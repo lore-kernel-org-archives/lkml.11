@@ -2,44 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7686C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:11:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE92C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:11:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236654AbiG2NLO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 09:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33920 "EHLO
+        id S236717AbiG2NLS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 09:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236501AbiG2NKr (ORCPT
+        with ESMTP id S236500AbiG2NKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Jul 2022 09:10:47 -0400
 Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB5565AF;
-        Fri, 29 Jul 2022 06:10:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F3F222A2;
+        Fri, 29 Jul 2022 06:10:42 -0700 (PDT)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LvSYs5qW8z4x1d;
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LvSYs1F4vz4x1c;
         Fri, 29 Jul 2022 23:10:41 +1000 (AEST)
 From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     linux-doc-tw-discuss@lists.sourceforge.net,
-        linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        linux-next@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Alex Shi <alexs@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        linux-kernel@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-In-Reply-To: <20220728033332.27836-1-bagasdotme@gmail.com>
-References: <20220727220050.549db613@canb.auug.org.au> <20220728033332.27836-1-bagasdotme@gmail.com>
-Subject: Re: [PATCH 0/3] Documentation: powerpc: documentation fixes for Documentation/powerpc/elf_hwcaps.rst
-Message-Id: <165909979455.253830.7633506902686535863.b4-ty@ellerman.id.au>
-Date:   Fri, 29 Jul 2022 23:03:14 +1000
+To:     Athira Rajeev <atrajeev@linux.vnet.ibm.com>, jolsa@kernel.org,
+        mpe@ellerman.id.au, acme@kernel.org
+Cc:     kjain@linux.ibm.com, disgoel@linux.vnet.ibm.com,
+        irogers@google.com, linuxppc-dev@lists.ozlabs.org,
+        rnsastry@linux.ibm.com, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, maddy@linux.vnet.ibm.com
+In-Reply-To: <20220520084630.15181-1-atrajeev@linux.vnet.ibm.com>
+References: <20220520084630.15181-1-atrajeev@linux.vnet.ibm.com>
+Subject: Re: [PATCH V3 1/2] powerpc/perf: Add support for caps under sysfs in powerpc
+Message-Id: <165909971373.253830.11662171769797597633.b4-ty@ellerman.id.au>
+Date:   Fri, 29 Jul 2022 23:01:53 +1000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -47,28 +40,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 28 Jul 2022 10:33:30 +0700, Bagas Sanjaya wrote:
-> After merging powerpc tree for linux-next integration testing, Stephen
-> Rothwell reported htmldocs warnings at [1]. Fix these with self-explanatory
-> fixes in the shortlog below.
-> 
-> [1]: https://lore.kernel.org/linuxppc-dev/20220727220050.549db613@canb.auug.org.au/
-> 
-> Bagas Sanjaya (3):
->   Documentation: powerpc: fix indentation warnings
->   Documentation: use different label names for each arch's
->     elf_hwcaps.rst
->   Documentation: powerpc: add elf_hwcaps to table of contents
+On Fri, 20 May 2022 14:16:29 +0530, Athira Rajeev wrote:
+> Add caps support under "/sys/bus/event_source/devices/<pmu>/"
+> for powerpc. This directory can be used to expose some of the
+> specific features that powerpc PMU supports to the user.
+> Example: pmu_name. The name of PMU registered will depend on
+> platform, say power9 or power10 or it could be Generic Compat
+> PMU.
 > 
 > [...]
 
 Applied to powerpc/next.
 
-[1/3] Documentation: powerpc: fix indentation warnings
-      https://git.kernel.org/powerpc/c/4515862b66d3bdaf681cade1c72f047c93d94d01
-[2/3] Documentation: use different label names for each arch's elf_hwcaps.rst
-      https://git.kernel.org/powerpc/c/0595a216920cb035030c73cec3ab9fe413ef1d77
-[3/3] Documentation: powerpc: add elf_hwcaps to table of contents
-      https://git.kernel.org/powerpc/c/a05aae92f84ba6d2705f6dac206ef5dcf097ea96
+[1/2] powerpc/perf: Add support for caps under sysfs in powerpc
+      https://git.kernel.org/powerpc/c/6320e693d98c7430653866b7ca6679338134cb79
+[2/2] docs: ABI: sysfs-bus-event_source-devices: Document sysfs caps entry for PMU
+      https://git.kernel.org/powerpc/c/999d7c47a0f737157608b9b0d2d37bdd1afec58c
 
 cheers
