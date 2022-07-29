@@ -2,284 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B042C19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B325C19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:06:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236607AbiG2PDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 11:03:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35468 "EHLO
+        id S236823AbiG2PGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 11:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiG2PDp (ORCPT
+        with ESMTP id S230516AbiG2PGr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 11:03:45 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 008F81582F;
-        Fri, 29 Jul 2022 08:03:41 -0700 (PDT)
-Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LvVyj4VRjz67PfY;
-        Fri, 29 Jul 2022 22:58:53 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Fri, 29 Jul 2022 17:03:38 +0200
-Received: from [10.195.35.4] (10.195.35.4) by lhrpeml500003.china.huawei.com
- (7.191.162.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 29 Jul
- 2022 16:03:37 +0100
-Message-ID: <d8356ddc-56e7-7324-5330-ff2bd54bcba4@huawei.com>
-Date:   Fri, 29 Jul 2022 16:03:36 +0100
+        Fri, 29 Jul 2022 11:06:47 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA6C7E812;
+        Fri, 29 Jul 2022 08:06:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659107207; x=1690643207;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=VLTg2DanJb0NwEo+jRGiYXD1Cu9WCDAEVpiydaB9dbg=;
+  b=lWpTvNcsDHQfLaFGbaOg4Bj7CG5J0q6yxUf8MbWt794A/Vlzrs9n3O4O
+   e+j1Df0VggDfDpIVhnaiPF59LnT0jyc4BMXsUE8wEieeAnaMHkT8G3lii
+   c8Czs+oJKYtIulSl4lZkODHMzbGYwMn87rfGNpdYGhGtqyl7vTHTgr+NI
+   HHp/J1QiWDUe8EGVzcAu+6Qnww5qjzo2o9zF9mndAuXznumIcpbQfZSwP
+   ZQgCw3NYybmEEoYJeORb7yFCVa/wb98QRfl+1H+37VcFMC/GwGhYIdHrn
+   xc5K+Su3o3OpofnGiqlJiwFBchlsy6RYcGfs3m0eQ86qCeslR9SpcI2ii
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="288797737"
+X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
+   d="scan'208";a="288797737"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 08:06:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
+   d="scan'208";a="660269187"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmsmga008.fm.intel.com with ESMTP; 29 Jul 2022 08:06:43 -0700
+Date:   Fri, 29 Jul 2022 22:57:57 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Daniel =?iso-8859-1?Q?Gl=F6ckner?= <dg@emlix.com>
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, mdf@kernel.org,
+        hao.wu@intel.com, trix@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        system@metrotek.ru,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v5 2/2] dt-bindings: fpga: add binding doc for ecp5-spi
+  fpga mgr
+Message-ID: <20220729145757.GA2601292@yilunxu-OptiPlex-7050>
+References: <20220719112335.9528-1-i.bornyakov@metrotek.ru>
+ <20220719112335.9528-3-i.bornyakov@metrotek.ru>
+ <20220729090123.GA28299@homes.emlix.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v3 00/17] Compress the pmu_event tables
-To:     Ian Rogers <irogers@google.com>, Will Deacon <will@kernel.org>,
-        "James Clark" <james.clark@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        "Namhyung Kim" <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        "Kan Liang" <kan.liang@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-perf-users@vger.kernel.org>
-CC:     Stephane Eranian <eranian@google.com>
-References: <20220729074351.138260-1-irogers@google.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <20220729074351.138260-1-irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.195.35.4]
-X-ClientProxiedBy: lhreml734-chm.china.huawei.com (10.201.108.85) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220729090123.GA28299@homes.emlix.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/07/2022 08:43, Ian Rogers wrote:
-> jevents.py creates a number of large arrays from the json events. The
-> arrays contain pointers to strings that need relocating. The
-> relocations have file size, run time and memory costs. These changes
-> refactor the pmu_events API so that the storage of the pmu_event
-> struct isn't exposed. The format is then changed to an offset within a
-> combined big string, with adjacent pmu_event struct variables being
-> next to each other in the string separated by \0 - meaning only the
-> first variable of the struct needs its offset recording.
+On Fri, Jul 29, 2022 at 11:01:24AM +0200, Daniel Glöckner wrote:
+> Hi,
 > 
-> Some related fixes are contained with the patches. The architecture
-> jevents.py creates tables for can now be set by the JEVENTS_ARCH make
-> variable, with a new 'all' that generates the events and metrics for
-> all architectures.
+> On Tue, Jul 19, 2022 at 02:23:35PM +0300, Ivan Bornyakov wrote:
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - lattice,ecp5-fpga-mgr
+> 
+> Since this driver uses the same interface as the existing
+> drivers/fpga/machxo2-spi.c driver, wouldn't it be advisable to use a
+> similar compatible id, i.e. lattice,ecp5-slave-spi?
 
-Hi Ian,
-
-I am going through this series currently.
-
-But I just wanted to mention my idea again on how to compress the 
-tables. Maybe you thought that there was no value in my idea or didn't 
-get it, but I'll mention it again just in case...
-
-Background:
-There is much duplication in events between cores. And currently we have 
-something like this:
-
-pmu-events/pmu-events.c:
-struct pmu_event core0[] {
-{
-	.name = event0,
-	.event = "event=0x0",
-},
-{
-	.name = event1,
-	.event = "event=0x1",
-},
-{
-	.name = event2,
-	.event = "event=0x2",
-	.desc = "event2 common desc",
-},
-...
-};
-
-struct pmu_event core1[] {
-{
-	.name = event0,
-	.event = "event=0x0",
-},
-{
-	.name = event1,
-	.event = "event=0x1",
-},
-{
-	.name = event2,
-	.event = "event=0x2",
-	.desc = "event2 desc for core1",
-},
-...
-};
-
-
-struct pmu_evenets_map map[] = {
-{
-	.cpuid = "0000",
-	.table = core0,
-},
-{
-	.cpuid = "0001",
-	.table = core1,
-},
-...
-};
-
-If you check broadwell and broadwellde frontent.json you will notice 
-that they are identical, which is an extreme example of duplication.
-
-Proposal for change:
-Make each event in the per-core pmu event table point to common event. 
-Each common event is unique, and each event per-core will point to a 
-common event. So if 2x cores have same event but small difference, then 
-there would be still 2x common events.
-
-pmu-events/pmu-events.c:
-struct pmu_event common_events[] {
-{
-	.name = event0,
-	.event = "event=0x0",
-},
-{
-	.name = event1,
-	.event = "event=0x1",
-},
-{
-	.name = event2,
-	.event = "event=0x2",
-	.desc = "event2 common desc",
-},
-{
-	.name = event2,
-	.event = "event=0x2",
-	.desc = "event2 desc for core1",
-},
-...
-};
-
-struct pmu_event_ptr {
-	struct pmu_event *pmu_event;
-}
-
-struct pmu_event_ptr core0[] {
-{
-	.pmu_event = &common_events[0],
-},
-{
-	.pmu_event = &common_events[1],
-},
-{
-	.pmu_event = &common_events[2],
-},
-...
-};
-
-struct pmu_event_ptr core0[] {
-{
-	.pmu_event = &common_events[0],
-},
-{
-	.pmu_event = &common_events[1],
-},
-{
-	.pmu_event = &common_events[3],
-},
-...
-};
-
-struct pmu_evenets_map map[] = {
-{
-	.cpuid = "0000",
-	.table = core0,
-},
-{
-	.cpuid = "0001",
-	.table = core1,
-},
-...
-};
-
-For x86, first step in JSON parsing would be to go through the JSON 
-files and compile a list of unique events. Then second step is to 
-process each per-core JSON to create the pmu events table, using the 
-common events. Using a per common event hash would make the lookup quicker.
-
-I'm not sure what you think. From figures below you seem to be saving 
-~20% at best - I would guess (with a capital G) that my method could 
-save a lot more.
-
-This implementation would require core pmu.c to be changed, but there is 
-ways that this could be done without needing to change core pmu.c
+That's a good clue for me. I searched the machxo2 & ecp5 Programming
+Usage Guide and seems they share the similar slave SPI sysCONFIG
+interface, at least the command word tables are the same. So could we
+have a generic driver for the lattice slave SPI sysCONFIG interface,
+rather than create similar drivers for each board?
 
 Thanks,
-John
+Yilun
 
 > 
-> An example of the improvement to the file size on x86 is:
-> no jevents - the same 19,788,464bytes
-> x86 jevents - ~16.7% file size saving 23,744,288bytes vs 28,502,632bytes
-> all jevents - ~19.5% file size saving 24,469,056bytes vs 30,379,920bytes
-> default build options plus NO_LIBBFD=1.
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - program-gpios
+> > +  - init-gpios
+> > +  - done-gpios
 > 
-> I originally suggested fixing this problem in:
-> https://lore.kernel.org/linux-perf-users/CAP-5=fVB8G4bdb9T=FncRTh9oBVKCS=+=eowAO+YSgAhab+Dtg@mail.gmail.com/
+> I think some of the GPIOs can be made optional by reading the status
+> register or using the refresh command, assuming the slave spi interface
+> stayed enabled after previous programming and we are not dealing with
+> several chained FPGAs. But that can of course be left as an exercise for
+> other developers.
 > 
-> v3. Fix an ARM build issue with a missed weak symbol. Perform some
->      pytype clean up.
-> v2. Split the substring folding optimization to its own patch and
->      comment tweaks as suggested by Namhyung Kim
->      <namhyung@kernel.org>. Recompute the file size savings with the
->      latest json events and metrics.
+> Best regards,
 > 
-> Ian Rogers (17):
->    perf jevents: Clean up pytype warnings
->    perf jevents: Simplify generation of C-string
->    perf jevents: Add JEVENTS_ARCH make option
->    perf jevent: Add an 'all' architecture argument
->    perf jevents: Remove the type/version variables
->    perf jevents: Provide path to json file on error
->    perf jevents: Sort json files entries
->    perf pmu-events: Hide pmu_sys_event_tables
->    perf pmu-events: Avoid passing pmu_events_map
->    perf pmu-events: Hide pmu_events_map
->    perf test: Use full metric resolution
->    perf pmu-events: Move test events/metrics to json
->    perf pmu-events: Don't assume pmu_event is an array
->    perf pmu-events: Hide the pmu_events
->    perf metrics: Copy entire pmu_event in find metric
->    perf jevents: Compress the pmu_events_table
->    perf jevents: Fold strings optimization
-> 
->   tools/perf/arch/arm64/util/pmu.c              |   4 +-
->   tools/perf/pmu-events/Build                   |   6 +-
->   .../arch/test/test_soc/cpu/metrics.json       |  64 +++
->   tools/perf/pmu-events/empty-pmu-events.c      | 204 +++++++-
->   tools/perf/pmu-events/jevents.py              | 495 ++++++++++++++----
->   tools/perf/pmu-events/pmu-events.h            |  40 +-
->   tools/perf/tests/expand-cgroup.c              |  25 +-
->   tools/perf/tests/parse-metric.c               |  77 +--
->   tools/perf/tests/pmu-events.c                 | 466 +++++++----------
->   tools/perf/util/metricgroup.c                 | 275 ++++++----
->   tools/perf/util/metricgroup.h                 |   5 +-
->   tools/perf/util/pmu.c                         | 139 ++---
->   tools/perf/util/pmu.h                         |   8 +-
->   tools/perf/util/s390-sample-raw.c             |  50 +-
->   14 files changed, 1140 insertions(+), 718 deletions(-)
->   create mode 100644 tools/perf/pmu-events/arch/test/test_soc/cpu/metrics.json
-> 
-
+>   Daniel
