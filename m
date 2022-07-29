@@ -2,54 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6937C19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 05:30:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F5EC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 05:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234506AbiG2Fag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 01:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57174 "EHLO
+        id S234530AbiG2Fan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 01:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234378AbiG2Fa0 (ORCPT
+        with ESMTP id S234256AbiG2FaZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 01:30:26 -0400
+        Fri, 29 Jul 2022 01:30:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA9711C10;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD07DFBB;
         Thu, 28 Jul 2022 22:30:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C6F961EA5;
-        Fri, 29 Jul 2022 05:30:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 03C90C43143;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95DE861EA0;
         Fri, 29 Jul 2022 05:30:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E719CC43140;
+        Fri, 29 Jul 2022 05:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659072620;
-        bh=Xcvfj3hoAs2jREw1c542RAD/KUpaKvZ72Gubv1t7zgg=;
+        s=k20201202; t=1659072619;
+        bh=wDCzmB4eJFbSSvyoCZElKojmCus+4/oANVG54d/8q+M=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=R/a1XdnsMMcjQQjrSCyc7T9Dl/ZHb56MRR+sWMbCWZ+0NyQQnX0weUkXK3EZIvUJ0
-         izKZ6HuIJ7xye31YrZ3Pd94zQs0eJPL8CRw7+VFMD+SuXAHb4VcX8txxVpfGHwLeQE
-         20BaFftB7KS8a6DhTRQ18jBosULgyVcuMyeRr8RLunk3VTEdhOOkXGMtoWudBLk2rQ
-         cURtquTBJY9e5GDwi8XUmv+O8PQtmeJ8Okd1wd2GNBh1BV4nz1thbA3GArG3/TnR31
-         uWrTgOHcJiP853YEG8TYZ641eBYsdFkipHxfwnHGsS/N3gMG3gOIP+3F+SeNhqnMfy
-         EZjjj2Rf/Nipw==
+        b=GBXcqVSRtS+63Su56lQEeCgCwmKhozpT/EwJq/KCn0uAPpe/nB4TCNLiRkTXr6i9i
+         yjgR7w8UkpRMH6jLkwxysgi52aZ3Nw/xsw3EjmNpiuYCNmoQ4qTLSTWltEtUXFMsGk
+         +ab+JFw5E4ORuXkSPsYs/RVhh81gTggGMBDH6WIEfjUcyQFQ6P7wozQdQVfgRLCAP7
+         IPUfupq8ne7RwNLmPpyA00dikc8d/KzZ0vKimnVsYrDZD9liwTFUzSnUIYorqTCaYr
+         XuFsQhJ2e73T6UGwvFxUimCsQgd/eIbi7dkNKXE1yCe+iy2aVWxlPpbho85xx4whlu
+         IOXW/zeOijvPQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E1794C43147;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CEA08C43146;
         Fri, 29 Jul 2022 05:30:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next] mlxsw: core_linecards: Remove duplicated include in
- core_linecard_dev.c
+Subject: Re: [PATCH net-next v1 1/1] firewire: net: Make use of
+ get_unaligned_be48(), put_unaligned_be48()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165907261992.17632.5783289767562003796.git-patchwork-notify@kernel.org>
+Message-Id: <165907261984.17632.6914991497819890237.git-patchwork-notify@kernel.org>
 Date:   Fri, 29 Jul 2022 05:30:19 +0000
-References: <20220727233801.23781-1-yang.lee@linux.alibaba.com>
-In-Reply-To: <20220727233801.23781-1-yang.lee@linux.alibaba.com>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     idosch@nvidia.com, petrm@nvidia.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        abaci@linux.alibaba.com
+References: <20220726144906.5217-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220726144906.5217-1-andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     kuba@kernel.org, linux1394-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        stefanr@s5r6.in-berlin.de, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -59,19 +59,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu, 28 Jul 2022 07:38:01 +0800 you wrote:
-> Fix following includecheck warning:
-> ./drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c: linux/err.h is included more than once.
+On Tue, 26 Jul 2022 17:49:06 +0300 you wrote:
+> Since we have a proper endianness converters for BE 48-bit data use
+> them.
 > 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
->  drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c | 1 -
->  1 file changed, 1 deletion(-)
+>  drivers/firewire/net.c | 14 ++------------
+>  include/net/firewire.h |  3 +--
+>  2 files changed, 3 insertions(+), 14 deletions(-)
 
 Here is the summary with links:
-  - [-next] mlxsw: core_linecards: Remove duplicated include in core_linecard_dev.c
-    https://git.kernel.org/netdev/net-next/c/707e304dd2e8
+  - [net-next,v1,1/1] firewire: net: Make use of get_unaligned_be48(), put_unaligned_be48()
+    https://git.kernel.org/netdev/net-next/c/29192a170e15
 
 You are awesome, thank you!
 -- 
