@@ -2,211 +2,478 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C3B4C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 09:39:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C994AC19F29
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 09:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235677AbiG2Jjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 05:39:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
+        id S235711AbiG2Jjj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 05:39:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235655AbiG2JjY (ORCPT
+        with ESMTP id S235683AbiG2Jjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 05:39:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6734F674;
-        Fri, 29 Jul 2022 02:39:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA17561D43;
-        Fri, 29 Jul 2022 09:39:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF4CEC43141;
-        Fri, 29 Jul 2022 09:39:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659087562;
-        bh=oWw25mtkJXkfmoetD7cNHKyHoDEVZWd1NhnSPh98QnQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V35CUiW/D6XVNnoOIq+dlMbi3L8jwnrxMBCj1IXuAAwGXqW+lcm4cEZFTRUSyrasr
-         uSX6FveXUo5kzghM3MbxBdhWaB8QULn3DIOBuEytU5VumYtH+sbRaGVZE+7WVvNMSp
-         6bvu/b4+sK1MZFwbyjUoWZLqa97DChSZ1rdeSiIQv6qqROPfpx21E5+MrVB03U9/fQ
-         XZyUoPi+EpYWI1dlLmRD0DXEqFUnp3MaB51od80MJs+c1/YwpNstcUZ3AAAbkrFiUm
-         sDZkcXmhMbegMnbGVHPfZwRHJi2DtZVn8h2z0SmJ3780ViATpuV8RtNOuwW0C7InRU
-         AndFiN46Z9Kkg==
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        Tao Zhou <tao.zhou@linux.dev>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org
-Subject: [PATCH V9 03/16] rv/include: Add helper functions for deterministic automata
-Date:   Fri, 29 Jul 2022 11:38:42 +0200
-Message-Id: <563234f2bfa84b540f60cf9e39c2d9f0eea95a55.1659052063.git.bristot@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1659052063.git.bristot@kernel.org>
-References: <cover.1659052063.git.bristot@kernel.org>
+        Fri, 29 Jul 2022 05:39:33 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9102B85FA2
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 02:39:30 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-324293f1414so10743847b3.0
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 02:39:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=CwH/d/sIqHDYK5xsWZYd5yGSd6KgMnTUiTsIbTqcNwY=;
+        b=DJBeadA9lQb88BmBHiwZ0rLr/ECqbKiAIoVpPNp8/4KO8eARYXroYH/Sv8p6budTa4
+         LmFiD8jNxsAFneGBLYVxjYZYUPHJu9+Wb+LM3JEdX2iKSm+JDWxCgwwSMIHWN5rGBIxQ
+         DIhAQ0j1idrcR8M2aVU9hfeYUvxn6jaYsA/pct20LeIX1JbNLpSAGUdwVRRvBhhAzAPK
+         kq8SHCiOl5yzIdC81ky9WckcI4cOccXNazKoMK8jxQAI6OKo216TjrxmKaamXubfz29F
+         iwBy10QB0Z3OSRWl55mSAQ2zlLlhYQRyZAgzBw3En9nO1pRhKVdgTK5fm/RkpJxkJzsY
+         xlcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=CwH/d/sIqHDYK5xsWZYd5yGSd6KgMnTUiTsIbTqcNwY=;
+        b=p0fPw0FylUG1x4oZ7Eswhk1OKYB/lb983JuO9FGCcRpzWYENJa8ie8+t5fqASCk/ox
+         XCeX8gunxinqMLoZanpPtaFf1F0POzXENEGtSLAsN90GW36wiYZ6sTxF9a253GguCX1I
+         /Dh465iEqwcjeIzVVmz/idt0qov2sfVi8MOXQGa5rlnOuMka9tDt7QyIlomXO7tY69VM
+         iwpN9JsjztMGgBya8MB+Gps/v2bTSTbO03NEDxj9OKLJ+xaKpbncMVPb3KG91CYJLRBH
+         YLqqauSEB9hVECFzrEmHH8MH0PXKydHv9JzsNcNzbSrhS8BtXZRuKykK7OweLF0M1VfY
+         YtfQ==
+X-Gm-Message-State: ACgBeo0PcHvexY/LE+BO2UsWg+Xz+Bxsg3pXIjHEa87Tfyu4XD6RBkt5
+        /jB7pbxR/9QBV+2WBTnu7XR0g/tR6Bah6+NqlBs2hA==
+X-Google-Smtp-Source: AA6agR5g+6baB5lguK1ym1ZY5rqNDhBHGHUBXr/kfZUyYODC7fOjSo+PbS8fu7HJINLZkU1hH6fq5oOd/3g/9zv2pvc=
+X-Received: by 2002:a0d:d085:0:b0:31e:dc35:ef9a with SMTP id
+ s127-20020a0dd085000000b0031edc35ef9amr2427200ywd.453.1659087569643; Fri, 29
+ Jul 2022 02:39:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220722174212.GA1911979@bhelgaas> <86522aa5-2855-0f73-ddb2-a2b50b2fd1b7@nvidia.com>
+ <CACK8Z6FSr_ztkZ5+ULjHiDZ5L9qR=Ewtq1ZuDofzvJX=mW5WAQ@mail.gmail.com> <CAFJ_xbpYrtFrt-hEd7M0jqyH7R9pOKA9884sgMvV2RZXycj7hA@mail.gmail.com>
+In-Reply-To: <CAFJ_xbpYrtFrt-hEd7M0jqyH7R9pOKA9884sgMvV2RZXycj7hA@mail.gmail.com>
+From:   Lukasz Majczak <lma@semihalf.com>
+Date:   Fri, 29 Jul 2022 11:39:18 +0200
+Message-ID: <CAFJ_xbqyxJ591DgC=xQEzokip6i_j0mex5SDTBrwkOe=-8bikg@mail.gmail.com>
+Subject: Re: [PATCH V2] PCI/ASPM: Save/restore L1SS Capability for suspend/resume
+To:     Rajat Jain <rajatja@google.com>
+Cc:     Vidya Sagar <vidyas@nvidia.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Ben Chuang <benchuanggli@gmail.com>, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, refactormyself@gmail.com, kw@linux.com,
+        kenny@panix.com, treding@nvidia.com, jonathanh@nvidia.com,
+        abhsahu@nvidia.com, sagupta@nvidia.com, linux-pci@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kthota@nvidia.com, mmaddireddy@nvidia.com, sagar.tv@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Formally, a deterministic automaton, denoted by G, is defined as a
-quintuple:
+wt., 26 lip 2022 o 09:20 Lukasz Majczak <lma@semihalf.com> napisa=C5=82(a):
+>
+> wt., 26 lip 2022 o 00:51 Rajat Jain <rajatja@google.com> napisa=C5=82(a):
+> >
+> > Hello,
+> >
+> > On Sat, Jul 23, 2022 at 10:03 AM Vidya Sagar <vidyas@nvidia.com> wrote:
+> > >
+> > > Agree with Bjorn's observations.
+> > > The fact that the L1SS capability registers themselves disappeared in
+> > > the root port post resume indicates that there seems to be something
+> > > wrong with the BIOS itself.
+> > > Could you please check from that perspective?
+> >
+> > ChromeOS Intel platforms use S0ix (suspend-to-idle) for suspend. This
+> > is a shallower sleep state that preserves more state than, for e.g. S3
+> > (suspend-to-RAM). When we use S0ix, then BIOS does not come in picture
+> > at all. i.e. after the kernel runs its suspend routines, it just puts
+> > the CPU into S0ix state. So I do not think there is a BIOS angle to
+> > this.
+> >
+> >
+> > >
+> > > Thanks,
+> > > Vidya Sagar
+> > >
+> > >
+> > > On 7/22/2022 11:12 PM, Bjorn Helgaas wrote:
+> > > > External email: Use caution opening links or attachments
+> > > >
+> > > >
+> > > > On Fri, Jul 22, 2022 at 11:41:14AM +0200, Lukasz Majczak wrote:
+> > > >> pt., 22 lip 2022 o 09:31 Kai-Heng Feng <kai.heng.feng@canonical.co=
+m> napisa=C5=82(a):
+> > > >>> On Fri, Jul 15, 2022 at 6:38 PM Ben Chuang <benchuanggli@gmail.co=
+m> wrote:
+> > > >>>> On Tue, Jul 5, 2022 at 2:00 PM Vidya Sagar <vidyas@nvidia.com> w=
+rote:
+> > > >>>>>
+> > > >>>>> Previously ASPM L1 Substates control registers (CTL1 and CTL2) =
+weren't
+> > > >>>>> saved and restored during suspend/resume leading to L1 Substate=
+s
+> > > >>>>> configuration being lost post-resume.
+> > > >>>>>
+> > > >>>>> Save the L1 Substates control registers so that the configurati=
+on is
+> > > >>>>> retained post-resume.
+> > > >>>>>
+> > > >>>>> Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
+> > > >>>>> Tested-by: Abhishek Sahu <abhsahu@nvidia.com>
+> > > >>>>
+> > > >>>> Hi Vidya,
+> > > >>>>
+> > > >>>> I tested this patch on kernel v5.19-rc6.
+> > > >>>> The test device is GL9755 card reader controller on Intel i5-102=
+10U RVP.
+> > > >>>> This patch can restore L1SS after suspend/resume.
+> > > >>>>
+> > > >>>> The test results are as follows:
+> > > >>>>
+> > > >>>> After Boot:
+> > > >>>> #lspci -d 17a0:9755 -vvv | grep -A5 "L1 PM Substates"
+> > > >>>>          Capabilities: [110 v1] L1 PM Substates
+> > > >>>>                  L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+
+> > > >>>> ASPM_L1.1+ L1_PM_Substates+
+> > > >>>>                            PortCommonModeRestoreTime=3D255us
+> > > >>>> PortTPowerOnTime=3D3100us
+> > > >>>>                  L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+=
+ ASPM_L1.1+
+> > > >>>>                             T_CommonMode=3D0us LTR1.2_Threshold=
+=3D3145728ns
+> > > >>>>                  L1SubCtl2: T_PwrOn=3D3100us
+> > > >>>>
+> > > >>>>
+> > > >>>> After suspend/resume without this patch.
+> > > >>>> #lspci -d 17a0:9755 -vvv | grep -A5 "L1 PM Substates"
+> > > >>>>          Capabilities: [110 v1] L1 PM Substates
+> > > >>>>                  L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+
+> > > >>>> ASPM_L1.1+ L1_PM_Substates+
+> > > >>>>                            PortCommonModeRestoreTime=3D255us
+> > > >>>> PortTPowerOnTime=3D3100us
+> > > >>>>                  L1SubCtl1: PCI-PM_L1.2- PCI-PM_L1.1- ASPM_L1.2-=
+ ASPM_L1.1-
+> > > >>>>                             T_CommonMode=3D0us LTR1.2_Threshold=
+=3D0ns
+> > > >>>>                  L1SubCtl2: T_PwrOn=3D10us
+> > > >>>>
+> > > >>>>
+> > > >>>> After suspend/resume with this patch.
+> > > >>>> #lspci -d 17a0:9755 -vvv | grep -A5 "L1 PM Substates"
+> > > >>>>          Capabilities: [110 v1] L1 PM Substates
+> > > >>>>                  L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+
+> > > >>>> ASPM_L1.1+ L1_PM_Substates+
+> > > >>>>                            PortCommonModeRestoreTime=3D255us
+> > > >>>> PortTPowerOnTime=3D3100us
+> > > >>>>                  L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+=
+ ASPM_L1.1+
+> > > >>>>                             T_CommonMode=3D0us LTR1.2_Threshold=
+=3D3145728ns
+> > > >>>>                  L1SubCtl2: T_PwrOn=3D3100us
+> > > >>>>
+> > > >>>>
+> > > >>>> Tested-by: Ben Chuang <benchuanggli@gmail.com>
+> > > >>>
+> > > >>> Forgot to add mine:
+> > > >>> Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> > > >>>
+> > > >>>>
+> > > >>>> Best regards,
+> > > >>>> Ben Chuang
+> > > >>>>
+> > > >>>>
+> > > >>>>> ---
+> > > >>>>> Hi,
+> > > >>>>> Kenneth R. Crudup <kenny@panix.com>, Could you please verify th=
+is patch
+> > > >>>>> on your laptop (Dell XPS 13) one last time?
+> > > >>>>> IMHO, the regression observed on your laptop with an old versio=
+n of the patch
+> > > >>>>> could be due to a buggy old version BIOS in the laptop.
+> > > >>>>>
+> > > >>>>> Thanks,
+> > > >>>>> Vidya Sagar
+> > > >>>>>
+> > > >>>>>   drivers/pci/pci.c       |  7 +++++++
+> > > >>>>>   drivers/pci/pci.h       |  4 ++++
+> > > >>>>>   drivers/pci/pcie/aspm.c | 44 ++++++++++++++++++++++++++++++++=
++++++++++
+> > > >>>>>   3 files changed, 55 insertions(+)
+> > > >>>>>
+> > > >>>>> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> > > >>>>> index cfaf40a540a8..aca05880aaa3 100644
+> > > >>>>> --- a/drivers/pci/pci.c
+> > > >>>>> +++ b/drivers/pci/pci.c
+> > > >>>>> @@ -1667,6 +1667,7 @@ int pci_save_state(struct pci_dev *dev)
+> > > >>>>>                  return i;
+> > > >>>>>
+> > > >>>>>          pci_save_ltr_state(dev);
+> > > >>>>> +       pci_save_aspm_l1ss_state(dev);
+> > > >>>>>          pci_save_dpc_state(dev);
+> > > >>>>>          pci_save_aer_state(dev);
+> > > >>>>>          pci_save_ptm_state(dev);
+> > > >>>>> @@ -1773,6 +1774,7 @@ void pci_restore_state(struct pci_dev *de=
+v)
+> > > >>>>>           * LTR itself (in the PCIe capability).
+> > > >>>>>           */
+> > > >>>>>          pci_restore_ltr_state(dev);
+> > > >>>>> +       pci_restore_aspm_l1ss_state(dev);
+> > > >>>>>
+> > > >>>>>          pci_restore_pcie_state(dev);
+> > > >>>>>          pci_restore_pasid_state(dev);
+> > > >>>>> @@ -3489,6 +3491,11 @@ void pci_allocate_cap_save_buffers(struc=
+t pci_dev *dev)
+> > > >>>>>          if (error)
+> > > >>>>>                  pci_err(dev, "unable to allocate suspend buffe=
+r for LTR\n");
+> > > >>>>>
+> > > >>>>> +       error =3D pci_add_ext_cap_save_buffer(dev, PCI_EXT_CAP_=
+ID_L1SS,
+> > > >>>>> +                                           2 * sizeof(u32));
+> > > >>>>> +       if (error)
+> > > >>>>> +               pci_err(dev, "unable to allocate suspend buffer=
+ for ASPM-L1SS\n");
+> > > >>>>> +
+> > > >>>>>          pci_allocate_vc_save_buffers(dev);
+> > > >>>>>   }
+> > > >>>>>
+> > > >>>>> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> > > >>>>> index e10cdec6c56e..92d8c92662a4 100644
+> > > >>>>> --- a/drivers/pci/pci.h
+> > > >>>>> +++ b/drivers/pci/pci.h
+> > > >>>>> @@ -562,11 +562,15 @@ void pcie_aspm_init_link_state(struct pci=
+_dev *pdev);
+> > > >>>>>   void pcie_aspm_exit_link_state(struct pci_dev *pdev);
+> > > >>>>>   void pcie_aspm_pm_state_change(struct pci_dev *pdev);
+> > > >>>>>   void pcie_aspm_powersave_config_link(struct pci_dev *pdev);
+> > > >>>>> +void pci_save_aspm_l1ss_state(struct pci_dev *dev);
+> > > >>>>> +void pci_restore_aspm_l1ss_state(struct pci_dev *dev);
+> > > >>>>>   #else
+> > > >>>>>   static inline void pcie_aspm_init_link_state(struct pci_dev *=
+pdev) { }
+> > > >>>>>   static inline void pcie_aspm_exit_link_state(struct pci_dev *=
+pdev) { }
+> > > >>>>>   static inline void pcie_aspm_pm_state_change(struct pci_dev *=
+pdev) { }
+> > > >>>>>   static inline void pcie_aspm_powersave_config_link(struct pci=
+_dev *pdev) { }
+> > > >>>>> +static inline void pci_save_aspm_l1ss_state(struct pci_dev *de=
+v) { }
+> > > >>>>> +static inline void pci_restore_aspm_l1ss_state(struct pci_dev =
+*dev) { }
+> > > >>>>>   #endif
+> > > >>>>>
+> > > >>>>>   #ifdef CONFIG_PCIE_ECRC
+> > > >>>>> diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
+> > > >>>>> index a96b7424c9bc..2c29fdd20059 100644
+> > > >>>>> --- a/drivers/pci/pcie/aspm.c
+> > > >>>>> +++ b/drivers/pci/pcie/aspm.c
+> > > >>>>> @@ -726,6 +726,50 @@ static void pcie_config_aspm_l1ss(struct p=
+cie_link_state *link, u32 state)
+> > > >>>>>                                  PCI_L1SS_CTL1_L1SS_MASK, val);
+> > > >>>>>   }
+> > > >>>>>
+> > > >>>>> +void pci_save_aspm_l1ss_state(struct pci_dev *dev)
+> > > >>>>> +{
+> > > >>>>> +       int aspm_l1ss;
+> > > >>>>> +       struct pci_cap_saved_state *save_state;
+> > > >>>>> +       u32 *cap;
+> > > >>>>> +
+> > > >>>>> +       if (!pci_is_pcie(dev))
+> > > >>>>> +               return;
+> > > >>>>> +
+> > > >>>>> +       aspm_l1ss =3D pci_find_ext_capability(dev, PCI_EXT_CAP_=
+ID_L1SS);
+> > > >>>>> +       if (!aspm_l1ss)
+> > > >>>>> +               return;
+> > > >>>>> +
+> > > >>>>> +       save_state =3D pci_find_saved_ext_cap(dev, PCI_EXT_CAP_=
+ID_L1SS);
+> > > >>>>> +       if (!save_state)
+> > > >>>>> +               return;
+> > > >>>>> +
+> > > >>>>> +       cap =3D (u32 *)&save_state->cap.data[0];
+> > > >>>>> +       pci_read_config_dword(dev, aspm_l1ss + PCI_L1SS_CTL2, c=
+ap++);
+> > > >>>>> +       pci_read_config_dword(dev, aspm_l1ss + PCI_L1SS_CTL1, c=
+ap++);
+> > > >>>>> +}
+> > > >>>>> +
+> > > >>>>> +void pci_restore_aspm_l1ss_state(struct pci_dev *dev)
+> > > >>>>> +{
+> > > >>>>> +       int aspm_l1ss;
+> > > >>>>> +       struct pci_cap_saved_state *save_state;
+> > > >>>>> +       u32 *cap;
+> > > >>>>> +
+> > > >>>>> +       if (!pci_is_pcie(dev))
+> > > >>>>> +               return;
+> > > >>>>> +
+> > > >>>>> +       aspm_l1ss =3D pci_find_ext_capability(dev, PCI_EXT_CAP_=
+ID_L1SS);
+> > > >>>>> +       if (!aspm_l1ss)
+> > > >>>>> +               return;
+> > > >>>>> +
+> > > >>>>> +       save_state =3D pci_find_saved_ext_cap(dev, PCI_EXT_CAP_=
+ID_L1SS);
+> > > >>>>> +       if (!save_state)
+> > > >>>>> +               return;
+> > > >>>>> +
+> > > >>>>> +       cap =3D (u32 *)&save_state->cap.data[0];
+> > > >>>>> +       pci_write_config_dword(dev, aspm_l1ss + PCI_L1SS_CTL2, =
+*cap++);
+> > > >>>>> +       pci_write_config_dword(dev, aspm_l1ss + PCI_L1SS_CTL1, =
+*cap++);
+> > > >>>>> +}
+> > > >>>>> +
+> > > >>>>>   static void pcie_config_aspm_dev(struct pci_dev *pdev, u32 va=
+l)
+> > > >>>>>   {
+> > > >>>>>          pcie_capability_clear_and_set_word(pdev, PCI_EXP_LNKCT=
+L,
+> > > >>>>> --
+> > > >>>>> 2.17.1
+> > > >>>>>
+> > > >>
+> > > >> Hi,
+> > > >>
+> > > >> With this patch (and also mentioned
+> > > >> https://lore.kernel.org/all/20220509073639.2048236-1-kai.heng.feng=
+@canonical.com/)
+> > > >> applied on 5.10 (chromeos-5.10) I am observing problems after
+> > > >> suspend/resume with my WiFi card - it looks like whole communicati=
+on
+> > > >> via PCI fails. Attaching logs (dmesg, lspci -vvv before suspend/re=
+sume
+> > > >> and after) https://gist.github.com/semihalf-majczak-lukasz/fb36dfa=
+2eff22911109dfb91ab0fc0e3
+> > > >>
+> > > >> I played a little bit with this code and it looks like the
+> > > >> pci_write_config_dword() to the PCI_L1SS_CTL1 breaks it (don't kno=
+w
+> > > >> why, not a PCI expert).
+> > > >
+> > > > Thanks a lot for testing this!  I'm not quite sure what to make of =
+the
+> > > > results since v5.10 is fairly old (Dec 2020) and I don't know what
+> > > > other changes are in chromeos-5.10.
+> >
+> > Lukasz: I assume you are running this on Atlas and are seeing this bug
+> > when uprev'ving it to 5.10 kernel. Can you please try it on a newer
+> > Intel platform that have the latest upstream kernel running already
+> > and see if this can be reproduced there too?
+> > Note that the wifi PCI device is different on newer Intel platforms,
+> > but platform design is similar enough that I suspect we should see
+> > similar bug on those too. The other option is to try the latest
+> > ustream kernel on Atlas. Perhaps if we just care about wifi (and
+> > ignore bringing up the graphics stack and GUI), it may come up
+> > sufficiently enough to try this patch?
+> >
+> > Thanks,
+> >
+> > Rajat
+> >
+> >
+> > > >
+> > > > Random observations, no analysis below.  This from your dmesg
+> > > > certainly looks like PCI reads failing and returning ~0:
+> > > >
+> > > >    Timeout waiting for hardware access (CSR_GP_CNTRL 0xffffffff)
+> > > >    iwlwifi 0000:01:00.0: 00000000: ffffffff ffffffff ffffffff fffff=
+fff ffffffff ffffffff ffffffff ffffffff
+> > > >    iwlwifi 0000:01:00.0: Device gone - attempting removal
+> > > >    Hardware became unavailable upon resume. This could be a softwar=
+e issue prior to suspend or a hardware issue.
+> > > >
+> > > > And then we re-enumerate 01:00.0 and it looks like it may have been
+> > > > reset (BAR is 0):
+> > > >
+> > > >    pci 0000:01:00.0: [8086:095a] type 00 class 0x028000
+> > > >    pci 0000:01:00.0: reg 0x10: [mem 0x00000000-0x00001fff 64bit]
+> > > >
+> > > > lspci diffs from before/after suspend:
+> > > >
+> > > >     00:14.0 PCI bridge: Intel Corporation Celeron N3350/Pentium N42=
+00/Atom E3900 Series PCI Express Port B #1 (rev fb) (prog-if 00 [Normal dec=
+ode])
+> > > >       Bus: primary=3D00, secondary=3D01, subordinate=3D01, sec-late=
+ncy=3D64
+> > > >    -               DevSta: CorrErr- NonFatalErr+ FatalErr- UnsupReq=
++ AuxPwr+ TransPend-
+> > > >    +               DevSta: CorrErr+ NonFatalErr- FatalErr- UnsupReq=
+- AuxPwr+ TransPend-
+> > > >    -               LnkCtl: ASPM L1 Enabled; RCB 64 bytes, Disabled-=
+ CommClk+
+> > > >    +               LnkCtl: ASPM Disabled; RCB 64 bytes, Disabled- C=
+ommClk+
+> > > >    -               LnkSta2: Current De-emphasis Level: -6dB, Equali=
+zationComplete- EqualizationPhase1-
+> > > >    +               LnkSta2: Current De-emphasis Level: -3.5dB, Equa=
+lizationComplete- EqualizationPhase1-
+> > > >    -       Capabilities: [150 v0] Null
+> > > >    -       Capabilities: [200 v1] L1 PM Substates
+> > > >    -               L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ A=
+SPM_L1.1+ L1_PM_Substates+
+> > > >    -                         PortCommonModeRestoreTime=3D40us PortT=
+PowerOnTime=3D10us
+> > > >    -               L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ =
+ASPM_L1.1+
+> > > >    -                          T_CommonMode=3D40us LTR1.2_Threshold=
+=3D98304ns
+> > > >    -               L1SubCtl2: T_PwrOn=3D60us
+> > > >
+> > > > The DevSta differences might be BIOS bugs, probably not relevant.
+> > > > Interesting that ASPM is disabled, maybe didn't get enabled after
+> > > > re-enumerating 01:00.0?  Strange that the L1 PM Substates capabilit=
+y
+> > > > disappeared.
+> > > >
+> > > >     01:00.0 Network controller: Intel Corporation Wireless 7265 (re=
+v 59)
+> > > >                    LnkCtl: ASPM L1 Enabled; RCB 64 bytes, Disabled-=
+ CommClk+
+> > > >    -                       ExtSynch- ClockPM+ AutWidDis- BWInt- Aut=
+BWInt-
+> > > >    +                       ExtSynch- ClockPM- AutWidDis- BWInt- Aut=
+BWInt-
+> > > >            Capabilities: [154 v1] L1 PM Substates
+> > > >                    L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ A=
+SPM_L1.1+ L1_PM_Substates+
+> > > >                              PortCommonModeRestoreTime=3D30us PortT=
+PowerOnTime=3D60us
+> > > >    -               L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ =
+ASPM_L1.1+
+> > > >    -                          T_CommonMode=3D0us LTR1.2_Threshold=
+=3D98304ns
+> > > >    +               L1SubCtl1: PCI-PM_L1.2- PCI-PM_L1.1- ASPM_L1.2- =
+ASPM_L1.1-
+> > > >    +                          T_CommonMode=3D0us LTR1.2_Threshold=
+=3D0ns
+> > > >
+> > > > Dmesg claimed we reconfigured common clock config.  Maybe ASPM didn=
+'t
+> > > > get reinitialized after re-enumeration?  Looks like we didn't resto=
+re
+> > > > L1SubCtl1.
+> > > >
+> > > > Bjorn
+> > > >
+>
+> Hi,
+>
+> Thank you all for the response and input! As Rajat mentioned I'm using
+> chromebook - but not Atlas (Amberlake) - in this case it is Babymega
+> (Apollolake)  - I will try to load most recent kernel and give it a
+> try once again.
+>
+> Best regards,
+> Lukasz
 
-  G = { X, E, f, x_0, X_m }
+Hi,
 
-where:
-	- X is the set of states;
-	- E is the finite set of events;
-	- x_0 is the initial state;
-	- X_m (subset of X) is the set of marked states.
-	- f : X x E -> X $ is the transition function. It defines the
-	  state transition in the occurrence of a event from E in
-	  the state X. In the special case of deterministic automata,
-	  the occurrence of the event in E in a state in X has a
-	  deterministic next state from X.
+ I have applied this patch on top of v5.19-rc7 (chromeos) and I'm
+still getting same results:
+https://gist.github.com/semihalf-majczak-lukasz/4b716704c21a3758d6711b2030e=
+a34b9
 
-An automaton can also be represented using a graphical format of
-vertices (nodes) and edges. The open-source tool Graphviz can produce
-this graphic format using the (textual) DOT language as the source code.
-
-The dot2c tool presented in this paper:
-
-De Oliveira, Daniel Bristot; Cucinotta, Tommaso; De Oliveira, Romulo
-Silva. Efficient formal verification for the Linux kernel. In:
-International Conference on Software Engineering and Formal Methods.
-Springer, Cham, 2019. p. 315-332.
-
-Translates a deterministic automaton in the DOT format into a C
-source code representation that to be used for monitoring.
-
-This header file implements helper functions to facilitate the usage
-of the C output from dot2c/k for monitoring.
-
-Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Marco Elver <elver@google.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>
-Cc: Shuah Khan <skhan@linuxfoundation.org>
-Cc: Gabriele Paoloni <gpaoloni@redhat.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Clark Williams <williams@redhat.com>
-Cc: Tao Zhou <tao.zhou@linux.dev>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: linux-doc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-trace-devel@vger.kernel.org
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
----
- include/rv/automata.h | 75 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 75 insertions(+)
- create mode 100644 include/rv/automata.h
-
-diff --git a/include/rv/automata.h b/include/rv/automata.h
-new file mode 100644
-index 000000000000..eb9e636809a0
---- /dev/null
-+++ b/include/rv/automata.h
-@@ -0,0 +1,75 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2019-2022 Red Hat, Inc. Daniel Bristot de Oliveira  <bristot@kernel.org>
-+ *
-+ * Deterministic automata helper functions, to be used with the automata
-+ * models in C generated by the dot2k tool.
-+ */
-+
-+/*
-+ * DECLARE_AUTOMATA_HELPERS - define a set of helper functions for automata
-+ *
-+ * Define a set of helper functions for automata. The 'name' argument is used
-+ * as suffix for the functions and data. These functions will handle automaton
-+ * with data type 'type'.
-+ */
-+#define DECLARE_AUTOMATA_HELPERS(name, type)					\
-+										\
-+/*										\
-+ * model_get_state_name_##name - return the (string) name of the given state	\
-+ */ 										\
-+static char *model_get_state_name_##name(enum states_##name state)		\
-+{										\
-+	if ((state < 0) || (state >= state_max_##name))				\
-+		return "INVALID";						\
-+										\
-+	return automaton_##name.state_names[state];				\
-+}										\
-+										\
-+/*										\
-+ * model_get_event_name_##name - return the (string) name of the given event	\
-+ */										\
-+static char *model_get_event_name_##name(enum events_##name event)		\
-+{										\
-+	if ((event < 0) || (event >= event_max_##name))				\
-+		return "INVALID";						\
-+										\
-+	return automaton_##name.event_names[event];				\
-+}										\
-+										\
-+/*										\
-+ * model_get_initial_state_##name - return the automaton's initial state		\
-+ */										\
-+static inline type model_get_initial_state_##name(void)				\
-+{										\
-+	return automaton_##name.initial_state;					\
-+}										\
-+										\
-+/*										\
-+ * model_get_next_state_##name - process an automaton event occurrence		\
-+ *										\
-+ * Given the current state (curr_state) and the event (event), returns		\
-+ * the next state, or INVALID_STATE in case of error.				\
-+ */										\
-+static inline type model_get_next_state_##name(enum states_##name curr_state,	\
-+					       enum events_##name event)	\
-+{										\
-+	if ((curr_state < 0) || (curr_state >= state_max_##name))		\
-+		return INVALID_STATE;						\
-+										\
-+	if ((event < 0) || (event >= event_max_##name))				\
-+		return INVALID_STATE;						\
-+										\
-+	return automaton_##name.function[curr_state][event];			\
-+}										\
-+										\
-+/*										\
-+ * model_is_final_state_##name - check if the given state is a final state	\
-+ */										\
-+static inline bool model_is_final_state_##name(enum states_##name state)	\
-+{										\
-+	if ((state < 0) || (state >= state_max_##name))				\
-+		return 0;							\
-+										\
-+	return automaton_##name.final_states[state];				\
-+}
--- 
-2.35.1
-
+Best regards,
+Lukasz
