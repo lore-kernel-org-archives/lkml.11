@@ -2,157 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD84DC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 03:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31CB1C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 04:00:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233945AbiG2D5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 23:57:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55530 "EHLO
+        id S232257AbiG2EA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 00:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234165AbiG2D5U (ORCPT
+        with ESMTP id S229477AbiG2EA0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 23:57:20 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6237D1C6;
-        Thu, 28 Jul 2022 20:57:17 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 26T3uuPT110119;
-        Thu, 28 Jul 2022 22:56:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1659067016;
-        bh=Vt0VHKRHoAGRwb0JuT/P1s1lR5MiWqzD+L1IqtnBN4g=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=rGGQPDRA7K6qQxES6ycnI2HE7vuhdTGYsI5rit3UQUA4aErthBK4gRr1BXIBevsdy
-         adXIeREC3b//mVvvcIBGT4OB6z2g1lEnbKquUEBB19zcFEhsdf7Vd0K9bqVGbdSYkK
-         3aNcR/QnUgFDqiM+irPtSHuYg2l88ABlbT/JvVlw=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 26T3uu6c103501
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 28 Jul 2022 22:56:56 -0500
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 28
- Jul 2022 22:56:56 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 28 Jul 2022 22:56:56 -0500
-Received: from [172.24.157.172] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 26T3une5095020;
-        Thu, 28 Jul 2022 22:56:50 -0500
-Message-ID: <5abdc690-3b0d-0763-2a8a-30d1516c8ab0@ti.com>
-Date:   Fri, 29 Jul 2022 09:26:49 +0530
+        Fri, 29 Jul 2022 00:00:26 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47203193C6
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 21:00:25 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id bn9so4516161wrb.9
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 21:00:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=N+M08tpos8evh2hu91cRjLmMwuJ4cMW1pehmYWY8GhA=;
+        b=DlRnNYVHf3u5DiGzLfwBE2FvJZHevCE3BjBtqtFkubjnjY9nLKabKPj4chGSNNn3M9
+         ckesrVKRzHqgd0zNFCU3pfN/1vpQXp0ZRVF8ledWD+k1i7p4cUono+MnZB68y7/5jdE7
+         10COQAgbY8OimaBx54LYhTY3oxT/m4O/adaGg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N+M08tpos8evh2hu91cRjLmMwuJ4cMW1pehmYWY8GhA=;
+        b=DJcMqqIjPF8RVDceD/qOCAlxIGQPTh3LYmqhJDr0U6cWL64NtzRICxUfwPl1IEAdD5
+         MPTHQTWhsbBsq1u54KLzX+jhW22IS4ZLDFbUWXtYJS2ypn/yKYdRkcCWif82DZ3ZJYaq
+         hG18+mDQvU37bi/nfF+umkbRNX3BCauJx8E2R9Sov4MTNviTy1+44iEGmjX14fkMXalF
+         xzlkan7ehplpksfYsCaD8EGCOorzaWSILHoDx1qOj2HXTsSqJ9bQ5CYHDzAq1PbF1bXi
+         2w7fOaO8UuUooi7D8T2IW9aN2fAKD7TuarwauI5yyMPrHWkZA6mBbxCGetNB3mrU2AJN
+         IdnQ==
+X-Gm-Message-State: ACgBeo1DayJWWFiFUqTi3M8UP1CpJ+MmzSLlhtRUbjFG4EE69z3TRNfE
+        IB4Fm8gae/nE2fTyxNVS1RXBPyWMZ44ktqwPgY0dVQ==
+X-Google-Smtp-Source: AA6agR7/0FtNh7jjz3ZxnoZKxjIxEcKDzaD7rZuUPapJb2MMh3j0nj5Ylz9QQMxX5PTay7wZW4S9C6oKjcQEsjdfF9M=
+X-Received: by 2002:a5d:64cc:0:b0:21d:a4bd:fdbe with SMTP id
+ f12-20020a5d64cc000000b0021da4bdfdbemr1011124wri.580.1659067223723; Thu, 28
+ Jul 2022 21:00:23 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.3
-Subject: Re: [PATCH 7/8] drm/tidss: Fix clock request value for OLDI
- videoports
-Content-Language: en-US
-To:     Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
-CC:     Darren Etheridge <detheridge@ti.com>, Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rahul T R <r-ravikumar@ti.com>,
-        Krunal Bhargav <k-bhargav@ti.com>,
-        Devarsh Thakkar <devarsht@ti.com>,
-        DRI Development List <dri-devel@lists.freedesktop.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        Linux Kernel List <linux-kernel@vger.kernel.org>,
+References: <20220727094034.1372745-1-treapking@chromium.org>
+ <c455adea-2d18-60af-7175-a4e283e3dcb8@collabora.com> <CAEXTbpc7W40-vYcTVTNo7ikQ-n0O246AsbPntNb4q2nBErYVQw@mail.gmail.com>
+ <689b439f-531b-9b3d-2e48-b7b83c50b3dd@collabora.com> <CAEXTbperyGnKZw9y_55yE-T5gzuR8yzpTwfg7dy_bvTUhmrOag@mail.gmail.com>
+In-Reply-To: <CAEXTbperyGnKZw9y_55yE-T5gzuR8yzpTwfg7dy_bvTUhmrOag@mail.gmail.com>
+From:   Pin-yen Lin <treapking@chromium.org>
+Date:   Fri, 29 Jul 2022 12:00:12 +0800
+Message-ID: <CAEXTbpdc29kKeaU=GO_=6JwXvx=vSpR3wG+VsjYQaT+kAdVuoQ@mail.gmail.com>
+Subject: Re: [PATCH v2] arm64: dts: mt8173-oak: Switch to SMC watchdog
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eizan Miyamoto <eizan@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Evan Benn <evanbenn@chromium.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>, Jyri Sarha <jyri.sarha@iki.fi>
-References: <20220719080845.22122-1-a-bhatia1@ti.com>
- <20220719080845.22122-8-a-bhatia1@ti.com>
- <03c77b33-271c-5cb3-fe00-cda7ff21102b@ideasonboard.com>
-From:   Aradhya Bhatia <a-bhatia1@ti.com>
-In-Reply-To: <03c77b33-271c-5cb3-fe00-cda7ff21102b@ideasonboard.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jul 29, 2022 at 10:59 AM Pin-yen Lin <treapking@chromium.org> wrote:
+>
+> On Thu, Jul 28, 2022 at 11:51 PM AngeloGioacchino Del Regno
+> <angelogioacchino.delregno@collabora.com> wrote:
+> >
+> > Il 28/07/22 17:39, Pin-yen Lin ha scritto:
+> > > On Thu, Jul 28, 2022 at 7:21 PM AngeloGioacchino Del Regno
+> > > <angelogioacchino.delregno@collabora.com> wrote:
+> > >>
+> > >> Il 27/07/22 11:40, Pin-yen Lin ha scritto:
+> > >>> Switch to SMC watchdog because we need direct control of HW watchdog
+> > >>> registers from kernel. The corresponding firmware was uploaded in
+> > >>> https://review.trustedfirmware.org/c/TF-A/trusted-firmware-a/+/3405.
+> > >>>
+> > >>> Signed-off-by: Pin-yen Lin <treapking@chromium.org>
+> > >>> ---
+> > >>>
+> > >>> Changes in v2:
+> > >>> - Move the modifications to mt8173-elm.dtsi and add some comments.
+> > >>>
+> > >>>    arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi | 12 ++++++++++++
+> > >>>    1 file changed, 12 insertions(+)
+> > >>>
+> > >>> diff --git a/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi b/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
+> > >>> index e21feb85d822..b2269770abc3 100644
+> > >>> --- a/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
+> > >>> +++ b/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
+> > >>> @@ -161,6 +161,18 @@ hdmi_connector_in: endpoint {
+> > >>>                        };
+> > >>>                };
+> > >>>        };
+> > >>> +
+> > >>> +     soc {
+> > >>> +             /*
+> > >>> +              * Disable the original MMIO watch dog and switch to the SMC watchdog,
+> > >>> +              * which operates on the same MMIO.
+> > >>> +              */
+> > >>> +             /delete-node/ watchdog@10007000;
+> > >>
+> > >> Unfortunately, we're not quite there yet.
+> > >> The comment is fine, but...
+> > >>
+> > >> There's no need to /delete-node/: you can just do it like
+> > >>
+> > >> /*
+> > >>    * Disable the original MMIO watch dog and switch to the SMC watchdog,
+> > >>    * which operates on the same MMIO.
+> > >>    */
+> > >> &watchdog {
+> > >>          status = "disabled";
+> > >> };
+> > >>
+> > >> and...
+> > >>
+> > >>> +
+> > >>> +             watchdog {
+> > >>
+> > >> This isn't addressable, hence it belongs to the root node, not to soc.
+> > >> If you did that because of naming issues, I would propose to call it
+> > >> smc-watchdog instead of watchdog.
+> > >>
+> > >>
+> > >>> +                     compatible = "arm,smc-wdt";
+> > >>
+> > > Thanks for the suggestion. I'll modify it accordingly in v3.
+> > >
+> > >> P.S.: No timeout-sec?
+> > >
+> > > The example in the binding file has a timeout-sec property, but it is
+> > > not defined in the binding nor used in the driver...
+> > > The driver seems to talk with the firmware to get a timeout value[1]
+> > > instead of reading it from the devicetree.
+> > >
+> >
+> > Oh. I admit I trusted the binding blindly, didn't check the actual driver code.
+> >
+> > On a note, we should check why is that binding partially wrong and eventually
+> > fix it (remove the property), or add the capability to the driver, but feel free
+> > to ignore that for now, as this is not relevant for the context of this specific
+> > change that you're trying to do here.
+>
+> It looks like the timeout-sec property was not defined nor referenced
+> from the very first commit [2][3]. I'll send out another patch to
+> remove it.
+>
+> [2]: dt-bindings:
+> https://lore.kernel.org/all/20200505131242.v6.1.Id96574f1f52479d7a2f3b866b8a0552ab8c03d7f@changeid/
+> [3]: watchdog driver:
+> https://lore.kernel.org/all/20200505131242.v6.2.Ia92bb4d4ce84bcefeba1d00aaa1c1e919b6164ef@changeid/
 
-On 28-Jul-22 15:35, Tomi Valkeinen wrote:
-> On 19/07/2022 11:08, Aradhya Bhatia wrote:
->> The OLDI TX(es) require a serial clock which is 7 times the pixel clock
->> of the display panel. When the OLDI is enabled in DSS, the pixel clock
->> input of the corresponding videoport gets a divided-by 7 value of the
->> requested clock.
->>
->> For the am625-dss, the requested clock needs to be 7 times the value.
->>
->> Update the clock frequency by requesting 7 times the value.
->>
->> Signed-off-by: Aradhya Bhatia <a-bhatia1@ti.com>
->> ---
->>   drivers/gpu/drm/tidss/tidss_dispc.c | 10 ++++++++++
->>   1 file changed, 10 insertions(+)
->>
->> diff --git a/drivers/gpu/drm/tidss/tidss_dispc.c 
->> b/drivers/gpu/drm/tidss/tidss_dispc.c
->> index c4a5f808648f..0b9689453ee8 100644
->> --- a/drivers/gpu/drm/tidss/tidss_dispc.c
->> +++ b/drivers/gpu/drm/tidss/tidss_dispc.c
->> @@ -1326,6 +1326,16 @@ int dispc_vp_set_clk_rate(struct dispc_device 
->> *dispc, u32 hw_videoport,
->>       int r;
->>       unsigned long new_rate;
->> +    /*
->> +     * For AM625 OLDI video ports, the requested pixel clock needs to 
->> take into account the
->> +     * serial clock required for the serialization of DPI signals 
->> into LVDS signals. The
->> +     * incoming pixel clock on the OLDI video port gets divided by 7 
->> whenever OLDI enable bit
->> +     * gets set.
->> +     */
->> +    if (dispc->feat->vp_bus_type[hw_videoport] == DISPC_VP_OLDI &&
->> +        dispc->feat->subrev == DISPC_AM625)
->> +        rate *= 7;
->> +
->>       r = clk_set_rate(dispc->vp_clk[hw_videoport], rate);
->>       if (r) {
->>           dev_err(dispc->dev, "vp%d: failed to set clk rate to %lu\n",
-> 
-> The AM625 TRM seems to be missing the "DSS integration" section, even if 
-> it's referred to in three places in the TRM. Supposedly that has details 
-> about the clocking.
-> 
-> Shouldn't the source clock be 3.5x when dual-link mode is used?
-There should not be.
+I checked the drivers again, and I realized that the `timeout-sec`
+property overrides the default timeout from the firmware.
 
-Whenever OLDI is enabled, the clock generated from the PLL is 7 times
-the required pixel clock.
+But for MT8173 chromebooks, I think we can just leave it blank and use
+the default value.
 
-For the OLDI TXes, the clock passes through a /2 divider. This divider
-only gets activated when the dual mode has been enabled in the OLDI
-configuration. Thus the OLDI TXes get 3.5x the pixel clock in dual mode.
-
-When the OLDI has been configured for a single mode,
-the PLL clock passes through the /2 divider without any change.
-
-> 
-> While I don't know the details, this doesn't feel correct. We're 
-> supposed to be setting the VP pixel clock here, and the serial clock 
-> would be derived from that as it's done on AM65x. Is the DT clock tree
-> wrong for AM625?
-Ideally, yes, its the pixel frequency that we are supposed to set here.
-
-The same PLL clock (7 times the pixel frequency) passes through a /7
-clock divider. This clock divider only gets active when OLDI is enabled.
-Thus, the DSS VP clock input, only gets the actual pixel frequency that
-it needs.
-
-Since, the /7 divider is controlled by a signal from the DSS, the driver
-needs to request 7 times more the pixel clock to accommodate for the
-divider.
-
-In AM65X, the system FW is able to model the 7 times requirement because
-the divider is not controlled by the DSS signal. DSS signal controls a
-multiplexer which receives both PLL Clock and PLL / 7 clock.
-
-
-Regards
-Aradhya
+> >
+> > P.S.: I just noticed that the commit title is also wrong. s/mt8173-oak/mt8173-elm/g
+>
+> I sent out the v3 before I saw this reply.  I'll send out a v4 for
+> this and address Krzysztof's comment as well.
+>
+> >
+> > Waiting for a v3!
+> >
+> >
+> > > [1]: https://elixir.bootlin.com/linux/latest/source/drivers/watchdog/arm_smc_wdt.c#L138
+> > >>
+> > >> Regards,
+> > >> Angelo
+> > >>
+> > >>> +             };
+> > >>> +     };
+> > >>>    };
+> > >>>
+> > >>>    &mfg_async {
+> > >>>
+> > >>
+> >
