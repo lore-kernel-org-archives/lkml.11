@@ -2,100 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E6C1C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 00:24:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46364C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 00:25:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233582AbiG2AYG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 20:24:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56414 "EHLO
+        id S233621AbiG2AZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 20:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230007AbiG2AYE (ORCPT
+        with ESMTP id S232560AbiG2AZX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 20:24:04 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5958B7B1DC
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:24:03 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id ss3so5771724ejc.11
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:24:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=DEDxzOgHTQRQ+rvv/SEM8DOqN9V3eUaGY5hH+UtkIUE=;
-        b=XgGvjKM+Hr42e4KmwAK3a1argfHnnskNbRdLej5zKrxwQdZsp8y8yMpZaRkfb6IxQr
-         C8PRTgOCkSzXDctTwt3AbbUt42+nPjnl1Ik5fW1fT+au0znVnOZDXvJpfPbucVm4Bv+n
-         ty8qUI1gfDrvRlxRV1sm3ItakjLTxp6xy+YLM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=DEDxzOgHTQRQ+rvv/SEM8DOqN9V3eUaGY5hH+UtkIUE=;
-        b=4AIiCBEVIo1djaY2h6AMwiZHNV4Gj6uZsLKP30TD0bh5zjz8md7p4M4NQdDP8q+Fnz
-         KkYrDpWXbf++C/MpVa40PuKorxop2mZB0zftYoo/eCRGAcK4sA/GAcJ6SDONc1SnrvpY
-         LPeXS2EN5NzKs52l4CLGSVwBvBm7GCZY/5fCqfArRnn2oUQ6UsXaaMWqmwYPjHfpAlZL
-         TjtygMTP0RNg608Cx2REaOts8ucX6ppOH9G9NJenKKT+psA4Wf5G/zWgR1KqDpKgE3qW
-         JJvSeYNJZMo/xJ4l5xmSSO4Ib/CblW2h3J4n9Vt29rEg9dWKSfr5+iNdCi/91juHp4OH
-         3CYw==
-X-Gm-Message-State: AJIora8cqMc9EVUhlnWUpfbR34JWeWbaTH+HbLW6y/G63n8vmxduznAt
-        Y7LvDpNGj0jtDBpGQ3MlmXTn2C3FszsNjKzy
-X-Google-Smtp-Source: AGRyM1vDfPCgxqosBxDGP629Tbh4824MjAn7tUo26+QoZML3NxFCjjVr/fPrCYT+5stBJD+numzM2Q==
-X-Received: by 2002:a17:907:8a28:b0:72e:cef6:eba0 with SMTP id sc40-20020a1709078a2800b0072ecef6eba0mr936726ejc.765.1659054241469;
-        Thu, 28 Jul 2022 17:24:01 -0700 (PDT)
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
-        by smtp.gmail.com with ESMTPSA id b2-20020a1709064d4200b0072a430d2abdsm970815ejv.91.2022.07.28.17.24.01
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jul 2022 17:24:01 -0700 (PDT)
-Received: by mail-wm1-f45.google.com with SMTP id c187-20020a1c35c4000000b003a30d88fe8eso3362654wma.2
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:24:01 -0700 (PDT)
-X-Received: by 2002:a05:600c:2e48:b0:3a3:1ce3:3036 with SMTP id
- q8-20020a05600c2e4800b003a31ce33036mr1007498wmf.188.1659053924819; Thu, 28
- Jul 2022 17:18:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <1657544224-10680-1-git-send-email-quic_vpolimer@quicinc.com> <1657544224-10680-4-git-send-email-quic_vpolimer@quicinc.com>
-In-Reply-To: <1657544224-10680-4-git-send-email-quic_vpolimer@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 28 Jul 2022 17:18:31 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UXKHrp63wosBdXDBKKcierbgfUOT-W1QF2N23No+MJBw@mail.gmail.com>
-Message-ID: <CAD=FV=UXKHrp63wosBdXDBKKcierbgfUOT-W1QF2N23No+MJBw@mail.gmail.com>
-Subject: Re: [PATCH v6 03/10] drm/msm/dp: use atomic callbacks for DP bridge ops
-To:     Vinod Polimera <quic_vpolimer@quicinc.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        quic_kalyant <quic_kalyant@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        quic_vproddut <quic_vproddut@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 28 Jul 2022 20:25:23 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347E89FFA
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:25:22 -0700 (PDT)
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220729002519epoutp02b05fd230c969192259dc8c5b57f27736~GJRz09DkF2755027550epoutp02K
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 00:25:19 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220729002519epoutp02b05fd230c969192259dc8c5b57f27736~GJRz09DkF2755027550epoutp02K
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1659054319;
+        bh=koeQxC1CaOa4b7/9eLTD8KByAFxytDocEf6VI8T3VaY=;
+        h=Subject:Reply-To:From:To:Date:References:From;
+        b=aFerxI/GjYtOUusWSxc1D7ZQDDWuH2rQoF/q9VJICNS1sohQMRsUJe+ZsMjIsp56J
+         0zqj2crhyKac8YJ1lBi67cJb1YZnebtUOWYXdqshtOPe9dvuQF2QUoY7psaiedVmxF
+         KMCQHj5iAH13lbckKgTzy1jzQt1tpQGNnuaIn7E4=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
+        20220729002518epcas2p462b8f60cd410cdfbe5e811bd5e1586ec~GJRzjMA8O2734727347epcas2p46;
+        Fri, 29 Jul 2022 00:25:18 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.69]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4Lv7Zk3DN6z4x9Q3; Fri, 29 Jul
+        2022 00:25:18 +0000 (GMT)
+X-AuditID: b6c32a45-471ff700000025c2-8b-62e328edb123
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        33.79.09666.DE823E26; Fri, 29 Jul 2022 09:25:17 +0900 (KST)
+Mime-Version: 1.0
+Subject: [PATCH v0] f2fs: allow direct read for zoned device
+Reply-To: eunhee83.rho@samsung.com
+Sender: Eunhee Rho <eunhee83.rho@samsung.com>
+From:   Eunhee Rho <eunhee83.rho@samsung.com>
+To:     "jaegeuk@kernel.org" <jaegeuk@kernel.org>,
+        "chao@kernel.org" <chao@kernel.org>,
+        "linux-f2fs-devel@lists.sourceforge.net" 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Eunhee Rho <eunhee83.rho@samsung.com>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20220729002517epcms2p35eed262c3349287436c1848ab350c2d4@epcms2p3>
+Date:   Fri, 29 Jul 2022 09:25:17 +0900
+X-CMS-MailID: 20220729002517epcms2p35eed262c3349287436c1848ab350c2d4
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrJKsWRmVeSWpSXmKPExsWy7bCmue5bjcdJBk8v61ucnnqWyeLlIU2L
+        n0862CyerJ/FbHFpkbvF5V1z2BzYPDat6mTz2L3gM5NH35ZVjB6fN8kFsERl22SkJqakFimk
+        5iXnp2TmpdsqeQfHO8ebmhkY6hpaWpgrKeQl5qbaKrn4BOi6ZeYArVZSKEvMKQUKBSQWFyvp
+        29kU5ZeWpCpk5BeX2CqlFqTkFJgX6BUn5haX5qXr5aWWWBkaGBiZAhUmZGdcbpjDWnCYraLl
+        3G2WBsYVrF2MHBwSAiYSV2a6djFycQgJ7GCUaD6wiBkkzisgKPF3h3AXIyeHsICNxMbma+wg
+        tpCAksTfg/eZIOK6ElO2TGIEsdkEtCWuHG9nBZkjIjCRSeLAznesIAkJAV6JGe1PWSBsaYnt
+        y7cyQtgaEj+W9TJD2KISN1e/ZYex3x+bD1UjItF67yxUjaDEg5+7oeISEnc3trBB2PkSPU+O
+        MkHYFRI7V1yFqtGXuNaxEWwvr4CvxOv5fWA2i4CqxJw7nVD3uEjs/joXrJdZQF5i+9s5YL8z
+        C2hKrN+lDwkeZYkjt1hgPmnY+Jsdnc0swCfRcfgvXHzHvCdQ16hJLP64ABoKMhI3NtyHintI
+        NC3ewDqBUXEWIqBnIblhFsINCxiZVzGKpRYU56anFhsVGMKjNjk/dxMjOA1que5gnPz2g94h
+        RiYOxkOMEhzMSiK8CdH3k4R4UxIrq1KL8uOLSnNSiw8xmgJ9P5FZSjQ5H5iI80riDU0sDUzM
+        zAzNjUwNzJXEeb1SNiQKCaQnlqRmp6YWpBbB9DFxcEo1MMWYlL438Z/v9ewwm3GlMNcNVo3n
+        lrF5ZR9u8smvy7sh9dfnkjgLYyJruq9Dwo2wX790lJu/HlfesFtsz0GNjNx/B3XXhJe+rTum
+        471Kct0mPv+qysipU+9fWdbwIuZdx/k/dxYIhf5eFtmTyGOjfSLOeUPgNHMOdUFVy52Gl69H
+        zpKsX979/qWJkM3ZFYc1ZrlGy8dHVjAEGl/evbJrioD9jXUTzeZ9dVi+rHJNYMPDsJZ1GfwO
+        E8JCXDluPl7AdPKZlwz7Jo/EH17+GllHtnf1KZtsN//96NXZBU556+3rdMPcEpo6Kq1zmuwq
+        fz5kWBfeyZ9toN5d8KM0oYp3ioDV/7ivz0pqD60wdbmoxFKckWioxVxUnAgA16imRwwEAAA=
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220729002517epcms2p35eed262c3349287436c1848ab350c2d4
+References: <CGME20220729002517epcms2p35eed262c3349287436c1848ab350c2d4@epcms2p3>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+For zoned devices, f2fs forbids direct IO and forces buffered IO
+to serialize write IOs. However, the constraint does not apply to
+read IOs.
 
-On Mon, Jul 11, 2022 at 5:57 AM Vinod Polimera
-<quic_vpolimer@quicinc.com> wrote:
->
-> Use atomic variants for DP bridge callback functions so that
-> the atomic state can be accessed in the interface drivers.
-> The atomic state will help the driver find out if the display
-> is in self refresh state.
->
-> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-> Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
-> ---
->  drivers/gpu/drm/msm/dp/dp_display.c |  9 ++++++---
->  drivers/gpu/drm/msm/dp/dp_drm.c     | 17 ++++++++++-------
->  drivers/gpu/drm/msm/dp/dp_drm.h     |  9 ++++++---
->  3 files changed, 22 insertions(+), 13 deletions(-)
+Signed-off-by: Eunhee Rho <eunhee83.rho@samsung.com>
+---
+ fs/f2fs/f2fs.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index d0f428aef34b..f69731f17402 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -4471,7 +4471,7 @@ static inline bool f2fs_force_buffered_io(struct inode *inode,
+ 	 * for blkzoned device, fallback direct IO to buffered IO, so
+ 	 * all IOs can be serialized by log-structured write.
+ 	 */
+-	if (f2fs_sb_has_blkzoned(sbi))
++	if (f2fs_sb_has_blkzoned(sbi) && (rw == WRITE))
+ 		return true;
+ 	if (f2fs_lfs_mode(sbi) && (rw == WRITE)) {
+ 		if (block_unaligned_IO(inode, iocb, iter))
+-- 
+2.25.1
+
