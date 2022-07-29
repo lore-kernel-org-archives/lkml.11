@@ -2,478 +2,920 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C994AC19F29
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 09:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3BE6C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 09:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235711AbiG2Jjj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 05:39:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37580 "EHLO
+        id S235723AbiG2Jjm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 05:39:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235683AbiG2Jjd (ORCPT
+        with ESMTP id S235631AbiG2Jjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Jul 2022 05:39:33 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9102B85FA2
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 02:39:30 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-324293f1414so10743847b3.0
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 02:39:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=CwH/d/sIqHDYK5xsWZYd5yGSd6KgMnTUiTsIbTqcNwY=;
-        b=DJBeadA9lQb88BmBHiwZ0rLr/ECqbKiAIoVpPNp8/4KO8eARYXroYH/Sv8p6budTa4
-         LmFiD8jNxsAFneGBLYVxjYZYUPHJu9+Wb+LM3JEdX2iKSm+JDWxCgwwSMIHWN5rGBIxQ
-         DIhAQ0j1idrcR8M2aVU9hfeYUvxn6jaYsA/pct20LeIX1JbNLpSAGUdwVRRvBhhAzAPK
-         kq8SHCiOl5yzIdC81ky9WckcI4cOccXNazKoMK8jxQAI6OKo216TjrxmKaamXubfz29F
-         iwBy10QB0Z3OSRWl55mSAQ2zlLlhYQRyZAgzBw3En9nO1pRhKVdgTK5fm/RkpJxkJzsY
-         xlcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CwH/d/sIqHDYK5xsWZYd5yGSd6KgMnTUiTsIbTqcNwY=;
-        b=p0fPw0FylUG1x4oZ7Eswhk1OKYB/lb983JuO9FGCcRpzWYENJa8ie8+t5fqASCk/ox
-         XCeX8gunxinqMLoZanpPtaFf1F0POzXENEGtSLAsN90GW36wiYZ6sTxF9a253GguCX1I
-         /Dh465iEqwcjeIzVVmz/idt0qov2sfVi8MOXQGa5rlnOuMka9tDt7QyIlomXO7tY69VM
-         iwpN9JsjztMGgBya8MB+Gps/v2bTSTbO03NEDxj9OKLJ+xaKpbncMVPb3KG91CYJLRBH
-         YLqqauSEB9hVECFzrEmHH8MH0PXKydHv9JzsNcNzbSrhS8BtXZRuKykK7OweLF0M1VfY
-         YtfQ==
-X-Gm-Message-State: ACgBeo0PcHvexY/LE+BO2UsWg+Xz+Bxsg3pXIjHEa87Tfyu4XD6RBkt5
-        /jB7pbxR/9QBV+2WBTnu7XR0g/tR6Bah6+NqlBs2hA==
-X-Google-Smtp-Source: AA6agR5g+6baB5lguK1ym1ZY5rqNDhBHGHUBXr/kfZUyYODC7fOjSo+PbS8fu7HJINLZkU1hH6fq5oOd/3g/9zv2pvc=
-X-Received: by 2002:a0d:d085:0:b0:31e:dc35:ef9a with SMTP id
- s127-20020a0dd085000000b0031edc35ef9amr2427200ywd.453.1659087569643; Fri, 29
- Jul 2022 02:39:29 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59BAC85FBF;
+        Fri, 29 Jul 2022 02:39:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6782B826F8;
+        Fri, 29 Jul 2022 09:39:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0C57C43145;
+        Fri, 29 Jul 2022 09:39:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659087567;
+        bh=mOUczc0ARivy6XevmPDa4Al3Gtuy+OhwFa5ffbOuu/4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gJ+iV7v86/1yYGYeFNjdUa04r1kznl3GDO7+lxXL+N0klsh/ShzPVSVgsC1dO9NC6
+         QeZ4iGpJcX1JJownn/EJc5mNIFwsXXNJsrsBfTwX6RIOo2VrCJcTzmOwyt7vQ+1wsS
+         QDvk+88QFuUxa9cZOr6KbowrX/7+Au2rza5lnWcZj4DBrKULSyEuFDs820I13O9TxQ
+         ssk68V4LxSM6jV7RcmwJYCW7nI7u8tNazpT5AOq2G8hnMxzkBXqwd8xSZCCzLlZ1tj
+         KMKwyF44CjqphoXVL8o9h4XojcyVZMoqiOOl96MyMJsbQQVlbXpS2/NK5KVwMRaIbO
+         QqOlWMb1PcmpA==
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        Tao Zhou <tao.zhou@linux.dev>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+Subject: [PATCH V9 04/16] rv/include: Add deterministic automata monitor definition via C macros
+Date:   Fri, 29 Jul 2022 11:38:43 +0200
+Message-Id: <51b0bf425a281e226dfeba7401d2115d6091f84e.1659052063.git.bristot@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1659052063.git.bristot@kernel.org>
+References: <cover.1659052063.git.bristot@kernel.org>
 MIME-Version: 1.0
-References: <20220722174212.GA1911979@bhelgaas> <86522aa5-2855-0f73-ddb2-a2b50b2fd1b7@nvidia.com>
- <CACK8Z6FSr_ztkZ5+ULjHiDZ5L9qR=Ewtq1ZuDofzvJX=mW5WAQ@mail.gmail.com> <CAFJ_xbpYrtFrt-hEd7M0jqyH7R9pOKA9884sgMvV2RZXycj7hA@mail.gmail.com>
-In-Reply-To: <CAFJ_xbpYrtFrt-hEd7M0jqyH7R9pOKA9884sgMvV2RZXycj7hA@mail.gmail.com>
-From:   Lukasz Majczak <lma@semihalf.com>
-Date:   Fri, 29 Jul 2022 11:39:18 +0200
-Message-ID: <CAFJ_xbqyxJ591DgC=xQEzokip6i_j0mex5SDTBrwkOe=-8bikg@mail.gmail.com>
-Subject: Re: [PATCH V2] PCI/ASPM: Save/restore L1SS Capability for suspend/resume
-To:     Rajat Jain <rajatja@google.com>
-Cc:     Vidya Sagar <vidyas@nvidia.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Ben Chuang <benchuanggli@gmail.com>, bhelgaas@google.com,
-        lorenzo.pieralisi@arm.com, refactormyself@gmail.com, kw@linux.com,
-        kenny@panix.com, treding@nvidia.com, jonathanh@nvidia.com,
-        abhsahu@nvidia.com, sagupta@nvidia.com, linux-pci@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kthota@nvidia.com, mmaddireddy@nvidia.com, sagar.tv@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-wt., 26 lip 2022 o 09:20 Lukasz Majczak <lma@semihalf.com> napisa=C5=82(a):
->
-> wt., 26 lip 2022 o 00:51 Rajat Jain <rajatja@google.com> napisa=C5=82(a):
-> >
-> > Hello,
-> >
-> > On Sat, Jul 23, 2022 at 10:03 AM Vidya Sagar <vidyas@nvidia.com> wrote:
-> > >
-> > > Agree with Bjorn's observations.
-> > > The fact that the L1SS capability registers themselves disappeared in
-> > > the root port post resume indicates that there seems to be something
-> > > wrong with the BIOS itself.
-> > > Could you please check from that perspective?
-> >
-> > ChromeOS Intel platforms use S0ix (suspend-to-idle) for suspend. This
-> > is a shallower sleep state that preserves more state than, for e.g. S3
-> > (suspend-to-RAM). When we use S0ix, then BIOS does not come in picture
-> > at all. i.e. after the kernel runs its suspend routines, it just puts
-> > the CPU into S0ix state. So I do not think there is a BIOS angle to
-> > this.
-> >
-> >
-> > >
-> > > Thanks,
-> > > Vidya Sagar
-> > >
-> > >
-> > > On 7/22/2022 11:12 PM, Bjorn Helgaas wrote:
-> > > > External email: Use caution opening links or attachments
-> > > >
-> > > >
-> > > > On Fri, Jul 22, 2022 at 11:41:14AM +0200, Lukasz Majczak wrote:
-> > > >> pt., 22 lip 2022 o 09:31 Kai-Heng Feng <kai.heng.feng@canonical.co=
-m> napisa=C5=82(a):
-> > > >>> On Fri, Jul 15, 2022 at 6:38 PM Ben Chuang <benchuanggli@gmail.co=
-m> wrote:
-> > > >>>> On Tue, Jul 5, 2022 at 2:00 PM Vidya Sagar <vidyas@nvidia.com> w=
-rote:
-> > > >>>>>
-> > > >>>>> Previously ASPM L1 Substates control registers (CTL1 and CTL2) =
-weren't
-> > > >>>>> saved and restored during suspend/resume leading to L1 Substate=
-s
-> > > >>>>> configuration being lost post-resume.
-> > > >>>>>
-> > > >>>>> Save the L1 Substates control registers so that the configurati=
-on is
-> > > >>>>> retained post-resume.
-> > > >>>>>
-> > > >>>>> Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
-> > > >>>>> Tested-by: Abhishek Sahu <abhsahu@nvidia.com>
-> > > >>>>
-> > > >>>> Hi Vidya,
-> > > >>>>
-> > > >>>> I tested this patch on kernel v5.19-rc6.
-> > > >>>> The test device is GL9755 card reader controller on Intel i5-102=
-10U RVP.
-> > > >>>> This patch can restore L1SS after suspend/resume.
-> > > >>>>
-> > > >>>> The test results are as follows:
-> > > >>>>
-> > > >>>> After Boot:
-> > > >>>> #lspci -d 17a0:9755 -vvv | grep -A5 "L1 PM Substates"
-> > > >>>>          Capabilities: [110 v1] L1 PM Substates
-> > > >>>>                  L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+
-> > > >>>> ASPM_L1.1+ L1_PM_Substates+
-> > > >>>>                            PortCommonModeRestoreTime=3D255us
-> > > >>>> PortTPowerOnTime=3D3100us
-> > > >>>>                  L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+=
- ASPM_L1.1+
-> > > >>>>                             T_CommonMode=3D0us LTR1.2_Threshold=
-=3D3145728ns
-> > > >>>>                  L1SubCtl2: T_PwrOn=3D3100us
-> > > >>>>
-> > > >>>>
-> > > >>>> After suspend/resume without this patch.
-> > > >>>> #lspci -d 17a0:9755 -vvv | grep -A5 "L1 PM Substates"
-> > > >>>>          Capabilities: [110 v1] L1 PM Substates
-> > > >>>>                  L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+
-> > > >>>> ASPM_L1.1+ L1_PM_Substates+
-> > > >>>>                            PortCommonModeRestoreTime=3D255us
-> > > >>>> PortTPowerOnTime=3D3100us
-> > > >>>>                  L1SubCtl1: PCI-PM_L1.2- PCI-PM_L1.1- ASPM_L1.2-=
- ASPM_L1.1-
-> > > >>>>                             T_CommonMode=3D0us LTR1.2_Threshold=
-=3D0ns
-> > > >>>>                  L1SubCtl2: T_PwrOn=3D10us
-> > > >>>>
-> > > >>>>
-> > > >>>> After suspend/resume with this patch.
-> > > >>>> #lspci -d 17a0:9755 -vvv | grep -A5 "L1 PM Substates"
-> > > >>>>          Capabilities: [110 v1] L1 PM Substates
-> > > >>>>                  L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+
-> > > >>>> ASPM_L1.1+ L1_PM_Substates+
-> > > >>>>                            PortCommonModeRestoreTime=3D255us
-> > > >>>> PortTPowerOnTime=3D3100us
-> > > >>>>                  L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+=
- ASPM_L1.1+
-> > > >>>>                             T_CommonMode=3D0us LTR1.2_Threshold=
-=3D3145728ns
-> > > >>>>                  L1SubCtl2: T_PwrOn=3D3100us
-> > > >>>>
-> > > >>>>
-> > > >>>> Tested-by: Ben Chuang <benchuanggli@gmail.com>
-> > > >>>
-> > > >>> Forgot to add mine:
-> > > >>> Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> > > >>>
-> > > >>>>
-> > > >>>> Best regards,
-> > > >>>> Ben Chuang
-> > > >>>>
-> > > >>>>
-> > > >>>>> ---
-> > > >>>>> Hi,
-> > > >>>>> Kenneth R. Crudup <kenny@panix.com>, Could you please verify th=
-is patch
-> > > >>>>> on your laptop (Dell XPS 13) one last time?
-> > > >>>>> IMHO, the regression observed on your laptop with an old versio=
-n of the patch
-> > > >>>>> could be due to a buggy old version BIOS in the laptop.
-> > > >>>>>
-> > > >>>>> Thanks,
-> > > >>>>> Vidya Sagar
-> > > >>>>>
-> > > >>>>>   drivers/pci/pci.c       |  7 +++++++
-> > > >>>>>   drivers/pci/pci.h       |  4 ++++
-> > > >>>>>   drivers/pci/pcie/aspm.c | 44 ++++++++++++++++++++++++++++++++=
-+++++++++
-> > > >>>>>   3 files changed, 55 insertions(+)
-> > > >>>>>
-> > > >>>>> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> > > >>>>> index cfaf40a540a8..aca05880aaa3 100644
-> > > >>>>> --- a/drivers/pci/pci.c
-> > > >>>>> +++ b/drivers/pci/pci.c
-> > > >>>>> @@ -1667,6 +1667,7 @@ int pci_save_state(struct pci_dev *dev)
-> > > >>>>>                  return i;
-> > > >>>>>
-> > > >>>>>          pci_save_ltr_state(dev);
-> > > >>>>> +       pci_save_aspm_l1ss_state(dev);
-> > > >>>>>          pci_save_dpc_state(dev);
-> > > >>>>>          pci_save_aer_state(dev);
-> > > >>>>>          pci_save_ptm_state(dev);
-> > > >>>>> @@ -1773,6 +1774,7 @@ void pci_restore_state(struct pci_dev *de=
-v)
-> > > >>>>>           * LTR itself (in the PCIe capability).
-> > > >>>>>           */
-> > > >>>>>          pci_restore_ltr_state(dev);
-> > > >>>>> +       pci_restore_aspm_l1ss_state(dev);
-> > > >>>>>
-> > > >>>>>          pci_restore_pcie_state(dev);
-> > > >>>>>          pci_restore_pasid_state(dev);
-> > > >>>>> @@ -3489,6 +3491,11 @@ void pci_allocate_cap_save_buffers(struc=
-t pci_dev *dev)
-> > > >>>>>          if (error)
-> > > >>>>>                  pci_err(dev, "unable to allocate suspend buffe=
-r for LTR\n");
-> > > >>>>>
-> > > >>>>> +       error =3D pci_add_ext_cap_save_buffer(dev, PCI_EXT_CAP_=
-ID_L1SS,
-> > > >>>>> +                                           2 * sizeof(u32));
-> > > >>>>> +       if (error)
-> > > >>>>> +               pci_err(dev, "unable to allocate suspend buffer=
- for ASPM-L1SS\n");
-> > > >>>>> +
-> > > >>>>>          pci_allocate_vc_save_buffers(dev);
-> > > >>>>>   }
-> > > >>>>>
-> > > >>>>> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-> > > >>>>> index e10cdec6c56e..92d8c92662a4 100644
-> > > >>>>> --- a/drivers/pci/pci.h
-> > > >>>>> +++ b/drivers/pci/pci.h
-> > > >>>>> @@ -562,11 +562,15 @@ void pcie_aspm_init_link_state(struct pci=
-_dev *pdev);
-> > > >>>>>   void pcie_aspm_exit_link_state(struct pci_dev *pdev);
-> > > >>>>>   void pcie_aspm_pm_state_change(struct pci_dev *pdev);
-> > > >>>>>   void pcie_aspm_powersave_config_link(struct pci_dev *pdev);
-> > > >>>>> +void pci_save_aspm_l1ss_state(struct pci_dev *dev);
-> > > >>>>> +void pci_restore_aspm_l1ss_state(struct pci_dev *dev);
-> > > >>>>>   #else
-> > > >>>>>   static inline void pcie_aspm_init_link_state(struct pci_dev *=
-pdev) { }
-> > > >>>>>   static inline void pcie_aspm_exit_link_state(struct pci_dev *=
-pdev) { }
-> > > >>>>>   static inline void pcie_aspm_pm_state_change(struct pci_dev *=
-pdev) { }
-> > > >>>>>   static inline void pcie_aspm_powersave_config_link(struct pci=
-_dev *pdev) { }
-> > > >>>>> +static inline void pci_save_aspm_l1ss_state(struct pci_dev *de=
-v) { }
-> > > >>>>> +static inline void pci_restore_aspm_l1ss_state(struct pci_dev =
-*dev) { }
-> > > >>>>>   #endif
-> > > >>>>>
-> > > >>>>>   #ifdef CONFIG_PCIE_ECRC
-> > > >>>>> diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-> > > >>>>> index a96b7424c9bc..2c29fdd20059 100644
-> > > >>>>> --- a/drivers/pci/pcie/aspm.c
-> > > >>>>> +++ b/drivers/pci/pcie/aspm.c
-> > > >>>>> @@ -726,6 +726,50 @@ static void pcie_config_aspm_l1ss(struct p=
-cie_link_state *link, u32 state)
-> > > >>>>>                                  PCI_L1SS_CTL1_L1SS_MASK, val);
-> > > >>>>>   }
-> > > >>>>>
-> > > >>>>> +void pci_save_aspm_l1ss_state(struct pci_dev *dev)
-> > > >>>>> +{
-> > > >>>>> +       int aspm_l1ss;
-> > > >>>>> +       struct pci_cap_saved_state *save_state;
-> > > >>>>> +       u32 *cap;
-> > > >>>>> +
-> > > >>>>> +       if (!pci_is_pcie(dev))
-> > > >>>>> +               return;
-> > > >>>>> +
-> > > >>>>> +       aspm_l1ss =3D pci_find_ext_capability(dev, PCI_EXT_CAP_=
-ID_L1SS);
-> > > >>>>> +       if (!aspm_l1ss)
-> > > >>>>> +               return;
-> > > >>>>> +
-> > > >>>>> +       save_state =3D pci_find_saved_ext_cap(dev, PCI_EXT_CAP_=
-ID_L1SS);
-> > > >>>>> +       if (!save_state)
-> > > >>>>> +               return;
-> > > >>>>> +
-> > > >>>>> +       cap =3D (u32 *)&save_state->cap.data[0];
-> > > >>>>> +       pci_read_config_dword(dev, aspm_l1ss + PCI_L1SS_CTL2, c=
-ap++);
-> > > >>>>> +       pci_read_config_dword(dev, aspm_l1ss + PCI_L1SS_CTL1, c=
-ap++);
-> > > >>>>> +}
-> > > >>>>> +
-> > > >>>>> +void pci_restore_aspm_l1ss_state(struct pci_dev *dev)
-> > > >>>>> +{
-> > > >>>>> +       int aspm_l1ss;
-> > > >>>>> +       struct pci_cap_saved_state *save_state;
-> > > >>>>> +       u32 *cap;
-> > > >>>>> +
-> > > >>>>> +       if (!pci_is_pcie(dev))
-> > > >>>>> +               return;
-> > > >>>>> +
-> > > >>>>> +       aspm_l1ss =3D pci_find_ext_capability(dev, PCI_EXT_CAP_=
-ID_L1SS);
-> > > >>>>> +       if (!aspm_l1ss)
-> > > >>>>> +               return;
-> > > >>>>> +
-> > > >>>>> +       save_state =3D pci_find_saved_ext_cap(dev, PCI_EXT_CAP_=
-ID_L1SS);
-> > > >>>>> +       if (!save_state)
-> > > >>>>> +               return;
-> > > >>>>> +
-> > > >>>>> +       cap =3D (u32 *)&save_state->cap.data[0];
-> > > >>>>> +       pci_write_config_dword(dev, aspm_l1ss + PCI_L1SS_CTL2, =
-*cap++);
-> > > >>>>> +       pci_write_config_dword(dev, aspm_l1ss + PCI_L1SS_CTL1, =
-*cap++);
-> > > >>>>> +}
-> > > >>>>> +
-> > > >>>>>   static void pcie_config_aspm_dev(struct pci_dev *pdev, u32 va=
-l)
-> > > >>>>>   {
-> > > >>>>>          pcie_capability_clear_and_set_word(pdev, PCI_EXP_LNKCT=
-L,
-> > > >>>>> --
-> > > >>>>> 2.17.1
-> > > >>>>>
-> > > >>
-> > > >> Hi,
-> > > >>
-> > > >> With this patch (and also mentioned
-> > > >> https://lore.kernel.org/all/20220509073639.2048236-1-kai.heng.feng=
-@canonical.com/)
-> > > >> applied on 5.10 (chromeos-5.10) I am observing problems after
-> > > >> suspend/resume with my WiFi card - it looks like whole communicati=
-on
-> > > >> via PCI fails. Attaching logs (dmesg, lspci -vvv before suspend/re=
-sume
-> > > >> and after) https://gist.github.com/semihalf-majczak-lukasz/fb36dfa=
-2eff22911109dfb91ab0fc0e3
-> > > >>
-> > > >> I played a little bit with this code and it looks like the
-> > > >> pci_write_config_dword() to the PCI_L1SS_CTL1 breaks it (don't kno=
-w
-> > > >> why, not a PCI expert).
-> > > >
-> > > > Thanks a lot for testing this!  I'm not quite sure what to make of =
-the
-> > > > results since v5.10 is fairly old (Dec 2020) and I don't know what
-> > > > other changes are in chromeos-5.10.
-> >
-> > Lukasz: I assume you are running this on Atlas and are seeing this bug
-> > when uprev'ving it to 5.10 kernel. Can you please try it on a newer
-> > Intel platform that have the latest upstream kernel running already
-> > and see if this can be reproduced there too?
-> > Note that the wifi PCI device is different on newer Intel platforms,
-> > but platform design is similar enough that I suspect we should see
-> > similar bug on those too. The other option is to try the latest
-> > ustream kernel on Atlas. Perhaps if we just care about wifi (and
-> > ignore bringing up the graphics stack and GUI), it may come up
-> > sufficiently enough to try this patch?
-> >
-> > Thanks,
-> >
-> > Rajat
-> >
-> >
-> > > >
-> > > > Random observations, no analysis below.  This from your dmesg
-> > > > certainly looks like PCI reads failing and returning ~0:
-> > > >
-> > > >    Timeout waiting for hardware access (CSR_GP_CNTRL 0xffffffff)
-> > > >    iwlwifi 0000:01:00.0: 00000000: ffffffff ffffffff ffffffff fffff=
-fff ffffffff ffffffff ffffffff ffffffff
-> > > >    iwlwifi 0000:01:00.0: Device gone - attempting removal
-> > > >    Hardware became unavailable upon resume. This could be a softwar=
-e issue prior to suspend or a hardware issue.
-> > > >
-> > > > And then we re-enumerate 01:00.0 and it looks like it may have been
-> > > > reset (BAR is 0):
-> > > >
-> > > >    pci 0000:01:00.0: [8086:095a] type 00 class 0x028000
-> > > >    pci 0000:01:00.0: reg 0x10: [mem 0x00000000-0x00001fff 64bit]
-> > > >
-> > > > lspci diffs from before/after suspend:
-> > > >
-> > > >     00:14.0 PCI bridge: Intel Corporation Celeron N3350/Pentium N42=
-00/Atom E3900 Series PCI Express Port B #1 (rev fb) (prog-if 00 [Normal dec=
-ode])
-> > > >       Bus: primary=3D00, secondary=3D01, subordinate=3D01, sec-late=
-ncy=3D64
-> > > >    -               DevSta: CorrErr- NonFatalErr+ FatalErr- UnsupReq=
-+ AuxPwr+ TransPend-
-> > > >    +               DevSta: CorrErr+ NonFatalErr- FatalErr- UnsupReq=
-- AuxPwr+ TransPend-
-> > > >    -               LnkCtl: ASPM L1 Enabled; RCB 64 bytes, Disabled-=
- CommClk+
-> > > >    +               LnkCtl: ASPM Disabled; RCB 64 bytes, Disabled- C=
-ommClk+
-> > > >    -               LnkSta2: Current De-emphasis Level: -6dB, Equali=
-zationComplete- EqualizationPhase1-
-> > > >    +               LnkSta2: Current De-emphasis Level: -3.5dB, Equa=
-lizationComplete- EqualizationPhase1-
-> > > >    -       Capabilities: [150 v0] Null
-> > > >    -       Capabilities: [200 v1] L1 PM Substates
-> > > >    -               L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ A=
-SPM_L1.1+ L1_PM_Substates+
-> > > >    -                         PortCommonModeRestoreTime=3D40us PortT=
-PowerOnTime=3D10us
-> > > >    -               L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ =
-ASPM_L1.1+
-> > > >    -                          T_CommonMode=3D40us LTR1.2_Threshold=
-=3D98304ns
-> > > >    -               L1SubCtl2: T_PwrOn=3D60us
-> > > >
-> > > > The DevSta differences might be BIOS bugs, probably not relevant.
-> > > > Interesting that ASPM is disabled, maybe didn't get enabled after
-> > > > re-enumerating 01:00.0?  Strange that the L1 PM Substates capabilit=
-y
-> > > > disappeared.
-> > > >
-> > > >     01:00.0 Network controller: Intel Corporation Wireless 7265 (re=
-v 59)
-> > > >                    LnkCtl: ASPM L1 Enabled; RCB 64 bytes, Disabled-=
- CommClk+
-> > > >    -                       ExtSynch- ClockPM+ AutWidDis- BWInt- Aut=
-BWInt-
-> > > >    +                       ExtSynch- ClockPM- AutWidDis- BWInt- Aut=
-BWInt-
-> > > >            Capabilities: [154 v1] L1 PM Substates
-> > > >                    L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ A=
-SPM_L1.1+ L1_PM_Substates+
-> > > >                              PortCommonModeRestoreTime=3D30us PortT=
-PowerOnTime=3D60us
-> > > >    -               L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ =
-ASPM_L1.1+
-> > > >    -                          T_CommonMode=3D0us LTR1.2_Threshold=
-=3D98304ns
-> > > >    +               L1SubCtl1: PCI-PM_L1.2- PCI-PM_L1.1- ASPM_L1.2- =
-ASPM_L1.1-
-> > > >    +                          T_CommonMode=3D0us LTR1.2_Threshold=
-=3D0ns
-> > > >
-> > > > Dmesg claimed we reconfigured common clock config.  Maybe ASPM didn=
-'t
-> > > > get reinitialized after re-enumeration?  Looks like we didn't resto=
-re
-> > > > L1SubCtl1.
-> > > >
-> > > > Bjorn
-> > > >
->
-> Hi,
->
-> Thank you all for the response and input! As Rajat mentioned I'm using
-> chromebook - but not Atlas (Amberlake) - in this case it is Babymega
-> (Apollolake)  - I will try to load most recent kernel and give it a
-> try once again.
->
-> Best regards,
-> Lukasz
+In Linux terms, the runtime verification monitors are encapsulated
+inside the "RV monitor" abstraction. The "RV monitor" includes a set
+of instances of the monitor (per-cpu monitor, per-task monitor, and
+so on), the helper functions that glue the monitor to the system
+reference model, and the trace output as a reaction for event parsing
+and exceptions, as depicted below:
 
-Hi,
+Linux  +----- RV Monitor ----------------------------------+ Formal
+ Realm |                                                   |  Realm
+ +-------------------+     +----------------+     +-----------------+
+ |   Linux kernel    |     |     Monitor    |     |     Reference   |
+ |     Tracing       |  -> |   Instance(s)  | <-  |       Model     |
+ | (instrumentation) |     | (verification) |     | (specification) |
+ +-------------------+     +----------------+     +-----------------+
+        |                          |                       |
+        |                          V                       |
+        |                     +----------+                 |
+        |                     | Reaction |                 |
+        |                     +--+--+--+-+                 |
+        |                        |  |  |                   |
+        |                        |  |  +-> trace output ?  |
+        +------------------------|--|----------------------+
+                                 |  +----> panic ?
+                                 +-------> <user-specified>
 
- I have applied this patch on top of v5.19-rc7 (chromeos) and I'm
-still getting same results:
-https://gist.github.com/semihalf-majczak-lukasz/4b716704c21a3758d6711b2030e=
-a34b9
+Add the rv/da_monitor.h, enabling automatic code generation for the
+*Monitor Instance(s)* using C macros, and code to support it.
 
-Best regards,
-Lukasz
+The benefits of the usage of macro for monitor synthesis are 3-fold as it:
+
+- Reduces the code duplication;
+- Facilitates the bug fix/improvement;
+- Avoids the case of developers changing the core of the monitor code
+  to manipulate the model in a (let's say) non-standard way.
+
+This initial implementation presents three different types of monitor
+instances:
+
+- DECLARE_DA_MON_GLOBAL(name, type)
+- DECLARE_DA_MON_PER_CPU(name, type)
+- DECLARE_DA_MON_PER_TASK(name, type)
+
+The first declares the functions for a global deterministic automata monitor,
+the second for monitors with per-cpu instances, and the third with per-task
+instances.
+
+Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Marco Elver <elver@google.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Shuah Khan <skhan@linuxfoundation.org>
+Cc: Gabriele Paoloni <gpaoloni@redhat.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Clark Williams <williams@redhat.com>
+Cc: Tao Zhou <tao.zhou@linux.dev>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: linux-doc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-trace-devel@vger.kernel.org
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+---
+ include/linux/rv.h        |  10 +
+ include/rv/da_monitor.h   | 541 ++++++++++++++++++++++++++++++++++++++
+ include/trace/events/rv.h | 120 +++++++++
+ kernel/fork.c             |  14 +
+ kernel/trace/rv/Kconfig   |  11 +
+ kernel/trace/rv/rv.c      |   5 +
+ 6 files changed, 701 insertions(+)
+ create mode 100644 include/rv/da_monitor.h
+ create mode 100644 include/trace/events/rv.h
+
+diff --git a/include/linux/rv.h b/include/linux/rv.h
+index dcce56987cf7..8883b41d88ec 100644
+--- a/include/linux/rv.h
++++ b/include/linux/rv.h
+@@ -7,7 +7,16 @@
+ #ifndef _LINUX_RV_H
+ #define _LINUX_RV_H
+ 
++#define MAX_DA_NAME_LEN	24
++
+ #ifdef CONFIG_RV
++/*
++ * Deterministic automaton per-object variables.
++ */
++struct da_monitor {
++	bool		monitoring;
++	unsigned int	curr_state;
++};
+ 
+ /*
+  * Per-task RV monitors count. Nowadays fixed in RV_PER_TASK_MONITORS.
+@@ -22,6 +31,7 @@
+  * Futher monitor types are expected, so make this a union.
+  */
+ union rv_task_monitor {
++	struct da_monitor da_mon;
+ };
+ 
+ #ifdef CONFIG_RV_REACTORS
+diff --git a/include/rv/da_monitor.h b/include/rv/da_monitor.h
+new file mode 100644
+index 000000000000..001bc298289f
+--- /dev/null
++++ b/include/rv/da_monitor.h
+@@ -0,0 +1,541 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (C) 2019-2022 Red Hat, Inc. Daniel Bristot de Oliveira <bristot@kernel.org>
++ *
++ * Deterministic automata (DA) monitor functions, to be used together
++ * with automata models in C generated by the dot2k tool.
++ *
++ * The dot2k tool is available at tools/verification/dot2k/
++ */
++
++#include <rv/automata.h>
++#include <linux/rv.h>
++#include <linux/bug.h>
++
++#ifdef CONFIG_RV_REACTORS
++
++#define DECLARE_RV_REACTING_HELPERS(name, type)							\
++static char REACT_MSG_##name[1024];								\
++												\
++static inline char *format_react_msg_##name(type curr_state, type event)			\
++{												\
++	snprintf(REACT_MSG_##name, 1024,							\
++		 "rv: monitor %s does not allow event %s on state %s\n",			\
++		 #name,										\
++		 model_get_event_name_##name(event),						\
++		 model_get_state_name_##name(curr_state));					\
++	return REACT_MSG_##name;								\
++}												\
++												\
++static void cond_react_##name(char *msg)							\
++{												\
++	if (rv_##name.react)									\
++		rv_##name.react(msg);								\
++}												\
++												\
++static bool rv_reacting_on_##name(void)								\
++{												\
++	return rv_reacting_on();								\
++}
++
++#else /* CONFIG_RV_REACTOR */
++
++#define DECLARE_RV_REACTING_HELPERS(name, type)							\
++static inline char *format_react_msg_##name(type curr_state, type event)			\
++{												\
++	return NULL;										\
++}												\
++												\
++static void cond_react_##name(char *msg)							\
++{												\
++	return;											\
++}												\
++												\
++static bool rv_reacting_on_##name(void)								\
++{												\
++	return 0;										\
++}
++#endif
++
++/*
++ * Generic helpers for all types of deterministic automata monitors.
++ */
++#define DECLARE_DA_MON_GENERIC_HELPERS(name, type)						\
++												\
++DECLARE_RV_REACTING_HELPERS(name, type)								\
++												\
++/*												\
++ * da_monitor_reset_##name - reset a monitor and setting it to init state			\
++ */												\
++static inline void da_monitor_reset_##name(struct da_monitor *da_mon)				\
++{												\
++	da_mon->monitoring = 0;									\
++	da_mon->curr_state = model_get_initial_state_##name();					\
++}												\
++												\
++/*												\
++ * da_monitor_curr_state_##name - return the current state					\
++ */												\
++static inline type da_monitor_curr_state_##name(struct da_monitor *da_mon)			\
++{												\
++	return da_mon->curr_state;								\
++}												\
++												\
++/*												\
++ * da_monitor_set_state_##name - set the new current state					\
++ */												\
++static inline void										\
++da_monitor_set_state_##name(struct da_monitor *da_mon, enum states_##name state)		\
++{												\
++	da_mon->curr_state = state;								\
++}												\
++												\
++/*												\
++ * da_monitor_start_##name - start monitoring							\
++ *												\
++ * The monitor will ignore all events until monitoring is set to true. This			\
++ * function needs to be called to tell the monitor to start monitoring.				\
++ */												\
++static inline void da_monitor_start_##name(struct da_monitor *da_mon)				\
++{												\
++	da_mon->curr_state = model_get_initial_state_##name();					\
++	da_mon->monitoring = 1;									\
++}												\
++												\
++/*												\
++ * da_monitoring_##name - returns true if the monitor is processing events			\
++ */												\
++static inline bool da_monitoring_##name(struct da_monitor *da_mon)				\
++{												\
++	return da_mon->monitoring;								\
++}												\
++												\
++/*												\
++ * da_monitor_enabled_##name - checks if the monitor is enabled					\
++ */												\
++static inline bool da_monitor_enabled_##name(void)						\
++{												\
++	/* global switch */									\
++	if (unlikely(!rv_monitoring_on()))							\
++		return 0;									\
++												\
++	/* monitor enabled */									\
++	if (unlikely(!rv_##name.enabled))							\
++		return 0;									\
++												\
++	return 1;										\
++}												\
++												\
++/*												\
++ * da_monitor_handling_event_##name - checks if the monitor is ready to handle events		\
++ */												\
++static inline bool da_monitor_handling_event_##name(struct da_monitor *da_mon)			\
++{												\
++												\
++	if (!da_monitor_enabled_##name())							\
++		return 0;									\
++												\
++	/* monitor is actually monitoring */							\
++	if (unlikely(!da_monitoring_##name(da_mon)))						\
++		return 0;									\
++												\
++	return 1;										\
++}
++
++/*
++ * Event handler for implicit monitors. Implicit monitor is the one which the
++ * handler does not need to specify which da_monitor to manipulate. Examples
++ * of implicit monitor are the per_cpu or the global ones.
++ */
++#define DECLARE_DA_MON_MODEL_HANDLER_IMPLICIT(name, type)					\
++												\
++static inline bool										\
++da_event_##name(struct da_monitor *da_mon, enum events_##name event)				\
++{												\
++	type curr_state = da_monitor_curr_state_##name(da_mon);					\
++	type next_state = model_get_next_state_##name(curr_state, event);			\
++												\
++	if (next_state != INVALID_STATE) {							\
++		da_monitor_set_state_##name(da_mon, next_state);				\
++												\
++		trace_event_##name(model_get_state_name_##name(curr_state),			\
++				   model_get_event_name_##name(event),				\
++				   model_get_state_name_##name(next_state),			\
++				   model_is_final_state_##name(next_state));			\
++												\
++		return true;									\
++	}											\
++												\
++	if (rv_reacting_on_##name())								\
++		cond_react_##name(format_react_msg_##name(curr_state, event));			\
++												\
++	trace_error_##name(model_get_state_name_##name(curr_state),				\
++			   model_get_event_name_##name(event));					\
++												\
++	return false;										\
++}												\
++
++/*
++ * Event handler for per_task monitors.
++ */
++#define DECLARE_DA_MON_MODEL_HANDLER_PER_TASK(name, type)					\
++												\
++static inline bool da_event_##name(struct da_monitor *da_mon, struct task_struct *tsk,		\
++				   enum events_##name event)					\
++{												\
++	type curr_state = da_monitor_curr_state_##name(da_mon);					\
++	type next_state = model_get_next_state_##name(curr_state, event);			\
++												\
++	if (next_state != INVALID_STATE) {							\
++		da_monitor_set_state_##name(da_mon, next_state);				\
++												\
++		trace_event_##name(tsk->pid,							\
++				   model_get_state_name_##name(curr_state),			\
++				   model_get_event_name_##name(event),				\
++				   model_get_state_name_##name(next_state),			\
++				   model_is_final_state_##name(next_state));			\
++												\
++		return true;									\
++	}											\
++												\
++	if (rv_reacting_on_##name())								\
++		cond_react_##name(format_react_msg_##name(curr_state, event));			\
++												\
++	trace_error_##name(tsk->pid,								\
++			   model_get_state_name_##name(curr_state),				\
++			   model_get_event_name_##name(event));					\
++												\
++	return false;										\
++}
++
++/*
++ * Functions to define, init and get a global monitor.
++ */
++#define DECLARE_DA_MON_INIT_GLOBAL(name, type)							\
++												\
++/*												\
++ * global monitor (a single variable)								\
++ */												\
++static struct da_monitor da_mon_##name;								\
++												\
++/*												\
++ * da_get_monitor_##name - return the global monitor address					\
++ */												\
++static struct da_monitor *da_get_monitor_##name(void)						\
++{												\
++	return &da_mon_##name;									\
++}												\
++												\
++/*												\
++ * da_monitor_reset_all_##name - reset the single monitor					\
++ */												\
++static void da_monitor_reset_all_##name(void)							\
++{												\
++	da_monitor_reset_##name(da_get_monitor_##name());					\
++}												\
++												\
++/*												\
++ * da_monitor_init_##name - initialize a monitor						\
++ */												\
++static inline int da_monitor_init_##name(void)							\
++{												\
++	da_monitor_reset_all_##name();								\
++	return 0;										\
++}												\
++												\
++/*												\
++ * da_monitor_destroy_##name - destroy the monitor						\
++ */												\
++static inline void da_monitor_destroy_##name(void)						\
++{												\
++	return;											\
++}
++
++/*
++ * Functions to define, init and get a per-cpu monitor.
++ */
++#define DECLARE_DA_MON_INIT_PER_CPU(name, type)							\
++												\
++/*												\
++ * per-cpu monitor variables									\
++ */												\
++DEFINE_PER_CPU(struct da_monitor, da_mon_##name);						\
++												\
++/*												\
++ * da_get_monitor_##name - return current CPU monitor address					\
++ */												\
++static struct da_monitor *da_get_monitor_##name(void)						\
++{												\
++	return this_cpu_ptr(&da_mon_##name);							\
++}												\
++												\
++/*												\
++ * da_monitor_reset_all_##name - reset all CPUs' monitor					\
++ */												\
++static void da_monitor_reset_all_##name(void)							\
++{												\
++	struct da_monitor *da_mon;								\
++	int cpu;										\
++	for_each_cpu(cpu, cpu_online_mask) {							\
++		da_mon = per_cpu_ptr(&da_mon_##name, cpu);					\
++		da_monitor_reset_##name(da_mon);						\
++	}											\
++}												\
++												\
++/*												\
++ * da_monitor_init_##name - initialize all CPUs' monitor					\
++ */												\
++static inline int da_monitor_init_##name(void)							\
++{												\
++	da_monitor_reset_all_##name();								\
++	return 0;										\
++}												\
++												\
++/*												\
++ * da_monitor_destroy_##name - destroy the monitor						\
++ */												\
++static inline void da_monitor_destroy_##name(void)						\
++{												\
++	return;											\
++}
++
++/*
++ * Functions to define, init and get a per-task monitor.
++ */
++#define DECLARE_DA_MON_INIT_PER_TASK(name, type)						\
++												\
++/*												\
++ * The per-task monitor is stored a vector in the task struct. This variable			\
++ * stores the position on the vector reserved for this monitor.					\
++ */												\
++static int task_mon_slot_##name = RV_PER_TASK_MONITOR_INIT;					\
++												\
++/*												\
++ * da_get_monitor_##name - return the monitor in the allocated slot for tsk 			\
++ */												\
++static inline struct da_monitor *da_get_monitor_##name(struct task_struct *tsk)			\
++{												\
++	return &tsk->rv[task_mon_slot_##name].da_mon;						\
++}												\
++												\
++static void da_monitor_reset_all_##name(void)							\
++{												\
++	struct task_struct *g, *p;								\
++												\
++	read_lock(&tasklist_lock);								\
++	for_each_process_thread(g, p)								\
++		da_monitor_reset_##name(da_get_monitor_##name(p));				\
++	read_unlock(&tasklist_lock);								\
++}												\
++												\
++/*												\
++ * da_monitor_init_##name - initialize the per-task monitor					\
++ *												\
++ * Try to allocate a slot in the task's vector of monitors. If there				\
++ * is an available slot, use it and reset all task's monitor.					\
++ */												\
++static int da_monitor_init_##name(void)								\
++{												\
++	int slot;										\
++												\
++	slot = rv_get_task_monitor_slot();							\
++	if (slot < 0 || slot >= RV_PER_TASK_MONITOR_INIT)					\
++		return slot;									\
++												\
++	task_mon_slot_##name = slot;								\
++												\
++	da_monitor_reset_all_##name();								\
++	return 0;										\
++}												\
++												\
++/*												\
++ * da_monitor_destroy_##name - return the allocated slot					\
++ */												\
++static inline void da_monitor_destroy_##name(void)						\
++{												\
++	if (task_mon_slot_##name == RV_PER_TASK_MONITOR_INIT) {					\
++		WARN_ONCE(1, "Disabling a disabled monitor: " #name);				\
++		return;										\
++	}											\
++	rv_put_task_monitor_slot(task_mon_slot_##name);						\
++	task_mon_slot_##name = RV_PER_TASK_MONITOR_INIT;					\
++	return;											\
++}
++
++/*
++ * Handle event for implicit monitor: da_get_monitor_##name() will figure out
++ * the monitor.
++ */
++#define DECLARE_DA_MON_MONITOR_HANDLER_IMPLICIT(name, type)					\
++												\
++static inline void __da_handle_event_##name(struct da_monitor *da_mon,				\
++					    enum events_##name event)				\
++{												\
++	bool retval;										\
++												\
++	retval = da_event_##name(da_mon, event);						\
++	if (!retval)										\
++		da_monitor_reset_##name(da_mon);						\
++}												\
++												\
++/*												\
++ * da_handle_event_##name - handle an event							\
++ */												\
++static inline void da_handle_event_##name(enum events_##name event)				\
++{												\
++	struct da_monitor *da_mon = da_get_monitor_##name();					\
++	bool retval;										\
++												\
++	retval = da_monitor_handling_event_##name(da_mon);					\
++	if (!retval)										\
++		return;										\
++												\
++	__da_handle_event_##name(da_mon, event);						\
++}												\
++												\
++/*												\
++ * da_handle_start_event_##name - start monitoring or handle event				\
++ *												\
++ * This function is used to notify the monitor that the system is returning			\
++ * to the initial state, so the monitor can start monitoring in the next event.			\
++ * Thus:											\
++ *												\
++ * If the monitor already started, handle the event.						\
++ * If the monitor did not start yet, start the monitor but skip the event.			\
++ */												\
++static inline bool da_handle_start_event_##name(enum events_##name event)			\
++{												\
++	struct da_monitor *da_mon;								\
++												\
++	if (!da_monitor_enabled_##name())							\
++		return 0;									\
++												\
++	da_mon = da_get_monitor_##name();							\
++												\
++	if (unlikely(!da_monitoring_##name(da_mon))) {						\
++		da_monitor_start_##name(da_mon);						\
++		return 0;									\
++	}											\
++												\
++	__da_handle_event_##name(da_mon, event);						\
++												\
++	return 1;										\
++}												\
++												\
++/*												\
++ * da_handle_start_run_event_##name - start monitoring and handle event				\
++ *												\
++ * This function is used to notify the monitor that the system is in the			\
++ * initial state, so the monitor can start monitoring and handling event.			\
++ */												\
++static inline bool da_handle_start_run_event_##name(enum events_##name event)			\
++{												\
++	struct da_monitor *da_mon;								\
++												\
++	if (!da_monitor_enabled_##name())							\
++		return 0;									\
++												\
++	da_mon = da_get_monitor_##name();							\
++												\
++	if (unlikely(!da_monitoring_##name(da_mon)))						\
++		da_monitor_start_##name(da_mon);						\
++												\
++	__da_handle_event_##name(da_mon, event);						\
++												\
++	return 1;										\
++}
++
++/*
++ * Handle event for per task.
++ */
++#define DECLARE_DA_MON_MONITOR_HANDLER_PER_TASK(name, type)					\
++												\
++static inline void										\
++__da_handle_event_##name(struct da_monitor *da_mon, struct task_struct *tsk,			\
++			 enum events_##name event)						\
++{												\
++	bool retval;										\
++												\
++	retval = da_event_##name(da_mon, tsk, event);						\
++	if (!retval)										\
++		da_monitor_reset_##name(da_mon);						\
++}												\
++												\
++/*												\
++ * da_handle_event_##name - handle an event							\
++ */												\
++static inline void										\
++da_handle_event_##name(struct task_struct *tsk, enum events_##name event)			\
++{												\
++	struct da_monitor *da_mon = da_get_monitor_##name(tsk);					\
++	bool retval;										\
++												\
++	retval = da_monitor_handling_event_##name(da_mon);					\
++	if (!retval)										\
++		return;										\
++												\
++	__da_handle_event_##name(da_mon, tsk, event);						\
++}												\
++												\
++/*												\
++ * da_handle_start_event_##name - start monitoring or handle event				\
++ *												\
++ * This function is used to notify the monitor that the system is returning			\
++ * to the initial state, so the monitor can start monitoring in the next event.			\
++ * Thus:											\
++ *												\
++ * If the monitor already started, handle the event.						\
++ * If the monitor did not start yet, start the monitor but skip the event.			\
++ */												\
++static inline bool										\
++da_handle_start_event_##name(struct task_struct *tsk, enum events_##name event)			\
++{												\
++	struct da_monitor *da_mon;								\
++												\
++	if (!da_monitor_enabled_##name())							\
++		return 0;									\
++												\
++	da_mon = da_get_monitor_##name(tsk);							\
++												\
++	if (unlikely(!da_monitoring_##name(da_mon))) {						\
++		da_monitor_start_##name(da_mon);						\
++		return 0;									\
++	}											\
++												\
++	__da_handle_event_##name(da_mon, tsk, event);						\
++												\
++	return 1;										\
++}
++
++/*
++ * Entry point for the global monitor.
++ */
++#define DECLARE_DA_MON_GLOBAL(name, type)							\
++												\
++DECLARE_AUTOMATA_HELPERS(name, type)								\
++DECLARE_DA_MON_GENERIC_HELPERS(name, type)							\
++DECLARE_DA_MON_MODEL_HANDLER_IMPLICIT(name, type)						\
++DECLARE_DA_MON_INIT_GLOBAL(name, type)								\
++DECLARE_DA_MON_MONITOR_HANDLER_IMPLICIT(name, type)
++
++/*
++ * Entry point for the per-cpu monitor.
++ */
++#define DECLARE_DA_MON_PER_CPU(name, type)							\
++												\
++DECLARE_AUTOMATA_HELPERS(name, type)								\
++DECLARE_DA_MON_GENERIC_HELPERS(name, type)							\
++DECLARE_DA_MON_MODEL_HANDLER_IMPLICIT(name, type)						\
++DECLARE_DA_MON_INIT_PER_CPU(name, type)								\
++DECLARE_DA_MON_MONITOR_HANDLER_IMPLICIT(name, type)
++
++/*
++ * Entry point for the per-task monitor.
++ */
++#define DECLARE_DA_MON_PER_TASK(name, type)							\
++												\
++DECLARE_AUTOMATA_HELPERS(name, type)								\
++DECLARE_DA_MON_GENERIC_HELPERS(name, type)							\
++DECLARE_DA_MON_MODEL_HANDLER_PER_TASK(name, type)						\
++DECLARE_DA_MON_INIT_PER_TASK(name, type)							\
++DECLARE_DA_MON_MONITOR_HANDLER_PER_TASK(name, type)
+diff --git a/include/trace/events/rv.h b/include/trace/events/rv.h
+new file mode 100644
+index 000000000000..20a2e09c6416
+--- /dev/null
++++ b/include/trace/events/rv.h
+@@ -0,0 +1,120 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM rv
++
++#if !defined(_TRACE_RV_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_RV_H
++
++#include <linux/rv.h>
++#include <linux/tracepoint.h>
++
++#ifdef CONFIG_DA_MON_EVENTS_IMPLICIT
++DECLARE_EVENT_CLASS(event_da_monitor,
++
++	TP_PROTO(char *state, char *event, char *next_state, bool final_state),
++
++	TP_ARGS(state, event, next_state, final_state),
++
++	TP_STRUCT__entry(
++		__array(	char,	state,		MAX_DA_NAME_LEN	)
++		__array(	char,	event,		MAX_DA_NAME_LEN	)
++		__array(	char,	next_state,	MAX_DA_NAME_LEN	)
++		__field(	bool,	final_state			)
++	),
++
++	TP_fast_assign(
++		memcpy(__entry->state,		state,		MAX_DA_NAME_LEN);
++		memcpy(__entry->event,		event,		MAX_DA_NAME_LEN);
++		memcpy(__entry->next_state,	next_state,	MAX_DA_NAME_LEN);
++		__entry->final_state		= final_state;
++	),
++
++	TP_printk("%s x %s -> %s %s",
++		__entry->state,
++		__entry->event,
++		__entry->next_state,
++		__entry->final_state ? "(final)" : "")
++);
++
++DECLARE_EVENT_CLASS(error_da_monitor,
++
++	TP_PROTO(char *state, char *event),
++
++	TP_ARGS(state, event),
++
++	TP_STRUCT__entry(
++		__array(	char,	state,		MAX_DA_NAME_LEN	)
++		__array(	char,	event,		MAX_DA_NAME_LEN	)
++	),
++
++	TP_fast_assign(
++		memcpy(__entry->state,		state,		MAX_DA_NAME_LEN);
++		memcpy(__entry->event,		event,		MAX_DA_NAME_LEN);
++	),
++
++	TP_printk("event %s not expected in the state %s",
++		__entry->event,
++		__entry->state)
++);
++#endif /* CONFIG_DA_MON_EVENTS_IMPLICIT */
++
++#ifdef CONFIG_DA_MON_EVENTS_ID
++DECLARE_EVENT_CLASS(event_da_monitor_id,
++
++	TP_PROTO(int id, char *state, char *event, char *next_state, bool final_state),
++
++	TP_ARGS(id, state, event, next_state, final_state),
++
++	TP_STRUCT__entry(
++		__field(	int,	id				)
++		__array(	char,	state,		MAX_DA_NAME_LEN	)
++		__array(	char,	event,		MAX_DA_NAME_LEN	)
++		__array(	char,	next_state,	MAX_DA_NAME_LEN	)
++		__field(	bool,	final_state			)
++	),
++
++	TP_fast_assign(
++		memcpy(__entry->state,		state,		MAX_DA_NAME_LEN);
++		memcpy(__entry->event,		event,		MAX_DA_NAME_LEN);
++		memcpy(__entry->next_state,	next_state,	MAX_DA_NAME_LEN);
++		__entry->id			= id;
++		__entry->final_state		= final_state;
++	),
++
++	TP_printk("%d: %s x %s -> %s %s",
++		__entry->id,
++		__entry->state,
++		__entry->event,
++		__entry->next_state,
++		__entry->final_state ? "(final)" : "")
++);
++
++DECLARE_EVENT_CLASS(error_da_monitor_id,
++
++	TP_PROTO(int id, char *state, char *event),
++
++	TP_ARGS(id, state, event),
++
++	TP_STRUCT__entry(
++		__field(	int,	id				)
++		__array(	char,	state,		MAX_DA_NAME_LEN	)
++		__array(	char,	event,		MAX_DA_NAME_LEN	)
++	),
++
++	TP_fast_assign(
++		memcpy(__entry->state,		state,		MAX_DA_NAME_LEN);
++		memcpy(__entry->event,		event,		MAX_DA_NAME_LEN);
++		__entry->id			= id;
++	),
++
++	TP_printk("%d: event %s not expected in the state %s",
++		__entry->id,
++		__entry->event,
++		__entry->state)
++);
++#endif /* CONFIG_DA_MON_EVENTS_ID */
++#endif /* _TRACE_RV_H */
++
++/* This part ust be outside protection */
++#undef TRACE_INCLUDE_PATH
++#include <trace/define_trace.h>
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 9d44f2d46c69..6f1f82ccd5f2 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -1964,6 +1964,18 @@ static void copy_oom_score_adj(u64 clone_flags, struct task_struct *tsk)
+ 	mutex_unlock(&oom_adj_mutex);
+ }
+ 
++#ifdef CONFIG_RV
++static void rv_task_fork(struct task_struct *p)
++{
++	int i;
++
++	for (i = 0; i < RV_PER_TASK_MONITORS; i++)
++		p->rv[i].da_mon.monitoring = false;
++}
++#else
++#define rv_task_fork(p) do {} while (0)
++#endif
++
+ /*
+  * This creates a new process as a copy of the old one,
+  * but does not actually start it yet.
+@@ -2399,6 +2411,8 @@ static __latent_entropy struct task_struct *copy_process(
+ 	 */
+ 	copy_seccomp(p);
+ 
++	rv_task_fork(p);
++
+ 	rseq_fork(p, clone_flags);
+ 
+ 	/* Don't start children in a dying pid namespace */
+diff --git a/kernel/trace/rv/Kconfig b/kernel/trace/rv/Kconfig
+index 3eb5d48ab4f6..8714800e22ad 100644
+--- a/kernel/trace/rv/Kconfig
++++ b/kernel/trace/rv/Kconfig
+@@ -1,5 +1,16 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ #
++config DA_MON_EVENTS
++	bool
++
++config DA_MON_EVENTS_IMPLICIT
++	select DA_MON_EVENTS
++	bool
++
++config DA_MON_EVENTS_ID
++	select DA_MON_EVENTS
++	bool
++
+ menuconfig RV
+ 	bool "Runtime Verification"
+ 	depends on TRACING
+diff --git a/kernel/trace/rv/rv.c b/kernel/trace/rv/rv.c
+index 45cf64eb2600..df6678c86334 100644
+--- a/kernel/trace/rv/rv.c
++++ b/kernel/trace/rv/rv.c
+@@ -140,6 +140,11 @@
+ #include <linux/init.h>
+ #include <linux/slab.h>
+ 
++#ifdef CONFIG_DA_MON_EVENTS
++#define CREATE_TRACE_POINTS
++#include <trace/events/rv.h>
++#endif
++
+ #include "rv.h"
+ 
+ DEFINE_MUTEX(rv_interface_lock);
+-- 
+2.35.1
+
