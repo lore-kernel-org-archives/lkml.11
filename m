@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD2B3C19F29
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:04:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4371C19F29
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:04:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236248AbiG2NEP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 09:04:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52510 "EHLO
+        id S236281AbiG2NES (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 09:04:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233968AbiG2NEF (ORCPT
+        with ESMTP id S235851AbiG2NEF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Jul 2022 09:04:05 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 076A6459B9
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8285947B82
         for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 06:04:04 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oHPeh-0006nP-9h; Fri, 29 Jul 2022 15:03:51 +0200
+        id 1oHPeh-0006nS-9j; Fri, 29 Jul 2022 15:03:51 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oHPef-000Vub-LY; Fri, 29 Jul 2022 15:03:49 +0200
+        id 1oHPeg-000Vuk-4o; Fri, 29 Jul 2022 15:03:50 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oHPed-00CQXz-Gd; Fri, 29 Jul 2022 15:03:47 +0200
+        id 1oHPed-00CQYQ-IX; Fri, 29 Jul 2022 15:03:47 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v1 03/10] net: dsa: microchip: forward error value on all ksz_pread/ksz_pwrite functions
-Date:   Fri, 29 Jul 2022 15:03:39 +0200
-Message-Id: <20220729130346.2961889-4-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v1 06/10] net: dsa: microchip: KSZ9893: do not write to not supported Output Clock Control Register
+Date:   Fri, 29 Jul 2022 15:03:42 +0200
+Message-Id: <20220729130346.2961889-7-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220729130346.2961889-1-o.rempel@pengutronix.de>
 References: <20220729130346.2961889-1-o.rempel@pengutronix.de>
@@ -55,72 +55,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ksz_read*/ksz_write* are able to return errors, so forward it.
+This issue was detected after adding regmap register access validation.
+KSZ9893 compatible chips do not have "Output Clock Control Register 0x0103".
+So, avoid writing to it.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz_common.h | 26 ++++++++++++++------------
- 1 file changed, 14 insertions(+), 12 deletions(-)
+ drivers/net/dsa/microchip/ksz9477.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index a06b9bf5938b..3a64a444fa26 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -390,40 +390,42 @@ static inline int ksz_write64(struct ksz_device *dev, u32 reg, u64 value)
- 	return regmap_bulk_write(dev->regmap[2], reg, val, 2);
- }
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 074d4c16d427..a3ddc9021af3 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -193,6 +193,10 @@ int ksz9477_reset_switch(struct ksz_device *dev)
+ 	ksz_write32(dev, REG_SW_PORT_INT_MASK__4, 0x7F);
+ 	ksz_read32(dev, REG_SW_PORT_INT_STATUS__4, &data32);
  
--static inline void ksz_pread8(struct ksz_device *dev, int port, int offset,
-+static inline int ksz_pread8(struct ksz_device *dev, int port, int offset,
- 			      u8 *data)
- {
--	ksz_read8(dev, dev->dev_ops->get_port_addr(port, offset), data);
-+	return ksz_read8(dev, dev->dev_ops->get_port_addr(port, offset), data);
- }
- 
--static inline void ksz_pread16(struct ksz_device *dev, int port, int offset,
-+static inline int ksz_pread16(struct ksz_device *dev, int port, int offset,
- 			       u16 *data)
- {
--	ksz_read16(dev, dev->dev_ops->get_port_addr(port, offset), data);
-+	return ksz_read16(dev, dev->dev_ops->get_port_addr(port, offset), data);
- }
- 
--static inline void ksz_pread32(struct ksz_device *dev, int port, int offset,
-+static inline int ksz_pread32(struct ksz_device *dev, int port, int offset,
- 			       u32 *data)
- {
--	ksz_read32(dev, dev->dev_ops->get_port_addr(port, offset), data);
-+	return ksz_read32(dev, dev->dev_ops->get_port_addr(port, offset), data);
- }
- 
--static inline void ksz_pwrite8(struct ksz_device *dev, int port, int offset,
-+static inline int ksz_pwrite8(struct ksz_device *dev, int port, int offset,
- 			       u8 data)
- {
--	ksz_write8(dev, dev->dev_ops->get_port_addr(port, offset), data);
-+	return ksz_write8(dev, dev->dev_ops->get_port_addr(port, offset), data);
- }
- 
--static inline void ksz_pwrite16(struct ksz_device *dev, int port, int offset,
-+static inline int ksz_pwrite16(struct ksz_device *dev, int port, int offset,
- 				u16 data)
- {
--	ksz_write16(dev, dev->dev_ops->get_port_addr(port, offset), data);
-+	return ksz_write16(dev, dev->dev_ops->get_port_addr(port, offset),
-+			   data);
- }
- 
--static inline void ksz_pwrite32(struct ksz_device *dev, int port, int offset,
-+static inline int ksz_pwrite32(struct ksz_device *dev, int port, int offset,
- 				u32 data)
- {
--	ksz_write32(dev, dev->dev_ops->get_port_addr(port, offset), data);
-+	return ksz_write32(dev, dev->dev_ops->get_port_addr(port, offset),
-+			   data);
- }
- 
- static inline void ksz_prmw8(struct ksz_device *dev, int port, int offset,
++	/* KSZ9893 compatible chips do not support refclk configuration */
++	if (dev->chip_id == KSZ9893_CHIP_ID)
++		return 0;
++
+ 	data8 = SW_ENABLE_REFCLKO;
+ 	if (dev->synclko_disable)
+ 		data8 = 0;
 -- 
 2.30.2
 
