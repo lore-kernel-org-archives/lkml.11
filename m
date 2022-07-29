@@ -2,96 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A63EFC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 08:37:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3596FC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 08:38:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235144AbiG2IhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 04:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44000 "EHLO
+        id S235099AbiG2Iix (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 04:38:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235072AbiG2IhQ (ORCPT
+        with ESMTP id S233362AbiG2Iiv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 04:37:16 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68DC082465
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 01:37:14 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id c131so7060566ybf.9
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 01:37:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jBtukp+iT13bXS1x4ppbbvLuYQYsK1bKT1T8ZuQYnuU=;
-        b=i22YIsoLhKb/wfkY6xp7KMmlRGqwFcE/LUkGQHT3XnBPKXflWCLwDnGhe3Y2v4aBGb
-         1bUjxWV41SVHBYhWtYuWL7UwmcyfYGERtfCq+CIffVBUqZMKfwET2uQrvA9ZVJBGytX+
-         j/oDivxugVZ2IhpyVx4ou8gTGgTwu7zrhtVng=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jBtukp+iT13bXS1x4ppbbvLuYQYsK1bKT1T8ZuQYnuU=;
-        b=UkGuwxhk+LXjlwkSURO5ZptCo/Giwx0eRw6q03lIwWm1Dbuc9VTXkyzQLCINsFLCD1
-         6fKm86Ul8nPJW3R6FebF//RQolJI+DeXTkrzaKv3mWuUv33RLga86uDJia3ICWRwP1CW
-         d9W+2CiIAMqBcyhcr6bN+9sChoJc3aexoQqRec2+4nxBNMKXBqzFYpW599UVgbk+Xq2U
-         29bbS3smdPxHiyHp3bxxmI4LQEnaHf/HYmaUuuFfymsHMVyawTKGTn7ar5Dq1mMbmYdZ
-         38ebrmrsIsbKrXxGPDQtFvi/q/EWKTmUjFUQQYx2cg7j48HrEvOqYsgnjpqcWOOzGw9s
-         HM5g==
-X-Gm-Message-State: ACgBeo2n20eYa7/vKrO62weD/gJdYeWiNNaPfQB7iuL9AsrFcfXVaxX2
-        dkJTemHqU/KI2BEaJ9bEU3jj3ngqp/1fMzHD8lk9Tg==
-X-Google-Smtp-Source: AA6agR4Fodc9JOFrHAphSV1LJgvVUjnQBZ8rGzgsx/oQkn3dAk23lZ2WjEVH2IM56ojvT4WwwhovvzIy+j9G9/w1IU0=
-X-Received: by 2002:a25:8888:0:b0:671:787e:8b3c with SMTP id
- d8-20020a258888000000b00671787e8b3cmr1820668ybl.478.1659083833529; Fri, 29
- Jul 2022 01:37:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220729020508.4147751-1-dlunev@chromium.org> <20220729120216.v3.1.I6b7934b96fff0d5ea22531e57c0a11f0ccd1acd8@changeid>
- <YuOV6l/7KoVO4yZp@kroah.com>
-In-Reply-To: <YuOV6l/7KoVO4yZp@kroah.com>
-From:   Daniil Lunev <dlunev@chromium.org>
-Date:   Fri, 29 Jul 2022 18:37:02 +1000
-Message-ID: <CAONX=-f=qnUqVCTuotrEp6MCMk_f+wWj4FPY6skXHHWuitqZiQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] ufs: add function to check CRYPTO capability
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Andy Gross <agross@kernel.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Daejun Park <daejun7.park@samsung.com>,
-        Eric Biggers <ebiggers@google.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-scsi@vger.kernel.org
+        Fri, 29 Jul 2022 04:38:51 -0400
+Received: from xry111.site (xry111.site [IPv6:2001:470:683e::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C1963C2
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 01:38:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1659083925;
+        bh=nhRJetfqLKjmUCbDBNY/1f03LEEuOrUUxiVJylmuTJE=;
+        h=Subject:From:To:Cc:Date:From;
+        b=FUPN6Cpcxd7PojPojV6dE7ZyP1ozEemFkP/TZvrTC9cJwmTdB2ehw5D6zz21VxfkV
+         R0QrPz/6vaAcqfXrA84ZZ1d8ayALTh+y+IiP3qZCiEj3GiAd1cX61IrC54bTJulrOj
+         PPQ1g6inqJxLLcRKfK8uAh4rZTAP//RHm53LCnVE=
+Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id 972CE669EA;
+        Fri, 29 Jul 2022 04:38:43 -0400 (EDT)
+Message-ID: <32a74a218c76611f897fd1df1ad0059068621133.camel@xry111.site>
+Subject: [PATCH v4 0/4] LoongArch: Support new relocation types
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     loongarch@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Youling Tang <tangyouling@loongson.cn>,
+        Jinyang He <hejinyang@loongson.cn>
+Date:   Fri, 29 Jul 2022 16:38:41 +0800
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> This is not a valid changelog text, sorry.  Please read the
-> documentation for how to write a valid one.
-Sorry for that. Though the latest patchset is v4 and that one
-doesn't contain this patch since Eric Biggers pointed out the
-crypto information can be obtained from device's queue sysfs
-node. But I will try to be better further on.
+The version 2.00 of LoongArch ELF ABI specification introduced new
+relocation types, and the development tree of Binutils and GCC has
+started to use them.  If the kernel is built with the latest snapshot of
+Binutils or GCC, it will fail to load the modules because of unrecognized
+relocation types in modules.
 
-> Something went wrong with your patch, there is no --- line, so git will
-> apply it with the diffstat, right?
->
-> Did you hand-edit this?
+Add support for GOT and new relocation types for the module loader, so
+the kernel (with modules) can be built with the "normal" code model and
+function properly.
 
-Hm, I don't recall hand editing it, but the possibility of pilot error is
-always there. I am still getting used to the upstream tooling and
-processes. Sorry for the inconvenience, but as I mentioned, this
-patch is dropped in v4 version (and sorry for high traffic of changes
-on this patchset)
+This series does not break the compatibility with old toolchain using
+stack-based relocation types, so with the patches applied the kernel can
+be be built with both old and new toolchains.
 
-Thanks,
-Daniil
+Tested by building the kernel with both Binutils & GCC master branch and
+my system Binutils & GCC (without new relocation type support), running
+both the builds with 35 in-tree modules loaded, and loading one module
+with 20 GOT loads (loaded addresses verified by comparing with
+/proc/kallsyms).
+
+Changes from v3 to v4:
+
+- No code change.  Reword the commit message of the 3rd patch again
+  based on suggestion from Huacai.
+
+Changes from v2 to v3:
+
+- Use `union loongarch_instruction` instead of explicit bit shifts
+  applying the relocation.  Suggested by Youling.
+- For R_LARCH_B26, move the alignment check before the range check to be
+  consistent with stack pop relocations.  Suggested by Youling.
+- Reword the commit message of the 3rd patch.  Suggested by Huacai.
+
+Changes from v1 to v2:
+
+- Fix a stupid programming error (confusion between the number of PLT
+  entries and the number of GOT entries).  (Bug spotted by Youling).
+- Synthesize the _GLOBAL_OFFSET_TABLE_ symbol with module.lds, instead
+  of faking it at runtime.  The 3rd patch from V1 is now merged into
+  the 1st patch because it would be a one-line change.  (Suggested by
+  Jinyang).
+- Keep reloc_rela_handlers[] ordered by the relocation type ID.
+  (Suggested by Youling).
+- Remove -fplt along with -Wa,-mla-* options because it's the default.
+  (Suggested by Youling).
+
+Xi Ruoyao (4):
+  LoongArch: Add section of GOT for kernel module
+  LoongArch: Support R_LARCH_SOP_PUSH_GPREL relocation type in kernel
+    module
+  LoongArch: Remove -fplt and -Wa,-mla-* from CFLAGS
+  LoongArch: Support modules with new relocation types
+
+ arch/loongarch/Makefile                 |  4 --
+ arch/loongarch/include/asm/elf.h        | 37 ++++++++++
+ arch/loongarch/include/asm/module.h     | 23 ++++++
+ arch/loongarch/include/asm/module.lds.h |  1 +
+ arch/loongarch/kernel/head.S            | 10 +--
+ arch/loongarch/kernel/module-sections.c | 51 +++++++++++--
+ arch/loongarch/kernel/module.c          | 96 +++++++++++++++++++++++++
+ 7 files changed, 209 insertions(+), 13 deletions(-)
+
+--=20
+2.37.0
+
+
