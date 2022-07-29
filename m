@@ -2,54 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F5EC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 05:30:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E48C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 05:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234530AbiG2Fan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 01:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
+        id S234554AbiG2Fas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 01:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234256AbiG2FaZ (ORCPT
+        with ESMTP id S234367AbiG2Fa0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 01:30:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD07DFBB;
-        Thu, 28 Jul 2022 22:30:21 -0700 (PDT)
+        Fri, 29 Jul 2022 01:30:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A317313DF3;
+        Thu, 28 Jul 2022 22:30:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95DE861EA0;
-        Fri, 29 Jul 2022 05:30:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E719CC43140;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4CC92B826F2;
+        Fri, 29 Jul 2022 05:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DF3C5C433B5;
         Fri, 29 Jul 2022 05:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1659072619;
-        bh=wDCzmB4eJFbSSvyoCZElKojmCus+4/oANVG54d/8q+M=;
+        bh=/5oj8sE7l+/hfD4swIIxbDOHMIBGNGjoHEyU1b/Z9SU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GBXcqVSRtS+63Su56lQEeCgCwmKhozpT/EwJq/KCn0uAPpe/nB4TCNLiRkTXr6i9i
-         yjgR7w8UkpRMH6jLkwxysgi52aZ3Nw/xsw3EjmNpiuYCNmoQ4qTLSTWltEtUXFMsGk
-         +ab+JFw5E4ORuXkSPsYs/RVhh81gTggGMBDH6WIEfjUcyQFQ6P7wozQdQVfgRLCAP7
-         IPUfupq8ne7RwNLmPpyA00dikc8d/KzZ0vKimnVsYrDZD9liwTFUzSnUIYorqTCaYr
-         XuFsQhJ2e73T6UGwvFxUimCsQgd/eIbi7dkNKXE1yCe+iy2aVWxlPpbho85xx4whlu
-         IOXW/zeOijvPQ==
+        b=nLbQfOO7XR/lNfXoWLCebbMfJgp0zZT+FkN+n+hOEdiGDNp1fZ4umWWKYxRXFIYho
+         Diev7K1eSAVG/aE9OK/7JyM57W56nDNUUn+5nuEqwatAQuQm26RzFmJWSAZ8pJSWAo
+         9j6IduarF1iMOTD9U03jke7wzDcqUHuT2EXvCMmNIOJjX4bV4eXBk7u0NpQFlaje6G
+         2px4UNcrLObW7EMOdg4B9l744T48xqL33N1PoVbKDmUncxc8TrWZTKA0pyE3ccRnPN
+         WdHQdNAzM+69c6VAUvfSyoC09FuV+OGO5sQ1EKG68+K+uN8c9kO+xmZEbyQ/S3TQAk
+         AGImiO6kEl0rw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CEA08C43146;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C5E38C43143;
         Fri, 29 Jul 2022 05:30:19 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v1 1/1] firewire: net: Make use of
- get_unaligned_be48(), put_unaligned_be48()
+Subject: Re: [PATCH net-next v1] selftests: net: dsa: Add a Makefile which
+ installs the selftests
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165907261984.17632.6914991497819890237.git-patchwork-notify@kernel.org>
+Message-Id: <165907261980.17632.18402519783746215352.git-patchwork-notify@kernel.org>
 Date:   Fri, 29 Jul 2022 05:30:19 +0000
-References: <20220726144906.5217-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220726144906.5217-1-andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     kuba@kernel.org, linux1394-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        stefanr@s5r6.in-berlin.de, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com
+References: <20220727191642.480279-1-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20220727191642.480279-1-martin.blumenstingl@googlemail.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        vladimir.oltean@nxp.com, linux-kernel@vger.kernel.org,
+        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
+        davem@davemloft.net, shuah@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -59,19 +60,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 26 Jul 2022 17:49:06 +0300 you wrote:
-> Since we have a proper endianness converters for BE 48-bit data use
-> them.
+On Wed, 27 Jul 2022 21:16:42 +0200 you wrote:
+> Add a Makefile which takes care of installing the selftests in
+> tools/testing/selftests/drivers/net/dsa. This can be used to install all
+> DSA specific selftests and forwarding.config using the same approach as
+> for the selftests in tools/testing/selftests/net/forwarding.
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/firewire/net.c | 14 ++------------
->  include/net/firewire.h |  3 +--
->  2 files changed, 3 insertions(+), 14 deletions(-)
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> 
+> [...]
 
 Here is the summary with links:
-  - [net-next,v1,1/1] firewire: net: Make use of get_unaligned_be48(), put_unaligned_be48()
-    https://git.kernel.org/netdev/net-next/c/29192a170e15
+  - [net-next,v1] selftests: net: dsa: Add a Makefile which installs the selftests
+    https://git.kernel.org/netdev/net-next/c/6ecf206d602f
 
 You are awesome, thank you!
 -- 
