@@ -2,157 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD2DFC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 14:20:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 328F5C19F2C
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 14:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236538AbiG2OUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 10:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56762 "EHLO
+        id S236307AbiG2OUb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 10:20:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236948AbiG2OUF (ORCPT
+        with ESMTP id S236612AbiG2OU1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 10:20:05 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D42197AC26
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 07:20:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659104404; x=1690640404;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=4gWrcWrWJgBokdA2N9hWZFx05zXm2QPBsuNfQ/ZPmL0=;
-  b=TGdnGNU2ev4s/7oUaRcHTOn+Ua2HCo6iGR6Se8m1815aw0u4f5caxU3C
-   3TzeTJX6dANdTof4/gf77ZYVIng2jQBQkhnL1u6YFd5MsftYT/eMwlb+2
-   04hw4yfapdtWH5pK9EtdXZ9Ru9ugYrMPDOMc2hA07CoIV1ggZEUmloyc2
-   0yjy3Ws1+a3UjblRyve4aeNX87iAMaiOIEbsgApFDJEFPMWwuEWYqikkv
-   m3HnDd+HYX9M8FZlS+H6FfoF6+dhybWfykzr+1dTEmQpvPqEr/U/U0C3j
-   LoUHWm/8ZTuu76OoAgbRdF9j4LSv6hAhI1GFod9Odrpi65hMifqKCaJPQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="289544058"
-X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
-   d="scan'208";a="289544058"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 07:20:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
-   d="scan'208";a="629391553"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 29 Jul 2022 07:20:03 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oHQqQ-000Bht-1z;
-        Fri, 29 Jul 2022 14:20:02 +0000
-Date:   Fri, 29 Jul 2022 22:19:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jolsa-perf:bpf/tracing_multi_4 23/35]
- kernel/bpf/trampoline.c:1074:16: error: implicit declaration of function
- 'ftrace_hash_alloc'
-Message-ID: <202207292200.qt0ol0Ov-lkp@intel.com>
+        Fri, 29 Jul 2022 10:20:27 -0400
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B2F713F0F
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 07:20:26 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id q6-20020a05683033c600b0061d2f64df5dso1883957ott.13
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 07:20:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kali.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=n48rwJ6znQ/JiCvqsQDOhikE94C4sngYxJzSk0+idkE=;
+        b=kEtZGN6Z/CorW5Lq9wq9t9IfRLJyy5KD5gGGTiO1ceZcd1+AdGD/ipjIzeeBB477aM
+         NjaME6VCtJHKdIAtJSf3AyiDtYVfHU2DMx2BK+WgYUfzmxs+P9l5aIpPj8EnP/GCW3Aj
+         63YYjuqGUmZqgyEURS2I7WmMqi6xNyoj1JDqGyqUbbpCzs2wKSkVV+WTKbYNCprRzxDE
+         kaXM6QtugzjaCnUIHwCHVfYbzEMnI4Ny5Tr15HtS6EDQTweVOT7qfNgUGZwOliuIDXfV
+         Szj2FryXQ589F5FlbwRvCpKK+4KZBNbXRUWfVMy+WsWihby1p3QZA93hXObM1VLVwTbf
+         2ZGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=n48rwJ6znQ/JiCvqsQDOhikE94C4sngYxJzSk0+idkE=;
+        b=R+YBRFX2vIHJX4uvWGfFSEwm+U4kMFoz16M9wGJQ2Qy5KTDoQPcGwOUVhsMfrqPcHK
+         ITMLVjIi4g0JIUSU+CK1Ti9UYdpvF74bXlqBiJwMeMEU8UsSvbWd0EPNyjfSGvgpyXJB
+         3OaoZnmPQr6q4umuLOYDiIdv2JGP0hvrgcktIyo0uneTWWD98jEkR7WtzSiDS1GKzHRi
+         iDGXVIW3+axVu1i4okKX8Gds0qlpMV7YPkXQoPde6bV1Jqk1lZ7hXclNA54cmC9nD31a
+         EOjt9uP4di+NkFS8nq5Xtt8UeUOKyoZaUf3JacSKvqBoBfeCIn0EDcWoF85nmoBreP40
+         ts6A==
+X-Gm-Message-State: AJIora8569JsBDMB6wlcdSaUMpeZNPahO2lWeXMYrXy+ZkFWwYCXgZvo
+        aV32n8sDtIsg+P9g9V88a7U9yw==
+X-Google-Smtp-Source: AGRyM1uRHTKEEcbNwdfwMOxF4/qNgi9j0Z4DK9KAiGrml3gkmfEBOEQ2f+23Zdw83v8JeDV2xhvALA==
+X-Received: by 2002:a05:6830:660c:b0:61c:1c4f:3f56 with SMTP id cp12-20020a056830660c00b0061c1c4f3f56mr1498744otb.207.1659104425591;
+        Fri, 29 Jul 2022 07:20:25 -0700 (PDT)
+Received: from [192.168.11.16] (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
+        by smtp.gmail.com with ESMTPSA id o32-20020a05687096a000b0010ea56a12a4sm113791oaq.10.2022.07.29.07.20.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Jul 2022 07:20:24 -0700 (PDT)
+Message-ID: <42875ff3-04a2-c465-4063-1ce3b0b35dba@kali.org>
+Date:   Fri, 29 Jul 2022 09:20:22 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH v2 00/11] soc/arm64: qcom: Add LLCC BWMON on SDM845
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Sibi Sankar <quic_sibis@quicinc.com>
+References: <20220728113748.170548-1-krzysztof.kozlowski@linaro.org>
+From:   Steev Klimaszewski <steev@kali.org>
+In-Reply-To: <20220728113748.170548-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tracing_multi_4
-head:   a63fc296e166a76b3f7250a966df4651e3a846f1
-commit: 8544251d2b26ab91f208df1c72259b909968b9a8 [23/35] bpf: Add support to attach multi trampolines
-config: x86_64-randconfig-a006 (https://download.01.org/0day-ci/archive/20220729/202207292200.qt0ol0Ov-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=8544251d2b26ab91f208df1c72259b909968b9a8
-        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-        git fetch --no-tags jolsa-perf bpf/tracing_multi_4
-        git checkout 8544251d2b26ab91f208df1c72259b909968b9a8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Hi,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On 7/28/22 6:37 AM, Krzysztof Kozlowski wrote:
+> Hi,
+>
+> Changes since v1
+> ================
+> 1. Patch #2: Drop also BWMON_GLOBAL_IRQ_STATUS (Sibi).
+> 2. Minor rebasings because of above drop.
+> 3. Patch #4: typo in subject (Sibi).
+> 4. New patch: arm64: dts: qcom: sdm845: narrow LLCC address space (Sibi).
+> 5. Add Rb tags.
+>
+> Description
+> ===========
+> BWMON is a data bandwidth monitor providing throughput/bandwidth over certain
+> interconnect links in a SoC.  It might be used to gather current bus usage and
+> vote for interconnect bandwidth, thus adjusting the bus speed based on actual
+> usage.
+>
+> Qualcomm SoCs might several BWMON instances.  Extend existing support for CPU
+> BWMON (called v4) to LLCC BWMON (called v5).
+>
+> Cc: Rajendra Nayak <quic_rjendra@quicinc.com>
+> Cc: Sibi Sankar <quic_sibis@quicinc.com>
+>
+> Best regards,
+> Krzysztof
+>
+> Krzysztof Kozlowski (11):
+>    dt-bindings: interconnect: qcom,msm8998-bwmon: add support for SDM845
+>      LLCC BWMON
+>    soc: qcom: icc-bwmon: re-use IRQ enable/clear define
+>    soc: qcom: icc-bwmon: drop unused registers
+>    soc: qcom: icc-bwmon: store reference to variant data in container
+>    soc: qcom: icc-bwmon: clear all registers on init
+>    soc: qcom: icc-bwmon: store count unit per variant
+>    soc: qcom: icc-bwmon: use regmap and prepare for BWMON v5
+>    soc: qcom: icc-bwmon: add per-variant quirks
+>    soc: qcom: icc-bwmon: add support for SDM845 LLCC BWMON
+>    arm64: dts: qcom: sdm845: narrow LLCC address space
+>    arm64: dts: qcom: sdm845: add LLCC BWMON
+>
+>   .../interconnect/qcom,msm8998-bwmon.yaml      |   1 +
+>   arch/arm64/boot/dts/qcom/sdm845.dtsi          |  39 +-
+>   drivers/soc/qcom/icc-bwmon.c                  | 460 ++++++++++++++----
+>   3 files changed, 401 insertions(+), 99 deletions(-)
+>
+Tested on the Lenovo Yoga C630 with QCOM_LLCC=m and no longer see the 
+previous error message.
 
-All errors (new ones prefixed by >>):
+Tested-by: Steev Klimaszewski <steev@kali.org>
 
-   kernel/bpf/trampoline.c: In function 'bpf_tramp_update_set':
->> kernel/bpf/trampoline.c:1074:16: error: implicit declaration of function 'ftrace_hash_alloc' [-Werror=implicit-function-declaration]
-    1074 |         hash = ftrace_hash_alloc(FTRACE_HASH_MAX_BITS);
-         |                ^~~~~~~~~~~~~~~~~
->> kernel/bpf/trampoline.c:1074:34: error: 'FTRACE_HASH_MAX_BITS' undeclared (first use in this function)
-    1074 |         hash = ftrace_hash_alloc(FTRACE_HASH_MAX_BITS);
-         |                                  ^~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/trampoline.c:1074:34: note: each undeclared identifier is reported only once for each function it appears in
->> kernel/bpf/trampoline.c:1101:33: error: implicit declaration of function 'ftrace_hash_add_entry' [-Werror=implicit-function-declaration]
-    1101 |                                 ftrace_hash_add_entry(hash, entry);
-         |                                 ^~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/trampoline.c:1115:15: error: implicit declaration of function 'set_ftrace_direct'; did you mean 'modify_ftrace_direct'? [-Werror=implicit-function-declaration]
-    1115 |         err = set_ftrace_direct(hash);
-         |               ^~~~~~~~~~~~~~~~~
-         |               modify_ftrace_direct
->> kernel/bpf/trampoline.c:1117:9: error: implicit declaration of function 'ftrace_hash_free' [-Werror=implicit-function-declaration]
-    1117 |         ftrace_hash_free(hash);
-         |         ^~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/ftrace_hash_alloc +1074 kernel/bpf/trampoline.c
-
-  1067	
-  1068	static int bpf_tramp_update_set(struct list_head *upd)
-  1069	{
-  1070		struct bpf_trampoline *tr;
-  1071		struct ftrace_hash *hash;
-  1072		int i, err;
-  1073	
-> 1074		hash = ftrace_hash_alloc(FTRACE_HASH_MAX_BITS);
-  1075		if (!hash)
-  1076			return -ENOMEM;
-  1077	
-  1078		list_for_each_entry(tr, upd, update.list) {
-  1079			struct ftrace_func_entry *entry;
-  1080			unsigned long direct;
-  1081	
-  1082			switch (tr->update.action) {
-  1083			case BPF_TRAMP_UPDATE_REG:
-  1084			case BPF_TRAMP_UPDATE_MODIFY:
-  1085				direct = (unsigned long) tr->update.im->image;
-  1086				break;
-  1087			case BPF_TRAMP_UPDATE_UNREG:
-  1088				direct = 0;
-  1089				break;
-  1090			}
-  1091	
-  1092			if (tr->multi.id_multi) {
-  1093				for (i = 0; i < tr->multi.id_multi->cnt; i++) {
-  1094					entry = kmalloc(sizeof(*entry), GFP_KERNEL);
-  1095					if (!entry) {
-  1096						err = -ENOMEM;
-  1097						goto out_free;
-  1098					}
-  1099					entry->ip = (unsigned long) tr->multi.id_multi->addr[i];
-  1100					entry->direct = direct;
-> 1101					ftrace_hash_add_entry(hash, entry);
-  1102				}
-  1103			} else {
-  1104				entry = kmalloc(sizeof(*entry), GFP_KERNEL);
-  1105				if (!entry) {
-  1106					err = -ENOMEM;
-  1107					goto out_free;
-  1108				}
-  1109				entry->ip = (unsigned long) tr->func.addr;
-  1110				entry->direct = direct;
-  1111				ftrace_hash_add_entry(hash, entry);
-  1112			}
-  1113		}
-  1114	
-  1115		err = set_ftrace_direct(hash);
-  1116	out_free:
-> 1117		ftrace_hash_free(hash);
-  1118		return err;
-  1119	}
-  1120	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
