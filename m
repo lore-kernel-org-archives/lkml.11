@@ -2,83 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50882C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:44:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA5A1C19F2A
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237439AbiG2QoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34322 "EHLO
+        id S230451AbiG2Qp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236744AbiG2QoW (ORCPT
+        with ESMTP id S238130AbiG2Qpt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 12:44:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA4A21251;
-        Fri, 29 Jul 2022 09:44:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF0BC61E42;
-        Fri, 29 Jul 2022 16:44:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B514C433C1;
-        Fri, 29 Jul 2022 16:44:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659113061;
-        bh=mJkE7iNiddS10SeRQUk9T+q+s6pC//HflqXIEWLh3p8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TnnYviSFsIuiDKSaa8PsBlobhxXtp6QbUnj5EKYi2FKQw9feY0Lgg/0vAj9SSD0+H
-         aND2+TWsdeeNI1nt6eClOMybsiKqho42uGCb8E9T9r+ZQIQzHERCyz57RD/wwpj4u/
-         y5hoglZx1HqADvvoHfhTVAX78MOjF9wk+0RENp9fnkwd8mUxKFHu2GfTOhQlhzytck
-         5UyE/KzjjiRYNR9/csqAiiI+Etj/WQBiscsLlSyVg5kWqTqzukdsk7FIaVNYYeYMsE
-         z6yz+ms4pkt1AnUsDciBdUNygcizNmHE9dPy2qgpRxevY4koPL8AEpEdqWH4IZ5FvB
-         +xm7hAFIn2SPw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 5B78240736; Fri, 29 Jul 2022 13:44:17 -0300 (-03)
-Date:   Fri, 29 Jul 2022 13:44:17 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     zhengjun.xing@linux.intel.com, peterz@infradead.org,
-        mingo@redhat.com, alexander.shishkin@intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, ak@linux.intel.com,
-        kan.liang@linux.intel.com
-Subject: Re: [PATCH v4 0/5] Add perf stat default events for hybrid machines
-Message-ID: <YuQOYdljpS5Og3Yz@kernel.org>
-References: <20220721065706.2886112-1-zhengjun.xing@linux.intel.com>
- <CAP-5=fUJ2KaxLXwUhyTtAZhwQ=M=QEv4_tP6y5CU08tf_uKAnA@mail.gmail.com>
+        Fri, 29 Jul 2022 12:45:49 -0400
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04FCD88F2D
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:45:47 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id B95CA580947;
+        Fri, 29 Jul 2022 12:36:12 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Fri, 29 Jul 2022 12:36:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659112572; x=
+        1659119772; bh=gJFOWkFTEXGrTcclT1RHO5zU3nkXgAwJMqE+MDonJno=; b=V
+        bAsxqceK+ATq420T3fRvQl+dQiZeb+8zA1MygBsQpbUXFBxn0A+NeU9dMJ/n0/kX
+        K+/3yEFcLBqT9A9eIAzZayf5cVxZifBtMEEvPvCJvjX0vebfRYs9TyXGo/kHcYYk
+        P+uJDkuAM3Kfr9bgZr9yxLC6o5Rg2DNwvuRf6MIQwxqbUEKYwNhgYBAyOLCxoLMv
+        yeshLCWu9TiKjhvMSKrbCN2eHFVpSH70pq8Pwa2SgEqWGFuIHCbx3zo0UM1akBhP
+        LxPzDQM7Y58A+LIUmzPRkJvHDxlL6ctRs0wTHPdeRjDx3B5Sicljc98qkCurLBQm
+        8Sk1gd24noqnV0XJMr+6Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659112572; x=
+        1659119772; bh=gJFOWkFTEXGrTcclT1RHO5zU3nkXgAwJMqE+MDonJno=; b=P
+        R9WKRmr821oY6bFmejRd1VOO89ExcOQ+mfpUFXgKZ1besL++H8vSnxsaWcfbX0Hb
+        yIbJVaY2ukONYQjdyPJeuR5Bl7CrtkmKVIX5dWidNyvz87TU2lfwGElDJj6FXm1a
+        9xw7/sL6z8yT8OhQLUZNViOkDufmsz13+caJC06ZZJgZSrxW8x/y2kNU2LvS8ZAy
+        6qEmwZM0vANGh8sylsq/R2KP06fY9YNX7TERgpzkaNmUw2W46Cir9UTjHAWBoNGe
+        OoSOM2RgivR/AdHz08JiJE6IPHcZcI1DMXNfQuvf9vXzBKLr6OwRAaGaauY2q4W5
+        ZXeQDSX3TlXZGhlmQbl5w==
+X-ME-Sender: <xms:fAzkYt5spZIbNYJIE2pGHDDZOUWFJkdSLPGcTvOElA1kb1xqIWm5_w>
+    <xme:fAzkYq7q3DgVL1ktXmiptLVAhwjdTczYHNWyWWt8Ya9xPacRAe5xXsf0pfJpH_Dqi
+    4RFQ2b8s8kpbV7H1kY>
+X-ME-Received: <xmr:fAzkYkeYsOTo4rNo9eeN-ArQG8gdDcfc-dDckhQSngnAOyb-ITK8dYq2AzCdTFZS00z-pikeKlCaF4Hb2WY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtfecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvfevufffkffojghfgggtoffgsehtkeertdertdejnecuhfhrohhmpefo
+    rgigihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecugg
+    ftrfgrthhtvghrnhepgfffgfetffduudelhfevieffffduleevgfegkeeutefgffejheel
+    leekjeefhfejnecuvehluhhsthgvrhfuihiivgepfeenucfrrghrrghmpehmrghilhhfrh
+    homhepmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:fAzkYmIMWECrPY_5dXcsB1-DKj628RVsGqwyfKrvCeY67bFFwkfo4A>
+    <xmx:fAzkYhIWOSOLKnBOY7tyBLYBS_WFmoqEXev55g22h4IvWFh7ucm0lw>
+    <xmx:fAzkYvwtob4lqwfdk1_wJVMZzJZcUrLUWgP6G6cK1D-FTgJHmSHH8A>
+    <xmx:fAzkYu4phFD0kGcrPDI3vGaD9tUipaiRZpc6UELK5U_xzKTRvd7LYQ>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 29 Jul 2022 12:36:11 -0400 (EDT)
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Maxime Ripard <mripard@kernel.org>
+Cc:     Maxime Ripard <maxime@cerno.tech>, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>
+Subject: [PATCH v1 13/35] drm/atomic-helper: Add a TV properties reset helper
+Date:   Fri, 29 Jul 2022 18:34:56 +0200
+Message-Id: <20220728-rpi-analog-tv-properties-v1-13-3d53ae722097@cerno.tech>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAP-5=fUJ2KaxLXwUhyTtAZhwQ=M=QEv4_tP6y5CU08tf_uKAnA@mail.gmail.com>
-X-Url:  http://acmel.wordpress.com
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.10.0-dev-49460
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3918; i=maxime@cerno.tech; h=from:subject:message-id; bh=ejcC0vOiOnRTUzVPhXVHAM3ZvKlGtRm17dFxhy68x2s=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VG68+hJxreizOs3Gw9dO1QgInHx7kNj4zLh2vdfRe/K rLMt6yhlYRDmYJAVU2S5LvjWji8syi2C58NmmDmsTCBDGLg4BWAiny0Z/nD8v7RS9syc1C9SWnLnFp hZuyw92r8i7do2146WmT9Oi/EyMiw5pNj/oPWw352+pWuObL4WdOCfllRd3vkzrjPiP3z6bVkDAA==
+X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Fri, Jul 29, 2022 at 08:03:20AM -0700, Ian Rogers escreveu:
-> On Wed, Jul 20, 2022 at 11:56 PM <zhengjun.xing@linux.intel.com> wrote:
-> >
-> > From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
-> >
-> > The patch series is to clean up the existing perf stat default and support
-> > the perf metrics Topdown for the p-core PMU in the perf stat default. The
-> > first 4 patches are the clean-up patch and fixing the "--detailed" issue.
-> > The last patch adds support for the perf metrics Topdown, the perf metrics
-> > Topdown support for e-core PMU will be implemented later separately.
-> >
-> > Kan Liang (4):
-> >   perf stat: Revert "perf stat: Add default hybrid events"
-> >   perf evsel: Add arch_evsel__hw_name()
-> >   perf evlist: Always use arch_evlist__add_default_attrs()
-> >   perf x86 evlist: Add default hybrid events for perf stat
-> >
-> > Zhengjun Xing (1):
-> >   perf stat: Add topdown metrics in the default perf stat on the hybrid
-> >     machine
-> 
-> Acked-by: Ian Rogers <irogers@google.com>
+The drm_tv_create_properties() function will create a bunch of properties,
+but it's up to each and every driver using that function to properly reset
+the state of these properties leading to inconsistent behaviours.
 
-Thanks, applied.
+Let's create a helper that will take care of it.
 
-- Arnaldo
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 
+diff --git a/drivers/gpu/drm/drm_atomic_state_helper.c b/drivers/gpu/drm/drm_atomic_state_helper.c
+index dfb57217253b..6d14cb0c64b1 100644
+--- a/drivers/gpu/drm/drm_atomic_state_helper.c
++++ b/drivers/gpu/drm/drm_atomic_state_helper.c
+@@ -481,6 +481,77 @@ void drm_atomic_helper_connector_tv_margins_reset(struct drm_connector *connecto
+ }
+ EXPORT_SYMBOL(drm_atomic_helper_connector_tv_margins_reset);
+ 
++/**
++ * drm_atomic_helper_connector_tv_reset - Resets Analog TV connector properties
++ * @connector: DRM connector
++ *
++ * Resets the analog TV properties attached to a connector
++ */
++void drm_atomic_helper_connector_tv_reset(struct drm_connector *connector)
++{
++	struct drm_device *dev = connector->dev;
++	struct drm_connector_state *state = connector->state;
++	struct drm_property *prop;
++	uint64_t val;
++
++	prop = dev->mode_config.tv_norm_property;
++	if (prop)
++		if (!drm_object_property_get_default_value(&connector->base,
++							   prop, &val))
++			state->tv.norm = val;
++
++	prop = dev->mode_config.tv_select_subconnector_property;
++	if (prop)
++		if (!drm_object_property_get_default_value(&connector->base,
++							   prop, &val))
++			state->tv.select_subconnector = val;
++
++	prop = dev->mode_config.tv_subconnector_property;
++	if (prop)
++		if (!drm_object_property_get_default_value(&connector->base,
++							   prop, &val))
++			state->tv.subconnector = val;
++
++	prop = dev->mode_config.tv_brightness_property;
++	if (prop)
++		if (!drm_object_property_get_default_value(&connector->base,
++							   prop, &val))
++			state->tv.brightness = val;
++
++	prop = dev->mode_config.tv_contrast_property;
++	if (prop)
++		if (!drm_object_property_get_default_value(&connector->base,
++							   prop, &val))
++			state->tv.contrast = val;
++
++	prop = dev->mode_config.tv_flicker_reduction_property;
++	if (prop)
++		if (!drm_object_property_get_default_value(&connector->base,
++							   prop, &val))
++			state->tv.flicker_reduction = val;
++
++	prop = dev->mode_config.tv_overscan_property;
++	if (prop)
++		if (!drm_object_property_get_default_value(&connector->base,
++							   prop, &val))
++			state->tv.overscan = val;
++
++	prop = dev->mode_config.tv_saturation_property;
++	if (prop)
++		if (!drm_object_property_get_default_value(&connector->base,
++							   prop, &val))
++			state->tv.saturation = val;
++
++	prop = dev->mode_config.tv_hue_property;
++	if (prop)
++		if (!drm_object_property_get_default_value(&connector->base,
++							   prop, &val))
++			state->tv.hue = val;
++
++	drm_atomic_helper_connector_tv_margins_reset(connector);
++}
++EXPORT_SYMBOL(drm_atomic_helper_connector_tv_reset);
++
+ /**
+  * __drm_atomic_helper_connector_duplicate_state - copy atomic connector state
+  * @connector: connector object
+diff --git a/include/drm/drm_atomic_state_helper.h b/include/drm/drm_atomic_state_helper.h
+index 192766656b88..c8fbce795ee7 100644
+--- a/include/drm/drm_atomic_state_helper.h
++++ b/include/drm/drm_atomic_state_helper.h
+@@ -70,6 +70,7 @@ void __drm_atomic_helper_connector_state_reset(struct drm_connector_state *conn_
+ void __drm_atomic_helper_connector_reset(struct drm_connector *connector,
+ 					 struct drm_connector_state *conn_state);
+ void drm_atomic_helper_connector_reset(struct drm_connector *connector);
++void drm_atomic_helper_connector_tv_reset(struct drm_connector *connector);
+ void drm_atomic_helper_connector_tv_margins_reset(struct drm_connector *connector);
+ void
+ __drm_atomic_helper_connector_duplicate_state(struct drm_connector *connector,
+
+-- 
+b4 0.10.0-dev-49460
