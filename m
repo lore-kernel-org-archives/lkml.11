@@ -2,144 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7DB7C19F29
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 11:25:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EC3DC19F2D
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 11:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236080AbiG2LZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 07:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42754 "EHLO
+        id S236167AbiG2LZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 07:25:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235979AbiG2LY4 (ORCPT
+        with ESMTP id S236086AbiG2LZM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 07:24:56 -0400
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCAF33DF3C;
-        Fri, 29 Jul 2022 04:24:52 -0700 (PDT)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 26TB5WpT050856;
-        Fri, 29 Jul 2022 19:05:32 +0800 (GMT-8)
-        (envelope-from neal_liu@aspeedtech.com)
-Received: from localhost.localdomain (192.168.10.10) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 29 Jul
- 2022 19:23:16 +0800
-From:   Neal Liu <neal_liu@aspeedtech.com>
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        "Andrew Jeffery" <andrew@aj.id.au>,
-        Dhananjay Phadke <dhphadke@microsoft.com>,
-        "Johnny Huang" <johnny_huang@aspeedtech.com>
-CC:     <linux-aspeed@lists.ozlabs.org>, <linux-crypto@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <BMC-SW@aspeedtech.com>
-Subject: [PATCH v9 0/5] Add Aspeed crypto driver for hardware acceleration
-Date:   Fri, 29 Jul 2022 19:23:08 +0800
-Message-ID: <20220729112313.86169-1-neal_liu@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 29 Jul 2022 07:25:12 -0400
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A20ED77
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 04:25:10 -0700 (PDT)
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-31f661b3f89so47616367b3.11
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 04:25:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/+Xle1HhYZA4u0BpE2NkhWcW76kE9EOZDKtebTajiOs=;
+        b=YqDKC1LJ8obrUBAHVtCKP1Ti7IQdF4dDyDOze3YncGCUVtr/bhbRmvw1cFb9pV2fb0
+         W/x9ahW7e9DESOkTZtefKbXMf5Mz9nQwFLCJwMYBz+mpKcb7sASZrgCK2pcY8oT7DxMU
+         j37ZZSrS/4u3LDCgyZAQZXVFCazQm/pzND+FSfq11oKnw0lrb4GQV5N5jvgtWHK+SpYN
+         OPoGRXd+YyqputV1G3mwVYzkZHbrWrv1BPOSUOxqjNj3+AGWbYXbktoKDbb22jv9cTRJ
+         ehMhxiLsIPep01YuP7XecIFupjEYKx0NQLbBh01eNTC8w94JNyS3Iw4Ey+vgyPAMuCwk
+         mimA==
+X-Gm-Message-State: ACgBeo20QRXn+1H8Ig/Oiu4oeQvOLXkt47L9h6wvN7JPPJbCSkWtL31+
+        gcP0od+AkFLJsZI6PFA9tmpPlwIvVTcfiFBvfcg=
+X-Google-Smtp-Source: AA6agR4vyF0x47Jgt80gnEl94cVYa+Ot/cwsvfn8nZQ1pVGqtBnuuInF9zUL3vVRiAm9LfYeN3e4a0I/onBCnkpLX2A=
+X-Received: by 2002:a0d:e682:0:b0:322:b5e1:5ed4 with SMTP id
+ p124-20020a0de682000000b00322b5e15ed4mr2611471ywe.220.1659093909158; Fri, 29
+ Jul 2022 04:25:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.10.10]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 26TB5WpT050856
+References: <20220511160319.1045812-1-mailhol.vincent@wanadoo.fr> <20220723151521.51451-1-mailhol.vincent@wanadoo.fr>
+In-Reply-To: <20220723151521.51451-1-mailhol.vincent@wanadoo.fr>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Fri, 29 Jul 2022 20:24:58 +0900
+Message-ID: <CAMZ6Rq+KohWoRurA3cKog18D=NuXNj_k4+ZmPRiakZd7ZPS1OQ@mail.gmail.com>
+Subject: Re: [RESEND PATCH v4 0/2] x86/asm/bitops: optimize ff{s,z} functions
+ for constant expressions
+To:     Nick Desaulniers <ndesaulniers@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, David Howells <dhowells@redhat.com>,
+        Jan Beulich <JBeulich@suse.com>,
+        Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
+        Joe Perches <joe@perches.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Aspeed Hash and Crypto Engine (HACE) is designed to accelerate the
-throughput of hash data digest, encryption and decryption.
+On Sun 24 Jul. 2022 at 00:15, Vincent Mailhol
+<mailhol.vincent@wanadoo.fr> wrote:
+> The compilers provide some builtin expression equivalent to the ffs(),
+> __ffs() and ffz() function of the kernel. The kernel uses optimized
+> assembly which produces better code than the builtin
+> functions. However, such assembly code can not be optimized when used
+> on constant expression.
+>
+> This series relies on __builtin_constant_p to select the optimal solution:
+>
+>   * use kernel assembly for non constant expressions
+>
+>   * use compiler's __builtin function for constant expressions.
+>
+>
+> ** Statistics **
+>
+> Patch 1/2 optimizes 26.7% of ffs() calls and patch 2/2 optimizes 27.9%
+> of __ffs() and ffz() calls (details of the calculation in each patch).
+>
+>
+> ** Changelog **
+>
+> v3 -> v4:
+>
+>   * (no changes on code, only commit comment was modified)
+>
+>   * Remove note and link to Nick's message in patch 1/2, c.f.:
+>   https://lore.kernel.org/all/CAKwvOdnnDaiJcV1gr9vV+ya-jWxx7+2KJNTDThyFctVDOgt9zQ@mail.gmail.com/
+>
+>   * Add Reviewed-by: Nick Desaulniers <ndesaulniers@google.com> in tag in patch 2/2.
+>
+>
+> v2 -> v3:
+>
+>   * Redacted out the instructions after ret and before next function
+>     in the assembly output.
+>
+>   * Added a note and a link to Nick's message on the constant
+>     propagation missed-optimization in clang:
+>     https://lore.kernel.org/all/CAKwvOdnH_gYv4qRN9pKY7jNTQK95xNeH1w1KZJJmvCkh8xJLBg@mail.gmail.com/
+>
+>   * Fix copy/paste typo in statistics of patch 1/2. Number of
+>     occurences before patches are 1081 and not 3607 (percentage
+>     reduction of 26.7% remains correct)
+>
+>   * Rename the functions as follow:
+>     - __varible_ffs() -> variable___ffs()
+>     - __variable_ffz() -> variable_ffz()
+>
+>   * Add Reviewed-by: Nick Desaulniers <ndesaulniers@google.com> in tag in patch 1/2.
+>
+> Vincent Mailhol (2):
+>   x86/asm/bitops: ffs: use __builtin_ffs to evaluate constant
+>     expressions
+>   x86/asm/bitops: __ffs,ffz: use __builtin_ctzl to evaluate constant
+>     expressions
+>
+>  arch/x86/include/asm/bitops.h | 64 +++++++++++++++++++++--------------
+>  1 file changed, 38 insertions(+), 26 deletions(-)
 
-These patches aim to add Aspeed hash & crypto driver support.
-The hash & crypto driver also pass the run-time self tests that
-take place at algorithm registration.
+Hi Thomas, Ingo, Borislav, Dave and Peter,
 
-The patch series are tested on both AST2500 & AST2600 evaluation boards.
+This patch series [1] has been waiting for more than two months
+already. So far, I have not heard back from any of the x86 mainteners.
+Do you see anything wrong with this series? If not, any chances to
+have someone of you to pick it up?
 
-Tested-by below configs:
-- CONFIG_CRYPTO_MANAGER_DISABLE_TESTS is not set
-- CONFIG_CRYPTO_MANAGER_EXTRA_TESTS=y
-- CONFIG_DMA_API_DEBUG=y
-- CONFIG_DMA_API_DEBUG_SG=y
-- CONFIG_CPU_BIG_ENDIAN=y
+[1] https://lore.kernel.org/all/20220625072645.251828-1-mailhol.vincent@wanadoo.fr/#t
 
-Change since v8:
-- Remove __weak functions for register/unregister crypto algos.
-- Add missing functions of unregister crypto algos.
-- Use single debug config to control debug messages.
+Thank you,
 
-Change since v7:
-- Define debug Kconfigs.
-- Simplify assign iv/ivsize.
-- Simplify cra_init() for hmac related init.
 
-Change since v6:
-- Refine debug print.
-- Change aspeed_sg_list struct memeber's type to __le32.
-
-Change since v5:
-- Re-define HACE clock define to fix breaking ABI.
-
-Change since v4:
-- Add AST2500 clock definition & dts node.
-- Add software fallback for handling corner cases.
-- Fix copy wrong key length.
-
-Change since v3:
-- Use dmam_alloc_coherent() instead to manage dma_alloc_coherent().
-- Add more error handler of dma_prepare() & crypto_engine_start().
-
-Change since v2:
-- Fix endianness issue. Tested on both little endian & big endian
-  system.
-- Use common crypto hardware engine for enqueue & dequeue requests.
-- Use pre-defined IVs for SHA-family.
-- Revise error handler flow.
-- Fix sorts of coding style problems.
-
-Change since v1:
-- Add more error handlers, including DMA memory allocate/free, DMA
-  map/unmap, clock enable/disable, etc.
-- Fix check dma_map error for config DMA_API_DEBUG.
-- Fix dt-binding doc & dts node naming.
-
-Neal Liu (5):
-  crypto: aspeed: Add HACE hash driver
-  dt-bindings: clock: Add AST2500/AST2600 HACE reset definition
-  ARM: dts: aspeed: Add HACE device controller node
-  dt-bindings: crypto: add documentation for aspeed hace
-  crypto: aspeed: add HACE crypto driver
-
- .../bindings/crypto/aspeed,ast2500-hace.yaml  |   53 +
- MAINTAINERS                                   |    7 +
- arch/arm/boot/dts/aspeed-g5.dtsi              |    8 +
- arch/arm/boot/dts/aspeed-g6.dtsi              |    8 +
- drivers/crypto/Kconfig                        |    1 +
- drivers/crypto/Makefile                       |    1 +
- drivers/crypto/aspeed/Kconfig                 |   49 +
- drivers/crypto/aspeed/Makefile                |    9 +
- drivers/crypto/aspeed/aspeed-hace-crypto.c    | 1135 ++++++++++++++
- drivers/crypto/aspeed/aspeed-hace-hash.c      | 1389 +++++++++++++++++
- drivers/crypto/aspeed/aspeed-hace.c           |  288 ++++
- drivers/crypto/aspeed/aspeed-hace.h           |  298 ++++
- include/dt-bindings/clock/aspeed-clock.h      |    1 +
- include/dt-bindings/clock/ast2600-clock.h     |    1 +
- 14 files changed, 3248 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/crypto/aspeed,ast2500-hace.yaml
- create mode 100644 drivers/crypto/aspeed/Kconfig
- create mode 100644 drivers/crypto/aspeed/Makefile
- create mode 100644 drivers/crypto/aspeed/aspeed-hace-crypto.c
- create mode 100644 drivers/crypto/aspeed/aspeed-hace-hash.c
- create mode 100644 drivers/crypto/aspeed/aspeed-hace.c
- create mode 100644 drivers/crypto/aspeed/aspeed-hace.h
-
--- 
-2.25.1
-
+Yours sincerely,
+Vincent Mailhol
