@@ -2,251 +2,377 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB8FC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4797C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:49:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233599AbiG2Crk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 22:47:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33488 "EHLO
+        id S233745AbiG2CtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 22:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiG2Crh (ORCPT
+        with ESMTP id S229559AbiG2CtM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 22:47:37 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2043.outbound.protection.outlook.com [40.107.96.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3DE8683E5
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 19:47:36 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IYB2c3kEayXKlRozqmCpTi4rKmqWNTBxr0nuh98ykTFM/lvqSx813bvYFdaFOV9Joja98ct7aGMZASES1Y2bfdOCWmlQ+e0aWbuWhgwmETgYvPsa1eAEcK7UDG3ge31hKqVsY4av2FXl1CRFJab89c9iO/FmRy1rW6esRq3JhiZFCHHEDMwDR3WKVmiU7UTyCGnxc7mJWwsXkPJeHx3J2gkmZ4Pvarhjvxiv3KeI7DI7hJEwmWv3FlLRxsPayIDxbST0zBIpbcVl4Xqfid5de6XQxQfTef0rEqDtIEXDZQLzyCjKgfUm/CSjqPB7Izpaif9jW4atylYRE5s6Bmdtcw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8W8hngUielgbbAbcYP2FDYL/b4/12jUv3FEeGe3dUDs=;
- b=edIEbzlbnZvBHyIFpcBkMccQShb5k18a2QbU1VowWl9sEpw4R59btELIALg2o0OAX25c5yqvZlNkDBW8v74uumaGv1zSYSVAUQcBAb9VN49rj+Y+ziP9vSXJw1U7EAriBRcO0/WoZQ598hZBs4hHtOHiqbRJh8iPBoI7VnrnarnYCahZ4ZYXw4gC151JZujSKvwxFzGZJJsUPwhbbTk1CaGoqO0s/lyoiUzWuxwLGJ5leRO2sOMgLEHYuM+uAAGy0Qqfwn5WTXflu503FGyt+Yue4/um4+Y8urOzD33TTVBl8CZ9cgugI1eFJAKNKrNmeGB01KcRatxDfgPYmIbxoQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8W8hngUielgbbAbcYP2FDYL/b4/12jUv3FEeGe3dUDs=;
- b=VtX37LSCksofrqZmSyJJbazQPc4GRamYmJEkt8Q2OJgUsZQ+3GMAcXvmMc2fA+yqLcAg5pl3CqkDDYcxuX5k/dxjG1iy8Uj7tipG2wUve7UoYJzc90oXgEcA7GX8bqc36pF2VFiv0IWztINvcv9bcTDz8BpI8s20xCoGdZUyoF5zVL22Uyk0Yxr/E2nHcZKlHUb5PAAXxKKBuDLxmttznxqamT4ODUlrwsXNet3i/8TkM1G92s/7XR/A/NNrhmzwSkqAhLQgl8n+OP0WZ1JyVUR0DleZ9w8HQEI5yyfzGG4t4jQLxF74FTUjD57sYFY5vMsMT64aAOzn2i1NzniKVA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
- by BN8PR12MB3570.namprd12.prod.outlook.com (2603:10b6:408:4a::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.11; Fri, 29 Jul
- 2022 02:47:34 +0000
-Received: from BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::eca6:a4a7:e2b2:27e7]) by BYAPR12MB3176.namprd12.prod.outlook.com
- ([fe80::eca6:a4a7:e2b2:27e7%5]) with mapi id 15.20.5458.024; Fri, 29 Jul 2022
- 02:47:34 +0000
-From:   Alistair Popple <apopple@nvidia.com>
-To:     akpm@linux-foundation.org
-Cc:     jgg@nvidia.com, minchan@kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, jhubbard@nvidia.com,
-        pasha.tatashin@soleen.com, Alistair Popple <apopple@nvidia.com>
-Subject: [PATCH] mm/gup.c: Simplify and fix check_and_migrate_movable_pages() return codes
-Date:   Fri, 29 Jul 2022 12:46:45 +1000
-Message-Id: <20220729024645.764366-1-apopple@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SJ0PR13CA0031.namprd13.prod.outlook.com
- (2603:10b6:a03:2c2::6) To BYAPR12MB3176.namprd12.prod.outlook.com
- (2603:10b6:a03:134::26)
+        Thu, 28 Jul 2022 22:49:12 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C581C61723
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 19:49:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659062951; x=1690598951;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=olo0bzw+vXINDWd3BWcSHONSjh9gy21tiHNZrzdJyYA=;
+  b=lZVevqa2ZkV3PutCqc5cKSGhZmTAKi/wwku4ZSwiW/la06Jv7CXjpEQi
+   ITxKJ/OsYH8eGZWH9g/UcOaPODVnkK+696512ZKu2NaStowUM/DJCxHWN
+   UWusyZgt9QAYKsZ8I2sGd7O3zu5+AoMB7BgY2bHjFndgrP/E0AvLgq2cg
+   wwLObY3kD5RCXWe+ECN7QlN4Y2ev+E11bwt4ew/BGbRCH+6hfPPQLN14y
+   +Hk3X9bsuVjDmRB78g1dqHc58qZiztV6DUag79IPPgu4b2h6SktMVTOVQ
+   /jqYavxLkgWNWYeQOKmxA9tw1HWwSk8+QaAIhVNZX/y7v8PlniWYIO3Gv
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="289444876"
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="289444876"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 19:49:11 -0700
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="633974963"
+Received: from xianrong-mobl.ccr.corp.intel.com (HELO [10.255.29.50]) ([10.255.29.50])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 19:49:06 -0700
+Message-ID: <78376ca4-9b55-7609-abf1-27a1a376a8e0@linux.intel.com>
+Date:   Fri, 29 Jul 2022 10:49:04 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4b503b48-5e5b-4f3c-6fe5-08da710cb08d
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3570:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bKQ/BCZD4m+u6s1iKre4NuGsc6kgRodELIdGgGw58DHoxNIkuFM3c94R7yeqXS4W/IxtXN/xr9jxogr4PFUMb8zXktux2hhT24sacW7HaQP7nTrqdSil7cJJ8//iwBH33hTyV1ImIPCzFD+CK5nONvVECvHPplskk/BN2fd1UJeTGoXPveQx+N5PhBB3GiXKAiIKfejEAWPZRBGbuOpfNL0OAqSeEN2BX7c161VA8xh3f35SLWRyFkqucDcW8WyJRpE428xSjiHsLDVaMK6/KVM06sQrxmkL3Lq2MUcGKxIZiih4FzxOy8mqxnscNER/JxZjMZLy8rjULzoHDurwXcp0kHPyeIl/50O3YhTRTO7zQ4hj8f7R3HMnlJjxZrxJu5XxLrQ1RPj5yj2Eb/lJBv8S0n7JTgk0aP79DPiB/9hR/cdRvCf5YqR9YzNKxOvFbohNEchr7q2LbQVRhfZ4HiRpXRtBa80KR60bU1d6K3jXQLgn0toqCuP93kf/3GWYjRwQH/MOzOsA9Ww7QS8+NYEJty58AwH/In1PezZiQdtJpgVXs+VkrQfhpcRwqH3SClBPpWfnaQ5X+pHq2X2VtqOAYcHDMVKZCDwxlVEo74l6P0J+tNIw/fJJvo8H4g1wnn1mA5Wl3iyClu4dZpfMzoCNnCnWwBqt2Bnme+wxob5+r5ju3xLKAZeLW6XHXow21u/lTzmXBOZ36lBs7x6T7F/dHnm8Cyh3rLQv/XwQF+zLSgpbv3mNtRg+72YXqTKM
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(366004)(136003)(376002)(39860400002)(346002)(86362001)(38100700002)(83380400001)(66556008)(66946007)(8676002)(6916009)(4326008)(316002)(66476007)(2906002)(6506007)(26005)(8936002)(6512007)(6666004)(5660300002)(1076003)(2616005)(107886003)(6486002)(186003)(478600001)(41300700001)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?InUoeboYsHJUUqZhvBjZzpSRGte1VOME28Rty5XF4tc5RRnLUpgP8gflHATR?=
- =?us-ascii?Q?Yp72Jit1+x5NLR81OnZG2SltYd/zVgvnD2fKLZGyuya0oS7jQac2mpg5PFEy?=
- =?us-ascii?Q?/AwvIJlvVeH0Pn6wNri0gZixOrf53toTtopVoOfepTyp8MoilqQMunffEVNr?=
- =?us-ascii?Q?3K/2cfQRyMQngQBr8gVhe57D/NFqqlqkdkLUpQXnW7uSmt/xghjOH/Xz3NQ1?=
- =?us-ascii?Q?JucLjR5c1cjydtPdrZ5lMpt4ku0+TwZL2t7AMLD/dvE9cQuAQuR80SnFrTYn?=
- =?us-ascii?Q?6bNSIOIh7YKdZfQqayu5soHjq2QuBaZa35lJKy37yMBOpWkdDBPyfRYQnfmo?=
- =?us-ascii?Q?Fs1wC6yz1f2w8pn734TAKC0f2A0+6cHuH/HvfnfngOzDkKi4GJsT41yyNY3C?=
- =?us-ascii?Q?FcMThO7RJRGs4LPsApkhEg4M3JdKz8FjrOuQ1TmuKjKdry19Pseloe/RkMlU?=
- =?us-ascii?Q?8CIxFlEZ04nZ7naRoI34fhkm9Yh4QTnixyfdjAguIRq8GqjeslZi2PFVr4vi?=
- =?us-ascii?Q?jZGfgS7pC+37Ck6hkHRT7BD6Xtt2fCer9s6pwB3ev9xkChtYsmnpn4Q1MXsZ?=
- =?us-ascii?Q?geAbE2u9fu1CoKjC60w4eiaR4oiAEC6uyx5e8zAETOR0w6h8IqNwcEc/Ccfs?=
- =?us-ascii?Q?RXhciL8okAv0E4qgMCW727N98x0IaUAtODOTfSjAf3+cN7gJXxAFBh63aZRB?=
- =?us-ascii?Q?oCamjYIFebw0DNPWLN0xDLsNYfhKW45pZiBqmrLgGQGl9aUNTQnAF7cR20bB?=
- =?us-ascii?Q?4p/JDQjBSgzPuIwzCtQYUSO0ExCJF3ZtbIHhQMdXkfGW3lalKHPCad8sG6wd?=
- =?us-ascii?Q?lLLhhVu0DtLUssc/auGXLpiDHyzyruRORNvBXC+C9HJ0hhzM0KE2yayAq6wb?=
- =?us-ascii?Q?CKAgooUv05o2Rj+PuSD2V7m7GAEkV+wyJPQ63fB5WWB5ZEKCTF8zhhvReEpy?=
- =?us-ascii?Q?+uriMVYZ5eVVbw+ZOifHK2jRPfJcaGvMBrg/fbko6ZMTxo5K0ppIWxfm+GNw?=
- =?us-ascii?Q?Qq78bXoohlTanv+Ruy+pSDfhkygQLHj92Fxg5Q64AQK7H5HRfgthNPxvYlv9?=
- =?us-ascii?Q?qmloK9IbiizRVUYSckFCiTkj0tayRaCPFk9Mjy7CR4zLsA9Am2ddtTyR9U0O?=
- =?us-ascii?Q?vs2VBi2fOMkSb6+mHLxRXDw8Ac9SP8lOPjRwzGAB0V7gXNfT3OFuPANJj+V8?=
- =?us-ascii?Q?HIXuyOh3TAVlXagfKima+cATUl1vonH49X8PicDJAaSR2dUub226iFjC6XAu?=
- =?us-ascii?Q?ooyJgj1a4vHKKEtrzVHD6Nj7w1AwBdzDqEIQFmzfVZrEgNGffMnT/gNUv42t?=
- =?us-ascii?Q?aKPKktfzZvTsGYvxYZ5OGvhWd7WpKgnuHmHcnG/bYYRkYqdHsqLHE8/M5FsU?=
- =?us-ascii?Q?vPSfH5CdYLI/NxHVFVRTNqspwu4enyfBGhJXUHMAa5nfLIGyw/w3g3pHbQcN?=
- =?us-ascii?Q?4RfxP+vy8Zgtqxgf1titP6oglP4dL8INHi2pCkJ4wzsPw/hy4j4uKjhQFagK?=
- =?us-ascii?Q?rVNGFQUEZUkC+xmem5yzj3/9fxXgz2BbEcan6ME0yCncn4neeqerZFMdKhdy?=
- =?us-ascii?Q?ouUby+Z5rHl7iU7x4K3HhXbQlhYJG+2VmDnnXOHX?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b503b48-5e5b-4f3c-6fe5-08da710cb08d
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2022 02:47:34.3670
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: X0UZHKG96GZLaX2n7nyQggNOiYIFza6OBiXDVKUiXgwF0EkLZUZJXgLoEaVnbFSHVqT4Okw4+9QFMDeJN5wwyQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3570
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        "Zhu, Tony" <tony.zhu@intel.com>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
+ interface
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>
+References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+ <20220705050710.2887204-5-baolu.lu@linux.intel.com>
+ <20220723141118.GD79279@nvidia.com>
+ <686b137f-232a-2a78-beb0-e4373bd20959@linux.intel.com>
+ <20220725144005.GE3747@nvidia.com>
+ <6da27a6b-b580-4ba4-24c8-ebdfb2d9345d@linux.intel.com>
+ <20220726135722.GC4438@nvidia.com>
+ <BN9PR11MB5276974ABA5981A7361953708C979@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220727115339.GM4438@nvidia.com>
+ <BN9PR11MB52766C3D37FA985DEBDC30C78C969@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <YuJ6MXoNTj0RKCb8@nvidia.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <YuJ6MXoNTj0RKCb8@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When pinning pages with FOLL_LONGTERM check_and_migrate_movable_pages()
-is called to migrate pages out of zones which should not contain any
-longterm pinned pages.
+On 2022/7/28 19:59, Jason Gunthorpe wrote:
+> On Thu, Jul 28, 2022 at 03:06:47AM +0000, Tian, Kevin wrote:
+> 
+>>> Then we don't need this weirdo check in the core iommu code at all.
+>>
+>> and then we could also move group->pasid_array to device->pasid_array
+>> with this approach. Though the end result doesn't change i.e. still only
+>> the singleton group can enable pasid the iommu core can just stick to
+>> the device manner now.
+> 
+> I don't see why, the group is still logically the unit of attachment
+> in the iommu area, and if we have a multi-device group it just means
+> we iterate over all the devices in the group when doing pasid set, no
+> different than a RID.
 
-When migration succeeds all pages will have been unpinned so pinning
-needs to be retried. This is indicated by returning zero. When all pages
-are in the correct zone the number of pinned pages is returned.
+Okay. Based on the discussions in this thread, this patch will evolve to
+look like below. Any comments or concerns?
 
-However migration can also fail, in which case pages are unpinned and
--ENOMEM is returned. However if the failure was due to not being unable
-to isolate a page zero is returned. This leads to indefinite looping in
-__gup_longterm_locked().
+[PATCH 04/12] iommu: Add attach/detach_dev_pasid iommu interface
 
-Fix this by simplifying the return codes such that zero indicates all
-pages were successfully pinned in the correct zone while errors indicate
-either pages were migrated and pinning should be retried or that
-migration has failed and therefore the pinning operation should fail.
+Attaching an IOMMU domain to a PASID of a device is a generic operation
+for modern IOMMU drivers which support PASID-granular DMA address
+translation. Currently visible usage scenarios include (but not limited):
 
-Signed-off-by: Alistair Popple <apopple@nvidia.com>
+  - SVA (Shared Virtual Address)
+  - kernel DMA with PASID
+  - hardware-assist mediated device
+
+This adds set_dev_pasid domain ops for this purpose and also adds some
+interfaces for device drivers to attach/detach/retrieve a domain for a
+PASID of a device.
+
+Multiple devices in an iommu group cannot be isolated from each other,
+then it's also difficult to ensure that their pasid address spaces are
+isolated without any guarantee of hardware mechanism. To make things
+simple, this starts the PASID attach/detach support from the devices
+belonging to singleton groups.
+
+Some configurations of the PCI fabric will route device originated TLP
+packets based on the memory addresses. These configurations are
+incompatible with PASID as the PASID packets form a distinct address
+space. For instance, any configuration where switches are present
+without ACS enabled is incompatible. In the future, we can further
+discuss the possibility of moving this restriction into PCI subsystem
+and making it a prerequisite of pci_enable_pasid().
+
+[--tags removed --]
+
 ---
- mm/gup.c | 46 +++++++++++++++++++++++-----------------------
- 1 file changed, 23 insertions(+), 23 deletions(-)
+  include/linux/iommu.h |  26 ++++++++
+  drivers/iommu/iommu.c | 146 ++++++++++++++++++++++++++++++++++++++++++
+  2 files changed, 172 insertions(+)
 
-diff --git a/mm/gup.c b/mm/gup.c
-index 364b274a10c2..8b8ce8b7719c 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -1901,16 +1901,16 @@ struct page *get_dump_page(unsigned long addr)
- 
- #ifdef CONFIG_MIGRATION
- /*
-- * Check whether all pages are pinnable, if so return number of pages.  If some
-- * pages are not pinnable, migrate them, and unpin all pages. Return zero if
-- * pages were migrated, or if some pages were not successfully isolated.
-- * Return negative error if migration fails.
-+ * Check whether all pages are pinnable. If some pages are not pinnable migrate
-+ * them and unpin all the pages. Returns -EAGAIN if pages were unpinned or zero
-+ * if all pages are pinnable and in the right zone. Other errors indicate
-+ * migration failure.
-  */
- static long check_and_migrate_movable_pages(unsigned long nr_pages,
- 					    struct page **pages,
- 					    unsigned int gup_flags)
- {
--	unsigned long isolation_error_count = 0, i;
-+	unsigned long i;
- 	struct folio *prev_folio = NULL;
- 	LIST_HEAD(movable_page_list);
- 	bool drain_allow = true, coherent_pages = false;
-@@ -1946,10 +1946,10 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
- 				unpin_user_page(&folio->page);
- 			}
- 
--			ret = migrate_device_coherent_page(&folio->page);
--			if (ret)
--				goto unpin_pages;
--
-+			if (migrate_device_coherent_page(&folio->page)) {
-+				ret = -EBUSY;
-+				break;
-+			}
- 			continue;
- 		}
- 
-@@ -1961,7 +1961,7 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
- 		if (folio_test_hugetlb(folio)) {
- 			if (isolate_hugetlb(&folio->page,
- 						&movable_page_list))
--				isolation_error_count++;
-+				ret = -EBUSY;
- 			continue;
- 		}
- 
-@@ -1971,7 +1971,7 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
- 		}
- 
- 		if (folio_isolate_lru(folio)) {
--			isolation_error_count++;
-+			ret = -EBUSY;
- 			continue;
- 		}
- 		list_add_tail(&folio->lru, &movable_page_list);
-@@ -1980,19 +1980,18 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
- 				    folio_nr_pages(folio));
- 	}
- 
--	if (!list_empty(&movable_page_list) || isolation_error_count
--		|| coherent_pages)
--		goto unpin_pages;
--
- 	/*
- 	 * If list is empty, and no isolation errors, means that all pages are
--	 * in the correct zone.
-+	 * in the correct zone. If there were device coherent pages some pages
-+	 * have been unpinned.
- 	 */
--	return nr_pages;
-+	if (list_empty(&movable_page_list) && !ret && !coherent_pages)
-+		return 0;
- 
--unpin_pages:
- 	/*
--	 * pages[i] might be NULL if any device coherent pages were found.
-+	 * Unpin all pages. If device coherent pages were found
-+	 * migrate_deivce_coherent_page() will have dropped the pin and set
-+	 * pages[i] == NULL.
- 	 */
- 	for (i = 0; i < nr_pages; i++) {
- 		if (!pages[i])
-@@ -2019,14 +2018,15 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
- 
- 	if (ret && !list_empty(&movable_page_list))
- 		putback_movable_pages(&movable_page_list);
--	return ret;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 2f237c3cd680..f1e8953b1e2e 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -266,6 +266,7 @@ struct iommu_ops {
+   * struct iommu_domain_ops - domain specific operations
+   * @attach_dev: attach an iommu domain to a device
+   * @detach_dev: detach an iommu domain from a device
++ * @set_dev_pasid: set an iommu domain to a pasid of device
+   * @map: map a physically contiguous memory region to an iommu domain
+   * @map_pages: map a physically contiguous set of pages of the same 
+size to
+   *             an iommu domain.
+@@ -286,6 +287,8 @@ struct iommu_ops {
+  struct iommu_domain_ops {
+  	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
+  	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
++	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
++			     ioasid_t pasid);
+
+  	int (*map)(struct iommu_domain *domain, unsigned long iova,
+  		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
+@@ -680,6 +683,12 @@ int iommu_group_claim_dma_owner(struct iommu_group 
+*group, void *owner);
+  void iommu_group_release_dma_owner(struct iommu_group *group);
+  bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+
++int iommu_attach_device_pasid(struct iommu_domain *domain,
++			      struct device *dev, ioasid_t pasid);
++void iommu_detach_device_pasid(struct iommu_domain *domain,
++			       struct device *dev, ioasid_t pasid);
++struct iommu_domain *
++iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid);
+  #else /* CONFIG_IOMMU_API */
+
+  struct iommu_ops {};
+@@ -1047,6 +1056,23 @@ static inline bool 
+iommu_group_dma_owner_claimed(struct iommu_group *group)
+  {
+  	return false;
+  }
 +
-+	return ret ? ret : -EAGAIN;
- }
- #else
- static long check_and_migrate_movable_pages(unsigned long nr_pages,
- 					    struct page **pages,
- 					    unsigned int gup_flags)
- {
--	return nr_pages;
-+	return 0;
- }
- #endif /* CONFIG_MIGRATION */
- 
-@@ -2054,10 +2054,10 @@ static long __gup_longterm_locked(struct mm_struct *mm,
- 		if (rc <= 0)
- 			break;
- 		rc = check_and_migrate_movable_pages(rc, pages, gup_flags);
--	} while (!rc);
-+	} while (rc == -EAGAIN);
- 	memalloc_pin_restore(flags);
- 
--	return rc;
-+	return rc ? rc : nr_pages;
- }
- 
- static bool is_valid_gup_flags(unsigned int gup_flags)
--- 
-2.35.1
++static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
++					    struct device *dev, ioasid_t pasid)
++{
++	return -ENODEV;
++}
++
++static inline void iommu_detach_device_pasid(struct iommu_domain *domain,
++					     struct device *dev, ioasid_t pasid)
++{
++}
++
++static inline struct iommu_domain *
++iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
++{
++	return NULL;
++}
+  #endif /* CONFIG_IOMMU_API */
 
+  /**
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 63fc4317cb47..46b8bffddc4d 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -39,6 +39,7 @@ struct iommu_group {
+  	struct kobject kobj;
+  	struct kobject *devices_kobj;
+  	struct list_head devices;
++	struct xarray pasid_array;
+  	struct mutex mutex;
+  	void *iommu_data;
+  	void (*iommu_data_release)(void *iommu_data);
+@@ -663,6 +664,7 @@ struct iommu_group *iommu_group_alloc(void)
+  	mutex_init(&group->mutex);
+  	INIT_LIST_HEAD(&group->devices);
+  	INIT_LIST_HEAD(&group->entry);
++	xa_init(&group->pasid_array);
+
+  	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
+  	if (ret < 0) {
+@@ -890,6 +892,14 @@ int iommu_group_add_device(struct iommu_group 
+*group, struct device *dev)
+  	int ret, i = 0;
+  	struct group_device *device;
+
++	/*
++	 * The iommu_attach_device_pasid() requires a singleton group.
++	 * Refuse to add a device into it if this assumption has been
++	 * made.
++	 */
++	if (!xa_empty(&group->pasid_array))
++		return -EBUSY;
++
+  	device = kzalloc(sizeof(*device), GFP_KERNEL);
+  	if (!device)
+  		return -ENOMEM;
+@@ -3254,3 +3264,139 @@ bool iommu_group_dma_owner_claimed(struct 
+iommu_group *group)
+  	return user;
+  }
+  EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
++
++/*
++ * Check the viability of PASID attach/detach on a @dev of a @group.
++ *
++ * Basically we don't support pasid attach/detach on multi-device groups.
++ * Multiple devices in an iommu group cannot be isolated from each other,
++ * then it's also difficult to ensure that their pasid address spaces are
++ * isolated without any guarantee of hardware mechanism. To make things
++ * simple, let's start the PASID attach/detach support from the devices
++ * belonging to singleton groups.
++ *
++ * Some configurations of the PCI fabric will route device originated TLP
++ * packets based on memory address, and these configurations are
++ * incompatible with PASID as the PASID packets form a distinct address
++ * space. For instance any configuration where switches are present
++ * without ACS enabled is incompatible.
++ */
++static bool iommu_group_device_pasid_viable(struct iommu_group *group,
++					    struct device *dev)
++{
++	int count;
++
++	count = iommu_group_device_count(group);
++	if (count != 1)
++		return false;
++
++	/*
++	 * Block PASID attachment in cases where the PCI fabric is
++	 * routing based on address. PCI/ACS disables that.
++	 */
++	if (dev_is_pci(dev))
++		return pci_acs_path_enabled(to_pci_dev(dev), NULL,
++					    REQ_ACS_FLAGS);
++
++	/*
++	 * Otherwise, the device came from DT/ACPI, assume it is static and
++	 * then singleton can know from the device count in the group.
++	 */
++	return true;
++}
++
++/*
++ * iommu_attach_device_pasid() - Attach a domain to pasid of device
++ * @domain: the iommu domain.
++ * @dev: the attached device.
++ * @pasid: the pasid of the device.
++ *
++ * Return: 0 on success, or an error.
++ */
++int iommu_attach_device_pasid(struct iommu_domain *domain,
++			      struct device *dev, ioasid_t pasid)
++{
++	struct iommu_group *group;
++	int ret = -ENODEV;
++	void *curr;
++
++	if (!domain->ops->set_dev_pasid)
++		return -EOPNOTSUPP;
++
++	group = iommu_group_get(dev);
++	if (!group)
++		return -ENODEV;
++
++	mutex_lock(&group->mutex);
++	if (!iommu_group_device_pasid_viable(group, dev))
++		goto out_unlock;
++	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
++	if (curr) {
++		ret = xa_err(curr) ? : -EBUSY;
++		goto out_unlock;
++	}
++	ret = domain->ops->set_dev_pasid(domain, dev, pasid);
++	if (ret)
++		xa_erase(&group->pasid_array, pasid);
++out_unlock:
++	mutex_unlock(&group->mutex);
++	iommu_group_put(group);
++
++	return ret;
++}
++
++/*
++ * iommu_detach_device_pasid() - Detach the domain from pasid of device
++ * @domain: the iommu domain.
++ * @dev: the attached device.
++ * @pasid: the pasid of the device.
++ *
++ * The @domain must have been attached to @pasid of the @dev with
++ * iommu_detach_device_pasid().
++ */
++void iommu_detach_device_pasid(struct iommu_domain *domain, struct 
+device *dev,
++			       ioasid_t pasid)
++{
++	struct iommu_group *group = iommu_group_get(dev);
++
++	mutex_lock(&group->mutex);
++	domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
++	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
++	mutex_unlock(&group->mutex);
++
++	iommu_group_put(group);
++}
++
++/*
++ * iommu_get_domain_for_dev_pasid() - Retrieve domain for @pasid of @dev
++ * @dev: the queried device
++ * @pasid: the pasid of the device
++ *
++ * This is a variant of iommu_get_domain_for_dev(). It returns the existing
++ * domain attached to pasid of a device. It's only for internal use of the
++ * IOMMU subsystem. The caller must take care to avoid any possible
++ * use-after-free case.
++ *
++ * Return: attached domain on success, NULL otherwise.
++ */
++struct iommu_domain *
++iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
++{
++	struct iommu_domain *domain;
++	struct iommu_group *group;
++
++	if (!pasid_valid(pasid))
++		return NULL;
++
++	group = iommu_group_get(dev);
++	if (!group)
++		return NULL;
++	/*
++	 * The xarray protects its internal state with RCU. Hence the domain
++	 * obtained is either NULL or fully formed.
++	 */
++	domain = xa_load(&group->pasid_array, pasid);
++	iommu_group_put(group);
++
++	return domain;
++}
+
+Best regards,
+baolu
