@@ -2,130 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE3EC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77D48C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238643AbiG2TqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 15:46:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58512 "EHLO
+        id S238884AbiG2Tqs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 15:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237659AbiG2TqI (ORCPT
+        with ESMTP id S238755AbiG2Tqp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 15:46:08 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A190865FD;
-        Fri, 29 Jul 2022 12:46:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=U4kyy3+iPq0es8I3IOuV/SecAyAqLgCBHGO4baBSJXY=; b=UPdILmC1M4E+vNWh+skga8xTtx
-        0PhIN33ICezQxaE6dsPX2HxW7tZZw2jdmzxkugjqLiZHUEmL+GeSUmCJeJN9BfRveZy/RLVOLDaUS
-        47Pq9nsJETnflbtM0ZwdWQSFusD6TgY75FM6RRA2FBU5rbDvCOCh5jnlwmFuqB+KXPLD7zc6pzkll
-        pqQVQz+S/kYsM2Mhz+e/fT/J6P7HwuGCq+JHplCLgTFgd5XCWueYcJTuupLbxu8cXF8BTA1LgXNve
-        Ak8NcHc8XfM8EgAz9+a2qR/06y+h9KcSHvCIeW+iLtKXHcZt4d8go5ntzyfMP2yv6IemNzhZzjCTM
-        24ubXt2Q==;
-Received: from [177.83.209.223] (helo=localhost)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oHVvk-00BM8Y-Lf; Fri, 29 Jul 2022 21:45:55 +0200
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     ardb@kernel.org, linux-efi@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, anton@enomsg.org, ccross@android.com,
-        keescook@chromium.org, matt@codeblueprint.co.uk,
-        mjg59@srcf.ucam.org, tony.luck@intel.com,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: [PATCH v2 0/3] The UEFI panic notification mechanism, 2nd round
-Date:   Fri, 29 Jul 2022 16:45:29 -0300
-Message-Id: <20220729194532.228403-1-gpiccoli@igalia.com>
-X-Mailer: git-send-email 2.37.1
+        Fri, 29 Jul 2022 15:46:45 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF7267586
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 12:46:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=7Uyb73v5rTeGi6O22hmhJ+u8gllUvmeLKJcs+R3V8JY=; b=fGF3arBN3qZwrpge7TrypIPvtU
+        lqSRvYisb02UGydgHErTPZdJUjvC8IilC6S4OQ+JNwa+4MV37da9is0EM6tVOs8imwcccqdsuLEzs
+        qDhvWgPZBdEgI2fiBKwXv6V0Ltaxje17UqBPUroWL4oqJCcrRny9j0na/OoOs0QYjw7k456Tqib0D
+        IgyYXviQHOt808H80OQ1mCYrMjs1yB+Nda4h/F6y2pXpGcrPbns0M8tIn+0mFjJyzoOIWubHkOWn+
+        AD2gJDLSd7cVTdJJOFbvMKeGI4mOoAPF/zGpiPYjfwkMlO23ykt+frY8ddmhWhfKTpz0Jx44jkVbZ
+        vs6YnXnw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oHVwL-0050n0-CU; Fri, 29 Jul 2022 19:46:29 +0000
+Date:   Fri, 29 Jul 2022 20:46:29 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     alexlzhu@fb.com
+Cc:     linux-mm@kvack.org, kernel-team@fb.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] x86/sys_x86_64: fix VMA alginment for mmap file to THP
+Message-ID: <YuQ5FYWMXLw+LpVA@casper.infradead.org>
+References: <20220729194214.1309313-1-alexlzhu@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220729194214.1309313-1-alexlzhu@fb.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey folks, this is the 2nd iteration of the patchset adding a simple
-mechanism to notify the UEFI firmware about a panic event in the kernel.
-V1 here:
-https://lore.kernel.org/lkml/20220520195028.1347426-1-gpiccoli@igalia.com/
+On Fri, Jul 29, 2022 at 12:42:14PM -0700, alexlzhu@devvm6390.atn0.facebook.com wrote:
+> From: alexlzhu <alexlzhu@fb.com>
+> 
+> With CONFIG_READ_ONLY_THP_FOR_FS, the Linux kernel supports using THPs for
+> read-only mmapped files, such as shared libraries. However, on x86 the
+> kernel makes no attempt to actually align those mappings on 2MB boundaries,
+> which makes it impossible to use those THPs most of the time. This issue
+> applies to general file mapping THP as well as existing setups using
+> CONFIG_READ_ONLY_THP_FOR_FS. This is easily fixed by using the alignment
+> info passed to vm_unmapped_area. The problem can be seen in
+> /proc/PID/smaps where THPeligible is set to 0 on mappings to eligible
+> shared object files as shown below.
 
-
-First thing, the differences in this V2:
-
-- Ardb response in V1 mentioned a refactor aimed for v5.20 that removes an
-obsolete/confusing way of setting EFI variables - this led to a weird
-condition, deleted variables stayed in sysfs after deletion. Well, I've
-refactored the code based on efi/next, so I'm using the recommended API
-now - thanks a bunch for the advice Ardb!
-
-- I've changed NULL-terminating char in patch 1 to the format I've seen
-in Ardb's code, L'\0'.
-
-- Patch 2 is new, it's somewhat a fix for a patch only in efi/next, part
-of the efivar refactor.
-
-
-In the V1 review, it was mentioned we could maybe use efi-pstore as a way
-to signal the firmware about a panic event - in the end, the efi-pstore
-mechanism can collect a dmesg, so it's even richer in the information level.
-But I disagree that it is the way to go, for 3 main reasons:
-
-a) efi-pstore could be impossible to use, if the users are already using
-another pstore backend (like ramoops), which is _exactly_ our case!
-Of course, we could rework pstore and allow 2 backends, quite a bit of work,
-but...see next points!
-
-b) Even if (a) is a not an issue, we have another one, even more important:
-signaling the firmware about a panic is *different* than collecting a bunch
-of data, a full dmesg even. This could be considered a security issue for
-some users; also, the dmesg collected consumes a bunch more memory in the
-(potentially scarce) UEFI available memory.
-Although related, the goal of pstore is orthogonal to our mechanism here:
-users rely on pstore to collect data, our proposal is a simple infrastructure
-to just let the firmware know about a panic. Our kernel module also shows a
-message and automatically clears the UEFI variable, so it tracks a single
-panic, whereas efi-pstore logs are kept by default, in order to provide
-data to users.
-
-c) Finally, it's faster and less "invasive"/risky to just write a byte in a
-variable on a panic event than having a ksmg dumper collecting the full dmesg
-and writing it to the UEFI memory; again, some users wish to have the logs,
-but not all of them.
-
-
-With all of that said, I think this module makes sense, it's a very simple
-solution that opens doors to firmware panic handling approaches, like in our
-proposed case (a different splash screen on panic).
-
-Finally, the variable name (PanicWarn) and value (0xFF by default, can be
-changed by a module parameter) are just my personal choices but I'm open to
-suggestions, not strongly attached to them heh
-
-Thanks again for the reviews/suggestions!
-Cheers,
-
-
-Guilherme
-
-
-Guilherme G. Piccoli (3):
-  efi: Add a generic helper to convert strings to unicode
-  efi: efibc: Guard against allocation failure
-  efi-panic: Introduce the UEFI panic notification mechanism
-
- drivers/firmware/efi/Kconfig      | 10 ++++
- drivers/firmware/efi/Makefile     |  1 +
- drivers/firmware/efi/efi-panic.c  | 89 +++++++++++++++++++++++++++++++
- drivers/firmware/efi/efi-pstore.c |  4 +-
- drivers/firmware/efi/efibc.c      | 11 ++--
- include/linux/efi.h               | 18 +++++++
- 6 files changed, 125 insertions(+), 8 deletions(-)
- create mode 100644 drivers/firmware/efi/efi-panic.c
-
--- 
-2.37.1
-
+Can't your filesystem just use thp_get_unmapped_area() like
+ext2/ext4/fuse/xfs do?
