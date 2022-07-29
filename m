@@ -2,106 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 911AFC19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC22C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237149AbiG2PSG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 11:18:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
+        id S236814AbiG2PSZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 11:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237092AbiG2PSE (ORCPT
+        with ESMTP id S230063AbiG2PSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 11:18:04 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD06A63914;
-        Fri, 29 Jul 2022 08:18:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1659107881; x=1690643881;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=eK/W5ETq5QSYGd3HgstGbsh5CACgeNdBiLnNdZM3OOk=;
-  b=FoJqZWCVulv3Fha2UbJ6MlIdP9BpraHKADkXZEAdJCOHzXW8KBrWP8kX
-   qpBFteCRhcYd7i/cnrCsOCbBkXT84Wi8YmOl9JKeR9irmAqfIwrq/hxv9
-   naYBfLf/4NjV5Gh92ZC8m1e1zOogXfx1SMjEtRQ5r8U+wjr4wmnWqfJGX
-   U6aDcCiUtoxi6/MUMg5+sHhJ+XW71vbFYlLJANkmXNuItsoCLDNjvj90u
-   IoyygF+aW2Y5QE4MPjPz0U/2QHQMM7wIEKzMCWO//GXTetXpNHg5ji3tL
-   n/4ILzbGbhRiSbV2AyThnRXjd/DmswJKZ1GWnmYh0ZzKRL7wH0QtpJtka
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
-   d="scan'208";a="174162666"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Jul 2022 08:18:00 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 29 Jul 2022 08:17:59 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 29 Jul 2022 08:17:48 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>
-Subject: [Patch RFC net-next 0/4] net: dsa: microchip: vlan configuration for bridge_vlan_unaware ports
-Date:   Fri, 29 Jul 2022 20:47:29 +0530
-Message-ID: <20220729151733.6032-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 29 Jul 2022 11:18:18 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A491A459B6;
+        Fri, 29 Jul 2022 08:18:17 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id l23so9082186ejr.5;
+        Fri, 29 Jul 2022 08:18:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m+O4lYrHKgUVBwG7qSHfHs7iGGU+8cpiows8bQnp47A=;
+        b=iveYsw9mfb3TzlP217SkKdM8vhrxKjUYrNfzgYbuYBUXSGtrXzXcXsNxrjWQOWj8lF
+         pk4i1Y1W3nMdxvvxLqvuwLn3ExoJdomPX4ptRDy6molLoNo3afguxqLSuIKyfdFaw7dN
+         21wXn65Hi2DRNdStp4I9KcH0pkYh/QUpj8Yi6oJ3ZBkGvPHDO3jNHm/Hf75xAz+5/75c
+         XTPAzEirzqP333zWg7zi4N+PTpIQzHMw8AiwVonscJzWPRN1HV6zup32hSIzeDy00iEN
+         YHSdpEdKKdQphUiUeC+tDxTymqeN9geL4w82qSMt+SiYyxo2IGE4FgTbIONM5GtYqd4C
+         hDjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m+O4lYrHKgUVBwG7qSHfHs7iGGU+8cpiows8bQnp47A=;
+        b=20z88Uc47dgOYIDaGCztv7SMscZp4n7fMs6JV+BlstWMQS0qFisK442iI8d7lCJ12T
+         pqOsjKHgeQ9N785u8FGk3Pz8vd9zXsFpALEplO/GOfBj5KBFEvwLFrMm+v1WpuSo/eO4
+         ArmMx7fzI46wRR0N0XJFYf0UPaedEqBc18LCpv7GOMgwl+oFYk0PjDyRi1p/fZ66lk3Y
+         VPYAaunoCZA4/mccGohI5liGaz+Vor39RlxlHH58VBYjWHZWep/ULNrLO8hpwVXHVWtZ
+         K4aKDAga1SKXPSRvAujzuIyApZT0LnzrMaYWez1FSW/LMR5Y/g4ToN9jmsW6IU0CxYy3
+         GrnA==
+X-Gm-Message-State: AJIora8oACBawbQlRzIGD541VLgo2IL7GTkDe+HBmnn2dor/vCh7iJFo
+        YsOjp4hMJoM5BoaAQBZBgx0f7gxXNObTvxXc7M2o/zLFZIU=
+X-Google-Smtp-Source: AGRyM1vvb6+mchGfXjJRTp1+ZGCw0IVKg00+3XBmmlF9Pb4aCHqrZLOxWAB0WyiGzDvJXgA99OQomfsv0OGHwMOaoTw=
+X-Received: by 2002:a17:907:2722:b0:72b:735a:d3b4 with SMTP id
+ d2-20020a170907272200b0072b735ad3b4mr3180478ejl.363.1659107895813; Fri, 29
+ Jul 2022 08:18:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220728190810.1290857-1-robh@kernel.org> <CABb+yY2jV7c8oX7=F=nocfvGrOMHJAYov7zS2nT0=qFoNyoxJQ@mail.gmail.com>
+ <CABb+yY0JzztBB+giBu+RCt-dzgwYWF32sCR3WKKP9U5K9UvhxA@mail.gmail.com> <20220729111051.5me4vklrzskvsj4w@bogus>
+In-Reply-To: <20220729111051.5me4vklrzskvsj4w@bogus>
+From:   Jassi Brar <jassisinghbrar@gmail.com>
+Date:   Fri, 29 Jul 2022 10:18:04 -0500
+Message-ID: <CABb+yY1=cppy9QAN=cLWmhvmYrQ5QpY5adE+nRev1rVrtp-QUw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: mailbox: arm,mhu: Make secure interrupt optional
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During refactoring of ksz spi probe, ds->configure_vlan_while_filtering flag is
-set in the ksz_setup function. It makes the extack warning when vlan_add
-command is used when vlan_filtering is turned off for the port.
-To allow the vlan_add for the bridge vlan unaware ports, private pvid is used
-for it. This pvid is used for the vlan_unaware ports. The private pvid is added
-to the vlan_table during the port_setup function.
-For the vlan aware ports, pvid issued by the user application will be used.
-Bridge vlan pvid is stored in the ksz port structure which can be used during
-transition between the vlan aware to unaware and vice versa.
+On Fri, Jul 29, 2022 at 6:10 AM Sudeep Holla <sudeep.holla@arm.com> wrote:
+> On Thu, Jul 28, 2022 at 04:07:45PM -0500, Jassi Brar wrote:
 
-Tested using the following sequence for ksz9477 and lan937x
-----------------
-Setup -> Host1 --- LAN1 -- LAN2 --- Host2
+> > >
+> > I could learn why specifying secure irq isn't desirable?
+> > No non-secure client node would ask for that secure irq/channel, which
+> > will simply lay unused.
+>
+> Did you mean would or wouldn't ?
+>
+I mean what's written.
 
-ip link set dev br0 type bridge vlan_filtering 0
-bridge vlan add vid 5 dev lan1 pvid untagged
-bridge vlan add vid 5 dev lan2 pvid untagged
-bridge vlan del vid 5 dev lan1
-bridge vlan del vid 5 dev lan2
-
-After each step of execution, transmitted the packets from Host1 and
-successfully received by the Host2.
-
-Arun Ramadoss (4):
-  net: dsa: microchip: modify vlan_add function prototype
-  net: dsa: microchip: lan937x: remove vlan_filtering_is_global flag
-  net: dsa: microchip: common ksz pvid get and set function
-  net: dsa: microchip: use private pvid for bridge_vlan_unwaware
-
- drivers/net/dsa/microchip/ksz8.h         |  6 +-
- drivers/net/dsa/microchip/ksz8795.c      | 42 +++-------
- drivers/net/dsa/microchip/ksz9477.c      | 40 ++++------
- drivers/net/dsa/microchip/ksz9477.h      |  5 +-
- drivers/net/dsa/microchip/ksz_common.c   | 98 +++++++++++++++++++++++-
- drivers/net/dsa/microchip/ksz_common.h   | 21 ++++-
- drivers/net/dsa/microchip/lan937x_main.c |  5 --
- 7 files changed, 142 insertions(+), 75 deletions(-)
+> Anyways I can insert a module that requests this channel and bring down
+> the system as accessing anything configure secure from non-secure side
+> on Juno results in system hang/error.
+>
+Why go to those lengths? These are already simpler options available  ;-)
+1)   while (1) ;      // preferably in some atomic context
+2)   *((int *) 0) = 0;   // you might want to iterate over offset for
+guaranteed results
+3) Slightly more work, but you also have the opportunity to erase your
+storage device
 
 
-base-commit: ba323f6bee1d1e70aed280f8c89ac06959559855
--- 
-2.36.1
+> > index f6c55877fbd94..004b1566be74d 100644
+> > --- a/arch/arm64/boot/dts/arm/juno-base.dtsi
+> > +++ b/arch/arm64/boot/dts/arm/juno-base.dtsi
+> > @@ -26,7 +26,8 @@ mailbox: mhu@2b1f0000 {
+> >         compatible = "arm,mhu", "arm,primecell";
+> >         reg = <0x0 0x2b1f0000 0x0 0x1000>;
+> >         interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>,
+> > -                <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
+> > +                <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>,
+> > +                <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
+> >         interrupt-names = "mhu_lpri_rx",
+> >                   "mhu_hpri_rx";
+> >         #mbox-cells = <1>;
+> >
+> > If this works for you, I could submit a proper patch.
+>
+> No this doesn't work IMO.
+>
+If you _really_ tested and faced an error, please share it.
 
+> Yes standalone everything looks fine, but you can
+> insert a module requesting this channel and bring down the system.
+>
+If anyone other than a super-user is able to do that, then you have a
+serious security problem at hand.
+If you do that as a super-user, have fun.
+
+cheers.
