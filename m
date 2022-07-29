@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9E36C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 10:45:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9558C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 10:45:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235601AbiG2KpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 06:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39754 "EHLO
+        id S236010AbiG2Kp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 06:45:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235856AbiG2KpB (ORCPT
+        with ESMTP id S235355AbiG2KpE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 06:45:01 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04DC83F19;
-        Fri, 29 Jul 2022 03:45:00 -0700 (PDT)
+        Fri, 29 Jul 2022 06:45:04 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D5183F32;
+        Fri, 29 Jul 2022 03:45:03 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3BEC66601B69;
-        Fri, 29 Jul 2022 11:44:58 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id BB4FD6601B71;
+        Fri, 29 Jul 2022 11:45:00 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1659091499;
-        bh=FJUOyAwho3bbWQ8PWvLe4wxYoMHlf01l8/jYVjXf2r0=;
+        s=mail; t=1659091501;
+        bh=KHcQKTlIo6mCV2UKqcNxwuM/2dLWF39lYb6bnCpx53Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QWzukmMRpP7N16ie/C/7kSNSqJO07cZHNsvoFBDgJhi6Jjb4ih+LGXpW+zMgi6YPm
-         yXEG0q1bVhbdTw4t12e8DySfifvBcCbnizCcFiOC5yi45hG9P4kn9+Y0ENLimm8C53
-         RRLXIpVmXy3Qk73sDFdkiSFB8ADTzIGo+VIasHg9KY7c1npOVBFSh1S3aXIFw8JH9h
-         IcEIV0LLbzCdUtxCUZ4FLuuNywYyPAZ5ep8d8HAwvGd1vG/DvIZDQjxZkxIzQYVv5V
-         nctcrZCXvoNSokM7OGhX4p7WnBHkPA48W3Sng1skXJGNpR4XQmD2IzRZigtGyTjkHg
-         HpxjTnK7IDaNA==
+        b=gwUT9zuOSrT8H5P4zToiy+Yl6pA2pulVODhkXMqwm+n2Nzs6hwZE28f/4cmrzq6WS
+         ScijsulJB37EnnP7WXkNM7w5t7yYLRHsE/2fB7jE2qanD/8E5xAjfqKd15wYzl2qMv
+         LqWent0iYNsl1AfUsLfcCPmrM+y/nCzMnFQ+e+N/IP1n5zdDmDiFUbITNFQ9prAUxR
+         SoXQFBSlgfMsoFkxZaHfs7PkdO2osJuM9dwrvGGbJAQ5Jlgh3lo8NVVazT38yNQA4d
+         myuTXqnCJMmMA8kjb8Rv4isxk0twfkvYhtThe1rsraIEHM///fvjhSU+CJ5EbO4SOx
+         EdZJRpVOvAPsQ==
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
 To:     robh+dt@kernel.org
@@ -47,9 +47,9 @@ Cc:     krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, phone-devel@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht
-Subject: [PATCH 6/8] arm64: dts: mediatek: mt6795: Add support for eMMC/SD/SDIO controllers
-Date:   Fri, 29 Jul 2022 12:44:38 +0200
-Message-Id: <20220729104441.39177-7-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 7/8] dt-bindings: arm: mediatek: Add compatible for MT6795 Sony Xperia M5
+Date:   Fri, 29 Jul 2022 12:44:40 +0200
+Message-Id: <20220729104441.39177-9-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220729104441.39177-1-angelogioacchino.delregno@collabora.com>
 References: <20220729104441.39177-1-angelogioacchino.delregno@collabora.com>
@@ -59,67 +59,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the mmc nodes to support all of the four controllers, used for
-eMMC, SD/MicroSD and SDIO storage.
-All of these controller nodes are left disabled by default, as
-usage is board dependent.
+Add a compatible for the Sony Xperia M5 smartphone.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- arch/arm64/boot/dts/mediatek/mt6795.dtsi | 41 ++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
+ Documentation/devicetree/bindings/arm/mediatek.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt6795.dtsi b/arch/arm64/boot/dts/mediatek/mt6795.dtsi
-index 687e0ee63503..2548bfcf9755 100644
---- a/arch/arm64/boot/dts/mediatek/mt6795.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt6795.dtsi
-@@ -380,5 +380,46 @@ uart3: serial@11005000 {
- 			dma-names = "tx", "rx";
- 			status = "disabled";
- 		};
-+
-+		mmc0: mmc@11230000 {
-+			compatible = "mediatek,mt6795-mmc", "mediatek,mt8173-mmc";
-+			reg = <0 0x11230000 0 0x1000>;
-+			interrupts = <GIC_SPI 79 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&pericfg CLK_PERI_MSDC30_0>,
-+				 <&topckgen CLK_TOP_MSDC50_0_H_SEL>,
-+				 <&topckgen CLK_TOP_MSDC50_0_SEL>;
-+			clock-names = "source", "hclk", "source_cg";
-+			status = "disabled";
-+		};
-+
-+		mmc1: mmc@11240000 {
-+			compatible = "mediatek,mt6795-mmc", "mediatek,mt8173-mmc";
-+			reg = <0 0x11240000 0 0x1000>;
-+			interrupts = <GIC_SPI 80 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&pericfg CLK_PERI_MSDC30_1>,
-+				 <&topckgen CLK_TOP_AXI_SEL>;
-+			clock-names = "source", "hclk";
-+			status = "disabled";
-+		};
-+
-+		mmc2: mmc@11250000 {
-+			compatible = "mediatek,mt6795-mmc", "mediatek,mt8173-mmc";
-+			reg = <0 0x11250000 0 0x1000>;
-+			interrupts = <GIC_SPI 81 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&pericfg CLK_PERI_MSDC30_2>,
-+				 <&topckgen CLK_TOP_AXI_SEL>;
-+			clock-names = "source", "hclk";
-+			status = "disabled";
-+		};
-+
-+		mmc3: mmc@11260000 {
-+			compatible = "mediatek,mt6795-mmc", "mediatek,mt8173-mmc";
-+			reg = <0 0x11260000 0 0x1000>;
-+			interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_LOW>;
-+			clocks = <&pericfg CLK_PERI_MSDC30_3>,
-+				 <&topckgen CLK_TOP_AXI_SEL>;
-+			clock-names = "source", "hclk";
-+			status = "disabled";
-+		};
- 	};
- };
+diff --git a/Documentation/devicetree/bindings/arm/mediatek.yaml b/Documentation/devicetree/bindings/arm/mediatek.yaml
+index 07c0ea94e850..c162b0df299b 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek.yaml
+@@ -58,6 +58,7 @@ properties:
+       - items:
+           - enum:
+               - mediatek,mt6795-evb
++              - sony,xperia-m5
+           - const: mediatek,mt6795
+       - items:
+           - enum:
 -- 
 2.35.1
 
