@@ -2,186 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A6ECC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 01:22:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B238C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 01:25:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233490AbiG2BW5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 21:22:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59410 "EHLO
+        id S233516AbiG2BZ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 21:25:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiG2BWy (ORCPT
+        with ESMTP id S229535AbiG2BZZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 21:22:54 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7AD17A99;
-        Thu, 28 Jul 2022 18:22:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659057773; x=1690593773;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   in-reply-to:mime-version;
-  bh=Xyb12e2ceTTrVFL2DSyXoREVy7jl9ntXHyTdW8Aax2g=;
-  b=N7nItGS0axWYAGHhqBMXcbwVHvx+4ZPiILo1vuK/QqRlszQEREJYkbt+
-   6zKbcFa2T+IworKE39V3oxXizKwwTJMX+kzA0ArtSFv8KW3NjR6DAUjLR
-   IRHcNcQv35TxUUNt6Ogf1Nj640Nw0dI6lyk64oqIcWdWoxEmXjsaHVGlE
-   RSiDvp/D/ibRAL6W4DjtLZJbgOrHJAQ1cmEA9N2uxMjqX+EULcZP9n4pZ
-   TEl2Q1HEd9vtirEq5DE+nVSkMmD6YAiU37A9UiKNG3iXsEVnGyYleLRb7
-   liWqw9OXKmjneu2O03mh5cERG1HaEwSPWyLhyFCNiyAqiI/nOGf7tykpq
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="286213300"
-X-IronPort-AV: E=Sophos;i="5.93,199,1654585200"; 
-   d="scan'208";a="286213300"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 18:22:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,199,1654585200"; 
-   d="scan'208";a="928555307"
-Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
-  by fmsmga005.fm.intel.com with ESMTP; 28 Jul 2022 18:22:53 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Thu, 28 Jul 2022 18:22:53 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28 via Frontend Transport; Thu, 28 Jul 2022 18:22:53 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.28; Thu, 28 Jul 2022 18:22:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DLE5dCaeWeFGVUGngXUdXBFQvOz1NPzzZiGwWo+xIj8XylrcAwTYgeo6Sd7wcAiEr4wnoZ5iyed4r0IZW3XqEZFzaEcmS0q5fYif+wlMvY73+1cJaiJjYrcR3inX2Sta5BAFXp/Ot0jxMnLXytI/zWXlKs2ehKFXCEdlAPe2BMgXSUIFipyJjC/qbw5QnrsmheUuftfixbYn92U0g2UwMixs0WxSVvrmP9NYCs6/3mR/FLJJGwVbd0D1uxAIjYQ578yK+UM9a/+6bsSqE4l5CZ9YM3r4KmIxvnfHZt5yDI1AYR0seNlVUHfpiuHSAbCTA3iQAa1FPr5LqyFBg7z9Dw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=H1oVDr9RuDDxCIVNl1o4E5c5uVp9+cr4jI21/ZoOw/w=;
- b=SL6H3O6Mbwj+gRGZ0zqqeTjjYyLXd3POyWvDLFoPR3VV5K/Myds35ogqO79yxJGTGy75sfDNasAhqmqepdBMUV+Ow50r7qXCPhYTGPrumhQYsDr2EtHrVrTMXKt7ptVkv6aVuT0jGWzKBJ2RnGavPo5PV89ivWIpf1jz55TGn4iV391QvIa3Brm7HedjmOu4rYwCxnMHNxP/FKj9t/mP+Hv42qL7XdP13lGKE6UY2zwh6xqXzhKrweJ3GCFxrcnCSbSR+epWw2FeDcWCd36Jj8F8C5MfNuVoRLSRw8gH/XvnClLxtINJN9738kWhk+2p7ozTJDSCJyQhLEGMxeeuog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS7PR11MB5966.namprd11.prod.outlook.com (2603:10b6:8:71::6) by
- BL0PR11MB3521.namprd11.prod.outlook.com (2603:10b6:208:7b::32) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5458.20; Fri, 29 Jul 2022 01:22:51 +0000
-Received: from DS7PR11MB5966.namprd11.prod.outlook.com
- ([fe80::74e8:3af5:24cb:4545]) by DS7PR11MB5966.namprd11.prod.outlook.com
- ([fe80::74e8:3af5:24cb:4545%7]) with mapi id 15.20.5482.006; Fri, 29 Jul 2022
- 01:22:51 +0000
-Date:   Fri, 29 Jul 2022 09:02:51 +0800
-From:   Yan Zhao <yan.y.zhao@intel.com>
-To:     Sean Christopherson <seanjc@google.com>
-CC:     Paolo Bonzini <pbonzini@redhat.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        "Mingwei Zhang" <mizhang@google.com>,
-        Ben Gardon <bgardon@google.com>
-Subject: Re: [PATCH v2 4/6] KVM: x86/mmu: Track the number of TDP MMU pages,
- but not the actual pages
-Message-ID: <YuMxuxgFpQdpmBBN@yzhao56-desk.sh.intel.com>
-Reply-To: Yan Zhao <yan.y.zhao@intel.com>
-References: <20220723012325.1715714-1-seanjc@google.com>
- <20220723012325.1715714-5-seanjc@google.com>
- <YuCl48wyA1XkqMan@yzhao56-desk.sh.intel.com>
- <YuGMQ/JJjuWxaUSu@google.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <YuGMQ/JJjuWxaUSu@google.com>
-X-ClientProxiedBy: SG2PR06CA0184.apcprd06.prod.outlook.com (2603:1096:4:1::16)
- To DS7PR11MB5966.namprd11.prod.outlook.com (2603:10b6:8:71::6)
+        Thu, 28 Jul 2022 21:25:25 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA3350065
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 18:25:23 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id 23so2865582pgc.8
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 18:25:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=OTK/VfscBXhFYYH3sJs44KtWrEvEi3UROFtYkeRJntE=;
+        b=MaKszq2Wm0TDmzZdUOPeg9aA9+08vDYr3phRb3VLxC9EgDm+PhpgagX93nHTeUSsYK
+         zpWSiurxcnK2nm/rJq3MUut8XjIR5/KQANlJx6QYdJy6J6LADTwZJ4UXfGMD83AUn/Qx
+         cBfxL/O+2376PzG57oBOFC1QIqe+LpkUrM2c2YGfpOrxHffPpcsQdL62GitujYha/ngP
+         BgTCL2gVk0JrmYyOSJvl4cy5Vsl0CD9rymCOjBJSkH4cdAOeq2dRuGXqPL6ASxkN6a7A
+         wuSZ8DvNzIeZwPOmbP+Klu806JPb6HFVlew8tBeBoyzEvcQx7VtBZaKxLTXg1H4XtfR/
+         DMGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=OTK/VfscBXhFYYH3sJs44KtWrEvEi3UROFtYkeRJntE=;
+        b=wiiEbkK3r2CeWRqwWpARIyU7ONCm9pW3Qkk50f0x1u124hmQQMuwrflcHgxkHF7Gf0
+         RrYXJqFuyEqPlt1FHSzEuI4ocXdhd7NJb+7TziooLNylF+2b2sqaOhnB0gOTW6rMR4Fe
+         LeNKQRZZkMsvfsofCxoCe+CGNCl0JuZWtGNvHprw+lEKLF2XmhbNwPF+2HTy3MGm8Xop
+         DvLcZJI6xSHbRqoQacVEWH0ntABkdYXQ90W55hZ1u+t82r34sex3lOc4+31Jrt771aJA
+         46qZDQVNmj02YQyTIebeNPmHLP61i1W/OxBD2hfigQGIF+beokKuiNdiX62YLXJvvrrR
+         wAxQ==
+X-Gm-Message-State: AJIora8L3Wgq9QXTLdC0Y9R2zF7uUIbj2lWYG41O1Q//64hAYmok76as
+        955eBij0HrM+J4g/+BXVMYU=
+X-Google-Smtp-Source: AGRyM1voyCt7VjAOfjVOeHY/3xJlVXe/F/8AEucWr3BxbdggRUMgyNl2ENa2CHABKqKrRlDn/LVEyg==
+X-Received: by 2002:a05:6a00:1a8b:b0:52c:9daa:ff65 with SMTP id e11-20020a056a001a8b00b0052c9daaff65mr1130577pfv.71.1659057923440;
+        Thu, 28 Jul 2022 18:25:23 -0700 (PDT)
+Received: from [192.168.0.10] (KD106168128197.ppp-bb.dion.ne.jp. [106.168.128.197])
+        by smtp.gmail.com with ESMTPSA id x134-20020a62868c000000b0050dc7628178sm1446314pfd.82.2022.07.28.18.25.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 18:25:22 -0700 (PDT)
+Message-ID: <12b9347e-4ce4-6248-659e-5abe3c1dfcd2@gmail.com>
+Date:   Fri, 29 Jul 2022 10:25:19 +0900
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6e867979-9387-4b08-24e8-08da7100da80
-X-MS-TrafficTypeDiagnostic: BL0PR11MB3521:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IDuL6ieJEVfv4feQ4tefBL5LYRbNNpM74vDvxwAOh8lguZxbb5H0BCh9soVer+L49Bzsv1wG4zktD9Gp5oPxATkr3b++q8TkwFRZIdMFoi71BIetBBH7BcQixAF+Lzwzs+V9fBwFsbVuUgJlHdcMjSf+hc/jqCT4UkBGahvVZxhX/DzBE+b0c8RMjy1x0OX2hXBSxMGbwMHrdaOobnpklVUc/L4g/8KCJoKebyT7ABPKggUsq0+XIWXXxHMeFzV4ekVGCG5a6z+5Dd8URF/Zed2eD4Y++C45kCdLU6gCrbjDKxu+EvIFwT/r761MJUT+J5a6tt4DDrS43X48xBX+FmVvdB8CdMPQXKsM2VM8HSmsoftyxL6Hw+Uo1BZCMzH5anOFfxWMCpIIgIywuS9uHvvqIO49YAcW7x+Xozmya6p/rkWWaDhQfjYGJGcZLe+I5maWNqnOTIFpG9e4vt1n/130i4a/7zG3UE9RTPayfI3Jkn0T6e0ymdDx5lkWOYdIOoPzYHjJtyqcqINaI3NMPVdmOh/topBGb9ZkVCsrbEDWb4KuymYGU4xd8sttb04sepZv+MXBz6NvH5R3cu0AQtBw2spo+iIDv95kibOd2MepqzsesilHnLZeOLnRFJqWKCoK5kghII0a1fGIq/ndLVuV0WMZaoH6YK3yof2mRvgxO5cnmx2OoCfHFCE4ewmyHCcaUW5bdXYjng7XFGhpHa3gni1uf4LI7Uq2H+xQNKE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR11MB5966.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(366004)(346002)(396003)(39860400002)(376002)(5660300002)(6512007)(82960400001)(38100700002)(41300700001)(186003)(83380400001)(86362001)(66946007)(54906003)(4326008)(66476007)(6916009)(8936002)(6486002)(6506007)(3450700001)(2906002)(8676002)(66556008)(26005)(478600001)(316002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?x5x8s4qBWEH+zcQO+K1Vjwz/hW9ettyKUxBg7qP1Jhi+OjEyGjpkTLZZFa3F?=
- =?us-ascii?Q?u/tUECVWXb2IXd4dT+4qY1pRN18/ejkVrOEjkeIj8ktRwPTohvGpzHvWU/x4?=
- =?us-ascii?Q?0DF12sgWBo0q6i5DwopJaeANQuiuHzWSToJveeroabTwY2Q+4TzMCIVXXSqx?=
- =?us-ascii?Q?C1TDOEWIbNbZLJGY7Cepi/rr8wblNG5fL9ym8ly9luhaQhZhEgkd359NeHQ7?=
- =?us-ascii?Q?dhw61vBTnOhQ4CtLlOwkOURCdG6ORnpV/4zNre2ySCcGqm5kQHCkaNRVfaqQ?=
- =?us-ascii?Q?ZJBSdrV6HJFL7G3IuTuei1AgeAnk8429+oK0/+gaGe+Tx89rZ8jCE8+ml6Ht?=
- =?us-ascii?Q?MWef3azb5iR6epn3lsmHtolC9qYO3fXY40xeFNtGRAo9aLxAWr4MaVQ197lm?=
- =?us-ascii?Q?/DLhyTHN2qoikHMQbmqKCMtsSrORjC5N+Oz8tShyfLUbMc0WVqE+hIpOeFCk?=
- =?us-ascii?Q?rxaxkQP3sIvv2Biy3Nh4NgF46BHQsjV8TpEdn/HKqUP/pXDPMbnJBiCbBWKZ?=
- =?us-ascii?Q?tr8EuFbRQe+I1Wp7xxoZcI6NxlQR0JIEWRGmUps8XP4lRZpT70/ictmcXWq8?=
- =?us-ascii?Q?ZuazsrgrHGLTHHbJkVlyQPcsOaqdvfiGWTZ5+ySuC8YFo2vkNsfH3T9nfs/q?=
- =?us-ascii?Q?rKJTvkoDbSO0HjqtzMTZR7iFpFzOWDTlifI1OcyaeTSev3xQADN1jpuP7xJ8?=
- =?us-ascii?Q?PHNzmj/3TvFd3eJzxQvaiU/KfCgpwr8uBwpPyXOD+nGL/qbrIXR8ogEgKVJQ?=
- =?us-ascii?Q?l0KeewaU5vQCMKAUpkek0yhejCWwa58sJl079FHzysMraluprz2nsQsVe92V?=
- =?us-ascii?Q?GcFqJQI5nn+XaqG0fmoC93pUgzbKMOkOIWZvKWYqGw0uC1IVWBy+GpJ4vYNg?=
- =?us-ascii?Q?kQ0KNFDCITcWXGx1WbQqfm87uBrmD9z7iXfTkOeQzCtGr+apOliEez9ul5Ge?=
- =?us-ascii?Q?jfg+PaK4j2IvoXFTX1TdkvCn7aW2PfL5Fg+8VuM9YzZpenSarqpsa1DSlWsr?=
- =?us-ascii?Q?b1KH02UehTi4XP6yq0TUc3rNtoMgYEDoeYnVimpaqJpKqVZuZCiKKkraI36e?=
- =?us-ascii?Q?kYIJtuIsVZAMfMV1uC7MzL/oE5AmtxvS6063riZ7qKrhqmmtC9UNraWNtyWK?=
- =?us-ascii?Q?S2Pmeb9kz/JK4NqJcauUDJPegbzhiAW/1W2ix5FB/1CyUcOh4yjwZxlMPsEZ?=
- =?us-ascii?Q?ubN5nmKlbvyaiV4ibMRy10nVaQuxZFWhsJXAZ/8pXEvS6YeMj25gtLMvfN28?=
- =?us-ascii?Q?WikQuKzoXKCl+b7YdmH+MH899axsXl2C+0SzkPun6Z/x3WL9D7DI+3X8Hnbf?=
- =?us-ascii?Q?nY3p8SHoS5a8AbNqVdDrDU551Q4OkBzzLIeljCycWlZwk5hx4qTIzXX238Gq?=
- =?us-ascii?Q?LpxyS2motjYXL4shz/tl2upPJpLe3xTXOmAklgLrE3aQSRrNrdY0lfDUwEPo?=
- =?us-ascii?Q?MF3FaGkeUw8Pk8uF/bidTCODj47S4pHN9sVJnYNShRjNJNqwASBNgOJqs980?=
- =?us-ascii?Q?Sj8QQmiaOYzfw9G1AaCFU/lt/qBmQQygbLqFIE2+uSpUwcapWqbZg8sq39lL?=
- =?us-ascii?Q?P/GvBrvRAjGPwWC+j7IgQNmXZFxsMGLeRn77VB4D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6e867979-9387-4b08-24e8-08da7100da80
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR11MB5966.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2022 01:22:50.8928
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IYn+NAr0F8E3dZfbpOnxkFrN/4mcFGE0Doz//htt9/ETdc4/0+Tpjs9NNulIK+Bzd1Gsnb/vcPqoTOTd6jAGhg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR11MB3521
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 6/6] mtd: spi-nor: sysfs: print JEDEC ID for generic flash
+ driver
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
+References: <20220513133520.3945820-1-michael@walle.cc>
+ <20220513133520.3945820-7-michael@walle.cc>
+From:   Takahiro Kuwano <tkuw584924@gmail.com>
+In-Reply-To: <20220513133520.3945820-7-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 07:04:35PM +0000, Sean Christopherson wrote:
-> On Wed, Jul 27, 2022, Yan Zhao wrote:
-> > On Sat, Jul 23, 2022 at 01:23:23AM +0000, Sean Christopherson wrote:
-> > 
-> > <snip>
-> > 
-> > > @@ -386,16 +385,18 @@ static void handle_changed_spte_dirty_log(struct kvm *kvm, int as_id, gfn_t gfn,
-> > >  static void tdp_mmu_unlink_sp(struct kvm *kvm, struct kvm_mmu_page *sp,
-> > >  			      bool shared)
-> > >  {
-> > > +	atomic64_dec(&kvm->arch.tdp_mmu_pages);
-> > > +
-> > > +	if (!sp->nx_huge_page_disallowed)
-> > > +		return;
-> > > +
-> > Does this read of sp->nx_huge_page_disallowed also need to be protected by
-> > tdp_mmu_pages_lock in shared path?
+On 5/13/2022 10:35 PM, Michael Walle wrote:
+> We don't have a database entry for the generic SPI-NOR flash driver and
+> thus we don't have a JEDEC ID to print. Print the (cached) JEDEC ID
+> instead.
 > 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>  drivers/mtd/spi-nor/sysfs.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
-> No, because only one CPU can call tdp_mmu_unlink_sp() for a shadow page.  E.g. in
-> a shared walk, the SPTE is zapped atomically and only the CPU that "wins" gets to
-> unlink the s[.  The extra lock is needed to prevent list corruption, but the
-> sp itself is thread safe.
-> 
-> FWIW, even if that guarantee didn't hold, checking the flag outside of tdp_mmu_pages_lock
-> is safe because false positives are ok.  untrack_possible_nx_huge_page() checks that
-> the shadow page is actually on the list, i.e. it's a nop if a different task unlinks
-> the page first.
-> 
-> False negatives need to be avoided, but nx_huge_page_disallowed is cleared only
-> when untrack_possible_nx_huge_page() is guaranteed to be called, i.e. true false
-> negatives can't occur.
-> 
-> Hmm, but I think there's a missing smp_rmb(), which is needed to ensure
-> nx_huge_page_disallowed is read after observing the shadow-present SPTE (that's
-> being unlinked).  I'll add that in the next version.
+> diff --git a/drivers/mtd/spi-nor/sysfs.c b/drivers/mtd/spi-nor/sysfs.c
+> index 20563c1926f4..c09bb832b3b9 100644
+> --- a/drivers/mtd/spi-nor/sysfs.c
+> +++ b/drivers/mtd/spi-nor/sysfs.c
+> @@ -35,8 +35,10 @@ static ssize_t jedec_id_show(struct device *dev,
+>  	struct spi_device *spi = to_spi_device(dev);
+>  	struct spi_mem *spimem = spi_get_drvdata(spi);
+>  	struct spi_nor *nor = spi_mem_get_drvdata(spimem);
+> +	const u8 *id = nor->info->id_len ? nor->info->id : nor->id;
+> +	u8 id_len = nor->info->id_len ?: SPI_NOR_MAX_ID_LEN;
+>  
+> -	return sysfs_emit(buf, "%*phN\n", nor->info->id_len, nor->info->id);
+> +	return sysfs_emit(buf, "%*phN\n", id_len, id);
+>  }
+>  static DEVICE_ATTR_RO(jedec_id);
+>  
+> @@ -76,7 +78,7 @@ static umode_t spi_nor_sysfs_is_visible(struct kobject *kobj,
+>  
+>  	if (attr == &dev_attr_manufacturer.attr && !nor->manufacturer)
+>  		return 0;
+> -	if (attr == &dev_attr_jedec_id.attr && !nor->info->id_len)
+> +	if (attr == &dev_attr_jedec_id.attr && !nor->info->id_len && !nor->id)
+>  		return 0;
+>  
+>  	return 0444;
 
-It makes sense. Thanks for such detailed explanation!
-
-Thanks
-Yan
+Reviewed-by: Takahiro Kuwano <Takahiro.Kuwano@infineon.com>
