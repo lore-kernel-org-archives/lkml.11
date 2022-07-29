@@ -2,81 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9590BC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:56:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DA85C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 03:00:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233911AbiG2C4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 22:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40782 "EHLO
+        id S233776AbiG2DAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 23:00:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233802AbiG2C4c (ORCPT
+        with ESMTP id S233277AbiG2DAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 22:56:32 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 754582982E
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 19:56:31 -0700 (PDT)
-Received: from [10.130.0.193] (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxOeBXTONiStZAAA--.27204S3;
-        Fri, 29 Jul 2022 10:56:24 +0800 (CST)
-Subject: Re: [PATCH 1/3] LoongArch: Add guess unwinder support
-To:     Jinyang He <hejinyang@loongson.cn>,
-        Qing Zhang <zhangqing@loongson.cn>,
-        Huacai Chen <chenhuacai@kernel.org>
-References: <20220728140519.5420-1-zhangqing@loongson.cn>
- <1288a80b-4038-126f-aec0-74f18cf2fea2@loongson.cn>
- <b49c5d32-81fb-0c56-16cc-8fe6cafa3957@loongson.cn>
-Cc:     WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Jiaxun Yang <jiaxun.yang@flygoat.com>
-From:   Youling Tang <tangyouling@loongson.cn>
-Message-ID: <67911739-b8f3-578f-4d10-7aabb193ddf1@loongson.cn>
-Date:   Fri, 29 Jul 2022 10:56:23 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
- Thunderbird/45.4.0
+        Thu, 28 Jul 2022 23:00:00 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA6178DE8
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 19:59:59 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id b26so4448292wrc.2
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 19:59:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NqOa2ydWKPCFCDt1F37LPTz5eL6WtbCSjhIkDCaOa5c=;
+        b=ig1aLUwDBF5K8r2xiXUpGpnlzg85IiadmuaALx5IUb+9Q9EWw/YjeZJS94s5/tuspY
+         LmJSFgP5e3p4SYbfBq4TBfoIxrTVAaurJdNnpp4SefZUZw/nM3QjI0k2LK33SJzFkUlD
+         xUMLU0Cf0vePKX0nwkOS8+4bbspWWeALobH0c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NqOa2ydWKPCFCDt1F37LPTz5eL6WtbCSjhIkDCaOa5c=;
+        b=0ul+D6YSMkAgGpSRAKyhkXzqzhty3p1eNPClCPVq9lMhQnhvXl50J1rDozEVLOyH6z
+         GNOyVMRDr4pp8Z+zp5OEWPXsfMwPWl6+Vyp+CCwQgdxki91/GdJev6/MKoHWJe1sYjxa
+         l55PHBFXuF2U9jeik1IHD36wLDi04HNK6k/ZqCQgI459H2wFA2HnhSg3fKmckXVQAR+s
+         eX3sTbFrgoAxy00mpZjx+qU9eh9fxvAt/RiWXzTNnJrLQUuxlJK4adwcrBjUB29gYsEK
+         BroMCP0eodNGaWQc6Q9WA7HDG7bhqEvv0PwChjrETtmg9hwk8VZKrDbBWW86sUCiCyxq
+         RlzA==
+X-Gm-Message-State: ACgBeo1qcsBS5cbKMVuTkeFoDC4L5HAg0JcNnQPuX2QPnqWIDZQydZoy
+        bf30e8qjaHIUB++0etirT0BEedeSLwPLArG2msydJg==
+X-Google-Smtp-Source: AA6agR4toWohZGJKI+9YbnPUu2yUsYg/YV9HP/3UFT4/MV/bpns3J4siYJlYs6COKIg0lrGKxz70EhFqqeOtGJX3zu8=
+X-Received: by 2002:a5d:64cc:0:b0:21d:a4bd:fdbe with SMTP id
+ f12-20020a5d64cc000000b0021da4bdfdbemr932345wri.580.1659063598082; Thu, 28
+ Jul 2022 19:59:58 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <b49c5d32-81fb-0c56-16cc-8fe6cafa3957@loongson.cn>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: AQAAf9AxOeBXTONiStZAAA--.27204S3
-X-Coremail-Antispam: 1UD129KBjvdXoW7XF1kWF43Jw43Gw18Kr48JFb_yoWxurX_Za
-        10gasrCr9IqF1vvF15JrWak3y7Ww47XFyDuw4Yq34xJw1ftF4DZrZ29r12va1rWr42yr47
-        W34UZwsavw12vjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbVxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc7I2V7IY0VAS07AlzVAY
-        IcxG8wCY02Avz4vE14v_Gr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr
-        1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE
-        14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
-        IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY
-        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
-        73UjIFyTuYvjfU55rcDUUUU
-X-CM-SenderInfo: 5wdqw5prxox03j6o00pqjv00gofq/
+References: <20220727094034.1372745-1-treapking@chromium.org>
+ <c455adea-2d18-60af-7175-a4e283e3dcb8@collabora.com> <CAEXTbpc7W40-vYcTVTNo7ikQ-n0O246AsbPntNb4q2nBErYVQw@mail.gmail.com>
+ <689b439f-531b-9b3d-2e48-b7b83c50b3dd@collabora.com>
+In-Reply-To: <689b439f-531b-9b3d-2e48-b7b83c50b3dd@collabora.com>
+From:   Pin-yen Lin <treapking@chromium.org>
+Date:   Fri, 29 Jul 2022 10:59:47 +0800
+Message-ID: <CAEXTbperyGnKZw9y_55yE-T5gzuR8yzpTwfg7dy_bvTUhmrOag@mail.gmail.com>
+Subject: Re: [PATCH v2] arm64: dts: mt8173-oak: Switch to SMC watchdog
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eizan Miyamoto <eizan@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Evan Benn <evanbenn@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Jinyang
-
-On 07/29/2022 10:28 AM, Jinyang He wrote:
-> Hi, Youling,
+On Thu, Jul 28, 2022 at 11:51 PM AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com> wrote:
 >
-> [...]
->>> +unsigned long unwind_get_return_address(struct unwind_state *state)
->>> +{
->>> +    if (unwind_done(state))
->>> +        return 0;
->> This judgment can be removed, because unwind_done() has been judged
->> before entering this function, and unwind_get_return_address will not
->> be called if it is true.
-> These unwinder functions are exported by "EXPORT_SYMBOL_GPL".
-> What's more, new ways to use them will be added in the future possible.
-> Assuming has judged unwind_done is not reliable.
-In this case, most of the code will be checked twice by unwind_done(),
-which feels a bit redundant.
+> Il 28/07/22 17:39, Pin-yen Lin ha scritto:
+> > On Thu, Jul 28, 2022 at 7:21 PM AngeloGioacchino Del Regno
+> > <angelogioacchino.delregno@collabora.com> wrote:
+> >>
+> >> Il 27/07/22 11:40, Pin-yen Lin ha scritto:
+> >>> Switch to SMC watchdog because we need direct control of HW watchdog
+> >>> registers from kernel. The corresponding firmware was uploaded in
+> >>> https://review.trustedfirmware.org/c/TF-A/trusted-firmware-a/+/3405.
+> >>>
+> >>> Signed-off-by: Pin-yen Lin <treapking@chromium.org>
+> >>> ---
+> >>>
+> >>> Changes in v2:
+> >>> - Move the modifications to mt8173-elm.dtsi and add some comments.
+> >>>
+> >>>    arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi | 12 ++++++++++++
+> >>>    1 file changed, 12 insertions(+)
+> >>>
+> >>> diff --git a/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi b/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
+> >>> index e21feb85d822..b2269770abc3 100644
+> >>> --- a/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
+> >>> +++ b/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
+> >>> @@ -161,6 +161,18 @@ hdmi_connector_in: endpoint {
+> >>>                        };
+> >>>                };
+> >>>        };
+> >>> +
+> >>> +     soc {
+> >>> +             /*
+> >>> +              * Disable the original MMIO watch dog and switch to the SMC watchdog,
+> >>> +              * which operates on the same MMIO.
+> >>> +              */
+> >>> +             /delete-node/ watchdog@10007000;
+> >>
+> >> Unfortunately, we're not quite there yet.
+> >> The comment is fine, but...
+> >>
+> >> There's no need to /delete-node/: you can just do it like
+> >>
+> >> /*
+> >>    * Disable the original MMIO watch dog and switch to the SMC watchdog,
+> >>    * which operates on the same MMIO.
+> >>    */
+> >> &watchdog {
+> >>          status = "disabled";
+> >> };
+> >>
+> >> and...
+> >>
+> >>> +
+> >>> +             watchdog {
+> >>
+> >> This isn't addressable, hence it belongs to the root node, not to soc.
+> >> If you did that because of naming issues, I would propose to call it
+> >> smc-watchdog instead of watchdog.
+> >>
+> >>
+> >>> +                     compatible = "arm,smc-wdt";
+> >>
+> > Thanks for the suggestion. I'll modify it accordingly in v3.
+> >
+> >> P.S.: No timeout-sec?
+> >
+> > The example in the binding file has a timeout-sec property, but it is
+> > not defined in the binding nor used in the driver...
+> > The driver seems to talk with the firmware to get a timeout value[1]
+> > instead of reading it from the devicetree.
+> >
+>
+> Oh. I admit I trusted the binding blindly, didn't check the actual driver code.
+>
+> On a note, we should check why is that binding partially wrong and eventually
+> fix it (remove the property), or add the capability to the driver, but feel free
+> to ignore that for now, as this is not relevant for the context of this specific
+> change that you're trying to do here.
 
-Thanks,
-Youling
+It looks like the timeout-sec property was not defined nor referenced
+from the very first commit [2][3]. I'll send out another patch to
+remove it.
 
+[2]: dt-bindings:
+https://lore.kernel.org/all/20200505131242.v6.1.Id96574f1f52479d7a2f3b866b8a0552ab8c03d7f@changeid/
+[3]: watchdog driver:
+https://lore.kernel.org/all/20200505131242.v6.2.Ia92bb4d4ce84bcefeba1d00aaa1c1e919b6164ef@changeid/
+>
+> P.S.: I just noticed that the commit title is also wrong. s/mt8173-oak/mt8173-elm/g
+
+I sent out the v3 before I saw this reply.  I'll send out a v4 for
+this and address Krzysztof's comment as well.
+
+>
+> Waiting for a v3!
+>
+>
+> > [1]: https://elixir.bootlin.com/linux/latest/source/drivers/watchdog/arm_smc_wdt.c#L138
+> >>
+> >> Regards,
+> >> Angelo
+> >>
+> >>> +             };
+> >>> +     };
+> >>>    };
+> >>>
+> >>>    &mfg_async {
+> >>>
+> >>
+>
