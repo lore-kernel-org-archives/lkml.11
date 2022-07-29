@@ -2,210 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90866C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 14:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 180D4C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 14:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236867AbiG2OFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 10:05:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47806 "EHLO
+        id S236882AbiG2OGg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 10:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236168AbiG2OFo (ORCPT
+        with ESMTP id S236168AbiG2OGd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 10:05:44 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCE02B2;
-        Fri, 29 Jul 2022 07:05:39 -0700 (PDT)
-Received: from zn.tnic (p57969665.dip0.t-ipconnect.de [87.150.150.101])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 85C5A1EC064F;
-        Fri, 29 Jul 2022 16:05:33 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1659103533;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=6wtiEyhnwQ7c2MaWfnmd32vuHILRm4NtdykTMft2APg=;
-        b=LkOVNw+v4VbRkjGegShFmwunwvJgPjpUYPMZ7rg12mOo9OFzaO8WTK/0ePKnXmN1qT1aTj
-        rxgZFiUPsu8MuaGFZ9r4VmUc7+7fP62xOyb8yWcUwStplhZqIUul8WwUG/soyjQI4qPQXQ
-        H9X+s0nWZXCpBotn4OIJJVOpmVJd+UI=
-Date:   Fri, 29 Jul 2022 16:05:29 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        tony.luck@intel.com, antonio.gomez.iglesias@linux.intel.com,
-        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
-        andrew.cooper3@citrix.com, Josh Poimboeuf <jpoimboe@kernel.org>
-Subject: Re: [RESEND RFC PATCH] x86/bugs: Add "unknown" reporting for MMIO
- Stale Data
-Message-ID: <YuPpKa6OsG9e9nTj@zn.tnic>
-References: <a932c154772f2121794a5f2eded1a11013114711.1657846269.git.pawan.kumar.gupta@linux.intel.com>
- <YuJ6TQpSTIeXLNfB@zn.tnic>
- <20220729022851.mdj3wuevkztspodh@desk>
+        Fri, 29 Jul 2022 10:06:33 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB4132D9A
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 07:06:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=5IjEeQk2j+nPMiWSIvtN9x/RruJpf321jwMLwDJFZTc=; b=BGfR3cb2FkJJ4m916YBe2HiiBQ
+        62mu5kNYyrk4NGLFM08pxuAXb9/zWj8tKfK38OktLZj8XdsbNPAv+cILtLtTZUGyrHQPr1o9q1xML
+        +vxdZwO0PZtgvFxZ4anj7rIypQ2108Z9sQKBkFrKf2kLZT2Dc3wnRIieDQjTuagFAOAOsqzljeRhx
+        EKoWONKa/nQ4MWxO/v4z2h3gyMlkruW3+n7gIYR7rmUo0uA3tWsXWt8LhzXOQKT6vSyijwO7LMfCR
+        uvJTJpK4l/iikzxm3SSXV9s0m6gzfnGppAsz2DU2MlV2dooFJia25MKxg+gUMaQjm+QeXYJCGfLlw
+        DUJerLOQ==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oHQdD-005OII-KS; Fri, 29 Jul 2022 14:06:23 +0000
+Message-ID: <607e46e9-1b4d-c8be-899f-185afdc83f42@infradead.org>
+Date:   Fri, 29 Jul 2022 07:06:21 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220729022851.mdj3wuevkztspodh@desk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: drivers/mux/mmio.c:76:20: error: variable has incomplete type
+ 'struct reg_field'
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>,
+        Aswath Govindraju <a-govindraju@ti.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Vinod Koul <vkoul@kernel.org>
+References: <202207292122.eOyFc13E-lkp@intel.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <202207292122.eOyFc13E-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 07:28:51PM -0700, Pawan Gupta wrote:
-> To keep things simple, can this stay in cpu/common.c?
 
-I know, right?
 
-The gullible maintainer should simply take your half-baked patch so that
-you can check off that box and then he can clean it up later.
+On 7/29/22 06:58, kernel test robot wrote:
+> Hi Aswath,
+> 
+> First bad commit (maybe != root cause):
+> 
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   6e2c0490769ef8a95b61304389116ccc85c53e12
+> commit: e4d4371253029528c02bfb43a46c252e1c3d035f phy: phy-can-transceiver: Add support for setting mux
+> date:   4 months ago
+> config: s390-randconfig-r022-20220729 (https://download.01.org/0day-ci/archive/20220729/202207292122.eOyFc13E-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 8dfaecc4c24494337933aff9d9166486ca0949f1)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install s390 cross compiling tool for clang build
+>         # apt-get install binutils-s390x-linux-gnu
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e4d4371253029528c02bfb43a46c252e1c3d035f
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout e4d4371253029528c02bfb43a46c252e1c3d035f
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/mux/
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
 
-So you've been doing this kernel development thing for a while. Didn't
-it get obvious by now that we don't do half-baked?!
-
-See if this works:
-
----
-diff --git a/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst b/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
-index 9393c50b5afc..14cd3c6ddec6 100644
---- a/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
-+++ b/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
-@@ -230,6 +230,21 @@ The possible values in this file are:
-      * - 'Mitigation: Clear CPU buffers'
-        - The processor is vulnerable and the CPU buffer clearing mitigation is
-          enabled.
-+     * - 'Unknown: CPU is beyond its servicing period'
-+       - The processor vulnerability status is unknown because it is
-+	 out of Servicing period. Mitigation is not attempted.
-+
-+
-+Definitions:
-+------------
-+
-+Servicing period: The process of providing functional and security
-+updates to Intel processors or platforms, utilizing the Intel Platform
-+Update (IPU) process or other similar mechanisms.
-+
-+End of Servicing Updates (ESU): ESU is the date at which Intel will no
-+longer provide Servicing, such as through IPU or other similar update
-+processes. ESU dates will typically be aligned to end of quarter.
- 
- If the processor is vulnerable then the following information is appended to
- the above information:
-diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
-index ea34cc31b047..fe66e94d7b86 100644
---- a/arch/x86/include/asm/cpufeature.h
-+++ b/arch/x86/include/asm/cpufeature.h
-@@ -154,6 +154,7 @@ extern void clear_cpu_cap(struct cpuinfo_x86 *c, unsigned int bit);
- } while (0)
- 
- #define setup_force_cpu_bug(bit) setup_force_cpu_cap(bit)
-+#define setup_clear_cpu_bug(bit) setup_clear_cpu_cap(bit)
- 
- #if defined(__clang__) && !defined(CONFIG_CC_HAS_ASM_GOTO)
- 
-diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-index 5fe7f6c8a7a4..130cb46ecaf9 100644
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -454,7 +454,8 @@
- #define X86_BUG_TAA			X86_BUG(22) /* CPU is affected by TSX Async Abort(TAA) */
- #define X86_BUG_ITLB_MULTIHIT		X86_BUG(23) /* CPU may incur MCE during certain page attribute changes */
- #define X86_BUG_SRBDS			X86_BUG(24) /* CPU may leak RNG bits if not mitigated */
--#define X86_BUG_MMIO_STALE_DATA		X86_BUG(25) /* CPU is affected by Processor MMIO Stale Data vulnerabilities */
--#define X86_BUG_RETBLEED		X86_BUG(26) /* CPU is affected by RETBleed */
-+#define X86_BUG_MMIO_UNKNOWN		X86_BUG(25) /* CPU is too old and its MMIO Stale Data status is unknown */
-+#define X86_BUG_MMIO_STALE_DATA		X86_BUG(26) /* CPU is affected by Processor MMIO Stale Data vulnerabilities */
-+#define X86_BUG_RETBLEED		X86_BUG(27) /* CPU is affected by RETBleed */
- 
- #endif /* _ASM_X86_CPUFEATURES_H */
-diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
-index 6454bc767f0f..a83d1c4265ae 100644
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -433,7 +433,8 @@ static void __init mmio_select_mitigation(void)
- 	u64 ia32_cap;
- 
- 	if (!boot_cpu_has_bug(X86_BUG_MMIO_STALE_DATA) ||
--	    cpu_mitigations_off()) {
-+	     boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN) ||
-+	     cpu_mitigations_off()) {
- 		mmio_mitigation = MMIO_MITIGATION_OFF;
- 		return;
- 	}
-@@ -2247,6 +2248,9 @@ static ssize_t tsx_async_abort_show_state(char *buf)
- 
- static ssize_t mmio_stale_data_show_state(char *buf)
- {
-+	if (boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN))
-+		return sysfs_emit(buf, "Unknown: CPU is beyond its servicing period\n");
-+
- 	if (mmio_mitigation == MMIO_MITIGATION_OFF)
- 		return sysfs_emit(buf, "%s\n", mmio_strings[mmio_mitigation]);
- 
-@@ -2378,6 +2382,7 @@ static ssize_t cpu_show_common(struct device *dev, struct device_attribute *attr
- 		return srbds_show_state(buf);
- 
- 	case X86_BUG_MMIO_STALE_DATA:
-+	case X86_BUG_MMIO_UNKNOWN:
- 		return mmio_stale_data_show_state(buf);
- 
- 	case X86_BUG_RETBLEED:
-@@ -2437,7 +2442,10 @@ ssize_t cpu_show_srbds(struct device *dev, struct device_attribute *attr, char *
- 
- ssize_t cpu_show_mmio_stale_data(struct device *dev, struct device_attribute *attr, char *buf)
- {
--	return cpu_show_common(dev, attr, buf, X86_BUG_MMIO_STALE_DATA);
-+	if (boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN))
-+		return cpu_show_common(dev, attr, buf, X86_BUG_MMIO_UNKNOWN);
-+	else
-+		return cpu_show_common(dev, attr, buf, X86_BUG_MMIO_STALE_DATA);
- }
- 
- ssize_t cpu_show_retbleed(struct device *dev, struct device_attribute *attr, char *buf)
-diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 736262a76a12..fb3e8576a3b4 100644
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -1356,9 +1356,13 @@ static void __init cpu_set_bug_bits(struct cpuinfo_x86 *c)
- 	 * but for virtualization case check for ARCH_CAP MSR bits also, VMM may
- 	 * not want the guest to enumerate the bug.
- 	 */
--	if (cpu_matches(cpu_vuln_blacklist, MMIO) &&
--	    !arch_cap_mmio_immune(ia32_cap))
--		setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
-+	if (boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN)) {
-+		if (cpu_matches(cpu_vuln_blacklist, MMIO) &&
-+		    !arch_cap_mmio_immune(ia32_cap)) {
-+			setup_clear_cpu_bug(X86_BUG_MMIO_UNKNOWN);
-+			setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
-+		}
-+	}
- 
- 	if (!cpu_has(c, X86_FEATURE_BTC_NO)) {
- 		if (cpu_matches(cpu_vuln_blacklist, RETBLEED) || (ia32_cap & ARCH_CAP_RSBA))
-diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
-index 663f6e6dd288..5b2508adc38a 100644
---- a/arch/x86/kernel/cpu/intel.c
-+++ b/arch/x86/kernel/cpu/intel.c
-@@ -372,6 +372,10 @@ static void early_init_intel(struct cpuinfo_x86 *c)
- static void bsp_init_intel(struct cpuinfo_x86 *c)
- {
- 	resctrl_cpu_detect(c);
-+
-+	/* Set on older crap */
-+	if (c->x86_model < INTEL_FAM6_IVYBRIDGE)
-+		setup_force_cpu_bug(X86_BUG_MMIO_UNKNOWN);
- }
- 
- #ifdef CONFIG_X86_32
+Fix is here:
+https://lore.kernel.org/lkml/20220728000550.10495-1-rdunlap@infradead.org/
 
 
 -- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+~Randy
