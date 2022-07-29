@@ -2,193 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61653C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:58:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA234C19F2A
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:59:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239019AbiG2T6K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 15:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38774 "EHLO
+        id S238704AbiG2T7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 15:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238704AbiG2T55 (ORCPT
+        with ESMTP id S238877AbiG2T7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 15:57:57 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D7B87C20
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 12:57:56 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id m20so384908ejx.1
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 12:57:56 -0700 (PDT)
+        Fri, 29 Jul 2022 15:59:21 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443F189E90;
+        Fri, 29 Jul 2022 12:59:20 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id e16so5507993pfm.11;
+        Fri, 29 Jul 2022 12:59:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=W+QN4O2BhXHS+vUE27PDdCSUcq9hnSAP99uK5Xn1FCM=;
-        b=Zj2jLtqa9dUSEbGnR+hTFlVho37WJlcebbvW7QtxZQ0BO9XFH3vP2obk6NtwMZBu9R
-         lvbWvFWpxmZeSay2R3uGC3Gv6F/586vBXsKjvhZu7UkEmvbwxhHNC+8Oiy55snkgH5t7
-         txYnsgBEpnqU+xpfPzP7gA3W/jmyDWqpjGygI=
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=NFtB5w26t9HkZR90SOzX7+kqkeWvxLjJ+yXgD8mSTL8=;
+        b=kYJpRYXcs0BpAHRthkEYWwoGTDm3mg2IhTCkR4+pXmWwRer4oCgrbsopCkvHq0LM29
+         R/83JZRdkn01R58g0pun57DqbGSYw/HZH1VPOvwZguT3WhbOKxdAQrlLPudpkgUqKcwM
+         WzvRgiACgv3i83PuAZchchg6PFEqawodFoJeoEVyghiIc1F5a7pLEjjNEM3XkTOVl6QM
+         3lyw72Of/gic7WcjSDol9kK6p4YGueioQV8Eqa7bbnberY3hawUOz4M0w90Bq+/utMej
+         iszxVewnyBQJJcRcNwtR64xGDAU2crr4BOE2aGQmVfUSc7PpzAPLxangktQU2zOfNI5c
+         2sTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=W+QN4O2BhXHS+vUE27PDdCSUcq9hnSAP99uK5Xn1FCM=;
-        b=fDF/N7cDjTG3zKlDNVuaiMPlQfF5Uy3XsYDK4WOwWyYatLwrp3kybkFaA9KsUcJxrl
-         /zJzSMjux+jWdDgvTHBzzL5sJioVqyITovpgNb/c+HvG5CLsl1L9UPy3flsuXjU972t8
-         lIK2bzGzXZWI7wElM/n5C4yMMGGPl8fKcm+o9yCwpjuTfXrGsZ9ElkTSLWOnvI53wz6X
-         M29rvr+fVQvK6s+SOXHLQcocviSLSjeyY/VO1geGyBodL2J0NBQUBvJwBuxjHK7gs3lF
-         wR0oEQx1NDtRdCvsJLXnjRT664azp/SpG/siLxDkBi2Kd3WEoSro1Te5GfGtRMqqd14h
-         t9uA==
-X-Gm-Message-State: AJIora8aGQzFZ6jIlfrDdKFMYHaMoW3Q+5JRbu8Rwl8tftBdzaVLNJGj
-        sYQ2nlrL0pRU4NTphdTTHw43Jw7f6neo1oz8LmE=
-X-Google-Smtp-Source: AGRyM1sQ95HrjlgqqFsLlxrWLJYE0tJ1VdqmG9X17tMlVzP/Q9ZZfDYn6xXGNH+2sVDJNUBRG3XkcA==
-X-Received: by 2002:a17:906:7e43:b0:72b:52de:b039 with SMTP id z3-20020a1709067e4300b0072b52deb039mr4154117ejr.198.1659124674230;
-        Fri, 29 Jul 2022 12:57:54 -0700 (PDT)
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com. [209.85.128.52])
-        by smtp.gmail.com with ESMTPSA id dk15-20020a0564021d8f00b0043cedad30a5sm2887914edb.21.2022.07.29.12.57.53
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Jul 2022 12:57:53 -0700 (PDT)
-Received: by mail-wm1-f52.google.com with SMTP id 8-20020a05600c024800b003a2fe343db1so2943111wmj.1
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 12:57:53 -0700 (PDT)
-X-Received: by 2002:a05:600c:1e0f:b0:3a3:191c:a3c8 with SMTP id
- ay15-20020a05600c1e0f00b003a3191ca3c8mr3637779wmb.151.1659124672731; Fri, 29
- Jul 2022 12:57:52 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=NFtB5w26t9HkZR90SOzX7+kqkeWvxLjJ+yXgD8mSTL8=;
+        b=aS9wDDVLZ3YQvHLCkfC59vpOQOzqRHW98U+88N0AX0O22oWlaqTIp5IbZKtQS+d08g
+         8H0mBZ35Me3DgLakak6X8vv6E+RkFdCGgvPTMyzbMtGJPgWa2VQxsde7oONEvKBNuk8+
+         N2NjHMul6O12oTU5PjZ4EZJOrOKluIUvfvrETSM3CNU3fFsTqZQTWFY4yEV6qDDCXsRL
+         UBrsFDLvyamYM8KvFY0oduUfvHLSW1SzdMjTPYRn4ogZEsCrvbIHhBvmrGOSrvJUhlsk
+         jBMZkjhshIvFA6hFxgseyuki8ZjQbrmQSDM29XKQ0DdxhhYgB30Wwi2ReZmncBra00jo
+         tWoA==
+X-Gm-Message-State: AJIora/mVHG6h5mT+Y+9E0FnWhdHNZBTsNoU9cOp0eRFdaZa9VYOzLMC
+        QwMOAzgCea17wYYxsjZ9nHI=
+X-Google-Smtp-Source: AGRyM1uAAqMmy0cDuYbePTOONdKdGb8DK8kbeNWw8zXcD7zczWYEGqsXxWFAC4hJ/HSCcYOpu9fDUg==
+X-Received: by 2002:a63:2205:0:b0:417:61fd:cd35 with SMTP id i5-20020a632205000000b0041761fdcd35mr4065690pgi.544.1659124759663;
+        Fri, 29 Jul 2022 12:59:19 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:df80])
+        by smtp.gmail.com with ESMTPSA id d8-20020a17090a7bc800b001f2ef3c7956sm6269020pjl.25.2022.07.29.12.59.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Jul 2022 12:59:18 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Fri, 29 Jul 2022 09:59:17 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Qais Yousef <qais.yousef@arm.com>
+Cc:     Xuewen Yan <xuewen.yan94@gmail.com>,
+        Waiman Long <longman@redhat.com>,
+        Xuewen Yan <xuewen.yan@unisoc.com>, rafael@kernel.org,
+        viresh.kumar@linaro.org, mingo@redhat.com, peterz@infradead.org,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, bristot@redhat.com, linux-kernel@vger.kernel.org,
+        ke.wang@unisoc.com, xuewyan@foxmail.com, linux-pm@vger.kernel.org,
+        Lukasz Luba <Lukasz.Luba@arm.com>, pengcheng.lai@unisoc.com
+Subject: Re: [PATCH] sched/schedutil: Fix deadlock between cpuset and cpu
+ hotplug when using schedutil
+Message-ID: <YuQ8FWtrMsgDmGAr@slm.duckdns.org>
+References: <20220705123705.764-1-xuewen.yan@unisoc.com>
+ <20220711174629.uehfmqegcwn2lqzu@wubuntu>
+ <YsyO9GM9mCydaybo@slm.duckdns.org>
+ <c1426573-92a7-9f0d-a6b8-aa612248b9a9@redhat.com>
+ <Ys41ZF5TmSnLLNRB@slm.duckdns.org>
+ <CAB8ipk-8cbur-m733py-cw4bXCt7gkd8gAOXtKO+-fV1B2EeZw@mail.gmail.com>
+ <YuGbYCfAG81mZBnN@slm.duckdns.org>
+ <CAB8ipk_gCLtvEahsp2DvPJf4NxRsM8WCYmmH=yTd7zQE+81_Yg@mail.gmail.com>
+ <20220729083949.6uaojl3vqyvwpkuk@wubuntu>
 MIME-Version: 1.0
-References: <20220721152314.RFC.1.Ie333b3e4aff6e4a5b58c4aa805e030e561be8773@changeid>
- <269f2610-425b-f296-dcfc-89bdc2e1d587@quicinc.com> <CAD=FV=XSVXasU5PMR2kL0WQjQ458xDePuTGd1m14_v9JO5B6oA@mail.gmail.com>
- <CAF6AEGv_Vikf80v-7ccz90fvGPrk5pV1tOxRoWKxKHYuEW8=aA@mail.gmail.com>
- <5c8ca71c-5f0b-d5f5-9f16-e312dec0d01b@quicinc.com> <CAD=FV=UGYV1mZenDCRrbpC+gpE12-Uis7fm_=H3PeEjK=t36yA@mail.gmail.com>
- <20220729075118.ofnpk52tk4usm3n3@penduick> <CAD=FV=WUB68-DQ-pAFjGaG-kid33ve4Qc3iqb8OUh61xTBohmg@mail.gmail.com>
- <20220729164136.opucqg64qz4ypmvo@penduick>
-In-Reply-To: <20220729164136.opucqg64qz4ypmvo@penduick>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 29 Jul 2022 12:57:40 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UKYksHjuVR27DPdUFFtJrQKB2KbT08qjeYLNW_3y_Mfg@mail.gmail.com>
-Message-ID: <CAD=FV=UKYksHjuVR27DPdUFFtJrQKB2KbT08qjeYLNW_3y_Mfg@mail.gmail.com>
-Subject: Re: [RFC PATCH] drm/edid: Make 144 Hz not preferred on Sharp LQ140M1JW46
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Rob Clark <robdclark@gmail.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220729083949.6uaojl3vqyvwpkuk@wubuntu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, Jul 29, 2022 at 09:39:49AM +0100, Qais Yousef wrote:
+> I *think* it's because we haven't removed cpus_read_lock() from
+> cpuset_attach(). So we end up holding the lock twice in the same path. Since we
+> hold it unconditionally now, we should remove cpuset dependency on
+> cpus_read_lock() I believe.
 
-On Fri, Jul 29, 2022 at 9:41 AM Maxime Ripard <maxime@cerno.tech> wrote:
->
-> On Fri, Jul 29, 2022 at 07:50:20AM -0700, Doug Anderson wrote:
-> > On Fri, Jul 29, 2022 at 12:51 AM Maxime Ripard <maxime@cerno.tech> wrote:
-> > >
-> > > On Thu, Jul 28, 2022 at 02:18:38PM -0700, Doug Anderson wrote:
-> > > > Hi,
-> > > >
-> > > > On Thu, Jul 28, 2022 at 10:34 AM Abhinav Kumar
-> > > > <quic_abhinavk@quicinc.com> wrote:
-> > > > >
-> > > > > Hi Rob and Doug
-> > > > >
-> > > > > On 7/22/2022 10:36 AM, Rob Clark wrote:
-> > > > > > On Fri, Jul 22, 2022 at 9:48 AM Doug Anderson <dianders@chromium.org> wrote:
-> > > > > >>
-> > > > > >> Hi,
-> > > > > >>
-> > > > > >> On Fri, Jul 22, 2022 at 9:37 AM Abhinav Kumar <quic_abhinavk@quicinc.com> wrote:
-> > > > > >>>
-> > > > > >>> + sankeerth
-> > > > > >>>
-> > > > > >>> Hi Doug
-> > > > > >>>
-> > > > > >>> On 7/21/2022 3:23 PM, Douglas Anderson wrote:
-> > > > > >>>> The Sharp LQ140M1JW46 panel is on the Qualcomm sc7280 CRD reference
-> > > > > >>>> board. This panel supports 144 Hz and 60 Hz. In the EDID, the 144 Hz
-> > > > > >>>> mode is listed first and thus is marked preferred. The EDID decode I
-> > > > > >>>> ran says:
-> > > > > >>>>
-> > > > > >>>>     First detailed timing includes the native pixel format and preferred
-> > > > > >>>>     refresh rate.
-> > > > > >>>>
-> > > > > >>>>     ...
-> > > > > >>>>
-> > > > > >>>>     Detailed Timing Descriptors:
-> > > > > >>>>       DTD 1:  1920x1080  143.981 Hz  16:9   166.587 kHz  346.500 MHz
-> > > > > >>>>                    Hfront   48 Hsync  32 Hback  80 Hpol N
-> > > > > >>>>                    Vfront    3 Vsync   5 Vback  69 Vpol N
-> > > > > >>>>       DTD 2:  1920x1080   59.990 Hz  16:9    69.409 kHz  144.370 MHz
-> > > > > >>>>                    Hfront   48 Hsync  32 Hback  80 Hpol N
-> > > > > >>>>                    Vfront    3 Vsync   5 Vback  69 Vpol N
-> > > > > >>>>
-> > > > > >>>> I'm proposing here that the above is actually a bug and that the 60 Hz
-> > > > > >>>> mode really should be considered preferred by Linux.
-> > > > >
-> > > > > Its a bit tricky to say that this is a bug but I think we can certainly
-> > > > > add here that for an internal display we would have ideally had the
-> > > > > lower resolution first to indicate it as default.
-> > > >
-> > > > Yeah, it gets into the vagueness of the EDID spec in general. As far
-> > > > as I can find it's really up to the monitor to decide by what means it
-> > > > chooses the "preferred" refresh rate if the monitor can support many.
-> > > > Some displays may decide that the normal rate is "preferred" and some
-> > > > may decide that the high refresh rate is "preferred". Neither display
-> > > > is "wrong" per say, but it's nice to have some consistency here and to
-> > > > make it so that otherwise "dumb" userspace will get something
-> > > > reasonable by default. I'll change it to say:
-> > > >
-> > > > While the EDID spec appears to allow a display to use any criteria for
-> > > > picking which refresh mode is "preferred" or "optimal", that vagueness
-> > > > is a bit annoying. From Linux's point of view let's choose the 60 Hz
-> > > > one as the default.
-> > >
-> > > And if we start making that decision, it should be for all panels with a
-> > > similar constraint, so most likely handled by the core, and the new
-> > > policy properly documented.
-> > >
-> > > Doing that just for a single panel is weird.
-> >
-> > Yeah, though having a "general policy" in the core can be problematic.
-> >
-> > In general I think panel EDIDs are only trustworthy as far as you can
-> > throw them. They are notorious for having wrong and incorrect
-> > information, which is why the EDID quirk list exists to begin with.
-> > Trying to change how we're going to interpret all EDIDs, even all
-> > EDIDs for eDP panels, seems like it will break someone somewhere.
-> > Maybe there are EDIDs out there that were only ever validated at the
-> > higher refresh rate and they don't work / flicker / cause digitizer
-> > noise at the lower refresh rate. Heck, we've seen eDP panel vendors
-> > that can't even get their checksum correct, so I'm not sure I want to
-> > make a global assertion that all panels validated their "secondary"
-> > display mode.
-> >
-> > In this particular case, we have validated that this particular Sharp
-> > panel works fine at the lower refresh rate.
-> >
-> > I would also note that, as far as I understand it, ODMs actually can
-> > request different EDIDs from the panel vendors. In the past we have
-> > been able to get panel vendors to change EDIDs. Thus for most panels
-> > I'd expect that we would discover this early, change the EDID default,
-> > and be done with it. The case here is a little unusual in that by the
-> > time we got involved and started digging into this panel too many were
-> > created and nobody wants to throw away those old panels. This is why
-> > I'm treating it as a quirk/bug. Really: we should have updated the
-> > EDID of the panel but we're unable to in this case.
->
-> You raise some good points, but most of the discussion around that patch
-> were mostly around performances, power consumption and so on.
->
-> This is very much a policy decision, and if there is some panel where
-> the EDID reports 60Hz but is broken, then that panel should be the
-> exception to the policy
->
-> But doing it for a single panel is just odd
+Ah, yeah, that's because pending write locker makes future reader lockers
+wait, so even if we're holding read lock, if we try to read lock again, we
+end up waiting. I'll make the cpus_read_lock() unconditional in cgroup core
+and drop it from cpuset's attach operation.
 
-OK, fair enough. I'll abandon this patch at least as far as mainline
-is concerned, then.
+Thanks.
 
--Doug
+-- 
+tejun
