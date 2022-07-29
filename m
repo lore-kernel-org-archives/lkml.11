@@ -2,121 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2759C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 11:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 766FDC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 12:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235694AbiG2L4f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 07:56:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36412 "EHLO
+        id S236039AbiG2MAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 08:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230456AbiG2L4c (ORCPT
+        with ESMTP id S235852AbiG2MAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 07:56:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D9D587C13
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 04:56:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 29 Jul 2022 08:00:12 -0400
+Received: from relay02.th.seeweb.it (relay02.th.seeweb.it [IPv6:2001:4b7a:2000:18::163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B10222653
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 05:00:09 -0700 (PDT)
+Received: from [192.168.1.101] (abxi232.neoplus.adsl.tpnet.pl [83.9.2.232])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6267EB827B2
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 11:56:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CA64C433D6;
-        Fri, 29 Jul 2022 11:56:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659095788;
-        bh=FpYePSzwbplmdejBdMeFXedH1y4tEBzFKTXBCQoAWik=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=avOTw1qKxp2kxtkPw0Tj9xfHq7/K8LzDFt/K5FwBz/Fjz4erlkFV+62wjnSul0Mqg
-         QOZ+wJQ/RZorKDFnLxxTKybba94kd0In85d5ehje2UN5VIRpWS8Cyej/u3tn5XJVCp
-         jNQ3SYPY4w/A+bnVYL8t4MqIydllLvNTNuBjWvzg=
-Date:   Fri, 29 Jul 2022 13:56:25 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Cc:     kah.jing.lee@intel.com, linux-kernel@vger.kernel.org,
-        arnd@arndb.de, rafael.j.wysocki@intel.com, tien.sung.ang@intel.com,
-        dinh.nguyen@intel.com, Zhou@kroah.com,
-        Furong <furong.zhou@intel.com>, Vinod Koul <vkoul@kernel.org>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>
-Subject: Re: [PATCH v2 1/3] drivers: misc: intel_sysid: Add sysid from arch
- to drivers
-Message-ID: <YuPK6cvPJvL+L3/t@kroah.com>
-References: <20220721123017.416438-1-kah.jing.lee@intel.com>
- <20220721123149.416618-1-kah.jing.lee@intel.com>
- <YuJAll2MEgKF0MVM@kroah.com>
- <be3f189e-c17c-2438-450d-3d84dfcd71da@linux.intel.com>
- <YuKyTKHk3c7DibX3@kroah.com>
- <7686403c-7252-ef7a-70fc-040c5ab8cb79@linux.intel.com>
- <YuPH+4zMImvY8C0A@kroah.com>
+        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id CEE251F9C3;
+        Fri, 29 Jul 2022 14:00:04 +0200 (CEST)
+Message-ID: <a8fa9e22-8c3f-60b2-a0db-01cfd5c37765@somainline.org>
+Date:   Fri, 29 Jul 2022 14:00:02 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YuPH+4zMImvY8C0A@kroah.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 7/7] arm64: dts: mediatek: Add support for MT6795 Sony
+ Xperia M5 smartphone
+Content-Language: en-US
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, robh+dt@kernel.org
+Cc:     krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org,
+        chaotian.jing@mediatek.com, ulf.hansson@linaro.org,
+        matthias.bgg@gmail.com, hsinyi@chromium.org,
+        nfraprado@collabora.com, allen-kh.cheng@mediatek.com,
+        fparent@baylibre.com, sam.shih@mediatek.com,
+        sean.wang@mediatek.com, long.cheng@mediatek.com,
+        wenbin.mei@mediatek.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, phone-devel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht
+References: <20220729104441.39177-1-angelogioacchino.delregno@collabora.com>
+ <20220729104441.39177-8-angelogioacchino.delregno@collabora.com>
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <20220729104441.39177-8-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 01:43:55PM +0200, Greg KH wrote:
-> On Thu, Jul 28, 2022 at 11:53:33AM -0500, Pierre-Louis Bossart wrote:
-> > 
-> > 
-> > On 7/28/22 10:59, Greg KH wrote:
-> > > On Thu, Jul 28, 2022 at 10:37:37AM -0500, Pierre-Louis Bossart wrote:
-> > >> Thanks for the review Greg,
-> > >>
-> > >>>> +static int intel_sysid_probe(struct platform_device *pdev)
-> > >>>> +{
-> > >>>> +	struct intel_sysid *sysid;
-> > >>>> +	struct resource	*regs;
-> > >>>> +
-> > >>>> +	sysid = devm_kzalloc(&pdev->dev, sizeof(struct intel_sysid),
-> > >>>> +		GFP_KERNEL);
-> > >>>> +	if (!sysid)
-> > >>>> +		return -ENOMEM;
-> > >>>> +
-> > >>>> +	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > >>>> +	if (!regs)
-> > >>>> +		return -ENXIO;
-> > >>>> +
-> > >>>> +	sysid->regs = devm_ioremap_resource(&pdev->dev, regs);
-> > >>>> +	if (IS_ERR(sysid->regs))
-> > >>>> +		return PTR_ERR(sysid->regs);
-> > >>>> +
-> > >>>> +	platform_set_drvdata(pdev, sysid);
-> > >>>> +
-> > >>>> +	return devm_device_add_group(&pdev->dev, &intel_sysid_attr_group);
-> > >>>
-> > >>> You just raced with userspace and lost.  Please use the default group
-> > >>> for the platform device.
-> > >>>
-> > >>> I need to go remove this function, it should not be used at all as it is
-> > >>> broken.
-> > >>
-> > >> Can you elaborate on the issue and suggested replacement?
-> > >>
-> > >> We used this function for the SoundWire sysfs based on your review
-> > >> comments (2 years ago?) that we should not muck with kobj, and that
-> > >> function devm_device_add_group() is also used in a probe function.
-> > > 
-> > > Use the default_groups pointer in the driver structure.
-> > 
-> > did you mean dev_groups?
-> 
-> Yes, sorry, that's the correct name.
-> 
-> > I am not following the idea, for SoundWire all the attributes are really
-> > device-specific or described by ACPI and cannot be hard-coded in the
-> > driver structure.
-> 
-> That's what the is_visible() callback is for in the groups structure,
-> you determine if the attribute is visable or not at runtime, you don't
-> rely on the driver itself to add/remove attributes, that does not scale
-> and again, is racy.
 
-In looking at your attribute code, ick, you dynamically create a ton of
-them.  But for the ones that you do not, you can just have the driver
-core add them.  Let me make up a patch that shows what I am thinking
-of...
 
-thanks,
+On 29.07.2022 12:44, AngeloGioacchino Del Regno wrote:
+> Add a basic support for the Sony Xperia M5 (codename "Holly")
+> smartphone, powered by a MediaTek Helio X10 SoC.
+> 
+> This achieves a console boot.
+> 
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>  arch/arm64/boot/dts/mediatek/Makefile         |  1 +
+>  .../dts/mediatek/mt6795-sony-xperia-m5.dts    | 90 +++++++++++++++++++
+>  2 files changed, 91 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/mediatek/mt6795-sony-xperia-m5.dts
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
+> index af362a085a02..72fd683c9264 100644
+> --- a/arch/arm64/boot/dts/mediatek/Makefile
+> +++ b/arch/arm64/boot/dts/mediatek/Makefile
+> @@ -3,6 +3,7 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt2712-evb.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6755-evb.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6779-evb.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-evb.dtb
+> +dtb-$(CONFIG_ARCH_MEDIATEK) += mt6795-sony-xperia-m5.dtb
+-holly.dtb?
 
-greg k-h
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6797-evb.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt6797-x20-dev.dtb
+>  dtb-$(CONFIG_ARCH_MEDIATEK) += mt7622-rfb1.dtb
+> diff --git a/arch/arm64/boot/dts/mediatek/mt6795-sony-xperia-m5.dts b/arch/arm64/boot/dts/mediatek/mt6795-sony-xperia-m5.dts
+> new file mode 100644
+> index 000000000000..94d011c4126c
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt6795-sony-xperia-m5.dts
+> @@ -0,0 +1,90 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (c) 2022, Collabora Ltd
+> + * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> + */
+> +
+> +/dts-v1/;
+> +#include "mt6795.dtsi"
+> +
+> +#include <dt-bindings/gpio/gpio.h>
+Looks unused.
+
+> +
+> +/ {
+> +	model = "Sony Xperia M5";
+> +	compatible = "sony,xperia-m5", "mediatek,mt6795";
+sony,holly?
+
+> +	chassis-type = "handset";
+> +
+> +	aliases {
+> +		mmc0 = &mmc0;
+> +		mmc1 = &mmc1;
+> +		serial0 = &uart0;
+> +		serial1 = &uart1;
+> +	};
+> +
+> +	memory@40000000 {
+> +		device_type = "memory";
+> +		reg = <0 0x40000000 0 0x1E800000>;
+Lowercase hex in size. Also, doesn't the bootloader fill it in?
+
+> +	};
+> +
+> +	reserved_memory: reserved-memory {
+> +		#address-cells = <2>;
+> +		#size-cells = <2>;
+> +		ranges;
+> +
+> +		/* 128 KiB reserved for ARM Trusted Firmware (BL31) */
+Is that true for all devices with this SoC, or..? If so, it may be worth
+moving this into mt6795.dtsi.
+
+> +		bl31_secmon_reserved: secmon@43000000 {
+memory@, everywhere. Use labels to name the nodes.
+
+> +			no-map;
+reg goes first.
+> +			reg = <0 0x43000000 0 0x30000>;
+> +		};
+> +
+> +		/* preloader and bootloader regions cannot be touched */
+> +		preloader-region@44800000 {
+> +			no-map;
+> +			reg = <0 0x44800000 0 0x100000>;
+> +		};
+> +
+> +		bootloader-region@46000000 {
+> +			no-map;
+> +			reg = <0 0x46000000 0 0x400000>;
+> +		};
+> +	};
+> +};
+> +
+> +&pio {
+> +	uart0_pins: uart0-pins {
+> +		pins-rx {
+> +			pinmux = <PINMUX_GPIO113__FUNC_URXD0>;
+> +			bias-pull-up;
+> +			input-enable;
+> +		};
+> +		pins-tx {
+> +			pinmux = <PINMUX_GPIO114__FUNC_UTXD0>;
+> +			output-high;
+> +		};
+> +	};
+> +
+> +	uart2_pins: uart2-pins {
+> +		pins-rx {
+> +			pinmux = <PINMUX_GPIO31__FUNC_URXD2>;
+> +			bias-pull-up;
+> +			input-enable;
+> +		};
+> +		pins-tx {
+> +			pinmux = <PINMUX_GPIO32__FUNC_UTXD2>;
+> +		};
+> +	};
+> +};
+> +
+> +&uart0 {
+> +	status = "okay";
+Status last here and below, please.
+
+Konrad
+> +
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&uart0_pins>;
+> +};
+> +
+> +&uart2 {
+> +	status = "okay";
+> +
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&uart2_pins>;
+> +};
+> 
