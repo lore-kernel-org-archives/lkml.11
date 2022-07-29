@@ -2,112 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F64FC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:21:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13243C19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237091AbiG2PVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 11:21:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48934 "EHLO
+        id S237547AbiG2PV0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 11:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237401AbiG2PUx (ORCPT
+        with ESMTP id S237336AbiG2PVD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 11:20:53 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1858F82FA0;
-        Fri, 29 Jul 2022 08:20:48 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4275B1063;
-        Fri, 29 Jul 2022 08:20:48 -0700 (PDT)
-Received: from [192.168.122.164] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 53E383F73B;
-        Fri, 29 Jul 2022 08:20:47 -0700 (PDT)
-Message-ID: <a0bdc45a-c5c6-65ba-1ab8-e52dd26652d7@arm.com>
-Date:   Fri, 29 Jul 2022 10:20:46 -0500
+        Fri, 29 Jul 2022 11:21:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E0183F21;
+        Fri, 29 Jul 2022 08:20:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E428761C1D;
+        Fri, 29 Jul 2022 15:20:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDD8FC433D6;
+        Fri, 29 Jul 2022 15:20:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659108050;
+        bh=7nfK78goH26HqmvO0NW5KkE6ojbgGgFVAf51Cgqvpds=;
+        h=From:To:Cc:Subject:Date:From;
+        b=b40/AjPZuDnsCBWHFIHThFKzODrld4hwnGUxh0JYRSf7I8+7KiWYO2OfSj4kqrFn/
+         4PQNJAmpm4GX9NoFOqjiOugMpg2FZaV3E9Q3QWTRtgf6SvWiokqDuNy23zD8apqJRV
+         Cljjtmzy4+T4sBiAyfhJEIb52Y0VlTURwlb72xfk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, stable@vger.kernel.org
+Cc:     lwn@lwn.net, jslaby@suse.cz,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Linux 4.19.254
+Date:   Fri, 29 Jul 2022 17:20:31 +0200
+Message-Id: <165910803220811@kroah.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2 1/1] ACPI: CPPC: Disable FIE if registers in PCC
- regions
-Content-Language: en-US
-To:     Punit Agrawal <punit.agrawal@bytedance.com>
-Cc:     linux-pm@vger.kernel.org, rafael@kernel.org, lenb@kernel.org,
-        viresh.kumar@linaro.org, robert.moore@intel.com, devel@acpica.org,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220728221043.4161903-1-jeremy.linton@arm.com>
- <20220728221043.4161903-2-jeremy.linton@arm.com> <871qu4krb4.fsf@stealth>
-From:   Jeremy Linton <jeremy.linton@arm.com>
-In-Reply-To: <871qu4krb4.fsf@stealth>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+I'm announcing the release of the 4.19.254 kernel.
 
-On 7/29/22 07:59, Punit Agrawal wrote:
-> Hi Jeremy,
-> 
-> One comment / query below.
-> 
-> Jeremy Linton <jeremy.linton@arm.com> writes:
-> 
->> PCC regions utilize a mailbox to set/retrieve register values used by
->> the CPPC code. This is fine as long as the operations are
->> infrequent. With the FIE code enabled though the overhead can range
->> from 2-11% of system CPU overhead (ex: as measured by top) on Arm
->> based machines.
->>
->> So, before enabling FIE assure none of the registers used by
->> cppc_get_perf_ctrs() are in the PCC region. Furthermore lets also
->> enable a module parameter which can also disable it at boot or module
->> reload.
->>
->> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
->> ---
->>   drivers/acpi/cppc_acpi.c       | 41 ++++++++++++++++++++++++++++++++++
->>   drivers/cpufreq/cppc_cpufreq.c | 19 ++++++++++++----
->>   include/acpi/cppc_acpi.h       |  5 +++++
->>   3 files changed, 61 insertions(+), 4 deletions(-)
->>
-> 
-> [...]
-> 
->> diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
->> index 24eaf0ec344d..ed607e27d6bb 100644
->> --- a/drivers/cpufreq/cppc_cpufreq.c
->> +++ b/drivers/cpufreq/cppc_cpufreq.c
-> 
-> [...]
-> 
->> @@ -229,7 +233,12 @@ static void __init cppc_freq_invariance_init(void)
->>   	};
->>   	int ret;
->>   
->> -	if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
->> +	if (cppc_perf_ctrs_in_pcc()) {
->> +		pr_debug("FIE not enabled on systems with registers in PCC\n");
-> 
-> The message should probably be promoted to a pr_info() and exposed as
-> part of the kernel logs. It is a change in the default behaviour we've
-> had until now. The message will provide some hint about why it was
-> disabled.
-> 
-> Thoughts?
+All users of the 4.19 kernel series must upgrade.
 
-I personally flip flopped between making it pr_info or pr_debug and 
-settled on debug because no one else was complaining about the cppc_fie 
-consumption. Which to me, meant that the users of platforms utilizing 
-PCC regions weren't sensitive to the problem, or weren't yet running a 
-distro/kernel with it enabled, or any number of other reasons why the 
-problem wasn't getting more attention. Mostly I concluded the FIE code 
-hadn't shown up in "enterprise" distros yet..
+The updated 4.19.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.19.y
+and can be browsed at the normal kernel.org git web browser:
+	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
+thanks,
 
-But, yah, if no one is going to complain about the extra messages 
-pr_info() is a better plan.
+greg k-h
 
-Thanks for looking at this!
+------------
 
+ Makefile                                          |    2 
+ arch/alpha/kernel/srmcons.c                       |    2 
+ arch/riscv/Makefile                               |    1 
+ drivers/char/random.c                             |    4 
+ drivers/gpu/drm/tilcdc/tilcdc_crtc.c              |   28 ++---
+ drivers/gpu/drm/tilcdc/tilcdc_drv.c               |    1 
+ drivers/gpu/drm/tilcdc/tilcdc_drv.h               |    2 
+ drivers/gpu/drm/tilcdc/tilcdc_external.c          |   96 ++----------------
+ drivers/gpu/drm/tilcdc/tilcdc_external.h          |    1 
+ drivers/gpu/drm/tilcdc/tilcdc_panel.c             |    9 -
+ drivers/gpu/drm/tilcdc/tilcdc_tfp410.c            |    9 -
+ drivers/hid/hid-ids.h                             |    2 
+ drivers/hid/hid-multitouch.c                      |  112 ++++++++++++----------
+ drivers/hid/hid-quirks.c                          |    1 
+ drivers/i2c/busses/i2c-cadence.c                  |   30 -----
+ drivers/net/ethernet/emulex/benet/be_cmds.c       |   10 -
+ drivers/net/ethernet/emulex/benet/be_cmds.h       |    2 
+ drivers/net/ethernet/emulex/benet/be_ethtool.c    |   31 +++---
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c |    3 
+ drivers/net/usb/ax88179_178a.c                    |   16 +--
+ drivers/pci/controller/pci-hyperv.c               |  100 ++++++++++++++++---
+ drivers/power/reset/arm-versatile-reboot.c        |    1 
+ drivers/s390/char/keyboard.h                      |    4 
+ drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c   |    2 
+ drivers/staging/speakup/spk_ttyio.c               |    4 
+ drivers/tty/cyclades.c                            |    6 -
+ drivers/tty/goldfish.c                            |    2 
+ drivers/tty/moxa.c                                |    4 
+ drivers/tty/pty.c                                 |   14 --
+ drivers/tty/serial/lpc32xx_hs.c                   |    2 
+ drivers/tty/serial/mvebu-uart.c                   |   25 ++--
+ drivers/tty/tty_buffer.c                          |   66 ++++++++----
+ drivers/tty/vt/keyboard.c                         |    6 -
+ drivers/tty/vt/vt.c                               |    2 
+ drivers/xen/gntdev.c                              |    3 
+ fs/dlm/lock.c                                     |    3 
+ include/linux/tty_flip.h                          |    4 
+ include/net/bluetooth/bluetooth.h                 |   65 ++++++++++++
+ include/net/inet_sock.h                           |    5 
+ include/net/ip.h                                  |    4 
+ include/net/tcp.h                                 |    9 -
+ kernel/bpf/core.c                                 |    8 -
+ kernel/events/core.c                              |   45 ++++++--
+ mm/mempolicy.c                                    |    2 
+ net/bluetooth/rfcomm/core.c                       |   50 ++++++++-
+ net/bluetooth/rfcomm/sock.c                       |   46 +--------
+ net/bluetooth/sco.c                               |   30 +----
+ net/ipv4/af_inet.c                                |    2 
+ net/ipv4/igmp.c                                   |   23 ++--
+ net/ipv4/route.c                                  |    2 
+ net/ipv4/tcp.c                                    |   10 +
+ net/ipv4/tcp_fastopen.c                           |    4 
+ net/ipv4/tcp_input.c                              |   19 ++-
+ net/ipv4/tcp_ipv4.c                               |    2 
+ net/ipv4/tcp_metrics.c                            |    3 
+ net/ipv4/tcp_minisocks.c                          |    2 
+ net/ipv4/tcp_output.c                             |   14 +-
+ net/ipv4/tcp_recovery.c                           |    6 -
+ net/ipv4/tcp_timer.c                              |   14 +-
+ net/sctp/protocol.c                               |    2 
+ net/tls/tls_device.c                              |    8 -
+ net/xfrm/xfrm_policy.c                            |    5 
+ security/integrity/ima/Kconfig                    |   12 --
+ sound/core/memalloc.c                             |    1 
+ 64 files changed, 554 insertions(+), 449 deletions(-)
 
+Alexander Aring (1):
+      dlm: fix pending remove if msg allocation fails
+
+Ben Dooks (1):
+      riscv: add as-options for modules with assembly compontents
+
+Benjamin Tissoires (2):
+      HID: multitouch: simplify the application retrieval
+      HID: multitouch: add support for the Smart Tech panel
+
+Demi Marie Obenour (1):
+      xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
+
+Eric Dumazet (1):
+      bpf: Make sure mac_header was set before using it
+
+GUO Zihua (1):
+      ima: remove the IMA_TEMPLATE Kconfig option
+
+Greg Kroah-Hartman (1):
+      Linux 4.19.254
+
+Hangyu Hua (1):
+      xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
+
+Hristo Venev (1):
+      be2net: Fix buffer overflow in be_get_module_eeprom
+
+Jason A. Donenfeld (1):
+      Revert "Revert "char/random: silence a lockdep splat with printk()""
+
+Jeffrey Hugo (4):
+      PCI: hv: Fix multi-MSI to allow more than one MSI vector
+      PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
+      PCI: hv: Reuse existing IRTE allocation in compose_msi_msg()
+      PCI: hv: Fix interrupt mapping for multi-MSI
+
+Jiri Slaby (5):
+      tty: drivers/tty/, stop using tty_schedule_flip()
+      tty: the rest, stop using tty_schedule_flip()
+      tty: drop tty_schedule_flip()
+      tty: extract tty_flip_buffer_commit() from tty_flip_buffer_push()
+      tty: use new tty_insert_flip_string_and_push_buffer() in pty_write()
+
+Jose Alonso (1):
+      net: usb: ax88179_178a needs FLAG_SEND_ZLP
+
+Junxiao Chang (1):
+      net: stmmac: fix dma queue left shift overflow issue
+
+Jyri Sarha (1):
+      drm/tilcdc: Remove obsolete crtc_mode_valid() hack
+
+Kuniyuki Iwashima (22):
+      ip: Fix data-races around sysctl_ip_fwd_use_pmtu.
+      ip: Fix data-races around sysctl_ip_nonlocal_bind.
+      ip: Fix a data-race around sysctl_fwmark_reflect.
+      tcp/dccp: Fix a data-race around sysctl_tcp_fwmark_accept.
+      tcp: Fix data-races around sysctl_tcp_mtu_probing.
+      tcp: Fix a data-race around sysctl_tcp_probe_threshold.
+      tcp: Fix a data-race around sysctl_tcp_probe_interval.
+      igmp: Fix data-races around sysctl_igmp_llm_reports.
+      igmp: Fix a data-race around sysctl_igmp_max_memberships.
+      tcp: Fix data-races around sysctl_tcp_reordering.
+      tcp: Fix data-races around some timeout sysctl knobs.
+      tcp: Fix a data-race around sysctl_tcp_notsent_lowat.
+      tcp: Fix a data-race around sysctl_tcp_tw_reuse.
+      tcp: Fix data-races around sysctl_tcp_fastopen.
+      tcp: Fix a data-race around sysctl_tcp_early_retrans.
+      tcp: Fix data-races around sysctl_tcp_recovery.
+      tcp: Fix a data-race around sysctl_tcp_thin_linear_timeouts.
+      tcp: Fix data-races around sysctl_tcp_slow_start_after_idle.
+      tcp: Fix a data-race around sysctl_tcp_retrans_collapse.
+      tcp: Fix a data-race around sysctl_tcp_stdurg.
+      tcp: Fix a data-race around sysctl_tcp_rfc1337.
+      tcp: Fix data-races around sysctl_tcp_max_reordering.
+
+Luiz Augusto von Dentz (7):
+      Bluetooth: Add bt_skb_sendmsg helper
+      Bluetooth: Add bt_skb_sendmmsg helper
+      Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg
+      Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg
+      Bluetooth: Fix passing NULL to PTR_ERR
+      Bluetooth: SCO: Fix sco_send_frame returning skb->len
+      Bluetooth: Fix bt_skb_sendmmsg not allocating partial chunks
+
+Miaoqian Lin (1):
+      power/reset: arm-versatile: Fix refcount leak in versatile_reboot_probe
+
+Mikael Wikström (1):
+      HID: multitouch: Lenovo X1 Tablet Gen3 trackpoint and buttons
+
+Pali Rohár (1):
+      serial: mvebu-uart: correctly report configured baudrate value
+
+Peter Zijlstra (1):
+      perf/core: Fix data race between perf_event_set_output() and perf_mmap_close()
+
+Robert Hancock (1):
+      i2c: cadence: Change large transfer count reset logic to be unconditional
+
+Takashi Iwai (1):
+      ALSA: memalloc: Align buffer allocations in page size
+
+Tariq Toukan (1):
+      net/tls: Fix race in TLS device down flow
+
+Tony Fischetti (1):
+      HID: add ALWAYS_POLL quirk to lenovo pixart mouse
+
+Wang Cheng (1):
+      mm/mempolicy: fix uninit-value in mpol_rebind_policy()
+
+William Dean (1):
+      pinctrl: ralink: Check for null return of devm_kcalloc
+
+Xiaomeng Tong (1):
+      tilcdc: tilcdc_external: fix an incorrect NULL check on list iterator
 
