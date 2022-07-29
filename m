@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D83E1C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 08:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C28EBC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 08:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235288AbiG2IBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 04:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42710 "EHLO
+        id S235234AbiG2IBx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 04:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235036AbiG2IB2 (ORCPT
+        with ESMTP id S235290AbiG2IBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 04:01:28 -0400
+        Fri, 29 Jul 2022 04:01:33 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFEB42FFD5
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 01:01:24 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LvKcQ5xMPzWf9M;
-        Fri, 29 Jul 2022 15:57:26 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35AAE33344
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 01:01:31 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LvKcR5KSkzWfh3;
+        Fri, 29 Jul 2022 15:57:27 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 29 Jul
- 2022 16:01:22 +0800
+ 2022 16:01:23 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <mike.kravetz@oracle.com>, <almasrymina@google.com>,
         <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <linmiaohe@huawei.com>
-Subject: [PATCH v2 3/5] hugetlb_cgroup: remove unneeded return value
-Date:   Fri, 29 Jul 2022 16:01:04 +0800
-Message-ID: <20220729080106.12752-4-linmiaohe@huawei.com>
+Subject: [PATCH v2 5/5] hugetlb_cgroup: use helper for_each_hstate and hstate_index
+Date:   Fri, 29 Jul 2022 16:01:06 +0800
+Message-ID: <20220729080106.12752-6-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220729080106.12752-1-linmiaohe@huawei.com>
 References: <20220729080106.12752-1-linmiaohe@huawei.com>
@@ -44,77 +44,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The return value of set_hugetlb_cgroup and set_hugetlb_cgroup_rsvd are
-always ignored. Remove them to clean up the code.
+Use helper for_each_hstate and hstate_index to iterate the hstate and get
+the hstate index. Minor readability improvement.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+Reviewed-by: Mina Almasry <almasrymina@google.com>
 ---
- include/linux/hugetlb_cgroup.h | 19 ++++++++-----------
- 1 file changed, 8 insertions(+), 11 deletions(-)
+ mm/hugetlb_cgroup.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/hugetlb_cgroup.h b/include/linux/hugetlb_cgroup.h
-index 379344828e78..630cd255d0cf 100644
---- a/include/linux/hugetlb_cgroup.h
-+++ b/include/linux/hugetlb_cgroup.h
-@@ -90,32 +90,31 @@ hugetlb_cgroup_from_page_rsvd(struct page *page)
- 	return __hugetlb_cgroup_from_page(page, true);
- }
+diff --git a/mm/hugetlb_cgroup.c b/mm/hugetlb_cgroup.c
+index 2affccfe59f1..f61d132df52b 100644
+--- a/mm/hugetlb_cgroup.c
++++ b/mm/hugetlb_cgroup.c
+@@ -75,11 +75,11 @@ parent_hugetlb_cgroup(struct hugetlb_cgroup *h_cg)
  
--static inline int __set_hugetlb_cgroup(struct page *page,
-+static inline void __set_hugetlb_cgroup(struct page *page,
- 				       struct hugetlb_cgroup *h_cg, bool rsvd)
+ static inline bool hugetlb_cgroup_have_usage(struct hugetlb_cgroup *h_cg)
  {
- 	VM_BUG_ON_PAGE(!PageHuge(page), page);
+-	int idx;
++	struct hstate *h;
  
- 	if (compound_order(page) < HUGETLB_CGROUP_MIN_ORDER)
--		return -1;
-+		return;
- 	if (rsvd)
- 		set_page_private(page + SUBPAGE_INDEX_CGROUP_RSVD,
- 				 (unsigned long)h_cg);
- 	else
- 		set_page_private(page + SUBPAGE_INDEX_CGROUP,
- 				 (unsigned long)h_cg);
--	return 0;
- }
+-	for (idx = 0; idx < hugetlb_max_hstate; idx++) {
++	for_each_hstate(h) {
+ 		if (page_counter_read(
+-				hugetlb_cgroup_counter_from_cgroup(h_cg, idx)))
++		    hugetlb_cgroup_counter_from_cgroup(h_cg, hstate_index(h))))
+ 			return true;
+ 	}
+ 	return false;
+@@ -225,17 +225,14 @@ static void hugetlb_cgroup_css_offline(struct cgroup_subsys_state *css)
+ 	struct hugetlb_cgroup *h_cg = hugetlb_cgroup_from_css(css);
+ 	struct hstate *h;
+ 	struct page *page;
+-	int idx;
  
--static inline int set_hugetlb_cgroup(struct page *page,
-+static inline void set_hugetlb_cgroup(struct page *page,
- 				     struct hugetlb_cgroup *h_cg)
- {
--	return __set_hugetlb_cgroup(page, h_cg, false);
-+	__set_hugetlb_cgroup(page, h_cg, false);
- }
+ 	do {
+-		idx = 0;
+ 		for_each_hstate(h) {
+ 			spin_lock_irq(&hugetlb_lock);
+ 			list_for_each_entry(page, &h->hugepage_activelist, lru)
+-				hugetlb_cgroup_move_parent(idx, h_cg, page);
++				hugetlb_cgroup_move_parent(hstate_index(h), h_cg, page);
  
--static inline int set_hugetlb_cgroup_rsvd(struct page *page,
-+static inline void set_hugetlb_cgroup_rsvd(struct page *page,
- 					  struct hugetlb_cgroup *h_cg)
- {
--	return __set_hugetlb_cgroup(page, h_cg, true);
-+	__set_hugetlb_cgroup(page, h_cg, true);
- }
- 
- static inline bool hugetlb_cgroup_disabled(void)
-@@ -199,16 +198,14 @@ hugetlb_cgroup_from_page_rsvd(struct page *page)
- 	return NULL;
- }
- 
--static inline int set_hugetlb_cgroup(struct page *page,
-+static inline void set_hugetlb_cgroup(struct page *page,
- 				     struct hugetlb_cgroup *h_cg)
- {
--	return 0;
- }
- 
--static inline int set_hugetlb_cgroup_rsvd(struct page *page,
-+static inline void set_hugetlb_cgroup_rsvd(struct page *page,
- 					  struct hugetlb_cgroup *h_cg)
- {
--	return 0;
- }
- 
- static inline bool hugetlb_cgroup_disabled(void)
+ 			spin_unlock_irq(&hugetlb_lock);
+-			idx++;
+ 		}
+ 		cond_resched();
+ 	} while (hugetlb_cgroup_have_usage(h_cg));
 -- 
 2.23.0
 
