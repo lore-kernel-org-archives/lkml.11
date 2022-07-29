@@ -2,128 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B71C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2819C19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236267AbiG2PPn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 11:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43578 "EHLO
+        id S237026AbiG2PRr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 11:17:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231158AbiG2PPk (ORCPT
+        with ESMTP id S231158AbiG2PRp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 11:15:40 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE193DBDD
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:15:38 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id y127so8674905yby.8
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:15:38 -0700 (PDT)
+        Fri, 29 Jul 2022 11:17:45 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E01E459B6
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:17:44 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id ss3so9041109ejc.11
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:17:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JVW1HuRhi3qWhCumOh2BN9qRaoJYOTe2cMXmsKboVPA=;
-        b=q3+xVd38htCkerZKxQ6R7n4Dj/dhgTXP8cf1zgt0TETxOzRPDIPko+9f0eqCQOzoxF
-         o/Y64pJri8xB0On7D4lX+BJ33/XKXOk/Es62jTldY/l7pg4XOKeesDuPqY9fiz35PN5G
-         7Q2AerqnCZzrSfQgwj6hmLEds9r22fcQSYT/X3u/T4uNZHd1i2qdUo5V0H04IxJc+hdX
-         q+wUd3CTnyTcE9E/+/Qtp8AHG0baKZiTcvw/mh/ongkjwlo96i1Lzlpt50A9cL96srAM
-         YmE9GBS1/BXs2uYAh2q0wlxlqZDTKhh4lnaIsthfcd1q6Lj0fE/O46aD/eehLc9aD+kl
-         L3tA==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=8uOzxUeHyhbXm38NMH0o9xKNocW39uZURlmCfdDfHVQ=;
+        b=X5JFM6ncTKhP0dvBkT3+YMgOXuX7B74bsPN/NF0g+oPNYeC1Ct5yDA690tfkf1XHu7
+         GwVt67m+Jb57vP0D/EEdsBmctPZCaptJeV7rTU8Jo/I1sqdIPycTLh0uIArioQ59k/4W
+         MIa4fLHpde6VL+mfDFfo/+Pt09NJvWxRLImMv0CuoWiggS5ADBEBOAFchKqPnlENnmKV
+         2j7EsqvvumTYVHn7dnmOpYTrv55QmTZ3Bjf00AmvFMyy2/rRV58cXuOhGPev4PTmpwVY
+         uemEFnPVxYNOrretMEd0T+AOIYDo8r9/wOLrt3kcmw/YYN1EX/tPDbu906tCsFAZvaPT
+         V8PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JVW1HuRhi3qWhCumOh2BN9qRaoJYOTe2cMXmsKboVPA=;
-        b=zlqkqSFzoinkLmdADNuEuq8yk1TeLwQ2OlV2Pub56yacQcaG3lX438m6xLEeLljU97
-         LFDQK0alVB8Oj/yosfah93eNXtZfWbcUYpTa5KnljDE24XVJOfDhyBTLvaaloZaIvulI
-         v3xY6HAQPENyM33BoOiGKqBYX7dFuO9B943Vxf1Wp0JsMCjeXynLKY9oM4vVznfN1V17
-         kh/gYEwUB4gybKuja604Czp8T1Q2bf9K3hKOJgX8QSxzMYleIcq5zwX5xmsyRsz42R+Z
-         39LYm7TLD9jDQ91X16cwcUjD8voIGekuhwZER7rQreaZZMndKVZZ4KVzNG52KC0KTMv9
-         r22Q==
-X-Gm-Message-State: ACgBeo2NtRRIo5Skds11xcFBSJtIMeOEeZmDYtPh/HbmiiRxqbAcQfJY
-        n49ixspTI2asUOlJS0WncPjzXzrqXgybNdxnOiRmQA==
-X-Google-Smtp-Source: AA6agR7MjsWrl5+wY6we1QLY1FGUyJgK/g+rqxviL46ZaTQ/lIO46FFNuI2HHXPoibeBW6Xc014AeHOzzqbfCG2Ff7Y=
-X-Received: by 2002:a25:bb12:0:b0:66f:3c5f:dd9c with SMTP id
- z18-20020a25bb12000000b0066f3c5fdd9cmr2700663ybg.520.1659107737834; Fri, 29
- Jul 2022 08:15:37 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8uOzxUeHyhbXm38NMH0o9xKNocW39uZURlmCfdDfHVQ=;
+        b=L3AsB/FSFXzI0n8SN877VsKWHU7tTWCApBvvC6Oenmso0F89WhZP+m+ux/td705iZQ
+         hMIrS45Z0GvJ+lCt7BB8PyG0Rt+ykAchFRcHQFn3mFQXXIA6wH/3yVZ0o2Gv+42rD/r5
+         Gm3AEbUxkxbjC+AjLqAj0YAH/1+20VH/wdaaAhOzfXeF2DfdnYC5THHLbFlbSEvUguXE
+         hw8WUX6k3S64bKY/82zK+3aKmV1XRkL435An/kgEjrIf5s8naT6BKECb9V9Yjb89Siyk
+         z7K4vphjdd7v0YdmcSTdoruTHi2pl98mP2IKlUlLyffPOloULcysi5+o5sfrDOgM3yRd
+         foFA==
+X-Gm-Message-State: AJIora9lUBFiqFFjw9rJ/11YSbsOJ1dIiRUqPQ1sIGzy30DH6C8eVg1k
+        n4NDOseNxxob4/jD9g3ITw==
+X-Google-Smtp-Source: AGRyM1unZD4CDaqGRE4CcewGTDSkgkSwfbx6+pGS5X/ZxyjvhfDPVd5wl1V9pG7ZMKxGNSQeMm5MRQ==
+X-Received: by 2002:a17:907:3ea6:b0:72b:4a06:989a with SMTP id hs38-20020a1709073ea600b0072b4a06989amr3359081ejc.168.1659107862822;
+        Fri, 29 Jul 2022 08:17:42 -0700 (PDT)
+Received: from localhost.localdomain ([46.53.249.83])
+        by smtp.gmail.com with ESMTPSA id c12-20020a056402120c00b0043cc2c9f5adsm2433441edw.40.2022.07.29.08.17.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Jul 2022 08:17:40 -0700 (PDT)
+Date:   Fri, 29 Jul 2022 18:17:38 +0300
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        ying.huang@intel.com, dave.hansen@intel.com,
+        Jonathan.Cameron@huawei.com, akpm@linux-foundation.org,
+        rf@opensource.cirrus.com, pmladek@suse.com, will@kernel.org
+Subject: Re: [PATCH v3 1/2] lib/kstrtox.c: Add "false"/"true" support to
+ kstrtobool()
+Message-ID: <YuP6Evijb2oZqD3D@localhost.localdomain>
+References: <20220426180203.70782-1-jvgediya@linux.ibm.com>
+ <Yt6u34sigPEkeZ0Y@FVFF77S0Q05N.cambridge.arm.com>
+ <Yt605xj898VSAsA3@casper.infradead.org>
+ <YuPwLq+D8k53GZa3@smile.fi.intel.com>
 MIME-Version: 1.0
-References: <20220726135506.485108-1-bchihi@baylibre.com> <20220726135506.485108-3-bchihi@baylibre.com>
- <1658866142.328871.782232.nullmailer@robh.at.kernel.org>
-In-Reply-To: <1658866142.328871.782232.nullmailer@robh.at.kernel.org>
-From:   Balsam CHIHI <bchihi@baylibre.com>
-Date:   Fri, 29 Jul 2022 17:15:01 +0200
-Message-ID: <CAGuA+opZSoWLZ62tZMdA1GoUe7N9K8DV19AUAophCQpr6rNH9Q@mail.gmail.com>
-Subject: Re: [PATCH v8 2/6] dt-bindings: thermal: Add binding document for
- LVTS thermal controllers
-To:     Rob Herring <robh@kernel.org>
-Cc:     rui.zhang@intel.com, rex-bc.chen@mediatek.com,
-        daniel.lezcano@linaro.org, amitk@kernel.org, mka@chromium.org,
-        linux-kernel@vger.kernel.org, abailon@baylibre.com,
-        robh+dt@kernel.org, p.zabel@pengutronix.de, matthias.bgg@gmail.com,
-        linux-pm@vger.kernel.org, rafael@kernel.org, khilman@baylibre.com,
-        fan.chen@mediatek.com, linux-arm-kernel@lists.infradead.org,
-        krzk+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, louis.yu@mediatek.com,
-        james.lo@mediatek.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YuPwLq+D8k53GZa3@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 10:09 PM Rob Herring <robh@kernel.org> wrote:
->
-> On Tue, 26 Jul 2022 15:55:02 +0200, Balsam CHIHI wrote:
-> > This patch adds dt-binding documents for mt8192 and mt8195 thermal controllers.
-> >
-> > Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
-> > Signed-off-by: Balsam CHIHI <bchihi@baylibre.com>
-> > ---
-> >  .../thermal/mediatek,mt8192-lvts.yaml         | 73 ++++++++++++++++++
-> >  .../thermal/mediatek,mt8195-lvts.yaml         | 75 +++++++++++++++++++
-> >  2 files changed, 148 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/thermal/mediatek,mt8192-lvts.yaml
-> >  create mode 100644 Documentation/devicetree/bindings/thermal/mediatek,mt8195-lvts.yaml
-> >
->
-> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> on your patch (DT_CHECKER_FLAGS is new in v5.13):
->
-> yamllint warnings/errors:
->
-> dtschema/dtc warnings/errors:
-> Error: Documentation/devicetree/bindings/thermal/mediatek,mt8195-lvts.example.dts:32.36-37 syntax error
-> FATAL ERROR: Unable to parse input tree
-> make[1]: *** [scripts/Makefile.lib:383: Documentation/devicetree/bindings/thermal/mediatek,mt8195-lvts.example.dtb] Error 1
-> make[1]: *** Waiting for unfinished jobs....
-> make: *** [Makefile:1404: dt_binding_check] Error 2
->
-> doc reference errors (make refcheckdocs):
->
-> See https://patchwork.ozlabs.org/patch/
->
-> This check can fail if there are any dependencies. The base for a patch
-> series is generally the most recent rc1.
->
-> If you already ran 'make dt_binding_check' and didn't see the above
-> error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> date:
->
-> pip3 install dtschema --upgrade
->
-> Please check and re-submit.
->
+On Fri, Jul 29, 2022 at 05:35:26PM +0300, Andy Shevchenko wrote:
+> On Mon, Jul 25, 2022 at 04:21:11PM +0100, Matthew Wilcox wrote:
+> > On Mon, Jul 25, 2022 at 03:55:27PM +0100, Mark Rutland wrote:
+> > > On Tue, Apr 26, 2022 at 11:32:02PM +0530, Jagdish Gediya wrote:
+> > > > At many places in kernel, It is necessary to convert sysfs input
+> > > > to corrosponding bool value e.g. "false" or "0" need to be converted
+> > > > to bool false, "true" or "1" need to be converted to bool true,
+> > > > places where such conversion is needed currently check the input
+> > > > string manually, kstrtobool() can be utilized at such places but
+> > > > currently it doesn't have support to accept "false"/"true".
+> > > > 
+> > > > Add support to accept "false"/"true" as valid string in kstrtobool().
+> > > > 
+> > > > Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+> > > > Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> > > 
+> > > I've just spotted that this broke arm64's "rodata=full" command line option,
+> > 
+> > That isn't a documented option.
+> > 
+> >         rodata=         [KNL]
+> >                 on      Mark read-only kernel memory as read-only (default).
+> >                 off     Leave read-only kernel memory writable for debugging.
+> > 
+> > Hopefully this is an object lesson in why you need to update the
+> > documentation when you extend a feature.
+> > 
+> > > since "full" gets parsed as 'f' = FALSE, when previously that would have been
+> > > rejected. So anyone passing "rodata=full" on the command line will have rodata
+> > > disabled, which is not what they wanted.
+> > > 
+> > > The current state of things is a bit messy (we prase the option twice because
+> > > arch code needs it early), and we can probably fix that with some refactoring,
+> > > but I do wonder if we actually want to open up the sysfs parsing to accept
+> > > anything *beginning* with [tTfF] rather than the full "true" and "false"
+> > > strings as previously, or whether it's worth reverting this for now in case
+> > > anything else is affected.
+> > 
+> > Well, that's going to break people who've started using the new option.
+> > As a quick fix, how about only allowing either "f\0" or "fa"?
+> 
+> I think we need to be more strict in kstrtobool(), i.e. 'f\0' ('t\0') and 'fal'
+> ('tru') perhaps?
 
-Hello Rob,
+lol what?
 
-This error only appear when I apply my series directly on top of linux-5.19.rc8.
-But, when I apply the other two series that mine depends on,
-
-https://patchwork.kernel.org/project/linux-pm/cover/20220722200007.1839356-1-daniel.lezcano@linexp.org/
-https://patchwork.kernel.org/project/linux-mediatek/cover/20220523093346.28493-1-rex-bc.chen@mediatek.com/
-
-and run "dt_binding_check" again against my YAML file, it does not
-print the error you found above.
-Would you check it, please?
-Thank you.
-
-Best regards.
-Balsam.
+the only way to be strict is to accept "0" and "1" with optional
+newline and delete all the rubbish entirely.
