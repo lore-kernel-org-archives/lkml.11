@@ -2,183 +2,292 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A75BC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 07:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F09CAC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 07:34:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234848AbiG2HeQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 03:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45350 "EHLO
+        id S234924AbiG2He1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 03:34:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234883AbiG2HeN (ORCPT
+        with ESMTP id S234903AbiG2HeW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 03:34:13 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64878049C
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 00:34:12 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oHKVT-0007Pt-Hy; Fri, 29 Jul 2022 09:33:59 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 2F80CBD688;
-        Fri, 29 Jul 2022 07:33:55 +0000 (UTC)
-Date:   Fri, 29 Jul 2022 09:33:52 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     Max Staudt <max@enpas.org>, linux-kernel@vger.kernel.org,
-        linux-can@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH v3 8/9] can: slcan: add support to set bit time
- register (btr)
-Message-ID: <20220729073352.rfxdyjvttjp7rnfk@pengutronix.de>
-References: <20220726210217.3368497-9-dario.binacchi@amarulasolutions.com>
- <20220727113054.ffcckzlcipcxer2c@pengutronix.de>
- <20220727192839.707a3453.max@enpas.org>
- <20220727182414.3mysdeam7mtnqyfx@pengutronix.de>
- <CABGWkvoE8i--g_2cNU6ToAfZk9WE6uK-nLcWy7J89hU6RidLWw@mail.gmail.com>
- <20220728090228.nckgpmfe7rpnfcyr@pengutronix.de>
- <CABGWkvoYR67MMmqZ6bRLuL3szhVb-gMwuAy6Z4YMkaG0yw6Sdg@mail.gmail.com>
- <20220728105049.43gbjuctezxzmm4j@pengutronix.de>
- <20220728125734.1c380d25.max@enpas.org>
- <CABGWkvo0B8XM+5qLhz3zY2DzyUrEQtQyJnd91VweUWDUcjyr5A@mail.gmail.com>
+        Fri, 29 Jul 2022 03:34:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1781804A8
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 00:34:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659080060;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=S2q2utn2CzeOeojEKg/tCXnqvan/YkCeq0ehI4nAHW8=;
+        b=KwFr68ctpc/Gitk53THU+0j0hkVO6UwbZsviOPcxR92XNA4n0zH3ME9969GRiKqDQxMpyR
+        w/kRiKe7lgzVksZWBoKDRV3GbrISYrP/BwcQj+5vIBgNVITh3EaTGuGPbsyZ5VdU9lvO1z
+        oM+eBYdxTkWOFw4NoupsXIVwyx+Y0Nc=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-5-tvSbqn4fMFSuzWMo9ARzHg-1; Fri, 29 Jul 2022 03:32:16 -0400
+X-MC-Unique: tvSbqn4fMFSuzWMo9ARzHg-1
+Received: by mail-lf1-f69.google.com with SMTP id z3-20020a19f703000000b0048ae517ee7bso33983lfe.14
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 00:32:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=S2q2utn2CzeOeojEKg/tCXnqvan/YkCeq0ehI4nAHW8=;
+        b=z58cb/0Z36J5Mr0YyaVKbbhdwG8aQABb3jx+jPSIcthBCa4IPlX41u2yVHxJad5oQG
+         s/JJTd+KL8LkXur5rBDMoFAbPtdZABCmSQLM3lN4GS8Wi9nkCwgeCabZ3OukERcsfIF1
+         N/zcKRmsgycY070bF3b27Y8MJ08Gv5HiUdUhb3u9sZ7q5Jt/sHN5F5WqMeZBJwLXXnqI
+         CXm4TwnI+6CqIAd+7qT3HXuMjUrGplrApmyTpps1nLl0j+RZz7YEsfRfL2jSVcvZsH8a
+         /kivhVsAcQ1A52CYiBjfC/V6KFNZjgXdqJ/TpOHCS2F+NItppwjABzXOeueYXEg4AAxa
+         +uUg==
+X-Gm-Message-State: AJIora+3EU2KuEEqCHfjxDSPotJpzQuO6BxEm3oEphM/bL9gueBUzlUc
+        qO5rQ5GEacunhrlxoRRHlW8BymdzhbJHx6PYP+Pkl/Ze6WAZRqFUb8H8Chqd1Dk79iHuNYKiixA
+        LxeAP7nKxTtg/Ugvh4ePFQ2gMc0QcwBmC2n8Cdejo
+X-Received: by 2002:a19:9145:0:b0:48a:7ee4:5eac with SMTP id y5-20020a199145000000b0048a7ee45eacmr849963lfj.641.1659079934549;
+        Fri, 29 Jul 2022 00:32:14 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR724Z9TIFD4TBShsFS+WI+wVQDzXpDufX5nXFkZ8Tvp62c/qrPU4I1gK/YFs9x7sodZ+Vk2IgowAFkA5+mh0bs=
+X-Received: by 2002:a19:9145:0:b0:48a:7ee4:5eac with SMTP id
+ y5-20020a199145000000b0048a7ee45eacmr849942lfj.641.1659079934017; Fri, 29 Jul
+ 2022 00:32:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="uvqgmkh7exxi4qsq"
-Content-Disposition: inline
-In-Reply-To: <CABGWkvo0B8XM+5qLhz3zY2DzyUrEQtQyJnd91VweUWDUcjyr5A@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+References: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn>
+ <20220721084341.24183-2-qtxuning1999@sjtu.edu.cn> <16a232ad-e0a1-fd4c-ae3e-27db168daacb@redhat.com>
+ <2a8838c4-2e6f-6de7-dcdc-572699ff3dc9@sjtu.edu.cn>
+In-Reply-To: <2a8838c4-2e6f-6de7-dcdc-572699ff3dc9@sjtu.edu.cn>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 29 Jul 2022 15:32:02 +0800
+Message-ID: <CACGkMEuwgZRt=J_2i-XugMZtcG-xZ7ZF1RpTjmErT5+RCcZ1OQ@mail.gmail.com>
+Subject: Re: [RFC 1/5] vhost: reorder used descriptors in a batch
+To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>
+Cc:     eperezma <eperezma@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>, mst <mst@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kvm <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jul 28, 2022 at 4:26 PM Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
+>
+> On 2022/7/26 15:36, Jason Wang wrote:
+>
+>
+> =E5=9C=A8 2022/7/21 16:43, Guo Zhi =E5=86=99=E9=81=93:
+>
+> Device may not use descriptors in order, for example, NIC and SCSI may
+> not call __vhost_add_used_n with buffers in order.  It's the task of
+> __vhost_add_used_n to order them.
+>
+>
+>
+> I'm not sure this is ture. Having ooo descriptors is probably by design t=
+o have better performance.
+>
+> This might be obvious for device that may have elevator or QOS stuffs.
+>
+> I suspect the right thing to do here is, for the device that can't perfor=
+m better in the case of IN_ORDER, let's simply not offer IN_ORDER (zerocopy=
+ or scsi). And for the device we know it can perform better, non-zercopy et=
+hernet device we can do that.
+>
+>
+>   This commit reorder the buffers using
+> vq->heads, only the batch is begin from the expected start point and is
+> continuous can the batch be exposed to driver.  And only writing out a
+> single used ring for a batch of descriptors, according to VIRTIO 1.1
+> spec.
+>
+>
+>
+> So this sounds more like a "workaround" of the device that can't consume =
+buffer in order, I suspect it can help in performance.
+>
+> More below.
+>
+>
+>
+> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+> ---
+>   drivers/vhost/vhost.c | 44 +++++++++++++++++++++++++++++++++++++++++--
+>   drivers/vhost/vhost.h |  3 +++
+>   2 files changed, 45 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index 40097826c..e2e77e29f 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -317,6 +317,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
+>       vq->used_flags =3D 0;
+>       vq->log_used =3D false;
+>       vq->log_addr =3D -1ull;
+> +    vq->next_used_head_idx =3D 0;
+>       vq->private_data =3D NULL;
+>       vq->acked_features =3D 0;
+>       vq->acked_backend_features =3D 0;
+> @@ -398,6 +399,8 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *=
+dev)
+>                         GFP_KERNEL);
+>           if (!vq->indirect || !vq->log || !vq->heads)
+>               goto err_nomem;
+> +
+> +        memset(vq->heads, 0, sizeof(*vq->heads) * dev->iov_limit);
+>       }
+>       return 0;
+>   @@ -2374,12 +2377,49 @@ static int __vhost_add_used_n(struct vhost_virt=
+queue *vq,
+>                   unsigned count)
+>   {
+>       vring_used_elem_t __user *used;
+> +    struct vring_desc desc;
+>       u16 old, new;
+>       int start;
+> +    int begin, end, i;
+> +    int copy_n =3D count;
+> +
+> +    if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
+>
+>
+>
+> How do you guarantee that ids of heads are contiguous?
+>
+> There is no need to be contiguous for ids of heads.
+>
+> For example, I have three buffer { .id =3D 0, 15}, {.id =3D 20, 30} {.id =
+=3D 15, 20} for vhost_add_used_n. Then I will let the vq->heads[0].len=3D15=
+. vq->heads[15].len=3D5, vq->heads[20].len=3D10 as reorder. Once I found th=
+ere is no hold in the batched descriptors. I will expose them to driver.
 
---uvqgmkh7exxi4qsq
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+So spec said:
 
-On 29.07.2022 08:52:07, Dario Binacchi wrote:
-> Hello Marc and Max,
->=20
-> On Thu, Jul 28, 2022 at 12:57 PM Max Staudt <max@enpas.org> wrote:
-> >
-> > On Thu, 28 Jul 2022 12:50:49 +0200
-> > Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> >
-> > > On 28.07.2022 12:23:04, Dario Binacchi wrote:
-> > > > > > Does it make sense to use the device tree
-> > > > >
-> > > > > The driver doesn't support DT and DT only works for static serial
-> > > > > interfaces.
-> > >
-> > > Have you seen my remarks about Device Tree?
-> >
-> > Dario, there seems to be a misunderstanding about the Device Tree.
-> >
-> > It is used *only* for hardware that is permanently attached, present at
-> > boot, and forever after. Not for dyamically added stuff, and definitely
-> > not for ldiscs that have to be attached manually by the user.
-> >
-> >
-> > The only exception to this is if you have an embedded device with an
-> > slcan adapter permanently attached to one of its UARTs. Then you can
-> > use the serdev ldisc adapter to attach the ldisc automatically at boot.
->=20
-> It is evident that I am lacking some skills (I will try to fix it :)).
+"If VIRTIO_F_IN_ORDER has been negotiated, driver uses descriptors in
+ring order: starting from offset 0 in the table, and wrapping around
+at the end of the table."
 
-We're all here to learn something!
+And
 
-> I think it is equally clear that it is not worth going down this path.
+"VIRTIO_F_IN_ORDER(35)This feature indicates that all buffers are used
+by the device in the same order in which they have been made
+available."
 
-If you have a static attached serial devices serdev is the way to go.
-But slcan has so many drawbacks compared to "real" CAN adapters that I
-hope the no one uses them in such a scenario.
+This means your example is not an IN_ORDER device.
 
-> > If you are actively developing for such a use case, please let us know,
-> > so we know what you're after and can help you better :)
->=20
-> I don't have a use case, other than to try, if possible, to make the driv=
-er
-> autonomous from slcand / slcan_attach for the CAN bus setup.
+The driver should submit buffers (assuming each buffer have one
+descriptor) in order {id =3D 0, 15}, {id =3D 1, 30} and {id =3D 2, 20}.
 
-=46rom my point of view your job is done!
+And even if it is submitted in order, we can not use a batch because:
 
-> Returning to Marc's previous analysis:
-> "... Some USB CAN drivers query the bit timing const from the USB device."
->=20
-> Can we think of taking the gs_usb driver as inspiration for getting/setti=
-ng the
-> bit timings?
->=20
-> https://elixir.bootlin.com/linux/latest/source/drivers/net/can/usb/gs_usb=
-=2Ec#L951
-> https://elixir.bootlin.com/linux/latest/source/drivers/net/can/usb/gs_usb=
-=2Ec#L510
->=20
-> and, as done with patches:
->=20
-> can: slcan: extend the protocol with CAN state info
-> can: slcan: extend the protocol with error info
+"The skipped buffers (for which no used ring entry was written) are
+assumed to have been used (read or written) by the device completely."
 
-You can define a way to query bit timing constants and CAN clock rate,
-but you have to get this into the "official" firmware. You have to roll
-out a firmware update to all devices. What about non official firmware?
+This means for TX we are probably ok, but for rx, unless we know the
+buffers were written completely, we can't write them in a batch.
 
-> further extend the protocol to get/set the bit timing from / to the adapt=
-er ?
-> In the case of non-standard bit rates, the driver would try, depending on=
- the
-> firmware of the adapter, to calculate and set the bit timings autonomousl=
-y.
+I'd suggest to do cross testing for this series:
 
-If an adapter follows 100% the official firmware doc the BTR registers
-are interpreted as SJA1000 with 8 MHz CAN clock.
+1) testing vhost IN_ORDER support with DPDK virtio PMD
+2) testing virtio IN_ORDER with DPDK vhost-user via testpmd
 
-See
+Thanks
 
-| https://lore.kernel.org/all/20220728105049.43gbjuctezxzmm4j@pengutronix.de
 
-where I compare the 125 Kbit/s BTR config of the documentation with the
-bit timing calculated by the kernel algorithm.
+>
+>
+> +        /* calculate descriptor chain length for each used buffer */
+>
+>
+>
+> I'm a little bit confused about this comment, we have heads[i].len for th=
+is?
+>
+> Maybe I should not use vq->heads, some misleading.
+>
+>
+> +        for (i =3D 0; i < count; i++) {
+> +            begin =3D heads[i].id;
+> +            end =3D begin;
+> +            vq->heads[begin].len =3D 0;
+>
+>
+>
+> Does this work for e.g RX virtqueue?
+>
+>
+> +            do {
+> +                vq->heads[begin].len +=3D 1;
+> +                if (unlikely(vhost_get_desc(vq, &desc, end))) {
+>
+>
+>
+> Let's try hard to avoid more userspace copy here, it's the source of perf=
+ormance regression.
+>
+> Thanks
+>
+>
+> +                    vq_err(vq, "Failed to get descriptor: idx %d addr %p=
+\n",
+> +                           end, vq->desc + end);
+> +                    return -EFAULT;
+> +                }
+> +            } while ((end =3D next_desc(vq, &desc)) !=3D -1);
+> +        }
+> +
+> +        count =3D 0;
+> +        /* sort and batch continuous used ring entry */
+> +        while (vq->heads[vq->next_used_head_idx].len !=3D 0) {
+> +            count++;
+> +            i =3D vq->next_used_head_idx;
+> +            vq->next_used_head_idx =3D (vq->next_used_head_idx +
+> +                          vq->heads[vq->next_used_head_idx].len)
+> +                          % vq->num;
+> +            vq->heads[i].len =3D 0;
+> +        }
+> +        /* only write out a single used ring entry with the id correspon=
+ding
+> +         * to the head entry of the descriptor chain describing the last=
+ buffer
+> +         * in the batch.
+> +         */
+> +        heads[0].id =3D i;
+> +        copy_n =3D 1;
+> +    }
+>         start =3D vq->last_used_idx & (vq->num - 1);
+>       used =3D vq->used->ring + start;
+> -    if (vhost_put_used(vq, heads, start, count)) {
+> +    if (vhost_put_used(vq, heads, start, copy_n)) {
+>           vq_err(vq, "Failed to write used");
+>           return -EFAULT;
+>       }
+> @@ -2410,7 +2450,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, st=
+ruct vring_used_elem *heads,
+>         start =3D vq->last_used_idx & (vq->num - 1);
+>       n =3D vq->num - start;
+> -    if (n < count) {
+> +    if (n < count && !vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
+>           r =3D __vhost_add_used_n(vq, heads, n);
+>           if (r < 0)
+>               return r;
+> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+> index d9109107a..7b2c0fbb5 100644
+> --- a/drivers/vhost/vhost.h
+> +++ b/drivers/vhost/vhost.h
+> @@ -107,6 +107,9 @@ struct vhost_virtqueue {
+>       bool log_used;
+>       u64 log_addr;
+>   +    /* Sort heads in order */
+> +    u16 next_used_head_idx;
+> +
+>       struct iovec iov[UIO_MAXIOV];
+>       struct iovec iotlb_iov[64];
+>       struct iovec *indirect;
+>
+>
+>
 
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---uvqgmkh7exxi4qsq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLjjV0ACgkQrX5LkNig
-011JXggAirzTuOAHUICqHeBohgikqNvfpTC2TSgukAcL9Gw2AkuU4P9kXEW/lHTc
-gjVFYxly67MCoBLXjpcbS4tvY4KveQBrD1UdFjka6NmWuSK1cf6TBiv9aw6OCWb+
-tWVgZuVk9SuPCDaHaY0ohfP4XflqH2M+ruFdKuoN2bElkM9gOv9exPCE+etGiVKq
-PnhCVwcGpUn04XqIOcnaIGjjhH68/rOLFnZH8vcV2uzHJ4iCfzok+1i5wZq0pvr6
-PtpHnfomhjtyc+kpzdEVoIz2e6ew1vQkQWchzhrRzrk+bnwMlnOBdvhbbkVecAKd
-oqeuYMqzgnafTco7n6a93CnUEQt/FA==
-=aZAq
------END PGP SIGNATURE-----
-
---uvqgmkh7exxi4qsq--
