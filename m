@@ -2,73 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E876AC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B575C19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:28:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233502AbiG2C2m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 22:28:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46656 "EHLO
+        id S233613AbiG2C24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 22:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiG2C2k (ORCPT
+        with ESMTP id S229535AbiG2C2z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 22:28:40 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D075B4A826
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 19:28:39 -0700 (PDT)
-Received: from localhost.localdomain (unknown [111.9.175.10])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxL9PPReNiH8xAAA--.45065S3;
-        Fri, 29 Jul 2022 10:28:32 +0800 (CST)
-Subject: Re: [PATCH 1/3] LoongArch: Add guess unwinder support
-To:     Youling Tang <tangyouling@loongson.cn>,
-        Qing Zhang <zhangqing@loongson.cn>,
-        Huacai Chen <chenhuacai@kernel.org>
-References: <20220728140519.5420-1-zhangqing@loongson.cn>
- <1288a80b-4038-126f-aec0-74f18cf2fea2@loongson.cn>
-Cc:     WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Jiaxun Yang <jiaxun.yang@flygoat.com>
-From:   Jinyang He <hejinyang@loongson.cn>
-Message-ID: <b49c5d32-81fb-0c56-16cc-8fe6cafa3957@loongson.cn>
-Date:   Fri, 29 Jul 2022 10:28:31 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
- Thunderbird/45.4.0
+        Thu, 28 Jul 2022 22:28:55 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E7D7B1F4;
+        Thu, 28 Jul 2022 19:28:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659061734; x=1690597734;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=12gKVngtqnjv+QPw8p8qTC74M0DQ2NH3SlFgYl5vsoQ=;
+  b=GOFV5TQyBSl8WuneX8oGHNn9c0iIHCd8LtAy+syRT3pC/7VVlFzrQEiY
+   RoxItuoRBhWYGCkTJxOG+uq93MWiWn4azOaRrLUMdeEcfstuG0oharIum
+   9tSf/stDTLvWnootubaRPBk0hHOmMp/ANbHW2PXvOUZNjLgc4cjSJx1Br
+   eY5vaP15eQWBuYsHiaLJS88diZ4U8rOxjF0eeFTrR651rwYq1TtDXX783
+   7answ6K2XeVCygpLH9kSfOk9Dw3m9KUnbvA+ytUpBwibcIJY7I1U5UyPW
+   wMEKsaao694wSTpFXST139wXxguq1977leqDMpYIaA/YPc+TWz6lXfcIc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="275555809"
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="275555809"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 19:28:53 -0700
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="669120036"
+Received: from astallix-mobl.amr.corp.intel.com (HELO desk) ([10.212.148.249])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 19:28:52 -0700
+Date:   Thu, 28 Jul 2022 19:28:51 -0700
+From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        tony.luck@intel.com, antonio.gomez.iglesias@linux.intel.com,
+        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
+        andrew.cooper3@citrix.com, Josh Poimboeuf <jpoimboe@kernel.org>
+Subject: Re: [RESEND RFC PATCH] x86/bugs: Add "unknown" reporting for MMIO
+ Stale Data
+Message-ID: <20220729022851.mdj3wuevkztspodh@desk>
+References: <a932c154772f2121794a5f2eded1a11013114711.1657846269.git.pawan.kumar.gupta@linux.intel.com>
+ <YuJ6TQpSTIeXLNfB@zn.tnic>
 MIME-Version: 1.0
-In-Reply-To: <1288a80b-4038-126f-aec0-74f18cf2fea2@loongson.cn>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: AQAAf9DxL9PPReNiH8xAAA--.45065S3
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY67AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E
-        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
-        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8I
-        cVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4
-        A2jsIEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVWUJVW8Jw
-        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7
-        Mxk0xIA0c2IEe2xFo4CEbIxvr21lc2xSY4AK67AK6r4UMxAIw28IcxkI7VAKI48JMxC20s
-        026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_
-        JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14
-        v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xva
-        j40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxV
-        W8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbN6pPUUUUU==
-X-CM-SenderInfo: pkhmx0p1dqwqxorr0wxvrqhubq/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuJ6TQpSTIeXLNfB@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Youling,
+On Thu, Jul 28, 2022 at 02:00:13PM +0200, Borislav Petkov wrote:
+> On Thu, Jul 14, 2022 at 06:30:18PM -0700, Pawan Gupta wrote:
+> > Older CPUs beyond its Servicing period are not listed in the affected
+> > processor list for MMIO Stale Data vulnerabilities. These CPUs currently
+> > report "Not affected" in sysfs, which may not be correct.
+> > 
+> > Add support for "Unknown" reporting for such CPUs. Mitigation is not
+> > deployed when the status is "Unknown".
+> > 
+> > "CPU is beyond its Servicing period" means these CPUs are beyond their
+> > Servicing [1] period and have reached End of Servicing Updates (ESU) [2].
+> > 
+> >   [1] Servicing: The process of providing functional and security
+> >   updates to Intel processors or platforms, utilizing the Intel Platform
+> >   Update (IPU) process or other similar mechanisms.
+> > 
+> >   [2] End of Servicing Updates (ESU): ESU is the date at which Intel
+> >   will no longer provide Servicing, such as through IPU or other similar
+> >   update processes. ESU dates will typically be aligned to end of
+> >   quarter.
+> 
+> The explanations of those things need to be...
+> 
+> > Suggested-by: Andrew Cooper <andrew.cooper3@citrix.com>
+> > Suggested-by: Tony Luck <tony.luck@intel.com>
+> > Fixes: 8d50cdf8b834 ("x86/speculation/mmio: Add sysfs reporting for Processor MMIO Stale Data")
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+> > ---
+> > CPU vulnerability is unknown if, hardware doesn't set the immunity bits
+> > and CPU is not in the known-affected-list.
+> > 
+> > In order to report the unknown status, this patch sets the MMIO bug
+> > for all Intel CPUs that don't have the hardware immunity bits set.
+> > Based on the known-affected-list of CPUs, mitigation selection then
+> > deploys the mitigation or sets the "Unknown" status; which is ugly.
+> > 
+> > I will appreciate suggestions to improve this.
+> > 
+> > Thanks,
+> > Pawan
+> > 
+> >  .../hw-vuln/processor_mmio_stale_data.rst     |  3 +++
+> >  arch/x86/kernel/cpu/bugs.c                    | 11 +++++++-
+> >  arch/x86/kernel/cpu/common.c                  | 26 +++++++++++++------
+> >  arch/x86/kernel/cpu/cpu.h                     |  1 +
+> >  4 files changed, 32 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst b/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
+> > index 9393c50b5afc..55524e0798da 100644
+> > --- a/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
+> > +++ b/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
+> > @@ -230,6 +230,9 @@ The possible values in this file are:
+> >       * - 'Mitigation: Clear CPU buffers'
+> >         - The processor is vulnerable and the CPU buffer clearing mitigation is
+> >           enabled.
+> > +     * - 'Unknown: CPU is beyond its Servicing period'
+> > +       - The processor vulnerability status is unknown because it is
+> > +	 out of Servicing period. Mitigation is not attempted.
+> 
+> ... here.
 
-[...]
->> +unsigned long unwind_get_return_address(struct unwind_state *state)
->> +{
->> +    if (unwind_done(state))
->> +        return 0;
-> This judgment can be removed, because unwind_done() has been judged
-> before entering this function, and unwind_get_return_address will not
-> be called if it is true.
-These unwinder functions are exported by "EXPORT_SYMBOL_GPL".
-What's more, new ways to use them will be added in the future possible.
-Assuming has judged unwind_done is not reliable.
+Sure, I will move it here.
+
+> > diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+> > index 736262a76a12..82088410870e 100644
+> > --- a/arch/x86/kernel/cpu/common.c
+> > +++ b/arch/x86/kernel/cpu/common.c
+> > @@ -1286,6 +1286,22 @@ static bool arch_cap_mmio_immune(u64 ia32_cap)
+> >  		ia32_cap & ARCH_CAP_SBDR_SSDP_NO);
+> >  }
+> >  
+> > +bool __init mmio_stale_data_unknown(void)
+> 
+> This function need to go to ...cpu/intel.c
+
+It will be big churn to move this function to ...cpu/intel.c.
+
+cpu/intel.c is not compiled for !CONFIG_CPU_SUP_INTEL, and bugs.c
+depends on this function. For bugs.c to compile there needs to be
+another version of this function for !CONFIG_CPU_SUP_INTEL.
+
+Secondly, this function relies on cpu_vuln_blacklist and
+arch_cap_mmio_immune(), both are in cpu/common.c and defined static.
+They would also need to made available in cpu/intel.c.
+
+To keep things simple, can this stay in cpu/common.c? And if there is a
+compelling reason, I am willing to make the required changes.
+
+> > +{
+> > +	u64 ia32_cap = x86_read_arch_cap_msr();
+> > +
+> > +	if (boot_cpu_data.x86_vendor != X86_VENDOR_INTEL)
+> > +		return false;
+> 
+> <---- newline here.
+> 
+> > +	/*
+> > +	 * CPU vulnerability is unknown when, hardware doesn't set the
+> 
+> no comma after the "when"
+> 
+> > +	 * immunity bits and CPU is not in the known affected list.
+> > +	 */
+> > +	if (!cpu_matches(cpu_vuln_blacklist, MMIO) &&
+> > +	    !arch_cap_mmio_immune(ia32_cap))
+> > +		return true;
+> 
+> <---- newline here.
+
+Will do this, and above changes.
+
+> > +	return false;
+> > +}
+> > +
+> >  static void __init cpu_set_bug_bits(struct cpuinfo_x86 *c)
+> >  {
+> >  	u64 ia32_cap = x86_read_arch_cap_msr();
+> > @@ -1349,14 +1365,8 @@ static void __init cpu_set_bug_bits(struct cpuinfo_x86 *c)
+> >  	    cpu_matches(cpu_vuln_blacklist, SRBDS | MMIO_SBDS))
+> >  		    setup_force_cpu_bug(X86_BUG_SRBDS);
+> >  
+> > -	/*
+> > -	 * Processor MMIO Stale Data bug enumeration
+> > -	 *
+> > -	 * Affected CPU list is generally enough to enumerate the vulnerability,
+> > -	 * but for virtualization case check for ARCH_CAP MSR bits also, VMM may
+> > -	 * not want the guest to enumerate the bug.
+> > -	 */
+> > -	if (cpu_matches(cpu_vuln_blacklist, MMIO) &&
+> > +	 /* Processor MMIO Stale Data bug enumeration */
+> > +	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL &&
+> 
+> Why is that vendor check here? We have the cpu_vuln_blacklist for a
+> reason.
+
+cpu_vuln_blacklist only has in-support MMIO vulnerable CPUs.
+
+There is no easy way to report unknown status for older CPUs. This
+patch sets the MMIO bug for all Intel CPUs that don't have the hardware
+immunity bits set.
+
+Later, mmio_select_mitigation() deploys the mitigation or sets the
+"Unknown" status based on the known-affected-list of CPUs i.e.
+cpu_vuln_blacklist.
+
+The vendor check is required, otherwise MMIO bug will be set for
+non-Intel CPUs also.
 
 Thanks,
-Jinyang
-
+Pawan
