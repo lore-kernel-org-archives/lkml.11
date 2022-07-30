@@ -2,76 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4A73C00144
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 03:07:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89EC9C00144
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 03:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239948AbiG3DHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 23:07:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
+        id S239825AbiG3DJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 23:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239775AbiG3DG3 (ORCPT
+        with ESMTP id S230251AbiG3DJT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 23:06:29 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB345072D;
-        Fri, 29 Jul 2022 20:06:28 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lvq2m3hPSz1M8Sh;
-        Sat, 30 Jul 2022 11:03:28 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 30 Jul 2022 11:06:25 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.61) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 30 Jul 2022 11:06:24 +0800
-From:   Yang Jihong <yangjihong1@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>,
-        <colin.i.king@gmail.com>, <linux-kernel@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>
-CC:     <pc@us.ibm.com>, <yhs@fb.com>, <andrii.nakryiko@gmail.com>,
-        <songliubraving@fb.com>, <yangjihong1@huawei.com>
-Subject: [PATCH v2 6/7] perf kwork: Expand capacity of bpf entries
-Date:   Sat, 30 Jul 2022 11:03:34 +0800
-Message-ID: <20220730030335.78203-7-yangjihong1@huawei.com>
-X-Mailer: git-send-email 2.30.GIT
-In-Reply-To: <20220730030335.78203-1-yangjihong1@huawei.com>
-References: <20220730030335.78203-1-yangjihong1@huawei.com>
+        Fri, 29 Jul 2022 23:09:19 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E74E50064;
+        Fri, 29 Jul 2022 20:09:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659150558; x=1690686558;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=k15e640Ac5kBV2qmOLkobhBC26rzlrHl47y6EDbeQTU=;
+  b=bpg02TieQr4xZRmsKBtyUrZ+8Gc1UlnJf6rPTRY9z9Z+GIqrebaTDx6M
+   zlwffe6ZIyKiGgMvKBvg9YXTqep9M1vlKXIy7K8Sp4VzOnOpZ+CNZL5SX
+   ZpQXVM4Izsjp8kaw6TccwXeV9xSwZtnlHhC2f5DgrTIcE+6BZdtJWrBDf
+   zXMbLFdSFvhs//rUI6vLe8TrLb4E9HHB6jPVfemsWypryRu8O7wzFGj4G
+   s08NaherMZWBbctLLRsPCuVGJwsxvVV9cDyK/3Nuc4fMu+JWhAinzV0DD
+   ePqaG02+ov9N5eu+aMc/SYfV5gEJBPiSE1JchvEkS/PCN7dwLt9AFDv6D
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="288898755"
+X-IronPort-AV: E=Sophos;i="5.93,203,1654585200"; 
+   d="scan'208";a="288898755"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 20:09:18 -0700
+X-IronPort-AV: E=Sophos;i="5.93,203,1654585200"; 
+   d="scan'208";a="928953118"
+Received: from abdulra4-mobl.gar.corp.intel.com ([10.214.159.26])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 20:09:15 -0700
+Message-ID: <9c1937c1d7ab7687412c15c26532aea258aec078.camel@intel.com>
+Subject: Re: [PATCH] thermal: intel: Add TCC cooling support for Alder
+ Lake-N and Raptor Lake-P
+From:   Zhang Rui <rui.zhang@intel.com>
+To:     Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>, rafael@kernel.org,
+        daniel.lezcano@linaro.org, linux-pm@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Date:   Sat, 30 Jul 2022 11:09:59 +0800
+In-Reply-To: <20220728175456.2796-1-sumeet.r.pawnikar@intel.com>
+References: <20220728175456.2796-1-sumeet.r.pawnikar@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.61]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-100 kwork entries are not enough for a system with hundreds of cores,
-improving capacity.
+On Thu, 2022-07-28 at 23:24 +0530, Sumeet Pawnikar wrote:
+> Add Alder Lake-N and Raptor Lake-P to the list of processor models
+> supported by the Intel TCC cooling driver.
+>=20
+> Signed-off-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
 
-Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
----
- tools/perf/util/bpf_skel/kwork_trace.bpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Acked-by: Zhang Rui <rui.zhang@intel.com>
 
-diff --git a/tools/perf/util/bpf_skel/kwork_trace.bpf.c b/tools/perf/util/bpf_skel/kwork_trace.bpf.c
-index 063c124e0999..5300e8be64b0 100644
---- a/tools/perf/util/bpf_skel/kwork_trace.bpf.c
-+++ b/tools/perf/util/bpf_skel/kwork_trace.bpf.c
-@@ -5,7 +5,7 @@
- #include <bpf/bpf_helpers.h>
- #include <bpf/bpf_tracing.h>
- 
--#define KWORK_COUNT 100
-+#define KWORK_COUNT 10000
- #define MAX_KWORKNAME 128
- 
- /*
--- 
-2.30.GIT
+> ---
+> =C2=A0drivers/thermal/intel/intel_tcc_cooling.c | 2 ++
+> =C2=A01 file changed, 2 insertions(+)
+>=20
+> diff --git a/drivers/thermal/intel/intel_tcc_cooling.c
+> b/drivers/thermal/intel/intel_tcc_cooling.c
+> index a9596e7562ea..95adac427b6f 100644
+> --- a/drivers/thermal/intel/intel_tcc_cooling.c
+> +++ b/drivers/thermal/intel/intel_tcc_cooling.c
+> @@ -81,7 +81,9 @@ static const struct x86_cpu_id tcc_ids[]
+> __initconst =3D {
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0X86_MATCH_INTEL_FAM6_MODE=
+L(COMETLAKE, NULL),
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0X86_MATCH_INTEL_FAM6_MODE=
+L(ALDERLAKE, NULL),
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0X86_MATCH_INTEL_FAM6_MODE=
+L(ALDERLAKE_L, NULL),
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0X86_MATCH_INTEL_FAM6_MODEL(ALD=
+ERLAKE_N, NULL),
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0X86_MATCH_INTEL_FAM6_MODE=
+L(RAPTORLAKE, NULL),
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0X86_MATCH_INTEL_FAM6_MODEL(RAP=
+TORLAKE_P, NULL),
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0{}
+> =C2=A0};
+> =C2=A0
 
