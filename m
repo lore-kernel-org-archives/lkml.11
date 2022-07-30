@@ -2,145 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BCE8C19F2A
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 20:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE49C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 20:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235666AbiG3USH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 16:18:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42360 "EHLO
+        id S235726AbiG3UTb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 16:19:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229733AbiG3USF (ORCPT
+        with ESMTP id S229733AbiG3UT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 16:18:05 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C440413F26;
-        Sat, 30 Jul 2022 13:18:04 -0700 (PDT)
+        Sat, 30 Jul 2022 16:19:29 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9294213F9D
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 13:19:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659212284; x=1690748284;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cd3syrwIXsSarb0bdUv6tHAADb63fWwB5Q5t7g/Spnw=;
-  b=n13ImsCcVTxUhddVgSjiCxIYQ7OJctvF5lV5+OWdnrtVnwPmcH0C/mEW
-   6uwFZqI7SyvUudNTUpVSxyknJ89sgcmokBm7B8jdd+RYCexrOhTDRseNR
-   XgI4ydVflOsjI1/seOr3iA9/tCcplwG/O1De0Dbd6pwetnYvy3agvF66q
-   ebzzHYfVcr6EMBld2tcSpKOal/0CuqbM8KK9exIfP0IN9EIv3KrccDgYm
-   A0VrwPzhhUpdG8I/dXiObTuI8fhnc4wwsgYNcNEh2ewY+Dk1r50w+lkTp
-   W2fXJpjpMWNfB3j1h359E3Xqypsskbvm1blJELR0Dfmyy2t4oLcIMYLDU
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="269326967"
+  t=1659212368; x=1690748368;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=tkNWNs279ekjDQ81ZWGm5RP83pVV5DOBgUe3EmBUhXk=;
+  b=EYDIpXVD4yM2qBqqiI1w/Q1612TE/y5oUTnwl1xsBiKrzAaNK+H69i/y
+   21olD3iKs00D/yujDF4Jxd0IJ319XyxhaVProtpqoKtDRYTDW2OZgfRqF
+   93sbRzZz22xSXw95JYkNCnm/opJm9WxkjLnUQZFBmFfxuB5WCU6VE2WSd
+   CgfRGGRtas6iVaemMeuR8eM7FoIXhHr3Uax51Aesawhhzut586G7p5YR9
+   bD8DOkLDR8DkpihfhLyot2p/Is6ky1PhW+aQSOkP1/IPbySR2b4hhy0CF
+   P9mIt37cN1vX8QRk/4EoglLATj8kkHupji4AnBLjFyO8r/kuFQPM0nNv9
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="271986684"
 X-IronPort-AV: E=Sophos;i="5.93,204,1654585200"; 
-   d="scan'208";a="269326967"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 13:18:04 -0700
+   d="scan'208";a="271986684"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 13:19:28 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,204,1654585200"; 
-   d="scan'208";a="728059168"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 13:18:00 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oHsuK-001fXT-16;
-        Sat, 30 Jul 2022 23:17:56 +0300
-Date:   Sat, 30 Jul 2022 23:17:56 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     vee.khee.wong@intel.com, weifeng.voon@intel.com,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 1/2] stmmac: intel: Add a missing clk_disable_unprepare()
- call in intel_eth_pci_remove()
-Message-ID: <YuWR9I8y9cWlLG3O@smile.fi.intel.com>
-References: <b5b44a0c025d0fdddd9b9d23153261363089a06a.1659204745.git.christophe.jaillet@wanadoo.fr>
+   d="scan'208";a="743865373"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 30 Jul 2022 13:19:26 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oHsvm-000DHX-0G;
+        Sat, 30 Jul 2022 20:19:26 +0000
+Date:   Sun, 31 Jul 2022 04:18:34 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:bits/110-smc 4/17]
+ drivers/platform/apple/smc_rtkit.c:74:16: error: implicit declaration of
+ function 'FIELD_PREP'
+Message-ID: <202207310431.oMcYjPWN-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b5b44a0c025d0fdddd9b9d23153261363089a06a.1659204745.git.christophe.jaillet@wanadoo.fr>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 30, 2022 at 08:19:47PM +0200, Christophe JAILLET wrote:
-> Commit 09f012e64e4b ("stmmac: intel: Fix clock handling on error and remove
-> paths") removed this clk_disable_unprepare()
-> 
-> This was partly revert by commit ac322f86b56c ("net: stmmac: Fix clock
-> handling on remove path") which removed this clk_disable_unprepare()
-> because:
-> "
->    While unloading the dwmac-intel driver, clk_disable_unprepare() is
->    being called twice in stmmac_dvr_remove() and
->    intel_eth_pci_remove(). This causes kernel panic on the second call.
-> "
-> 
-> However later on, commit 5ec55823438e8 ("net: stmmac: add clocks management
-> for gmac driver") has updated stmmac_dvr_remove() which do not call
-> clk_disable_unprepare() anymore.
-> 
-> So this call should now be called from intel_eth_pci_remove().
+tree:   https://github.com/AsahiLinux/linux bits/110-smc
+head:   b1ba46a24716bd39ca22059fc93705a727c39890
+commit: 58a839ca536e6de7bf1b2dff7441509c3ac9c8e7 [4/17] platform/apple: Add new Apple Mac SMC driver
+config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220731/202207310431.oMcYjPWN-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/58a839ca536e6de7bf1b2dff7441509c3ac9c8e7
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/110-smc
+        git checkout 58a839ca536e6de7bf1b2dff7441509c3ac9c8e7
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/
 
-The correct way of fixing it (which might be very well end up functionally
-the same as this patch), is to introduce ->quit() in struct stmmac_pci_info
-and assign it correctly, because not all platforms enable clocks.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Perhaps, we may leave this patch as is (for the sake of easy backporting) and
-apply another one as I explained above to avoid similar mistakes in the future.
+All errors (new ones prefixed by >>):
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+   drivers/platform/apple/smc_rtkit.c: In function 'apple_smc_rtkit_write_key_atomic':
+>> drivers/platform/apple/smc_rtkit.c:74:16: error: implicit declaration of function 'FIELD_PREP' [-Werror=implicit-function-declaration]
+      74 |         msg = (FIELD_PREP(SMC_MSG, SMC_MSG_WRITE_KEY) |
+         |                ^~~~~~~~~~
+   In file included from include/linux/bitops.h:6,
+                    from include/linux/log2.h:12,
+                    from include/asm-generic/div64.h:55,
+                    from arch/arm/include/asm/div64.h:107,
+                    from include/linux/math.h:6,
+                    from include/linux/delay.h:22,
+                    from drivers/platform/apple/smc_rtkit.c:8:
+   include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
+      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
+         |                             ^~
+   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
+      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+         |                                      ^~~~~~~~~
+   drivers/platform/apple/smc_rtkit.c:30:41: note: in expansion of macro 'GENMASK'
+      30 | #define SMC_DATA                        GENMASK(63, 32)
+         |                                         ^~~~~~~
+   drivers/platform/apple/smc_rtkit.c:77:27: note: in expansion of macro 'SMC_DATA'
+      77 |                FIELD_PREP(SMC_DATA, key));
+         |                           ^~~~~~~~
+   include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
+      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+         |                  ^~
+   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
+      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+         |                                      ^~~~~~~~~
+   drivers/platform/apple/smc_rtkit.c:30:41: note: in expansion of macro 'GENMASK'
+      30 | #define SMC_DATA                        GENMASK(63, 32)
+         |                                         ^~~~~~~
+   drivers/platform/apple/smc_rtkit.c:77:27: note: in expansion of macro 'SMC_DATA'
+      77 |                FIELD_PREP(SMC_DATA, key));
+         |                           ^~~~~~~~
+>> drivers/platform/apple/smc_rtkit.c:95:13: error: implicit declaration of function 'FIELD_GET' [-Werror=implicit-function-declaration]
+      95 |         if (FIELD_GET(SMC_ID, smc->cmd_ret) != smc->msg_id) {
+         |             ^~~~~~~~~
+   drivers/platform/apple/smc_rtkit.c: In function 'apple_smc_cmd':
+   include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
+      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
+         |                             ^~
+   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
+      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+         |                                      ^~~~~~~~~
+   drivers/platform/apple/smc_rtkit.c:30:41: note: in expansion of macro 'GENMASK'
+      30 | #define SMC_DATA                        GENMASK(63, 32)
+         |                                         ^~~~~~~
+   drivers/platform/apple/smc_rtkit.c:125:27: note: in expansion of macro 'SMC_DATA'
+     125 |                FIELD_PREP(SMC_DATA, arg));
+         |                           ^~~~~~~~
+   include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
+      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+         |                  ^~
+   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
+      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+         |                                      ^~~~~~~~~
+   drivers/platform/apple/smc_rtkit.c:30:41: note: in expansion of macro 'GENMASK'
+      30 | #define SMC_DATA                        GENMASK(63, 32)
+         |                                         ^~~~~~~
+   drivers/platform/apple/smc_rtkit.c:125:27: note: in expansion of macro 'SMC_DATA'
+     125 |                FIELD_PREP(SMC_DATA, arg));
+         |                           ^~~~~~~~
+   include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
+      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
+         |                             ^~
+   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
+      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+         |                                      ^~~~~~~~~
+   drivers/platform/apple/smc_rtkit.c:30:41: note: in expansion of macro 'GENMASK'
+      30 | #define SMC_DATA                        GENMASK(63, 32)
+         |                                         ^~~~~~~
+   drivers/platform/apple/smc_rtkit.c:150:39: note: in expansion of macro 'SMC_DATA'
+     150 |                 *ret_data = FIELD_GET(SMC_DATA, smc->cmd_ret);
+         |                                       ^~~~~~~~
+   include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
+      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+         |                  ^~
+   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
+      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+         |                                      ^~~~~~~~~
+   drivers/platform/apple/smc_rtkit.c:30:41: note: in expansion of macro 'GENMASK'
+      30 | #define SMC_DATA                        GENMASK(63, 32)
+         |                                         ^~~~~~~
+   drivers/platform/apple/smc_rtkit.c:150:39: note: in expansion of macro 'SMC_DATA'
+     150 |                 *ret_data = FIELD_GET(SMC_DATA, smc->cmd_ret);
+         |                                       ^~~~~~~~
+   drivers/platform/apple/smc_rtkit.c: In function 'apple_smc_rtkit_recv':
+   include/linux/bits.h:35:29: warning: left shift count >= width of type [-Wshift-count-overflow]
+      35 |         (((~UL(0)) - (UL(1) << (l)) + 1) & \
+         |                             ^~
+   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
+      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+         |                                      ^~~~~~~~~
+   drivers/platform/apple/smc_rtkit.c:30:41: note: in expansion of macro 'GENMASK'
+      30 | #define SMC_DATA                        GENMASK(63, 32)
+         |                                         ^~~~~~~
+   drivers/platform/apple/smc_rtkit.c:332:55: note: in expansion of macro 'SMC_DATA'
+     332 |         apple_smc_event_received(smc->core, FIELD_GET(SMC_DATA, message));
+         |                                                       ^~~~~~~~
+   include/linux/bits.h:36:18: warning: right shift count is negative [-Wshift-count-negative]
+      36 |          (~UL(0) >> (BITS_PER_LONG - 1 - (h))))
+         |                  ^~
+   include/linux/bits.h:38:38: note: in expansion of macro '__GENMASK'
+      38 |         (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+         |                                      ^~~~~~~~~
+   drivers/platform/apple/smc_rtkit.c:30:41: note: in expansion of macro 'GENMASK'
+      30 | #define SMC_DATA                        GENMASK(63, 32)
+         |                                         ^~~~~~~
+   drivers/platform/apple/smc_rtkit.c:332:55: note: in expansion of macro 'SMC_DATA'
+     332 |         apple_smc_event_received(smc->core, FIELD_GET(SMC_DATA, message));
+         |                                                       ^~~~~~~~
+   cc1: some warnings being treated as errors
 
-> Fixes: 5ec55823438e8 ("net: stmmac: add clocks management for gmac driver")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> /!\     This patch is HIGHLY speculative.     /!\
-> 
-> The corresponding clk_disable_unprepare() is still called within the pm
-> related stmmac_bus_clks_config() function.
-> 
-> However, with my limited understanding of the pm API, I think it that the
-> patch is valid.
-> (in other word, does the pm_runtime_put() and/or pm_runtime_disable()
-> and/or stmmac_dvr_remove() can end up calling .runtime_suspend())
-> 
-> So please review with care, as I'm not able to test the change by myself.
-> 
-> 
-> If I'm wrong, maybe a comment explaining why it is safe to have this
-> call in the error handling path of the probe and not in the remove function
-> would avoid erroneous patches generated from static code analyzer to be
-> sent.
-> ---
->  drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-> index 52f9ed8db9c9..9f38642f86ce 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-> @@ -1134,6 +1134,7 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
->  
->  	stmmac_dvr_remove(&pdev->dev);
->  
-> +	clk_disable_unprepare(plat->stmmac_clk);
->  	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
->  
->  	pcim_iounmap_regions(pdev, BIT(0));
-> -- 
-> 2.34.1
-> 
+
+vim +/FIELD_PREP +74 drivers/platform/apple/smc_rtkit.c
+
+    58	
+    59	static int apple_smc_rtkit_write_key_atomic(void *cookie, smc_key key, void *buf, size_t size)
+    60	{
+    61		struct apple_smc_rtkit *smc = cookie;
+    62		int ret;
+    63		u64 msg;
+    64		u8 result;
+    65	
+    66		if (size > SMC_SHMEM_SIZE || size == 0)
+    67			return -EINVAL;
+    68	
+    69		if (!smc->alive)
+    70			return -EIO;
+    71	
+    72		memcpy_toio(smc->shmem.iomem, buf, size);
+    73		smc->msg_id = (smc->msg_id + 1) & 0xf;
+  > 74		msg = (FIELD_PREP(SMC_MSG, SMC_MSG_WRITE_KEY) |
+    75		       FIELD_PREP(SMC_SIZE, size) |
+    76		       FIELD_PREP(SMC_ID, smc->msg_id) |
+    77		       FIELD_PREP(SMC_DATA, key));
+    78		smc->atomic_pending = true;
+    79	
+    80		ret = apple_rtkit_send_message(smc->rtk, SMC_ENDPOINT, msg, NULL, true);
+    81		if (ret < 0) {
+    82			dev_err(smc->dev, "Failed to send command (%d)\n", ret);
+    83			return ret;
+    84		}
+    85	
+    86		while (smc->atomic_pending) {
+    87			ret = apple_rtkit_poll(smc->rtk);
+    88			if (ret < 0) {
+    89				dev_err(smc->dev, "RTKit poll failed (%llx)", msg);
+    90				return ret;
+    91			}
+    92			udelay(100);
+    93		}
+    94	
+  > 95		if (FIELD_GET(SMC_ID, smc->cmd_ret) != smc->msg_id) {
+    96			dev_err(smc->dev, "Command sequence mismatch (expected %d, got %d)\n",
+    97				smc->msg_id, (unsigned int)FIELD_GET(SMC_ID, smc->cmd_ret));
+    98			return -EIO;
+    99		}
+   100	
+   101		result = FIELD_GET(SMC_RESULT, smc->cmd_ret);
+   102		if (result != 0)
+   103			return -result;
+   104	
+   105		return FIELD_GET(SMC_SIZE, smc->cmd_ret);
+   106	}
+   107	
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
