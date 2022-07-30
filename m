@@ -2,67 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1283C19F29
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:31:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB129C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234139AbiG3Jb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 05:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33510 "EHLO
+        id S234436AbiG3JcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 05:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230209AbiG3Jb5 (ORCPT
+        with ESMTP id S234401AbiG3JcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 05:31:57 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9999B1C925
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:31:55 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LvzZP1YTpzWfD9;
-        Sat, 30 Jul 2022 17:27:57 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 30 Jul 2022 17:31:53 +0800
-Subject: Re: [PATCH v3] mm: memory-failure: convert to pr_fmt()
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>
-CC:     <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20220729031919.72331-1-wangkefeng.wang@huawei.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <e699cd23-3eeb-7920-accd-b30622efa551@huawei.com>
-Date:   Sat, 30 Jul 2022 17:31:53 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Sat, 30 Jul 2022 05:32:06 -0400
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111A242AFC
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:32:05 -0700 (PDT)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-10e6bdbe218so8326773fac.10
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:32:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=landley-net.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=VQvaSdst3GlNtIz5gSEbzEWnw6iJp0dnfjX2/uw4Pi0=;
+        b=WwZeLQPHVZMv7Tf/yzouYMy/N8ncJHBvNxrLWXHyVtWxdZ1PxHorwX/QP+bQZFNbY1
+         rFwGJtpccThotO8bEaWew5690F3KBLjHib7+tV2wpgxvsFLNez3D6LNChyTXqofSjLSL
+         3t6mL4NZhitq1h4tRWJkYont7aB4p6WDw3W2nbHcvT//xibau8r6KMdHFoQnG+SQ/3rI
+         3j0ybuxX0FIf2CU4lpJxYEwnn2Qs8McUF9hZQ8kDHVp4HHibCyHITaH7wbRaDD6Z8BOI
+         nolUx7bNdTsURyp6dA0MSYRIyofqMVotGVXSojpI8bVNj+lPXZDKpcXfE/3CmYrakb10
+         Apmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=VQvaSdst3GlNtIz5gSEbzEWnw6iJp0dnfjX2/uw4Pi0=;
+        b=EDvRyqQ+miLWinW/UtthWEA62j79YDyVnVkpWg44ek9SDlX8pxNmCeblpTWRaRvwqr
+         MzLGp58W2ZPaHJD19JHPOxGbj86/B2gH5hFe0ZVWj1AzZc7M3I59cDF6lGYqQgadZ860
+         UydXDaZuNSHqqh1P0NxY5ikuji1Xo8lz9siMSPbiTC6lEcoSCjoqOYmO0HDFnC26uhgm
+         z0pd4iEasVNY6UyJNU/BXSf9ZBUDksmS1czF4kg4u/mevgludEk6FrS+Kwz1VTmOLjit
+         1q9AA4HGLyst4EMP+HHZBWovGKCY4VguRdnNu33D477NEPE2yHQPdsIalRWd9TeCVJZk
+         lz9Q==
+X-Gm-Message-State: AJIora9svbpBPd5gakNXucEEYM9JGYfjIO7aIX20FMc1GteQ2lMWr3zz
+        T31Dt998cL8py9WMpCjto2Tw0w==
+X-Google-Smtp-Source: AGRyM1vlzdqQ1oG5qxelDaZGwViNeSWbgs5sytdvECpAolwn1LIlFKm9WBz+/JKkjdUAPx95t1xc6g==
+X-Received: by 2002:a05:6870:f2a0:b0:fe:29a0:4b48 with SMTP id u32-20020a056870f2a000b000fe29a04b48mr3309674oap.183.1659173524398;
+        Sat, 30 Jul 2022 02:32:04 -0700 (PDT)
+Received: from ?IPV6:2607:fb90:c2d4:35df:6680:99ff:fe6f:cb54? ([2607:fb90:c2d4:35df:6680:99ff:fe6f:cb54])
+        by smtp.gmail.com with ESMTPSA id q16-20020a05683033d000b0061c29a38b3bsm1633168ott.33.2022.07.30.02.32.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 30 Jul 2022 02:32:03 -0700 (PDT)
+Message-ID: <e850477a-6dd8-0a76-cfa0-bf78951f7281@landley.net>
+Date:   Sat, 30 Jul 2022 04:39:13 -0500
 MIME-Version: 1.0
-In-Reply-To: <20220729031919.72331-1-wangkefeng.wang@huawei.com>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
+ ram disk
 Content-Language: en-US
+To:     Jim Baxter <jim_baxter@mentor.com>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>
+Cc:     "hpa@zytor.com" <hpa@zytor.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "initramfs@vger.kernel.org" <initramfs@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bug-cpio@gnu.org" <bug-cpio@gnu.org>,
+        "zohar@linux.vnet.ibm.com" <zohar@linux.vnet.ibm.com>,
+        Silviu Vlasceanu <Silviu.Vlasceanu@huawei.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@huawei.com>,
+        "takondra@cisco.com" <takondra@cisco.com>,
+        "kamensky@cisco.com" <kamensky@cisco.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "james.w.mcmechan@gmail.com" <james.w.mcmechan@gmail.com>,
+        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
+        Dirk Behme <dirk.behme@de.bosch.com>,
+        Eugeniu Rosca <roscaeugeniu@gmail.com>
+References: <33cfb804-6a17-39f0-92b7-01d54e9c452d@huawei.com>
+ <1561909199.3985.33.camel@linux.ibm.com>
+ <45164486-782f-a442-e442-6f56f9299c66@huawei.com>
+ <1561991485.4067.14.camel@linux.ibm.com>
+ <f85ed711-f583-51cd-34e2-80018a592280@huawei.com>
+ <0c17bf9e-9b0b-b067-cf18-24516315b682@huawei.com>
+ <20220609102627.GA3922@lxhi-065>
+ <21b3aeab20554a30b9796b82cc58e55b@huawei.com>
+ <20220610153336.GA8881@lxhi-065>
+ <4bc349a59e4042f7831b1190914851fe@huawei.com>
+ <20220615092712.GA4068@lxhi-065>
+ <032ade35-6eb8-d698-ac44-aa45d46752dd@mentor.com>
+ <f82d4961986547b28b6de066219ad08b@huawei.com>
+ <737ddf72-05f4-a47e-c901-fec5b1dfa7a6@mentor.com>
+ <8e6a723874644449be99fcebb0905058@huawei.com>
+ <d6af7f7e-7f8c-a6a7-7a09-84928fd69774@mentor.com>
+From:   Rob Landley <rob@landley.net>
+In-Reply-To: <d6af7f7e-7f8c-a6a7-7a09-84928fd69774@mentor.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/29 11:19, Kefeng Wang wrote:
-> Use pr_fmt to prefix all pr_<level> output, but unpoison_memory()
-> and soft_offline_page() are used by error injection, which have
-> own prefixes like "Unpoison:" and "soft offline:", meanwhile,
-> soft_offline_page() could be used by memory hotremove, so reset
-> pr_fmt before unpoison_pr_info definition to keep the original
-> output for them.
-> 
-> Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-> Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+On 7/29/22 05:37, Jim Baxter wrote:
+>>>> Uhm, I guess this could be solved with:
+>>>>
+>>>> https://github.com/openeuler-
+>>> mirror/kernel/commit/18a502f7e3b1de7b9ba0c70896ce08ee13d052da
+>>>>
+>>>> and adding initramtmpfs to the kernel command line. You are
+>>>> probably using ramfs, which does not have xattr support.
+>>>>
 
-I'm sorry but this patch will make pr_info in try_to_split_thp_page looks like below?
+Oh, here's the actual tested version of the patch wiring up rootfstype=tmpfs to
+force rootfs to be tmpfs even when you specify root=
 
-Memory failure: Memory failure: 0x1b8200: thp split failed
-or
-Memory failure: soft offline: 0x1b8200: thp split failed
+diff --git a/init/do_mounts.c b/init/do_mounts.c
+index 7058e14ad5f7..dedf27fe9044 100644
+--- a/init/do_mounts.c
++++ b/init/do_mounts.c
+@@ -665,7 +665,7 @@ struct file_system_type rootfs_fs_type = {
 
-Thanks.
+ void __init init_rootfs(void)
+ {
+-	if (IS_ENABLED(CONFIG_TMPFS) && !saved_root_name[0] &&
+-		(!root_fs_names || strstr(root_fs_names, "tmpfs")))
++	if (IS_ENABLED(CONFIG_TMPFS) && (!root_fs_names ? !saved_root_name[0] :
++		!!strstr(root_fs_names, "tmpfs")))
+ 		is_tmpfs = true;
+ }
+
+Signed-in-triplicate-by: Rob Landley <rob@landley.net>
+
+No idea why nobody else has fixed that bug in the past 9 years, seems obvious?
+
+Anyway, here's the testing I did using mkroot (ala
+https://landley.net/toybox/faq.html#mkroot):
+
+$ (cd root/x86_64; KARGS='quiet root=potato HANDOFF="/bin/head -n 1
+/proc/mounts"' ./run-qemu.sh) | tail -n 3
+rootfs / rootfs rw 0 0
+reboot: Restarting system
+
+$ (cd root/x86_64; KARGS='quiet HANDOFF="/bin/head -n 1 /proc/mounts"'
+./run-qemu.sh) | tail -n 3
+rootfs / rootfs rw,size=121828k,nr_inodes=30457 0 0
+reboot: Restarting system
+
+$ (cd root/x86_64; KARGS='quiet rootfstype=tmpfs root=potato HANDOFF="/bin/head
+-n 1 /proc/mounts"' ./run-qemu.sh) | tail -n 3
+rootfs / rootfs rw,size=121828k,nr_inodes=30457 0 0
+reboot: Restarting system
+
+I.E. rootfstype=tmpfs neutralized the root= so it was still tmpfs despite the
+kernel being explicitly told you weren't going to stay on initramfs (which is
+still what root= means). With just root= it's still ramfs, with all the "my log
+file got too big and the system livelocked" and "querying available space always
+returns zero" that entails.
+
+> Can I clarify which filesystem type is supported with this patch series?
+> Is it tmpfs or perhaps a ramdisk?
+
+I believe both tmpfs and ramfs support xattrs? (I know tmpfs does, and
+fs/ramfs/file-mmu.c plugs simple_getattr() into ramfs_file_operations.setattr so
+it looks like that would too? Haven't tried it.)
+
+This isn't a modification to the filesystem code (ramfs/tmpfs), this is a
+modification to the boot-time loader (initramfs) that extracts a cpio.gz file
+into the filesystem.
+
+Ramdisks have supported xattrs for years: they fake up a block device out of a
+chunk of memory and them format it and mount some other filesystem on it,
+meaning the driver for the other filesystem handles the xattr support.
+
+But ramdisks don't use initramfs, they load an image of the preformatted
+filesystem into the ramdisk block device. Completely separate mechanism, sharing
+no code with initramfs, depending on the block layer, etc.
+
+>>> Thank you, I have tested that patch but the problem remained. Here is my
+>>> command line, I wonder if there is something wrong.
+>>>
+>>> Kernel command line: rw rootfstype=initramtmpfs root=/dev/ram0
+>>> initrd=0x500000000 rootwait
+>> 
+>> It is just initramtmpfs, without rootfstype=.
+
+The above patch does not go on top of that patch, it's instead of.
+
+Rob
