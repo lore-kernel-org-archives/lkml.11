@@ -2,104 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04211C00144
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 02:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF4AC00144
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 02:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239740AbiG3Cka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 22:40:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59130 "EHLO
+        id S239575AbiG3Cmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 22:42:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbiG3Ck0 (ORCPT
+        with ESMTP id S230476AbiG3Cmg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 22:40:26 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA36E029;
-        Fri, 29 Jul 2022 19:40:24 -0700 (PDT)
+        Fri, 29 Jul 2022 22:42:36 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017A42F022
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 19:42:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659148824; x=1690684824;
+  t=1659148955; x=1690684955;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ZOfkkbSr9Kz9OSg2dqohMlXKgKNZ6vkhC5qYNXvx98E=;
-  b=J9ynEbYt1Vg2WEgNXh62ZS0B/UdPKMpREX6UX+qAmgj1Z2j9I8Uwglx6
-   XDkmAbsDrlIcVnik6i///4bL64f+2fBYo5jIB+VHQc0LgDlydpRL3bGLD
-   0TnNH2Q7YkkQtHYepy/+q39XwIHLrHvQomDxAvH2nInZwZi0pshDcUxbE
-   W1+G/XJDMWeUKuhm6/K1BYj2c0Pe9cbyF7LkbtDeSbceLvccC5+lcuS7o
-   5ofGNPRSgoOO08pXLAKZI5DRtx9AlpynJ/GEcDBN1nG75yHygCVJMC31M
-   ctMwBiVHl3Cq54nFtrk4TEeTefLZuNL5YQtjN49f9MNDTEJCQJumhRXfx
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="314693219"
+  bh=mcpZdeDc1xfj4+c/v41ilgEl0id0FXrF8qWUD5A4IXE=;
+  b=ZffO6LB0W8SZYwjTsqaBUhPW4YaNxzekItQL56huZDLbUs8HzPpVaCCq
+   7qGwgWZBiEh3HiOi60nW/q5YCJ5xe9jjdubzYRUwDGu96T9wZc94PXvex
+   IYyuspdKEHQRJ+DA10PUBDgJ81OBDXQBOKYfCYkEJ2JIlmKLSwsDugDp0
+   jdSkzr29yrEe2jjtrEO4JUfrq/qWPLYxLUgWx65BjmZmHpIdenAqAHN2M
+   ygXBg3xQaRIb53jQlWcV3bxhH4Kzz0TproeXG8lJWmN89pccxSz82klUJ
+   lmYEiInRqTlzNI6ONNVuWbQfgD0DFXiOhQdS8rvkKFsEA6uM3Ujz9apJr
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="375188610"
 X-IronPort-AV: E=Sophos;i="5.93,202,1654585200"; 
-   d="scan'208";a="314693219"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 19:40:24 -0700
+   d="scan'208";a="375188610"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 19:42:35 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,202,1654585200"; 
-   d="scan'208";a="777715583"
-Received: from unknown (HELO desk) ([10.252.135.102])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 19:40:23 -0700
-Date:   Fri, 29 Jul 2022 19:40:22 -0700
-From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-To:     Tony Luck <tony.luck@intel.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        antonio.gomez.iglesias@linux.intel.com,
-        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
-        andrew.cooper3@citrix.com, Josh Poimboeuf <jpoimboe@kernel.org>
-Subject: Re: [RESEND RFC PATCH] x86/bugs: Add "unknown" reporting for MMIO
- Stale Data
-Message-ID: <20220730024022.dn2b66ecaqar5h4t@desk>
-References: <a932c154772f2121794a5f2eded1a11013114711.1657846269.git.pawan.kumar.gupta@linux.intel.com>
- <YuJ6TQpSTIeXLNfB@zn.tnic>
- <20220729022851.mdj3wuevkztspodh@desk>
- <YuPpKa6OsG9e9nTj@zn.tnic>
- <20220729173609.45o7lllpvsgjttqt@desk>
- <YuRDbuQPYiYBZghm@zn.tnic>
- <20220729214627.wowu5sny226c5pe4@desk>
- <1bcf0b54-6ddf-b343-87c5-f7fd7538759c@intel.com>
- <YuRoOCUxGUJ/8QVH@agluck-desk3.sc.intel.com>
+   d="scan'208";a="928949097"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 29 Jul 2022 19:42:34 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oHcQz-000CIs-34;
+        Sat, 30 Jul 2022 02:42:33 +0000
+Date:   Sat, 30 Jul 2022 10:42:18 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] dma-buf: Add ioctl to query mmap info
+Message-ID: <202207301057.KVTYTw6h-lkp@intel.com>
+References: <20220729170744.1301044-2-robdclark@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YuRoOCUxGUJ/8QVH@agluck-desk3.sc.intel.com>
+In-Reply-To: <20220729170744.1301044-2-robdclark@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 04:07:36PM -0700, Tony Luck wrote:
-> On Fri, Jul 29, 2022 at 03:54:58PM -0700, Dave Hansen wrote:
-> > On 7/29/22 14:46, Pawan Gupta wrote:
-> > > Let me see if there is a way to distinguish between 4. and 5. below:
-> > > 
-> > >    CPU category				  X86_BUG_MMIO_STALE_DATA	X86_BUG_MMIO_UNKNOWN
-> > > -----------------------------------------------------------------------------------------------
-> > > 1. Known affected (in cpu list)			1				0
-> > > 2. CPUs with HW immunity (MMIO_NO=1)		0				0
-> > > 3. Other vendors				0				0
-> > > 4. Older Intel CPUs				0				1
-> > > 5. Not affected current CPUs (but MMIO_NO=0)	0				?
-> > 
-> > This seems like something we would need to go back to our colleagues to
-> > figure out.  Basically, at the time of publishing the
-> > X86_BUG_MMIO_STALE_DATA papers, what was considered "older"?
-> > 
-> > In other words, we need the folks at Intel that did this good work to
-> > _show_ their work (at least part of it).
-> 
-> https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html
-> 
-> Click to the 2022 tab. The MMIO affected/not-affected status is there
-> (you'll need to use the horizontal scroll to shift over to see those
-> columns).
-> 
-> This table lists all the CPUs that were not "older".
-> 
-> Any CPU not on that list is out of servicing period.
+Hi Rob,
 
-I thought about this option, this will require CPUs to be added to
-whitelist too. If the maintainers wont hate it, I will go this route.
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on linus/master]
+[also build test WARNING on v5.19-rc8]
+[cannot apply to drm-misc/drm-misc-next drm/drm-next drm-exynos/exynos-drm-next drm-intel/for-linux-next drm-tip/drm-tip next-20220728]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Rob-Clark/dma-buf-map-info-support/20220730-010844
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 6e2c0490769ef8a95b61304389116ccc85c53e12
+config: m68k-randconfig-s032-20220729 (https://download.01.org/0day-ci/archive/20220730/202207301057.KVTYTw6h-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/203f14a73a179d6c5fbfa4813e45fde2a9ae9860
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Rob-Clark/dma-buf-map-info-support/20220730-010844
+        git checkout 203f14a73a179d6c5fbfa4813e45fde2a9ae9860
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=m68k SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+sparse warnings: (new ones prefixed by >>)
+>> drivers/dma-buf/dma-buf.c:346:26: sparse: sparse: incorrect type in argument 1 (different modifiers) @@     expected void [noderef] __user *to @@     got void const [noderef] __user *uarg @@
+   drivers/dma-buf/dma-buf.c:346:26: sparse:     expected void [noderef] __user *to
+   drivers/dma-buf/dma-buf.c:346:26: sparse:     got void const [noderef] __user *uarg
+
+vim +346 drivers/dma-buf/dma-buf.c
+
+   328	
+   329	static long dma_buf_info(struct dma_buf *dmabuf, const void __user *uarg)
+   330	{
+   331		struct dma_buf_info arg;
+   332	
+   333		if (copy_from_user(&arg, uarg, sizeof(arg)))
+   334			return -EFAULT;
+   335	
+   336		switch (arg.param) {
+   337		case DMA_BUF_INFO_VM_PROT:
+   338			if (!dmabuf->ops->mmap_info)
+   339				return -ENOSYS;
+   340			arg.value = dmabuf->ops->mmap_info(dmabuf);
+   341			break;
+   342		default:
+   343			return -EINVAL;
+   344		}
+   345	
+ > 346		if (copy_to_user(uarg, &arg, sizeof(arg)))
+   347			return -EFAULT;
+   348	
+   349		return 0;
+   350	}
+   351	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
