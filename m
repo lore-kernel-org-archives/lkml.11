@@ -2,104 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12296C19F28
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 11:40:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD3CC04A68
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 11:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234131AbiG3Lke (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 07:40:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49354 "EHLO
+        id S233181AbiG3LqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 07:46:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230135AbiG3Lkb (ORCPT
+        with ESMTP id S230135AbiG3LqK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 07:40:31 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D98DF7A;
-        Sat, 30 Jul 2022 04:40:30 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id a18-20020a05600c349200b003a30de68697so5108731wmq.0;
-        Sat, 30 Jul 2022 04:40:30 -0700 (PDT)
+        Sat, 30 Jul 2022 07:46:10 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C89717E0F
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 04:46:09 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id bh13so5919480pgb.4
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 04:46:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=n7XzjcJpXfeDeN0N6bD2rYAtzteaNAW8TEQ70M39WGE=;
-        b=nsvGR89Exucsj6s6UQyamXy53TNOhzxln9vKRIqDxDr0UKXzdeu5WDvTtFYg052SVd
-         hC8m28n4qkzv8CrerqL8Y5zkKggrZg0JGCONh3iitbo+WI7XCTgC44p1M+7hMOWsHRVU
-         5c8NmnuyCxIBZ9Ho1e13XjUW2dOFNEX3bR5nXk/euNZpdEU1TLOvYQXOpSRwdXYGzJ1Q
-         FJAH5pbvXJcPtWTLRZpBcD2SPHAOeamd6TgingwkBm3ebQ5lHqJILYQ37m029ZDlMLwe
-         wSDpbM0Oa8EbrvQF1Mb1h0W7EWnG1kFvZ0Ziks43g0ASQp8n4blxGy7jDfIwsL4wKFCm
-         kVeA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=styzkenOeqf5qc9bxBJ7dgDvmeZrbcokR+YC5je8YLc=;
+        b=oAPknW93Ck0yOHpxSeCkDGLraImV4G12racNx/YfFtTcNctn07zrj/W9FlLjYxP8xF
+         nf2H6UuZNbGJ17+ikYY6n7X5Slb5sGrr+RnvPEpKBCFhdbBevEhrf4t7dVEgu8lpqvFT
+         wjwnGReGu6TUFkhtHd17tBfCCxkqCeZbzquESWjq+/10WlFX0qdk+JouTmexKkjdfDBX
+         0X2T07R6MM6ku1zl7swuTwWTAAwLMkGdAZogm1czq3RdDpExBO8C5JbRHXPdG+ZIg8Jd
+         EQ36hhfxqhqtc7EKPioxThmEcIAWC5tZjw+EaH5T3ozOyA56o01yAbYTAI86CVHuR4NE
+         DZwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=n7XzjcJpXfeDeN0N6bD2rYAtzteaNAW8TEQ70M39WGE=;
-        b=CPSrqc2yWwxF/2oremBOQjnBE8UsW+35EpZoA3Y/z01JokGmlc/3IXPYcB03hM2xi6
-         S8wFxMT1IVEd+NCHrHz3trAjcrpPIZZRjgweWqPkrOlCuPmUMozat2qYmmpKi/Oo6chm
-         4Pnmyi/C/twElBS5btA+B+jrnHWooFDKwKGmQmkJmRpNOo9rvpKPuzqWpWnlOTXzOL68
-         cra2cuV1Fxx9HE+2iu8Kz13SdtfVJgutbXo1V8MDYV9dxITn4Bg5FULyXP8pdzErXnWT
-         EyHBYnIgk6SpLPXpH4Xt7/GvM1sLhKOCOrtTLMQ0WnSnOdF9lchrSmWQK3Uig3+ceY40
-         cKLg==
-X-Gm-Message-State: AJIora8F3Hv6s1JYECcVtCgY22N03kqRsHsaayS/0KxV9hZyNnsoOfv3
-        uzt5b6qNSFNAr/s/qppDi2k=
-X-Google-Smtp-Source: AGRyM1tAU/z7TliT3qoqSCY9k9rrs7Z1Hvc8puGpUeHnxnyYJg5vVyncTVdsHHbwqFKR74nBUTKPBQ==
-X-Received: by 2002:a05:600c:22c7:b0:3a3:6dfb:49eb with SMTP id 7-20020a05600c22c700b003a36dfb49ebmr5279513wmg.99.1659181229326;
-        Sat, 30 Jul 2022 04:40:29 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id b2-20020a5d4b82000000b0021e5bec14basm6278099wrt.5.2022.07.30.04.40.28
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=styzkenOeqf5qc9bxBJ7dgDvmeZrbcokR+YC5je8YLc=;
+        b=ldYfKILm1RBiXa52sEahILefXZMjGfgC5G/1Uxs5iSSY3zespZuY8LZXkGuSb9biMM
+         8e/ES2tqZdXp+sOffKOEDPfRWBTlpAKaQmMXf3PUyMYF7OhRDsRU6wkXo5qhx62DDYrh
+         +dhrmq+7ffUfiRzTN5RAfGGHaY/E/gTs8P0GSfetibf4DqrCJ87h+3rvxdApbyjrKNnk
+         35cOtxizKtc+3xK1IkAmgB8t4otUiuvKqyX4BiKtc1xtdqT0ww0U3LAPoXFCwFYOJGYT
+         /eBLIstA/sBfmI6SevHWlpcsoZzI7+MrFH4athI5UnjTlP+DjtV6tIvN9C0pCpnPM6bG
+         Oy1A==
+X-Gm-Message-State: AJIora/Gij22gSsWgfl76UQ4h7a/450fbI8qWJFzdqOa2xWHleL1+kj2
+        RrHDH0tGZR2+gO/Ej801BFxSJuzApvE=
+X-Google-Smtp-Source: AGRyM1t180hITPVu7N3GJCw3O1RHTbLRqD7FM1XxJ+RJ1OvxD6zdUB23g1/5TZzmt0CZ7uGpH0IY1g==
+X-Received: by 2002:aa7:8e86:0:b0:528:c755:1d96 with SMTP id a6-20020aa78e86000000b00528c7551d96mr7832102pfr.30.1659181568842;
+        Sat, 30 Jul 2022 04:46:08 -0700 (PDT)
+Received: from fedora.. ([103.230.104.28])
+        by smtp.gmail.com with ESMTPSA id x5-20020aa79a45000000b0052b4f4c6a8fsm4612336pfj.209.2022.07.30.04.46.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Jul 2022 04:40:28 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] tls: rx: Fix less than zero check on unsigned variable sz
-Date:   Sat, 30 Jul 2022 12:40:27 +0100
-Message-Id: <20220730114027.142376-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        Sat, 30 Jul 2022 04:46:08 -0700 (PDT)
+From:   Khalid Masum <khalid.masum.92@gmail.com>
+To:     syzbot+14b0e8f3fd1612e35350@syzkaller.appspotmail.com
+Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        Khalid Masum <khalid.masum.92@gmail.com>
+Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Write in imageblit (2)
+Date:   Sat, 30 Jul 2022 17:45:47 +0600
+Message-Id: <20220730114547.5790-1-khalid.masum.92@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <000000000000bbdd0405d120c155@google.com>
+References: <000000000000bbdd0405d120c155@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Variable sz is declared as an unsigned size_t and is being checked
-for an less than zero error return on a call to tls_rx_msg_size.
-Fix this by making sz an int.
+#syz-test: https://github.com/torvalds/linux.git e0dccc3b76fb 
 
-Fixes: 84c61fe1a75b ("tls: rx: do not use the standard strparser")
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- net/tls/tls_strp.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/video/fbdev/core/fbcon.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/net/tls/tls_strp.c b/net/tls/tls_strp.c
-index b945288c312e..2b9c42b8064c 100644
---- a/net/tls/tls_strp.c
-+++ b/net/tls/tls_strp.c
-@@ -187,7 +187,8 @@ static int tls_strp_copyin(read_descriptor_t *desc, struct sk_buff *in_skb,
- 			   unsigned int offset, size_t in_len)
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+index 1a9aa12cf886..d026f3845b60 100644
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -2591,14 +2591,13 @@ static unsigned long fbcon_getxy(struct vc_data *vc, unsigned long pos,
  {
- 	struct tls_strparser *strp = (struct tls_strparser *)desc->arg.data;
--	size_t sz, len, chunk;
-+	int sz;
-+	size_t len, chunk;
- 	struct sk_buff *skb;
- 	skb_frag_t *frag;
+ 	unsigned long ret;
+ 	int x, y;
++	unsigned long offset = (pos - vc->vc_origin) / 2;
++	x = offset % vc->vc_cols;
++	y = offset / vc->vc_cols;
++	ret = pos + (vc->vc_cols - x) * 2;
  
-@@ -215,7 +216,7 @@ static int tls_strp_copyin(read_descriptor_t *desc, struct sk_buff *in_skb,
- 
- 		/* We may have over-read, sz == 0 is guaranteed under-read */
- 		if (sz > 0)
--			chunk =	min_t(size_t, chunk, sz - skb->len);
-+			chunk =	min_t(size_t, chunk, (size_t)sz - skb->len);
- 
- 		skb->len += chunk;
- 		skb->data_len += chunk;
+-	if (pos >= vc->vc_origin && pos < vc->vc_scr_end) {
+-		unsigned long offset = (pos - vc->vc_origin) / 2;
+-
+-		x = offset % vc->vc_cols;
+-		y = offset / vc->vc_cols;
+-		ret = pos + (vc->vc_cols - x) * 2;
+-	} else {
++	if (!pos >= vc->vc_origin || !pos < vc->vc_scr_end ||
++	    !ret >= vc->vc_origin || !ret < vc->vc_scr_end) {
+ 		/* Should not happen */
+ 		x = y = 0;
+ 		ret = vc->vc_origin;
 -- 
-2.35.3
+2.36.1
 
