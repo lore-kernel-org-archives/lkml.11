@@ -2,133 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C3EC19F2B
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 19:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB381C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 19:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235356AbiG3Tkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 15:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53620 "EHLO
+        id S235644AbiG3Tkz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 15:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235570AbiG3Tko (ORCPT
+        with ESMTP id S235695AbiG3Tko (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 30 Jul 2022 15:40:44 -0400
 Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668FA167F0;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66485167EF;
         Sat, 30 Jul 2022 12:40:42 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id A00425C00D7;
-        Sat, 30 Jul 2022 15:40:41 -0400 (EDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id F2F5A5C0095;
+        Sat, 30 Jul 2022 15:40:39 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sat, 30 Jul 2022 15:40:41 -0400
+  by compute4.internal (MEProxy); Sat, 30 Jul 2022 15:40:39 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
         :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1659210041; x=1659296441; bh=WZ
-        EQVb7LXNaO/V7wO/BS4WbF6FIQfaAKzTUD9UnPU88=; b=nCc5TsYiptdA2M6PJF
-        /IZ/6cDakk+ZYu63BBwesYGAlTraAsT/cb47g3ewJTckQ/c5kk+en9xrKOvFd0Ne
-        3fSinalPLP1lxeEL6eoO0YSTp5MclrEMo/tBks/BfC4FxGkDYwivXBXd2C8zniaS
-        2v8kni7819RyEfg2lLj7vGTMvNK3FE8vSJgTOOsqc31FiREdkqitWC1yd6I7qOAs
-        wAPN36M4iECgATDXWfvmZVQwPML4VYnNwpLeM9ODKFX2aYHTG1Vr9HHkknUUXZPJ
-        QZ6iMGBAQZWAX8VwLl8SenilNxzduaDmL8oaFXARU6x/45eTOCS53c+Bp+EvHuDq
-        kQLQ==
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm2; t=1659210039; x=1659296439; bh=xOBsPksCdqcov7JXxKD8topM8
+        +c6rpsTvLZgx6AhQ0s=; b=lbHDM+gtO+eqKdhMcQ2TK2stBTVaKgo5REnFwDBaz
+        wYTlVojJDT96vX3RSS69TuvZSmUe/qfaayngWhJkUw8a35+fpEifr9N8J1A/z7BW
+        GlZiCySZ9BhkcOtmAKoaOPhFZtMSMcLjWnuZmVnm36gh7R3EyT0wE3yO8Q2n1OxT
+        TwjsU/s5m1eMejjafbqb2eNOohMdxwfJOfxxXE59+wribqQjW81TcPj+tBK0/gep
+        KxB0lwv1NMkdAR5qhfwR+5frxGGvG7nEsun2jWMejtSPnjaBcWPA8kW95O9tJfuM
+        c9HL5gwLEOGk7TfRbBE9/0KMCPcwKFvvmsmJPfCMQgZTg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; t=1659210041; x=1659296441; bh=WZEQVb7LXNaO/
-        V7wO/BS4WbF6FIQfaAKzTUD9UnPU88=; b=hmecbVcu6+DwL+6Ykv/60ipkcmeoU
-        mJcOCFOHf6vgxk0rq7tPsM1UdOW4nfoeXSieURnbMW2xsfViWaVG0X8EN5A4L4v0
-        JnUWYuhDJV1WxE+INRtK5ee1SBdt5gudqn0dFXx4lH9W6MbUhF4ehwdOj35xln+X
-        0DmjgRr/WCCsF5Z71VV4nS1XZTpZzlMp4tLmUu5nZwJjS3aTNYQ612TV/wg831iM
-        01sRLCQmHl1tjH8Stdc1OeoZV8MbkwJLm5yhG+JRVhIj++8C5FCwMGOKbB6lSXrX
-        A5rPODtU/9RsXtbwfkcAxC915s9YFr9dve0zYEfCqO0zZ9/WeFQg4aJfw==
-X-ME-Sender: <xms:OYnlYr6UrHpIMQUMRXJCZ-VTdfjocZadbyJnldf5xD7X8URmVzQFaA>
-    <xme:OYnlYg4lPHRmqEgtsiY6bVSwgSkEFBoBgznumymSpBuIdSiFD60I9fJGGg6KpnB2L
-    s-SzR7z6WpPEjU62A>
-X-ME-Received: <xmr:OYnlYiezLss8SbRovMHhtT8_Qsqd6vkWZ8TFN5lClq1iexDdvZgXgWpi02kXtodxyJy0Oflpd_we>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdduledgudegvdcutefuodetggdotefrod
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+        1659210039; x=1659296439; bh=xOBsPksCdqcov7JXxKD8topM8+c6rpsTvLZ
+        gx6AhQ0s=; b=zL8KWZv4BMajxJCG+1mY/jjj99YJuqsuuu4qo9FD85NtuZQ66Np
+        jR2nYEYLp/Kmedp2dm7Dz7dwUn8p+Jmz4mxMg3PZLmC3SbxGUcVZ5GOAZ7rPwKh6
+        chvwoAWo7jbl8+EBCuRV20ylvcbm8MXuMYb5IJzPy3nBNXn9qcr847Rc4vOerxh6
+        F52nMvBkWxpv2WQXELQvxvKFRdQB3cIBR64aZ6DE4IbyCc0SZRt9c4revKmy6+4Z
+        jsifinUT/yJAgNIxiUSlBMi20uoIhxjvBX8qiioPrtlndq+gMX6t6HTCq8zZ32KS
+        BQQCO/timaM4aX8c9XWlSw+8kl1x4We+W3w==
+X-ME-Sender: <xms:N4nlYvtkxsJ3B-Ilkle6sJ0ha2hJO0McLpBy3lVTvXaukSsy25QfPw>
+    <xme:N4nlYgedjDY41wdBkF1hZqao6Dr4HJaHaAXbOOaAv-90HjdnjXpJM34c22KqoAA2k
+    srh_Gq3LlFgo7AkiQ>
+X-ME-Received: <xmr:N4nlYix-x1p2dytMk-O0W-OpOOa1WDUPIYkARgEcPlLlEMkj8bqsoyHxJu5rYNo465Hz4WM6vDx7>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdduledgudegudcutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephf
-    fvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcu
-    oegugihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpefgfefggeejhfduie
-    ekvdeuteffleeifeeuvdfhheejleejjeekgfffgefhtddtteenucevlhhushhtvghrufhi
-    iigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:OYnlYsK9rrb-NL_aQgOiqxb6Lv6MZ8EFui4hj-j19FYpky9k5Z27iA>
-    <xmx:OYnlYvLb_i3BLpfc7gpB6gc3EvL4dCa4x916emA3e5dufAy8PeMBKA>
-    <xmx:OYnlYlyuHa_eKBSqoNdikZ0rZcNW6w1rVKgjpET1gItgv1t2J9d1Ww>
-    <xmx:OYnlYlhjp91_pYO7r9Dlbsq2Jmv0t9tWMEO02sVBbxNI_kHaN0g9-g>
+    fvvefufffkofgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcuoegu
+    gihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpedvgefgtefgleehhfeufe
+    ekuddvgfeuvdfhgeeljeduudfffffgteeuudeiieekjeenucevlhhushhtvghrufhiiigv
+    pedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
+X-ME-Proxy: <xmx:N4nlYuOsv5-84pfZOjPG-Rm6HMJwaD001Dv91X16qyzYsUS7xZ0XPw>
+    <xmx:N4nlYv9SeLHtHhgxn0D4GmTchuEfAdKntyocF8Tp5fXk_y-BI4OCCg>
+    <xmx:N4nlYuUMx9Dy6cAcBdO3RfcYcQauv3c8MHjcYYs0sZrpMpYmHitnhg>
+    <xmx:N4nlYqn4Z8OfMOYSN8zGCXvO8HcKLd4RvtElYhkxcwj_GclyVlFo3A>
 Feedback-ID: i6a694271:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 30 Jul 2022 15:40:40 -0400 (EDT)
+ 30 Jul 2022 15:40:38 -0400 (EDT)
 From:   Daniel Xu <dxu@dxuuu.xyz>
 To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         andrii@kernel.org, memxor@gmail.com
 Cc:     Daniel Xu <dxu@dxuuu.xyz>, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next 2/2] selftests/bpf: Add connmark read/write test
-Date:   Sat, 30 Jul 2022 14:40:30 -0500
-Message-Id: <abd424ee71675e3008acd4a2c1fd136cb7dbf8be.1659209738.git.dxu@dxuuu.xyz>
+Subject: [PATCH bpf-next 0/2] Add more bpf_*_ct_lookup() selftests
+Date:   Sat, 30 Jul 2022 14:40:28 -0500
+Message-Id: <cover.1659209738.git.dxu@dxuuu.xyz>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <cover.1659209738.git.dxu@dxuuu.xyz>
-References: <cover.1659209738.git.dxu@dxuuu.xyz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Test that the prog can read/write to/from the connection mark. This
-test is nice because it ensures progs can interact with netfilter
-subsystem correctly.
+This patchset adds more bpf_*_ct_lookup() selftests. The goal is to test
+interaction with netfilter subsystem as well as reading and writing from
+`struct nf_conn`. The first is important when migrating legacy systems
+towards bpf. The latter is important in general to take full advantage
+of connection tracking.
 
-Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
----
- tools/testing/selftests/bpf/prog_tests/bpf_nf.c | 3 ++-
- tools/testing/selftests/bpf/progs/test_bpf_nf.c | 3 +++
- 2 files changed, 5 insertions(+), 1 deletion(-)
+This change will require two changes to BPF CI kconfig:
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-index 317978cac029..7232f6dcd252 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-@@ -44,7 +44,7 @@ static int connect_to_server(int srv_fd)
- 
- static void test_bpf_nf_ct(int mode)
- {
--	const char *iptables = "iptables -t raw %s PREROUTING -j CT";
-+	const char *iptables = "iptables -t raw %s PREROUTING -j CONNMARK --set-mark 42/0";
- 	int srv_fd = -1, client_fd = -1, srv_client_fd = -1;
- 	struct sockaddr_in peer_addr = {};
- 	struct test_bpf_nf *skel;
-@@ -114,6 +114,7 @@ static void test_bpf_nf_ct(int mode)
- 	/* expected status is IPS_SEEN_REPLY */
- 	ASSERT_EQ(skel->bss->test_status, 2, "Test for ct status update ");
- 	ASSERT_EQ(skel->data->test_exist_lookup, 0, "Test existing connection lookup");
-+	ASSERT_EQ(skel->bss->test_exist_lookup_mark, 43, "Test existing connection lookup ctmark");
- end:
- 	if (srv_client_fd != -1)
- 		close(srv_client_fd);
-diff --git a/tools/testing/selftests/bpf/progs/test_bpf_nf.c b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
-index 84e0fd479794..2722441850cc 100644
---- a/tools/testing/selftests/bpf/progs/test_bpf_nf.c
-+++ b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
-@@ -28,6 +28,7 @@ __be16 sport = 0;
- __be32 daddr = 0;
- __be16 dport = 0;
- int test_exist_lookup = -ENOENT;
-+u32 test_exist_lookup_mark = 0;
- 
- struct nf_conn;
- 
-@@ -174,6 +175,8 @@ nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
- 		       sizeof(opts_def));
- 	if (ct) {
- 		test_exist_lookup = 0;
-+		if (ct->mark == 42)
-+			test_exist_lookup_mark = 43;
- 		bpf_ct_release(ct);
- 	} else {
- 		test_exist_lookup = opts_def.error;
+* CONFIG_NF_CONNTRACK_MARK=y
+* CONFIG_NETFILTER_XT_CONNMARK=y
+
+I can put up the PR if this patchset looks good.
+
+Daniel Xu (2):
+  selftests/bpf: Add existing connection bpf_*_ct_lookup() test
+  selftests/bpf: Add connmark read/write test
+
+ .../testing/selftests/bpf/prog_tests/bpf_nf.c | 60 +++++++++++++++++++
+ .../testing/selftests/bpf/progs/test_bpf_nf.c | 21 +++++++
+ 2 files changed, 81 insertions(+)
+
 -- 
 2.37.1
 
