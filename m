@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD32EC04A68
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:14:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF28C04A68
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:15:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233551AbiG3JOt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 05:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47374 "EHLO
+        id S233619AbiG3JP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 05:15:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230382AbiG3JOs (ORCPT
+        with ESMTP id S233508AbiG3JPY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 05:14:48 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15F773DF19
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:14:47 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id bp15so12168161ejb.6
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:14:47 -0700 (PDT)
+        Sat, 30 Jul 2022 05:15:24 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9BAEE10
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:15:22 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id bp15so12169443ejb.6
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:15:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=i+7O6hms/hqLnG44y9CuXX+hyQPYHHY40QX+YQRZrcQ=;
-        b=I463grYfVol0JRUlt+Ar+SpcJUB4ZO9pNGMk3/6nbERWzXNnIlibdYQ9cGLRUwcdn0
-         7fPs1V3TsdNGHjKKB5BGN45EUyF7Wugi7wwhUJ/7OxSNvgtsEo1A8biJVgtzfbXFqgfK
-         I2oOZ6oRwBoo7JEE1aAnCwt43GepXKPWGHhnUmmM6ZV+wrcdgIu5wwhgd1X934R+b+PS
-         N+pb9eFkY8TnaObP8ZIpEJwsPFxFwSNi9+uy+Ucj9ofrw7BTQe8qYLQRsn56BEQmQhkc
-         4Rl8DvXCRHTHsdydiNGH8CZ0PJtM3lIFi7IlIKiKUDGDHkYi4jP9KdDTDjAxBLxSVhck
-         XRfA==
+        bh=rwWtE2tS+sQfxC0TkYkw+6LysHn8HM6so6RxZNUEwWQ=;
+        b=cUuJZ0nzayLtd8sD1yqDO+l52EhIAyWq6fLaHZagbbZVJKKCUYyqC0sLoFqK5i10zC
+         OiQN+JhbXIBEd+ifQUUou0Xm4CHUyrEtDHAFIfsJ/thybpafFsKAGPc+zRW8drWcD/2y
+         MbcptzAARs9f2bw9vbEiLNPGkXipLLlozKnC8B+j1/A0VCwDPynRlCFADJymcs/nZQMq
+         0r+PNxvDlrSlp8SkpMFbTyC2zaG1kGz6VKlhT0BnkbvQfXkLmm9augDHwmRVcE0vsk27
+         xIUv8XBlV3TzjiCAoD1ucUi3DHMqMiTxaxbG+/0huI6IfOY2cXOfRUJCzDSSbZHbPWt6
+         B20A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=i+7O6hms/hqLnG44y9CuXX+hyQPYHHY40QX+YQRZrcQ=;
-        b=5aV3dz18x/WDksJmM7F72pK5G1p3enAcHwrgYfaUNHMYd560Fef9LSVOXQ4SoQcRc6
-         GWbmXvdcZe5tjbtU3HaUPt02MDlY9jfR4cfdo82MC8pf9O3SbmWKeAtGDWajrSRM/rcp
-         DpcVtTtwFsptXqnsSdlNFpzbjqCuyngns3vsPMRKb4VmW6QjL6v3u+AEw62bgei7zE22
-         gejHaUylmzLGx4KLEZlazu07pE1j9g5GR/qJ4XtqAI9BCog3xELSiO58Ym17R4ksiCi1
-         n6WgmE+gjpbJpm0D3pA7xBLLjRr/ICm2/FqZhHheYadm8F83gYquuNWgb7FrnGAvY81O
-         QjXw==
-X-Gm-Message-State: ACgBeo0bcHPLZu9W91INKTuZ/SWsZZQKrYY/t9tM9m+W8RbqdLBdaUxz
-        GhBLTqnVf/OJ3lRTbkYmOmU=
-X-Google-Smtp-Source: AA6agR4VYJrXZiOXIvhb8G1HuoD3AuMr4cbsju8RIBJv//kfsMPN/cLW/Y0CDv/M1HP7A2m0gTyCfw==
-X-Received: by 2002:a17:907:75f7:b0:730:5b01:56b0 with SMTP id jz23-20020a17090775f700b007305b0156b0mr145624ejc.689.1659172485555;
-        Sat, 30 Jul 2022 02:14:45 -0700 (PDT)
+        bh=rwWtE2tS+sQfxC0TkYkw+6LysHn8HM6so6RxZNUEwWQ=;
+        b=ZQWSnncpfuD/NJHxRuN//P+zA9apQRPLAxZRH6voXE9TyZ9oWxAY8GtJW86XVY/8Zu
+         EQnaqdJckNuGnUT5H/tFp+PyfLHDOa/d2WS4pyOVavaGpL2yZaaw7evk1Z6Njjg+wOIs
+         IZdd0PUr3PMmTuJq+PCtDhpjK5mLDeY6QNJtvLXHIpbyMT+kKGwpW6Hs9Knq0wlnsGRA
+         MCrXe06Y5AzKWTYpKYIgHTuvp3IaLhzugWDJLT078Sp6L4xatR/yeL8873lJl4U+KLrP
+         CvldrtH6yNl1hhX2xRKf2jR2icQB2VEJ+Ih829UxNVDVXrt6eZ6oFiEBybE+Ym/TMgTU
+         H7Bg==
+X-Gm-Message-State: AJIora88GrRc4LTd+3r5zOOo/IzrmGwJO4KFT9s1fP2UTlF3LLbY7XAT
+        AbPFr2uIyAP6c+7hU86eAuA=
+X-Google-Smtp-Source: AGRyM1uUUQf/u0gQ0J3VcW2S6C2L6ixaRhj3FiMEXuT1uyjb9VsBFnqW3+WGYV9mlP57pVmny/vcAA==
+X-Received: by 2002:a17:907:7638:b0:72d:f11b:5ebb with SMTP id jy24-20020a170907763800b0072df11b5ebbmr5799655ejc.647.1659172521175;
+        Sat, 30 Jul 2022 02:15:21 -0700 (PDT)
 Received: from jernej-laptop.localnet (194-152-27-124.dynamic.telemach.net. [194.152.27.124])
-        by smtp.gmail.com with ESMTPSA id p3-20020a17090653c300b00730223dc5c0sm2204354ejo.206.2022.07.30.02.14.44
+        by smtp.gmail.com with ESMTPSA id g5-20020a056402114500b0043cf0d56a61sm3623915edw.8.2022.07.30.02.15.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Jul 2022 02:14:45 -0700 (PDT)
+        Sat, 30 Jul 2022 02:15:20 -0700 (PDT)
 From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
 To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         Chen-Yu Tsai <wens@csie.org>,
@@ -71,11 +71,11 @@ Cc:     Maxime Ripard <maxime@cerno.tech>, linux-sunxi@lists.linux.dev,
         Dave Stevenson <dave.stevenson@raspberrypi.com>,
         linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
         Dom Cobley <dom@raspberrypi.com>
-Subject: Re: [PATCH v1 29/35] drm/sun4i: tv: Remove useless destroy function
-Date:   Sat, 30 Jul 2022 11:14:43 +0200
-Message-ID: <4754901.31r3eYUQgx@jernej-laptop>
-In-Reply-To: <20220728-rpi-analog-tv-properties-v1-29-3d53ae722097@cerno.tech>
-References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech> <20220728-rpi-analog-tv-properties-v1-29-3d53ae722097@cerno.tech>
+Subject: Re: [PATCH v1 30/35] drm/sun4i: tv: Rename error label
+Date:   Sat, 30 Jul 2022 11:15:19 +0200
+Message-ID: <2245985.ElGaqSPkdT@jernej-laptop>
+In-Reply-To: <20220728-rpi-analog-tv-properties-v1-30-3d53ae722097@cerno.tech>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech> <20220728-rpi-analog-tv-properties-v1-30-3d53ae722097@cerno.tech>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
@@ -83,9 +83,13 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne petek, 29. julij 2022 ob 18:35:12 CEST je Maxime Ripard napisal(a):
-> Our destroy implementation is just calling the generic helper, so let's
-> just remove our function and directly use the helper.
+Dne petek, 29. julij 2022 ob 18:35:13 CEST je Maxime Ripard napisal(a):
+> The other error labels in sun4i_tv_bind() are named after the task they
+> perform (err_disable_clk to call clk_disable_unprepare for example).
+> 
+> However, the err_cleanup_connector is named after the calling site
+> (drm_connector_init failing) and will actually cleanup the encoder. Let's
+> rename it to err_cleanup_encoder to be consistent.
 > 
 > Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 
@@ -96,29 +100,29 @@ Jernej
 
 > 
 > diff --git a/drivers/gpu/drm/sun4i/sun4i_tv.c
-> b/drivers/gpu/drm/sun4i/sun4i_tv.c index 52bbba8f19dc..6d7e1d51569a 100644
+> b/drivers/gpu/drm/sun4i/sun4i_tv.c index 6d7e1d51569a..ad6a3739bfa9 100644
 > --- a/drivers/gpu/drm/sun4i/sun4i_tv.c
 > +++ b/drivers/gpu/drm/sun4i/sun4i_tv.c
-> @@ -491,15 +491,9 @@ static const struct drm_connector_helper_funcs
-> sun4i_tv_comp_connector_helper_fu .get_modes	= sun4i_tv_comp_get_modes,
->  };
+> @@ -580,7 +580,7 @@ static int sun4i_tv_bind(struct device *dev, struct
+> device *master, if (ret) {
+>  		dev_err(dev,
+>  			"Couldn't initialise the Composite 
+connector\n");
+> -		goto err_cleanup_connector;
+> +		goto err_cleanup_encoder;
+>  	}
+>  	tv->connector.interlace_allowed = true;
 > 
-> -static void
-> -sun4i_tv_comp_connector_destroy(struct drm_connector *connector)
-> -{
-> -	drm_connector_cleanup(connector);
-> -}
-> -
->  static const struct drm_connector_funcs sun4i_tv_comp_connector_funcs = {
->  	.fill_modes		= drm_helper_probe_single_connector_modes,
-> -	.destroy		= sun4i_tv_comp_connector_destroy,
-> +	.destroy		= drm_connector_cleanup,
->  	.reset			= 
-drm_atomic_helper_connector_reset,
->  	.atomic_duplicate_state	= 
-drm_atomic_helper_connector_duplicate_state,
->  	.atomic_destroy_state	= 
-drm_atomic_helper_connector_destroy_state,
+> @@ -588,7 +588,7 @@ static int sun4i_tv_bind(struct device *dev, struct
+> device *master,
+> 
+>  	return 0;
+> 
+> -err_cleanup_connector:
+> +err_cleanup_encoder:
+>  	drm_encoder_cleanup(&tv->encoder);
+>  err_disable_clk:
+>  	clk_disable_unprepare(tv->clk);
 
 
 
