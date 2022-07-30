@@ -2,312 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F76BC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 05:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10FCDC04A68
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 06:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232964AbiG3FNY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 01:13:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60896 "EHLO
+        id S230156AbiG3GMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 02:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232300AbiG3FNU (ORCPT
+        with ESMTP id S229464AbiG3GMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 01:13:20 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E3578222
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 22:13:18 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id l4so8055734wrm.13
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 22:13:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rtteVBgS71Lb/JC0BpG4/xW6LftD/Fk6tCYTvc5gfGo=;
-        b=ZkWJlPy9/j+8ucQs4aao4njIAn6w9Nppt+1clKTBWJseKyjDQ6CqCFfFDmBlYXTzNp
-         +MmrSbuIjSkC7Zw+Gi1SqziLRVs3hX8wy3iZu3rmgdMTm8sZWPxHsS6XmC6dzBP8COxc
-         LBcKoUYu3j3sme4GrypwHMuGWwvUcswSqrKh+VDyN2ikfFg1j9+dljQ9+6QEVxQBgInu
-         30yk8NhvwLS1UvKsfbwBdUGdYWaFo88TQ1UjzI//Iia+NCN+NO4z1lR49F2ECAzU8MhV
-         XRCZbudaYxcaslIIG95TxEb4uRnwViGSzkaL+bLfa/YBzQ8pn3SPUiYkbBmTGPxqJ+Li
-         KL0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rtteVBgS71Lb/JC0BpG4/xW6LftD/Fk6tCYTvc5gfGo=;
-        b=cJsIb1nRSBYPwsIvLu3FVt5vwEyhGv7nEeh5L43hf3fcA7VStoA2Op41gg76kU1rdR
-         EX2wn8iomqkK4qzxnn8utWWgxsfbp9uDuIdMVUvMIiOQ++8wHMUIgueoGSy7dhTybjMV
-         uXEj+XifNbSm3mB4lMJqkOc7EcjH82O4vxhacKepQfyxdZdu93glTcu5EoBBgNHgUs18
-         rkdbHlJQsAQkrrLYgzWpIIWXuZ1Pue+TZ2oj3w3Om0F8DHV+iOC/yeWctMgf5D/eOMl6
-         gjKZcZe3j8QvFe7v9sfmd1pqYHDGkEr5MwHU1BDZgaw9ipsoOT81d64QYSC8zgLB646t
-         5ULw==
-X-Gm-Message-State: ACgBeo04JiRcisVRAt+hRDm3gNG3Ybo5+kXhLBYh2RgSTbjKeObDD7HW
-        NdO6vY81Ny3d9Ou+pWOpm54aB0zxkrzWdGdECGNLnw==
-X-Google-Smtp-Source: AA6agR7TqvLwTbBs6GsXk9Z+S16HTlKccQxHC18N2V18QiyTAC8qpJce59RMmfuL0E+NYFGvKjDyaP21krsMSDusqts=
-X-Received: by 2002:a5d:6d4e:0:b0:21e:660e:55bf with SMTP id
- k14-20020a5d6d4e000000b0021e660e55bfmr3971363wri.343.1659157996688; Fri, 29
- Jul 2022 22:13:16 -0700 (PDT)
+        Sat, 30 Jul 2022 02:12:45 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA8B101CE
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 23:12:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659161565; x=1690697565;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=z3dt3CF/Wfrwij9l6dIICz7tlz6a9YtfxGNodSaZ3wo=;
+  b=Rtj3sd+9zqi4mYb8Cf3YGpQCZK7dXIvovtvCiCtvzPoW6PsUqeBrtp/i
+   55zKqzG79tYKtwx6JopxeOFNhRu8gisFvnXXNRr1ChqzBSnKNc4zdc3Ez
+   QmoeAjQg5+Q+p5Yys4/Pwz2CjrhQlW2vUF6EEy6Sr8Ev1mcCXEjrI59TQ
+   ThyjyWdXH+cMGkRFy2moIK6fBB5vo8t/5XSiopKHY6HOSS5WCOVIAefOF
+   ZhEH8ueYEqPeNGten5HFJSwSE1unIxTSHfkCrqEqlhbpVNu1yhxxvAg3D
+   JP9xVVPGcCQmvlfUVQm5i+7nxbuICeCxVnU7ILbQ+Wd8HGhNK5VfjwNn+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="269277812"
+X-IronPort-AV: E=Sophos;i="5.93,203,1654585200"; 
+   d="scan'208";a="269277812"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 23:12:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,203,1654585200"; 
+   d="scan'208";a="928980357"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 29 Jul 2022 23:12:43 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oHfiN-000CUB-0k;
+        Sat, 30 Jul 2022 06:12:43 +0000
+Date:   Sat, 30 Jul 2022 14:12:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] dma-buf: Add ioctl to query mmap info
+Message-ID: <202207301450.M4icK2Bg-lkp@intel.com>
+References: <20220729170744.1301044-2-robdclark@gmail.com>
 MIME-Version: 1.0
-References: <20220724060013.171050-1-leo.yan@linaro.org> <20220724060013.171050-2-leo.yan@linaro.org>
-In-Reply-To: <20220724060013.171050-2-leo.yan@linaro.org>
-From:   Ian Rogers <irogers@google.com>
-Date:   Fri, 29 Jul 2022 22:13:04 -0700
-Message-ID: <CAP-5=fVY=_WUpke0sRMpvbJFu9JuYwqiwAmKdCS+=u7vEG-2uA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] perf symbol: Correct address for bss symbols
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Fangrui Song <maskray@google.com>,
-        Chang Rui <changruinj@gmail.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220729170744.1301044-2-robdclark@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 23, 2022 at 11:00 PM Leo Yan <leo.yan@linaro.org> wrote:
->
-> When using 'perf mem' and 'perf c2c', an issue is observed that tool
-> reports the wrong offset for global data symbols.  This is a common
-> issue on both x86 and Arm64 platforms.
->
-> Let's see an example, for a test program, below is the disassembly for
-> its .bss section which is dumped with objdump:
->
->   ...
->
->   Disassembly of section .bss:
->
->   0000000000004040 <completed.0>:
->         ...
->
->   0000000000004080 <buf1>:
->         ...
->
->   00000000000040c0 <buf2>:
->         ...
->
->   0000000000004100 <thread>:
->         ...
->
-> First we used 'perf mem record' to run the test program and then used
-> 'perf --debug verbose=4 mem report' to observe what's the symbol info
-> for 'buf1' and 'buf2' structures.
->
->   # ./perf mem record -e ldlat-loads,ldlat-stores -- false_sharing.exe 8
->   # ./perf --debug verbose=4 mem report
->     ...
->     dso__load_sym_internal: adjusting symbol: st_value: 0x40c0 sh_addr: 0x4040 sh_offset: 0x3028
->     symbol__new: buf2 0x30a8-0x30e8
->     ...
->     dso__load_sym_internal: adjusting symbol: st_value: 0x4080 sh_addr: 0x4040 sh_offset: 0x3028
->     symbol__new: buf1 0x3068-0x30a8
->     ...
->
-> Perf tool relies on libelf to parse symbols, in executable and shared
-> object files, 'st_value' holds a virtual address; 'sh_addr' is the
-> address at which section's first byte should reside in memory, and
-> 'sh_offset' is the byte offset from the beginning of the file to the
-> first byte in the section.  Perf tool uses below formula to convert
-> symbol's memory address to file address:
->
->   file_address = st_value - sh_addr + sh_offset
->                     ^
->                     ` Memory address
->
-> We can see the final adjusted address ranges for buf1 and buf2 are
-> [0x30a8-0x30e8) and [0x3068-0x30a8) respectively, apparently this is
-> incorrect, in the code, the structure for 'buf1' and 'buf2' specifies
-> compiler attribute with 64-byte alignment.
->
-> The problem happens for 'sh_offset', libelf returns it as 0x3028 which
-> is not 64-byte aligned, combining with disassembly, it's likely libelf
-> doesn't respect the alignment for .bss section, therefore, it doesn't
-> return the aligned value for 'sh_offset'.
->
-> Suggested by Fangrui Song, elf file contains program header which
-> contains PT_LOAD segments, the fields p_vaddr and p_offset in PT_LOAD
-> segments contain the execution info.  A better choice for converting
-> memory address to file address is using the formula:
->
->   file_address = st_value - p_vaddr + p_offset
->
-> This patch introduces function elf_read_program_header() which returns
-> out the program header based on the passed 'st_value', then it uses
-> above formula to calculate the symbol file address; and the debugging
-> log is updated respectively.
->
-> After applying the change:
->
->   # ./perf --debug verbose=4 mem report
->     ...
->     dso__load_sym_internal: adjusting symbol: st_value: 0x40c0 p_vaddr: 0x3d28 p_offset: 0x2d28
->     symbol__new: buf2 0x30c0-0x3100
->     ...
->     dso__load_sym_internal: adjusting symbol: st_value: 0x4080 p_vaddr: 0x3d28 p_offset: 0x2d28
->     symbol__new: buf1 0x3080-0x30c0
->     ...
->
-> Fixes: f17e04afaff8 ("perf report: Fix ELF symbol parsing")
-> Reported-by: Chang Rui <changruinj@gmail.com>
-> Suggested-by: Fangrui Song <maskray@google.com>
-> Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Hi Rob,
 
-I am seeing a problem with this patch with jvmti. To repro:
+I love your patch! Yet something to improve:
 
-1) download a Java workload dacapo-9.12-MR1-bach.jar from
-https://sourceforge.net/projects/dacapobench/
-2) build perf such as "make -C tools/perf O=/tmp/perf NO_LIBBFD=1" it
-should detect Java and create /tmp/perf/libperf-jvmti.so
-3) run perf with the jvmti agent:
-/tmp/perf/perf record -k 1 java -agentpath:/tmp/perf/libperf-jvmti.so
--jar dacapo-9.12-MR1-bach.jar -n 10 fop
-4) run perf inject:
-/tmp/perf/perf inject -i perf.data -o perf-injected.data -j
-5) run perf report
-/tmp/perf/perf report -i  perf-injected.data | grep org.apache.fop
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.19-rc8]
+[cannot apply to drm-misc/drm-misc-next drm/drm-next drm-exynos/exynos-drm-next drm-intel/for-linux-next drm-tip/drm-tip next-20220728]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-With this patch reverted I see lots of symbols like:
-     0.00%  java             jitted-388040-4656.so  [.]
-org.apache.fop.fo.FObj.bind(org.apache.fop.fo.PropertyList)
+url:    https://github.com/intel-lab-lkp/linux/commits/Rob-Clark/dma-buf-map-info-support/20220730-010844
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 6e2c0490769ef8a95b61304389116ccc85c53e12
+config: arm-randconfig-r033-20220729 (https://download.01.org/0day-ci/archive/20220730/202207301450.M4icK2Bg-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/intel-lab-lkp/linux/commit/203f14a73a179d6c5fbfa4813e45fde2a9ae9860
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Rob-Clark/dma-buf-map-info-support/20220730-010844
+        git checkout 203f14a73a179d6c5fbfa4813e45fde2a9ae9860
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/dma-buf/
 
-With the patch I see lots of:
-dso__load_sym_internal: failed to find program header for symbol:
-Lorg/apache/fop/fo/FObj;bind(Lorg/apache/fop/fo/PropertyList;)V
-st_value: 0x40
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> ---
->  tools/perf/util/symbol-elf.c | 45 ++++++++++++++++++++++++++++++++----
->  1 file changed, 41 insertions(+), 4 deletions(-)
->
-> diff --git a/tools/perf/util/symbol-elf.c b/tools/perf/util/symbol-elf.c
-> index ecd377938eea..ef6ced5c5746 100644
-> --- a/tools/perf/util/symbol-elf.c
-> +++ b/tools/perf/util/symbol-elf.c
-> @@ -233,6 +233,33 @@ Elf_Scn *elf_section_by_name(Elf *elf, GElf_Ehdr *ep,
->         return NULL;
->  }
->
-> +static int elf_read_program_header(Elf *elf, u64 vaddr, GElf_Phdr *phdr)
-> +{
-> +       size_t i, phdrnum;
-> +       u64 sz;
-> +
-> +       if (elf_getphdrnum(elf, &phdrnum))
-> +               return -1;
-> +
-> +       for (i = 0; i < phdrnum; i++) {
-> +               if (gelf_getphdr(elf, i, phdr) == NULL)
-> +                       return -1;
-> +
-> +               if (phdr->p_type != PT_LOAD)
-> +                       continue;
-> +
-> +               sz = max(phdr->p_memsz, phdr->p_filesz);
-> +               if (!sz)
-> +                       continue;
-> +
-> +               if (vaddr >= phdr->p_vaddr && (vaddr < phdr->p_vaddr + sz))
-> +                       return 0;
-> +       }
-> +
-> +       /* Not found any valid program header */
-> +       return -1;
-> +}
-> +
->  static bool want_demangle(bool is_kernel_sym)
->  {
->         return is_kernel_sym ? symbol_conf.demangle_kernel : symbol_conf.demangle;
-> @@ -1209,6 +1236,7 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
->                                         sym.st_value);
->                         used_opd = true;
->                 }
-> +
->                 /*
->                  * When loading symbols in a data mapping, ABS symbols (which
->                  * has a value of SHN_ABS in its st_shndx) failed at
-> @@ -1262,11 +1290,20 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
->                                 goto out_elf_end;
->                 } else if ((used_opd && runtime_ss->adjust_symbols) ||
->                            (!used_opd && syms_ss->adjust_symbols)) {
-> +                       GElf_Phdr phdr;
-> +
-> +                       if (elf_read_program_header(syms_ss->elf,
-> +                                                   (u64)sym.st_value, &phdr)) {
-> +                               pr_warning("%s: failed to find program header for "
-> +                                          "symbol: %s st_value: %#" PRIx64 "\n",
-> +                                          __func__, elf_name, (u64)sym.st_value);
-> +                               continue;
-> +                       }
->                         pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
-> -                                 "sh_addr: %#" PRIx64 " sh_offset: %#" PRIx64 "\n", __func__,
-> -                                 (u64)sym.st_value, (u64)shdr.sh_addr,
-> -                                 (u64)shdr.sh_offset);
-> -                       sym.st_value -= shdr.sh_addr - shdr.sh_offset;
-> +                                 "p_vaddr: %#" PRIx64 " p_offset: %#" PRIx64 "\n",
-> +                                 __func__, (u64)sym.st_value, (u64)phdr.p_vaddr,
-> +                                 (u64)phdr.p_offset);
-> +                       sym.st_value -= phdr.p_vaddr - phdr.p_offset;
->                 }
+All errors (new ones prefixed by >>):
 
-Combining the old and new behaviors fixes the issue for me, wdyt?
+>> drivers/dma-buf/dma-buf.c:346:19: error: passing 'const void *' to parameter of type 'void *' discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
+           if (copy_to_user(uarg, &arg, sizeof(arg)))
+                            ^~~~
+   include/linux/uaccess.h:157:27: note: passing argument to parameter 'to' here
+   copy_to_user(void __user *to, const void *from, unsigned long n)
+                             ^
+   1 error generated.
 
-```
---- a/tools/perf/util/symbol-elf.c
-+++ b/tools/perf/util/symbol-elf.c
-@@ -1305,16 +1305,21 @@ dso__load_sym_internal(struct dso *dso, struct
-map *map, struct symsrc *syms
-_ss,
 
-                       if (elf_read_program_header(syms_ss->elf,
-                                                   (u64)sym.st_value, &phdr)) {
--                               pr_warning("%s: failed to find program
-header for "
-+                               pr_debug4("%s: failed to find program
-header for "
-                                          "symbol: %s st_value: %#" PRIx64 "\n",
-                                          __func__, elf_name,
-(u64)sym.st_value);
--                               continue;
-+                               pr_debug4("%s: adjusting symbol:
-st_value: %#" PRIx64 " "
-+                                       "sh_addr: %#" PRIx64 "
-sh_offset: %#" PRIx64 "\n",
-+                                       __func__, (u64)sym.st_value,
-(u64)shdr.sh_addr,
-+                                       (u64)shdr.sh_offset);
-+                               sym.st_value -= shdr.sh_addr - shdr.sh_offset;
-+                       } else {
-+                               pr_debug4("%s: adjusting symbol:
-st_value: %#" PRIx64 " "
-+                                       "p_vaddr: %#" PRIx64 "
-p_offset: %#" PRIx64 "\n",
-+                                       __func__, (u64)sym.st_value,
-(u64)phdr.p_vaddr,
-+                                       (u64)phdr.p_offset);
-+                               sym.st_value -= phdr.p_vaddr - phdr.p_offset;
-                       }
--                       pr_debug4("%s: adjusting symbol: st_value: %#"
-PRIx64 " "
--                                 "p_vaddr: %#" PRIx64 " p_offset: %#"
-PRIx64 "\n",
--                                 __func__, (u64)sym.st_value,
-(u64)phdr.p_vaddr,
--                                 (u64)phdr.p_offset);
--                       sym.st_value -= phdr.p_vaddr - phdr.p_offset;
-               }
+vim +346 drivers/dma-buf/dma-buf.c
 
-               demangled = demangle_sym(dso, kmodule, elf_name);
-```
+   328	
+   329	static long dma_buf_info(struct dma_buf *dmabuf, const void __user *uarg)
+   330	{
+   331		struct dma_buf_info arg;
+   332	
+   333		if (copy_from_user(&arg, uarg, sizeof(arg)))
+   334			return -EFAULT;
+   335	
+   336		switch (arg.param) {
+   337		case DMA_BUF_INFO_VM_PROT:
+   338			if (!dmabuf->ops->mmap_info)
+   339				return -ENOSYS;
+   340			arg.value = dmabuf->ops->mmap_info(dmabuf);
+   341			break;
+   342		default:
+   343			return -EINVAL;
+   344		}
+   345	
+ > 346		if (copy_to_user(uarg, &arg, sizeof(arg)))
+   347			return -EFAULT;
+   348	
+   349		return 0;
+   350	}
+   351	
 
-Thanks,
-Ian
-
->
->                 demangled = demangle_sym(dso, kmodule, elf_name);
-> --
-> 2.25.1
->
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
