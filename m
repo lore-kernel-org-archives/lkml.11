@@ -2,63 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B6FC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 03:39:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F10C8C04A68
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 03:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239858AbiG3DjL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 23:39:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36776 "EHLO
+        id S237144AbiG3Dok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 23:44:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239829AbiG3DjH (ORCPT
+        with ESMTP id S230303AbiG3Doi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 23:39:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A63D7E02A;
-        Fri, 29 Jul 2022 20:39:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F92AB82305;
-        Sat, 30 Jul 2022 03:39:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A13EFC433D6;
-        Sat, 30 Jul 2022 03:39:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659152343;
-        bh=xVFNcytZRdMqagmPn8ufFMbBtglH3lVw4k5ZKLUkRX8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tq0wpr6Pg4x34uavnm+sHfWQ58OolnUXWym7KbvOEYwtI7x+qiQW3udbkXazcQLFg
-         vg0964KP013SCBR5uLKgVhS5U4zjk0QhyrtfvR8Q7KfYBlzZTdtF6N6AuzR6KiW8y/
-         FA7BbMNmX37EsONegJ2K/IU/GjQDXxvg0ZU5dsMHapigqjBixUrkzAbM0M48q9cnna
-         J+qKyuZ37U/vyj+RLl0wLxyF2m4reezFCMIrRakObXkWnoQM52HBFlDgntGWxSMa8y
-         INUjDKWOv+uE+sbjRVrHRBfzUlUvHjbuKNmfyRVmXq0fQoFvqLPHxK9W6WJBS73JrV
-         ++KXonL0co8QA==
-Date:   Fri, 29 Jul 2022 20:38:54 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Naveen Mamindlapalli <naveenm@marvell.com>
-Cc:     <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sgoutham@marvell.com>
-Subject: Re: [net PATCH] octeontx2-pf: Fix NIX_AF_TL3_TL2X_LINKX_CFG
- register configuration
-Message-ID: <20220729203854.274f410a@kernel.org>
-In-Reply-To: <20220728171026.22699-1-naveenm@marvell.com>
-References: <20220728171026.22699-1-naveenm@marvell.com>
+        Fri, 29 Jul 2022 23:44:38 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF5546D2D1
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 20:44:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659152677; x=1690688677;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=OKSusFbrm5sUaWyzaFMDDNHXw+ww7jPgpopObZCSoLk=;
+  b=bdK1RYDKCySou+M6g6MWTF0/YRozqp8VvVC2O3xBBHs/ToE8w0vuK6AG
+   Gj6b8qWG5ddlgfFum/u06r10gaQZhn2NeygGPvcS4KY56gkERpceNvHfr
+   FPlus5HVPPg6He3Yc13JFIEnZ7XkzNCTg1rdQF78HfGW4nhoJPAs1RfEF
+   HF97/0b3hFmYYLpQQKuwZj66RVT4xU6pB3DZWsq5vDdz96sA0HxBQcEYe
+   7HZTeikRhVn1A67JH1NVxWcrd0t+7RdPajogL5qGNYKdpBYLlszaZDJ4X
+   mFqiFVNV/EtOcQIf7CKiXddblxNm/dXsm8stQXwbc+D4PhUu0GXgRonoz
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="375191624"
+X-IronPort-AV: E=Sophos;i="5.93,203,1654585200"; 
+   d="scan'208";a="375191624"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 20:44:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,203,1654585200"; 
+   d="scan'208";a="669464243"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 29 Jul 2022 20:44:36 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oHdP1-000CLS-1Z;
+        Sat, 30 Jul 2022 03:44:35 +0000
+Date:   Sat, 30 Jul 2022 11:44:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
+Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:crng/random/jd/vdso 8/8]
+ drivers/char/random.c:88:42: error: expected declaration specifiers or '...'
+ before '_vdso_rng_data'
+Message-ID: <202207301142.4Kf53jZQ-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 28 Jul 2022 22:40:26 +0530 Naveen Mamindlapalli wrote:
-> Subject: [net PATCH] octeontx2-pf: Fix NIX_AF_TL3_TL2X_LINKX_CFG register configuration
-> Date: Thu, 28 Jul 2022 22:40:26 +0530
-> X-Mailer: git-send-email 2.16.5
-> 
-> This patch configures the NIX_AF_TL3_TL2X_LINKX_CFG register
-> based on NIX_AF_PSE_CHANNEL_LEVEL BP_LEVEL value.
+tree:   https://github.com/ammarfaizi2/linux-block crng/random/jd/vdso
+head:   65b88fc7d65669b6a7f4225aa00acf18b82a7682
+commit: 65b88fc7d65669b6a7f4225aa00acf18b82a7682 [8/8] random: implement getrandom() in vDSO
+config: csky-randconfig-r012-20220729 (https://download.01.org/0day-ci/archive/20220730/202207301142.4Kf53jZQ-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/65b88fc7d65669b6a7f4225aa00acf18b82a7682
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block crng/random/jd/vdso
+        git checkout 65b88fc7d65669b6a7f4225aa00acf18b82a7682
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=csky SHELL=/bin/bash drivers/char/
 
-You need to explain what that does.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-If it's a fix (assuming it is based on the tree in the subject) we need
-a Fixes tag.
+All errors (new ones prefixed by >>):
+
+>> drivers/char/random.c:88:42: error: expected declaration specifiers or '...' before '_vdso_rng_data'
+      88 | DEFINE_VVAR_SINGLE(struct vdso_rng_data, _vdso_rng_data);
+         |                                          ^~~~~~~~~~~~~~
+
+
+vim +88 drivers/char/random.c
+
+    63	
+    64	/*********************************************************************
+    65	 *
+    66	 * Initialization and readiness waiting.
+    67	 *
+    68	 * Much of the RNG infrastructure is devoted to various dependencies
+    69	 * being able to wait until the RNG has collected enough entropy and
+    70	 * is ready for safe consumption.
+    71	 *
+    72	 *********************************************************************/
+    73	
+    74	/*
+    75	 * crng_init is protected by base_crng->lock, and only increases
+    76	 * its value (from empty->early->ready).
+    77	 */
+    78	static enum {
+    79		CRNG_EMPTY = 0, /* Little to no entropy collected */
+    80		CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
+    81		CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
+    82	} crng_init __read_mostly = CRNG_EMPTY;
+    83	static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
+    84	#define crng_ready() (static_branch_likely(&crng_is_ready) || crng_init >= CRNG_READY)
+    85	/* Various types of waiters for crng_init->CRNG_READY transition. */
+    86	static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+    87	static struct fasync_struct *fasync;
+  > 88	DEFINE_VVAR_SINGLE(struct vdso_rng_data, _vdso_rng_data);
+    89	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
