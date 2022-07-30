@@ -2,58 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A587C19F2C
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31235C04A68
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:09:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233375AbiG3JJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 05:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43790 "EHLO
+        id S233390AbiG3JJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 05:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiG3JJD (ORCPT
+        with ESMTP id S233181AbiG3JJD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 30 Jul 2022 05:09:03 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB57B357EF;
-        Sat, 30 Jul 2022 02:09:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0634D371A6;
+        Sat, 30 Jul 2022 02:09:02 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1oHiSy-000199-00; Sat, 30 Jul 2022 11:09:00 +0200
+        id 1oHiSy-000199-02; Sat, 30 Jul 2022 11:09:00 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 758B0C0192; Sat, 30 Jul 2022 11:02:35 +0200 (CEST)
-Date:   Sat, 30 Jul 2022 11:02:35 +0200
+        id 5E89BC0193; Sat, 30 Jul 2022 11:03:22 +0200 (CEST)
+Date:   Sat, 30 Jul 2022 11:03:22 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Alexander A Sverdlin <alexander.sverdlin@nokia.com>
-Cc:     linux-mips@vger.kernel.org, Joe Perches <joe@perches.com>,
-        Corey Minyard <cminyard@mvista.com>,
+To:     Jason Wang <wangborong@cdjrlc.com>
+Cc:     zajec5@gmail.com, hauke@hauke-m.de, linux-mips@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] MIPS: Restore CONFIG_CAVIUM_RESERVE32
-Message-ID: <20220730090235.GA4620@alpha.franken.de>
-References: <20220725091740.28188-1-alexander.sverdlin@nokia.com>
+Subject: Re: [PATCH] MIPS: Fix comment typo
+Message-ID: <20220730090322.GC4620@alpha.franken.de>
+References: <20220716040119.31221-1-wangborong@cdjrlc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220725091740.28188-1-alexander.sverdlin@nokia.com>
+In-Reply-To: <20220716040119.31221-1-wangborong@cdjrlc.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 11:17:38AM +0200, Alexander A Sverdlin wrote:
-> From: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+On Sat, Jul 16, 2022 at 12:01:19PM +0800, Jason Wang wrote:
+> Fix the typo `s/that that/than that/' in line 72.
 > 
-> We have been using the option but the definition in the Kconfig has not
-> been upstreamed. Fix that.
+> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+> ---
+>  arch/mips/bcm47xx/prom.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Alexander Sverdlin (2):
->   MIPS: Introduce CAVIUM_RESERVE32 Kconfig option
->   Revert "MIPS: octeon: Remove vestiges of CONFIG_CAVIUM_RESERVE32"
-> 
->  arch/mips/cavium-octeon/Kconfig                    | 12 +++++++
->  arch/mips/cavium-octeon/executive/cvmx-cmd-queue.c | 21 +++++++++---
->  arch/mips/cavium-octeon/setup.c                    | 38 +++++++++++++++++++++-
->  3 files changed, 66 insertions(+), 5 deletions(-)
+> diff --git a/arch/mips/bcm47xx/prom.c b/arch/mips/bcm47xx/prom.c
+> index 0a63721d0fbf..ab203e66ba0d 100644
+> --- a/arch/mips/bcm47xx/prom.c
+> +++ b/arch/mips/bcm47xx/prom.c
+> @@ -69,7 +69,7 @@ static __init void prom_init_mem(void)
+>  	 * call them at the beginning of the boot.
+>  	 *
+>  	 * BCM47XX uses 128MB for addressing the ram, if the system contains
+> -	 * less that that amount of ram it remaps the ram more often into the
+> +	 * less than that amount of ram it remaps the ram more often into the
+>  	 * available space.
+>  	 */
+>  
+> -- 
+> 2.35.1
 
-series applied to mips-next.
+applied to mips-next.
 
 Thomas.
 
