@@ -2,91 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2022CC19F2B
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:08:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A587C19F2C
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233162AbiG3JIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 05:08:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43232 "EHLO
+        id S233375AbiG3JJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 05:09:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiG3JIR (ORCPT
+        with ESMTP id S229720AbiG3JJD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 05:08:17 -0400
-Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 232EA357EF;
-        Sat, 30 Jul 2022 02:08:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=tcP2m
-        m4DtplDocqbYqdu/vxCgy6tDyjtagLsytmyRzU=; b=mAAWN2NkWG2yssZj7wRN9
-        aI9lflNHtzfEyGGT2pdtaZRfvCioneh9p/yWasAMlddv//UONMQoI2cx19Vnh9PO
-        +Hpc0oUD8K/tDfOTM7pj2FsvZ1l/8taCrQu5Z3cNNNzDpCTGu27pZd3ojYmutHS8
-        cbnEOQgQfp5VbrgOpKmXIA=
-Received: from localhost.localdomain (unknown [123.58.221.99])
-        by smtp3 (Coremail) with SMTP id G9xpCgCHs1yL9ORimkc0SQ--.24840S2;
-        Sat, 30 Jul 2022 17:06:21 +0800 (CST)
-From:   studentxswpy@163.com
-To:     mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, mptcp@lists.linux.dev,
+        Sat, 30 Jul 2022 05:09:03 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB57B357EF;
+        Sat, 30 Jul 2022 02:09:01 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1oHiSy-000199-00; Sat, 30 Jul 2022 11:09:00 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 758B0C0192; Sat, 30 Jul 2022 11:02:35 +0200 (CEST)
+Date:   Sat, 30 Jul 2022 11:02:35 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Alexander A Sverdlin <alexander.sverdlin@nokia.com>
+Cc:     linux-mips@vger.kernel.org, Joe Perches <joe@perches.com>,
+        Corey Minyard <cminyard@mvista.com>,
         linux-kernel@vger.kernel.org
-Cc:     Xie Shaowen <studentxswpy@163.com>,
-        Hacash Robot <hacashRobot@santino.com>
-Subject: [PATCH net-next] mptcp: Fix spelling mistakes and cleanup code
-Date:   Sat, 30 Jul 2022 17:06:17 +0800
-Message-Id: <20220730090617.3101386-1-studentxswpy@163.com>
-X-Mailer: git-send-email 2.25.1
+Subject: Re: [PATCH 0/2] MIPS: Restore CONFIG_CAVIUM_RESERVE32
+Message-ID: <20220730090235.GA4620@alpha.franken.de>
+References: <20220725091740.28188-1-alexander.sverdlin@nokia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: G9xpCgCHs1yL9ORimkc0SQ--.24840S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7KFW7Cr1DXr4kKw43Jr13Arb_yoW8WF1xpr
-        W7Ka93GFs7JFWxXr4kAF4kZr9ruan8WFnakFyj9w1fArs8uryaq345KFW5ZrWUCrs5XFZx
-        XrW2ga13Ca1DuaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j5Ma8UUUUU=
-X-Originating-IP: [123.58.221.99]
-X-CM-SenderInfo: xvwxvv5qw024ls16il2tof0z/xtbBEQ1OJFaEJ33FQgAAs5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220725091740.28188-1-alexander.sverdlin@nokia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Shaowen <studentxswpy@163.com>
+On Mon, Jul 25, 2022 at 11:17:38AM +0200, Alexander A Sverdlin wrote:
+> From: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+> 
+> We have been using the option but the definition in the Kconfig has not
+> been upstreamed. Fix that.
+> 
+> Alexander Sverdlin (2):
+>   MIPS: Introduce CAVIUM_RESERVE32 Kconfig option
+>   Revert "MIPS: octeon: Remove vestiges of CONFIG_CAVIUM_RESERVE32"
+> 
+>  arch/mips/cavium-octeon/Kconfig                    | 12 +++++++
+>  arch/mips/cavium-octeon/executive/cvmx-cmd-queue.c | 21 +++++++++---
+>  arch/mips/cavium-octeon/setup.c                    | 38 +++++++++++++++++++++-
+>  3 files changed, 66 insertions(+), 5 deletions(-)
 
-fix follow spelling misktakes:
-	regarless ==> regardless
-	interaces ==> interfaces
+series applied to mips-next.
 
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: Xie Shaowen <studentxswpy@163.com>
----
- net/mptcp/pm_netlink.c | 2 +-
- net/mptcp/subflow.c    | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Thomas.
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 7c7395b58944..5bdb559d5242 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -1134,7 +1134,7 @@ void mptcp_pm_nl_subflow_chk_stale(const struct mptcp_sock *msk, struct sock *ss
- 			}
- 			unlock_sock_fast(ssk, slow);
- 
--			/* always try to push the pending data regarless of re-injections:
-+			/* always try to push the pending data regardless of re-injections:
- 			 * we can possibly use backup subflows now, and subflow selection
- 			 * is cheap under the msk socket lock
- 			 */
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index af28f3b60389..901c763dcdbb 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -1634,7 +1634,7 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
- 	/* the newly created socket really belongs to the owning MPTCP master
- 	 * socket, even if for additional subflows the allocation is performed
- 	 * by a kernel workqueue. Adjust inode references, so that the
--	 * procfs/diag interaces really show this one belonging to the correct
-+	 * procfs/diag interfaces really show this one belonging to the correct
- 	 * user.
- 	 */
- 	SOCK_INODE(sf)->i_ino = SOCK_INODE(sk->sk_socket)->i_ino;
 -- 
-2.25.1
-
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
