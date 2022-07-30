@@ -2,194 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB129C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:32:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB6C4C04A68
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:33:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234436AbiG3JcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 05:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33678 "EHLO
+        id S234491AbiG3JdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 05:33:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234401AbiG3JcG (ORCPT
+        with ESMTP id S232933AbiG3JdG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 05:32:06 -0400
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111A242AFC
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:32:05 -0700 (PDT)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-10e6bdbe218so8326773fac.10
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:32:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=landley-net.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=VQvaSdst3GlNtIz5gSEbzEWnw6iJp0dnfjX2/uw4Pi0=;
-        b=WwZeLQPHVZMv7Tf/yzouYMy/N8ncJHBvNxrLWXHyVtWxdZ1PxHorwX/QP+bQZFNbY1
-         rFwGJtpccThotO8bEaWew5690F3KBLjHib7+tV2wpgxvsFLNez3D6LNChyTXqofSjLSL
-         3t6mL4NZhitq1h4tRWJkYont7aB4p6WDw3W2nbHcvT//xibau8r6KMdHFoQnG+SQ/3rI
-         3j0ybuxX0FIf2CU4lpJxYEwnn2Qs8McUF9hZQ8kDHVp4HHibCyHITaH7wbRaDD6Z8BOI
-         nolUx7bNdTsURyp6dA0MSYRIyofqMVotGVXSojpI8bVNj+lPXZDKpcXfE/3CmYrakb10
-         Apmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VQvaSdst3GlNtIz5gSEbzEWnw6iJp0dnfjX2/uw4Pi0=;
-        b=EDvRyqQ+miLWinW/UtthWEA62j79YDyVnVkpWg44ek9SDlX8pxNmCeblpTWRaRvwqr
-         MzLGp58W2ZPaHJD19JHPOxGbj86/B2gH5hFe0ZVWj1AzZc7M3I59cDF6lGYqQgadZ860
-         UydXDaZuNSHqqh1P0NxY5ikuji1Xo8lz9siMSPbiTC6lEcoSCjoqOYmO0HDFnC26uhgm
-         z0pd4iEasVNY6UyJNU/BXSf9ZBUDksmS1czF4kg4u/mevgludEk6FrS+Kwz1VTmOLjit
-         1q9AA4HGLyst4EMP+HHZBWovGKCY4VguRdnNu33D477NEPE2yHQPdsIalRWd9TeCVJZk
-         lz9Q==
-X-Gm-Message-State: AJIora9svbpBPd5gakNXucEEYM9JGYfjIO7aIX20FMc1GteQ2lMWr3zz
-        T31Dt998cL8py9WMpCjto2Tw0w==
-X-Google-Smtp-Source: AGRyM1vlzdqQ1oG5qxelDaZGwViNeSWbgs5sytdvECpAolwn1LIlFKm9WBz+/JKkjdUAPx95t1xc6g==
-X-Received: by 2002:a05:6870:f2a0:b0:fe:29a0:4b48 with SMTP id u32-20020a056870f2a000b000fe29a04b48mr3309674oap.183.1659173524398;
-        Sat, 30 Jul 2022 02:32:04 -0700 (PDT)
-Received: from ?IPV6:2607:fb90:c2d4:35df:6680:99ff:fe6f:cb54? ([2607:fb90:c2d4:35df:6680:99ff:fe6f:cb54])
-        by smtp.gmail.com with ESMTPSA id q16-20020a05683033d000b0061c29a38b3bsm1633168ott.33.2022.07.30.02.32.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 30 Jul 2022 02:32:03 -0700 (PDT)
-Message-ID: <e850477a-6dd8-0a76-cfa0-bf78951f7281@landley.net>
-Date:   Sat, 30 Jul 2022 04:39:13 -0500
+        Sat, 30 Jul 2022 05:33:06 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8463E773
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:33:05 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 12FF820898;
+        Sat, 30 Jul 2022 09:33:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1659173584; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9Lb9yZCabxMhizNdALgYsCx1Z50UiodZ1L7bHVlBBoM=;
+        b=t9yFOOEf3uz5UIrvNQthegCtPzKTUFZJBiHeDDX/N2pXIg16z9UjJstoBm2QgT9mtQEQRs
+        AnWsAkBsWNst/Vv+3NJr9LUa8a2SVefZr9VUVVA1T5B660FvJROGXtb7AVxtHPY1xuNLt+
+        2U/Kx6oBFNgRkNurAaXu7nBRl4ZylBg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1659173584;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9Lb9yZCabxMhizNdALgYsCx1Z50UiodZ1L7bHVlBBoM=;
+        b=AmhbWKgJVB8lpmYEVEBaSvf/XMLxj8tino+7plHi6Z7uD6NqmziMoDkiB8N9dOWJK81+oz
+        8w/njsH7cc5aupAA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E45F91331F;
+        Sat, 30 Jul 2022 09:33:03 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id FFP2Nc/65GKALwAAMHmgww
+        (envelope-from <jdelvare@suse.de>); Sat, 30 Jul 2022 09:33:03 +0000
+Date:   Sat, 30 Jul 2022 11:33:02 +0200
+From:   Jean Delvare <jdelvare@suse.de>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/1] firmware: dmi: Don't take garbage into
+ consideration in dmi_smbios3_present()
+Message-ID: <20220730113302.6215923d@endymion.delvare>
+In-Reply-To: <YuQljCM4LZXhSkbh@smile.fi.intel.com>
+References: <20220726094329.1725-1-andriy.shevchenko@linux.intel.com>
+        <20220727102504.6bbefcf9@endymion.delvare>
+        <YuQljCM4LZXhSkbh@smile.fi.intel.com>
+Organization: SUSE Linux
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 0/3] initramfs: add support for xattrs in the initial
- ram disk
-Content-Language: en-US
-To:     Jim Baxter <jim_baxter@mentor.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>
-Cc:     "hpa@zytor.com" <hpa@zytor.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Arvind Sankar <nivedita@alum.mit.edu>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "initramfs@vger.kernel.org" <initramfs@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bug-cpio@gnu.org" <bug-cpio@gnu.org>,
-        "zohar@linux.vnet.ibm.com" <zohar@linux.vnet.ibm.com>,
-        Silviu Vlasceanu <Silviu.Vlasceanu@huawei.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@huawei.com>,
-        "takondra@cisco.com" <takondra@cisco.com>,
-        "kamensky@cisco.com" <kamensky@cisco.com>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "james.w.mcmechan@gmail.com" <james.w.mcmechan@gmail.com>,
-        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-        Dirk Behme <dirk.behme@de.bosch.com>,
-        Eugeniu Rosca <roscaeugeniu@gmail.com>
-References: <33cfb804-6a17-39f0-92b7-01d54e9c452d@huawei.com>
- <1561909199.3985.33.camel@linux.ibm.com>
- <45164486-782f-a442-e442-6f56f9299c66@huawei.com>
- <1561991485.4067.14.camel@linux.ibm.com>
- <f85ed711-f583-51cd-34e2-80018a592280@huawei.com>
- <0c17bf9e-9b0b-b067-cf18-24516315b682@huawei.com>
- <20220609102627.GA3922@lxhi-065>
- <21b3aeab20554a30b9796b82cc58e55b@huawei.com>
- <20220610153336.GA8881@lxhi-065>
- <4bc349a59e4042f7831b1190914851fe@huawei.com>
- <20220615092712.GA4068@lxhi-065>
- <032ade35-6eb8-d698-ac44-aa45d46752dd@mentor.com>
- <f82d4961986547b28b6de066219ad08b@huawei.com>
- <737ddf72-05f4-a47e-c901-fec5b1dfa7a6@mentor.com>
- <8e6a723874644449be99fcebb0905058@huawei.com>
- <d6af7f7e-7f8c-a6a7-7a09-84928fd69774@mentor.com>
-From:   Rob Landley <rob@landley.net>
-In-Reply-To: <d6af7f7e-7f8c-a6a7-7a09-84928fd69774@mentor.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/29/22 05:37, Jim Baxter wrote:
->>>> Uhm, I guess this could be solved with:
->>>>
->>>> https://github.com/openeuler-
->>> mirror/kernel/commit/18a502f7e3b1de7b9ba0c70896ce08ee13d052da
->>>>
->>>> and adding initramtmpfs to the kernel command line. You are
->>>> probably using ramfs, which does not have xattr support.
->>>>
+Hi Andy,
 
-Oh, here's the actual tested version of the patch wiring up rootfstype=tmpfs to
-force rootfs to be tmpfs even when you specify root=
+On Fri, 29 Jul 2022 21:23:08 +0300, Andy Shevchenko wrote:
+> On Wed, Jul 27, 2022 at 10:25:04AM +0200, Jean Delvare wrote:
+> > On Tue, 26 Jul 2022 12:43:29 +0300, Andy Shevchenko wrote:  
+> > > The byte at offset 6 represent length. Don't take it and drop it immediately
+> > > by using proper accessor, i.e. get_unaligned_be24().  
+> > 
+> > The subject sounds like you are fixing a bug, while this is only, at
+> > best, a minor optimization.  
+> 
+> I don't know how to improve it, but it kinda a bug in a logic for non-prepared
+> reader, esp. as specification suggests different thing about version offset.
 
-diff --git a/init/do_mounts.c b/init/do_mounts.c
-index 7058e14ad5f7..dedf27fe9044 100644
---- a/init/do_mounts.c
-+++ b/init/do_mounts.c
-@@ -665,7 +665,7 @@ struct file_system_type rootfs_fs_type = {
+I didn't consider that. Having code match the documentation is indeed
+valuable.
 
- void __init init_rootfs(void)
- {
--	if (IS_ENABLED(CONFIG_TMPFS) && !saved_root_name[0] &&
--		(!root_fs_names || strstr(root_fs_names, "tmpfs")))
-+	if (IS_ENABLED(CONFIG_TMPFS) && (!root_fs_names ? !saved_root_name[0] :
-+		!!strstr(root_fs_names, "tmpfs")))
- 		is_tmpfs = true;
- }
+> > > -		dmi_ver = get_unaligned_be32(buf + 6) & 0xFFFFFF;
+> > > +		dmi_ver = get_unaligned_be24(buf + 7);  
+> 
+> > I admit I did not know about get_unaligned_be24(). While I agree that
+> > it makes the source code look better, one downside is that it actually
+> > increases the binary size on x86_64. The reason is that
+> > get_unaligned_be32() is optimized by assembly instruction bswapl, while
+> > get_unaligned_be24() is not. Situation appears to be the same on ia64
+> > and arm. Only arm64 would apparently benefit from your proposed
+> > change.  
+> 
+> Good to know!
+> But here it's not a hot path, right?
 
-Signed-in-triplicate-by: Rob Landley <rob@landley.net>
+True.
 
-No idea why nobody else has fixed that bug in the past 9 years, seems obvious?
+> > I'm not too sure what is preferred in such situations.
+> 
+> For cold paths I think the correctness prevail the performance.
 
-Anyway, here's the testing I did using mkroot (ala
-https://landley.net/toybox/faq.html#mkroot):
+You have a point.
 
-$ (cd root/x86_64; KARGS='quiet root=potato HANDOFF="/bin/head -n 1
-/proc/mounts"' ./run-qemu.sh) | tail -n 3
-rootfs / rootfs rw 0 0
-reboot: Restarting system
+> Alternatively we might add a comment in the code explaining the trick,
+> although I won't like to do it.
+> 
+> Another way is to have a subset of 24-/48-bit unaligned accessors that
+> use the trick specifically for hot paths with a caveat that they may
+> access data out of the 24-/48-bit boundaries.
 
-$ (cd root/x86_64; KARGS='quiet HANDOFF="/bin/head -n 1 /proc/mounts"'
-./run-qemu.sh) | tail -n 3
-rootfs / rootfs rw,size=121828k,nr_inodes=30457 0 0
-reboot: Restarting system
+I considered that, but that's too hackish for me and could easily cause
+confusion leading to improper use. Not worth it. Let's keep things
+simple and understandable.
 
-$ (cd root/x86_64; KARGS='quiet rootfstype=tmpfs root=potato HANDOFF="/bin/head
--n 1 /proc/mounts"' ./run-qemu.sh) | tail -n 3
-rootfs / rootfs rw,size=121828k,nr_inodes=30457 0 0
-reboot: Restarting system
+So I'll apply your patch, thanks for contributing it.
 
-I.E. rootfstype=tmpfs neutralized the root= so it was still tmpfs despite the
-kernel being explicitly told you weren't going to stay on initramfs (which is
-still what root= means). With just root= it's still ramfs, with all the "my log
-file got too big and the system livelocked" and "querying available space always
-returns zero" that entails.
-
-> Can I clarify which filesystem type is supported with this patch series?
-> Is it tmpfs or perhaps a ramdisk?
-
-I believe both tmpfs and ramfs support xattrs? (I know tmpfs does, and
-fs/ramfs/file-mmu.c plugs simple_getattr() into ramfs_file_operations.setattr so
-it looks like that would too? Haven't tried it.)
-
-This isn't a modification to the filesystem code (ramfs/tmpfs), this is a
-modification to the boot-time loader (initramfs) that extracts a cpio.gz file
-into the filesystem.
-
-Ramdisks have supported xattrs for years: they fake up a block device out of a
-chunk of memory and them format it and mount some other filesystem on it,
-meaning the driver for the other filesystem handles the xattr support.
-
-But ramdisks don't use initramfs, they load an image of the preformatted
-filesystem into the ramdisk block device. Completely separate mechanism, sharing
-no code with initramfs, depending on the block layer, etc.
-
->>> Thank you, I have tested that patch but the problem remained. Here is my
->>> command line, I wonder if there is something wrong.
->>>
->>> Kernel command line: rw rootfstype=initramtmpfs root=/dev/ram0
->>> initrd=0x500000000 rootwait
->> 
->> It is just initramtmpfs, without rootfstype=.
-
-The above patch does not go on top of that patch, it's instead of.
-
-Rob
+-- 
+Jean Delvare
+SUSE L3 Support
