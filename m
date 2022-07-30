@@ -2,97 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93099C19F28
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 14:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABB21C04A68
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 14:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234415AbiG3OXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 10:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45012 "EHLO
+        id S234616AbiG3O1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 10:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231592AbiG3OXn (ORCPT
+        with ESMTP id S231472AbiG3O1q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 10:23:43 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1A013FA3;
-        Sat, 30 Jul 2022 07:23:42 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id y13so3619290ilv.5;
-        Sat, 30 Jul 2022 07:23:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Voqu6aJRMeEVOlwvE2Se+YOjP0roD05uM97alfr1h0Q=;
-        b=MX7F5L/LWJMPs2QHSwZwzmP4Y6xVwFQp8GJCkHXhb7CGqUJa7+vf8kRe4DXN0f62qU
-         a+g7LFZfWpWd7Xyq/BV2lvmBrpq6aoaE7hj+etBbwBk4WyceBQcdNtH301NfavcfY1c7
-         jFO8+eVuVeb0+snB8izWnwQpKIlBYF1GtKRXyQX6wl5WqBtgBzrVFHsoIwRtLTzpyc9l
-         ZkULh3EpTqRi+wmJUrvSeNgPuYboJy1p+X/xr3NrFEtWJ68y5F8SK6k1iAt7q6BEVH4i
-         azqGvDkB9fHhjPWC82oEQ5O97iM+SEwL0qGfqGC3k/nyJ8PYviGWUTVxUoYOEXdTvlvT
-         eG6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Voqu6aJRMeEVOlwvE2Se+YOjP0roD05uM97alfr1h0Q=;
-        b=uopa3dGFBt/AGvpki49oXINF6ihVRi98dYNJgxLA4ix/LpY+xEa0WCD56LQWwPb75w
-         9VanUjq1+pcipJ2YerPSwU/H2QQY5ecUhwxP03k6TB7Dq9XTFIGuNnpDKYYagH7jJ5ZV
-         YbWClFQXzutOcJM2K2oD84JL8DR657BZNJ/qlspRE8SQ1nxEbYyaEEssJjd2pOcGb594
-         kqtIrbZVHbm2Kxy7ClTe6xQt89v8Me9leWhjmLIQQ0tSFThxSL6je1iejQfuopCcd5Oh
-         vcm5id/QheWZlkKSFJTNCvSXzKJSIztSkM2vbuNkQPOmtGWvH3Ydox//yn2Miv1BDEMc
-         H7jg==
-X-Gm-Message-State: AJIora/h2mRfFurB3sLwJ1MnBMlDRi3lNWgXbWxUFOSMJnpX/T3qWC5H
-        gjAtPtpp6ElLD5LtjmnD2fyAJezyq0A=
-X-Google-Smtp-Source: AGRyM1sHoqCRGd+RA6qoOLRK20en+E/bcTFuyjB7xzm3eFF9tkeNeqofLeVur/DL9Sp8bhxqzCZYeg==
-X-Received: by 2002:a05:6e02:1ca5:b0:2dd:77a2:7d71 with SMTP id x5-20020a056e021ca500b002dd77a27d71mr3164913ill.256.1659191021792;
-        Sat, 30 Jul 2022 07:23:41 -0700 (PDT)
-Received: from localhost.localdomain (wnpgmb0311w-ds01-45-179-115.dynamic.bellmts.net. [206.45.179.115])
-        by smtp.gmail.com with ESMTPSA id q25-20020a05663810d900b00339c33df66bsm2991083jad.118.2022.07.30.07.23.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Jul 2022 07:23:40 -0700 (PDT)
-From:   jassisinghbrar@gmail.com
-To:     robh@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        sudeep.holla@arm.com
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Jassi Brar <jaswinder.singh@linaro.org>
-Subject: [PATCH] arm64: dts: juno: Add missing MHU secure-irq
-Date:   Sat, 30 Jul 2022 09:23:36 -0500
-Message-Id: <20220730142336.484564-1-jassisinghbrar@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 30 Jul 2022 10:27:46 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9BEBF59A;
+        Sat, 30 Jul 2022 07:27:44 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1659191217; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=k7AD4oZfgUgnBoUmRly/rpZx+/u1I/Tk8GB8KMIqPkYwovK96FaVLZxSpp786cdbtJSsElEDh+y3hXJCPbjJyY9jTJVFBgku+dORbwCLt9ZIzyfnB5rORdX2wH7UIZC/UJP7FOv7ileiwIpmGJH5nn5ErIYILt0HD85qfw3D4To=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1659191217; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=T9IjTJcjihkHFFN5KVJgnWvnqo9eLDcviRSrTl9a0H0=; 
+        b=Wh/L/Ttv85JP+iYVLAqmsB+SIoy100UJReUlmC08WsIEYbhKmxNCPzm7y7/0wVAxGivvweHf7kUDZiaLvZxb/vJK88d6Iub7wcHfmNUUyDdIXxYf8HPoJHRCnQxPFA4hJtnk+V2iHQNua+xTYMcWCSghsarxyDfMaMHjbQKPiA0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659191216;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
+        bh=T9IjTJcjihkHFFN5KVJgnWvnqo9eLDcviRSrTl9a0H0=;
+        b=bVPBDKDihVxB7WrRaipJBs/aatUd37kuX5nzPDB+8CZ1J6mQf8w7lYx0SLqWbPBZ
+        Tsqe8VAHgGVnEKzir8PRp+mhA6L1fE0uStM2fjQjGHdCUDvp4am+9gQEXdmK+D21F69
+        RL+zxtBaMRk/fB+AkHL67tvCQqo6RjKmVNCV+DOo=
+Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1659191215964410.90340698142415; Sat, 30 Jul 2022 07:26:55 -0700 (PDT)
+From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH 1/4] dt-bindings: net: dsa: mediatek,mt7530: make trivial changes
+Date:   Sat, 30 Jul 2022 17:26:24 +0300
+Message-Id: <20220730142627.29028-2-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220730142627.29028-1-arinc.unal@arinc9.com>
+References: <20220730142627.29028-1-arinc.unal@arinc9.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jassi Brar <jaswinder.singh@linaro.org>
+Make trivial changes on the binding.
 
-The MHU secure interrupt exists physically but is missing in the DT node.
+- Update title to include MT7531 switch.
+- Add me as a maintainer. List maintainers in alphabetical order by first
+name.
+- Add description to compatible strings.
+- Fix MCM description. mediatek,mcm is not used on MT7623NI.
+- Add description for reset-gpios.
+- Remove quotes from $ref: "dsa.yaml#".
 
-Specify the interrupt in DT node to fix a warning on Arm Juno board:
-   mhu@2b1f0000: interrupts: [[0, 36, 4], [0, 35, 4]] is too short
-
-Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- arch/arm64/boot/dts/arm/juno-base.dtsi | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ .../bindings/net/dsa/mediatek,mt7530.yaml     | 27 ++++++++++++++-----
+ 1 file changed, 20 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/arm/juno-base.dtsi b/arch/arm64/boot/dts/arm/juno-base.dtsi
-index f6c55877fbd94..3220a00e9500d 100644
---- a/arch/arm64/boot/dts/arm/juno-base.dtsi
-+++ b/arch/arm64/boot/dts/arm/juno-base.dtsi
-@@ -26,9 +26,11 @@ mailbox: mhu@2b1f0000 {
- 		compatible = "arm,mhu", "arm,primecell";
- 		reg = <0x0 0x2b1f0000 0x0 0x1000>;
- 		interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
-+			     <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
- 		interrupt-names = "mhu_lpri_rx",
--				  "mhu_hpri_rx";
-+				  "mhu_hpri_rx",
-+				  "mhu_secure_rx";
- 		#mbox-cells = <1>;
- 		clocks = <&soc_refclk100mhz>;
- 		clock-names = "apb_pclk";
+diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+index 17ab6c69ecc7..541984a7d2d4 100644
+--- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+@@ -4,12 +4,13 @@
+ $id: http://devicetree.org/schemas/net/dsa/mediatek,mt7530.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: Mediatek MT7530 Ethernet switch
++title: Mediatek MT7530 and MT7531 Ethernet Switches
+ 
+ maintainers:
+-  - Sean Wang <sean.wang@mediatek.com>
++  - Arınç ÜNAL <arinc.unal@arinc9.com>
+   - Landen Chao <Landen.Chao@mediatek.com>
+   - DENG Qingfang <dqfext@gmail.com>
++  - Sean Wang <sean.wang@mediatek.com>
+ 
+ description: |
+   Port 5 of mt7530 and mt7621 switch is muxed between:
+@@ -66,6 +67,14 @@ properties:
+       - mediatek,mt7531
+       - mediatek,mt7621
+ 
++    description: |
++      mediatek,mt7530:
++        For standalone MT7530 and multi-chip module MT7530 in MT7623AI SoC.
++      mediatek,mt7531:
++        For standalone MT7531.
++      mediatek,mt7621:
++        For multi-chip module MT7530 in MT7621AT, MT7621DAT and MT7621ST SoCs.
++
+   reg:
+     maxItems: 1
+ 
+@@ -79,7 +88,7 @@ properties:
+   gpio-controller:
+     type: boolean
+     description:
+-      if defined, MT7530's LED controller will run on GPIO mode.
++      If defined, MT7530's LED controller will run on GPIO mode.
+ 
+   "#interrupt-cells":
+     const: 1
+@@ -98,11 +107,15 @@ properties:
+   mediatek,mcm:
+     type: boolean
+     description:
+-      if defined, indicates that either MT7530 is the part on multi-chip
+-      module belong to MT7623A has or the remotely standalone chip as the
+-      function MT7623N reference board provided for.
++      Used for MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs which the MT7530
++      switch is a part of the multi-chip module.
+ 
+   reset-gpios:
++    description:
++      GPIO to reset the switch. Use this if mediatek,mcm is not used.
++      This property is optional because some boards share the reset line with
++      other components which makes it impossible to probe the switch if the
++      reset line is used.
+     maxItems: 1
+ 
+   reset-names:
+@@ -148,7 +161,7 @@ required:
+   - reg
+ 
+ allOf:
+-  - $ref: "dsa.yaml#"
++  - $ref: dsa.yaml#
+   - if:
+       required:
+         - mediatek,mcm
 -- 
-2.25.1
+2.34.1
 
