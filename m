@@ -2,179 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B44B3C04A68
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 08:36:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC83C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 08:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231766AbiG3IgC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 04:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54180 "EHLO
+        id S232127AbiG3Ijv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 04:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230138AbiG3IgB (ORCPT
+        with ESMTP id S230138AbiG3Ijt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 04:36:01 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3832C13EB7
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 01:36:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659170160; x=1690706160;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Q1yUwiF4wpL++puTylr9syqtyGC5KFVkzaS3swaErXE=;
-  b=BvXZmVa4vwFMlmR4EpfhfDpSeE/EEDL8lEjCSfnM6ovD+qDHpz4NDApU
-   BSpn7RlBc+YolC9uh6OXxJ1yZt6PYvDFJgOXYb7Ym63oGZUJPGfgjuurn
-   Oz243cYrFVE+mityZ2VeAuXzhIEmKVry+5Zuc1InrLeTJYxbBRLU4Ll5g
-   DHfHAFsLk0lPdricoJJ+s+ZBhPg8svsCrwBZMs9nV/rR6XlAQGffTS69T
-   uBhf7NfWDj8jdGH331INbNUWa9YQim/g9oXhHJ5Fiff25OtNb3Pw5BsSP
-   pEDUCff/4/a3HEinoHrr5nFac8WnC6xObZGoEe1dhjHn6QeuP7WAELfCN
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="287659703"
-X-IronPort-AV: E=Sophos;i="5.93,203,1654585200"; 
-   d="scan'208";a="287659703"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 01:35:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,203,1654585200"; 
-   d="scan'208";a="551983376"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 30 Jul 2022 01:35:57 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oHhwz-000CeH-0e;
-        Sat, 30 Jul 2022 08:35:57 +0000
-Date:   Sat, 30 Jul 2022 16:35:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>
-Subject: [jsarha:topic/chromeos-4.19-s0ix 6418/9999] cc1: error:
- arch/sh/include/mach-rsk: No such file or directory
-Message-ID: <202207301643.B4B5Etah-lkp@intel.com>
+        Sat, 30 Jul 2022 04:39:49 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AB927B29;
+        Sat, 30 Jul 2022 01:39:47 -0700 (PDT)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LvyRm38hYzlW5b;
+        Sat, 30 Jul 2022 16:37:08 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 30 Jul 2022 16:39:45 +0800
+Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
+ (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 30 Jul
+ 2022 16:39:45 +0800
+From:   Kai Ye <yekai13@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
+CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wangzhou1@hisilicon.com>, <liulongfang@huawei.com>,
+        <yekai13@huawei.com>
+Subject: [PATCH v6 2/3] Documentation: add a isolation strategy sysfs node for uacce
+Date:   Sat, 30 Jul 2022 16:32:45 +0800
+Message-ID: <20220730083246.55646-3-yekai13@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220730083246.55646-1-yekai13@huawei.com>
+References: <20220730083246.55646-1-yekai13@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jsarha/linux topic/chromeos-4.19-s0ix
-head:   430bdaa0a8c38697780f45a148964d71951df11f
-commit: 4fae0a1dc645742f2ecd6238813b2d30d4fb31cd [6418/9999] UPSTREAM: kbuild: add some extra warning flags unconditionally
-config: sh-rsk7201_defconfig (https://download.01.org/0day-ci/archive/20220730/202207301643.B4B5Etah-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jsarha/linux/commit/4fae0a1dc645742f2ecd6238813b2d30d4fb31cd
-        git remote add jsarha https://github.com/jsarha/linux
-        git fetch --no-tags jsarha topic/chromeos-4.19-s0ix
-        git checkout 4fae0a1dc645742f2ecd6238813b2d30d4fb31cd
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash
+Update documentation describing sysfs node that could help to
+configure isolation strategy for users in the user space. And
+describing sysfs node that could read the device isolated state.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+---
+ Documentation/ABI/testing/sysfs-driver-uacce | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-All errors (new ones prefixed by >>):
-
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
-   arch/sh/lib/lshrdi3.c:6:11: error: no previous prototype for '__lshrdi3' [-Werror=missing-prototypes]
-       6 | long long __lshrdi3(long long u, word_type b)
-         |           ^~~~~~~~~
-   cc1: all warnings being treated as errors
---
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
-   cc1: all warnings being treated as errors
---
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
-   arch/sh/lib/ashldi3.c:6:11: error: no previous prototype for '__ashldi3' [-Werror=missing-prototypes]
-       6 | long long __ashldi3(long long u, word_type b)
-         |           ^~~~~~~~~
-   cc1: all warnings being treated as errors
---
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
-   arch/sh/lib/ashrdi3.c:6:11: error: no previous prototype for '__ashrdi3' [-Werror=missing-prototypes]
-       6 | long long __ashrdi3(long long u, word_type b)
-         |           ^~~~~~~~~
-   cc1: all warnings being treated as errors
---
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
-   arch/sh/kernel/idle.c:35:6: error: no previous prototype for 'arch_cpu_idle_dead' [-Werror=missing-prototypes]
-      35 | void arch_cpu_idle_dead(void)
-         |      ^~~~~~~~~~~~~~~~~~
-   arch/sh/kernel/idle.c:40:6: error: no previous prototype for 'arch_cpu_idle' [-Werror=missing-prototypes]
-      40 | void arch_cpu_idle(void)
-         |      ^~~~~~~~~~~~~
-   arch/sh/kernel/idle.c:45:13: error: no previous prototype for 'select_idle_routine' [-Werror=missing-prototypes]
-      45 | void __init select_idle_routine(void)
-         |             ^~~~~~~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
---
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
-   arch/sh/kernel/machvec.c: In function 'early_parse_mv':
-   arch/sh/kernel/machvec.c:46:15: error: variable 'mv_comma' set but not used [-Werror=unused-but-set-variable]
-      46 |         char *mv_comma;
-         |               ^~~~~~~~
-   arch/sh/kernel/machvec.c: In function 'sh_mv_setup':
-   arch/sh/kernel/machvec.c:107:33: error: array subscript 'struct sh_machine_vector[0]' is partly outside array bounds of 'long int[1]' [-Werror=array-bounds]
-     107 |                         sh_mv = *(struct sh_machine_vector *)&__machvec_start;
-         |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from arch/sh/kernel/machvec.c:16:
-   arch/sh/include/asm/sections.h:7:13: note: object '__machvec_start' of size 4
-       7 | extern long __machvec_start, __machvec_end;
-         |             ^~~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
---
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
-   arch/sh/kernel/ptrace_32.c: In function 'arch_ptrace':
-   arch/sh/kernel/ptrace_32.c:383:40: error: comparison of unsigned expression in '< 0' is always false [-Werror=type-limits]
-     383 |                 if ((addr & 3) || addr < 0 ||
-         |                                        ^
-   arch/sh/kernel/ptrace_32.c:423:40: error: comparison of unsigned expression in '< 0' is always false [-Werror=type-limits]
-     423 |                 if ((addr & 3) || addr < 0 ||
-         |                                        ^
-   cc1: all warnings being treated as errors
---
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
-   arch/sh/kernel/return_address.c:52:7: error: no previous prototype for 'return_address' [-Werror=missing-prototypes]
-      52 | void *return_address(unsigned int depth)
-         |       ^~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
---
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
-   arch/sh/kernel/sys_sh.c:58:16: error: no previous prototype for 'sys_cacheflush' [-Werror=missing-prototypes]
-      58 | asmlinkage int sys_cacheflush(unsigned long addr, unsigned long len, int op)
-         |                ^~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
---
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
-   arch/sh/kernel/traps.c: In function 'is_valid_bugaddr':
-   arch/sh/kernel/traps.c:119:18: error: comparison of unsigned expression in '< 0' is always false [-Werror=type-limits]
-     119 |         if (addr < PAGE_OFFSET)
-         |                  ^
-   cc1: all warnings being treated as errors
---
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
->> cc1: error: arch/sh/include/mach-rsk: No such file or directory [-Werror=missing-include-dirs]
-   arch/sh/kernel/traps_32.c:734:6: error: no previous prototype for 'per_cpu_trap_init' [-Werror=missing-prototypes]
-     734 | void per_cpu_trap_init(void)
-         |      ^~~~~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
-..
-
+diff --git a/Documentation/ABI/testing/sysfs-driver-uacce b/Documentation/ABI/testing/sysfs-driver-uacce
+index 08f2591138af..1601f9dac29c 100644
+--- a/Documentation/ABI/testing/sysfs-driver-uacce
++++ b/Documentation/ABI/testing/sysfs-driver-uacce
+@@ -19,6 +19,23 @@ Contact:        linux-accelerators@lists.ozlabs.org
+ Description:    Available instances left of the device
+                 Return -ENODEV if uacce_ops get_available_instances is not provided
+ 
++What:           /sys/class/uacce/<dev_name>/isolate_strategy
++Date:           Jul 2022
++KernelVersion:  5.20
++Contact:        linux-accelerators@lists.ozlabs.org
++Description:    (RW) Configure the frequency size for the hardware error
++                isolation strategy. This size is a configured integer value.
++                The default is 0. The maximum value is 65535. This value is a
++                threshold based on your driver handling strategy.
++
++What:           /sys/class/uacce/<dev_name>/isolate
++Date:           Jul 2022
++KernelVersion:  5.20
++Contact:        linux-accelerators@lists.ozlabs.org
++Description:    (R) A sysfs node that read the device isolated state. The value 1
++                means the device is unavailable. The 0 means the device is
++                available.
++
+ What:           /sys/class/uacce/<dev_name>/algorithms
+ Date:           Feb 2020
+ KernelVersion:  5.7
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.33.0
+
