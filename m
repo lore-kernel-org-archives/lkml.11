@@ -2,178 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FEF6C04A68
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 05:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 315D9C19F2B
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 05:12:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231783AbiG3FLa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 01:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
+        id S231810AbiG3FMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 01:12:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229799AbiG3FL2 (ORCPT
+        with ESMTP id S232096AbiG3FLy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 01:11:28 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD064B0CE;
-        Fri, 29 Jul 2022 22:11:27 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:50274)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oHel4-007lNd-3m; Fri, 29 Jul 2022 23:11:26 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:47520 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oHel3-00GJeY-2g; Fri, 29 Jul 2022 23:11:25 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Oleg Nesterov <oleg@redhat.com>,
-        Tycho Andersen <tycho@tycho.pizza>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-References: <20220727191949.GD18822@redhat.com> <YuGUyayVWDB7R89i@tycho.pizza>
-        <20220728091220.GA11207@redhat.com> <YuL9uc8WfiYlb2Hw@tycho.pizza>
-        <87pmhofr1q.fsf@email.froward.int.ebiederm.org>
-        <YuPlqp0jSvVu4WBK@tycho.pizza>
-        <87v8rfevz3.fsf@email.froward.int.ebiederm.org>
-        <YuQPc51yXhnBHjIx@tycho.pizza>
-        <87h72zes14.fsf_-_@email.froward.int.ebiederm.org>
-        <20220729204730.GA3625@redhat.com> <YuR4MRL8WxA88il+@ZenIV>
-Date:   Sat, 30 Jul 2022 00:10:33 -0500
-In-Reply-To: <YuR4MRL8WxA88il+@ZenIV> (Al Viro's message of "Sat, 30 Jul 2022
-        01:15:45 +0100")
-Message-ID: <875yjfdw3a.fsf_-_@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Sat, 30 Jul 2022 01:11:54 -0400
+Received: from smtp.smtpout.orange.fr (smtp03.smtpout.orange.fr [80.12.242.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9815F78221
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 22:11:52 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id HelRobzmhPASQHelRonGwH; Sat, 30 Jul 2022 07:11:50 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 30 Jul 2022 07:11:50 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        John Stultz <jstultz@google.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH v3] timers: Optimize usleep_range()
+Date:   Sat, 30 Jul 2022 07:11:44 +0200
+Message-Id: <c146e183a0f0b819f8ec5ab8934905d01a642506.1659126514.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1oHel3-00GJeY-2g;;;mid=<875yjfdw3a.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/LqhIvVPqMhw9lZ6gy83GJGTB7oURvop8=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [RFC][PATCH v2] fuse: In fuse_flush only wait if someone wants the
- return code
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Most of the time the 'min' and 'max' parameters of usleep_range() are
+constant. We can take advantage of it to pre-compute at compile time
+some values otherwise computed at run-time in usleep_range_state().
 
-In my very light testing this resolves a hang where a thread of the
-fuse server was accessing the fuse filesystem (the fuse server is
-serving up), when the fuse server is killed.
+Replace usleep_range_state() by a new __nsleep_range_delta_state() function
+that takes as parameters the pre-computed values.
 
-The practical problem is that the fuse server file descriptor was
-being closed after the file descriptor into the fuse filesystem so
-that the fuse filesystem operations were being blocked for instead of
-being aborted.  Simply skipping the unnecessary wait resolves this
-issue.
+The main benefit is to save a few instructions, especially 2
+multiplications (x1000 when converting us to ns).
 
-This is just a proof of concept and someone should look to see if the
-fuse max_background limit could cause a problem with this approach.
 
-Additionally testing PF_EXITING is a very crude way to tell if someone
-wants the return code from the vfs flush operation.  As such in the
-long run it probably makes sense to get some direct vfs support for
-knowing if flush needs to block until all of the flushing is complete
-and a status/return code can be returned.
+Some hand simplified diff of the generated asm are given below. They were
+produced on a Intel(R) Core(TM) i7-3770, with gcc 11.2.0.
 
-Unless I have missed something this is a generic optimization that can
-apply to many network filesystems.
+drivers/clk/clk-si514.c (taken as an example)
+-----------------------
+In this driver we have:
+   usleep_range(10000, 12000);
 
-Al, vfs folks? (igrab/iput sorted so as not to be distractions).
+  ea0:	45 85 e4             	test   %r12d,%r12d
+  ea3:	0f 88 f6 fc ff ff    	js     b9f <si514_set_rate+0x9f>
+  ea9:	e8 00 00 00 00       	call   eae <si514_set_rate+0x3ae>
+- eae:	be e0 2e 00 00       	mov    $0x2ee0,%esi             ;     12.000
+- eb3:	bf 10 27 00 00       	mov    $0x2710,%edi             ;     10.000
++ eae:	be 80 84 1e 00       	mov    $0x1e8480,%esi           ;  2.000.000
++ eb3:	bf 80 96 98 00       	mov    $0x989680,%edi           ; 10.000.000
+  eb8:	ba 02 00 00 00       	mov    $0x2,%edx
+  ebd:	e8 00 00 00 00       	call   ec2 <si514_set_rate+0x3c2>
+  ec2:	44 8b 74 24 30       	mov    0x30(%rsp),%r14d
 
-Perhaps a .flush_async method without a return code and a
-filp_close_async function without a return code to take advantage of
-this in the general sense.
+The asm produced in the caller is mostly the same. Only constant values
+passed to usleep_range_state() or __nsleep_range_delta_state() are
+different. No other instructions or whatever is different.
 
-Waiting potentially indefinitely for user space in do_exit seems like a
-bad idea.  Especially when all that the wait is for is to get a return
-code that will never be examined.
 
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+kernel/time/timer.c
+-------------------
+-0000000000000000 <usleep_range_state>:
++0000000000000000 <__nsleep_range_delta_state>:
+  f3 0f 1e fa          	endbr64
+  e8 00 00 00 00       	call   ...
+  48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+[...]
+  41 56                	push   %r14
+  49 c7 c6 00 00 00 00 	mov    $0x0,%r14
+  41 55                	push   %r13
+- 41 89 d5             	mov    %edx,%r13d
++ 49 89 f5             	mov    %rsi,%r13
+  41 54                	push   %r12
+- 49 89 f4             	mov    %rsi,%r12
++ 41 89 d4             	mov    %edx,%r12d
+  55                   	push   %rbp
+- 44 89 ed             	mov    %r13d,%ebp
++ 44 89 e5             	mov    %r12d,%ebp
+  53                   	push   %rbx
+  48 89 fb             	mov    %rdi,%rbx
+  81 e5 cc 00 00 00    	and    $0xcc,%ebp
+- 49 29 dc             	sub    %rbx,%r12              ; (max - min)
+- 4d 69 e4 e8 03 00 00 	imul   $0x3e8,%r12,%r12       ; us --> ns (x 1000)
+  48 83 ec 68          	sub    $0x68,%rsp
+  48 c7 44 24 08 b3 8a 	movq   $0x41b58ab3,0x8(%rsp)
+  b5 41
+[...]
+  31 c0                	xor    %eax,%eax
+  e8 00 00 00 00       	call   ...
+  e8 00 00 00 00       	call   ...
+- 49 89 c0             	mov    %rax,%r8
+- 48 69 c3 e8 03 00 00 	imul   $0x3e8,%rbx,%rax       ; us --> ns (x 1000)
++ 48 01 d8             	add    %rbx,%rax
++ 48 89 44 24 28       	mov    %rax,0x28(%rsp)
+  65 48 8b 1c 25 00 00 	mov    %gs:0x0,%rbx
+  00 00
+- 4c 01 c0             	add    %r8,%rax
+- 48 89 44 24 28       	mov    %rax,0x28(%rsp)
+  e8 00 00 00 00       	call   ...
+  31 ff                	xor    %edi,%edi
+  89 ee                	mov    %ebp,%esi
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: John Stultz <jstultz@google.com>
 ---
- fs/fuse/file.c | 59 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 59 insertions(+)
+v1 -> v2
+  - Simplify and avoid use of __buildint_constant_p()  [John Stultz <jstultz@google.com>]
+  - Also update usleep_idle_range()
+  - Axe usleep_range_state()  [John Stultz <jstultz@google.com>]
+  - Fix kerneldoc  [John Stultz <jstultz@google.com>]
+  - Update log message accordingly
+https://lore.kernel.org/all/d7fc85736adee02ce52ee88a54fa7477fbd18ed2.1653236802.git.christophe.jaillet@wanadoo.fr/
 
-diff --git a/fs/fuse/file.c b/fs/fuse/file.c
-index 05caa2b9272e..2bd94acd761f 100644
---- a/fs/fuse/file.c
-+++ b/fs/fuse/file.c
-@@ -464,6 +464,62 @@ static void fuse_sync_writes(struct inode *inode)
- 	fuse_release_nowrite(inode);
+v2 -> v3
+  - Fix checkpatch warning/error  [John Stultz <jstultz@google.com>]
+  - Add SoB
+https://lore.kernel.org/all/a896e176f0f0b819f8ec5ab8935355d01a642506.1659126514.git.christophe.jaillet@wanadoo.fr/
+---
+ include/linux/delay.h | 17 +++++++++++++----
+ kernel/time/timer.c   | 17 ++++++++---------
+ 2 files changed, 21 insertions(+), 13 deletions(-)
+
+diff --git a/include/linux/delay.h b/include/linux/delay.h
+index 039e7e0c7378..27938a49c701 100644
+--- a/include/linux/delay.h
++++ b/include/linux/delay.h
+@@ -59,17 +59,26 @@ void calibrate_delay(void);
+ void __attribute__((weak)) calibration_delay_done(void);
+ void msleep(unsigned int msecs);
+ unsigned long msleep_interruptible(unsigned int msecs);
+-void usleep_range_state(unsigned long min, unsigned long max,
+-			unsigned int state);
++void __nsleep_range_delta_state(u64 min, u64 delta, unsigned int state);
+ 
+ static inline void usleep_range(unsigned long min, unsigned long max)
+ {
+-	usleep_range_state(min, max, TASK_UNINTERRUPTIBLE);
++	/*
++	 * Most of the time min and max are constant, so the time delta and the
++	 * conversion to ns will be optimized-out at compile time.
++	 */
++	u64 delta = (u64)(max - min) * NSEC_PER_USEC;
++
++	__nsleep_range_delta_state(min * NSEC_PER_USEC, delta,
++				   TASK_UNINTERRUPTIBLE);
  }
  
-+struct fuse_flush_args {
-+	struct fuse_args args;
-+	struct fuse_flush_in inarg;
-+	struct inode *inode;
-+};
-+
-+static void fuse_flush_end(struct fuse_mount *fm, struct fuse_args *args, int err)
-+{
-+	struct fuse_flush_args *fa = container_of(args, typeof(*fa), args);
-+
-+	if (err == -ENOSYS) {
-+		fm->fc->no_flush = 1;
-+		err = 0;
-+	}
-+
-+	/*
-+	 * In memory i_blocks is not maintained by fuse, if writeback cache is
-+	 * enabled, i_blocks from cached attr may not be accurate.
-+	 */
-+	if (!err && fm->fc->writeback_cache)
-+		fuse_invalidate_attr_mask(fa->inode, STATX_BLOCKS);
-+
-+	iput(fa->inode);
-+	kfree(fa);
-+}
-+
-+static int fuse_flush_async(struct file *file, fl_owner_t id)
-+{
-+	struct inode *inode = file_inode(file);
-+	struct fuse_mount *fm = get_fuse_mount(inode);
-+	struct fuse_file *ff = file->private_data;
-+	struct fuse_flush_args *fa;
-+	int err;
-+
-+	fa = kzalloc(sizeof(*fa), GFP_KERNEL);
-+	if (!fa)
-+		return -ENOMEM;
-+
-+	fa->inarg.fh = ff->fh;
-+	fa->inarg.lock_owner = fuse_lock_owner_id(fm->fc, id);
-+	fa->args.opcode = FUSE_FLUSH;
-+	fa->args.nodeid = get_node_id(inode);
-+	fa->args.in_numargs = 1;
-+	fa->args.in_args[0].size = sizeof(fa->inarg);
-+	fa->args.in_args[0].value = &fa->inarg;
-+	fa->args.force = true;
-+	fa->args.end = fuse_flush_end;
-+	fa->inode = igrab(inode);
-+
-+	err = fuse_simple_background(fm, &fa->args, GFP_KERNEL);
-+	if (err)
-+		fuse_flush_end(fm, &fa->args, err);
-+
-+	return err;
-+}
-+
- static int fuse_flush(struct file *file, fl_owner_t id)
+ static inline void usleep_idle_range(unsigned long min, unsigned long max)
  {
- 	struct inode *inode = file_inode(file);
-@@ -495,6 +551,9 @@ static int fuse_flush(struct file *file, fl_owner_t id)
- 	if (fm->fc->no_flush)
- 		goto inval_attr_out;
- 
-+	if (current->flags & PF_EXITING)
-+		return fuse_flush_async(file, id);
+-	usleep_range_state(min, max, TASK_IDLE);
++	u64 delta = (u64)(max - min) * NSEC_PER_USEC;
 +
- 	memset(&inarg, 0, sizeof(inarg));
- 	inarg.fh = ff->fh;
- 	inarg.lock_owner = fuse_lock_owner_id(fm->fc, id);
++	__nsleep_range_delta_state(min * NSEC_PER_USEC, delta,
++				   TASK_IDLE);
+ }
+ 
+ static inline void ssleep(unsigned int seconds)
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 717fcb9fb14a..475b1c0406d7 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -2109,22 +2109,21 @@ unsigned long msleep_interruptible(unsigned int msecs)
+ EXPORT_SYMBOL(msleep_interruptible);
+ 
+ /**
+- * usleep_range_state - Sleep for an approximate time in a given state
+- * @min:	Minimum time in usecs to sleep
+- * @max:	Maximum time in usecs to sleep
++ * __nsleep_range_delta_state - Sleep for an approximate time in a given state
++ * @min:	Minimum time in nsecs to sleep
++ * @delta:	Duration in nsecs that can be tolerated after @min
+  * @state:	State of the current task that will be while sleeping
+  *
+  * In non-atomic context where the exact wakeup time is flexible, use
+- * usleep_range_state() instead of udelay().  The sleep improves responsiveness
++ * usleep_[idle_]range() instead of udelay().  The sleep improves responsiveness
+  * by avoiding the CPU-hogging busy-wait of udelay(), and the range reduces
+  * power usage by allowing hrtimers to take advantage of an already-
+  * scheduled interrupt instead of scheduling a new one just for this sleep.
+  */
+-void __sched usleep_range_state(unsigned long min, unsigned long max,
+-				unsigned int state)
++void __sched __nsleep_range_delta_state(u64 min, u64 delta,
++					unsigned int state)
+ {
+-	ktime_t exp = ktime_add_us(ktime_get(), min);
+-	u64 delta = (u64)(max - min) * NSEC_PER_USEC;
++	ktime_t exp = ktime_add_ns(ktime_get(), min);
+ 
+ 	for (;;) {
+ 		__set_current_state(state);
+@@ -2133,4 +2132,4 @@ void __sched usleep_range_state(unsigned long min, unsigned long max,
+ 			break;
+ 	}
+ }
+-EXPORT_SYMBOL(usleep_range_state);
++EXPORT_SYMBOL(__nsleep_range_delta_state);
 -- 
-2.35.3
+2.34.1
 
