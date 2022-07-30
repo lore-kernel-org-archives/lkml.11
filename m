@@ -2,75 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1339C19F2B
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05093C19F2B
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:12:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233436AbiG3JJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 05:09:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43804 "EHLO
+        id S231926AbiG3JMW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 05:12:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233215AbiG3JJE (ORCPT
+        with ESMTP id S229795AbiG3JMU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 05:09:04 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2561337FA9;
-        Sat, 30 Jul 2022 02:09:03 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1oHiSy-000199-01; Sat, 30 Jul 2022 11:09:00 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 55E4CC0193; Sat, 30 Jul 2022 11:02:52 +0200 (CEST)
-Date:   Sat, 30 Jul 2022 11:02:52 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Aditya Srivastava <yashsri421@gmail.com>,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH] MIPS: msi-octeon: eliminate kernel-doc warnings
-Message-ID: <20220730090252.GB4620@alpha.franken.de>
-References: <20220724055723.12986-1-rdunlap@infradead.org>
+        Sat, 30 Jul 2022 05:12:20 -0400
+Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E69A14D1F;
+        Sat, 30 Jul 2022 02:12:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=SCfPf
+        hJ87HAhYDJZQauyiCi8fuafYr/8A9EeHXs8eF0=; b=S1Nk0kBzo7QLH1JtCNYCn
+        taOsRfDK7r9fclcOmM2J/Q774WBhdsOzpmzW1moqimHzgSYFOXVNSraL3jbFZJ5+
+        fxiabY1StVlVyPq91FKsDWUgqMULDUIGqxHUuac1SQGZwkSaCDV2vAQ83ILFDtrI
+        z349AA6qdJwYku/YUbxrP4=
+Received: from localhost.localdomain (unknown [123.58.221.99])
+        by smtp3 (Coremail) with SMTP id G9xpCgC301yq9eRiGiU1SQ--.7389S2;
+        Sat, 30 Jul 2022 17:11:07 +0800 (CST)
+From:   studentxswpy@163.com
+To:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Xie Shaowen <studentxswpy@163.com>,
+        Hacash Robot <hacashRobot@santino.com>
+Subject: [PATCH net-next] net: dsa: Fix spelling mistakes and cleanup code
+Date:   Sat, 30 Jul 2022 17:11:02 +0800
+Message-Id: <20220730091102.3101859-1-studentxswpy@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220724055723.12986-1-rdunlap@infradead.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: G9xpCgC301yq9eRiGiU1SQ--.7389S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtr4rXrWrXryUtw43XF1DWrg_yoW3ZFb_ZF
+        yIyF4rXr4fXayvka1UKrWFqFWIgw48Ar1ku3WY9rWDu3s5Zr45Gan5WFnxG3y7uFWj9FZ8
+        Zrn0qF95t3sxWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8qQ6tUUUUU==
+X-Originating-IP: [123.58.221.99]
+X-CM-SenderInfo: xvwxvv5qw024ls16il2tof0z/xtbBEQtOJFaEJ33OYQAAsX
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 23, 2022 at 10:57:23PM -0700, Randy Dunlap wrote:
-> Rearrange kernel-doc notation for 2 functions to eliminate
-> kernel-doc warnings. Use Return: notation for the function
-> return value description. Add function short descriptions
-> for both functions.
-> Correct 2 typos.
-> 
-> Fixes these kernel-doc warnings:
-> 
-> msi-octeon.c:49: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Called when a driver request MSI interrupts instead of the
-> msi-octeon.c:49: warning: missing initial short description on line:
->  * Called when a driver request MSI interrupts instead of the
-> msi-octeon.c:62: warning: No description found for return value of 'arch_setup_msi_irq'
-> msi-octeon.c:189: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
->  * Called when a device no longer needs its MSI interrupts. All
-> msi-octeon.c:189: warning: missing initial short description on line:
->  * Called when a device no longer needs its MSI interrupts. All
-> 
-> Fixes: e8635b484f64 ("MIPS: Add Cavium OCTEON PCI support.")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Aditya Srivastava <yashsri421@gmail.com>
-> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> Cc: linux-mips@vger.kernel.org
-> ---
->  arch/mips/pci/msi-octeon.c |   16 +++++++++-------
->  1 file changed, 9 insertions(+), 7 deletions(-)
+From: Xie Shaowen <studentxswpy@163.com>
 
-applied to mips-next.
+fix follow spelling misktakes:
+	desconstructed ==> deconstructed
+	enforcment ==> enforcement
 
-Thomas.
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: Xie Shaowen <studentxswpy@163.com>
+---
+ net/dsa/tag_brcm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
+index 96dbb8ee2fee..4d538f4c3884 100644
+--- a/net/dsa/tag_brcm.c
++++ b/net/dsa/tag_brcm.c
+@@ -103,7 +103,7 @@ static struct sk_buff *brcm_tag_xmit_ll(struct sk_buff *skb,
+ 
+ 	brcm_tag = skb->data + offset;
+ 
+-	/* Set the ingress opcode, traffic class, tag enforcment is
++	/* Set the ingress opcode, traffic class, tag enforcement is
+ 	 * deprecated
+ 	 */
+ 	brcm_tag[0] = (1 << BRCM_OPCODE_SHIFT) |
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+2.25.1
+
