@@ -2,114 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D17C19F2B
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 17:29:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0CC6C04A68
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 17:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235358AbiG3R3p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 13:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50740 "EHLO
+        id S235384AbiG3Rht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 13:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233216AbiG3R3m (ORCPT
+        with ESMTP id S233216AbiG3Rhr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 13:29:42 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7049617598;
-        Sat, 30 Jul 2022 10:29:41 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id z16so9254157wrh.12;
-        Sat, 30 Jul 2022 10:29:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=jXNl2nAbqMTGsUENmWvJuMRNyD8yYg6etmCEbWy+v6M=;
-        b=gcFZsKVJXC3IcY1kslaV3C6NiufA2f/Tv/GDJIsowX8kCCNXfHM0h9957lKOuhNDY1
-         lSqA0zoqBYCscFugaCm6XyxRlGOvBOrybBFFZZMMAW46UcJKWFbCkk24DHEZhYYNl1lL
-         fYljWQzhvNpOQk+zOYu7bQ27iTr1wzZfDW6gRMK3/9g86Ob8cKWAmY0ueXhuvBZoz50l
-         Y5U5zFQrryN8UbPEhTORaRNVOJuHPQApAz+DVjIdWF6lWCVsMiGBWcsDSBOt64TWwuGf
-         rEoyBPmubFYc8isQGH5aCYNiiy0Vhyu5gS1lXZ23AZS7wvKoLn4qRpVl2V8PoDTlkwSe
-         7cbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jXNl2nAbqMTGsUENmWvJuMRNyD8yYg6etmCEbWy+v6M=;
-        b=M59DlZEEh+HoKZdPtyjEy4pGJmdFccxnGOJuJ4aZxt4JvpAkTN5Rv/n/lmtgpZzIiQ
-         DkpQlVGcy+hmOg3C/T36HKLNymYwpkPn15PzDpLsEaQJO8jet8+nBXjAI3C3XqMw2d9z
-         4lHAujYKkmReLSfItO4emiYXALNJEq93IBCsH3LtAhJ2nzy8GvSBiuhOyx9oAXMytn+r
-         6DRXRfLRhVuZXSOfdft1TlulhSSgjzUpI+KAwoReKKHDpez5vNpAzhLOCpkN78UiKXiU
-         HxmyoqeRAjq0z1yGbv9kbUgX8OM5ZcExYjl+dwNGtG+Dk6DQclDMEuMCIp3mveDBjWKr
-         7UlA==
-X-Gm-Message-State: ACgBeo2FIPxtI1w8nEUk+Lz3W1qYIJ7t55OKkrON8KiKZsmKSOQd/36Q
-        VXzgxv1fHbrcWbG+oL92rQo=
-X-Google-Smtp-Source: AA6agR44PKiUxmMFxKJsokauJr7GaxKtpUT0yC/DBr1QO7BMiSWk8ehv3nqC5jNWcSmX47F9fEdyQA==
-X-Received: by 2002:a5d:63cb:0:b0:21e:b81d:8b0d with SMTP id c11-20020a5d63cb000000b0021eb81d8b0dmr5558142wrw.526.1659202179617;
-        Sat, 30 Jul 2022 10:29:39 -0700 (PDT)
-Received: from [192.168.0.104] ([77.126.166.31])
-        by smtp.gmail.com with ESMTPSA id p8-20020a5d6388000000b002205b786ab3sm1516348wru.14.2022.07.30.10.29.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 30 Jul 2022 10:29:39 -0700 (PDT)
-Message-ID: <7f1ab968-cc10-f0a7-cac8-63dd60021493@gmail.com>
-Date:   Sat, 30 Jul 2022 20:29:36 +0300
+        Sat, 30 Jul 2022 13:37:47 -0400
+Received: from conuserg-10.nifty.com (conuserg-10.nifty.com [210.131.2.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7130B15835;
+        Sat, 30 Jul 2022 10:37:45 -0700 (PDT)
+Received: from localhost.localdomain (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-10.nifty.com with ESMTP id 26UHad9a015991;
+        Sun, 31 Jul 2022 02:36:39 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 26UHad9a015991
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1659202600;
+        bh=zDHb71qwI+a+ejytrtA7mu7Mj8TpMPar35Ic/moKcDM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aPlwIx7XNgw5TU8kj+kuzexvwVlz4VP6ZXUkaE8PhcbY+/K3sPcGnk4unpZvrtQl9
+         LcMczhDuL4hDERQFqHTptmSpU+ls/Mtf4c6bTBuDFb9bCxq46cEHqs3VNh2C7puo32
+         VSHkx9TSbOdOgZPdYRILZm7t0CiRtzpuGBv2Id30plEecuqcVQC29FOCrPMbzkQESN
+         +w9WK9NYZr4TU2eAr7eFnFLXKAW7znVMluN3LYejDmcainuX9jkIXHpgWiB87h5ntG
+         cyDdMDxGFbVqeTe1zFGjDYXTGqbKbvnq3mBteF14Bz6CjeuO1pfpGr9bf5E0KXZKgJ
+         DwyaJ39qT1ivA==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/3] modpost: use more reliable way to get fromsec in section_rel(a)()
+Date:   Sun, 31 Jul 2022 02:36:35 +0900
+Message-Id: <20220730173636.1303357-2-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220730173636.1303357-1-masahiroy@kernel.org>
+References: <20220730173636.1303357-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next V4 1/3] sched/topology: Add NUMA-based CPUs
- spread API
-Content-Language: en-US
-To:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Ben Segall <bsegall@google.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Juri Lelli <juri.lelli@redhat.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>, linux-kernel@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20220728191203.4055-1-tariqt@nvidia.com>
- <20220728191203.4055-2-tariqt@nvidia.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20220728191203.4055-2-tariqt@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The section name of Rel and Rela starts with ".rel" and ".rela"
+respectively (but, I do not know whether this is specification or
+convention).
 
+For example, ".rela.text" holds relocation entries applied to the
+".text" section.
 
-On 7/28/2022 10:12 PM, Tariq Toukan wrote:
-> Implement and expose API that sets the spread of CPUs based on distance,
-> given a NUMA node.  Fallback to legacy logic that uses
-> cpumask_local_spread.
-> 
-> This logic can be used by device drivers to prefer some remote cpus over
-> others.
-> 
-> Reviewed-by: Gal Pressman <gal@nvidia.com>
-> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-> ---
->   include/linux/sched/topology.h |  5 ++++
->   kernel/sched/topology.c        | 49 ++++++++++++++++++++++++++++++++++
->   2 files changed, 54 insertions(+)
-> 
+So, the code chops the ".rel" or ".rela" prefix to get the name of
+the section to which the relocation applies.
 
-++
+However, I do not like to skip 4 or 5 bytes blindly because it is
+potential memory overrun.
 
-Dear SCHEDULER maintainers,
+The ELF specification provides a more reliable way to do this.
 
-V3 of my series was submitted ~12 days ago and had significant changes.
-I'd appreciate your review to this patch, so we could make it to the 
-upcoming kernel.
+ - The sh_info field holds extra information, whose interpretation
+   depends on the section type
 
-Regards,
-Tariq
+ - If the section type is SHT_REL or SHT_RELA, the sh_info field holds
+   the section header index of the section to which the relocation
+   applies.
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+ scripts/mod/modpost.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 148b38699889..c6a055c0291e 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1723,8 +1723,7 @@ static void section_rela(const char *modname, struct elf_info *elf,
+ 	Elf_Rela *start = (void *)elf->hdr + sechdr->sh_offset;
+ 	Elf_Rela *stop  = (void *)start + sechdr->sh_size;
+ 
+-	fromsec = sech_name(elf, sechdr);
+-	fromsec += strlen(".rela");
++	fromsec = sec_name(elf, sechdr->sh_info);
+ 	/* if from section (name) is know good then skip it */
+ 	if (match(fromsec, section_white_list))
+ 		return;
+@@ -1776,8 +1775,7 @@ static void section_rel(const char *modname, struct elf_info *elf,
+ 	Elf_Rel *start = (void *)elf->hdr + sechdr->sh_offset;
+ 	Elf_Rel *stop  = (void *)start + sechdr->sh_size;
+ 
+-	fromsec = sech_name(elf, sechdr);
+-	fromsec += strlen(".rel");
++	fromsec = sec_name(elf, sechdr->sh_info);
+ 	/* if from section (name) is know good then skip it */
+ 	if (match(fromsec, section_white_list))
+ 		return;
+-- 
+2.34.1
+
