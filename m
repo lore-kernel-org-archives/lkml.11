@@ -2,144 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A73FC00144
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 02:42:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96841C00144
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 02:53:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239757AbiG3Cmm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 22:42:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60518 "EHLO
+        id S239752AbiG3CxA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 22:53:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbiG3Cmj (ORCPT
+        with ESMTP id S230476AbiG3Cw6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 22:42:39 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017F02F02D;
-        Fri, 29 Jul 2022 19:42:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=DoWUSFfdp1DbelCpJZW8+ybwygbd/m+exxYZmmyTXOc=; b=BIhMo1Y/s4qhZ3Hu44+7Yu3cDV
-        vKphqnukwIKms2hZ7+8vymACWRWH7hzxDuEcZXqC7TSSeKrT+KQ5ntbvwBo8hknF0+pFx2+5W1O0g
-        QTgkN46hoJZlA29R1HW+/2zMn7Ymf06F12Nw8ONwkxRKi6GB0qM11Xd2dM3C8b3ZYr8mA+NM59Pf6
-        m48vr3icZtio49TVDQAQHEty93bQSajyMA6yNCBeTzKeFXIOWo+3Zs+NHSKgU51hKriIXYkCzo0JS
-        bgr5Yih/H0xf9Xa7joLUzz8dgKazAi1QPPUzTlqutrq+ABhhSaGgSvVVvRTnQ2JyD2Ct3bpSCRsSh
-        RH9tuuwQ==;
-Received: from [187.34.27.134] (helo=[192.168.15.109])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oHcQe-00BiFl-Rj; Sat, 30 Jul 2022 04:42:12 +0200
-Message-ID: <85a49b72-8bb7-b3b3-8a69-2c90cda8079d@igalia.com>
-Date:   Fri, 29 Jul 2022 23:41:55 -0300
+        Fri, 29 Jul 2022 22:52:58 -0400
+Received: from xry111.site (xry111.site [89.208.246.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D1EA4A802
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 19:52:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1659149577;
+        bh=VGBnudRMFElu/73O1TFeffQmUXPA+FTQzL6ZDNaIZKM=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=Jx91mXR0MnejWrp4pOvDHyT7cN/+uLCgEDGoIILj0KOxI0WTuQz4E4+3LKDwU73Xx
+         7S6srtNT7XbVuLryAV8kn+UPFcM12M/+BisV8OV5/lkzEEBQnG1ZaVsonNbE6c9fq+
+         3V3fs4wqy648YV76iIhgZ5Gs796A3ug+RO2UbWKc=
+Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384))
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id 10E3865923;
+        Fri, 29 Jul 2022 22:52:55 -0400 (EDT)
+Message-ID: <00eede4b1380888a500f74b1e818bb25a550632b.camel@xry111.site>
+Subject: Re: [PATCH v4 0/4] LoongArch: Support new relocation types
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     Youling Tang <tangyouling@loongson.cn>, loongarch@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Jinyang He <hejinyang@loongson.cn>,
+        Lulu Cheng <chenglulu@loongson.cn>
+Date:   Sat, 30 Jul 2022 10:52:54 +0800
+In-Reply-To: <1d0783b87bda3e454a111862fcc5b5faffcb16b0.camel@xry111.site>
+References: <32a74a218c76611f897fd1df1ad0059068621133.camel@xry111.site>
+         <ec52fd49-4a30-15d9-3d32-fd7bc6d8b3f0@loongson.cn>
+         <0179679b736aea7258981dec2d83107cce74dfc1.camel@xry111.site>
+         <a139a8475fe295ac9f17064269cd0312dca6f96e.camel@xry111.site>
+         <6b5d2188f93ed72b67a4bbb7116113f833fe1ee5.camel@xry111.site>
+         <d7670b60-2782-4642-995b-7baa01779a66@loongson.cn>
+         <7cad6e78014168a8906e130e1cf3809077d2bda7.camel@xry111.site>
+         <1d0783b87bda3e454a111862fcc5b5faffcb16b0.camel@xry111.site>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: Stack-frame warnings in display_mode_vba_32.c
-Content-Language: en-US
-To:     paulmck@kernel.org
-Cc:     sfr@canb.auug.org.au, harry.wentland@amd.com, sunpeng.li@amd.com,
-        arnd@arndb.de, alexander.deucher@amd.com, linux@roeck-us.net,
-        linux-next@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
-References: <20220730022532.GA1234397@paulmck-ThinkPad-P17-Gen-1>
-From:   =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@igalia.com>
-In-Reply-To: <20220730022532.GA1234397@paulmck-ThinkPad-P17-Gen-1>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
+On Sat, 2022-07-30 at 10:24 +0800, Xi Ruoyao wrote:
+> On Sat, 2022-07-30 at 01:55 +0800, Xi Ruoyao wrote:
+> > On Fri, 2022-07-29 at 20:19 +0800, Youling Tang wrote:
+> >=20
+> > > On 07/29/2022 07:45 PM, Xi Ruoyao wrote:
+> > > > Hmm... The problem is the "addresses" of per-cpu symbols are
+> > > > faked: they
+> > > > are actually offsets from $r21.=C2=A0 So we can't just load such an
+> > > > offset
+> > > > with PCALA addressing.
+> > > >=20
+> > > > It looks like we'll need to introduce an attribute for GCC to
+> > > > make
+> > > > an
+> > > > variable "must be addressed via GOT", and add the attribute into
+> > > > PER_CPU_ATTRIBUTES.
+> >=20
+> > > Yes, we need a GCC attribute to specify the per-cpu variable.
+> >=20
+> > GCC patch adding "addr_global" attribute for LoongArch:
+> > https://gcc.gnu.org/pipermail/gcc-patches/2022-July/599064.html
+> >=20
+> > An experiment to use it:
+> > https://github.com/xry111/linux/commit/c1d5d70
+>=20
+> Correction: https://github.com/xry111/linux/commit/c1d5d708
+>=20
+> It seems 7-bit SHA is not enough for kernel repo.
 
-Às 23:25 de 29/07/22, Paul E. McKenney escreveu:
-> Hello!
-> 
-> I am seeing the following in allmodconfig builds of recent -next on x86:
-> 
-> drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c: In function ‘DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation’:
-> drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c:1659:1: error: the frame size of 2144 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]
->  1659 | }
->       | ^
-> drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c: In function ‘dml32_ModeSupportAndSystemConfigurationFull’:
-> drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c:3799:1: error: the frame size of 2480 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]
->  3799 | } // ModeSupportAndSystemConfigurationFull
->       | ^
+If addr_global is rejected or not implemented (for example, building the
+kernel with GCC 12), *I expect* the following hack to work (I've not
+tested it because I'm AFK now).  Using visibility in kernel seems
+strange, but I think it may make some sense because the modules are some
+sort of similar to an ELF shared object being dlopen()'ed, and our way
+to inject per-CPU symbols is analog to ELF interposition.
 
-I think they are fixed at amd-staging-drm-next:
+arch/loongarch/include/asm/percpu.h:=20
 
-git log --oneline amd/amd-staging-drm-next
-drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_32.c
-953daa61981b drm/amd/display: Reduce stack size in the mode support function
-361e705e712d drm/amd/display: reduce stack for
-dml32_CalculatePrefetchSchedule
-f2dbf5a4dd1e drm/amd/display: reduce stack for
-dml32_CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport
-a0a68cda2ef8 drm/amd/display: reduce stack for dml32_CalculateVMRowAndSwath
-ca6730ca0f01 drm/amd/display: reduce stack for
-dml32_CalculateSwathAndDETConfiguration
-593eef8c1a5e drm/amd/display: reduce stack size in dcn32 dml (v2)
+   #if !__has_attribute(__addr_global__) && defined(MODULE)
+   /* Magically remove "static" for per-CPU variables.  */
+   # define ARCH_NEEDS_WEAK_PER_CPU
+   /* Force GOT-relocation for per-CPU variables.  */
+   # define PER_CPU_ATTRIBUTES __attribute__((__visibility__("default")))
+   #endif
+  =20
+arch/loongarch/Makefile:
 
-https://gitlab.freedesktop.org/agd5f/linux/-/commits/amd-staging-drm-next/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_32.c
+   # Hack for per-CPU variables, see PER_CPU_ATTRIBUTES in
+   # include/asm/percpu.h
+   if (call gcc-does-not-support-addr-global)
+     KBUILD_CFLAGS_MODULE +=3D -fPIC -fvisibility=3Dhidden
+   endif
 
-> 
-> Bisection located the commit shown below.  Doing an allmodconfig build
-> on this commit reproduces the error, its parent builds fine.
-> 
-> Thoughts?
-> 
-> 							Thanx, Paul
-> 
-> ------------------------------------------------------------------------
-> 
-> commit 3876a8b5e241081b2a519f848a65c00d8e6cd124
-> Author: Guenter Roeck <linux@roeck-us.net>
-> Date:   Tue Jul 12 15:42:47 2022 -0700
-> 
->     drm/amd/display: Enable building new display engine with KCOV enabled
->     
->     The new display engine uses floating point math, which is not supported
->     by KCOV. Commit 9d1d02ff3678 ("drm/amd/display: Don't build DCN1 when kcov
->     is enabled") tried to work around the problem by disabling
->     CONFIG_DRM_AMD_DC_DCN if KCOV_INSTRUMENT_ALL and KCOV_ENABLE_COMPARISONS
->     are enabled. The result is that KCOV can not be enabled on systems which
->     require this display engine. A much simpler and less invasive solution is
->     to disable KCOV selectively when compiling the display enagine while
->     keeping it enabled for the rest of the kernel.
->     
->     Fixes: 9d1d02ff3678 ("drm/amd/display: Don't build DCN1 when kcov is enabled")
->     Cc: Arnd Bergmann <arnd@arndb.de>
->     Cc: Leo Li <sunpeng.li@amd.com>
->     Reviewed-by: Harry Wentland <harry.wentland@amd.com>
->     Signed-off-by: Guenter Roeck <linux@roeck-us.net>
->     Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-> 
-> diff --git a/drivers/gpu/drm/amd/display/Kconfig b/drivers/gpu/drm/amd/display/Kconfig
-> index b4029c0d5d8c5..96cbc87f7b6b8 100644
-> --- a/drivers/gpu/drm/amd/display/Kconfig
-> +++ b/drivers/gpu/drm/amd/display/Kconfig
-> @@ -6,7 +6,7 @@ config DRM_AMD_DC
->  	bool "AMD DC - Enable new display engine"
->  	default y
->  	select SND_HDA_COMPONENT if SND_HDA_CORE
-> -	select DRM_AMD_DC_DCN if (X86 || PPC64) && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
-> +	select DRM_AMD_DC_DCN if (X86 || PPC64)
->  	help
->  	  Choose this option if you want to use the new display engine
->  	  support for AMDGPU. This adds required support for Vega and
-> diff --git a/drivers/gpu/drm/amd/display/dc/Makefile b/drivers/gpu/drm/amd/display/dc/Makefile
-> index 273f8f2c8e020..b9effadfc4bb7 100644
-> --- a/drivers/gpu/drm/amd/display/dc/Makefile
-> +++ b/drivers/gpu/drm/amd/display/dc/Makefile
-> @@ -25,6 +25,9 @@
->  DC_LIBS = basics bios dml clk_mgr dce gpio irq link virtual
->  
->  ifdef CONFIG_DRM_AMD_DC_DCN
-> +
-> +KCOV_INSTRUMENT := n
-> +
->  DC_LIBS += dcn20
->  DC_LIBS += dsc
->  DC_LIBS += dcn10
+--=20
+Xi Ruoyao <xry111@xry111.site>
+School of Aerospace Science and Technology, Xidian University
