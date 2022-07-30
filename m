@@ -2,85 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 884ABC00144
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 02:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B30FC00144
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 02:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239710AbiG3CYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 22:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48282 "EHLO
+        id S239736AbiG3CZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 22:25:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231201AbiG3CYa (ORCPT
+        with ESMTP id S231201AbiG3CZe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 22:24:30 -0400
-Received: from xry111.site (xry111.site [IPv6:2001:470:683e::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1EA78DF6
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 19:24:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1659147864;
-        bh=lLrFDNLYFIvJDBeCh1p3b+wuDEcKqH51FlP5FJjN88I=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Y4XYAhliaOue8DGO7fjc9N/V+FwTUNieeLcLKX4RRHvrZC8mRG38jHaCB4EgZNlF9
-         1cIpru95sOo71Mdwe8vnDZRsytKVt4I3EOiqC8PRyI3JGpECYd3HHBn3x2KBJy5Rij
-         3Alp/uu/+E72BBAzX6PIk3k2tT/8koK9XEcK9FDE=
-Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id 1457E66B48;
-        Fri, 29 Jul 2022 22:24:21 -0400 (EDT)
-Message-ID: <1d0783b87bda3e454a111862fcc5b5faffcb16b0.camel@xry111.site>
-Subject: Re: [PATCH v4 0/4] LoongArch: Support new relocation types
-From:   Xi Ruoyao <xry111@xry111.site>
-To:     Youling Tang <tangyouling@loongson.cn>, loongarch@lists.linux.dev
-Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Jinyang He <hejinyang@loongson.cn>,
-        Lulu Cheng <chenglulu@loongson.cn>
-Date:   Sat, 30 Jul 2022 10:24:19 +0800
-In-Reply-To: <7cad6e78014168a8906e130e1cf3809077d2bda7.camel@xry111.site>
-References: <32a74a218c76611f897fd1df1ad0059068621133.camel@xry111.site>
-         <ec52fd49-4a30-15d9-3d32-fd7bc6d8b3f0@loongson.cn>
-         <0179679b736aea7258981dec2d83107cce74dfc1.camel@xry111.site>
-         <a139a8475fe295ac9f17064269cd0312dca6f96e.camel@xry111.site>
-         <6b5d2188f93ed72b67a4bbb7116113f833fe1ee5.camel@xry111.site>
-         <d7670b60-2782-4642-995b-7baa01779a66@loongson.cn>
-         <7cad6e78014168a8906e130e1cf3809077d2bda7.camel@xry111.site>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 
+        Fri, 29 Jul 2022 22:25:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F602186F7;
+        Fri, 29 Jul 2022 19:25:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA34961D96;
+        Sat, 30 Jul 2022 02:25:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1974CC433C1;
+        Sat, 30 Jul 2022 02:25:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659147933;
+        bh=EsersN85TttPaQcdVgjli1UBcGalAzLNzoI5+PJX7dM=;
+        h=Date:From:To:Cc:Subject:Reply-To:From;
+        b=B4+6uWnYV7ESdirnk7ZjgWGid8KnJI6m1JBH5aa0AERpBYWc5YSvyj63GgbXIJHu6
+         KFVTFuUJ2Asl0NdjuPGKjFUJQ0o4VsAqxulR3d+78OluLQYI+JnvIgSuHEMvaIvwon
+         wpl2pY3m2PjaUv/nU1Zl0G8RBD8nDYznCDESmclu/N+4mC4mtfIWGaKPEQvXniwk5A
+         uG98IJjh1LYDKXGV6rI2Ukcml2jJjxrajTJBucWOh6cWR7vUA5WnMfArM98ICarnmt
+         x76yt4QwANCleBOa2tCk4mKQ9MJ1QvT+ddlwncWT31DitJ3XS4A82P4SvxfdjD4amA
+         WkgB8qMacyB/w==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id A2F845C04B1; Fri, 29 Jul 2022 19:25:32 -0700 (PDT)
+Date:   Fri, 29 Jul 2022 19:25:32 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     linux@roeck-us.net, alexander.deucher@amd.com, arnd@arndb.de,
+        sunpeng.li@amd.com, harry.wentland@amd.com
+Cc:     sfr@canb.auug.org.au, linux-next@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: Stack-frame warnings in display_mode_vba_32.c
+Message-ID: <20220730022532.GA1234397@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-07-30 at 01:55 +0800, Xi Ruoyao wrote:
-> On Fri, 2022-07-29 at 20:19 +0800, Youling Tang wrote:
->=20
-> > On 07/29/2022 07:45 PM, Xi Ruoyao wrote:
-> > > Hmm... The problem is the "addresses" of per-cpu symbols are
-> > > faked: they
-> > > are actually offsets from $r21.=C2=A0 So we can't just load such an
-> > > offset
-> > > with PCALA addressing.
-> > >=20
-> > > It looks like we'll need to introduce an attribute for GCC to make
-> > > an
-> > > variable "must be addressed via GOT", and add the attribute into
-> > > PER_CPU_ATTRIBUTES.
->=20
-> > Yes, we need a GCC attribute to specify the per-cpu variable.
->=20
-> GCC patch adding "addr_global" attribute for LoongArch:
-> https://gcc.gnu.org/pipermail/gcc-patches/2022-July/599064.html
->=20
-> An experiment to use it:
-> https://github.com/xry111/linux/commit/c1d5d70
+Hello!
 
-Correction: https://github.com/xry111/linux/commit/c1d5d708
+I am seeing the following in allmodconfig builds of recent -next on x86:
 
-It seems 7-bit SHA is not enough for kernel repo.
+drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c: In function ‘DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation’:
+drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c:1659:1: error: the frame size of 2144 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]
+ 1659 | }
+      | ^
+drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c: In function ‘dml32_ModeSupportAndSystemConfigurationFull’:
+drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c:3799:1: error: the frame size of 2480 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]
+ 3799 | } // ModeSupportAndSystemConfigurationFull
+      | ^
 
---=20
-Xi Ruoyao <xry111@xry111.site>
-School of Aerospace Science and Technology, Xidian University
+Bisection located the commit shown below.  Doing an allmodconfig build
+on this commit reproduces the error, its parent builds fine.
+
+Thoughts?
+
+							Thanx, Paul
+
+------------------------------------------------------------------------
+
+commit 3876a8b5e241081b2a519f848a65c00d8e6cd124
+Author: Guenter Roeck <linux@roeck-us.net>
+Date:   Tue Jul 12 15:42:47 2022 -0700
+
+    drm/amd/display: Enable building new display engine with KCOV enabled
+    
+    The new display engine uses floating point math, which is not supported
+    by KCOV. Commit 9d1d02ff3678 ("drm/amd/display: Don't build DCN1 when kcov
+    is enabled") tried to work around the problem by disabling
+    CONFIG_DRM_AMD_DC_DCN if KCOV_INSTRUMENT_ALL and KCOV_ENABLE_COMPARISONS
+    are enabled. The result is that KCOV can not be enabled on systems which
+    require this display engine. A much simpler and less invasive solution is
+    to disable KCOV selectively when compiling the display enagine while
+    keeping it enabled for the rest of the kernel.
+    
+    Fixes: 9d1d02ff3678 ("drm/amd/display: Don't build DCN1 when kcov is enabled")
+    Cc: Arnd Bergmann <arnd@arndb.de>
+    Cc: Leo Li <sunpeng.li@amd.com>
+    Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+    Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+    Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+
+diff --git a/drivers/gpu/drm/amd/display/Kconfig b/drivers/gpu/drm/amd/display/Kconfig
+index b4029c0d5d8c5..96cbc87f7b6b8 100644
+--- a/drivers/gpu/drm/amd/display/Kconfig
++++ b/drivers/gpu/drm/amd/display/Kconfig
+@@ -6,7 +6,7 @@ config DRM_AMD_DC
+ 	bool "AMD DC - Enable new display engine"
+ 	default y
+ 	select SND_HDA_COMPONENT if SND_HDA_CORE
+-	select DRM_AMD_DC_DCN if (X86 || PPC64) && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
++	select DRM_AMD_DC_DCN if (X86 || PPC64)
+ 	help
+ 	  Choose this option if you want to use the new display engine
+ 	  support for AMDGPU. This adds required support for Vega and
+diff --git a/drivers/gpu/drm/amd/display/dc/Makefile b/drivers/gpu/drm/amd/display/dc/Makefile
+index 273f8f2c8e020..b9effadfc4bb7 100644
+--- a/drivers/gpu/drm/amd/display/dc/Makefile
++++ b/drivers/gpu/drm/amd/display/dc/Makefile
+@@ -25,6 +25,9 @@
+ DC_LIBS = basics bios dml clk_mgr dce gpio irq link virtual
+ 
+ ifdef CONFIG_DRM_AMD_DC_DCN
++
++KCOV_INSTRUMENT := n
++
+ DC_LIBS += dcn20
+ DC_LIBS += dsc
+ DC_LIBS += dcn10
