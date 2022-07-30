@@ -2,353 +2,290 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F4FC04A68
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 17:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04702C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 18:07:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235266AbiG3R5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 13:57:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34646 "EHLO
+        id S235393AbiG3SHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 14:07:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbiG3R5U (ORCPT
+        with ESMTP id S229742AbiG3SHT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 13:57:20 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BCB13F0E
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 10:57:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659203838; x=1690739838;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Z9LLupgPTjFUzoIrUhUi293eeoL1/wHUh/jwKwUhLlk=;
-  b=gdj0AvYPa2phkuRcljTdoPyBE9XLKtulUJvMUr2BAGaWV9Rj3RIH9qJc
-   ZDlKA+USzVBRZiasEmc9254OVyc3Glva3kHx+fXf5YDKKLfqyT/sOeFdq
-   nR/su179LL6ERpsU/1ZJwlTKcQVd/Hivuyr/uDG8Q43AcCQsuxRvzg4pi
-   pzjqJtL35rVHPUxHukLuAKyocD6H7JvpPLOazUmGunsYVePQmdZf3HXS2
-   uGvZ9hlLL2o4fpmNzRxT9cnC2ctl7vFynnmv0yJm6D0dYYc+o2NcFNr/J
-   XkZ/33FpIvHrkB9VOGnzHy+UO5FXdHF4b1gSecdwzhChH7w6tjxQ1gHl0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="350640929"
-X-IronPort-AV: E=Sophos;i="5.93,204,1654585200"; 
-   d="scan'208";a="350640929"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 10:57:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,204,1654585200"; 
-   d="scan'208";a="669590426"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 30 Jul 2022 10:57:17 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oHqiC-000D2n-1q;
-        Sat, 30 Jul 2022 17:57:16 +0000
-Date:   Sun, 31 Jul 2022 01:56:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jolsa-perf:bpf/tracing_multi_4 24/35] kernel/bpf/syscall.c:3157:22:
- error: implicit declaration of function 'bpf_trampoline_multi_detach'
-Message-ID: <202207310100.xQT6NlLP-lkp@intel.com>
+        Sat, 30 Jul 2022 14:07:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C486815729;
+        Sat, 30 Jul 2022 11:07:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D773B80C87;
+        Sat, 30 Jul 2022 18:07:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E468CC433D6;
+        Sat, 30 Jul 2022 18:07:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659204436;
+        bh=NHayoJQJHFGVFFpyKSan0WTA5LlQNXHZWl5S2fn3mzc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=XX0+qvt+ZWEIzfkuAmWhIh8NEWBvkk1HnUBnSVjnZvnHLv538WOClkIw1f9kKbdF0
+         iUdtXYTuUU/Rmbr208/p5pFMRvMn+/mq7WYM5TyAiCapDyJFucu2B/EiCb2TcK6V5p
+         Ic4sglKzCcuOSistIbWyMHZIPAtJjScZUbmnm2zHRIAJQRcS7Q0sVDLK54WMm5UHIQ
+         uLJ64qM8X/FxG/+T/4LRUieqtCln9MxKOilXPVdzdLCKA6OBKirFpzqUouuwK/6N9W
+         7dA9cXyfjwb0LnIlhMJLvxIGrOPuGBpi7x1w+FyDG2HOTl4EInhGY0gqUryCaR6Znt
+         GB2nOWEI9ssEA==
+Message-ID: <0197dd47-ea15-4d8b-5fc7-e466d8a501a7@kernel.org>
+Date:   Sat, 30 Jul 2022 20:07:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH V9 01/16] rv: Add Runtime Verification (RV) interface
+Content-Language: en-US
+To:     Tao Zhou <tao.zhou@linux.dev>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+References: <cover.1659052063.git.bristot@kernel.org>
+ <a4bfe038f50cb047bfb343ad0e12b0e646ab308b.1659052063.git.bristot@kernel.org>
+ <YuU7TGxm5pzmBFTx@geo.homenetwork>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <YuU7TGxm5pzmBFTx@geo.homenetwork>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tracing_multi_4
-head:   a63fc296e166a76b3f7250a966df4651e3a846f1
-commit: 2792d334c3d8d0f27276319d17dcb166c41794b7 [24/35] bpf: Add support for tracing multi link
-config: m68k-amiga_defconfig (https://download.01.org/0day-ci/archive/20220731/202207310100.xQT6NlLP-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=2792d334c3d8d0f27276319d17dcb166c41794b7
-        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-        git fetch --no-tags jolsa-perf bpf/tracing_multi_4
-        git checkout 2792d334c3d8d0f27276319d17dcb166c41794b7
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
+On 7/30/22 16:08, Tao Zhou wrote:
+> On Fri, Jul 29, 2022 at 11:38:40AM +0200, Daniel Bristot de Oliveira wrote:
+> 
+>> +static int __rv_disable_monitor(struct rv_monitor_def *mdef, bool sync)
+>> +{
+>> +	lockdep_assert_held(&rv_interface_lock);
+>> +
+>> +	if (mdef->monitor->enabled) {
+>> +		mdef->monitor->enabled = 0;
+>> +		mdef->monitor->disable();
+> 
+> If call disable(), the @enabled is set 0 there.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Which is correct.
 
-All errors (new ones prefixed by >>):
+> 
+>> +
+>> +		/*
+>> +		 * Wait for the execution of all events to finish.
+>> +		 * Otherwise, the data used by the monitor could
+>> +		 * be inconsistent. i.e., if the monitor is re-enabled.
+>> +		 */
+>> +		if (sync)
+>> +			tracepoint_synchronize_unregister();
+>> +		return 1;
+> 
+> Return 0 indicate the actually disabling and successed.
 
-   kernel/bpf/syscall.c: In function 'bpf_prog_load':
-   kernel/bpf/syscall.c:2523:22: error: implicit declaration of function 'is_tracing_multi' [-Werror=implicit-function-declaration]
-    2523 |         multi_func = is_tracing_multi(attr->expected_attach_type);
-         |                      ^~~~~~~~~~~~~~~~
-   In file included from include/asm-generic/bug.h:7,
-                    from arch/m68k/include/asm/bug.h:32,
-                    from include/linux/ktime.h:26,
-                    from include/linux/timer.h:6,
-                    from include/linux/workqueue.h:9,
-                    from include/linux/bpf.h:10,
-                    from kernel/bpf/syscall.c:4:
-   kernel/bpf/syscall.c: In function 'bpf_tracing_multi_link_release':
->> kernel/bpf/syscall.c:3157:22: error: implicit declaration of function 'bpf_trampoline_multi_detach' [-Werror=implicit-function-declaration]
-    3157 |         WARN_ON_ONCE(bpf_trampoline_multi_detach(&tr_link->tp, tr_link->id));
-         |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/once_lite.h:15:41: note: in definition of macro 'DO_ONCE_LITE_IF'
-      15 |                 bool __ret_do_once = !!(condition);                     \
-         |                                         ^~~~~~~~~
-   kernel/bpf/syscall.c:3157:9: note: in expansion of macro 'WARN_ON_ONCE'
-    3157 |         WARN_ON_ONCE(bpf_trampoline_multi_detach(&tr_link->tp, tr_link->id));
-         |         ^~~~~~~~~~~~
-   kernel/bpf/syscall.c: In function 'bpf_tracing_multi_link_dealloc':
->> kernel/bpf/syscall.c:3165:9: error: implicit declaration of function 'bpf_tramp_id_put'; did you mean 'bpf_trampoline_put'? [-Werror=implicit-function-declaration]
-    3165 |         bpf_tramp_id_put(tr_link->id);
-         |         ^~~~~~~~~~~~~~~~
-         |         bpf_trampoline_put
-   kernel/bpf/syscall.c: In function 'bpf_tracing_multi_attach':
->> kernel/bpf/syscall.c:3328:14: error: implicit declaration of function 'bpf_tramp_id_alloc'; did you mean 'bpf_tramp_id_resolve'? [-Werror=implicit-function-declaration]
-    3328 |         id = bpf_tramp_id_alloc(cnt);
-         |              ^~~~~~~~~~~~~~~~~~
-         |              bpf_tramp_id_resolve
-   kernel/bpf/syscall.c:3328:12: warning: assignment to 'struct bpf_tramp_id *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-    3328 |         id = bpf_tramp_id_alloc(cnt);
-         |            ^
->> kernel/bpf/syscall.c:3369:15: error: implicit declaration of function 'bpf_trampoline_multi_attach'; did you mean 'bpf_tracing_multi_attach'? [-Werror=implicit-function-declaration]
-    3369 |         err = bpf_trampoline_multi_attach(&link->tp, id);
-         |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |               bpf_tracing_multi_attach
-   cc1: some warnings being treated as errors
+No, 1 indicates that *disable was called, 0 did not call disable function.
 
+>> +	}
+>> +	return 0;
+> 
+> If disable a diabled monitor, return error(negative).
 
-vim +/bpf_trampoline_multi_detach +3157 kernel/bpf/syscall.c
+This is a "static __function", which alerts for internal aspects.
 
-  3151	
-  3152	static void bpf_tracing_multi_link_release(struct bpf_link *link)
-  3153	{
-  3154		struct bpf_tracing_multi_link *tr_link =
-  3155			container_of(link, struct bpf_tracing_multi_link, link);
-  3156	
-> 3157		WARN_ON_ONCE(bpf_trampoline_multi_detach(&tr_link->tp, tr_link->id));
-  3158	}
-  3159	
-  3160	static void bpf_tracing_multi_link_dealloc(struct bpf_link *link)
-  3161	{
-  3162		struct bpf_tracing_multi_link *tr_link =
-  3163			container_of(link, struct bpf_tracing_multi_link, link);
-  3164	
-> 3165		bpf_tramp_id_put(tr_link->id);
-  3166		kfree(tr_link);
-  3167	}
-  3168	
-  3169	static void bpf_tracing_multi_link_show_fdinfo(const struct bpf_link *link,
-  3170						       struct seq_file *seq)
-  3171	{
-  3172		struct bpf_tracing_multi_link *tr_link =
-  3173			container_of(link, struct bpf_tracing_multi_link, link);
-  3174	
-  3175		seq_printf(seq, "attach_type:\t%d\n", tr_link->attach_type);
-  3176	}
-  3177	
-  3178	static int bpf_tracing_multi_link_fill_link_info(const struct bpf_link *link,
-  3179							 struct bpf_link_info *info)
-  3180	{
-  3181		struct bpf_tracing_multi_link *tr_link =
-  3182			container_of(link, struct bpf_tracing_multi_link, link);
-  3183	
-  3184		info->tracing.attach_type = tr_link->attach_type;
-  3185		return 0;
-  3186	}
-  3187	
-  3188	static const struct bpf_link_ops bpf_tracing_multi_link_lops = {
-  3189		.release = bpf_tracing_multi_link_release,
-  3190		.dealloc = bpf_tracing_multi_link_dealloc,
-  3191		.show_fdinfo = bpf_tracing_multi_link_show_fdinfo,
-  3192		.fill_link_info = bpf_tracing_multi_link_fill_link_info,
-  3193	};
-  3194	
-  3195	static int check_multi_prog_type(struct bpf_prog *prog)
-  3196	{
-  3197		if (prog->expected_attach_type != BPF_TRACE_FENTRY_MULTI &&
-  3198		    prog->expected_attach_type != BPF_TRACE_FEXIT_MULTI)
-  3199			return -EINVAL;
-  3200		return 0;
-  3201	}
-  3202	
-  3203	static int btf_ids_cmp(const void *a, const void *b)
-  3204	{
-  3205		const u32 *x = a;
-  3206		const u32 *y = b;
-  3207	
-  3208		if (*x == *y)
-  3209			return 0;
-  3210		return *x < *y ? -1 : 1;
-  3211	}
-  3212	
-  3213	struct resolve_id {
-  3214		const char *name;
-  3215		void *addr;
-  3216		u32 id;
-  3217	};
-  3218	
-  3219	static int rid_name_cmp(const void *a, const void *b)
-  3220	{
-  3221		const struct resolve_id *x = a;
-  3222		const struct resolve_id *y = b;
-  3223	
-  3224		return strcmp(x->name, y->name);
-  3225	}
-  3226	
-  3227	static int rid_id_cmp(const void *a, const void *b)
-  3228	{
-  3229		const struct resolve_id *x = a;
-  3230		const struct resolve_id *y = b;
-  3231	
-  3232		if (x->id == y->id)
-  3233			return 0;
-  3234		return x->id < y->id ? -1 : 1;
-  3235	}
-  3236	
-  3237	struct kallsyms_data {
-  3238		struct resolve_id *rid;
-  3239		u32 cnt;
-  3240		u32 found;
-  3241	};
-  3242	
-  3243	static int kallsyms_callback(void *data, const char *name,
-  3244				     struct module *mod, unsigned long addr)
-  3245	{
-  3246		struct kallsyms_data *args = data;
-  3247		struct resolve_id *rid, id = {
-  3248			.name = name,
-  3249		};
-  3250	
-  3251		rid = bsearch(&id, args->rid, args->cnt, sizeof(*rid), rid_name_cmp);
-  3252		if (rid && !rid->addr) {
-  3253			rid->addr = (void *) addr;
-  3254			args->found++;
-  3255		}
-  3256		return args->found == args->cnt ? 1 : 0;
-  3257	}
-  3258	
-  3259	static int bpf_tramp_id_resolve(struct bpf_tramp_id *id, struct bpf_prog *prog)
-  3260	{
-  3261		struct kallsyms_data args;
-  3262		const struct btf_type *t;
-  3263		struct resolve_id *rid;
-  3264		const char *name;
-  3265		struct btf *btf;
-  3266		int err = 0;
-  3267		u32 i;
-  3268	
-  3269		btf = prog->aux->attach_btf;
-  3270		if (!btf)
-  3271			return -EINVAL;
-  3272	
-  3273		rid = kzalloc(id->cnt * sizeof(*rid), GFP_KERNEL);
-  3274		if (!rid)
-  3275			return -ENOMEM;
-  3276	
-  3277		err = -EINVAL;
-  3278		for (i = 0; i < id->cnt; i++) {
-  3279			t = btf_type_by_id(btf, id->id[i]);
-  3280			if (!t)
-  3281				goto out_free;
-  3282	
-  3283			name = btf_name_by_offset(btf, t->name_off);
-  3284			if (!name)
-  3285				goto out_free;
-  3286	
-  3287			rid[i].name = name;
-  3288			rid[i].id = id->id[i];
-  3289		}
-  3290	
-  3291		sort(rid, id->cnt, sizeof(*rid), rid_name_cmp, NULL);
-  3292	
-  3293		args.rid = rid;
-  3294		args.cnt = id->cnt;
-  3295		args.found = 0;
-  3296		kallsyms_on_each_symbol(kallsyms_callback, &args);
-  3297	
-  3298		sort(rid, id->cnt, sizeof(*rid), rid_id_cmp, NULL);
-  3299	
-  3300		for (i = 0; i < id->cnt; i++) {
-  3301			if (!rid[i].addr) {
-  3302				err = -EINVAL;
-  3303				goto out_free;
-  3304			}
-  3305			id->addr[i] = rid[i].addr;
-  3306		}
-  3307		err = 0;
-  3308	out_free:
-  3309		kfree(rid);
-  3310		return err;
-  3311	}
-  3312	
-  3313	static int bpf_tracing_multi_attach(struct bpf_prog *prog,
-  3314					    const union bpf_attr *attr)
-  3315	{
-  3316		void __user *uids = u64_to_user_ptr(attr->link_create.tracing_multi.btf_ids);
-  3317		u32 cnt_size, cnt = attr->link_create.tracing_multi.btf_ids_cnt;
-  3318		struct bpf_tracing_multi_link *link = NULL;
-  3319		struct bpf_link_primer link_primer;
-  3320		struct bpf_tramp_id *id = NULL;
-  3321		int err = -EINVAL;
-  3322	
-  3323		if (check_multi_prog_type(prog))
-  3324			return -EINVAL;
-  3325		if (!cnt || !uids)
-  3326			return -EINVAL;
-  3327	
-> 3328		id = bpf_tramp_id_alloc(cnt);
-  3329		if (!id)
-  3330			return -ENOMEM;
-  3331	
-  3332		err = -EFAULT;
-  3333		cnt_size = cnt * sizeof(id->id[0]);
-  3334		if (copy_from_user(id->id, uids, cnt_size))
-  3335			goto out_free_id;
-  3336	
-  3337		id->cnt = cnt;
-  3338		id->obj_id = btf_obj_id(prog->aux->attach_btf);
-  3339	
-  3340		/* Sort user provided BTF ids, so we can use memcmp
-  3341		 * and bsearch on top of it later.
-  3342		 */
-  3343		sort(id->id, cnt, sizeof(u32), btf_ids_cmp, NULL);
-  3344	
-  3345		err = bpf_tramp_id_resolve(id, prog);
-  3346		if (err)
-  3347			goto out_free_id;
-  3348	
-  3349		link = kzalloc(sizeof(*link), GFP_KERNEL);
-  3350		if (!link) {
-  3351			err = -ENOMEM;
-  3352			goto out_free_id;
-  3353		}
-  3354	
-  3355		bpf_link_init(&link->link, BPF_LINK_TYPE_TRACING_MULTI,
-  3356			      &bpf_tracing_multi_link_lops, prog);
-  3357		link->attach_type = prog->expected_attach_type;
-  3358	
-  3359		err = bpf_link_prime(&link->link, &link_primer);
-  3360		if (err) {
-  3361			kfree(link);
-  3362			goto out_free_id;
-  3363		}
-  3364	
-  3365		link->id = id;
-  3366		link->tp.cookie = 0;
-  3367		link->tp.prog = prog;
-  3368	
-  3369		err = bpf_trampoline_multi_attach(&link->tp, id);
-  3370		if (err) {
-  3371			bpf_link_cleanup(&link_primer);
-  3372			goto out_free_id;
-  3373		}
-  3374		return bpf_link_settle(&link_primer);
-  3375	out_free_id:
-  3376		kfree(id);
-  3377		return err;
-  3378	}
-  3379	
+It has a specific purpose of counting if the disable function
+was actually called.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Disabling a disabled monitor is not a problem.
+
+So all your argumentation based on this is not correct, and it is breaking
+other parts of the code... see where it is called.
+
+>> +}
+>> +
+>> +/**
+>> + * rv_disable_monitor - disable a given runtime monitor
+>> + *
+>> + * Returns 0 on success.
+>> + */
+>> +int rv_disable_monitor(struct rv_monitor_def *mdef)
+>> +{
+>> +	__rv_disable_monitor(mdef, true);
+>> +	return 0;
+> 
+> Always return 0 here, whatever the return value of __rv_disable_monitor().
+> And this enforce me to look more here, see below.
+
+This is not a problem. Actually, disable functions often return void.
+I am keeping an int just in case.
+
+>> +}
+> 
+>> +static ssize_t enabled_monitors_write(struct file *filp, const char __user *user_buf,
+>> +				      size_t count, loff_t *ppos)
+>> +{
+>> +	char buff[MAX_RV_MONITOR_NAME_SIZE + 2];
+>> +	struct rv_monitor_def *mdef;
+>> +	int retval = -EINVAL;
+>> +	bool enable = true;
+>> +	char *ptr = buff;
+>> +	int len;
+>> +
+>> +	if (count < 1 || count > MAX_RV_MONITOR_NAME_SIZE + 1)
+>> +		return -EINVAL;
+>> +
+>> +	memset(buff, 0, sizeof(buff));
+>> +
+>> +	retval = simple_write_to_buffer(buff, sizeof(buff) - 1, ppos, user_buf, count);
+>> +	if (retval < 0)
+>> +		return -EFAULT;
+>> +
+>> +	ptr = strim(buff);
+>> +
+>> +	if (ptr[0] == '!') {
+>> +		enable = false;
+>> +		ptr++;
+>> +	}
+>> +
+>> +	len = strlen(ptr);
+>> +	if (!len)
+>> +		return count;
+>> +
+>> +	mutex_lock(&rv_interface_lock);
+>> +
+>> +	retval = -EINVAL;
+>> +
+>> +	list_for_each_entry(mdef, &rv_monitors_list, list) {
+>> +		if (strcmp(ptr, mdef->monitor->name) != 0)
+>> +			continue;
+>> +
+>> +		/*
+>> +		 * Monitor found!
+>> +		 */
+>> +		if (enable)
+>> +			retval = rv_enable_monitor(mdef);
+>> +		else
+>> +			retval = rv_disable_monitor(mdef);
+> 
+> About the retval here. If count == 1 and retval == 0, then
+> `retval = count` --> retval == 1. This retval will be returned to 
+> user space and dedicate that how many character read and success
+> If retval is 1(it is not possiable, the return value of
+> da_monitor_init_*() called in enable callback in rv_enable_monitor()
+> will be 0, so that return value check is not needed, or any other functions
+> called in enable callback need to check the return value then,...
+
+All things above are misled by the first interpretation but,,,
+
+so I checked
+> the WARN_ONCE() called in macro rv_attach_trace_probe() which is called in
+> enable callback,if the WARN_ONCE is called, it means that something go wrong.
+
+The way that rv_attach_trace_probe() is attaching a probe is not different from the way
+other *in kernel* tracing does.
+
+> We need to check the return value of WARN_ONCE() in enable callback), the
+> return value will be returned to user space but actually the error(warn) happened.
+> User space do not know. They treat the two kind of return value 1 the same
+> but one is the write count value successed and another is the write error
+> value returned.
+> In enable callback, check rv_attach_trace_probe():
+> 
+> static int enable_wip(void)
+> {
+>       int retval = 1;
+>  	  
+>       /* 
+>        * Delete the check of return value of da_monitor_init_wip()
+>        * because it is always 0
+>        */
+>       da_monitor_init_wip();
+> 
+>       retval &= rv_attach_trace_probe("wip", preempt_enable, handle_preempt_enable);
+>       retval &= rv_attach_trace_probe("wip", sched_waking, handle_sched_waking);
+>       retval &= rv_attach_trace_probe("wip", preempt_disable, handle_preempt_disable);
+
+No, that is not the most robust way to do this. A better way is to do it like in the
+early versions of this patch set, where it was searching for the existence of the tracepoint
+from the module perspective, taking notes of the ones that were enabled, and then actually disabling
+all events that were enabled before the failure.
+
+> 
+>       /* 
+>        * If the retval is not 0, it mean at least one rv_attach_trace_probe()
+>        * is WARN_ONCE(). I am not sure that if the first WARN_ONCE() happened,
+>        * then return directly or at here after all rv_attach_trace_probe() is
+>        * called and check the retval is 0 or 1.
+>        */
+>       if (retval)
+>              return -1;
+
+and here the system state is even worse than WARNING and doing nothing: the monitor is
+disabled, but the tracepoints that were registered are still hooked to the system...
+and you cannot unhook them because the monitor is not enabled.
+
+You still can unhook in current implementation.
+
+So, for the in-kernel version, the current method is equivalent to the
+the way we do on other tracers, and the monitors only compile if the
+tracepoints exist, the callback has the correct signature and WARNs
+in case of problems in the tracepoint.
+
+There will be a more robust way to do this, and it will be included in the
+"add module support" patch set. But is its better to add it in a patch
+set because we can analyze change by change instead of adding on top
+of this initial implementation - which is quite large already.
+
+>       return retval;
+> }
+> 
+>> +
+>> +		if (!retval)
+>> +			retval = count;
+>> +
+>> +		break;
+>> +	}
+> 
+>> +/**
+>> + * rv_register_monitor - register a rv monitor.
+>> + * @monitor:    The rv_monitor to be registered.
+>> + *
+>> + * Returns 0 if successful, error otherwise.
+>> + */
+>> +int rv_register_monitor(struct rv_monitor *monitor)
+>> +{
+>> +	struct rv_monitor_def *r;
+>> +	int retval = 0;
+>> +
+>> +	if (strlen(monitor->name) >= MAX_RV_MONITOR_NAME_SIZE) {
+> 
+> s/>=/>/ no? The same check happened in patch 2. Thanks,
+
+Yep, this can be improved. But it is not a BUG, as it is allowing monitor
+ with (MAX_RV_MONITOR_NAME_SIZE - 1) size, which is safe.
+
+Given that neither 'wip' or 'wwnr' are >= MAX_RV_MONITOR_NAME_SIZE, this
+problem is not happening - and no other monitor can hit it because modules
+are not yet supported.
+
+I took note and will patch it.
+
+>> +		pr_info("Monitor %s has a name longer than %d\n", monitor->name,
+>> +			MAX_RV_MONITOR_NAME_SIZE);
+
+Thanks!
+-- Daniel
