@@ -2,116 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B3E4C04A68
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 08:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D011C19F2B
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 08:26:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230489AbiG3IVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 04:21:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45704 "EHLO
+        id S230362AbiG3I0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 04:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229619AbiG3IVr (ORCPT
+        with ESMTP id S229581AbiG3I0H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 04:21:47 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11BB3CFA;
-        Sat, 30 Jul 2022 01:21:44 -0700 (PDT)
-Date:   Sat, 30 Jul 2022 08:21:40 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1659169302;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Lpq6EhPNWYSKFs15nT7sEiVIoMgk+C378PhAkSDTkSk=;
-        b=ELOPA818HCEmMAgRSIdeiVIxBeC4o9ONRFuIqWlFLTK/ke4/z3U93iMLRx7zZpqtXHAfYW
-        GhpTf/mkbnFVUm9UFEFrdbPeB801OS0+jftLwfVrmtMjc6MM0PPj/+3k1R2Y1vXx2lyxsk
-        zF+3ncvt/kRzZAqzOgmoEzMt42gS6zQV5ZRpvN9qjuGCM5b+JqZLAEdjkKBxOidHyHmgJ9
-        c0FQ3rKLtHqfta/MVOwOehWrrrqaCF6CTuHeWOWVKN0qEAWD1eBxatwG+NVSuQEXeA4f2p
-        0cgr059MAdEyakzcMMLA5AJ22Q0quMaZ6CwqUdBLHONPfy9ibqeY8Mpf7hakIQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1659169302;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Lpq6EhPNWYSKFs15nT7sEiVIoMgk+C378PhAkSDTkSk=;
-        b=07e4c/L8v+rlxZCNj+R52HymCj85p/xuufOq/DoMvhIYZQiX30RVkMs7OE+eaIoZ+t6Ifd
-        kWWl9R/HpRvDyNDA==
-From:   "tip-bot2 for Mathieu Desnoyers" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] rseq: Kill process when unknown flags are
- encountered in ABI structures
-Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220622194617.1155957-2-mathieu.desnoyers@efficios.com>
-References: <20220622194617.1155957-2-mathieu.desnoyers@efficios.com>
+        Sat, 30 Jul 2022 04:26:07 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 170B413D3E;
+        Sat, 30 Jul 2022 01:26:05 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1659169507; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=ikFsdtZS6QLQV7wSSuu0bVueSxmcxFv4Ze50nTcsSkhess3qh89zI+TmWNjMcLW86AI2LwysHmW7RQq6MJNwpOHiP1ONXDHPzsenibLgQxwwPN673VoyNXPAe6mbpKhIBiDOdyg4sfOj1lqKyfGSerWQtK9vdHGgY1ZqgekU5pQ=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1659169507; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=36su4m2QjNQHBx4LFEg5D6awN/f2ZqxlK1cfInLaW0k=; 
+        b=LTCvyeBRkbu3CLzAff9ttLUsmCMQsvoDNcufIv9Rtn4To6xBcbPtDszYiF3USHSJ5T8xxiTTHISRXzHqYJT1mnUeIfGvcAET4Q6hRTNE5hShs50DuuNPvqrwqGccxxF6U98o83Wv+RAohOTxETHb8d2h4GNZKVeHSVb8klYXS0k=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659169507;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=36su4m2QjNQHBx4LFEg5D6awN/f2ZqxlK1cfInLaW0k=;
+        b=Eg/bfs6AKyEGW9uenYU81ZDZ2AxVkJJst7BH4RJuWUWJT6zhKVwpFEIUCqGJjpmn
+        VHX4b9gpExL9P6bajvIuCskR1KkHu1T5GrTc3ECJoNbdTJSg5EKkS4GkabBOWOpEgNF
+        TuYbWsVoKDV84qcNu3xg9e5Fg+P1pIVpGrXjSKIo=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 165916950613718.65544541820657; Sat, 30 Jul 2022 01:25:06 -0700 (PDT)
+Message-ID: <a2dd1ce2-a23e-8894-5ef4-b73ef0dad89d@arinc9.com>
+Date:   Sat, 30 Jul 2022 11:24:59 +0300
 MIME-Version: 1.0
-Message-ID: <165916930066.15455.7617990662704399879.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH net-next] dt-bindings: net: dsa: mediatek,mt7530:
+ completely rework binding
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220726122406.31043-1-arinc.unal@arinc9.com>
+ <a8c778db-f52c-45cb-c671-556b24f3cb46@linaro.org>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <a8c778db-f52c-45cb-c671-556b24f3cb46@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/core branch of tip:
+Hi Krzysztof,
 
-Commit-ID:     8da3d9b8590bc178752d4b72938745e9a6c4c416
-Gitweb:        https://git.kernel.org/tip/8da3d9b8590bc178752d4b72938745e9a6c4c416
-Author:        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-AuthorDate:    Wed, 22 Jun 2022 15:46:17 -04:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Sat, 30 Jul 2022 10:14:18 +02:00
+On 27.07.2022 13:29, Krzysztof Kozlowski wrote:
+> On 26/07/2022 14:24, Arınç ÜNAL wrote:
+>> Completely rework the binding for MediaTek MT7530 and MT7531 switches.
+> 
+> Rules are the same for schema as for driver - one patch, one thing. You
+> mix here trivial style changes (removal of quotes) with functional stuff.
+> 
+> Patch is unreviewable, so it must be split.
 
-rseq: Kill process when unknown flags are encountered in ABI structures
+Thank you. I'm going to split it this way:
+- Trivial changes; fix title and property descriptions, remove quotes, 
+add me as maintainer, etc.
+- Update binding description
+- Update json-schema for compatible devices
+- Update examples
 
-rseq_abi()->flags and rseq_abi()->rseq_cs->flags 29 upper bits are
-currently unused.
+Let me know if you have any objections.
 
-The current behavior when those bits are set is to ignore them. This is
-not an ideal behavior, because when future features will start using
-those flags, if user-space fails to correctly validate that the kernel
-indeed supports those flags (e.g. with a new sys_rseq flags bit) before
-using them, it may incorrectly assume that the kernel will handle those
-flags way when in fact those will be silently ignored on older kernels.
-
-Validating that unused flags bits are cleared will allow a smoother
-transition when those flags will start to be used by allowing
-applications to fail early, and obviously, when they attempt to use the
-new flags on an older kernel that does not support them.
-
-Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220622194617.1155957-2-mathieu.desnoyers@efficios.com
----
- kernel/rseq.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/rseq.c b/kernel/rseq.c
-index 81d7dc8..bda8175 100644
---- a/kernel/rseq.c
-+++ b/kernel/rseq.c
-@@ -176,7 +176,7 @@ static int rseq_need_restart(struct task_struct *t, u32 cs_flags)
- 	u32 flags, event_mask;
- 	int ret;
- 
--	if (WARN_ON_ONCE(cs_flags & RSEQ_CS_NO_RESTART_FLAGS))
-+	if (WARN_ON_ONCE(cs_flags & RSEQ_CS_NO_RESTART_FLAGS) || cs_flags)
- 		return -EINVAL;
- 
- 	/* Get thread flags. */
-@@ -184,7 +184,7 @@ static int rseq_need_restart(struct task_struct *t, u32 cs_flags)
- 	if (ret)
- 		return ret;
- 
--	if (WARN_ON_ONCE(flags & RSEQ_CS_NO_RESTART_FLAGS))
-+	if (WARN_ON_ONCE(flags & RSEQ_CS_NO_RESTART_FLAGS) || flags)
- 		return -EINVAL;
- 
- 	/*
+Arınç
