@@ -2,128 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80362C19F28
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 23:02:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31D51C19F28
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 23:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236218AbiG3XBz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 19:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
+        id S235459AbiG3XQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 19:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236128AbiG3XBy (ORCPT
+        with ESMTP id S230432AbiG3XQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 19:01:54 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 046EB14038
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 16:01:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659222111; x=1690758111;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=T8Gwb5eXQuxPfUXYvnUcxftAQQomSRR24x3wrRDUKSU=;
-  b=hw4yZnk8VEZFO39mIH7y8qQReJGFhxrNNWW2MFqGILiscpzTj2TkU+vF
-   IFkUPjNkmD1SXQHnY1FiCMvZlW7VaghLCy3owYaJ0HyFjhRAZ13yKkthY
-   +tuOYnvOO5pIw57R1Ie1Xlz5hoiiSAlkoU8UT1e2G34F/ggeC753Yn/P2
-   Ijtt0b3VzscVg+WRI7kpo+EqFLEAmnZB3v2d4TkZNObFSrv0yPekRSdYc
-   YDSq/z+QBG0c6q77wxLpsIfzoAep9diXlZj2PGWScvDisnX/xpv4zOyKu
-   8j5FfIbDhU4Yc1VbFWeTzlnSXr2Dc5NCuk9UEmrEznBnTcuF5HRN06KvR
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="269333511"
-X-IronPort-AV: E=Sophos;i="5.93,205,1654585200"; 
-   d="scan'208";a="269333511"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 16:01:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,205,1654585200"; 
-   d="scan'208";a="601641594"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 30 Jul 2022 16:01:50 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oHvSv-000DPr-2J;
-        Sat, 30 Jul 2022 23:01:49 +0000
-Date:   Sun, 31 Jul 2022 07:01:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] dma-buf: Add ioctl to query mmap info
-Message-ID: <202207310607.RX5r6WRK-lkp@intel.com>
-References: <20220729170744.1301044-2-robdclark@gmail.com>
+        Sat, 30 Jul 2022 19:16:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA6365F5
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 16:16:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7E3260FCB
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 23:16:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C887C433C1;
+        Sat, 30 Jul 2022 23:16:05 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="SUdHm9Vd"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1659222963;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AzCdRPj05yjL8h85+6gig1pAniprat2lIv4CqlJ0538=;
+        b=SUdHm9VdcBySkgCGqKK/SvTxdxaNdVZYwa4T1eNvhkLbUlm7F3tOQ3EUNsh2phAGbQZx2K
+        VBQPiV/0m3zyeXpM22Lvzg5igCOEd8/snd4QY65ABaVLJjBe5TyR+HHiFg1q+GpSAmuq2k
+        zigzuYJno3uB5FW3QMZon4YKaeGjwMs=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f4e515bd (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Sat, 30 Jul 2022 23:16:03 +0000 (UTC)
+Date:   Sun, 31 Jul 2022 01:15:59 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Arnd Bergmann <arnd@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        "Justin M. Forbes" <jforbes@fedoraproject.org>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        kbuild-all@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Jason A. Donenfeld" <zx2c4@kernel.org>
+Subject: Re: [linux-stable-rc:linux-5.15.y 6874/8723]
+ arch/arm/lib/xor-neon.c:30:2: warning: This code requires at least version
+ 4.6 of GCC
+Message-ID: <YuW7r1pyBAeNKlPG@zx2c4.com>
+References: <202207250449.BYMZbIA2-lkp@intel.com>
+ <Yt3KObFVIUI2mFGt@zx2c4.com>
+ <CAMj1kXHTf4f+onREnWhYk-vYXkPaQtPpZz+SqFCP+Ey7+bOXkQ@mail.gmail.com>
+ <Yt5Y/cIKIDlyFWMQ@kroah.com>
+ <CAMj1kXGPjFAY0y-SPZv64CRhpo9s1+__z4bya86aMcTs9=f8pw@mail.gmail.com>
+ <CAK8P3a0g4NT1oDW5gq7YO540Eo0UDoqbK1tmtb8QHteiDNXj5Q@mail.gmail.com>
+ <CAK8P3a2ZfEr+4OWWteZHpDYGw8U0dQgMfF_OFwQDEtY=GaTfQA@mail.gmail.com>
+ <YuVBOOrdoBDUhRxJ@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220729170744.1301044-2-robdclark@gmail.com>
+In-Reply-To: <YuVBOOrdoBDUhRxJ@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob,
+On Sat, Jul 30, 2022 at 04:33:28PM +0200, Greg Kroah-Hartman wrote:
+> On Mon, Jul 25, 2022 at 04:35:38PM +0200, Arnd Bergmann wrote:
+> > On Mon, Jul 25, 2022 at 2:55 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> > 
+> > > The other easy workaround would be to just turn off the xor-neon code
+> > > when building with clang, e.g. using this Makefile hack:
+> > >
+> > > diff --git a/arch/arm/lib/Makefile b/arch/arm/lib/Makefile
+> > > index 6d2ba454f25b..8e4fe6421dd2 100644
+> > > --- a/arch/arm/lib/Makefile
+> > > +++ b/arch/arm/lib/Makefile
+> > > @@ -43,8 +43,10 @@ endif
+> > >  $(obj)/csumpartialcopy.o:      $(obj)/csumpartialcopygeneric.S
+> > >  $(obj)/csumpartialcopyuser.o:  $(obj)/csumpartialcopygeneric.S
+> > >
+> > > +ifdef CONFIG_CC_IS_CLANG
+> > >  ifeq ($(CONFIG_KERNEL_MODE_NEON),y)
+> > >    NEON_FLAGS                   := -march=armv7-a -mfloat-abi=softfp -mfpu=neon
+> > >    CFLAGS_xor-neon.o            += $(NEON_FLAGS)
+> > >    obj-$(CONFIG_XOR_BLOCKS)     += xor-neon.o
+> > >  endif
+> > > +endif
+> > 
+> > Nevermind, this does not actually work. Just turning off the warning
+> > is probably best then, as actually disabling this code would still
+> > be invasive not do much beyond saving a little bit of kernel .text size.
+> 
+> Ok, if it triggers again, and I get annoyed, I'll write a patch,
+> otherwise I'll just leave it alone unless someone else wants to send it
+> to me...
 
-I love your patch! Yet something to improve:
+The patch is trivial, if your idea is just to remove the #warning,
+right? Might as well just do it now and get it over with.
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.19-rc8]
-[cannot apply to drm-misc/drm-misc-next drm/drm-next drm-exynos/exynos-drm-next drm-intel/for-linux-next drm-tip/drm-tip next-20220728]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Rob-Clark/dma-buf-map-info-support/20220730-010844
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 6e2c0490769ef8a95b61304389116ccc85c53e12
-config: hexagon-randconfig-r032-20220729 (https://download.01.org/0day-ci/archive/20220731/202207310607.RX5r6WRK-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/203f14a73a179d6c5fbfa4813e45fde2a9ae9860
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Rob-Clark/dma-buf-map-info-support/20220730-010844
-        git checkout 203f14a73a179d6c5fbfa4813e45fde2a9ae9860
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/dma-buf/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/dma-buf/dma-buf.c:346:19: error: passing 'const void  btf_type_tag(user)*' (aka 'const void *') to parameter of type 'void  btf_type_tag(user)*' (aka 'void *') discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
-           if (copy_to_user(uarg, &arg, sizeof(arg)))
-                            ^~~~
-   include/linux/uaccess.h:157:27: note: passing argument to parameter 'to' here
-   copy_to_user(void __user *to, const void *from, unsigned long n)
-                             ^
-   1 error generated.
-
-
-vim +346 drivers/dma-buf/dma-buf.c
-
-   328	
-   329	static long dma_buf_info(struct dma_buf *dmabuf, const void __user *uarg)
-   330	{
-   331		struct dma_buf_info arg;
-   332	
-   333		if (copy_from_user(&arg, uarg, sizeof(arg)))
-   334			return -EFAULT;
-   335	
-   336		switch (arg.param) {
-   337		case DMA_BUF_INFO_VM_PROT:
-   338			if (!dmabuf->ops->mmap_info)
-   339				return -ENOSYS;
-   340			arg.value = dmabuf->ops->mmap_info(dmabuf);
-   341			break;
-   342		default:
-   343			return -EINVAL;
-   344		}
-   345	
- > 346		if (copy_to_user(uarg, &arg, sizeof(arg)))
-   347			return -EFAULT;
-   348	
-   349		return 0;
-   350	}
-   351	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Jason
