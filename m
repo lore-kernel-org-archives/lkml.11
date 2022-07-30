@@ -2,114 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79EF6C19F2A
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 08:48:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEE27C19F2B
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 08:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232354AbiG3IsL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 04:48:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60254 "EHLO
+        id S232664AbiG3IzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 04:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230135AbiG3IsJ (ORCPT
+        with ESMTP id S229720AbiG3IzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 04:48:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C032B631
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 01:48:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D6E1260B3F
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 08:48:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C65B9C433D6;
-        Sat, 30 Jul 2022 08:48:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659170887;
-        bh=VgUDT0CHq5xXwgXx5dUDrl0wzXv+0S+jSbH+6URRswM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=b/nRY3OEu7X4Lw6tfdqct/bqN21HMcA0HSjTu/cEPmk4+fz/kHgsi2s6U+rXc79mq
-         wd2vv/fRHdos4RfUdYFkHiVMyHuteEbYflFleRD2NLvsZQzwZ6mLhEpNMFqU2W1Hfw
-         mfldxJHLuKmUK0DhFUf/GHstEPWvJRjYzZ8V7zvpDuyoxEmBASZ5dHmFfq1lXmD49O
-         x3OVh3gEco0SwzuLYj+PTnK5fySq53BIMdnuQ3SrkDT8OtT/fZW0QnQEgRylmle8pg
-         LASGZ/vVD4d0+DL9aI2LLGX7+YZDsPXQy25gA8zHz5NFIp4C4TJ5/1siVTJi0WLqnD
-         F9DrNfXJMay8g==
-Date:   Sat, 30 Jul 2022 11:47:54 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     shaoqin.huang@intel.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] memblock test: Modify the obsolete description in
- README
-Message-ID: <YuTwOjRMNXss3dZi@kernel.org>
-References: <20220729161125.190845-1-shaoqin.huang@intel.com>
+        Sat, 30 Jul 2022 04:55:10 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747B1F43;
+        Sat, 30 Jul 2022 01:55:09 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id tk8so12115687ejc.7;
+        Sat, 30 Jul 2022 01:55:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=bxfY1htXxbYgZJF5B+dESeWX+UdX+4GjUNZm08CoJ8E=;
+        b=YbS/lcslcbmkXpey5cpFq+X/ytIJj3qLqsAi5z2w3lorLorzgulYzXLv7skrAU7gN0
+         EX8kGu++8KCaP8JbTGm7Bo3U8kDDvcQXkGjM1MLqVjThH9BjNQnNUYSsBpwGPt78mnIV
+         OmvNjkD5/22LUnX3abOBs3Ip/74gtvYpkMEqaB47rKWbISEtyBK4LuIyQGvszb2bZdoL
+         CgvYhVFbtXuOgKbSqVay5FL3qu2DJiuNMGh1IjG0TKwGsmXbUFFznpLlY3RbMcwjVw9M
+         adMX/40d2nJLNi65Qz4IOrP2vL7GL5fg4YlumPSgmRc3Lgb1LQGlkLtbz97XAWPK/J7w
+         FrgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bxfY1htXxbYgZJF5B+dESeWX+UdX+4GjUNZm08CoJ8E=;
+        b=QXCKSPv1a/lGjPkdu9538fZa3ZWu1gFi+KWhDhgH2AkJvxXrqUAb+H+jlhm4XCS4ms
+         EF65XDo4YB1K229xJ4H1GMWiRMtYnDV3s7nx0BELxvSQOv3d9y4v/EsUDviE16/eigER
+         S8OkqPxNWCvgeSx2imUMp0/msB27p8GNMG9/Dwpk6Zs/mMFz8IfI5edHOwBZ05FCiflr
+         g9mGaroQtBBSoTvrAe9a811QQQDRgoaksGru54rG9ifnxhrezQNdl1//BpmynEYGtUvQ
+         fxnskJXx9IPFkgCyezvuJJTt2cEvd77ULpeZMciDTFS3fcGZy1DnWPzhYT1P6uDzAsWf
+         gYVg==
+X-Gm-Message-State: AJIora8pZusH4ReJ3SYqcx0wcuYINDKf4vmey5oOlR+aBrXfHxHqvJJH
+        I5vhqKwiwQS/h8JU7RcKFu0=
+X-Google-Smtp-Source: AGRyM1sheQBaWBbZ2/dbYWLUaQqAMJRtzg5nrxQDGH46I4vLTxOvUd/Zbug1LN1Ia1i+sismD/uiGg==
+X-Received: by 2002:a17:907:970c:b0:72e:e972:5c73 with SMTP id jg12-20020a170907970c00b0072ee9725c73mr5518137ejc.352.1659171307805;
+        Sat, 30 Jul 2022 01:55:07 -0700 (PDT)
+Received: from [0.0.0.0] ([81.17.18.61])
+        by smtp.gmail.com with ESMTPSA id 19-20020a170906319300b0072b8fbc9be1sm2699005ejy.187.2022.07.30.01.54.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 30 Jul 2022 01:55:07 -0700 (PDT)
+Message-ID: <3c55e119-5b6f-25ab-99c9-2c99b1dfd9e9@gmail.com>
+Date:   Sat, 30 Jul 2022 14:54:41 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220729161125.190845-1-shaoqin.huang@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 2/2] efi: earlycon: Add support for generic framebuffers
+ and move to fbdev subsystem
+Content-Language: en-US
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Helge Deller <deller@gmx.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Linux Documentation List <linux-doc@vger.kernel.org>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Rob Herring <robh@kernel.org>
+References: <20220728142824.3836-1-markuss.broks@gmail.com>
+ <20220728142824.3836-3-markuss.broks@gmail.com>
+ <CAHp75VdaDyyqRw9fAkUOhNjsyifeozVx6JuYXSU1HpoO+VHDNA@mail.gmail.com>
+From:   Markuss Broks <markuss.broks@gmail.com>
+In-Reply-To: <CAHp75VdaDyyqRw9fAkUOhNjsyifeozVx6JuYXSU1HpoO+VHDNA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 10:11:25AM -0600, shaoqin.huang@intel.com wrote:
-> From: Shaoqin Huang <shaoqin.huang@intel.com>
-> 
-> The VERBOSE option in Makefile has been moved, but there still have the
-> description left in README. For now, we use `-v` options when running
-> memblock test to print information, so using the new to replace the
-> obsolete items.
-> 
-> Signed-off-by: Shaoqin Huang <shaoqin.huang@intel.com>
-> ---
-> Changelog:
-> ----------
-> v3:
->   - Using `build options` replace `options` to make it more clear.
-> v2:
->   - Tweak the sentence to make it more clear and continuesly.
->   - Commit log changes.
-> 
->  tools/testing/memblock/README | 15 +++++++++------
->  1 file changed, 9 insertions(+), 6 deletions(-)
+Hi Andy,
 
-Applied, thanks!
- 
-> diff --git a/tools/testing/memblock/README b/tools/testing/memblock/README
-> index 058146b528a5..72162b5f4a76 100644
-> --- a/tools/testing/memblock/README
-> +++ b/tools/testing/memblock/README
-> @@ -33,20 +33,23 @@ To run the tests, build the main target and run it:
->  
->  $ make && ./main
->  
-> -A successful run produces no output. It is also possible to override different
-> -configuration parameters. For example, to include verbose output, specify the
-> -VERBOSE flag when building the main target:
-> +A successful run produces no output. It is possible to control the behavior
-> +by passing options from command line. For example, to include verbose output,
-> +append the `-v` options when you run the tests:
->  
-> -$ make VERBOSE=1
-> +$ ./main -v
->  
->  This will print information about which functions are being tested and the
->  number of test cases that passed.
->  
-> -To simulate enabled NUMA, use:
-> +For the full list of options from command line, see `./main --help`.
-> +
-> +It is also possible to override different configuration parameters to change it
-> +test functions. For example, To simulate enabled NUMA, use:
->  
->  $ make NUMA=1
->  
-> -For the full list of options, see `make help`.
-> +For the full list of build options, see `make help`.
->  
->  Project structure
->  =================
-> -- 
-> 2.30.2
+On 7/29/22 00:19, Andy Shevchenko wrote:
+> On Thu, Jul 28, 2022 at 4:32 PM Markuss Broks <markuss.broks@gmail.com> wrote:
+>>
+>> Add early console support for generic linear framebuffer devices.
+>> This driver supports probing from cmdline early parameters
+>> or from the device-tree using information in simple-framebuffer node.
+>> The EFI functionality should be retained in whole.
+>> The driver was disabled on ARM because of a bug in early_ioremap
+>> implementation on ARM.
 > 
+> ...
+> 
+>> -               efifb,[options]
+>> +               efifb
+>>                          Start an early, unaccelerated console on the EFI
+>> -                       memory mapped framebuffer (if available). On cache
+>> -                       coherent non-x86 systems that use system memory for
+>> -                       the framebuffer, pass the 'ram' option so that it is
+>> -                       mapped with the correct attributes.
+>> +                       memory mapped framebuffer (if available).
+> 
+> If somebody passes those (legacy) options, what will happen?
+
+Those would be ignored. Instead it would be automatically determined if 
+framebuffer is located in RAM or in the I/O space.
+
+> 
+> ...
+> 
+>>   config EFI_EARLYCON
+>> -       def_bool y
+>> -       depends on SERIAL_EARLYCON && !ARM && !IA64
+>> -       select FONT_SUPPORT
+>> -       select ARCH_USE_MEMREMAP_PROT
+>> +       bool "EFI early console support"
+>> +       depends on FB_EARLYCON && !IA64
+> 
+> This doesn't sound right. Previously on my configuration it was
+> selected automatically, now I need to select it explicitly? I mean
+> that for me EFI_EARLYCON should be selected by default as it was
+> before.
+
+The problem I had with EFI_EARLYCON selected by default was that it 
+would also carry fbdev with itself. Luckily, that's solved if it's moved 
+to console subsystem.
+
+> 
+> ...
+> 
+>> +static int __init simplefb_earlycon_remap_fb(void)
+>> +{
+>> +       int is_ram;
+> 
+> + blank line.
+> 
+>> +       /* bail if there is no bootconsole or it has been disabled already */
+>> +       if (!earlycon_console || !(earlycon_console->flags & CON_ENABLED))
+>> +               return 0;
+>> +
+>> +       is_ram = region_intersects(info.phys_base, info.size,
+>> +                                  IORESOURCE_SYSTEM_RAM, IORES_DESC_NONE);
+>> +       is_ram = is_ram == REGION_INTERSECTS;
+> 
+> Was it in the original code? Otherwise, I would go with plain conditional:
+> 
+>    if (region_intersects())
+>      base = ...
+>    else
+>      base = ...
+
+It wasn't in original code. Original code assumed MEMREMAP_WC always
+unless "ram" was specified as an option to efifb (e.g.
+earlycon=efifb,ram). This code instead checks if the framebuffer is in 
+RAM, and sets the mapping accordingly.
+
+Another issue is that region_intersects() returns REGION_INTERSECTS 
+(defined as 0) when true. I suppose we could use something like:
+
+if (region_intersects() == REGION_INTERSECTS)
+...
+
+> 
+>> +       info.virt_base = memremap(info.phys_base, info.size,
+>> +                                 is_ram ? MEMREMAP_WB : MEMREMAP_WC);
+>> +
+>> +       return info.virt_base ? 0 : -ENOMEM;
+>> +}
+> 
+> ...
+> 
+>> +static void simplefb_earlycon_write_char(u8 *dst, unsigned char c, unsigned int h)
+>> +{
+>> +       const u8 *src;
+>> +       int m, n, bytes;
+>> +       u8 x;
+>> +
+>> +       bytes = BITS_TO_BYTES(font->width);
+>> +       src = font->data + c * font->height * bytes + h * bytes;
+>> +
+>> +       for (m = 0; m < font->width; m++) {
+>> +               n = m % 8;
+>> +               x = *(src + m / 8);
+>> +               if ((x >> (7 - n)) & 1)
+>> +                       memset(dst, 0xff, (info.depth / 8));
+>> +               else
+>> +                       memset(dst, 0, (info.depth / 8));
+>> +               dst += (info.depth / 8);
+>> +       }
+>> +}
+> 
+> Wondering if we already have something like this in DRM/fbdev and can
+> split into a generic helper.
+> 
+> ...
+> 
+>> +       ret = sscanf(device->options, "%u,%u,%u", &info.x, &info.y, &info.depth);
+>> +       if (ret != 3)
+>> +               return -ENODEV;
+> 
+> Don't we have some standard template of this, something like XxYxD,
+> where X, Y, and D are respective decimal numbers?
+
+I'm not aware of this.
+
 > 
 
--- 
-Sincerely yours,
-Mike.
+-Markuss
