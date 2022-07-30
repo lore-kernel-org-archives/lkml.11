@@ -2,100 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D011C19F2B
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 08:26:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31745C04A68
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 08:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230362AbiG3I0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 04:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48534 "EHLO
+        id S231509AbiG3Ie4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 04:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229581AbiG3I0H (ORCPT
+        with ESMTP id S229674AbiG3Iex (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 04:26:07 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 170B413D3E;
-        Sat, 30 Jul 2022 01:26:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1659169507; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=ikFsdtZS6QLQV7wSSuu0bVueSxmcxFv4Ze50nTcsSkhess3qh89zI+TmWNjMcLW86AI2LwysHmW7RQq6MJNwpOHiP1ONXDHPzsenibLgQxwwPN673VoyNXPAe6mbpKhIBiDOdyg4sfOj1lqKyfGSerWQtK9vdHGgY1ZqgekU5pQ=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1659169507; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=36su4m2QjNQHBx4LFEg5D6awN/f2ZqxlK1cfInLaW0k=; 
-        b=LTCvyeBRkbu3CLzAff9ttLUsmCMQsvoDNcufIv9Rtn4To6xBcbPtDszYiF3USHSJ5T8xxiTTHISRXzHqYJT1mnUeIfGvcAET4Q6hRTNE5hShs50DuuNPvqrwqGccxxF6U98o83Wv+RAohOTxETHb8d2h4GNZKVeHSVb8klYXS0k=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659169507;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=36su4m2QjNQHBx4LFEg5D6awN/f2ZqxlK1cfInLaW0k=;
-        b=Eg/bfs6AKyEGW9uenYU81ZDZ2AxVkJJst7BH4RJuWUWJT6zhKVwpFEIUCqGJjpmn
-        VHX4b9gpExL9P6bajvIuCskR1KkHu1T5GrTc3ECJoNbdTJSg5EKkS4GkabBOWOpEgNF
-        TuYbWsVoKDV84qcNu3xg9e5Fg+P1pIVpGrXjSKIo=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 165916950613718.65544541820657; Sat, 30 Jul 2022 01:25:06 -0700 (PDT)
-Message-ID: <a2dd1ce2-a23e-8894-5ef4-b73ef0dad89d@arinc9.com>
-Date:   Sat, 30 Jul 2022 11:24:59 +0300
+        Sat, 30 Jul 2022 04:34:53 -0400
+Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0FDF13E21;
+        Sat, 30 Jul 2022 01:34:51 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.153])
+        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4LvyMg50yHz6Pn3s;
+        Sat, 30 Jul 2022 16:33:35 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.127.227])
+        by APP3 (Coremail) with SMTP id _Ch0CgCH6mkn7eRi2T9yBQ--.5018S4;
+        Sat, 30 Jul 2022 16:34:49 +0800 (CST)
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+To:     stable@vger.kernel.org, ming.lei@redhat.com
+Cc:     jejb@linux.vnet.ibm.com, martin.petersen@oracle.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yukuai3@huawei.com, yukuai1@huaweicloud.com, yi.zhang@huawei.com
+Subject: [PATCH stable 4.19 0/1] fix io hung for scsi
+Date:   Sat, 30 Jul 2022 16:46:50 +0800
+Message-Id: <20220730084651.4093719-1-yukuai1@huaweicloud.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [RFC PATCH net-next] dt-bindings: net: dsa: mediatek,mt7530:
- completely rework binding
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220726122406.31043-1-arinc.unal@arinc9.com>
- <a8c778db-f52c-45cb-c671-556b24f3cb46@linaro.org>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <a8c778db-f52c-45cb-c671-556b24f3cb46@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+X-CM-TRANSID: _Ch0CgCH6mkn7eRi2T9yBQ--.5018S4
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUU5E7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E
+        6xAIw20EY4v20xvaj40_JFC_Wr1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
+        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8I
+        cVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87
+        Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE
+        6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72
+        CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
+        W8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI
+        42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUoOJ5UUUUU
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+From: Yu Kuai <yukuai3@huawei.com>
 
-On 27.07.2022 13:29, Krzysztof Kozlowski wrote:
-> On 26/07/2022 14:24, Arınç ÜNAL wrote:
->> Completely rework the binding for MediaTek MT7530 and MT7531 switches.
-> 
-> Rules are the same for schema as for driver - one patch, one thing. You
-> mix here trivial style changes (removal of quotes) with functional stuff.
-> 
-> Patch is unreviewable, so it must be split.
+One of our product reported a io hung problem, turns out the problem
+can be fixed by the patch.
 
-Thank you. I'm going to split it this way:
-- Trivial changes; fix title and property descriptions, remove quotes, 
-add me as maintainer, etc.
-- Update binding description
-- Update json-schema for compatible devices
-- Update examples
+I'm not sure why this patch is not backported yet, however, please
+consider it in 4.19 lts.
 
-Let me know if you have any objections.
+Ming Lei (1):
+  scsi: core: Fix race between handling STS_RESOURCE and completion
 
-Arınç
+ drivers/scsi/scsi_lib.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+-- 
+2.31.1
+
