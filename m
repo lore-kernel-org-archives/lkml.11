@@ -2,89 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F44FC04A68
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:27:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E7BC19F2B
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:30:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231772AbiG3J1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 05:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57066 "EHLO
+        id S234174AbiG3Jak (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 05:30:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234174AbiG3J1D (ORCPT
+        with ESMTP id S230135AbiG3Jae (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 05:27:03 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E0FB402F9
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:27:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659173222; x=1690709222;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ZDDSd/0tgLFk6lpLJt/WUEGCyfcouSQz+j+g3fCmbjA=;
-  b=mcAzIPF9wqkn2vzsFYbOnwfJEYqgrp9pwmRwpje1bI5nArEQSl7vaJ7h
-   6Ysruvf0Z5pbz0Ae/fyaDB7G8tOFqS+xOG98QhlVktZF50F56dkOzh4G/
-   cHFgKPoyCW6TiHAVdxzTFNg3/6kZFCC+fVGL28bv6MuNA3heJgsotys33
-   7ITCRBEpakwvFcUwPptAshazEdhMkYgCJwpwWs0gjYO+1Ngz5EMnE/dm+
-   ylzWFiNWngsglJ8hC6Kc8VaqRRSn9+NZSMkLM6pUOqVCHZyfbjFY/ARCB
-   zk+4YgisIFt+2/ZzBr+uifOmaT7AP7m4ZdYdESIH4YScnk1TsTsuI/yIS
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="287661653"
-X-IronPort-AV: E=Sophos;i="5.93,203,1654585200"; 
-   d="scan'208";a="287661653"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 02:27:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,203,1654585200"; 
-   d="scan'208";a="577218637"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 30 Jul 2022 02:26:59 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oHikN-000Cgb-0D;
-        Sat, 30 Jul 2022 09:26:59 +0000
-Date:   Sat, 30 Jul 2022 17:26:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Atish Patra <atishp@rivosinc.com>
-Cc:     kbuild-all@lists.01.org, Atish Patra <Atish.Patra@wdc.com>,
-        linux-kernel@vger.kernel.org
-Subject: [atishp04:kvm_perf_rfc_snapshot 15/25] WARNING: modpost:
- vmlinux.o(.text+0xb94): Section mismatch in reference from the function
- regulator_set_voltage_sel_regmap() to the function
- .init.text:alloc_tree_node()
-Message-ID: <202207301718.zVuhqhyF-lkp@intel.com>
+        Sat, 30 Jul 2022 05:30:34 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12A01186DD;
+        Sat, 30 Jul 2022 02:30:34 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id h132so5744108pgc.10;
+        Sat, 30 Jul 2022 02:30:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=rrdKDJbtGqa5viWukiN2p7Td+Kx3OFsE5gH0u7qT+jU=;
+        b=RRfQHaMAO4mu/wyFZRz7MFqoYB3wwHE2gYR7h9+xQYhNKRKnLDnzRu9hOEhVvrfxpG
+         VGG4BPeC8llyWTW9J2yo/ExyFhkJsvTpY9NdtwMwJP13dTYHmQB3MGFTucTYHX4va6Qx
+         dhTIN4FhtKJouj2dcSwif8SN9HihuEa6NdIRFyc5Cn0A2tRytz4suhyg6VcvbqMmcLvt
+         W+i5A37iV1PLjN8zXmMkGU7rMg4HXRNrPEidZgoCIudr7hHDSkTJq5XrfxosWP09daQI
+         /u1TFjRfLOcOxb8WXw5hYLBpMg05Pg7o4cGNRWmX936WpedNdubM/KQYyTFQvIionvIl
+         gy0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=rrdKDJbtGqa5viWukiN2p7Td+Kx3OFsE5gH0u7qT+jU=;
+        b=J9Jh6IUA1F2CG6dVsSG22+odPKua+89NGpiCE8djeIxufhYtd1BPMfEeT6nZYm9tEc
+         XVz3dVzMsUuWm4QgmdK74qyO/Smx12o0+KKSBRETuNo342FgitTY8zI44wB2JSBzuOey
+         S+YfkOxgv8bd6xdWCkMooB6PnbP+D7/v/zS3Nv33qEBekpK0IklsrHzDmt1Pz6oNIHoC
+         VNwFIeCrqcvDT6XpM3fxSVvHR2oUk88tnp9B0QxCvn2bsJ84UKxViOEljC4NrjXQ7KyG
+         qSTSF1oXG32A7/gPXKPROGXqAMgHvjcWoqYat9AyFXQ+rYf3YAsVsD++vhlWgKNMIMxH
+         lymg==
+X-Gm-Message-State: AJIora9R6aaVV2tCPL4mj762rwk7Y5QBIt2u7lLrFmHtAIg+PG4tlq3m
+        LuZ96/daiPqbdYGPwnR0amaiOjUvkqspcmI4zUc=
+X-Google-Smtp-Source: AGRyM1uEHExAwDPMjqjRxs4fCYjmwCx9oX7UsRv4rOEZkJCal6Y3x7tqTVyR4ThmsAcK5LLhRnvu4PQuU70eM2+FnxY=
+X-Received: by 2002:a65:4b8c:0:b0:41b:cbd:b9c4 with SMTP id
+ t12-20020a654b8c000000b0041b0cbdb9c4mr5938371pgq.128.1659173433579; Sat, 30
+ Jul 2022 02:30:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220726122406.31043-1-arinc.unal@arinc9.com> <YuK193gAQ+Rwe26s@makrotopia.org>
+ <980c9926-9199-9b6e-aa65-6b5276af5d70@arinc9.com>
+In-Reply-To: <980c9926-9199-9b6e-aa65-6b5276af5d70@arinc9.com>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Sat, 30 Jul 2022 17:30:23 +0800
+Message-ID: <CALW65jYfcfND4QiD=8OhMCgW0LZMSBYmVZK5Ce8u3cMPh+8Rdg@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next] dt-bindings: net: dsa: mediatek,mt7530:
+ completely rework binding
+To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Daniel Golle <daniel@makrotopia.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/atishp04/linux kvm_perf_rfc_snapshot
-head:   42182a0a79a8768e22fd70232c3aca2bc1a26a43
-commit: 20c5f15d297fb5a842bb1488be2781826b65a1dd [15/25] COVER
-config: parisc-randconfig-r014-20220729 (https://download.01.org/0day-ci/archive/20220730/202207301718.zVuhqhyF-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/atishp04/linux/commit/20c5f15d297fb5a842bb1488be2781826b65a1dd
-        git remote add atishp04 https://github.com/atishp04/linux
-        git fetch --no-tags atishp04 kvm_perf_rfc_snapshot
-        git checkout 20c5f15d297fb5a842bb1488be2781826b65a1dd
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash
+On Sat, Jul 30, 2022 at 5:15 PM Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc=
+9.com> wrote:
+> Thanks Daniel. To be precise, this is the case for MT7620AN, MT7620DA,
+> MT7620DAN, MT7620NN, MT7628AN, MT7628DAN, MT7628DBN, MT7628KN, MT7628NN,
+> MT7688AN and MT7688KN SoCs as all include a 5p FE switch according to
+> Russia hosted WikiDevi.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
-
->> WARNING: modpost: vmlinux.o(.text+0xb94): Section mismatch in reference from the function regulator_set_voltage_sel_regmap() to the function .init.text:alloc_tree_node()
-The function regulator_set_voltage_sel_regmap() references
-the function __init alloc_tree_node().
-This is often because regulator_set_voltage_sel_regmap lacks a __init
-annotation or the annotation of alloc_tree_node is wrong.
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+MT76x8 series uses a different switch IP.
+>
+> I'll update the description accordingly.
+>
+> Ar=C4=B1n=C3=A7
