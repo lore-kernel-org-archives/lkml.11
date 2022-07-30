@@ -2,76 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 899EEC04A68
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 03:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63AC0C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 03:55:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239796AbiG3Dyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 23:54:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
+        id S239852AbiG3DzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 23:55:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230251AbiG3Dyb (ORCPT
+        with ESMTP id S230251AbiG3DzX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 23:54:31 -0400
+        Fri, 29 Jul 2022 23:55:23 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36DD743E0;
-        Fri, 29 Jul 2022 20:54:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF78814D2E;
+        Fri, 29 Jul 2022 20:55:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=7YiLpMaw2/hxuRrEztHHabGbkHQasdt3WXqJtG/B6gw=; b=h6XBNvyFKzvxULfonXBLLWfWS1
-        u9687BHCigWyaGq0EikFteQpmPwoy8uAPviM+sB/X0ZJwLLz9hwfpz16IHQIHlzwof6+0WTpJaYXZ
-        Nxbblkknonx6RC6kIZs9z72+xkZScI3Qloyrs+nV+Uo6u/RCpyrRCUdCiwh21Zhtc8kk=;
+        bh=gjwGvuIYlf7YURpygwYL3YCCMDNSe/5O6oVE1XLk23k=; b=ZYUfs1+1e4ls90l1z7FI1IjfsV
+        y6HXSTTXO7KiFdvT1ncL/nrAV0qzX9copWCDrD4jsLPOBJ0DXiSmDKjs2GmgTEiDOKhAxFHVYTPW4
+        u7RAi7MtzrxbdSacHnD7VIKCqzLMo2j5I/3An1YCyxid+o0Oo7feza5JE8fVY3ffckOc=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1oHdYR-00BzQN-P6; Sat, 30 Jul 2022 05:54:19 +0200
-Date:   Sat, 30 Jul 2022 05:54:19 +0200
+        id 1oHdZN-00BzR1-Tv; Sat, 30 Jul 2022 05:55:17 +0200
+Date:   Sat, 30 Jul 2022 05:55:17 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         linux-arm-kernel@lists.infradead.org,
         Richard Cochran <richardcochran@gmail.com>,
         Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
         UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next v3 3/4] net: phy: Add helper to derive the
- number of ports from a phy mode
-Message-ID: <YuSra19Sm0VAM9T9@lunn.ch>
+Subject: Re: [PATCH net-next v3 1/4] net: phy: Introduce QUSGMII PHY mode
+Message-ID: <YuSrpbUrcZh5QotE@lunn.ch>
 References: <20220729153356.581444-1-maxime.chevallier@bootlin.com>
- <20220729153356.581444-4-maxime.chevallier@bootlin.com>
- <056164ec-3525-479b-3b71-834af48d323c@gmail.com>
+ <20220729153356.581444-2-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <056164ec-3525-479b-3b71-834af48d323c@gmail.com>
+In-Reply-To: <20220729153356.581444-2-maxime.chevallier@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > +int phy_interface_num_ports(phy_interface_t interface)
-> > +{
-> > +	switch (interface) {
-> > +	case PHY_INTERFACE_MODE_NA:
-> > +		return 0;
-> > +	case PHY_INTERFACE_MODE_INTERNAL:
+On Fri, Jul 29, 2022 at 05:33:53PM +0200, Maxime Chevallier wrote:
+> The QUSGMII mode is a derivative of Cisco's USXGMII standard. This
+> standard is pretty similar to SGMII, but allows for faster speeds, and
+> has the build-in bits for Quad and Octa variants (like QSGMII).
 > 
+> The main difference with SGMII/QSGMII is that USXGMII/QUSGMII re-uses
+> the preamble to carry various information, named 'Extensions'.
+> 
+> As of today, the USXGMII standard only mentions the "PCH" extension,
+> which is used to convey timestamps, allowing in-band signaling of PTP
+> timestamps without having to modify the frame itself.
+> 
+> This commit adds support for that mode. When no extension is in use, it
+> behaves exactly like QSGMII, although it's not compatible with QSGMII.
+> 
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 
-> Maybe this was covered in the previous iteration, but cannot the
-> default case return 1, and all of the cases that need an explicit
-> non-1 return value are handled? Enumeration all of those that do
-> need to return 1 does not really scale.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-It is a trade off. In the current form, when somebody adds a new enum
-value, gcc will give a warning if they forget to add it here. If we
-default to 1, new values are probably going to be missed here, and
-could end up with the incorrect return value.
-
-I think the compiler warning actually does make it scale. And the
-generated code probably very similar either way.
-
-	  Andrew
+    Andrew
