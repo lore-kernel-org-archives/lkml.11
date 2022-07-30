@@ -2,127 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C4CC04A68
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 15:39:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B379C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 15:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234375AbiG3PjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 11:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56824 "EHLO
+        id S235039AbiG3Psm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 11:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232125AbiG3PjQ (ORCPT
+        with ESMTP id S232125AbiG3Psk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 11:39:16 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BDA60D5
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 08:39:15 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id m9-20020a6b7b49000000b0067c0331524cso2363754iop.21
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 08:39:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=5ecUYpMaMp4UuRjS+LeCyelFgbZvF9R9lKRlidKNv8M=;
-        b=dnt64SPFhCS/OFNr0X1FNrSxlBWIKqqZpAEV/0w6b8z53dzyw50KGoSCTUI6NNieIf
-         bRm7fq2+c/6uAbY+f7dTMhqhj2pj5KVQVDjevYHXKb8y5m8YjSRF6TwWxgoJjV9znZMe
-         KJm25yijNRAPp5IlVQKlNr2wSr3K8GRIu6MQhIoN9D80VSPoyK1hn71D9ZHXHIZMevuc
-         lMs7JGCET6UujIDl8Ky+zKntIy/z+kSdiUhH0ybKbGaKsMZ4JgfwvxNMvYpED2OB9asH
-         iqfog7GruwpfbVLgVqs4h0I2sHXm95/PTUyOT3KWGT7PqQDVns6ZgfCtofZA47cgXo7a
-         VM1g==
-X-Gm-Message-State: AJIora+dTM9EMO7KfcA6JUFEb9RP1xq478vyaTtZIH6YeBdD8+/HJq8t
-        Xuvgkw9JYYyVeMfkt2ncTQXZ3jsIA3W+z//W0WxBN8nomepb
-X-Google-Smtp-Source: AGRyM1v+AI2E0V0hVg3LKHVoUWTUrbFZAWORimkHbV4SJSiGfMLnTss49xQFHm+M/yQBwwUpScLfYS4qRaNO+TrZnL+VnQqPt2bq
+        Sat, 30 Jul 2022 11:48:40 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A43915836;
+        Sat, 30 Jul 2022 08:48:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659196119; x=1690732119;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/lkRKIKf5NUPYe0Arklh0YQ8Fp95nZE0357TMlZXoCw=;
+  b=D0YmyrevmNFfNisdSPANV9FT8GbkmVVhaAQYhRBBtEgRxF8ViBQM/DXk
+   nHDrK1p6VTrp+XNjuNy8rG4MqLFuB7J3mpTqt0eDeiY6/bB7Q524oBB8F
+   wuCLxVlVhXyJgr1nAwfCF78YccaPzoNjrHCnCuCObgtDv6ghZQJ61pARl
+   0vwfm9CuB/+opiX5SC14zaS64T4jCvPRZt7jagQf74HS1uTNfMrptPQhO
+   g+v//YTuzxMKBJUAXOlp9N6a8XAoK3RXso0848uJzDQjR2RSfH0hli3KQ
+   NH8+8YUYj8mJPXM07lnD0yymNwhUv96/d7Z+pSvNm8jf57r1RefzqMYOJ
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="289695187"
+X-IronPort-AV: E=Sophos;i="5.93,204,1654585200"; 
+   d="scan'208";a="289695187"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 08:48:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,204,1654585200"; 
+   d="scan'208";a="660611414"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga008.fm.intel.com with ESMTP; 30 Jul 2022 08:48:36 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id E3A03F1; Sat, 30 Jul 2022 18:48:46 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Yong Zhi <yong.zhi@intel.com>, Bingbu Cao <bingbu.cao@intel.com>,
+        Dan Scally <djrscally@gmail.com>,
+        Tianshu Qiu <tian.shu.qiu@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] media: ipu3-cio2: Don't dereference fwnode handle
+Date:   Sat, 30 Jul 2022 18:48:44 +0300
+Message-Id: <20220730154844.89556-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-Received: by 2002:a92:c544:0:b0:2dc:f222:9fba with SMTP id
- a4-20020a92c544000000b002dcf2229fbamr3324103ilj.270.1659195554796; Sat, 30
- Jul 2022 08:39:14 -0700 (PDT)
-Date:   Sat, 30 Jul 2022 08:39:14 -0700
-In-Reply-To: <20220730114547.5790-1-khalid.masum.92@gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a81b9205e5079176@google.com>
-Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Write in imageblit (2)
-From:   syzbot <syzbot+14b0e8f3fd1612e35350@syzkaller.appspotmail.com>
-To:     khalid.masum.92@gmail.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Use acpi_fwnode_handle() instead of dereferencing an fwnode handle directly,
+which is a better coding practice.
 
-syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-KASAN: vmalloc-out-of-bounds Write in imageblit
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/media/pci/intel/ipu3/cio2-bridge.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-==================================================================
-BUG: KASAN: vmalloc-out-of-bounds in fast_imageblit drivers/video/fbdev/core/sysimgblt.c:257 [inline]
-BUG: KASAN: vmalloc-out-of-bounds in sys_imageblit+0x1ed0/0x2240 drivers/video/fbdev/core/sysimgblt.c:323
-Write of size 4 at addr ffffc90004411000 by task syz-executor.5/4188
-
-CPU: 1 PID: 4188 Comm: syz-executor.5 Not tainted 5.19.0-rc8-syzkaller-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0xf/0x495 mm/kasan/report.c:313
- print_report mm/kasan/report.c:429 [inline]
- kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
- fast_imageblit drivers/video/fbdev/core/sysimgblt.c:257 [inline]
- sys_imageblit+0x1ed0/0x2240 drivers/video/fbdev/core/sysimgblt.c:323
- drm_fb_helper_sys_imageblit drivers/gpu/drm/drm_fb_helper.c:825 [inline]
- drm_fbdev_fb_imageblit+0x15c/0x350 drivers/gpu/drm/drm_fb_helper.c:2328
- bit_putcs_unaligned drivers/video/fbdev/core/bitblit.c:139 [inline]
- bit_putcs+0x6e1/0xd20 drivers/video/fbdev/core/bitblit.c:188
- fbcon_putcs+0x314/0x3e0 drivers/video/fbdev/core/fbcon.c:1285
- do_update_region+0x399/0x630 drivers/tty/vt/vt.c:676
- redraw_screen+0x61f/0x740 drivers/tty/vt/vt.c:1035
- fbcon_do_set_font+0x5eb/0x6f0 drivers/video/fbdev/core/fbcon.c:2435
- fbcon_set_font+0x89d/0xab0 drivers/video/fbdev/core/fbcon.c:2522
- con_font_set drivers/tty/vt/vt.c:4666 [inline]
- con_font_op+0x73a/0xc90 drivers/tty/vt/vt.c:4710
- vt_k_ioctl drivers/tty/vt/vt_ioctl.c:474 [inline]
- vt_ioctl+0x1efa/0x2b20 drivers/tty/vt/vt_ioctl.c:752
- tty_ioctl+0xbbd/0x15e0 drivers/tty/tty_io.c:2778
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl fs/ioctl.c:856 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fb2a0689109
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fb2a1830168 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007fb2a079bf60 RCX: 00007fb2a0689109
-RDX: 0000000020000040 RSI: 0000000000004b72 RDI: 0000000000000004
-RBP: 00007fb2a18301d0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
-R13: 00007ffca595479f R14: 00007fb2a1830300 R15: 0000000000022000
- </TASK>
-
-The buggy address belongs to the virtual mapping at
- [ffffc90004111000, ffffc90004412000) created by:
- drm_gem_shmem_vmap_locked drivers/gpu/drm/drm_gem_shmem_helper.c:319 [inline]
- drm_gem_shmem_vmap+0x3d7/0x5a0 drivers/gpu/drm/drm_gem_shmem_helper.c:366
-
-Memory state around the buggy address:
- ffffc90004410f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffffc90004410f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffffc90004411000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-                   ^
- ffffc90004411080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
- ffffc90004411100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-==================================================================
-
-
-Tested on:
-
-commit:         e0dccc3b Linux 5.19-rc8
-git tree:       https://github.com/torvalds/linux.git
-console output: https://syzkaller.appspot.com/x/log.txt?x=13963ed2080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=26034e6fe0075dad
-dashboard link: https://syzkaller.appspot.com/bug?extid=14b0e8f3fd1612e35350
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=14d7b5da080000
+diff --git a/drivers/media/pci/intel/ipu3/cio2-bridge.c b/drivers/media/pci/intel/ipu3/cio2-bridge.c
+index df6c94da2f6a..5998541d331c 100644
+--- a/drivers/media/pci/intel/ipu3/cio2-bridge.c
++++ b/drivers/media/pci/intel/ipu3/cio2-bridge.c
+@@ -263,7 +263,7 @@ static int cio2_bridge_connect_sensor(const struct cio2_sensor_config *cfg,
+ 				      struct cio2_bridge *bridge,
+ 				      struct pci_dev *cio2)
+ {
+-	struct fwnode_handle *fwnode;
++	struct fwnode_handle *fwnode, *current;
+ 	struct cio2_sensor *sensor;
+ 	struct acpi_device *adev;
+ 	acpi_status status;
+@@ -322,7 +322,9 @@ static int cio2_bridge_connect_sensor(const struct cio2_sensor_config *cfg,
+ 		}
+ 
+ 		sensor->adev = acpi_dev_get(adev);
+-		adev->fwnode.secondary = fwnode;
++
++		current = acpi_fwnode_handle(adev);
++		current->secondary = fwnode;
+ 
+ 		cio2_bridge_instantiate_vcm_i2c_client(sensor);
+ 
+-- 
+2.35.1
 
