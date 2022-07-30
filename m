@@ -2,196 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23F7AC19F2B
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 08:39:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79EF6C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 08:48:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232285AbiG3Ij5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 04:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55420 "EHLO
+        id S232354AbiG3IsL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 04:48:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232009AbiG3Iju (ORCPT
+        with ESMTP id S230135AbiG3IsJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 04:39:50 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84779286C5;
-        Sat, 30 Jul 2022 01:39:47 -0700 (PDT)
-Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LvyQD6YCFzWfC9;
-        Sat, 30 Jul 2022 16:35:48 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 30 Jul 2022 16:39:45 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 30 Jul
- 2022 16:39:45 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
-CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wangzhou1@hisilicon.com>, <liulongfang@huawei.com>,
-        <yekai13@huawei.com>
-Subject: [PATCH v6 1/3] uacce: supports device isolation feature
-Date:   Sat, 30 Jul 2022 16:32:44 +0800
-Message-ID: <20220730083246.55646-2-yekai13@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220730083246.55646-1-yekai13@huawei.com>
-References: <20220730083246.55646-1-yekai13@huawei.com>
+        Sat, 30 Jul 2022 04:48:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C032B631
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 01:48:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6E1260B3F
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 08:48:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C65B9C433D6;
+        Sat, 30 Jul 2022 08:48:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659170887;
+        bh=VgUDT0CHq5xXwgXx5dUDrl0wzXv+0S+jSbH+6URRswM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=b/nRY3OEu7X4Lw6tfdqct/bqN21HMcA0HSjTu/cEPmk4+fz/kHgsi2s6U+rXc79mq
+         wd2vv/fRHdos4RfUdYFkHiVMyHuteEbYflFleRD2NLvsZQzwZ6mLhEpNMFqU2W1Hfw
+         mfldxJHLuKmUK0DhFUf/GHstEPWvJRjYzZ8V7zvpDuyoxEmBASZ5dHmFfq1lXmD49O
+         x3OVh3gEco0SwzuLYj+PTnK5fySq53BIMdnuQ3SrkDT8OtT/fZW0QnQEgRylmle8pg
+         LASGZ/vVD4d0+DL9aI2LLGX7+YZDsPXQy25gA8zHz5NFIp4C4TJ5/1siVTJi0WLqnD
+         F9DrNfXJMay8g==
+Date:   Sat, 30 Jul 2022 11:47:54 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     shaoqin.huang@intel.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] memblock test: Modify the obsolete description in
+ README
+Message-ID: <YuTwOjRMNXss3dZi@kernel.org>
+References: <20220729161125.190845-1-shaoqin.huang@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220729161125.190845-1-shaoqin.huang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UACCE adds the hardware error isolation API. Users can configure
-the isolation frequency by this sysfs node. UACCE reports the device
-isolate state to the user space. If the AER error frequency exceeds
-the value of setting for a certain period of time, the device will be
-isolated.
+On Fri, Jul 29, 2022 at 10:11:25AM -0600, shaoqin.huang@intel.com wrote:
+> From: Shaoqin Huang <shaoqin.huang@intel.com>
+> 
+> The VERBOSE option in Makefile has been moved, but there still have the
+> description left in README. For now, we use `-v` options when running
+> memblock test to print information, so using the new to replace the
+> obsolete items.
+> 
+> Signed-off-by: Shaoqin Huang <shaoqin.huang@intel.com>
+> ---
+> Changelog:
+> ----------
+> v3:
+>   - Using `build options` replace `options` to make it more clear.
+> v2:
+>   - Tweak the sentence to make it more clear and continuesly.
+>   - Commit log changes.
+> 
+>  tools/testing/memblock/README | 15 +++++++++------
+>  1 file changed, 9 insertions(+), 6 deletions(-)
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
----
- drivers/misc/uacce/uacce.c | 58 ++++++++++++++++++++++++++++++++++++++
- include/linux/uacce.h      | 11 ++++++++
- 2 files changed, 69 insertions(+)
+Applied, thanks!
+ 
+> diff --git a/tools/testing/memblock/README b/tools/testing/memblock/README
+> index 058146b528a5..72162b5f4a76 100644
+> --- a/tools/testing/memblock/README
+> +++ b/tools/testing/memblock/README
+> @@ -33,20 +33,23 @@ To run the tests, build the main target and run it:
+>  
+>  $ make && ./main
+>  
+> -A successful run produces no output. It is also possible to override different
+> -configuration parameters. For example, to include verbose output, specify the
+> -VERBOSE flag when building the main target:
+> +A successful run produces no output. It is possible to control the behavior
+> +by passing options from command line. For example, to include verbose output,
+> +append the `-v` options when you run the tests:
+>  
+> -$ make VERBOSE=1
+> +$ ./main -v
+>  
+>  This will print information about which functions are being tested and the
+>  number of test cases that passed.
+>  
+> -To simulate enabled NUMA, use:
+> +For the full list of options from command line, see `./main --help`.
+> +
+> +It is also possible to override different configuration parameters to change it
+> +test functions. For example, To simulate enabled NUMA, use:
+>  
+>  $ make NUMA=1
+>  
+> -For the full list of options, see `make help`.
+> +For the full list of build options, see `make help`.
+>  
+>  Project structure
+>  =================
+> -- 
+> 2.30.2
+> 
+> 
 
-diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-index 281c54003edc..41f454c89cd1 100644
---- a/drivers/misc/uacce/uacce.c
-+++ b/drivers/misc/uacce/uacce.c
-@@ -7,6 +7,8 @@
- #include <linux/slab.h>
- #include <linux/uacce.h>
- 
-+#define MAX_ERR_ISOLATE_COUNT		65535
-+
- static struct class *uacce_class;
- static dev_t uacce_devt;
- static DEFINE_MUTEX(uacce_mutex);
-@@ -339,12 +341,57 @@ static ssize_t region_dus_size_show(struct device *dev,
- 		       uacce->qf_pg_num[UACCE_QFRT_DUS] << PAGE_SHIFT);
- }
- 
-+static ssize_t isolate_show(struct device *dev,
-+			    struct device_attribute *attr, char *buf)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+
-+	if (!uacce->ops->get_isolate_state)
-+		return -ENODEV;
-+
-+	return sysfs_emit(buf, "%d\n", uacce->ops->get_isolate_state(uacce));
-+}
-+
-+static ssize_t isolate_strategy_show(struct device *dev,
-+				     struct device_attribute *attr, char *buf)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+	u32 val;
-+
-+	val = uacce->ops->isolate_strategy_read(uacce);
-+	if (val > MAX_ERR_ISOLATE_COUNT)
-+		return -EINVAL;
-+
-+	return sysfs_emit(buf, "%u\n", val);
-+}
-+
-+static ssize_t isolate_strategy_store(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf, size_t count)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+	unsigned long val;
-+	int ret;
-+
-+	if (kstrtoul(buf, 0, &val) < 0)
-+		return -EINVAL;
-+
-+	if (val > MAX_ERR_ISOLATE_COUNT)
-+		return -EINVAL;
-+
-+	ret = uacce->ops->isolate_strategy_write(uacce, val);
-+
-+	return ret ? ret : count;
-+}
-+
- static DEVICE_ATTR_RO(api);
- static DEVICE_ATTR_RO(flags);
- static DEVICE_ATTR_RO(available_instances);
- static DEVICE_ATTR_RO(algorithms);
- static DEVICE_ATTR_RO(region_mmio_size);
- static DEVICE_ATTR_RO(region_dus_size);
-+static DEVICE_ATTR_RO(isolate);
-+static DEVICE_ATTR_RW(isolate_strategy);
- 
- static struct attribute *uacce_dev_attrs[] = {
- 	&dev_attr_api.attr,
-@@ -353,6 +400,8 @@ static struct attribute *uacce_dev_attrs[] = {
- 	&dev_attr_algorithms.attr,
- 	&dev_attr_region_mmio_size.attr,
- 	&dev_attr_region_dus_size.attr,
-+	&dev_attr_isolate.attr,
-+	&dev_attr_isolate_strategy.attr,
- 	NULL,
- };
- 
-@@ -368,6 +417,15 @@ static umode_t uacce_dev_is_visible(struct kobject *kobj,
- 	    (!uacce->qf_pg_num[UACCE_QFRT_DUS])))
- 		return 0;
- 
-+	if (attr == &dev_attr_isolate_strategy.attr &&
-+	    (!uacce->ops->isolate_strategy_read ||
-+	     !uacce->ops->isolate_strategy_write))
-+		return 0;
-+
-+	if (attr == &dev_attr_isolate.attr &&
-+	    !uacce->ops->get_isolate_state)
-+		return 0;
-+
- 	return attr->mode;
- }
- 
-diff --git a/include/linux/uacce.h b/include/linux/uacce.h
-index 48e319f40275..69e8f238d80c 100644
---- a/include/linux/uacce.h
-+++ b/include/linux/uacce.h
-@@ -30,6 +30,9 @@ struct uacce_qfile_region {
-  * @is_q_updated: check whether the task is finished
-  * @mmap: mmap addresses of queue to user space
-  * @ioctl: ioctl for user space users of the queue
-+ * @get_isolate_state: get the device state after set the isolate strategy
-+ * @isolate_strategy_write: stored the isolate strategy to the device
-+ * @isolate_strategy_read: read the isolate strategy value from the device
-  */
- struct uacce_ops {
- 	int (*get_available_instances)(struct uacce_device *uacce);
-@@ -43,6 +46,9 @@ struct uacce_ops {
- 		    struct uacce_qfile_region *qfr);
- 	long (*ioctl)(struct uacce_queue *q, unsigned int cmd,
- 		      unsigned long arg);
-+	enum uacce_dev_state (*get_isolate_state)(struct uacce_device *uacce);
-+	int (*isolate_strategy_write)(struct uacce_device *uacce, u32 freq);
-+	u32 (*isolate_strategy_read)(struct uacce_device *uacce);
- };
- 
- /**
-@@ -57,6 +63,11 @@ struct uacce_interface {
- 	const struct uacce_ops *ops;
- };
- 
-+enum uacce_dev_state {
-+	UACCE_DEV_NORMAL,
-+	UACCE_DEV_ISOLATE,
-+};
-+
- enum uacce_q_state {
- 	UACCE_Q_ZOMBIE = 0,
- 	UACCE_Q_INIT,
 -- 
-2.33.0
-
+Sincerely yours,
+Mike.
