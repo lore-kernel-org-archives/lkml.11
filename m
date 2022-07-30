@@ -2,112 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9902C04A68
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 11:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91766C19F28
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 11:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234191AbiG3LQp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 07:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37034 "EHLO
+        id S234217AbiG3LRz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 07:17:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234131AbiG3LQl (ORCPT
+        with ESMTP id S232323AbiG3LRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 07:16:41 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174871EC40
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 04:16:40 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Lw1yN4yqkz9svc;
-        Sat, 30 Jul 2022 19:15:24 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 30 Jul 2022 19:16:38 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
- (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 30 Jul
- 2022 19:16:37 +0800
-From:   Zhihao Cheng <chengzhihao1@huawei.com>
-To:     <richard@nod.at>, <miquel.raynal@bootlin.com>, <vigneshr@ti.com>,
-        <zach.brown@ni.com>, <ben.shelton@ni.com>, <s.hauer@pengutronix.de>
-CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>
-Subject: [PATCH] ubi: Fix UAF wear-leveling entry in eraseblk_count_seq_show()
-Date:   Sat, 30 Jul 2022 19:28:37 +0800
-Message-ID: <20220730112837.51184-1-chengzhihao1@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Sat, 30 Jul 2022 07:17:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 972201EC74
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 04:17:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659179871;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ajeH2EPldj0oFW5NJlh68z51lwf7zGjC5FfPekouKAo=;
+        b=RYNufI7U/tOmpC2MM9pmTn6hzZe6E1oATlJcL08mj5GfVD0cIYvkpidYIAWsR0qyH2XyI+
+        y3t3/200vq1j1xV3Q8CsLHkGSCuS+fZ8yc4OUJ1akl9qS3dKWsuy9ee+094Lz6NOY9o53T
+        ADz8TVFwlo6bL85/DHZ5VGuPWzd+AdI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-13-Ok_HGvXdP6SII63yWAl8ww-1; Sat, 30 Jul 2022 07:17:50 -0400
+X-MC-Unique: Ok_HGvXdP6SII63yWAl8ww-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5C008101A54E;
+        Sat, 30 Jul 2022 11:17:49 +0000 (UTC)
+Received: from T590 (ovpn-8-20.pek2.redhat.com [10.72.8.20])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id CAC6A2026D07;
+        Sat, 30 Jul 2022 11:17:43 +0000 (UTC)
+Date:   Sat, 30 Jul 2022 19:17:38 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     syzbot <syzbot+934ebb67352c8a490bf3@syzkaller.appspotmail.com>
+Cc:     axboe@kernel.dk, cgroups@vger.kernel.org, hdanton@sina.com,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, tj@kernel.org,
+        Yufen Yu <yuyufen@huawei.com>
+Subject: Re: [syzbot] possible deadlock in throtl_pending_timer_fn
+Message-ID: <YuUTUkxYFTKr6Ih3@T590>
+References: <000000000000921fd405db62096a@google.com>
+ <0000000000004e96a405e4fd5051@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0000000000004e96a405e4fd5051@google.com>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wear-leveling entry could be freed in error path, which may be accessed
-again in eraseblk_count_seq_show(), for example:
+On Fri, Jul 29, 2022 at 08:25:08PM -0700, syzbot wrote:
+> syzbot has bisected this issue to:
+> 
+> commit 0a9a25ca78437b39e691bcc3dc8240455b803d8d
+> Author: Ming Lei <ming.lei@redhat.com>
+> Date:   Fri Mar 18 13:01:43 2022 +0000
+> 
+>     block: let blkcg_gq grab request queue's refcnt
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16c3cfc2080000
+> start commit:   cb71b93c2dc3 Add linux-next specific files for 20220628
+> git tree:       linux-next
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=15c3cfc2080000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=11c3cfc2080000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
+> dashboard link: https://syzkaller.appspot.com/bug?extid=934ebb67352c8a490bf3
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17713dee080000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15d24952080000
+> 
+> Reported-by: syzbot+934ebb67352c8a490bf3@syzkaller.appspotmail.com
+> Fixes: 0a9a25ca7843 ("block: let blkcg_gq grab request queue's refcnt")
 
-__erase_worker                eraseblk_count_seq_show
-                                wl = ubi->lookuptbl[*block_number]
-				if (wl)
-  wl_entry_destroy
-    ubi->lookuptbl[e->pnum] = NULL
-    kmem_cache_free(ubi_wl_entry_slab, e)
-		                   erase_count = wl->ec  // UAF!
+No, this lockdep warning isn't related with the above commit, which
+caused another regression, but fixed by commit d578c770c852
+("block: avoid calling blkg_free() in atomic context"). Looks syzbot
+can't recognize difference between the two different issues.
 
-Wear-leveling entry updating/accessing in ubi->lookuptbl should be
-protected by ubi->wl_lock, fix it by adding ubi->wl_lock to serialize
-wl entry accessing between wl_entry_destroy() and
-eraseblk_count_seq_show().
+This specific issue of '[syzbot] possible deadlock in throtl_pending_timer_fn',
+is actually introduced by commit ("27029b4b18aa blkcg: fix memleak for iolatency").
 
-Fetch a reproducer in [Link].
+blk_throtl_exit() isn't safe to be called before blkg_destroy_all().
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216305
-Fixes: 7bccd12d27b7e3 ("ubi: Add debugfs file for tracking PEB state")
-Fixes: 801c135ce73d5d ("UBI: Unsorted Block Images")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
----
- drivers/mtd/ubi/wl.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+The following change should avoid the issue:
 
-diff --git a/drivers/mtd/ubi/wl.c b/drivers/mtd/ubi/wl.c
-index ee0100740869..5218e6edde58 100644
---- a/drivers/mtd/ubi/wl.c
-+++ b/drivers/mtd/ubi/wl.c
-@@ -890,8 +890,11 @@ static int wear_leveling_worker(struct ubi_device *ubi, struct ubi_work *wrk,
+
+diff --git a/block/blk-cgroup.c b/block/blk-cgroup.c
+index 869af9d72bcf..1606acb917fd 100644
+--- a/block/blk-cgroup.c
++++ b/block/blk-cgroup.c
+@@ -1268,6 +1268,7 @@ static int blkcg_css_online(struct cgroup_subsys_state *css)
+ int blkcg_init_queue(struct request_queue *q)
+ {
+ 	struct blkcg_gq *new_blkg, *blkg;
++	bool need_exit_throtl = false;
+ 	bool preloaded;
+ 	int ret;
  
- 	err = do_sync_erase(ubi, e1, vol_id, lnum, 0);
- 	if (err) {
--		if (e2)
-+		if (e2) {
-+			spin_lock(&ubi->wl_lock);
- 			wl_entry_destroy(ubi, e2);
-+			spin_unlock(&ubi->wl_lock);
-+		}
- 		goto out_ro;
+@@ -1301,7 +1302,7 @@ int blkcg_init_queue(struct request_queue *q)
+ 
+ 	ret = blk_iolatency_init(q);
+ 	if (ret) {
+-		blk_throtl_exit(q);
++		need_exit_throtl = true;
+ 		blk_ioprio_exit(q);
+ 		goto err_destroy_all;
  	}
+@@ -1310,6 +1311,8 @@ int blkcg_init_queue(struct request_queue *q)
  
-@@ -1130,14 +1133,18 @@ static int __erase_worker(struct ubi_device *ubi, struct ubi_work *wl_wrk)
- 		/* Re-schedule the LEB for erasure */
- 		err1 = schedule_erase(ubi, e, vol_id, lnum, 0, false);
- 		if (err1) {
-+			spin_lock(&ubi->wl_lock);
- 			wl_entry_destroy(ubi, e);
-+			spin_unlock(&ubi->wl_lock);
- 			err = err1;
- 			goto out_ro;
- 		}
- 		return err;
- 	}
- 
-+	spin_lock(&ubi->wl_lock);
- 	wl_entry_destroy(ubi, e);
-+	spin_unlock(&ubi->wl_lock);
- 	if (err != -EIO)
- 		/*
- 		 * If this is not %-EIO, we have no idea what to do. Scheduling
--- 
-2.31.1
+ err_destroy_all:
+ 	blkg_destroy_all(q);
++	if (need_exit_throtl)
++		blk_throtl_exit(q);
+ 	return ret;
+ err_unlock:
+ 	spin_unlock_irq(&q->queue_lock);
+
+
+
+Thanks,
+Ming
 
