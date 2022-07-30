@@ -2,89 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C95C19F2B
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 04:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AA47C04A68
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 04:20:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238817AbiG3EQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 00:16:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57750 "EHLO
+        id S239741AbiG3EUD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 00:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiG3EQG (ORCPT
+        with ESMTP id S229464AbiG3EUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 00:16:06 -0400
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 494C7255BD;
-        Fri, 29 Jul 2022 21:16:03 -0700 (PDT)
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-31f443e276fso67866417b3.1;
-        Fri, 29 Jul 2022 21:16:03 -0700 (PDT)
+        Sat, 30 Jul 2022 00:20:00 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7E1E08D
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 21:19:59 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id c3so6157887pfb.13
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 21:19:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc;
+        bh=F3IeneTwCJW5d+Il05ySjjZRUCa3E5afzHaOl38agr4=;
+        b=QeJEXzzSkp5Q9X6QvWOOHI9mew/nwQrHrEu3MSiTEyBYzenK394pSi2LKAItqbBgZV
+         9tMnILRcWu7qGm2kFRRop69UVorKESZapHTZLcRayNM3yKWSxf0fjLTBpdaLeU3MsHJe
+         LtWg41YyjX7hhOaZMX3/4rmTwcI/UZzu0np9AY4eeikigInVojeEw0kdbQuqq2imhpoo
+         nrjp9eTvW1H8ZBRKe3nwEMoxkVV372RZyOlx2XeDQImIR0HvKTaAA/V1bmFZD24SFmSw
+         AHKtX3QRL9sWTUxx5OfH2Bo9N/ELSUm7aPWzpgQzavZ+z2acaCJ1qnhYjDu7jSmKvHvp
+         lmbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fFgeLGDEXPjOLoUZJYNTF+ABbc7/QLMmmIBC+Ua0eXw=;
-        b=mRVQ1C2qSFk38q8RHRGoly5s1xIrOa9l7Ae/vdguNp5Yme5JTZ2fnftV8/Rxp7aFP5
-         sA82Agx5h0BETSUyESNj7E3F7TsEfIcdYCEf0nGEm0/H/RTpWDocEpyoeLyG5yjbHjQb
-         WfLlgiadDQQx/+7ytlBxecyl2JkImTUx7DKUGjH2K9aFOmzSJ5wEw0jYA2DLVkEiquYD
-         cYcx/ngwPEjUw8N847RjlOTSeFvVhNMpKZQOPUTGfGSF2H3wmmMBZUXljZgqJ9QqcT53
-         DVfMkLFDZfrPqXzZhAakPZPK4lU62p4nyS/6zgVTU1BY4GMRTK044V5/LxyRiMeYd1d8
-         i7xw==
-X-Gm-Message-State: ACgBeo1OiycMSEH7ksAP6sME3iXNpiCH9gpOY1/m2iehGmfqa01m57p9
-        Gr7WqpjG1bqkWIAI5qTalYIPFcFFwvd2i66K4y4=
-X-Google-Smtp-Source: AA6agR5t6rI3A3K9sYbRqGT/vLTbTLQr/bzKrf5x7JfThTPsrmentR3RUNcsQOJ+3Ksbu1oMQT/d1tmHbkGkZvvKWyo=
-X-Received: by 2002:a0d:e682:0:b0:322:b5e1:5ed4 with SMTP id
- p124-20020a0de682000000b00322b5e15ed4mr5561178ywe.220.1659154562409; Fri, 29
- Jul 2022 21:16:02 -0700 (PDT)
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc;
+        bh=F3IeneTwCJW5d+Il05ySjjZRUCa3E5afzHaOl38agr4=;
+        b=pWrialel485rhhLF9pw3/WuQmm36mwla2nlDe82HrekRnA7hqmnMnN/l9AOI5LzAxu
+         ZJj851L/cSnqQ7e+J5/Zz8u88caT23GcLzRdidwZEn4RelhTkXyjAD8eDFup64A7kCo8
+         bKjMt9cUYPb7UvXrzec5E0/JyzgjHOGlu8+iYVcSJgf+rwtKWGZwbzvPRhD2Z2jx2eA8
+         mNZbyWSxiXE0uvZRrwAgNGFvcqNsCaiG5xI/MVE3OpC5tuSP3gDtM1tj0bGXOLRWbHPO
+         bWArgn9Ieu0mp3fJKystkMsX00NHWX9lELcBli6ZLbcI8pn/eHmM0HzK5Q9Y7pVRRfNc
+         QYyg==
+X-Gm-Message-State: ACgBeo1WRswjPaBkZ6YL8YUolr+eJNX0eKnu+ALDQqoG/qZ3CRaHDNUU
+        Kx7qzf9xa11VDYnSbVbh01ZEsZt1NU4fQw==
+X-Google-Smtp-Source: AA6agR4U9hol001Jq5temblRnxxjomikjHZdlhAq/raKZws7tXMEe2AGVgVpKM+mJT0HMOBAgRb2Qw==
+X-Received: by 2002:aa7:810a:0:b0:52c:e906:e355 with SMTP id b10-20020aa7810a000000b0052ce906e355mr3364470pfi.16.1659154797927;
+        Fri, 29 Jul 2022 21:19:57 -0700 (PDT)
+Received: from ArchLinux (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
+        by smtp.gmail.com with ESMTPSA id i1-20020a1709026ac100b0016bee668a5asm4452397plt.161.2022.07.29.21.19.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Jul 2022 21:19:57 -0700 (PDT)
+References: <20220707090501.55483-1-schspa@gmail.com>
+ <0320c5f9-cbda-1652-1f97-24d1a22fb298@gmail.com>
+ <YtAqsyjlvmfDokH/@worktop.programming.kicks-ass.net>
+User-agent: mu4e 1.7.5; emacs 28.1
+From:   Schspa Shi <schspa@gmail.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Lai Jiangshan <jiangshanlai@gmail.com>, tj@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] workqueue: Use active mask for new worker when pool is
+ DISASSOCIATED
+Date:   Sat, 30 Jul 2022 11:49:41 +0800
+In-reply-to: <YtAqsyjlvmfDokH/@worktop.programming.kicks-ass.net>
+Message-ID: <m2tu6zxme3.fsf@gmail.com>
 MIME-Version: 1.0
-References: <20220729084533.54500-1-mailhol.vincent@wanadoo.fr> <YuQdhaUi0ur4l/zb@google.com>
-In-Reply-To: <YuQdhaUi0ur4l/zb@google.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Sat, 30 Jul 2022 13:15:51 +0900
-Message-ID: <CAMZ6RqJUtFDKZj9Wo8EjG3nefwM3RztW00FRwXct-KgFo-HSLw@mail.gmail.com>
-Subject: Re: [PATCH] KVM: x86: do not shadow apic global definition
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat. 30 Jul. 2022 at 02:48, Sean Christopherson <seanjc@google.com> wrote:
-> On Fri, Jul 29, 2022, Vincent Mailhol wrote:
-> > arch/x86/include/asm/apic.h declares a global variable named `apic'.
-> >
-> > Many function arguments from arch/x86/kvm/lapic.h also uses the same
-> > name and thus shadow the global declaration. For each case of
-> > shadowing, rename the function argument from `apic' to `lapic'.
-> >
-> > This patch silences below -Wshadow warnings:
+
+Peter Zijlstra <peterz@infradead.org> writes:
+
+> On Wed, Jul 13, 2022 at 05:52:58PM +0800, Lai Jiangshan wrote:
+>> 
+>> 
+>> CC Peter.
+>> Peter has changed the CPU binding code in workqueue.c.
 >
-> This is just the tip of the iceberg, nearly every KVM x86 .c file has at least one
-> "apic" variable.  arch/x86/kvm/lapic.c alone has nearly 100.  If this were the very
-> last step before a kernel-wide (or even KVM-wide) enabling of -Wshadow then maybe
-> it would be worth doing, but as it stands IMO it's unnecesary churn.
+> [ 1622.829091] WARNING: CPU: 3 PID: 31 at kernel/sched/core.c:7756 sched_cpu_dying+0x74/0x204
+> [ 1622.829374] CPU: 3 PID: 31 Comm: migration/3 Tainted: P           O      5.10.59-rt52 #2
+> 									^^^^^^^^^^^^^^^^^^^^^
+>
+> I think we can ignore this as being some ancient kernel. Please try
+> something recent.
 
-I would say the opposite: in terms of *volume*, warnings from apic.c
-would be the tip of the iceberg and apic.h is the submerged part.
+Hi peter:
 
-When the warning occurs in a header from the include directory, it
-will spam some random files which include such header. This is
-annoying when trying to triage W=2 warnings because you get totally
-unrelated warning (and W=2 has some useful flags such as
--Wmaybe-uninitialized so there are some insensitive to check it).
+I spent a few days writing a test case and reproduced the problem on
+kernel 5.19. I think it's time for us to review the V3 patch for a fix.
 
-My intent is only to silence the headers. I do not really care about
-the -Wshadow on *.c files because it is local.
+The V3 patch is at
+https://lore.kernel.org/all/20220714031645.28004-1-schspa@gmail.com/
+Please help to review it.
 
-> What I would really love is to not have the global (and exported!) "apic", but
-> properly solving that, i.e. not just a rename, would require a significant rework.
+Test branch as:
+https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git/tag/?h=v5.19-rc8-rt8
 
-I double agree. I would also like to rename the global "apic" but I do
-not think this is easily feasible.
+I think this code is new enough to demonstrate that the problem persists.
 
+The log as fellowing:
 
-Yours sincerely,
-Vincent Mailhol
+[ 3103.198684] ------------[ cut here ]------------
+[ 3103.198684] Dying CPU not properly vacated!
+[ 3103.198684] WARNING: CPU: 1 PID: 23 at kernel/sched/core.c:9575 sched_cpu_dying.cold+0xc/0xc3
+[ 3103.198684] Modules linked in: work_test(O)
+[ 3103.198684] CPU: 1 PID: 23 Comm: migration/1 Tainted: G           O      5.19.0-rc8-rt8 #1
+[ 3103.198684] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+[ 3103.198684] Stopper: multi_cpu_stop+0x0/0xf0 <- stop_machine_cpuslocked+0x132/0x170
+[ 3103.198684] RIP: 0010:sched_cpu_dying.cold+0xc/0xc3
+[ 3103.198684] Code: 00 e9 a1 c1 40 ff 48 c7 c7 48 91 94 82 e8 99 29 00 00 48 c7 c7 00 5e 53 83 e9 e3 10 50 ff 48 c7 c7 98 91 94 82 e8 4f ec ff ff <0f> 0b 44 8b ab 10 0a 00 00 8b 4b 04 48 c7 c6 cd 37 93 82 48 c7 c7
+[ 3103.198684] RSP: 0000:ffffc900000dbda0 EFLAGS: 00010086
+[ 3103.198684] RAX: 0000000000000000 RBX: ffff88813bcaa280 RCX: 0000000000000000
+[ 3103.198684] RDX: 0000000000000003 RSI: ffffffff82953971 RDI: 00000000ffffffff
+[ 3103.198684] RBP: 0000000000000082 R08: 00000000000021ed R09: ffffc900000dbd38
+[ 3103.198684] R10: 0000000000000001 R11: ffffffffffffffff R12: 0000000000000060
+[ 3103.198684] R13: ffffffff810a9040 R14: ffffffff82c555c0 R15: 0000000000000000
+[ 3103.198684] FS:  0000000000000000(0000) GS:ffff88813bc80000(0000) knlGS:0000000000000000
+[ 3103.198684] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 3103.198684] CR2: 00007f85acd18010 CR3: 0000000102578000 CR4: 0000000000350ee0
+[ 3103.198684] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 3103.198684] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[ 3103.198684] Call Trace:
+[ 3103.198684]  <TASK>
+[ 3103.198684]  ? sched_cpu_wait_empty+0x60/0x60
+[ 3103.198684]  cpuhp_invoke_callback+0x3a4/0x5f0
+[ 3103.198684]  take_cpu_down+0x71/0xd0
+[ 3103.198684]  multi_cpu_stop+0x5c/0xf0
+[ 3103.198684]  ? stop_machine_yield+0x10/0x10
+[ 3103.198684]  cpu_stopper_thread+0x82/0x130
+[ 3103.198684]  smpboot_thread_fn+0x1bb/0x2b0
+[ 3103.198684]  ? sort_range+0x20/0x20
+[ 3103.198684]  kthread+0xfe/0x120
+[ 3103.198684]  ? kthread_complete_and_exit+0x20/0x20
+[ 3103.198684]  ret_from_fork+0x1f/0x30
+[ 3103.198684]  </TASK>
+[ 3103.198684] Kernel panic - not syncing: panic_on_warn set ...
+[ 3103.198684] CPU: 1 PID: 23 Comm: migration/1 Tainted: G           O      5.19.0-rc8-rt8 #1
+[ 3103.198684] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+[ 3103.198684] Stopper: multi_cpu_stop+0x0/0xf0 <- stop_machine_cpuslocked+0x132/0x170
+[ 3103.198684] Call Trace:
+[ 3103.198684]  <TASK>
+[ 3103.198684]  dump_stack_lvl+0x34/0x48
+[ 3103.198684]  panic+0xf8/0x299
+[ 3103.198684]  ? sched_cpu_dying.cold+0xc/0xc3
+[ 3103.198684]  __warn.cold+0x43/0xba
+[ 3103.198684]  ? sched_cpu_dying.cold+0xc/0xc3
+[ 3103.198684]  report_bug+0x9d/0xc0
+[ 3103.198684]  handle_bug+0x3c/0x70
+[ 3103.198684]  exc_invalid_op+0x14/0x70
+[ 3103.198684]  asm_exc_invalid_op+0x16/0x20
+[ 3103.198684] RIP: 0010:sched_cpu_dying.cold+0xc/0xc3
+
+-- 
+BRs
+Schspa Shi
