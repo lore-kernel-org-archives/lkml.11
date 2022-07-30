@@ -2,118 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2CE5C04A68
-	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACFB1C04A68
+	for <linux-kernel@archiver.kernel.org>; Sat, 30 Jul 2022 09:17:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233508AbiG3JQg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 30 Jul 2022 05:16:36 -0400
+        id S233855AbiG3JQb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 30 Jul 2022 05:16:31 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232154AbiG3JQ3 (ORCPT
+        with ESMTP id S231502AbiG3JQ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 30 Jul 2022 05:16:29 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50991402DD
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:16:27 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LvzG31cfczlVxx
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 17:13:47 +0800 (CST)
-Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 30 Jul 2022 17:16:24 +0800
-Received: from huawei.com (10.175.101.6) by kwepemm600010.china.huawei.com
- (7.193.23.86) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 30 Jul
- 2022 17:16:23 +0800
-From:   Liu Chao <liuchao173@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <tglx@linutronix.de>
-CC:     <hewenliang4@huawei.com>, <linfeilong@huawei.com>
-Subject: [PATCH] add miss time to CPUTIME_USER when kernel boots with highres=off
-Date:   Sat, 30 Jul 2022 17:14:56 +0800
-Message-ID: <20220730091456.3741503-1-liuchao173@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Sat, 30 Jul 2022 05:16:27 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EA4A3F33E
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:16:26 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id i13so8272100edj.11
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 02:16:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2ikzYAjzqfaF+a4GkobxDatu0soZrTXVKMloqR9b6tU=;
+        b=ODVq1f1/LK9nGxTfjwXO4ssEzwk81G34edDpsOIHpHTuvnSmZevpPG/84UYDkXBv8U
+         CLgbMgUZM8dS1bS1AyLYl9eEjgXp3UpwCxBos92t40mUCmBL3QUrK5RfTtU0vwM/AzDe
+         gmM98LP8su2vSEdNxfnnqf5nFNmj1zOGilWCgwL/9zXisxjzzlMldbxrv42qo7OKN4nN
+         27y9j7VR8dYZ9tQS/gG1Z4hMSlz1BdNwI7wotbL/IkpHLM3nNYdF72nwzeGiuQZSM/0c
+         J5AvjWooDFx+mBcmo+4oeRfdmWr2nWcGaUn/UAI5dUv0Ma/OVWJCC+ckBWsKfufFtS+7
+         xQUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2ikzYAjzqfaF+a4GkobxDatu0soZrTXVKMloqR9b6tU=;
+        b=7e6xWZ+0uktcZvJ8rDokJtJP772gt6rYm1oGKGTyr0g7NV2EUgp5vQ/4ovIPBx5iJj
+         eyZpBU8ICr5TEQSMvThnioGEM/kTQfkfz6j3w8Nev7LAzMeo8YmOAT1dkECIGjZaaHCy
+         7WFAY2NFSvm8grrZeWMeUF5Y28ISTbnaz/YdWYyqL65d35PRa+UNjcvyX9VNmm9ZSDhM
+         pOvhoUAk6tgQh8sIaTz1H6Oexp2nTqGjDh7Dl0VuroHcGTAF9JpnuEpAdO8aKcdxtSaA
+         yICeORgaB8Pve3p36tY6bXol0Tnuzs2LQxNu7szHxokHzq61qWfGIvJaAhmnw1rOJd5v
+         uuVQ==
+X-Gm-Message-State: AJIora83+wTBzoOHBz06dnyUrTmS2F7SfzsqjfoCMxsxZw390b2ji6Zr
+        f/BcYzvQ5iGK4Gaz/gbyV5I=
+X-Google-Smtp-Source: AGRyM1vwibvRhtEPZaZcnZE0I3sovCWh/d2MGizGNAj8LqkgAI7GjPSEvzFNhCBH1UWn2jszQI2xYA==
+X-Received: by 2002:a05:6402:40d2:b0:43c:5a4d:c3b4 with SMTP id z18-20020a05640240d200b0043c5a4dc3b4mr7329019edb.95.1659172585551;
+        Sat, 30 Jul 2022 02:16:25 -0700 (PDT)
+Received: from jernej-laptop.localnet (194-152-27-124.dynamic.telemach.net. [194.152.27.124])
+        by smtp.gmail.com with ESMTPSA id p24-20020a17090653d800b0073045f26d41sm676395ejo.72.2022.07.30.02.16.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 Jul 2022 02:16:25 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Noralf =?ISO-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Maxime Ripard <maxime@cerno.tech>
+Cc:     Maxime Ripard <maxime@cerno.tech>, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>
+Subject: Re: [PATCH v1 31/35] drm/sun4i: tv: Add missing reset assertion
+Date:   Sat, 30 Jul 2022 11:16:23 +0200
+Message-ID: <1822091.tdWV9SEqCh@jernej-laptop>
+In-Reply-To: <20220728-rpi-analog-tv-properties-v1-31-3d53ae722097@cerno.tech>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech> <20220728-rpi-analog-tv-properties-v1-31-3d53ae722097@cerno.tech>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600010.china.huawei.com (7.193.23.86)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When kernel boots with highres=off and the cpu load isn't full, almost
-every tick will account towards CPUTIME_IDLE. But in /proc/stat, idle
-time is obtained from get_idle_time.
-So the sum time will lose the time of user tasks.
+Dne petek, 29. julij 2022 ob 18:35:14 CEST je Maxime Ripard napisal(a):
+> The reset line is deasserted at bind, and asserted if we ever encounter an
+> error there. However, it's never deasserted in unbind which will lead to a
 
-For example:
- # stress-ng --cpu 2 --taskset 66 --timeout 600 --cpu-load 50 &
- # cat /proc/stat | grep "cpu66";sleep 10; cat /proc/stat | grep "cpu66"
- cpu66 1038 0 72 50124 75 17 1 0 0 0
- cpu66 1038 0 72 50569 75 18 2 0 0 0
+s/deasserted/asserted/
 
-the detla of sum time is 447, which should be 1000 actually. It will
-casue the data in top is imprecise.
+Once fixed:
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-Signed-off-by: Liu Chao <liuchao173@huawei.com>
----
- fs/proc/stat.c          | 5 +++++
- include/linux/hrtimer.h | 2 ++
- kernel/time/hrtimer.c   | 2 +-
- 3 files changed, 8 insertions(+), 1 deletion(-)
+Best regards,
+Jernej
 
-diff --git a/fs/proc/stat.c b/fs/proc/stat.c
-index 4fb8729a68d4..c5b9116e74ad 100644
---- a/fs/proc/stat.c
-+++ b/fs/proc/stat.c
-@@ -141,6 +141,9 @@ static int show_stat(struct seq_file *p, void *v)
- 		sum		+= kstat_cpu_irqs_sum(i);
- 		sum		+= arch_irq_stat_cpu(i);
- 
-+		if (hrtimer_is_hres_enabled() == 0)
-+			user	+= cpustat[CPUTIME_IDLE] - get_idle_time(&kcpustat, i);
-+
- 		for (j = 0; j < NR_SOFTIRQS; j++) {
- 			unsigned int softirq_stat = kstat_softirqs_cpu(j, i);
- 
-@@ -179,6 +182,8 @@ static int show_stat(struct seq_file *p, void *v)
- 		steal		= cpustat[CPUTIME_STEAL];
- 		guest		= cpustat[CPUTIME_GUEST];
- 		guest_nice	= cpustat[CPUTIME_GUEST_NICE];
-+		if (hrtimer_is_hres_enabled() == 0)
-+			user	+=  cpustat[CPUTIME_IDLE] - idle;
- 		seq_printf(p, "cpu%d", i);
- 		seq_put_decimal_ull(p, " ", nsec_to_clock_t(user));
- 		seq_put_decimal_ull(p, " ", nsec_to_clock_t(nice));
-diff --git a/include/linux/hrtimer.h b/include/linux/hrtimer.h
-index 0ee140176f10..4fa1bbe86287 100644
---- a/include/linux/hrtimer.h
-+++ b/include/linux/hrtimer.h
-@@ -326,6 +326,8 @@ extern unsigned int hrtimer_resolution;
- 
- #endif
- 
-+extern int hrtimer_is_hres_enabled(void);
-+
- static inline ktime_t
- __hrtimer_expires_remaining_adjusted(const struct hrtimer *timer, ktime_t now)
- {
-diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index 0ea8702eb516..3ba2d9fe492c 100644
---- a/kernel/time/hrtimer.c
-+++ b/kernel/time/hrtimer.c
-@@ -722,7 +722,7 @@ __setup("highres=", setup_hrtimer_hres);
- /*
-  * hrtimer_high_res_enabled - query, if the highres mode is enabled
-  */
--static inline int hrtimer_is_hres_enabled(void)
-+int hrtimer_is_hres_enabled(void)
- {
- 	return hrtimer_hres_enabled;
- }
--- 
-2.23.0
+> resource unbalance.
+> 
+> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+> 
+> diff --git a/drivers/gpu/drm/sun4i/sun4i_tv.c
+> b/drivers/gpu/drm/sun4i/sun4i_tv.c index ad6a3739bfa9..74ff5ad6a8b9 100644
+> --- a/drivers/gpu/drm/sun4i/sun4i_tv.c
+> +++ b/drivers/gpu/drm/sun4i/sun4i_tv.c
+> @@ -605,6 +605,7 @@ static void sun4i_tv_unbind(struct device *dev, struct
+> device *master, drm_connector_cleanup(&tv->connector);
+>  	drm_encoder_cleanup(&tv->encoder);
+>  	clk_disable_unprepare(tv->clk);
+> +	reset_control_assert(tv->reset);
+>  }
+> 
+>  static const struct component_ops sun4i_tv_ops = {
+
+
+
 
