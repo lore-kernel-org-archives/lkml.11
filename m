@@ -2,89 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 093EAC19F2C
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 10:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41939C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 10:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231417AbiGaKtP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 06:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49368 "EHLO
+        id S231874AbiGaKt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 06:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiGaKtN (ORCPT
+        with ESMTP id S229484AbiGaKt5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 06:49:13 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E979E9FC8;
-        Sun, 31 Jul 2022 03:49:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659264552; x=1690800552;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=lT72Bexrs57W84BZaeIkvJnQF4eTQDr/RDyvUrHL/v4=;
-  b=ewe8r6P+gFQNExb8UgYA1tgLQRCcHVGqNVarIwmsWPHo5AZl8itpRxVz
-   0kks3fCm0LVmUyLjKA28Gr3iinTMXQrEiH/TJ/ZMrBVdaLgOqIJOpgxo+
-   fIF5VK4UgXZ57pqZiKyDPs5jMm6pTmy0W0ynD5L3vNnm9Vu6eHw/wuSGU
-   KdZiPn4VohKBU4FoGJFShzkAG3eEP/IIWVZ77fA+QqNKta7s/Ib1ivR6d
-   Vihr8Mh/zunDPV8vxC406X3yO8nhg4PiAIWY1Fj2SX6j3AR+NrPGrbrOD
-   3rW2fV3fK6zf172ts7yWpXjBQ7cY76Sm/GAif8iliQv+4VNacEA3GY5r5
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="375289126"
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="375289126"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 03:49:12 -0700
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="660799595"
-Received: from zq-optiplex-7090.bj.intel.com ([10.238.156.125])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 03:49:11 -0700
-From:   Zqiang <qiang1.zhang@intel.com>
-To:     paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] rcutorture: Use the barrier operation corresponding to rcutorture.torture_type
-Date:   Sun, 31 Jul 2022 18:53:56 +0800
-Message-Id: <20220731105356.1741086-1-qiang1.zhang@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 31 Jul 2022 06:49:57 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E4749FC8;
+        Sun, 31 Jul 2022 03:49:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 20F0ECE0E5F;
+        Sun, 31 Jul 2022 10:49:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAF50C433C1;
+        Sun, 31 Jul 2022 10:49:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659264588;
+        bh=PUNN+rCT3YXN5pehv7cULkzpQnreNsgjU2b4qW3dOto=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bejCl17Yd2Tvvo8nEdqDOHsy6MvrBm2YL4gdQtABzahCWd1IyD+yGqMbF12AxcAWe
+         qAygk10Ha3H7fLFiBYQSB4iWD8kP2ijEKXmypi14eeKaUCHteH4bhwLNmaBA6Bp2vT
+         niOdnThWuwAMSrAFmciEp7SwuJkvJCdV+xSsz1NR8TnBHwOFi3s9AmyHhKwNiUfI87
+         T1Eg1ckCHjMqwRXwMk+cHD9wlP1VYfhCv1AU0WOBX5W9xX7nAp1xgR06+kSBUCF73O
+         oDuiVbu2X4nk0Ec512FsjObYmYNNDOTvLjek+grtmp63BtCjYzqdbVEJqFNsla+Vqc
+         Rw/q6SHFNAfjA==
+Date:   Sun, 31 Jul 2022 11:59:55 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Marek Belisko <marek@goldelico.com>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 1/1] spi/panel: dt-bindings: drop CPHA and CPOL from
+ common properties
+Message-ID: <20220731115955.1977f429@jic23-huawei>
+In-Reply-To: <20220722191539.90641-2-krzysztof.kozlowski@linaro.org>
+References: <20220722191539.90641-1-krzysztof.kozlowski@linaro.org>
+        <20220722191539.90641-2-krzysztof.kozlowski@linaro.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-when the rcutorture.torture_type value is 'rcu', this is correct for
-invoke rcu_barrier() to wait all in-flight call_rcu() callbacks
-(rcu_torture_fwd_cb_cr()) complete in rcutorture_oom_notify(). but when
-the rcutorture.torture_type value is 'tasks-tracing', invoke rcu_barrier()
-won't wait all in-flight call_rcu_tasks_trace() callbacks complete, the
-rcu_barrier_tasks_trace() should be invoked.
+On Fri, 22 Jul 2022 21:15:39 +0200
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
-This commit fix it by using barrier operation corresponding to
-rcutorture.torture_type to wait all in-flight rcu_torture_fwd_cb_cr()
-complete.
+> The spi-cpha and spi-cpol properties are device specific and should be
+> accepted only if device really needs them.  Drop them from common
+> spi-peripheral-props.yaml schema, mention in few panel drivers which use
+> them and include instead in the SPI controller bindings.  The controller
+> bindings will provide CPHA/CPOL type validation and one place for
+> description.  Each device schema must list the properties if they are
+> applicable.
+> 
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Suggested-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
----
- kernel/rcu/rcutorture.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This seems like a good solution to me.
 
-diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
-index 7f13f2e5ed62..7e7d54841613 100644
---- a/kernel/rcu/rcutorture.c
-+++ b/kernel/rcu/rcutorture.c
-@@ -2638,12 +2638,12 @@ static int rcutorture_oom_notify(struct notifier_block *self,
- 	for (i = 0; i < fwd_progress; i++)
- 		ncbs += rcu_torture_fwd_prog_cbfree(&rfp[i]);
- 	pr_info("%s: Freed %lu RCU callbacks.\n", __func__, ncbs);
--	rcu_barrier();
-+	cur_ops->cb_barrier();
- 	ncbs = 0;
- 	for (i = 0; i < fwd_progress; i++)
- 		ncbs += rcu_torture_fwd_prog_cbfree(&rfp[i]);
- 	pr_info("%s: Freed %lu RCU callbacks.\n", __func__, ncbs);
--	rcu_barrier();
-+	cur_ops->cb_barrier();
- 	ncbs = 0;
- 	for (i = 0; i < fwd_progress; i++)
- 		ncbs += rcu_torture_fwd_prog_cbfree(&rfp[i]);
--- 
-2.25.1
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+> ---
+>  .../bindings/display/panel/lgphilips,lb035q02.yaml    |  3 +++
+>  .../bindings/display/panel/samsung,ld9040.yaml        |  3 +++
+>  .../bindings/display/panel/sitronix,st7789v.yaml      |  3 +++
+>  .../devicetree/bindings/display/panel/tpo,td.yaml     |  3 +++
+>  .../devicetree/bindings/spi/spi-controller.yaml       | 11 +++++++++++
+>  .../devicetree/bindings/spi/spi-peripheral-props.yaml | 10 ----------
+>  6 files changed, 23 insertions(+), 10 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/display/panel/lgphilips,lb035q02.yaml b/Documentation/devicetree/bindings/display/panel/lgphilips,lb035q02.yaml
+> index 5e4e0e552c2f..628c4b898111 100644
+> --- a/Documentation/devicetree/bindings/display/panel/lgphilips,lb035q02.yaml
+> +++ b/Documentation/devicetree/bindings/display/panel/lgphilips,lb035q02.yaml
+> @@ -21,6 +21,9 @@ properties:
+>    enable-gpios: true
+>    port: true
+>  
+> +  spi-cpha: true
+> +  spi-cpol: true
+> +
+>  required:
+>    - compatible
+>    - enable-gpios
+> diff --git a/Documentation/devicetree/bindings/display/panel/samsung,ld9040.yaml b/Documentation/devicetree/bindings/display/panel/samsung,ld9040.yaml
+> index d525165d6d63..c0fabeb38628 100644
+> --- a/Documentation/devicetree/bindings/display/panel/samsung,ld9040.yaml
+> +++ b/Documentation/devicetree/bindings/display/panel/samsung,ld9040.yaml
+> @@ -42,6 +42,9 @@ properties:
+>    panel-height-mm:
+>      description: physical panel height [mm]
+>  
+> +  spi-cpha: true
+> +  spi-cpol: true
+> +
+>  required:
+>    - compatible
+>    - reg
+> diff --git a/Documentation/devicetree/bindings/display/panel/sitronix,st7789v.yaml b/Documentation/devicetree/bindings/display/panel/sitronix,st7789v.yaml
+> index 9e1d707c2ace..d984b59daa4a 100644
+> --- a/Documentation/devicetree/bindings/display/panel/sitronix,st7789v.yaml
+> +++ b/Documentation/devicetree/bindings/display/panel/sitronix,st7789v.yaml
+> @@ -23,6 +23,9 @@ properties:
+>    backlight: true
+>    port: true
+>  
+> +  spi-cpha: true
+> +  spi-cpol: true
+> +
+>  required:
+>    - compatible
+>    - reg
+> diff --git a/Documentation/devicetree/bindings/display/panel/tpo,td.yaml b/Documentation/devicetree/bindings/display/panel/tpo,td.yaml
+> index f902a9d74141..e8c8ee8d7c88 100644
+> --- a/Documentation/devicetree/bindings/display/panel/tpo,td.yaml
+> +++ b/Documentation/devicetree/bindings/display/panel/tpo,td.yaml
+> @@ -28,6 +28,9 @@ properties:
+>    backlight: true
+>    port: true
+>  
+> +  spi-cpha: true
+> +  spi-cpol: true
+> +
+>  required:
+>    - compatible
+>    - port
+> diff --git a/Documentation/devicetree/bindings/spi/spi-controller.yaml b/Documentation/devicetree/bindings/spi/spi-controller.yaml
+> index 678cee68b52a..655713fba7e2 100644
+> --- a/Documentation/devicetree/bindings/spi/spi-controller.yaml
+> +++ b/Documentation/devicetree/bindings/spi/spi-controller.yaml
+> @@ -95,6 +95,17 @@ patternProperties:
+>      type: object
+>      $ref: spi-peripheral-props.yaml
+>  
+> +    properties:
+> +      spi-cpha:
+> +        $ref: /schemas/types.yaml#/definitions/flag
+> +        description:
+> +          The device requires shifted clock phase (CPHA) mode.
+> +
+> +      spi-cpol:
+> +        $ref: /schemas/types.yaml#/definitions/flag
+> +        description:
+> +          The device requires inverse clock polarity (CPOL) mode.
+> +
+>      required:
+>        - compatible
+>        - reg
+> diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> index 5e32928c4fc3..2349f83c07f3 100644
+> --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> @@ -34,16 +34,6 @@ properties:
+>      description:
+>        The device requires 3-wire mode.
+>  
+> -  spi-cpha:
+> -    $ref: /schemas/types.yaml#/definitions/flag
+> -    description:
+> -      The device requires shifted clock phase (CPHA) mode.
+> -
+> -  spi-cpol:
+> -    $ref: /schemas/types.yaml#/definitions/flag
+> -    description:
+> -      The device requires inverse clock polarity (CPOL) mode.
+> -
+>    spi-cs-high:
+>      $ref: /schemas/types.yaml#/definitions/flag
+>      description:
 
