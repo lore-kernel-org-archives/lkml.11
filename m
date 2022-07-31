@@ -2,117 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 817C6C19F29
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 15:50:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD5DC19F29
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 15:52:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237351AbiGaPuw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 11:50:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46502 "EHLO
+        id S237369AbiGaPwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 11:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233306AbiGaPuu (ORCPT
+        with ESMTP id S233306AbiGaPwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 11:50:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D17FEE3E;
-        Sun, 31 Jul 2022 08:50:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1BDCB80D11;
-        Sun, 31 Jul 2022 15:50:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEC1DC433D6;
-        Sun, 31 Jul 2022 15:50:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659282646;
-        bh=Nb8/KbRuMq0D5hB06qTzpFBgs5A+mZTRpBygcswuGTA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PhvD5DSlj7aX4WUCA135VaXQjtYC1xTVVc34bshN5hll6g4bAvI8RYVouxWma1LFX
-         +u7IW2KXKtbsZ4B27ywspeeKe6SlkjIrypDjYMI+adt5+zGEBcWdf71dwGdE0mQxww
-         MduQOqb4u5oZAYG6q6E/QdB1Z2AGNuOVkVQC6Wj+MR0uYelq5N5vOm5xv6eP5YJxZe
-         xwlHsplqrSzzQJ2rctOnev6MQ8Q3NZfKjAtJGZC1ruC3yLX0gJBUzmmZEHAu2ALa2V
-         YbpXMn7EeDfwplDb+IamyGti74Lq0TtvX+AZ0VDeZE/NpO1MTAoxmSCrvxvqcvaNx+
-         Bti9ND8Ahk3JA==
-Date:   Sun, 31 Jul 2022 17:00:57 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Matti =?UTF-8?B?TGVodGltw6RraQ==?= <matti.lehtimaki@gmail.com>
-Cc:     linux-iio@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: st_sensors: Retry ID verification on failure
-Message-ID: <20220731170057.2b8ac00e@jic23-huawei>
-In-Reply-To: <20220724164316.68393-1-matti.lehtimaki@gmail.com>
-References: <20220724164316.68393-1-matti.lehtimaki@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 31 Jul 2022 11:52:34 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41B6A46F
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 08:52:31 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R711e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xhao@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VKwpIWE_1659282745;
+Received: from localhost.localdomain(mailfrom:xhao@linux.alibaba.com fp:SMTPD_---0VKwpIWE_1659282745)
+          by smtp.aliyun-inc.com;
+          Sun, 31 Jul 2022 23:52:26 +0800
+From:   Xin Hao <xhao@linux.alibaba.com>
+To:     willy@infradead.org
+Cc:     akpm@linux-foundation.org, adobriyan@gmail.com,
+        keescook@chromium.org, xhao@linux.alibaba.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: [RFC V2 PATCH] mm: add last level page table numa info to /proc/pid/numa_pgtable
+Date:   Sun, 31 Jul 2022 23:52:23 +0800
+Message-Id: <20220731155223.60238-1-xhao@linux.alibaba.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 24 Jul 2022 19:43:15 +0300
-Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com> wrote:
+In many data center servers, the shared memory architectures is
+Non-Uniform Memory Access (NUMA), remote numa node data access
+often brings a high latency problem, but what we are easy to ignore
+is that the page table remote numa access, It can also leads to a
+performance degradation.
 
-> Some sensors do not always start fast enough to read a valid ID from
-> registers at first attempt. Let's retry at most 3 times with short sleep
-> in between to fix random timing issues.
->=20
-> Signed-off-by: Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com>
-Hi Matti,
+So there add a new interface in /proc, This will help developers to
+get more info about performance issues if they are caused by cross-NUMA.
 
-My gut feeling is this isn't in a fast path, so why not just wait
-for whatever the documented power up time of the sensor is?
+V1 -> V2
+1, As Matthew Wilcox advise, Simplify the codes.
+2, Do some codes format fix.
 
-I'd expect to see a sleep in st_sensors_power_enable() if one is
-required.
+V1: https://lore.kernel.org/linux-mm/YuVqdcY8Ibib2LJa@casper.infradead.org/T/
 
-Jonathan
+Signed-off-by: Xin Hao <xhao@linux.alibaba.com>
+---
+ fs/proc/base.c     |  2 ++
+ fs/proc/internal.h |  1 +
+ fs/proc/task_mmu.c | 87 ++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 90 insertions(+)
 
-> ---
->  drivers/iio/common/st_sensors/st_sensors_core.c | 15 ++++++++++++---
->  1 file changed, 12 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/ii=
-o/common/st_sensors/st_sensors_core.c
-> index 9910ba1da085..106f7953683e 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -21,6 +21,8 @@
-> =20
->  #include "st_sensors_core.h"
-> =20
-> +#define VERIFY_ID_RETRY_COUNT 3
-> +
->  int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
->  				    u8 reg_addr, u8 mask, u8 data)
->  {
-> @@ -619,11 +621,18 @@ EXPORT_SYMBOL_NS(st_sensors_get_settings_index, IIO=
-_ST_SENSORS);
->  int st_sensors_verify_id(struct iio_dev *indio_dev)
->  {
->  	struct st_sensor_data *sdata =3D iio_priv(indio_dev);
-> -	int wai, err;
-> +	int wai, err, i;
-> =20
->  	if (sdata->sensor_settings->wai_addr) {
-> -		err =3D regmap_read(sdata->regmap,
-> -				  sdata->sensor_settings->wai_addr, &wai);
-> +		for (i =3D 0; i < VERIFY_ID_RETRY_COUNT; i++) {
-> +			err =3D regmap_read(sdata->regmap,
-> +					  sdata->sensor_settings->wai_addr, &wai);
-> +
-> +			if (!err && sdata->sensor_settings->wai =3D=3D wai)
-> +				return 0;
-> +
-> +			msleep(20);
-How do we know 60msecs is long enough for all sensors?
+diff --git a/fs/proc/base.c b/fs/proc/base.c
+index 8dfa36a99c74..487e82dd3275 100644
+--- a/fs/proc/base.c
++++ b/fs/proc/base.c
+@@ -3224,6 +3224,7 @@ static const struct pid_entry tgid_base_stuff[] = {
+ 	REG("maps",       S_IRUGO, proc_pid_maps_operations),
+ #ifdef CONFIG_NUMA
+ 	REG("numa_maps",  S_IRUGO, proc_pid_numa_maps_operations),
++	REG("numa_pgtable", S_IRUGO, proc_pid_numa_pgtable_operations),
+ #endif
+ 	REG("mem",        S_IRUSR|S_IWUSR, proc_mem_operations),
+ 	LNK("cwd",        proc_cwd_link),
+@@ -3571,6 +3572,7 @@ static const struct pid_entry tid_base_stuff[] = {
+ #endif
+ #ifdef CONFIG_NUMA
+ 	REG("numa_maps", S_IRUGO, proc_pid_numa_maps_operations),
++	REG("numa_pgtable", S_IRUGO, proc_pid_numa_pgtable_operations),
+ #endif
+ 	REG("mem",       S_IRUSR|S_IWUSR, proc_mem_operations),
+ 	LNK("cwd",       proc_cwd_link),
+diff --git a/fs/proc/internal.h b/fs/proc/internal.h
+index 06a80f78433d..e7ed9ef097b6 100644
+--- a/fs/proc/internal.h
++++ b/fs/proc/internal.h
+@@ -296,6 +296,7 @@ struct mm_struct *proc_mem_open(struct inode *inode, unsigned int mode);
 
-> +		}
->  		if (err < 0) {
->  			dev_err(&indio_dev->dev,
->  				"failed to read Who-Am-I register.\n");
+ extern const struct file_operations proc_pid_maps_operations;
+ extern const struct file_operations proc_pid_numa_maps_operations;
++extern const struct file_operations proc_pid_numa_pgtable_operations;
+ extern const struct file_operations proc_pid_smaps_operations;
+ extern const struct file_operations proc_pid_smaps_rollup_operations;
+ extern const struct file_operations proc_clear_refs_operations;
+diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
+index 2d04e3470d4c..967e46f523a0 100644
+--- a/fs/proc/task_mmu.c
++++ b/fs/proc/task_mmu.c
+@@ -1999,4 +1999,91 @@ const struct file_operations proc_pid_numa_maps_operations = {
+ 	.release	= proc_map_release,
+ };
 
++struct pgtable_numa_private {
++	struct proc_maps_private proc_maps;
++	unsigned long node[MAX_NUMNODES];
++};
++
++static int gather_pgtable_numa_stats(pmd_t *pmd, unsigned long addr,
++				     unsigned long end, struct mm_walk *walk)
++{
++	struct pgtable_numa_private *priv = walk->private;
++	struct page *page;
++	int nid;
++
++	if (pmd_huge(*pmd)) {
++		page = virt_to_page(pmd);
++	} else {
++		page = pmd_page(*pmd);
++	}
++
++	nid = page_to_nid(page);
++	priv->node[nid]++;
++
++	return 0;
++}
++
++static const struct mm_walk_ops show_numa_pgtable_ops = {
++	.pmd_entry = gather_pgtable_numa_stats,
++};
++
++/*
++ * Display the page talbe allocated per node via /proc.
++ */
++static int show_numa_pgtable(struct seq_file *m, void *v)
++{
++	struct pgtable_numa_private *numa_priv = m->private;
++	struct vm_area_struct *vma = v;
++	struct mm_struct *mm = vma->vm_mm;
++	struct file *file = vma->vm_file;
++	int nid;
++
++	if (!mm)
++		return 0;
++
++	memset(numa_priv->node, 0, MAX_NUMNODES);
++
++	seq_printf(m, "%08lx ", vma->vm_start);
++
++	if (file) {
++		seq_puts(m, " file=");
++		seq_file_path(m, file, "\n\t= ");
++	} else if (vma->vm_start <= mm->brk && vma->vm_end >= mm->start_brk) {
++		seq_puts(m, " heap");
++	} else if (is_stack(vma)) {
++		seq_puts(m, " stack");
++	}
++
++	/* mmap_lock is held by m_start */
++	walk_page_vma(vma, &show_numa_pgtable_ops, numa_priv);
++
++	for_each_node_state(nid, N_MEMORY) {
++		if (numa_priv->node[nid])
++			seq_printf(m, " N%d=%lu", nid, numa_priv->node[nid]);
++	}
++	seq_putc(m, '\n');
++
++	return 0;
++}
++
++static const struct seq_operations proc_pid_numa_pgtable_op = {
++	.start  = m_start,
++	.next   = m_next,
++	.stop   = m_stop,
++	.show   = show_numa_pgtable,
++};
++
++static int pid_numa_pgtable_open(struct inode *inode, struct file *file)
++{
++	return proc_maps_open(inode, file, &proc_pid_numa_pgtable_op,
++			sizeof(struct pgtable_numa_private));
++}
++
++const struct file_operations proc_pid_numa_pgtable_operations = {
++	.open		= pid_numa_pgtable_open,
++	.read		= seq_read,
++	.llseek		= seq_lseek,
++	.release	= proc_map_release,
++};
++
+ #endif /* CONFIG_NUMA */
+--
+2.31.0
