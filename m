@@ -2,171 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C53C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 05:09:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC54FC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 05:59:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235981AbiGaFJZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 01:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44276 "EHLO
+        id S236222AbiGaF7r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 01:59:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230492AbiGaFJX (ORCPT
+        with ESMTP id S231243AbiGaF7o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 01:09:23 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AED313DE3
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 22:09:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659244162; x=1690780162;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=4MkDPWucBtTo8n//4AUx9bX+U8MS5kpW1L2mV3z9Hj0=;
-  b=kTV4kNppqWi0Re9UzjPC0dquGa5U/zTWeah3/kH5y/fwHe+sXKkcZCcr
-   7SgA6x2s3O42QLTX/Zn8q89E5qf1/V2FJ6dQd5V+Bt9cYxhzOqKUuSAph
-   5Cq7OoEwmAhNc2VHlYUxbkhaAU0fA49z//ouBe2RJRnGtpx8N6IRyqtKj
-   bsokRJLQScGbwsayfsLl3jerapLvWbZNWYYPWHN/1YIEVZWNa8U+Pe5i5
-   4QiggrDec5nZhevh5uBAazawASQcj9SvDTPphQR+6EWst+4OXgJ1nMe6x
-   7DdFl5jOCXcuP4qLay0S1dTE1mzH5uZX+YNRXQwQc5keMTxsEG1CjjDVv
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="269350450"
-X-IronPort-AV: E=Sophos;i="5.93,205,1654585200"; 
-   d="scan'208";a="269350450"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jul 2022 22:09:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,205,1654585200"; 
-   d="scan'208";a="728122968"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 30 Jul 2022 22:09:20 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oI1Ca-000DiT-0Z;
-        Sun, 31 Jul 2022 05:09:20 +0000
-Date:   Sun, 31 Jul 2022 13:08:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [asahilinux:bits/090-spi-hid 17/21]
- drivers/hid/dockchannel-hid/dockchannel-hid.c:303:21: error: call to
- undeclared function 'FIELD_PREP'; ISO C99 and later do not support implicit
- function declarations
-Message-ID: <202207311303.fsxdJJ2i-lkp@intel.com>
+        Sun, 31 Jul 2022 01:59:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F6513CE9
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 22:59:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B90460DBF
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 05:59:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E42AC433C1;
+        Sun, 31 Jul 2022 05:59:40 +0000 (UTC)
+Date:   Sun, 31 Jul 2022 01:59:28 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: [PATCH] tracing: Use a struct alignof to determine trace event
+ field alignment
+Message-ID: <20220731015928.7ab3a154@rorschach.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux bits/090-spi-hid
-head:   e784b825a3358d79e5da5d9426c6eb37f79819b3
-commit: fca5de56d067159949909e595e6bf3ee10af0a91 [17/21] hid: Add Apple DockChannel HID transport driver
-config: hexagon-allmodconfig (https://download.01.org/0day-ci/archive/20220731/202207311303.fsxdJJ2i-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/AsahiLinux/linux/commit/fca5de56d067159949909e595e6bf3ee10af0a91
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux bits/090-spi-hid
-        git checkout fca5de56d067159949909e595e6bf3ee10af0a91
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/hid/dockchannel-hid/
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+alignof() gives an alignment of types as they would be as standalone
+variables. But alignment in structures might be different, and when
+building the fields of events, the alignment must be the actual
+alignment otherwise the field offsets may not match what they actually
+are.
 
-All error/warnings (new ones prefixed by >>):
+This caused trace-cmd to crash, as libtraceevent did not check if the
+field offset was bigger than the event. The write_msr and read_msr
+events on 32 bit had their fields incorrect, because it had a u64 field
+between two ints. alignof(u64) would give 8, but the u64 field was at a
+4 byte alignment.
 
->> drivers/hid/dockchannel-hid/dockchannel-hid.c:303:21: error: call to undeclared function 'FIELD_PREP'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           iface->out_flags = FIELD_PREP(FLAGS_GROUP, type) | FIELD_PREP(FLAGS_REQ, req);
-                              ^
->> drivers/hid/dockchannel-hid/dockchannel-hid.c:569:62: warning: format specifies type 'long' but the argument has type 'size_t' (aka 'unsigned int') [-Wformat]
-                   dev_err(dchid->dev, "Bad length for ready message: %ld\n", length);
-                                                                      ~~~     ^~~~~~
-                                                                      %zu
-   include/linux/dev_printk.h:144:65: note: expanded from macro 'dev_err'
-           dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                                                  ~~~     ^~~~~~~~~~~
-   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
-                   _p_func(dev, fmt, ##__VA_ARGS__);                       \
-                                ~~~    ^~~~~~~~~~~
->> drivers/hid/dockchannel-hid/dockchannel-hid.c:825:13: error: call to undeclared function 'FIELD_GET'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           int type = FIELD_GET(FLAGS_GROUP, shdr->flags);
-                      ^
->> drivers/hid/dockchannel-hid/dockchannel-hid.c:830:18: warning: format specifies type 'long' but the argument has type 'unsigned int' [-Wformat]
-                           shdr->length, work->hdr.length - sizeof(*shdr));
-                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:144:65: note: expanded from macro 'dev_err'
-           dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                                                  ~~~     ^~~~~~~~~~~
-   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
-                   _p_func(dev, fmt, ##__VA_ARGS__);                       \
-                                ~~~    ^~~~~~~~~~~
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:856:18: warning: format specifies type 'long' but the argument has type 'unsigned int' [-Wformat]
-                           shdr->length, hdr->length - sizeof(*shdr));
-                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:144:65: note: expanded from macro 'dev_err'
-           dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                                                  ~~~     ^~~~~~~~~~~
-   include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
-                   _p_func(dev, fmt, ##__VA_ARGS__);                       \
-                                ~~~    ^~~~~~~~~~~
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:975:7: warning: variable 'defer' set but not used [-Wunused-but-set-variable]
-           bool defer = false;
-                ^
-   4 warnings and 2 errors generated.
+Define a macro as:
 
+   ALIGN_STRUCTFIELD(type) ((int)(offsetof(struct {char a; type b;}, b)))
 
-vim +/FIELD_PREP +303 drivers/hid/dockchannel-hid/dockchannel-hid.c
+which gives the actual alignment of types in a structure.
 
-   292	
-   293	static int dchid_cmd(struct dchid_iface *iface, u32 type, u32 req,
-   294			     void *data, size_t size, void *resp_buf, size_t resp_size)
-   295	{
-   296		int ret;
-   297		int report_id = *(u8*)data;
-   298	
-   299		mutex_lock(&iface->out_mutex);
-   300	
-   301		WARN_ON(iface->out_report != -1);
-   302		iface->out_report = report_id;
- > 303		iface->out_flags = FIELD_PREP(FLAGS_GROUP, type) | FIELD_PREP(FLAGS_REQ, req);
-   304		iface->resp_buf = resp_buf;
-   305		iface->resp_size = resp_size;
-   306		reinit_completion(&iface->out_complete);
-   307	
-   308		ret = dchid_send(iface, iface->out_flags, data, size);
-   309		if (ret < 0)
-   310			goto done;
-   311	
-   312		if (!wait_for_completion_timeout(&iface->out_complete, msecs_to_jiffies(1000))) {
-   313			dev_err(iface->dchid->dev, "output report 0x%x to iface  %d (%s) timed out\n",
-   314				report_id, iface->index, iface->name);
-   315			ret = -ETIMEDOUT;
-   316			goto done;
-   317		}
-   318	
-   319		ret = iface->resp_size;
-   320		if (iface->retcode) {
-   321			dev_err(iface->dchid->dev,
-   322				"output report 0x%x to iface %d (%s) failed with err 0x%x\n",
-   323				report_id, iface->index, iface->name, iface->retcode);
-   324			ret = -EIO;
-   325		}
-   326	
-   327	done:
-   328		iface->tx_seq++;
-   329		iface->out_report = -1;
-   330		iface->out_flags = 0;
-   331		iface->resp_buf = NULL;
-   332		iface->resp_size = 0;
-   333		mutex_unlock(&iface->out_mutex);
-   334		return ret;
-   335	}
-   336	
+Cc: stable@vger.kernel.org
+Fixes: 04ae87a52074e ("ftrace: Rework event_create_dir()")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ include/trace/stages/stage4_event_fields.h | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
+diff --git a/include/trace/stages/stage4_event_fields.h b/include/trace/stages/stage4_event_fields.h
+index c3790ec7a453..80d34f396555 100644
+--- a/include/trace/stages/stage4_event_fields.h
++++ b/include/trace/stages/stage4_event_fields.h
+@@ -2,16 +2,18 @@
+ 
+ /* Stage 4 definitions for creating trace events */
+ 
++#define ALIGN_STRUCTFIELD(type) ((int)(offsetof(struct {char a; type b;}, b)))
++
+ #undef __field_ext
+ #define __field_ext(_type, _item, _filter_type) {			\
+ 	.type = #_type, .name = #_item,					\
+-	.size = sizeof(_type), .align = __alignof__(_type),		\
++	.size = sizeof(_type), .align = ALIGN_STRUCTFIELD(_type),	\
+ 	.is_signed = is_signed_type(_type), .filter_type = _filter_type },
+ 
+ #undef __field_struct_ext
+ #define __field_struct_ext(_type, _item, _filter_type) {		\
+ 	.type = #_type, .name = #_item,					\
+-	.size = sizeof(_type), .align = __alignof__(_type),		\
++	.size = sizeof(_type), .align = ALIGN_STRUCTFIELD(_type),	\
+ 	0, .filter_type = _filter_type },
+ 
+ #undef __field
+@@ -23,7 +25,7 @@
+ #undef __array
+ #define __array(_type, _item, _len) {					\
+ 	.type = #_type"["__stringify(_len)"]", .name = #_item,		\
+-	.size = sizeof(_type[_len]), .align = __alignof__(_type),	\
++	.size = sizeof(_type[_len]), .align = ALIGN_STRUCTFIELD(_type),	\
+ 	.is_signed = is_signed_type(_type), .filter_type = FILTER_OTHER },
+ 
+ #undef __dynamic_array
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
