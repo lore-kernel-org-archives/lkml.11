@@ -2,128 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D0D0C19F29
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 12:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA95C19F2C
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 12:06:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236206AbiGaMD3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 08:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57884 "EHLO
+        id S236701AbiGaMGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 08:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbiGaMD1 (ORCPT
+        with ESMTP id S229640AbiGaMGd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 08:03:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF1211814;
-        Sun, 31 Jul 2022 05:03:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7F9EB80D1D;
-        Sun, 31 Jul 2022 12:03:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E52CC433D6;
-        Sun, 31 Jul 2022 12:03:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659269003;
-        bh=dgiL09k3fn1iAi1x9FpXJw4FrC+NXMosnHbICt8S4Zs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JHQK9Pl3O8Vnrcfj3/YDIY+pWrMUG0hvj6nyIrkJ7tCFKK21Ncfec/QzojLSvDARe
-         lr7o0yzRQLgJPTbozA0g4qVRpxpOVddLE8Cbk9bzVU5MVbHHq3GPtsHTbYZl+9Bp0x
-         RDTc1fS9WNoDB3Z8Pa/hIeAwaidUaAqlEksqllwiqwL//DTKNHkAhEk9KcBqzekef6
-         MD/ktPdll/uLze02Gb3/vqdV89Tavmope2E223OB+k63KAOZoOjKqc8X7sTGh7Gob3
-         M3mQ4WKjwtOvXcsR/5y3dwsDMSuzK0agZtMtpBgA+MZ+XvgS1rGY9M64kPie3Rr9f7
-         Grz3f+dzYSQIA==
-Date:   Sun, 31 Jul 2022 13:13:28 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Daniel Lezcano <daniel.lezcano@linexp.org>
-Cc:     daniel.lezcano@linaro.org, rafael@kernel.org, rui.zhang@intel.com,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        khilman@baylibre.com, abailon@baylibre.com, lukasz.luba@arm.com,
-        broonie@kernel.org, damien.lemoal@opensource.wdc.com,
-        heiko@sntech.de, hayashi.kunihiko@socionext.com,
-        mhiramat@kernel.org, talel@amazon.com, thierry.reding@gmail.com,
-        digetx@gmail.com, jonathanh@nvidia.com, anarsoul@gmail.com,
-        tiny.windzz@gmail.com, baolin.wang7@gmail.com,
-        f.fainelli@gmail.com, bjorn.andersson@linaro.org,
-        mcoquelin.stm32@gmail.com, glaroque@baylibre.com,
-        miquel.raynal@bootlin.com, shawnguo@kernel.org,
-        niklas.soderlund@ragnatech.se, matthias.bgg@gmail.com,
-        j-keerthy@ti.com, Lars-Peter Clausen <lars@metafoo.de>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Allwinner
-        sunXi SoC support),
-        linux-sunxi@lists.linux.dev (open list:ARM/Allwinner sunXi SoC support)
-Subject: Re: [PATCH v3 27/32] iio/drivers/sun4i_gpadc: Switch to new of
- thermal API
-Message-ID: <20220731131328.7301de32@jic23-huawei>
-In-Reply-To: <20220727210253.3794069-28-daniel.lezcano@linexp.org>
-References: <20220727210253.3794069-1-daniel.lezcano@linexp.org>
-        <20220727210253.3794069-28-daniel.lezcano@linexp.org>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 31 Jul 2022 08:06:33 -0400
+Received: from smtp.smtpout.orange.fr (smtp09.smtpout.orange.fr [80.12.242.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C00881145F
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 05:06:29 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id I7iDoiOFNAeI9I7iDoaGld; Sun, 31 Jul 2022 14:06:28 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 31 Jul 2022 14:06:28 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Lee Jones <lee@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Lee Jones <lee.jones@linaro.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] mfd: fsl-imx25: Fix an error handling path in mx25_tsadc_setup_irq()
+Date:   Sun, 31 Jul 2022 14:06:23 +0200
+Message-Id: <d404e04828fc06bcfddf81f9f3e9b4babbe35415.1659269156.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Jul 2022 23:02:48 +0200
-Daniel Lezcano <daniel.lezcano@linexp.org> wrote:
+If devm_of_platform_populate() fails, some resources need to be
+released.
 
-> The thermal OF code has a new API allowing to migrate the OF
-> initialization to a simpler approach. The ops are no longer device
-> tree specific and are the generic ones provided by the core code.
-> 
-> Convert the ops to the thermal_zone_device_ops format and use the new
-> API to register the thermal zone with these generic ops.
-> 
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
-Whilst making no pretence at having checked what the new calls do, I'm fine with this
-patch affecting the driver in IIO and going through appropriate thermal tree.
+Introduce a mx25_tsadc_unset_irq() function that undoes
+mx25_tsadc_setup_irq() and call it both from the new error handling path
+of the probe and in the remove function.
 
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> ---
->  drivers/iio/adc/sun4i-gpadc-iio.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
-> index 2d393a4dfff6..13d1e937357c 100644
-> --- a/drivers/iio/adc/sun4i-gpadc-iio.c
-> +++ b/drivers/iio/adc/sun4i-gpadc-iio.c
-> @@ -412,9 +412,9 @@ static int sun4i_gpadc_runtime_resume(struct device *dev)
->  	return 0;
->  }
->  
-> -static int sun4i_gpadc_get_temp(void *data, int *temp)
-> +static int sun4i_gpadc_get_temp(struct thermal_zone_device *tz, int *temp)
->  {
-> -	struct sun4i_gpadc_iio *info = data;
-> +	struct sun4i_gpadc_iio *info = tz->devdata;
->  	int val, scale, offset;
->  
->  	if (sun4i_gpadc_temp_read(info->indio_dev, &val))
-> @@ -428,7 +428,7 @@ static int sun4i_gpadc_get_temp(void *data, int *temp)
->  	return 0;
->  }
->  
-> -static const struct thermal_zone_of_device_ops sun4i_ts_tz_ops = {
-> +static const struct thermal_zone_device_ops sun4i_ts_tz_ops = {
->  	.get_temp = &sun4i_gpadc_get_temp,
->  };
->  
-> @@ -637,9 +637,9 @@ static int sun4i_gpadc_probe(struct platform_device *pdev)
->  	pm_runtime_enable(&pdev->dev);
->  
->  	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
-> -		info->tzd = thermal_zone_of_sensor_register(info->sensor_device,
-> -							    0, info,
-> -							    &sun4i_ts_tz_ops);
-> +		info->tzd = thermal_of_zone_register(info->sensor_device,
-> +						     0, info,
-> +						     &sun4i_ts_tz_ops);
->  		/*
->  		 * Do not fail driver probing when failing to register in
->  		 * thermal because no thermal DT node is found.
+Fixes: a55196eff6d6 ("mfd: fsl-imx25: Use devm_of_platform_populate()")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+mx25_tsadc_setup_irq() and mx25_tsadc_unset_irq() are not symetrical.
+One tests for "(irq <= 0)" while the other one tests for "(irq)".
+
+If <0 the probe will fails, so that is fine.
+If ==0, according to doc platform_get_irq() can't return 0, so that should
+be fine as well.
+
+
+That said, I think that the "if (irq)" in mx25_tsadc_unset_irq() can be
+removed.
+---
+ drivers/mfd/fsl-imx25-tsadc.c | 32 ++++++++++++++++++++++++--------
+ 1 file changed, 24 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/mfd/fsl-imx25-tsadc.c b/drivers/mfd/fsl-imx25-tsadc.c
+index 37e5e02a1d05..85f7982d26d2 100644
+--- a/drivers/mfd/fsl-imx25-tsadc.c
++++ b/drivers/mfd/fsl-imx25-tsadc.c
+@@ -84,6 +84,19 @@ static int mx25_tsadc_setup_irq(struct platform_device *pdev,
+ 	return 0;
+ }
+ 
++static int mx25_tsadc_unset_irq(struct platform_device *pdev)
++{
++	struct mx25_tsadc *tsadc = platform_get_drvdata(pdev);
++	int irq = platform_get_irq(pdev, 0);
++
++	if (irq) {
++		irq_set_chained_handler_and_data(irq, NULL, NULL);
++		irq_domain_remove(tsadc->domain);
++	}
++
++	return 0;
++}
++
+ static void mx25_tsadc_setup_clk(struct platform_device *pdev,
+ 				 struct mx25_tsadc *tsadc)
+ {
+@@ -171,18 +184,21 @@ static int mx25_tsadc_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, tsadc);
+ 
+-	return devm_of_platform_populate(dev);
++	ret = devm_of_platform_populate(dev);
++	if (ret)
++		goto err_irq;
++
++	return 0;
++
++err_irq:
++	mx25_tsadc_unset_irq(pdev);
++
++	return ret;
+ }
+ 
+ static int mx25_tsadc_remove(struct platform_device *pdev)
+ {
+-	struct mx25_tsadc *tsadc = platform_get_drvdata(pdev);
+-	int irq = platform_get_irq(pdev, 0);
+-
+-	if (irq) {
+-		irq_set_chained_handler_and_data(irq, NULL, NULL);
+-		irq_domain_remove(tsadc->domain);
+-	}
++	mx25_tsadc_unset_irq(pdev);
+ 
+ 	return 0;
+ }
+-- 
+2.34.1
 
