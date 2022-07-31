@@ -2,221 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22122C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 17:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBBE3C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 17:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237551AbiGaRDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 13:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55648 "EHLO
+        id S237581AbiGaRL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 13:11:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbiGaRDa (ORCPT
+        with ESMTP id S229495AbiGaRLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 13:03:30 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC7CAE66;
-        Sun, 31 Jul 2022 10:03:29 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id w7so8493160ply.12;
-        Sun, 31 Jul 2022 10:03:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fzm9FXVK1++mZC5DB3xf/VNAMRJCgD5SmSkZkONamI0=;
-        b=aD4/ICKma9H8QGUrQNpPLRVjC7JOnDZvzrZC711tHOJMI0j6ULUnb4avuLqcZVJjiW
-         RXjeo7h1MUi1cnRBVfLLE6CqrgHSUP9NIa3ZsbIRLnHGBPgO4wnj0IzHvOd+iPWsd4hp
-         cz4jC4j3CbHjJrTP9sdRD+xSvDwGS7RJEV+DxRO68kFY5xdURGfv0to3k6F4w4EtrgGB
-         EJqhubxy9DF0KRzW03aZnEfNxib7JCRHRMb1ZIKncFrU9V56uSULZchCGksx8/V5zBap
-         uRpsr3HgojQXXEqtl6Cs3nngyp6MOm7OvQr5F55PX1bvSoHwF80vLS5S/eGfBz0Oofpk
-         jpfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fzm9FXVK1++mZC5DB3xf/VNAMRJCgD5SmSkZkONamI0=;
-        b=CZhY19Nd7bAK4PIJCMNfaBwonu8gz9OCVMTtzEP/Xbty2JuX0Ke0D7y6G7YnCMBOgV
-         pqfJEcTOMYkC6Jb3IxudqD6jJ+2LYAY2G4kSHZ6nzawTKWIZT+x1hmYNHMOrgrwNoYTO
-         eQ0WnIBBElWkQ3OMSGMS94E19kymDnEdpgiUpWSn4KgI95ximoMPY6gqY4ItfigzeHTE
-         0+C9hTgaTtbaP32va22rP5Amy0SJ/bwAEQaFYAzIeUEZh5YAGVlF8Eo6riPsyvZ/3f2O
-         BRi6NCqrzmhQ6+5dvm9HuEY6IpWOkGacGDMHqqZSgOXDsGqjcnWrCPeYyyFIk6R3LH0a
-         csmw==
-X-Gm-Message-State: ACgBeo1A+6PYzZzhwgAn5C7HkaJlbc0wziy/ydeI1kYFeFMnJ6HwpyVZ
-        zfy1GOI6wzdEMfF++5k0oHs=
-X-Google-Smtp-Source: AA6agR6ozNq7hqX3YWd831P1TBQPEOX1taSgzIAWgLLhtINpn05+TgL/DsK5AN7Evp1hd6lyV+IkwA==
-X-Received: by 2002:a17:90a:fe10:b0:1f3:1de7:fe1b with SMTP id ck16-20020a17090afe1000b001f31de7fe1bmr15093843pjb.189.1659287008532;
-        Sun, 31 Jul 2022 10:03:28 -0700 (PDT)
-Received: from biggie.. ([103.230.148.186])
-        by smtp.gmail.com with ESMTPSA id u5-20020a17090a4bc500b001ef7c7564fdsm9696745pjl.21.2022.07.31.10.03.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Jul 2022 10:03:28 -0700 (PDT)
-From:   Gautam Menghani <gautammenghani201@gmail.com>
-To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, shuah@kernel.org
-Cc:     Gautam Menghani <gautammenghani201@gmail.com>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Subject: [PATCH] selftests/net: Refactor xfrm_fill_key() to use array of structs
-Date:   Sun, 31 Jul 2022 22:33:16 +0530
-Message-Id: <20220731170316.71542-1-gautammenghani201@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Sun, 31 Jul 2022 13:11:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D410B7EC;
+        Sun, 31 Jul 2022 10:11:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4840B80DA7;
+        Sun, 31 Jul 2022 17:11:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01B07C433D6;
+        Sun, 31 Jul 2022 17:11:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659287511;
+        bh=Eyb54P98ZxBTTy/p/CQm64vp3ep0RfhtJzwLsSC1dvI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Cj6BhG9AGIK886Adot7aslKv2OU9iqtb2a0aWALjbpyyZAbXq7z7fTgH8vp0rwb1/
+         zzD88suADqbU9L8WsZOWBZrKEbzRSE3uzpVm1aW5LOmQqpsuSQP9P3e99oa9KjyY8W
+         CqWZrPswAd0fXiozh06PAN8lbOla8Gc8HYHe2rXvX/G72/8iHkDzlLNeuzM20QvDJ4
+         mllGvQjs9tHfYtzGsqDhjzJrU4z/az0bxfiI7Mhe5BDWK1Xp1oR1G7YK3PqFJc99uW
+         A1IN24YEUcmUPszxKe2bjuAAlPI2KWN+O5fXrfnFRDrf2I/ftkmmRHCV2zCnEW6oes
+         4xQiQM1kfaLLw==
+Date:   Sun, 31 Jul 2022 18:22:04 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Peter Rosin <peda@axentia.se>,
+        Lars-Peter Clausen <lars@metafoo.de>, list@opendingux.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/4] iio: core: Add support for IIO_AVAIL_LIST_WITH_TYPE
+Message-ID: <20220731182204.02459834@jic23-huawei>
+In-Reply-To: <20220721191526.374152-3-paul@crapouillou.net>
+References: <20220721191526.374152-1-paul@crapouillou.net>
+        <20220721191526.374152-3-paul@crapouillou.net>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A TODO in net/ipsec.c asks to refactor the code in xfrm_fill_key() to
-use set/map to avoid manually comparing each algorithm with the "name" 
-parameter passed to the function as an argument. This patch refactors 
-the code to create an array of structs where each struct contains the 
-algorithm name and its corresponding key length.
+On Thu, 21 Jul 2022 20:15:24 +0100
+Paul Cercueil <paul@crapouillou.net> wrote:
 
-Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
----
- tools/testing/selftests/net/ipsec.c | 108 +++++++++++++---------------
- 1 file changed, 49 insertions(+), 59 deletions(-)
+> The IIO_AVAIL_LIST_WITH_TYPE specifies that the array that corresponds
+> to the available values is composed by cells of 3 integers, the first
+> two representing the value itself (similar to what you would have with
+> IIO_AVAIL_LIST), and the third integer representing the encoding type of
+> the value.
+> 
+> This can be used for instance when a driver's .read_avail() callback
+> returns values which cannot be represented with an unique encoding type.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 
-diff --git a/tools/testing/selftests/net/ipsec.c b/tools/testing/selftests/net/ipsec.c
-index cc10c10c5ed9..82d3f9256b84 100644
---- a/tools/testing/selftests/net/ipsec.c
-+++ b/tools/testing/selftests/net/ipsec.c
-@@ -58,6 +58,8 @@
- #define VETH_FMT	"ktst-%d"
- #define VETH_LEN	12
- 
-+#define XFRM_ALGO_NR_KEYS 29
-+
- static int nsfd_parent	= -1;
- static int nsfd_childa	= -1;
- static int nsfd_childb	= -1;
-@@ -75,6 +77,46 @@ const unsigned int ping_timeout		= 300;
- const unsigned int ping_count		= 100;
- const unsigned int ping_success		= 80;
- 
-+static struct xfrm_key_entry {
-+	char algo_name[35];
-+	int key_len;
-+};
-+
-+static struct xfrm_key_entry xfrm_key_entries[XFRM_ALGO_NR_KEYS];
-+
-+static void init_xfrm_algo_keys(void)
-+{
-+	xfrm_key_entries[0] = (struct xfrm_key_entry) {"digest_null", 0};
-+	xfrm_key_entries[1] = (struct xfrm_key_entry) {"ecb(cipher_null)", 0};
-+	xfrm_key_entries[2] = (struct xfrm_key_entry) {"cbc(des)", 64};
-+	xfrm_key_entries[3] = (struct xfrm_key_entry) {"hmac(md5)", 128};
-+	xfrm_key_entries[4] = (struct xfrm_key_entry) {"cmac(aes)", 128};
-+	xfrm_key_entries[5] = (struct xfrm_key_entry) {"xcbc(aes)", 128};
-+	xfrm_key_entries[6] = (struct xfrm_key_entry) {"cbc(cast5)", 128};
-+	xfrm_key_entries[7] = (struct xfrm_key_entry) {"cbc(serpent)", 128};
-+	xfrm_key_entries[8] = (struct xfrm_key_entry) {"hmac(sha1)", 160};
-+	xfrm_key_entries[9] = (struct xfrm_key_entry) {"hmac(rmd160)", 160};
-+	xfrm_key_entries[10] = (struct xfrm_key_entry) {"cbc(des3_ede)", 192};
-+	xfrm_key_entries[11] = (struct xfrm_key_entry) {"hmac(sha256)", 256};
-+	xfrm_key_entries[12] = (struct xfrm_key_entry) {"cbc(aes)", 256};
-+	xfrm_key_entries[13] = (struct xfrm_key_entry) {"cbc(camellia)", 256};
-+	xfrm_key_entries[14] = (struct xfrm_key_entry) {"cbc(twofish)", 256};
-+	xfrm_key_entries[15] = (struct xfrm_key_entry) {"rfc3686(ctr(aes))", 288};
-+	xfrm_key_entries[16] = (struct xfrm_key_entry) {"hmac(sha384)", 384};
-+	xfrm_key_entries[17] = (struct xfrm_key_entry) {"cbc(blowfish)", 448};
-+	xfrm_key_entries[18] = (struct xfrm_key_entry) {"hmac(sha512)", 512};
-+	xfrm_key_entries[19] = (struct xfrm_key_entry) {"rfc4106(gcm(aes))-128", 160};
-+	xfrm_key_entries[20] = (struct xfrm_key_entry) {"rfc4543(gcm(aes))-128", 160};
-+	xfrm_key_entries[21] = (struct xfrm_key_entry) {"rfc4309(ccm(aes))-128", 152};
-+	xfrm_key_entries[22] = (struct xfrm_key_entry) {"rfc4106(gcm(aes))-192", 224};
-+	xfrm_key_entries[23] = (struct xfrm_key_entry) {"rfc4543(gcm(aes))-192", 224};
-+	xfrm_key_entries[24] = (struct xfrm_key_entry) {"rfc4309(ccm(aes))-192", 216};
-+	xfrm_key_entries[25] = (struct xfrm_key_entry) {"rfc4106(gcm(aes))-256", 288};
-+	xfrm_key_entries[26] = (struct xfrm_key_entry) {"rfc4543(gcm(aes))-256", 288};
-+	xfrm_key_entries[27] = (struct xfrm_key_entry) {"rfc4309(ccm(aes))-256", 280};
-+	xfrm_key_entries[28] = (struct xfrm_key_entry) {"rfc7539(chacha20,poly1305)-128", 0};
-+}
-+
- static void randomize_buffer(void *buf, size_t buflen)
- {
- 	int *p = (int *)buf;
-@@ -767,65 +809,12 @@ static int do_ping(int cmd_fd, char *buf, size_t buf_len, struct in_addr from,
- static int xfrm_fill_key(char *name, char *buf,
- 		size_t buf_len, unsigned int *key_len)
- {
--	/* TODO: use set/map instead */
--	if (strncmp(name, "digest_null", ALGO_LEN) == 0)
--		*key_len = 0;
--	else if (strncmp(name, "ecb(cipher_null)", ALGO_LEN) == 0)
--		*key_len = 0;
--	else if (strncmp(name, "cbc(des)", ALGO_LEN) == 0)
--		*key_len = 64;
--	else if (strncmp(name, "hmac(md5)", ALGO_LEN) == 0)
--		*key_len = 128;
--	else if (strncmp(name, "cmac(aes)", ALGO_LEN) == 0)
--		*key_len = 128;
--	else if (strncmp(name, "xcbc(aes)", ALGO_LEN) == 0)
--		*key_len = 128;
--	else if (strncmp(name, "cbc(cast5)", ALGO_LEN) == 0)
--		*key_len = 128;
--	else if (strncmp(name, "cbc(serpent)", ALGO_LEN) == 0)
--		*key_len = 128;
--	else if (strncmp(name, "hmac(sha1)", ALGO_LEN) == 0)
--		*key_len = 160;
--	else if (strncmp(name, "hmac(rmd160)", ALGO_LEN) == 0)
--		*key_len = 160;
--	else if (strncmp(name, "cbc(des3_ede)", ALGO_LEN) == 0)
--		*key_len = 192;
--	else if (strncmp(name, "hmac(sha256)", ALGO_LEN) == 0)
--		*key_len = 256;
--	else if (strncmp(name, "cbc(aes)", ALGO_LEN) == 0)
--		*key_len = 256;
--	else if (strncmp(name, "cbc(camellia)", ALGO_LEN) == 0)
--		*key_len = 256;
--	else if (strncmp(name, "cbc(twofish)", ALGO_LEN) == 0)
--		*key_len = 256;
--	else if (strncmp(name, "rfc3686(ctr(aes))", ALGO_LEN) == 0)
--		*key_len = 288;
--	else if (strncmp(name, "hmac(sha384)", ALGO_LEN) == 0)
--		*key_len = 384;
--	else if (strncmp(name, "cbc(blowfish)", ALGO_LEN) == 0)
--		*key_len = 448;
--	else if (strncmp(name, "hmac(sha512)", ALGO_LEN) == 0)
--		*key_len = 512;
--	else if (strncmp(name, "rfc4106(gcm(aes))-128", ALGO_LEN) == 0)
--		*key_len = 160;
--	else if (strncmp(name, "rfc4543(gcm(aes))-128", ALGO_LEN) == 0)
--		*key_len = 160;
--	else if (strncmp(name, "rfc4309(ccm(aes))-128", ALGO_LEN) == 0)
--		*key_len = 152;
--	else if (strncmp(name, "rfc4106(gcm(aes))-192", ALGO_LEN) == 0)
--		*key_len = 224;
--	else if (strncmp(name, "rfc4543(gcm(aes))-192", ALGO_LEN) == 0)
--		*key_len = 224;
--	else if (strncmp(name, "rfc4309(ccm(aes))-192", ALGO_LEN) == 0)
--		*key_len = 216;
--	else if (strncmp(name, "rfc4106(gcm(aes))-256", ALGO_LEN) == 0)
--		*key_len = 288;
--	else if (strncmp(name, "rfc4543(gcm(aes))-256", ALGO_LEN) == 0)
--		*key_len = 288;
--	else if (strncmp(name, "rfc4309(ccm(aes))-256", ALGO_LEN) == 0)
--		*key_len = 280;
--	else if (strncmp(name, "rfc7539(chacha20,poly1305)-128", ALGO_LEN) == 0)
--		*key_len = 0;
-+	int i = 0;
-+
-+	for (int i = 0; i < XFRM_ALGO_NR_KEYS; i++) {
-+		if (strncmp(name, xfrm_key_entries[i].algo_name, ALGO_LEN) == 0)
-+			*key_len = xfrm_key_entries[i].key_len;
-+	}
- 
- 	if (*key_len > buf_len) {
- 		printk("Can't pack a key - too big for buffer");
-@@ -2305,6 +2294,7 @@ int main(int argc, char **argv)
- 		}
- 	}
- 
-+	init_xfrm_algo_keys();
- 	srand(time(NULL));
- 	page_size = sysconf(_SC_PAGESIZE);
- 	if (page_size < 1)
--- 
-2.34.1
+Hi Paul,
+
+Generally looks good to me, but I'm not sure the overflow checks will work
+as expected.
+
+Jonathan
+
+> ---
+>  drivers/iio/industrialio-core.c | 25 +++++++++++++++++++++++++
+>  drivers/iio/inkern.c            | 23 +++++++++++++++++++++++
+>  include/linux/iio/consumer.h    |  6 ++++--
+>  include/linux/iio/types.h       |  1 +
+>  4 files changed, 53 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index adf054c7a75e..99ced9eab069 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -838,6 +838,29 @@ static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
+>  	return iio_format_list(buf, vals, type, 3, "[", "]");
+>  }
+>  
+> +static ssize_t iio_format_avail_list_with_type(char *buf, const int *vals,
+> +					       int length)
+> +{
+> +	ssize_t len = 0;
+> +	int i;
+> +
+> +	for (i = 0; i < length; i += 3) {
+> +		if (i != 0) {
+> +			len += sysfs_emit_at(buf, len, " ");
+> +			if (len >= PAGE_SIZE)
+I don't think this check will trigger if I read the sysfs_emit_at() docs right.
+
+> +				return -EFBIG;
+> +		}
+> +
+> +		len += __iio_format_value(buf, len, vals[i + 2], 2, &vals[i]);
+> +		if (len >= PAGE_SIZE)
+
+Can this trigger?  sysfs_emit_at() inside __iio_format_value() will only return
+characters written which I think is none if there isn't space left in the page...
+
+I think the normal thing to do is to just not handle the overflow if it occurs...
+
+
+
+> +			return -EFBIG;
+> +	}
+> +
+> +	len += sysfs_emit_at(buf, len, "\n");
+> +
+> +	return len;
+> +}
+> +
+>  static ssize_t iio_read_channel_info_avail(struct device *dev,
+>  					   struct device_attribute *attr,
+>  					   char *buf)
+> @@ -860,6 +883,8 @@ static ssize_t iio_read_channel_info_avail(struct device *dev,
+>  		return iio_format_avail_list(buf, vals, type, length);
+>  	case IIO_AVAIL_RANGE:
+>  		return iio_format_avail_range(buf, vals, type);
+> +	case IIO_AVAIL_LIST_WITH_TYPE:
+> +		return iio_format_avail_list_with_type(buf, vals, length);
+>  	default:
+>  		return -EINVAL;
+>  	}
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index e8a25852f0df..92d225f1ddd5 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -855,6 +855,29 @@ static int iio_channel_read_max(struct iio_channel *chan,
+>  		}
+>  		return 0;
+>  
+> +	case IIO_AVAIL_LIST_WITH_TYPE:
+> +		if (length <= 0 || length % 3 != 0)
+> +			return -EINVAL;
+> +
+> +		if (vals[length - 1] != IIO_VAL_INT) {
+> +			/* FIXME: learn about max for other iio values */
+> +			return -EINVAL;
+> +		}
+> +
+> +		*val = vals[length - 3];
+> +		length -= 3;
+> +
+> +		for (; length; length -= 3) {
+> +			if (vals[length - 1] != IIO_VAL_INT) {
+> +				/* FIXME: learn about max for other iio values */
+> +				return -EINVAL;
+> +			}
+> +
+> +			if (vals[length - 3] > *val)
+> +				*val = vals[length - 3];
+> +		}
+> +		return 0;
+> +
+>  	default:
+>  		return ret;
+>  	}
+> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+> index 5fa5957586cf..99dd12e10fb6 100644
+> --- a/include/linux/iio/consumer.h
+> +++ b/include/linux/iio/consumer.h
+> @@ -309,7 +309,8 @@ int iio_read_max_channel_raw(struct iio_channel *chan, int *val);
+>   * @vals:		Available values read back.
+>   * @length:		Number of entries in vals.
+>   *
+> - * Returns an error code, IIO_AVAIL_RANGE or IIO_AVAIL_LIST.
+> + * Returns an error code, IIO_AVAIL_RANGE, IIO_AVAIL_LIST or
+> + * IIO_AVAIL_LIST_WITH_TYPE.
+>   *
+>   * For ranges, three vals are always returned; min, step and max.
+>   * For lists, all the possible values are enumerated.
+> @@ -328,7 +329,8 @@ int iio_read_avail_channel_raw(struct iio_channel *chan,
+>   * @length:		Number of entries in vals.
+>   * @attribute:		info attribute to be read back.
+>   *
+> - * Returns an error code, IIO_AVAIL_RANGE or IIO_AVAIL_LIST.
+> + * Returns an error code, IIO_AVAIL_RANGE, IIO_AVAIL_LIST or
+> + * IIO_AVAIL_LIST_WITH_TYPE.
+>   */
+>  int iio_read_avail_channel_attribute(struct iio_channel *chan,
+>  				     const int **vals, int *type, int *length,
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index a7aa91f3a8dc..9777d1357080 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -32,6 +32,7 @@ enum iio_event_info {
+>  enum iio_available_type {
+>  	IIO_AVAIL_LIST,
+>  	IIO_AVAIL_RANGE,
+> +	IIO_AVAIL_LIST_WITH_TYPE,
+>  };
+>  
+>  enum iio_chan_info_enum {
 
