@@ -2,109 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98840C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 16:31:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D45B4C19F2B
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 16:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234951AbiGaQbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 12:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38584 "EHLO
+        id S237343AbiGaQdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 12:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbiGaQbF (ORCPT
+        with ESMTP id S229674AbiGaQdq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 12:31:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F1662C8;
-        Sun, 31 Jul 2022 09:31:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30158B80DA7;
-        Sun, 31 Jul 2022 16:31:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68224C433C1;
-        Sun, 31 Jul 2022 16:30:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659285060;
-        bh=iEhFJD0Uh7t+0kHyZggEl1bybolK+40g8fFl/KgN6ko=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Z/Slht9nbTV3N6bk/OTKKa1e3XhwnQtIb7y5JrdR5qFA0anjPUxC7qEYtd//OO6fV
-         dvZTzt0JoAT50wWGQWQc0plX2TVymmEQAwGolhIMC8YMJvhqUR6XSSRO11Pt86iLvT
-         TfrdVZZ7uEVsRg025mqMSEbtMeHoz6RIwhACCeFjLbBrmWVLkAhzETMDKTh+3F1NAt
-         OGCI6A8RJSc59iTT+a6yc5+NJXfRx++O+37ZRVvU/kmOU4I0lgDz1t/HTGq0psx3sp
-         LdUveetYwsUzGrF+LbTDNJZVAA1gmrTsx+89Z02ZAmCSNojdFhIF+Or9PDxojXkxb0
-         xxCF1DsulLIJQ==
-Date:   Sun, 31 Jul 2022 17:41:12 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>
-Cc:     Kent Gustavsson <kent@minoris.se>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/9] Improve MCP3911 driver
-Message-ID: <20220731174112.072345e3@jic23-huawei>
-In-Reply-To: <20220722130726.7627-1-marcus.folkesson@gmail.com>
-References: <20220722130726.7627-1-marcus.folkesson@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 31 Jul 2022 12:33:46 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CD7FD2A;
+        Sun, 31 Jul 2022 09:33:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1659285222; x=1690821222;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=89qX1O/H+lET6Ss1xB8dRlPHjGtgPFz4Arj/97wfYiU=;
+  b=LEz1P8FKbECwMzHCcZmuuGdSswCGoGfgCIBJ7oJg91jpqHPHPjZyEZYJ
+   D7e6RBS8AAXnz81j/y2+cVyZFXoRmBhAmj3Xfgto4uQrZKPPot7ISWrsg
+   Sta5KALXf96S8J7JmNexW5GdFYyDVlxQPLNYgNAWOgxx07x2lLQ2pIAIY
+   g=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 31 Jul 2022 09:33:41 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 09:33:41 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sun, 31 Jul 2022 09:32:40 -0700
+Received: from [10.216.11.73] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Sun, 31 Jul
+ 2022 09:32:35 -0700
+Message-ID: <d7f95663-c0f7-8227-dbc0-fac43bdf6faa@quicinc.com>
+Date:   Sun, 31 Jul 2022 22:02:32 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH v3 2/8] drm/msm: Take single rpm refcount on behalf of all
+ submits
+Content-Language: en-US
+To:     Rob Clark <robdclark@gmail.com>
+CC:     freedreno <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Jonathan Marek <jonathan@marek.ca>,
+        "Douglas Anderson" <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, <linux-kernel@vger.kernel.org>
+References: <1659174051-27816-1-git-send-email-quic_akhilpo@quicinc.com>
+ <20220730150952.v3.2.Ifee853f6d8217a0fdacc459092bbc9e81a8a7ac7@changeid>
+ <CAF6AEGs7zKDoRY=ijxFQvaZig=UiSPgWkJFA-PY2MTxKWr5bpw@mail.gmail.com>
+From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
+In-Reply-To: <CAF6AEGs7zKDoRY=ijxFQvaZig=UiSPgWkJFA-PY2MTxKWr5bpw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Jul 2022 15:07:17 +0200
-Marcus Folkesson <marcus.folkesson@gmail.com> wrote:
+On 7/31/2022 9:26 PM, Rob Clark wrote:
+> On Sat, Jul 30, 2022 at 2:41 AM Akhil P Oommen <quic_akhilpo@quicinc.com> wrote:
+>> Instead of separate refcount for each submit, take single rpm refcount
+>> on behalf of all the submits. This makes it easier to drop the rpm
+>> refcount during recovery in an upcoming patch.
+>>
+>> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
+>> ---
+>>
+>> (no changes since v1)
+> I see no earlier version of this patch?
+>
+>>   drivers/gpu/drm/msm/msm_gpu.c | 12 ++++++++----
+>>   1 file changed, 8 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+>> index c8cd9bf..e1dd3cc 100644
+>> --- a/drivers/gpu/drm/msm/msm_gpu.c
+>> +++ b/drivers/gpu/drm/msm/msm_gpu.c
+>> @@ -663,11 +663,12 @@ static void retire_submit(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
+>>          mutex_lock(&gpu->active_lock);
+>>          gpu->active_submits--;
+>>          WARN_ON(gpu->active_submits < 0);
+>> -       if (!gpu->active_submits)
+>> +       if (!gpu->active_submits) {
+>>                  msm_devfreq_idle(gpu);
+>> -       mutex_unlock(&gpu->active_lock);
+>> +               pm_runtime_put_autosuspend(&gpu->pdev->dev);
+>> +       }
+>>
+>> -       pm_runtime_put_autosuspend(&gpu->pdev->dev);
+>> +       mutex_unlock(&gpu->active_lock);
+>>
+>>          msm_gem_submit_put(submit);
+>>   }
+>> @@ -756,14 +757,17 @@ void msm_gpu_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
+>>
+>>          /* Update devfreq on transition from idle->active: */
+>>          mutex_lock(&gpu->active_lock);
+>> -       if (!gpu->active_submits)
+>> +       if (!gpu->active_submits) {
+>> +               pm_runtime_get(&gpu->pdev->dev);
+>>                  msm_devfreq_active(gpu);
+>> +       }
+>>          gpu->active_submits++;
+>>          mutex_unlock(&gpu->active_lock);
+>>
+>>          gpu->funcs->submit(gpu, submit);
+>>          gpu->cur_ctx_seqno = submit->queue->ctx->seqno;
+>>
+>> +       pm_runtime_put(&gpu->pdev->dev);
+> this looks unbalanced?
+There is another pm_runtime_get_sync at the top of this function. Just 
+before hw_init().
+https://elixir.bootlin.com/linux/v5.19-rc8/source/drivers/gpu/drm/msm/msm_gpu.c#L737
 
-> Hi,
-> 
-> This patch series intend to fix bugs and improve functionality of the
-> MCP3911 driver.
-> The main features added are
-> - Support for buffers
-> - Interrupt driven readings
-> - Support for oversampling ratio
-> - Support for set scale values (Gain)
-> 
-> Among the bug fixes, there are changes in the formula for calculate raw
-> value and a fix for mismatch in the devicetree property.
-> 
-> Another general improvement for the driver is to use managed resources
-> for all allocated resources.
-> 
-Hi Marcus,
-
-The first 3 fixes look good to me.  Do you want me to pick those up to
-go in after rc1 via my togreg-fixes branch?  The side effect of doing
-that is it'll be a little while before they are upstream in the branch
-I'll want to pick the rest of the series on top of.
-
-So it's a trade off between getting fixes in as soon as possible and
-slowing down other improvements a little.
-
-Jonathan
-
-> General changes for the series:
-> 
-> v3:
-> - Drop Phase patch
-> - Add Fixes tags for those patches that are fixes
-> - Move Fixes patches to the beginning of the patchset
-> 
-> v4:
-> - Split up devm-cleanup functions 
-> - Cosmetic cleanups
-> - Add
->     select IIO_BUFFER
->     select IIO_TRIGGERED_BUFFER
->     To Kconfig
-> - Add .endianness = IIO_BE
-> 
-> 
-> Best regards,
-> Marcus Folkesson
-> 
-> 
-> 
+-Akhil.
+>
+> BR,
+> -R
+>
+>>          hangcheck_timer_reset(gpu);
+>>   }
+>>
+>> --
+>> 2.7.4
+>>
 
