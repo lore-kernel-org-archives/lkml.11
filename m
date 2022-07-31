@@ -2,58 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 057C4C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 20:00:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37373C19F2C
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 20:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237851AbiGaUAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 16:00:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53682 "EHLO
+        id S237902AbiGaUA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 16:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237772AbiGaUAq (ORCPT
+        with ESMTP id S237772AbiGaUAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 16:00:46 -0400
-Received: from smtp.smtpout.orange.fr (smtp05.smtpout.orange.fr [80.12.242.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55530CE32
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 13:00:45 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id IF7CoUO8ZcdW9IF7CoxqKI; Sun, 31 Jul 2022 22:00:43 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 31 Jul 2022 22:00:43 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <b92e535f-1683-e7f6-2bb4-da873605274f@wanadoo.fr>
-Date:   Sun, 31 Jul 2022 22:00:42 +0200
+        Sun, 31 Jul 2022 16:00:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 327D1EE32;
+        Sun, 31 Jul 2022 13:00:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4D98B80D18;
+        Sun, 31 Jul 2022 20:00:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66F5CC433D6;
+        Sun, 31 Jul 2022 20:00:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659297651;
+        bh=yhG/0weQiu1uClHoiYMUHcDuCmikwM2JcQ+CqPn5MhI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ubFRmDjd9f6LwROClVgJu44QJvGHnInjGvU2sQaqYYe1ZCanW51kettShaf9acR88
+         kRgti/Y+F20+PDnWBFU7qZUFkcYFZxAekvxb2F2x8d7ecuiZbf+3FpW0na6XNjxuwq
+         pVWHTY4wcgh3Z8SOtawtU3TZ4JXnoooyOp3oIZjThNjQJ3H+pDNkEFUIE9KtViVrih
+         hZ0l607+XH4mnQJdOWqXlkJTbJ835uY9z/xgR68crmuQ+KLESi6LbloO1Z2tatqWOb
+         0W8VjyOLVae+Xc5evxpVBGhu/lpiCIvnSKE2RN/AzpVMWKbbPpadm9168kC9IC/pBX
+         QpnKKq7Xk8+rA==
+Date:   Sun, 31 Jul 2022 21:11:01 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     <eugen.hristev@microchip.com>, <lars@metafoo.de>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v2 19/19] iio: adc: at91-sama5d2_adc: add runtime pm
+ support
+Message-ID: <20220731211101.2ca0ab1b@jic23-huawei>
+In-Reply-To: <20220628151631.3116454-20-claudiu.beznea@microchip.com>
+References: <20220628151631.3116454-1-claudiu.beznea@microchip.com>
+        <20220628151631.3116454-20-claudiu.beznea@microchip.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] hyperv_setup_vram() calls vmbus_allocate_mmio(). This
- must be undone in the error handling path of the probe, as already done in
- the remove function.
-Content-Language: fr
-To:     Deepak Rawat <drawat.floss@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, dri-devel@lists.freedesktop.org
-References: <1781855facffbdba640ce2da3649cac424e76fed.1659297462.git.christophe.jaillet@wanadoo.fr>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <1781855facffbdba640ce2da3649cac424e76fed.1659297462.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 31/07/2022 à 21:57, Christophe JAILLET a écrit :
-> This patch depends on	commit a0ab5abced55 ("drm/hyperv : Removing the
-> restruction of VRAM allocation with PCI bar size").
-> Without it, something like what is done in commit e048834c209a
-> ("drm/hyperv: Fix device removal on Gen1 VMs") should be done.
+On Tue, 28 Jun 2022 18:16:31 +0300
+Claudiu Beznea <claudiu.beznea@microchip.com> wrote:
 
-I forgot the subject :(
-Will resend.
+> Add runtime PM support by disabling/enabling ADC's peripheral clock.
+> On simple conversion the ADC's clock is kept enabled just while the
+> conversion is in progress. This includes also temperature conversion.
+> For triggered buffers and touch conversions the ADC clock is kept enabled
+> while the triggered buffers or touch are enabled. Along with it removed
+> the __maybe_unused on suspend() and resume() ops as the dev_pm_ops
+> object members are now filled with SYSTEM_SLEEP_PM_OPS().
+> 
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-CJ
+Hi Claudia,
 
+This patch crossed with a mass conversion series taking lots of drivers
+over to the new PM ops macros. That covered some of the changes in here.
+I've hand applied this but please check I didn't mess it up.
+
+Thanks,
+
+Jonathan
