@@ -2,112 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3552AC19F2C
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 20:07:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 470CFC00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 20:13:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238027AbiGaUHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 16:07:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57134 "EHLO
+        id S238084AbiGaUNC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 16:13:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230351AbiGaUHe (ORCPT
+        with ESMTP id S230351AbiGaUNA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 16:07:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B01C65DC;
-        Sun, 31 Jul 2022 13:07:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7D966108F;
-        Sun, 31 Jul 2022 20:07:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98E2AC433D6;
-        Sun, 31 Jul 2022 20:07:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659298052;
-        bh=+qfOhp/3423pXOH1mc2GCsLtY504nNGk6+866UHD/8U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Q/4PXuK6Rm1ZDU5zh+PHtVqkHDkeja0FxrqhVm6uZudzjJy+dN7y49IqpX3GLjOcV
-         8s7rEFRNCfdirL0JMqdTxaeQ/cBotEp7msPl0PDKI+3ainWh1VGy/sclLGnELfCHao
-         4BAI44Mu6iO+dCJhGBUYxIV3iE3Txleh1W0emyYFc/RnfD+UbUJiOQ5NB0IUZgyMgo
-         +wr+R4/MF+IBurVsqO3af7YGDruWmDvQtm34ibhZcfJlvR522/Glh324xNkWvXeDxk
-         aNWVpQAprEg99s2R+E9KYrrg/jzPg/BcP9FYCqsFVU4xeykTgs+ZWR2dHwW9XqWpIC
-         eDMN43OtAHrLA==
-Date:   Sun, 31 Jul 2022 21:17:43 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Matti =?UTF-8?B?TGVodGltw6RraQ==?= <matti.lehtimaki@gmail.com>
-Cc:     linux-iio@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
+        Sun, 31 Jul 2022 16:13:00 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABAEE0F2
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 13:12:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659298379; x=1690834379;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=B3MrJ5yXSJK9PTu8OhemhCUTFa5SOOA82b/FDvNo1gY=;
+  b=fpaieIrLczKg5wxg8M2j7+D5obKbSgSnqjUMdpMlaPhqde1bq07MWyWm
+   tqZJnRSSUzHzXYmmZFwmixq7VLHnf9cOAwMPs6bOEnIOEn7RXjcBe9P2h
+   JTX1BTN2+DYkBODZQwlhEIQa6W33a9jgfA0axlwijGeIws328STHb80Sf
+   MOO2xt/3wX6azzi8G8EViQn1coJE/THbooRDWwXqHf8m1F+Lz3bQBKuRu
+   8FVTmqjpEllgEeZph6l2AU+6rXAzwnwRqY5n6c963MypMKLoGSXQtadPj
+   E0s5FJccq9R5CR0bstE62Y99dwCIu83JpKWnOvSoL8dTAs+fZbgvcNLts
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10425"; a="286581524"
+X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
+   d="scan'208";a="286581524"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 13:12:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
+   d="scan'208";a="691258309"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by FMSMGA003.fm.intel.com with ESMTP; 31 Jul 2022 13:12:57 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 5040FF7; Sun, 31 Jul 2022 23:13:08 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Lee Jones <lee.jones@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: st_sensors: Retry ID verification on failure
-Message-ID: <20220731211743.6ab9264f@jic23-huawei>
-In-Reply-To: <6c839ba3-b671-76fb-95e1-94bf2f2da303@gmail.com>
-References: <20220724164316.68393-1-matti.lehtimaki@gmail.com>
-        <20220731170057.2b8ac00e@jic23-huawei>
-        <6c839ba3-b671-76fb-95e1-94bf2f2da303@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+Cc:     Lee Jones <lee@kernel.org>, Andy Shevchenko <andy@kernel.org>
+Subject: [PATCH v2 03/10] mfd: intel_soc_pmic: Move non-Intel Makefile entries to their own group
+Date:   Sun, 31 Jul 2022 23:12:51 +0300
+Message-Id: <20220731201258.11262-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220731201258.11262-1-andriy.shevchenko@linux.intel.com>
+References: <20220731201258.11262-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 31 Jul 2022 21:51:55 +0300
-Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com> wrote:
+It looks like a random position for couple of Makefile entries that are
+disrupting Intel PMIC group. Move them to their own group.
 
-> On 31.7.2022 19.00, Jonathan Cameron wrote:
-> > On Sun, 24 Jul 2022 19:43:15 +0300
-> > Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com> wrote:
-> >  =20
-> >> Some sensors do not always start fast enough to read a valid ID from
-> >> registers at first attempt. Let's retry at most 3 times with short sle=
-ep
-> >> in between to fix random timing issues.
-> >>
-> >> Signed-off-by: Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com> =20
-> > Hi Matti,
-> >=20
-> > My gut feeling is this isn't in a fast path, so why not just wait
-> > for whatever the documented power up time of the sensor is?
-> >=20
-> > I'd expect to see a sleep in st_sensors_power_enable() if one is
-> > required. =20
->=20
-> In the specification for the sensor (lis2hh12) I have on my device I
-> found that the maximum boot time of the sensor (starting from Vdd power
-> on) is defined as 20 ms. Not sure if the other sensors supported by the
-> driver have different values but based on checking a couple of
-> specifications I didn't find any bigger values so far.
->=20
-> >> +			msleep(20); =20
-> > How do we know 60msecs is long enough for all sensors? =20
->=20
-> Based on the specification for the sensor I have and also driver used in
-> Android kernel for my device (it uses a 3 x 20 ms loop) I think 20 ms is
-> a good value but to be sure a slightly longer might make sense. As
-> suggested in the other review comment by changing the regmap_read to
-> regmap_read_poll_timeout the function doesn't always need to wait at
-> least 20 ms in case first read doesn't provide the correct value, if a
-> suitable shorter poll interval is used (something like 1-10 ms).
->=20
-> However testing on my device has shown that I still need to have a loop
-> or at least a retry possibility because I have noticed a rare random
-> read error (-6, happens after some time not at first read) when reading
-> the id from the hardware. This could be due to for example internal
-> init failure of the sensor chip causing an internal reset. Because of
-> this read error regmap_read_poll_timeout returns with an error and
-> without retrying to read the id the sensor probe fails.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Tested-by: Hans de Goede <hdegoede@redhat.com>
+Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+---
+v2: added tags and rebased on top of new patch 1
 
-Nasty. If you can get a confirmation that it's a possible failure on startup
-from the manufacturer then I'd be happier with that justification to retry
-rather than just sleep for say 30msec after power on.
+ drivers/mfd/Makefile | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-Jonathan
-
->=20
-> -Matti
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 61db669f864c..30f5de657e88 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -172,6 +172,10 @@ obj-$(CONFIG_MFD_MAX8998)	+= max8998.o max8998-irq.o
+ 
+ obj-$(CONFIG_MFD_MP2629)	+= mp2629.o
+ 
++obj-$(CONFIG_MFD_MT6360)	+= mt6360-core.o
++mt6397-objs			:= mt6397-core.o mt6397-irq.o mt6358-irq.o
++obj-$(CONFIG_MFD_MT6397)	+= mt6397.o
++
+ pcf50633-objs			:= pcf50633-core.o pcf50633-irq.o
+ obj-$(CONFIG_MFD_PCF50633)	+= pcf50633.o
+ obj-$(CONFIG_PCF50633_ADC)	+= pcf50633-adc.o
+@@ -240,9 +244,6 @@ obj-$(CONFIG_INTEL_SOC_PMIC)		+= intel_soc_pmic_crc.o
+ obj-$(CONFIG_INTEL_SOC_PMIC_BXTWC)	+= intel_soc_pmic_bxtwc.o
+ obj-$(CONFIG_INTEL_SOC_PMIC_CHTWC)	+= intel_soc_pmic_chtwc.o
+ obj-$(CONFIG_INTEL_SOC_PMIC_CHTDC_TI)	+= intel_soc_pmic_chtdc_ti.o
+-obj-$(CONFIG_MFD_MT6360)	+= mt6360-core.o
+-mt6397-objs			:= mt6397-core.o mt6397-irq.o mt6358-irq.o
+-obj-$(CONFIG_MFD_MT6397)	+= mt6397.o
+ obj-$(CONFIG_INTEL_SOC_PMIC_MRFLD)	+= intel_soc_pmic_mrfld.o
+ 
+ obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
+-- 
+2.35.1
 
