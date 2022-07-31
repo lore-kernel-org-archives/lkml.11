@@ -2,68 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF04EC00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 16:56:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA58C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 16:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236999AbiGaQ4B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 12:56:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
+        id S236763AbiGaQ5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 12:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236937AbiGaQzw (ORCPT
+        with ESMTP id S231281AbiGaQ5E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 12:55:52 -0400
+        Sun, 31 Jul 2022 12:57:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F336472
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 09:55:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BD765AB;
+        Sun, 31 Jul 2022 09:57:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D96EEB80DB4
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 16:55:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 857EEC433D6;
-        Sun, 31 Jul 2022 16:55:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F421B80DB2;
+        Sun, 31 Jul 2022 16:57:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31B5EC433C1;
+        Sun, 31 Jul 2022 16:56:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659286548;
-        bh=vk/5v/etr2AWVlX0WBCMwY/MMz3J/OQvlQSOKHnZQcI=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ni0SGpYtr2Jwzz5z9shQS56CqdI5UmocNqwP0zWc0lkW9KpaAlLYoVMjB5p+9SaLj
-         N3KTxPHclIw2/drWB2tSKtvVu+3ADvPCAxc3GwOemCCr70I5SLuXW0TNMGgpm369s6
-         JsMraXY8NfoOw8X6lQurOJ8eL1qiMDEET90qRD2vU9xd7g2Yxc+3GJAjbgIRuwXktC
-         +EwpSo5g718Y2pbvaMtdWkZD3u5nznxWiWEk+RHvYbm+WwUT2e0x4fjFy+NfAQJ7iD
-         TVj/yV5LPtTBhai3vpc69IljDHzxqQigr6joZWZslal0g2HgWemIV3Pp42AQtEobtL
-         qysA/VfgrZvuw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 671B2C43143;
-        Sun, 31 Jul 2022 16:55:48 +0000 (UTC)
-Subject: Re: [GIT PULL] x86/urgent for 5.19
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YuZYELRWE77M09c2@zn.tnic>
-References: <YuZYELRWE77M09c2@zn.tnic>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YuZYELRWE77M09c2@zn.tnic>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_urgent_for_v5.19
-X-PR-Tracked-Commit-Id: ea304a8b89fd0d6cf94ee30cb139dc23d9f1a62f
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 89caf575400a9296e45b7de97b07d2fbf249c1f5
-Message-Id: <165928654841.8632.1633335365341452244.pr-tracker-bot@kernel.org>
-Date:   Sun, 31 Jul 2022 16:55:48 +0000
-To:     Borislav Petkov <bp@suse.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+        s=k20201202; t=1659286620;
+        bh=C2gjWpdRXKf8H74OuiqBmJfM3oAyddv3Qxyb+Pg+zEU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aAd7Z4WkMcGJ0IgdUSaCVJZtQ2fq0bh1txcOGKRFpNj7Irte0y+Z6oF9HfeD/vJSk
+         QN7eLhjzDm27y1OKx0PqAV0Aww/tyxbQt2RB84iyRCdrHRJDKdoQstj0LKuPV4I/c1
+         SvuDLDGdvxBJ7oWSr8OEFJ8ytDPKiskjURPzOy+w1ZYSWiCJctV45CKgC5Fu30uOAF
+         M0qV29DCJJLcJFEuYRvjsJ5Skxb36ZB5pq34vkwK7H7q5bO/gdA9IUVfzoG3JN645a
+         jtSggRsOMuYgx6Inr6WHTTwkD8xT6ID0qUUIIhuwez8f2jfcJnt18iMoEVjPXON1Lq
+         q6ESDOWXVkRsQ==
+Date:   Sun, 31 Jul 2022 18:07:13 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Peter Rosin <peda@axentia.se>,
+        Lars-Peter Clausen <lars@metafoo.de>, list@opendingux.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] iio: inkern: Remove useless argument to
+ iio_channel_read_max()
+Message-ID: <20220731180713.48349570@jic23-huawei>
+In-Reply-To: <20220721191526.374152-2-paul@crapouillou.net>
+References: <20220721191526.374152-1-paul@crapouillou.net>
+        <20220721191526.374152-2-paul@crapouillou.net>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 31 Jul 2022 12:23:12 +0200:
+On Thu, 21 Jul 2022 20:15:23 +0100
+Paul Cercueil <paul@crapouillou.net> wrote:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_urgent_for_v5.19
+> The 'type' argument was passed by the only caller of the
+> iio_channel_read_max() function as a pointer to return an extra value,
+> but the value of the variable passed by the caller was never read
+> afterwards.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/89caf575400a9296e45b7de97b07d2fbf249c1f5
+Curious. I'm playing guess the intent here and I suspect that what
+we should really be doing is checking type in 
+iio_read_max_channel_raw() and returning an error if it is not IIO_VAL_INT
+(can only get there for IIO_AVAIL_RANGE currently as there is a FIXME for
+ IIO_AVAIL_LIST for non IIO_VAL_INT types)
 
-Thank you!
+I'm not sure we've ever documented that _RAW can't be non integer even if
+that makes relatively little sense most of the time..
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Jonathan
+
+> ---
+>  drivers/iio/inkern.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index df74765d33dc..e8a25852f0df 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -813,21 +813,22 @@ int iio_read_avail_channel_raw(struct iio_channel *chan,
+>  EXPORT_SYMBOL_GPL(iio_read_avail_channel_raw);
+>  
+>  static int iio_channel_read_max(struct iio_channel *chan,
+> -				int *val, int *val2, int *type,
+> +				int *val, int *val2,
+>  				enum iio_chan_info_enum info)
+>  {
+>  	int unused;
+>  	const int *vals;
+>  	int length;
+>  	int ret;
+> +	int type;
+>  
+>  	if (!val2)
+>  		val2 = &unused;
+>  
+> -	ret = iio_channel_read_avail(chan, &vals, type, &length, info);
+> +	ret = iio_channel_read_avail(chan, &vals, &type, &length, info);
+>  	switch (ret) {
+>  	case IIO_AVAIL_RANGE:
+> -		switch (*type) {
+> +		switch (type) {
+>  		case IIO_VAL_INT:
+>  			*val = vals[2];
+>  			break;
+> @@ -840,7 +841,7 @@ static int iio_channel_read_max(struct iio_channel *chan,
+>  	case IIO_AVAIL_LIST:
+>  		if (length <= 0)
+>  			return -EINVAL;
+> -		switch (*type) {
+> +		switch (type) {
+>  		case IIO_VAL_INT:
+>  			*val = vals[--length];
+>  			while (length) {
+> @@ -863,7 +864,6 @@ int iio_read_max_channel_raw(struct iio_channel *chan, int *val)
+>  {
+>  	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(chan->indio_dev);
+>  	int ret;
+> -	int type;
+>  
+>  	mutex_lock(&iio_dev_opaque->info_exist_lock);
+>  	if (!chan->indio_dev->info) {
+> @@ -871,7 +871,7 @@ int iio_read_max_channel_raw(struct iio_channel *chan, int *val)
+>  		goto err_unlock;
+>  	}
+>  
+> -	ret = iio_channel_read_max(chan, val, NULL, &type, IIO_CHAN_INFO_RAW);
+> +	ret = iio_channel_read_max(chan, val, NULL, IIO_CHAN_INFO_RAW);
+>  err_unlock:
+>  	mutex_unlock(&iio_dev_opaque->info_exist_lock);
+>  
+
