@@ -2,74 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD004C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 10:09:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A35CAC00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 10:13:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232696AbiGaKJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 06:09:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59762 "EHLO
+        id S232952AbiGaKNX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 06:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231267AbiGaKJT (ORCPT
+        with ESMTP id S231267AbiGaKNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 06:09:19 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002CDBC03
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 03:09:16 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id j5-20020a056e02218500b002de1cf2347bso3393838ila.2
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 03:09:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=fB4ZFQbGOh22CQyNCxnbUuNY0WDSjtBE2vSyeSW5G+c=;
-        b=sE2uPhELtv2Vtn45rgeS2jLlqJkVef3d5XiUqw3yhmDyAlvOOIMCqJtKnKsy/SsB+V
-         3H4xuCGva/SqhVhsNHLeFkXGjeZmejLIk1/Z/8ZV8LTU7hrG6R0xYgmD0Hd+9wZQX3jC
-         lH04JAMMGLXHLgkzBCyDbeDHRBUaYPgW7cjpJUkWlUKRgTJ05tLPqbQlSXtJjVbO2FJo
-         stVwE/LQPy68RKL0OGkhiRnSYDXYGsAtCTBpUoNb/g1Ula5L0FsXW81nmmBQcWENujzC
-         UdIAU+ESzMW6CdkUEEmI9P2P5I/lmKMr6TDME/WyG5CWiRqNylwkc9MW6Cz77Abqr1Kl
-         +IJA==
-X-Gm-Message-State: ACgBeo2jXYtaTyd7nIlGbocuXQJgd2CjgV14+gxsVopz5h/j/4+BcPyw
-        z2vZnDd58mBuE5AA8oCexd7vB//f0uLtNV3Y/b658CTZCm6n
-X-Google-Smtp-Source: AA6agR4YNsdIXwW4E3ZVaopPhSjeQnRfxTz3O+lMbX2712oNCcbItZdONhSQyTHdUx3uQMh8IJ+Ty6Fch6q0b1TKD2saTWINeznW
+        Sun, 31 Jul 2022 06:13:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD5EFE018
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 03:13:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8ED22B80A27
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 10:13:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB85EC433C1;
+        Sun, 31 Jul 2022 10:13:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659262397;
+        bh=l1KcgsyDNOlbE9gZMQjdsaDZuWLLdpPFaAzH+3qqmhE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vDz/7PtrR9YpZzsEM75UVFsCsdhLffknxIjX1sjuGSMlM+yhFj6GArpfkDewN0dFD
+         tCgscT5N/MZ2Pr1RDwkZdCkmn2W9snudd2KDGG7wWSjGpYA3FPi/UJ2uQPCcIf5UoV
+         JD/n67t3X8x0Z4VqAVr2T8dlkpGT9STHWtYdzYTs=
+Date:   Sun, 31 Jul 2022 12:13:14 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Arnd Bergmann <arnd@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        "Justin M. Forbes" <jforbes@fedoraproject.org>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        kbuild-all@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Jason A. Donenfeld" <zx2c4@kernel.org>
+Subject: Re: [linux-stable-rc:linux-5.15.y 6874/8723]
+ arch/arm/lib/xor-neon.c:30:2: warning: This code requires at least version
+ 4.6 of GCC
+Message-ID: <YuZVuutjt9HcJuGh@kroah.com>
+References: <202207250449.BYMZbIA2-lkp@intel.com>
+ <Yt3KObFVIUI2mFGt@zx2c4.com>
+ <CAMj1kXHTf4f+onREnWhYk-vYXkPaQtPpZz+SqFCP+Ey7+bOXkQ@mail.gmail.com>
+ <Yt5Y/cIKIDlyFWMQ@kroah.com>
+ <CAMj1kXGPjFAY0y-SPZv64CRhpo9s1+__z4bya86aMcTs9=f8pw@mail.gmail.com>
+ <CAK8P3a0g4NT1oDW5gq7YO540Eo0UDoqbK1tmtb8QHteiDNXj5Q@mail.gmail.com>
+ <CAK8P3a2ZfEr+4OWWteZHpDYGw8U0dQgMfF_OFwQDEtY=GaTfQA@mail.gmail.com>
+ <YuVBOOrdoBDUhRxJ@kroah.com>
+ <YuW7r1pyBAeNKlPG@zx2c4.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1bcc:b0:2de:67ee:c89f with SMTP id
- x12-20020a056e021bcc00b002de67eec89fmr1664162ilv.169.1659262156350; Sun, 31
- Jul 2022 03:09:16 -0700 (PDT)
-Date:   Sun, 31 Jul 2022 03:09:16 -0700
-In-Reply-To: <20220731094805.847-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006b309205e51713c7@google.com>
-Subject: Re: [syzbot] INFO: rcu detected stall in gc_worker (3)
-From:   syzbot <syzbot+eec403943a2a2455adaa@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuW7r1pyBAeNKlPG@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Sun, Jul 31, 2022 at 01:15:59AM +0200, Jason A. Donenfeld wrote:
+> On Sat, Jul 30, 2022 at 04:33:28PM +0200, Greg Kroah-Hartman wrote:
+> > On Mon, Jul 25, 2022 at 04:35:38PM +0200, Arnd Bergmann wrote:
+> > > On Mon, Jul 25, 2022 at 2:55 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> > > 
+> > > > The other easy workaround would be to just turn off the xor-neon code
+> > > > when building with clang, e.g. using this Makefile hack:
+> > > >
+> > > > diff --git a/arch/arm/lib/Makefile b/arch/arm/lib/Makefile
+> > > > index 6d2ba454f25b..8e4fe6421dd2 100644
+> > > > --- a/arch/arm/lib/Makefile
+> > > > +++ b/arch/arm/lib/Makefile
+> > > > @@ -43,8 +43,10 @@ endif
+> > > >  $(obj)/csumpartialcopy.o:      $(obj)/csumpartialcopygeneric.S
+> > > >  $(obj)/csumpartialcopyuser.o:  $(obj)/csumpartialcopygeneric.S
+> > > >
+> > > > +ifdef CONFIG_CC_IS_CLANG
+> > > >  ifeq ($(CONFIG_KERNEL_MODE_NEON),y)
+> > > >    NEON_FLAGS                   := -march=armv7-a -mfloat-abi=softfp -mfpu=neon
+> > > >    CFLAGS_xor-neon.o            += $(NEON_FLAGS)
+> > > >    obj-$(CONFIG_XOR_BLOCKS)     += xor-neon.o
+> > > >  endif
+> > > > +endif
+> > > 
+> > > Nevermind, this does not actually work. Just turning off the warning
+> > > is probably best then, as actually disabling this code would still
+> > > be invasive not do much beyond saving a little bit of kernel .text size.
+> > 
+> > Ok, if it triggers again, and I get annoyed, I'll write a patch,
+> > otherwise I'll just leave it alone unless someone else wants to send it
+> > to me...
+> 
+> The patch is trivial, if your idea is just to remove the #warning,
+> right? Might as well just do it now and get it over with.
 
-syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-INFO: rcu detected stall in corrupted
+Fine, I was being lazy :)
 
-rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-rcu: 	0-...!: (1 GPs behind) idle=cad/1/0x4000000000000000 softirq=7023/7025 fqs=2 
-	(detected by 1, t=10502 jiffies, g=7257, q=133)
-Sending NMI from CPU 1 to CPUs 0:
-NMI backtrace for cpu 0
-CPU: 0 PID: 4073 Comm: syz-executor.0 Not tainted 5.17.0-rc6-next-20220303-syzkaller-dirty #0
-Harclient_loop: send disconnect: Broken pipe
-
-
-Tested on:
-
-commit:         91265a6d Add linux-next specific files for 20220303
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-console output: https://syzkaller.appspot.com/x/log.txt?x=166fe82e080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=617f79440a35673a
-dashboard link: https://syzkaller.appspot.com/bug?extid=eec403943a2a2455adaa
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=15c240c1080000
-
+Now sent out:
+	https://lore.kernel.org/all/20220731100551.3679874-1-gregkh@linuxfoundation.org/
