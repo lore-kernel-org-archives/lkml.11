@@ -2,69 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD90C19F2C
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 18:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C120C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 18:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235555AbiGaS2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 14:28:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60834 "EHLO
+        id S237602AbiGaS2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 14:28:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230074AbiGaS17 (ORCPT
+        with ESMTP id S237209AbiGaS2K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 14:27:59 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 31 Jul 2022 11:27:58 PDT
-Received: from aer-iport-3.cisco.com (aer-iport-3.cisco.com [173.38.203.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1110BE1F
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 11:27:58 -0700 (PDT)
+        Sun, 31 Jul 2022 14:28:10 -0400
+Received: from aer-iport-4.cisco.com (aer-iport-4.cisco.com [173.38.203.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31D6BE1F
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 11:28:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=1050; q=dns/txt; s=iport;
-  t=1659292078; x=1660501678;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=6I9TRH1ZkVMYRUP2fY6iFDmWZdaI7GodAr19qhlINQQ=;
-  b=Vrzv8oiwXChLIcYR7XKSTkeJ6nBliAiNfaRdCFZtt8xKU/6FVnZU1TFE
-   0kFpINoCZ/Fck6zmhnF4bH+vBjWtHBtWz+5z4gqFGp0Cbds1PFAjbdTb2
-   5mvcvjba31CzHn4UBQ2CbS/M95TJy7zaxcS7tgWOoXLSc3zA+uAO31AAn
-   Q=;
-X-IPAS-Result: =?us-ascii?q?A0ALBgDAyOZi/xbLJq1agliDJVYsEo4RiHmYEIQAgXwLA?=
- =?us-ascii?q?QEBDzMPBAEBhQaEdyY0CQ4BAgQBAQEBAwIDAQEBAQEBAwEBBQEBAQIBBwSBC?=
- =?us-ascii?q?ROFaA2GewFGhE4BgxoDEKZdgiuBAYNPAYEfhQwGgT2JeYVkBoFJRIEVgnqDO?=
- =?us-ascii?q?YJGhW4EgRiWbQMJBAcFSkQDCywPFgUICRcSEBACBBEaCwYDFj8JAgQOA0AID?=
- =?us-ascii?q?QMRBAMPGAkSCBAEBgMxDCULAxQMAQYDBgUDAQMbAxQDBSQHAxwPIw0NBB8dA?=
- =?us-ascii?q?wMFJQMCAhsHAgIDAgYVBgICNhg5CAQIBCsjDwUCBy8FBC8CHgQFBhEIAhYCB?=
- =?us-ascii?q?gQEBAQWAhAIAggnFwcTMxkBBVkQCSEcKBAFBhMDIG8FBz4PKDM1PCsfGwqBE?=
- =?us-ascii?q?iorFQMEBAMCBhgDAyICEC4xAxUGKRMSLQkqdQkCAyJtAwMEKi4DCSEfBwkwH?=
- =?us-ascii?q?ZZEgwc/gUWBA8FMg1uLIpRcGjGnbXqWfIlVKYM6lUyEUIFhPIFZTSMVgyQeM?=
- =?us-ascii?q?hkPlyaFTEJsAgYLAQEDCYZHiD8BAQ?=
-IronPort-Data: A9a23:pAoe467LzZhw+ey71ivf3gxRtHjGchMFZxGqfqrLsTDasY5as4F+v
- jZLDWrSO/aOZWehLt8gboW38E4Au5HUy9AwG1A//ntmZn8b8sCt6fZ1gavT04J+CuWZESqLO
- u1HMoGowPgcFyOa/FH1WlTYhSEU/bmSQbbhA/LzNCl0RAt1IA8skhsLd9QR2uaEuvDkRVLW0
- T/Oi5eHYgX9hGUtajt8B5+r8XuDgtyj4Fv0gXRmDRx7lAe2v2UYCpsZOZawIxPQKmWDNrfnL
- wpr5OjRElLxp3/BOPv8+lrIWhFirorpAOS7oiE+t55OLfR1jndaPq4TbJLwYKrM4tmDt4gZJ
- N5l7fRcReq1V0HBsLx1bvVWL81xFaJpqeScLiC+ivCay0bgNEnH2cpPUE5jaOX0+s4vaY1P3
- fUVMnUGaQqOwrvwy7OgQe4qjcMmRCXpFNpA4Tc7nXeDVa1gG8qrr6bivbe02B8wi89SA/vSe
- +ISaCFka1LLZBgn1lI/U8huxr7w2xETdRVHhlfEnJY0zVHCkhRR1bzyaeLZKtiVEJA9ckGw4
- ziuE37CKh4AOdOcyRKB83SxluHIgCX3UZ4TE7v+8eRl6HWXx2oOGFgVWEG9rP2RlEGzQZRcJ
- lYS9y5oqrI9nHFHVfH0Ugf9oWaDpAJZXdNMVeY78wqKjKHT5m51G1Q5c9KIU/R+3OdeeNDg/
- gbhcw/BbdC3jICodA==
-IronPort-HdrOrdr: A9a23:HtWsl6uD+zLCg00K2ac4X5OI7skDf9V00zEX/kB9WHVpmwKj+/
- xG+85rtyMc5wx+ZJhNo7q90cq7MBDhHOBOgLX5VI3KNGLbUQCTQ72Kg7GO/9SZIU3DHio379
- YFT0C4Y+eAaGRHsQ==
+  d=cisco.com; i=@cisco.com; l=1897; q=dns/txt; s=iport;
+  t=1659292087; x=1660501687;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=z3LO+JP8HDIgBnL70ETLbDLvAFI0OSC3OOOwkBAeHVg=;
+  b=D9dQQ6jYsM1oHilB3dsiaPj+NIqvt1AZ+1vtcZjVCNLNzsQihqlBdnA3
+   6O4yLp0AGgMkZgNeCD3P00O0PxCeYhc2tjeDoZWxXp7JTFGJ6fAoB1s7D
+   dN3IZYCiOTQeMNxjCsrtI4gQC8E1rQjRy6xbi1AO+43nMxND9ipO3mMZD
+   o=;
+X-IPAS-Result: =?us-ascii?q?A0ANAADAyOZilxbLJq1aHAEBAQEBAQcBARIBAQQEAQGBf?=
+ =?us-ascii?q?AYBAQsBgyRWLBJFjUyIEIsgkVmBJQNUCwEBAQ83CwQBAYUGAoR1JjUIDgECB?=
+ =?us-ascii?q?AEBAQEDAgMBAQEBAQEDAQEFAQEBAgEHBBQBAQEBAQEBAQkbBgwFEDWFaA2GQ?=
+ =?us-ascii?q?wMDMgFGEB0DMSEoDhmCfQGCZQMyAxCmXYIrgQGDTwGDWA2CTIE9AYYyg0aFJ?=
+ =?us-ascii?q?z0GgUlEhH2CIIFcgRWFbgSHHJBpAwkEBwVKRAMLLA8WBQgJFxIQEAIEERoLB?=
+ =?us-ascii?q?gMWPwkCBA4DQAgNAxEEAw8YCRIIEAQGAzEMJQsDFAwBBgMGBQMBAxsDFAMFJ?=
+ =?us-ascii?q?AcDHA8jDQ0EHx0DAwUlAwICGwcCAgMCBhUGAgI2GDkIBAgEKyMPBQIHLwUEL?=
+ =?us-ascii?q?wIeBAUGEQgCFgIGBAQEBBYCEAgCCCcXBxMzGQEFWRAJIRwOGhAFBhMDIG8FB?=
+ =?us-ascii?q?z4PKDM1PCsfGwqBEiorFQMEBAMCBhgDAyICEC4xAxUGKRMSLQkqdQkCAyJtA?=
+ =?us-ascii?q?wMEKi4DCSEfBwkwHZZEggyBDitRNZNfgzsBqlwsbINbiyKOd4VlGjGFRqMhL?=
+ =?us-ascii?q?ZZPhHqIPoNflj2BYgFzgSBNIxWDIwkKPhkPjiwNCYhkhUxCMQIBOAIGCwEBA?=
+ =?us-ascii?q?wmMT4I3AQE?=
+IronPort-Data: A9a23:B0WYoqlwUvgJVurM4w3f11To5gwXJkRdPkR7XQ2eYbSJt1+Wr1Gzt
+ xIZXj2AOvyLNmP9f9pxb9ix/RkG6pLRnNE3TwtrrSwwEltH+JHPbTi7wugcHM8zwunrFh8PA
+ xA2M4GYRCwMZiaA4E/raNANlFEkvU2ybuKU5NXsZ2YgHmeIdA970Ug5w7Fi29Yx6TSEK1rlV
+ e3a8pW31GCNg1aYAkpMg05UgEoy1BhakGpwUm0WPZinjneH/5UmJM53yZWKEpfNatI88thW6
+ Ar05OrREmvxp3/BAz4++1rxWhVirrX6ZWBihpfKMkSvqkAqm8A87ko0HNMXY34PihHYo5ds5
+ 9VRn7i7ZiUqO7KZzYzxUzEAe81/FaRL4vrMJmKy9JXVxEzdeHyqyPJrZK00FdRHoaAsUScUr
+ adecmplghOr34paxJq7R+ZwmMkvMOHgPZgUvTdryjSx4fMOGsqTG/qXvre02h86h+pBH9SPe
+ fAWeCI3VUyQTABIIX0uXcdWcOCA3ymjLGIwREiujbYw+XbayABq+LzsNsfFP9KNWMNZl1qZo
+ WSA+H72ajkTN8Sa4T6E9G+8w+HIgCX3UZ4TE7v+8eRl6HWVwG87BxoRWl+25/K+jyaWV9tZK
+ kEQ/yslpLka+0miT927VBq9yFaYrwIHXPJVEvF85Q2QooLX7guCDW8DTRZKaMYhsc4rQHotz
+ FDht9fgDzZorKG9U3+R9r6I6zi1PEA9KWYffyYNZQAC79TqvZs0lBuJScxseIa6lND6GjHYx
+ zGMsTgwgKgVgccX1qK9u1fdjFqEopnPUx5w5QjNWG+hxh12aZTjZIGy71Xfq/FaI+6kokKpt
+ XUe3smG6/oSSJeEiGqGQf4GG/ei4PPt3CDgbUBHNpIrzmys3y+fOp1/4C1UAExGEMUBZmq8C
+ KPMgj956JhWNXqsSKZ4ZYOtFsgnpZTd+cTZuuP8NYURP8AgHOOT1GQ/Oh7KhjGFfF0EyPlnY
+ f+mndCQ4WH24JmLLQZapc9AiNfHJQhnmws/oKwXKDz9i9KjiIa9E+ttDbd3RrlRAFm4iAvU6
+ c1DEMCB1g9SVubzCgGOr9NCdwhXfSRjXM6twyCySgJlClQ+cI3GI6KBqY7Nh6Q+90iovr6Sp
+ yrkChMwJKTX3CWYc21mlUyPmJu2Dcog8hrXzAQnPE2j3DA4cJ2z4aIEH6bbjpF5nNGPOcVcF
+ qFfE+3ZW6wnYm2eq1w1MMmsxKQ/JU/DrV/fYEKYjM0XIscIq/rhoYS/IGMCNUAmU0KKiCfJi
+ +f4iFiAEcZaG1UK4QS/QKvH8m5ddEM1wIpaN3Yk6PEKEKkw2OCG8xDMs8I=
+IronPort-HdrOrdr: A9a23:KuQldqsV6dRfiaj99ePE7Nh57skDc9V00zEX/kB9WHVpmwKj+/
+ xG+85rsSMc5wx+ZJhNo7q90ey7MBDhHP1OkOws1MmZPTUO0VHAROpfBMnZsl/d8kbFmdK1u5
+ 0MT0EHMr3N5ZwQt7ed3OF+eOxQp+W6zA==
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-AV: E=Sophos;i="5.93,206,1654560000"; 
-   d="scan'208";a="3282105"
+   d="scan'208";a="3280753"
 Received: from aer-iport-nat.cisco.com (HELO aer-core-1.cisco.com) ([173.38.203.22])
-  by aer-iport-3.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 31 Jul 2022 18:26:51 +0000
+  by aer-iport-4.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 31 Jul 2022 18:26:59 +0000
 Received: from hce-anki.rd.cisco.com ([10.47.79.243])
-        by aer-core-1.cisco.com (8.15.2/8.15.2) with ESMTP id 26VIQpXu008219;
-        Sun, 31 Jul 2022 18:26:51 GMT
+        by aer-core-1.cisco.com (8.15.2/8.15.2) with ESMTP id 26VIQpY0008219;
+        Sun, 31 Jul 2022 18:26:59 GMT
 From:   Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org
-Subject: [v4.9] Fixes to linux-4.9.y stable tree swab.h and random initialization
-Date:   Sun, 31 Jul 2022 20:26:30 +0200
-Message-Id: <20220731182635.1910069-1-hegtvedt@cisco.com>
+Cc:     gregkh@linuxfoundation.org, Laura Abbott <lauraa@codeaurora.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Daniel Micay <danielmicay@gmail.com>,
+        Nick Kralevich <nnk@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [v4.9 PATCH 4/6] init: move stack canary initialization after setup_arch
+Date:   Sun, 31 Jul 2022 20:26:34 +0200
+Message-Id: <20220731182635.1910069-5-hegtvedt@cisco.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220731182635.1910069-1-hegtvedt@cisco.com>
+References: <20220731182635.1910069-1-hegtvedt@cisco.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Outbound-SMTP-Client: 10.47.79.243, [10.47.79.243]
@@ -73,27 +91,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I discovered one regression when I merged 4.9.320 for one of our
-platforms, the include of swab.h from user space (libudev) triggered the
-error described in https://lkml.org/lkml/2020/2/12/93
+From: Laura Abbott <lauraa@codeaurora.org>
 
-Cherry picking that commit solved the problem as expected.
-[v4.9 PATCH 1/6] include/uapi/linux/swab.h: fix userspace breakage,
+Patch series "Command line randomness", v3.
 
-Then the next part of this series:
-[v4.9 PATCH 2/6] init/main: Fix double "the" in comment
-[v4.9 PATCH 3/6] init/main: properly align the multi-line comment
-[v4.9 PATCH 4/6] init: move stack canary initialization after
-[v4.9 PATCH 5/6] init/main.c: extract early boot entropy from the
-[v4.9 PATCH 6/6] random: move rand_initialize() earlier
+A series to add the kernel command line as a source of randomness.
 
-Is to get the code flow similar in linux-4.9.y compared to HEAD
-implementation. I suspect there is a not completely ok merge conflict
-that was resolved during backport to linux-4.9.y branch with regards to
-the 'random: move rand_initialize() earlier' commit.
+This patch (of 2):
 
-Now the code flow is in the same order as latest HEAD.
+Stack canary intialization involves getting a random number.  Getting this
+random number may involve accessing caches or other architectural specific
+features which are not available until after the architecture is setup.
+Move the stack canary initialization later to accommodate this.
 
+Link: http://lkml.kernel.org/r/20170816231458.2299-2-labbott@redhat.com
+Signed-off-by: Laura Abbott <lauraa@codeaurora.org>
+Signed-off-by: Laura Abbott <labbott@redhat.com>
+Acked-by: Kees Cook <keescook@chromium.org>
+Cc: "Theodore Ts'o" <tytso@mit.edu>
+Cc: Daniel Micay <danielmicay@gmail.com>
+Cc: Nick Kralevich <nnk@google.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+(cherry picked from commit 121388a31362b0d3176dc1190ac8064b98a61b20)
+---
+ init/main.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/init/main.c b/init/main.c
+index 8b803078d7b..67fa94c5967 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -487,12 +487,6 @@ asmlinkage __visible void __init start_kernel(void)
+ 	smp_setup_processor_id();
+ 	debug_objects_early_init();
+ 
+-	/*
+-	 * Set up the initial canary ASAP:
+-	 */
+-	add_latent_entropy();
+-	boot_init_stack_canary();
+-
+ 	cgroup_init_early();
+ 
+ 	local_irq_disable();
+@@ -506,6 +500,11 @@ asmlinkage __visible void __init start_kernel(void)
+ 	page_address_init();
+ 	pr_notice("%s", linux_banner);
+ 	setup_arch(&command_line);
++	/*
++	 * Set up the the initial canary and entropy after arch
++	 */
++	add_latent_entropy();
++	boot_init_stack_canary();
+ 	mm_init_cpumask(&init_mm);
+ 	setup_command_line(command_line);
+ 	setup_nr_cpu_ids();
 -- 
-Best regards, Hans-Christian Noren Egtvedt.
+2.34.1
 
