@@ -2,155 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C665C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 13:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C49F7C19F2B
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 13:41:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237111AbiGaNjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 09:39:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
+        id S236518AbiGaNlO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 09:41:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231631AbiGaNjg (ORCPT
+        with ESMTP id S230436AbiGaNlL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 09:39:36 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E94BC26
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 06:39:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659274774; x=1690810774;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XUMw2GCkJoEjozVFDeMbgBe4REkA82oGwVdbepixBjs=;
-  b=WBJoZFgmpUtD9ez9+kpvYzxizvzFwlWISXMiQ+uEDJILrldeXegCCbcB
-   PVRkpQeGYiMTbq9LYnNq9fv/9Hozvxj01ljfQ/iyAvwuxAievFIEYqg0B
-   /4w+80QrCVrTwiGqorlaPl6CP7Beb2WgEJL4nG4PbD5rX0lsQEHlB+KQd
-   x20nq9J8or9SWte9bj5U+26ag7zaOv6x6zpyQHQVsRGdRnd3lkDL0B3Jg
-   Sbq1W2fnnLtdLvKfZXhW/n44zDDmduOQaebAWAvqhKQ8SBURN9YDo58Yq
-   Pt+R+eIQVVBaxWZbEyfZBGD4cL6AqjHoq5Q6W0eY5Q9RAQnItdE7raOvH
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10425"; a="268762274"
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="268762274"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 06:39:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="577486747"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 31 Jul 2022 06:39:30 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oI9AH-000EBT-2k;
-        Sun, 31 Jul 2022 13:39:29 +0000
-Date:   Sun, 31 Jul 2022 21:38:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Zhenneng Li <lizhenneng@kylinos.cn>,
-        Alex Deucher <alexander.deucher@amd.com>
-Cc:     kbuild-all@lists.01.org,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Pan Xinhui <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Tao Zhou <tao.zhou1@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Jack Xiao <Jack.Xiao@amd.com>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Zhenneng Li <lizhenneng@kylinos.cn>
-Subject: Re: [PATCH] drm/amdgpu: use native mode for dp aux transfer
-Message-ID: <202207312143.yefmpijn-lkp@intel.com>
-References: <20220720021639.58406-1-lizhenneng@kylinos.cn>
+        Sun, 31 Jul 2022 09:41:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 24656CE1A
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 06:41:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659274869;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SWo/FoD4QM1KXB5H5atBkQnHX7hzvCdJbAxzr/wiEMY=;
+        b=UGzWtQJe7g1OEZmzW9itVsDGzCTAfFI5FvntEk7QgzOqBY1h9CLOL+hDvfjw/3JQ1L+IPD
+        kAK9xhhfU6jnpsSXSP4XIHVQzauNwS3nl34EhR2eICq1EArtdo6tZXAy5e2aBBMP3EFQyO
+        mSUDqm4HHdNc6cg063ThOuR86UtTxwg=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-79-oXmXFGOKNDy0l_ivd3DbPQ-1; Sun, 31 Jul 2022 09:41:04 -0400
+X-MC-Unique: oXmXFGOKNDy0l_ivd3DbPQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BFF8D801585;
+        Sun, 31 Jul 2022 13:41:03 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 92C6D1121314;
+        Sun, 31 Jul 2022 13:41:03 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 26VDf3iN009354;
+        Sun, 31 Jul 2022 09:41:03 -0400
+Received: from localhost (mpatocka@localhost)
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 26VDf2oa009349;
+        Sun, 31 Jul 2022 09:41:02 -0400
+X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
+Date:   Sun, 31 Jul 2022 09:41:02 -0400 (EDT)
+From:   Mikulas Patocka <mpatocka@redhat.com>
+X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
+To:     Ard Biesheuvel <ardb@kernel.org>
+cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH] Add a read memory barrier to wait_on_buffer
+In-Reply-To: <CAMj1kXFYRNrP2k8yppgfdKg+CxWeYfHTbzLBuyBqJ9UVAR_vaQ@mail.gmail.com>
+Message-ID: <alpine.LRH.2.02.2207310920390.6506@file01.intranet.prod.int.rdu2.redhat.com>
+References: <alpine.LRH.2.02.2207310703170.14394@file01.intranet.prod.int.rdu2.redhat.com> <CAMj1kXFYRNrP2k8yppgfdKg+CxWeYfHTbzLBuyBqJ9UVAR_vaQ@mail.gmail.com>
+User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220720021639.58406-1-lizhenneng@kylinos.cn>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Zhenneng,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on drm-misc/drm-misc-next]
-[also build test WARNING on linus/master v5.19-rc8 next-20220728]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Zhenneng-Li/drm-amdgpu-use-native-mode-for-dp-aux-transfer/20220720-103324
-base:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
-config: csky-randconfig-r036-20220718 (https://download.01.org/0day-ci/archive/20220731/202207312143.yefmpijn-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/8429a257cb9bf2f0e850afeef0a3dbc4cd3006da
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Zhenneng-Li/drm-amdgpu-use-native-mode-for-dp-aux-transfer/20220720-103324
-        git checkout 8429a257cb9bf2f0e850afeef0a3dbc4cd3006da
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=csky SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/gpu/drm/amd/amdgpu/amdgpu_dp_auxch.c:73:10: warning: no previous prototype for 'venus_mm_rreg_slow' [-Wmissing-prototypes]
-      73 | uint32_t venus_mm_rreg_slow(struct amdgpu_device *adev, uint32_t reg)
-         |          ^~~~~~~~~~~~~~~~~~
->> drivers/gpu/drm/amd/amdgpu/amdgpu_dp_auxch.c:84:6: warning: no previous prototype for 'venus_mm_wreg_slow' [-Wmissing-prototypes]
-      84 | void venus_mm_wreg_slow(struct amdgpu_device *adev, uint32_t reg, uint32_t v)
-         |      ^~~~~~~~~~~~~~~~~~
 
 
-vim +/venus_mm_rreg_slow +73 drivers/gpu/drm/amd/amdgpu/amdgpu_dp_auxch.c
+On Sun, 31 Jul 2022, Ard Biesheuvel wrote:
 
-    69	
-    70	#define R100_MM_INDEX                   0x0000
-    71	#define R100_MM_DATA                      0x0004
-    72	#define AMDGPU_MIN_MMIO_SIZE 0x10000
-  > 73	uint32_t venus_mm_rreg_slow(struct amdgpu_device *adev, uint32_t reg)
-    74	{
-    75	        unsigned long flags;
-    76	        uint32_t ret;
-    77	
-    78	        spin_lock_irqsave(&adev->mmio_idx_lock, flags);
-    79	        writel(reg, ((void __iomem *)adev->rmmio) + R100_MM_INDEX);
-    80	        ret = readl(((void __iomem *)adev->rmmio) + R100_MM_DATA);
-    81	        spin_unlock_irqrestore(&adev->mmio_idx_lock, flags);
-    82	        return ret;
-    83	}
-  > 84	void venus_mm_wreg_slow(struct amdgpu_device *adev, uint32_t reg, uint32_t v)
-    85	{
-    86	        unsigned long flags;
-    87	
-    88	        spin_lock_irqsave(&adev->mmio_idx_lock, flags);
-    89	        writel(reg, ((void __iomem *)adev->rmmio) + R100_MM_INDEX);
-    90	        writel(v, ((void __iomem *)adev->rmmio) + R100_MM_DATA);
-    91	        spin_unlock_irqrestore(&adev->mmio_idx_lock, flags);
-    92	}
-    93	static inline uint32_t venus_mm_rreg(struct amdgpu_device *adev, uint32_t reg,
-    94	                                    bool always_indirect)
-    95	{
-    96	        /* The mmio size is 64kb at minimum. Allows the if to be optimized out. */
-    97	        if ((reg < adev->rmmio_size || reg < AMDGPU_MIN_MMIO_SIZE) && !always_indirect)
-    98	                return readl(((void __iomem *)adev->rmmio) + reg);
-    99	        else
-   100	                return venus_mm_rreg_slow(adev, reg);
-   101	}
-   102	static inline void venus_mm_wreg(struct amdgpu_device *adev, uint32_t reg, uint32_t v,
-   103	                                bool always_indirect)
-   104	{
-   105	        if ((reg < adev->rmmio_size || reg < AMDGPU_MIN_MMIO_SIZE) && !always_indirect)
-   106	                writel(v, ((void __iomem *)adev->rmmio) + reg);
-   107	        else
-   108	                venus_mm_wreg_slow(adev, reg, v);
-   109	}
-   110	
+> This has little to do with speculation, so better to drop this S bomb
+> from your commit message. This is about concurrency and weak memory
+> ordering.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Yes.
+
+> This doesn't seem like a very robust fix to me, tbh - I suppose this
+> makes the symptom you encountered go away, but the underlying issue
+> remains afaict.
+> 
+> Given that the lock and uptodate fields etc are just bits in a
+> bitfield, wouldn't it be better to use cmpxchg() with acquire/release
+> semantics (as appropriate) to manage these bits?
+
+The kernel already uses clear_bit_unlock, test_and_set_bit_lock and 
+wait_on_bit_lock_io to manage the BH_Lock bit - and they have 
+acquire/release semantics.
+
+The only problem is that test_bit doesn't provide any memory barriers. 
+Should we add the barrier to buffer_locked() instead of wait_on_buffer()? 
+Perhaps it would fix more bugs - in reiserfs, there's this piece of code:
+
+                if (buffer_locked(bh)) {
+                        spin_unlock(lock);
+                        wait_on_buffer(bh);
+                        spin_lock(lock);
+                }
+                if (!buffer_uptodate(bh)) {
+                        ret = -EIO;
+                }
+
+or this:
+                if (buffer_locked(bh)) {
+                        int depth;
+                        PROC_INFO_INC(sb, scan_bitmap.wait);
+                        depth = reiserfs_write_unlock_nested(sb);
+                        __wait_on_buffer(bh);
+                        reiserfs_write_lock_nested(sb, depth);
+                }
+                BUG_ON(!buffer_uptodate(bh));
+                BUG_ON(atomic_read(&bh->b_count) == 0);
+
+That assumes that buffer_locked provides a barrier.
+
+Mikulas
+
