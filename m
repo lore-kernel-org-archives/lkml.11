@@ -2,98 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 697DCC19F2C
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 11:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4FA1C19F2C
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 11:32:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234094AbiGaLbr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 07:31:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42176 "EHLO
+        id S235027AbiGaLcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 07:32:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232558AbiGaLbq (ORCPT
+        with ESMTP id S232220AbiGaLct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 07:31:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3D3E00D;
-        Sun, 31 Jul 2022 04:31:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EE7660C78;
-        Sun, 31 Jul 2022 11:31:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 419EFC433D6;
-        Sun, 31 Jul 2022 11:31:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659267104;
-        bh=38BTaASGYg5+Vs+XTa8bg9XAcJEvnldmFNzVWjYh5zg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lxRnv2Jw7emD1Dq4XiFS5ZFs7+8Ry7VRxlMXXYlT9lbEnlva+Za3gM29Xk+xq4PuX
-         r/bY5LZQ9qQ4bYZiwijah8s26s285098TQKE/VhFxcrN6az3j+UkLlLLg/x4MhWD6E
-         eeXRslRxl/3dw36mkbuu0UU6LhlsGfmkOc6KQ4tema3XLpBIvwDNgJVKf5CA8TNWzU
-         QsZ31StzU9O76HsOoMtDkApRhUUchGdGHh4bWDAE/PP0IP4pCtcSUwuc4qVLVMe9IA
-         mxkcQ109zlP0mGTFn3FljLP6qXj4vv7H6FgiaelMJIsI5gitrIpuBor0zXG0hycNJs
-         cOcOMmMSIfiMA==
-Date:   Sun, 31 Jul 2022 12:41:55 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Dmitry Rokosov <DDRokosov@sberdevices.ru>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
-        "wsa@kernel.org" <wsa@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
-        "jbhayana@google.com" <jbhayana@google.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/3] units: complement the set of Hz units
-Message-ID: <20220731124140.777ddd05@jic23-huawei>
-In-Reply-To: <CAHp75VfGEPVBWbZ16widVCjgCnYAoUurjDj+-2pgC2oBQR12ZQ@mail.gmail.com>
-References: <20220729172332.19118-1-ddrokosov@sberdevices.ru>
-        <20220729172332.19118-2-ddrokosov@sberdevices.ru>
-        <CAHp75VfGEPVBWbZ16widVCjgCnYAoUurjDj+-2pgC2oBQR12ZQ@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 31 Jul 2022 07:32:49 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A41DDFEE;
+        Sun, 31 Jul 2022 04:32:49 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id f11so7386509pgj.7;
+        Sun, 31 Jul 2022 04:32:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=9zxYvVb7b8LZLTBs71kugtnLomBjlBQUO9h/IsY7cyk=;
+        b=I/HBjugbuX1kfRW3rikYJwk4ncEkL69ipDZZhQV2ws5vwB+xXuHZLLJw6evWq77VQm
+         nuEJWV0PBIW/oG54TENBgeP7u3eWlbl7LPN+aLuhQ1vsrukH8hJn02xjvgR1tNRHTTW7
+         sIHUE49DeSdRzNuGFRx8lPCmZm/e56cjXw5rQ/Spa1m2ShXrSFhmfK/J9oHW8Xo95kEG
+         YcmBguqez2z0nLAaviwhhsNjJREcDOqKghZto3XjwtJRGk35YijN9dsMyAQ+rNVLjm5f
+         ouWrXflh1JfCfxPGJ5A4r1sc7FTXYP17gS+eX+Pn153HqcIBcj6i5gg7Wk8d0bJUBaHJ
+         j+vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=9zxYvVb7b8LZLTBs71kugtnLomBjlBQUO9h/IsY7cyk=;
+        b=hYwdIFfakU3ej14/njXf6dCa3FTgYsVTjAjU14Y37nWF4Te4vMo23PODRKcvJypdQk
+         NSob0zEtoF81LfufnLSQgBIdh2Fmj43n6tX+Q0OCJme2KSyEqaDqtpnKnEwkTLeCXhGN
+         WpjBnwUjYZgUfYLChCFYaKNczdkzS0YidaiAvFxVN0iJEibYTZKXfcvwSBNJYQ7hE/ew
+         RZumVRcdN/6T0vR+9FiFF19oo8pPxLdkBmuDMo8OiyIZkBZL8J9msWkbYO5nbG5iiLGr
+         /kkgWqwlY9ZHlUZlIc8vEnzVOshWdgJJGgl9dm94KEMEDJp0T7ymHFu1pmx90DLCMdmT
+         +86g==
+X-Gm-Message-State: AJIora80/xPddePHGuvu5AeP4oH8y1k3uHaSai8VWglD8DfbgcdDhrzY
+        9qrMbyuKfwcHaxKCZEOBd/U=
+X-Google-Smtp-Source: AGRyM1u9NHvpHt5MchqETPsuNoKOmNKdCOuJGDsUH1Ao13fjbnfwEJmvsjIYwhFNGeGKRnGnQFmHnw==
+X-Received: by 2002:a63:121a:0:b0:41a:6792:31e5 with SMTP id h26-20020a63121a000000b0041a679231e5mr9432755pgl.69.1659267168467;
+        Sun, 31 Jul 2022 04:32:48 -0700 (PDT)
+Received: from [192.168.0.110] ([103.159.189.145])
+        by smtp.gmail.com with ESMTPSA id u14-20020a170902e5ce00b0016c4f0065b4sm7358652plf.84.2022.07.31.04.32.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 31 Jul 2022 04:32:48 -0700 (PDT)
+Message-ID: <166886f8-eb9e-f779-cf57-1ea353adc446@gmail.com>
+Date:   Sun, 31 Jul 2022 17:32:41 +0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] vt: Clear selection before changing the font
+Content-Language: en-US
+To:     Helge Deller <deller@gmx.de>,
+        syzbot <syzbot+14b0e8f3fd1612e35350@syzkaller.appspotmail.com>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+References: <000000000000bbdd0405d120c155@google.com>
+ <20220729065139.6529-1-khalid.masum.92@gmail.com>
+ <eb4a26aa-da30-ceee-7d27-c1e902dd4218@gmx.de> <YuV9apZGNmGfjcor@p100>
+From:   Khalid Masum <khalid.masum.92@gmail.com>
+In-Reply-To: <YuV9apZGNmGfjcor@p100>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Jul 2022 20:02:42 +0200
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-
-> On Fri, Jul 29, 2022 at 7:23 PM Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
-> >
-> > Currently, Hz units do not have milli, micro and nano Hz coefficients.
-> > Some drivers (IIO especially) use their analogues to calculate
-> > appropriate Hz values. This patch includes them to units.h definitions,
-> > so they can be used from different kernel places.  
+On 7/31/22 00:50, Helge Deller wrote:
+> When changing the console font with ioctl(KDFONTOP) the new font size
+> can be bigger than the previous font. A previous selection may thus now
+> be outside of the new screen size and thus trigger out-of-bounds
+> accesses to graphics memory if the selection is removed in
+> vc_do_resize().
 > 
-> ...
+> Prevent such out-of-memory accesses by dropping the selection before the
+> various con_font_set() console handlers are called.
 > 
-> > +#define NHZ_PER_HZ             1000000000UL
-> > +#define UHZ_PER_HZ             1000000UL
-> > +#define MILLIHZ_PER_HZ         1000UL  
+> Signed-off-by: Helge Deller <deller@gmx.de>
+
+Tested-by: Khalid Masum <khalid.masum.92@gmail.com>
+
+> Reported-by: syzbot+14b0e8f3fd1612e35350@syzkaller.appspotmail.com
 > 
-> Oh, but then a bit of consistency?
-> 
-> MICRO
-> NANO
-Tricky given existing items, but I agree we shouldn't make
-it worse.
-
-However, I'm not 100% sold on why we need these conversions relative to HZ.
-What's wrong with using MILLI / NANO etc as already defined?  I guess
-there is a 'documentation' like effect of making it clear these are frequency
-unit conversions, but I don't think it makes sense to add it for all the other
-types of unit, so why is Hz special?
-
-I'm not sure why we have the existing ones for HZ with the
-exception of KHZ_PER_MEGAHZ.
-
-Jonathan
-
-> 
-
+> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> index dfc1f4b445f3..3f09205185a4 100644
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+> @@ -4662,9 +4662,11 @@ static int con_font_set(struct vc_data *vc, struct console_font_op *op)
+>   	console_lock();
+>   	if (vc->vc_mode != KD_TEXT)
+>   		rc = -EINVAL;
+> -	else if (vc->vc_sw->con_font_set)
+> +	else if (vc->vc_sw->con_font_set) {
+> +		if (vc_is_sel(vc))
+> +			clear_selection();
+>   		rc = vc->vc_sw->con_font_set(vc, &font, op->flags);
+> -	else
+> +	} else
+>   		rc = -ENOSYS;
+>   	console_unlock();
+>   	kfree(font.data);
+> @@ -4691,9 +4693,11 @@ static int con_font_default(struct vc_data *vc, struct console_font_op *op)
+>   		console_unlock();
+>   		return -EINVAL;
+>   	}
+> -	if (vc->vc_sw->con_font_default)
+> +	if (vc->vc_sw->con_font_default) {
+> +		if (vc_is_sel(vc))
+> +			clear_selection();
+>   		rc = vc->vc_sw->con_font_default(vc, &font, s);
+> -	else
+> +	} else
+>   		rc = -ENOSYS;
+>   	console_unlock();
+>   	if (!rc) {
