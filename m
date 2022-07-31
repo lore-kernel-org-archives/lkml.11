@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2A8C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 10:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1815EC00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 10:51:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236487AbiGaKvE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 06:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51076 "EHLO
+        id S236677AbiGaKvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 06:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234690AbiGaKuu (ORCPT
+        with ESMTP id S232065AbiGaKuv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 06:50:50 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02FF11820
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 03:50:49 -0700 (PDT)
+        Sun, 31 Jul 2022 06:50:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBA411820
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 03:50:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A97F2CE0E54
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 10:50:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23808C433D6;
-        Sun, 31 Jul 2022 10:50:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCB7160B3D
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 10:50:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87FCAC433C1
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 10:50:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659264645;
-        bh=VtEsSiV656Ya2AG7KrEC96VqMVryBOdbrqBclir5X1Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aTzVNqIBIN8J+XRM1oyb8SToi0SJLDS7Epl7wKvVRMxWxXoRx4Xn1ubhT1Cxfn4mk
-         R/nGPwO2tqFEcegWZm8U2fsYZkx5RHZbzJhE1+Cb8a5teBQye5n/9xyq24hkfwow1r
-         fkaCquJ/Lrl1y1IQjvXXsnaCjDaArXxmw/wEWRwVHvD57rpQD07CwQqhgQFSVWnkPn
-         T0vAWnNt7Z4u3Au3Xo9WysjNDOqUZWdxtZ9msa2inq9yLTIhK0zbQnSxSRsO/ELROU
-         4nPftr404T2ZxZDEv26olRAaE0ZF40Nz9XAUlSpRqtFcQsm6yoWNKNIY8LNz+nglqE
-         D18nQUNXMUo1g==
+        s=k20201202; t=1659264650;
+        bh=pROq9rEzNTOI1fzW6NoVSP+vx6+vZTNKn/lRRqVRxgA=;
+        h=From:To:Subject:Date:In-Reply-To:References:From;
+        b=FnTXZbRacWQ4+KSG+v5QdlnsbS8TfdfrAof3aogUgVW+XACFbfEpnF92ea3csdfRw
+         LuQeGDVgu3WmdPM0URGn7e445szl9BUSyKG8MxtnYafbrRaiT+nNjmezVfl1prblwL
+         9PsORsEfIZUJpBxws9Um9XdE3GAdR2Z3G9lw/rxEOgBlAG7wQHTjKtmKOhlHOObT3i
+         mQH0PvZmKcC1r/L4BAIaW+Ax9A6CgOvBF50c0QXRRF0uFXJn5bo4pn35dIIbcxny70
+         C/DoPKeuBYBepYZZDVp+B5EPQj9mcbmpRpWuyl84J7iMqqCC+SVme5vLz4P2c7sMZV
+         qF9Q34U0cOMSw==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Tal Cohen <talcohen@habana.ai>
-Subject: [PATCH 3/8] habanalabs: fix command submission sanity check
-Date:   Sun, 31 Jul 2022 13:50:32 +0300
-Message-Id: <20220731105037.545106-3-ogabbay@kernel.org>
+Subject: [PATCH 7/8] habanalabs/uapi: move defines to better place inside file
+Date:   Sun, 31 Jul 2022 13:50:36 +0300
+Message-Id: <20220731105037.545106-7-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220731105037.545106-1-ogabbay@kernel.org>
 References: <20220731105037.545106-1-ogabbay@kernel.org>
@@ -47,66 +46,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tal Cohen <talcohen@habana.ai>
+Cosmetic change to move the eventfd events defines to a better
+location in the file, closer to other INFO IOCTL defines.
 
-When a CS is submitted, the ioctl handler checks the CS
-flags and performs a sanity check, according to its value.
-As new CS flags are added, the sanity check needs to be updated
-according to the new flags.
-
-Signed-off-by: Tal Cohen <talcohen@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- .../misc/habanalabs/common/command_submission.c    | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ include/uapi/misc/habanalabs.h | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/common/command_submission.c b/drivers/misc/habanalabs/common/command_submission.c
-index 90a4574cbe2d..304e4f3b0e7e 100644
---- a/drivers/misc/habanalabs/common/command_submission.c
-+++ b/drivers/misc/habanalabs/common/command_submission.c
-@@ -12,7 +12,9 @@
- #include <linux/slab.h>
+diff --git a/include/uapi/misc/habanalabs.h b/include/uapi/misc/habanalabs.h
+index 83ca6f40f4ba..0da8894ab94a 100644
+--- a/include/uapi/misc/habanalabs.h
++++ b/include/uapi/misc/habanalabs.h
+@@ -707,6 +707,21 @@ enum hl_server_type {
+ 	HL_SERVER_GAUDI2_HLS2 = 5
+ };
  
- #define HL_CS_FLAGS_TYPE_MASK	(HL_CS_FLAGS_SIGNAL | HL_CS_FLAGS_WAIT | \
--					HL_CS_FLAGS_COLLECTIVE_WAIT)
-+			HL_CS_FLAGS_COLLECTIVE_WAIT | HL_CS_FLAGS_RESERVE_SIGNALS_ONLY | \
-+			HL_CS_FLAGS_UNRESERVE_SIGNALS_ONLY)
++/*
++ * Notifier event values - for the notification mechanism and the HL_INFO_GET_EVENTS command
++ *
++ * HL_NOTIFIER_EVENT_TPC_ASSERT		- Indicates TPC assert event
++ * HL_NOTIFIER_EVENT_UNDEFINED_OPCODE	- Indicates undefined operation code
++ * HL_NOTIFIER_EVENT_DEVICE_RESET	- Indicates device requires a reset
++ * HL_NOTIFIER_EVENT_CS_TIMEOUT		- Indicates CS timeout error
++ * HL_NOTIFIER_EVENT_DEVICE_UNAVAILABLE	- Indicates device is unavailable
++ */
++#define HL_NOTIFIER_EVENT_TPC_ASSERT		(1ULL << 0)
++#define HL_NOTIFIER_EVENT_UNDEFINED_OPCODE	(1ULL << 1)
++#define HL_NOTIFIER_EVENT_DEVICE_RESET		(1ULL << 2)
++#define HL_NOTIFIER_EVENT_CS_TIMEOUT		(1ULL << 3)
++#define HL_NOTIFIER_EVENT_DEVICE_UNAVAILABLE	(1ULL << 4)
 +
+ /* Opcode for management ioctl
+  *
+  * HW_IP_INFO            - Receive information about different IP blocks in the
+@@ -1883,21 +1898,6 @@ struct hl_debug_args {
+ 	__u32 ctx_id;
+ };
  
- #define MAX_TS_ITER_NUM 10
- 
-@@ -1253,6 +1255,7 @@ static int hl_cs_sanity_checks(struct hl_fpriv *hpriv, union hl_cs_args *args)
- 	u32 cs_type_flags, num_chunks;
- 	enum hl_device_status status;
- 	enum hl_cs_type cs_type;
-+	bool is_sync_stream;
- 
- 	if (!hl_device_operational(hdev, &status)) {
- 		return -EBUSY;
-@@ -1276,9 +1279,10 @@ static int hl_cs_sanity_checks(struct hl_fpriv *hpriv, union hl_cs_args *args)
- 	cs_type = hl_cs_get_cs_type(cs_type_flags);
- 	num_chunks = args->in.num_chunks_execute;
- 
--	if (unlikely((cs_type == CS_TYPE_SIGNAL || cs_type == CS_TYPE_WAIT ||
--			cs_type == CS_TYPE_COLLECTIVE_WAIT) &&
--			!hdev->supports_sync_stream)) {
-+	is_sync_stream = (cs_type == CS_TYPE_SIGNAL || cs_type == CS_TYPE_WAIT ||
-+			cs_type == CS_TYPE_COLLECTIVE_WAIT);
-+
-+	if (unlikely(is_sync_stream && !hdev->supports_sync_stream)) {
- 		dev_err(hdev->dev, "Sync stream CS is not supported\n");
- 		return -EINVAL;
- 	}
-@@ -1288,7 +1292,7 @@ static int hl_cs_sanity_checks(struct hl_fpriv *hpriv, union hl_cs_args *args)
- 			dev_err(hdev->dev, "Got execute CS with 0 chunks, context %d\n", ctx->asid);
- 			return -EINVAL;
- 		}
--	} else if (num_chunks != 1) {
-+	} else if (is_sync_stream && num_chunks != 1) {
- 		dev_err(hdev->dev,
- 			"Sync stream CS mandates one chunk only, context %d\n",
- 			ctx->asid);
+-/*
+- * Notifier event values - for the notification mechanism and the HL_INFO_GET_EVENTS command
+- *
+- * HL_NOTIFIER_EVENT_TPC_ASSERT		- Indicates TPC assert event
+- * HL_NOTIFIER_EVENT_UNDEFINED_OPCODE	- Indicates undefined operation code
+- * HL_NOTIFIER_EVENT_DEVICE_RESET	- Indicates device requires a reset
+- * HL_NOTIFIER_EVENT_CS_TIMEOUT		- Indicates CS timeout error
+- * HL_NOTIFIER_EVENT_DEVICE_UNAVAILABLE	- Indicates device is unavailable
+- */
+-#define HL_NOTIFIER_EVENT_TPC_ASSERT		(1ULL << 0)
+-#define HL_NOTIFIER_EVENT_UNDEFINED_OPCODE	(1ULL << 1)
+-#define HL_NOTIFIER_EVENT_DEVICE_RESET		(1ULL << 2)
+-#define HL_NOTIFIER_EVENT_CS_TIMEOUT		(1ULL << 3)
+-#define HL_NOTIFIER_EVENT_DEVICE_UNAVAILABLE	(1ULL << 4)
+-
+ /*
+  * Various information operations such as:
+  * - H/W IP information
 -- 
 2.25.1
 
