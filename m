@@ -2,198 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50297C19F2C
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 22:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A372C19F2C
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 22:15:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238176AbiGaWLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 18:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51804 "EHLO
+        id S238464AbiGaWPa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 18:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbiGaWLo (ORCPT
+        with ESMTP id S229710AbiGaWP1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 18:11:44 -0400
-Received: from mx0.riseup.net (mx0.riseup.net [198.252.153.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 962C29592
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 15:11:42 -0700 (PDT)
-Received: from fews2.riseup.net (fews2-pn.riseup.net [10.0.1.84])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx0.riseup.net (Postfix) with ESMTPS id 4LwwT91fytz9tCs;
-        Sun, 31 Jul 2022 22:11:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1659305501; bh=CsOI+E/4KnM+DdNjxS2fc/kMX0NafXZF+YchFal+Wlc=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=H8b51xMZadM+jdJxTvTOeaCF6P7Te8rpscjyTbBfxh/w3U3rzQQLdSdiiDJJYklE6
-         bjn3lBqk/yhy9xyGr/yHorkL6K/CSah0UWWBTE8HZNbYhf1jyMPr4fv6Nmx543N6WR
-         2/oikrstzi4t3I/+zLLuxg/VOGG23tX0/GkNeM1s=
-X-Riseup-User-ID: DF8F1D7C500EBDCCB3287F70C6FB765612C30DB837C4782BAB02E793DA1936E8
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews2.riseup.net (Postfix) with ESMTPSA id 4LwwT502Tsz1y9N;
-        Sun, 31 Jul 2022 22:11:36 +0000 (UTC)
-Message-ID: <613a3c17-1d76-0a21-5ce2-895f46c2247a@riseup.net>
-Date:   Sun, 31 Jul 2022 19:11:34 -0300
+        Sun, 31 Jul 2022 18:15:27 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE628B2C;
+        Sun, 31 Jul 2022 15:15:26 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id bq11so9574523lfb.5;
+        Sun, 31 Jul 2022 15:15:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=JhTc/o85aa/gNSXM1E2WlhOm4hoCmf8aYbOpvTqzACg=;
+        b=IYcyUZylduzwRAWXYDunqrHsrpEt1tyMI6KfAyQj2u1aW7Jxfnw074RjZ9Qmkgdm3N
+         9RNJImzPJX4mezXXmy7NYqTkxLev4LQGq4gwOpL4LxjbKTvL5xpwFXGuW3nmAKTZdN96
+         7hXJ/isn1PiMCoP00zX+uiqg3sqESxr8CHhcLE/0yN/Cr0RkaK1uN5eQoX/J3pVkJs69
+         uMDj87BXk35CXEZ1qI1eb/G9Go4iJ61eNwBj1HEG//jZtfG9sCko1UejSMQ1BbQ1kXv/
+         3IBnG8u4PEJxwWklKhY4vEBZ8xRjuWwTC6QTwYH6/82yuqkV1rK83iA8RXDn186T1/cX
+         lOTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=JhTc/o85aa/gNSXM1E2WlhOm4hoCmf8aYbOpvTqzACg=;
+        b=LDqq9bLuGJiWgsVHz/sYnLA+QCTickheA9adZ0Jhay+ILbrGWgKMFYYJMa6cpoF0VY
+         hZzMPY9aulbylADa2R7uX1oftQgoZVKebN39di9OTOLcMEqRffeVWdlAtqkJzTUdU4vO
+         wK0QmpuG7c/EYpTNEAxl+jO3dfnnIp4ptpBvLWfH4cEV9+34RpUPjifN89e5TU5n689M
+         Hups69LOBZ2LTapX4GhcwYk1Mi24u3A7KK5ArHr/ZsfuCstC6mNEDJirfcKxxHRY0QP2
+         ahGldPSXxLynhwbC6yY2LhQVRTCFIwpy7E4K7zPk7IfDdsEhP6xM5uKQVfNjj+97jSnm
+         5ceA==
+X-Gm-Message-State: AJIora8pBwL2CRzSHh2S8iXVwWWi+Wkx+AI2RbmsxEnVVOlOzdRETAL2
+        M5gl9sbc0hhuztW/MMYnX3ESJc1ocze4HpaqlJlPVcn1
+X-Google-Smtp-Source: AGRyM1tdLlKik2XqGE1EF+tHF1IzVO89f4sSViGTihMdIqiZb/1V9J01GjK3tML6KEdslkqSQ7uCw8J3NkhPN0aTXfU=
+X-Received: by 2002:a05:6512:1307:b0:47f:baa4:52c5 with SMTP id
+ x7-20020a056512130700b0047fbaa452c5mr4437991lfu.103.1659305724920; Sun, 31
+ Jul 2022 15:15:24 -0700 (PDT)
 MIME-Version: 1.0
-Subject: Re: [PATCH v5 4/5] lib/test: introduce cpumask KUnit test suite
-Content-Language: en-US
-To:     Sander Vanheule <sander@svanheule.net>,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        David Gow <davidgow@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "H . Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Marco Elver <elver@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Yury Norov <yury.norov@gmail.com>
-References: <cover.1659077534.git.sander@svanheule.net>
- <85217b5de6d62257313ad7fde3e1969421acad75.1659077534.git.sander@svanheule.net>
- <b6b20883-3fe7-9a5d-ab55-b5a61cef996c@riseup.net>
- <1ad99cc0df85c932a7df18f67560930e37976e2b.camel@svanheule.net>
-From:   =?UTF-8?Q?Ma=c3=adra_Canal?= <mairacanal@riseup.net>
-In-Reply-To: <1ad99cc0df85c932a7df18f67560930e37976e2b.camel@svanheule.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <1659174051-27816-1-git-send-email-quic_akhilpo@quicinc.com>
+ <20220730150952.v3.2.Ifee853f6d8217a0fdacc459092bbc9e81a8a7ac7@changeid>
+ <CAF6AEGs7zKDoRY=ijxFQvaZig=UiSPgWkJFA-PY2MTxKWr5bpw@mail.gmail.com> <d7f95663-c0f7-8227-dbc0-fac43bdf6faa@quicinc.com>
+In-Reply-To: <d7f95663-c0f7-8227-dbc0-fac43bdf6faa@quicinc.com>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Sun, 31 Jul 2022 15:15:49 -0700
+Message-ID: <CAF6AEGt5H=T_0HOLrNqRHZOYNicfk74bgZrQH56k2bYpi5JsRA@mail.gmail.com>
+Subject: Re: [PATCH v3 2/8] drm/msm: Take single rpm refcount on behalf of all submits
+To:     Akhil P Oommen <quic_akhilpo@quicinc.com>
+Cc:     freedreno <freedreno@lists.freedesktop.org>,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Douglas Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sun, Jul 31, 2022 at 9:33 AM Akhil P Oommen <quic_akhilpo@quicinc.com> wrote:
+>
+> On 7/31/2022 9:26 PM, Rob Clark wrote:
+> > On Sat, Jul 30, 2022 at 2:41 AM Akhil P Oommen <quic_akhilpo@quicinc.com> wrote:
+> >> Instead of separate refcount for each submit, take single rpm refcount
+> >> on behalf of all the submits. This makes it easier to drop the rpm
+> >> refcount during recovery in an upcoming patch.
+> >>
+> >> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
+> >> ---
+> >>
+> >> (no changes since v1)
+> > I see no earlier version of this patch?
+> >
+> >>   drivers/gpu/drm/msm/msm_gpu.c | 12 ++++++++----
+> >>   1 file changed, 8 insertions(+), 4 deletions(-)
+> >>
+> >> diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+> >> index c8cd9bf..e1dd3cc 100644
+> >> --- a/drivers/gpu/drm/msm/msm_gpu.c
+> >> +++ b/drivers/gpu/drm/msm/msm_gpu.c
+> >> @@ -663,11 +663,12 @@ static void retire_submit(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
+> >>          mutex_lock(&gpu->active_lock);
+> >>          gpu->active_submits--;
+> >>          WARN_ON(gpu->active_submits < 0);
+> >> -       if (!gpu->active_submits)
+> >> +       if (!gpu->active_submits) {
+> >>                  msm_devfreq_idle(gpu);
+> >> -       mutex_unlock(&gpu->active_lock);
+> >> +               pm_runtime_put_autosuspend(&gpu->pdev->dev);
+> >> +       }
+> >>
+> >> -       pm_runtime_put_autosuspend(&gpu->pdev->dev);
+> >> +       mutex_unlock(&gpu->active_lock);
+> >>
+> >>          msm_gem_submit_put(submit);
+> >>   }
+> >> @@ -756,14 +757,17 @@ void msm_gpu_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
+> >>
+> >>          /* Update devfreq on transition from idle->active: */
+> >>          mutex_lock(&gpu->active_lock);
+> >> -       if (!gpu->active_submits)
+> >> +       if (!gpu->active_submits) {
+> >> +               pm_runtime_get(&gpu->pdev->dev);
+> >>                  msm_devfreq_active(gpu);
+> >> +       }
+> >>          gpu->active_submits++;
+> >>          mutex_unlock(&gpu->active_lock);
+> >>
+> >>          gpu->funcs->submit(gpu, submit);
+> >>          gpu->cur_ctx_seqno = submit->queue->ctx->seqno;
+> >>
+> >> +       pm_runtime_put(&gpu->pdev->dev);
+> > this looks unbalanced?
+> There is another pm_runtime_get_sync at the top of this function. Just
+> before hw_init().
+> https://elixir.bootlin.com/linux/v5.19-rc8/source/drivers/gpu/drm/msm/msm_gpu.c#L737
 
+oh, right.. sorry, I was looking at my local stack of WIP patches
+which went the opposite direction and moved the runpm into just
+msm_job_run().. I'll drop that one
 
-On 7/31/22 12:42, Sander Vanheule wrote:
-> On Sun, 2022-07-31 at 12:23 -0300, Maíra Canal wrote:
->> Hi Sander
->>
->> On 7/29/22 04:01, Sander Vanheule wrote:
->>> Add a basic suite of tests for cpumask, providing some tests for empty and
->>> completely filled cpumasks.
->>>
->>> Signed-off-by: Sander Vanheule <sander@svanheule.net>
->>> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->>> Suggested-by: Yury Norov <yury.norov@gmail.com>
->>> Cc: Borislav Petkov <bp@alien8.de>
->>> Cc: Dave Hansen <dave.hansen@linux.intel.com>
->>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>> Cc: "H. Peter Anvin" <hpa@zytor.com>
->>> Cc: Ingo Molnar <mingo@redhat.com>
->>> Cc: Marco Elver <elver@google.com>
->>> Cc: Peter Zijlstra <peterz@infradead.org>
->>> Cc: Thomas Gleixner <tglx@linutronix.de>
->>> Cc: Valentin Schneider <vschneid@redhat.com>
->>> Cc: Brendan Higgins <brendanhiggins@google.com>
->>> Cc: David Gow <davidgow@google.com>
->>> Cc: Maíra Canal <mairacanal@riseup.net>
->>> ---
->>> Changes since v4:
->>> - Belated addition of Yury's Suggested-by:
->>> - Follow KUnit style more closely
->>> - Drop full check on cpu_possible_mask
->>> - Update last check on cpu_possible_mask
->>> - Log masks when starting test
->>> - Update commit message 
->>>   
->>> Changes since v3:
->>> - Test for_each_cpu*() over empty mask and cpu_possible_mask
->>> - Add Andy's Reviewed-by
->>> - Use num_{online,present,possible}_cpus() for builtin masks
->>> - Guard against CPU hotplugging during test for dynamic builtin CPU masks
->>>  
->>> Changes since v2:
->>> - Rework for_each_* test macros, as suggested by Yury
->>>
->>> Changes since v1:
->>> - New patch
->>>
->>>  lib/Kconfig.debug  |  12 ++++
->>>  lib/Makefile       |   1 +
->>>  lib/cpumask_test.c | 147 +++++++++++++++++++++++++++++++++++++++++++++
->>>  3 files changed, 160 insertions(+)
->>>  create mode 100644 lib/cpumask_test.c
->>>
->>> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
->>> index 2e24db4bff19..e85e74646178 100644
->>> --- a/lib/Kconfig.debug
->>> +++ b/lib/Kconfig.debug
->>> @@ -2021,6 +2021,18 @@ config LKDTM
->>>         Documentation on how to use the module can be found in
->>>         Documentation/fault-injection/provoke-crashes.rst
->>>  
->>> +config CPUMASK_KUNIT_TEST
->>> +       tristate "KUnit test for cpumask" if !KUNIT_ALL_TESTS
->>> +       depends on KUNIT
->>> +       default KUNIT_ALL_TESTS
->>> +       help
->>> +         Enable to turn on cpumask tests, running at boot or module load
->>> time.
->>> +
->>> +         For more information on KUnit and unit tests in general, please
->>> refer
->>> +         to the KUnit documentation in Documentation/dev-tools/kunit/.
->>> +
->>> +         If unsure, say N.
->>> +
->>>  config TEST_LIST_SORT
->>>         tristate "Linked list sorting test" if !KUNIT_ALL_TESTS
->>>         depends on KUNIT
->>> diff --git a/lib/Makefile b/lib/Makefile
->>> index bcc7e8ea0cde..9f9db1376538 100644
->>> --- a/lib/Makefile
->>> +++ b/lib/Makefile
->>> @@ -59,6 +59,7 @@ obj-$(CONFIG_TEST_BPF) += test_bpf.o
->>>  obj-$(CONFIG_TEST_FIRMWARE) += test_firmware.o
->>>  obj-$(CONFIG_TEST_BITOPS) += test_bitops.o
->>>  CFLAGS_test_bitops.o += -Werror
->>> +obj-$(CONFIG_CPUMASK_KUNIT_TEST) += cpumask_test.o
->>>  obj-$(CONFIG_TEST_SYSCTL) += test_sysctl.o
->>>  obj-$(CONFIG_TEST_SIPHASH) += test_siphash.o
->>>  obj-$(CONFIG_HASH_KUNIT_TEST) += test_hash.o
->>> diff --git a/lib/cpumask_test.c b/lib/cpumask_test.c
->>> new file mode 100644
->>> index 000000000000..0f8059a5e93b
->>> --- /dev/null
->>> +++ b/lib/cpumask_test.c
->>
->> In order to make the tests at lib/ with more compliant naming, it would
->> make more sense to name it test_cpumask.c.
-> 
-> That's what I had originally, exactly because I copied the naming from other
-> files in lib/. That didn't match the style guide [1] which proposes the _test.c
-> or _kunit.c suffix.
+BR,
+-R
 
-My mistake!
-
-> 
-> Most files in lib/ use the test_ prefix (45), but some use the  _test.c suffix
-> (4), or _kunit.c suffix (6). Of the "test_" ones, only 8 are actually KUnit test
-> suites. I personally think the style guide makes a good argument to use a
-> suffix, as that clearly places the test suite next to the relevant file in an
-> alphabetic listing.
-> 
-> Based on the above, would you agree with using "cpumask_kunit.c" as the
-> filename? That distinguishes it from the non-KUnit test files, and follows the
-> style guide.
-
-I believe this would be the best option as well, as there is many
-different types of tests in this folder. Thank you for noticing this!
-
-Best Regards,
-- Maíra Canal
-
-> 
-> [1] https://docs.kernel.org/dev-tools/kunit/style.html#test-file-and-module-names
-> 
->>
->> Thank you for the respin to the series! All tests are passing now.
->>
->> Tested-by: Maíra Canal <mairacanal@riseup.net>
-> 
-> Thank you for testing!
-> 
-> Best,
-> Sander
+>
+> -Akhil.
+> >
+> > BR,
+> > -R
+> >
+> >>          hangcheck_timer_reset(gpu);
+> >>   }
+> >>
+> >> --
+> >> 2.7.4
+> >>
+>
