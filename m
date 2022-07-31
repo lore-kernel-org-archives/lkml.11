@@ -2,89 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E6A6C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 11:46:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 964D3C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 11:47:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236631AbiGaLqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 07:46:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48762 "EHLO
+        id S236664AbiGaLrL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 07:47:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230198AbiGaLqF (ORCPT
+        with ESMTP id S230198AbiGaLrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 07:46:05 -0400
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D8BB10562
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 04:46:02 -0700 (PDT)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-10cf9f5b500so10643524fac.2
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 04:46:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc;
-        bh=Kj6cBvNirPBOcR0RNx1S0sycN75ulvqnQVOku/MwN8Y=;
-        b=NAsA92Fcf9V01k3u2OQiLynjFaA0zAgcMmRK33Ffuzw58xh9eay4H6F3z3zweH9Uq7
-         6MIkCFS63jrNdg4oXsS6lTvTHn7YrzXHki28xnYQEtYQnu/LNZIVwUzAjIIzUo0gPqv5
-         EmfZsAm6e4DJWaIQXVwa7nRx7Ti9S7/skQVG36k9nEedZg778+Zx4JBy+bRZqxBIshoT
-         F5lZOjLomKCan+WNTPZHvkoDlujA7bEYTYaXxKuH9bAxgDD8Zrn8G2TdTn7ft5lqgiKD
-         S8WK2gbGT3qrOScS4y7/IybhxAHxJB01wPANZKYyHifeCYg6jreXHols3Uy1XmnaDIqS
-         crRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=Kj6cBvNirPBOcR0RNx1S0sycN75ulvqnQVOku/MwN8Y=;
-        b=6JUbuqtRmAXAYJGz9UEDthfAVygG59849kMqBQlIKpLXBgAaMvggZ+xba6ehah8Ci9
-         rcQ+fTyMe+XEEO+H7bY+ksg4QNVI6GPA9xH1lGFlcVcBR+Bq4HEM3Nwjgy3CVhFiANxz
-         4qE5uvMETsqUU/mKzjdNnxybcQhXq2xVDXb2FMLrGDQ+d1fjanerQNy9yBbudzVbgiGT
-         djYbPxUQRCto5V+trPMZEj2nGOUBn9PeS3dO8D4d7tDqXdmquJpGR6XtB1CPTvsCi5gu
-         3R2Zovb9DN97kiRFZ/5hLQTX/Uq2CZbjmY5EtDKWgSmFGiYLOS9ZwB49WcwzanIBxLf9
-         AZcg==
-X-Gm-Message-State: AJIora+Z46Cpp/K8d9ND/bkz93I63xbjIGpvRXVTwr38Ya0rY/YTR8LO
-        TsqXW+I0cdm+N+mADc8uvY337ZDMiM3JPzNtggAJ2qZSm9nMGw==
-X-Google-Smtp-Source: AGRyM1uwlLq6GcFjL0Nvi3y/OKIqcimzjP8cngE+cghI08E9EqLUuQG4Nj9ITaWy6uRRkifSrKycg1ZitQnUkLWlNSI=
-X-Received: by 2002:a05:6870:9193:b0:10d:130e:e57c with SMTP id
- b19-20020a056870919300b0010d130ee57cmr5561405oaf.286.1659267960847; Sun, 31
- Jul 2022 04:46:00 -0700 (PDT)
+        Sun, 31 Jul 2022 07:47:09 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7F810562
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 04:47:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659268028; x=1690804028;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=SRzCrz8m3EasE34Y3R1C/gn/8QB4gdMfmAwlqIY73XE=;
+  b=IsZtB/CIahct8rNOIrX1yH3Djn5ZSeqDeLtfn95f7nR/B9OAa502cSZr
+   /z+ck0Ku1mri2PbnR8sSok/mFmgPZoOcM86BUKBj23yh9CUiDuRU8B0gQ
+   6xCvwR7Qq2Hndo5TTBSesh9J3hZtPo2pSXhJvw1TKDlAxzuE3ufM9BXF3
+   zSGnO82OQLlnLEuuyjxQlils8nfhqvv5p16x7lXMFVazFK4NvD4nAGvCZ
+   dJVLzM9WI2ABN4JEc91hYAerxYJUd7612DwfCuRifduTWa+Ol5+8ueMLT
+   NbDflE9UElLd99AAXKfHWw1C6JkC076H0WY0U/eHGyNy7fQIM8wxASc4K
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="375292579"
+X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
+   d="scan'208";a="375292579"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 04:47:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
+   d="scan'208";a="629912346"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 31 Jul 2022 04:47:06 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oI7PV-000E5D-2o;
+        Sun, 31 Jul 2022 11:47:05 +0000
+Date:   Sun, 31 Jul 2022 19:46:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:bits/130-cpufreq 3/5]
+ drivers/cpufreq/apple-soc-cpufreq.c:67:19: error: implicit declaration of
+ function 'readq_relaxed'; did you mean 'readl_relaxed'?
+Message-ID: <202207311938.bhk4la4x-lkp@intel.com>
 MIME-Version: 1.0
-From:   Oded Gabbay <oded.gabbay@gmail.com>
-Date:   Sun, 31 Jul 2022 14:45:34 +0300
-Message-ID: <CAFCwf11=9qpNAepL7NL+YAV_QO=Wv6pnWPhKHKAepK3fNn+2Dg@mail.gmail.com>
-Subject: New subsystem for acceleration devices
-To:     Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>,
-        Jiho Chu <jiho.chu@samsung.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-Greg and I talked a couple of months ago about preparing a new accel
-subsystem for compute/acceleration devices that are not GPUs and I
-think your drivers that you are now trying to upstream fit it as well.
+tree:   https://github.com/AsahiLinux/linux bits/130-cpufreq
+head:   ed275ce5bf2d4348378a6e8ed0cba08439ae1ef4
+commit: 09036df18fff78a214cfb8a5cac10d74968d28b1 [3/5] cpufreq: apple-soc: Add new driver to control Apple SoC CPU P-states
+config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220731/202207311938.bhk4la4x-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/09036df18fff78a214cfb8a5cac10d74968d28b1
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/130-cpufreq
+        git checkout 09036df18fff78a214cfb8a5cac10d74968d28b1
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/
 
-Would you be open/interested in migrating your drivers to this new subsystem ?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Because there were no outstanding candidates, I have done so far only
-a basic and partial implementation of the infrastructure for this
-subsystem, but if you are willing to join I believe I can finish it
-rather quickly.
+All errors (new ones prefixed by >>):
 
-At start, the new subsystem will provide only a common device
-character (e.g. /dev/acX) so everyone will do open/close/ioctl on the
-same device character. Also sysfs/debugfs entries will be under that
-device and maybe an IOCTL to retrieve information.
+   drivers/cpufreq/apple-soc-cpufreq.c: In function 'apple_soc_cpufreq_get_rate':
+>> drivers/cpufreq/apple-soc-cpufreq.c:67:19: error: implicit declaration of function 'readq_relaxed'; did you mean 'readl_relaxed'? [-Werror=implicit-function-declaration]
+      67 |         u64 reg = readq_relaxed(priv->reg_base + APPLE_DVFS_STATUS);
+         |                   ^~~~~~~~~~~~~
+         |                   readl_relaxed
+   In file included from drivers/cpufreq/apple-soc-cpufreq.c:18:
+   drivers/cpufreq/apple-soc-cpufreq.c: In function 'apple_soc_cpufreq_set_target':
+>> include/linux/iopoll.h:165:35: error: implicit declaration of function 'readq'; did you mean 'readl'? [-Werror=implicit-function-declaration]
+     165 |         readx_poll_timeout_atomic(readq, addr, val, cond, delay_us, timeout_us)
+         |                                   ^~~~~
+   include/linux/iopoll.h:88:25: note: in definition of macro 'read_poll_timeout_atomic'
+      88 |                 (val) = op(args); \
+         |                         ^~
+   include/linux/iopoll.h:165:9: note: in expansion of macro 'readx_poll_timeout_atomic'
+     165 |         readx_poll_timeout_atomic(readq, addr, val, cond, delay_us, timeout_us)
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/cpufreq/apple-soc-cpufreq.c:87:13: note: in expansion of macro 'readq_poll_timeout_atomic'
+      87 |         if (readq_poll_timeout_atomic(priv->reg_base + APPLE_DVFS_CMD, reg,
+         |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/cpufreq/apple-soc-cpufreq.c:98:9: error: implicit declaration of function 'writeq_relaxed'; did you mean 'writeb_relaxed'? [-Werror=implicit-function-declaration]
+      98 |         writeq_relaxed(reg, priv->reg_base + APPLE_DVFS_CMD);
+         |         ^~~~~~~~~~~~~~
+         |         writeb_relaxed
+   drivers/cpufreq/apple-soc-cpufreq.c: At top level:
+   drivers/cpufreq/apple-soc-cpufreq.c:291:27: warning: initialized field overwritten [-Woverride-init]
+     291 |         .attr           = apple_soc_cpufreq_hw_attr,
+         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/cpufreq/apple-soc-cpufreq.c:291:27: note: (near initialization for 'apple_soc_cpufreq_driver.attr')
+   cc1: some warnings being treated as errors
 
-In the future I plan to move some of habanalabs driver's code into the
-subsystem itself, for common tasks such as memory management, dma
-memory allocation, etc.
 
-Of course, you will be able to add your own IOCTLs as you see fit.
-There will be a range of IOCTLs which are device-specific (similar to
-drm).
+vim +67 drivers/cpufreq/apple-soc-cpufreq.c
 
-wdyt ?
+    62	
+    63	static unsigned int apple_soc_cpufreq_get_rate(unsigned int cpu)
+    64	{
+    65		struct cpufreq_policy *policy = cpufreq_cpu_get_raw(cpu);
+    66		struct apple_cpu_priv *priv = policy->driver_data;
+  > 67		u64 reg = readq_relaxed(priv->reg_base + APPLE_DVFS_STATUS);
+    68		unsigned int pstate = FIELD_GET(APPLE_DVFS_STATUS_CUR_PS, reg);
+    69		unsigned int i;
+    70	
+    71		for (i = 0; policy->freq_table[i].frequency != CPUFREQ_TABLE_END; i++)
+    72			if (policy->freq_table[i].driver_data == pstate)
+    73				return policy->freq_table[i].frequency;
+    74	
+    75		dev_err(priv->cpu_dev, "could not find frequency for pstate %d\n",
+    76			pstate);
+    77		return 0;
+    78	}
+    79	
+    80	static int apple_soc_cpufreq_set_target(struct cpufreq_policy *policy,
+    81						unsigned int index)
+    82	{
+    83		struct apple_cpu_priv *priv = policy->driver_data;
+    84		unsigned int pstate = policy->freq_table[index].driver_data;
+    85		u64 reg;
+    86	
+  > 87		if (readq_poll_timeout_atomic(priv->reg_base + APPLE_DVFS_CMD, reg,
+    88					      !(reg & APPLE_DVFS_CMD_BUSY), 2,
+    89					      APPLE_DVFS_TRANSITION_TIMEOUT)) {
+    90			return -EIO;
+    91		}
+    92	
+    93		reg &= ~(APPLE_DVFS_CMD_PS1 | APPLE_DVFS_CMD_PS2);
+    94		reg |= FIELD_PREP(APPLE_DVFS_CMD_PS1, pstate);
+    95		reg |= FIELD_PREP(APPLE_DVFS_CMD_PS2, pstate);
+    96		reg |= APPLE_DVFS_CMD_SET;
+    97	
+  > 98		writeq_relaxed(reg, priv->reg_base + APPLE_DVFS_CMD);
+    99	
+   100		return 0;
+   101	}
+   102	
 
-Thanks,
-Oded
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
