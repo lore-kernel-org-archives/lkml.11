@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E36C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 10:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C109DC19F2C
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 10:51:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236366AbiGaKuy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 06:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51030 "EHLO
+        id S236573AbiGaKvC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 06:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232565AbiGaKup (ORCPT
+        with ESMTP id S233740AbiGaKut (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 06:50:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A077211820
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 03:50:44 -0700 (PDT)
+        Sun, 31 Jul 2022 06:50:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B5A11820
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 03:50:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D04D60B3D
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 10:50:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1944C433B5;
-        Sun, 31 Jul 2022 10:50:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45F9E60C02
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 10:50:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF105C433B5;
+        Sun, 31 Jul 2022 10:50:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659264643;
-        bh=/4PNQYWxqsLAmKS//9Lz9FU8s9x7tK2yEhm8PBdtgQQ=;
+        s=k20201202; t=1659264647;
+        bh=iTu5p4YKZ4xAm4s5F+BSXv8uXDKAOfaBoiaPJlN3I8E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hRZs1F8q8oSiupI2DZXSI5Hp4fXkPw7hTh5+fE/LIKDcyVDAXn4mR88yTo7xUxILa
-         xYCgGDy2Db+mDu7hXr27a6zRTJ3dVMcW/t1OD82ChHquLKXj0QRdER4RHd6Z6638tr
-         0G7DzUa5Q7LTiHE6kvNC4blXP5yW2Ancw5RYi26aCLi1j/ia/VzRItM/lDWyTBwIMs
-         NBLlww4QUxhbMVpcI+anUEOHYbooxQMwXJaLrqchiHMazqty2F9o76AEfkSrAqGo3U
-         i3dHypfkp0/XaECG2AbO7kyab8kGpksDioS1CsTx4zPLPfnIBK2AbNmwhbg9miHuh/
-         2aMY6gwo5mg9Q==
+        b=e9aLD7xH7frXpHNKF9/yO0HaCdDnByqaUL2byadK8QdPjTIxss8xDANPxHHIDH2fw
+         0igTYbSDEv/gPPH+FohtxmTWSP1pQoVcDzKb8EPOeV8wMuV/8AjAph9sdlmT0pvu6R
+         l4qjCRrmr90nynQx41TvhA9Zx25hvDK2W41uOyBFKwlRfhwC23BuE3Gw/aCeopgYdM
+         TaH7U//PAFLA0cjQl3EYBAnEJjxi1vf3/fCokDUskJk+QHXsLiUGZUOVUhqXGTFNuC
+         oFmIXPpWlmC2oV1221gjCUNoMEy1oBZD4rPN0aGzrEEnEIFlIqtmc2Hjayz7laupIU
+         PvsnILWZbsIQw==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Ohad Sharabi <osharabi@habana.ai>
-Subject: [PATCH 2/8] habanalabs/gaudi: read div_sel value from firmware
-Date:   Sun, 31 Jul 2022 13:50:31 +0300
-Message-Id: <20220731105037.545106-2-ogabbay@kernel.org>
+Cc:     Tomer Tayar <ttayar@habana.ai>
+Subject: [PATCH 5/8] habanalabs: fix vma fields assignments order in hl_hw_block_mmap()
+Date:   Sun, 31 Jul 2022 13:50:34 +0300
+Message-Id: <20220731105037.545106-5-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220731105037.545106-1-ogabbay@kernel.org>
 References: <20220731105037.545106-1-ogabbay@kernel.org>
@@ -47,38 +47,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ohad Sharabi <osharabi@habana.ai>
+From: Tomer Tayar <ttayar@habana.ai>
 
-Even when running with unsecured f/w, we should read the PLL div_sel
-value from the f/w as this register is always privileged.
+In hl_hw_block_mmap(), the vma's 'vm_private_data' and 'vm_ops' fields
+are assigned before filling the content of the private data.
+In between there is a call to the ASIC hw_block_mmap() function, and if
+it fails, the vma close function will be called with a bad private data
+value.
+Fix the order of assignments to avoid this issue.
 
-Signed-off-by: Ohad Sharabi <osharabi@habana.ai>
+In hl_hw_block_mmap() the vma's 'vm_private_data and vm_ops are assigned
+before setting the
+
+Signed-off-by: Tomer Tayar <ttayar@habana.ai>
 Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/gaudi/gaudi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/misc/habanalabs/common/memory.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index 866dc4b891d6..7f52935dc603 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -899,12 +899,13 @@ static int gaudi_early_fini(struct hl_device *hdev)
-  */
- static int gaudi_fetch_psoc_frequency(struct hl_device *hdev)
- {
--	struct asic_fixed_properties *prop = &hdev->asic_prop;
- 	u32 nr = 0, nf = 0, od = 0, div_fctr = 0, pll_clk, div_sel;
-+	struct asic_fixed_properties *prop = &hdev->asic_prop;
- 	u16 pll_freq_arr[HL_PLL_NUM_OUTPUTS], freq;
- 	int rc;
+diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
+index 0698c3c363bd..a027fa88889b 100644
+--- a/drivers/misc/habanalabs/common/memory.c
++++ b/drivers/misc/habanalabs/common/memory.c
+@@ -1492,23 +1492,22 @@ int hl_hw_block_mmap(struct hl_fpriv *hpriv, struct vm_area_struct *vma)
+ 	if (!lnode)
+ 		return -ENOMEM;
  
--	if (hdev->asic_prop.fw_security_enabled) {
-+	if ((hdev->fw_components & FW_TYPE_LINUX) &&
-+			(prop->fw_app_cpu_boot_dev_sts0 & CPU_BOOT_DEV_STS0_PLL_INFO_EN)) {
- 		struct gaudi_device *gaudi = hdev->asic_specific;
+-	vma->vm_ops = &hw_block_vm_ops;
+-	vma->vm_private_data = lnode;
+-
+-	hl_ctx_get(ctx);
+-
+ 	rc = hdev->asic_funcs->hw_block_mmap(hdev, vma, block_id, block_size);
+ 	if (rc) {
+-		hl_ctx_put(ctx);
+ 		kfree(lnode);
+ 		return rc;
+ 	}
  
- 		if (!(gaudi->hw_cap_initialized & HW_CAP_CPU_Q))
++	hl_ctx_get(ctx);
++
+ 	lnode->ctx = ctx;
+ 	lnode->vaddr = vma->vm_start;
+ 	lnode->size = block_size;
+ 	lnode->id = block_id;
+ 
++	vma->vm_private_data = lnode;
++	vma->vm_ops = &hw_block_vm_ops;
++
+ 	mutex_lock(&ctx->hw_block_list_lock);
+ 	list_add_tail(&lnode->node, &ctx->hw_block_mem_list);
+ 	mutex_unlock(&ctx->hw_block_list_lock);
 -- 
 2.25.1
 
