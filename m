@@ -2,77 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75839C19F2C
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 11:19:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 983B6C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 11:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232913AbiGaLTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 07:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36014 "EHLO
+        id S233221AbiGaLUe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 07:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232378AbiGaLTa (ORCPT
+        with ESMTP id S232378AbiGaLUb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 07:19:30 -0400
-Received: from smtp.smtpout.orange.fr (smtp04.smtpout.orange.fr [80.12.242.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD5ECE00
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 04:19:29 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id I6ykoVjnl0UP7I6ykoOcxz; Sun, 31 Jul 2022 13:19:27 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 31 Jul 2022 13:19:27 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Andy Shevchenko <andy@kernel.org>, Lee Jones <lee@kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Shobhit Kumar <shobhit.kumar@intel.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH] mfd: intel_soc_pmic: Fix an error handling path in intel_soc_pmic_i2c_probe()
-Date:   Sun, 31 Jul 2022 13:19:24 +0200
-Message-Id: <7c3918d7cce9643414697cef02ef636f05efb003.1659266359.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Sun, 31 Jul 2022 07:20:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B7D6428;
+        Sun, 31 Jul 2022 04:20:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE122B80D1D;
+        Sun, 31 Jul 2022 11:20:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B511C433D6;
+        Sun, 31 Jul 2022 11:20:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659266427;
+        bh=K8XMnjLrVWD4hf/TSjDR6ccL8BtOsnjvFMSZEJF/67Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lzL//zYodUHTGytXfvrpXUiDMZwS+emJlOHZ4IOBNn+zzSEpUy72POGAFWXIPXvgF
+         wGTNtID6YSbV4AW9KfkTx6Qs444rLO3VjwWoA9X0140p8P0bLVTiRl2iOiAqWtbJoG
+         cO3M9fApNzmD7qJKBpyQBF1gVT1SQuvJOwY0FQONvyi390ZzXEHaJ/KilrYpdrc0Zf
+         71HKqsYDKClaaK5kakwGNzKl3RmB3yIPDRbFkBJOoWF0/64CmN8dlf2kNYAGdMC15Y
+         N1AALLfxbOgc/UHEP1ajEu+FZA7HkqoMSqOvzab+LpQUPzsZ716MKNIjUeYNiMJxLq
+         JP1Dno34aCuGg==
+Date:   Sun, 31 Jul 2022 12:30:39 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Joe Simmons-Talbott <joetalbott@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: Use parens with sizeof
+Message-ID: <20220731123039.600347b0@jic23-huawei>
+In-Reply-To: <20220717153438.10800-1-joetalbott@gmail.com>
+References: <20220717153438.10800-1-joetalbott@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit in Fixes: has added a pwm_add_table() call in the probe() and
-a pwm_remove_table() call in the remove(), but forget to update the error
-handling path of the probe.
+On Sun, 17 Jul 2022 11:34:38 -0400
+Joe Simmons-Talbott <joetalbott@gmail.com> wrote:
 
-Add the missing pwm_remove_table() call.
+> Prefer 'sizeof(var)' over 'sizeof var' as reported by checkpatch.pl.
+> 
+> Signed-off-by: Joe Simmons-Talbott <joetalbott@gmail.com>
+Applied to the togreg branch of iio.git and pushed out as testing
+to let 0-day take a poke at it.
 
-Fixes: a3aa9a93df9f ("mfd: intel_soc_pmic_core: ADD PWM lookup table for CRC PMIC based PWM")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-The order of pwm_remove_table() and regmap_del_irq_chip() is not the same
-as the one in the remove function.
-The one in this patch looks more logical to me because things are done in
-the reverse order of allocations...
+oops. Email got stuck in my outbox when I went away for a week.
 
-... but in regmap_del_irq_chip() there is irq, and in such a case releasing
-resource is sometime tricky.
+Thanks,
 
-Review with care.
----
- drivers/mfd/intel_soc_pmic_core.c | 1 +
- 1 file changed, 1 insertion(+)
+Jonathan
 
-diff --git a/drivers/mfd/intel_soc_pmic_core.c b/drivers/mfd/intel_soc_pmic_core.c
-index 5e8c94e008ed..85d070bce0e2 100644
---- a/drivers/mfd/intel_soc_pmic_core.c
-+++ b/drivers/mfd/intel_soc_pmic_core.c
-@@ -77,6 +77,7 @@ static int intel_soc_pmic_i2c_probe(struct i2c_client *i2c,
- 	return 0;
- 
- err_del_irq_chip:
-+	pwm_remove_table(crc_pwm_lookup, ARRAY_SIZE(crc_pwm_lookup));
- 	regmap_del_irq_chip(pmic->irq, pmic->irq_chip_data);
- 	return ret;
- }
--- 
-2.34.1
+> ---
+>  drivers/iio/industrialio-trigger.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> index f504ed351b3e..88bccb0676c8 100644
+> --- a/drivers/iio/industrialio-trigger.c
+> +++ b/drivers/iio/industrialio-trigger.c
+> @@ -368,7 +368,7 @@ struct iio_poll_func
+>  	va_list vargs;
+>  	struct iio_poll_func *pf;
+>  
+> -	pf = kmalloc(sizeof *pf, GFP_KERNEL);
+> +	pf = kmalloc(sizeof(*pf), GFP_KERNEL);
+>  	if (pf == NULL)
+>  		return NULL;
+>  	va_start(vargs, fmt);
+> @@ -560,7 +560,7 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
+>  	struct iio_trigger *trig;
+>  	int i;
+>  
+> -	trig = kzalloc(sizeof *trig, GFP_KERNEL);
+> +	trig = kzalloc(sizeof(*trig), GFP_KERNEL);
+>  	if (!trig)
+>  		return NULL;
+>  
 
