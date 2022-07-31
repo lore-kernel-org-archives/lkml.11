@@ -2,148 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 464A4C19F2B
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 15:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 817C6C19F29
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 15:50:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237319AbiGaPtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 11:49:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45182 "EHLO
+        id S237351AbiGaPuw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 11:50:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231424AbiGaPtA (ORCPT
+        with ESMTP id S233306AbiGaPuu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 11:49:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BED9E0DA;
-        Sun, 31 Jul 2022 08:48:59 -0700 (PDT)
+        Sun, 31 Jul 2022 11:50:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D17FEE3E;
+        Sun, 31 Jul 2022 08:50:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32C8860AE5;
-        Sun, 31 Jul 2022 15:48:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A855CC433D6;
-        Sun, 31 Jul 2022 15:48:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1BDCB80D11;
+        Sun, 31 Jul 2022 15:50:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEC1DC433D6;
+        Sun, 31 Jul 2022 15:50:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659282538;
-        bh=BpVa9XKiTUOgz9LsKONU0g8nIyCwFAdKHoQkKOfJZG0=;
+        s=k20201202; t=1659282646;
+        bh=Nb8/KbRuMq0D5hB06qTzpFBgs5A+mZTRpBygcswuGTA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ezrAupgkv1KT72574l5osh6l5yi3NzrFxWmQrBAx9UstB4YHCONW1fFz8yFAV0saC
-         B9+OERGYa+EPlvvjHFIUUbPQgPaoml64eG6icHsFPeU74HxsZ5izPdeuzzC2p/UKXx
-         /0rAyJevGiPvBiEajNnxgxELO3JUMD2APZdSXABzMkH8pMKLfqkfPPsSlXbFqw3nlZ
-         RXF2PfAjKLH0Vm9+wWVCXbpOPPkRpY2ESn47bvf+S82AJ8jOrJQ/OKJpH8YruFnmwF
-         7YLjnv8X5NFNoZq2U8x6xP51UPWsryFZCHI+CP+X4nGOwigZWWEjbw3ZSSeSCy7Svp
-         dREEN86bbTm5Q==
-Date:   Mon, 1 Aug 2022 00:48:54 +0900
-From:   Masami Hiramatsu (Google) <mhiramat@kernel.org>
-To:     Chen Zhongjin <chenzhongjin@huawei.com>
-Cc:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arch@vger.kernel.org>,
-        <naveen.n.rao@linux.ibm.com>, <anil.s.keshavamurthy@intel.com>,
-        <davem@davemloft.net>, <mhiramat@kernel.org>
-Subject: Re: [PATCH] kprobes: Forbid probing on kprobe_insn_slot
-Message-Id: <20220801004854.9c2b36f38fe5ad19b2271196@kernel.org>
-In-Reply-To: <20220727032058.60444-1-chenzhongjin@huawei.com>
-References: <20220727032058.60444-1-chenzhongjin@huawei.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
+        b=PhvD5DSlj7aX4WUCA135VaXQjtYC1xTVVc34bshN5hll6g4bAvI8RYVouxWma1LFX
+         +u7IW2KXKtbsZ4B27ywspeeKe6SlkjIrypDjYMI+adt5+zGEBcWdf71dwGdE0mQxww
+         MduQOqb4u5oZAYG6q6E/QdB1Z2AGNuOVkVQC6Wj+MR0uYelq5N5vOm5xv6eP5YJxZe
+         xwlHsplqrSzzQJ2rctOnev6MQ8Q3NZfKjAtJGZC1ruC3yLX0gJBUzmmZEHAu2ALa2V
+         YbpXMn7EeDfwplDb+IamyGti74Lq0TtvX+AZ0VDeZE/NpO1MTAoxmSCrvxvqcvaNx+
+         Bti9ND8Ahk3JA==
+Date:   Sun, 31 Jul 2022 17:00:57 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Matti =?UTF-8?B?TGVodGltw6RraQ==?= <matti.lehtimaki@gmail.com>
+Cc:     linux-iio@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: st_sensors: Retry ID verification on failure
+Message-ID: <20220731170057.2b8ac00e@jic23-huawei>
+In-Reply-To: <20220724164316.68393-1-matti.lehtimaki@gmail.com>
+References: <20220724164316.68393-1-matti.lehtimaki@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Jul 2022 11:20:58 +0800
-Chen Zhongjin <chenzhongjin@huawei.com> wrote:
+On Sun, 24 Jul 2022 19:43:15 +0300
+Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com> wrote:
 
-> Syzkaller reported a BUG on arm64:
-> Unrecoverable kprobe detected.
-> Dumping kprobe:
-> Name: (null)
-> Offset: 0
-> Address: 0xffffa00010019000
-> ------------[ cut here ]------------
-> kernel BUG at arch/arm64/kernel/probes/kprobes.c:235!
-> Internal error: Oops - BUG: 0 [#1] SMP
-> Modules linked in:
-> CPU: 1 PID: 31060 Comm: syz-executor.6 Not tainted 5.10.0 #11
-> ...
-> Call trace:
->  reenter_kprobe arch/arm64/kernel/probes/kprobes.c:234 [inline]
->  kprobe_handler+0x23c/0x26c arch/arm64/kernel/probes/kprobes.c:339
->  kprobe_breakpoint_handler+0x24/0x34 arch/arm64/kernel/probes/kprobes.c:406
->  call_break_hook+0xf4/0x13c arch/arm64/kernel/debug-monitors.c:322
->  brk_handler+0x2c/0xa0 arch/arm64/kernel/debug-monitors.c:329
->  do_debug_exception+0x140/0x230 arch/arm64/mm/fault.c:867
->  el1_dbg+0x38/0x50 arch/arm64/kernel/entry-common.c:182
->  el1_sync_handler+0xf4/0x150 arch/arm64/kernel/entry-common.c:219
->  el1_sync+0x74/0x100 arch/arm64/kernel/entry.S:665
->  0xffffa00010019000
->  do_futex+0x2f4/0x370 kernel/futex.c:3735
->  __do_sys_futex kernel/futex.c:3798 [inline]
->  __se_sys_futex kernel/futex.c:3764 [inline]
->  __arm64_sys_futex+0x168/0x3a0 kernel/futex.c:3764
->  __invoke_syscall arch/arm64/kernel/syscall.c:36 [inline]
->  invoke_syscall arch/arm64/kernel/syscall.c:48 [inline]
->  el0_svc_common.constprop.0+0xf4/0x414 arch/arm64/kernel/syscall.c:155
->  do_el0_svc+0x50/0x11c arch/arm64/kernel/syscall.c:217
->  el0_svc+0x20/0x30 arch/arm64/kernel/entry-common.c:353
->  el0_sync_handler+0xe4/0x1e0 arch/arm64/kernel/entry-common.c:369
->  el0_sync+0x148/0x180 arch/arm64/kernel/entry.S:683
-> Code: 91018360 97ff1838 aa1703e0 97ff1fdf (d4210000)
-> ---[ end trace 767503e946e01b15 ]---
-> 
-> Syzbot tried to porbe on a kprobe_insn_slot.
-> 
-> kprobe will replace instruciton with a break and store the origin one
-> on kprobe_insn_slot. However these slots are not in .kprobes.text and
-> exported by perf_event_ksymbol so can be probed by perf interface.
-> 
-> Probing these slots will triggers kprobe handler inside single step
-> process and for some architectures such as arm64 this will causes a
-> bug().
-> 
-> These slots are kprobe process so they should not be probed anyway.
-> Add kprobe_insn_slot check when register_kprobe to forbid probing on
-> these slots.
+> Some sensors do not always start fast enough to read a valid ID from
+> registers at first attempt. Let's retry at most 3 times with short sleep
+> in between to fix random timing issues.
+>=20
+> Signed-off-by: Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com>
+Hi Matti,
 
-Oops, good catch!
+My gut feeling is this isn't in a fast path, so why not just wait
+for whatever the documented power up time of the sensor is?
 
-Previously this was not counted as text area, but now the kernel_text_address()
-returns true for these trampoline buffers.
+I'd expect to see a sleep in st_sensors_power_enable() if one is
+required.
 
-In this case, I think kprobes should be limited to probe only
-core_kernel_text and module_text.
-Can you use is_module_text_address() and core_kernel_text() instead?
-Below can allow kprobes probing on other trampolines like ftrace and
-bpf.
-Also, you may need this tag;
+Jonathan
 
-Fixes: 5b485629ba0d ("kprobes, extable: Identify kprobes trampolines as kernel text area")
-
-Thank you,
-
-> 
-> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
 > ---
->  kernel/kprobes.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-> index f214f8c088ed..3e798b62db70 100644
-> --- a/kernel/kprobes.c
-> +++ b/kernel/kprobes.c
-> @@ -1562,6 +1562,8 @@ static int check_kprobe_address_safe(struct kprobe *p,
->  	/* Ensure it is not in reserved area nor out of text */
->  	if (!kernel_text_address((unsigned long) p->addr) ||
->  	    within_kprobe_blacklist((unsigned long) p->addr) ||
-> +	    is_kprobe_insn_slot((unsigned long) p->addr) ||
-> +	    is_kprobe_optinsn_slot((unsigned long) p->addr) ||
->  	    jump_label_text_reserved(p->addr, p->addr) ||
->  	    static_call_text_reserved(p->addr, p->addr) ||
->  	    find_bug((unsigned long)p->addr)) {
-> -- 
-> 2.17.1
-> 
+>  drivers/iio/common/st_sensors/st_sensors_core.c | 15 ++++++++++++---
+>  1 file changed, 12 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/ii=
+o/common/st_sensors/st_sensors_core.c
+> index 9910ba1da085..106f7953683e 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+> @@ -21,6 +21,8 @@
+> =20
+>  #include "st_sensors_core.h"
+> =20
+> +#define VERIFY_ID_RETRY_COUNT 3
+> +
+>  int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
+>  				    u8 reg_addr, u8 mask, u8 data)
+>  {
+> @@ -619,11 +621,18 @@ EXPORT_SYMBOL_NS(st_sensors_get_settings_index, IIO=
+_ST_SENSORS);
+>  int st_sensors_verify_id(struct iio_dev *indio_dev)
+>  {
+>  	struct st_sensor_data *sdata =3D iio_priv(indio_dev);
+> -	int wai, err;
+> +	int wai, err, i;
+> =20
+>  	if (sdata->sensor_settings->wai_addr) {
+> -		err =3D regmap_read(sdata->regmap,
+> -				  sdata->sensor_settings->wai_addr, &wai);
+> +		for (i =3D 0; i < VERIFY_ID_RETRY_COUNT; i++) {
+> +			err =3D regmap_read(sdata->regmap,
+> +					  sdata->sensor_settings->wai_addr, &wai);
+> +
+> +			if (!err && sdata->sensor_settings->wai =3D=3D wai)
+> +				return 0;
+> +
+> +			msleep(20);
+How do we know 60msecs is long enough for all sensors?
 
+> +		}
+>  		if (err < 0) {
+>  			dev_err(&indio_dev->dev,
+>  				"failed to read Who-Am-I register.\n");
 
--- 
-Masami Hiramatsu (Google) <mhiramat@kernel.org>
