@@ -2,76 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA65C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 20:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 910A9C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 20:54:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238058AbiGaUn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 16:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46314 "EHLO
+        id S238421AbiGaUyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 16:54:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237775AbiGaUnR (ORCPT
+        with ESMTP id S231264AbiGaUyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 16:43:17 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A57FFD2F;
-        Sun, 31 Jul 2022 13:43:15 -0700 (PDT)
-Received: from [192.168.1.107] ([37.4.248.80]) by mrelayeu.kundenserver.de
- (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MEVqu-1oFTpL2Yuo-00FyFa; Sun, 31 Jul 2022 22:42:57 +0200
-Message-ID: <76a9b920-0937-7bef-db55-844f0f5f6c1b@i2se.com>
-Date:   Sun, 31 Jul 2022 22:42:56 +0200
+        Sun, 31 Jul 2022 16:54:12 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0F7120BA
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 13:54:08 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id kb8so2479760ejc.4
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 13:54:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=8udE8uoB93uvyZlPSO/At6OnaISC9AjkEA/Lil/8ZIc=;
+        b=RXdA/hhOuYtjtLsjICxxWIPOCtIg9FAGmddkvsILWsPwpb2CImUOlXGktmIH0KWcUU
+         Oi+dPDgXdKM3kJUXZa130UlR6HcKO/DW117bkUjTs7cpTnrtBvPipCqXDXhEufsyyWPE
+         KMS5LcZVx0m9S0gYoEn1AX8EQhQAb2kyFXfX8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=8udE8uoB93uvyZlPSO/At6OnaISC9AjkEA/Lil/8ZIc=;
+        b=GYPE9pJvAs2DDLlJNKaOXRIWNwlJBBZga/Ym8R26a5jtaWILP/4m9BvP2owb1cFtnX
+         qH3ST9pn7JD9gQsQ0+Ja2b7jH+jhihnRdGOp7LZQk6vK8Q3It78cKeI/Pg94Ec2JqWGk
+         tjepvksIu/RlJhBdpSsxrjyHnnGsDlQ/42y9jma5wrh5kR8m1wdr9aNBwu42dIJDXvNF
+         2bPHKZX2Tls02aaPkplG85pEeLaaW3rREedz2n8XOcJVZJaadVf6wiQmfx14nNtEBRXk
+         P7L8HYxMnD54MvP32rivgIJrxMTURD3DebV8B1XWk3Ls/6GfE2SM0vRbwOFikrNyP5KN
+         Nxzw==
+X-Gm-Message-State: ACgBeo3AEPYw/dUOWQx/bdAAnjuXSeUk8Omh7cGiw1u+PXmfCawJ79xV
+        lvWxKS6auKy2sDEYFCDjyMroh0n5Ypznz4TGHO4=
+X-Google-Smtp-Source: AGRyM1ukX2UTidFn/XRkDK8CdFxevAX8TghleFJSPYvbHfToi4x5uxOLwxRgkwkLsHtk+sjyomcDxw==
+X-Received: by 2002:a17:907:1608:b0:730:5ad0:ae1a with SMTP id hb8-20020a170907160800b007305ad0ae1amr4888971ejc.222.1659300847275;
+        Sun, 31 Jul 2022 13:54:07 -0700 (PDT)
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com. [209.85.208.54])
+        by smtp.gmail.com with ESMTPSA id 26-20020a170906301a00b006fec56c57f3sm4486212ejz.178.2022.07.31.13.54.06
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 31 Jul 2022 13:54:07 -0700 (PDT)
+Received: by mail-ed1-f54.google.com with SMTP id i13so11479882edj.11
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 13:54:06 -0700 (PDT)
+X-Received: by 2002:adf:fc02:0:b0:21f:c94:8bda with SMTP id
+ i2-20020adffc02000000b0021f0c948bdamr8351235wrr.193.1659300392079; Sun, 31
+ Jul 2022 13:46:32 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [Regression] ext4: changes to mb_optimize_scan cause issues on
- Raspberry Pi
-Content-Language: en-US
-To:     Jan Kara <jack@suse.cz>
-Cc:     linux-ext4@vger.kernel.org, Ojaswin Mujoo <ojaswin@linux.ibm.com>,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        linux-fsdevel@vger.kernel.org,
+References: <alpine.LRH.2.02.2207310703170.14394@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAMj1kXFYRNrP2k8yppgfdKg+CxWeYfHTbzLBuyBqJ9UVAR_vaQ@mail.gmail.com>
+ <alpine.LRH.2.02.2207310920390.6506@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2207311104020.16444@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wiC_oidYZeMD7p0E-=TAuLgrNQ86-sB99=hRqFM8fVLDQ@mail.gmail.com> <alpine.LRH.2.02.2207311542280.21273@file01.intranet.prod.int.rdu2.redhat.com>
+In-Reply-To: <alpine.LRH.2.02.2207311542280.21273@file01.intranet.prod.int.rdu2.redhat.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 31 Jul 2022 13:46:15 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjY8Lfem5JvyUYMFwZVvE40=9fzDba_44au0w-hgaozJQ@mail.gmail.com>
+Message-ID: <CAHk-=wjY8Lfem5JvyUYMFwZVvE40=9fzDba_44au0w-hgaozJQ@mail.gmail.com>
+Subject: Re: [PATCH v2] make buffer_locked provide an acquire semantics
+To:     Mikulas Patocka <mpatocka@redhat.com>
+Cc:     Will Deacon <will@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Geetika.Moolchandani1@ibm.com, regressions@lists.linux.dev
-References: <0d81a7c2-46b7-6010-62a4-3e6cfc1628d6@i2se.com>
- <20220728100055.efbvaudwp3ofolpi@quack3>
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-In-Reply-To: <20220728100055.efbvaudwp3ofolpi@quack3>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:Dcd8RCHyhpHavJXYcw0hQDX5NYRw1s/4sRLNcrD7ilRyJnQ+eOe
- I2GXOt7ObjklURZGQq0007jadzrUxUzw1kcMzl2gv5jlTmU17Y9ZJecZYfQ5mte4hwSBzyw
- tFtMtXB6BDvYY2+SMP1tX1iHwumVsvk6zRCoxlntAr/gLkKR+OgB1cgyPL5EvWBsXBFYMXE
- dDVOaIPd/si0MUBXs+U5A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:aZq7BjSyy7U=:22e74Qq48gKwrtv3X2UXIw
- AUdFiP5e2GbAb1Hizhf4KNy8b8KMkAZ28cGfeCdqiSwL/zUs7Z0GbiLdwBjlz8uYtO0g8eRyW
- f1bYDyOpSnsrJPRLa/KKJYrKcWsmtqxtFNWOM8482l9PIgMzvVx3qBBGS8nGRO0D4miU71PNt
- CR+PWAcS4NV251fE/Yh9iBv5Xo5pGkYLlKE4meem9KORB//fAk/NAHzIAO4zo28YMR5DCA2Il
- U3igwmdouxxlUqzQCrO7LM9vm9PICNndeBc5dHJUdnZydwL7zWPg9bMcuuOoFwKFUMYQj2Zoy
- LFDD4Rv0TjFubZR+po4LExGoetVZljgWRCPqYfzpf8RrD6Ojjzrlwn70qO8VR8aL1kuUIitnv
- /0C5etsXucvuXIXbWCCI1MTaaNwErzq7c1+WszgnvyF99BwM3DQJopgZKN7joqseANWM+RbEm
- jfF4AdXxIg0KnGxKYw4CKte661FLJQ1JC8eJuUEDE8eoDPcmJ1oMVzMAknlMKiTJPKZm4Btep
- 60RyLWEUuw1KwybLFSenGSo4nPW+4TrQDt0AhAt+8CJMaNdxMK3wvMqY5MYPeTc3ZVz6iu/vZ
- /nHvpzvo+l436Y7hivCLoiQFnfos3aP+AkpxSZyC00JVyLyHTVCRi6lqWiJxp2gjePUyhYAIy
- Qtixh/eD8eFmC/fct4e5OgNA1wCU5Ijup9HyfjDn7EemhdwlsCvTY+e+Uk8cwDYUqgWqT/88m
- wj2kB10Wg601jHFKK/0jH8g3kA3CRqvIpYWgCdlqQqD0YL26YPdtWllcBSU=
+        linux-arch <linux-arch@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jan,
+On Sun, Jul 31, 2022 at 1:39 PM Mikulas Patocka <mpatocka@redhat.com> wrote:
+>
+> Do you think that wait_event also needs a read memory barrier?
 
-Am 28.07.22 um 12:00 schrieb Jan Kara:
->
-> Also can get filesystem metadata image of your card like:
->    e2image -r <fs-device> - | gzip >/tmp/ext4-image.gz
->
-> and put it somewhere for download? The image will contain only fs metadata,
-> not data so it should be relatively small and we won't have access to your
-> secrets ;). With the image we'd be able to see how the free space looks
-> like and whether it perhaps does not trigger some pathological behavior.
-i've problems with this. If i try store uncompressed the metadata of the 
-second SD card partition (/dev/sdb2 = rootfs) the generated image file 
-is nearly big as the whole partition. In compressed state it's 25 MB. Is 
-this expected?
+Not really, no.
+
+__wait_event() uses prepare_to_wait(), and it uses set_current_state()
+very much so that the process state setting is serialized with the
+test afterwards.
+
+And the only race wait_event should worry about is exactly the "go to
+sleep" vs "make the event true and then wake up" race, so that it
+doesn't wait forever.
+
+There is no guarantee of memory ordering wrt anything else, and I
+don't think there is any need for such a guarantee.
+
+If somebody wants that guarantee, they should probably make the
+condition for wait_event() to be a "load_acquire()" or similar. Those
+cases do exist.
+
+                       Linus
