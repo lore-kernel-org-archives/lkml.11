@@ -2,343 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FD7C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 20:07:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3552AC19F2C
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 20:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237955AbiGaUHX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 16:07:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56880 "EHLO
+        id S238027AbiGaUHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 16:07:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230351AbiGaUHV (ORCPT
+        with ESMTP id S230351AbiGaUHe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 16:07:21 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00F865DC
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 13:07:19 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id m22so2583951lfl.9
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 13:07:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=hEsKAMCIoLqV3Pbcc8ZayFsqrCaRS622EJ1x7Mr4lco=;
-        b=Oj97CEdpVkl74TCvbnULDAlpEygo6SdKrqjAZwspHqnRwaE5onYJJMJpcVjCdVIFMI
-         Hn7EH4ka1VAr/ptychtVefJpiBKX8ri/YPUmIVCbHQdQrVNxkq90H4LGc2aQidrEVG31
-         bTYyWO8mydhkHm+A3MhhXnhy+YDM0LNbQUHMDtpb1wUnUM9P+RHHz/nI+55Kh/2NrHJx
-         WoOb7/wDLQ2C36SsEhDGqKlHghOk6ewic/L40JtqbOpPSzhOm8pEY1wdLSvTSWp4eXEm
-         +NiYLSCO9Q8Ziw6kRN9kJaIvk3bzf8Sr/+GlI7Hj295RCJ+UJUGN6GMOv4bC6+3fv8FX
-         Cf+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=hEsKAMCIoLqV3Pbcc8ZayFsqrCaRS622EJ1x7Mr4lco=;
-        b=MuNSDgZ1zktE/2WEWXGcVskx08WNWCJuy9eULAqwWLm/7lQbCUgGmdjaioonMkH021
-         UV3AwPBR7b8g4WrQycnGCFppM+EBb9yYKEd10R7lbkPRzIvKhbnBChbS7gyPsEL9Jwrg
-         12et5ys1WWZLAd1Fx5AH+X8U6c7qsM4Njc5g3y3OBqkPetF17yOYU6qsrY7o7FjoUrL4
-         lHXaMQybkAvoUSGQsZho+Bkvek5jPdeb/X2q3ecx7tvkLwMc7gMLz5zBxmdR1sQeTzhD
-         6yNz7qrFtFyucJclUeL6xLoBs9qVBIWJvFXofIC716MuQogsb/ISlp6TcCSQykoyiu8d
-         XnFw==
-X-Gm-Message-State: AJIora88llb8VqLBCfCol+uzHGqTBXLKPSRJRjHb3q12Gk/S4b2yB1om
-        knu47lOO8HgCcoLFPImqQuXHS525GF4=
-X-Google-Smtp-Source: AGRyM1tYEZwwtZFyM3bsPrhzlIA10hzwoK6H0LJC73htPIQcpor3y04gQ4Jv2iyCmkiA4PTy9U1YCA==
-X-Received: by 2002:a05:6512:31c6:b0:48a:7946:b9ec with SMTP id j6-20020a05651231c600b0048a7946b9ecmr4442862lfe.418.1659298037792;
-        Sun, 31 Jul 2022 13:07:17 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-119-232.nat.spd-mgts.ru. [109.252.119.232])
-        by smtp.googlemail.com with ESMTPSA id t20-20020a2e8e74000000b0025d47112194sm1395029ljk.131.2022.07.31.13.07.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 31 Jul 2022 13:07:17 -0700 (PDT)
-Message-ID: <25976b46-21b4-6e3f-0182-85dd4ca2b654@gmail.com>
-Date:   Sun, 31 Jul 2022 23:07:10 +0300
+        Sun, 31 Jul 2022 16:07:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B01C65DC;
+        Sun, 31 Jul 2022 13:07:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7D966108F;
+        Sun, 31 Jul 2022 20:07:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98E2AC433D6;
+        Sun, 31 Jul 2022 20:07:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659298052;
+        bh=+qfOhp/3423pXOH1mc2GCsLtY504nNGk6+866UHD/8U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Q/4PXuK6Rm1ZDU5zh+PHtVqkHDkeja0FxrqhVm6uZudzjJy+dN7y49IqpX3GLjOcV
+         8s7rEFRNCfdirL0JMqdTxaeQ/cBotEp7msPl0PDKI+3ainWh1VGy/sclLGnELfCHao
+         4BAI44Mu6iO+dCJhGBUYxIV3iE3Txleh1W0emyYFc/RnfD+UbUJiOQ5NB0IUZgyMgo
+         +wr+R4/MF+IBurVsqO3af7YGDruWmDvQtm34ibhZcfJlvR522/Glh324xNkWvXeDxk
+         aNWVpQAprEg99s2R+E9KYrrg/jzPg/BcP9FYCqsFVU4xeykTgs+ZWR2dHwW9XqWpIC
+         eDMN43OtAHrLA==
+Date:   Sun, 31 Jul 2022 21:17:43 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Matti =?UTF-8?B?TGVodGltw6RraQ==?= <matti.lehtimaki@gmail.com>
+Cc:     linux-iio@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: st_sensors: Retry ID verification on failure
+Message-ID: <20220731211743.6ab9264f@jic23-huawei>
+In-Reply-To: <6c839ba3-b671-76fb-95e1-94bf2f2da303@gmail.com>
+References: <20220724164316.68393-1-matti.lehtimaki@gmail.com>
+        <20220731170057.2b8ac00e@jic23-huawei>
+        <6c839ba3-b671-76fb-95e1-94bf2f2da303@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] drm/bridge: sii902x: add support for
- DRM_BRIDGE_ATTACH_NO_CONNECTOR
-Content-Language: en-US
-To:     Neil Armstrong <narmstrong@baylibre.com>, andrzej.hajda@intel.com,
-        robert.foss@linaro.org
-Cc:     jernej.skrabec@gmail.com, jonas@kwiboo.se,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Laurent.pinchart@ideasonboard.com
-References: <20220113144305.1074389-1-narmstrong@baylibre.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <20220113144305.1074389-1-narmstrong@baylibre.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-13.01.2022 17:43, Neil Armstrong пишет:
-> This adds support for DRM_BRIDGE_ATTACH_NO_CONNECTOR by adding the
-> bridge get_edid() and detect() callbacks after refactoring the connector
-> get_modes() and connector_detect() callbacks.
-> 
-> In order to keep the bridge working, extra code in get_modes() has been
-> moved to more logical places.
-> 
-> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-> ---
->  drivers/gpu/drm/bridge/sii902x.c | 129 ++++++++++++++++++++++++-------
->  1 file changed, 99 insertions(+), 30 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/bridge/sii902x.c b/drivers/gpu/drm/bridge/sii902x.c
-> index 89558e581530..65549fbfdc87 100644
-> --- a/drivers/gpu/drm/bridge/sii902x.c
-> +++ b/drivers/gpu/drm/bridge/sii902x.c
-> @@ -166,10 +166,12 @@ struct sii902x {
->  	struct i2c_client *i2c;
->  	struct regmap *regmap;
->  	struct drm_bridge bridge;
-> +	struct drm_bridge *next_bridge;
->  	struct drm_connector connector;
->  	struct gpio_desc *reset_gpio;
->  	struct i2c_mux_core *i2cmux;
->  	struct regulator_bulk_data supplies[2];
-> +	bool sink_is_hdmi;
->  	/*
->  	 * Mutex protects audio and video functions from interfering
->  	 * each other, by keeping their i2c command sequences atomic.
-> @@ -245,10 +247,8 @@ static void sii902x_reset(struct sii902x *sii902x)
->  	gpiod_set_value(sii902x->reset_gpio, 0);
->  }
->  
-> -static enum drm_connector_status
-> -sii902x_connector_detect(struct drm_connector *connector, bool force)
-> +static enum drm_connector_status sii902x_detect(struct sii902x *sii902x)
->  {
-> -	struct sii902x *sii902x = connector_to_sii902x(connector);
->  	unsigned int status;
->  
->  	mutex_lock(&sii902x->mutex);
-> @@ -261,6 +261,14 @@ sii902x_connector_detect(struct drm_connector *connector, bool force)
->  	       connector_status_connected : connector_status_disconnected;
->  }
->  
-> +static enum drm_connector_status
-> +sii902x_connector_detect(struct drm_connector *connector, bool force)
-> +{
-> +	struct sii902x *sii902x = connector_to_sii902x(connector);
-> +
-> +	return sii902x_detect(sii902x);
-> +}
-> +
->  static const struct drm_connector_funcs sii902x_connector_funcs = {
->  	.detect = sii902x_connector_detect,
->  	.fill_modes = drm_helper_probe_single_connector_modes,
-> @@ -270,42 +278,40 @@ static const struct drm_connector_funcs sii902x_connector_funcs = {
->  	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
->  };
->  
-> -static int sii902x_get_modes(struct drm_connector *connector)
-> +static struct edid *sii902x_get_edid(struct sii902x *sii902x,
-> +				     struct drm_connector *connector)
->  {
-> -	struct sii902x *sii902x = connector_to_sii902x(connector);
-> -	u32 bus_format = MEDIA_BUS_FMT_RGB888_1X24;
-> -	u8 output_mode = SII902X_SYS_CTRL_OUTPUT_DVI;
->  	struct edid *edid;
-> -	int num = 0, ret;
->  
->  	mutex_lock(&sii902x->mutex);
->  
->  	edid = drm_get_edid(connector, sii902x->i2cmux->adapter[0]);
-> -	drm_connector_update_edid_property(connector, edid);
->  	if (edid) {
->  		if (drm_detect_hdmi_monitor(edid))
-> -			output_mode = SII902X_SYS_CTRL_OUTPUT_HDMI;
-> -
-> -		num = drm_add_edid_modes(connector, edid);
-> -		kfree(edid);
-> +			sii902x->sink_is_hdmi = true;
-> +		else
-> +			sii902x->sink_is_hdmi = false;
->  	}
->  
-> -	ret = drm_display_info_set_bus_formats(&connector->display_info,
-> -					       &bus_format, 1);
-> -	if (ret)
-> -		goto error_out;
-> +	mutex_unlock(&sii902x->mutex);
->  
-> -	ret = regmap_update_bits(sii902x->regmap, SII902X_SYS_CTRL_DATA,
-> -				 SII902X_SYS_CTRL_OUTPUT_MODE, output_mode);
-> -	if (ret)
-> -		goto error_out;
-> +	return edid;
-> +}
->  
-> -	ret = num;
-> +static int sii902x_get_modes(struct drm_connector *connector)
-> +{
-> +	struct sii902x *sii902x = connector_to_sii902x(connector);
-> +	struct edid *edid;
-> +	int num = 0;
->  
-> -error_out:
-> -	mutex_unlock(&sii902x->mutex);
-> +	edid = sii902x_get_edid(sii902x, connector);
-> +	drm_connector_update_edid_property(connector, edid);
-> +	if (edid) {
-> +		num = drm_add_edid_modes(connector, edid);
-> +		kfree(edid);
-> +	}
->  
-> -	return ret;
-> +	return num;
->  }
->  
->  static enum drm_mode_status sii902x_mode_valid(struct drm_connector *connector,
-> @@ -354,12 +360,16 @@ static void sii902x_bridge_mode_set(struct drm_bridge *bridge,
->  				    const struct drm_display_mode *adj)
->  {
->  	struct sii902x *sii902x = bridge_to_sii902x(bridge);
-> +	u8 output_mode = SII902X_SYS_CTRL_OUTPUT_DVI;
->  	struct regmap *regmap = sii902x->regmap;
->  	u8 buf[HDMI_INFOFRAME_SIZE(AVI)];
->  	struct hdmi_avi_infoframe frame;
->  	u16 pixel_clock_10kHz = adj->clock / 10;
->  	int ret;
->  
-> +	if (sii902x->sink_is_hdmi)
-> +		output_mode = SII902X_SYS_CTRL_OUTPUT_HDMI;
-> +
->  	buf[0] = pixel_clock_10kHz & 0xff;
->  	buf[1] = pixel_clock_10kHz >> 8;
->  	buf[2] = drm_mode_vrefresh(adj);
-> @@ -375,6 +385,11 @@ static void sii902x_bridge_mode_set(struct drm_bridge *bridge,
->  
->  	mutex_lock(&sii902x->mutex);
->  
-> +	ret = regmap_update_bits(sii902x->regmap, SII902X_SYS_CTRL_DATA,
-> +				 SII902X_SYS_CTRL_OUTPUT_MODE, output_mode);
-> +	if (ret)
-> +		goto out;
-> +
->  	ret = regmap_bulk_write(regmap, SII902X_TPI_VIDEO_DATA, buf, 10);
->  	if (ret)
->  		goto out;
-> @@ -405,13 +420,13 @@ static int sii902x_bridge_attach(struct drm_bridge *bridge,
->  				 enum drm_bridge_attach_flags flags)
->  {
->  	struct sii902x *sii902x = bridge_to_sii902x(bridge);
-> +	u32 bus_format = MEDIA_BUS_FMT_RGB888_1X24;
->  	struct drm_device *drm = bridge->dev;
->  	int ret;
->  
-> -	if (flags & DRM_BRIDGE_ATTACH_NO_CONNECTOR) {
-> -		DRM_ERROR("Fix bridge driver to make connector optional!");
-> -		return -EINVAL;
-> -	}
-> +	if (flags & DRM_BRIDGE_ATTACH_NO_CONNECTOR)
-> +		return drm_bridge_attach(bridge->encoder, sii902x->next_bridge,
-> +					 bridge, flags);
->  
->  	drm_connector_helper_add(&sii902x->connector,
->  				 &sii902x_connector_helper_funcs);
-> @@ -433,16 +448,38 @@ static int sii902x_bridge_attach(struct drm_bridge *bridge,
->  	else
->  		sii902x->connector.polled = DRM_CONNECTOR_POLL_CONNECT;
->  
-> +	ret = drm_display_info_set_bus_formats(&sii902x->connector.display_info,
-> +					       &bus_format, 1);
-> +	if (ret)
-> +		return ret;
-> +
->  	drm_connector_attach_encoder(&sii902x->connector, bridge->encoder);
->  
->  	return 0;
->  }
->  
-> +static enum drm_connector_status sii902x_bridge_detect(struct drm_bridge *bridge)
-> +{
-> +	struct sii902x *sii902x = bridge_to_sii902x(bridge);
-> +
-> +	return sii902x_detect(sii902x);
-> +}
-> +
-> +static struct edid *sii902x_bridge_get_edid(struct drm_bridge *bridge,
-> +					    struct drm_connector *connector)
-> +{
-> +	struct sii902x *sii902x = bridge_to_sii902x(bridge);
-> +
-> +	return sii902x_get_edid(sii902x, connector);
-> +}
-> +
->  static const struct drm_bridge_funcs sii902x_bridge_funcs = {
->  	.attach = sii902x_bridge_attach,
->  	.mode_set = sii902x_bridge_mode_set,
->  	.disable = sii902x_bridge_disable,
->  	.enable = sii902x_bridge_enable,
-> +	.detect = sii902x_bridge_detect,
-> +	.get_edid = sii902x_bridge_get_edid,
->  };
->  
->  static int sii902x_mute(struct sii902x *sii902x, bool mute)
-> @@ -829,8 +866,12 @@ static irqreturn_t sii902x_interrupt(int irq, void *data)
->  
->  	mutex_unlock(&sii902x->mutex);
->  
-> -	if ((status & SII902X_HOTPLUG_EVENT) && sii902x->bridge.dev)
-> +	if ((status & SII902X_HOTPLUG_EVENT) && sii902x->bridge.dev) {
->  		drm_helper_hpd_irq_event(sii902x->bridge.dev);
-> +		drm_bridge_hpd_notify(&sii902x->bridge, (status & SII902X_PLUGGED_STATUS)
-> +								? connector_status_connected
-> +								: connector_status_disconnected);
-> +	}
->  
->  	return IRQ_HANDLED;
->  }
-> @@ -1001,6 +1042,11 @@ static int sii902x_init(struct sii902x *sii902x)
->  	sii902x->bridge.funcs = &sii902x_bridge_funcs;
->  	sii902x->bridge.of_node = dev->of_node;
->  	sii902x->bridge.timings = &default_sii902x_timings;
-> +	sii902x->bridge.ops = DRM_BRIDGE_OP_DETECT | DRM_BRIDGE_OP_EDID;
-> +
-> +	if (sii902x->i2c->irq > 0)
-> +		sii902x->bridge.ops |= DRM_BRIDGE_OP_HPD;
-> +
->  	drm_bridge_add(&sii902x->bridge);
->  
->  	sii902x_audio_codec_init(sii902x, dev);
-> @@ -1022,6 +1068,7 @@ static int sii902x_probe(struct i2c_client *client,
->  			 const struct i2c_device_id *id)
->  {
->  	struct device *dev = &client->dev;
-> +	struct device_node *endpoint;
->  	struct sii902x *sii902x;
->  	int ret;
->  
-> @@ -1049,6 +1096,28 @@ static int sii902x_probe(struct i2c_client *client,
->  		return PTR_ERR(sii902x->reset_gpio);
->  	}
->  
-> +	endpoint = of_graph_get_endpoint_by_regs(dev->of_node, 1, -1);
-> +	if (endpoint) {
-> +		struct device_node *remote = of_graph_get_remote_port_parent(endpoint);
-> +
-> +		of_node_put(endpoint);
-> +		if (!remote) {
-> +			dev_err(dev, "Endpoint in port@1 unconnected\n");
-> +			return -ENODEV;
-> +		}
-> +
-> +		if (!of_device_is_available(remote)) {
-> +			dev_err(dev, "port@1 remote device is disabled\n");
-> +			of_node_put(remote);
-> +			return -ENODEV;
-> +		}
-> +
-> +		sii902x->next_bridge = of_drm_find_bridge(remote);
-> +		of_node_put(remote);
-> +		if (!sii902x->next_bridge)
-> +			return -EPROBE_DEFER;
+On Sun, 31 Jul 2022 21:51:55 +0300
+Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com> wrote:
 
-Hi,
+> On 31.7.2022 19.00, Jonathan Cameron wrote:
+> > On Sun, 24 Jul 2022 19:43:15 +0300
+> > Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com> wrote:
+> >  =20
+> >> Some sensors do not always start fast enough to read a valid ID from
+> >> registers at first attempt. Let's retry at most 3 times with short sle=
+ep
+> >> in between to fix random timing issues.
+> >>
+> >> Signed-off-by: Matti Lehtim=C3=A4ki <matti.lehtimaki@gmail.com> =20
+> > Hi Matti,
+> >=20
+> > My gut feeling is this isn't in a fast path, so why not just wait
+> > for whatever the documented power up time of the sensor is?
+> >=20
+> > I'd expect to see a sleep in st_sensors_power_enable() if one is
+> > required. =20
+>=20
+> In the specification for the sensor (lis2hh12) I have on my device I
+> found that the maximum boot time of the sensor (starting from Vdd power
+> on) is defined as 20 ms. Not sure if the other sensors supported by the
+> driver have different values but based on checking a couple of
+> specifications I didn't find any bigger values so far.
+>=20
+> >> +			msleep(20); =20
+> > How do we know 60msecs is long enough for all sensors? =20
+>=20
+> Based on the specification for the sensor I have and also driver used in
+> Android kernel for my device (it uses a 3 x 20 ms loop) I think 20 ms is
+> a good value but to be sure a slightly longer might make sense. As
+> suggested in the other review comment by changing the regmap_read to
+> regmap_read_poll_timeout the function doesn't always need to wait at
+> least 20 ms in case first read doesn't provide the correct value, if a
+> suitable shorter poll interval is used (something like 1-10 ms).
+>=20
+> However testing on my device has shown that I still need to have a loop
+> or at least a retry possibility because I have noticed a rare random
+> read error (-6, happens after some time not at first read) when reading
+> the id from the hardware. This could be due to for example internal
+> init failure of the sensor chip causing an internal reset. Because of
+> this read error regmap_read_poll_timeout returns with an error and
+> without retrying to read the id the sensor probe fails.
 
-This patch broke ARM/QEMU vexpress display because of_drm_find_bridge()
-always fail with -EPROBE_DEFER. Reverting this patch returns display
-back. Please fix or revert, thanks in advance.
+Nasty. If you can get a confirmation that it's a possible failure on startup
+from the manufacturer then I'd be happier with that justification to retry
+rather than just sleep for say 30msec after power on.
+
+Jonathan
+
+>=20
+> -Matti
+
