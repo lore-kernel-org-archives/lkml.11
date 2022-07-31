@@ -2,129 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1214BC00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 20:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 922F2C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 20:15:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238489AbiGaUNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 16:13:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59272 "EHLO
+        id S237986AbiGaUPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 16:15:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230351AbiGaUND (ORCPT
+        with ESMTP id S238380AbiGaUOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 16:13:03 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9EDEE07
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 13:13:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659298382; x=1690834382;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mSjwg+d6IVWVm+Xe0h2TaAOWoxuqXJl5bodxlLMEj4I=;
-  b=XfMCj9sg7t8Ua/VMQcIcOlaF+YhgnJMvupIwtiHWyACaCMQculzF1U9q
-   q+h3/qN4VSgI4IP6bGIte/pVjyJ1SxQIPjsXPer+vnZS6vdLP5RKON7U2
-   ZsSGgcv9ce93IIvz+aCYbdRjUZgPt1fhjKc4slzv0mnGmY/noHZ+595nf
-   q4VPYXvR+7vz+cnSGfWlUIrRLfTAd1Q89j6D+BSJd2k2/slk+1GtNyQrE
-   qBSsbmUFV7TTo3lPAsKGSNYNUw2E3EE43Np6XgvUNn151iKuz9Hjdq1qb
-   eerykAYhFHXeM17P9sCB7PZhMfR1rFJor4gJWckb8IeFNijHF2RIApEXi
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10425"; a="314841144"
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="314841144"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 13:13:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="601824036"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 31 Jul 2022 13:13:00 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 7BFFD1DF; Sun, 31 Jul 2022 23:13:08 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lee Jones <lee.jones@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Lee Jones <lee@kernel.org>, Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v2 07/10] mfd: intel_soc_pmic_crc: Drop redundant ACPI_PTR() and ifdeffery
-Date:   Sun, 31 Jul 2022 23:12:55 +0300
-Message-Id: <20220731201258.11262-7-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220731201258.11262-1-andriy.shevchenko@linux.intel.com>
-References: <20220731201258.11262-1-andriy.shevchenko@linux.intel.com>
+        Sun, 31 Jul 2022 16:14:47 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2EF9E0F2;
+        Sun, 31 Jul 2022 13:14:30 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-322b5199358so89495427b3.6;
+        Sun, 31 Jul 2022 13:14:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OeGpJdxhfYfzpb5Uf9HD0YunEOMQCAiuTRKThZ+PwSo=;
+        b=fJG8A2loRJfa6x4e80+zN7Fvw3Pe/ZYExhC+mfCZ2iElsgf1KCNf1fsWPfMiy8YGmC
+         w+UH1PTagz5wAqhVJn+FQPFZWytCvSrniGNXqhaColRl/HYS5XEOARvusybmP1cZMtyY
+         wAC1Oe45/yiQ1hqVTmcwiokt8ih3tqwzdwmyet6unIjt/ONPI0qizoHdTxt9mMFtEKKT
+         s5a0PunUo4aDGknRnjlMOUsDOsjIJiHV4EL2gtV52I5mYdjv5Rs71NlmFX61bs5T28HI
+         Xm+pfpqHIY2QyuBEQEHvgRMfRsZtgAnGzt6oiaqU8YNFOxwL4XTCptdXIlf/IfZ7Z0of
+         YF/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OeGpJdxhfYfzpb5Uf9HD0YunEOMQCAiuTRKThZ+PwSo=;
+        b=vVRQEXbVwPdMruvoZqWB9svvQGJfQ5RlDvZQW6p6BW9mXc1wxuwvMNYDGj6QVzwAON
+         upl4v4GGX2D7xC+VpHaa1Npd//v05WEK9GSJxRyc2s/iovLEIhMVx5hO6EOZoasfHe6w
+         8I0M/yDYoOPjJZ4w41xGNV6uqjw31MG8LaeblUjXYyOyxd7YHa4ZGNC35a63ee6y0Ztj
+         ks84suu76uQcTr1v5XVDgfTNUUtq3sjqX2bzu58c5PN5lvxUHn/AaZOk3YKXxZnF0vbo
+         gWo/EOTCHJge8zxELUCZiV01t9BjiCN5T6fxE1fVHFWZ7xhUuACSXGUS4TlshTXYonlU
+         1jqg==
+X-Gm-Message-State: ACgBeo2FpPmwXlq63XB09tuQmCj7PAnfXXZjO0UTfp9fNH29JCqUGwAj
+        Z07yyM8tIyj22uuWqvYXreHEcPlh369cfS37xmcLi9aPoSs=
+X-Google-Smtp-Source: AA6agR50IYOKvjQ9URod6wvD3PZZ9Q8A9+2ExY/nwdWTW3eZksP2dZd9tvwpELBNjBE3lw7v6MEK+j+2xWCfSLIrsVM=
+X-Received: by 2002:a81:75d4:0:b0:324:7783:1e43 with SMTP id
+ q203-20020a8175d4000000b0032477831e43mr5499748ywc.1.1659298470073; Sun, 31
+ Jul 2022 13:14:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220725193547.1038414-1-martin.blumenstingl@googlemail.com>
+ <be60acab-7dfe-6841-b176-4bd1e875d52e@birger-koblitz.de> <CAFBinCB6bJbK2sx+oyCjo97Sv2=ywnCi_4v+E76f78DYMNqJkg@mail.gmail.com>
+ <075b8d68-93e5-93a3-a247-6811152b35d1@birger-koblitz.de>
+In-Reply-To: <075b8d68-93e5-93a3-a247-6811152b35d1@birger-koblitz.de>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Sun, 31 Jul 2022 22:14:19 +0200
+Message-ID: <CAFBinCCorAkiBg+ZXOgKtNYfjr6PUmT2mN1OH7Q3SoMkY-yYhw@mail.gmail.com>
+Subject: Re: [PATCH RFC v1] spi: realtek-rtl: Fix clearing some register bits
+To:     Birger Koblitz <mail@birger-koblitz.de>
+Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bert@biot.com, sander@svanheule.net
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver depends on ACPI, ACPI_PTR() resolution is always the same.
-Otherwise a compiler may produce a warning.
+Hi Birger,
 
-That said, the rule of thumb either ugly ifdeffery with ACPI_PTR or
-none should be used in a driver.
+On Fri, Jul 29, 2022 at 10:20 AM Birger Koblitz <mail@birger-koblitz.de> wrote:
+>
+> Hi Martin,
+>
+> On 7/28/22 17:27, Martin Blumenstingl wrote:
+> > Your patch actually addresses an issue which I have seen with RTL_SPI_SFCSR_CS.
+> > Since you seem to have boards with these Realtek SoCs: could you
+> > please clean up your patch and upstream it (splitting into smaller
+> > patches if/where needed)? That would be a win-win: upstream gains
+> > improved SPI support and I won't be confused the next time I look at
+> > the spi-realtek-rtl driver.
+>
+> Thanks for suggesting this! I will send a patch-set later today along
+> these lines, I first need to set up a linux dev environment as the
+> development so far was within OpenWRT.
+There's not a single right or wrong. The fewer patches a target has in
+OpenWrt the easier it gets in my experience. The most simple approach
+in my opinion is to make OpenWrt use an external kernel tree (using
+CONFIG_EXTERNAL_KERNEL_TREE).
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Hans de Goede <hdegoede@redhat.com>
-Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
----
-v2: added tags and rebased on top of new patch 1
 
- drivers/mfd/Kconfig              | 4 ++--
- drivers/mfd/intel_soc_pmic_crc.c | 6 ++----
- 2 files changed, 4 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index abb58ab1a1a4..60196bdc8a1d 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -589,8 +589,8 @@ config LPC_SCH
- 
- config INTEL_SOC_PMIC
- 	bool "Support for Crystal Cove PMIC"
--	depends on ACPI && HAS_IOMEM && I2C=y && GPIOLIB && COMMON_CLK
--	depends on X86 || COMPILE_TEST
-+	depends on HAS_IOMEM && I2C=y && GPIOLIB && COMMON_CLK
-+	depends on (X86 && ACPI) || COMPILE_TEST
- 	depends on I2C_DESIGNWARE_PLATFORM=y
- 	select MFD_CORE
- 	select REGMAP_I2C
-diff --git a/drivers/mfd/intel_soc_pmic_crc.c b/drivers/mfd/intel_soc_pmic_crc.c
-index d68ed5b35fd9..17fcb10930f6 100644
---- a/drivers/mfd/intel_soc_pmic_crc.c
-+++ b/drivers/mfd/intel_soc_pmic_crc.c
-@@ -8,9 +8,9 @@
-  * Author: Zhu, Lejun <lejun.zhu@linux.intel.com>
-  */
- 
--#include <linux/acpi.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/mfd/core.h>
- #include <linux/mfd/intel_soc_pmic.h>
-@@ -259,19 +259,17 @@ static const struct i2c_device_id intel_soc_pmic_i2c_id[] = {
- };
- MODULE_DEVICE_TABLE(i2c, intel_soc_pmic_i2c_id);
- 
--#if defined(CONFIG_ACPI)
- static const struct acpi_device_id intel_soc_pmic_acpi_match[] = {
- 	{ "INT33FD" },
- 	{ },
- };
- MODULE_DEVICE_TABLE(acpi, intel_soc_pmic_acpi_match);
--#endif
- 
- static struct i2c_driver intel_soc_pmic_i2c_driver = {
- 	.driver = {
- 		.name = "intel_soc_pmic_i2c",
- 		.pm = pm_sleep_ptr(&crystal_cove_pm_ops),
--		.acpi_match_table = ACPI_PTR(intel_soc_pmic_acpi_match),
-+		.acpi_match_table = intel_soc_pmic_acpi_match,
- 	},
- 	.probe = intel_soc_pmic_i2c_probe,
- 	.remove = intel_soc_pmic_i2c_remove,
--- 
-2.35.1
-
+Best regards,
+Martin
