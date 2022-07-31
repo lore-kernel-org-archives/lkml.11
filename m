@@ -2,166 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70DEEC00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 16:11:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F1C8C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 16:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237425AbiGaQK4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 12:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57820 "EHLO
+        id S237424AbiGaQRh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 12:17:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233341AbiGaQKy (ORCPT
+        with ESMTP id S230244AbiGaQRf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 12:10:54 -0400
-Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9E32735
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 09:10:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1659283776; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=fBYjmFwCARWWi4tqpjtYoddPlEA46q4WgK+ZVld86gtIFLtXSk4cb9GHwQw9zvc+p2HVLOz6z3HSV4hMQqEapg5sVkH0EXNgzfXgONkrrUx4T9FJXKYRJJs+o/V/WBWgAH8bTF5xoVWxJM3aIuzL/zq2Ct9OfneKoO/IhPEZwXk=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1659283776; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=p+JGMZFOwhjpdzA/MfM1jeGfmv3RLCTVkm7iRbrSFBc=; 
-        b=VhlT7zCUN6qS/5OyWREUqDA9xHj9jid+qqB4nBbeDcwRH//xXqKrPVcIRHzFSVzoCNbgqNZdijuuaXOJjhugpvwmt4C9FyQCThBMzeuv1qW70OUOnLoJ3rSUroyO6OPVWg2hfUtgO8DewAL3UA/562TocDtwUEflY1VlLMB4+UU=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659283776;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=p+JGMZFOwhjpdzA/MfM1jeGfmv3RLCTVkm7iRbrSFBc=;
-        b=QCG+IqHTBXwjdGZ6SH4PHGn2+nV4YLtxp/xoOTOJ9pRCKnIia86MIRpoKx/Z+Uy+
-        EvNfhi0T5ow8XmBapjFlUzGO4k6S6KIh9KNjMrOWMzgwlbO5dNwwjOvvPeGLXkslzCe
-        BOmdR/GC8tPOGQeO//7Dhuwsb4ueTIVcyruKQeEY=
-Received: from localhost.localdomain (43.241.144.202 [43.241.144.202]) by mx.zoho.in
-        with SMTPS id 1659283774265240.75092323645038; Sun, 31 Jul 2022 21:39:34 +0530 (IST)
-From:   Siddh Raman Pant <code@siddh.me>
-To:     x86@kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>
-Message-ID: <20220731160913.632092-1-code@siddh.me>
-Subject: [PATCH] x86/numa: Use cpumask_available instead of hardcoded NULL check
-Date:   Sun, 31 Jul 2022 21:39:13 +0530
-X-Mailer: git-send-email 2.35.1
+        Sun, 31 Jul 2022 12:17:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071EFDFF9;
+        Sun, 31 Jul 2022 09:17:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9660160F1F;
+        Sun, 31 Jul 2022 16:17:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D217FC433C1;
+        Sun, 31 Jul 2022 16:17:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659284254;
+        bh=QgAz5bY89pnm43xuM+ZChX7STSLA6T9WvSXtE1C3d/g=;
+        h=From:To:Cc:Subject:Date:From;
+        b=b/vwqyKDPnJ9m+s64qW8Jenp6E+spUubFrvV4NXkc2tXDD/kYMUuWs+Q9n27HMZEb
+         eTkWmkXhRdN27pGAQHwbzMr1EJJ5tEd7q9Sab5Ma3V9gStxX2Y0A6ED76YTm6sRmgv
+         bkTxLpabuc5KEpZHm7B5x/HJMnJZ0elB2ARYv0kWfVFMXRLXvQ4ujwhQ7xlJbUm0p6
+         CQVoS9yCAUd0Zl9hd/ePsHIvGXXCZzjo07VHQ8z8G4kT6EWfl0EQdZ+VCuKxcDE1li
+         8uf8mULMzQ6dQlhwsgaqM5KJD+JxwYk3EdTE4qrVmWm+giYnNx5/Q5Z0dcJyeiVdEr
+         3PVIGRzcbeK+w==
+From:   Stephen Boyd <sboyd@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] clk fixes for v5.19-rc8
+Date:   Sun, 31 Jul 2022 09:17:32 -0700
+Message-Id: <20220731161733.2786191-1-sboyd@kernel.org>
+X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-node_to_cpumask_map is of type cpumask_var_t[].
+The following changes since commit 25c2a075eb6a3031813b6051bd10dfc22c36a2a4:
 
-When CONFIG_CPUMASK_OFFSTACK is set, cpumask_var_t is typedef'd to a
-pointer for dynamic allocation, else to an array of one element. The
-"wicked game" can be checked on line 700 of include/linux/cpumask.h.
+  clk: lan966x: Fix the lan966x clock gate register address (2022-07-19 00:04:10 -0700)
 
-The lines changed in this commit were probably written by the original
-authors with CONFIG_CPUMASK_OFFSTACK=3Dy (i.e. dynamic allocation) in mind,
-checking if the cpumask was available via a direct NULL check.
+are available in the Git repository at:
 
-When CONFIG_CPUMASK_OFFSTACK is not set, GCC gives the below given warning
-while compiling the kernel.
+  https://git.kernel.org/pub/scm/linux/kernel/git/clk/linux.git tags/clk-fixes-for-linus
 
-Fix that by using cpumask_available(), which does the NULL check when
-CONFIG_CPUMASK_OFFSTACK is set, otherwise returns true. Use it wherever
-such checks are made.
+for you to fetch changes up to 8dc592c41f38735306d1f1dc0b183601379c6d94:
 
-Conditional definitions of cpumask_available() can be found along with
-the definition of cpumask_var_t. Check the cpumask.h reference mentioned
-above.
+  clk: sunxi-ng: Fix H6 RTC clock definition (2022-07-27 16:45:58 -0700)
 
-GCC warning log:
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+----------------------------------------------------------------
+Fix a NULL pointer deref in the Allwinner clk driver with a one liner.
 
-arch/x86/mm/numa.c: In function =E2=80=98cpumask_of_node=E2=80=99:
-arch/x86/mm/numa.c:916:39: warning: the comparison will always evaluate as =
-=E2=80=98false=E2=80=99 for the address of =E2=80=98node_to_cpumask_map=E2=
-=80=99 will never be NULL [-Waddress]
-  916 |         if (node_to_cpumask_map[node] =3D=3D NULL) {
-      |                                       ^~
-In file included from ./include/linux/linkage.h:7,
-                 from ./include/linux/kernel.h:17,
-                 from ./arch/x86/include/asm/percpu.h:27,
-                 from ./arch/x86/include/asm/current.h:6,
-                 from ./include/linux/mutex.h:14,
-                 from ./include/linux/kernfs.h:11,
-                 from ./include/linux/sysfs.h:16,
-                 from ./include/linux/kobject.h:20,
-                 from ./include/linux/of.h:17,
-                 from ./include/linux/irqdomain.h:35,
-                 from ./include/linux/acpi.h:13,
-                 from arch/x86/mm/numa.c:3:
-arch/x86/mm/numa.c:67:15: note: =E2=80=98node_to_cpumask_map=E2=80=99 decla=
-red here
-   67 | EXPORT_SYMBOL(node_to_cpumask_map);
-      |               ^~~~~~~~~~~~~~~~~~~
-./include/linux/export.h:87:28: note: in definition of macro =E2=80=98___EX=
-PORT_SYMBOL=E2=80=99
-   87 |         extern typeof(sym) sym;                                    =
-             \
-      |                            ^~~
-./include/linux/export.h:147:41: note: in expansion of macro =E2=80=98__EXP=
-ORT_SYMBOL=E2=80=99
-  147 | #define _EXPORT_SYMBOL(sym, sec)        __EXPORT_SYMBOL(sym, sec, "=
-")
-      |                                         ^~~~~~~~~~~~~~~
-./include/linux/export.h:150:41: note: in expansion of macro =E2=80=98_EXPO=
-RT_SYMBOL=E2=80=99
-  150 | #define EXPORT_SYMBOL(sym)              _EXPORT_SYMBOL(sym, "")
-      |                                         ^~~~~~~~~~~~~~
-arch/x86/mm/numa.c:67:1: note: in expansion of macro =E2=80=98EXPORT_SYMBOL=
-=E2=80=99
-   67 | EXPORT_SYMBOL(node_to_cpumask_map);
-      | ^~~~~~~~~~~~~
+----------------------------------------------------------------
+Jernej Skrabec (1):
+      clk: sunxi-ng: Fix H6 RTC clock definition
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ drivers/clk/sunxi-ng/ccu-sun50i-h6-r.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Fixes: c032ef60d1aa ("cpumask: convert node_to_cpumask_map[] to cpumask_var=
-_t")
-Fixes: de2d9445f162 ("x86: Unify node_to_cpumask_map handling between 32 an=
-d 64bit")
-
-Signed-off-by: Siddh Raman Pant <code@siddh.me>
----
- arch/x86/mm/numa.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/x86/mm/numa.c b/arch/x86/mm/numa.c
-index e8b061557887..2aadb2019b4f 100644
---- a/arch/x86/mm/numa.c
-+++ b/arch/x86/mm/numa.c
-@@ -867,7 +867,7 @@ void debug_cpumask_set_cpu(int cpu, int node, bool enab=
-le)
- =09=09return;
- =09}
- =09mask =3D node_to_cpumask_map[node];
--=09if (!mask) {
-+=09if (!cpumask_available(mask)) {
- =09=09pr_err("node_to_cpumask_map[%i] NULL\n", node);
- =09=09dump_stack();
- =09=09return;
-@@ -913,7 +913,7 @@ const struct cpumask *cpumask_of_node(int node)
- =09=09dump_stack();
- =09=09return cpu_none_mask;
- =09}
--=09if (node_to_cpumask_map[node] =3D=3D NULL) {
-+=09if (!cpumask_available(node_to_cpumask_map[node])) {
- =09=09printk(KERN_WARNING
- =09=09=09"cpumask_of_node(%d): no node_to_cpumask_map!\n",
- =09=09=09node);
---=20
-2.35.1
-
-
+-- 
+https://git.kernel.org/pub/scm/linux/kernel/git/clk/linux.git/
+https://git.kernel.org/pub/scm/linux/kernel/git/sboyd/spmi.git
