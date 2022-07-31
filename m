@@ -2,54 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D36EC00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 21:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44547C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 21:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238545AbiGaVJ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 17:09:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57562 "EHLO
+        id S238242AbiGaVKA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 17:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235100AbiGaVJn (ORCPT
+        with ESMTP id S238321AbiGaVJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 17:09:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236B1DF86
+        Sun, 31 Jul 2022 17:09:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E9B0E017
         for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 14:09:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B11E5B80DCF
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 21:09:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63BFEC433D6;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FE8AB80DD1
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 21:09:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDD08C43143;
         Sun, 31 Jul 2022 21:09:40 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oIGBv-007Ghh-0b;
+        id 1oIGBv-007Gjw-2z;
         Sun, 31 Jul 2022 17:09:39 -0400
-Message-ID: <20220731210918.097591536@goodmis.org>
+Message-ID: <20220731210939.761903601@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Sun, 31 Jul 2022 17:09:18 -0400
+Date:   Sun, 31 Jul 2022 17:09:22 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>
-Subject: [for-next][PATCH 0/4] rtla: Updates for 5.20
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Andreas Schwab <schwab@suse.de>
+Subject: [for-next][PATCH 4/4] rtla: Define syscall numbers for riscv
+References: <20220731210918.097591536@goodmis.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Andreas Schwab <schwab@suse.de>
 
-Andreas Schwab (2):
-      rtla: Fix double free
-      rtla: Define syscall numbers for riscv
+RISC-V uses the same (generic) syscall numbers as ARM64.
 
-Daniel Bristot de Oliveira (1):
-      rtla: Fix Makefile when called from -C tools/
+Link: https://lkml.kernel.org/r/mvma68wl2ul.fsf@suse.de
 
-jianchunfu (1):
-      rtla/utils: Use calloc and check the potential memory allocation failure
+Signed-off-by: Andreas Schwab <schwab@suse.de>
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ tools/tracing/rtla/src/utils.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-----
- tools/tracing/rtla/Makefile    | 2 +-
- tools/tracing/rtla/src/trace.c | 9 +++++++--
- tools/tracing/rtla/src/utils.c | 7 ++++---
- 3 files changed, 12 insertions(+), 6 deletions(-)
+diff --git a/tools/tracing/rtla/src/utils.c b/tools/tracing/rtla/src/utils.c
+index 5ae2fa96fde1..663a047f794d 100644
+--- a/tools/tracing/rtla/src/utils.c
++++ b/tools/tracing/rtla/src/utils.c
+@@ -225,7 +225,7 @@ long parse_ns_duration(char *val)
+ #elif __arm__
+ # define __NR_sched_setattr	380
+ # define __NR_sched_getattr	381
+-#elif __aarch64__
++#elif __aarch64__ || __riscv
+ # define __NR_sched_setattr	274
+ # define __NR_sched_getattr	275
+ #elif __powerpc__
+-- 
+2.35.1
