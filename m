@@ -2,125 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD55C19F2B
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 16:06:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6944C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 16:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237441AbiGaQGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 12:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55648 "EHLO
+        id S237482AbiGaQJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 12:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbiGaQGR (ORCPT
+        with ESMTP id S233668AbiGaQJV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 12:06:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A59465ED;
-        Sun, 31 Jul 2022 09:06:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BD791CE0E1D;
-        Sun, 31 Jul 2022 16:06:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDC5AC433D6;
-        Sun, 31 Jul 2022 16:06:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659283573;
-        bh=+vFal/LdjoTbxx9yuRtd76JF9XeHOgnLz0ofopDkgjY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=n+NtQI8dIHBRrBniVbydhInrIWc8jzuZeCvJx3TRJ7Lak2rAR3f3QFB87GH18hqQN
-         yx7sZJRvciMBzi0WfQRypIJUnxwHVKmcZ450fN6G0oM/fnZ6UMUylrbBJ1lV5XMQjV
-         m2K+B9ZGtzcUNqFR3cree68ndppApja/mRLtJKB7RRwJ6kKjEhVKlE4YBEeC4rEBwg
-         vyTFSnVUlsQyb//sAoiInBgGW6J9DAgph3ri+vxWiETewmxkb88p8oz9v5jpUcIGdn
-         CtQTEkBrD/MFq+JSqg+70KenALSwtQFHbqCRbH0tIOEGhCFo4rYP3dh1LZLM2ysKVd
-         EJmpQ0di9i8mg==
-Date:   Sun, 31 Jul 2022 17:16:24 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Angel Iglesias <ang.iglesiasg@gmail.com>
-Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 4/5] iio: pressure: bmp280: Add support for BMP380
- sensor family
-Message-ID: <20220731171624.3d4bb241@jic23-huawei>
-In-Reply-To: <50841287411a4e459487cc94a05bc6de66be4acf.1658597501.git.ang.iglesiasg@gmail.com>
-References: <cover.1658597501.git.ang.iglesiasg@gmail.com>
-        <50841287411a4e459487cc94a05bc6de66be4acf.1658597501.git.ang.iglesiasg@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 31 Jul 2022 12:09:21 -0400
+Received: from smtp.smtpout.orange.fr (smtp-11.smtpout.orange.fr [80.12.242.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391CADE8F
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 09:09:20 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id IBVFoscLf9qatIBVFoZdUE; Sun, 31 Jul 2022 18:09:18 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 31 Jul 2022 18:09:18 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Tony Krowiak <akrowiak@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Jason Herne <jjherne@linux.ibm.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-s390@vger.kernel.org
+Subject: [PATCH] s390/vfio-ap: Fix an error handling path in vfio_ap_mdev_probe_queue()
+Date:   Sun, 31 Jul 2022 18:09:14 +0200
+Message-Id: <d0c0a35eec4fa87cb7f3910d8ac4dc0f7dc9008a.1659283738.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 23 Jul 2022 19:39:44 +0200
-Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
+The commit in Fixes: has switch the order of a sysfs_create_group() and a
+kzalloc().
 
-> Adds compatibility with the new generation of this sensor, the BMP380
-> 
-> Includes basic sensor initialization to do pressure and temp
-> measurements and allows tuning oversampling settings for each channel.
-> 
-> The compensation algorithms are adapted from the device datasheet and
-> the repository https://github.com/BoschSensortec/BMP3-Sensor-API
-> 
-> Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
+It correctly removed the now useless kfree() but forgot to add a
+sysfs_remove_group() in case of (unlikely) memory allocation failure.
 
-Hi Angel,
+Add it now.
 
-A comment below. Follows on from comment on previous patch rather than being a
-suggestion to change anything in here (beyond what has already been raised by others!)
+Fixes: 260f3ea14138 ("s390/vfio-ap: move probe and remove callbacks to vfio_ap_ops.c")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+This patch is NOT compile tested.
+I don't cross-compile (even if I've already been told several times that
+it was really easy)
+---
+ drivers/s390/crypto/vfio_ap_ops.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-Jonathan
+diff --git a/drivers/s390/crypto/vfio_ap_ops.c b/drivers/s390/crypto/vfio_ap_ops.c
+index 6c8c41fac4e1..ad30b9871122 100644
+--- a/drivers/s390/crypto/vfio_ap_ops.c
++++ b/drivers/s390/crypto/vfio_ap_ops.c
+@@ -1849,8 +1849,10 @@ int vfio_ap_mdev_probe_queue(struct ap_device *apdev)
+ 		return ret;
+ 
+ 	q = kzalloc(sizeof(*q), GFP_KERNEL);
+-	if (!q)
+-		return -ENOMEM;
++	if (!q) {
++		ret = -ENOMEM;
++		goto err_remove_group;
++	}
+ 
+ 	q->apqn = to_ap_queue(&apdev->device)->qid;
+ 	q->saved_isc = VFIO_AP_ISC_INVALID;
+@@ -1868,6 +1870,10 @@ int vfio_ap_mdev_probe_queue(struct ap_device *apdev)
+ 	release_update_locks_for_mdev(matrix_mdev);
+ 
+ 	return 0;
++
++err_remove_group:
++	sysfs_remove_group(&apdev->device.kobj, &vfio_queue_attr_group);
++	return ret;
+ }
+ 
+ void vfio_ap_mdev_remove_queue(struct ap_device *apdev)
+-- 
+2.34.1
 
-> +static int bmp380_read_calib(struct bmp280_data *data, unsigned int chip)
-> +{
-> +	struct bmp380_calib *calib = &data->calib.bmp380;
-> +	int ret;
-> +	u8 *buf;
-> +
-> +	buf = kmalloc(BMP380_CALIB_REG_COUNT, GFP_KERNEL);
-
-Ah. The complexity in here explains somewhat why you did it with u8 in the previous
-patch.  Probably still better to have a __be16 buffer for that one though
-even though we can't do that here.
-
-> +	if (!buf)
-> +		return -ENOMEM;
-> +
-> +	/* Read temperature calibration values. */
-> +	ret = regmap_bulk_read(data->regmap, BMP380_REG_CALIB_TEMP_START, buf,
-> +			       BMP380_CALIB_REG_COUNT);
-> +	if (ret < 0) {
-> +		dev_err(data->dev,
-> +			"failed to read temperature calibration parameters\n");
-> +		kfree(buf);
-> +		return ret;
-> +	}
-> +
-> +	/* Toss the temperature calibration data into the entropy pool */
-> +	add_device_randomness(buf, BMP380_CALIB_REG_COUNT);
-> +
-> +	/* Parse calibration data */
-> +	calib->T1 = get_unaligned_le16(&buf[BMP380_T1]);
-> +	calib->T2 = get_unaligned_le16(&buf[BMP380_T2]);
-> +	calib->T3 = buf[BMP380_T3];
-> +	calib->P1 = get_unaligned_le16(&buf[BMP380_P1]);
-> +	calib->P2 = get_unaligned_le16(&buf[BMP380_P2]);
-> +	calib->P3 = buf[BMP380_P3];
-> +	calib->P4 = buf[BMP380_P4];
-> +	calib->P5 = get_unaligned_le16(&buf[BMP380_P5]);
-> +	calib->P6 = get_unaligned_le16(&buf[BMP380_P6]);
-> +	calib->P7 = buf[BMP380_P7];
-> +	calib->P8 = buf[BMP380_P8];
-> +	calib->P9 = get_unaligned_le16(&buf[BMP380_P9]);
-> +	calib->P10 = buf[BMP380_P10];
-> +	calib->P11 = buf[BMP380_P11];
-> +
-> +	kfree(buf);
-> +	return 0;
-> +}
-> +
