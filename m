@@ -2,41 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE620C19F2C
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 05:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA754C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 06:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236092AbiGaF7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 01:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35086 "EHLO
+        id S236271AbiGaGSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 02:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231243AbiGaF7R (ORCPT
+        with ESMTP id S234916AbiGaGSa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 01:59:17 -0400
-Received: from smtp.smtpout.orange.fr (smtp09.smtpout.orange.fr [80.12.242.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCC112A92
-        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 22:59:15 -0700 (PDT)
+        Sun, 31 Jul 2022 02:18:30 -0400
+Received: from smtp.smtpout.orange.fr (smtp-22.smtpout.orange.fr [80.12.242.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE04613D6D
+        for <linux-kernel@vger.kernel.org>; Sat, 30 Jul 2022 23:18:28 -0700 (PDT)
 Received: from pop-os.home ([90.11.190.129])
         by smtp.orange.fr with ESMTPA
-        id I1ypo1mN3ghoJI1ypop3be; Sun, 31 Jul 2022 07:59:13 +0200
+        id I2HRo3vdL5V1hI2HRokPDz; Sun, 31 Jul 2022 08:18:27 +0200
 X-ME-Helo: pop-os.home
 X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 31 Jul 2022 07:59:13 +0200
+X-ME-Date: Sun, 31 Jul 2022 08:18:27 +0200
 X-ME-IP: 90.11.190.129
 From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+To:     "Theodore Ts'o" <tytso@mit.edu>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
         Jonathan Corbet <corbet@lwn.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Rob Herring <robh@kernel.org>
+        Wang Jianjian <wangjianjian3@huawei.com>
 Cc:     linux-kernel@vger.kernel.org,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: [PATCH] doc: sfp-phylink: Fix a broken reference
-Date:   Sun, 31 Jul 2022 07:59:00 +0200
-Message-Id: <be3c7e87ca7f027703247eccfe000b8e34805094.1659247114.git.christophe.jaillet@wanadoo.fr>
+        linux-ext4@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: [PATCH] ext4, doc: Fix a broken layout
+Date:   Sun, 31 Jul 2022 08:18:24 +0200
+Message-Id: <d3ec14afe2396272da6353162b3081a0c92de313.1659248273.git.christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -44,45 +40,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit in Fixes: has changed a .txt file into a .yaml file. Update the
-documentation accordingly.
+The commit in Fixes: has removed an escaping character without updating
+the layout of the table.
 
-While at it add some `` around some file names to improve the output.
+Add the missing space.
 
-Fixes: 70991f1e6858 ("dt-bindings: net: convert sff,sfp to dtschema")
+Fixes: 3103084afcf2 ("ext4, doc: remove unnecessary escaping")
 Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- Documentation/networking/sfp-phylink.rst | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ Documentation/filesystems/ext4/blockmap.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/sfp-phylink.rst b/Documentation/networking/sfp-phylink.rst
-index 328f8d39eeb3..55b65f607a64 100644
---- a/Documentation/networking/sfp-phylink.rst
-+++ b/Documentation/networking/sfp-phylink.rst
-@@ -203,7 +203,7 @@ this documentation.
-    The :c:func:`validate` method should mask the supplied supported mask,
-    and ``state->advertising`` with the supported ethtool link modes.
-    These are the new ethtool link modes, so bitmask operations must be
--   used. For an example, see drivers/net/ethernet/marvell/mvneta.c.
-+   used. For an example, see ``drivers/net/ethernet/marvell/mvneta.c``.
+diff --git a/Documentation/filesystems/ext4/blockmap.rst b/Documentation/filesystems/ext4/blockmap.rst
+index 2bd990402a5c..cc596541ce79 100644
+--- a/Documentation/filesystems/ext4/blockmap.rst
++++ b/Documentation/filesystems/ext4/blockmap.rst
+@@ -1,7 +1,7 @@
+ .. SPDX-License-Identifier: GPL-2.0
  
-    The :c:func:`mac_link_state` method is used to read the link state
-    from the MAC, and report back the settings that the MAC is currently
-@@ -224,7 +224,7 @@ this documentation.
-    function should modify the state and only take the link down when
-    absolutely necessary to change the MAC configuration.  An example
-    of how to do this can be found in :c:func:`mvneta_mac_config` in
--   drivers/net/ethernet/marvell/mvneta.c.
-+   ``drivers/net/ethernet/marvell/mvneta.c``.
- 
-    For further information on these methods, please see the inline
-    documentation in :c:type:`struct phylink_mac_ops <phylink_mac_ops>`.
-@@ -281,4 +281,4 @@ as necessary.
- 
- For information describing the SFP cage in DT, please see the binding
- documentation in the kernel source tree
--``Documentation/devicetree/bindings/net/sff,sfp.txt``
-+``Documentation/devicetree/bindings/net/sff,sfp.yaml``.
+ +---------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+-| i.i_block Offset   | Where It Points                                                                                                                                                                                                              |
++| i.i_block Offset    | Where It Points                                                                                                                                                                                                              |
+ +=====================+==============================================================================================================================================================================================================================+
+ | 0 to 11             | Direct map to file blocks 0 to 11.                                                                                                                                                                                           |
+ +---------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 -- 
 2.34.1
 
