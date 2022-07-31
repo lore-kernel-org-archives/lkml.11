@@ -2,146 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A002C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 15:03:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2A00C19F2B
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 15:04:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237253AbiGaPDh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 11:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51926 "EHLO
+        id S237270AbiGaPEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 11:04:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237068AbiGaPDe (ORCPT
+        with ESMTP id S233431AbiGaPEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 11:03:34 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C960DEE4
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 08:03:33 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id x4so1906052pfr.8
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 08:03:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :content-language:content-transfer-encoding;
-        bh=CqarRD0qBma+nkDvEq8uD5MNW2b7at7eSJRZBX+iSRg=;
-        b=c+Lg4tTvxwhoOwnitw/8esS0JfRoc7588NH7ZMpcW3trPL7rLOUSI9E/7Fn9wyoTXR
-         iqvu1jS9uH0faNEStn9gcKsXTyKXNAgsmqpYhSSGq9GPLziCD8YhniqMqEL1C6pEj1Pc
-         x9DXY+9k/GIkN2xA3bfpjoUIqEL1v+nOIPfPx9A9YlQ8ZOTf+/wTMeWJr3nIvhmK/fud
-         w0zhCeQpGtOBIYB1QuxuCw0VwqqN8reqSThtHucdOm3MJ+N4+sE+KafHGvTugfal/DqZ
-         x1kOttY8idYKSHL64B/VsfAAZl6tTrvgoFWOsuvLGlEz36VhHp0nZOeUxRm7XFFOTKE3
-         96PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:content-language:content-transfer-encoding;
-        bh=CqarRD0qBma+nkDvEq8uD5MNW2b7at7eSJRZBX+iSRg=;
-        b=o/9qDTygV6Ze6LGdJdmyiPMHc2PQAh/Irvq8OPLxNDecPFgOq7wVlJSj9GDnzP3fYw
-         We/FdOkXHesn8J+cpfD+fmEJ4H3PsQNzyyiV3KmsoXL05ttrinbMK9j/w9IvW/TPFdfd
-         tegqY3TSKJpapxs3/IMDrPiMBSgdhdtQ6kbORlMS2SDdx9G/G8MLpE5Kfeoeyixd+ekO
-         PIHclr+ygKeYY0RboX0G9X5ejQLCuZnS2maZPXYAoFgHfNnipBGrTlBIqV46TOPTehnR
-         lbK/j05o1lCDo1yTW7Rhpn1x5nzff8wPLsv86ZagOo9p+jiIVaXd++Pph4SOY5E+b9mm
-         Zd5g==
-X-Gm-Message-State: AJIora/BEIibanNF+/o6FfeyJoWKGVNgveuWnffNWiPql0gZex0vv0dy
-        h7GKL0pymTtrBnBPEwxRAzWe8lhdBd/oMw==
-X-Google-Smtp-Source: AGRyM1sbh/JldyhtTyQMu6gVq6HNWLs7pK2HOedzv2yx6vukYAF9/lxIclfHNmb5/Hjseat7ThTgNA==
-X-Received: by 2002:a63:eb0d:0:b0:41b:7a15:1fbb with SMTP id t13-20020a63eb0d000000b0041b7a151fbbmr10085682pgh.511.1659279812442;
-        Sun, 31 Jul 2022 08:03:32 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id u17-20020a170903125100b0016d33b8a231sm7582928plh.270.2022.07.31.08.03.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 31 Jul 2022 08:03:32 -0700 (PDT)
-Message-ID: <c737af00-e879-fe01-380c-ba95b555f423@kernel.dk>
-Date:   Sun, 31 Jul 2022 09:03:30 -0600
+        Sun, 31 Jul 2022 11:04:32 -0400
+X-Greylist: delayed 1235 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 31 Jul 2022 08:04:30 PDT
+Received: from mx.treblig.org (mx.treblig.org [46.43.15.161])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D577DEAB;
+        Sun, 31 Jul 2022 08:04:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=treblig.org
+        ; s=bytemarkmx; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID
+        :Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
+        :List-Post:List-Owner:List-Archive;
+        bh=F0slf2YJCD3XvKv+dbnLCjFi/jGrdLYNNGrKXZecVsY=; b=Qax82oRkZ2/71XbaSpBsMQ8Zld
+        y9D2W0RdUt/juCpV/Jpt6J+EzOx5i3/VxLzA2RBkmhvS9PTfW6ycsm5OwG6kwnMP8O4yBpKs4SntD
+        9nfkPUyBCKhMiVIln0/23/YQkmoa0wQCccpJNugUbqjMrvsPL8RX0cL2IkwvtJqRyiV6MlNw1Yl5c
+        N7/9y/XycmIoQQzIv90iDOn9gKEdyLITUZESrCLR/w/B5qn8UGNy3Tw/KsoH9vHUgMassCnrFRJaE
+        y4n1i2enMLInlvVxB3Z8/ct6DJP/RHvJoODmIUb+ElxyIduFjLhmv7wH4QiEXBFiXnShA5MU5WYIW
+        N8BYM9sQ==;
+Received: from dg by mx.treblig.org with local (Exim 4.94.2)
+        (envelope-from <dg@treblig.org>)
+        id 1oIAAU-009All-PW; Sun, 31 Jul 2022 15:43:46 +0100
+Date:   Sun, 31 Jul 2022 15:43:46 +0100
+From:   "Dr. David Alan Gilbert" <linux@treblig.org>
+To:     linux-kernel@vger.kernel.org, corbet@lwn.net, davem@davemloft.net,
+        jgg@ziepe.ca, linux-doc@vger.kernel.org
+Cc:     edumazet@google.com, dan.j.williams@intel.com
+Subject: Re: [PATCH] typos: Fix 'namespace' typos
+Message-ID: <YuaVIp1dug0tUSje@gallifrey>
+References: <20220709132830.9869-1-linux@treblig.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-From:   Jens Axboe <axboe@kernel.dk>
-Subject: [GIT PULL] io_uring support for buffered writes
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     io-uring <io-uring@vger.kernel.org>, linux-xfs@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+In-Reply-To: <20220709132830.9869-1-linux@treblig.org>
+X-Chocolate: 70 percent or better cocoa solids preferably
+X-Operating-System: Linux/5.10.0-12-amd64 (x86_64)
+X-Uptime: 15:41:12 up 142 days,  1:06,  1 user,  load average: 0.00, 0.00,
+ 0.00
+User-Agent: Mutt/2.0.5 (2021-01-21)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+* linux@treblig.org (linux@treblig.org) wrote:
+> From: "Dr. David Alan Gilbert" <linux@treblig.org>
+> 
+> 'namespace' is creatively typo'd in a few different places
+> 
+> Signed-off-by: Dr. David Alan Gilbert <linux@treblig.org>
 
-On top of the core io_uring changes for 5.20, this pull request contains
-support for buffered writes, specifically for XFS. btrfs is in progress,
-will be coming in the next release.
+Ping.
+(and added a couple more cc'c)
 
-io_uring does support buffered writes on any file type, but since the
-buffered write path just always -EAGAIN (or -EOPNOTSUPP) any attempt to
-do so if IOCB_NOWAIT is set, any buffered write will effectively be
-handled by io-wq offload. This isn't very efficient, and we even have
-specific code in io-wq to serialize buffered writes to the same inode to
-avoid further inefficiencies with thread offload.
-
-This is particularly sad since most buffered writes don't block, they
-simply copy data to a page and dirty it. With this pull request, we can
-handle buffered writes a lot more effiently. If balance_dirty_pages()
-needs to block, we back off on writes as indicated.
-
-This improves buffered write support by 2-3x.
-
-Jan Kara helped with the mm bits for this, and Stefan handled the
-fs/iomap/xfs/io_uring parts of it.
-
-Please pull!
-
-
-The following changes since commit f6b543fd03d347e8bf245cee4f2d54eb6ffd8fcb:
-
-  io_uring: ensure REQ_F_ISREG is set async offload (2022-07-24 18:39:18 -0600)
-
-are available in the Git repository at:
-
-  git://git.kernel.dk/linux-block.git tags/for-5.20/io_uring-buffered-writes-2022-07-29
-
-for you to fetch changes up to 0dd316ba8692c2374fbb82cce57c0b23144f2977:
-
-  mm: honor FGP_NOWAIT for page cache page allocation (2022-07-24 18:39:32 -0600)
-
-----------------------------------------------------------------
-for-5.20/io_uring-buffered-writes-2022-07-29
-
-----------------------------------------------------------------
-Jan Kara (3):
-      mm: Move starting of background writeback into the main balancing loop
-      mm: Move updates of dirty_exceeded into one place
-      mm: Add balance_dirty_pages_ratelimited_flags() function
-
-Jens Axboe (2):
-      io_uring: fix issue with io_write() not always undoing sb_start_write()
-      mm: honor FGP_NOWAIT for page cache page allocation
-
-Stefan Roesch (11):
-      iomap: Add flags parameter to iomap_page_create()
-      iomap: Add async buffered write support
-      iomap: Return -EAGAIN from iomap_write_iter()
-      fs: add a FMODE_BUF_WASYNC flags for f_mode
-      fs: add __remove_file_privs() with flags parameter
-      fs: Split off inode_needs_update_time and __file_update_time
-      fs: Add async write file modification handling.
-      io_uring: Add support for async buffered writes
-      io_uring: Add tracepoint for short writes
-      xfs: Specify lockmode when calling xfs_ilock_for_iomap()
-      xfs: Add async buffered write support
-
- fs/inode.c                      | 168 +++++++++++++++++++++++++++++-----------
- fs/iomap/buffered-io.c          |  67 ++++++++++++----
- fs/read_write.c                 |   4 +-
- fs/xfs/xfs_file.c               |  11 ++-
- fs/xfs/xfs_iomap.c              |  11 ++-
- include/linux/fs.h              |   4 +
- include/linux/writeback.h       |   7 ++
- include/trace/events/io_uring.h |  25 ++++++
- io_uring/rw.c                   |  41 ++++++++--
- mm/filemap.c                    |   4 +
- mm/page-writeback.c             |  89 +++++++++++++--------
- 11 files changed, 323 insertions(+), 108 deletions(-)
-
+> ---
+> I've added 'namesapce' to codespell: https://github.com/codespell-project/codespell/commit/cfe751aedb234e262d7e32c1d568939c2ccd4e36
+> I wasn't sure if it was worth splitting this into 3 patches given the
+> different areas; please advise.
+> ---
+>  Documentation/driver-api/nvdimm/nvdimm.rst | 2 +-
+>  Documentation/filesystems/proc.rst         | 2 +-
+>  Documentation/networking/sysfs-tagging.rst | 2 +-
+>  drivers/infiniband/core/device.c           | 2 +-
+>  include/linux/nd.h                         | 2 +-
+>  5 files changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/Documentation/driver-api/nvdimm/nvdimm.rst b/Documentation/driver-api/nvdimm/nvdimm.rst
+> index be8587a558e1e..ca16b5acbf30d 100644
+> --- a/Documentation/driver-api/nvdimm/nvdimm.rst
+> +++ b/Documentation/driver-api/nvdimm/nvdimm.rst
+> @@ -82,7 +82,7 @@ LABEL:
+>    Metadata stored on a DIMM device that partitions and identifies
+>    (persistently names) capacity allocated to different PMEM namespaces. It
+>    also indicates whether an address abstraction like a BTT is applied to
+> -  the namepsace.  Note that traditional partition tables, GPT/MBR, are
+> +  the namespace.  Note that traditional partition tables, GPT/MBR, are
+>    layered on top of a PMEM namespace, or an address abstraction like BTT
+>    if present, but partition support is deprecated going forward.
+>  
+> diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
+> index 1bc91fb8c321a..335d028752d45 100644
+> --- a/Documentation/filesystems/proc.rst
+> +++ b/Documentation/filesystems/proc.rst
+> @@ -2187,7 +2187,7 @@ are not related to tasks.
+>  Chapter 5: Filesystem behavior
+>  ==============================
+>  
+> -Originally, before the advent of pid namepsace, procfs was a global file
+> +Originally, before the advent of pid namespace, procfs was a global file
+>  system. It means that there was only one procfs instance in the system.
+>  
+>  When pid namespace was added, a separate procfs instance was mounted in
+> diff --git a/Documentation/networking/sysfs-tagging.rst b/Documentation/networking/sysfs-tagging.rst
+> index 83647e10c2078..65307130ab633 100644
+> --- a/Documentation/networking/sysfs-tagging.rst
+> +++ b/Documentation/networking/sysfs-tagging.rst
+> @@ -43,6 +43,6 @@ Users of this interface:
+>  
+>    - current_ns() which returns current's namespace
+>    - netlink_ns() which returns a socket's namespace
+> -  - initial_ns() which returns the initial namesapce
+> +  - initial_ns() which returns the initial namespace
+>  
+>  - call kobj_ns_exit() when an individual tag is no longer valid
+> diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
+> index d275db195f1a1..0af50a1f53418 100644
+> --- a/drivers/infiniband/core/device.c
+> +++ b/drivers/infiniband/core/device.c
+> @@ -132,7 +132,7 @@ MODULE_PARM_DESC(netns_mode,
+>   * rdma_dev_access_netns() - Return whether an rdma device can be accessed
+>   *			     from a specified net namespace or not.
+>   * @dev:	Pointer to rdma device which needs to be checked
+> - * @net:	Pointer to net namesapce for which access to be checked
+> + * @net:	Pointer to net namespace for which access to be checked
+>   *
+>   * When the rdma device is in shared mode, it ignores the net namespace.
+>   * When the rdma device is exclusive to a net namespace, rdma device net
+> diff --git a/include/linux/nd.h b/include/linux/nd.h
+> index b9771ba1ef879..7095faf4a0c85 100644
+> --- a/include/linux/nd.h
+> +++ b/include/linux/nd.h
+> @@ -179,7 +179,7 @@ static inline int nvdimm_read_bytes(struct nd_namespace_common *ndns,
+>   * @buf: buffer to drain
+>   * @size: transfer length
+>   *
+> - * NVDIMM Namepaces disks do not implement sectors internally.  Depending on
+> + * NVDIMM Namespaces disks do not implement sectors internally.  Depending on
+>   * the @ndns, the contents of @buf may be in cpu cache, platform buffers,
+>   * or on backing memory media upon return from this routine.  Flushing
+>   * to media is handled internal to the @ndns driver, if at all.
+> -- 
+> 2.36.1
+> 
 -- 
-Jens Axboe
-
+ -----Open up your eyes, open up your mind, open up your code -------   
+/ Dr. David Alan Gilbert    |       Running GNU/Linux       | Happy  \ 
+\        dave @ treblig.org |                               | In Hex /
+ \ _________________________|_____ http://www.treblig.org   |_______/
