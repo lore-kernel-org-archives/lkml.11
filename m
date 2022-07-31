@@ -2,165 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62942C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 18:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E66E3C19F2B
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 18:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237698AbiGaS2c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 14:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60962 "EHLO
+        id S232790AbiGaSpK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 14:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237243AbiGaS2L (ORCPT
+        with ESMTP id S229495AbiGaSpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 14:28:11 -0400
-Received: from aer-iport-1.cisco.com (aer-iport-1.cisco.com [173.38.203.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70DBBE37
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 11:28:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=3500; q=dns/txt; s=iport;
-  t=1659292087; x=1660501687;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6Cdb2OQrgAvdR16JMhjiKU3mXiADfXmJC5nN3O18Blw=;
-  b=LLFO7RNrB0c0I+UW5QTaFC6UJCfy6VnefuF2nNDU8AH9nwsvv0DbecyU
-   FcsXbq5ihjjZkvWQVin9IO7PFcB31D6V7F9FHgchv60fIJP4yxwqK+Kr1
-   nLpoOYybxruflDjDOa1mBI9PA3OGgzI6+hFRnLjdR8XMRLwuE2p4utQVv
-   I=;
-X-IPAS-Result: =?us-ascii?q?A0ACAADAyOZilxbLJq1aGwEBAQEBAQEBBQEBARIBAQEDA?=
- =?us-ascii?q?wEBAYF7BgEBAQsBgyRWLBJFjG1fiA0DiyCRWYElA1QLAQEBDzcLBAEBhQYCh?=
- =?us-ascii?q?HUmNAkOAQIEAQEBAQMCAwEBAQEBAQMBAQUBAQECAQcEFAEBAQEBAQEBCRsGD?=
- =?us-ascii?q?AUQNYVoDYZDAwMyAUEFECAxITYZgn0BgmUDMgMQpl2CK4EBg08Bg1gNgkyBP?=
- =?us-ascii?q?QGGMoNGhSc9BoFJRIR9giCIXwSHHJBpAwkEBwVKRAMLLA8WBQgJFxIQEAIEE?=
- =?us-ascii?q?RoLBgMWPwkCBA4DQAgNAxEEAw8YCRIIEAQGAzEMJQsDFAwBBgMGBQMBAxsDF?=
- =?us-ascii?q?AMFJAcDHA8jDQ0EHx0DAwUlAwICGwcCAgMCBhUGAgI2GDkIBAgEKyMPBQIHL?=
- =?us-ascii?q?wUELwIeBAUGEQgCFgIGBAQEBBYCEAgCCCcXBxMzGQEFWRAJIRwOGhAFBhMDI?=
- =?us-ascii?q?G8FBz4PKDM1PCsfGwqBEiorFQMEBAMCBhgDAyICEC4xAxUGKRMSLQkqdQkCA?=
- =?us-ascii?q?yJtAwMEKi4DCSEfBwkwHZZEggUHUzsrUVCBKI8Jhk4BqlwsbINbiyKOd4VlG?=
- =?us-ascii?q?jGFRqMhlnyEeog+g1+WPYFhdYEgTSMVgyMJCj4ZD44sDQmIZIVMQjECATgCB?=
- =?us-ascii?q?gsBAQMJjwYBAQ?=
-IronPort-Data: A9a23:+Zjfp6wk14CNCZE19Zh6t+ehxirEfRIJ4+MujC+fZmUNrF6WrkUCm
- jQcXGuAb6qJNGqjLdh3b4ix/U9V6sPSndQ1QVRspFhgHilAwSbn6Xt1DatR0we6dJCroJdPt
- p1GAjX4BJloCCea/H9BC5C5xZVG/fngqoHUVaiVYUideSc+EH170U04wrZg6mJVqYHR7z2l6
- IuaT/L3YDdJ6xYsWo7Dw/vewP/HlK2aVAIw5jTSV9gS1LPtvyV94KYkGE2EByCQrr+4sQKNb
- 72rILmRpgs19vq2Yz+vuu6TnkYiGtY+MeUS45Zbc/DKv/RMmsA9+v1jBvpMeHl3sDLXw+FL7
- vUUkKD3TC58a8UgmMxFO/VZOyhzJ+hN/6XKZCH5us2IxEqAeHzpqxlsJBhpZstDqqAtWToIr
- 6ZwxDMlNnhvg8q2zb2nVORgmuwoLdLgO8UUvXQIITTxVq1/HM+dHs0m4/dFwygdlPJ1RsyAT
- JpAUTgxT0THfDBQbwJ/5JUWxbf02SaXnydjgE6Sv7Q+52TI5Ahw1qX9ddTSZ9qGTNlUmUDeo
- XjJl0zwAQkfHNiezyeVt3yrm+nDlD/6X4RUE6e3ntZshl67yWsUBxkbE1C8pJGRjkejQdtWA
- 0cT9icnsLI17kXtScPyNzWksWKfuTYZWsYWHuEngCmOx6fP6AGeBUAPTiRGbd07sYkxXzNC/
- luAldnuGSBHqrCZSXuBsLyTqFuaNSETLGIGYC4PRBot7NzqoYV1hRXKJv5sCqO6jd3dHTD23
- iCEqzU4i7wPjMkNkaKh8jjvhzOqu4iMTQMv4AjTdnyq4xk/Z4O/YYGsr1/B4p59wJ2xR1Sb+
- XkcnNKCqeYHEdeGlTeGR6MGG7TBC+u53CP02gZdH8kwyRSW/CD/TLp2wGhbGABsG5NREdP2W
- 3P7tQRU7Z5VGXKla65rfo68Y/gXIbjc+cfNDa+LM4IfCnRlXErWo3E0PB/4M3XFyRB0yckC1
- YGnndFA5Ev26JiLLhLrHo/xMpdymEjSIF8/orihlXyaPUK2PiL9dFv8GALmghoFxK2Fuh7J1
- N1UKtGHzR5SOMWnPHSGq9ZOfQxSdCZgbXwTlyCxXrDbSuaBMDxxY8I9PZt6E2CYt/0Pz7yRr
- i3VtrFwkQKg3xUr1jlmmlg6OO+wAv6TXFowPDcnOh6zymM/bIO0hJrzhLNpFYTLANdLlKYuJ
- 9FcIp3oKq0WGlzvpmRMBbGg/dcKXEn62mqz09+NPWFXk2hIHFeSpLcJv2LHqUEzM8ZAnZFm/
- eb7hl+CHctrqsYLJJ++Vc9DBmiZ5RA18N+elWORSjWPUC0AKLRXFhE=
-IronPort-HdrOrdr: A9a23:hcogSKBCwgw1v+nlHemp55DYdb4zR+YMi2TDGXocdfUzSL39qy
- nAppomPHPP4gr5HUtQ+uxoW5PwJE80i6QV3WB5B97LNzUO+lHYTr2KhrGM/9SPIUDDH5ZmtZ
- uJt8NFebvN5Z8Qt7ec3DWF
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-AV: E=Sophos;i="5.93,206,1654560000"; 
-   d="scan'208";a="3315765"
-Received: from aer-iport-nat.cisco.com (HELO aer-core-1.cisco.com) ([173.38.203.22])
-  by aer-iport-1.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 31 Jul 2022 18:27:00 +0000
-Received: from hce-anki.rd.cisco.com ([10.47.79.243])
-        by aer-core-1.cisco.com (8.15.2/8.15.2) with ESMTP id 26VIQpY1008219;
-        Sun, 31 Jul 2022 18:26:59 GMT
-From:   Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, Daniel Micay <danielmicay@gmail.com>,
-        Laura Abbott <labbott@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Laura Abbott <lauraa@codeaurora.org>,
-        Nick Kralevich <nnk@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [v4.9 PATCH 5/6] init/main.c: extract early boot entropy from the passed cmdline
-Date:   Sun, 31 Jul 2022 20:26:35 +0200
-Message-Id: <20220731182635.1910069-6-hegtvedt@cisco.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220731182635.1910069-1-hegtvedt@cisco.com>
-References: <20220731182635.1910069-1-hegtvedt@cisco.com>
+        Sun, 31 Jul 2022 14:45:08 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD992635
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 11:45:04 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id p10so7414823wru.8
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 11:45:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linexp-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=tvOif7D7GjSlYLteSKiLH6y+AMJJ8XB36nHdth7eJaI=;
+        b=ySCIVB22C5KydntWmrTt/vJ+FXw3SCt7Qq0EHU4Wsdg2oo0gWbj6Yxwz8cwyy/4I5K
+         HENmHYrPnicHJz+eux7lA0koBsdcES1krsyeu6Rz+rpBZiPHb+TTCTlfP/FVQyqR6qlH
+         5OJ6yYriM4M95Hd8HA0AuUQsxGPJ+0hVqFFGfywDb5BY/8pSvl7qolw0J915JkE4QIwO
+         fnABpzC687Y+xnV6RlQ4Cg59hcz7RyikQg5/y0fj2bZcBDZUCbQ1gXSTOdOIdEaGoROf
+         XhtdFr+Y2uKEu0TfDrNYUt4MEK4yGM5Ls4OYoOkxR0Qq8Z3BQwFArZaBCSHXWUawg5Tt
+         IADg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=tvOif7D7GjSlYLteSKiLH6y+AMJJ8XB36nHdth7eJaI=;
+        b=SC8GB9ffq7FUOxX4YnHELfKtBKdsB4hGyFX0bacfpkYhiaRsxVCXFse6UUIU9Tb1cH
+         UmMtm3LXIWNaPRNpxmrM2p9M3HgXr2GBNm7vGXrMeaHog2dF3AcidJNJwapY1zrVIbLg
+         7XVxgNnpy1gi4V9aVFiqkc3pn8QvXSnD6JvWPnofSnv9ujkWN3jSwtOxdEX4oldkNxPg
+         KHgtaM85Gf1AqPPZvySkfrX2mCH+A00AOKXCiPIPBGXLevI5BXMRhCtlY4w2sMyyTbsU
+         lTDzo+t9OQ+CnQzLs08lqt9rskMnJPC3Nb6Z4bBlVCnOGqFdFUilVOp3j/pvuHSEF1lZ
+         7+xA==
+X-Gm-Message-State: ACgBeo19+pFpdxgLdP9tSXNTaXbFYBJdCAx1/F+fyTYFYaDN2ja7hZxi
+        d88AZ11iLPJFqObWn7fqlVapbA==
+X-Google-Smtp-Source: AA6agR63ZHLK7NohlWD4N34eOOAHK775S7u5BEkmukp5cqJ2trsqg6paOiu8M/xH8+DhuG6l8q2scg==
+X-Received: by 2002:a5d:6d0c:0:b0:21f:ba0:ff7f with SMTP id e12-20020a5d6d0c000000b0021f0ba0ff7fmr8841442wrq.76.1659293103468;
+        Sun, 31 Jul 2022 11:45:03 -0700 (PDT)
+Received: from ?IPV6:2a05:6e02:1041:c10:b04a:b59f:f2d8:e65c? ([2a05:6e02:1041:c10:b04a:b59f:f2d8:e65c])
+        by smtp.gmail.com with ESMTPSA id h1-20020a05600c2ca100b003a3253b706esm17534135wmc.34.2022.07.31.11.45.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 31 Jul 2022 11:45:03 -0700 (PDT)
+Message-ID: <eee44dc0-9717-9ed0-42b0-713ad9fbe688@linexp.org>
+Date:   Sun, 31 Jul 2022 20:45:00 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Outbound-SMTP-Client: 10.47.79.243, [10.47.79.243]
-X-Outbound-Node: aer-core-1.cisco.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 27/32] iio/drivers/sun4i_gpadc: Switch to new of
+ thermal API
+Content-Language: en-US
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     daniel.lezcano@linaro.org, rafael@kernel.org, rui.zhang@intel.com,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        khilman@baylibre.com, abailon@baylibre.com, lukasz.luba@arm.com,
+        broonie@kernel.org, damien.lemoal@opensource.wdc.com,
+        heiko@sntech.de, hayashi.kunihiko@socionext.com,
+        mhiramat@kernel.org, talel@amazon.com, thierry.reding@gmail.com,
+        digetx@gmail.com, jonathanh@nvidia.com, anarsoul@gmail.com,
+        tiny.windzz@gmail.com, baolin.wang7@gmail.com,
+        f.fainelli@gmail.com, bjorn.andersson@linaro.org,
+        mcoquelin.stm32@gmail.com, glaroque@baylibre.com,
+        miquel.raynal@bootlin.com, shawnguo@kernel.org,
+        niklas.soderlund@ragnatech.se, matthias.bgg@gmail.com,
+        j-keerthy@ti.com, Lars-Peter Clausen <lars@metafoo.de>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        "moderated list:ARM/Allwinner sunXi SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Allwinner sunXi SoC support" 
+        <linux-sunxi@lists.linux.dev>
+References: <20220727210253.3794069-1-daniel.lezcano@linexp.org>
+ <20220727210253.3794069-28-daniel.lezcano@linexp.org>
+ <20220731131328.7301de32@jic23-huawei>
+From:   Daniel Lezcano <daniel.lezcano@linexp.org>
+In-Reply-To: <20220731131328.7301de32@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Micay <danielmicay@gmail.com>
+On 31/07/2022 14:13, Jonathan Cameron wrote:
+> On Wed, 27 Jul 2022 23:02:48 +0200
+> Daniel Lezcano <daniel.lezcano@linexp.org> wrote:
+>
+>> The thermal OF code has a new API allowing to migrate the OF
+>> initialization to a simpler approach. The ops are no longer device
+>> tree specific and are the generic ones provided by the core code.
+>>
+>> Convert the ops to the thermal_zone_device_ops format and use the new
+>> API to register the thermal zone with these generic ops.
+>>
+>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
+> Whilst making no pretence at having checked what the new calls do, I'm fine with this
+> patch affecting the driver in IIO and going through appropriate thermal tree.
+>
+> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Feed the boot command-line as to the /dev/random entropy pool
-
-Existing Android bootloaders usually pass data which may not be known by
-an external attacker on the kernel command-line.  It may also be the
-case on other embedded systems.  Sample command-line from a Google Pixel
-running CopperheadOS....
-
-    console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0
-    androidboot.hardware=sailfish user_debug=31 ehci-hcd.park=3
-    lpm_levels.sleep_disabled=1 cma=32M@0-0xffffffff buildvariant=user
-    veritykeyid=id:dfcb9db0089e5b3b4090a592415c28e1cb4545ab
-    androidboot.bootdevice=624000.ufshc androidboot.verifiedbootstate=yellow
-    androidboot.veritymode=enforcing androidboot.keymaster=1
-    androidboot.serialno=FA6CE0305299 androidboot.baseband=msm
-    mdss_mdp.panel=1:dsi:0:qcom,mdss_dsi_samsung_ea8064tg_1080p_cmd:1:none:cfg:single_dsi
-    androidboot.slot_suffix=_b fpsimd.fpsimd_settings=0
-    app_setting.use_app_setting=0 kernelflag=0x00000000 debugflag=0x00000000
-    androidboot.hardware.revision=PVT radioflag=0x00000000
-    radioflagex1=0x00000000 radioflagex2=0x00000000 cpumask=0x00000000
-    androidboot.hardware.ddr=4096MB,Hynix,LPDDR4 androidboot.ddrinfo=00000006
-    androidboot.ddrsize=4GB androidboot.hardware.color=GRA00
-    androidboot.hardware.ufs=32GB,Samsung androidboot.msm.hw_ver_id=268824801
-    androidboot.qf.st=2 androidboot.cid=11111111 androidboot.mid=G-2PW4100
-    androidboot.bootloader=8996-012001-1704121145
-    androidboot.oem_unlock_support=1 androidboot.fp_src=1
-    androidboot.htc.hrdump=detected androidboot.ramdump.opt=mem@2g:2g,mem@4g:2g
-    androidboot.bootreason=reboot androidboot.ramdump_enable=0 ro
-    root=/dev/dm-0 dm="system none ro,0 1 android-verity /dev/sda34"
-    rootwait skip_initramfs init=/init androidboot.wificountrycode=US
-    androidboot.boottime=1BLL:85,1BLE:669,2BLL:0,2BLE:1777,SW:6,KL:8136
-
-Among other things, it contains a value unique to the device
-(androidboot.serialno=FA6CE0305299), unique to the OS builds for the
-device variant (veritykeyid=id:dfcb9db0089e5b3b4090a592415c28e1cb4545ab)
-and timings from the bootloader stages in milliseconds
-(androidboot.boottime=1BLL:85,1BLE:669,2BLL:0,2BLE:1777,SW:6,KL:8136).
-
-[tytso@mit.edu: changelog tweak]
-[labbott@redhat.com: line-wrapped command line]
-Link: http://lkml.kernel.org/r/20170816231458.2299-3-labbott@redhat.com
-Signed-off-by: Daniel Micay <danielmicay@gmail.com>
-Signed-off-by: Laura Abbott <labbott@redhat.com>
-Acked-by: Kees Cook <keescook@chromium.org>
-Cc: "Theodore Ts'o" <tytso@mit.edu>
-Cc: Laura Abbott <lauraa@codeaurora.org>
-Cc: Nick Kralevich <nnk@google.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-(cherry picked from commit 33d72f3822d7ff8a9e45bd7413c811085cb87aa5)
----
- init/main.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/init/main.c b/init/main.c
-index 67fa94c5967..6bc1a3fa152 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -502,8 +502,10 @@ asmlinkage __visible void __init start_kernel(void)
- 	setup_arch(&command_line);
- 	/*
- 	 * Set up the the initial canary and entropy after arch
-+	 * and after adding latent and command line entropy.
- 	 */
- 	add_latent_entropy();
-+	add_device_randomness(command_line, strlen(command_line));
- 	boot_init_stack_canary();
- 	mm_init_cpumask(&init_mm);
- 	setup_command_line(command_line);
--- 
-2.34.1
+Thanks for reviewing the patch
 
