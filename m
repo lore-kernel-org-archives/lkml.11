@@ -2,135 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA58C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 16:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E82C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 16:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236763AbiGaQ5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 12:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52386 "EHLO
+        id S237415AbiGaQ6A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 12:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231281AbiGaQ5E (ORCPT
+        with ESMTP id S231281AbiGaQ56 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 12:57:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BD765AB;
-        Sun, 31 Jul 2022 09:57:03 -0700 (PDT)
+        Sun, 31 Jul 2022 12:57:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706BBAE4E
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 09:57:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F421B80DB2;
-        Sun, 31 Jul 2022 16:57:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31B5EC433C1;
-        Sun, 31 Jul 2022 16:56:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 102A560FA2
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 16:57:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 702C9C433D6;
+        Sun, 31 Jul 2022 16:57:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659286620;
-        bh=C2gjWpdRXKf8H74OuiqBmJfM3oAyddv3Qxyb+Pg+zEU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aAd7Z4WkMcGJ0IgdUSaCVJZtQ2fq0bh1txcOGKRFpNj7Irte0y+Z6oF9HfeD/vJSk
-         QN7eLhjzDm27y1OKx0PqAV0Aww/tyxbQt2RB84iyRCdrHRJDKdoQstj0LKuPV4I/c1
-         SvuDLDGdvxBJ7oWSr8OEFJ8ytDPKiskjURPzOy+w1ZYSWiCJctV45CKgC5Fu30uOAF
-         M0qV29DCJJLcJFEuYRvjsJ5Skxb36ZB5pq34vkwK7H7q5bO/gdA9IUVfzoG3JN645a
-         jtSggRsOMuYgx6Inr6WHTTwkD8xT6ID0qUUIIhuwez8f2jfcJnt18iMoEVjPXON1Lq
-         q6ESDOWXVkRsQ==
-Date:   Sun, 31 Jul 2022 18:07:13 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Peter Rosin <peda@axentia.se>,
-        Lars-Peter Clausen <lars@metafoo.de>, list@opendingux.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] iio: inkern: Remove useless argument to
- iio_channel_read_max()
-Message-ID: <20220731180713.48349570@jic23-huawei>
-In-Reply-To: <20220721191526.374152-2-paul@crapouillou.net>
-References: <20220721191526.374152-1-paul@crapouillou.net>
-        <20220721191526.374152-2-paul@crapouillou.net>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1659286676;
+        bh=C/F0EfpnyeQpggY2k+3Nc4FV3FsbcipZfmwroGRCehw=;
+        h=Date:From:To:Cc:Subject:Reply-To:From;
+        b=a2SyGynWt8qGUEeIvq7QIXGJBPcNbdg9lPxdj2rlnp/QiAz2g62L8WPb4KbwTPrT7
+         TmQRsi/vGE7Lnla6aJdKcrVVSu3sZwxOBiGCCwVBmi/5sxeric/RqkmjlMfC4niDJq
+         dOWSostYM2CIO01Ozah4LW4kd9bho4qKbbvcl+Rz1qvWjxro7BwmaXnE5gNGdsp2de
+         2WEX6K578w8h1do38E1xLsyrDG3pglxkK+sOnmcUZNQp4aU09wo7aHC+dZZzklpvjZ
+         /x7pUQrNpRx/AtEcotv+yAPDpBcDpHIbMNIvu/URabWxZhph2qkxSHc7cv89FHNomN
+         faBXxQp1Ab2Fw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 11ABE5C0514; Sun, 31 Jul 2022 09:57:56 -0700 (PDT)
+Date:   Sun, 31 Jul 2022 09:57:56 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     torvalds@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com, w@1wt.eu,
+        alviro.iskandar@gnuweeb.org, ammarfaizi2@gnuweeb.org
+Subject: [GIT PULL] nolibc changes for v5.20 (or whatever)
+Message-ID: <20220731165756.GA3034113@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Jul 2022 20:15:23 +0100
-Paul Cercueil <paul@crapouillou.net> wrote:
+Hello, Linus,
 
-> The 'type' argument was passed by the only caller of the
-> iio_channel_read_max() function as a pointer to return an extra value,
-> but the value of the variable passed by the caller was never read
-> afterwards.
-> 
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Once the merge window opens, please pull the latest nolibc changes from:
 
-Curious. I'm playing guess the intent here and I suspect that what
-we should really be doing is checking type in 
-iio_read_max_channel_raw() and returning an error if it is not IIO_VAL_INT
-(can only get there for IIO_AVAIL_RANGE currently as there is a FIXME for
- IIO_AVAIL_LIST for non IIO_VAL_INT types)
+  git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/nolibc.2022.07.27a
+  # HEAD 4f8126f3a665456b68ae923cd7a7e9b9eb98547d: tools/nolibc: add a help target to list supported targets (2022-06-20 09:43:19 -0700)
 
-I'm not sure we've ever documented that _RAW can't be non integer even if
-that makes relatively little sense most of the time..
+----------------------------------------------------------------
+nolibc pull request for v5.20 (or whatever)
 
-Jonathan
+This branch provides nolibc updates, perhaps most notably improved testing
+via the "cd tools/include/nolibc; make headers" command.  This should
+be considered a smoke test.  More thorough testing is in the works.
 
-> ---
->  drivers/iio/inkern.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index df74765d33dc..e8a25852f0df 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -813,21 +813,22 @@ int iio_read_avail_channel_raw(struct iio_channel *chan,
->  EXPORT_SYMBOL_GPL(iio_read_avail_channel_raw);
->  
->  static int iio_channel_read_max(struct iio_channel *chan,
-> -				int *val, int *val2, int *type,
-> +				int *val, int *val2,
->  				enum iio_chan_info_enum info)
->  {
->  	int unused;
->  	const int *vals;
->  	int length;
->  	int ret;
-> +	int type;
->  
->  	if (!val2)
->  		val2 = &unused;
->  
-> -	ret = iio_channel_read_avail(chan, &vals, type, &length, info);
-> +	ret = iio_channel_read_avail(chan, &vals, &type, &length, info);
->  	switch (ret) {
->  	case IIO_AVAIL_RANGE:
-> -		switch (*type) {
-> +		switch (type) {
->  		case IIO_VAL_INT:
->  			*val = vals[2];
->  			break;
-> @@ -840,7 +841,7 @@ static int iio_channel_read_max(struct iio_channel *chan,
->  	case IIO_AVAIL_LIST:
->  		if (length <= 0)
->  			return -EINVAL;
-> -		switch (*type) {
-> +		switch (type) {
->  		case IIO_VAL_INT:
->  			*val = vals[--length];
->  			while (length) {
-> @@ -863,7 +864,6 @@ int iio_read_max_channel_raw(struct iio_channel *chan, int *val)
->  {
->  	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(chan->indio_dev);
->  	int ret;
-> -	int type;
->  
->  	mutex_lock(&iio_dev_opaque->info_exist_lock);
->  	if (!chan->indio_dev->info) {
-> @@ -871,7 +871,7 @@ int iio_read_max_channel_raw(struct iio_channel *chan, int *val)
->  		goto err_unlock;
->  	}
->  
-> -	ret = iio_channel_read_max(chan, val, NULL, &type, IIO_CHAN_INFO_RAW);
-> +	ret = iio_channel_read_max(chan, val, NULL, IIO_CHAN_INFO_RAW);
->  err_unlock:
->  	mutex_unlock(&iio_dev_opaque->info_exist_lock);
->  
+----------------------------------------------------------------
+Alviro Iskandar Setiawan (1):
+      tools/nolibc/stdio: Add format attribute to enable printf warnings
 
+Ammar Faizi (1):
+      tools/nolibc/stdlib: Support overflow checking for older compiler versions
+
+Willy Tarreau (3):
+      tools/nolibc: fix the makefile to also work as "make -C tools ..."
+      tools/nolibc: make the default target build the headers
+      tools/nolibc: add a help target to list supported targets
+
+ tools/Makefile                |  3 +++
+ tools/include/nolibc/Makefile | 37 +++++++++++++++++++++++++++++++++++--
+ tools/include/nolibc/stdio.h  |  4 ++--
+ tools/include/nolibc/stdlib.h |  7 +++----
+ 4 files changed, 43 insertions(+), 8 deletions(-)
