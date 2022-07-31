@@ -2,125 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B523C19F2B
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 15:40:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEB4C00140
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 15:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237220AbiGaPk6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 11:40:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41162 "EHLO
+        id S237095AbiGaPlh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 11:41:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237125AbiGaPkz (ORCPT
+        with ESMTP id S230494AbiGaPlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 11:40:55 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461D9E0B7;
-        Sun, 31 Jul 2022 08:40:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1659282043;
-        bh=455S/Bkj5h1lhx7w4Mij9eRLCCdj/4iqM8wDFPcFhCM=;
-        h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
-        b=NFlRiovXy0GgdVPuUpLt67qY8MU84md/BZNItSXoBguhHZOvn8If7IirUAKvxSaVu
-         gpEguDFV0yJ2C877qBsfwcbndT3D7giDHmRpvIwvicl0v6V6wmResOWjjSlSao2Mn0
-         kjH119DdM8lD/xBHIq/vdbZQiwXp061Ni3ARD7HI=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.152.171]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N17Ye-1nK8PI3ooU-012ZD5; Sun, 31
- Jul 2022 17:40:42 +0200
-Message-ID: <f15c9525-f21f-0599-3d5e-d9cbedc683df@gmx.de>
-Date:   Sun, 31 Jul 2022 17:39:56 +0200
+        Sun, 31 Jul 2022 11:41:35 -0400
+Received: from smtp.smtpout.orange.fr (smtp-12.smtpout.orange.fr [80.12.242.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D71F1E0B9
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 08:41:33 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id IB4IoW8sbLFqbIB4IoU93a; Sun, 31 Jul 2022 17:41:31 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 31 Jul 2022 17:41:31 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <e30925e7-56b7-48df-b287-094441f8c586@wanadoo.fr>
+Date:   Sun, 31 Jul 2022 17:41:25 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Write in imageblit (2)
-Content-Language: en-US
-To:     Khalid Masum <khalid.masum.92@gmail.com>,
-        syzbot <syzbot+14b0e8f3fd1612e35350@syzkaller.appspotmail.com>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-References: <000000000000bbdd0405d120c155@google.com>
- <20220729065139.6529-1-khalid.masum.92@gmail.com>
- <eb4a26aa-da30-ceee-7d27-c1e902dd4218@gmx.de>
- <7973ec94-75ad-c133-032e-b83beeb2d397@gmail.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <7973ec94-75ad-c133-032e-b83beeb2d397@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:96yvlOFnhb0Fhsfp3e8feRiz+vkd/lOpKVQiIsvZ7ADJ/vfiTlE
- sv1+YusSs1DbLM+HH+bjQV/ZaxYU3s8okby6K3SeCyrQtBWYw0lc1cXaAvzzh2LoDxQvoYv
- ayWZ3b6yHzVn+mLXVGiSzgEBDhLvX4p/1fYzRcWwh/+rRdFVtnWNXh5ZKVmWUuvyxzJfd0l
- yydudPuCmcECITggoAMEw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:CFsMDRFMyVw=:RB3RzDSdrRMy03tR8sL+38
- IbZ1dn/xAFlJwTxDMfDR3hcFmjopEPG2IJLu9Lec2fnW+sWOvHanpxDXlEuQHjMhIIuz6VFUm
- csaKje/Xlo3NhTOGxPS9Kj9S/B02tp/fVTDcZs/+r6WS6wnmot+LlBWuN8B7p0lEwGBD/fSUI
- bDA4nJU2WWN9IQStAjGewuORNamggH0EGGSVT2KTCgJN4hj7s3XWqgH+KyajgJmHEeGN//6b1
- Dw6gTm9kNJHG/cuLAWdRMNqKtsvodj9iGDgKF3BoNC7ICAeuDC0h+QmDzuH11ksXs26HRxRz9
- NEmHzJ/0Rf4PmlBPB+xswSBj77c/XUhPCrvlKZ5O3ddfo23HZnkM/1MwDjK6h5N2WPbAv4JFM
- k6qegwmgc1UFg5AOIrBe0oKtwEtJJUgCoyy43yt9YTmdfTvEj8bIlfuhqwxF6JMlIJmLWvppf
- B2dwMriufZ06hWwY563clEghpL2lqHsOP35lNvh8GZVM66l+qi492RBW7+N+m6Wk4CZGLT0hb
- gVb9GY4G8mOhP4XRWowmLnZ4fIlnApNzSKh9QfLczXID+IODzzYCoq1wo7sLYLPiWxYKgrfWP
- kEuZyQBvrc0/dMNWd8gyqkldhmluQ0iJVk0yOfkitZ5ELkmo/pyDloUs1B/0wGXzySg71cjfn
- FAtb2hEYCZMxv1454CA8i1NtS5sCJCjGz1HiR4YtEtjcpgsmfECfTlHXbDmYKY+VJG0W2hd8m
- 2vPQ0M5M6LRohDwRH0xjh8Go4lY3SXbkqmRADss3xVMkIRnFxUeJMfBpRMZMu1ZnQjlh388WC
- e7bWVFmRtKZYiuEz7obaQ62WfaFWADe/+Ba7EOvxqL+5/aU+Wz86KWp3UHZGuCjt+VEQ10Ks7
- gm1EuiA0HQ+HOuSt/e6fMfH3NpbMG1ZAxDigDbTHaMOKd4PoouOLxfme9XNL4M3r6YWO0DGmq
- h5AjgE5pSRgOe2CPJRPPJ7ZVwpWRk5opQpGtSP6J9ghuI9bT55W2ElFKq+LAWDhTbRSZKgBK3
- B6xAtChImvGubPHIic4HeamPqtMMUiZHUcR5kwjApQ1pLYEPI9vWkulhwylRdNpLcTVTSEwp2
- 0OZdVxokXSICt/wgu7RXWLPC9rkP5xurrY8UUQ+A63I4lyXQ7rlHzjdxg==
+Subject: Re: [PATCH v1 3/3] ASoC: amd: acp: Add legacy audio driver support
+ for Rembrandt platform
+Content-Language: fr
+To:     V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>,
+        broonie@kernel.org, alsa-devel@alsa-project.org
+Cc:     Sunil-kumar.Dommati@amd.com,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        ssabakar@amd.com, Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
+        venkataprasad.potturu@amd.com, Meng Tang <tangmeng@uniontech.com>,
+        Basavaraj.Hiregoudar@amd.com, Takashi Iwai <tiwai@suse.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Akihiko Odaki <akihiko.odaki@gmail.com>,
+        Vijendar.Mukunda@amd.com,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Newsgroups: gmane.linux.alsa.devel,gmane.linux.kernel
+References: <20220707161142.491034-1-Vsujithkumar.Reddy@amd.com>
+ <20220707161142.491034-4-Vsujithkumar.Reddy@amd.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220707161142.491034-4-Vsujithkumar.Reddy@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/31/22 15:55, Khalid Masum wrote:
-> On 7/30/22 23:25, Helge Deller wrote:
->> On 7/29/22 08:51, Khalid Masum wrote:
->>> Here is a simplified reproducer for the issue:
->>>
->>> https://gist.githubusercontent.com/Labnann/923d6b9b3a19848fc129637b839=
-b8a55/raw/a68271fcc724569735fe27f80817e561b3ff629a/reproducer.c
->>
->> The reproducer does this:
->> ioctl(3, TIOCLINUX, TIOCL_SETSEL, selection: xs:3=C2=A0 ys:0=C2=A0 xe:0=
- ye:0 mode:0)=C2=A0 =3D 0
->> -> sets the text selection area
->> ioctl(4, KDFONTOP)=C2=A0 with op=3D0 (con_font_set), charcount=3D512=C2=
-=A0 width=3D8=C2=A0 height=3D32, 0x20000000) =3D 0
->> -> changes the font size.
->>
->> It does not crash with current Linus' head (v5.19-rc8).
->> Kernel v5.16, which was used by this KASAN report, hasn't received back=
-ports
->> since months, so I tried stable kernel v5.15.58 instead, and this
->> kernel crashed with the reproducer.
->>
->> The reproducer brings up two issues with current code:
->> 1. The reproducer uses ioctl(TIOCLINUX, TIOCL_SETSEL) and hands over (i=
-nvalid)
->> zero-values for ys and ye for the starting lines.
->> This is wrong, since the API seems to expect a "1" as the very first li=
-ne for the selection.
->
-> Why do you think that API expects a 1?
+Hi,
 
-because the code in drivers/tty/vt/selection.c indicates this:
-See:
-static int vc_selection(struct vc_data *vc, struct tiocl_selection *v, str=
-uct tty_struct *tty)
-{
-        int ps, pe;
-...
-        v->xs =3D min_t(u16, v->xs - 1, vc->vc_cols - 1);
-        v->ys =3D min_t(u16, v->ys - 1, vc->vc_rows - 1);
-        v->xe =3D min_t(u16, v->xe - 1, vc->vc_cols - 1);
-        v->ye =3D min_t(u16, v->ye - 1, vc->vc_rows - 1);
-...
-        ps =3D v->ys * vc->vc_size_row + (v->xs << 1);
-        pe =3D v->ye * vc->vc_size_row + (v->xe << 1);
+this patch has already reached -next, but a few nit below.
 
-The userspace-provided xs,ys,xe and ye values are decremented by one
-before ps and pe (the pointers into the text screen array) are calculated.
-So, for the xs...ye values in the range from 1..max-screen-lines/columns
-are expected.
+Le 07/07/2022 à 18:11, V sujith kumar Reddy a écrit :
+> Add i2s and dmic support for Rembrandt platform,
+> Add machine support for nau8825, max98360 and rt5682s,rt1019 codec
+> in legacy driver for rembrandt platform.
+> Here codec is in a slave mode.
+> 
+> Signed-off-by: V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
+> ---
+>   sound/soc/amd/acp/Kconfig            |  11 +
+>   sound/soc/amd/acp/Makefile           |   2 +
+>   sound/soc/amd/acp/acp-i2s.c          | 137 ++++++++-
+>   sound/soc/amd/acp/acp-legacy-mach.c  |  32 +++
+>   sound/soc/amd/acp/acp-mach-common.c  |  86 +++++-
+>   sound/soc/amd/acp/acp-mach.h         |   6 +
+>   sound/soc/amd/acp/acp-pci.c          |   6 +
+>   sound/soc/amd/acp/acp-platform.c     |  16 +-
+>   sound/soc/amd/acp/acp-rembrandt.c    | 401 +++++++++++++++++++++++++++
+>   sound/soc/amd/acp/amd.h              |  62 ++++-
+>   sound/soc/amd/acp/chip_offset_byte.h |  28 ++
+>   11 files changed, 781 insertions(+), 6 deletions(-)
+>   create mode 100644 sound/soc/amd/acp/acp-rembrandt.c
+> 
 
-Helge
+[...]
+
+> diff --git a/sound/soc/amd/acp/acp-rembrandt.c b/sound/soc/amd/acp/acp-rembrandt.c
+> new file mode 100644
+> index 000000000000..2b57c0ca4e99
+> --- /dev/null
+> +++ b/sound/soc/amd/acp/acp-rembrandt.c
+> @@ -0,0 +1,401 @@
+> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+> +//
+> +// This file is provided under a dual BSD/GPLv2 license. When using or
+> +// redistributing this file, you may do so under either license.
+
+These lines are useless. There is already a SPDX-License-Identifier just 
+above.
+
+> +//
+> +// Copyright(c) 2022 Advanced Micro Devices, Inc.
+> +//
+> +// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
+> +//          V sujith kumar Reddy <Vsujithkumar.Reddy@amd.com>
+> +/*
+> + * Hardware interface for Renoir ACP block
+> + */
+> +
+
+[...]
+
+> +static int rembrandt_audio_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct acp_chip_info *chip;
+> +	struct acp_dev_data *adata;
+> +	struct resource *res;
+> +
+> +	chip = dev_get_platdata(&pdev->dev);
+> +	if (!chip || !chip->base) {
+> +		dev_err(&pdev->dev, "ACP chip data is NULL\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (chip->acp_rev != ACP6X_DEV) {
+> +		dev_err(&pdev->dev, "Un-supported ACP Revision %d\n", chip->acp_rev);
+> +		return -ENODEV;
+> +	}
+> +
+> +	rmb_acp_init(chip->base);
+
+Should rmb_acp_deinit() be called if an error occurs below?
+Or a devm_add_action_or_reset() + .remove() simplification?
+
+(this is called in the .remove() function)
+
+> +
+> +	adata = devm_kzalloc(dev, sizeof(struct acp_dev_data), GFP_KERNEL);
+> +	if (!adata)
+> +		return -ENOMEM;
+> +
+> +	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "acp_mem");
+> +	if (!res) {
+> +		dev_err(&pdev->dev, "IORESOURCE_MEM FAILED\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	adata->acp_base = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+> +	if (!adata->acp_base)
+> +		return -ENOMEM;
+> +
+> +	res = platform_get_resource_byname(pdev, IORESOURCE_IRQ, "acp_dai_irq");
+> +	if (!res) {
+> +		dev_err(&pdev->dev, "IORESOURCE_IRQ FAILED\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	adata->i2s_irq = res->start;
+> +	adata->dev = dev;
+> +	adata->dai_driver = acp_rmb_dai;
+> +	adata->num_dai = ARRAY_SIZE(acp_rmb_dai);
+> +	adata->rsrc = &rsrc;
+> +
+> +	adata->machines = snd_soc_acpi_amd_rmb_acp_machines;
+> +	acp_machine_select(adata);
+> +
+> +	dev_set_drvdata(dev, adata);
+> +	acp6x_enable_interrupts(adata);
+> +	acp_platform_register(dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static int rembrandt_audio_remove(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct acp_dev_data *adata = dev_get_drvdata(dev);
+> +	struct acp_chip_info *chip;
+> +
+> +	chip = dev_get_platdata(&pdev->dev);
+> +	if (!chip || !chip->base) {
+> +		dev_err(&pdev->dev, "ACP chip data is NULL\n");
+> +		return -ENODEV;
+> +	}
+
+These tests and dev_err and return look useless.
+The same is already tested at the biginning of the probe and if it 
+fails, the probe will fail, right?
+
+> +
+> +	rmb_acp_deinit(chip->base);
+> +
+> +	acp6x_disable_interrupts(adata);
+> +	acp_platform_unregister(dev);
+> +	return 0;
+> +}
+
+[...]
+
