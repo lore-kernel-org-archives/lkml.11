@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 910A8C25B06
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 19:04:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67800C25B0F
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 19:04:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237733AbiGaTEi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 15:04:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49174 "EHLO
+        id S237809AbiGaTEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 15:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbiGaTEf (ORCPT
+        with ESMTP id S237622AbiGaTEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 31 Jul 2022 15:04:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33143EE0E;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CFE6EE1B;
         Sun, 31 Jul 2022 12:04:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A44A461031;
-        Sun, 31 Jul 2022 19:04:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F59BC433D7;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35F1661032;
+        Sun, 31 Jul 2022 19:04:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99DC8C43143;
         Sun, 31 Jul 2022 19:04:33 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.96)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oIEEq-007G2B-0I;
+        id 1oIEEq-007G3p-23;
         Sun, 31 Jul 2022 15:04:32 -0400
-Message-ID: <20220731190431.934571546@goodmis.org>
+Message-ID: <20220731190432.473358990@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Sun, 31 Jul 2022 15:03:30 -0400
+Date:   Sun, 31 Jul 2022 15:03:33 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>
-Subject: [for-next][PATCH 01/21] USB: mtu3: tracing: Use the new __vstring() helper
+        "x86@kernel.org" <x86@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, stable@vger.kernel.org
+Subject: [for-next][PATCH 04/21] ftrace/x86: Add back ftrace_expected assignment
 References: <20220731190329.641602282@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,49 +48,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Instead of open coding a __dynamic_array() with a fixed length (which
-defeats the purpose of the dynamic array in the first place). Use the new
-__vstring() helper that will use a va_list and only write enough of the
-string into the ring buffer that is needed.
+When a ftrace_bug happens (where ftrace fails to modify a location) it is
+helpful to have what was at that location as well as what was expected to
+be there.
 
-Link: https://lkml.kernel.org/r/20220719112719.17e796c6@gandalf.local.home
+But with the conversion to text_poke() the variable that assigns the
+expected for debugging was dropped. Unfortunately, I noticed this when I
+needed it. Add it back.
 
+Link: https://lkml.kernel.org/r/20220726101851.069d2e70@gandalf.local.home
+
+Cc: "x86@kernel.org" <x86@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
 Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-usb@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-mediatek@lists.infradead.org
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Tested-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Cc: stable@vger.kernel.org
+Fixes: 768ae4406a5c ("x86/ftrace: Use text_poke()")
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- drivers/usb/mtu3/mtu3_trace.h | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ arch/x86/kernel/ftrace.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/mtu3/mtu3_trace.h b/drivers/usb/mtu3/mtu3_trace.h
-index 1b897636daf2..a98fa012b729 100644
---- a/drivers/usb/mtu3/mtu3_trace.h
-+++ b/drivers/usb/mtu3/mtu3_trace.h
-@@ -18,18 +18,16 @@
+diff --git a/arch/x86/kernel/ftrace.c b/arch/x86/kernel/ftrace.c
+index 5b4efc927d80..f5cdb5f675b3 100644
+--- a/arch/x86/kernel/ftrace.c
++++ b/arch/x86/kernel/ftrace.c
+@@ -91,6 +91,7 @@ static int ftrace_verify_code(unsigned long ip, const char *old_code)
  
- #include "mtu3.h"
- 
--#define MTU3_MSG_MAX	256
--
- TRACE_EVENT(mtu3_log,
- 	TP_PROTO(struct device *dev, struct va_format *vaf),
- 	TP_ARGS(dev, vaf),
- 	TP_STRUCT__entry(
- 		__string(name, dev_name(dev))
--		__dynamic_array(char, msg, MTU3_MSG_MAX)
-+		__vstring(msg, vaf->fmt, vaf->va)
- 	),
- 	TP_fast_assign(
- 		__assign_str(name, dev_name(dev));
--		vsnprintf(__get_str(msg), MTU3_MSG_MAX, vaf->fmt, *vaf->va);
-+		__assign_vstr(msg, vaf->fmt, vaf->va);
- 	),
- 	TP_printk("%s: %s", __get_str(name), __get_str(msg))
- );
+ 	/* Make sure it is what we expect it to be */
+ 	if (memcmp(cur_code, old_code, MCOUNT_INSN_SIZE) != 0) {
++		ftrace_expected = old_code;
+ 		WARN_ON(1);
+ 		return -EINVAL;
+ 	}
 -- 
 2.35.1
