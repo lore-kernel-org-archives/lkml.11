@@ -2,194 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41939C19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 10:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06BAFC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 10:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231874AbiGaKt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 06:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49798 "EHLO
+        id S235208AbiGaKuw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 06:50:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiGaKt5 (ORCPT
+        with ESMTP id S232596AbiGaKup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 06:49:57 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E4749FC8;
-        Sun, 31 Jul 2022 03:49:54 -0700 (PDT)
+        Sun, 31 Jul 2022 06:50:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF40011821
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 03:50:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 20F0ECE0E5F;
-        Sun, 31 Jul 2022 10:49:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAF50C433C1;
-        Sun, 31 Jul 2022 10:49:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8843CB80CC5
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 10:50:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BC69C433D6;
+        Sun, 31 Jul 2022 10:50:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659264588;
-        bh=PUNN+rCT3YXN5pehv7cULkzpQnreNsgjU2b4qW3dOto=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bejCl17Yd2Tvvo8nEdqDOHsy6MvrBm2YL4gdQtABzahCWd1IyD+yGqMbF12AxcAWe
-         qAygk10Ha3H7fLFiBYQSB4iWD8kP2ijEKXmypi14eeKaUCHteH4bhwLNmaBA6Bp2vT
-         niOdnThWuwAMSrAFmciEp7SwuJkvJCdV+xSsz1NR8TnBHwOFi3s9AmyHhKwNiUfI87
-         T1Eg1ckCHjMqwRXwMk+cHD9wlP1VYfhCv1AU0WOBX5W9xX7nAp1xgR06+kSBUCF73O
-         oDuiVbu2X4nk0Ec512FsjObYmYNNDOTvLjek+grtmp63BtCjYzqdbVEJqFNsla+Vqc
-         Rw/q6SHFNAfjA==
-Date:   Sun, 31 Jul 2022 11:59:55 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Marek Belisko <marek@goldelico.com>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 1/1] spi/panel: dt-bindings: drop CPHA and CPOL from
- common properties
-Message-ID: <20220731115955.1977f429@jic23-huawei>
-In-Reply-To: <20220722191539.90641-2-krzysztof.kozlowski@linaro.org>
-References: <20220722191539.90641-1-krzysztof.kozlowski@linaro.org>
-        <20220722191539.90641-2-krzysztof.kozlowski@linaro.org>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1659264642;
+        bh=Qm90ax5F/85o497xB98g0dIa3GOLg1AqvHKn/kB035o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ovpUhqhhAkqoNPthPEexCSVlkbTN8Z1hZXHZLBpqAbT1bo3dVgcv0XzGE7Ox4iHEO
+         RYlQw10BNQ42HoUYV9FxdUafQZ0RtwZSWF9UJePi/20AUM62gxEKW80Co15goak4s6
+         +GYaSOEBUuFrU/X90gFkFXsvvwMjRIP0X3QZwGeeQpa6ur8czHjLr+uZt3weuBNVPX
+         fjVJlVTk4pfnoaX4yvfhQM22oREcNGZBmQkJvzHMc9+wJ4lRDEggP+2GO6zwymcc+e
+         Qx3UM4x/UKfBweiLd43R14XFAlzuJFwwBpzH00I5x5CI0ie76EhhfNpBQbP8LoK4X7
+         0A4kmgZC9b2XQ==
+From:   Oded Gabbay <ogabbay@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ohad Sharabi <osharabi@habana.ai>
+Subject: [PATCH 1/8] habanalabs/gaudi: fix print format for div_sel
+Date:   Sun, 31 Jul 2022 13:50:30 +0300
+Message-Id: <20220731105037.545106-1-ogabbay@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Jul 2022 21:15:39 +0200
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+From: Ohad Sharabi <osharabi@habana.ai>
 
-> The spi-cpha and spi-cpol properties are device specific and should be
-> accepted only if device really needs them.  Drop them from common
-> spi-peripheral-props.yaml schema, mention in few panel drivers which use
-> them and include instead in the SPI controller bindings.  The controller
-> bindings will provide CPHA/CPOL type validation and one place for
-> description.  Each device schema must list the properties if they are
-> applicable.
-> 
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Suggested-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Print format was for int (%d) while variable is u32.
 
-This seems like a good solution to me.
+Signed-off-by: Ohad Sharabi <osharabi@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+---
+ drivers/misc/habanalabs/gaudi/gaudi.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-
-> ---
->  .../bindings/display/panel/lgphilips,lb035q02.yaml    |  3 +++
->  .../bindings/display/panel/samsung,ld9040.yaml        |  3 +++
->  .../bindings/display/panel/sitronix,st7789v.yaml      |  3 +++
->  .../devicetree/bindings/display/panel/tpo,td.yaml     |  3 +++
->  .../devicetree/bindings/spi/spi-controller.yaml       | 11 +++++++++++
->  .../devicetree/bindings/spi/spi-peripheral-props.yaml | 10 ----------
->  6 files changed, 23 insertions(+), 10 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/display/panel/lgphilips,lb035q02.yaml b/Documentation/devicetree/bindings/display/panel/lgphilips,lb035q02.yaml
-> index 5e4e0e552c2f..628c4b898111 100644
-> --- a/Documentation/devicetree/bindings/display/panel/lgphilips,lb035q02.yaml
-> +++ b/Documentation/devicetree/bindings/display/panel/lgphilips,lb035q02.yaml
-> @@ -21,6 +21,9 @@ properties:
->    enable-gpios: true
->    port: true
->  
-> +  spi-cpha: true
-> +  spi-cpol: true
-> +
->  required:
->    - compatible
->    - enable-gpios
-> diff --git a/Documentation/devicetree/bindings/display/panel/samsung,ld9040.yaml b/Documentation/devicetree/bindings/display/panel/samsung,ld9040.yaml
-> index d525165d6d63..c0fabeb38628 100644
-> --- a/Documentation/devicetree/bindings/display/panel/samsung,ld9040.yaml
-> +++ b/Documentation/devicetree/bindings/display/panel/samsung,ld9040.yaml
-> @@ -42,6 +42,9 @@ properties:
->    panel-height-mm:
->      description: physical panel height [mm]
->  
-> +  spi-cpha: true
-> +  spi-cpol: true
-> +
->  required:
->    - compatible
->    - reg
-> diff --git a/Documentation/devicetree/bindings/display/panel/sitronix,st7789v.yaml b/Documentation/devicetree/bindings/display/panel/sitronix,st7789v.yaml
-> index 9e1d707c2ace..d984b59daa4a 100644
-> --- a/Documentation/devicetree/bindings/display/panel/sitronix,st7789v.yaml
-> +++ b/Documentation/devicetree/bindings/display/panel/sitronix,st7789v.yaml
-> @@ -23,6 +23,9 @@ properties:
->    backlight: true
->    port: true
->  
-> +  spi-cpha: true
-> +  spi-cpol: true
-> +
->  required:
->    - compatible
->    - reg
-> diff --git a/Documentation/devicetree/bindings/display/panel/tpo,td.yaml b/Documentation/devicetree/bindings/display/panel/tpo,td.yaml
-> index f902a9d74141..e8c8ee8d7c88 100644
-> --- a/Documentation/devicetree/bindings/display/panel/tpo,td.yaml
-> +++ b/Documentation/devicetree/bindings/display/panel/tpo,td.yaml
-> @@ -28,6 +28,9 @@ properties:
->    backlight: true
->    port: true
->  
-> +  spi-cpha: true
-> +  spi-cpol: true
-> +
->  required:
->    - compatible
->    - port
-> diff --git a/Documentation/devicetree/bindings/spi/spi-controller.yaml b/Documentation/devicetree/bindings/spi/spi-controller.yaml
-> index 678cee68b52a..655713fba7e2 100644
-> --- a/Documentation/devicetree/bindings/spi/spi-controller.yaml
-> +++ b/Documentation/devicetree/bindings/spi/spi-controller.yaml
-> @@ -95,6 +95,17 @@ patternProperties:
->      type: object
->      $ref: spi-peripheral-props.yaml
->  
-> +    properties:
-> +      spi-cpha:
-> +        $ref: /schemas/types.yaml#/definitions/flag
-> +        description:
-> +          The device requires shifted clock phase (CPHA) mode.
-> +
-> +      spi-cpol:
-> +        $ref: /schemas/types.yaml#/definitions/flag
-> +        description:
-> +          The device requires inverse clock polarity (CPOL) mode.
-> +
->      required:
->        - compatible
->        - reg
-> diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> index 5e32928c4fc3..2349f83c07f3 100644
-> --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> @@ -34,16 +34,6 @@ properties:
->      description:
->        The device requires 3-wire mode.
->  
-> -  spi-cpha:
-> -    $ref: /schemas/types.yaml#/definitions/flag
-> -    description:
-> -      The device requires shifted clock phase (CPHA) mode.
-> -
-> -  spi-cpol:
-> -    $ref: /schemas/types.yaml#/definitions/flag
-> -    description:
-> -      The device requires inverse clock polarity (CPOL) mode.
-> -
->    spi-cs-high:
->      $ref: /schemas/types.yaml#/definitions/flag
->      description:
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index 4d11efed3e64..866dc4b891d6 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -939,9 +939,7 @@ static int gaudi_fetch_psoc_frequency(struct hl_device *hdev)
+ 			else
+ 				freq = pll_clk / (div_fctr + 1);
+ 		} else {
+-			dev_warn(hdev->dev,
+-				"Received invalid div select value: %d",
+-				div_sel);
++			dev_warn(hdev->dev, "Received invalid div select value: %#x", div_sel);
+ 			freq = 0;
+ 		}
+ 	}
+-- 
+2.25.1
 
