@@ -2,174 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37353C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 05:08:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C74D5C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 05:10:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238827AbiHAFI5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 01:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47470 "EHLO
+        id S239195AbiHAFKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 01:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230126AbiHAFIz (ORCPT
+        with ESMTP id S230126AbiHAFKv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 01:08:55 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AEA612ACE
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 22:08:54 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id s206so8754290pgs.3
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 22:08:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc;
-        bh=FI2slEDL0OuyC3Vag1PYn+ptaAQPjUy3upspXOztAUk=;
-        b=gsub5H2rhbM2DFZX8x20b8mFjESBS8BmlfMoexLGK2OHt6mCIlS5vGC/7nJk+cwOyP
-         QbB0aBv5uX+qS7z304m6BbcPXQCRAnnlps7v5SNEmU5VWpMgVkWP7WKbQKoMcCvu5Pmh
-         2IWDiz5M6kFgDKayUbW+llxLGpAHvpvZ9NA/q9cCAD5lw06AJXtwxwH1qoPVIlZMclKU
-         mkUWnq38tBhrTQGTDMFVTyYZHuCAFvouYUEjMCopVXxR4DYOJrvRqD/6dU7UGEH+RFcG
-         c7c7RRXBLRYzrWTHUwCNjWhJUVOj/vSzIRYXwqgf1XfGkxcPo8BGLKSlrNfZBLImdjo6
-         2v5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc;
-        bh=FI2slEDL0OuyC3Vag1PYn+ptaAQPjUy3upspXOztAUk=;
-        b=PgY0LZZpf+O7BB+TFs+uGWtq/3BzQQ9nIpm0Rb6VHJrTSvRmENkUiLjam4y0Arn0N1
-         1QKyEYgCAhceMY1LuTasEE7UmxMTCFP2cfdLTWhoFdg3+iomNmhw4RoRGaTgVDMIqxpn
-         NZds2mQsu3gqlX1gAvDCqqiQHAG9YNrZbZBkU+B2r+AwHcxjMsgCqhXzwpaGTTjd7ZeL
-         nQvZuJw++axSmlIolvPzw2v2M9YQTZps4tC6mAD3ko5mw61GebwcWeb/Qj+ikg4+xSFP
-         AeaXRJIEo2nqZRMmLBBtg+/h2K2Ll6zJKDCKRQLa+IpozpfrO7buBokLKcxZALRJIXjc
-         6swg==
-X-Gm-Message-State: AJIora+AC2NZ8o1PuDCKBI9D1gBu0JuGVzbmJqQ99zJU3h+4Syhwbovq
-        vQcZoPQ1PnoJRw07G77aLzLdyyRAostXeg==
-X-Google-Smtp-Source: AGRyM1u8IDjmNenIskJL/4ifXqk/YzPCpvCHLiR+hZE8kFIlozkZG/hoKkv8dBbqBxpJLz5FgjB4eQ==
-X-Received: by 2002:a05:6a00:230d:b0:52b:1819:3a0 with SMTP id h13-20020a056a00230d00b0052b181903a0mr14463443pfh.53.1659330533464;
-        Sun, 31 Jul 2022 22:08:53 -0700 (PDT)
-Received: from MBP ([39.170.101.209])
-        by smtp.gmail.com with ESMTPSA id l9-20020a170903244900b0016dc307aef4sm8467231pls.36.2022.07.31.22.08.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Jul 2022 22:08:52 -0700 (PDT)
-References: <20220707090501.55483-1-schspa@gmail.com>
- <0320c5f9-cbda-1652-1f97-24d1a22fb298@gmail.com>
- <YtAqsyjlvmfDokH/@worktop.programming.kicks-ass.net>
- <m2tu6zxme3.fsf@gmail.com>
- <CAJhGHyBc4HXE8bRFYcqNLoX7oNqdq62tOFWvR0XGCAcBJ9mgsQ@mail.gmail.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Schspa Shi <schspa@gmail.com>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>, Tejun Heo <tj@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] workqueue: Use active mask for new worker when pool is
- DISASSOCIATED
-Date:   Mon, 01 Aug 2022 12:42:33 +0800
-In-reply-to: <CAJhGHyBc4HXE8bRFYcqNLoX7oNqdq62tOFWvR0XGCAcBJ9mgsQ@mail.gmail.com>
-Message-ID: <m235egv9d1.fsf@gmail.com>
+        Mon, 1 Aug 2022 01:10:51 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65DF012D3E
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 22:10:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659330650; x=1690866650;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=sXlUNBQU0YAqd7QbFGF/4F/JI9f2vYUenSiG17xay1s=;
+  b=N9u/6YJ43jvxhgl6tjqtwkDQKILmtytHlQFIkEVqYcBFc8NihQEm1dRJ
+   CJQUzUijC9do+pPkBMFbA0ZbeCDp8AUGX9NbkXBZ7eOOn1d7EPhcglAZb
+   Nte/UznQ1/dMwbxQANOxuEhGSBPvXBYysNoDwiStM8iI5sqJUkABZSfXH
+   erWi0P/suApH34P10ofAgvpeXNmCDHNlAAuECSQ7lSOUx14VcA3lg33an
+   ixFq3DSfELNf3rDLshrnm97GoCEcyCKiCvelial9L7QEksGCSczUkmDg7
+   /bh8t8unoIITqLdHu98/ODXDByY8FYyj/SEfTT8lJDcUEIfmpjzXYoqfc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10425"; a="289835387"
+X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
+   d="scan'208";a="289835387"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 22:10:49 -0700
+X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
+   d="scan'208";a="577651319"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.238.208.55])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 22:10:46 -0700
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        Wei Xu <weixugc@google.com>, Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com
+Subject: Re: [PATCH v11 4/8] mm/demotion/dax/kmem: Set node's abstract
+ distance to MEMTIER_ADISTANCE_PMEM
+References: <20220728190436.858458-1-aneesh.kumar@linux.ibm.com>
+        <20220728190436.858458-5-aneesh.kumar@linux.ibm.com>
+        <875yjgmocg.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <87bkt8s7w9.fsf@linux.ibm.com>
+        <87k07slnt7.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <e5545c90-9595-d08c-8a1c-1c15e3b94999@linux.ibm.com>
+Date:   Mon, 01 Aug 2022 13:10:42 +0800
+In-Reply-To: <e5545c90-9595-d08c-8a1c-1c15e3b94999@linux.ibm.com> (Aneesh
+        Kumar K. V.'s message of "Mon, 1 Aug 2022 10:10:39 +0530")
+Message-ID: <87tu6wk0q5.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
 
-Lai Jiangshan <jiangshanlai@gmail.com> writes:
-
-> On Sat, Jul 30, 2022 at 12:19 PM Schspa Shi <schspa@gmail.com> wrote:
->>
->>
->> Peter Zijlstra <peterz@infradead.org> writes:
->>
->> > On Wed, Jul 13, 2022 at 05:52:58PM +0800, Lai Jiangshan wrote:
->> >>
->> >>
->> >> CC Peter.
->> >> Peter has changed the CPU binding code in workqueue.c.
->> >
->> > [ 1622.829091] WARNING: CPU: 3 PID: 31 at kernel/sched/core.c:7756 sched_cpu_dying+0x74/0x204
->> > [ 1622.829374] CPU: 3 PID: 31 Comm: migration/3 Tainted: P           O      5.10.59-rt52 #2
->> >                                                                       ^^^^^^^^^^^^^^^^^^^^^
->> >
->> > I think we can ignore this as being some ancient kernel. Please try
->> > something recent.
->>
->> Hi peter:
->>
->> I spent a few days writing a test case and reproduced the problem on
->> kernel 5.19. I think it's time for us to review the V3 patch for a fix.
->>
->> The V3 patch is at
->> https://lore.kernel.org/all/20220714031645.28004-1-schspa@gmail.com/
->> Please help to review it.
+> On 8/1/22 7:36 AM, Huang, Ying wrote:
+>> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
+>> 
+>>> "Huang, Ying" <ying.huang@intel.com> writes:
+>>>
+>>>> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
+>>>>
+>>>>> By default, all nodes are assigned to the default memory tier which
+>>>>> is the memory tier designated for nodes with DRAM
+>>>>>
+>>>>> Set dax kmem device node's tier to slower memory tier by assigning
+>>>>> abstract distance to MEMTIER_ADISTANCE_PMEM. PMEM tier
+>>>>> appears below the default memory tier in demotion order.
+>>>>>
+>>>>> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+>>>>> ---
+>>>>>  drivers/dax/kmem.c           |  9 +++++++++
+>>>>>  include/linux/memory-tiers.h | 19 ++++++++++++++++++-
+>>>>>  mm/memory-tiers.c            | 28 ++++++++++++++++------------
+>>>>>  3 files changed, 43 insertions(+), 13 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/dax/kmem.c b/drivers/dax/kmem.c
+>>>>> index a37622060fff..6b0d5de9a3e9 100644
+>>>>> --- a/drivers/dax/kmem.c
+>>>>> +++ b/drivers/dax/kmem.c
+>>>>> @@ -11,6 +11,7 @@
+>>>>>  #include <linux/fs.h>
+>>>>>  #include <linux/mm.h>
+>>>>>  #include <linux/mman.h>
+>>>>> +#include <linux/memory-tiers.h>
+>>>>>  #include "dax-private.h"
+>>>>>  #include "bus.h"
+>>>>>  
+>>>>> @@ -41,6 +42,12 @@ struct dax_kmem_data {
+>>>>>  	struct resource *res[];
+>>>>>  };
+>>>>>  
+>>>>> +static struct memory_dev_type default_pmem_type  = {
+>>>>
+>>>> Why is this named as default_pmem_type?  We will not change the memory
+>>>> type of a node usually.
+>>>>
+>>>
+>>> Any other suggestion? pmem_dev_type? 
+>> 
+>> Or dax_pmem_type?
+>> 
+>> DAX is used to enumerate the memory device.
+>> 
+>>>
+>>>>> +	.adistance = MEMTIER_ADISTANCE_PMEM,
+>>>>> +	.tier_sibiling = LIST_HEAD_INIT(default_pmem_type.tier_sibiling),
+>>>>> +	.nodes  = NODE_MASK_NONE,
+>>>>> +};
+>>>>> +
+>>>>>  static int dev_dax_kmem_probe(struct dev_dax *dev_dax)
+>>>>>  {
+>>>>>  	struct device *dev = &dev_dax->dev;
+>>>>> @@ -62,6 +69,8 @@ static int dev_dax_kmem_probe(struct dev_dax *dev_dax)
+>>>>>  		return -EINVAL;
+>>>>>  	}
+>>>>>  
+>>>>> +	init_node_memory_type(numa_node, &default_pmem_type);
+>>>>> +
+>>>>
+>>>> The memory hot-add below may fail.  So the error handling needs to be
+>>>> added.
+>>>>
+>>>> And, it appears that the memory type and memory tier of a node may be
+>>>> fully initialized here before NUMA hot-adding started.  So I suggest to
+>>>> set node_memory_types[] here only.  And set memory_dev_type->nodes in
+>>>> node hot-add callback.  I think there is the proper place to complete
+>>>> the initialization.
+>>>>
+>>>> And, in theory dax/kmem.c can be unloaded.  So we need to clear
+>>>> node_memory_types[] for nodes somewhere.
+>>>>
+>>>
+>>> I guess by module exit we can be sure that all the memory managed
+>>> by dax/kmem is hotplugged out. How about something like below?
+>> 
+>> Because we set node_memorty_types[] in dev_dax_kmem_probe(), it's
+>> natural to clear it in dev_dax_kmem_remove().
+>> 
 >
-> Because of the implementation of is_cpu_allowed(),
-> I am still suspicious about how the newly created worker can be woken
-> up in the dying cpu since it has no KTHREAD_IS_PER_CPU set.
+> Most of required reset/clear is done as part of memory hotunplug. So
+> if we did manage to successfully unplug the memory, everything except
+> node_memory_types[node] should be reset. That makes the clear_node_memory_type
+> the below. 
 >
-
-I think the comments of the V3 patch have explained the problem, the
-newly created worker runs on the dying CPU because we bind it to the
-dying CPU via kthread_bind_mask or set_cpus_allowed_ptr.
-
-Please refer to the following scenarios.
-
-           CPU0                                  CPU1
-------------------------------------------------------------------
-sched_cpu_deactivate(cpu_active_mask clear)
-workqueue_offline_cpu(work pool POOL_DISASSOCIATED)
-  -- all worker will migrate to another cpu --
-                                    worker_thread
-                                    -- will create new worker if
-                                       pool->worklist is not empty
-                                       create_worker()
-                                     -- new kworker will bound to CPU0
-                               (pool->attrs->cpumask will be mask of CPU0).
-      kworker/0:x will running on rq
-
-sched_cpu_dying
-  if (rq->nr_running != 1 || rq_has_pinned_tasks(rq))
-    WARN(true, "Dying CPU not properly vacated!");
-      ---------OOPS-------------
-
-When CPUHP_HRTIMERS_PREPARE < CPU0's state < CPUHP_AP_WORKQUEUE_ONLINE,
-the CPU0 still can schedule a new work, which will add a new work to
-pool->worklist of a dying CPU's work pool.
-
-> Is it a dying cpu when onlining a CPU fails?  I think balance_push
-> is not set in this case when it fails at some point during online.
-> But I haven't looked into the details and linked the clues.
+> void clear_node_memory_type(int node, struct memory_dev_type *memtype)
+> {
 >
-
-Not this case, there is on onlining CPU fails log in my test log.
-
+> 	mutex_lock(&memory_tier_lock);
+> 	/*
+> 	 * memory unplug did clear the node from the memtype and
+> 	 * dax/kem did initialize this node's memory type.
+> 	 */
+> 	if (!node_isset(node, memtype->nodes) && node_memory_types[node]  == memtype){
+> 		node_memory_types[node] = NULL;
+> 	}
+> 	mutex_unlock(&memory_tier_lock);
+> }
 >
->>
->> Test branch as:
->> https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git/tag/?h=v5.19-rc8-rt8
->>
->
-> Can it only be triggered in the rt kernel?
->
+> With the module unload, it is kind of force removing the usage of the specific memtype.
+> Considering module unload will remove the usage of specific memtype from other parts
+> of the kernel and we already do all the required reset in memory hot unplug, do we
+> need to do the clear_node_memory_type above? 
 
-I only test on rt kernel, because of I work on RT kernel now, But I
-think non-rt kernel have the issues too.
+Per my understanding, we need to call clear_node_memory_type() in
+dev_dax_kmem_remove().  After that, we have nothing to do in
+dax_kmem_exit().
 
->> I think this code is new enough to demonstrate that the problem persists.
->>
->> The log as fellowing:
->>
->> [ 3103.198684] ------------[ cut here ]------------
->> [ 3103.198684] Dying CPU not properly vacated!
->> [ 3103.198684] WARNING: CPU: 1 PID: 23 at kernel/sched/core.c:9575 sched_cpu_dying.cold+0xc/0xc3
->> [ 3103.198684] Modules linked in: work_test(O)
->
-> Could you give me the code of this module?
+Best Regards,
+Huang, Ying
 
-The module's source code is at
-https://github.com/schspa/code_snippet/blob/master/kernel_module/workqueue_test/work-test.c
-Kernel defconfig is at
-https://github.com/schspa/ktest/blob/main/configs/linux_rt_defconfig
-
-I add a hook to the entry of worker_thread, which add extra 50ms delay
-to make it reproduced faster.
-
--- 
-BRs
-Schspa Shi
