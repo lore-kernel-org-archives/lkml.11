@@ -2,146 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AE15C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:48:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F6C6C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:49:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235039AbiHAMsR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49594 "EHLO
+        id S234990AbiHAMtR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234740AbiHAMro (ORCPT
+        with ESMTP id S234979AbiHAMs7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:47:44 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C818250181;
-        Mon,  1 Aug 2022 05:38:51 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 271A12YR031410;
-        Mon, 1 Aug 2022 05:38:39 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=AH3eQitAxYvhy4/RzAP+//HGTXu655O4Xsd9zGjJRZU=;
- b=HVFdXMKhCP7o4jUKI4O5FY1YtlHTXb/eAqu2ZnTZLDgauPEwfY14AHiYOu6yMrUAR1gq
- Ugz576RlMScn9iq+An/HTgHdTJ+2ULstYL52gHVTqpyQivJYYyxptyOjC0bkV7qbP2yS
- fr8whjxWoxKplVvRM+OUY7MZ28chUIHIgp+Rlm16e7h92XhFWEYTz5+bPi/Lx+sLbYVu
- Xs0HzMnPohm1ubsdh9P0DN5rWR8olE5+dw+34qUTeOp4YVebTSGgV7ewO4w50MXrUQF1
- qMR2xhGTJ+ov23tNJ2oULw2cqyZWeSfHjlhtdm3cJ83ZsIfH1lp2WnYaMu0eL76jnmUG hw== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3hn45m6j2v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 01 Aug 2022 05:38:39 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 1 Aug
- 2022 05:38:37 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 1 Aug 2022 05:38:37 -0700
-Received: from #hyd1583.marvell.com (unknown [10.29.37.44])
-        by maili.marvell.com (Postfix) with ESMTP id EF6173F70A1;
-        Mon,  1 Aug 2022 05:38:34 -0700 (PDT)
-From:   Naveen Mamindlapalli <naveenm@marvell.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>
-CC:     Naveen Mamindlapalli <naveenm@marvell.com>
-Subject: [net PATCH v2] octeontx2-pf: Fix NIX_AF_TL3_TL2X_LINKX_CFG register configuration
-Date:   Mon, 1 Aug 2022 18:08:31 +0530
-Message-ID: <20220801123831.9370-1-naveenm@marvell.com>
-X-Mailer: git-send-email 2.16.5
+        Mon, 1 Aug 2022 08:48:59 -0400
+Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCEF12AF1
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:40:17 -0700 (PDT)
+Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx1.riseup.net (Postfix) with ESMTPS id 4LxHlN4nPRzDqGt;
+        Mon,  1 Aug 2022 12:40:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1659357616; bh=DrT1LeaDfNwwsNUchbsuDRJXsZzb3gVGQhZQOPYtNzQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mf6jZmQoGkE+u3cUdqqccDw0O7OZ7rmt2eodyOCULd4653wzwBwtbzXearfN0Ic+W
+         FZZ8nfp1QR5wG9jij0300mtz03P0TAknWvYNNnDVVj9xK/eH4dKj3ZVEsytOtnrdVI
+         8OMiP/xWuwW/mSrfRQMmOYNyYQiCBV2f6GxnWiro=
+X-Riseup-User-ID: ECBF70E8AE18FA2C3A4503D85996DE13307D642BFD9025435F88ABC64A82DC45
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews1.riseup.net (Postfix) with ESMTPSA id 4LxHlJ1fnBz5vMX;
+        Mon,  1 Aug 2022 12:40:12 +0000 (UTC)
+From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+To:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        mwen@igalia.com, andrealmeid@riseup.net,
+        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+Subject: [PATCH] drm/amd/display: Drop XFCEnabled parameter from CalculatePrefetchSchedule
+Date:   Mon,  1 Aug 2022 09:40:06 -0300
+Message-Id: <20220801124006.89027-1-mairacanal@riseup.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: 0hIy8DYg4P1hoWGWyO0HKR9NYw6czMHh
-X-Proofpoint-ORIG-GUID: 0hIy8DYg4P1hoWGWyO0HKR9NYw6czMHh
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-01_07,2022-08-01_01,2022-06-22_01
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For packets scheduled to RPM and LBK, NIX_AF_PSE_CHANNEL_LEVEL[BP_LEVEL]
-selects the TL3 or TL2 scheduling level as the one used for link/channel
-selection and backpressure. For each scheduling queue at the selected
-level: Setting NIX_AF_TL3_TL2(0..255)_LINK(0..12)_CFG[ENA] = 1 allows
-the TL3/TL2 queue to schedule packets to a specified RPM or LBK link
-and channel.
+The XFCEnabled parameter from the CalculatePrefetchSchedule function is
+not used and is only mentioned in a couple of comments. Therefore,
+remove the argument and the comments.
 
-There is an issue in the code where NIX_AF_PSE_CHANNEL_LEVEL[BP_LEVEL]
-is set to TL3 where as the NIX_AF_TL3_TL2(0..255)_LINK(0..12)_CFG is
-configured for TL2 queue in some cases. As a result packets will not
-transmit on that link/channel. This patch fixes the issue by configuring
-the NIX_AF_TL3_TL2(0..255)_LINK(0..12)_CFG register depending on the
-NIX_AF_PSE_CHANNEL_LEVEL[BP_LEVEL] value.
-
-Fixes: 5d9b976d4480 ("octeontx2-af: Support fixed transmit scheduler topology")
-Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Signed-off-by: Maíra Canal <mairacanal@riseup.net>
 ---
-v2:
-  - Added more details about the fix in commit message.
-  - Added fixes Tag.
+ .../dc/dml/dcn21/display_mode_vba_21.c        | 21 +++----------------
+ 1 file changed, 3 insertions(+), 18 deletions(-)
 
----
- .../net/ethernet/marvell/octeontx2/nic/otx2_common.c  | 19 ++++++++++++++-----
- .../net/ethernet/marvell/octeontx2/nic/otx2_common.h  |  1 +
- 2 files changed, 15 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index fb8db5888d2f..d686c7b6252f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -632,6 +632,12 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
- 		req->num_regs++;
- 		req->reg[1] = NIX_AF_TL3X_SCHEDULE(schq);
- 		req->regval[1] = dwrr_val;
-+		if (lvl == hw->txschq_link_cfg_lvl) {
-+			req->num_regs++;
-+			req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
-+			/* Enable this queue and backpressure */
-+			req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
-+		}
- 	} else if (lvl == NIX_TXSCH_LVL_TL2) {
- 		parent =  hw->txschq_list[NIX_TXSCH_LVL_TL1][0];
- 		req->reg[0] = NIX_AF_TL2X_PARENT(schq);
-@@ -641,11 +647,12 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
- 		req->reg[1] = NIX_AF_TL2X_SCHEDULE(schq);
- 		req->regval[1] = TXSCH_TL1_DFLT_RR_PRIO << 24 | dwrr_val;
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c b/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c
+index 8a7485e21d53..05cbc6968cde 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c
+@@ -120,7 +120,6 @@ static bool CalculatePrefetchSchedule(
+ 		unsigned int SwathHeightY,
+ 		unsigned int SwathHeightC,
+ 		double TWait,
+-		bool XFCEnabled,
+ 		double XFCRemoteSurfaceFlipDelay,
+ 		bool ProgressiveToInterlaceUnitInOPP,
+ 		double *DSTXAfterScaler,
+@@ -673,7 +672,6 @@ static bool CalculatePrefetchSchedule(
+ 		unsigned int SwathHeightY,
+ 		unsigned int SwathHeightC,
+ 		double TWait,
+-		bool XFCEnabled,
+ 		double XFCRemoteSurfaceFlipDelay,
+ 		bool ProgressiveToInterlaceUnitInOPP,
+ 		double *DSTXAfterScaler,
+@@ -910,12 +908,7 @@ static bool CalculatePrefetchSchedule(
+ 			TimeForFetchingMetaPTE = dml_max(*Tno_bw + (double) PDEAndMetaPTEBytesFrame * HostVMInefficiencyFactor / *PrefetchBandwidth,
+ 					dml_max(UrgentExtraLatency + UrgentLatency * (GPUVMPageTableLevels * (HostVMDynamicLevels + 1) - 1), LineTime / 4));
+ 		} else {
+-// 5/30/2018 - This was an optimization requested from Sy but now NumberOfCursors is no longer a factor
+-//             so if this needs to be reinstated, then it should be officially done in the VBA code as well.
+-//			if (mode_lib->NumberOfCursors > 0 || XFCEnabled)
+-				TimeForFetchingMetaPTE = LineTime / 4;
+-//			else
+-//				TimeForFetchingMetaPTE = 0.0;
++			TimeForFetchingMetaPTE = LineTime / 4;
+ 		}
  
--		req->num_regs++;
--		req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
--		/* Enable this queue and backpressure */
--		req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
--
-+		if (lvl == hw->txschq_link_cfg_lvl) {
-+			req->num_regs++;
-+			req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
-+			/* Enable this queue and backpressure */
-+			req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
-+		}
- 	} else if (lvl == NIX_TXSCH_LVL_TL1) {
- 		/* Default config for TL1.
- 		 * For VF this is always ignored.
-@@ -1591,6 +1598,8 @@ void mbox_handler_nix_txsch_alloc(struct otx2_nic *pf,
- 		for (schq = 0; schq < rsp->schq[lvl]; schq++)
- 			pf->hw.txschq_list[lvl][schq] =
- 				rsp->schq_list[lvl][schq];
-+
-+	pf->hw.txschq_link_cfg_lvl = rsp->link_cfg_lvl;
- }
- EXPORT_SYMBOL(mbox_handler_nix_txsch_alloc);
+ 		if ((GPUVMEnable == true || DCCEnable == true)) {
+@@ -931,11 +924,7 @@ static bool CalculatePrefetchSchedule(
+ 											LineTime
+ 													/ 4.0)));
+ 		} else {
+-// See note above dated 5/30/2018
+-//			if (NumberOfCursors > 0 || XFCEnabled)
+-				TimeForFetchingRowInVBlank = (LineTime - TimeForFetchingMetaPTE) / 2.0;
+-//			else // TODO: Did someone else add this??
+-//				TimeForFetchingRowInVBlank = 0.0;
++			TimeForFetchingRowInVBlank = (LineTime - TimeForFetchingMetaPTE) / 2.0;
+ 		}
  
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index ce2766317c0b..f9c0d2f08e87 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -195,6 +195,7 @@ struct otx2_hw {
- 	u16			sqb_size;
+ 		*DestinationLinesToRequestVMInVBlank = dml_ceil(4.0 * TimeForFetchingMetaPTE / LineTime, 1.0) / 4.0;
+@@ -943,11 +932,9 @@ static bool CalculatePrefetchSchedule(
+ 		*DestinationLinesToRequestRowInVBlank = dml_ceil(4.0 * TimeForFetchingRowInVBlank / LineTime, 1.0) / 4.0;
  
- 	/* NIX */
-+	u8			txschq_link_cfg_lvl;
- 	u16		txschq_list[NIX_TXSCH_LVL_CNT][MAX_TXSCHQ_PER_FUNC];
- 	u16			matchall_ipolicer;
- 	u32			dwrr_mtu;
+ 		LinesToRequestPrefetchPixelData = *DestinationLinesForPrefetch
+-// See note above dated 5/30/2018
+-//						- ((NumberOfCursors > 0 || GPUVMEnable || DCCEnable) ?
+ 						- ((GPUVMEnable || DCCEnable) ?
+ 								(*DestinationLinesToRequestVMInVBlank + 2 * *DestinationLinesToRequestRowInVBlank) :
+-								0.0); // TODO: Did someone else add this??
++								0.0);
+ 
+ 		if (LinesToRequestPrefetchPixelData > 0) {
+ 
+@@ -2200,7 +2187,6 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
+ 							mode_lib->vba.SwathHeightY[k],
+ 							mode_lib->vba.SwathHeightC[k],
+ 							TWait,
+-							mode_lib->vba.XFCEnabled[k],
+ 							mode_lib->vba.XFCRemoteSurfaceFlipDelay,
+ 							mode_lib->vba.ProgressiveToInterlaceUnitInOPP,
+ 							&locals->DSTXAfterScaler[k],
+@@ -3493,7 +3479,6 @@ static noinline void CalculatePrefetchSchedulePerPlane(
+ 			locals->SwathHeightYThisState[k],
+ 			locals->SwathHeightCThisState[k],
+ 			mode_lib->vba.TWait,
+-			mode_lib->vba.XFCEnabled[k],
+ 			mode_lib->vba.XFCRemoteSurfaceFlipDelay,
+ 			mode_lib->vba.ProgressiveToInterlaceUnitInOPP,
+ 			&locals->dst_x_after_scaler,
 -- 
-2.16.5
+2.37.1
 
