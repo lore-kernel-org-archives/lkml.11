@@ -2,133 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE4DC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 14:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A12C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 14:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232822AbiHAOkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 10:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52936 "EHLO
+        id S232859AbiHAOkz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 10:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232837AbiHAOkm (ORCPT
+        with ESMTP id S232807AbiHAOkp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 10:40:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A04537185
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 07:40:41 -0700 (PDT)
+        Mon, 1 Aug 2022 10:40:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62E893AB3A
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 07:40:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659364840;
+        s=mimecast20190719; t=1659364843;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=OgqhE+gnu6wIXIAF0NLfff8Tx1dAcg+s0AiRearY4Bw=;
-        b=jKKp6ijs62iALrIHw5dEpdJnUhWWhftH9DqKcSXR2Wn36utdh26glAn4Esv8NMxJ7WdMTF
-        JxPBdKz2FyIe9+Cv15mnvMMn/5wrvdt6Uo3pyl9qq4Ls17W8BC989zpRh93nfnNPr9rGNZ
-        po5awplZSMLH3cPYuls5CnaNmzydjvg=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dPYiXDhaESDDlUqMSp8278u1iB29EOZV/3YaR/+rAG0=;
+        b=JT51uNOw7pK1eNLSedjAULE69tCzd5OzeVYMyRDZbht/0AQzgh4+0Likd5j1p4zl0jq5QW
+        /rYpqhLux4nyjmxL/eUK8eB+lsYvHxH8oLzdOeLLz2xhpEZA9SybPsIN9KKBN+LqDB528y
+        +Wndc2OCXpwGiaUhMlYrvJc9s4w1zI8=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-441-lr3gSQvSPXGEkokmH3FIIg-1; Mon, 01 Aug 2022 10:40:37 -0400
-X-MC-Unique: lr3gSQvSPXGEkokmH3FIIg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E694C85A587;
-        Mon,  1 Aug 2022 14:40:36 +0000 (UTC)
-Received: from MiWiFi-R3L-srv.redhat.com (ovpn-12-103.pek2.redhat.com [10.72.12.103])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CA143141510F;
-        Mon,  1 Aug 2022 14:40:32 +0000 (UTC)
-From:   Baoquan He <bhe@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org, hch@infradead.org,
-        wangkefeng.wang@huawei.com, linux-arm-kernel@lists.infradead.org,
-        Baoquan He <bhe@redhat.com>
-Subject: [PATCH 00/11] mm: ioremap:  Convert architectures to take GENERIC_IOREMAP way
-Date:   Mon,  1 Aug 2022 22:40:18 +0800
-Message-Id: <20220801144029.57829-1-bhe@redhat.com>
+ us-mta-122-y_VDmuz0OEa4zZ9zxIeJMQ-1; Mon, 01 Aug 2022 10:40:41 -0400
+X-MC-Unique: y_VDmuz0OEa4zZ9zxIeJMQ-1
+Received: by mail-ed1-f69.google.com with SMTP id i6-20020a05640242c600b0043d5404f2e9so3686946edc.22
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 07:40:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dPYiXDhaESDDlUqMSp8278u1iB29EOZV/3YaR/+rAG0=;
+        b=yRo753lcL2GiY6GcAn3OeTVwqB7gtkk8VZuuxM3QqSpd+lw4d4ucI8qqTWXuM94dJm
+         VxzyJnRHu+E/Mn1/R4mKznz3diC3Q4BiwwP7Y23C8FS+2GHlbcfBy4FSsQ3pQcfoZFG0
+         gtqPTRG08nUMqh2OXP3KYJ5PEbJ1fwRNpbCLJvhEeyVqWhLHfTYAb+UQCweW4UZ3sTDS
+         5/YebJdPrNp1ojikY9im+6b5j7T8X/LZwFQQ6UcEi6cj5b4oiXqbPtiKsbrsVTqZy5OD
+         BBi/5wbrRaWhNatOgxrPcActmX39v8ybvYGaL7LqSiWEOOrxvp1CaX6xEzbG65uPmaWx
+         2b9g==
+X-Gm-Message-State: AJIora/xp/3HoallKAk1Zm53xdrRNyMnA5eXozb5POI1Dc+l1mhl3qcP
+        vStiKVuxSkx/Wh+aVMpqRmw4Y9gve1UffsL0BcDkNpJrxfRdBUNzkCeeOgpIAvKgZT216oiKLHg
+        SioDXGHY5VCHxyK1/4lUpGY2p
+X-Received: by 2002:a17:906:c781:b0:726:c967:8d1b with SMTP id cw1-20020a170906c78100b00726c9678d1bmr13057556ejb.54.1659364840721;
+        Mon, 01 Aug 2022 07:40:40 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uFazZco81Jdd7IQiFo4yx8dEY6I5Zc8J1NnmkMxgFaFH+Cla1eGtIocR5HBAEQZxXka6+QIg==
+X-Received: by 2002:a17:906:c781:b0:726:c967:8d1b with SMTP id cw1-20020a170906c78100b00726c9678d1bmr13057547ejb.54.1659364840578;
+        Mon, 01 Aug 2022 07:40:40 -0700 (PDT)
+Received: from [10.40.98.142] ([78.108.130.194])
+        by smtp.gmail.com with ESMTPSA id ku26-20020a170907789a00b00730979f568fsm401575ejc.150.2022.08.01.07.40.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Aug 2022 07:40:39 -0700 (PDT)
+Message-ID: <a2c40124-4b7c-0f71-1153-2bc03802724a@redhat.com>
+Date:   Mon, 1 Aug 2022 16:40:39 +0200
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/1] platform/x86: p2sb: Move out of
+ X86_PLATFORM_DEVICES dependency
+Content-Language: en-US
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mark Gross <markgross@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Kate Hsuan <hpa@redhat.com>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lee Jones <lee@kernel.org>
+References: <20220718145328.14374-1-andriy.shevchenko@linux.intel.com>
+ <2b1b4cd1-faec-85a1-5ad2-e2b29290e0c1@redhat.com>
+ <YufTmwg/A94XjrQ8@google.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <YufTmwg/A94XjrQ8@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, many architecutres have't taken the standard GENERIC_IOREMAP
-way to implement ioremap_prot(), iounmap(), and ioremap_xx(), but make
-these functions specifically under each arch's folder. Those cause many
-duplicated codes of ioremap() and iounmap().
+Hi,
 
-In this patchset, firstly adapt the hooks io[re|un]map_allowed, then
-make use of them to convert those ARCH-es to take GENERIC_IOREMAP method.
-With these change, duplicated ioremap/iounmap() code uder ARCH-es are
-removed.
+On 8/1/22 15:22, Lee Jones wrote:
+> On Thu, 28 Jul 2022, Hans de Goede wrote:
+> 
+>> Hi,
+>>
+>> On 7/18/22 16:53, Andy Shevchenko wrote:
+>>> The P2SB library is used for various drivers, including server
+>>> platforms. That's why the dependency on X86_PLATFORM_DEVICES
+>>> seems superfluous.
+>>>
+>>> Reported-by: kernel test robot <lkp@intel.com>
+>>> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>>> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+>>> ---
+>>> v2: added X86 to the dependencies of P2SB (Hans), added Rb tag (Hans)
+>>
+>> Lee I presume that since you've merged the original series
+>> (in your ib-mfd-edac-i2c-leds-pinctrl-platform-watchdog-5.20
+>> branch) that you will take this fix on top ?
+> 
+> The point of supplying an immutable branch is that whoever maintains
+> this subsystem can pull from it and apply this patch on-top.
 
-This is suggested by Christoph in below discussion:
-https://lore.kernel.org/all/Yp7h0Jv6vpgt6xdZ@infradead.org/T/#u
+I've added the fix to pdx86/for-next now.
 
-And it's basically further action after arm64 has converted to
-GENERIC_IOREMAP way in below patchset.
-[PATCH v5 0/6] arm64: Cleanup ioremap() and support ioremap_prot()
-https://lore.kernel.org/all/20220607125027.44946-1-wangkefeng.wang@huawei.com/T/#u
+Regards,
 
-And some change of io[re|un]map_allowed() is borrowed from the v3 of
-arm64 converting patch.
-[PATCH v3 4/6] mm: ioremap: Add arch_ioremap/iounmap()
-https://lore.kernel.org/all/20220519082552.117736-5-wangkefeng.wang@huawei.com/T/#u
+Hans
 
-For patch 1~3, I don't merge them because I made them in different
-rounds of changing. And splitting them makes me easily describe the
-intention and make review easier. I can merge them after v1 reviewing
-if anyone thinks they should be merged.
 
-Testing:
-It passes the testing on arm64 and s390. For other ARCHes, I only tried
-to pass build with existing RPMs of cross compiling tools. ARCHes like
-openrisc, parisc, don't build because of lack of cross compiling RPMS.
-
-Baoquan He (11):
-  mm/ioremap: change the return value of io[re|un]map_allowed
-  mm: ioremap: fixup the physical address
-  mm: ioremap: allow ARCH to have its own ioremap definition
-  arc: mm: Convert to GENERIC_IOREMAP
-  hexagon: mm: Convert to GENERIC_IOREMAP
-  ia64: mm: Convert to GENERIC_IOREMAP
-  openrisc: mm: Convert to GENERIC_IOREMAP
-  parisc: mm: Convert to GENERIC_IOREMAP
-  s390: mm: Convert to GENERIC_IOREMAP
-  sh: mm: Convert to GENERIC_IOREMAP
-  xtensa: mm: Convert to GENERIC_IOREMAP
-
- arch/arc/Kconfig               |  1 +
- arch/arc/include/asm/io.h      | 19 +++++++---
- arch/arc/mm/ioremap.c          | 60 +++++--------------------------
- arch/arm64/include/asm/io.h    |  3 +-
- arch/arm64/mm/ioremap.c        | 17 ++++++---
- arch/hexagon/Kconfig           |  1 +
- arch/hexagon/include/asm/io.h  |  9 +++--
- arch/hexagon/mm/ioremap.c      | 44 -----------------------
- arch/ia64/Kconfig              |  1 +
- arch/ia64/include/asm/io.h     | 26 ++++++++------
- arch/ia64/mm/ioremap.c         | 50 ++++++--------------------
- arch/openrisc/Kconfig          |  1 +
- arch/openrisc/include/asm/io.h | 16 ++++++---
- arch/openrisc/mm/ioremap.c     | 49 ++++++++-----------------
- arch/parisc/include/asm/io.h   | 16 ++++++---
- arch/parisc/mm/ioremap.c       | 66 ++++------------------------------
- arch/s390/Kconfig              |  1 +
- arch/s390/include/asm/io.h     | 26 +++++++++-----
- arch/s390/pci/pci.c            | 60 +++++--------------------------
- arch/sh/Kconfig                |  1 +
- arch/sh/include/asm/io.h       | 47 ++++++++----------------
- arch/sh/mm/ioremap.c           | 62 +++++++-------------------------
- arch/xtensa/Kconfig            |  1 +
- arch/xtensa/include/asm/io.h   | 39 ++++++++++----------
- arch/xtensa/mm/ioremap.c       | 56 +++++++----------------------
- include/asm-generic/io.h       | 24 +++++++------
- mm/ioremap.c                   | 21 ++++++-----
- 27 files changed, 232 insertions(+), 485 deletions(-)
- delete mode 100644 arch/hexagon/mm/ioremap.c
-
--- 
-2.34.1
+> 
+>> This fix is necessary to fix a bunch of randconfig build
+>> failures in the current linux-next.
+>>
+>>>  drivers/platform/x86/Kconfig            | 12 ++++++++++++
+>>>  drivers/platform/x86/Makefile           |  4 ++++
+>>>  drivers/platform/x86/intel/Kconfig      | 12 ------------
+>>>  drivers/platform/x86/intel/Makefile     |  2 --
+>>>  drivers/platform/x86/{intel => }/p2sb.c |  0
+>>>  5 files changed, 16 insertions(+), 14 deletions(-)
+>>>  rename drivers/platform/x86/{intel => }/p2sb.c (100%)
+> 
 
