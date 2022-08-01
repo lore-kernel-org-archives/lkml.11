@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C530C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:16:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFFDBC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:16:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234385AbiHAMQi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:16:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59316 "EHLO
+        id S234409AbiHAMQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:16:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233670AbiHAMP2 (ORCPT
+        with ESMTP id S234320AbiHAMPc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:15:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F8979EC0;
-        Mon,  1 Aug 2022 04:58:20 -0700 (PDT)
+        Mon, 1 Aug 2022 08:15:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D1441981;
+        Mon,  1 Aug 2022 04:58:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F9CF601C3;
-        Mon,  1 Aug 2022 11:58:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18FAFC433D6;
-        Mon,  1 Aug 2022 11:58:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9282BB80EAC;
+        Mon,  1 Aug 2022 11:58:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E304AC433D7;
+        Mon,  1 Aug 2022 11:58:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355099;
-        bh=5N9uNsQ0SJ0Qf0HCAEwVojCgpDfmLRr/FMEiPYEn17Y=;
+        s=korg; t=1659355102;
+        bh=LARZAiDrC/yVd6yIGxBo8r5qc1cW9qVjsXp3JdlPGDk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cVVezDBNsdhi+6plUeMK75V25SxyxgrUuuCFiAHjNsKGwHUo5hNgvlGcjK0zocrP3
-         ir9PWoau/lIjYm6kEEcyEE2rC2FApPMYb2+TRqzQeOK8rV0bOV9XuMTO5P2O0CWHa+
-         OpEJ2MHfzHXe7ujKwwKyKM/hDbEsJo/T8S8IYvnw=
+        b=NI1M9BddxTbnQ6Mlsp6AV+SrQUKZmPCQvIk2ygze5s+Nif3oGFCSn/97JwlS8o5GQ
+         WaqFb8sf77CilotN/qQotAjUXCuwYePnXPhutGxVt8iejLA4E3pGCiczbs7z+JmSfD
+         QfQt3IbkPae8Phs+0j6IGs4RFPz85cdwUWVcyppI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, LemmyHuang <hlm3280@163.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 32/88] Revert "tcp: change pingpong threshold to 3"
-Date:   Mon,  1 Aug 2022 13:46:46 +0200
-Message-Id: <20220801114139.498415881@linuxfoundation.org>
+        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.18 33/88] octeontx2-pf: Fix UDP/TCP src and dst port tc filters
+Date:   Mon,  1 Aug 2022 13:46:47 +0200
+Message-Id: <20220801114139.546511574@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -51,84 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Wang <weiwan@google.com>
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-commit 4d8f24eeedc58d5f87b650ddda73c16e8ba56559 upstream.
+commit 59e1be6f83b928a04189bbf3ab683a1fc6248db3 upstream.
 
-This reverts commit 4a41f453bedfd5e9cd040bad509d9da49feb3e2c.
+Check the mask for non-zero value before installing tc filters
+for L4 source and destination ports. Otherwise installing a
+filter for source port installs destination port too and
+vice-versa.
 
-This to-be-reverted commit was meant to apply a stricter rule for the
-stack to enter pingpong mode. However, the condition used to check for
-interactive session "before(tp->lsndtime, icsk->icsk_ack.lrcvtime)" is
-jiffy based and might be too coarse, which delays the stack entering
-pingpong mode.
-We revert this patch so that we no longer use the above condition to
-determine interactive session, and also reduce pingpong threshold to 1.
-
-Fixes: 4a41f453bedf ("tcp: change pingpong threshold to 3")
-Reported-by: LemmyHuang <hlm3280@163.com>
-Suggested-by: Neal Cardwell <ncardwell@google.com>
-Signed-off-by: Wei Wang <weiwan@google.com>
-Acked-by: Neal Cardwell <ncardwell@google.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220721204404.388396-1-weiwan@google.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 1d4d9e42c240 ("octeontx2-pf: Add tc flower hardware offload on ingress traffic")
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/inet_connection_sock.h |   10 +---------
- net/ipv4/tcp_output.c              |   15 ++++++---------
- 2 files changed, 7 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c |   30 +++++++++++--------
+ 1 file changed, 18 insertions(+), 12 deletions(-)
 
---- a/include/net/inet_connection_sock.h
-+++ b/include/net/inet_connection_sock.h
-@@ -323,7 +323,7 @@ void inet_csk_update_fastreuse(struct in
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
+@@ -614,21 +614,27 @@ static int otx2_tc_prepare_flow(struct o
  
- struct dst_entry *inet_csk_update_pmtu(struct sock *sk, u32 mtu);
- 
--#define TCP_PINGPONG_THRESH	3
-+#define TCP_PINGPONG_THRESH	1
- 
- static inline void inet_csk_enter_pingpong_mode(struct sock *sk)
- {
-@@ -340,14 +340,6 @@ static inline bool inet_csk_in_pingpong_
- 	return inet_csk(sk)->icsk_ack.pingpong >= TCP_PINGPONG_THRESH;
- }
- 
--static inline void inet_csk_inc_pingpong_cnt(struct sock *sk)
--{
--	struct inet_connection_sock *icsk = inet_csk(sk);
--
--	if (icsk->icsk_ack.pingpong < U8_MAX)
--		icsk->icsk_ack.pingpong++;
--}
--
- static inline bool inet_csk_has_ulp(struct sock *sk)
- {
- 	return inet_sk(sk)->is_icsk && !!inet_csk(sk)->icsk_ulp_ops;
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -167,16 +167,13 @@ static void tcp_event_data_sent(struct t
- 	if (tcp_packets_in_flight(tp) == 0)
- 		tcp_ca_event(sk, CA_EVENT_TX_START);
- 
--	/* If this is the first data packet sent in response to the
--	 * previous received data,
--	 * and it is a reply for ato after last received packet,
--	 * increase pingpong count.
--	 */
--	if (before(tp->lsndtime, icsk->icsk_ack.lrcvtime) &&
--	    (u32)(now - icsk->icsk_ack.lrcvtime) < icsk->icsk_ack.ato)
--		inet_csk_inc_pingpong_cnt(sk);
--
- 	tp->lsndtime = now;
+ 		flow_spec->dport = match.key->dst;
+ 		flow_mask->dport = match.mask->dst;
+-		if (ip_proto == IPPROTO_UDP)
+-			req->features |= BIT_ULL(NPC_DPORT_UDP);
+-		else if (ip_proto == IPPROTO_TCP)
+-			req->features |= BIT_ULL(NPC_DPORT_TCP);
+-		else if (ip_proto == IPPROTO_SCTP)
+-			req->features |= BIT_ULL(NPC_DPORT_SCTP);
 +
-+	/* If it is a reply for ato after last received
-+	 * packet, enter pingpong mode.
-+	 */
-+	if ((u32)(now - icsk->icsk_ack.lrcvtime) < icsk->icsk_ack.ato)
-+		inet_csk_enter_pingpong_mode(sk);
- }
++		if (flow_mask->dport) {
++			if (ip_proto == IPPROTO_UDP)
++				req->features |= BIT_ULL(NPC_DPORT_UDP);
++			else if (ip_proto == IPPROTO_TCP)
++				req->features |= BIT_ULL(NPC_DPORT_TCP);
++			else if (ip_proto == IPPROTO_SCTP)
++				req->features |= BIT_ULL(NPC_DPORT_SCTP);
++		}
  
- /* Account for an ACK we sent. */
+ 		flow_spec->sport = match.key->src;
+ 		flow_mask->sport = match.mask->src;
+-		if (ip_proto == IPPROTO_UDP)
+-			req->features |= BIT_ULL(NPC_SPORT_UDP);
+-		else if (ip_proto == IPPROTO_TCP)
+-			req->features |= BIT_ULL(NPC_SPORT_TCP);
+-		else if (ip_proto == IPPROTO_SCTP)
+-			req->features |= BIT_ULL(NPC_SPORT_SCTP);
++
++		if (flow_mask->sport) {
++			if (ip_proto == IPPROTO_UDP)
++				req->features |= BIT_ULL(NPC_SPORT_UDP);
++			else if (ip_proto == IPPROTO_TCP)
++				req->features |= BIT_ULL(NPC_SPORT_TCP);
++			else if (ip_proto == IPPROTO_SCTP)
++				req->features |= BIT_ULL(NPC_SPORT_SCTP);
++		}
+ 	}
+ 
+ 	return otx2_tc_parse_actions(nic, &rule->action, req, f, node);
 
 
