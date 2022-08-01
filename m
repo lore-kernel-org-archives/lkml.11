@@ -2,109 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42AB0C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 22:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94D03C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 22:22:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234691AbiHAWV6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 18:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
+        id S235325AbiHAWWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 18:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234458AbiHAWVz (ORCPT
+        with ESMTP id S234271AbiHAWWQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 18:21:55 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E301730565
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 15:21:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659392514; x=1690928514;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Q5X8l4dioprMK4qGEnFeqa81fe/C/lrjNZ06tNnnru0=;
-  b=niGtKOnkTjCyojPmXKKc91OqWxh0y6rVtDUMrtxsKw44JA4oXgtGfGpw
-   chTdDKzSb6rdO84ODWoCvz3PEDR2fqzoF7y6jGAlrKY0hCBwz65xwz1+s
-   NQiWzCBjgEeF6gvxFCsnaPBbn9F8ZzVRrdj26UqRgJvbnLlzgz1SFJ3Lh
-   ANM1LguByW0m+qymnjYY8lWgBk8hD+KGyeEUIR9MCktHHmx0B2pTtQ8VT
-   s9v+bG21wKQafDftswIQo2X4WA0P4pZdvLmuaqLi+PUA1G+RKUOmo7XNO
-   JKUarnTdQycsn76lkudQmltyNU/rx2q/6IwQE3tXBwbMzALjk4ULakHgI
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10426"; a="289276561"
-X-IronPort-AV: E=Sophos;i="5.93,209,1654585200"; 
-   d="scan'208";a="289276561"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 15:21:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,209,1654585200"; 
-   d="scan'208";a="635066191"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 01 Aug 2022 15:21:52 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oIdnL-000FQl-2E;
-        Mon, 01 Aug 2022 22:21:51 +0000
-Date:   Tue, 2 Aug 2022 06:21:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Nathan Chancellor <natechancellor@gmail.com>
-Subject: drivers/gpu/drm/i915/i915_sw_fence.c:47:20: error: unused function
- 'debug_fence_init_onstack'
-Message-ID: <202208020632.SW3GUtGm-lkp@intel.com>
+        Mon, 1 Aug 2022 18:22:16 -0400
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5F73135D
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 15:22:14 -0700 (PDT)
+Received: by mail-il1-x131.google.com with SMTP id g18so6233192ilk.4
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 15:22:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=pBK/Zf0lgEwmQCyP2kjQOOFSWsDbib9HeyBn7MqJNZM=;
+        b=MF7yfeVd7MawTl2MshTqFrbkSMcDEBBjmTdHNWvCMYZTvHlKG9/zkdxj5curmX77pH
+         i7+q8xPS/JkHi9hZQCqMOiY+Xn3A7iox56RRuLlPxod7WhEfXYyRowN3kuv55XPdX0Ly
+         8SLOyR/8kIWnpZ0ydGkXAABQltdL46I2+jIv8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pBK/Zf0lgEwmQCyP2kjQOOFSWsDbib9HeyBn7MqJNZM=;
+        b=NQoWDcz+1QrA8keVeLTGExZZP3PwNluM6E0oXq5ICDF0T8daLgPSejtTirEY8Q8Af1
+         D2FIkyLeinQB5ItvxdczYv1j52FpwZXkPJlsViG3hCnlHmAWrxw5f9xeSPGSaVclmuAm
+         i+kEuHHAIvJre54ps61+HztcNmLgJgJJ7/6l0MbSyWyTIlSNIB9R4J2n2lYIGkeQB7y6
+         fp1LrDKuHBnaHvZZEmaPaqa+kpGzG1wLE7rsVXu0VyDrtsU0yJFBUgKPk5uzZFJdfwzK
+         6x8vPv23BbuyNYPVsba6d05ZEfxw3dgDPa+dvBBSJEqOs5jXlhnwva5h3wqDsF9rRXJu
+         U+2w==
+X-Gm-Message-State: ACgBeo0HR8t3zU0KbcxHJb7P0Mb6ttRO/AdfF2eutTrag8Ri7EvyZtii
+        BpZcfZJF39VKm9RdH96rw5wzBQ==
+X-Google-Smtp-Source: AA6agR5CYKU0jz3M1J0x/y1wYEL75eJVfHPmxvZRwjGd3VfN5zh+uBXldH6iin0xHzjuWepiScYG5A==
+X-Received: by 2002:a92:d304:0:b0:2de:e328:942f with SMTP id x4-20020a92d304000000b002dee328942fmr376965ila.175.1659392534310;
+        Mon, 01 Aug 2022 15:22:14 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id x19-20020a056602161300b0067beb49f801sm6043838iow.2.2022.08.01.15.22.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Aug 2022 15:22:13 -0700 (PDT)
+Subject: Re: [PATCH 5.4 00/34] 5.4.209-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220801114128.025615151@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <0cf3cb5f-7244-77da-f2a6-fa7a07e01a83@linuxfoundation.org>
+Date:   Mon, 1 Aug 2022 16:22:13 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <20220801114128.025615151@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nick,
+On 8/1/22 5:46 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.209 release.
+> There are 34 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 03 Aug 2022 11:41:16 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.209-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-FYI, the error/warning still remains.
+Compiled and booted on my test system. No dmesg regressions.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   9de1f9c8ca5100a02a2e271bdbde36202e251b4b
-commit: 9f4069b055d1508c833115df7493b6e0001e5c9b drm/i915: re-disable -Wframe-address
-date:   2 years, 3 months ago
-config: x86_64-randconfig-a001-20220801 (https://download.01.org/0day-ci/archive/20220802/202208020632.SW3GUtGm-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9f4069b055d1508c833115df7493b6e0001e5c9b
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 9f4069b055d1508c833115df7493b6e0001e5c9b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/gpu/drm/i915/i915_sw_fence.c:47:20: error: unused function 'debug_fence_init_onstack' [-Werror,-Wunused-function]
-   static inline void debug_fence_init_onstack(struct i915_sw_fence *fence)
-                      ^
-   1 error generated.
-
-
-vim +/debug_fence_init_onstack +47 drivers/gpu/drm/i915/i915_sw_fence.c
-
-fc1584059d6c43 Chris Wilson 2016-11-25  46  
-214707fc2ce08d Chris Wilson 2017-10-12 @47  static inline void debug_fence_init_onstack(struct i915_sw_fence *fence)
-214707fc2ce08d Chris Wilson 2017-10-12  48  {
-214707fc2ce08d Chris Wilson 2017-10-12  49  	debug_object_init_on_stack(fence, &i915_sw_fence_debug_descr);
-214707fc2ce08d Chris Wilson 2017-10-12  50  }
-214707fc2ce08d Chris Wilson 2017-10-12  51  
-
-:::::: The code at line 47 was first introduced by commit
-:::::: 214707fc2ce08d09982bc4fe4b7a1c1f010e82be drm/i915/selftests: Wrap a timer into a i915_sw_fence
-
-:::::: TO: Chris Wilson <chris@chris-wilson.co.uk>
-:::::: CC: Chris Wilson <chris@chris-wilson.co.uk>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+thanks,
+-- Shuah
