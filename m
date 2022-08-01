@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F28AEC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:06:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB44DC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:06:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234638AbiHATGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 15:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53262 "EHLO
+        id S234666AbiHATGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 15:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234054AbiHATEz (ORCPT
+        with ESMTP id S234544AbiHATFG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 15:04:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A492E3343F;
-        Mon,  1 Aug 2022 12:03:25 -0700 (PDT)
+        Mon, 1 Aug 2022 15:05:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A0053336F;
+        Mon,  1 Aug 2022 12:03:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E1FDB81645;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D049F61172;
+        Mon,  1 Aug 2022 19:03:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5691C4314F;
         Mon,  1 Aug 2022 19:03:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 968C4C43470;
-        Mon,  1 Aug 2022 19:03:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659380603;
-        bh=Vk1fyfOrmClDp1ULmnoVQSdLcNlKkxopQ7DU/cAEJ3g=;
+        s=k20201202; t=1659380607;
+        bh=DiNStDhc8f9jVXz6FaKN9TB72QC5VBXV6hUncDDUwm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d5/E6pEP+zuhEfvyWTGMPkZTLrXBeWh3KyoRBRgGuBNmwm7Li40wKLwKideCqjVsq
-         dvVUW3ZYz9b1JbCvhl5aOAhblkN4G5jnV2IN2xOzNi8D5kfab0OlJ/vEWv2bp8ne2L
-         ckCwOEx3LZI2/gsnIx4HfUdGEMWBuUf7PsAIarErPoya8AHJHosuS6jvYHFl7Tan9h
-         RMpiBpERdQivoo6p92CIdOPmLH8oIv8J0VIxlEtTi5h5bF7NYioU9Ezc9VSN8iIait
-         zm85QjMyBGrxcqxRHIoAsJC1k81nvEnJodw/sCdI1PKgF9DmZz/rMaKdjIsRJ5EJ6F
-         pjB+4VCqtviJg==
+        b=kASD9hIDY8Dm+IYIjGHYM2EEIJ085D/X9xhbCresiy8J0A5iVeEVGA0lsBd1tzNTN
+         x4LDFoxRVmBUdHrH52u602ilzpE70iBzg6Sb0F3S4RbYUOMpu3KEJBczkplvDmGchG
+         +2R2DsDiFDEzjM1Xd8NuJKk7MKf9O5cFyKvXiH0Sws5PBY6t+K0WEmqZ6y8+lmEAfJ
+         5y2Oqw65JT89hO+qHgR9RaVjEPT0kUXN20NInklhpSGQZ3IB52GhXbU+H3rCYUFe8m
+         WZsAvlvvCWTuC9/ZDOV3OfSy0Sj1y5XOxtGoT9PtIrPojuQHMY7MmvAT/2TUbhcbd9
+         XAvFkjA92Z4Lw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, aneesh.kumar@linux.ibm.com,
-        npiggin@gmail.com, linux-arch@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH AUTOSEL 5.4 3/6] mmu_gather: Let there be one tlb_{start,end}_vma() implementation
-Date:   Mon,  1 Aug 2022 15:03:14 -0400
-Message-Id: <20220801190317.3819520-3-sashal@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, kadlec@netfilter.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 5/6] netfilter: nf_tables: add rescheduling points during loop detection walks
+Date:   Mon,  1 Aug 2022 15:03:16 -0400
+Message-Id: <20220801190317.3819520-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220801190317.3819520-1-sashal@kernel.org>
 References: <20220801190317.3819520-1-sashal@kernel.org>
@@ -53,83 +54,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 18ba064e42df3661e196ab58a23931fc732a420b ]
+[ Upstream commit 81ea010667417ef3f218dfd99b69769fe66c2b67 ]
 
-Now that architectures are no longer allowed to override
-tlb_{start,end}_vma() re-arrange code so that there is only one
-implementation for each of these functions.
+Add explicit rescheduling points during ruleset walk.
 
-This much simplifies trying to figure out what they actually do.
+Switching to a faster algorithm is possible but this is a much
+smaller change, suitable for nf tree.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Link: https://bugzilla.netfilter.org/show_bug.cgi?id=1460
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/asm-generic/tlb.h | 15 ++-------------
- 1 file changed, 2 insertions(+), 13 deletions(-)
+ net/netfilter/nf_tables_api.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
-index 268674c1d568..fe05a8562c52 100644
---- a/include/asm-generic/tlb.h
-+++ b/include/asm-generic/tlb.h
-@@ -321,8 +321,8 @@ static inline void __tlb_reset_range(struct mmu_gather *tlb)
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 58a7d89719b1..d60067c5221e 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2684,6 +2684,8 @@ int nft_chain_validate(const struct nft_ctx *ctx, const struct nft_chain *chain)
+ 			if (err < 0)
+ 				return err;
+ 		}
++
++		cond_resched();
+ 	}
  
- #ifdef CONFIG_MMU_GATHER_NO_RANGE
+ 	return 0;
+@@ -7310,9 +7312,13 @@ static int nf_tables_check_loops(const struct nft_ctx *ctx,
+ 				break;
+ 			}
+ 		}
++
++		cond_resched();
+ 	}
  
--#if defined(tlb_flush) || defined(tlb_start_vma) || defined(tlb_end_vma)
--#error MMU_GATHER_NO_RANGE relies on default tlb_flush(), tlb_start_vma() and tlb_end_vma()
-+#if defined(tlb_flush)
-+#error MMU_GATHER_NO_RANGE relies on default tlb_flush()
- #endif
- 
- /*
-@@ -342,17 +342,10 @@ static inline void tlb_flush(struct mmu_gather *tlb)
- static inline void
- tlb_update_vma_flags(struct mmu_gather *tlb, struct vm_area_struct *vma) { }
- 
--#define tlb_end_vma tlb_end_vma
--static inline void tlb_end_vma(struct mmu_gather *tlb, struct vm_area_struct *vma) { }
--
- #else /* CONFIG_MMU_GATHER_NO_RANGE */
- 
- #ifndef tlb_flush
- 
--#if defined(tlb_start_vma) || defined(tlb_end_vma)
--#error Default tlb_flush() relies on default tlb_start_vma() and tlb_end_vma()
--#endif
--
- /*
-  * When an architecture does not provide its own tlb_flush() implementation
-  * but does have a reasonably efficient flush_vma_range() implementation
-@@ -468,7 +461,6 @@ static inline unsigned long tlb_get_unmap_size(struct mmu_gather *tlb)
-  * case where we're doing a full MM flush.  When we're doing a munmap,
-  * the vmas are adjusted to only cover the region to be torn down.
-  */
--#ifndef tlb_start_vma
- static inline void tlb_start_vma(struct mmu_gather *tlb, struct vm_area_struct *vma)
- {
- 	if (tlb->fullmm)
-@@ -477,9 +469,7 @@ static inline void tlb_start_vma(struct mmu_gather *tlb, struct vm_area_struct *
- 	tlb_update_vma_flags(tlb, vma);
- 	flush_cache_range(vma, vma->vm_start, vma->vm_end);
- }
--#endif
- 
--#ifndef tlb_end_vma
- static inline void tlb_end_vma(struct mmu_gather *tlb, struct vm_area_struct *vma)
- {
- 	if (tlb->fullmm)
-@@ -493,7 +483,6 @@ static inline void tlb_end_vma(struct mmu_gather *tlb, struct vm_area_struct *vm
- 	 */
- 	tlb_flush_mmu_tlbonly(tlb);
- }
--#endif
- 
- /*
-  * tlb_flush_{pte|pmd|pud|p4d}_range() adjust the tlb->start and tlb->end,
+ 	list_for_each_entry(set, &ctx->table->sets, list) {
++		cond_resched();
++
+ 		if (!nft_is_active_next(ctx->net, set))
+ 			continue;
+ 		if (!(set->flags & NFT_SET_MAP) ||
 -- 
 2.35.1
 
