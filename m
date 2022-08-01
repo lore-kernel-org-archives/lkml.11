@@ -2,104 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F24C19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 20:54:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE9AC19F29
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 20:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234616AbiHAUyp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 16:54:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55884 "EHLO
+        id S234642AbiHAUzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 16:55:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234182AbiHAUyo (ORCPT
+        with ESMTP id S234629AbiHAUzp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 16:54:44 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607AE25E87;
-        Mon,  1 Aug 2022 13:54:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659387283; x=1690923283;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=pQhtdszcHMGPbia0y/FuipLo7GGj6lQUsaAbpfds0dc=;
-  b=eOjxCqn2vyvleCIsPjOCMKTppeoF3r36zoei7n1HftRgDGrK9B4XwBJ1
-   kJvRtll5WojeK5ERSLz5RLYax1AL3Pyi8SaMXOZIFjJuS5IgMZFZLyx4q
-   cSolAviAUrcuFD2SDrMBNhYFT2mBQR8HtFe63maZZmY4O3zW6tyLk+Nn4
-   ZcByAlrLOa9F7LTt3KrHEbMIeusP3NnpbZSAcXtli/XwOo7iGuxVRdjBZ
-   5YRUWnnIyKC8hQU2X9iB/x5EuTTsypKqLHBQTIvMqsB+zk+38JN2L2jQn
-   apNQ6R1iPGt3cZm9HonQgIA2e39s5Cj7WqQaoNYf/MNyH6dBFFTkrEzca
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10426"; a="269629921"
-X-IronPort-AV: E=Sophos;i="5.93,209,1654585200"; 
-   d="scan'208";a="269629921"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 13:46:29 -0700
-X-IronPort-AV: E=Sophos;i="5.93,209,1654585200"; 
-   d="scan'208";a="929698557"
-Received: from vgutierr-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.212.22.230])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 13:46:28 -0700
-Message-ID: <244f619a4e7a1c7079830d12379872a111da418d.camel@intel.com>
-Subject: Re: [PATCH 2/4] KVM: x86/mmu: Fully re-evaluate MMIO caching when
- SPTE masks change
-From:   Kai Huang <kai.huang@intel.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Roth <michael.roth@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Date:   Tue, 02 Aug 2022 08:46:26 +1200
-In-Reply-To: <YufgCR9CpeoVWKF7@google.com>
-References: <20220728221759.3492539-1-seanjc@google.com>
-         <20220728221759.3492539-3-seanjc@google.com>
-         <9104e22da628fef86a6e8a02d9d2e81814a9d598.camel@intel.com>
-         <YuP3zGmpiALuXfW+@google.com>
-         <f313c41ed50e187ae5de87b32325c6cd4cc17c79.camel@intel.com>
-         <YufgCR9CpeoVWKF7@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
+        Mon, 1 Aug 2022 16:55:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3B7B165A9
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 13:55:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659387343;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=If7o53X6NPJUO5QP9EKT7gVSaWaVmoWSrh7iKnn9p6w=;
+        b=YpUTMiQTp1t/rRFotX1+njk4xA/3YrjtWelRd0gzFEXKnBuxhRvf9Empz7k1XlPtzhpIMh
+        V5j5d7CWlSh5rZaNFKhFpefbuAixITmk0eqL3HaoswjhVL82jQiD4vAdQvvJTVsMIzHw4r
+        6mk/jMSJpje1tfaW9jZeBjmOPXgEdyM=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-30-logxaxFFNm-XxQcoCLel1w-1; Mon, 01 Aug 2022 16:55:42 -0400
+X-MC-Unique: logxaxFFNm-XxQcoCLel1w-1
+Received: by mail-io1-f70.google.com with SMTP id g22-20020a056602249600b0067caba4f24bso4370727ioe.4
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 13:55:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=If7o53X6NPJUO5QP9EKT7gVSaWaVmoWSrh7iKnn9p6w=;
+        b=49/u5idHS/XfG5/PezXIw8okqompaHpugrH/HLVP+H4dbbGWbhAVig/c+W89Kqfn8u
+         DYvq82QeP7ECjSIgvTbXQhYf1jZDa/iN3FK04JxbWB69ru0NtcT2x4GCYoFLe/pdOkIN
+         53TCPxcCCPvaMWUxKlxYdkr9UadWFYXPY7mHsMN/H1qfsO0qyCwV5przADFCIHg7pYdk
+         BO9yk9XlevQ5ePdkmM6osIcZSUbV+/SwmXigZP8jXFOTyNo1Z2xUCAqXFkjkZ2Ytp9Ws
+         wrtPWxmUomKwMquKKoc4XAs+iufIP0mYXUWqqibGuhURLfCxtDYRaeW3xPa4meZ5K4Vf
+         6fgA==
+X-Gm-Message-State: AJIora/f28X167LQIENkW2AQAXIy8oaqQjZljnsS5mPCJCb8NfC5SoxT
+        x8RuqU2EyqN+89Ye2muFOXJvvN2u+Nq/VfIwMw/wQ8c9r75ZwW3JwzIqU0u5efa6lsM/2s6Wbwp
+        gMkuOhlgmajTdnWj5mveaZTdy
+X-Received: by 2002:a05:6638:1602:b0:341:3e1f:d862 with SMTP id x2-20020a056638160200b003413e1fd862mr7064960jas.24.1659387342025;
+        Mon, 01 Aug 2022 13:55:42 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sjutKz5dBzIoacK7wfnyP8jIm+dI8xx7u0A1yEnZnR/R5aP1CIyq7RJKqoV8fdmri+4HklNw==
+X-Received: by 2002:a05:6638:1602:b0:341:3e1f:d862 with SMTP id x2-20020a056638160200b003413e1fd862mr7064952jas.24.1659387341842;
+        Mon, 01 Aug 2022 13:55:41 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id x14-20020a92de0e000000b002dd0cf02f42sm5119805ilm.44.2022.08.01.13.55.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 13:55:41 -0700 (PDT)
+Date:   Mon, 1 Aug 2022 14:55:40 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Bo Liu <liubo03@inspur.com>
+Cc:     <cohuck@redhat.com>, <kvm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] vfio/pci: fix the wrong word
+Message-ID: <20220801145540.5cb4460e.alex.williamson@redhat.com>
+In-Reply-To: <20220801013918.2520-1-liubo03@inspur.com>
+References: <20220801013918.2520-1-liubo03@inspur.com>
+Organization: Red Hat
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-08-01 at 14:15 +0000, Sean Christopherson wrote:
-> On Mon, Aug 01, 2022, Kai Huang wrote:
-> > On Fri, 2022-07-29 at 15:07 +0000, Sean Christopherson wrote:
-> > > Lastly, in prepration for TDX, enable_mmio_caching should be changed =
-to key off
-> > > of the _mask_, not the value.  E.g. for TDX, the value will be '0', b=
-ut the mask
-> > > should be SUPPRESS_VE | RWX.
-> >=20
-> > Agreed.  But perhaps in another patch.  We need to re-define what does
-> > mask/value mean to enable_mmio_caching.
->=20
-> There's no need to redefine what they mean, the only change that needs to=
- be made
-> is handle the scenario where desire value is '0'.  Maybe that's all you m=
-ean by
-> "redefine"?
+On Sun, 31 Jul 2022 21:39:18 -0400
+Bo Liu <liubo03@inspur.com> wrote:
 
-My thinking is only when mask and value both are 0, enable_mmio_caching is
-considered disabled.  vlaue=3D0 is valid when enable_mmio_caching is true a=
-s you
-said.
+> This patch fixes a wrong word in comment.
+> 
+> Signed-off-by: Bo Liu <liubo03@inspur.com>
+> ---
+>  drivers/vfio/pci/vfio_pci_config.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
+> index 97e5ade6efb3..442d3ba4122b 100644
+> --- a/drivers/vfio/pci/vfio_pci_config.c
+> +++ b/drivers/vfio/pci/vfio_pci_config.c
+> @@ -222,7 +222,7 @@ static int vfio_default_config_write(struct vfio_pci_core_device *vdev, int pos,
+>  		memcpy(vdev->vconfig + pos, &virt_val, count);
+>  	}
+>  
+> -	/* Non-virtualzed and writable bits go to hardware */
+> +	/* Non-virtualized and writable bits go to hardware */
+>  	if (write & ~virt) {
+>  		struct pci_dev *pdev = vdev->pdev;
+>  		__le32 phys_val = 0;
 
->=20
-> Another thing to note is that only the value needs to be per-VM, the mask=
- can be
-> KVM-wide, i.e. "mask =3D SUPPRESS_VE | RWX" will work for TDX and non-TDX=
- VMs when
-> EPT is enabled.
+Applied to vfio next branch for v5.20/v6.0.  Thanks,
 
-Yeah, but is more like VMX and TDX both *happen* to have the same mask?=20
-Theoretically,  VMX only need RWX to trigger EPT misconfiguration but doesn=
-'t
-need SUPPRESS_VE.
-
-I don't see making mask/value both per-vm is a big issue?
-
---=20
-Thanks,
--Kai
-
+Alex
 
