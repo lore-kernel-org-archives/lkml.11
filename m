@@ -2,134 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31991C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 16:00:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E93EC19F2B
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 16:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231962AbiHAQAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 12:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
+        id S231848AbiHAQCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 12:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231540AbiHAQA1 (ORCPT
+        with ESMTP id S231540AbiHAQCn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 12:00:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F05BEA18E
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 09:00:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659369626;
+        Mon, 1 Aug 2022 12:02:43 -0400
+Received: from polaris.svanheule.net (polaris.svanheule.net [IPv6:2a00:c98:2060:a004:1::200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB443336A
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 09:02:42 -0700 (PDT)
+Received: from [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd] (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id 8047630494D;
+        Mon,  1 Aug 2022 18:02:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1659369760;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=425mAoRHv7Eq4Ioj1UBZU+35qRscrZA6m4TfZAimPVo=;
-        b=Ot5Rul3SnKOAm0sJvDLHq76sB00AhDcj80VoeWK2NBBVT/5MMAz7J+s60StmqojSoD9JSu
-        yutvUiyawN+aXpS4dm/lLucCfiaw8ouRs1ANVTlgOuo0E5RZWH9dY1xE9c3uT5PMVoa2af
-        UVx2bIrNx79vItHk7hyfzXYyYvWUSS8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-124-Mhtw9F8KN9yFnZi3tuWQbw-1; Mon, 01 Aug 2022 12:00:21 -0400
-X-MC-Unique: Mhtw9F8KN9yFnZi3tuWQbw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 640A12813D28;
-        Mon,  1 Aug 2022 16:00:21 +0000 (UTC)
-Received: from starship (unknown [10.40.194.242])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8FC9740C1288;
-        Mon,  1 Aug 2022 16:00:19 +0000 (UTC)
-Message-ID: <29713b12503aa705fe857f6b61678053d0330db3.camel@redhat.com>
-Subject: Re: [PATCH v4 02/24] KVM: VMX: Drop bits 31:16 when shoving
- exception error code into VMCS
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jim Mattson <jmattson@google.com>,
-        Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Date:   Mon, 01 Aug 2022 19:00:18 +0300
-In-Reply-To: <20220723005137.1649592-3-seanjc@google.com>
-References: <20220723005137.1649592-1-seanjc@google.com>
-         <20220723005137.1649592-3-seanjc@google.com>
+        bh=f3hxkzXi+pvt7W5ZxfDPzIuf1Pn6WGDyIat0IzyBqWI=;
+        b=mgSsDPTPqVRBw5neJ4ZiTWwWKEzCSFvdhB4aniGxBHWR8tBd2oNHfBl71GOfnkobzjNuRq
+        wNrMAV7/5acfFp8711h9Fvf5QMkm24fXqJMLM/VpRfD6JdBZMm6pn/rBBvYRycCuhE/aiq
+        vd6+OmzcorvzcLwwHGL/ssdpV6dtyiy9mOCyAU7OY4Ca2YcrEhKm5rrkyBwrzJebZB7Iia
+        lF+9N1rVkyn4rOHIZgZGuIZdtGK/e53QywBk29NzC734jL68m9hVPlfV+bEeZEZ34ebQyD
+        MEyBxbVoQ/kJWAfHVcwoiSJPIgreyDdNZTWu+w1SMr7QY9WS25AckUwx6DK9ZA==
+Message-ID: <0dbe47388183bf17830e5c77513ca78c58e32612.camel@svanheule.net>
+Subject: Re: [PATCH] MIPS: smp-mt: enable all hardware interrupts on second
+ VPE
+From:   Sander Vanheule <sander@svanheule.net>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Aleksander Jan Bajkowski <olek2@wp.pl>,
+        Hauke Mehrtens <hauke@hauke-m.de>, git@birger-koblitz.de,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 01 Aug 2022 18:02:38 +0200
+In-Reply-To: <20220801152559.GA9041@alpha.franken.de>
+References: <20220702190705.5319-1-olek2@wp.pl>
+         <3c9a032edd0fb9b9608ad3ca08d6e3cc38f21464.camel@svanheule.net>
+         <87fsjen2kl.wl-maz@kernel.org> <20220706081901.GA10797@alpha.franken.de>
+         <CAFBinCAsj=RNvitj2tXJU6pTLSbanRXdKM9H4vyF=N9N=PP06g@mail.gmail.com>
+         <20220707100630.GC9894@alpha.franken.de>
+         <CAFBinCBn3+MbKFE84Y0KjW4qG_88+HuBTzRhPQSDqzqGhyhhZw@mail.gmail.com>
+         <20220707143930.GA14693@alpha.franken.de>
+         <CAFBinCBq3ydoxtj1VG=kjqbq5NjP1ZnQe_dOAS2Gjm2fNkK9Yg@mail.gmail.com>
+         <20220801152559.GA9041@alpha.franken.de>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-07-23 at 00:51 +0000, Sean Christopherson wrote:
-> Deliberately truncate the exception error code when shoving it into the
-> VMCS (VM-Entry field for vmcs01 and vmcs02, VM-Exit field for vmcs12).
-> Intel CPUs are incapable of handling 32-bit error codes and will never
-> generate an error code with bits 31:16, but userspace can provide an
-> arbitrary error code via KVM_SET_VCPU_EVENTS.  Failure to drop the bits
-> on exception injection results in failed VM-Entry, as VMX disallows
-> setting bits 31:16.  Setting the bits on VM-Exit would at best confuse
-> L1, and at worse induce a nested VM-Entry failure, e.g. if L1 decided to
-> reinject the exception back into L2.
-> 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> Reviewed-by: Jim Mattson <jmattson@google.com>
-> Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-> ---
->  arch/x86/kvm/vmx/nested.c | 11 ++++++++++-
->  arch/x86/kvm/vmx/vmx.c    | 12 +++++++++++-
->  2 files changed, 21 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-> index a980d9cbee60..c6f9fe0b6b33 100644
-> --- a/arch/x86/kvm/vmx/nested.c
-> +++ b/arch/x86/kvm/vmx/nested.c
-> @@ -3827,7 +3827,16 @@ static void nested_vmx_inject_exception_vmexit(struct kvm_vcpu *vcpu,
->  	u32 intr_info = nr | INTR_INFO_VALID_MASK;
->  
->  	if (vcpu->arch.exception.has_error_code) {
-> -		vmcs12->vm_exit_intr_error_code = vcpu->arch.exception.error_code;
-> +		/*
-> +		 * Intel CPUs do not generate error codes with bits 31:16 set,
-> +		 * and more importantly VMX disallows setting bits 31:16 in the
-> +		 * injected error code for VM-Entry.  Drop the bits to mimic
-> +		 * hardware and avoid inducing failure on nested VM-Entry if L1
-> +		 * chooses to inject the exception back to L2.  AMD CPUs _do_
-> +		 * generate "full" 32-bit error codes, so KVM allows userspace
-> +		 * to inject exception error codes with bits 31:16 set.
-> +		 */
-> +		vmcs12->vm_exit_intr_error_code = (u16)vcpu->arch.exception.error_code;
->  		intr_info |= INTR_INFO_DELIVER_CODE_MASK;
->  	}
->  
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index 4fd25e1d6ec9..1c72cde600d0 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -1621,7 +1621,17 @@ static void vmx_queue_exception(struct kvm_vcpu *vcpu)
->  	kvm_deliver_exception_payload(vcpu);
->  
->  	if (has_error_code) {
-> -		vmcs_write32(VM_ENTRY_EXCEPTION_ERROR_CODE, error_code);
-> +		/*
-> +		 * Despite the error code being architecturally defined as 32
-> +		 * bits, and the VMCS field being 32 bits, Intel CPUs and thus
-> +		 * VMX don't actually supporting setting bits 31:16.  Hardware
-> +		 * will (should) never provide a bogus error code, but AMD CPUs
-> +		 * do generate error codes with bits 31:16 set, and so KVM's
-> +		 * ABI lets userspace shove in arbitrary 32-bit values.  Drop
-> +		 * the upper bits to avoid VM-Fail, losing information that
-> +		 * does't really exist is preferable to killing the VM.
-> +		 */
-> +		vmcs_write32(VM_ENTRY_EXCEPTION_ERROR_CODE, (u16)error_code);
->  		intr_info |= INTR_INFO_DELIVER_CODE_MASK;
->  	}
->  
+Hi Thomas,
 
+On Mon, 2022-08-01 at 17:25 +0200, Thomas Bogendoerfer wrote:
+> On Thu, Jul 28, 2022 at 05:50:10PM +0200, Martin Blumenstingl wrote:
+> > I think for the Realtek SoC's this would be problematic because it's
+> > using MIPS_GENERIC. My understanding is that in an ideal world all
+>=20
+> which SOC are these ?
 
-Thanks!
+That would be the SoCs supported by MACH_REALTEK_RTL. More specifically, th=
+e
+ones affected by this issue are the RTL8391M, RTL8392M, RTL8393M, and RTL83=
+96M
+which have two VPEs.
 
-Best regards,
-	Maxim Levitsky
+The SoC interrupt controller on these chips can route interrupts to all CPU=
+ HW
+interrupts. If only IP6 and IP7 are enabled on the second VPE, anything rou=
+ted
+there to IP2-IP5 ends up in a black hole.
+
+Best,
+Sander
+
+>=20
+> > platforms would switch to MIPS_GENERIC.
+> > As an alternative to making irq-mips-cpu capable of changing another
+> > CPU's registers: would you also be happy with a change that implements
+> > the following idea (pseudocode) in vsmp_init_secondary():
+> > =C2=A0=C2=A0=C2=A0 struct device_node *root_node =3D of_find_node_by_pa=
+th("/");
+> >=20
+> > =C2=A0=C2=A0=C2=A0 if (mips_gic_present() ||
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 of_device_is_compatible(root=
+_node, "lantiq,xrx200") ||
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 of_device_is_compatible(root=
+_node, "realtek,some-relevant-soc"))
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 change_c0_status(ST0_IM, STA=
+TUSF_IP2 | STATUSF_IP3 |
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 STAT=
+USF_IP4 | STATUSF_IP5 |
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 STAT=
+USF_IP6 | STATUSF_IP7);
+> > =C2=A0=C2=A0=C2=A0 else
+> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ...
+> >=20
+> > =C2=A0=C2=A0=C2=A0 of_node_put(root_node);
+> >=20
+> > That way we don't risk enabling interrupt lines which shouldn't be
+> > enabled (on SoCs which we don't know).
+> > And also it would not cause any issues with MIPS_GENERIC support.
+>=20
+> well it's not exactly the abstraction I'm looking for, but it's ok for me
+> as a short term way to move forward.
+>=20
+> Thomas.
+>=20
 
