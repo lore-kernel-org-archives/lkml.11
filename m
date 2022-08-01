@@ -2,449 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBA8BC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 17:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CB3BC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 17:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233475AbiHAR4M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 13:56:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32978 "EHLO
+        id S232798AbiHAR5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 13:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234275AbiHARzB (ORCPT
+        with ESMTP id S234211AbiHARzJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 13:55:01 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED85A3CBFF
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 10:54:52 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31f5668674cso97235297b3.8
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 10:54:52 -0700 (PDT)
+        Mon, 1 Aug 2022 13:55:09 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7135C33434
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 10:55:00 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id w15so18452900lft.11
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 10:55:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=pvCRJUebhiAgGw/6v2aWMbBeBMjWvHw3SX7EShvA5Sc=;
-        b=WOqwPr2o1uDz1rdzoMfYQ+gI+bvW4gvSo8HnODLlacjjlXMNQ7spcIIri0FRNVOL9U
-         +6O6P18yDSJldgSWbwaE7YfS8WU+6HREoomXiYyujvcAWV7Otolk3W2gFih0GLEGMHBX
-         hCJ5iOnO1D9lufIaxEAW1qE/vx/KheTyWONUoknmtV9HcobamA6O/BLYWX9EdoNGLfxv
-         1dGs6++jxu5NnDrXPSQ/1P8UpNtweiPPtcH7DzFmYtrewtjsCLuJiPiuIONYdtajJ+Px
-         TITaDGWPaxPwnU7QAze9lg2IX6NrQsK3YFDj+ToFHU1zETq8aqUPl9qj4cx+U5H6GAEg
-         XF/g==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=0dGf0wQlT5nVscla096RlUxod41IYCPpARZuBEndXgw=;
+        b=T6Yc3nNefe3TyXG0Vbq3cLSHdoLWMnMoLC1rCsAkOgbXk6qxf5NxTtsWLdlh+h8h+Y
+         zy2IwEG5thASc8/tliCDThGrGmtCTEdm8IXEBOHigiClrMlsAzwm83kX6UzZ765pOx1e
+         OclAzmznuvZ754z0Ve0hY1GPZHIA1OlVcjqd1pdshqzyg6rGVUId1LPHhOz3KeyYZFRc
+         t/OHO6Ha6Awj4xVLh6Z29b7VRFpOctOrXQjlHsrwl4Qf09vAHD3rLXe3d64GSOjqOUXp
+         pxqPLGY1Wx82yKUx05QB3V6cu+EFy6fNjGcOecN3bN3HXJRhuRdVTt0iyNgPggTgQqgE
+         58kg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=pvCRJUebhiAgGw/6v2aWMbBeBMjWvHw3SX7EShvA5Sc=;
-        b=iKbmJJP1Q+/mXFw8s1QdoMBZPyurRpAs7pB5Flanhga9dz2+CGoLi3hFKkVX0pd/yz
-         1ZffbgmOBfMmmUM7zFNQQ2vwEYRpGRxA4kVhkfWYYXw4pBONRGK95DqkEvkvBmdFKjnH
-         uEAqlw/ghtDvEaC354wJzS7C1tMVYvfHv+8NsncF71e52jAuBvpjOW69tsVHVbF4c67g
-         KWfPVizcmTKF3ZmQcD2WwFj+9Uj3P5S2jz5xqpnT8cCk/593ds9oIKv5XptfqOrgv3Po
-         x7yY4mk6xRmyCcB0kIcHtqkha9fW6r9oe2MWPT9Pz2yPUgbBq2uQEa1o1KdKvO8rvB/A
-         8B2A==
-X-Gm-Message-State: ACgBeo1Bdh4Etdn9U7s7y3n26DGdZYRlsVew4ZG+/1Yeyq8cC+snkW14
-        nXszzQL58o2b/gKN2BI4L8aRoXe17ItnQ9WSyL5COrdvo4Hy6/J1Oknu4D6r9+f28H+cB6ECMrB
-        lfCesfqq2NOiuEbQL+Zji9XE0suk8S+RZbUrshp9H1+a3BiHkhYSlfhbxuGJl9VaNaKWVbA==
-X-Google-Smtp-Source: AA6agR6TrCVYSuI/5z8XkjL8e9rUf1uSIfaft07L55TzZQGJyLxPgHkd+nCKLO4RIWcpNGch3N9aN7FmXFo=
-X-Received: from haoluo.svl.corp.google.com ([2620:15c:2d4:203:7c9:7b32:e73f:6716])
- (user=haoluo job=sendgmr) by 2002:a25:f50a:0:b0:66f:4f74:1417 with SMTP id
- a10-20020a25f50a000000b0066f4f741417mr12012251ybe.64.1659376491785; Mon, 01
- Aug 2022 10:54:51 -0700 (PDT)
-Date:   Mon,  1 Aug 2022 10:54:06 -0700
-In-Reply-To: <20220801175407.2647869-1-haoluo@google.com>
-Message-Id: <20220801175407.2647869-8-haoluo@google.com>
-Mime-Version: 1.0
-References: <20220801175407.2647869-1-haoluo@google.com>
-X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
-Subject: [PATCH bpf-next v6 7/8] selftests/bpf: extend cgroup helpers
-From:   Hao Luo <haoluo@google.com>
-To:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        cgroups@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Michal Koutny <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0dGf0wQlT5nVscla096RlUxod41IYCPpARZuBEndXgw=;
+        b=Rn8q+RCLPJGw/rmTMFL75eKQqA2ozlrAttJbW1GGTRI4Io1tJfGF7sSskUX5qgcOAG
+         4VX8YWlWyYWTovR00dgPK4YV1a1lXOFdyAtFz3azkcZw2HdQEZEnR8ZABqVA9mFcbJ/x
+         q2tz0nFWcRPCYT1M4TxyIhG8xaYaKeMzYdLPXWUCNlVd/1Q1JIORp4/4i3fBqS5dDpbz
+         iFO6urnfMmFf36BA5SKkoSfB3t14X7Wjx67X9sdKbah4YgJHL+TVSCXxkImUr5MErK6H
+         oaXT6HG27ma7aD+cvgLxVz3iBof23IeRwbRheawdjNzmRE88ZVW+9Pj7jybqZ86JssT+
+         xnIw==
+X-Gm-Message-State: AJIora/ecQW4s5dPkqoK7VaUJxy3y3aAR5iSPDxwZ5v3NMrDtHGArDEU
+        iroL8oEHaWa3HMrMssjvWBzwYw==
+X-Google-Smtp-Source: AGRyM1sQPJdZYAWXfwoVj4Hz7Z7Cwylr4YwG9UFSXMVERZh0c/cbramPGiv0H/4T1qlznG/Ilz5Rxw==
+X-Received: by 2002:ac2:4a8f:0:b0:48a:9705:c81d with SMTP id l15-20020ac24a8f000000b0048a9705c81dmr5760708lfp.63.1659376498624;
+        Mon, 01 Aug 2022 10:54:58 -0700 (PDT)
+Received: from [192.168.1.6] ([213.161.169.44])
+        by smtp.gmail.com with ESMTPSA id bj38-20020a2eaaa6000000b0025d64453f4dsm1654422ljb.122.2022.08.01.10.54.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Aug 2022 10:54:57 -0700 (PDT)
+Message-ID: <428fe2c1-3c70-5ae8-efcb-1e4a0426a972@linaro.org>
+Date:   Mon, 1 Aug 2022 19:54:54 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [RFC PATCH net-next] dt-bindings: net: dsa: mediatek,mt7530:
+ completely rework binding
+Content-Language: en-US
+To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220726122406.31043-1-arinc.unal@arinc9.com>
+ <a8c778db-f52c-45cb-c671-556b24f3cb46@linaro.org>
+ <a2dd1ce2-a23e-8894-5ef4-b73ef0dad89d@arinc9.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <a2dd1ce2-a23e-8894-5ef4-b73ef0dad89d@arinc9.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yosry Ahmed <yosryahmed@google.com>
+On 30/07/2022 10:24, Arınç ÜNAL wrote:
+> Hi Krzysztof,
+> 
+> On 27.07.2022 13:29, Krzysztof Kozlowski wrote:
+>> On 26/07/2022 14:24, Arınç ÜNAL wrote:
+>>> Completely rework the binding for MediaTek MT7530 and MT7531 switches.
+>>
+>> Rules are the same for schema as for driver - one patch, one thing. You
+>> mix here trivial style changes (removal of quotes) with functional stuff.
+>>
+>> Patch is unreviewable, so it must be split.
+> 
+> Thank you. I'm going to split it this way:
+> - Trivial changes; fix title and property descriptions, remove quotes, 
+> add me as maintainer, etc.
+> - Update binding description
+> - Update json-schema for compatible devices
+> - Update examples
+> 
+> Let me know if you have any objections.
 
-From: Yosry Ahmed <yosryahmed@google.com>
 
-This patch extends bpf selft cgroup_helpers [ID] n various ways:
-- Add enable_controllers() that allows tests to enable all or a
-  subset of controllers for a specific cgroup.
-- Add join_cgroup_parent(). The cgroup workdir is based on the pid,
-  therefore a spawned child cannot join the same cgroup hierarchy of the
-  test through join_cgroup(). join_cgroup_parent() is used in child
-  processes to join a cgroup under the parent's workdir.
-- Add write_cgroup_file() and write_cgroup_file_parent() (similar to
-  join_cgroup_parent() above).
-- Add get_root_cgroup() for tests that need to do checks on root cgroup.
-- Distinguish relative and absolute cgroup paths in function arguments.
-  Now relative paths are called relative_path, and absolute paths are
-  called cgroup_path.
+Depends what are these "udpates". One logical change = one patch. Adding
+compatible in one patch and then adding example for it, is not correct.
 
-Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-Signed-off-by: Hao Luo <haoluo@google.com>
----
- tools/testing/selftests/bpf/cgroup_helpers.c | 202 +++++++++++++++----
- tools/testing/selftests/bpf/cgroup_helpers.h |  19 +-
- 2 files changed, 174 insertions(+), 47 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/cgroup_helpers.c b/tools/testing/selftests/bpf/cgroup_helpers.c
-index 9d59c3990ca8..e914cc45b766 100644
---- a/tools/testing/selftests/bpf/cgroup_helpers.c
-+++ b/tools/testing/selftests/bpf/cgroup_helpers.c
-@@ -33,49 +33,52 @@
- #define CGROUP_MOUNT_DFLT		"/sys/fs/cgroup"
- #define NETCLS_MOUNT_PATH		CGROUP_MOUNT_DFLT "/net_cls"
- #define CGROUP_WORK_DIR			"/cgroup-test-work-dir"
--#define format_cgroup_path(buf, path) \
-+
-+#define format_cgroup_path_pid(buf, path, pid) \
- 	snprintf(buf, sizeof(buf), "%s%s%d%s", CGROUP_MOUNT_PATH, \
--	CGROUP_WORK_DIR, getpid(), path)
-+	CGROUP_WORK_DIR, pid, path)
-+
-+#define format_cgroup_path(buf, path) \
-+	format_cgroup_path_pid(buf, path, getpid())
-+
-+#define format_parent_cgroup_path(buf, path) \
-+	format_cgroup_path_pid(buf, path, getppid())
- 
- #define format_classid_path(buf)				\
- 	snprintf(buf, sizeof(buf), "%s%s", NETCLS_MOUNT_PATH,	\
- 		 CGROUP_WORK_DIR)
- 
--/**
-- * enable_all_controllers() - Enable all available cgroup v2 controllers
-- *
-- * Enable all available cgroup v2 controllers in order to increase
-- * the code coverage.
-- *
-- * If successful, 0 is returned.
-- */
--static int enable_all_controllers(char *cgroup_path)
-+static int __enable_controllers(const char *cgroup_path, const char *controllers)
- {
- 	char path[PATH_MAX + 1];
--	char buf[PATH_MAX];
-+	char enable[PATH_MAX + 1];
- 	char *c, *c2;
- 	int fd, cfd;
- 	ssize_t len;
- 
--	snprintf(path, sizeof(path), "%s/cgroup.controllers", cgroup_path);
--	fd = open(path, O_RDONLY);
--	if (fd < 0) {
--		log_err("Opening cgroup.controllers: %s", path);
--		return 1;
--	}
--
--	len = read(fd, buf, sizeof(buf) - 1);
--	if (len < 0) {
-+	/* If not controllers are passed, enable all available controllers */
-+	if (!controllers) {
-+		snprintf(path, sizeof(path), "%s/cgroup.controllers",
-+			 cgroup_path);
-+		fd = open(path, O_RDONLY);
-+		if (fd < 0) {
-+			log_err("Opening cgroup.controllers: %s", path);
-+			return 1;
-+		}
-+		len = read(fd, enable, sizeof(enable) - 1);
-+		if (len < 0) {
-+			close(fd);
-+			log_err("Reading cgroup.controllers: %s", path);
-+			return 1;
-+		} else if (len == 0) { /* No controllers to enable */
-+			close(fd);
-+			return 0;
-+		}
-+		enable[len] = 0;
- 		close(fd);
--		log_err("Reading cgroup.controllers: %s", path);
--		return 1;
-+	} else {
-+		strncpy(enable, controllers, sizeof(enable));
- 	}
--	buf[len] = 0;
--	close(fd);
--
--	/* No controllers available? We're probably on cgroup v1. */
--	if (len == 0)
--		return 0;
- 
- 	snprintf(path, sizeof(path), "%s/cgroup.subtree_control", cgroup_path);
- 	cfd = open(path, O_RDWR);
-@@ -84,7 +87,7 @@ static int enable_all_controllers(char *cgroup_path)
- 		return 1;
- 	}
- 
--	for (c = strtok_r(buf, " ", &c2); c; c = strtok_r(NULL, " ", &c2)) {
-+	for (c = strtok_r(enable, " ", &c2); c; c = strtok_r(NULL, " ", &c2)) {
- 		if (dprintf(cfd, "+%s\n", c) <= 0) {
- 			log_err("Enabling controller %s: %s", c, path);
- 			close(cfd);
-@@ -95,6 +98,87 @@ static int enable_all_controllers(char *cgroup_path)
- 	return 0;
- }
- 
-+/**
-+ * enable_controllers() - Enable cgroup v2 controllers
-+ * @relative_path: The cgroup path, relative to the workdir
-+ * @controllers: List of controllers to enable in cgroup.controllers format
-+ *
-+ *
-+ * Enable given cgroup v2 controllers, if @controllers is NULL, enable all
-+ * available controllers.
-+ *
-+ * If successful, 0 is returned.
-+ */
-+int enable_controllers(const char *relative_path, const char *controllers)
-+{
-+	char cgroup_path[PATH_MAX + 1];
-+
-+	format_cgroup_path(cgroup_path, relative_path);
-+	return __enable_controllers(cgroup_path, controllers);
-+}
-+
-+static int __write_cgroup_file(const char *cgroup_path, const char *file,
-+			       const char *buf)
-+{
-+	char file_path[PATH_MAX + 1];
-+	int fd;
-+
-+	snprintf(file_path, sizeof(file_path), "%s/%s", cgroup_path, file);
-+	fd = open(file_path, O_RDWR);
-+	if (fd < 0) {
-+		log_err("Opening %s", file_path);
-+		return 1;
-+	}
-+
-+	if (dprintf(fd, "%s", buf) <= 0) {
-+		log_err("Writing to %s", file_path);
-+		close(fd);
-+		return 1;
-+	}
-+	close(fd);
-+	return 0;
-+}
-+
-+/**
-+ * write_cgroup_file() - Write to a cgroup file
-+ * @relative_path: The cgroup path, relative to the workdir
-+ * @file: The name of the file in cgroupfs to write to
-+ * @buf: Buffer to write to the file
-+ *
-+ * Write to a file in the given cgroup's directory.
-+ *
-+ * If successful, 0 is returned.
-+ */
-+int write_cgroup_file(const char *relative_path, const char *file,
-+		      const char *buf)
-+{
-+	char cgroup_path[PATH_MAX - 24];
-+
-+	format_cgroup_path(cgroup_path, relative_path);
-+	return __write_cgroup_file(cgroup_path, file, buf);
-+}
-+
-+/**
-+ * write_cgroup_file_parent() - Write to a cgroup file in the parent process
-+ *                              workdir
-+ * @relative_path: The cgroup path, relative to the parent process workdir
-+ * @file: The name of the file in cgroupfs to write to
-+ * @buf: Buffer to write to the file
-+ *
-+ * Write to a file in the given cgroup's directory under the parent process
-+ * workdir.
-+ *
-+ * If successful, 0 is returned.
-+ */
-+int write_cgroup_file_parent(const char *relative_path, const char *file,
-+			     const char *buf)
-+{
-+	char cgroup_path[PATH_MAX - 24];
-+
-+	format_parent_cgroup_path(cgroup_path, relative_path);
-+	return __write_cgroup_file(cgroup_path, file, buf);
-+}
-+
- /**
-  * setup_cgroup_environment() - Setup the cgroup environment
-  *
-@@ -133,7 +217,9 @@ int setup_cgroup_environment(void)
- 		return 1;
- 	}
- 
--	if (enable_all_controllers(cgroup_workdir))
-+	/* Enable all available controllers to increase test coverage */
-+	if (__enable_controllers(CGROUP_MOUNT_PATH, NULL) ||
-+	    __enable_controllers(cgroup_workdir, NULL))
- 		return 1;
- 
- 	return 0;
-@@ -173,7 +259,7 @@ static int join_cgroup_from_top(const char *cgroup_path)
- 
- /**
-  * join_cgroup() - Join a cgroup
-- * @path: The cgroup path, relative to the workdir, to join
-+ * @relative_path: The cgroup path, relative to the workdir, to join
-  *
-  * This function expects a cgroup to already be created, relative to the cgroup
-  * work dir, and it joins it. For example, passing "/my-cgroup" as the path
-@@ -182,11 +268,27 @@ static int join_cgroup_from_top(const char *cgroup_path)
-  *
-  * On success, it returns 0, otherwise on failure it returns 1.
-  */
--int join_cgroup(const char *path)
-+int join_cgroup(const char *relative_path)
-+{
-+	char cgroup_path[PATH_MAX + 1];
-+
-+	format_cgroup_path(cgroup_path, relative_path);
-+	return join_cgroup_from_top(cgroup_path);
-+}
-+
-+/**
-+ * join_parent_cgroup() - Join a cgroup in the parent process workdir
-+ * @relative_path: The cgroup path, relative to parent process workdir, to join
-+ *
-+ * See join_cgroup().
-+ *
-+ * On success, it returns 0, otherwise on failure it returns 1.
-+ */
-+int join_parent_cgroup(const char *relative_path)
- {
- 	char cgroup_path[PATH_MAX + 1];
- 
--	format_cgroup_path(cgroup_path, path);
-+	format_parent_cgroup_path(cgroup_path, relative_path);
- 	return join_cgroup_from_top(cgroup_path);
- }
- 
-@@ -212,9 +314,27 @@ void cleanup_cgroup_environment(void)
- 	nftw(cgroup_workdir, nftwfunc, WALK_FD_LIMIT, FTW_DEPTH | FTW_MOUNT);
- }
- 
-+/**
-+ * get_root_cgroup() - Get the FD of the root cgroup
-+ *
-+ * On success, it returns the file descriptor. On failure, it returns -1.
-+ * If there is a failure, it prints the error to stderr.
-+ */
-+int get_root_cgroup(void)
-+{
-+	int fd;
-+
-+	fd = open(CGROUP_MOUNT_PATH, O_RDONLY);
-+	if (fd < 0) {
-+		log_err("Opening root cgroup");
-+		return -1;
-+	}
-+	return fd;
-+}
-+
- /**
-  * create_and_get_cgroup() - Create a cgroup, relative to workdir, and get the FD
-- * @path: The cgroup path, relative to the workdir, to join
-+ * @relative_path: The cgroup path, relative to the workdir, to join
-  *
-  * This function creates a cgroup under the top level workdir and returns the
-  * file descriptor. It is idempotent.
-@@ -222,14 +342,14 @@ void cleanup_cgroup_environment(void)
-  * On success, it returns the file descriptor. On failure it returns -1.
-  * If there is a failure, it prints the error to stderr.
-  */
--int create_and_get_cgroup(const char *path)
-+int create_and_get_cgroup(const char *relative_path)
- {
- 	char cgroup_path[PATH_MAX + 1];
- 	int fd;
- 
--	format_cgroup_path(cgroup_path, path);
-+	format_cgroup_path(cgroup_path, relative_path);
- 	if (mkdir(cgroup_path, 0777) && errno != EEXIST) {
--		log_err("mkdiring cgroup %s .. %s", path, cgroup_path);
-+		log_err("mkdiring cgroup %s .. %s", relative_path, cgroup_path);
- 		return -1;
- 	}
- 
-@@ -244,13 +364,13 @@ int create_and_get_cgroup(const char *path)
- 
- /**
-  * get_cgroup_id() - Get cgroup id for a particular cgroup path
-- * @path: The cgroup path, relative to the workdir, to join
-+ * @relative_path: The cgroup path, relative to the workdir, to join
-  *
-  * On success, it returns the cgroup id. On failure it returns 0,
-  * which is an invalid cgroup id.
-  * If there is a failure, it prints the error to stderr.
-  */
--unsigned long long get_cgroup_id(const char *path)
-+unsigned long long get_cgroup_id(const char *relative_path)
- {
- 	int dirfd, err, flags, mount_id, fhsize;
- 	union {
-@@ -261,7 +381,7 @@ unsigned long long get_cgroup_id(const char *path)
- 	struct file_handle *fhp, *fhp2;
- 	unsigned long long ret = 0;
- 
--	format_cgroup_path(cgroup_workdir, path);
-+	format_cgroup_path(cgroup_workdir, relative_path);
- 
- 	dirfd = AT_FDCWD;
- 	flags = 0;
-diff --git a/tools/testing/selftests/bpf/cgroup_helpers.h b/tools/testing/selftests/bpf/cgroup_helpers.h
-index fcc9cb91b211..3358734356ab 100644
---- a/tools/testing/selftests/bpf/cgroup_helpers.h
-+++ b/tools/testing/selftests/bpf/cgroup_helpers.h
-@@ -10,11 +10,18 @@
- 	__FILE__, __LINE__, clean_errno(), ##__VA_ARGS__)
- 
- /* cgroupv2 related */
--int cgroup_setup_and_join(const char *path);
--int create_and_get_cgroup(const char *path);
--unsigned long long get_cgroup_id(const char *path);
--
--int join_cgroup(const char *path);
-+int enable_controllers(const char *relative_path, const char *controllers);
-+int write_cgroup_file(const char *relative_path, const char *file,
-+		      const char *buf);
-+int write_cgroup_file_parent(const char *relative_path, const char *file,
-+			     const char *buf);
-+int cgroup_setup_and_join(const char *relative_path);
-+int get_root_cgroup(void);
-+int create_and_get_cgroup(const char *relative_path);
-+unsigned long long get_cgroup_id(const char *relative_path);
-+
-+int join_cgroup(const char *relative_path);
-+int join_parent_cgroup(const char *relative_path);
- 
- int setup_cgroup_environment(void);
- void cleanup_cgroup_environment(void);
-@@ -26,4 +33,4 @@ int join_classid(void);
- int setup_classid_environment(void);
- void cleanup_classid_environment(void);
- 
--#endif /* __CGROUP_HELPERS_H */
-\ No newline at end of file
-+#endif /* __CGROUP_HELPERS_H */
--- 
-2.37.1.455.g008518b4e5-goog
-
+Best regards,
+Krzysztof
