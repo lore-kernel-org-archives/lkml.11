@@ -2,85 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F6E9C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 17:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F5FC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 17:48:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233342AbiHARrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 13:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54938 "EHLO
+        id S233410AbiHARsa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 13:48:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232650AbiHARrn (ORCPT
+        with ESMTP id S232650AbiHARsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 13:47:43 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD582A71C
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 10:47:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659376062; x=1690912062;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=d1tYTsp95n8Spsdrl2hf4UlQdR9GEgA0rx3KEAZ315U=;
-  b=mG7GFRlZOjnDBjJXp+2Hi7ibysIQB2CAYiUi0c56IIGx65LNe0d2IGEJ
-   Gup6IdBTv4H+vgYQTClz9pkjxqGiX+NV/CyNKNKiX/hsxUBmg1VZWD7UT
-   d9S7rVpLZYpMPG7Bdov5oK4MqEoP/zI1Nm6gLYzDQAQEcrBZubsUxxVSe
-   rliW4rEQ9C3K6Wh4940SMkky466jQNOLlTO8WL+9AuR33kjlJfDT4v8Vh
-   XV810Wet1TYLQqnx6R1KIr/iHM/8CqyKcM9qzN2h6QBG7h51EWyI1Aka5
-   v8QsZ/EQk3wSwFetzb7K0jn74qCElh2qVDw2MCnoamEfK1RQ/43Cn5hSc
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10426"; a="315038912"
-X-IronPort-AV: E=Sophos;i="5.93,208,1654585200"; 
-   d="scan'208";a="315038912"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 10:47:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,208,1654585200"; 
-   d="scan'208";a="929642179"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 01 Aug 2022 10:47:41 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oIZW0-000FCC-1M;
-        Mon, 01 Aug 2022 17:47:40 +0000
-Date:   Tue, 2 Aug 2022 01:47:24 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Lina Wang <lina.wang@mediatek.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Maciej enczykowski <maze@google.com>
-Subject: error: unable to open output file 'kselftest/net/bpf/nat6to4.o': 'No
- such file or directory'
-Message-ID: <202208020112.9k23Y19d-lkp@intel.com>
+        Mon, 1 Aug 2022 13:48:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A57C2DAAB;
+        Mon,  1 Aug 2022 10:48:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7C2B6109E;
+        Mon,  1 Aug 2022 17:48:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29DF4C433C1;
+        Mon,  1 Aug 2022 17:48:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659376103;
+        bh=VH+9IJa8N2N/pZ14waAEZzza9dSZ+N1KF+5/+D85BNk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jeWuSZTv033aU1Z1zCAYdh5j8RfiSLieo9TtUZQMKC/acnpSq+TLAFiI6kFP7n+bl
+         djMTowEDde/tsuAH/4o1Kk9hVYe0mTFU4h7bJ55+7Ru4xhVt1QH/j9AzYxXq2yIEGE
+         a94h8SYgxWaBMw6/nUL7fY4yuhmBSUpeo23pHU8PjQTVKWP14gIExQ1xclH62Ouahy
+         fH/yfX2UU0TwmIxUgOHIrrkbxFm70hOGSUbjd+dL9RwHfIt6MA3UKIXH5KJ/0TIEHn
+         rGgNC7XZ4v7sEuYcAMey0pp3sgUju3NGImq7/kHxAhfrUBu0g8dLbPvcK26qFy2aUZ
+         k4sN+XLJ0HQSw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 07D3540736; Mon,  1 Aug 2022 14:48:20 -0300 (-03)
+Date:   Mon, 1 Aug 2022 14:48:20 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     Namhyung Kim <namhyung@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        German Gomez <german.gomez@arm.com>
+Subject: Re: [PATCH v3] perf test: Add ARM SPE system wide test
+Message-ID: <YugR5LbHqTcweo2c@kernel.org>
+References: <20220701230932.1000495-1-namhyung@kernel.org>
+ <20220707031352.GB631004@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220707031352.GB631004@leoy-ThinkPad-X240s>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Lina,
+Em Thu, Jul 07, 2022 at 11:13:52AM +0800, Leo Yan escreveu:
+> On Fri, Jul 01, 2022 at 04:09:32PM -0700, Namhyung Kim wrote:
+> > In the past it had a problem not setting the pid/tid on the sample
+> > correctly when system-wide mode is used.  Although it's fixed now it'd
+> > be nice if we have a test case for it.
+> > 
+> > Cc: German Gomez <german.gomez@arm.com>
+> > Cc: Leo Yan <leo.yan@linaro.org>
+> > Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+> 
+> Tested for both root user and non-privileged user, both works as
+> expected:
+> 
+> Tested-by: Leo Yan <leo.yan@linaro.org>
 
-First bad commit (maybe != root cause):
+Thanks, applied.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   0fac198def2b41138850867b6aa92044c76ff802
-commit: edae34a3ed9293b5077dddf9e51a3d86c95dc76a selftests net: add UDP GRO fraglist + bpf self-tests
-date:   3 months ago
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce:
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=edae34a3ed9293b5077dddf9e51a3d86c95dc76a
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout edae34a3ed9293b5077dddf9e51a3d86c95dc76a
-        make O=/tmp/kselftest headers
-        make O=/tmp/kselftest -C tools/testing/selftests
+- Arnaldo
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> error: unable to open output file 'kselftest/net/bpf/nat6to4.o': 'No such file or directory'
-   1 error generated.
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
