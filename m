@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE9FC19F29
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F38B2C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:14:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234065AbiHAMOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
+        id S234145AbiHAMOL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:14:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234029AbiHAMMX (ORCPT
+        with ESMTP id S234125AbiHAMNV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:12:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2638274DE0;
-        Mon,  1 Aug 2022 04:57:31 -0700 (PDT)
+        Mon, 1 Aug 2022 08:13:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D35673927;
+        Mon,  1 Aug 2022 04:57:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72BA2601CE;
-        Mon,  1 Aug 2022 11:57:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83288C433C1;
-        Mon,  1 Aug 2022 11:57:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DCE1BB80E8F;
+        Mon,  1 Aug 2022 11:57:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CC34C433C1;
+        Mon,  1 Aug 2022 11:57:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355044;
-        bh=ByQukd9uLY06XlywYZfodLC5/VmwGwQ2h7kHwKrbhpc=;
+        s=korg; t=1659355047;
+        bh=0hleLRWE8Q45RrhCoyizBtJ12n71tJoyut4fO0ZKcXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IkEfRLlteMBHtQqH3iZisT1nogsnU8kyT291zL1dpWrckfsQGQ+j+wvVofog1GNTP
-         RVU6BarZbeL46Z23zq4w6h4YNzEwTcdPJbe33pLr25jP5RUN7ToOyDS363xAosNv4x
-         8PlCwXEROPe9ZIVOWMAY+vlHkSXBEy8tue+bYZig=
+        b=OZtYQ1xQiiPp8+9ydf2v33ZC15iaVU4FDYy9sRCLIBlBoEpqC0TQ4rfTTM9gwOgmx
+         g3Gwgctlkb8FZraJs4u5lwp+VA32J0FdMshmR1Hscy8iy/k7kNW0fKe03kZt9SsEXX
+         uFjK9ILQKWnlSAeYH7j7ac6k8arIw8qOOqXOpMlY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 43/88] net: pcs: xpcs: propagate xpcs_read error to xpcs_get_state_c37_sgmii
-Date:   Mon,  1 Aug 2022 13:46:57 +0200
-Message-Id: <20220801114140.014397322@linuxfoundation.org>
+Subject: [PATCH 5.18 44/88] net: sungem_phy: Add of_node_put() for reference returned by of_get_parent()
+Date:   Mon,  1 Aug 2022 13:46:58 +0200
+Message-Id: <20220801114140.063065871@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -49,40 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 27161db0904ee48e59140aa8d0835939a666c1f1 ]
+[ Upstream commit ebbbe23fdf6070e31509638df3321688358cc211 ]
 
-While phylink_pcs_ops :: pcs_get_state does return void, xpcs_get_state()
-does check for a non-zero return code from xpcs_get_state_c37_sgmii()
-and prints that as a message to the kernel log.
+In bcm5421_init(), we should call of_node_put() for the reference
+returned by of_get_parent() which has increased the refcount.
 
-However, a non-zero return code from xpcs_read() is translated into
-"return false" (i.e. zero as int) and the I/O error is therefore not
-printed. Fix that.
-
-Fixes: b97b5331b8ab ("net: pcs: add C37 SGMII AN support for intel mGbE controller")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220720112057.3504398-1-vladimir.oltean@nxp.com
+Fixes: 3c326fe9cb7a ("[PATCH] ppc64: Add new PHY to sungem")
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220720131003.1287426-1-windhl@126.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/pcs/pcs-xpcs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/sungem_phy.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index 61418d4dc0cd..8768f6e34846 100644
---- a/drivers/net/pcs/pcs-xpcs.c
-+++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -898,7 +898,7 @@ static int xpcs_get_state_c37_sgmii(struct dw_xpcs *xpcs,
- 	 */
- 	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_AN_INTR_STS);
- 	if (ret < 0)
--		return false;
-+		return ret;
- 
- 	if (ret & DW_VR_MII_C37_ANSGM_SP_LNKSTS) {
- 		int speed_value;
+diff --git a/drivers/net/sungem_phy.c b/drivers/net/sungem_phy.c
+index 4daac5fda073..0d40d265b688 100644
+--- a/drivers/net/sungem_phy.c
++++ b/drivers/net/sungem_phy.c
+@@ -454,6 +454,7 @@ static int bcm5421_init(struct mii_phy* phy)
+ 		int can_low_power = 1;
+ 		if (np == NULL || of_get_property(np, "no-autolowpower", NULL))
+ 			can_low_power = 0;
++		of_node_put(np);
+ 		if (can_low_power) {
+ 			/* Enable automatic low-power */
+ 			sungem_phy_write(phy, 0x1c, 0x9002);
 -- 
 2.35.1
 
