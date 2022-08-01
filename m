@@ -2,140 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0421C19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 04:00:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36BDCC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 04:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237066AbiHAEAu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 00:00:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42328 "EHLO
+        id S238598AbiHAEGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 00:06:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbiHAEAp (ORCPT
+        with ESMTP id S229497AbiHAEGM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 00:00:45 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF561B1F0;
-        Sun, 31 Jul 2022 21:00:43 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id u3so12649495lfl.3;
-        Sun, 31 Jul 2022 21:00:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=n9CkTzrmV50rz/zYav9x+RF/pPnwcqb7p6AKMW3GDVE=;
-        b=bYLg1gqyddQb/fdJtaz6CifAlxNtwd60RjS3APsY8uavHzjSp6HUjWINovZZBfbyqO
-         vGZU4d3HuQDSF49FkDG9kXlS3DMv5dqV6sl86fT4MrFwPO1P6JYW2QyXt0NKWurueYqd
-         FziDt1wWzmUAmCx+qE2hKM6th5NnKTNAl9Cn7QXkRMGVdn6ldEThi/opanrtq5yVXBPC
-         +kBCSngHe1b4AxfYQtfZvLwC4mKAKwQHJwQ+JOwb4kBICPxpKCKJIBKey09tv64ovDcZ
-         LkKD0XsTVtrA3CTcQeFPTZw45EarLdOpZzTACndcNOKk1ZI9X2oZfr9T8Sk/EnCThEVL
-         GWhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=n9CkTzrmV50rz/zYav9x+RF/pPnwcqb7p6AKMW3GDVE=;
-        b=cBDQX7Y6UO8IfuFIGahIwnFgdoQN+NKgmVoklcDYn7pgHbJU86Epj9zfZQ7e+1hcbb
-         v1/tscJ1H/ulEz/lDlGmfChNRnj3MExR4PgRRozxpaeRzcVDG1werxpqYzWazewUI9tz
-         H/VKDbj7n0qTfeqTcsNHfkNRxXhHlaEfhGWR1UNTewVUzpYMOxk4LISC71PxlZNRydsj
-         lQuZBwxO+MyrLUP1J4pxmiU1D/arWxvoS3C3bAp6KoOqIv60Q4owTAofSMJ2ZzOBiIyF
-         1g15Icl9PqGQXvWtJSnqSjyVDfUw/oaZC0wGmc2bEAqLSl43Ep8R2FnJ/6sUiCn3XSpt
-         pvHQ==
-X-Gm-Message-State: ACgBeo0EH7Au5t76kdad3PmY2AdTuIsrpMrmVAH9Hz+KMathRzCBI2Mr
-        XfxCxjsXzX384FbImeHwhl7Qe/0pHNrbW5FXikU=
-X-Google-Smtp-Source: AGRyM1ucrIu40q63iE3W2g1r6fsomMMm1BVU7gCAY/74Pyu/8YsE8j95gMs/4Q1fxQpDsCAEJHsZMMCXZ5A3PBHgfu4=
-X-Received: by 2002:a05:6512:10c1:b0:48a:b8cb:ef2d with SMTP id
- k1-20020a05651210c100b0048ab8cbef2dmr4811968lfg.384.1659326442204; Sun, 31
- Jul 2022 21:00:42 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220725030605.1808710-1-klimov.linux@gmail.com>
- <Yt5Zn9cXDe9/F9RJ@kroah.com> <CALW4P+Kd_XdvzGfA=Cmtu0c=kEHfhp2pph2Wh0Sa8Fm8GxDRTA@mail.gmail.com>
- <7770401d-fe3d-bda4-a2e2-55cd004a2d07@suse.com> <CALW4P++5ahRdK6WvghPgpPcTuoJyezU_=s6MG2nn4OBRWZYGXQ@mail.gmail.com>
- <20220731082055.GA4008925@roeck-us.net> <YuaO5Gx84zonjq7X@rowland.harvard.edu>
-In-Reply-To: <YuaO5Gx84zonjq7X@rowland.harvard.edu>
-From:   Alexey Klimov <klimov.linux@gmail.com>
-Date:   Mon, 1 Aug 2022 05:00:30 +0100
-Message-ID: <CALW4P+JiHWMchE+bq1UMTaW78YXo42_069vcimjE=och=7havg@mail.gmail.com>
-Subject: Re: [PATCH v5] watchdog: add driver for StreamLabs USB watchdog device
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Oliver Neukum <oneukum@suse.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-watchdog@vger.kernel.org, wim@linux-watchdog.org,
-        USB list <linux-usb@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        atishp@rivosinc.com, atishp@atishpatra.org,
-        Yury Norov <yury.norov@gmail.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        Aaron Tomlin <atomlin@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 1 Aug 2022 00:06:12 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 034FE637A
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 21:06:10 -0700 (PDT)
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220801040609epoutp01b5624dbb5c625af2a4fafcc27b7e167c~HHOeo3gYB2659126591epoutp01U
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:06:09 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220801040609epoutp01b5624dbb5c625af2a4fafcc27b7e167c~HHOeo3gYB2659126591epoutp01U
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1659326769;
+        bh=1xmuozlUVstGB2fJ4rqWFjLc1ucMPbO4tmMpICPDtFM=;
+        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
+        b=mpc5AAs1+ijnYyVEASQskX6XYwwjnDfQwo/1cgAcdjWAyKe3qaAGYTI2X+Wj4PL4r
+         4AqCdt2wUs9D/CKKshlJpqpBihQeJ1IUd7OvqZiJTRf3PszNyfU17ns7l0dkkBNa2y
+         1M6k4MLHUReIt8nw4KXtIYuHL6fH+7GbbPWJISk0=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20220801040608epcas2p196a71867d2ed4b4adbedbdd675b02a68~HHOeED2gl2566225662epcas2p1J;
+        Mon,  1 Aug 2022 04:06:08 +0000 (GMT)
+Received: from epsmges2p4.samsung.com (unknown [182.195.36.91]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4Lx4L80Hs3z4x9Pq; Mon,  1 Aug
+        2022 04:06:08 +0000 (GMT)
+X-AuditID: b6c32a48-9f7ff700000025be-f2-62e7512f8858
+Received: from epcas2p1.samsung.com ( [182.195.41.53]) by
+        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
+        B4.4D.09662.F2157E26; Mon,  1 Aug 2022 13:06:07 +0900 (KST)
+Mime-Version: 1.0
+Subject: RE: RE: [PATCH v0] f2fs: allow direct read for zoned device
+Reply-To: eunhee83.rho@samsung.com
+Sender: Eunhee Rho <eunhee83.rho@samsung.com>
+From:   Eunhee Rho <eunhee83.rho@samsung.com>
+To:     Jaegeuk Kim <jaegeuk@kernel.org>
+CC:     "chao@kernel.org" <chao@kernel.org>,
+        "linux-f2fs-devel@lists.sourceforge.net" 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+In-Reply-To: <YuXZSTw4reBDtLgk@google.com>
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20220801040607epcms2p82da0594039ba5f1ed77c451e2d13c965@epcms2p8>
+Date:   Mon, 01 Aug 2022 13:06:07 +0900
+X-CMS-MailID: 20220801040607epcms2p82da0594039ba5f1ed77c451e2d13c965
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrJKsWRmVeSWpSXmKPExsWy7bCmqa5+4PMkg6avNhanp55lsnh5SNPi
+        55MONosn62cxW1xa5G5xedccNgc2j02rOtk8di/4zOTRt2UVo8fnTXIBLFHZNhmpiSmpRQqp
+        ecn5KZl56bZK3sHxzvGmZgaGuoaWFuZKCnmJuam2Si4+AbpumTlAq5UUyhJzSoFCAYnFxUr6
+        djZF+aUlqQoZ+cUltkqpBSk5BeYFesWJucWleel6eaklVoYGBkamQIUJ2RkTj+9jKmjkrPh0
+        hbuBcQZ7FyMnh4SAiUT702lANheHkMAORol9TVOYuhg5OHgFBCX+7hAGqREWcJHYt+Y3C4gt
+        JKAk8ffgfSaIuK7ElC2TGEFsNgFtiSvH21lBbBEBFYlDiy6DzWQW2M8ocadnBxPEMl6JGe1P
+        WSBsaYnty7eCNXMKaElM+vEWKq4h8WNZLzOELSpxc/Vbdhj7/bH5jBC2iETrvbNQNYISD37u
+        hopLSNzd2MIGYedL9Dw5CrW3QmLniqtQNfoS1zo2gu3iFfCVOLb0FVg9i4CqxIkpLVA3uEgc
+        urEIbD6zgLzE9rdzmEFhwiygKbF+lz6IKSGgLHHkFgvMVw0bf7Ojs5kF+CQ6Dv+Fi++Y9wTq
+        GjWJxR8XsE5gVJ6FCOhZSHbNQti1gJF5FaNYakFxbnpqsVGBCTxqk/NzNzGC06CWxw7G2W8/
+        6B1iZOJgPMQowcGsJMJ7x+V5khBvSmJlVWpRfnxRaU5q8SFGU6AvJzJLiSbnAxNxXkm8oYml
+        gYmZmaG5kamBuZI4r1fKhkQhgfTEktTs1NSC1CKYPiYOTqkGJsMT8ed1bjvwS09Y/PT81qzd
+        121cug42CCWcfy/kdZ/LbnJQOee5C7GhvlP3p7z3snzF+/GdnaIjw4U13ROqU0OZxb0rT1+2
+        VFXZN/9964dT8Z+4jh7NEzy49oPW1ur373RmFs262Ka4/3N99/6Hto0Pr7M/3qnt6PFKilmc
+        bcH9Xe0C3mwT17UpHDi72mvN/2PBGwt/fb/z4m9+rorJA+cpxa5XLrxhPX7S9npUIaOTxlHr
+        1VIyr/ak/rnBY932yvDzrPtTQ/e35rfe5OE4b7lQoXp6QXFR2OcrAd/dMnZOnFb371kVs1Z2
+        Revmcxb3PxT6v+h7zZWf71bqbXOQYa2EkPCC0rKvG38Yr1G8s0qJpTgj0VCLuag4EQAwmuff
+        DAQAAA==
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220729002517epcms2p35eed262c3349287436c1848ab350c2d4
+References: <YuXZSTw4reBDtLgk@google.com>
+        <20220729002517epcms2p35eed262c3349287436c1848ab350c2d4@epcms2p3>
+        <CGME20220729002517epcms2p35eed262c3349287436c1848ab350c2d4@epcms2p8>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alan,
-
-Thank you for your responses here and in another email thread.
-
-On Sun, Jul 31, 2022 at 3:17 PM Alan Stern <stern@rowland.harvard.edu> wrote:
+>On 07/29, Eunhee Rho wrote:
+>> For zoned devices, f2fs forbids direct IO and forces buffered IO
+>> to serialize write IOs. However, the constraint does not apply to
+>> read IOs.
+>> 
+>> Signed-off-by: Eunhee Rho <eunhee83.rho@samsung.com>
+>> ---
+>>  fs/f2fs/f2fs.h | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> 
+>> diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+>> index d0f428aef34b..f69731f17402 100644
+>> --- a/fs/f2fs/f2fs.h
+>> +++ b/fs/f2fs/f2fs.h
+>> @@ -4471,7 +4471,7 @@ static inline bool f2fs_force_buffered_io(struct inode *inode,
+>>  	 * for blkzoned device, fallback direct IO to buffered IO, so
+>>  	 * all IOs can be serialized by log-structured write.
+>>  	 */
+>> -	if (f2fs_sb_has_blkzoned(sbi))
+>> +	if (f2fs_sb_has_blkzoned(sbi) && (rw == WRITE))
+>>  		return true;
 >
-> On Sun, Jul 31, 2022 at 01:20:55AM -0700, Guenter Roeck wrote:
-> > On Sun, Jul 31, 2022 at 03:34:16AM +0100, Alexey Klimov wrote:
-> > > On Tue, Jul 26, 2022 at 8:48 AM Oliver Neukum <oneukum@suse.com> wrote:
-> > > >
-> > > > On 26.07.22 02:21, Alexey Klimov wrote:
-> > > > > On Mon, Jul 25, 2022 at 9:51 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > > > >>
-> > > > >> On Mon, Jul 25, 2022 at 04:06:05AM +0100, Alexey Klimov wrote:
-> > > > >
-> > > > > [..]
-> > > > >
-> > > > >> Anyway, driver looks good to me, nice work!
-> > > > >>
-> > > > >> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > > >
-> > > > > Thanks, Greg. If you don't mind I'll use your tag in next version
-> > > > > after making changes suggested by Guenter since there will be no
-> > > > > significant functional changes. If code will change a lot, then the
-> > > > > process (Documentation/process/submitting-patches.rst) will require me
-> > > > > to drop the tag.
-> > > >
-> > > > Hi,
-> > > >
-> > > > while thinking about this a question arose. How does this
-> > > > device react to a USB reset? A watchdog that can be disabled
-> > > > by a simple reset does not like very reliable to me.
-> > > > Do you need to implement pre/post_reset() ?
-> > >
-> > > You're right. Upon reset the watchdog is disabled even if it was active before.
-> > > Adding empty ->pre_reset() and ->post_reset() helps to avoid that, but
-> > > looking at Documentation and other drivers it seems that I need to do:
-> > > in pre_reset():
-> > > mutex_lock() to block any other I/O to the usb device;
-> > > __usb_streamlabs_wdt_cmd(STOP) to stop the watchdog;
-> > > and do not unlock the mutex;
-> > >
-> > > in post_reset():
-> > > if (watchdog_active())
-> > >         __usb_streamlabs_wdt_cmd(START);
-> > > mutex_unlock() to allow other's I/O to the usb deivce.
-> > >
-> > > Seems right?
-> > >
-> > Not necessarily. Is other code doing something similar ?
-> > Using a mutex like this creates the risk for hung tasks.
+>Actually we don't need to check the device type, but rely on the
+>filesystem allocation policy like the below lfs mode. Can we remove this
+>line simply?
 >
-> Are mutexes intended to be used in situations where one function
-> acquires the lock, then returns, and then a different function releases
-> the lock?  I'm not sure about this.
+>>  	if (f2fs_lfs_mode(sbi) && (rw == WRITE)) {
+>>  		if (block_unaligned_IO(inode, iocb, iter))
+>> -- 
+>> 2.25.1
 >
-> Perhaps a good old semaphore would be more appropriate.  But it's clear
-> that I/O to the device does need to be mutually exclusive with resets,
-> one way or another.
 
-Thanks for the idea, I'll look into implementing this.
-Also, just to let you know there are a lot of drivers who do mutex
-lock in pre_reset and mutex release in post_reset.
-And there is 16-years old commit 47104b0dd32cec467574822b0dc3517b3de3f0ad
-Maybe usb skeleton driver could be updated as well.
-
-Best regards,
-Alexey
+Yes, I will reflect on the next patch.
+Thanks. 
