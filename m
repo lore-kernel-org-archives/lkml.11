@@ -2,170 +2,387 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D1E1C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 04:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE4FFC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 04:48:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239546AbiHAEsD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 00:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36742 "EHLO
+        id S239607AbiHAEsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 00:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238845AbiHAEsA (ORCPT
+        with ESMTP id S239562AbiHAEsG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 00:48:00 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA6AA194
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 21:47:59 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2714dTvt029383;
-        Mon, 1 Aug 2022 04:47:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=0ZeKB5/7UPuG9ARuCsC3LP8pAP1UFfxwG6u1FvcnW5s=;
- b=UQAU1V4JvANv28YZnJjvlHftJA0XRW8+dSYjSi1lu8ArfH7z+O6TJfWdx4gYzkGYsDvD
- qzrnST/XasSo2aCTHt79rIdnvc3LifUsAm/v+nelL38jAVs1DDZOzUsSJzoGnM8H+5Dm
- VSez5tPmeYI1SRehpCZHVQNssUSK/hUNSnzzR30ayebFVTiynjxqpC1v/LmVhRoZ32oI
- aT66c4TgK8CkZUUxQa2UY25JPGeDMOYKS1FwDeTSBtUW1gFsWpWbuRYOU3wjou/UYW7l
- kd5A6thRtXFvRJI1Y8olj0lvGV8dEYf5sbq9IvtMxyaNDmkyKV7xlNzT0s6F6rBRQ/3R KA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hp51q3xty-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 01 Aug 2022 04:47:37 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2714Fnva008605;
-        Mon, 1 Aug 2022 04:47:37 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hp51q3xt1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 01 Aug 2022 04:47:37 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2714ZR6Y032306;
-        Mon, 1 Aug 2022 04:47:35 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03ams.nl.ibm.com with ESMTP id 3hmv98snuy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 01 Aug 2022 04:47:35 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2714jMCP26345976
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 1 Aug 2022 04:45:22 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C330AAE04D;
-        Mon,  1 Aug 2022 04:47:32 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 22E2CAE045;
-        Mon,  1 Aug 2022 04:47:29 +0000 (GMT)
-Received: from [9.43.22.209] (unknown [9.43.22.209])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  1 Aug 2022 04:47:28 +0000 (GMT)
-Message-ID: <60846a10-f661-69e1-f4f2-71bfeca8f9b4@linux.ibm.com>
-Date:   Mon, 1 Aug 2022 10:17:28 +0530
+        Mon, 1 Aug 2022 00:48:06 -0400
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC95613E34;
+        Sun, 31 Jul 2022 21:48:04 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 4C179320047A;
+        Mon,  1 Aug 2022 00:48:03 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 01 Aug 2022 00:48:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm1; t=1659329282; x=1659415682; bh=eJ
+        aAVmwqR0NW9DeEP+qDxnDdsemHn3NpvuJmJ+NmkDg=; b=lF8AuzbMqAkvafYB2z
+        1AXxhz26CkGKQCpQpktDp0/ML+e3pgaox0+3JimrGdRp8w0IlHTCUZGPt2XDkRno
+        5A6BBV9JCQOxF4SOs6HfykVBpg39Rnfaz4uRRbVxMGlFmYIhAVstHb3TYP8ueA1D
+        4S8XzndWSUTb+APZxfwoiGonRs7TKSShNXhZrO+P79ppa6jOagu9t0I1Qifr4VDa
+        QNpyOiWyma5EsjVjEfpkifiDQG0I1SFGs8inpq+LFcBgxKy/e2UZheohmnVPGBES
+        Edo9tx28P750egFExN9GThY8+eVSsjGwTxLKe4LrKacbss6nFJrSjEVEhP12Lwik
+        gvvw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; t=1659329282; x=1659415682; bh=eJaAVmwqR0NW9
+        DeEP+qDxnDdsemHn3NpvuJmJ+NmkDg=; b=sDgFGvIWFcxGwhIjq12RGkyTJQSLv
+        pKull0/TNG6eptg/ccakNdFwPQYH0GF7qs6btBguKnq90IEPO44nRmT2B46Kv0I/
+        OKW6f/jKVfWC1DZ0Emn+qxNHZNRSF/IzAVLy7fsJXVpxwg3OzhP6WYdiAWTEvHs3
+        cjeE/jiVImUA2P1UzMRkcQlG2gE08ieHGxYwaOgq56rwhkN/GA6+uJJcrEycwqj0
+        sx6S5L8aZNEQIlYp+rLC6SYwf23HZV/vwEhKyubyIkyc7DE7B72sSjJczyQAOGhn
+        djLpGesvLKo+OilLWelu+XGZbjqT+oRn2V1z45IY76fNvzDUIOrWnc5tA==
+X-ME-Sender: <xms:AlvnYvyVkneLSQt-__YMEsdDsZp4F903dBLF1cV2lxiDwt_NfUyC7w>
+    <xme:AlvnYnRgcLD5eHojJ_H1SaNZPwkr9usj4qoqt-tYnY5attp3bfS2uljNitDS_68nA
+    KZgA2-B7SMx2kYySQ>
+X-ME-Received: <xmr:AlvnYpWh0ZDRKGlpdr3pAyVsXyaPKMjnIk2SpVrKXPX8wt9V8x6ArWL1XIRkTJ30Y_wntgLPaIn_EAlS-Nnnl-q1Yo3-nadvvkEIOxvtTB2n5E-Ax0Fo4YwifhM1cNq6qEuQEQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddvvddgjeekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufgrmhhu
+    vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
+    ftrfgrthhtvghrnhepudekteeuudehtdelteevgfduvddvjefhfedulefgudevgeeghefg
+    udefiedtveetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
+    homhepshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
+X-ME-Proxy: <xmx:AlvnYpgWrXC6BjbHYbIWWLRY1yyUAV2rNatSlBFbv2HtsnsYvh9Tkw>
+    <xmx:AlvnYhDzYlwqxAJHEAlxOGb5i_envoECcy3uZ2yCFad_XymhwhiYVA>
+    <xmx:AlvnYiJ6KLAk8ccsRINRMX89JOwPg_QrS7tr6ZE3lWtefXBoT3IpDQ>
+    <xmx:AlvnYlsNFVDjzPP8kBNgwtYlmNWH9Mzg3h-oX0HH4V9wF5ZHuvErlQ>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 1 Aug 2022 00:48:02 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Samuel Holland <samuel@sholland.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: [PATCH 2/2] regulator: sun20i: Add support for Allwinner D1 LDOs
+Date:   Sun, 31 Jul 2022 23:47:58 -0500
+Message-Id: <20220801044758.12679-2-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220801044758.12679-1-samuel@sholland.org>
+References: <20220801044758.12679-1-samuel@sholland.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v12 1/8] mm/demotion: Add support for explicit memory
- tiers
-Content-Language: en-US
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
-        Wei Xu <weixugc@google.com>, Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
-        Jagdish Gediya <jvgediya@linux.ibm.com>
-References: <20220729061349.968148-1-aneesh.kumar@linux.ibm.com>
- <20220729061349.968148-2-aneesh.kumar@linux.ibm.com>
- <877d3slmdm.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
-In-Reply-To: <877d3slmdm.fsf@yhuang6-desk2.ccr.corp.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: eIfzWnTfpgA0tsCGrJlY3NF1IA4ksNG5
-X-Proofpoint-ORIG-GUID: IVMadr9TdV0EjcZnW-apW2XLMAPNHRjw
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-01_01,2022-07-28_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
- spamscore=0 impostorscore=0 suspectscore=0 mlxscore=0 priorityscore=1501
- adultscore=0 clxscore=1015 bulkscore=0 mlxlogscore=999 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2208010024
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/1/22 8:07 AM, Huang, Ying wrote:
-> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
-> 
->> In the current kernel, memory tiers are defined implicitly via a demotion path
->> relationship between NUMA nodes, which is created during the kernel
->> initialization and updated when a NUMA node is hot-added or hot-removed. The
->> current implementation puts all nodes with CPU into the highest tier, and builds
->> the tier hierarchy tier-by-tier by establishing the per-node demotion targets
->> based on the distances between nodes.
->>
->> This current memory tier kernel implementation needs to be improved for several
->> important use cases,
->>
->> The current tier initialization code always initializes each memory-only NUMA
->> node into a lower tier. But a memory-only NUMA node may have a high performance
->> memory device (e.g. a DRAM-backed memory-only node on a virtual machine) that
->> should be put into a higher tier.
->>
->> The current tier hierarchy always puts CPU nodes into the top tier. But on a
->> system with HBM or GPU devices, the memory-only NUMA nodes mapping these devices
->> should be in the top tier, and DRAM nodes with CPUs are better to be placed into
->> the next lower tier.
->>
->> With current kernel higher tier node can only be demoted to nodes with shortest
->> distance on the next lower tier as defined by the demotion path, not any other
->> node from any lower tier. This strict, demotion order does not work in all use
->> cases (e.g. some use cases may want to allow cross-socket demotion to another
->> node in the same demotion tier as a fallback when the preferred demotion node is
->> out of space), This demotion order is also inconsistent with the page allocation
->> fallback order when all the nodes in a higher tier are out of space: The page
->> allocation can fall back to any node from any lower tier, whereas the demotion
->> order doesn't allow that.
->>
->> This patch series address the above by defining memory tiers explicitly.
->>
->> Linux kernel presents memory devices as NUMA nodes and each memory device is of
->> a specific type. The memory type of a device is represented by its abstract
->> distance. A memory tier corresponds to a range of abstract distance. This allows
->> for classifying memory devices with a specific performance range into a memory
->> tier.
->>
->> This patch configures the range/chunk size to be 128. The default DRAM
->> abstract distance is 512. We can have 4 memory tiers below the default DRAM
->                                                        ~~~~~
-> 
-> above?
+D1 contains two pairs of LDOs. Since they have similar bindings, and
+they always exist together, put them in a single driver.
 
-Updated the above as below.
+The analog LDOs are relatively boring, with a single linear range. The
+one quirk is that their bandgap reference must be calibrated for them to
+produce the correct voltage.
 
+The system LDOs have the complication that their voltage step is not an
+integer, so a custom .list_voltage is needed to get the rounding right.
 
-This patch configures the range/chunk size to be 128. The default DRAM abstract
-distance is 512. We can have 4 memory tiers below the default DRAM with abstract
-distance range 0 - 127, 127 - 255, 256- 383, 384 - 511. Faster memory devices
-can be placed in these faster(higher) memory tiers. Slower memory devices like
-persistent memory will have abstract distance higher than the default DRAM
-level.
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
 
+ drivers/regulator/Kconfig            |   8 +
+ drivers/regulator/Makefile           |   1 +
+ drivers/regulator/sun20i-regulator.c | 244 +++++++++++++++++++++++++++
+ 3 files changed, 253 insertions(+)
+ create mode 100644 drivers/regulator/sun20i-regulator.c
 
+diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
+index cbe0f96ca342..20a22f900bb2 100644
+--- a/drivers/regulator/Kconfig
++++ b/drivers/regulator/Kconfig
+@@ -1234,6 +1234,14 @@ config REGULATOR_STW481X_VMMC
+ 	  This driver supports the internal VMMC regulator in the STw481x
+ 	  PMIC chips.
+ 
++config REGULATOR_SUN20I
++	tristate "Allwinner D1 internal LDOs"
++	depends on ARCH_SUNXI || COMPILE_TEST
++	depends on MFD_SYSCON && NVMEM
++	default ARCH_SUNXI
++	help
++	  This driver supports the internal LDOs in the Allwinner D1 SoC.
++
+ config REGULATOR_SY7636A
+ 	tristate "Silergy SY7636A voltage regulator"
+ 	help
+diff --git a/drivers/regulator/Makefile b/drivers/regulator/Makefile
+index 8d3ee8b6d41d..cb3ac9290fc3 100644
+--- a/drivers/regulator/Makefile
++++ b/drivers/regulator/Makefile
+@@ -145,6 +145,7 @@ obj-$(CONFIG_REGULATOR_STM32_VREFBUF) += stm32-vrefbuf.o
+ obj-$(CONFIG_REGULATOR_STM32_PWR) += stm32-pwr.o
+ obj-$(CONFIG_REGULATOR_STPMIC1) += stpmic1_regulator.o
+ obj-$(CONFIG_REGULATOR_STW481X_VMMC) += stw481x-vmmc.o
++obj-$(CONFIG_REGULATOR_SUN20I) += sun20i-regulator.o
+ obj-$(CONFIG_REGULATOR_SY7636A) += sy7636a-regulator.o
+ obj-$(CONFIG_REGULATOR_SY8106A) += sy8106a-regulator.o
+ obj-$(CONFIG_REGULATOR_SY8824X) += sy8824x.o
+diff --git a/drivers/regulator/sun20i-regulator.c b/drivers/regulator/sun20i-regulator.c
+new file mode 100644
+index 000000000000..c4d075440249
+--- /dev/null
++++ b/drivers/regulator/sun20i-regulator.c
+@@ -0,0 +1,244 @@
++// SPDX-License-Identifier: GPL-2.0-only
++//
++// Copyright (c) 2021-2022 Samuel Holland <samuel@sholland.org>
++//
++
++#include <linux/mfd/syscon.h>
++#include <linux/module.h>
++#include <linux/nvmem-consumer.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <linux/regulator/driver.h>
++
++#define SUN20I_POWER_REG		0x348
++
++#define SUN20I_SYS_LDO_CTRL_REG		0x150
++
++struct sun20i_regulator_data {
++	int				(*init)(struct device *dev,
++						struct regmap *regmap);
++	const struct regulator_desc	*descs;
++	unsigned int			ndescs;
++};
++
++static int sun20i_d1_analog_ldos_init(struct device *dev, struct regmap *regmap)
++{
++	u8 bg_trim;
++	int ret;
++
++	ret = nvmem_cell_read_u8(dev, "bg_trim", &bg_trim);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to get bg_trim value\n");
++
++	/* The default value corresponds to 900 mV. */
++	if (!bg_trim)
++		bg_trim = 0x19;
++
++	return regmap_update_bits(regmap, SUN20I_POWER_REG,
++				  GENMASK(7, 0), bg_trim);
++}
++
++static const struct regulator_ops sun20i_d1_analog_ldo_ops = {
++	.list_voltage		= regulator_list_voltage_linear,
++	.map_voltage		= regulator_map_voltage_linear,
++	.set_voltage_sel	= regulator_set_voltage_sel_regmap,
++	.get_voltage_sel	= regulator_get_voltage_sel_regmap,
++	.enable			= regulator_enable_regmap,
++	.disable		= regulator_disable_regmap,
++	.is_enabled		= regulator_is_enabled_regmap,
++};
++
++static const struct regulator_desc sun20i_d1_analog_ldo_descs[] = {
++	{
++		.name		= "aldo",
++		.supply_name	= "vdd33",
++		.of_match	= "aldo",
++		.ops		= &sun20i_d1_analog_ldo_ops,
++		.type		= REGULATOR_VOLTAGE,
++		.owner		= THIS_MODULE,
++		.n_voltages	= BIT(3),
++		.min_uV		= 1650000,
++		.uV_step	= 50000,
++		.vsel_reg	= SUN20I_POWER_REG,
++		.vsel_mask	= GENMASK(14, 12),
++		.enable_reg	= SUN20I_POWER_REG,
++		.enable_mask	= BIT(31),
++	},
++	{
++		.name		= "hpldo",
++		.supply_name	= "hpldoin",
++		.of_match	= "hpldo",
++		.ops		= &sun20i_d1_analog_ldo_ops,
++		.type		= REGULATOR_VOLTAGE,
++		.owner		= THIS_MODULE,
++		.n_voltages	= BIT(3),
++		.min_uV		= 1650000,
++		.uV_step	= 50000,
++		.vsel_reg	= SUN20I_POWER_REG,
++		.vsel_mask	= GENMASK(10, 8),
++		.enable_reg	= SUN20I_POWER_REG,
++		.enable_mask	= BIT(30),
++	},
++};
++
++static const struct sun20i_regulator_data sun20i_d1_analog_ldos = {
++	.init	= sun20i_d1_analog_ldos_init,
++	.descs	= sun20i_d1_analog_ldo_descs,
++	.ndescs	= ARRAY_SIZE(sun20i_d1_analog_ldo_descs),
++};
++
++/* regulator_list_voltage_linear() modified for the non-integral uV_step. */
++static int sun20i_d1_system_ldo_list_voltage(struct regulator_dev *rdev,
++					     unsigned int selector)
++{
++	const struct regulator_desc *desc = rdev->desc;
++	unsigned int uV;
++
++	if (selector >= desc->n_voltages)
++		return -EINVAL;
++
++	uV = desc->min_uV + (desc->uV_step * selector);
++
++	/* Produce correctly-rounded absolute voltages. */
++	return uV + ((selector + 1 + (desc->min_uV % 4)) / 3);
++}
++
++static const struct regulator_ops sun20i_d1_system_ldo_ops = {
++	.list_voltage		= sun20i_d1_system_ldo_list_voltage,
++	.map_voltage		= regulator_map_voltage_ascend,
++	.set_voltage_sel	= regulator_set_voltage_sel_regmap,
++	.get_voltage_sel	= regulator_get_voltage_sel_regmap,
++};
++
++static const struct regulator_desc sun20i_d1_system_ldo_descs[] = {
++	{
++		.name		= "ldoa",
++		.supply_name	= "ldo-in",
++		.of_match	= "ldoa",
++		.ops		= &sun20i_d1_system_ldo_ops,
++		.type		= REGULATOR_VOLTAGE,
++		.owner		= THIS_MODULE,
++		.n_voltages	= BIT(5),
++		.min_uV		= 1600000,
++		.uV_step	= 13333, /* repeating */
++		.vsel_reg	= SUN20I_SYS_LDO_CTRL_REG,
++		.vsel_mask	= GENMASK(7, 0),
++	},
++	{
++		.name		= "ldob",
++		.supply_name	= "ldo-in",
++		.of_match	= "ldob",
++		.ops		= &sun20i_d1_system_ldo_ops,
++		.type		= REGULATOR_VOLTAGE,
++		.owner		= THIS_MODULE,
++		.n_voltages	= BIT(6),
++		.min_uV		= 1166666,
++		.uV_step	= 13333, /* repeating */
++		.vsel_reg	= SUN20I_SYS_LDO_CTRL_REG,
++		.vsel_mask	= GENMASK(15, 8),
++	},
++};
++
++static const struct sun20i_regulator_data sun20i_d1_system_ldos = {
++	.descs	= sun20i_d1_system_ldo_descs,
++	.ndescs	= ARRAY_SIZE(sun20i_d1_system_ldo_descs),
++};
++
++static const struct of_device_id sun20i_regulator_of_match[] = {
++	{
++		.compatible = "allwinner,sun20i-d1-analog-ldos",
++		.data = &sun20i_d1_analog_ldos,
++	},
++	{
++		.compatible = "allwinner,sun20i-d1-system-ldos",
++		.data = &sun20i_d1_system_ldos,
++	},
++	{ },
++};
++MODULE_DEVICE_TABLE(of, sun20i_regulator_of_match);
++
++static struct regmap *sun20i_regulator_get_regmap(struct device *dev)
++{
++	struct platform_device *syscon_pdev;
++	struct device_node *syscon_node;
++	struct regmap *regmap;
++
++	/*
++	 * First try the syscon interface. The system control device is not
++	 * compatible with "syscon", so fall back to getting the regmap from
++	 * its platform device. This is ugly, but required for devicetree
++	 * backward compatibility.
++	 */
++	regmap = syscon_regmap_lookup_by_phandle(dev->of_node, "syscon");
++	if (!IS_ERR(regmap))
++		return regmap;
++
++	syscon_node = of_parse_phandle(dev->of_node, "syscon", 0);
++	if (!syscon_node)
++		return ERR_PTR(-ENODEV);
++
++	syscon_pdev = of_find_device_by_node(syscon_node);
++	of_node_put(syscon_node);
++	if (!syscon_pdev)
++		return ERR_PTR(-EPROBE_DEFER);
++
++	regmap = dev_get_regmap(&syscon_pdev->dev, NULL);
++	platform_device_put(syscon_pdev);
++	if (!regmap)
++		return ERR_PTR(-EPROBE_DEFER);
++
++	return regmap;
++}
++
++static int sun20i_regulator_probe(struct platform_device *pdev)
++{
++	const struct sun20i_regulator_data *data;
++	struct device *dev = &pdev->dev;
++	struct regulator_config config;
++	struct regmap *regmap;
++	int ret;
++
++	data = of_device_get_match_data(dev);
++	if (!data)
++		return -EINVAL;
++
++	regmap = sun20i_regulator_get_regmap(dev);
++	if (IS_ERR(regmap))
++		return dev_err_probe(dev, PTR_ERR(regmap), "Failed to get regmap\n");
++
++	if (data->init) {
++		ret = data->init(dev, regmap);
++		if (ret)
++			return ret;
++	}
++
++	config = (struct regulator_config) {
++		.dev	= dev,
++		.regmap	= regmap,
++	};
++
++	for (unsigned int i = 0; i < data->ndescs; ++i) {
++		const struct regulator_desc *desc = &data->descs[i];
++		struct regulator_dev *rdev;
++
++		rdev = devm_regulator_register(dev, desc, &config);
++		if (IS_ERR(rdev))
++			return PTR_ERR(rdev);
++	}
++
++	return 0;
++}
++
++static struct platform_driver sun20i_regulator_driver = {
++	.probe	= sun20i_regulator_probe,
++	.driver	= {
++		.name		= "sun20i-regulator",
++		.of_match_table	= sun20i_regulator_of_match,
++	},
++};
++module_platform_driver(sun20i_regulator_driver);
++
++MODULE_AUTHOR("Samuel Holland <samuel@sholland.org>");
++MODULE_DESCRIPTION("Allwinner D1 internal LDO driver");
++MODULE_LICENSE("GPL");
+-- 
+2.35.1
 
-
-> 
->> abstract distance which cover the range 0 - 127, 127 - 255, 256- 383, 384 - 511.
->> Slower memory devices like persistent memory will have abstract distance higher
->> than the default DRAM level.
->>
-
--aneesh
