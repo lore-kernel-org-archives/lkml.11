@@ -2,128 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A12C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 14:40:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C98EC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 14:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232859AbiHAOkz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 10:40:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53026 "EHLO
+        id S232889AbiHAOk6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 10:40:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232807AbiHAOkp (ORCPT
+        with ESMTP id S232835AbiHAOkw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 10:40:45 -0400
+        Mon, 1 Aug 2022 10:40:52 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62E893AB3A
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 07:40:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F48737185
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 07:40:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659364843;
+        s=mimecast20190719; t=1659364845;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dPYiXDhaESDDlUqMSp8278u1iB29EOZV/3YaR/+rAG0=;
-        b=JT51uNOw7pK1eNLSedjAULE69tCzd5OzeVYMyRDZbht/0AQzgh4+0Likd5j1p4zl0jq5QW
-        /rYpqhLux4nyjmxL/eUK8eB+lsYvHxH8oLzdOeLLz2xhpEZA9SybPsIN9KKBN+LqDB528y
-        +Wndc2OCXpwGiaUhMlYrvJc9s4w1zI8=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=yqh7FeHFMtI+kW+10TKPDeJZiXYb/xwqaqaRSxDfiUM=;
+        b=Fxm9l+AfcZt8TkceQGTA2H0Cl889bslKnFcQS/mbZrAmzpp4PQR1mTevjXCMJoDRV9U9Y+
+        /KOUSyfYAjgJXjBg45T0fsep8lihyghlx015jW+5exCbJe7BmNU5+b89kwwMu/7HzNEzf0
+        +Xnow6FkqeBMFoZ150RsY0N8UPbDzAU=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-122-y_VDmuz0OEa4zZ9zxIeJMQ-1; Mon, 01 Aug 2022 10:40:41 -0400
-X-MC-Unique: y_VDmuz0OEa4zZ9zxIeJMQ-1
-Received: by mail-ed1-f69.google.com with SMTP id i6-20020a05640242c600b0043d5404f2e9so3686946edc.22
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 07:40:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=dPYiXDhaESDDlUqMSp8278u1iB29EOZV/3YaR/+rAG0=;
-        b=yRo753lcL2GiY6GcAn3OeTVwqB7gtkk8VZuuxM3QqSpd+lw4d4ucI8qqTWXuM94dJm
-         VxzyJnRHu+E/Mn1/R4mKznz3diC3Q4BiwwP7Y23C8FS+2GHlbcfBy4FSsQ3pQcfoZFG0
-         gtqPTRG08nUMqh2OXP3KYJ5PEbJ1fwRNpbCLJvhEeyVqWhLHfTYAb+UQCweW4UZ3sTDS
-         5/YebJdPrNp1ojikY9im+6b5j7T8X/LZwFQQ6UcEi6cj5b4oiXqbPtiKsbrsVTqZy5OD
-         BBi/5wbrRaWhNatOgxrPcActmX39v8ybvYGaL7LqSiWEOOrxvp1CaX6xEzbG65uPmaWx
-         2b9g==
-X-Gm-Message-State: AJIora/xp/3HoallKAk1Zm53xdrRNyMnA5eXozb5POI1Dc+l1mhl3qcP
-        vStiKVuxSkx/Wh+aVMpqRmw4Y9gve1UffsL0BcDkNpJrxfRdBUNzkCeeOgpIAvKgZT216oiKLHg
-        SioDXGHY5VCHxyK1/4lUpGY2p
-X-Received: by 2002:a17:906:c781:b0:726:c967:8d1b with SMTP id cw1-20020a170906c78100b00726c9678d1bmr13057556ejb.54.1659364840721;
-        Mon, 01 Aug 2022 07:40:40 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uFazZco81Jdd7IQiFo4yx8dEY6I5Zc8J1NnmkMxgFaFH+Cla1eGtIocR5HBAEQZxXka6+QIg==
-X-Received: by 2002:a17:906:c781:b0:726:c967:8d1b with SMTP id cw1-20020a170906c78100b00726c9678d1bmr13057547ejb.54.1659364840578;
-        Mon, 01 Aug 2022 07:40:40 -0700 (PDT)
-Received: from [10.40.98.142] ([78.108.130.194])
-        by smtp.gmail.com with ESMTPSA id ku26-20020a170907789a00b00730979f568fsm401575ejc.150.2022.08.01.07.40.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Aug 2022 07:40:39 -0700 (PDT)
-Message-ID: <a2c40124-4b7c-0f71-1153-2bc03802724a@redhat.com>
-Date:   Mon, 1 Aug 2022 16:40:39 +0200
+ us-mta-460-j3vyREzDPkeg7ERZPn0gvA-1; Mon, 01 Aug 2022 10:40:42 -0400
+X-MC-Unique: j3vyREzDPkeg7ERZPn0gvA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 40404382ECC6;
+        Mon,  1 Aug 2022 14:40:42 +0000 (UTC)
+Received: from MiWiFi-R3L-srv.redhat.com (ovpn-12-103.pek2.redhat.com [10.72.12.103])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B6C6C141510F;
+        Mon,  1 Aug 2022 14:40:37 +0000 (UTC)
+From:   Baoquan He <bhe@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org, hch@infradead.org,
+        wangkefeng.wang@huawei.com, linux-arm-kernel@lists.infradead.org,
+        Baoquan He <bhe@redhat.com>
+Subject: [PATCH 01/11] mm/ioremap: change the return value of io[re|un]map_allowed
+Date:   Mon,  1 Aug 2022 22:40:19 +0800
+Message-Id: <20220801144029.57829-2-bhe@redhat.com>
+In-Reply-To: <20220801144029.57829-1-bhe@redhat.com>
+References: <20220801144029.57829-1-bhe@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 1/1] platform/x86: p2sb: Move out of
- X86_PLATFORM_DEVICES dependency
-Content-Language: en-US
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Gross <markgross@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Kate Hsuan <hpa@redhat.com>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lee Jones <lee@kernel.org>
-References: <20220718145328.14374-1-andriy.shevchenko@linux.intel.com>
- <2b1b4cd1-faec-85a1-5ad2-e2b29290e0c1@redhat.com>
- <YufTmwg/A94XjrQ8@google.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <YufTmwg/A94XjrQ8@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+In some architectures, there are arch specifici io address mapping
+handling when calling ioremap() or ioremap_prot(), e.g, arc, ia64,
+openrisc, s390, sh.
 
-On 8/1/22 15:22, Lee Jones wrote:
-> On Thu, 28 Jul 2022, Hans de Goede wrote:
-> 
->> Hi,
->>
->> On 7/18/22 16:53, Andy Shevchenko wrote:
->>> The P2SB library is used for various drivers, including server
->>> platforms. That's why the dependency on X86_PLATFORM_DEVICES
->>> seems superfluous.
->>>
->>> Reported-by: kernel test robot <lkp@intel.com>
->>> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->>> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
->>> ---
->>> v2: added X86 to the dependencies of P2SB (Hans), added Rb tag (Hans)
->>
->> Lee I presume that since you've merged the original series
->> (in your ib-mfd-edac-i2c-leds-pinctrl-platform-watchdog-5.20
->> branch) that you will take this fix on top ?
-> 
-> The point of supplying an immutable branch is that whoever maintains
-> this subsystem can pull from it and apply this patch on-top.
+In oder to convert them to take GENERIC_IOREMAP method, we need change
+the return value of ioremap_allowed() and iounmap_allowed() as below.
 
-I've added the fix to pdx86/for-next now.
+===
+ ioremap_allowed() return a bool,
+   - IS_ERR means return an error
+   - NULL means continue to remap
+   - a non-NULL, non-IS_ERR pointer is returned directly
+ iounmap_allowed() return a bool,
+   - 0 means continue to vunmap
+   - error code means skip vunmap and return directly
 
-Regards,
+This is taken from Kefeng's below old patch. Christoph suggested the
+return value because he foresaw the doablity of converting to take
+GENERIC_IOREMAP on more architectures.
+ - [PATCH v3 4/6] mm: ioremap: Add arch_ioremap/iounmap()
+ - https://lore.kernel.org/all/20220519082552.117736-5-wangkefeng.wang@huawei.com/T/#u
 
-Hans
+This is preparation for later patch, no functionality change.
 
+Signed-off-by: Baoquan He <bhe@redhat.com>
+---
+ arch/arm64/include/asm/io.h |  2 +-
+ arch/arm64/mm/ioremap.c     |  9 +++++----
+ include/asm-generic/io.h    | 17 +++++++++--------
+ mm/ioremap.c                | 10 +++++++---
+ 4 files changed, 22 insertions(+), 16 deletions(-)
 
-> 
->> This fix is necessary to fix a bunch of randconfig build
->> failures in the current linux-next.
->>
->>>  drivers/platform/x86/Kconfig            | 12 ++++++++++++
->>>  drivers/platform/x86/Makefile           |  4 ++++
->>>  drivers/platform/x86/intel/Kconfig      | 12 ------------
->>>  drivers/platform/x86/intel/Makefile     |  2 --
->>>  drivers/platform/x86/{intel => }/p2sb.c |  0
->>>  5 files changed, 16 insertions(+), 14 deletions(-)
->>>  rename drivers/platform/x86/{intel => }/p2sb.c (100%)
-> 
+diff --git a/arch/arm64/include/asm/io.h b/arch/arm64/include/asm/io.h
+index 87dd42d74afe..9c56a077b687 100644
+--- a/arch/arm64/include/asm/io.h
++++ b/arch/arm64/include/asm/io.h
+@@ -164,7 +164,7 @@ extern void __memset_io(volatile void __iomem *, int, size_t);
+  * I/O memory mapping functions.
+  */
+ 
+-bool ioremap_allowed(phys_addr_t phys_addr, size_t size, unsigned long prot);
++void __iomem *ioremap_allowed(phys_addr_t phys_addr, size_t size, unsigned long prot);
+ #define ioremap_allowed ioremap_allowed
+ 
+ #define _PAGE_IOREMAP PROT_DEVICE_nGnRE
+diff --git a/arch/arm64/mm/ioremap.c b/arch/arm64/mm/ioremap.c
+index c5af103d4ad4..49467c781283 100644
+--- a/arch/arm64/mm/ioremap.c
++++ b/arch/arm64/mm/ioremap.c
+@@ -3,19 +3,20 @@
+ #include <linux/mm.h>
+ #include <linux/io.h>
+ 
+-bool ioremap_allowed(phys_addr_t phys_addr, size_t size, unsigned long prot)
++void __iomem *ioremap_allowed(phys_addr_t phys_addr, size_t size, unsigned long prot)
+ {
+ 	unsigned long last_addr = phys_addr + size - 1;
++	int ret = -EINVAL;
+ 
+ 	/* Don't allow outside PHYS_MASK */
+ 	if (last_addr & ~PHYS_MASK)
+-		return false;
++		return IOMEM_ERR_PTR(ret);
+ 
+ 	/* Don't allow RAM to be mapped. */
+ 	if (WARN_ON(pfn_is_map_memory(__phys_to_pfn(phys_addr))))
+-		return false;
++		return IOMEM_ERR_PTR(ret);
+ 
+-	return true;
++	return NULL;
+ }
+ 
+ /*
+diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
+index 72974cb81343..d72eb310fb3c 100644
+--- a/include/asm-generic/io.h
++++ b/include/asm-generic/io.h
+@@ -967,26 +967,27 @@ static inline void iounmap(volatile void __iomem *addr)
+ /*
+  * Arch code can implement the following two hooks when using GENERIC_IOREMAP
+  * ioremap_allowed() return a bool,
+- *   - true means continue to remap
+- *   - false means skip remap and return directly
++ *   - IS_ERR means return an error
++ *   - NULL means continue to remap
++ *   - a non-NULL, non-IS_ERR pointer is returned directly
+  * iounmap_allowed() return a bool,
+- *   - true means continue to vunmap
+- *   - false means skip vunmap and return directly
++ *   - 0 means continue to vunmap
++ *   - error code means skip vunmap and return directly
+  */
+ #ifndef ioremap_allowed
+ #define ioremap_allowed ioremap_allowed
+-static inline bool ioremap_allowed(phys_addr_t phys_addr, size_t size,
++static inline void __iomem *ioremap_allowed(phys_addr_t phys_addr, size_t size,
+ 				   unsigned long prot)
+ {
+-	return true;
++	return NULL;
+ }
+ #endif
+ 
+ #ifndef iounmap_allowed
+ #define iounmap_allowed iounmap_allowed
+-static inline bool iounmap_allowed(void *addr)
++static inline int iounmap_allowed(void *addr)
+ {
+-	return true;
++	return 0;
+ }
+ #endif
+ 
+diff --git a/mm/ioremap.c b/mm/ioremap.c
+index 8652426282cc..b16ee9debea2 100644
+--- a/mm/ioremap.c
++++ b/mm/ioremap.c
+@@ -17,6 +17,7 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
+ 	unsigned long offset, vaddr;
+ 	phys_addr_t last_addr;
+ 	struct vm_struct *area;
++	void __iomem *base;
+ 
+ 	/* Disallow wrap-around or zero size */
+ 	last_addr = phys_addr + size - 1;
+@@ -28,8 +29,11 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
+ 	phys_addr -= offset;
+ 	size = PAGE_ALIGN(size + offset);
+ 
+-	if (!ioremap_allowed(phys_addr, size, prot))
++	base = ioremap_allowed(phys_addr, size, prot);
++	if (IS_ERR(base))
+ 		return NULL;
++	else if (base)
++		return base;
+ 
+ 	area = get_vm_area_caller(size, VM_IOREMAP,
+ 			__builtin_return_address(0));
+@@ -50,9 +54,9 @@ EXPORT_SYMBOL(ioremap_prot);
+ 
+ void iounmap(volatile void __iomem *addr)
+ {
+-	void *vaddr = (void *)((unsigned long)addr & PAGE_MASK);
++	void __iomem *vaddr = (void __iomem *)((unsigned long)addr & PAGE_MASK);
+ 
+-	if (!iounmap_allowed(vaddr))
++	if (iounmap_allowed(vaddr))
+ 		return;
+ 
+ 	if (is_vmalloc_addr(vaddr))
+-- 
+2.34.1
 
