@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B7CC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:51:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9400AC19F2D
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231964AbiHALvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35108 "EHLO
+        id S232020AbiHALwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232062AbiHALuz (ORCPT
+        with ESMTP id S231859AbiHALvd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:50:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E57940BF0;
-        Mon,  1 Aug 2022 04:49:24 -0700 (PDT)
+        Mon, 1 Aug 2022 07:51:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9FD3E77E;
+        Mon,  1 Aug 2022 04:49:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3447B81055;
-        Mon,  1 Aug 2022 11:49:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D8FCC433D7;
-        Mon,  1 Aug 2022 11:49:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26F78B8116B;
+        Mon,  1 Aug 2022 11:49:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 474BFC433D6;
+        Mon,  1 Aug 2022 11:49:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354561;
-        bh=NxgMr9IOK2r74FmzVfDcwXghgS/ZLi9ZSMBfS4OirPs=;
+        s=korg; t=1659354566;
+        bh=vYtUgWJOtyovVyFdms+tN1lBrNToWs07uk+ePG6BBiM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iXKyqGEn+Uak2ciWDp/KIUC0WJ7nXlb1n8z3hPWkGhrp5v5h1SWnVcK24R/JJK+mR
-         ynKHJSIYkOhcxIZUU25uVuv7YFdGLb/PU+NY6CQnLZVl2DWhBvjqcFrZTJky7sWcN9
-         2x/4CvR0LMgloGMJuoSnoXZ7SCAi+GLNB6tIkT8U=
+        b=KMXQexf8eWrclj8piMd3UjUfNR31rbM2WMkEDecaD9UQgwvKB8iPRWzI755Jrj239
+         oowqym1S/kef426lt7jPV48R01UtUIftG6mukKEMBmHNYNzwp/eEhETpiy3WSYANmH
+         N8H/SMHhTfdEs/BhsLRkHC47DKBA4t7kjLRjsb3U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.4 09/34] ice: check (DD | EOF) bits on Rx descriptor rather than (EOP | RS)
-Date:   Mon,  1 Aug 2022 13:46:49 +0200
-Message-Id: <20220801114128.406083028@linuxfoundation.org>
+        stable@vger.kernel.org, Hannes Reinecke <hare@suse.com>,
+        Sumit Saxena <sumit.saxena@broadcom.com>,
+        Kashyap Desai <kashyap.desai@broadcom.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Ewan Milne <emilne@redhat.com>, Long Li <longli@microsoft.com>,
+        John Garry <john.garry@huawei.com>,
+        "chenxiang (M)" <chenxiang66@hisilicon.com>,
+        Ming Lei <ming.lei@redhat.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Yu Kuai <yukuai3@huawei.com>
+Subject: [PATCH 5.4 34/34] scsi: core: Fix race between handling STS_RESOURCE and completion
+Date:   Mon,  1 Aug 2022 13:47:14 +0200
+Message-Id: <20220801114129.332434263@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114128.025615151@linuxfoundation.org>
 References: <20220801114128.025615151@linuxfoundation.org>
@@ -50,41 +56,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Ming Lei <ming.lei@redhat.com>
 
-commit 283d736ff7c7e96ac5b32c6c0de40372f8eb171e upstream.
+commit 673235f915318ced5d7ec4b2bfd8cb909e6a4a55 upstream.
 
-Tx side sets EOP and RS bits on descriptors to indicate that a
-particular descriptor is the last one and needs to generate an irq when
-it was sent. These bits should not be checked on completion path
-regardless whether it's the Tx or the Rx. DD bit serves this purpose and
-it indicates that a particular descriptor is either for Rx or was
-successfully Txed. EOF is also set as loopback test does not xmit
-fragmented frames.
+When queuing I/O request to LLD, STS_RESOURCE may be returned because:
 
-Look at (DD | EOF) bits setting in ice_lbtest_receive_frames() instead
-of EOP and RS pair.
+ - Host is in recovery or blocked
 
-Fixes: 0e674aeb0b77 ("ice: Add handler for ethtool selftest")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+ - Target queue throttling or target is blocked
+
+ - LLD rejection
+
+In these scenarios BLK_STS_DEV_RESOURCE is returned to the block layer to
+avoid an unnecessary re-run of the queue. However, all of the requests
+queued to this SCSI device may complete immediately after reading
+'sdev->device_busy' and BLK_STS_DEV_RESOURCE is returned to block layer. In
+that case the current I/O won't get a chance to get queued since it is
+invisible at that time for both scsi_run_queue_async() and blk-mq's
+RESTART.
+
+Fix the issue by not returning BLK_STS_DEV_RESOURCE in this situation.
+
+Link: https://lore.kernel.org/r/20201202100419.525144-1-ming.lei@redhat.com
+Fixes: 86ff7c2a80cd ("blk-mq: introduce BLK_STS_DEV_RESOURCE")
+Cc: Hannes Reinecke <hare@suse.com>
+Cc: Sumit Saxena <sumit.saxena@broadcom.com>
+Cc: Kashyap Desai <kashyap.desai@broadcom.com>
+Cc: Bart Van Assche <bvanassche@acm.org>
+Cc: Ewan Milne <emilne@redhat.com>
+Cc: Long Li <longli@microsoft.com>
+Reported-by: John Garry <john.garry@huawei.com>
+Tested-by: "chenxiang (M)" <chenxiang66@hisilicon.com>
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ice/ice_ethtool.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/scsi/scsi_lib.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -619,7 +619,8 @@ static int ice_lbtest_receive_frames(str
- 		rx_desc = ICE_RX_DESC(rx_ring, i);
- 
- 		if (!(rx_desc->wb.status_error0 &
--		    cpu_to_le16(ICE_TX_DESC_CMD_EOP | ICE_TX_DESC_CMD_RS)))
-+		    (cpu_to_le16(BIT(ICE_RX_FLEX_DESC_STATUS0_DD_S)) |
-+		     cpu_to_le16(BIT(ICE_RX_FLEX_DESC_STATUS0_EOF_S)))))
- 			continue;
- 
- 		rx_buf = &rx_ring->rx_buf[i];
+--- a/drivers/scsi/scsi_lib.c
++++ b/drivers/scsi/scsi_lib.c
+@@ -1719,8 +1719,7 @@ out_put_budget:
+ 	case BLK_STS_OK:
+ 		break;
+ 	case BLK_STS_RESOURCE:
+-		if (atomic_read(&sdev->device_busy) ||
+-		    scsi_device_blocked(sdev))
++		if (scsi_device_blocked(sdev))
+ 			ret = BLK_STS_DEV_RESOURCE;
+ 		break;
+ 	default:
 
 
