@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51AD7C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEFEC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:14:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233270AbiHAMOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56770 "EHLO
+        id S234229AbiHAMO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233782AbiHAMNi (ORCPT
+        with ESMTP id S233921AbiHAMNw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:13:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A6940BE3;
-        Mon,  1 Aug 2022 04:57:37 -0700 (PDT)
+        Mon, 1 Aug 2022 08:13:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E34947BB7;
+        Mon,  1 Aug 2022 04:57:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDE5A601C0;
-        Mon,  1 Aug 2022 11:57:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9768C433D6;
-        Mon,  1 Aug 2022 11:57:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A478601C5;
+        Mon,  1 Aug 2022 11:57:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3280AC433C1;
+        Mon,  1 Aug 2022 11:57:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355053;
-        bh=y6ETTkAbglq6SU4Bo2p1DDhR7aHNjAN+eDL61AvGvuw=;
+        s=korg; t=1659355058;
+        bh=bHumqSMh+NEFc3LDZg3MdzJZC6wjGvYc0zi13rK9kLs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Irjo7jRENnP8AlbTMlOodhlIpwYT9e4HY6khHsk4Jf7gArH59qZXJG0cs6YRltURH
-         hrvkUABNlYnWdPjQNJ/bOYFDIVl7q6nPs6WYnJknhOszQwU42BagUWqdSWbMfH9D10
-         b5L1kznkV8g6EZ2oFsCPNZ9fDUTFEQPnrBIJzbhg=
+        b=sLEtU/0UWl86kM/d7HPCnbQv9pQtZhtm+O5rpWnAb3nh4+Ggu2Lvv2lXFAuz9kJGz
+         xatRmi3ffITX7Rs/+7nzvx4QFW4iIifQFVga9VTq6ACAr8Cn4jQtfqn0yB3IxAemZ4
+         quBX1ujMbf6YKqFnKFpT0rl8tjtsSJMjQ5SUBvjI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.18 28/88] ice: check (DD | EOF) bits on Rx descriptor rather than (EOP | RS)
-Date:   Mon,  1 Aug 2022 13:46:42 +0200
-Message-Id: <20220801114139.305607949@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 47/88] tcp: Fix a data-race around sysctl_tcp_tso_rtt_log.
+Date:   Mon,  1 Aug 2022 13:47:01 +0200
+Message-Id: <20220801114140.192782036@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -50,41 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 283d736ff7c7e96ac5b32c6c0de40372f8eb171e upstream.
+[ Upstream commit 2455e61b85e9c99af38cd889a7101f1d48b33cb4 ]
 
-Tx side sets EOP and RS bits on descriptors to indicate that a
-particular descriptor is the last one and needs to generate an irq when
-it was sent. These bits should not be checked on completion path
-regardless whether it's the Tx or the Rx. DD bit serves this purpose and
-it indicates that a particular descriptor is either for Rx or was
-successfully Txed. EOF is also set as loopback test does not xmit
-fragmented frames.
+While reading sysctl_tcp_tso_rtt_log, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Look at (DD | EOF) bits setting in ice_lbtest_receive_frames() instead
-of EOP and RS pair.
-
-Fixes: 0e674aeb0b77 ("ice: Add handler for ethtool selftest")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 65466904b015 ("tcp: adjust TSO packet sizes based on min_rtt")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_ethtool.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/ipv4/tcp_output.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -660,7 +660,8 @@ static int ice_lbtest_receive_frames(str
- 		rx_desc = ICE_RX_DESC(rx_ring, i);
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 08466421e7e0..60c9f7f444e0 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1971,7 +1971,7 @@ static u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
  
- 		if (!(rx_desc->wb.status_error0 &
--		    cpu_to_le16(ICE_TX_DESC_CMD_EOP | ICE_TX_DESC_CMD_RS)))
-+		    (cpu_to_le16(BIT(ICE_RX_FLEX_DESC_STATUS0_DD_S)) |
-+		     cpu_to_le16(BIT(ICE_RX_FLEX_DESC_STATUS0_EOF_S)))))
- 			continue;
+ 	bytes = sk->sk_pacing_rate >> READ_ONCE(sk->sk_pacing_shift);
  
- 		rx_buf = &rx_ring->rx_buf[i];
+-	r = tcp_min_rtt(tcp_sk(sk)) >> sock_net(sk)->ipv4.sysctl_tcp_tso_rtt_log;
++	r = tcp_min_rtt(tcp_sk(sk)) >> READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_tso_rtt_log);
+ 	if (r < BITS_PER_TYPE(sk->sk_gso_max_size))
+ 		bytes += sk->sk_gso_max_size >> r;
+ 
+-- 
+2.35.1
+
 
 
