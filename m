@@ -2,169 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75485C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 22:00:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B243C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 22:01:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235295AbiHAWAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 18:00:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51092 "EHLO
+        id S233561AbiHAWBq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 18:01:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230406AbiHAWAe (ORCPT
+        with ESMTP id S230406AbiHAWBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 18:00:34 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF84DFFC;
-        Mon,  1 Aug 2022 15:00:33 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id p5so15405461edi.12;
-        Mon, 01 Aug 2022 15:00:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=hQjaiLlOPDHg8PJMxt51e7po/sQpoZ8WOzBvNGfMuJw=;
-        b=SgVAraQQNEuyUU1IYaTN+0ukCGUBlTYzej3Y9PZ6rXYfTtTnWWtxrdXvWhO6BHwLbr
-         YbN4vLDYHRjxIkedz67wdupFmHhyMFB1IU3qJhVsbo2+2B+vNS9sso8K+RaT3/DUl2KP
-         o4DnXejif53KP2eB22SMFYZ959/PJ3y7IPd2Raf5vPkPrPW629H66Ym7+xMXv9uNvGQl
-         4PrmeuW09HMUJJhjTbyX7VI/flRMz64gJFXRUUXGKo8JqCZWXbAVghTcwGEyEDQORt4P
-         AtOPiX7DnQyir7PzYCNffdg6/LSu3VyokofWb+kO39AP7DMlpcTBT6r/bpAtYYcAS/vt
-         QPGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=hQjaiLlOPDHg8PJMxt51e7po/sQpoZ8WOzBvNGfMuJw=;
-        b=NvHqvQDmZdQu+MQBkv9ReO5tIJHqOcQN9Y5EmLDo0mf4IiH35ndNFv7eMYs9IH7Nd4
-         Ake/FFTi/KEqJ4wsgVEh7vH6ODDDCULk6/ZnQZd5FT2DOWBKmbkQIpHtUJ42B2ect0m0
-         CClPGsQhDEfhKeooT27p8FjVi5aEJvaW1eq13bdNOSWb+mxJCcBVYHJDIa/XlkMZAYMh
-         sRk0f6b0DDTlAXek+jNsWhTxSvf4FyhlkblXk4n2N7WmPreXLa4pbUalaRe6UvYPZ3gP
-         lzj5y1no340x1N0mK9k5iyJ83JtcNoHgLes3pl5s6noRbHwySg8x55nrY8nOCvXD703B
-         QRnQ==
-X-Gm-Message-State: ACgBeo2Z5/G/Usn5yHFBccUlnxLOMmmU/4nRkWAtqVkeKJUtqLXcQ0qF
-        JmWWq6/uYQ3w2FJaGIseeftY7BaXndJ9i9V8bLo=
-X-Google-Smtp-Source: AA6agR4BHIatxtmS+U0WWvYuA9anzo03WeJOAUuTrGKsWpHfq1dAIfQ9ca2kLQijM24ByFg4sbpFwj6Krq18eTuU648=
-X-Received: by 2002:aa7:ccc4:0:b0:43d:9e0e:b7ff with SMTP id
- y4-20020aa7ccc4000000b0043d9e0eb7ffmr7521645edt.14.1659391231767; Mon, 01 Aug
- 2022 15:00:31 -0700 (PDT)
+        Mon, 1 Aug 2022 18:01:45 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CD4273;
+        Mon,  1 Aug 2022 15:01:43 -0700 (PDT)
+Received: from notapiano (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: nfraprado)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 471546601BB3;
+        Mon,  1 Aug 2022 23:01:40 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1659391302;
+        bh=T/RBuEUbnEnXmUp/1eTflZrVxy/Gs/nupFpbmEOWa9E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZOws5VedmDbHkFhWT29i0tdGLWLXgnKLQsNlmwrf2CibOJCyd98LRZJAfGhV7rnfL
+         Vcb60J/3oA+NKz3bm2V2ATrGv0/O8AuOCifcOCxRysAs+X6v+XHPvitrg/p30ZoTP7
+         ULTMtx+YGzzxtpa7yTgi1L+Tdm+zI3N7Mfb65Tvw8zLKpTu5+JeVp+k3bT5mOYngpS
+         jjJO44SYhlpB1gqLGEyuMgDVnafsaf1rfuYb4l+P0Rz91ixPmdI0eNYBaJt1nOP8Py
+         c4U7tdPjkvM3/xdZMJWbsU5lPOlcjniYtNVTUw15N4voCTifxYLDaFbufyurZGNiXD
+         3it+WslmnD6iQ==
+Date:   Mon, 1 Aug 2022 18:01:36 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>, hsinyi@chromium.org
+Subject: Re: [PATCH v12 1/1] arm64: dts: Add MediaTek MT8186 dts and
+ evaluation board and Makefile
+Message-ID: <20220801220136.4lll2wifc7muocuc@notapiano>
+References: <20220801123952.18932-1-allen-kh.cheng@mediatek.com>
+ <20220801123952.18932-2-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-References: <20220801175407.2647869-1-haoluo@google.com> <20220801175407.2647869-9-haoluo@google.com>
-In-Reply-To: <20220801175407.2647869-9-haoluo@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 1 Aug 2022 15:00:20 -0700
-Message-ID: <CAEf4Bza0BzW1urrDghOw2oynftOQ6jP7_k4VvEq-UgyBHp6D8g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6 8/8] selftests/bpf: add a selftest for cgroup
- hierarchical stats collection
-To:     Hao Luo <haoluo@google.com>
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        cgroups@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Michal Koutny <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Yosry Ahmed <yosryahmed@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220801123952.18932-2-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 10:54 AM Hao Luo <haoluo@google.com> wrote:
->
-> From: Yosry Ahmed <yosryahmed@google.com>
->
-> From: Yosry Ahmed <yosryahmed@google.com>
->
-> Add a selftest that tests the whole workflow for collecting,
-> aggregating (flushing), and displaying cgroup hierarchical stats.
->
-> TL;DR:
-> - Userspace program creates a cgroup hierarchy and induces memcg reclaim
->   in parts of it.
-> - Whenever reclaim happens, vmscan_start and vmscan_end update
->   per-cgroup percpu readings, and tell rstat which (cgroup, cpu) pairs
->   have updates.
-> - When userspace tries to read the stats, vmscan_dump calls rstat to flush
->   the stats, and outputs the stats in text format to userspace (similar
->   to cgroupfs stats).
-> - rstat calls vmscan_flush once for every (cgroup, cpu) pair that has
->   updates, vmscan_flush aggregates cpu readings and propagates updates
->   to parents.
-> - Userspace program makes sure the stats are aggregated and read
->   correctly.
->
-> Detailed explanation:
-> - The test loads tracing bpf programs, vmscan_start and vmscan_end, to
->   measure the latency of cgroup reclaim. Per-cgroup readings are stored in
->   percpu maps for efficiency. When a cgroup reading is updated on a cpu,
->   cgroup_rstat_updated(cgroup, cpu) is called to add the cgroup to the
->   rstat updated tree on that cpu.
->
-> - A cgroup_iter program, vmscan_dump, is loaded and pinned to a file, for
->   each cgroup. Reading this file invokes the program, which calls
->   cgroup_rstat_flush(cgroup) to ask rstat to propagate the updates for all
->   cpus and cgroups that have updates in this cgroup's subtree. Afterwards,
->   the stats are exposed to the user. vmscan_dump returns 1 to terminate
->   iteration early, so that we only expose stats for one cgroup per read.
->
-> - An ftrace program, vmscan_flush, is also loaded and attached to
->   bpf_rstat_flush. When rstat flushing is ongoing, vmscan_flush is invoked
->   once for each (cgroup, cpu) pair that has updates. cgroups are popped
->   from the rstat tree in a bottom-up fashion, so calls will always be
->   made for cgroups that have updates before their parents. The program
->   aggregates percpu readings to a total per-cgroup reading, and also
->   propagates them to the parent cgroup. After rstat flushing is over, all
->   cgroups will have correct updated hierarchical readings (including all
->   cpus and all their descendants).
->
-> - Finally, the test creates a cgroup hierarchy and induces memcg reclaim
->   in parts of it, and makes sure that the stats collection, aggregation,
->   and reading workflow works as expected.
->
-> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> Signed-off-by: Hao Luo <haoluo@google.com>
+Hi Allen,
+
+On Mon, Aug 01, 2022 at 08:39:52PM +0800, Allen-KH Cheng wrote:
+> Add basic chip support for MediaTek MT8186.
+> 
+> Signed-off-by: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
 > ---
->  .../prog_tests/cgroup_hierarchical_stats.c    | 358 ++++++++++++++++++
->  .../bpf/progs/cgroup_hierarchical_stats.c     | 218 +++++++++++
->  2 files changed, 576 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
->  create mode 100644 tools/testing/selftests/bpf/progs/cgroup_hierarchical_stats.c
->
+>  arch/arm64/boot/dts/mediatek/Makefile       |   1 +
+>  arch/arm64/boot/dts/mediatek/mt8186-evb.dts | 238 ++++++
+>  arch/arm64/boot/dts/mediatek/mt8186.dtsi    | 874 ++++++++++++++++++++
+>  3 files changed, 1113 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/mediatek/mt8186-evb.dts
+>  create mode 100644 arch/arm64/boot/dts/mediatek/mt8186.dtsi
+> 
+[..]
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8186-evb.dts b/arch/arm64/boot/dts/mediatek/mt8186-evb.dts
+> new file mode 100644
+> index 000000000000..7d4a64ab95e4
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt8186-evb.dts
+[..]
+> +&pio {
+> +	i2c0_pins: i2c0-default-pins {
+> +		pins-bus {
+> +			pinmux = <PINMUX_GPIO128__FUNC_SDA0>,
+> +				 <PINMUX_GPIO127__FUNC_SCL0>;
+> +			bias-disable;
+> +			drive-strength-microamp = <1000>;
+> +			drive-strength = <4>;
 
-[...]
+You can't use both drive-strength-microamp and drive-strength. You only want the
+microamp one here (and for the others below), since these are i2c pins.
 
-> +extern void cgroup_rstat_updated(struct cgroup *cgrp, int cpu) __ksym;
-> +extern void cgroup_rstat_flush(struct cgroup *cgrp) __ksym;
-> +
-> +static struct cgroup *task_memcg(struct task_struct *task)
-> +{
-> +       return task->cgroups->subsys[memory_cgrp_id]->cgroup;
+> +			input-enable;
+> +		};
+> +	};
+[..]
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8186.dtsi b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
+> new file mode 100644
+> index 000000000000..38f9466eea42
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
+> @@ -0,0 +1,874 @@
+[..]
+> +		pio: pinctrl@10005000 {
+> +			compatible = "mediatek,mt8186-pinctrl";
+> +			reg = <0 0x10005000 0 0x1000>,
+> +			      <0 0x10002000 0 0x0200>,
+> +			      <0 0x10002200 0 0x0200>,
+> +			      <0 0x10002400 0 0x0200>,
+> +			      <0 0x10002600 0 0x0200>,
+> +			      <0 0x10002A00 0 0x0200>,
+> +			      <0 0x10002C00 0 0x0200>,
+> +			      <0 0x1000B000 0 0x1000>;
 
-memory_cgrp_id is kernel-defined internal enum which actually can
-change based on kernel configuration (i.e., which cgroup subsystems
-are enabled or not), is that right?
+Please use lowercase hex for addresses.
 
-In practice you wouldn't hard-code it, it's better to use
-bpf_core_enum_value() to capture enum's value in CO-RE-relocatable
-way.
+> +			reg-names = "iocfg0", "iocfg_bm", "iocfg_bl", "iocfg_br",
+> +				    "iocfg_lm", "iocfg_rb", "iocfg_tl", "eint";
+> +			gpio-controller;
+> +			#gpio-cells = <2>;
+> +			gpio-ranges = <&pio 0 0 185>;
+> +			interrupt-controller;
+> +			interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH 0>;
+> +			#interrupt-cells = <2>;
+> +		};
+[..]
+> +		xhci0: usb@11200000 {
+> +			compatible = "mediatek,mt8186-xhci",
+> +				     "mediatek,mtk-xhci";
+> +			reg = <0 0x11200000 0 0x1000>,
+> +			      <0 0x11203e00 0 0x0100>;
+> +			reg-names = "mac", "ippc";
+> +			interrupts = <GIC_SPI 294 IRQ_TYPE_LEVEL_HIGH 0>;
+> +			phys = <&u2port0 PHY_TYPE_USB2>;
+> +			clocks = <&topckgen CLK_TOP_USB_TOP>,
+> +				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_XHCI>,
+> +				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_HCLK>,
+> +				 <&infracfg_ao CLK_INFRA_AO_ICUSB>,
+> +				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_REF>;
+> +			clock-names = "sys_ck", "ref_ck", "mcu_ck", "dma_ck", "xhci_ck";
 
-So it might be a good idea to demonstrate that here.
+The clocks and clock-names don't match, can you confirm whether they're right?
+(But keep this clock order, see the comment on xhci1 below)
 
-> +}
-> +
-> +static uint64_t cgroup_id(struct cgroup *cgrp)
-> +{
-> +       return cgrp->kn->id;
-> +}
-> +
+> +			mediatek,syscon-wakeup = <&pericfg 0x420 2>;
+> +			wakeup-source;
+> +			status = "disabled";
+> +		};
+[..]
+> +		xhci1: usb@11280000 {
+> +			compatible = "mediatek,mt8186-xhci",
+> +				     "mediatek,mtk-xhci";
+> +			reg = <0 0x11280000 0 0x1000>,
+> +			      <0 0x11283e00 0 0x0100>;
+> +			reg-names = "mac", "ippc";
+> +			interrupts = <GIC_SPI 324 IRQ_TYPE_LEVEL_HIGH 0>;
+> +			phys = <&u2port1 PHY_TYPE_USB2>,
+> +			       <&u3port1 PHY_TYPE_USB3>;
+> +			clocks = <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_P1_SYS>,
+> +				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_P1_XHCI>,
+> +				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_P1_HCLK>,
+> +				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_P1_REF>;
+> +			clock-names = "sys_ck", "ref_ck", "mcu_ck", "xhci_ck";
 
-[...]
+The xhci dt-binding enforces this clock order:
+
+	sys_ck, ref_ck, mcu_ck, dma_ck, xhci_ck
+
+You can't skip dma_ck, otherwise you'll see a dtbs_check warning. So if this
+hardware block has a fixed clock connected to the dma_ck slot (ie it isn't
+controllable), then just add a fixed clock entry for it (eg <&clk26m>).
+
+The clock names also look switched here, please double-check.
+
+Thanks,
+Nícolas
+
+> +			mediatek,syscon-wakeup = <&pericfg 0x424 2>;
+> +			wakeup-source;
+> +			status = "disabled";
+> +		};
