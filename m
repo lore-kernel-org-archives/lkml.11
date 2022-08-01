@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 992EEC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 04:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B32C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 04:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234029AbiHAE2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 00:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53178 "EHLO
+        id S239346AbiHAE2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 00:28:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239199AbiHAE2H (ORCPT
+        with ESMTP id S239256AbiHAE2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 00:28:07 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33132DFA6
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 21:28:06 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id s206so8697010pgs.3
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 21:28:06 -0700 (PDT)
+        Mon, 1 Aug 2022 00:28:18 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF81DFD2
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 21:28:13 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id e8-20020a17090a280800b001f2fef7886eso10710523pjd.3
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 21:28:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/w4d2+EaQroyv2P/11Ro6fW4T9xIlpzK4n5YR8bSveQ=;
-        b=SjypgSlEb0OP8iYCGGYtl5NTi7gHq0BX+OwbrP1J8RTxVLJtlwsCt8HHENmT1W/7Hs
-         5VQtbEpd9Hlt3meP5bennKtCSfMXuZPYRpqBSmSCrbu7vQ636/HoukKS4SqT2UFUVo3g
-         9QA4Zw0nwRlc15LNoSBT8FHHypdEHJC5OhdNZSyuiUuo0SdlUtNMyJgltYauzKpHmMXf
-         BhOnw5knl1gwCkyGYTHA++UVBKswNn5SghrO1gJOz9Sl7c3wamkXv4B9C0IZmiQad9tB
-         Ys5KnIpDtbG6waWI6t6TjdQXT9JCKtoT6mSsoVNF1L7niH3j2GBH25bxscQrwouYzmcR
-         VEZw==
+        bh=BbAH2OjARx+sGC5hf2wT2Wik++XxhkGMe8jaPc24Anw=;
+        b=IczVJ2eKvmP1G8pKdOptWmdZQ50McO+PEJnY9lhMh9n3yBOci29Hy7BfOVJaA96C33
+         HIKcza5nQHSjytEj3bEsizWtqvT0dDNntorVhqwoPgzcm1ViswS0EoJ9KDOe19hR0aKC
+         F9MTAobqpUKmNLaxX448BoW9xynm3SDQ+NwFI2Z3sCwNgJSov2CgF6Xid1OU+QMPLDcg
+         yhzFbqgbf26Dv6fYpfnPqi2wFMd7mX1YT/u94gJEpjMaCpAwrJzKtr+nMOk9/xGBGSsx
+         czxVrP9M0yVeJe/bWpT0px2MKBRptjYW0MFTAMxNb8mHgYzA4HzfbstW2W3MsMUWm7+g
+         BLpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/w4d2+EaQroyv2P/11Ro6fW4T9xIlpzK4n5YR8bSveQ=;
-        b=BPNzEWxtTMDvZVAUUDVlSSRJB/JD36IQqIf/buEg7ha3O8bsD6qs3fVvO2kbcd+0zu
-         lJ8ANnFwBE25NGyo1GH9xt0KZ2+hupYxwlN8vsmHEM+vFit2z2GovLKH6f+fd/AHONVB
-         cCrQnTxk1CMNVkUZH0eKakXpAk911kiWLXyS9SJtNkIFigTS+hqMKG2xHan8A5sIMkOl
-         jVzRa38RDm20wycDOlPOWWgc80EtwZW5DyuLAcHYofmTOR+E5Vrz4UfW1zS8TQTQwzko
-         UIiPGxMeNQ1O9R2WxtdeD5fzHOXWKfHmr6iDoNmlVT/WM4zrwy/UiGg0aQcAZHasXpSI
-         o3iQ==
-X-Gm-Message-State: ACgBeo1QK0RSqZ2ljeJEXAbdB0Mn2VFad6R2GGj6h7DQtqRTJVhMK42P
-        yQXM3bMl+B4JMVBJHrKynhtgvg==
-X-Google-Smtp-Source: AA6agR495PY4jykHh20wj3uEIXUt+rv6O6xqlNdzX0mVPMpQCfaNl6aE2MCoh6YkWS/xWTHrU47WXA==
-X-Received: by 2002:aa7:8e91:0:b0:52d:8ebf:29a4 with SMTP id a17-20020aa78e91000000b0052d8ebf29a4mr1706695pfr.1.1659328085577;
-        Sun, 31 Jul 2022 21:28:05 -0700 (PDT)
+        bh=BbAH2OjARx+sGC5hf2wT2Wik++XxhkGMe8jaPc24Anw=;
+        b=StQZZofpnWvxJpykH2XQsAD5W6w8qiNc98296GCj3SLsJBe9Gak5z+WTyrhRqZqoKD
+         fUPdY+G8U8WC6crcO08+0V1nyOW+eo4V8K0nICJAMq+6FDi47S4B8h9N1fbNGc1J5XzK
+         3VWlqecs0dlzQAcul1LDFON5UouUZe1j1BP0dECeAizRtj/JlYjA+z/u5gydAaA2DXv0
+         D0WupDpr2fvDnRNryLiQPFQVW00bgc3JNweLFZkK/AzgCQKYJ8bsWSXhR9aUjQLv7Oel
+         AJz/ynV/r773mu3mBL3bte8hDYibsZwvuyNohn6fD534Scdwu3w45auSkeH5JsYEcpGZ
+         mrgA==
+X-Gm-Message-State: ACgBeo1MBU8QUjXxOEYkuTL7fhV1pA82BWX/Gb9gkvVVIWHXgXSSLWfS
+        liaQaP9NlebVMLpEpgJkpovYvw==
+X-Google-Smtp-Source: AA6agR42VQvDZQLNDhWgGmDrWl43U9P1MPEvqcTr204dMPM1bxfhkCHoUMDjEe1mJQD53KUFgT8eZA==
+X-Received: by 2002:a17:903:2589:b0:16d:c26c:d641 with SMTP id jb9-20020a170903258900b0016dc26cd641mr14829718plb.8.1659328093055;
+        Sun, 31 Jul 2022 21:28:13 -0700 (PDT)
 Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.241])
-        by smtp.gmail.com with ESMTPSA id ot10-20020a17090b3b4a00b001f326ead012sm7012202pjb.37.2022.07.31.21.28.01
+        by smtp.gmail.com with ESMTPSA id ot10-20020a17090b3b4a00b001f326ead012sm7012202pjb.37.2022.07.31.21.28.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Jul 2022 21:28:05 -0700 (PDT)
+        Sun, 31 Jul 2022 21:28:12 -0700 (PDT)
 From:   Chengming Zhou <zhouchengming@bytedance.com>
 To:     mingo@redhat.com, peterz@infradead.org, vincent.guittot@linaro.org,
         dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
         vschneid@redhat.com
 Cc:     linux-kernel@vger.kernel.org,
         Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH v3 01/10] sched/fair: maintain task se depth in set_task_rq()
-Date:   Mon,  1 Aug 2022 12:27:36 +0800
-Message-Id: <20220801042745.7794-2-zhouchengming@bytedance.com>
+Subject: [PATCH v3 03/10] sched/fair: reset sched_avg last_update_time before set_task_rq()
+Date:   Mon,  1 Aug 2022 12:27:38 +0800
+Message-Id: <20220801042745.7794-4-zhouchengming@bytedance.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220801042745.7794-1-zhouchengming@bytedance.com>
 References: <20220801042745.7794-1-zhouchengming@bytedance.com>
@@ -66,61 +66,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Previously we only maintain task se depth in task_move_group_fair(),
-if a !fair task change task group, its se depth will not be updated,
-so commit eb7a59b2c888 ("sched/fair: Reset se-depth when task switched to FAIR")
-fix the problem by updating se depth in switched_to_fair() too.
+set_task_rq() -> set_task_rq_fair() will try to synchronize the blocked
+task's sched_avg when migrate, which is not needed for already detached
+task.
 
-Then commit daa59407b558 ("sched/fair: Unify switched_{from,to}_fair()
-and task_move_group_fair()") unified these two functions, moved se.depth
-setting to attach_task_cfs_rq(), which further into attach_entity_cfs_rq()
-with commit df217913e72e ("sched/fair: Factorize attach/detach entity").
-
-This patch move task se depth maintenance from attach_entity_cfs_rq()
-to set_task_rq(), which will be called when CPU/cgroup change, so its
-depth will always be correct.
-
-This patch is preparation for the next patch.
+task_change_group_fair() will detached the task sched_avg from prev cfs_rq
+first, so reset sched_avg last_update_time before set_task_rq() to avoid that.
 
 Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
 Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
 ---
- kernel/sched/fair.c  | 8 --------
- kernel/sched/sched.h | 1 +
- 2 files changed, 1 insertion(+), 8 deletions(-)
+ kernel/sched/fair.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 2fc47257ae91..77cd2bad17a8 100644
+index 89626b115660..948b4cd2a024 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -11566,14 +11566,6 @@ static void attach_entity_cfs_rq(struct sched_entity *se)
+@@ -11664,12 +11664,12 @@ void init_cfs_rq(struct cfs_rq *cfs_rq)
+ static void task_change_group_fair(struct task_struct *p)
  {
- 	struct cfs_rq *cfs_rq = cfs_rq_of(se);
+ 	detach_task_cfs_rq(p);
+-	set_task_rq(p, task_cpu(p));
  
--#ifdef CONFIG_FAIR_GROUP_SCHED
--	/*
--	 * Since the real-depth could have been changed (only FAIR
--	 * class maintain depth value), reset depth properly.
--	 */
--	se->depth = se->parent ? se->parent->depth + 1 : 0;
--#endif
--
- 	/* Synchronize entity with its cfs_rq */
- 	update_load_avg(cfs_rq, se, sched_feat(ATTACH_AGE_LOAD) ? 0 : SKIP_AGE_LOAD);
- 	attach_entity_load_avg(cfs_rq, se);
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index aad7f5ee9666..8cc3eb7b86cd 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -1940,6 +1940,7 @@ static inline void set_task_rq(struct task_struct *p, unsigned int cpu)
- 	set_task_rq_fair(&p->se, p->se.cfs_rq, tg->cfs_rq[cpu]);
- 	p->se.cfs_rq = tg->cfs_rq[cpu];
- 	p->se.parent = tg->se[cpu];
-+	p->se.depth = tg->se[cpu] ? tg->se[cpu]->depth + 1 : 0;
+ #ifdef CONFIG_SMP
+ 	/* Tell se's cfs_rq has been changed -- migrated */
+ 	p->se.avg.last_update_time = 0;
  #endif
++	set_task_rq(p, task_cpu(p));
+ 	attach_task_cfs_rq(p);
+ }
  
- #ifdef CONFIG_RT_GROUP_SCHED
 -- 
 2.36.1
 
