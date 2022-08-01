@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A3DC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB665C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233194AbiHAMDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33230 "EHLO
+        id S233208AbiHAMDx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233189AbiHAMAw (ORCPT
+        with ESMTP id S233792AbiHAMBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:00:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E306B4F655;
-        Mon,  1 Aug 2022 04:53:14 -0700 (PDT)
+        Mon, 1 Aug 2022 08:01:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0D23DF9;
+        Mon,  1 Aug 2022 04:53:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 794F9B80E8F;
-        Mon,  1 Aug 2022 11:53:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4470C433C1;
-        Mon,  1 Aug 2022 11:53:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDCA261227;
+        Mon,  1 Aug 2022 11:53:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C926BC433D6;
+        Mon,  1 Aug 2022 11:53:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354792;
-        bh=A4HOruPbbaKVIxq1nerFl1jW8NyTpVY694MfOQPQpO8=;
+        s=korg; t=1659354828;
+        bh=TiAgG5vUFmtICBTTOC+Ytzwf4hKXz4NMEgmV2/gbwfU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Puob3fpMNznZXy07aSZuk5YC5OWnIdEcUVqeZLJJ1jTBgQ05R3KMfVjrUIcXbd1LI
-         5DdD2LMbtJKJh+xt7Va9dhwYj7xpqsN0WMqYAqfvEHje5PKfF1W6FbgIq49dzzloBJ
-         qpGWNsfLrHXox6mi13BqFJtSgEn84W6QEOD3HqN4=
+        b=w/OtOFnTQ5wxO5OiRUwXw3zfbGjNb1/r+aiHvOQpg6uq7OHRg3/g+8TDtT8PBjgGP
+         J8TnFCgeEi+Bx+N6WFjT1U0oHTd0eDvzI5N1myqHDp5jL+G8kex2qjf3VJL6mHuDiv
+         s6GLbK1lVqZo9GPxKzAeagei7hinJRM4zjaK+6eY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Liang He <windhl@126.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 22/69] scsi: ufs: host: Hold reference returned by of_parse_phandle()
-Date:   Mon,  1 Aug 2022 13:46:46 +0200
-Message-Id: <20220801114135.418190782@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 34/69] net: pcs: xpcs: propagate xpcs_read error to xpcs_get_state_c37_sgmii
+Date:   Mon,  1 Aug 2022 13:46:58 +0200
+Message-Id: <20220801114135.896348934@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -49,56 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit a3435afba87dc6cd83f5595e7607f3c40f93ef01 upstream.
+[ Upstream commit 27161db0904ee48e59140aa8d0835939a666c1f1 ]
 
-In ufshcd_populate_vreg(), we should hold the reference returned by
-of_parse_phandle() and then use it to call of_node_put() for refcount
-balance.
+While phylink_pcs_ops :: pcs_get_state does return void, xpcs_get_state()
+does check for a non-zero return code from xpcs_get_state_c37_sgmii()
+and prints that as a message to the kernel log.
 
-Link: https://lore.kernel.org/r/20220719071529.1081166-1-windhl@126.com
-Fixes: aa4976130934 ("ufs: Add regulator enable support")
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Liang He <windhl@126.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+However, a non-zero return code from xpcs_read() is translated into
+"return false" (i.e. zero as int) and the I/O error is therefore not
+printed. Fix that.
+
+Fixes: b97b5331b8ab ("net: pcs: add C37 SGMII AN support for intel mGbE controller")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220720112057.3504398-1-vladimir.oltean@nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd-pltfrm.c |   15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/net/pcs/pcs-xpcs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/ufs/ufshcd-pltfrm.c
-+++ b/drivers/scsi/ufs/ufshcd-pltfrm.c
-@@ -107,9 +107,20 @@ out:
- 	return ret;
- }
+diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+index 7de631f5356f..fd4cbf8a55ad 100644
+--- a/drivers/net/pcs/pcs-xpcs.c
++++ b/drivers/net/pcs/pcs-xpcs.c
+@@ -890,7 +890,7 @@ static int xpcs_get_state_c37_sgmii(struct dw_xpcs *xpcs,
+ 	 */
+ 	ret = xpcs_read(xpcs, MDIO_MMD_VEND2, DW_VR_MII_AN_INTR_STS);
+ 	if (ret < 0)
+-		return false;
++		return ret;
  
-+static bool phandle_exists(const struct device_node *np,
-+			   const char *phandle_name, int index)
-+{
-+	struct device_node *parse_np = of_parse_phandle(np, phandle_name, index);
-+
-+	if (parse_np)
-+		of_node_put(parse_np);
-+
-+	return parse_np != NULL;
-+}
-+
- #define MAX_PROP_SIZE 32
- static int ufshcd_populate_vreg(struct device *dev, const char *name,
--		struct ufs_vreg **out_vreg)
-+				struct ufs_vreg **out_vreg)
- {
- 	char prop_name[MAX_PROP_SIZE];
- 	struct ufs_vreg *vreg = NULL;
-@@ -121,7 +132,7 @@ static int ufshcd_populate_vreg(struct d
- 	}
- 
- 	snprintf(prop_name, MAX_PROP_SIZE, "%s-supply", name);
--	if (!of_parse_phandle(np, prop_name, 0)) {
-+	if (!phandle_exists(np, prop_name, 0)) {
- 		dev_info(dev, "%s: Unable to find %s regulator, assuming enabled\n",
- 				__func__, prop_name);
- 		goto out;
+ 	if (ret & DW_VR_MII_C37_ANSGM_SP_LNKSTS) {
+ 		int speed_value;
+-- 
+2.35.1
+
 
 
