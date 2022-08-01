@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D466C25B06
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EAE9C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232487AbiHAL7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:59:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49150 "EHLO
+        id S232849AbiHAL76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:59:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232743AbiHAL7M (ORCPT
+        with ESMTP id S232912AbiHAL7P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:59:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B854C4AD53;
-        Mon,  1 Aug 2022 04:52:31 -0700 (PDT)
+        Mon, 1 Aug 2022 07:59:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B5F4B0E5;
+        Mon,  1 Aug 2022 04:52:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3FA77B8116E;
-        Mon,  1 Aug 2022 11:52:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3559C433D6;
-        Mon,  1 Aug 2022 11:52:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC1FAB81171;
+        Mon,  1 Aug 2022 11:52:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 541F9C433C1;
+        Mon,  1 Aug 2022 11:52:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354749;
-        bh=9BE/nUQGWleDQxVfUqpKfHzWVdmMwFM+lL9qBXcXGjg=;
+        s=korg; t=1659354751;
+        bh=Q5E1jl/+1O97q4wtu2UZwV9sc9s4f7+lg7q+Pf8jJeo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1y8PJrT/k1KWsEsC+FyAVg62P6Xfi0ztoiUrVDdbSFomsPfCczCwcDto5McTlIISX
-         HeAJX2AsVUwbDau8afqv6NcTpug/eEt89Xb2bypSVvkKG1UwF9Hae38GJ0KXCisKa7
-         EvHSTKs/Gnhtbn00iSTZQ5Fym8SiT50jrkmxv51E=
+        b=bE7b5RGpSah9kxsY340c9hktA7hwx7BvKevqFLaDpSV0RcDlbqUUKHCWFEtXVEdJH
+         xXMM43BfyfieoW3o3FNkwNBKeVKkEJdDrEGLZUmGkvJ2/Y4s3Ix7aKjKeVZMFfioKk
+         PAgupHpDZoGj/afTAGH0+LR8CmpG3P1eK1EDP9/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dawid Lukwinski <dawid.lukwinski@intel.com>,
-        Michal Maloszewski <michal.maloszewski@intel.com>,
-        Dave Switzer <david.switzer@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Frantisek Sumsal <fsumsal@redhat.com>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 40/65] i40e: Fix interface init with MSI interrupts (no MSI-X)
-Date:   Mon,  1 Aug 2022 13:46:57 +0200
-Message-Id: <20220801114135.394817890@linuxfoundation.org>
+Subject: [PATCH 5.10 31/65] macsec: fix NULL deref in macsec_add_rxsa
+Date:   Mon,  1 Aug 2022 13:46:48 +0200
+Message-Id: <20220801114135.010489346@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114133.641770326@linuxfoundation.org>
 References: <20220801114133.641770326@linuxfoundation.org>
@@ -53,47 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Maloszewski <michal.maloszewski@intel.com>
+From: Sabrina Dubroca <sd@queasysnail.net>
 
-[ Upstream commit 5fcbb711024aac6d4db385623e6f2fdf019f7782 ]
+[ Upstream commit f46040eeaf2e523a4096199fd93a11e794818009 ]
 
-Fix the inability to bring an interface up on a setup with
-only MSI interrupts enabled (no MSI-X).
-Solution is to add a default number of QPs = 1. This is enough,
-since without MSI-X support driver enables only a basic feature set.
+Commit 48ef50fa866a added a test on tb_sa[MACSEC_SA_ATTR_PN], but
+nothing guarantees that it's not NULL at this point. The same code was
+added to macsec_add_txsa, but there it's not a problem because
+validate_add_txsa checks that the MACSEC_SA_ATTR_PN attribute is
+present.
 
-Fixes: bc6d33c8d93f ("i40e: Fix the number of queues available to be mapped for use")
-Signed-off-by: Dawid Lukwinski <dawid.lukwinski@intel.com>
-Signed-off-by: Michal Maloszewski <michal.maloszewski@intel.com>
-Tested-by: Dave Switzer <david.switzer@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Link: https://lore.kernel.org/r/20220722175401.112572-1-anthony.l.nguyen@intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Note: it's not possible to reproduce with iproute, because iproute
+doesn't allow creating an SA without specifying the PN.
+
+Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites (IEEE 802.1AEbw)")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=208315
+Reported-by: Frantisek Sumsal <fsumsal@redhat.com>
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/macsec.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 11d4e3ba9af4..1dad62ecb8a3 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -1907,11 +1907,15 @@ static void i40e_vsi_setup_queue_map(struct i40e_vsi *vsi,
- 		 * non-zero req_queue_pairs says that user requested a new
- 		 * queue count via ethtool's set_channels, so use this
- 		 * value for queues distribution across traffic classes
-+		 * We need at least one queue pair for the interface
-+		 * to be usable as we see in else statement.
- 		 */
- 		if (vsi->req_queue_pairs > 0)
- 			vsi->num_queue_pairs = vsi->req_queue_pairs;
- 		else if (pf->flags & I40E_FLAG_MSIX_ENABLED)
- 			vsi->num_queue_pairs = pf->num_lan_msix;
-+		else
-+			vsi->num_queue_pairs = 1;
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index 789a124809e3..0b53c7cadd87 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -1750,7 +1750,8 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
  	}
  
- 	/* Number of queues per enabled TC */
+ 	pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
+-	if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
++	if (tb_sa[MACSEC_SA_ATTR_PN] &&
++	    nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
+ 		pr_notice("macsec: nl: add_rxsa: bad pn length: %d != %d\n",
+ 			  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
+ 		rtnl_unlock();
 -- 
 2.35.1
 
