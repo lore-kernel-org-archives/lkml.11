@@ -2,96 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C989C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 999FDC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230231AbiHAMa6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34700 "EHLO
+        id S233981AbiHAMbx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232008AbiHAMam (ORCPT
+        with ESMTP id S231787AbiHAMbh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:30:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F3895C0D
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:09:54 -0700 (PDT)
+        Mon, 1 Aug 2022 08:31:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7376969F1F
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:11:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F5F3601CD
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 12:09:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC42EC433D6
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 12:09:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659355793;
-        bh=Dj1WIaCLQ5ggZ5YYu7kWg3EE1ARgkRRqTx0wUE79N1Y=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=c+VOQW+SUaPWZGfEtTnRKM9wkL7ZL5NmiF2/xp8QvARdIFIZA7xwhjCd9KsNpnlEj
-         glohiSMODaiuT6YFBP0kBCMI91LXKRzivrvXau/VHLn8Da5Z0sZDaLJM2uZ3IGx9qE
-         zvnkh1t//1KWbMJJNR86u7OBTD8eDZcB3ykxbBJQMeGBTX7xUxZQR3qIZMXHMlXOTx
-         LmGPLDG67Mmv9DS5j9Sp9MmxixLjWXf3lXIe6ccFUe/MVy+JF93yJ5bucIVvY+1kPL
-         o4cgqpzQWljJQFPmDCoc9xN+dfuKgoN4+qwd134qr3fZjmtGq6uTRwXRnuzy28gbsx
-         WqnonsX1TDiug==
-Received: by mail-vs1-f48.google.com with SMTP id 129so10962831vsq.8
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 05:09:52 -0700 (PDT)
-X-Gm-Message-State: AJIora/mr3vPBqSxOiBdXO6ibrKUd3Rj8ob8l5apbVuPPPKsv9ywHVwv
-        9H7Yac5RnO++L9OTtR7d7UqcqYXLTVhI4zTgn0s=
-X-Google-Smtp-Source: AGRyM1s0etQ9Pvllk/JiNzbTQ6QGqNTG4QGA7PokgrtQugX90IoTP+3B3Ap08D0LMddUwtf24xueuWULWjo15yBKjXY=
-X-Received: by 2002:a05:6102:dd4:b0:358:62b5:20a6 with SMTP id
- e20-20020a0561020dd400b0035862b520a6mr5613984vst.84.1659355791817; Mon, 01
- Aug 2022 05:09:51 -0700 (PDT)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FCD160EE6
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 12:11:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B018C433C1;
+        Mon,  1 Aug 2022 12:11:46 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="of8795Qp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1659355904;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ec9m+bkHcs7kSLZ7WnnfBVOiBP4SdMr+uo7n0QyASHg=;
+        b=of8795Qpckq663rDSszVZP+HRDateWgKjGmeGXcTkgFVZVzW4ci/su25PNYqMGexuK5Ffb
+        9GQQSDrBIXvzDbvdz7aJFx46sv6iP4pD3BE6HSWsAyieBdTF/bQiFkUfDi3r5MBdlcdIr5
+        ky1KXmG4uViN4oxqx0iZAu3C9Sw5V9k=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 16016793 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Mon, 1 Aug 2022 12:11:43 +0000 (UTC)
+Date:   Mon, 1 Aug 2022 14:11:33 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Mike Galbraith <efault@gmx.de>, Petr Mladek <pmladek@suse.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH 1/2 v2] lib/vsprintf: Remove static_branch_likely() from
+ __ptr_to_hashval().
+Message-ID: <YufC9XCej2qmcH8p@zx2c4.com>
+References: <20220729154716.429964-1-bigeasy@linutronix.de>
+ <20220729154716.429964-2-bigeasy@linutronix.de>
 MIME-Version: 1.0
-References: <32a74a218c76611f897fd1df1ad0059068621133.camel@xry111.site>
- <ec52fd49-4a30-15d9-3d32-fd7bc6d8b3f0@loongson.cn> <0179679b736aea7258981dec2d83107cce74dfc1.camel@xry111.site>
- <a139a8475fe295ac9f17064269cd0312dca6f96e.camel@xry111.site>
- <6b5d2188f93ed72b67a4bbb7116113f833fe1ee5.camel@xry111.site>
- <d7670b60-2782-4642-995b-7baa01779a66@loongson.cn> <7cad6e78014168a8906e130e1cf3809077d2bda7.camel@xry111.site>
- <1d0783b87bda3e454a111862fcc5b5faffcb16b0.camel@xry111.site>
- <00eede4b1380888a500f74b1e818bb25a550632b.camel@xry111.site>
- <7512ae16-b171-d072-674f-a6b9a5e764d6@loongson.cn> <CAAhV-H5wSJZ2X46ySqoaJd7Z2soGcYKRNixnghmE3f3zEzyS+w@mail.gmail.com>
- <10751c9af5d45fea741e0bbed6c818ddb9db3ac3.camel@xry111.site>
- <7b1f9813-85fc-acfd-8e24-7e01469ded3a@loongson.cn> <ba5e99de-0719-af88-4d94-8860787a4251@loongson.cn>
- <d6cab26afc5829c1b93bc1cc5867ebf22f5c7f47.camel@xry111.site>
-In-Reply-To: <d6cab26afc5829c1b93bc1cc5867ebf22f5c7f47.camel@xry111.site>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Mon, 1 Aug 2022 20:09:39 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H7pWc2bNtdyoczmANiNLSs_+A1ZVhakMdrZjGFXpMzCfQ@mail.gmail.com>
-Message-ID: <CAAhV-H7pWc2bNtdyoczmANiNLSs_+A1ZVhakMdrZjGFXpMzCfQ@mail.gmail.com>
-Subject: Re: [PATCH v4 0/4] LoongArch: Support new relocation types
-To:     Xi Ruoyao <xry111@xry111.site>
-Cc:     Youling Tang <tangyouling@loongson.cn>,
-        Jinyang He <hejinyang@loongson.cn>, loongarch@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>,
-        WANG Xuerui <kernel@xen0n.name>,
-        Lulu Cheng <chenglulu@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220729154716.429964-2-bigeasy@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Ruoyao,
+On Fri, Jul 29, 2022 at 05:47:15PM +0200, Sebastian Andrzej Siewior wrote:
+> Using static_branch_likely() to signal that ptr_key has been filled is a
+> bit much given that it is not a fast path.
+> 
+> Replace static_branch_likely() with bool for condition and a memory
+> barrier for ptr_key.
+> 
+> Suggested-by: Petr Mladek <pmladek@suse.com>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+>  lib/vsprintf.c |   19 ++++++++-----------
+>  1 file changed, 8 insertions(+), 11 deletions(-)
+> 
+> --- a/lib/vsprintf.c
+> +++ b/lib/vsprintf.c
+> @@ -750,12 +750,7 @@ static int __init debug_boot_weak_hash_e
+>  }
+>  early_param("debug_boot_weak_hash", debug_boot_weak_hash_enable);
+>  
+> -static DEFINE_STATIC_KEY_FALSE(filled_random_ptr_key);
+> -
+> -static void enable_ptr_key_workfn(struct work_struct *work)
+> -{
+> -	static_branch_enable(&filled_random_ptr_key);
+> -}
+> +static bool filled_random_ptr_key;
 
-On Mon, Aug 1, 2022 at 7:40 PM Xi Ruoyao <xry111@xry111.site> wrote:
->
-> On Mon, 2022-08-01 at 19:28 +0800, Youling Tang wrote:
->
-> > > Actually, I really hope kernel image is in the XKVRANGE, rather
-> > > than being in XKPRANGE. So that we can limit kernel and modules
-> > > be in 4GB range. I think it will make all work normally. :-(
-> > >
-> >
-> > Assuming that the kernel and modules are limited to 4G, the external
-> > symbols will be accessed through pcrel32, which means that there is no
-> > need to pass the GOT table entry and there is no need for got support
->
-> We'll still need to modify GCC to use PC-rel for accessing an object in
-> another TU (by default, or an option to control), instead of GOT.  Or
-> just add support to GOT relocations here.  But anyway it will be much
-> easier as we won't need to handle per-CPU variables specially.
-All tlb-mapped kernel may be supported in future, but no now. Because
-there are a ton of problems. :)
+This should be __read_mostly, right? Just like ptr_key.
 
-Huacai
-> --
-> Xi Ruoyao <xry111@xry111.site>
-> School of Aerospace Science and Technology, Xidian University
+Jason
