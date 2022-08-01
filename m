@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 219E5C25B06
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 21:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4B9C19F2D
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 21:26:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234229AbiHAV0c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 17:26:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50330 "EHLO
+        id S233753AbiHAV0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 17:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234951AbiHAVZb (ORCPT
+        with ESMTP id S235059AbiHAVZe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 17:25:31 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4285148CAF
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 14:24:09 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id z17so10924293wrq.4
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 14:24:09 -0700 (PDT)
+        Mon, 1 Aug 2022 17:25:34 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C9748E84
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 14:24:14 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id l4so15625392wrm.13
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 14:24:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linexp-org.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Mb4JyaEjxL4JDBtXDcGCWHFGP5KgiZCOnINym1JdoVI=;
-        b=8LvX3hXmElC8vSlXB0k6jIllDXIln1q2Ni9IjDdmOKW/j9Wnqjltk3vneDpOC9o2/l
-         BDXmHxRwSk1up75MHbh2IQ4M0jC5toG8f/AND9gZFUBe476A1F6Ydve9TKNR12Q//kJ+
-         7ULoAIgH1vtF/PlpWz3E45PY90R4syXyKxZs3jml9QWHKqIBgcI00bma4zDQu1Z9pUrm
-         91m2E7s0F64kUaxPtIOOWzEL8MIelEV9TvXZPguyEYryhQ7t602fqu87lqt9e/saqj1L
-         ZeTqEU5K+k6nurxjr+QQe3y6Ei4j4JPCFiNzNfTNCxelf+qcbzr7PZ2Xqq+oxHDrVK5E
-         MXPg==
+        bh=kpAJvHnsGVgVYdV6CGwRXamKol+XLg/BJyowOdExSUs=;
+        b=F9Rp5XIfTNsMRnVUYBaGtl9WsUFHBiNlkLG5UhGRqxRe0iTwGYk81ALUdZg+JpG/3G
+         85OitBnsTprwJCW8T0AS1CTGhKIGy+QfEXJSdHE0KZ6i3nyjb36u1nYai9GvGnW9X9O1
+         LAw+RZKjbidHFELCpadPbRpRY0/dJtc/UKPOhwWT8Cl9PHwn7UFL2AuWunjh3M5HiKtW
+         wbIv6wjZ/U5AeLvlvK9ja8iH3Lz2xideY5d0taJEO4JLAORWwykIdxzfgn7j9JoGUEEn
+         KrDGACM1Nl53w5ln23Vg97tgiiZClVdRTPD0uYjXnrehwshvrS/ZqHS/OMX5P9PfpGQz
+         yeAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Mb4JyaEjxL4JDBtXDcGCWHFGP5KgiZCOnINym1JdoVI=;
-        b=ibg29tXz+e4KnWiiThxpSAbLZSGUhY0OWBVHsWtosev7RAV8UaqWfGMBlxGccLZTGd
-         dCOFgC1I0PSSQc0tJafCoPPfWJpv//WDPOhg2K8C+OW4dMZ7THEMoVvNbtcXyJWswOsX
-         bctfuP6jzexlKtDP2ffEOMLiqBqXeueIMtWyJbsKHx5qKPDINWJNlSNWNJEqsfKyPj7n
-         kGO0IgmEq0xzNlfo/cv98l2GmG8cjlsfsiLWKVDaEcLBlHMgzHHHV3XnoojOvrAQqLAs
-         6DXvonc8yFeaT804IbU3MibFyzXmTeiwdNqTNLnX3dTXDDQlioBD5h2IPcRjztlpo5He
-         4mvw==
-X-Gm-Message-State: ACgBeo0kmO4VnPQDCy9DvLzS1yM9/jxkivXPbRFpO3HeqKGYTlv6N1YD
-        zn5l9u3rYMQbNvUFwRpU8JIPMA==
-X-Google-Smtp-Source: AA6agR4535ZJFSEIWDiDIyavvSySKf9lNKEx2n9jNeS7L/WY7knUsK+dx/YA7vbBcPdjU8TZPqHZRQ==
-X-Received: by 2002:a5d:6651:0:b0:21f:3890:810c with SMTP id f17-20020a5d6651000000b0021f3890810cmr8008825wrw.105.1659389045976;
-        Mon, 01 Aug 2022 14:24:05 -0700 (PDT)
+        bh=kpAJvHnsGVgVYdV6CGwRXamKol+XLg/BJyowOdExSUs=;
+        b=53XRZwdF0gEFnputk1ZCChrlvlzZna7JhRuNbHy6145YhB9nex/mHmRYo0+d2aSadE
+         3GeVWahvf/21s8sI3n6eZEGshAe1HOrY4d8LKBcw3NsswrZ/R/u8ba50Q02YcBuDoOt6
+         bEYC7tbNFZRaJIPVpaArUor4+ucIqc3UyFlaYoNW+xoFs7TaMoE60EqkMn9VSp+Ddd8C
+         99kPvuAzT5ZdQKEB3P8y4+uRziPVbJRYB5XIUy1Lo9uE5v+DCixTEIeo+mJNnWaPm2DW
+         ftUX7slJoskcA2Vq3iGYz0oY2JNKJkxEZkP8UA+HFdnWS87ryGsjJE1isojF5hgNbMLg
+         BmcA==
+X-Gm-Message-State: ACgBeo0oBBMqSjXrrdSvqYWYfXDgy1KN9skBBikXGVv+ydS6Oteycm+I
+        oEpT+iKO+jOAzt3XCteATyK3zA==
+X-Google-Smtp-Source: AA6agR5cjynS7Tv4uPwkZ4YQew9ugTBY9m8nxDP2tIpAzTjc9/d3an3hkoOLOqz64Geqky9SMdLt1w==
+X-Received: by 2002:a5d:47c4:0:b0:21f:f34:56fd with SMTP id o4-20020a5d47c4000000b0021f0f3456fdmr10744222wrc.585.1659389052349;
+        Mon, 01 Aug 2022 14:24:12 -0700 (PDT)
 Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:d00:ceb8:9c09:1302])
-        by smtp.gmail.com with ESMTPSA id c7-20020adffb07000000b0021e501519d3sm12995285wrr.67.2022.08.01.14.24.04
+        by smtp.gmail.com with ESMTPSA id c7-20020adffb07000000b0021e501519d3sm12995285wrr.67.2022.08.01.14.24.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Aug 2022 14:24:05 -0700 (PDT)
+        Mon, 01 Aug 2022 14:24:12 -0700 (PDT)
 From:   Daniel Lezcano <daniel.lezcano@linexp.org>
 To:     daniel.lezcano@linaro.org, rafael@kernel.org
 Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
@@ -62,12 +62,18 @@ Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
         glaroque@baylibre.com, miquel.raynal@bootlin.com,
         shawnguo@kernel.org, niklas.soderlund@ragnatech.se,
         matthias.bgg@gmail.com, j-keerthy@ti.com,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>,
-        linux-hwmon@vger.kernel.org (open list:HARDWARE MONITORING)
-Subject: [PATCH v4 26/32] hwmon/drivers: Switch to new of thermal API
-Date:   Mon,  1 Aug 2022 23:22:38 +0200
-Message-Id: <20220801212244.1124867-27-daniel.lezcano@linexp.org>
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        linux-input@vger.kernel.org (open list:INPUT (KEYBOARD, MOUSE, JOYSTICK
+        , TOUCHSCREEN)...),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Allwinner
+        sunXi SoC support),
+        linux-sunxi@lists.linux.dev (open list:ARM/Allwinner sunXi SoC support)
+Subject: [PATCH v4 28/32] Input: sun4i-ts - switch to new of thermal API
+Date:   Mon,  1 Aug 2022 23:22:40 +0200
+Message-Id: <20220801212244.1124867-29-daniel.lezcano@linexp.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220801212244.1124867-1-daniel.lezcano@linexp.org>
 References: <20220801212244.1124867-1-daniel.lezcano@linexp.org>
@@ -85,100 +91,42 @@ Convert the ops to the thermal_zone_device_ops format and use the new
 API to register the thermal zone with these generic ops.
 
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 ---
- drivers/hwmon/hwmon.c      | 14 +++++++-------
- drivers/hwmon/scpi-hwmon.c | 14 +++++++-------
- 2 files changed, 14 insertions(+), 14 deletions(-)
+ drivers/input/touchscreen/sun4i-ts.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
-index 2e2cd79d89eb..4218750d5a66 100644
---- a/drivers/hwmon/hwmon.c
-+++ b/drivers/hwmon/hwmon.c
-@@ -151,9 +151,9 @@ static DEFINE_IDA(hwmon_ida);
-  * between hwmon and thermal_sys modules.
-  */
- #ifdef CONFIG_THERMAL_OF
--static int hwmon_thermal_get_temp(void *data, int *temp)
-+static int hwmon_thermal_get_temp(struct thermal_zone_device *tz, int *temp)
- {
--	struct hwmon_thermal_data *tdata = data;
-+	struct hwmon_thermal_data *tdata = tz->devdata;
- 	struct hwmon_device *hwdev = to_hwmon_device(tdata->dev);
- 	int ret;
- 	long t;
-@@ -168,9 +168,9 @@ static int hwmon_thermal_get_temp(void *data, int *temp)
+diff --git a/drivers/input/touchscreen/sun4i-ts.c b/drivers/input/touchscreen/sun4i-ts.c
+index 742a7e96c1b5..73eb8f80be6e 100644
+--- a/drivers/input/touchscreen/sun4i-ts.c
++++ b/drivers/input/touchscreen/sun4i-ts.c
+@@ -192,12 +192,12 @@ static int sun4i_get_temp(const struct sun4i_ts_data *ts, int *temp)
  	return 0;
  }
  
--static int hwmon_thermal_set_trips(void *data, int low, int high)
-+static int hwmon_thermal_set_trips(struct thermal_zone_device *tz, int low, int high)
+-static int sun4i_get_tz_temp(void *data, int *temp)
++static int sun4i_get_tz_temp(struct thermal_zone_device *tz, int *temp)
  {
--	struct hwmon_thermal_data *tdata = data;
-+	struct hwmon_thermal_data *tdata = tz->devdata;
- 	struct hwmon_device *hwdev = to_hwmon_device(tdata->dev);
- 	const struct hwmon_chip_info *chip = hwdev->chip;
- 	const struct hwmon_channel_info **info = chip->info;
-@@ -203,7 +203,7 @@ static int hwmon_thermal_set_trips(void *data, int low, int high)
- 	return 0;
+-	return sun4i_get_temp(data, temp);
++	return sun4i_get_temp(tz->devdata, temp);
  }
  
--static const struct thermal_zone_of_device_ops hwmon_thermal_ops = {
-+static const struct thermal_zone_device_ops hwmon_thermal_ops = {
- 	.get_temp = hwmon_thermal_get_temp,
- 	.set_trips = hwmon_thermal_set_trips,
- };
-@@ -227,8 +227,8 @@ static int hwmon_thermal_add_sensor(struct device *dev, int index)
- 	tdata->dev = dev;
- 	tdata->index = index;
- 
--	tzd = devm_thermal_zone_of_sensor_register(dev, index, tdata,
--						   &hwmon_thermal_ops);
-+	tzd = devm_thermal_of_zone_register(dev, index, tdata,
-+					    &hwmon_thermal_ops);
- 	if (IS_ERR(tzd)) {
- 		if (PTR_ERR(tzd) != -ENODEV)
- 			return PTR_ERR(tzd);
-diff --git a/drivers/hwmon/scpi-hwmon.c b/drivers/hwmon/scpi-hwmon.c
-index 5187c6dd5a4f..4d75385f7d5e 100644
---- a/drivers/hwmon/scpi-hwmon.c
-+++ b/drivers/hwmon/scpi-hwmon.c
-@@ -62,9 +62,9 @@ static void scpi_scale_reading(u64 *value, struct sensor_data *sensor)
- 	}
- }
- 
--static int scpi_read_temp(void *dev, int *temp)
-+static int scpi_read_temp(struct thermal_zone_device *tz, int *temp)
- {
--	struct scpi_thermal_zone *zone = dev;
-+	struct scpi_thermal_zone *zone = tz->devdata;
- 	struct scpi_sensors *scpi_sensors = zone->scpi_sensors;
- 	struct scpi_ops *scpi_ops = scpi_sensors->scpi_ops;
- 	struct sensor_data *sensor = &scpi_sensors->data[zone->sensor_id];
-@@ -121,7 +121,7 @@ scpi_show_label(struct device *dev, struct device_attribute *attr, char *buf)
- 	return sprintf(buf, "%s\n", sensor->info.name);
- }
- 
--static const struct thermal_zone_of_device_ops scpi_sensor_ops = {
-+static const struct thermal_zone_device_ops scpi_sensor_ops = {
- 	.get_temp = scpi_read_temp,
+-static const struct thermal_zone_of_device_ops sun4i_ts_tz_ops = {
++static const struct thermal_zone_device_ops sun4i_ts_tz_ops = {
+ 	.get_temp = sun4i_get_tz_temp,
  };
  
-@@ -275,10 +275,10 @@ static int scpi_hwmon_probe(struct platform_device *pdev)
+@@ -356,8 +356,8 @@ static int sun4i_ts_probe(struct platform_device *pdev)
+ 	if (IS_ERR(hwmon))
+ 		return PTR_ERR(hwmon);
  
- 		zone->sensor_id = i;
- 		zone->scpi_sensors = scpi_sensors;
--		z = devm_thermal_zone_of_sensor_register(dev,
--							 sensor->info.sensor_id,
--							 zone,
--							 &scpi_sensor_ops);
-+		z = devm_thermal_of_zone_register(dev,
-+						  sensor->info.sensor_id,
-+						  zone,
-+						  &scpi_sensor_ops);
- 		/*
- 		 * The call to thermal_zone_of_sensor_register returns
- 		 * an error for sensors that are not associated with
+-	thermal = devm_thermal_zone_of_sensor_register(ts->dev, 0, ts,
+-						       &sun4i_ts_tz_ops);
++	thermal = devm_thermal_of_zone_register(ts->dev, 0, ts,
++						&sun4i_ts_tz_ops);
+ 	if (IS_ERR(thermal))
+ 		return PTR_ERR(thermal);
+ 
 -- 
 2.25.1
 
