@@ -2,176 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF38FC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 08:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12705C19F29
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 08:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbiHAIbG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 04:31:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
+        id S230192AbiHAIec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 04:34:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230162AbiHAIbB (ORCPT
+        with ESMTP id S229727AbiHAIea (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 04:31:01 -0400
+        Mon, 1 Aug 2022 04:34:30 -0400
 Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C75F1FCDB
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 01:30:59 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LxBBD4WJxzGpJ8;
-        Mon,  1 Aug 2022 16:29:40 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 1 Aug 2022 16:30:56 +0800
-Received: from zelda.huawei.com (10.175.103.14) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 1 Aug 2022 16:30:55 +0800
-From:   Wang Jingjin <wangjingjin1@huawei.com>
-To:     <rostedt@goodmis.org>
-CC:     <daniel@iogearbox.net>, <gaochao49@huawei.com>,
-        <linux-kernel@vger.kernel.org>, <mingo@redhat.com>,
-        <song@kernel.org>, <wangjingjin1@huawei.com>,
-        <zhengbin13@huawei.com>, <cj.chengjian@huawei.com>
-Subject: [PATCH v2 -next] ftrace: Fix build error whithout CONFIG_MODULES
-Date:   Mon, 1 Aug 2022 16:47:45 +0800
-Message-ID: <20220801084745.1187987-1-wangjingjin1@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220726113538.2992790-1-wangjingjin1@huawei.com>
-References: <20220726113538.2992790-1-wangjingjin1@huawei.com>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AA026D6;
+        Mon,  1 Aug 2022 01:34:29 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LxBGH2LZDzGpHj;
+        Mon,  1 Aug 2022 16:33:11 +0800 (CST)
+Received: from huawei.com (10.67.174.191) by canpemm500009.china.huawei.com
+ (7.192.105.203) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 1 Aug
+ 2022 16:34:26 +0800
+From:   Li Hua <hucool.lihua@huawei.com>
+To:     <akpm@linux-foundation.org>, <mail@christoph.anton.mitterer.name>,
+        <hannes@cmpxchg.org>, <kaleshsingh@google.com>,
+        <shy828301@gmail.com>, <rppt@kernel.org>,
+        <paul.gortmaker@windriver.co>
+CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>
+Subject: [PATCH -next] Documentation/filesystems/proc.rst: Change the document about cputime
+Date:   Tue, 2 Aug 2022 06:30:46 +0800
+Message-ID: <20220801223046.35178-1-hucool.lihua@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.103.14]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600017.china.huawei.com (7.193.23.234)
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.191]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500009.china.huawei.com (7.192.105.203)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix build errors on kernel/trace/ftrace.c:
-    ‘ops_references_rec’ defined but not used.
+Because the values of utime, stime, and delta are temporarily
+written to cpustat in kcpustat_cpu_fetch_vtime. Therefore, there are two
+problems read from /proc/stat:
+1. The value read the second time may be less than the first time.
+2. When there are many tasks, the statistics are not imprecise when utime
+and stime do not exceed one tick.
 
-Fixes: 53cd885bc5c3 ("ftrace: Allow IPMODIFY and DIRECT ops on the same function")
-Signed-off-by: Wang Jingjin <wangjingjin1@huawei.com>
+Signed-off-by: Li Hua <hucool.lihua@huawei.com>
 ---
-v2:
-- delete function - ops_references_rec
-- move function - ops_references_ip above the "#ifdef CONFIG_MODULES"
- kernel/trace/ftrace.c | 79 ++++++++++++++++++-------------------------
- 1 file changed, 33 insertions(+), 46 deletions(-)
+ Documentation/filesystems/proc.rst | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index bc921a3f7ea8..aa5e29e40da8 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -1861,8 +1861,6 @@ static void ftrace_hash_rec_enable_modify(struct ftrace_ops *ops,
- 	ftrace_hash_rec_update_modify(ops, filter_hash, 1);
- }
-
--static bool ops_references_ip(struct ftrace_ops *ops, unsigned long ip);
--
- /*
-  * Try to update IPMODIFY flag on each ftrace_rec. Return 0 if it is OK
-  * or no-needed to update, -EBUSY if it detects a conflict of the flag
-@@ -3108,49 +3106,6 @@ static inline int ops_traces_mod(struct ftrace_ops *ops)
- 		ftrace_hash_empty(ops->func_hash->notrace_hash);
- }
-
--/*
-- * Check if the current ops references the given ip.
-- *
-- * If the ops traces all functions, then it was already accounted for.
-- * If the ops does not trace the current record function, skip it.
-- * If the ops ignores the function via notrace filter, skip it.
-- */
--static bool
--ops_references_ip(struct ftrace_ops *ops, unsigned long ip)
--{
--	/* If ops isn't enabled, ignore it */
--	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
--		return false;
--
--	/* If ops traces all then it includes this function */
--	if (ops_traces_mod(ops))
--		return true;
--
--	/* The function must be in the filter */
--	if (!ftrace_hash_empty(ops->func_hash->filter_hash) &&
--	    !__ftrace_lookup_ip(ops->func_hash->filter_hash, ip))
--		return false;
--
--	/* If in notrace hash, we ignore it too */
--	if (ftrace_lookup_ip(ops->func_hash->notrace_hash, ip))
--		return false;
--
--	return true;
--}
--
--/*
-- * Check if the current ops references the record.
-- *
-- * If the ops traces all functions, then it was already accounted for.
-- * If the ops does not trace the current record function, skip it.
-- * If the ops ignores the function via notrace filter, skip it.
-- */
--static bool
--ops_references_rec(struct ftrace_ops *ops, struct dyn_ftrace *rec)
--{
--	return ops_references_ip(ops, rec->ip);
--}
--
- static int ftrace_update_code(struct module *mod, struct ftrace_page *new_pgs)
- {
- 	bool init_nop = ftrace_need_init_nop();
-@@ -6812,6 +6767,38 @@ static int ftrace_get_trampoline_kallsym(unsigned int symnum,
- 	return -ERANGE;
- }
-
-+#if defined(CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS) || defined(CONFIG_MODULES)
-+/*
-+ * Check if the current ops references the given ip.
-+ *
-+ * If the ops traces all functions, then it was already accounted for.
-+ * If the ops does not trace the current record function, skip it.
-+ * If the ops ignores the function via notrace filter, skip it.
-+ */
-+static bool
-+ops_references_ip(struct ftrace_ops *ops, unsigned long ip)
-+{
-+	/* If ops isn't enabled, ignore it */
-+	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
-+		return false;
+diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
+index 47e95dbc820d..b6625e83c994 100644
+--- a/Documentation/filesystems/proc.rst
++++ b/Documentation/filesystems/proc.rst
+@@ -1459,6 +1459,10 @@ second).  The meanings of the columns are as follows, from left to right:
+ - user: normal processes executing in user mode
+ - nice: niced processes executing in user mode
+ - system: processes executing in kernel mode
++  The amount of time reading from /proc/stat is not reliable, because the value
++  of utime, stime, and delta are temporarily written to cpustat in
++  kcpustat_cpu_fetch_vtime().
 +
-+	/* If ops traces all then it includes this function */
-+	if (ops_traces_mod(ops))
-+		return true;
-+
-+	/* The function must be in the filter */
-+	if (!ftrace_hash_empty(ops->func_hash->filter_hash) &&
-+	    !__ftrace_lookup_ip(ops->func_hash->filter_hash, ip))
-+		return false;
-+
-+	/* If in notrace hash, we ignore it too */
-+	if (ftrace_lookup_ip(ops->func_hash->notrace_hash, ip))
-+		return false;
-+
-+	return true;
-+}
-+#endif
-+
- #ifdef CONFIG_MODULES
-
- #define next_to_ftrace_page(p) container_of(p, struct ftrace_page, next)
-@@ -6824,7 +6811,7 @@ static int referenced_filters(struct dyn_ftrace *rec)
- 	int cnt = 0;
-
- 	for (ops = ftrace_ops_list; ops != &ftrace_list_end; ops = ops->next) {
--		if (ops_references_rec(ops, rec)) {
-+		if (ops_references_ip(ops, rec->ip)) {
- 			if (WARN_ON_ONCE(ops->flags & FTRACE_OPS_FL_DIRECT))
- 				continue;
- 			if (WARN_ON_ONCE(ops->flags & FTRACE_OPS_FL_IPMODIFY))
---
-2.25.1
+ - idle: twiddling thumbs
+ - iowait: In a word, iowait stands for waiting for I/O to complete. But there
+   are several problems:
+-- 
+2.17.1
 
