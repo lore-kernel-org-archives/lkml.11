@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD23C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A644C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233521AbiHAMNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56232 "EHLO
+        id S234121AbiHAMNU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:13:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234704AbiHAMLn (ORCPT
+        with ESMTP id S234193AbiHAMKw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:11:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB0A7173D;
-        Mon,  1 Aug 2022 04:57:15 -0700 (PDT)
+        Mon, 1 Aug 2022 08:10:52 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE99D6AA1B;
+        Mon,  1 Aug 2022 04:56:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE310601C0;
-        Mon,  1 Aug 2022 11:57:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E79C7C433B5;
-        Mon,  1 Aug 2022 11:57:12 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2A5F5CE13B9;
+        Mon,  1 Aug 2022 11:56:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C3C3C433D6;
+        Mon,  1 Aug 2022 11:56:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355033;
-        bh=nD4Jw/AEkwftyi/ilIfxVsQWBaTUwluPwcx9dvaFgZo=;
+        s=korg; t=1659355000;
+        bh=oONK/2x2HZCKsDsB+GoDk34waBGsK8OQ/Klc1ODe+zU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zWkk8GzWt62CUUIq8PZn5xh6cHM0YrzoEcu45QG1E++5vC206Pq8Ki8vY/Ffr4ai7
-         /fqpx3J8LoC1bhESz1byyiEqAbz69PlS8Wf2YeoGwXZCaF8O0CVJ0mpAG0bnmtcD99
-         bCtV5Jdu5XLjNeo6W0Q83dOcJzFK3GKGcZdPbQ6U=
+        b=wCpaoGXEBw3pl+pA5nqe1F/phWDjBSf/taSsKZj+A0I9FzcrHuOj8f3/omTy5+6NF
+         4NLo6JiOyxRU7TAS3w/cFZvzT1yrl5jJb0ldqswteB7yUU9E+NvozwtK8m+JJP04tH
+         R3bmKSYKwat1+2Rv4HedXwILDD8EKBaVgE3OlQUg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Laurence Oberman <loberman@redhat.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        David Jeffery <djeffery@redhat.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.18 39/88] scsi: mpt3sas: Stop fw fault watchdog work item during system shutdown
-Date:   Mon,  1 Aug 2022 13:46:53 +0200
-Message-Id: <20220801114139.822193246@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 5.18 03/88] ARM: dts: lan966x: fix sys_clk frequency
+Date:   Mon,  1 Aug 2022 13:46:17 +0200
+Message-Id: <20220801114138.189784913@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -50,40 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Jeffery <djeffery@redhat.com>
+From: Michael Walle <michael@walle.cc>
 
-commit 0fde22c5420ed258ee538a760291c2f3935f6a01 upstream.
+commit ef0324b6415db6742bd632dc0dfbb8fbc111473b upstream.
 
-During system shutdown or reboot, mpt3sas will reset the firmware back to
-ready state. However, the driver leaves running a watchdog work item
-intended to keep the firmware in operational state. This causes a second,
-unneeded reset on shutdown and moves the firmware back to operational
-instead of in ready state as intended. And if the mpt3sas_fwfault_debug
-module parameter is set, this extra reset also panics the system.
+The sys_clk frequency is 165.625MHz. The register reference of the
+Generic Clock controller lists the CPU clock as 600MHz, the DDR clock as
+300MHz and the SYS clock as 162.5MHz. This is wrong. It was first
+noticed during the fan driver development and it was measured and
+verified via the CLK_MON output of the SoC which can be configured to
+output sys_clk/64.
 
-mpt3sas's scsih_shutdown needs to stop the watchdog before resetting the
-firmware back to ready state.
+The core PLL settings (which drives the SYS clock) seems to be as
+follows:
+  DIVF = 52
+  DIVQ = 3
+  DIVR = 1
 
-Link: https://lore.kernel.org/r/20220722142448.6289-1-djeffery@redhat.com
-Fixes: fae21608c31c ("scsi: mpt3sas: Transition IOC to Ready state during shutdown")
-Tested-by: Laurence Oberman <loberman@redhat.com>
-Acked-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
-Signed-off-by: David Jeffery <djeffery@redhat.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+With a refernce clock of 25MHz, this means we have a post divider clock
+  Fpfd = Fref / (DIVR + 1) = 25MHz / (1 + 1) = 12.5MHz
+
+The resulting VCO frequency is then
+  Fvco = Fpfd * (DIVF + 1) * 2 = 12.5MHz * (52 + 1) * 2 = 1325MHz
+
+And the output frequency is
+  Fout = Fvco / 2^DIVQ = 1325MHz / 2^3 = 165.625Mhz
+
+This all adds up to the constrains of the PLL:
+    10MHz <= Fpfd <= 200MHz
+    20MHz <= Fout <= 1000MHz
+  1000MHz <= Fvco <= 2000MHz
+
+Fixes: 290deaa10c50 ("ARM: dts: add DT for lan966 SoC and 2-port board pcb8291")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/20220326194028.2945985-1-michael@walle.cc
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/mpt3sas/mpt3sas_scsih.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/lan966x.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-@@ -11386,6 +11386,7 @@ scsih_shutdown(struct pci_dev *pdev)
- 	_scsih_ir_shutdown(ioc);
- 	_scsih_nvme_shutdown(ioc);
- 	mpt3sas_base_mask_interrupts(ioc);
-+	mpt3sas_base_stop_watchdog(ioc);
- 	ioc->shost_recovery = 1;
- 	mpt3sas_base_make_ioc_ready(ioc, SOFT_RESET);
- 	ioc->shost_recovery = 0;
+diff --git a/arch/arm/boot/dts/lan966x.dtsi b/arch/arm/boot/dts/lan966x.dtsi
+index 3cb02fffe716..38e90a31d2dd 100644
+--- a/arch/arm/boot/dts/lan966x.dtsi
++++ b/arch/arm/boot/dts/lan966x.dtsi
+@@ -38,7 +38,7 @@ clocks {
+ 		sys_clk: sys_clk {
+ 			compatible = "fixed-clock";
+ 			#clock-cells = <0>;
+-			clock-frequency = <162500000>;
++			clock-frequency = <165625000>;
+ 		};
+ 
+ 		cpu_clk: cpu_clk {
+-- 
+2.37.1
+
 
 
