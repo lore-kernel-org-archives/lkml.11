@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C272C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:51:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66859C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:51:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231822AbiHALv2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:51:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34580 "EHLO
+        id S231842AbiHALvb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231679AbiHALua (ORCPT
+        with ESMTP id S231446AbiHALue (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:50:30 -0400
+        Mon, 1 Aug 2022 07:50:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEBA53E74F;
-        Mon,  1 Aug 2022 04:49:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20A73AE47;
+        Mon,  1 Aug 2022 04:49:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 305476125A;
-        Mon,  1 Aug 2022 11:49:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 377E8C433C1;
-        Mon,  1 Aug 2022 11:49:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D982B612C6;
+        Mon,  1 Aug 2022 11:49:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4D69C433C1;
+        Mon,  1 Aug 2022 11:49:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354550;
-        bh=yH/Jv9zpljAV0KPz0rIO5WPu1QCsz4NkIWRT4ePOxGk=;
+        s=korg; t=1659354553;
+        bh=LIcRHKYKYlzajg/YMOhVk1Ufpco9mjpW0QZrPm6QgCA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oQLeY7P60mlht3TWFL5vj8twOicYWPuTI9hfD4CtqKSxngVoWADvPx4Lz7krF6G1S
-         EXjGQgYTFkxgCy9VR36bQfDst+RNWj37XJhcnOu4+rQHhcpzUVImp1CLkONBPh8eV1
-         SLaF/OQROt3bMfUYy5VxNKB5kH3vtHTRsTHukQdY=
+        b=2i5j0mPavSthhlaoNalmxQjvvgO5qfKi3MfbmAiR2C7Rl/6NYXRp3NoBeO2yomCHW
+         /895wjX8WwezCiNnaQ5ysnvJjGGKUNfX6H3Ra0+NxIt6/to6g0KQ7T3i4KIxExYwso
+         HAAQhCwSDhA9JZL4L1xUT2rBrrBf+jipg8xKfEC8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 05/34] tcp: Fix a data-race around sysctl_tcp_app_win.
-Date:   Mon,  1 Aug 2022 13:46:45 +0200
-Message-Id: <20220801114128.270135146@linuxfoundation.org>
+Subject: [PATCH 5.4 06/34] tcp: Fix a data-race around sysctl_tcp_adv_win_scale.
+Date:   Mon,  1 Aug 2022 13:46:46 +0200
+Message-Id: <20220801114128.304976802@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114128.025615151@linuxfoundation.org>
 References: <20220801114128.025615151@linuxfoundation.org>
@@ -50,9 +50,9 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 02ca527ac5581cf56749db9fd03d854e842253dd upstream.
+commit 36eeee75ef0157e42fb6593dcc65daab289b559e upstream.
 
-While reading sysctl_tcp_app_win, it can be changed concurrently.
+While reading sysctl_tcp_adv_win_scale, it can be changed concurrently.
 Thus, we need to add READ_ONCE() to its reader.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
@@ -60,19 +60,19 @@ Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_input.c |    2 +-
+ include/net/tcp.h |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -439,7 +439,7 @@ static void tcp_grow_window(struct sock
-  */
- void tcp_init_buffer_space(struct sock *sk)
- {
--	int tcp_app_win = sock_net(sk)->ipv4.sysctl_tcp_app_win;
-+	int tcp_app_win = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_app_win);
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	int maxwin;
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1389,7 +1389,7 @@ void tcp_select_initial_window(const str
  
+ static inline int tcp_win_from_space(const struct sock *sk, int space)
+ {
+-	int tcp_adv_win_scale = sock_net(sk)->ipv4.sysctl_tcp_adv_win_scale;
++	int tcp_adv_win_scale = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_adv_win_scale);
+ 
+ 	return tcp_adv_win_scale <= 0 ?
+ 		(space>>(-tcp_adv_win_scale)) :
 
 
