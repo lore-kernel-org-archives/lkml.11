@@ -2,244 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8667BC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 14:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 172CFC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 14:43:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233209AbiHAOnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 10:43:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53212 "EHLO
+        id S233140AbiHAOnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 10:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232805AbiHAOmh (ORCPT
+        with ESMTP id S233068AbiHAOnD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 10:42:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 22BCE3ED44
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 07:41:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659364917;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hmWLgk9mxYZv12nkrvH4NBGBZ/tnKJeEmUWq6HAqO4g=;
-        b=ffRsS1Mo/Om32l4hKsvxf0EBWZl3xsXc7CUcrjeS4kCIUPww+s8oEAvtpIIoKZxtC+uS1V
-        cFXjfAafB+yG3kkhChAk1GBR9pjugEnB4YXiYD4LsOe0lCBzrKIcZMWWCAaB6MTyp2GSOq
-        Y95OEYRdmnN+CoiOqCydaiCu9Q/wunQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-623-On80zDDoNia6S4F6gjcXbw-1; Mon, 01 Aug 2022 10:41:40 -0400
-X-MC-Unique: On80zDDoNia6S4F6gjcXbw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5231F8039C3;
-        Mon,  1 Aug 2022 14:41:40 +0000 (UTC)
-Received: from MiWiFi-R3L-srv.redhat.com (ovpn-12-103.pek2.redhat.com [10.72.12.103])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BB0AB141DC28;
-        Mon,  1 Aug 2022 14:41:35 +0000 (UTC)
-From:   Baoquan He <bhe@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org, hch@infradead.org,
-        wangkefeng.wang@huawei.com, linux-arm-kernel@lists.infradead.org,
-        Baoquan He <bhe@redhat.com>, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org
-Subject: [PATCH 11/11] xtensa: mm: Convert to GENERIC_IOREMAP
-Date:   Mon,  1 Aug 2022 22:40:29 +0800
-Message-Id: <20220801144029.57829-12-bhe@redhat.com>
-In-Reply-To: <20220801144029.57829-1-bhe@redhat.com>
-References: <20220801144029.57829-1-bhe@redhat.com>
+        Mon, 1 Aug 2022 10:43:03 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594983F30D
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 07:42:14 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id j1so6031705wrw.1
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 07:42:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=4mNGPkiJmohKmnOITHrGFa8PgJkIob3O+bOGBuccTN0=;
+        b=JaRggMvlHH/j4V6dHNpxE2SGL71/p/MNU0fZhD+h5pf9VtLt+vuL6gltrwEZU9J9i8
+         spwkxa9c73rQDdTtwEh/rf7IytRiLNrcWDdiGQQSryc4qlTZp6Jw0MGRBiH4JeI8LtUP
+         eGzJU/74n7nPJDVzvdIdxW2PiQwYOvqerhEMdStBGhPBrxEOSzqHse23A5lT8P9E95n4
+         +hbFgil/Y6y0SIlc078KBnRLHROIuYDoy4yBshgxfjnSud1/so+tdNjqDX2TVz54y6i2
+         d86BpqU1BgPcf72wQtlrcXcFkney5LdIihUIvj5dAO/5QRl2+A/NIC8wscpDD9Fw3asc
+         3bMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=4mNGPkiJmohKmnOITHrGFa8PgJkIob3O+bOGBuccTN0=;
+        b=CfN13EaT3BWix8vy85C3BzsmapHEll1DtvzaHclo8RjYIFFHO9SYrz6h3K2GMqZczs
+         iS72XKW9WLPd8Q2N2IqTNbba0LkHqS32d09JRQIoypzGlBjxWH8EYRXaXF2Fzpw2VTCW
+         pFoYLJxUf7YNjrWRQloleME6M9XqFGd/QzlpgBKS4Rzq98Qz6ZPpiSID3cxmIm5B7z5J
+         c15hrGn9lYvhWv8v+s/4i60fpMyLN+5K8oyhdb3/qRMx18Lq5x6ONo2+/cD4oQzO7FX+
+         rndXmfOoFu6m0UIqpzy4FXqjZkWf7Ob+ecw2cYOzoXZE5zAFrfLPTCWum9McTIjnwko4
+         GVKA==
+X-Gm-Message-State: ACgBeo26UT1ANTmm7k3ZkpI7vpHvKddCwZrHUgOl0VeqwNhZN2ke0Obt
+        XsANzCR+TV4/J3II1PlZO7bq7Q==
+X-Google-Smtp-Source: AA6agR4/IyYurhGhEZw2tgwWkaDRof0/42GQxvcMgrV1ZTVNlW1ZTXb5875EISg5z4dRhX8+wNWUXQ==
+X-Received: by 2002:a5d:4889:0:b0:21d:eab7:f798 with SMTP id g9-20020a5d4889000000b0021deab7f798mr10403906wrq.96.1659364932883;
+        Mon, 01 Aug 2022 07:42:12 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id l3-20020adff483000000b00220592005edsm7068170wro.85.2022.08.01.07.42.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 07:42:12 -0700 (PDT)
+Date:   Mon, 1 Aug 2022 15:42:09 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     ChiYuan Huang <u0084500@gmail.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        cy_huang <cy_huang@richtek.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        linux-input@vger.kernel.org, Lee Jones <lee@kernel.org>
+Subject: Re: [PATCH v3 0/3] Add Richtek RT5120 PMIC support
+Message-ID: <YufmQXSQ093YkuiE@google.com>
+References: <1657780937-20891-1-git-send-email-u0084500@gmail.com>
+ <CADiBU39x98iyO_OB2sYdAUGUOW9pV4dt+mEdfquhuJVm1HDRHA@mail.gmail.com>
+ <ada44af6-2a5e-0b1c-8c46-3dbaae9b1a94@linaro.org>
+ <CADiBU3-juJZoeGccjPGCsJJ=B7Sez=MhtiiFADCuCCGc7fLrxQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+In-Reply-To: <CADiBU3-juJZoeGccjPGCsJJ=B7Sez=MhtiiFADCuCCGc7fLrxQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add hooks ioremap_allowed() and iounmap_allowed() for xtensa's special
-operation when ioremap() and iounmap(). Then define and implement its
-own ioremap() and ioremap_cache().
+On Tue, 26 Jul 2022, ChiYuan Huang wrote:
 
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Cc: Chris Zankel <chris@zankel.net>
-Cc: Max Filippov <jcmvbkbc@gmail.com>
-Cc: linux-xtensa@linux-xtensa.org
----
- arch/xtensa/Kconfig          |  1 +
- arch/xtensa/include/asm/io.h | 39 ++++++++++++-------------
- arch/xtensa/mm/ioremap.c     | 56 +++++++++---------------------------
- 3 files changed, 32 insertions(+), 64 deletions(-)
+> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> 於 2022年7月26日 週二 下午5:59寫道：
+> >
+> > On 26/07/2022 05:45, ChiYuan Huang wrote:
+> > > cy_huang <u0084500@gmail.com> 於 2022年7月14日 週四 下午2:42寫道：
+> > >>
+> > >> From: ChiYuan Huang <cy_huang@richtek.com>
+> > >>
+> > >> This patch series is to add Richtek RT5120 PMIC support.
+> > >> In RT5120, it integrates four channels of buck converter, one channel of LDO,
+> > >> and one external enable channel to control the external power source.
+> > > ping ......
+> >
+> > Whom are you pinging? Everyone in To list?
+> >
+> Sorry, forget to specify the part.
+> I'm pining the 'mfd' patch and 'power key' patch.
 
-diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-index 0b0f0172cced..8edc1a049673 100644
---- a/arch/xtensa/Kconfig
-+++ b/arch/xtensa/Kconfig
-@@ -27,6 +27,7 @@ config XTENSA
- 	select GENERIC_LIB_UCMPDI2
- 	select GENERIC_PCI_IOMAP
- 	select GENERIC_SCHED_CLOCK
-+	select GENERIC_IOREMAP if MMU
- 	select HAVE_ARCH_AUDITSYSCALL
- 	select HAVE_ARCH_JUMP_LABEL if !XIP_KERNEL
- 	select HAVE_ARCH_KASAN if MMU && !XIP_KERNEL
-diff --git a/arch/xtensa/include/asm/io.h b/arch/xtensa/include/asm/io.h
-index 54188e69b988..ca890b7d9f91 100644
---- a/arch/xtensa/include/asm/io.h
-+++ b/arch/xtensa/include/asm/io.h
-@@ -16,6 +16,7 @@
- #include <asm/vectors.h>
- #include <linux/bug.h>
- #include <linux/kernel.h>
-+#include <linux/pgtable.h>
- 
- #include <linux/types.h>
- 
-@@ -23,23 +24,29 @@
- #define IO_SPACE_LIMIT ~0
- #define PCI_IOBASE		((void __iomem *)XCHAL_KIO_BYPASS_VADDR)
- 
--#ifdef CONFIG_MMU
--
--void __iomem *xtensa_ioremap_nocache(unsigned long addr, unsigned long size);
--void __iomem *xtensa_ioremap_cache(unsigned long addr, unsigned long size);
--void xtensa_iounmap(volatile void __iomem *addr);
--
- /*
-- * Return the virtual address for the specified bus memory.
-+ * I/O memory mapping functions.
-  */
-+void __iomem *
-+ioremap_allowed(phys_addr_t *paddr, size_t size, unsigned long *prot_val);
-+#define ioremap_allowed ioremap_allowed
-+
-+int iounmap_allowed(void *addr);
-+#define iounmap_allowed iounmap_allowed
-+
-+void __iomem *ioremap_prot(phys_addr_t paddr, size_t size,
-+			   unsigned long prot);
-+
- static inline void __iomem *ioremap(unsigned long offset, unsigned long size)
- {
- 	if (offset >= XCHAL_KIO_PADDR
- 	    && offset - XCHAL_KIO_PADDR < XCHAL_KIO_SIZE)
- 		return (void*)(offset-XCHAL_KIO_PADDR+XCHAL_KIO_BYPASS_VADDR);
- 	else
--		return xtensa_ioremap_nocache(offset, size);
-+		return ioremap_prot(offset, size,
-+			pgprot_val(pgprot_noncached(PAGE_KERNEL)));
- }
-+#define ioremap ioremap
- 
- static inline void __iomem *ioremap_cache(unsigned long offset,
- 		unsigned long size)
-@@ -48,24 +55,14 @@ static inline void __iomem *ioremap_cache(unsigned long offset,
- 	    && offset - XCHAL_KIO_PADDR < XCHAL_KIO_SIZE)
- 		return (void*)(offset-XCHAL_KIO_PADDR+XCHAL_KIO_CACHED_VADDR);
- 	else
--		return xtensa_ioremap_cache(offset, size);
--}
--#define ioremap_cache ioremap_cache
--
--static inline void iounmap(volatile void __iomem *addr)
--{
--	unsigned long va = (unsigned long) addr;
-+		return ioremap_prot(offset, size, pgprot_val(PAGE_KERNEL));
- 
--	if (!(va >= XCHAL_KIO_CACHED_VADDR &&
--	      va - XCHAL_KIO_CACHED_VADDR < XCHAL_KIO_SIZE) &&
--	    !(va >= XCHAL_KIO_BYPASS_VADDR &&
--	      va - XCHAL_KIO_BYPASS_VADDR < XCHAL_KIO_SIZE))
--		xtensa_iounmap(addr);
- }
-+#define ioremap_cache ioremap_cache
- 
-+#ifdef CONFIG_MMU
- #define virt_to_bus     virt_to_phys
- #define bus_to_virt     phys_to_virt
--
- #endif /* CONFIG_MMU */
- 
- #include <asm-generic/io.h>
-diff --git a/arch/xtensa/mm/ioremap.c b/arch/xtensa/mm/ioremap.c
-index a400188c16b9..76733528f06d 100644
---- a/arch/xtensa/mm/ioremap.c
-+++ b/arch/xtensa/mm/ioremap.c
-@@ -6,60 +6,30 @@
-  */
- 
- #include <linux/io.h>
--#include <linux/vmalloc.h>
- #include <linux/pgtable.h>
- #include <asm/cacheflush.h>
- #include <asm/io.h>
- 
--static void __iomem *xtensa_ioremap(unsigned long paddr, unsigned long size,
--				    pgprot_t prot)
-+void __iomem *
-+ioremap_allowed(phys_addr_t *paddr, size_t size, unsigned long *prot_val)
- {
--	unsigned long offset = paddr & ~PAGE_MASK;
--	unsigned long pfn = __phys_to_pfn(paddr);
--	struct vm_struct *area;
--	unsigned long vaddr;
--	int err;
--
--	paddr &= PAGE_MASK;
-+	unsigned long phys_addr = *paddr;
-+	unsigned long pfn = __phys_to_pfn(phys_addr);
- 
- 	WARN_ON(pfn_valid(pfn));
- 
--	size = PAGE_ALIGN(offset + size);
--
--	area = get_vm_area(size, VM_IOREMAP);
--	if (!area)
--		return NULL;
--
--	vaddr = (unsigned long)area->addr;
--	area->phys_addr = paddr;
--
--	err = ioremap_page_range(vaddr, vaddr + size, paddr, prot);
--
--	if (err) {
--		vunmap((void *)vaddr);
--		return NULL;
--	}
--
--	flush_cache_vmap(vaddr, vaddr + size);
--	return (void __iomem *)(offset + vaddr);
-+	return NULL;
- }
- 
--void __iomem *xtensa_ioremap_nocache(unsigned long addr, unsigned long size)
-+int iounmap_allowed(void __iomem *addr)
- {
--	return xtensa_ioremap(addr, size, pgprot_noncached(PAGE_KERNEL));
--}
--EXPORT_SYMBOL(xtensa_ioremap_nocache);
-+	unsigned long va = (unsigned long) addr;
- 
--void __iomem *xtensa_ioremap_cache(unsigned long addr, unsigned long size)
--{
--	return xtensa_ioremap(addr, size, PAGE_KERNEL);
--}
--EXPORT_SYMBOL(xtensa_ioremap_cache);
--
--void xtensa_iounmap(volatile void __iomem *io_addr)
--{
--	void *addr = (void *)(PAGE_MASK & (unsigned long)io_addr);
-+	if ((va >= XCHAL_KIO_CACHED_VADDR &&
-+	      va - XCHAL_KIO_CACHED_VADDR < XCHAL_KIO_SIZE) ||
-+	    (va >= XCHAL_KIO_BYPASS_VADDR &&
-+	      va - XCHAL_KIO_BYPASS_VADDR < XCHAL_KIO_SIZE))
-+		return -EINVAL;
- 
--	vunmap(addr);
-+	return 0;
- }
--EXPORT_SYMBOL(xtensa_iounmap);
+Don't ping any{thing,one}!  If you think your patch has fallen through
+the gaps (it hasn't), then submit a [RESEND].
+
+Your patch was submitted at the very end of the development cycle,
+which means that it is low priority and is unlikely to receive
+attention until after -rc1 is out.
+
 -- 
-2.34.1
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
