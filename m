@@ -2,104 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A185C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 16:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C52C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 16:42:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234034AbiHAQlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 12:41:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36272 "EHLO
+        id S233888AbiHAQmv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 12:42:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233970AbiHAQls (ORCPT
+        with ESMTP id S233005AbiHAQmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 12:41:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A13581B78E
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 09:41:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659372103;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DhoXo/Y209peqbHa3vvcONnGjAEeyiXsA/tKUz+QGDY=;
-        b=Tc91oqFabjynnBW13krxM9YPYT83JLEWS7RLqUcz9sB8ueHzkxLI8V7veDJ9zFRiSj7/IE
-        QIVwlZr1lmDQTr+zM6PQLOhnQ9oIOkrHqD2rW4hBRb72zPhnqdXvlG5yaz0mYrXdRYSzG+
-        wRWjVmK2nn1KtkPYJTcGwd65qLlH3p4=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-539-P3FGFkgGO8au2CMneF6HXQ-1; Mon, 01 Aug 2022 12:41:32 -0400
-X-MC-Unique: P3FGFkgGO8au2CMneF6HXQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 1 Aug 2022 12:42:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D985B90;
+        Mon,  1 Aug 2022 09:42:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 309443C0E20F;
-        Mon,  1 Aug 2022 16:41:31 +0000 (UTC)
-Received: from starship (unknown [10.40.194.242])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0951D492C3B;
-        Mon,  1 Aug 2022 16:41:24 +0000 (UTC)
-Message-ID: <acb29da31cf7a805d8e6e8419151c27f6b135c58.camel@redhat.com>
-Subject: Re: [PATCH v2 0/5] x86: cpuid: improve support for broken CPUID
- configurations
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Dave Hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Jane Malalane <jane.malalane@citrix.com>,
-        Kees Cook <keescook@chromium.org>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        linux-perf-users@vger.kernel.org,
-        "open list:CRYPTO API" <linux-crypto@vger.kernel.org>
-Date:   Mon, 01 Aug 2022 19:41:23 +0300
-In-Reply-To: <85aa20bb-09ca-d1a6-8671-947370765a02@intel.com>
-References: <20220718141123.136106-1-mlevitsk@redhat.com>
-         <fad05f161cc6425d8c36fb6322de2bbaa683dcb3.camel@redhat.com>
-         <4a327f06f6e5da6f3badb5ccf80d22a5c9e18b97.camel@redhat.com>
-         <85aa20bb-09ca-d1a6-8671-947370765a02@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C02660F6E;
+        Mon,  1 Aug 2022 16:42:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 988D3C433D6;
+        Mon,  1 Aug 2022 16:42:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659372169;
+        bh=DQ4noSUQRPScorU8fDb3IKwYMG7ZdcugAbAWD3extDo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ic5eUIVwgaLfNSKjaUBrgSbP0o312UCTFo6eVANI5XwPJJMXOUNSLsBczeuVR/JJo
+         16VDwx5WiBl4Akcn//oRARv6kF7dpZBgQpnhjn+6uogmg7h6YtV4B9bFVsqB4XMYc3
+         we+mT0s7PPnvjhAUljRlA09F/S9cz1qMRcL4rtP4cyYIRsoyb4zBGoHvfP1ncAOnU3
+         hUcFMJveamEKiGbfoRIA64HlFKlQTjEBiSS+sWisvPALVq2NdvRbxqI4GrcxYyvUg5
+         YYAvsOZBccHe0imctXLxY8FuktcEbq0mlvqvQnX30F6BJYHSqA6DAuUGenmR5mFGeG
+         UiwgfE40BdUnA==
+Date:   Mon, 1 Aug 2022 19:42:43 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Cc:     Lino Sanfilippo <LinoSanfilippo@gmx.de>, peterhuewe@gmx.de,
+        jgg@ziepe.ca, stefanb@linux.vnet.ibm.com, linux@mniewoehner.de,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lukas@wunner.de, p.rosenberger@kunbus.com
+Subject: Re: [PATCH v7 07/10] tmp, tmp_tis: Implement usage counter for
+ locality
+Message-ID: <YugCg5s8I5GIRWls@kernel.org>
+References: <20220629232653.1306735-1-LinoSanfilippo@gmx.de>
+ <20220629232653.1306735-8-LinoSanfilippo@gmx.de>
+ <Yr4x6KRSvzlXNdH2@kernel.org>
+ <f0e33bc4-335c-322a-9295-18d6bc0b8286@gmx.de>
+ <570976c3-8292-092d-5e0c-25eef63f7f3c@kunbus.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <570976c3-8292-092d-5e0c-25eef63f7f3c@kunbus.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-08-01 at 09:31 -0700, Dave Hansen wrote:
-> On 8/1/22 09:05, Maxim Levitsky wrote:
-> > > A very kind ping on these patches.
-> > Another kind ping on these patches.
+On Thu, Jul 28, 2022 at 07:36:19PM +0200, Lino Sanfilippo wrote:
 > 
-> Maxim,
 > 
-> This series is not forgotten.  Its latest version was simply posted too
-> close to the merge window.  It'll get looked at in a week or two when
-> things calm down.
+> On 04.07.22 19:45, Lino Sanfilippo wrote:
+> > 
+> > 
+> > On 01.07.22 01:29, Jarkko Sakkinen wrote:
+> > 
+> >>
+> >> I'm kind of thinking that should tpm_tis_data have a lock for its
+> >> contents?
+> > 
+> > Most of the tpm_tis_data structure elements are set once during init and
+> > then never changed but only read. So no need for locking for these. The
+> > exceptions I see are
+> > 
+> > - flags
+> > - locality_count
+> > - locality
+> > 
+> > 
+> > whereby "flags" is accessed by atomic bit manipulating functions and thus
+> > does not need extra locking. "locality_count" is protected by the locality_count_mutex.
+> > "locality" is only set in check_locality() which is called from tpm_tis_request_locality_locked()
+> > which holds the locality_count_mutex. So check_locality() is also protected by the locality_count_mutex
+> > (which for this reason should probably rather be called locality_mutex since it protects both the "locality_count"
+> > and the "locality" variable).
+> > 
+> > There is one other place check_locality() is called from, namely the interrupt handler. This is also the only
+> > place in which "locality" could be assigned another value than 0 (aka the default). In this case there
+> > is no lock, so this could indeed by racy.
+> > 
+> > The solution I see for this is:
+> > 1. remove the entire loop that checks for the current locality, i.e. this code:
+> > 
+> > 	if (interrupt & TPM_INTF_LOCALITY_CHANGE_INT)
+> > 		for (i = 0; i < 5; i++)
+> > 			if (check_locality(chip, i))
+> > 				break;
+> > 
+> > So we avoid "locality" from being changed to something that is not the default.
+> > 
+> > 
 > 
-> Please be patient.
+> I wonder if we need tpm_tis_data->locality at all: the claimed locality is already tracked in
+> chip->locality and in TPM TIS we never use anything else than locality 0 so it never changes.
 > 
+> Is there any good reason not to remove it?
 
-Thanks!
+I think it would be a great idea to unify them.
 
-Best regards,
-	Maxim Levitsky
-
+BR, Jarkko
