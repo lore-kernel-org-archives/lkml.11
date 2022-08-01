@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 636DEC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E34C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232710AbiHAL6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
+        id S232708AbiHAL6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:58:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232666AbiHAL5Y (ORCPT
+        with ESMTP id S232715AbiHAL5i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:57:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8552C48CAF;
-        Mon,  1 Aug 2022 04:51:53 -0700 (PDT)
+        Mon, 1 Aug 2022 07:57:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9320948C90;
+        Mon,  1 Aug 2022 04:51:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6C93B8116E;
-        Mon,  1 Aug 2022 11:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 407FFC433C1;
-        Mon,  1 Aug 2022 11:51:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 400FFB8116D;
+        Mon,  1 Aug 2022 11:51:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DADDC433D6;
+        Mon,  1 Aug 2022 11:51:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354710;
-        bh=j+lLUqvz74ahqj07oBiRiEe4LBl0Q7op740iScROl2s=;
+        s=korg; t=1659354716;
+        bh=2OtF/lWbAQz5mAmpIMI4Vi3c9MhSJie89ze9WWDx/sY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ATWQfGO22NMbLY72pHISDqOFAtFi18kk2sHv2F2wdQCojnHWumV5pHvmhRffHVGUD
-         OcuvVGAUuHKQ5ZA/YLgKfBCiR7/78qahPqMeqqUDRgFv+L7ulSlPLtwrKERUknzMFs
-         tbVeHCKqTy0NEbrVo6+wQWzG96znOydOeRKwm91I=
+        b=dwvczoDvSQRE+RkoVlKgk/Xhr+vSla1hm1j46Bdzu2nwqO/Sy9Zjs/hepEc5ruRtT
+         VDjUtVz3/eH0y6zprsFA4Ftoa7E1lauTAi9vMJ8f7EKSIh3AFfXW9TLddryYj1NViP
+         7qZ2aLrTWT53RfJdliiwGgJzdtPgX5J4WpNVswN4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
+        stable@vger.kernel.org, Dave Chinner <dchinner@redhat.com>,
         "Darrick J. Wong" <djwong@kernel.org>,
         Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 58/65] xfs: hold buffer across unpin and potential shutdown processing
-Date:   Mon,  1 Aug 2022 13:47:15 +0200
-Message-Id: <20220801114136.094866787@linuxfoundation.org>
+Subject: [PATCH 5.10 60/65] xfs: logging the on disk inode LSN can make it go backwards
+Date:   Mon,  1 Aug 2022 13:47:17 +0200
+Message-Id: <20220801114136.162313627@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114133.641770326@linuxfoundation.org>
 References: <20220801114133.641770326@linuxfoundation.org>
@@ -49,120 +49,239 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Foster <bfoster@redhat.com>
+From: Dave Chinner <dchinner@redhat.com>
 
-commit 84d8949e770745b16a7e8a68dcb1d0f3687bdee9 upstream.
+commit 32baa63d82ee3f5ab3bd51bae6bf7d1c15aed8c7 upstream.
 
-The special processing used to simulate a buffer I/O failure on fs
-shutdown has a difficult to reproduce race that can result in a use
-after free of the associated buffer. Consider a buffer that has been
-committed to the on-disk log and thus is AIL resident. The buffer
-lands on the writeback delwri queue, but is subsequently locked,
-committed and pinned by another transaction before submitted for
-I/O. At this point, the buffer is stuck on the delwri queue as it
-cannot be submitted for I/O until it is unpinned. A log checkpoint
-I/O failure occurs sometime later, which aborts the bli. The unpin
-handler is called with the aborted log item, drops the bli reference
-count, the pin count, and falls into the I/O failure simulation
-path.
+When we log an inode, we format the "log inode" core and set an LSN
+in that inode core. We do that via xfs_inode_item_format_core(),
+which calls:
 
-The potential problem here is that once the pin count falls to zero
-in ->iop_unpin(), xfsaild is free to retry delwri submission of the
-buffer at any time, before the unpin handler even completes. If
-delwri queue submission wins the race to the buffer lock, it
-observes the shutdown state and simulates the I/O failure itself.
-This releases both the bli and delwri queue holds and frees the
-buffer while xfs_buf_item_unpin() sits on xfs_buf_lock() waiting to
-run through the same failure sequence. This problem is rare and
-requires many iterations of fstest generic/019 (which simulates disk
-I/O failures) to reproduce.
+	xfs_inode_to_log_dinode(ip, dic, ip->i_itemp->ili_item.li_lsn);
 
-To avoid this problem, grab a hold on the buffer before the log item
-is unpinned if the associated item has been aborted and will require
-a simulated I/O failure. The hold is already required for the
-simulated I/O failure, so the ordering simply guarantees the unpin
-handler access to the buffer before it is unpinned and thus
-processed by the AIL. This particular ordering is required so long
-as the AIL does not acquire a reference on the bli, which is the
-long term solution to this problem.
+to format the log inode. It writes the LSN from the inode item into
+the log inode, and if recovery decides the inode item needs to be
+replayed, it recovers the log inode LSN field and writes it into the
+on disk inode LSN field.
 
-Signed-off-by: Brian Foster <bfoster@redhat.com>
+Now this might seem like a reasonable thing to do, but it is wrong
+on multiple levels. Firstly, if the item is not yet in the AIL,
+item->li_lsn is zero. i.e. the first time the inode it is logged and
+formatted, the LSN we write into the log inode will be zero. If we
+only log it once, recovery will run and can write this zero LSN into
+the inode.
+
+This means that the next time the inode is logged and log recovery
+runs, it will *always* replay changes to the inode regardless of
+whether the inode is newer on disk than the version in the log and
+that violates the entire purpose of recording the LSN in the inode
+at writeback time (i.e. to stop it going backwards in time on disk
+during recovery).
+
+Secondly, if we commit the CIL to the journal so the inode item
+moves to the AIL, and then relog the inode, the LSN that gets
+stamped into the log inode will be the LSN of the inode's current
+location in the AIL, not it's age on disk. And it's not the LSN that
+will be associated with the current change. That means when log
+recovery replays this inode item, the LSN that ends up on disk is
+the LSN for the previous changes in the log, not the current
+changes being replayed. IOWs, after recovery the LSN on disk is not
+in sync with the LSN of the modifications that were replayed into
+the inode. This, again, violates the recovery ordering semantics
+that on-disk writeback LSNs provide.
+
+Hence the inode LSN in the log dinode is -always- invalid.
+
+Thirdly, recovery actually has the LSN of the log transaction it is
+replaying right at hand - it uses it to determine if it should
+replay the inode by comparing it to the on-disk inode's LSN. But it
+doesn't use that LSN to stamp the LSN into the inode which will be
+written back when the transaction is fully replayed. It uses the one
+in the log dinode, which we know is always going to be incorrect.
+
+Looking back at the change history, the inode logging was broken by
+commit 93f958f9c41f ("xfs: cull unnecessary icdinode fields") way
+back in 2016 by a stupid idiot who thought he knew how this code
+worked. i.e. me. That commit replaced an in memory di_lsn field that
+was updated only at inode writeback time from the inode item.li_lsn
+value - and hence always contained the same LSN that appeared in the
+on-disk inode - with a read of the inode item LSN at inode format
+time. CLearly these are not the same thing.
+
+Before 93f958f9c41f, the log recovery behaviour was irrelevant,
+because the LSN in the log inode always matched the on-disk LSN at
+the time the inode was logged, hence recovery of the transaction
+would never make the on-disk LSN in the inode go backwards or get
+out of sync.
+
+A symptom of the problem is this, caught from a failure of
+generic/482. Before log recovery, the inode has been allocated but
+never used:
+
+xfs_db> inode 393388
+xfs_db> p
+core.magic = 0x494e
+core.mode = 0
+....
+v3.crc = 0x99126961 (correct)
+v3.change_count = 0
+v3.lsn = 0
+v3.flags2 = 0
+v3.cowextsize = 0
+v3.crtime.sec = Thu Jan  1 10:00:00 1970
+v3.crtime.nsec = 0
+
+After log recovery:
+
+xfs_db> p
+core.magic = 0x494e
+core.mode = 020444
+....
+v3.crc = 0x23e68f23 (correct)
+v3.change_count = 2
+v3.lsn = 0
+v3.flags2 = 0
+v3.cowextsize = 0
+v3.crtime.sec = Thu Jul 22 17:03:03 2021
+v3.crtime.nsec = 751000000
+...
+
+You can see that the LSN of the on-disk inode is 0, even though it
+clearly has been written to disk. I point out this inode, because
+the generic/482 failure occurred because several adjacent inodes in
+this specific inode cluster were not replayed correctly and still
+appeared to be zero on disk when all the other metadata (inobt,
+finobt, directories, etc) indicated they should be allocated and
+written back.
+
+The fix for this is two-fold. The first is that we need to either
+revert the LSN changes in 93f958f9c41f or stop logging the inode LSN
+altogether. If we do the former, log recovery does not need to
+change but we add 8 bytes of memory per inode to store what is
+largely a write-only inode field. If we do the latter, log recovery
+needs to stamp the on-disk inode in the same manner that inode
+writeback does.
+
+I prefer the latter, because we shouldn't really be trying to log
+and replay changes to the on disk LSN as the on-disk value is the
+canonical source of the on-disk version of the inode. It also
+matches the way we recover buffer items - we create a buf_log_item
+that carries the current recovery transaction LSN that gets stamped
+into the buffer by the write verifier when it gets written back
+when the transaction is fully recovered.
+
+However, this might break log recovery on older kernels even more,
+so I'm going to simply ignore the logged value in recovery and stamp
+the on-disk inode with the LSN of the transaction being recovered
+that will trigger writeback on transaction recovery completion. This
+will ensure that the on-disk inode LSN always reflects the LSN of
+the last change that was written to disk, regardless of whether it
+comes from log recovery or runtime writeback.
+
+Fixes: 93f958f9c41f ("xfs: cull unnecessary icdinode fields")
+Signed-off-by: Dave Chinner <dchinner@redhat.com>
 Reviewed-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Amir Goldstein <amir73il@gmail.com>
 Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_buf_item.c |   37 +++++++++++++++++++++----------------
- 1 file changed, 21 insertions(+), 16 deletions(-)
+ fs/xfs/libxfs/xfs_log_format.h  |   11 ++++++++++-
+ fs/xfs/xfs_inode_item_recover.c |   39 +++++++++++++++++++++++++++++----------
+ 2 files changed, 39 insertions(+), 11 deletions(-)
 
---- a/fs/xfs/xfs_buf_item.c
-+++ b/fs/xfs/xfs_buf_item.c
-@@ -393,17 +393,8 @@ xfs_buf_item_pin(
- }
- 
- /*
-- * This is called to unpin the buffer associated with the buf log
-- * item which was previously pinned with a call to xfs_buf_item_pin().
-- *
-- * Also drop the reference to the buf item for the current transaction.
-- * If the XFS_BLI_STALE flag is set and we are the last reference,
-- * then free up the buf log item and unlock the buffer.
-- *
-- * If the remove flag is set we are called from uncommit in the
-- * forced-shutdown path.  If that is true and the reference count on
-- * the log item is going to drop to zero we need to free the item's
-- * descriptor in the transaction.
-+ * This is called to unpin the buffer associated with the buf log item which
-+ * was previously pinned with a call to xfs_buf_item_pin().
-  */
- STATIC void
- xfs_buf_item_unpin(
-@@ -420,12 +411,26 @@ xfs_buf_item_unpin(
- 
- 	trace_xfs_buf_item_unpin(bip);
- 
-+	/*
-+	 * Drop the bli ref associated with the pin and grab the hold required
-+	 * for the I/O simulation failure in the abort case. We have to do this
-+	 * before the pin count drops because the AIL doesn't acquire a bli
-+	 * reference. Therefore if the refcount drops to zero, the bli could
-+	 * still be AIL resident and the buffer submitted for I/O (and freed on
-+	 * completion) at any point before we return. This can be removed once
-+	 * the AIL properly holds a reference on the bli.
-+	 */
- 	freed = atomic_dec_and_test(&bip->bli_refcount);
--
-+	if (freed && !stale && remove)
-+		xfs_buf_hold(bp);
- 	if (atomic_dec_and_test(&bp->b_pin_count))
- 		wake_up_all(&bp->b_waiters);
- 
--	if (freed && stale) {
-+	 /* nothing to do but drop the pin count if the bli is active */
-+	if (!freed)
-+		return;
+--- a/fs/xfs/libxfs/xfs_log_format.h
++++ b/fs/xfs/libxfs/xfs_log_format.h
+@@ -414,7 +414,16 @@ struct xfs_log_dinode {
+ 	/* start of the extended dinode, writable fields */
+ 	uint32_t	di_crc;		/* CRC of the inode */
+ 	uint64_t	di_changecount;	/* number of attribute changes */
+-	xfs_lsn_t	di_lsn;		/* flush sequence */
 +
-+	if (stale) {
- 		ASSERT(bip->bli_flags & XFS_BLI_STALE);
- 		ASSERT(xfs_buf_islocked(bp));
- 		ASSERT(bp->b_flags & XBF_STALE);
-@@ -468,13 +473,13 @@ xfs_buf_item_unpin(
- 			ASSERT(bp->b_log_item == NULL);
- 		}
- 		xfs_buf_relse(bp);
--	} else if (freed && remove) {
-+	} else if (remove) {
- 		/*
- 		 * The buffer must be locked and held by the caller to simulate
--		 * an async I/O failure.
-+		 * an async I/O failure. We acquired the hold for this case
-+		 * before the buffer was unpinned.
- 		 */
- 		xfs_buf_lock(bp);
--		xfs_buf_hold(bp);
- 		bp->b_flags |= XBF_ASYNC;
- 		xfs_buf_ioend_fail(bp);
++	/*
++	 * The LSN we write to this field during formatting is not a reflection
++	 * of the current on-disk LSN. It should never be used for recovery
++	 * sequencing, nor should it be recovered into the on-disk inode at all.
++	 * See xlog_recover_inode_commit_pass2() and xfs_log_dinode_to_disk()
++	 * for details.
++	 */
++	xfs_lsn_t	di_lsn;
++
+ 	uint64_t	di_flags2;	/* more random flags */
+ 	uint32_t	di_cowextsize;	/* basic cow extent size for file */
+ 	uint8_t		di_pad2[12];	/* more padding for future expansion */
+--- a/fs/xfs/xfs_inode_item_recover.c
++++ b/fs/xfs/xfs_inode_item_recover.c
+@@ -145,7 +145,8 @@ xfs_log_dinode_to_disk_ts(
+ STATIC void
+ xfs_log_dinode_to_disk(
+ 	struct xfs_log_dinode	*from,
+-	struct xfs_dinode	*to)
++	struct xfs_dinode	*to,
++	xfs_lsn_t		lsn)
+ {
+ 	to->di_magic = cpu_to_be16(from->di_magic);
+ 	to->di_mode = cpu_to_be16(from->di_mode);
+@@ -182,7 +183,7 @@ xfs_log_dinode_to_disk(
+ 		to->di_flags2 = cpu_to_be64(from->di_flags2);
+ 		to->di_cowextsize = cpu_to_be32(from->di_cowextsize);
+ 		to->di_ino = cpu_to_be64(from->di_ino);
+-		to->di_lsn = cpu_to_be64(from->di_lsn);
++		to->di_lsn = cpu_to_be64(lsn);
+ 		memcpy(to->di_pad2, from->di_pad2, sizeof(to->di_pad2));
+ 		uuid_copy(&to->di_uuid, &from->di_uuid);
+ 		to->di_flushiter = 0;
+@@ -261,16 +262,25 @@ xlog_recover_inode_commit_pass2(
  	}
+ 
+ 	/*
+-	 * If the inode has an LSN in it, recover the inode only if it's less
+-	 * than the lsn of the transaction we are replaying. Note: we still
+-	 * need to replay an owner change even though the inode is more recent
+-	 * than the transaction as there is no guarantee that all the btree
+-	 * blocks are more recent than this transaction, too.
++	 * If the inode has an LSN in it, recover the inode only if the on-disk
++	 * inode's LSN is older than the lsn of the transaction we are
++	 * replaying. We can have multiple checkpoints with the same start LSN,
++	 * so the current LSN being equal to the on-disk LSN doesn't necessarily
++	 * mean that the on-disk inode is more recent than the change being
++	 * replayed.
++	 *
++	 * We must check the current_lsn against the on-disk inode
++	 * here because the we can't trust the log dinode to contain a valid LSN
++	 * (see comment below before replaying the log dinode for details).
++	 *
++	 * Note: we still need to replay an owner change even though the inode
++	 * is more recent than the transaction as there is no guarantee that all
++	 * the btree blocks are more recent than this transaction, too.
+ 	 */
+ 	if (dip->di_version >= 3) {
+ 		xfs_lsn_t	lsn = be64_to_cpu(dip->di_lsn);
+ 
+-		if (lsn && lsn != -1 && XFS_LSN_CMP(lsn, current_lsn) >= 0) {
++		if (lsn && lsn != -1 && XFS_LSN_CMP(lsn, current_lsn) > 0) {
+ 			trace_xfs_log_recover_inode_skip(log, in_f);
+ 			error = 0;
+ 			goto out_owner_change;
+@@ -368,8 +378,17 @@ xlog_recover_inode_commit_pass2(
+ 		goto out_release;
+ 	}
+ 
+-	/* recover the log dinode inode into the on disk inode */
+-	xfs_log_dinode_to_disk(ldip, dip);
++	/*
++	 * Recover the log dinode inode into the on disk inode.
++	 *
++	 * The LSN in the log dinode is garbage - it can be zero or reflect
++	 * stale in-memory runtime state that isn't coherent with the changes
++	 * logged in this transaction or the changes written to the on-disk
++	 * inode.  Hence we write the current lSN into the inode because that
++	 * matches what xfs_iflush() would write inode the inode when flushing
++	 * the changes in this transaction.
++	 */
++	xfs_log_dinode_to_disk(ldip, dip, current_lsn);
+ 
+ 	fields = in_f->ilf_fields;
+ 	if (fields & XFS_ILOG_DEV)
 
 
