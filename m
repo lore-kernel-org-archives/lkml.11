@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8079BC25B06
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC9AFC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232882AbiHAMCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34790 "EHLO
+        id S232935AbiHAMCi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:02:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232954AbiHAMAh (ORCPT
+        with ESMTP id S233005AbiHAMAj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:00:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B513942ADD;
-        Mon,  1 Aug 2022 04:53:02 -0700 (PDT)
+        Mon, 1 Aug 2022 08:00:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EDB24E857;
+        Mon,  1 Aug 2022 04:53:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAB2A612E9;
-        Mon,  1 Aug 2022 11:53:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3748C433C1;
-        Mon,  1 Aug 2022 11:53:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8807761326;
+        Mon,  1 Aug 2022 11:53:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9344BC433C1;
+        Mon,  1 Aug 2022 11:53:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354781;
-        bh=nWkaHB4aObE4+ORXQz/gbELbp69I+2ype2nxZe9a19U=;
+        s=korg; t=1659354784;
+        bh=Pk5xfaZveeo4I7PJdyybX2fZfA1CFcunfBUWgqk6NJA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CAB5PcVt8myx2h/rHToQNqP8u5c44gy+8SNJz0cDvehAZHue+HjeXZNFslgssdkbJ
-         MNLtOIJybGPmTLm4dw0wWQrSJeboG39zWsOpLTjqx9SP6MvIbNIT3RzVv0BXFHKY35
-         mfC2yRbu5qJaIiOiaq3I6ssIXr0rgNA/FbncMMEk=
+        b=WAHp3Yp9L7/Y2JRVQIoF01vFPn7Rt1mOOPramuRw1NO9h3LHrv9eonVdW9sHXtHYT
+         m8f0tWVpmAkJjDWX0HIMGzoQ6EX1WS8aG1QzLTPQJB/7ai2eVAU22xgHP+y089C4+U
+         CjoNBswF/vGPtP+3uj5fIr/54pRRBnQc3Kd8Lnnw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 18/69] tcp: Fix a data-race around sysctl_tcp_nometrics_save.
-Date:   Mon,  1 Aug 2022 13:46:42 +0200
-Message-Id: <20220801114135.235052420@linuxfoundation.org>
+Subject: [PATCH 5.15 19/69] tcp: Fix data-races around sysctl_tcp_no_ssthresh_metrics_save.
+Date:   Mon,  1 Aug 2022 13:46:43 +0200
+Message-Id: <20220801114135.282857286@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -50,29 +50,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 8499a2454d9e8a55ce616ede9f9580f36fd5b0f3 upstream.
+commit ab1ba21b523ab496b1a4a8e396333b24b0a18f9a upstream.
 
-While reading sysctl_tcp_nometrics_save, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+While reading sysctl_tcp_no_ssthresh_metrics_save, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 65e6d90168f3 ("net-tcp: Disable TCP ssthresh metrics cache by default")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_metrics.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/tcp_metrics.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 --- a/net/ipv4/tcp_metrics.c
 +++ b/net/ipv4/tcp_metrics.c
-@@ -329,7 +329,7 @@ void tcp_update_metrics(struct sock *sk)
- 	int m;
+@@ -385,7 +385,7 @@ void tcp_update_metrics(struct sock *sk)
  
- 	sk_dst_confirm(sk);
--	if (net->ipv4.sysctl_tcp_nometrics_save || !dst)
-+	if (READ_ONCE(net->ipv4.sysctl_tcp_nometrics_save) || !dst)
- 		return;
+ 	if (tcp_in_initial_slowstart(tp)) {
+ 		/* Slow start still did not finish. */
+-		if (!net->ipv4.sysctl_tcp_no_ssthresh_metrics_save &&
++		if (!READ_ONCE(net->ipv4.sysctl_tcp_no_ssthresh_metrics_save) &&
+ 		    !tcp_metric_locked(tm, TCP_METRIC_SSTHRESH)) {
+ 			val = tcp_metric_get(tm, TCP_METRIC_SSTHRESH);
+ 			if (val && (tcp_snd_cwnd(tp) >> 1) > val)
+@@ -401,7 +401,7 @@ void tcp_update_metrics(struct sock *sk)
+ 	} else if (!tcp_in_slow_start(tp) &&
+ 		   icsk->icsk_ca_state == TCP_CA_Open) {
+ 		/* Cong. avoidance phase, cwnd is reliable. */
+-		if (!net->ipv4.sysctl_tcp_no_ssthresh_metrics_save &&
++		if (!READ_ONCE(net->ipv4.sysctl_tcp_no_ssthresh_metrics_save) &&
+ 		    !tcp_metric_locked(tm, TCP_METRIC_SSTHRESH))
+ 			tcp_metric_set(tm, TCP_METRIC_SSTHRESH,
+ 				       max(tcp_snd_cwnd(tp) >> 1, tp->snd_ssthresh));
+@@ -418,7 +418,7 @@ void tcp_update_metrics(struct sock *sk)
+ 			tcp_metric_set(tm, TCP_METRIC_CWND,
+ 				       (val + tp->snd_ssthresh) >> 1);
+ 		}
+-		if (!net->ipv4.sysctl_tcp_no_ssthresh_metrics_save &&
++		if (!READ_ONCE(net->ipv4.sysctl_tcp_no_ssthresh_metrics_save) &&
+ 		    !tcp_metric_locked(tm, TCP_METRIC_SSTHRESH)) {
+ 			val = tcp_metric_get(tm, TCP_METRIC_SSTHRESH);
+ 			if (val && tp->snd_ssthresh > val)
+@@ -463,7 +463,7 @@ void tcp_init_metrics(struct sock *sk)
+ 	if (tcp_metric_locked(tm, TCP_METRIC_CWND))
+ 		tp->snd_cwnd_clamp = tcp_metric_get(tm, TCP_METRIC_CWND);
  
- 	rcu_read_lock();
+-	val = net->ipv4.sysctl_tcp_no_ssthresh_metrics_save ?
++	val = READ_ONCE(net->ipv4.sysctl_tcp_no_ssthresh_metrics_save) ?
+ 	      0 : tcp_metric_get(tm, TCP_METRIC_SSTHRESH);
+ 	if (val) {
+ 		tp->snd_ssthresh = val;
 
 
