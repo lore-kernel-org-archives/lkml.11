@@ -2,74 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB831C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C989C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:30:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232243AbiHAM23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56242 "EHLO
+        id S230231AbiHAMa6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:30:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231726AbiHAM16 (ORCPT
+        with ESMTP id S232008AbiHAMam (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:27:58 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71EC16577;
-        Mon,  1 Aug 2022 05:07:24 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LxGzy3MSFzGpJg;
-        Mon,  1 Aug 2022 20:06:06 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 1 Aug
- 2022 20:07:21 +0800
-From:   Xu Qiang <xuqiang36@huawei.com>
-To:     <robh+dt@kernel.org>, <frowand.list@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <guohanjun@huawei.com>, <weiyongjun1@huawei.com>,
-        <xuqiang36@huawei.com>
-Subject: [PATCH -next] of/fdt: declared return type does not match actual return type
-Date:   Mon, 1 Aug 2022 12:05:05 +0000
-Message-ID: <20220801120506.11461-1-xuqiang36@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 1 Aug 2022 08:30:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F3895C0D
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:09:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F5F3601CD
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 12:09:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC42EC433D6
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 12:09:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659355793;
+        bh=Dj1WIaCLQ5ggZ5YYu7kWg3EE1ARgkRRqTx0wUE79N1Y=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=c+VOQW+SUaPWZGfEtTnRKM9wkL7ZL5NmiF2/xp8QvARdIFIZA7xwhjCd9KsNpnlEj
+         glohiSMODaiuT6YFBP0kBCMI91LXKRzivrvXau/VHLn8Da5Z0sZDaLJM2uZ3IGx9qE
+         zvnkh1t//1KWbMJJNR86u7OBTD8eDZcB3ykxbBJQMeGBTX7xUxZQR3qIZMXHMlXOTx
+         LmGPLDG67Mmv9DS5j9Sp9MmxixLjWXf3lXIe6ccFUe/MVy+JF93yJ5bucIVvY+1kPL
+         o4cgqpzQWljJQFPmDCoc9xN+dfuKgoN4+qwd134qr3fZjmtGq6uTRwXRnuzy28gbsx
+         WqnonsX1TDiug==
+Received: by mail-vs1-f48.google.com with SMTP id 129so10962831vsq.8
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 05:09:52 -0700 (PDT)
+X-Gm-Message-State: AJIora/mr3vPBqSxOiBdXO6ibrKUd3Rj8ob8l5apbVuPPPKsv9ywHVwv
+        9H7Yac5RnO++L9OTtR7d7UqcqYXLTVhI4zTgn0s=
+X-Google-Smtp-Source: AGRyM1s0etQ9Pvllk/JiNzbTQ6QGqNTG4QGA7PokgrtQugX90IoTP+3B3Ap08D0LMddUwtf24xueuWULWjo15yBKjXY=
+X-Received: by 2002:a05:6102:dd4:b0:358:62b5:20a6 with SMTP id
+ e20-20020a0561020dd400b0035862b520a6mr5613984vst.84.1659355791817; Mon, 01
+ Aug 2022 05:09:51 -0700 (PDT)
 MIME-Version: 1.0
+References: <32a74a218c76611f897fd1df1ad0059068621133.camel@xry111.site>
+ <ec52fd49-4a30-15d9-3d32-fd7bc6d8b3f0@loongson.cn> <0179679b736aea7258981dec2d83107cce74dfc1.camel@xry111.site>
+ <a139a8475fe295ac9f17064269cd0312dca6f96e.camel@xry111.site>
+ <6b5d2188f93ed72b67a4bbb7116113f833fe1ee5.camel@xry111.site>
+ <d7670b60-2782-4642-995b-7baa01779a66@loongson.cn> <7cad6e78014168a8906e130e1cf3809077d2bda7.camel@xry111.site>
+ <1d0783b87bda3e454a111862fcc5b5faffcb16b0.camel@xry111.site>
+ <00eede4b1380888a500f74b1e818bb25a550632b.camel@xry111.site>
+ <7512ae16-b171-d072-674f-a6b9a5e764d6@loongson.cn> <CAAhV-H5wSJZ2X46ySqoaJd7Z2soGcYKRNixnghmE3f3zEzyS+w@mail.gmail.com>
+ <10751c9af5d45fea741e0bbed6c818ddb9db3ac3.camel@xry111.site>
+ <7b1f9813-85fc-acfd-8e24-7e01469ded3a@loongson.cn> <ba5e99de-0719-af88-4d94-8860787a4251@loongson.cn>
+ <d6cab26afc5829c1b93bc1cc5867ebf22f5c7f47.camel@xry111.site>
+In-Reply-To: <d6cab26afc5829c1b93bc1cc5867ebf22f5c7f47.camel@xry111.site>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Mon, 1 Aug 2022 20:09:39 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H7pWc2bNtdyoczmANiNLSs_+A1ZVhakMdrZjGFXpMzCfQ@mail.gmail.com>
+Message-ID: <CAAhV-H7pWc2bNtdyoczmANiNLSs_+A1ZVhakMdrZjGFXpMzCfQ@mail.gmail.com>
+Subject: Re: [PATCH v4 0/4] LoongArch: Support new relocation types
+To:     Xi Ruoyao <xry111@xry111.site>
+Cc:     Youling Tang <tangyouling@loongson.cn>,
+        Jinyang He <hejinyang@loongson.cn>, loongarch@lists.linux.dev,
+        LKML <linux-kernel@vger.kernel.org>,
+        WANG Xuerui <kernel@xen0n.name>,
+        Lulu Cheng <chenglulu@loongson.cn>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit 649cab56de8e (“of: properly check for error returned
-by fdt_get_name()”) changed the return value type from bool to int,
-but forgot to change the return value simultaneously.
+Hi, Ruoyao,
 
-populate_node was only called in unflatten_dt_nodes, and returns
-with values greater than or equal to 0 were discarded without further
-processing. Considering that return 0 usually indicates success,
-return 0 instead of return true.
+On Mon, Aug 1, 2022 at 7:40 PM Xi Ruoyao <xry111@xry111.site> wrote:
+>
+> On Mon, 2022-08-01 at 19:28 +0800, Youling Tang wrote:
+>
+> > > Actually, I really hope kernel image is in the XKVRANGE, rather
+> > > than being in XKPRANGE. So that we can limit kernel and modules
+> > > be in 4GB range. I think it will make all work normally. :-(
+> > >
+> >
+> > Assuming that the kernel and modules are limited to 4G, the external
+> > symbols will be accessed through pcrel32, which means that there is no
+> > need to pass the GOT table entry and there is no need for got support
+>
+> We'll still need to modify GCC to use PC-rel for accessing an object in
+> another TU (by default, or an option to control), instead of GOT.  Or
+> just add support to GOT relocations here.  But anyway it will be much
+> easier as we won't need to handle per-CPU variables specially.
+All tlb-mapped kernel may be supported in future, but no now. Because
+there are a ton of problems. :)
 
-Fixes: 649cab56de8e (“of: properly check for error returned by fdt_get_name()”)
-Signed-off-by: Xu Qiang <xuqiang36@huawei.com>
----
- drivers/of/fdt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 22b3d35a5e76..4fe448d8d2ae 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -246,7 +246,7 @@ static int populate_node(const void *blob,
- 	}
- 
- 	*pnp = np;
--	return true;
-+	return 0;
- }
- 
- static void reverse_nodes(struct device_node *parent)
--- 
-2.17.1
-
+Huacai
+> --
+> Xi Ruoyao <xry111@xry111.site>
+> School of Aerospace Science and Technology, Xidian University
