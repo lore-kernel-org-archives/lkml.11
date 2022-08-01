@@ -2,141 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4821EC19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 20:42:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D86EC19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 20:49:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233721AbiHAUmu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 16:42:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48886 "EHLO
+        id S233719AbiHAUtF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 16:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231549AbiHAUms (ORCPT
+        with ESMTP id S229901AbiHAUtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 16:42:48 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1EC13F99;
-        Mon,  1 Aug 2022 13:42:47 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id y11so19085036lfs.6;
-        Mon, 01 Aug 2022 13:42:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=kIthB6TdDhvPyIaexnTVyNbX/FCo84yFP9KPpNhWWBY=;
-        b=j5MzaMTJnqz34fw2Csn3rJvONY9AS+T7ZuCnNuEncmdiqawrf3dEvAWUK/l/ifXNpY
-         f9yQT1qgelDTxzM7vKCNjQEXOSdxokMVX2uisDsUoMSP/ckxTJPivRSnBhUe8w9H9L+s
-         r9buZwZv5h7nQ3u696dl6dRlS/0cfc8zMH11Du4ZeFyRfcs0YZvABnxuDlUFk4nI0amC
-         74S6c4DYN1QeUY33mD0yMOTRTA5xQ1ZheteO8wVfbJV2O7ZmBf0eOkEwnn4MR9PDYkOD
-         egI1v6NsRu6NiR+ye/zAIyWCXR0QWx6zhsEaIlUAcg6vAQyjSEpzZh/J9xDTEcp5wp36
-         G7xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=kIthB6TdDhvPyIaexnTVyNbX/FCo84yFP9KPpNhWWBY=;
-        b=0eY8Ktn7CyifusKcT86zLZuRpaV0HL0coqwxipOCPOUWx6KGSpVNOflIEFdCJiv4iC
-         xh6ZwSSpCNMiH2UpFZG2aRukwejMhA9NGgShNn6JMB2X4WE0xgqWc947PCczQDSAVHLU
-         ORfS6wu3GnwtzQscLNxZ4J0z810XlO/niYzWuXD1eQcI/+H5LtIgQwwj8U1L4qnQOxoB
-         d4SZqwFaL1PAA/+D6sm/b3G0ACpzw2HWwAQu2ffS7sL57A/t7g9rORY/IoUzjCys6Xrf
-         HucmAwhmDGgCWVjtOpylZ1qOqwN7p9Buo5TUGhliraF9gkW5vtk+7IfNl+YOSfdE7Yo5
-         UaHg==
-X-Gm-Message-State: AJIora/VlBSjRAG7HLml11QUc+IShdpCQD2xg8fFR9+k/CJKfpc82hxE
-        EMF2M4utK48+WKYZtiBH2zn64MjwLLzSGsfYJ4o=
-X-Google-Smtp-Source: AGRyM1skt9q0ry/mgHPex0SgVfhaLl0kYvKNgfxFdnPqi7je6iVIXJWKfJkgv19VqjAta18vJNQs/Cr++y8j7e0NBV8=
-X-Received: by 2002:ac2:4f03:0:b0:481:50f7:ac07 with SMTP id
- k3-20020ac24f03000000b0048150f7ac07mr5817490lfr.422.1659386565885; Mon, 01
- Aug 2022 13:42:45 -0700 (PDT)
+        Mon, 1 Aug 2022 16:49:03 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E2A2A268;
+        Mon,  1 Aug 2022 13:48:59 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1659386937;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Dat5xa5E/lEwDYPSAlowFSQnwBw0r1kem5ElGB1ydd0=;
+        b=BTLKTq5qa6y8oFgPI11LD5sOpLfoGKVSH9tVvZhVfl+McxaW9Y6wMNs0pWu5Zme4dd64bv
+        SG2JFEuE3eMSHYx1lDnU4ajha68cQUDB9/IUUkLOsiDH0WWS1zx0Cz26x+V9yLB1dJJ5bl
+        NYGCefhtB26aITYUaJ41KkG0EIEIFtanRgeltlIqU0t5y424f0ToaYUpO5A8ABRXsAr/m4
+        xUOKjvjdOw9CNyuMBv1rgW4HcOJAzMOMOgXG+vovv225SC96daMpjFXwzeZ4vm2Klnh/H7
+        JZ3i5/QOOkhytNG60gGMNoCEVlw3rYqHENYsIk9Xg+wL8CNSYhTF3SiNC4qbAg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1659386937;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Dat5xa5E/lEwDYPSAlowFSQnwBw0r1kem5ElGB1ydd0=;
+        b=Sp8PggihhISHUlZu90rNG3oLV9mEC3uKCgWY70wMBfCaomjVQ6WV5d7IqgQf9IL2v3ewwM
+        RWLL6zTcWWADBeCg==
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-crypto@vger.kernel.org, x86@kernel.org,
+        Nadia Heninger <nadiah@cs.ucsd.edu>,
+        Thomas Ristenpart <ristenpart@cornell.edu>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Adhemerval Zanella Netto <adhemerval.zanella@linaro.org>,
+        Florian Weimer <fweimer@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH RFC v2] random: implement getrandom() in vDSO
+In-Reply-To: <20220731013125.2103601-1-Jason@zx2c4.com>
+References: <YuXLlUZ8EzvZB43U@zx2c4.com>
+ <20220731013125.2103601-1-Jason@zx2c4.com>
+Date:   Mon, 01 Aug 2022 22:48:56 +0200
+Message-ID: <87v8rbsn9j.ffs@tglx>
 MIME-Version: 1.0
-References: <20220726175043.1027731-1-robdclark@gmail.com> <20220726175043.1027731-10-robdclark@gmail.com>
- <def8e47c-067e-0841-4ae4-1eb90244cd50@collabora.com> <CAF6AEGtV4GY6=PmQh0wrKxjxk_baRCzOo=s=Uz-uKBNEn7SBBg@mail.gmail.com>
- <6b35b912-68e5-e722-0b5a-0f7bd06c22c2@collabora.com> <733f5d3f-293e-f951-a00b-fcd3052f68e7@collabora.com>
- <88576d7a-da5f-753d-51cf-08ed22f7c81e@collabora.com>
-In-Reply-To: <88576d7a-da5f-753d-51cf-08ed22f7c81e@collabora.com>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Mon, 1 Aug 2022 13:42:33 -0700
-Message-ID: <CAF6AEGu1_5EBmKQR8cMs=or6o_ALBWxTyKA_JL-G-AhemDyaww@mail.gmail.com>
-Subject: Re: [PATCH v3 09/15] drm/gem: Add LRU/shrinker helper
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 1:26 PM Dmitry Osipenko
-<dmitry.osipenko@collabora.com> wrote:
->
-> On 8/1/22 23:13, Dmitry Osipenko wrote:
-> > On 8/1/22 23:11, Dmitry Osipenko wrote:
-> >> On 8/1/22 23:00, Rob Clark wrote:
-> >>> On Mon, Aug 1, 2022 at 12:41 PM Dmitry Osipenko
-> >>> <dmitry.osipenko@collabora.com> wrote:
-> >>>>
-> >>>> On 7/26/22 20:50, Rob Clark wrote:
-> >>>>> +/**
-> >>>>> + * drm_gem_lru_remove - remove object from whatever LRU it is in
-> >>>>> + *
-> >>>>> + * If the object is currently in any LRU, remove it.
-> >>>>> + *
-> >>>>> + * @obj: The GEM object to remove from current LRU
-> >>>>> + */
-> >>>>> +void
-> >>>>> +drm_gem_lru_remove(struct drm_gem_object *obj)
-> >>>>> +{
-> >>>>> +     struct drm_gem_lru *lru = obj->lru;
-> >>>>> +
-> >>>>> +     if (!lru)
-> >>>>> +             return;
-> >>>>> +
-> >>>>> +     mutex_lock(lru->lock);
-> >>>>> +     lru_remove(obj);
-> >>>>> +     mutex_unlock(lru->lock);
-> >>>>> +}
-> >>>>> +EXPORT_SYMBOL(drm_gem_lru_remove);
-> >>>>
-> >>>> I made a preliminary port of the DRM-SHMEM shrinker on top of the the
-> >>>> latest version of dma-buf locking convention and yours LRU patches. It
-> >>>> all works good, the only thing that is missing for the DRM-SHMEM
-> >>>> shrinker is the drm_gem_lru_remove_locked().
-> >>>>
-> >>>> What about to add a locked variant of drm_gem_lru_remove()?
-> >>>
-> >>> Sounds fine to me.. the only reason it didn't exist yet was because it
-> >>> wasn't needed yet..
-> >>
-> >> There is no use for the drm_gem_lru_move_tail_locked() as well, you're
-> >> not using it in the MSM driver. Hence I thought it might be good to add
-> >> the drm_gem_lru_remove_locked(), or maybe the
-> >> drm_gem_lru_move_tail_locked() should be dropped then?
-> >>
-> >>> I can respin w/ an addition of a _locked() version, or you can add it
-> >>> on top in your patchset.  Either is fine by me
-> >>
-> >> The either option is fine by me too. If you'll keep the unused
-> >> drm_gem_lru_move_tail_locked(), then will be nice to add
-> >> drm_gem_lru_remove_locked().
-> >>
-> >
-> > The drm_gem_lru_move_tail_locked() will be needed by DRM-SHMEM shrinker,
-> > BTW.
->
-> On the other hand, I see now that DRM-SHMEM shrinker can use the
-> unlocked versions only. Hence both drm_gem_lru_move_tail_locked() and
-> drm_gem_lru_remove_locked() aren't needed.
+On Sun, Jul 31 2022 at 03:31, Jason A. Donenfeld wrote:
 
-drm_gem_lru_move_tail_locked() is used internally, but I guess it
-could be made static since there ended up not being external users
-(yet?)
+> +vobjs-y := vdso-note.o vclock_gettime.o vgetcpu.o vgetrandom.o
 
-I could see _move_tail_locked() being useful for a driver that wanted
-to bulk update a bunch of GEM objs, for ex. all the bo's associated
-with a submit/job.
+You clearly forgot to tell people that they need a special config to
+make this compile.
 
-BR,
--R
+I don't even have to try to see that this cannot build with a defconfig:
+
+Lacks -pg for that file and the included chacha.c contains
+EXPORT_SYMBOL() which is not really working in the VDSO.
+
+> +DECLARE_VVAR_SINGLE(640, struct vdso_rng_data, _vdso_rng_data)
+...
+> +#define __vdso_rng_data (VVAR(_vdso_rng_data))
+> +
+> +static __always_inline const struct vdso_rng_data *__arch_get_vdso_rng_data(void)
+> +{
+> +	return &__vdso_rng_data;
+> +}
+
+That's not working with time name spaces.
+
+> +static __always_inline ssize_t
+> +__cvdso_getrandom(void *opaque_state, void *buffer, size_t len, unsigned int flags)
+> +{
+> +	struct getrandom_state *state = opaque_state;
+> +	const struct vdso_rng_data *rng_info = __arch_get_vdso_rng_data();
+
+This gives you vvar__vdso_rng_data and that points to the VVAR page at
+offset 640. That works up to the point where a task is part of a
+non-root time name space.
+
+The kernel side mapping (the one which is updated) looks like this:
+
+    VVAR_PAGE
+    VIRT_CLOCK_PAGE[S]
+    TIMENS_PAGE
+
+If time namespaces are disabled or the task is in the root time
+namespace then the user mapping is in the same order.
+
+If the task is in the non-root time namespace, then the user mapping is:
+
+    TIMENS_PAGE
+    VIRT_CLOCK_PAGE[S]
+    VVAR_PAGE
+
+So your user space looks at offset 640 in the TIMENS_PAGE, which has
+rand_data->ready and rand_data->generation == 0 forever.
+
+See the comment above timens_setup_vdso_data() and look at the way how
+e.g. __cvdso_time_data() deals with that.
+
+VDSO hacking is special and not a sunday evening project. :)
+
+Thanks,
+
+        tglx
