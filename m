@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B176BC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90822C19F29
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232397AbiHALy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38906 "EHLO
+        id S231902AbiHALzD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232217AbiHALyX (ORCPT
+        with ESMTP id S232135AbiHALyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:54:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4CA3DBDF;
-        Mon,  1 Aug 2022 04:50:36 -0700 (PDT)
+        Mon, 1 Aug 2022 07:54:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C093DF13;
+        Mon,  1 Aug 2022 04:50:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02F04612E3;
-        Mon,  1 Aug 2022 11:50:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D7D2C433B5;
-        Mon,  1 Aug 2022 11:50:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23BB3B8116B;
+        Mon,  1 Aug 2022 11:50:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76CBBC433C1;
+        Mon,  1 Aug 2022 11:50:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354635;
-        bh=rcXhONTnsSRcgl/29eaAgLPlHuMMAOLV0cxVAhvv3aU=;
+        s=korg; t=1659354640;
+        bh=F9pxzWaFExZc72a2VmO0mWpFCFZ99faa32kDZsNKF9k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KeF3nwRCscCP2p9T9+TpePLpkMR7BRFM7nLAcShmRO+fhZdVR9xTWSbko7OUX/gmu
-         4YPZC0eelbDeOyoRU/OyL9mPYDbOd6VDWeI3hmp+de/ixv2sgQxiyHOPOu6ge6Ln2b
-         PJmx8DvD59hm7X58fuGfVhwDWEmbzvXn23uAvt88=
+        b=lKlgbjWxGzHyqv6H+4LAiNCSqFF0+PssKM8tcsivq8jnzOMmeNiqO/u+VLEVp3Ed6
+         2JBEGbkX3IhLUOUvOT3a+WVkmGfVh1nM1eQtZ7RQ5nJ0T6F5OXplw5rkLkUdzhWfNy
+         kGVBddpnIMaQfO6xCc/VefxUEKDI0MYJZGCrE6AA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 30/65] Documentation: fix sctp_wmem in ip-sysctl.rst
-Date:   Mon,  1 Aug 2022 13:46:47 +0200
-Message-Id: <20220801114134.979359718@linuxfoundation.org>
+        stable@vger.kernel.org, Alistair Popple <apopple@nvidia.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 5.10 05/65] nouveau/svm: Fix to migrate all requested pages
+Date:   Mon,  1 Aug 2022 13:46:22 +0200
+Message-Id: <20220801114133.880205502@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114133.641770326@linuxfoundation.org>
 References: <20220801114133.641770326@linuxfoundation.org>
@@ -50,49 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Alistair Popple <apopple@nvidia.com>
 
-[ Upstream commit aa709da0e032cee7c202047ecd75f437bb0126ed ]
+commit 66cee9097e2b74ff3c8cc040ce5717c521a0c3fa upstream.
 
-Since commit 1033990ac5b2 ("sctp: implement memory accounting on tx path"),
-SCTP has supported memory accounting on tx path where 'sctp_wmem' is used
-by sk_wmem_schedule(). So we should fix the description for this option in
-ip-sysctl.rst accordingly.
+Users may request that pages from an OpenCL SVM allocation be migrated
+to the GPU with clEnqueueSVMMigrateMem(). In Nouveau this will call into
+nouveau_dmem_migrate_vma() to do the migration. If the total range to be
+migrated exceeds SG_MAX_SINGLE_ALLOC the pages will be migrated in
+chunks of size SG_MAX_SINGLE_ALLOC. However a typo in updating the
+starting address means that only the first chunk will get migrated.
 
-v1->v2:
-  - Improve the description as Marcelo suggested.
+Fix the calculation so that the entire range will get migrated if
+possible.
 
-Fixes: 1033990ac5b2 ("sctp: implement memory accounting on tx path")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Alistair Popple <apopple@nvidia.com>
+Fixes: e3d8b0890469 ("drm/nouveau/svm: map pages after migration")
+Reviewed-by: Ralph Campbell <rcampbell@nvidia.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220720062745.960701-1-apopple@nvidia.com
+Cc: <stable@vger.kernel.org> # v5.8+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/networking/ip-sysctl.rst | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/nouveau/nouveau_dmem.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 0b1f3235aa77..0158dff63887 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -2629,7 +2629,14 @@ sctp_rmem - vector of 3 INTEGERs: min, default, max
- 	Default: 4K
+--- a/drivers/gpu/drm/nouveau/nouveau_dmem.c
++++ b/drivers/gpu/drm/nouveau/nouveau_dmem.c
+@@ -679,7 +679,11 @@ nouveau_dmem_migrate_vma(struct nouveau_
+ 		goto out_free_dma;
  
- sctp_wmem  - vector of 3 INTEGERs: min, default, max
--	Currently this tunable has no effect.
-+	Only the first value ("min") is used, "default" and "max" are
-+	ignored.
+ 	for (i = 0; i < npages; i += max) {
+-		args.end = start + (max << PAGE_SHIFT);
++		if (args.start + (max << PAGE_SHIFT) > end)
++			args.end = end;
++		else
++			args.end = args.start + (max << PAGE_SHIFT);
 +
-+	min: Minimum size of send buffer that can be used by SCTP sockets.
-+	It is guaranteed to each SCTP socket (but not association) even
-+	under moderate memory pressure.
-+
-+	Default: 4K
- 
- addr_scope_policy - INTEGER
- 	Control IPv4 address scoping - draft-stewart-tsvwg-sctp-ipv4-00
--- 
-2.35.1
-
+ 		ret = migrate_vma_setup(&args);
+ 		if (ret)
+ 			goto out_free_pfns;
 
 
