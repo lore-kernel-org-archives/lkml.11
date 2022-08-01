@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83FF4C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 07:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EA46C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 07:29:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229727AbiHAH3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 03:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33990 "EHLO
+        id S229738AbiHAH3n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 03:29:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbiHAH3c (ORCPT
+        with ESMTP id S229664AbiHAH3d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 03:29:32 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565B832D8F;
-        Mon,  1 Aug 2022 00:29:31 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R711e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VL2sBJ._1659338968;
-Received: from localhost.localdomain(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0VL2sBJ._1659338968)
+        Mon, 1 Aug 2022 03:29:33 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACFF2F67E;
+        Mon,  1 Aug 2022 00:29:30 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VL2sBHM_1659338966;
+Received: from localhost.localdomain(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0VL2sBHM_1659338966)
           by smtp.aliyun-inc.com;
-          Mon, 01 Aug 2022 15:29:28 +0800
+          Mon, 01 Aug 2022 15:29:27 +0800
 From:   Tianchen Ding <dtcccc@linux.alibaba.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
 Cc:     Lorenz Bauer <lmb@cloudflare.com>,
         Alexei Starovoitov <ast@kernel.org>,
         linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: [PATCH 5.10 3/3] selftests: bpf: Don't run sk_lookup in verifier tests
-Date:   Mon,  1 Aug 2022 15:29:16 +0800
-Message-Id: <20220801072916.29586-4-dtcccc@linux.alibaba.com>
+Subject: [PATCH 5.10 1/3] bpf: Consolidate shared test timing code
+Date:   Mon,  1 Aug 2022 15:29:14 +0800
+Message-Id: <20220801072916.29586-2-dtcccc@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220801072916.29586-1-dtcccc@linux.alibaba.com>
 References: <20220801072916.29586-1-dtcccc@linux.alibaba.com>
@@ -39,58 +39,222 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lorenz Bauer <lmb@cloudflare.com>
 
-commit b4f894633fa14d7d46ba7676f950b90a401504bb upstream.
+commit 607b9cc92bd7208338d714a22b8082fe83bcb177 upstream.
 
-sk_lookup doesn't allow setting data_in for bpf_prog_run. This doesn't
-play well with the verifier tests, since they always set a 64 byte
-input buffer. Allow not running verifier tests by setting
-bpf_test.runs to a negative value and don't run the ctx access case
-for sk_lookup. We have dedicated ctx access tests so skipping here
-doesn't reduce coverage.
+Share the timing / signal interruption logic between different
+implementations of PROG_TEST_RUN. There is a change in behaviour
+as well. We check the loop exit condition before checking for
+pending signals. This resolves an edge case where a signal
+arrives during the last iteration. Instead of aborting with
+EINTR we return the successful result to user space.
 
 Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20210303101816.36774-6-lmb@cloudflare.com
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20210303101816.36774-2-lmb@cloudflare.com
+[dtcccc: fix conflicts in bpf_test_run()]
 Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
 ---
- tools/testing/selftests/bpf/test_verifier.c          | 4 ++--
- tools/testing/selftests/bpf/verifier/ctx_sk_lookup.c | 1 +
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ net/bpf/test_run.c | 140 +++++++++++++++++++++++++--------------------
+ 1 file changed, 78 insertions(+), 62 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-index a4c55fcb0e7b..0fb92d9a319b 100644
---- a/tools/testing/selftests/bpf/test_verifier.c
-+++ b/tools/testing/selftests/bpf/test_verifier.c
-@@ -100,7 +100,7 @@ struct bpf_test {
- 	enum bpf_prog_type prog_type;
- 	uint8_t flags;
- 	void (*fill_helper)(struct bpf_test *self);
--	uint8_t runs;
-+	int runs;
- #define bpf_testdata_struct_t					\
- 	struct {						\
- 		uint32_t retval, retval_unpriv;			\
-@@ -1054,7 +1054,7 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index eb684f31fd69..d2a4f04df1da 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -16,14 +16,78 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/bpf_test_run.h>
  
- 	run_errs = 0;
- 	run_successes = 0;
--	if (!alignment_prevented_execution && fd_prog >= 0) {
-+	if (!alignment_prevented_execution && fd_prog >= 0 && test->runs >= 0) {
- 		uint32_t expected_val;
- 		int i;
- 
-diff --git a/tools/testing/selftests/bpf/verifier/ctx_sk_lookup.c b/tools/testing/selftests/bpf/verifier/ctx_sk_lookup.c
-index 2ad5f974451c..fd3b62a084b9 100644
---- a/tools/testing/selftests/bpf/verifier/ctx_sk_lookup.c
-+++ b/tools/testing/selftests/bpf/verifier/ctx_sk_lookup.c
-@@ -239,6 +239,7 @@
- 	.result = ACCEPT,
- 	.prog_type = BPF_PROG_TYPE_SK_LOOKUP,
- 	.expected_attach_type = BPF_SK_LOOKUP,
-+	.runs = -1,
- },
- /* invalid 8-byte reads from a 4-byte fields in bpf_sk_lookup */
++struct bpf_test_timer {
++	enum { NO_PREEMPT, NO_MIGRATE } mode;
++	u32 i;
++	u64 time_start, time_spent;
++};
++
++static void bpf_test_timer_enter(struct bpf_test_timer *t)
++	__acquires(rcu)
++{
++	rcu_read_lock();
++	if (t->mode == NO_PREEMPT)
++		preempt_disable();
++	else
++		migrate_disable();
++
++	t->time_start = ktime_get_ns();
++}
++
++static void bpf_test_timer_leave(struct bpf_test_timer *t)
++	__releases(rcu)
++{
++	t->time_start = 0;
++
++	if (t->mode == NO_PREEMPT)
++		preempt_enable();
++	else
++		migrate_enable();
++	rcu_read_unlock();
++}
++
++static bool bpf_test_timer_continue(struct bpf_test_timer *t, u32 repeat, int *err, u32 *duration)
++	__must_hold(rcu)
++{
++	t->i++;
++	if (t->i >= repeat) {
++		/* We're done. */
++		t->time_spent += ktime_get_ns() - t->time_start;
++		do_div(t->time_spent, t->i);
++		*duration = t->time_spent > U32_MAX ? U32_MAX : (u32)t->time_spent;
++		*err = 0;
++		goto reset;
++	}
++
++	if (signal_pending(current)) {
++		/* During iteration: we've been cancelled, abort. */
++		*err = -EINTR;
++		goto reset;
++	}
++
++	if (need_resched()) {
++		/* During iteration: we need to reschedule between runs. */
++		t->time_spent += ktime_get_ns() - t->time_start;
++		bpf_test_timer_leave(t);
++		cond_resched();
++		bpf_test_timer_enter(t);
++	}
++
++	/* Do another round. */
++	return true;
++
++reset:
++	t->i = 0;
++	return false;
++}
++
+ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
+ 			u32 *retval, u32 *time, bool xdp)
  {
+ 	struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE] = { NULL };
++	struct bpf_test_timer t = { NO_MIGRATE };
+ 	enum bpf_cgroup_storage_type stype;
+-	u64 time_start, time_spent = 0;
+-	int ret = 0;
+-	u32 i;
++	int ret;
+ 
+ 	for_each_cgroup_storage_type(stype) {
+ 		storage[stype] = bpf_cgroup_storage_alloc(prog, stype);
+@@ -38,10 +102,8 @@ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
+ 	if (!repeat)
+ 		repeat = 1;
+ 
+-	rcu_read_lock();
+-	migrate_disable();
+-	time_start = ktime_get_ns();
+-	for (i = 0; i < repeat; i++) {
++	bpf_test_timer_enter(&t);
++	do {
+ 		ret = bpf_cgroup_storage_set(storage);
+ 		if (ret)
+ 			break;
+@@ -53,29 +115,8 @@ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
+ 
+ 		bpf_cgroup_storage_unset();
+ 
+-		if (signal_pending(current)) {
+-			ret = -EINTR;
+-			break;
+-		}
+-
+-		if (need_resched()) {
+-			time_spent += ktime_get_ns() - time_start;
+-			migrate_enable();
+-			rcu_read_unlock();
+-
+-			cond_resched();
+-
+-			rcu_read_lock();
+-			migrate_disable();
+-			time_start = ktime_get_ns();
+-		}
+-	}
+-	time_spent += ktime_get_ns() - time_start;
+-	migrate_enable();
+-	rcu_read_unlock();
+-
+-	do_div(time_spent, repeat);
+-	*time = time_spent > U32_MAX ? U32_MAX : (u32)time_spent;
++	} while (bpf_test_timer_continue(&t, repeat, &ret, time));
++	bpf_test_timer_leave(&t);
+ 
+ 	for_each_cgroup_storage_type(stype)
+ 		bpf_cgroup_storage_free(storage[stype]);
+@@ -688,18 +729,17 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
+ 				     const union bpf_attr *kattr,
+ 				     union bpf_attr __user *uattr)
+ {
++	struct bpf_test_timer t = { NO_PREEMPT };
+ 	u32 size = kattr->test.data_size_in;
+ 	struct bpf_flow_dissector ctx = {};
+ 	u32 repeat = kattr->test.repeat;
+ 	struct bpf_flow_keys *user_ctx;
+ 	struct bpf_flow_keys flow_keys;
+-	u64 time_start, time_spent = 0;
+ 	const struct ethhdr *eth;
+ 	unsigned int flags = 0;
+ 	u32 retval, duration;
+ 	void *data;
+ 	int ret;
+-	u32 i;
+ 
+ 	if (prog->type != BPF_PROG_TYPE_FLOW_DISSECTOR)
+ 		return -EINVAL;
+@@ -735,39 +775,15 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
+ 	ctx.data = data;
+ 	ctx.data_end = (__u8 *)data + size;
+ 
+-	rcu_read_lock();
+-	preempt_disable();
+-	time_start = ktime_get_ns();
+-	for (i = 0; i < repeat; i++) {
++	bpf_test_timer_enter(&t);
++	do {
+ 		retval = bpf_flow_dissect(prog, &ctx, eth->h_proto, ETH_HLEN,
+ 					  size, flags);
++	} while (bpf_test_timer_continue(&t, repeat, &ret, &duration));
++	bpf_test_timer_leave(&t);
+ 
+-		if (signal_pending(current)) {
+-			preempt_enable();
+-			rcu_read_unlock();
+-
+-			ret = -EINTR;
+-			goto out;
+-		}
+-
+-		if (need_resched()) {
+-			time_spent += ktime_get_ns() - time_start;
+-			preempt_enable();
+-			rcu_read_unlock();
+-
+-			cond_resched();
+-
+-			rcu_read_lock();
+-			preempt_disable();
+-			time_start = ktime_get_ns();
+-		}
+-	}
+-	time_spent += ktime_get_ns() - time_start;
+-	preempt_enable();
+-	rcu_read_unlock();
+-
+-	do_div(time_spent, repeat);
+-	duration = time_spent > U32_MAX ? U32_MAX : (u32)time_spent;
++	if (ret < 0)
++		goto out;
+ 
+ 	ret = bpf_test_finish(kattr, uattr, &flow_keys, sizeof(flow_keys),
+ 			      retval, duration);
 -- 
 2.27.0
 
