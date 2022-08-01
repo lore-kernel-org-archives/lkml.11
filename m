@@ -2,62 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C82C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 18:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F010EC19F2B
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 18:02:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233608AbiHASB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 14:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41390 "EHLO
+        id S233939AbiHASCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 14:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232577AbiHASBv (ORCPT
+        with ESMTP id S233527AbiHASCR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 14:01:51 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3F9237ED
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 11:01:51 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 4406D68AFE; Mon,  1 Aug 2022 20:01:47 +0200 (CEST)
-Date:   Mon, 1 Aug 2022 20:01:46 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     yf.wang@mediatek.com, Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>, wsd_upstream@mediatek.com,
-        Libo Kang <Libo.Kang@mediatek.com>,
-        Ning Li <Ning.Li@mediatek.com>, Yong Wu <Yong.Wu@mediatek.com>,
-        Miles Chen <miles.chen@mediatek.com>
-Subject: Re: [PATCH] dma-debug: Remove warning in dma_debug_entry
-Message-ID: <20220801180146.GB17256@lst.de>
-References: <20220730085657.31977-1-yf.wang@mediatek.com> <19a0a508-fb39-8b06-ce0f-ce26767ef57f@arm.com>
+        Mon, 1 Aug 2022 14:02:17 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F9325C5F
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 11:02:15 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-10dc1b16c12so14583347fac.6
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 11:02:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=neYCRoMJHZhrkPomT+D8lBoa9lWbM2Zjq7tdhg++BD8=;
+        b=Mhxk6WOQ1kBwvZATBE/fUmbfdcWPONvbLqPeeFwjgpXx30ZOq9K8e9XiO+heooXplM
+         yIxZGuPYi6Y3upntqiTXP/fp9FqKCw4yfTan+k9O5EO5dpK1xku83lnqrHR4EC2zmuYi
+         1Wtv13AgwXk1J74t2M0Zv22JEVrbvaw3bB9ww=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=neYCRoMJHZhrkPomT+D8lBoa9lWbM2Zjq7tdhg++BD8=;
+        b=hIcYSzthHHtvp3NSM0owgaLNnloFI7H8//vYLTGYf9zncf5KzfvtGJmbPXpxhiJ5Yw
+         FinFqKLKNBo6KVe7ng0n0iKElrmZLAlzEzEnWWXkgEzDLd0eBh75/Ut88uY9sMVT/QfU
+         cdqywVy8tcEFruxtqEImCXJCmVW3TMXpSBCq/RKi1RXNsQepwNunMDOeFIyWQYWROJnN
+         XyLzqSeswnVojbi0WEMX89gaXkEo61ZFDGWUzybCJo2fz5D3NTxf+jrROGAzp/xbHscr
+         8jlenvLJk9VJl9zLgRNWdDJS5maVIG2fpSIvi0UxLtR+y76/EHUhJPGavSoOgli4HhJ7
+         wajA==
+X-Gm-Message-State: AJIora8iVYPptkOHWIkCABfHq/SG1wGSObT5oZpnH7BtawfeSlB01Olm
+        Hcy7GoQgwajmrkraRawRlc26sg==
+X-Google-Smtp-Source: AGRyM1s00uyA5RxFeoJiOwnWUCMdS5VnKo6fHkNTdsQVmzGj5TtMhEcfqeGl5rB5c+kZha+7htuYfg==
+X-Received: by 2002:a05:6870:4302:b0:10d:c587:d30e with SMTP id w2-20020a056870430200b0010dc587d30emr7992216oah.28.1659376935129;
+        Mon, 01 Aug 2022 11:02:15 -0700 (PDT)
+Received: from localhost.localdomain ([184.4.90.121])
+        by smtp.gmail.com with ESMTPSA id n14-20020a9d64ce000000b00618fa37308csm2881348otl.35.2022.08.01.11.02.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 11:02:14 -0700 (PDT)
+From:   Frederick Lawler <fred@cloudflare.com>
+To:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
+        paul@paul-moore.com, stephen.smalley.work@gmail.com,
+        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
+        casey@schaufler-ca.com, ebiederm@xmission.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, cgzones@googlemail.com,
+        karl@bigbadwolfsecurity.com, Frederick Lawler <fred@cloudflare.com>
+Subject: [PATCH v4 0/4] Introduce security_create_user_ns()
+Date:   Mon,  1 Aug 2022 13:01:42 -0500
+Message-Id: <20220801180146.1157914-1-fred@cloudflare.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <19a0a508-fb39-8b06-ce0f-ce26767ef57f@arm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 01, 2022 at 01:07:10PM +0100, Robin Murphy wrote:
-> Furthermore, even for the valid dma-buf import case I'm not convinced that 
-> the SKIP_CPU_SYNC check can be dropped either. If one device can import a 
-> buffer while another device is already accessing it, there are definitely 
-> combinations of parameters which could lead to potential data loss (e.g. a 
-> non-coherent DMA_TO_DEVICE mapping during a non-coherent DMA_FROM_DEVICE 
-> access, a or non-coherent DMA_FROM_DEVICE mapping during a coherent 
-> DMA_TO_DEVICE access).
+While creating a LSM BPF MAC policy to block user namespace creation, we
+used the LSM cred_prepare hook because that is the closest hook to prevent
+a call to create_user_ns().
 
-Yes.  While there is a rare case where double mapping actually works
-(exactly the same region, no access to the data between the invidual
-mapping and unmapping calls), there is absolutely no good reason to
-support it.  The additional cache maintainance operations will still
-take some overhead that can be skipped, and it makes the rules very
-confusing.  It is much better to fix the upper layers to use
-the SKIP_CPU_SYNC flag in case of multiple mappings, which also
-clearly documents what is being done there.
+The calls look something like this:
+
+    cred = prepare_creds()
+        security_prepare_creds()
+            call_int_hook(cred_prepare, ...
+    if (cred)
+        create_user_ns(cred)
+
+We noticed that error codes were not propagated from this hook and
+introduced a patch [1] to propagate those errors.
+
+The discussion notes that security_prepare_creds()
+is not appropriate for MAC policies, and instead the hook is
+meant for LSM authors to prepare credentials for mutation. [2]
+
+Ultimately, we concluded that a better course of action is to introduce
+a new security hook for LSM authors. [3]
+
+This patch set first introduces a new security_create_user_ns() function
+and userns_create LSM hook, then marks the hook as sleepable in BPF.
+
+Links:
+1. https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
+2. https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
+3. https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
+
+Past discussions:
+V3: https://lore.kernel.org/all/20220721172808.585539-1-fred@cloudflare.com/
+V2: https://lore.kernel.org/all/20220707223228.1940249-1-fred@cloudflare.com/
+V1: https://lore.kernel.org/all/20220621233939.993579-1-fred@cloudflare.com/
+
+Changes since v3:
+- Explicitly set CAP_SYS_ADMIN to test namespace is created given
+  permission
+- Simplify BPF test to use sleepable hook only
+- Prefer unshare() over clone() for tests
+Changes since v2:
+- Rename create_user_ns hook to userns_create
+- Use user_namespace as an object opposed to a generic namespace object
+- s/domB_t/domA_t in commit message
+Changes since v1:
+- Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook patch
+- Add selinux: Implement create_user_ns hook patch
+- Change function signature of security_create_user_ns() to only take
+  struct cred
+- Move security_create_user_ns() call after id mapping check in
+  create_user_ns()
+- Update documentation to reflect changes
+
+Frederick Lawler (4):
+  security, lsm: Introduce security_create_user_ns()
+  bpf-lsm: Make bpf_lsm_userns_create() sleepable
+  selftests/bpf: Add tests verifying bpf lsm userns_create hook
+  selinux: Implement userns_create hook
+
+ include/linux/lsm_hook_defs.h                 |   1 +
+ include/linux/lsm_hooks.h                     |   4 +
+ include/linux/security.h                      |   6 ++
+ kernel/bpf/bpf_lsm.c                          |   1 +
+ kernel/user_namespace.c                       |   5 +
+ security/security.c                           |   5 +
+ security/selinux/hooks.c                      |   9 ++
+ security/selinux/include/classmap.h           |   2 +
+ .../selftests/bpf/prog_tests/deny_namespace.c | 102 ++++++++++++++++++
+ .../selftests/bpf/progs/test_deny_namespace.c |  33 ++++++
+ 10 files changed, 168 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/deny_namespace.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_deny_namespace.c
+
+-- 
+2.30.2
+
