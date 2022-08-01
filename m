@@ -2,81 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FF0DC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 15:16:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF328C19F2B
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 15:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232787AbiHAPQU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 11:16:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50868 "EHLO
+        id S233179AbiHAPRB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 11:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231444AbiHAPQR (ORCPT
+        with ESMTP id S233153AbiHAPQ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 11:16:17 -0400
-Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D69AD10FF8;
-        Mon,  1 Aug 2022 08:16:16 -0700 (PDT)
-Received: by mail-il1-f179.google.com with SMTP id s16so2013982ilp.3;
-        Mon, 01 Aug 2022 08:16:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=HOzPqmgULZoG1/y97IP7LGvfzYRQUc7XYUea7CGLp8U=;
-        b=YAvN+t2HBbzsvdIjZDeT1ZpwzLcB4Jd3YTv3N1PbPqg/krzPmKqZbqKY+eqkaNjF3f
-         5z+DOO/4m9v2+vzKdw07TV6p5kt99Sd4sZk4+FbHk6OQ/rW7hTqVoTRazq+vKosmMo6b
-         fGA8OpcYnY6Q59dUkljiHyJh2Vovzc1pRzMz0JQErFiAlYQOzear54F8Qrs8uq+okjDa
-         RoNS4jOiUGXFzvOEd0fVERGQBxfkpEMsX2TEwoSRR1wNAHfW5CQyfdnKHxE/ye7w0mpZ
-         Rn7h4vJZZa/ukH+pa4xbFvZ0pOo4kDeMP2dtIxfFISm1jByxywGmcqMASRjkbmnNPEOy
-         bK8Q==
-X-Gm-Message-State: AJIora/MJyExVKkN8p9GBoCxxU9TSiL2rcK/r+L3qID+NRfPzltYOt5B
-        zgS0JBlKjm2bXYlB7XzTh3kH8G/3tg==
-X-Google-Smtp-Source: AGRyM1tBT8uzEoN/IPycG1TaNi4r8WsAWJy+p/L9JRkw66xWTFSVYLTTw/cSKPf2yP4onj4R6IzOZw==
-X-Received: by 2002:a05:6e02:1847:b0:2dd:18c7:51c3 with SMTP id b7-20020a056e02184700b002dd18c751c3mr6610384ilv.29.1659366975972;
-        Mon, 01 Aug 2022 08:16:15 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id g10-20020a05660226ca00b0067bcbb0d258sm5779349ioo.46.2022.08.01.08.16.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Aug 2022 08:16:15 -0700 (PDT)
-Received: (nullmailer pid 1035626 invoked by uid 1000);
-        Mon, 01 Aug 2022 15:16:14 -0000
-Date:   Mon, 1 Aug 2022 09:16:14 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-doc@vger.kernel.org, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Subject: Re: [PATCH] devicetree/bindings: correct possessive "its" typos
-Message-ID: <20220801151614.GA1031441-robh@kernel.org>
-References: <20220801025221.30563-1-rdunlap@infradead.org>
+        Mon, 1 Aug 2022 11:16:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49CD024BC8;
+        Mon,  1 Aug 2022 08:16:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 089C6B81217;
+        Mon,  1 Aug 2022 15:16:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35175C433C1;
+        Mon,  1 Aug 2022 15:16:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659367015;
+        bh=pSXSf1aeVqWVQCcBcL4HOgiZB3i5p+bYXDxKTnDwCTY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HaF7w62TEI/sbGdBt8MnFflAEp8kXVgpMoH3YB9X0wvHly6XTRUedvj8W2tYAhh4x
+         +fkpOT5ZOsLIA5umEt6cJwShiOLPk73YX5EKCuj2Zc1ollwBNFqcrYuff0fKyBN3RC
+         6TplN9Gc9zJqZ5wgZucx3xBY7PqW2m/qIccqdCH7WXqOhobznc6wDgqxuXMNrcl2N9
+         0Wv7ZJnTWRRITEqYEFM69ea2+SfCIrocMXPt/mCkQvaTJ3V6taLvhCMkLOtbc7iICp
+         fX5C08Kpof37krH7hQ2sk9OB+rpyLHk/1Ss4dn6BAp4VNUejPCZZxZFo8PSS0DjaTU
+         gKCQJ5uP9EPoA==
+Date:   Mon, 1 Aug 2022 16:16:49 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Frieder Schrempf <frieder.schrempf@kontron.de>
+Cc:     Frieder Schrempf <frieder@fris.de>, devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Robin Gong <yibin.gong@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Per-Daniel Olsson <perdo@axis.com>,
+        Rickard x Andersson <rickaran@axis.com>
+Subject: Re: [PATCH v2 2/8] dt-bindings: regulator: pca9450: Allow arbitrary
+ regulator names
+Message-ID: <YufuYabz0MeJ8r8z@sirena.org.uk>
+References: <20220801131554.116795-1-frieder@fris.de>
+ <20220801131554.116795-3-frieder@fris.de>
+ <YufTP621Bsu8HVpP@sirena.org.uk>
+ <16f688e9-7777-c5f1-0269-f83ed6788831@kontron.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xDyTfeOSnKbkpx89"
 Content-Disposition: inline
-In-Reply-To: <20220801025221.30563-1-rdunlap@infradead.org>
+In-Reply-To: <16f688e9-7777-c5f1-0269-f83ed6788831@kontron.de>
+X-Cookie: Dieters live life in the fasting lane.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 31 Jul 2022 19:52:21 -0700, Randy Dunlap wrote:
-> Correct all uses of "it's" that are meant to be possessive "its".
-> 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-> Cc: devicetree@vger.kernel.org
-> ---
->  Documentation/devicetree/bindings/clock/st/st,flexgen.txt        |    2 +-
->  Documentation/devicetree/bindings/clock/ti/dra7-atl.txt          |    2 +-
->  Documentation/devicetree/bindings/hwmon/adt7475.yaml             |    2 +-
->  Documentation/devicetree/bindings/input/touchscreen/ektf2127.txt |    2 +-
->  Documentation/devicetree/bindings/mfd/rohm,bd71815-pmic.yaml     |    2 +-
->  Documentation/devicetree/bindings/mips/lantiq/rcu.txt            |    2 +-
->  Documentation/devicetree/bindings/net/altera_tse.txt             |    2 +-
->  Documentation/devicetree/bindings/net/cpsw.txt                   |    2 +-
->  Documentation/devicetree/bindings/powerpc/fsl/mpc5200.txt        |    2 +-
->  Documentation/devicetree/bindings/soc/qcom/qcom,aoss-qmp.yaml    |    2 +-
->  Documentation/devicetree/bindings/sound/da9055.txt               |    2 +-
->  11 files changed, 11 insertions(+), 11 deletions(-)
 
-Its a great fix. Applied, thanks!
+--xDyTfeOSnKbkpx89
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Mon, Aug 01, 2022 at 03:45:52PM +0200, Frieder Schrempf wrote:
+> Am 01.08.22 um 15:21 schrieb Mark Brown:
+
+> > This should simply be removed from the bindings for the device, devices
+> > have no business placing any constraint on this generic binding.
+
+> Ok, IIUC something like below should do then. I can change this in the
+> next iteration of this series or send it separately if the rest of the
+> set gets accepted as-is.
+
+Yes, just send it any time and I can apply it as a fix.
+
+--xDyTfeOSnKbkpx89
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLn7mEACgkQJNaLcl1U
+h9DcvAf+OL6kk/U+n1i8yT2A0OedNTTVypjDULReLCbVRBhiJfKjexG/ZKBMGs1a
+y3ogBBbb7O5rzCnBkcZmn7c94GNUCvk7QfpJzB7OcgRORoAzTNB3Nkcc0rhO586v
+91NzqwhOSpDSWsHkOjFHaixJJRuvTaGlR4LptFQdPk8DGN42Pn2zQ/FThRi2c5iU
+k2B/Dtp8oWAA8Z60i/2s3S6p2neCsOTihV3aYHy5GLGPL9yMZSEraQHO0TzDNyM3
+Em/o/L4cIzlBnKfO5AHdJNDjBE85Om0HfkrSGBgTjJ46RvuGfztZY5kZga1VNBUs
+Euk0j9lKJBqVciVhv4khDRd7Ol851w==
+=/gmk
+-----END PGP SIGNATURE-----
+
+--xDyTfeOSnKbkpx89--
