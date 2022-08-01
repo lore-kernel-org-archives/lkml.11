@@ -2,126 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3201DC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:46:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC663C19F29
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234867AbiHAMqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44158 "EHLO
+        id S231571AbiHAMrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234780AbiHAMpx (ORCPT
+        with ESMTP id S230018AbiHAMqy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:45:53 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F7249B54
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:34:08 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id n8so18709440yba.2
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 05:34:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=LcoRKUZxcX+fwnP/w+Ek0L1ccliKcMJGGIMkqg+/gBk=;
-        b=8Qq67pSUym7bRxaJ1wXQxajEMJS6HpKos8PyqVw/AIYaTRUkyuiHDv0eycBw7WteMz
-         vA2ffmtRj5NpE9imFKTBnZZHdh7Veak9BjcfMJEO1TvQsTZncZ8wpJSSeWS/Fzl2r4oo
-         crxtVikU87MU4cvow8KAMXuSE8Fw4ECrP5KwDbAKdS8agCFU52209EKhx1fzCsQSWcmG
-         Bf2T4r9FGmsl0SSufopazQYH6qUx7esh3yBY7jYpKJtzHa+9ugcTbzjnNcl7YUrB99/v
-         9oEa7EI5KFpJbbLUS6osrgC2g3+vL4a3PJZdTepn337fCpKGSdA1qUQAomSfAXFQxHJJ
-         e1NA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LcoRKUZxcX+fwnP/w+Ek0L1ccliKcMJGGIMkqg+/gBk=;
-        b=m2rkuzm9CusAsgzf1SqdIcFYNf4/ZwsFRvclTuJJs66OG+0LVEICh6foBJkGJ1HoYK
-         HitBHnVXQ/Sh/MBwTkkyzQbPF17kU2VQMLlWDK3O9U9O6oIeTCDhmmC0Y2bNEilHLRu0
-         ntJmTACi9F4L6NSyDSWveZghofrJHGycWPHpRqe9HFFBGz1nFswUXBsO1W3MBJo2PQd4
-         J+33KqvMTU84GkA1I+6sE8rqvhgqNb9nntC3751X1axqHxcKONgp8qzwg48vBygRaiq4
-         jta8wH7RWnhvxpM/KVV27Y1KUccxVkYbTQySqRtFy1cb5eUWnXBlLGbhiKoq6vHdM/Aq
-         e19w==
-X-Gm-Message-State: ACgBeo1b49DzkbcNaLaZYbRxLHOwxV1AQd7s4RDWW7SUgw94HtdIxIBK
-        81VmO7KabcxhsF+k01Sqaqi2gQPSmG7XPkKQL4Ed3w==
-X-Google-Smtp-Source: AA6agR6gUV377VODoTtcZyENpHL6zTEL/yl0+xktWswsikj2XjC6xG8FsEO1Dd8D5SwcKI+6sZgTq8Xo9pCEdETIOIU=
-X-Received: by 2002:a25:4941:0:b0:670:24c7:dc96 with SMTP id
- w62-20020a254941000000b0067024c7dc96mr10354775yba.22.1659357247554; Mon, 01
- Aug 2022 05:34:07 -0700 (PDT)
+        Mon, 1 Aug 2022 08:46:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB729FC4
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:36:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FC56B81173
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 12:36:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82336C433C1;
+        Mon,  1 Aug 2022 12:36:55 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="QKy5U0pN"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1659357413;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2KISeyaLsqCiN/ZJ9W/b9JY9pxQfrQ535e2JkH7NRdo=;
+        b=QKy5U0pNaRsUuee6rzIdJoho7WGmWC88MH+HC0/QhQnrkwUue4McSlqbOm7yWKOi6YDS5D
+        wVEaDn0wdi8jdD9dB+cDuCDh0uoO8qsG/eqJuK5s8diBtB9Xl5PWVnHt0PCzYdVOTwCF3n
+        6l1Xk2avoWWVR6cdUhfJK4pnf40AUoM=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c7938d60 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Mon, 1 Aug 2022 12:36:53 +0000 (UTC)
+Date:   Mon, 1 Aug 2022 14:36:48 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Mike Galbraith <efault@gmx.de>, Petr Mladek <pmladek@suse.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH 2/2 v3] lib/vsprintf: Initialize vsprintf's pointer hash
+ once the random core is ready.
+Message-ID: <YufHN7fF0dROMETj@zx2c4.com>
+References: <20220729154716.429964-1-bigeasy@linutronix.de>
+ <20220729154716.429964-3-bigeasy@linutronix.de>
+ <YuRtSGCfe2qxHrqT@zx2c4.com>
+ <YueBnnnnvpxxjE4N@linutronix.de>
+ <YueeIgPGUJgsnsAh@linutronix.de>
 MIME-Version: 1.0
-References: <20220726135506.485108-1-bchihi@baylibre.com> <20220726135506.485108-6-bchihi@baylibre.com>
- <20220729201421.fxybo57g46ftghgd@notapiano>
-In-Reply-To: <20220729201421.fxybo57g46ftghgd@notapiano>
-From:   Balsam CHIHI <bchihi@baylibre.com>
-Date:   Mon, 1 Aug 2022 14:33:31 +0200
-Message-ID: <CAGuA+ooqk-tf5FVfEbA0WdjTOo2fPJi-+AaHDC9jXgw=3vKq0g@mail.gmail.com>
-Subject: Re: [PATCH v8 5/6] arm64: dts: mt8195: Add efuse node to mt8195
-To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>
-Cc:     rafael@kernel.org, rui.zhang@intel.com, daniel.lezcano@linaro.org,
-        amitk@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, khilman@baylibre.com,
-        mka@chromium.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        matthias.bgg@gmail.com, p.zabel@pengutronix.de,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, james.lo@mediatek.com,
-        fan.chen@mediatek.com, louis.yu@mediatek.com,
-        rex-bc.chen@mediatek.com, abailon@baylibre.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YueeIgPGUJgsnsAh@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 10:14 PM N=C3=ADcolas F. R. A. Prado
-<nfraprado@collabora.com> wrote:
->
-> On Tue, Jul 26, 2022 at 03:55:05PM +0200, Balsam CHIHI wrote:
-> > This adds the efuse node. This will be required by the thermal driver
-> > to get the calibration data.
-> >
-> > Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
-> > Signed-off-by: Balsam CHIHI <bchihi@baylibre.com>
-> > ---
-> >  arch/arm64/boot/dts/mediatek/mt8195.dtsi | 16 ++++++++++++++++
-> >  1 file changed, 16 insertions(+)
-> >
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot=
-/dts/mediatek/mt8195.dtsi
-> > index 0ff34edcf8c8..4fbf24b5d202 100644
-> > --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-> > +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-> > @@ -1236,6 +1236,22 @@ nor_flash: spi@1132c000 {
-> >                       status =3D "disabled";
-> >               };
-> >
-> > +             efuse: efuse@11c10000 {
-> > +                     compatible =3D "mediatek,efuse";
-> > +                     reg =3D <0 0x11c10000 0 0x1000>;
-> > +                     #address-cells =3D <1>;
-> > +                     #size-cells =3D <1>;
-> > +                     lvts_efuse_data1: lvts1-calib@1bc {
-> > +                             reg =3D <0x1bc 0x14>;
-> > +                     };
-> > +                     lvts_efuse_data2: lvts2-calib@1d0 {
-> > +                             reg =3D <0x1d0 0x38>;
-> > +                     };
-> > +                     svs_calibration: calib@580 {
-> > +                             reg =3D <0x580 0x64>;
-> > +                     };
-> > +             };
-> > +
->
-> This commit doesn't apply, there's already an efuse node on mt8195.dtsi. =
-Please
-> rebase.
->
-> Thanks,
-> N=C3=ADcolas
+On Mon, Aug 01, 2022 at 11:34:26AM +0200, Sebastian Andrzej Siewior wrote:
+> The printk code invokes vnsprintf in order to compute the complete
+> string before adding it into its buffer. This happens in an IRQ-off
+> region which leads to a warning on PREEMPT_RT in the random code if the
+> format strings contains a %p for pointer printing. This happens because
+> the random core acquires locks which become sleeping locks on PREEMPT_RT
+> which must not be acquired with disabled interrupts and or preemption
+> disabled.
+> By default the pointers are hashed which requires a random value on the
+> first invocation (either by printk or another user which comes first.
+> 
+> One could argue that there is no need for printk to disable interrupts
+> during the vsprintf() invocation which would fix the just mentioned
+> problem. However printk itself can be invoked in a context with
+> disabled interrupts which would lead to the very same problem.
+> 
+> Move the initialization of ptr_key into a worker and schedule it from
+> subsys_initcall(). This happens early but after the workqueue subsystem
+> is ready. Use get_random_bytes() to retrieve the random value if the RNG
+> core is ready, otherwise schedule a worker in two seconds and try again.
+> 
+> Reported-by: Mike Galbraith <efault@gmx.de>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+> v2…v3:
+>    - schedule a worker every two seconds if the RNG core is not ready.
+> 
+>  lib/vsprintf.c |   46 +++++++++++++++++++++++++++-------------------
+>  1 file changed, 27 insertions(+), 19 deletions(-)
+> 
+> --- a/lib/vsprintf.c
+> +++ b/lib/vsprintf.c
+> @@ -751,31 +751,39 @@ static int __init debug_boot_weak_hash_e
+>  early_param("debug_boot_weak_hash", debug_boot_weak_hash_enable);
+>  
+>  static bool filled_random_ptr_key;
+> +static siphash_key_t ptr_key __read_mostly;
+> +static void fill_ptr_key_workfn(struct work_struct *work);
+> +static DECLARE_DELAYED_WORK(fill_ptr_key_work, fill_ptr_key_workfn);
+> +
+> +static void fill_ptr_key_workfn(struct work_struct *work)
+> +{
+> +	if (!rng_is_initialized()) {
+> +		queue_delayed_work(system_unbound_wq, &fill_ptr_key_work, HZ  * 2);
+> +		return;
+> +	}
 
-Hello N=C3=ADcolas,
+This seems kind of crazy and over-complex. You only need this on RT,
+right? Because of the raw lock issue? So just schedule it for the right
+time on RT and not elsewhere.
 
-Thank you so much for the review.
-I rebased on top of the latest kernel version "linux-5.19.0" but I
-can't find efuse node on mt8195.dtsi.
-But, this node is indeed present on mt8192.dtsi.
+I'll send a more basic patch.
 
-Best regards,
-Balsam
+Jason
