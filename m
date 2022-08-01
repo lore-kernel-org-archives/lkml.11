@@ -2,151 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99161C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:05:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B83BDC19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234626AbiHATFe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 15:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
+        id S234099AbiHATFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 15:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234382AbiHATEi (ORCPT
+        with ESMTP id S234530AbiHATE4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 15:04:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B77E41985;
-        Mon,  1 Aug 2022 12:03:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4300AB81603;
-        Mon,  1 Aug 2022 19:03:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2E11C433D6;
-        Mon,  1 Aug 2022 19:03:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659380592;
-        bh=l8enj4MTrzaffRymhY9N+ZvA53+ALJIfwRiVZI2HHvw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eTobRXmRMJqo7gJNkVU9ipopTGLh4eAc/JpFoy9/XvBDHrfWf+z8wuTOBkHYtmdF5
-         nRG80861TJ9EjKP/8vHncX/m8YAUfdvc1im1RTNsfkLhpBH0KACTLCtKA6solik926
-         lm2E3W82HOmMgrjTbNcJVZkFv+yP2UQ736e2g7YGOJuusGy7kPmZ5mhUaQkTi+J3Qg
-         RcS8z38pM0kfKF5tVh4qjUVVC41JG4RvKprrA3+C7gBurwJoGgXvpDRMiwT//mtq6K
-         fzBOwX6nti5mxW/n8HJY4aXP3xqJEiul4Se4h/gnOpWOSsOQX5pUlu145+4M/+BhEL
-         YB024g1nq4FMQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, aneesh.kumar@linux.ibm.com,
-        npiggin@gmail.com, linux-arch@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH AUTOSEL 5.10 5/7] mmu_gather: Force tlb-flush VM_PFNMAP vmas
-Date:   Mon,  1 Aug 2022 15:02:59 -0400
-Message-Id: <20220801190301.3819065-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220801190301.3819065-1-sashal@kernel.org>
-References: <20220801190301.3819065-1-sashal@kernel.org>
+        Mon, 1 Aug 2022 15:04:56 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9DF441D17;
+        Mon,  1 Aug 2022 12:03:25 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 271HsHW9025312;
+        Mon, 1 Aug 2022 19:03:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2022-7-12; bh=BbFNxr6tjxw9VIW8unVKeDr44rwjxC/Z2yvXUqJcDCw=;
+ b=ueQ0b6ffvGNY0WKaKAxOYt7xHvUnMs4Z4jovAwWFIKcaJJoeKF7jKVyTRzC6FgpXWTlk
+ +hNLSa3leeiSHZDYo0ow2K3IIyYOan2TNg4f4VhO9b4eQ17/HQWZbDdbF3NR+2B7szCH
+ Pb4hEJaMqw6sSJZbkFwJLsSQl1+D0JuKdgmYgOI/qAofPmaflhwHyvmu9lGl0IRCvXJk
+ p8xcUYGciwjbXfsBoRL6uy7RIGOOOwzOoRsjqoNcMFTDxy2Y7XWOFzl1Zx7kGEEFbuve
+ 08kZI5xUBCP9U/4mrNN/xsbM7yCwZvTJ+xUfLv6/NrJswP9f/3Rnj/X6soSL30RxiEeo 9Q== 
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hmw6tcmpa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 01 Aug 2022 19:03:13 +0000
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 271I3ag3001480;
+        Mon, 1 Aug 2022 19:03:12 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3hp57qg2c1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 01 Aug 2022 19:03:12 +0000
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 271J3CoW023542;
+        Mon, 1 Aug 2022 19:03:12 GMT
+Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
+        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3hp57qg2bh-1;
+        Mon, 01 Aug 2022 19:03:12 +0000
+From:   Sherry Yang <sherry.yang@oracle.com>
+To:     djwong@kernel.org, dchinner@redhat.com,
+        allison.henderson@oracle.com, chandanrlinux@gmail.com,
+        bfoster@redhat.com
+Cc:     linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sherry.yang@oracle.com
+Subject: [PATCH v1] xfs: initialize error in xfs_defer_finish_one
+Date:   Mon,  1 Aug 2022 12:03:11 -0700
+Message-Id: <20220801190311.65703-1-sherry.yang@oracle.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-01_08,2022-08-01_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=999
+ adultscore=0 spamscore=0 bulkscore=0 suspectscore=0 mlxscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2208010095
+X-Proofpoint-GUID: uNFatD76gB1qiLt5X6VLMjIai8QjcPJx
+X-Proofpoint-ORIG-GUID: uNFatD76gB1qiLt5X6VLMjIai8QjcPJx
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+Path through non-void function 'xfs_defer_finish_one' may return error
+uninitialized if no iteration of 'list_for_each_safe' occurs. Fix this
+by initializing error.
 
-[ Upstream commit b67fbebd4cf980aecbcc750e1462128bffe8ae15 ]
-
-Jann reported a race between munmap() and unmap_mapping_range(), where
-unmap_mapping_range() will no-op once unmap_vmas() has unlinked the
-VMA; however munmap() will not yet have invalidated the TLBs.
-
-Therefore unmap_mapping_range() will complete while there are still
-(stale) TLB entries for the specified range.
-
-Mitigate this by force flushing TLBs for VM_PFNMAP ranges.
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: bb47d79750f1 ("xfs: refactor xfs_defer_finish_noroll")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
 ---
- include/asm-generic/tlb.h | 31 ++++++++++++++++---------------
- 1 file changed, 16 insertions(+), 15 deletions(-)
+ fs/xfs/libxfs/xfs_defer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
-index a8112510522b..171bd6347f74 100644
---- a/include/asm-generic/tlb.h
-+++ b/include/asm-generic/tlb.h
-@@ -286,6 +286,7 @@ struct mmu_gather {
- 	 */
- 	unsigned int		vma_exec : 1;
- 	unsigned int		vma_huge : 1;
-+	unsigned int		vma_pfn  : 1;
+diff --git a/fs/xfs/libxfs/xfs_defer.c b/fs/xfs/libxfs/xfs_defer.c
+index 5a321b783398..3188712ff34e 100644
+--- a/fs/xfs/libxfs/xfs_defer.c
++++ b/fs/xfs/libxfs/xfs_defer.c
+@@ -468,7 +468,7 @@ xfs_defer_finish_one(
+ 	const struct xfs_defer_op_type	*ops = defer_op_types[dfp->dfp_type];
+ 	struct xfs_btree_cur		*state = NULL;
+ 	struct list_head		*li, *n;
+-	int				error;
++	int				error = 0;
  
- 	unsigned int		batch_count;
+ 	trace_xfs_defer_pending_finish(tp->t_mountp, dfp);
  
-@@ -356,7 +357,6 @@ tlb_update_vma_flags(struct mmu_gather *tlb, struct vm_area_struct *vma) { }
- #else /* CONFIG_MMU_GATHER_NO_RANGE */
- 
- #ifndef tlb_flush
--
- /*
-  * When an architecture does not provide its own tlb_flush() implementation
-  * but does have a reasonably efficient flush_vma_range() implementation
-@@ -376,6 +376,9 @@ static inline void tlb_flush(struct mmu_gather *tlb)
- 		flush_tlb_range(&vma, tlb->start, tlb->end);
- 	}
- }
-+#endif
-+
-+#endif /* CONFIG_MMU_GATHER_NO_RANGE */
- 
- static inline void
- tlb_update_vma_flags(struct mmu_gather *tlb, struct vm_area_struct *vma)
-@@ -393,17 +396,9 @@ tlb_update_vma_flags(struct mmu_gather *tlb, struct vm_area_struct *vma)
- 	 */
- 	tlb->vma_huge = is_vm_hugetlb_page(vma);
- 	tlb->vma_exec = !!(vma->vm_flags & VM_EXEC);
-+	tlb->vma_pfn  = !!(vma->vm_flags & (VM_PFNMAP|VM_MIXEDMAP));
- }
- 
--#else
--
--static inline void
--tlb_update_vma_flags(struct mmu_gather *tlb, struct vm_area_struct *vma) { }
--
--#endif
--
--#endif /* CONFIG_MMU_GATHER_NO_RANGE */
--
- static inline void tlb_flush_mmu_tlbonly(struct mmu_gather *tlb)
- {
- 	/*
-@@ -492,12 +487,18 @@ static inline void tlb_end_vma(struct mmu_gather *tlb, struct vm_area_struct *vm
- 		return;
- 
- 	/*
--	 * Do a TLB flush and reset the range at VMA boundaries; this avoids
--	 * the ranges growing with the unused space between consecutive VMAs,
--	 * but also the mmu_gather::vma_* flags from tlb_start_vma() rely on
--	 * this.
-+	 * VM_PFNMAP is more fragile because the core mm will not track the
-+	 * page mapcount -- there might not be page-frames for these PFNs after
-+	 * all. Force flush TLBs for such ranges to avoid munmap() vs
-+	 * unmap_mapping_range() races.
- 	 */
--	tlb_flush_mmu_tlbonly(tlb);
-+	if (tlb->vma_pfn || !IS_ENABLED(CONFIG_MMU_GATHER_MERGE_VMAS)) {
-+		/*
-+		 * Do a TLB flush and reset the range at VMA boundaries; this avoids
-+		 * the ranges growing with the unused space between consecutive VMAs.
-+		 */
-+		tlb_flush_mmu_tlbonly(tlb);
-+	}
- }
- 
- /*
 -- 
-2.35.1
+2.31.1
 
