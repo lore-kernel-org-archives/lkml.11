@@ -2,199 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4083AC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 13:14:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6711C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 13:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232231AbiHANOs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 09:14:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
+        id S231485AbiHANQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 09:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232051AbiHANOp (ORCPT
+        with ESMTP id S230087AbiHANQH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 09:14:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82EC9255A5
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 06:14:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11C98B8116B
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 13:14:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89772C433C1;
-        Mon,  1 Aug 2022 13:14:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659359681;
-        bh=Ys23SCaqwQo0xJ/5DGB6j0jxIe7a4XFk2MqQP4qYS00=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=baIFx+BYLzwvIxTsk4i8ToRmLEoWEk38ssM0zmXdIqkX41EIzrEPFwBMX2wf95LLR
-         2wrIH8KYLcUICP7WFQ8GoZe/NHONm3uQo7fQOgysSAvkfmWgJ1d6I7a1CxLvssE2SR
-         wp6+jBWYWhs7Y19+0ZNga6eZVp66AgaBGTnLbylFY/0lXHJasfTxuWVo6lSIyucf3H
-         QACKpjJjJfYdx72qIvN7u+5S42H2mfZBnQj7woFipz+5dNQsRxn99r8mVyzQCo7SvZ
-         XzGZ/NsTXGM7Dkvyuq6Brj6XQITdc0gtCcMJJq1fg9hlMY845zfzYNqT7rRp0KFUkl
-         JKN9ro0gLjfSA==
-Date:   Mon, 1 Aug 2022 14:14:35 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Kevin Lu <luminlong@139.com>
-Cc:     linux-kernel@vger.kernel.org, shenghao-ding@ti.com, kevin-lu@ti.com
-Subject: Re: [PATCH v1 1/1] Add a new kcontrol for phase calib, remove
- unnecessary header file, make code more comply with linux coding style
-Message-ID: <YufRu6/Wed2J/eoX@sirena.org.uk>
-References: <20220801025939.2343-1-luminlong@139.com>
- <20220801025939.2343-2-luminlong@139.com>
+        Mon, 1 Aug 2022 09:16:07 -0400
+Received: from mail.fris.de (mail.fris.de [IPv6:2a01:4f8:c2c:390b::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E0462B264;
+        Mon,  1 Aug 2022 06:16:03 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id E7E48BFBC6;
+        Mon,  1 Aug 2022 15:15:56 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
+        t=1659359760; h=from:subject:date:message-id:to:cc:mime-version:
+         content-transfer-encoding; bh=n20eecw78N24KCT8Ahm3HDfln/rPRfajiP3bL2FlrGs=;
+        b=pdgNgswtZrsx51v7nh4v33IU0NLiXWy45kzDW5tKzkBgys/a/O7gKeMV04CYiCO4vfUxn+
+        SPRSZjts64T1zt/uW1ruzr+HFJjlKUUkaS8Xy2Uq3zmjynUHoMxXvk6fgxSl+c+hjdCjrj
+        bwKw0YNutHT7iP0Zk2jyFAhFXDbQ2mQ3nQCS07Cc/KDIo3ZyV93FCMX/w3vp/UoMumhm2E
+        mPQtt3X6CctdMi9yNYoliTynu/THuUuWJTs8oftSQGZZopPQFLRhLZd+xn6gpVK66hChKF
+        wK7lruNaIe+VeAKKzdGaLkddAAuKTiTwE2u9LIZ35CbDgydVrg++w17VHkI3dw==
+From:   Frieder Schrempf <frieder@fris.de>
+To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
+        Robin Gong <yibin.gong@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>
+Cc:     Fabio Estevam <festevam@gmail.com>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Subject: [PATCH v2 0/8] arm64: dts: imx8mm-kontron: Improvements and OSM board support
+Date:   Mon,  1 Aug 2022 15:15:44 +0200
+Message-Id: <20220801131554.116795-1-frieder@fris.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="3VOt0VJwLJ0XInkT"
-Content-Disposition: inline
-In-Reply-To: <20220801025939.2343-2-luminlong@139.com>
-X-Cookie: Dieters live life in the fasting lane.
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
---3VOt0VJwLJ0XInkT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This set contains a few small improvements for the imx8mm-kontron devicetrees
+(patch 3-7) and support for a new SoM (patch 8, including baseboard) that
+complies to the Open Standard Module (OSM) 1.0 hardware specification, size S
+(https://sget.org/standards/osm).
 
-On Mon, Aug 01, 2022 at 10:59:39AM +0800, Kevin Lu wrote:
+It also includes binding changes for the new board (patch 1) and a binding
+change for the PCA9450 PMIC regulators (patch2).
 
-This looks mostly good however there are a few things that need looking
-at:
+Changes in v2:
+* move binding changes to beginning of patchset
+* Allow arbitrary regulator names in PCA9450 bindings
+* Use voltage rail names from schematic for PMIC regulator-names
+* Add SPI NOR partition layout to devicetree
+* Remove unneeded header include
+* Add tags
 
-> Signed-off-by: Kevin Lu <luminlong@139.com>
-> ---
->  tlv320adcx140.c | 1218 +++++++++++++++++++++++++++++++++++++++++++++++
->  tlv320adcx140.h |  157 ++++++
->  2 files changed, 1375 insertions(+)
->  create mode 100644 tlv320adcx140.c
->  create mode 100644 tlv320adcx140.h
+Frieder Schrempf (8):
+  dt-bindings: arm: fsl: Add Kontron BL i.MX8MM OSM-S board
+  dt-bindings: regulator: pca9450: Allow arbitrary regulator names
+  arm64: dts: imx8mm-kontron: Adjust board and SoM model strings
+  arm64: dts: imx8mm-kontron: Use the VSELECT signal to switch SD card
+    IO voltage
+  arm64: dts: imx8mm-kontron: Remove low DDRC operating point
+  arm64: dts: imx8mm-kontron: Use voltage rail names from schematic for
+    PMIC regulator-names
+  arm64: dts: imx8mm-kontron: Add SPI NOR partition layout
+  arm64: dts: Add support for Kontron SL/BL i.MX8MM OSM-S
 
-This is a new driver which isn't what the changelog says at all, and it
-lacks any Kconfig or Makefile updates so the new driver won't be built.
+ .../devicetree/bindings/arm/fsl.yaml          |   6 +
+ .../regulator/nxp,pca9450-regulator.yaml      |   8 +-
+ arch/arm64/boot/dts/freescale/Makefile        |   1 +
+ .../dts/freescale/imx8mm-kontron-n801x-s.dts  |   5 +-
+ .../freescale/imx8mm-kontron-n801x-som.dtsi   |  51 ++-
+ .../dts/freescale/imx8mm-kontron-n802x-s.dts  | 376 ++++++++++++++++++
+ .../freescale/imx8mm-kontron-n802x-som.dtsi   | 330 +++++++++++++++
+ 7 files changed, 754 insertions(+), 23 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-kontron-n802x-s.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-kontron-n802x-som.dtsi
 
-Please format your changelog as covered in submitting-patches.rst, both
-accurately describing what's in the patch and following the subject line
-style for the subsystem.
+-- 
+2.37.1
 
-> +static const char * const resistor_text[] = {
-> +	"2.5 kOhm", "10 kOhm", "20 kOhm"
-> +};
-> +
-> +static SOC_ENUM_SINGLE_DECL(in1_resistor_enum, ADCX140_CH1_CFG0, 2,
-> +			    resistor_text);
-> +static SOC_ENUM_SINGLE_DECL(in2_resistor_enum, ADCX140_CH2_CFG0, 2,
-> +			    resistor_text);
-> +static SOC_ENUM_SINGLE_DECL(in3_resistor_enum, ADCX140_CH3_CFG0, 2,
-> +			    resistor_text);
-> +static SOC_ENUM_SINGLE_DECL(in4_resistor_enum, ADCX140_CH4_CFG0, 2,
-> +			    resistor_text);
-
-Is this something that can usefully be varied at runtime or does it
-depend on the board design?
-
-> +	SND_SOC_DAPM_MIXER("Output Mixer", SND_SOC_NOPM, 0, 0,
-> +		&adcx140_output_mixer_controls[0],
-> +		ARRAY_SIZE(adcx140_output_mixer_controls)),
-
-Don't put all the mixer controls into an array and then index into it by
-magic numbers, just declare variables for all the individual controls.
-This is much more readable and less error prone.
-
-> +static const char * const phase_calib_text[] = {
-> +	"Disable",
-> +	"Enable"
-> +};
-> +
-> +static const struct soc_enum phase_calib_enum[] = {
-> +	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(phase_calib_text), phase_calib_text),
-> +};
-
-This is a simple on/off switch, it should be a normal control with a
-name ending in Switch not an enum.
-
-> +static int adcx140_phase_calib_get(struct snd_kcontrol *pKcontrol,
-> +	struct snd_ctl_elem_value *pValue)
-> +{
-> +	struct snd_soc_component *codec =
-> +		snd_soc_kcontrol_component(pKcontrol);
-> +	struct adcx140_priv *adcx140 = snd_soc_component_get_drvdata(codec);
-> +
-> +	pValue->value.integer.value[0] = adcx140->phase_calib_on;
-
-Please follow the normal kernel coding style for variable and parameter
-names, don't use hungarian notation.
-
-> +static int adcx140_phase_calib_put(struct snd_kcontrol *pKcontrol,
-> +	struct snd_ctl_elem_value *pValue)
-> +{
-> +	struct snd_soc_component *codec
-> +		= snd_soc_kcontrol_component(pKcontrol);
-> +	struct adcx140_priv *adcx140 = snd_soc_component_get_drvdata(codec);
-> +
-> +	adcx140->phase_calib_on = pValue->value.integer.value[0];
-> +
-> +	return 0;
-> +}
-
-This should return 1 if the value changes, the mixer-test selftest will
-check for this and a number of other issues - you should ensure your
-driver passes that cleanly.
-
-> +	/* signal polarity */
-> +	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
-> +	case SND_SOC_DAIFMT_IB_NF:
-> +	case SND_SOC_DAIFMT_IB_IF:
-> +		inverted_bclk = !inverted_bclk;
-> +		break;
-> +	case SND_SOC_DAIFMT_NB_IF:
-> +		iface_reg1 |= ADCX140_FSYNCINV_BIT;
-> +		break;
-> +	case SND_SOC_DAIFMT_NB_NF:
-> +		break;
-
-This is treating _IB_IF and _IB_NF identically which is clearly wrong.
-It looks like the ADCX140_FSYNCINV_BIT setting needs to be handled.
-
-> +	adcx140->supply_areg = devm_regulator_get_optional(adcx140->dev,
-> +							   "areg");
-> +	if (IS_ERR(adcx140->supply_areg)) {
-> +		if (PTR_ERR(adcx140->supply_areg) == -EPROBE_DEFER)
-> +			return -EPROBE_DEFER;
-> +
-> +		adcx140->supply_areg = NULL;
-> +	} else {
-> +		ret = regulator_enable(adcx140->supply_areg);
-> +		if (ret) {
-> +			dev_err(adcx140->dev, "Failed to enable areg\n");
-> +			return ret;
-> +		}
-> +
-> +		ret = devm_add_action_or_reset(&i2c->dev,
-> +			adcx140_disable_regulator, adcx140);
-> +		if (ret)
-> +			return ret;
-> +	}
-
-Unless the hardware can work without power this is buggy.  The driver
-should request and unconditionally use all supplies the device
-physically has, it should only use _get_optional() for supplies which
-may be physically absent in the system for some reason.  For example
-with the TLV320ADC6140 it looks like the driver shuld be requesting
-AVDD and IOVDD and that AREG is an output from the device.
-
---3VOt0VJwLJ0XInkT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLn0boACgkQJNaLcl1U
-h9Cr9Qf/ULUoVl5YDm4HlnyFKdSJrFSop/q5H0KXaJHmquPMXs0cOgHHvxDoB1eb
-4rNNqHk94qy2/e3RKv1gDLaeEj/1E/WSPGFbQJXOX8dBs3kKgVXQpVxb1xQUwGDg
-WWzfeCVimsEPHX1zHjAYVH2Rwu7fpgEj/9qoejZPiBwAeZkHFKh0oIwi309BeICp
-Bbqi5L+0+OSc+ZdSt2E34oxXrVH6xtkmrDuHmmdhXJ5f2EyjZHPrgqkmS9H1owVO
-UhzoXIX2VoavCZI/gu7FCV0/JoKRz8Dy9gOtAIHJlJuwGVA/NK7Z/sGZ04AnM+nc
-2ZXkgZpnLe0Y1E6aWklITqvQgan13w==
-=ylpb
------END PGP SIGNATURE-----
-
---3VOt0VJwLJ0XInkT--
