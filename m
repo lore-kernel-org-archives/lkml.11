@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61AB4C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F651C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234465AbiHAMRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39826 "EHLO
+        id S234481AbiHAMRT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234564AbiHAMQG (ORCPT
+        with ESMTP id S234600AbiHAMQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:16:06 -0400
+        Mon, 1 Aug 2022 08:16:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D074A7B7B2;
-        Mon,  1 Aug 2022 04:58:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380657CB4D;
+        Mon,  1 Aug 2022 04:58:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 163EBB81177;
-        Mon,  1 Aug 2022 11:58:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D51EC433D6;
-        Mon,  1 Aug 2022 11:58:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3CB3B80E8F;
+        Mon,  1 Aug 2022 11:58:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 305C0C433D6;
+        Mon,  1 Aug 2022 11:58:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355118;
-        bh=BCSZ5FcxKHLnLX9QYsEZYRemGsHyujug8mJ30WI0Syo=;
+        s=korg; t=1659355121;
+        bh=t9K1ljGtuwOhs5uxy8grAgH4UHD7p6dHciwG8jNTmFI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U0rfW4RclhbNf+tvS4I3B1d3x042P1gRiaI8jRt3P2Y0A4QJPWlH13VpEuibFTvmr
-         yp3/zWn77eS/pBU7KCDfYnfnB9wwZlSedOmr07/zOZonnqG9WNRp/WlXs2ycP3mdQU
-         gOXnlX6GbnwAQJTUmjJ1U0CNgsoXVavtAA3/ImQ0=
+        b=BvMls7l8Yi7ZdhgeXDh1QLRESjxIqdGuvsW3M1oqv/D7450DkPfi5Z/sYhbJ48rfh
+         qacb2/4yYZP87TJTGxYZEpELfutAjuLycAQVrhvA+ZPPMPt45N/wX39EGAXcngD1PK
+         mCSUXPucDpF/IgLFtFT3TGRABZYBXbvF4RkJrl/M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stanley Chu <stanley.chu@mediatek.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Bean Huo <beanhuo@micron.com>,
+        Stanley Chu <stanley.chu@mediatek.com>,
         Bart Van Assche <bvanassche@acm.org>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 70/88] scsi: ufs: Support clearing multiple commands at once
-Date:   Mon,  1 Aug 2022 13:47:24 +0200
-Message-Id: <20220801114141.237012467@linuxfoundation.org>
+Subject: [PATCH 5.18 71/88] scsi: ufs: core: Fix a race condition related to device management
+Date:   Mon,  1 Aug 2022 13:47:25 +0200
+Message-Id: <20220801114141.269290284@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -53,113 +55,135 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Bart Van Assche <bvanassche@acm.org>
 
-[ Upstream commit d1a7644648b7cdacaf8d1013a4285001911e9bc8 ]
+[ Upstream commit f5c2976e0cb0f6236013bfb479868531b04f61d4 ]
 
-Modify ufshcd_clear_cmd() such that it supports clearing multiple commands
-at once instead of one command at a time. This change will be used in a
-later patch to reduce the time spent in the reset handler.
+If a device management command completion happens after
+wait_for_completion_timeout() times out and before ufshcd_clear_cmds() is
+called, then the completion code may crash on the complete() call in
+__ufshcd_transfer_req_compl().
 
-Link: https://lore.kernel.org/r/20220613214442.212466-3-bvanassche@acm.org
-Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
-Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
+Fix the following crash:
+
+  Unable to handle kernel NULL pointer dereference at virtual address 0000000000000008
+  Call trace:
+   complete+0x64/0x178
+   __ufshcd_transfer_req_compl+0x30c/0x9c0
+   ufshcd_poll+0xf0/0x208
+   ufshcd_sl_intr+0xb8/0xf0
+   ufshcd_intr+0x168/0x2f4
+   __handle_irq_event_percpu+0xa0/0x30c
+   handle_irq_event+0x84/0x178
+   handle_fasteoi_irq+0x150/0x2e8
+   __handle_domain_irq+0x114/0x1e4
+   gic_handle_irq.31846+0x58/0x300
+   el1_irq+0xe4/0x1c0
+   efi_header_end+0x110/0x680
+   __irq_exit_rcu+0x108/0x124
+   __handle_domain_irq+0x118/0x1e4
+   gic_handle_irq.31846+0x58/0x300
+   el1_irq+0xe4/0x1c0
+   cpuidle_enter_state+0x3ac/0x8c4
+   do_idle+0x2fc/0x55c
+   cpu_startup_entry+0x84/0x90
+   kernel_init+0x0/0x310
+   start_kernel+0x0/0x608
+   start_kernel+0x4ec/0x608
+
+Link: https://lore.kernel.org/r/20220720170228.1598842-1-bvanassche@acm.org
+Fixes: 5a0b0cb9bee7 ("[SCSI] ufs: Add support for sending NOP OUT UPIU")
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Avri Altman <avri.altman@wdc.com>
+Cc: Bean Huo <beanhuo@micron.com>
+Cc: Stanley Chu <stanley.chu@mediatek.com>
 Signed-off-by: Bart Van Assche <bvanassche@acm.org>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd.c | 42 ++++++++++++++++++++++++++-------------
- 1 file changed, 28 insertions(+), 14 deletions(-)
+ drivers/scsi/ufs/ufshcd.c | 58 +++++++++++++++++++++++++++------------
+ 1 file changed, 40 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 452ad0612067..a34c1fab0246 100644
+index a34c1fab0246..874490f7f5e7 100644
 --- a/drivers/scsi/ufs/ufshcd.c
 +++ b/drivers/scsi/ufs/ufshcd.c
-@@ -734,17 +734,28 @@ static enum utp_ocs ufshcd_get_tr_ocs(struct ufshcd_lrb *lrbp)
- }
- 
- /**
-- * ufshcd_utrl_clear - Clear a bit in UTRLCLR register
-+ * ufshcd_utrl_clear() - Clear requests from the controller request list.
-  * @hba: per adapter instance
-- * @pos: position of the bit to be cleared
-+ * @mask: mask with one bit set for each request to be cleared
-  */
--static inline void ufshcd_utrl_clear(struct ufs_hba *hba, u32 pos)
-+static inline void ufshcd_utrl_clear(struct ufs_hba *hba, u32 mask)
+@@ -2947,37 +2947,59 @@ ufshcd_dev_cmd_completion(struct ufs_hba *hba, struct ufshcd_lrb *lrbp)
+ static int ufshcd_wait_for_dev_cmd(struct ufs_hba *hba,
+ 		struct ufshcd_lrb *lrbp, int max_timeout)
  {
- 	if (hba->quirks & UFSHCI_QUIRK_BROKEN_REQ_LIST_CLR)
--		ufshcd_writel(hba, (1 << pos), REG_UTP_TRANSFER_REQ_LIST_CLEAR);
--	else
--		ufshcd_writel(hba, ~(1 << pos),
--				REG_UTP_TRANSFER_REQ_LIST_CLEAR);
-+		mask = ~mask;
-+	/*
-+	 * From the UFSHCI specification: "UTP Transfer Request List CLear
-+	 * Register (UTRLCLR): This field is bit significant. Each bit
-+	 * corresponds to a slot in the UTP Transfer Request List, where bit 0
-+	 * corresponds to request slot 0. A bit in this field is set to ‘0’
-+	 * by host software to indicate to the host controller that a transfer
-+	 * request slot is cleared. The host controller
-+	 * shall free up any resources associated to the request slot
-+	 * immediately, and shall set the associated bit in UTRLDBR to ‘0’. The
-+	 * host software indicates no change to request slots by setting the
-+	 * associated bits in this field to ‘1’. Bits in this field shall only
-+	 * be set ‘1’ or ‘0’ by host software when UTRLRSR is set to ‘1’."
-+	 */
-+	ufshcd_writel(hba, ~mask, REG_UTP_TRANSFER_REQ_LIST_CLEAR);
- }
- 
- /**
-@@ -2853,16 +2864,19 @@ static int ufshcd_compose_dev_cmd(struct ufs_hba *hba,
- 	return ufshcd_compose_devman_upiu(hba, lrbp);
- }
- 
--static int
--ufshcd_clear_cmd(struct ufs_hba *hba, int tag)
-+/*
-+ * Clear all the requests from the controller for which a bit has been set in
-+ * @mask and wait until the controller confirms that these requests have been
-+ * cleared.
-+ */
-+static int ufshcd_clear_cmds(struct ufs_hba *hba, u32 mask)
- {
- 	int err = 0;
+-	int err = 0;
+-	unsigned long time_left;
++	unsigned long time_left = msecs_to_jiffies(max_timeout);
  	unsigned long flags;
--	u32 mask = 1 << tag;
++	bool pending;
++	int err;
  
- 	/* clear outstanding transaction before retry */
- 	spin_lock_irqsave(hba->host->host_lock, flags);
--	ufshcd_utrl_clear(hba, tag);
-+	ufshcd_utrl_clear(hba, mask);
- 	spin_unlock_irqrestore(hba->host->host_lock, flags);
++retry:
+ 	time_left = wait_for_completion_timeout(hba->dev_cmd.complete,
+-			msecs_to_jiffies(max_timeout));
++						time_left);
  
- 	/*
-@@ -2953,7 +2967,7 @@ static int ufshcd_wait_for_dev_cmd(struct ufs_hba *hba,
+-	spin_lock_irqsave(hba->host->host_lock, flags);
+-	hba->dev_cmd.complete = NULL;
+ 	if (likely(time_left)) {
++		/*
++		 * The completion handler called complete() and the caller of
++		 * this function still owns the @lrbp tag so the code below does
++		 * not trigger any race conditions.
++		 */
++		hba->dev_cmd.complete = NULL;
+ 		err = ufshcd_get_tr_ocs(lrbp);
+ 		if (!err)
+ 			err = ufshcd_dev_cmd_completion(hba, lrbp);
+-	}
+-	spin_unlock_irqrestore(hba->host->host_lock, flags);
+-
+-	if (!time_left) {
++	} else {
  		err = -ETIMEDOUT;
  		dev_dbg(hba->dev, "%s: dev_cmd request timedout, tag %d\n",
  			__func__, lrbp->task_tag);
--		if (!ufshcd_clear_cmd(hba, lrbp->task_tag))
-+		if (!ufshcd_clear_cmds(hba, 1U << lrbp->task_tag))
+-		if (!ufshcd_clear_cmds(hba, 1U << lrbp->task_tag))
++		if (ufshcd_clear_cmds(hba, 1U << lrbp->task_tag) == 0) {
  			/* successfully cleared the command, retry if needed */
  			err = -EAGAIN;
- 		/*
-@@ -6988,7 +7002,7 @@ static int ufshcd_eh_device_reset_handler(struct scsi_cmnd *cmd)
- 	/* clear the commands that were pending for corresponding LUN */
- 	for_each_set_bit(pos, &hba->outstanding_reqs, hba->nutrs) {
- 		if (hba->lrb[pos].lun == lun) {
--			err = ufshcd_clear_cmd(hba, pos);
-+			err = ufshcd_clear_cmds(hba, 1U << pos);
- 			if (err)
- 				break;
- 			__ufshcd_transfer_req_compl(hba, 1U << pos);
-@@ -7090,7 +7104,7 @@ static int ufshcd_try_to_abort_task(struct ufs_hba *hba, int tag)
- 		goto out;
+-		/*
+-		 * in case of an error, after clearing the doorbell,
+-		 * we also need to clear the outstanding_request
+-		 * field in hba
+-		 */
+-		spin_lock_irqsave(&hba->outstanding_lock, flags);
+-		__clear_bit(lrbp->task_tag, &hba->outstanding_reqs);
+-		spin_unlock_irqrestore(&hba->outstanding_lock, flags);
++			/*
++			 * Since clearing the command succeeded we also need to
++			 * clear the task tag bit from the outstanding_reqs
++			 * variable.
++			 */
++			spin_lock_irqsave(&hba->outstanding_lock, flags);
++			pending = test_bit(lrbp->task_tag,
++					   &hba->outstanding_reqs);
++			if (pending) {
++				hba->dev_cmd.complete = NULL;
++				__clear_bit(lrbp->task_tag,
++					    &hba->outstanding_reqs);
++			}
++			spin_unlock_irqrestore(&hba->outstanding_lock, flags);
++
++			if (!pending) {
++				/*
++				 * The completion handler ran while we tried to
++				 * clear the command.
++				 */
++				time_left = 1;
++				goto retry;
++			}
++		} else {
++			dev_err(hba->dev, "%s: failed to clear tag %d\n",
++				__func__, lrbp->task_tag);
++		}
  	}
  
--	err = ufshcd_clear_cmd(hba, tag);
-+	err = ufshcd_clear_cmds(hba, 1U << tag);
- 	if (err)
- 		dev_err(hba->dev, "%s: Failed clearing cmd at tag %d, err %d\n",
- 			__func__, tag, err);
+ 	return err;
 -- 
 2.35.1
 
