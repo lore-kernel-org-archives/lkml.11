@@ -2,97 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A09C25B06
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 14:41:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58721C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 14:41:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233049AbiHAOlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 10:41:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53282 "EHLO
+        id S233136AbiHAOlg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 10:41:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232825AbiHAOk5 (ORCPT
+        with ESMTP id S232921AbiHAOlQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 10:40:57 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E8137185
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 07:40:54 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id z17so9703341wrq.4
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 07:40:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=14KOQn3U09Etizd1SZ3pc5DfY9+tF9zMxWV58jSuGuE=;
-        b=ln9Otoqf4wEoVRIgdfZr95riVXGLZq63ykvOyiv+nRsT6MXy2pw0qlNiHv/wkKg8VR
-         qy6rgo5S0kRmVSJSI8oHq+/TK9IDHrzOdBpMh7NoQseDYEygb5jCpitEs5/YbUvxtYl9
-         Wdl7/jFbSDXmtqsBIlqeKGrOnRmp/MS2sN9mbbe2UDX19rieQ9Eq9czDezqyITQaZrBu
-         OGG13Y1dXSdGcYKkB4UfByrAaFXUic4Wv1k5L/4kyGvWKa/Bl+SpabJDRHId0rlL7zcR
-         hes8/TjC/da/ehnuer1ZmnPG7I8QC2wan9ylugRQoiQEV7Z1cDYYnlFylLmUiohQKlh7
-         zfHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=14KOQn3U09Etizd1SZ3pc5DfY9+tF9zMxWV58jSuGuE=;
-        b=AFvMNOKqyqRZjdHzQTTa5nAHkHir03xnhn7uqPbR39qGexWoQouvfHFJ1LkbvaKfBf
-         3qIEEC5woqJM7oOspdS1L/HRtyprTYDZgaoZpPmtlI6m6KZj4/vY/01EcsgePT0Xu1Od
-         TB12RgIp4hJpcZDqCVOl8SZtrxTDYYHLJt2roKO5F7rli0EkSBnXiVaIysVI8wDVcgid
-         bkq8JKhgTzuaU6Q1GcpDYLpXJpSey33P79Vd0dteu75XJPOSlSWb6bVTP0+X/CHleVSg
-         NMEg4U8SfyuNfMhB4I7B7V3f86WHmgug3SAx9FsWg0k0ZFav6mGvqIi5O0iI/v8kbk1P
-         niXw==
-X-Gm-Message-State: ACgBeo2gpTup3PRprRFqNtYJZqr3WlrQ6gTV6gx2SLIj7aaw/SQioA/+
-        GFtSPw6twnwQSasc+f3cAG6SHA==
-X-Google-Smtp-Source: AA6agR6CLIJddHIFsdoRnEoCimzh2cjJp8NBZ07mvCC7qWBoeICAgZyMqz5vnhXXvm6O7FW3ZXd9ag==
-X-Received: by 2002:adf:e0cd:0:b0:21f:bb1:21f4 with SMTP id m13-20020adfe0cd000000b0021f0bb121f4mr10665807wri.113.1659364852659;
-        Mon, 01 Aug 2022 07:40:52 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id r21-20020a05600c35d500b003a17ab4e7c8sm20525405wmq.39.2022.08.01.07.40.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Aug 2022 07:40:51 -0700 (PDT)
-Date:   Mon, 1 Aug 2022 16:40:50 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Moshe Shemesh <moshe@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Fernanda Ma'rouf <fernandafmr12@gnuweeb.org>,
-        netdev Mailing List <netdev@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kbuild Mailing List <kbuild@lists.01.org>,
-        kbuild-all Mailing List <kbuild-all@lists.01.org>
-Subject: Re: [PATCH] net: devlink: Fix missing mutex_unlock() call
-Message-ID: <Yufl8sENNlOjsfwf@nanopsycho>
-References: <202207311503.QBFSGqiL-lkp@intel.com>
- <20220801115742.1309329-1-ammar.faizi@intel.com>
+        Mon, 1 Aug 2022 10:41:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D75403D582
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 07:41:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659364864;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4t1/0IxJa6CSuWSxZNOTLOA5QGMU9OZhYQRkkYe7p6I=;
+        b=ZsmneIvdXfXDtuRHUtmHK1gbFP9lh5oXeKPiPm7wXpy7+h3Ly66LEc431KXpfQCQ8DFUX6
+        QkREKXETRNOYNJuoCy0YjozgAtMoqsWrR0vk94LyKejQtpLtI4Au59DPWO5giRKvC+xIry
+        BnDesddWOqVW7ZPUHMcED2sCj7/cTTQ=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-526-0zvBQuswOaeEa8TYB4iQBQ-1; Mon, 01 Aug 2022 10:41:03 -0400
+X-MC-Unique: 0zvBQuswOaeEa8TYB4iQBQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B1CD33C2F761;
+        Mon,  1 Aug 2022 14:41:02 +0000 (UTC)
+Received: from MiWiFi-R3L-srv.redhat.com (ovpn-12-103.pek2.redhat.com [10.72.12.103])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 13F21141510F;
+        Mon,  1 Aug 2022 14:40:51 +0000 (UTC)
+From:   Baoquan He <bhe@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org, hch@infradead.org,
+        wangkefeng.wang@huawei.com, linux-arm-kernel@lists.infradead.org,
+        Baoquan He <bhe@redhat.com>, Vineet Gupta <vgupta@kernel.org>,
+        linux-snps-arc@lists.infradead.org
+Subject: [PATCH 04/11] arc: mm: Convert to GENERIC_IOREMAP
+Date:   Mon,  1 Aug 2022 22:40:22 +0800
+Message-Id: <20220801144029.57829-5-bhe@redhat.com>
+In-Reply-To: <20220801144029.57829-1-bhe@redhat.com>
+References: <20220801144029.57829-1-bhe@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220801115742.1309329-1-ammar.faizi@intel.com>
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mon, Aug 01, 2022 at 01:59:56PM CEST, ammarfaizi2@gnuweeb.org wrote:
->From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
->
->Commit 2dec18ad826f forgets to call mutex_unlock() before the function
->returns in the error path:
->
->   New smatch warnings:
->   net/core/devlink.c:6392 devlink_nl_cmd_region_new() warn: inconsistent \
->   returns '&region->snapshot_lock'.
->
->Make sure we call mutex_unlock() in this error path.
->
->Reported-by: kernel test robot <lkp@intel.com>
->Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
->Fixes: 2dec18ad826f52658f7781ee995d236cc449b678 ("net: devlink: remove region snapshots list dependency on devlink->lock")
->Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Add hooks ioremap_allowed() and iounmap_allowed() for arc's special
+operation when ioremap_prot() and iounmap(). Meanwhile define and
+implement arc's own ioremap() because arc has some special handling
+in ioremap() than standard ioremap().
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: Baoquan He <bhe@redhat.com>
+Cc: Vineet Gupta <vgupta@kernel.org>
+Cc: linux-snps-arc@lists.infradead.org
+---
+ arch/arc/Kconfig          |  1 +
+ arch/arc/include/asm/io.h | 19 +++++++++----
+ arch/arc/mm/ioremap.c     | 60 ++++++---------------------------------
+ 3 files changed, 24 insertions(+), 56 deletions(-)
 
-Thanks for the fix!
+diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
+index 9e3653253ef2..a08d2abfaf61 100644
+--- a/arch/arc/Kconfig
++++ b/arch/arc/Kconfig
+@@ -26,6 +26,7 @@ config ARC
+ 	select GENERIC_PENDING_IRQ if SMP
+ 	select GENERIC_SCHED_CLOCK
+ 	select GENERIC_SMP_IDLE_THREAD
++	select GENERIC_IOREMAP
+ 	select HAVE_ARCH_KGDB
+ 	select HAVE_ARCH_TRACEHOOK
+ 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE if ARC_MMU_V4
+diff --git a/arch/arc/include/asm/io.h b/arch/arc/include/asm/io.h
+index 8f777d6441a5..10d7ed9dfa61 100644
+--- a/arch/arc/include/asm/io.h
++++ b/arch/arc/include/asm/io.h
+@@ -20,9 +20,20 @@
+ #define __iowmb()		do { } while (0)
+ #endif
+ 
+-extern void __iomem *ioremap(phys_addr_t paddr, unsigned long size);
+-extern void __iomem *ioremap_prot(phys_addr_t paddr, unsigned long size,
+-				  unsigned long flags);
++/*
++ * I/O memory mapping functions.
++ */
++
++void __iomem *
++ioremap_allowed(phys_addr_t *paddr, size_t size, unsigned long *prot_val);
++#define ioremap_allowed ioremap_allowed
++
++int iounmap_allowed(void __iomem *addr);
++#define iounmap_allowed iounmap_allowed
++
++void __iomem *ioremap(phys_addr_t paddr, unsigned long size);
++#define ioremap ioremap
++
+ static inline void __iomem *ioport_map(unsigned long port, unsigned int nr)
+ {
+ 	return (void __iomem *)port;
+@@ -32,8 +43,6 @@ static inline void ioport_unmap(void __iomem *addr)
+ {
+ }
+ 
+-extern void iounmap(const void __iomem *addr);
+-
+ /*
+  * io{read,write}{16,32}be() macros
+  */
+diff --git a/arch/arc/mm/ioremap.c b/arch/arc/mm/ioremap.c
+index 0ee75aca6e10..7be73e3645da 100644
+--- a/arch/arc/mm/ioremap.c
++++ b/arch/arc/mm/ioremap.c
+@@ -25,13 +25,6 @@ static inline bool arc_uncached_addr_space(phys_addr_t paddr)
+ 
+ void __iomem *ioremap(phys_addr_t paddr, unsigned long size)
+ {
+-	phys_addr_t end;
+-
+-	/* Don't allow wraparound or zero size */
+-	end = paddr + size - 1;
+-	if (!size || (end < paddr))
+-		return NULL;
+-
+ 	/*
+ 	 * If the region is h/w uncached, MMU mapping can be elided as optim
+ 	 * The cast to u32 is fine as this region can only be inside 4GB
+@@ -44,62 +37,27 @@ void __iomem *ioremap(phys_addr_t paddr, unsigned long size)
+ }
+ EXPORT_SYMBOL(ioremap);
+ 
+-/*
+- * ioremap with access flags
+- * Cache semantics wise it is same as ioremap - "forced" uncached.
+- * However unlike vanilla ioremap which bypasses ARC MMU for addresses in
+- * ARC hardware uncached region, this one still goes thru the MMU as caller
+- * might need finer access control (R/W/X)
+- */
+-void __iomem *ioremap_prot(phys_addr_t paddr, unsigned long size,
+-			   unsigned long flags)
++void __iomem *
++ioremap_allowed(phys_addr_t *paddr, size_t size, unsigned long *prot_val)
+ {
+-	unsigned int off;
+-	unsigned long vaddr;
+-	struct vm_struct *area;
+-	phys_addr_t end;
+-	pgprot_t prot = __pgprot(flags);
+-
+-	/* Don't allow wraparound, zero size */
+-	end = paddr + size - 1;
+-	if ((!size) || (end < paddr))
+-		return NULL;
++	int ret = -EINVAL;
+ 
+ 	/* An early platform driver might end up here */
+ 	if (!slab_is_available())
+-		return NULL;
++		return IOMEM_ERR_PTR(ret);
+ 
+ 	/* force uncached */
+-	prot = pgprot_noncached(prot);
++	*prot_val = pgprot_val(pgprot_noncached(__pgprot(*prot_val)));
+ 
+-	/* Mappings have to be page-aligned */
+-	off = paddr & ~PAGE_MASK;
+-	paddr &= PAGE_MASK_PHYS;
+-	size = PAGE_ALIGN(end + 1) - paddr;
++	return NULL;
+ 
+-	/*
+-	 * Ok, go for it..
+-	 */
+-	area = get_vm_area(size, VM_IOREMAP);
+-	if (!area)
+-		return NULL;
+-	area->phys_addr = paddr;
+-	vaddr = (unsigned long)area->addr;
+-	if (ioremap_page_range(vaddr, vaddr + size, paddr, prot)) {
+-		vunmap((void __force *)vaddr);
+-		return NULL;
+-	}
+-	return (void __iomem *)(off + (char __iomem *)vaddr);
+ }
+-EXPORT_SYMBOL(ioremap_prot);
+-
+ 
+-void iounmap(const void __iomem *addr)
++int iounmap_allowed(void __iomem *addr)
+ {
+ 	/* weird double cast to handle phys_addr_t > 32 bits */
+ 	if (arc_uncached_addr_space((phys_addr_t)(u32)addr))
+-		return;
++		return -EINVAL;
+ 
+-	vfree((void *)(PAGE_MASK & (unsigned long __force)addr));
++	return 0;
+ }
+-EXPORT_SYMBOL(iounmap);
+-- 
+2.34.1
+
