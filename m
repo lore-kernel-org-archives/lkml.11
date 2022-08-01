@@ -2,99 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDBD8C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 14:38:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C759C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 14:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232783AbiHAOif (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 10:38:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50398 "EHLO
+        id S232665AbiHAOj7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 10:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232607AbiHAOiY (ORCPT
+        with ESMTP id S230109AbiHAOj5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 10:38:24 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1AAE33417;
-        Mon,  1 Aug 2022 07:38:19 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 069785FD18;
-        Mon,  1 Aug 2022 17:38:17 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1659364697;
-        bh=bBzOl1ozVTghtx6a1x8+yHWmy394M9SjIp1tfXubAc0=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=Gj0TyHDCGy/TdL8/NePxRXh3/x6RAzvc1v0KvlRtSYOcPnN0GgSfDAqEbijPq40+3
-         ipJK58JCKyp7Ma1OX2S18LnInJKbEqwV9jZVIAOIe7oxakzECYCkAbIHINcy4JhLWs
-         wBi0mx8zmA89prBBGXh2uzc5M6eJKtuP0sQGy4kPdfYkljZ9ih3tZj/y6ztNKkz0qe
-         zU2fFJ5BQ1QBh0DWP7VULGVsRuPqOVmr4RP0z2hzacE04YHQmQZxKQDmlEzKT3aHNi
-         igH+vkI834Ac5ziRq1n3k7skEcyF4BB7PXGykIfAN7X5cxBBwG45jmuQqIpT9sVkj1
-         QDF+k2f2n+AAA==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon,  1 Aug 2022 17:38:16 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "wsa@kernel.org" <wsa@kernel.org>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
-        "jbhayana@google.com" <jbhayana@google.com>
-CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: [PATCH v3 1/3] units: complement the set of Hz units
-Thread-Topic: [PATCH v3 1/3] units: complement the set of Hz units
-Thread-Index: AQHYpbQ3L2y5rpVaXUmgnJKPuZEWTQ==
-Date:   Mon, 1 Aug 2022 14:37:25 +0000
-Message-ID: <20220801143811.14817-2-ddrokosov@sberdevices.ru>
-References: <20220801143811.14817-1-ddrokosov@sberdevices.ru>
-In-Reply-To: <20220801143811.14817-1-ddrokosov@sberdevices.ru>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 1 Aug 2022 10:39:57 -0400
+Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85DB233A08;
+        Mon,  1 Aug 2022 07:39:55 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 41022355282;
+        Mon,  1 Aug 2022 10:39:54 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id qU3Ksj57-Bf5; Mon,  1 Aug 2022 10:39:53 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 84365355281;
+        Mon,  1 Aug 2022 10:39:53 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 84365355281
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1659364793;
+        bh=S6TGQdRaLLzWDqfWZw/iX4zWZbflDaNiquwZgEj1VAU=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=GEcHO9q5VqIHAvO9M4Ydp4H68nx8WrnKU7NcXWY2D7IPyC0YwoxjOAQ2lgkRGgNzZ
+         xtOOS0dDoNecDFEt3sAJl2HOP1/QLkuAUKpunPP7NjbTqa4Y2pVH7fWmGTXX+/83IB
+         UjxztRTvu6bSF+Pg0bLf2mJFZ+RDS8N7HxfhjngILB7wnOz//L8fWUiIuP+pQfgQVo
+         ebxXkCRVmopyaquWoHbqFAALghaeRLubX5azntPcaXkhAEmgyRgTwqpML6A+9ttaA0
+         Dr90DNSqBCm0aWFCmnwD5hMHweDS0t0PDUKreEY9JjqJPUvbCAyNVK4gcjqnFtrFpF
+         n9cfH2lJ+M3XQ==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 28mwD_qkks1k; Mon,  1 Aug 2022 10:39:53 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 72610354FAE;
+        Mon,  1 Aug 2022 10:39:53 -0400 (EDT)
+Date:   Mon, 1 Aug 2022 10:39:53 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
+        linux-api <linux-api@vger.kernel.org>,
+        Peter Oskolkov <posk@posk.io>,
+        Florian Weimer <fweimer@redhat.com>,
+        Carlos O'Donell <carlos@redhat.com>
+Message-ID: <1686554751.93506.1659364793386.JavaMail.zimbra@efficios.com>
+In-Reply-To: <YufV3PmAOfo1Gt7g@gmail.com>
+References: <20220622194617.1155957-1-mathieu.desnoyers@efficios.com> <20220622194617.1155957-2-mathieu.desnoyers@efficios.com> <YufV3PmAOfo1Gt7g@gmail.com>
+Subject: Re: [PATCH 2/2] rseq: Kill process when unknown flags are
+ encountered in ABI structures
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/01 10:27:00 #20025860
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_4304 (ZimbraWebClient - FF100 (Linux)/8.8.15_GA_4304)
+Thread-Topic: rseq: Kill process when unknown flags are encountered in ABI structures
+Thread-Index: Gyv6lAHRYZe8QjWfh6WSrEJ1aTXMvw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, Hz units do not have milli, micro and nano Hz coefficients.
-Some drivers (IIO especially) use their analogues to calculate
-appropriate Hz values. This patch includes them to units.h definitions,
-so they can be used from different kernel places.
+----- On Aug 1, 2022, at 9:32 AM, Ingo Molnar mingo@kernel.org wrote:
 
-Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
----
- include/linux/units.h | 3 +++
- 1 file changed, 3 insertions(+)
+> * Mathieu Desnoyers <mathieu.desnoyers@efficios.com> wrote:
+> 
+>> rseq_abi()->flags and rseq_abi()->rseq_cs->flags 29 upper bits are
+>> currently unused.
+>> 
+>> The current behavior when those bits are set is to ignore them. This is
+>> not an ideal behavior, because when future features will start using
+>> those flags, if user-space fails to correctly validate that the kernel
+>> indeed supports those flags (e.g. with a new sys_rseq flags bit) before
+>> using them, it may incorrectly assume that the kernel will handle those
+>> flags way when in fact those will be silently ignored on older kernels.
+>> 
+>> Validating that unused flags bits are cleared will allow a smoother
+>> transition when those flags will start to be used by allowing
+>> applications to fail early, and obviously, when they attempt to use the
+>> new flags on an older kernel that does not support them.
+>> 
+>> Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+>> ---
+>>  kernel/rseq.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>> 
+>> diff --git a/kernel/rseq.c b/kernel/rseq.c
+>> index 81d7dc80787b..bda8175f8f99 100644
+>> --- a/kernel/rseq.c
+>> +++ b/kernel/rseq.c
+>> @@ -176,7 +176,7 @@ static int rseq_need_restart(struct task_struct *t, u32
+>> cs_flags)
+>>  	u32 flags, event_mask;
+>>  	int ret;
+>>  
+>> -	if (WARN_ON_ONCE(cs_flags & RSEQ_CS_NO_RESTART_FLAGS))
+>> +	if (WARN_ON_ONCE(cs_flags & RSEQ_CS_NO_RESTART_FLAGS) || cs_flags)
+>>  		return -EINVAL;
+>>  
+>>  	/* Get thread flags. */
+>> @@ -184,7 +184,7 @@ static int rseq_need_restart(struct task_struct *t, u32
+>> cs_flags)
+>>  	if (ret)
+>>  		return ret;
+>>  
+>> -	if (WARN_ON_ONCE(flags & RSEQ_CS_NO_RESTART_FLAGS))
+>> +	if (WARN_ON_ONCE(flags & RSEQ_CS_NO_RESTART_FLAGS) || flags)
+>>  		return -EINVAL;
+> 
+> Just to make it clear: no existing libraries/tooling out there have learned
+> to rely on the old ABI that ignored unset flags, right? Only then is this
+> patch ABI-safe.
 
-diff --git a/include/linux/units.h b/include/linux/units.h
-index 681fc652e3d7..2793a41e73a2 100644
---- a/include/linux/units.h
-+++ b/include/linux/units.h
-@@ -20,6 +20,9 @@
- #define PICO	1000000000000ULL
- #define FEMTO	1000000000000000ULL
-=20
-+#define NANOHZ_PER_HZ		1000000000UL
-+#define MICROHZ_PER_HZ		1000000UL
-+#define MILLIHZ_PER_HZ		1000UL
- #define HZ_PER_KHZ		1000UL
- #define KHZ_PER_MHZ		1000UL
- #define HZ_PER_MHZ		1000000UL
---=20
-2.36.0
+The projects I know about that use rseq at the moment don't rely on the old ABI
+ignoring unset flags:
+
+- glibc initialize the rseq_abi()->flags to 0 and do not use rseq_abi()->rseq_cs->flags yet.
+- tcmalloc initialize rseq_abi()->flags and rseq_abi()->rseq_cs->flags to 0.
+- librseq (still only a master branch, no officially released public API yet) initialize
+  rseq_abi()->flags and rseq_abi()->rseq_cs->cs_flags to 0.
+- the Linux kernel selftests initialize rseq_abi()->flags and rseq_abi()->rseq_cs->cs_flags
+  to 0.
+- AFAIK DynamoRIO does not rely on the kernel ignoring unset flags bits.
+- AFAIK CRIU does not rely on the kernel ignoring unset flags bits.
+
+If anyone else rely on rseq ignoring those unset flags, please yell now.
+
+Thanks,
+
+Mathieu
+
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
