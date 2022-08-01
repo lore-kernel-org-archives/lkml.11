@@ -2,214 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF695C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 08:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B47C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 08:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230061AbiHAIV6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 04:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
+        id S230048AbiHAIXB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 04:23:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230091AbiHAIVz (ORCPT
+        with ESMTP id S229759AbiHAIW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 04:21:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36E532445
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 01:21:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 27520CE1161
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 08:21:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49927C433D6
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 08:21:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659342110;
-        bh=eUr/ZH45qggIMaFLX3LJkoO2C78pcKF2mxz/f/h/tRs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=TBuVvcDeJ0LmTIi3MPah56qvrK2ZDDLFG6iG1u98Np1/iLhmxXVO7H/qmcbLVfa/e
-         rciDqH3/KCO24UAdwzt9bOjySVYUq0tkynyc84hxNRPEc5itLyOSi0dRuKiWSpGD6/
-         5KqkG51REnO7gjiGOd19hqp+dUAWQT6W09QT9FFpz25unCKcfXT0iXYnJul+qEe8vt
-         bqD2vNhqk0wlTe3Q1gTf6GOtQrJ/I7U1qfMrNSKmc+jFusDMjbjAELwcqy92bdlo0j
-         VAUEuTfnMMAlDiS/cxYDT/8SJHyvfnVkC4O53f/dwz/MC0biv2V44wkMVLBTj7QV4w
-         S7NckUTfE4+WQ==
-Received: by mail-ot1-f47.google.com with SMTP id g8-20020a9d6b08000000b0061d0ac9ebb2so7733749otp.10
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 01:21:50 -0700 (PDT)
-X-Gm-Message-State: AJIora/wjTjRtv4FYbmyzSJmezez9U10GXIu6kXDEdtRiyH0AcUXAOOb
-        HENVzazeP6drQPMvkrTrR19Izic4AQ16hdLgG6g=
-X-Google-Smtp-Source: AGRyM1svlL9dEheAPe6zNYjS6XldUOCMkMNJjj8CQnE1F6BYQ+HvQRDwyksNDWfc0HgRxfX/t/LpdCVjn7Ei7nmhWXg=
-X-Received: by 2002:a9d:6e84:0:b0:61c:8fdc:de7c with SMTP id
- a4-20020a9d6e84000000b0061c8fdcde7cmr5507976otr.334.1659342109445; Mon, 01
- Aug 2022 01:21:49 -0700 (PDT)
+        Mon, 1 Aug 2022 04:22:56 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2306F32445;
+        Mon,  1 Aug 2022 01:22:55 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id fy29so18884271ejc.12;
+        Mon, 01 Aug 2022 01:22:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=kjv0FJlI0lUU+rmPW0iCxfcBjoloU4HFBTK1BDc1WhU=;
+        b=SGiD99rnB9w5Lo0zaLyFYjCLUr+HfzQo4L/onIg5UCJ2abXcfrLk0Q2J/0NhGPIOl5
+         SxD7lkaGT75emAzQMOxY9SUdrDlDVUjzTEue0ynK8FRv5kPZFW2ayGmoNxxeliKJFp/j
+         5/S5bOQSX/Z7HFoP8EgvaxtAuDmKTtAJSoGK2a/AOcUnPis74wVBWkq9zDVXRgbiUSkZ
+         PWcapOxkFwNmFo2XT+47qaSwM9FjED5PGr+RFo/NrutdgfZ4ak0242zDBlgSWDTzpfew
+         NW1KJ9UWEpRlj37b5SyFi5Bt+lex0J00UJ/VsTNalRTVRp5W/P0/e51LNfs/JY9CDWI5
+         2XlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=kjv0FJlI0lUU+rmPW0iCxfcBjoloU4HFBTK1BDc1WhU=;
+        b=5m70kx+5NY2MGTWdvU1K+HLvQ3DwpKoHAeQpTODE/X5vy75lRzLJIA9EPWY0/e0uSi
+         eN+xSbLv67RctiRsQ0lxulLGxThJ9QlrvQHKp9dJhCxVk15LT65EkCLOtdeca08ZAxC3
+         0qu42U/QFFPUpCfZV45SxISuq9co7XQwswWV/oEvGlQlNYALjzydCxYQYu5/1DMV5QzQ
+         KoIH3De11UAr0ZK1087ZJ2oAxgi+bvQrfKnyWezPFxOmxB3gr5MRIFhFIAV3dp9GhC3u
+         1XmjMXvFqEzNVy92ZYwkseUgCSpktMKF9M+SO1cFPriGOxyGaZfrTR5Q/kCTpPhZr0rj
+         PEhw==
+X-Gm-Message-State: ACgBeo27jFZGjAoIF2t6j7dYDWBk/jhq6FmS+jsww9Z/E7OcFGM4v+l2
+        EZnGWLw6s+sdLASBC5pXQtIaK+9iw6drCyW2DXA=
+X-Google-Smtp-Source: AA6agR7TnWJfR8dWO6hsj+nQSrs3tXP2aeFY2812Ck5pBsJqHWm0D1IIbq2EJIDt+JhUXE4Jac0EJWA+RjmNxfjA3us=
+X-Received: by 2002:a17:906:e8f:b0:730:9480:9728 with SMTP id
+ p15-20020a1709060e8f00b0073094809728mr832222ejf.99.1659342173330; Mon, 01 Aug
+ 2022 01:22:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAFCwf11=9qpNAepL7NL+YAV_QO=Wv6pnWPhKHKAepK3fNn+2Dg@mail.gmail.com>
- <YuahxB6geST6ZtGN@kroah.com> <TYAPR01MB62013A228CD094847524F8D8929A9@TYAPR01MB6201.jpnprd01.prod.outlook.com>
-In-Reply-To: <TYAPR01MB62013A228CD094847524F8D8929A9@TYAPR01MB6201.jpnprd01.prod.outlook.com>
-From:   Oded Gabbay <ogabbay@kernel.org>
-Date:   Mon, 1 Aug 2022 11:21:22 +0300
-X-Gmail-Original-Message-ID: <CAFCwf139nRjebnMfHPuhHWBh_6pWuRm=9sBjgAFL9u9GsOqEzw@mail.gmail.com>
-Message-ID: <CAFCwf139nRjebnMfHPuhHWBh_6pWuRm=9sBjgAFL9u9GsOqEzw@mail.gmail.com>
-Subject: Re: New subsystem for acceleration devices
-To:     Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiho Chu <jiho.chu@samsung.com>, Arnd Bergmann <arnd@arndb.de>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
+References: <20220728125435.3336618-1-potin.lai.pt@gmail.com>
+ <20220728125435.3336618-3-potin.lai.pt@gmail.com> <20220731130959.50826fc4@jic23-huawei>
+ <4ea235d1-46c1-87de-760f-dc4775007ae0@gmail.com>
+In-Reply-To: <4ea235d1-46c1-87de-760f-dc4775007ae0@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 1 Aug 2022 10:22:16 +0200
+Message-ID: <CAHp75VcZqTpmvVV=u4t=fdx=ffzksoWVDFZmq6Lfr6DrFrB2aA@mail.gmail.com>
+Subject: Re: [PATCH v5 2/2] iio: humidity: hdc100x: add manufacturer and
+ device ID check
+To:     Potin Lai <potin.lai.pt@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai@quantatw.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 5:35 AM <yuji2.ishikawa@toshiba.co.jp> wrote:
+On Mon, Aug 1, 2022 at 3:52 AM Potin Lai <potin.lai.pt@gmail.com> wrote:
+> On 7/31/22 20:09, Jonathan Cameron wrote:
+
+...
+
+> In our hardware board, we have "ti,hdc1080" as main source, and "silabs,si7020"
+> for 2nd source. This two chip are locate at same bus and same slave address,
+> and we want to use multiple compatibles to support both chips with single device
+> node in device tree.
 >
-> > -----Original Message-----
-> > From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Sent: Monday, August 1, 2022 12:38 AM
-> > To: Oded Gabbay <oded.gabbay@gmail.com>
-> > Cc: ishikawa yuji(=E7=9F=B3=E5=B7=9D =E6=82=A0=E5=8F=B8 =E2=97=8B=EF=BC=
-=B2=EF=BC=A4=EF=BC=A3=E2=96=A1=EF=BC=A1=EF=BC=A9=EF=BC=B4=EF=BC=A3=E2=97=8B=
-=EF=BC=A5=EF=BC=A1=E9=96=8B)
-> > <yuji2.ishikawa@toshiba.co.jp>; Jiho Chu <jiho.chu@samsung.com>; Arnd
-> > Bergmann <arnd@arndb.de>; Linux-Kernel@Vger. Kernel. Org
-> > <linux-kernel@vger.kernel.org>
-> > Subject: Re: New subsystem for acceleration devices
-> >
-> > On Sun, Jul 31, 2022 at 02:45:34PM +0300, Oded Gabbay wrote:
-> > > Hi,
-> > > Greg and I talked a couple of months ago about preparing a new accel
-> > > subsystem for compute/acceleration devices that are not GPUs and I
-> > > think your drivers that you are now trying to upstream fit it as well=
-.
-> > >
-> > > Would you be open/interested in migrating your drivers to this new
-> > subsystem ?
-> > >
-> > > Because there were no outstanding candidates, I have done so far only
-> > > a basic and partial implementation of the infrastructure for this
-> > > subsystem, but if you are willing to join I believe I can finish it
-> > > rather quickly.
-> > >
-> > > At start, the new subsystem will provide only a common device
-> > > character (e.g. /dev/acX) so everyone will do open/close/ioctl on the
-> > > same device character. Also sysfs/debugfs entries will be under that
-> > > device and maybe an IOCTL to retrieve information.
-> > >
-> > > In the future I plan to move some of habanalabs driver's code into th=
-e
-> > > subsystem itself, for common tasks such as memory management, dma
-> > > memory allocation, etc.
-> > >
-> > > Of course, you will be able to add your own IOCTLs as you see fit.
-> > > There will be a range of IOCTLs which are device-specific (similar to
-> > > drm).
-> > >
-> > > wdyt ?
-> >
-> > That sounds reasonable to me as a sane plan forward, thanks for working=
- on
-> > this.
-> >
-> > greg k-h
+> Ex:
+> compatible = "ti,hdc1099", "silabs,si7020";
+
+This is simply broken DT, you must not put incompatible hardware on
+the same compatible string. DT is by definition the description of a
+certain platform. What you showed is a combination of incompatible
+chips in a single DT.
+
+> In order to support this, I need to add ID checking mechanism into the current
+> hdc100x driver, so the si7020 chip will fail to probe with hdc100x driver
+> (because the ID checking is not failed), then success probe with si7020.
 >
-> Hi,
-> Thank you for your suggestion.
-> I'm really interested in the idea to have a dedicated subsystem for accel=
-erators.
-> Let me challenge if the Visconti DNN driver can be re-written to the fram=
-ework.
-> As Visconti SoC has several accelerators as well as DNN,
-> having a general/common interface will be a big benefit for us to maintai=
-n drivers for a long time.
->
-> I've heard that the framework has some basic implementation.
-> Do you have some sample code or enumeration of idea to describe the frame=
-work?
-> Would you share them with me? if that does not bother you.
->
-Great to hear that!
+> Base on you explanation, it looks multiple compatibles is not suitable in this
+> case? Would you mind advise us what would be the better approach for our case?
 
-I will need a couple of days to complete the code and clean it up
-because I stopped working on it a couple of months ago as there were
-no other candidates at the time.
-Once I have it ready I will put it in my linux repo and send you a branch n=
-ame.
+If I may advise... fix your DT by dropping the wrong compatible item.
 
-In the meantime, I'd like to describe at a high level how this
-framework is going to work.
-
-I'll start with the main theme of this framework which is allowing
-maximum flexibility to the different device drivers. This is because
-in my opinion there is and always will be a large variance between
-different compute accelerators, which stems from the fact their h/w is
-designed for different purposes. I believe that it would be nearly
-impossible to create a standard acceleration API that will be
-applicable to all compute accelerators.
-
-Having said that, there are many things that can be common. I'll just
-name here a few things:
-
-- Exposing devices in a uniform way (same device character files) and
-managing the major/minor/open/close (with callbacks to the open/close
-of the device driver)
-
-- Defining a standard user API for monitoring applications that
-usually run in a data-center. There is a big difference
-between the acceleration uAPI and a monitoring uAPI and while the
-former is highly specialized, the latter can be standardized.
-
-- Common implementation of a memory manager that will give services of
-allocating kernel memory that can be
-  mmap'ed by the user.
-
-- For devices with on-chip MMU, common memory manager for allocating
-device memory and managing it.
-
-- Integration with dma-buf for interoperability with other drivers.
-
-The initial implementation of the framework will expose two device
-character files per device. One will be used for the main/compute
-operations and the other one will be used for monitoring applications.
-This is done in case there are some limitations on the main device
-file (e.g. allowing only a single compute application to be connected
-to the device).
-
-Each driver will call a register function during its probe function
-(very similar to what is done in the drm subsystem). This will
-register the device in the accel framework and expose the device
-character files. Every call on those files
-(e.g. open, ioctl) will then go through the accel subsystem first and
-then will go to the callbacks of the specific device drivers. The
-framework will take care of allocating major and minor numbers and
-handle these issues in a uniform way.
-
-For now, I plan to define a single ioctl in the common part, which is
-an information ioctl, allowing the user to retrieve various
-information on the device (fixed or dynamic). I don't want to jump
-ahead of myself and define other common ioctls before gaining some
-traction. As I wrote above, each driver will be allowed to define its
-own custom ioctls.
-
-There will be an infrastructure to add custom sysfs and debugfs
-entries. Once we start working, I'm sure we will find some properties
-that we can move to the infrastructure itself (e.g. asking to reset
-the device, operational status)
-
-I don't know if I want to add the memory manager we prepared in
-habanalabs driver at day one, because I would like to minimize the
-effort we have to convert our drivers to using this framework. From
-the above, I believe you can see the current effort is not large.
-
-That's it from high-level pov. As I wrote at the beginning, I'll get
-back to you in a few days with a link to a git repo containing the
-initial implementation.
-
-> If you need further information on the current DNN driver, please let me =
-know.
-> Also, I can provide some for other accelerator drivers which are currentl=
-y under cleaning up for contribution.
-I looked at the patches you sent and I believe it will be a good match
-for this framework.
-If you have additional drivers that you think can be a goot match, by
-all means, please send links to me.
-
-Thanks,
-Oded
+-- 
+With Best Regards,
+Andy Shevchenko
