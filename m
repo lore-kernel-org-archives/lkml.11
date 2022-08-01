@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEFEC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:14:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8DDDC19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:14:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234229AbiHAMO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56896 "EHLO
+        id S233911AbiHAMOi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233921AbiHAMNw (ORCPT
+        with ESMTP id S233941AbiHAMNx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:13:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E34947BB7;
-        Mon,  1 Aug 2022 04:57:40 -0700 (PDT)
+        Mon, 1 Aug 2022 08:13:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0331740BF0;
+        Mon,  1 Aug 2022 04:57:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A478601C5;
-        Mon,  1 Aug 2022 11:57:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3280AC433C1;
-        Mon,  1 Aug 2022 11:57:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8460601BD;
+        Mon,  1 Aug 2022 11:57:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6D26C433D6;
+        Mon,  1 Aug 2022 11:57:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355058;
-        bh=bHumqSMh+NEFc3LDZg3MdzJZC6wjGvYc0zi13rK9kLs=;
+        s=korg; t=1659355061;
+        bh=YbmgbmyACU5oWKp981nJxWl6QS1LxWlzYtM4WloYayk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sLEtU/0UWl86kM/d7HPCnbQv9pQtZhtm+O5rpWnAb3nh4+Ggu2Lvv2lXFAuz9kJGz
-         xatRmi3ffITX7Rs/+7nzvx4QFW4iIifQFVga9VTq6ACAr8Cn4jQtfqn0yB3IxAemZ4
-         quBX1ujMbf6YKqFnKFpT0rl8tjtsSJMjQ5SUBvjI=
+        b=XpDmIhyFO5yP6cfrzA5VV4FV1uOKfwXhNEdOoazzh5+ZVtmzOvveqBSNK0Pxfu3Vd
+         tHQRSpQJ41iE6QdKaIGM1zuKEKjsfFN8dGgef5trV3dpOYTN1Qm9RMy7/GVT6KjKqg
+         rMubanRpApUc0Wh5K61Vkt8NX9NBkwoJrjSoAWrM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 47/88] tcp: Fix a data-race around sysctl_tcp_tso_rtt_log.
-Date:   Mon,  1 Aug 2022 13:47:01 +0200
-Message-Id: <20220801114140.192782036@linuxfoundation.org>
+Subject: [PATCH 5.18 48/88] tcp: Fix a data-race around sysctl_tcp_min_rtt_wlen.
+Date:   Mon,  1 Aug 2022 13:47:02 +0200
+Message-Id: <20220801114140.243597986@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -51,32 +51,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 2455e61b85e9c99af38cd889a7101f1d48b33cb4 ]
+[ Upstream commit 1330ffacd05fc9ac4159d19286ce119e22450ed2 ]
 
-While reading sysctl_tcp_tso_rtt_log, it can be changed concurrently.
+While reading sysctl_tcp_min_rtt_wlen, it can be changed concurrently.
 Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 65466904b015 ("tcp: adjust TSO packet sizes based on min_rtt")
+Fixes: f672258391b4 ("tcp: track min RTT using windowed min-filter")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_output.c | 2 +-
+ net/ipv4/tcp_input.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 08466421e7e0..60c9f7f444e0 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1971,7 +1971,7 @@ static u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 78e16891f12b..f3b658fa3e7b 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3058,7 +3058,7 @@ static void tcp_fastretrans_alert(struct sock *sk, const u32 prior_snd_una,
  
- 	bytes = sk->sk_pacing_rate >> READ_ONCE(sk->sk_pacing_shift);
+ static void tcp_update_rtt_min(struct sock *sk, u32 rtt_us, const int flag)
+ {
+-	u32 wlen = sock_net(sk)->ipv4.sysctl_tcp_min_rtt_wlen * HZ;
++	u32 wlen = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_min_rtt_wlen) * HZ;
+ 	struct tcp_sock *tp = tcp_sk(sk);
  
--	r = tcp_min_rtt(tcp_sk(sk)) >> sock_net(sk)->ipv4.sysctl_tcp_tso_rtt_log;
-+	r = tcp_min_rtt(tcp_sk(sk)) >> READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_tso_rtt_log);
- 	if (r < BITS_PER_TYPE(sk->sk_gso_max_size))
- 		bytes += sk->sk_gso_max_size >> r;
- 
+ 	if ((flag & FLAG_ACK_MAYBE_DELAYED) && rtt_us > tcp_min_rtt(tp)) {
 -- 
 2.35.1
 
