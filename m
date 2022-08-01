@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 503A7C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:02:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D06CC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233006AbiHAMCr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:02:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
+        id S233032AbiHAMCx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:02:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233116AbiHAMAq (ORCPT
+        with ESMTP id S233271AbiHAMBB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:00:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB604E872;
-        Mon,  1 Aug 2022 04:53:10 -0700 (PDT)
+        Mon, 1 Aug 2022 08:01:01 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F624F682;
+        Mon,  1 Aug 2022 04:53:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08559612C6;
-        Mon,  1 Aug 2022 11:53:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CEFBC433D6;
-        Mon,  1 Aug 2022 11:53:08 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 363EBCE1157;
+        Mon,  1 Aug 2022 11:53:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FD2AC433D7;
+        Mon,  1 Aug 2022 11:53:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354789;
-        bh=h2cD6mP9oo859yPB9nAEQNjXoWrMcTRTI3Ci+qVuKZg=;
+        s=korg; t=1659354797;
+        bh=PmkRJqX+XFsmViraul3CsMmcCbzpWi/US/m8nUUng9Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wbS6eeRImnpwXY3RoMIkqRmy+FmbSd7dNLx5QyDYILz8xLIFqHbpyFVjL4CkwFo0U
-         mG8rEOTjekz3kD1ofWGMFPaI8LHuMDiHQ2cN30985YBDQqNA4jUQEASYvAArn0awpa
-         CusKtdinTxbFuwRZHf1jS/6KX38vl7/C0GXyMDhs=
+        b=YBHr0DP2kdJMhJyPd8/G+TdF63q41KBjBCT3Tn2geVloXtUdDfGimX6o7pcXfoPqt
+         ljOcopenXr6nuKsz2q/r7Lg4uOq6/RAEqqw5J2tOptvymMNaZoNGW4Kv3oDlZe4qi2
+         nXE/xmfb0e3owP0/7UIaVRcQplI4LaiOMVU+2ngo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.15 21/69] ice: do not setup vlan for loopback VSI
-Date:   Mon,  1 Aug 2022 13:46:45 +0200
-Message-Id: <20220801114135.369470914@linuxfoundation.org>
+        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 5.15 24/69] octeontx2-pf: Fix UDP/TCP src and dst port tc filters
+Date:   Mon,  1 Aug 2022 13:46:48 +0200
+Message-Id: <20220801114135.496918838@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -50,39 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-commit cc019545a238518fa9da1e2a889f6e1bb1005a63 upstream.
+commit 59e1be6f83b928a04189bbf3ab683a1fc6248db3 upstream.
 
-Currently loopback test is failiing due to the error returned from
-ice_vsi_vlan_setup(). Skip calling it when preparing loopback VSI.
+Check the mask for non-zero value before installing tc filters
+for L4 source and destination ports. Otherwise installing a
+filter for source port installs destination port too and
+vice-versa.
 
-Fixes: 0e674aeb0b77 ("ice: Add handler for ethtool selftest")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 1d4d9e42c240 ("octeontx2-pf: Add tc flower hardware offload on ingress traffic")
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c |   30 +++++++++++--------
+ 1 file changed, 18 insertions(+), 12 deletions(-)
 
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5481,10 +5481,12 @@ int ice_vsi_cfg(struct ice_vsi *vsi)
- 	if (vsi->netdev) {
- 		ice_set_rx_mode(vsi->netdev);
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c
+@@ -571,21 +571,27 @@ static int otx2_tc_prepare_flow(struct o
  
--		err = ice_vsi_vlan_setup(vsi);
-+		if (vsi->type != ICE_VSI_LB) {
-+			err = ice_vsi_vlan_setup(vsi);
+ 		flow_spec->dport = match.key->dst;
+ 		flow_mask->dport = match.mask->dst;
+-		if (ip_proto == IPPROTO_UDP)
+-			req->features |= BIT_ULL(NPC_DPORT_UDP);
+-		else if (ip_proto == IPPROTO_TCP)
+-			req->features |= BIT_ULL(NPC_DPORT_TCP);
+-		else if (ip_proto == IPPROTO_SCTP)
+-			req->features |= BIT_ULL(NPC_DPORT_SCTP);
++
++		if (flow_mask->dport) {
++			if (ip_proto == IPPROTO_UDP)
++				req->features |= BIT_ULL(NPC_DPORT_UDP);
++			else if (ip_proto == IPPROTO_TCP)
++				req->features |= BIT_ULL(NPC_DPORT_TCP);
++			else if (ip_proto == IPPROTO_SCTP)
++				req->features |= BIT_ULL(NPC_DPORT_SCTP);
++		}
  
--		if (err)
--			return err;
-+			if (err)
-+				return err;
+ 		flow_spec->sport = match.key->src;
+ 		flow_mask->sport = match.mask->src;
+-		if (ip_proto == IPPROTO_UDP)
+-			req->features |= BIT_ULL(NPC_SPORT_UDP);
+-		else if (ip_proto == IPPROTO_TCP)
+-			req->features |= BIT_ULL(NPC_SPORT_TCP);
+-		else if (ip_proto == IPPROTO_SCTP)
+-			req->features |= BIT_ULL(NPC_SPORT_SCTP);
++
++		if (flow_mask->sport) {
++			if (ip_proto == IPPROTO_UDP)
++				req->features |= BIT_ULL(NPC_SPORT_UDP);
++			else if (ip_proto == IPPROTO_TCP)
++				req->features |= BIT_ULL(NPC_SPORT_TCP);
++			else if (ip_proto == IPPROTO_SCTP)
++				req->features |= BIT_ULL(NPC_SPORT_SCTP);
 +		}
  	}
- 	ice_vsi_cfg_dcb_rings(vsi);
  
+ 	return otx2_tc_parse_actions(nic, &rule->action, req, f, node);
 
 
