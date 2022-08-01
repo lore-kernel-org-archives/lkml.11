@@ -2,74 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D80C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:43:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF32C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234875AbiHAMnI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:43:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43904 "EHLO
+        id S234635AbiHAMoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232240AbiHAMmr (ORCPT
+        with ESMTP id S234834AbiHAMnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:42:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5DF04B4AC
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:23:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F2E5B8102E
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 12:23:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B31EC433C1;
-        Mon,  1 Aug 2022 12:23:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659356605;
-        bh=iGJbH/WY0pOpKZEcFcog6gW4Baah6IrvPgqG1mwDY4A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uinyRCt8xp/RobxaTIKI5w6bpbgO2zFCT2GxZGO/jxey1G3Gz/07dENb3uPpgILFP
-         ix+vyHUlWuLWj/fxYYmosR5M+6XxSx3THsjOGhbhordts0+q2gBXK5AEL6R2sTiiY8
-         hjj5abVFguoMxd/duomHt8XjaVw0HJL61yjtlBMg=
-Date:   Mon, 1 Aug 2022 14:23:22 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     DLG Adam Thomson <DLG-Adam.Thomson.Opensource@dm.renesas.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        DLG Support Opensource <DLG-Support.Opensource@lm.renesas.com>
-Subject: Re: [PATCH] MAINTAINERS: Update Dialog Semiconductor mailing list,
- website
-Message-ID: <YufFutiRVHHWMNQ0@kroah.com>
-References: <20220801110140.7DF6280007F@slsrvapps-01.diasemi.com>
- <Yue3LpR7FdHygLze@kroah.com>
- <OSAPR01MB506015B38A0A9DC6BE90F7A3B09A9@OSAPR01MB5060.jpnprd01.prod.outlook.com>
+        Mon, 1 Aug 2022 08:43:42 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1920B3FA22
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:27:18 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id j15so5841765wrr.2
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 05:27:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nLKdQQ5g3ou50dhyIdW6eWtXk/tWTXotcdzpp32Zmcs=;
+        b=Mr/s1tlx4/ydwVD50h+BuznAd+SNslOgaw3OXGHBKbaduMKEvI//MsCHsvmgcnWbez
+         Z22Ha66Hw1yjPwZpTskwqRfJVnktWw09PgtbqZzIs3vbcXfdd82ItcVLKE9Lsys7US/8
+         xRiRi7+DGcTz8R6PYH0Fm7/gagMHkoBnEa4qFF7BlWSzv8fkbBRv8WQugFgZNbCA1lL7
+         W+QfFghrpei/aTmEPHeErWCAvs+tq2Bgqi6PK+7oMK3cCL6qpusCpOmCnPWm8VKXcvW0
+         jS8J4tpNNb/6siyuCmo3eoABbS7XOIDmIiyviP+l+jT1S4tlmlCwUMJ3W9X+ugKp2h6n
+         fiAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nLKdQQ5g3ou50dhyIdW6eWtXk/tWTXotcdzpp32Zmcs=;
+        b=DDGsgeVQ3zAmyI8bY8sJ/XpsYoZuQLvcauArERBE9yBgxnW7O9CAh9mieUgHXnGqH8
+         Me0qBIF7VT5g/0uI04GkcG6ePNpVfGgMNHkHkYFxa52CyT1T2u8/9zdZ0ad8+GvOPyz2
+         fB3Pf7xj80XTXU78DoXjzyGtg/Z7JUX5hzghuQP2PeSGuhwjUh4mm7Jayb/bAdusLU85
+         tY8W8EPGtpk5jADs6LCYMKSO59FQkdRDgBTrchAQeVhlfrKyw9npUs0r30wOBEwgIBLa
+         TB961O4yVHzjqU27866TNK2+T+8/LUDnN6f5qzI52zUhHmLS213CZGO1owzMXyupBH71
+         bv6Q==
+X-Gm-Message-State: ACgBeo0bXa5qLA0/KKHu/G7tWu7f+zbD6gX71NYnATxm6V12f6+ubG3d
+        E7/zm3YPtFLV5l3J7n2KEi4=
+X-Google-Smtp-Source: AA6agR4j85qMHT/7R/CkURi692BI1xDOTS7V2jmJ/5xMKAi4WXmDI6fi8tLL4l5W1JEPteWnuGKrVA==
+X-Received: by 2002:a5d:4fcc:0:b0:21f:dd9:df09 with SMTP id h12-20020a5d4fcc000000b0021f0dd9df09mr10418799wrw.294.1659356836572;
+        Mon, 01 Aug 2022 05:27:16 -0700 (PDT)
+Received: from localhost.localdomain (host-79-27-108-198.retail.telecomitalia.it. [79.27.108.198])
+        by smtp.gmail.com with ESMTPSA id t16-20020a5d42d0000000b0021f17542fe2sm7954707wrr.84.2022.08.01.05.27.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 05:27:15 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Jan Kara <jack@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        "Theodore Ts'o" <tytso@mit.edu>, Ira Weiny <ira.weiny@intel.com>,
+        linux-kernel@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH v2] fs/isofs: Replace kmap() with kmap_local_page()
+Date:   Mon,  1 Aug 2022 14:27:09 +0200
+Message-Id: <20220801122709.8164-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <OSAPR01MB506015B38A0A9DC6BE90F7A3B09A9@OSAPR01MB5060.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 01, 2022 at 12:13:25PM +0000, DLG Adam Thomson wrote:
-> On 01 August 2022 12:21, Greg Kroah-Hartman wrote:
-> 
-> > >  DIALOG SEMICONDUCTOR DRIVERS
-> > > -M:	Support Opensource <support.opensource@diasemi.com>
-> > > +M:	DLG Support Opensource <DLG-Support.Opensource@lm.renesas.com>
-> > 
-> > I strongly discourage any anonymous "group alias" for maintainers of any
-> > kernel code, as that takes away the personal responsibility from the
-> > maintainer entirely, which defeats one of the strongest reasons that
-> > open source development efforts work so well.
-> > 
-> > Why not just switch this over to you instead?
-> 
-> Appreciate the input. I will no longer be part of Renesas as of the end of this
-> week, so wanted to update the mailing list address before I leave. The actual
-> mailing list itself hasn't changed in terms of the people on it, aside from
-> myself dropping off of course.
+The use of kmap() is being deprecated in favor of kmap_local_page().
 
-Then why not just list the people on that list?  That would be easiest,
-right?
+There are two main problems with kmap(): (1) It comes with an overhead as
+mapping space is restricted and protected by a global lock for
+synchronization and (2) it also requires global TLB invalidation when the
+kmap’s pool wraps and it might block when the mapping space is fully
+utilized until a slot becomes available.
 
-thanks,
+With kmap_local_page() the mappings are per thread, CPU local, can take
+page faults, and can be called from any context (including interrupts).
+Tasks can be preempted and, when scheduled to run again, the kernel
+virtual addresses are restored and still valid. It is faster than kmap()
+in kernels with HIGHMEM enabled.
 
-greg k-h
+Since kmap_local_page() can be safely used in compress.c, it should be
+called everywhere instead of kmap().
+
+Therefore, replace kmap() with kmap_local_page() in compress.c. Where it
+is needed, use memzero_page() instead of open coding kmap_local_page()
+plus memset() to fill the pages with zeros. Delete the redundant
+flush_dcache_page() in the two call sites of memzero_page().
+
+Tested with mkisofs on a QEMU/KVM x86_32 VM, 6GB RAM, booting a kernel
+with HIGHMEM64GB enabled.
+
+Cc: Jan Kara <jack@suse.cz>
+Suggested-by: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
+
+v1->v2: Cast zisofs_sink_page to pointer to unsigned char.
+Reported-by: kernel test robot <lkp@intel.com>
+
+Many thanks to Jan Kara for the comments and suggestions provided with
+replying to my previous RFC.[1] Furthermore, I want to thank Ira Weiny for
+the advices he provided, especially about how to use mkisofs to test that
+this patch is working properly.
+
+[1] https://lore.kernel.org/lkml/20220726145024.rryvw7ot7j2c6tqv@quack3/
+
+ fs/isofs/compress.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/fs/isofs/compress.c b/fs/isofs/compress.c
+index 95a19f25d61c..107007c38d08 100644
+--- a/fs/isofs/compress.c
++++ b/fs/isofs/compress.c
+@@ -67,8 +67,7 @@ static loff_t zisofs_uncompress_block(struct inode *inode, loff_t block_start,
+ 		for ( i = 0 ; i < pcount ; i++ ) {
+ 			if (!pages[i])
+ 				continue;
+-			memset(page_address(pages[i]), 0, PAGE_SIZE);
+-			flush_dcache_page(pages[i]);
++			memzero_page(pages[i], 0, PAGE_SIZE);
+ 			SetPageUptodate(pages[i]);
+ 		}
+ 		return ((loff_t)pcount) << PAGE_SHIFT;
+@@ -120,7 +119,7 @@ static loff_t zisofs_uncompress_block(struct inode *inode, loff_t block_start,
+ 	       zerr != Z_STREAM_END) {
+ 		if (!stream.avail_out) {
+ 			if (pages[curpage]) {
+-				stream.next_out = page_address(pages[curpage])
++				stream.next_out = kmap_local_page(pages[curpage])
+ 						+ poffset;
+ 				stream.avail_out = PAGE_SIZE - poffset;
+ 				poffset = 0;
+@@ -176,6 +175,10 @@ static loff_t zisofs_uncompress_block(struct inode *inode, loff_t block_start,
+ 				flush_dcache_page(pages[curpage]);
+ 				SetPageUptodate(pages[curpage]);
+ 			}
++			if (stream.next_out != (unsigned char *)zisofs_sink_page) {
++				kunmap_local(stream.next_out);
++				stream.next_out = NULL;
++			}
+ 			curpage++;
+ 		}
+ 		if (!stream.avail_in)
+@@ -183,6 +186,8 @@ static loff_t zisofs_uncompress_block(struct inode *inode, loff_t block_start,
+ 	}
+ inflate_out:
+ 	zlib_inflateEnd(&stream);
++	if (stream.next_out && stream.next_out != (unsigned char *)zisofs_sink_page)
++		kunmap_local(stream.next_out);
+ 
+ z_eio:
+ 	mutex_unlock(&zisofs_zlib_lock);
+@@ -283,9 +288,7 @@ static int zisofs_fill_pages(struct inode *inode, int full_page, int pcount,
+ 	}
+ 
+ 	if (poffset && *pages) {
+-		memset(page_address(*pages) + poffset, 0,
+-		       PAGE_SIZE - poffset);
+-		flush_dcache_page(*pages);
++		memzero_page(*pages, poffset, PAGE_SIZE - poffset);
+ 		SetPageUptodate(*pages);
+ 	}
+ 	return 0;
+@@ -343,10 +346,8 @@ static int zisofs_read_folio(struct file *file, struct folio *folio)
+ 	for (i = 0; i < pcount; i++, index++) {
+ 		if (i != full_page)
+ 			pages[i] = grab_cache_page_nowait(mapping, index);
+-		if (pages[i]) {
++		if (pages[i])
+ 			ClearPageError(pages[i]);
+-			kmap(pages[i]);
+-		}
+ 	}
+ 
+ 	err = zisofs_fill_pages(inode, full_page, pcount, pages);
+@@ -357,7 +358,6 @@ static int zisofs_read_folio(struct file *file, struct folio *folio)
+ 			flush_dcache_page(pages[i]);
+ 			if (i == full_page && err)
+ 				SetPageError(pages[i]);
+-			kunmap(pages[i]);
+ 			unlock_page(pages[i]);
+ 			if (i != full_page)
+ 				put_page(pages[i]);
+-- 
+2.37.1
+
