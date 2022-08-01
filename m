@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7A00C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:49:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29DE6C25B06
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:49:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231689AbiHALtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:49:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35696 "EHLO
+        id S231714AbiHALtM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231661AbiHALsq (ORCPT
+        with ESMTP id S231609AbiHALsr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:48:46 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A35837F98;
-        Mon,  1 Aug 2022 04:48:23 -0700 (PDT)
+        Mon, 1 Aug 2022 07:48:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2E483C8D9;
+        Mon,  1 Aug 2022 04:48:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8E3F5CE13B6;
-        Mon,  1 Aug 2022 11:48:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85037C4314C;
-        Mon,  1 Aug 2022 11:48:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BED2612D5;
+        Mon,  1 Aug 2022 11:48:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BF93C433C1;
+        Mon,  1 Aug 2022 11:48:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354497;
-        bh=Z2nPSpHn1y5163xrsf+ZmDTgWIF3XTh49tZw0iUcB1g=;
+        s=korg; t=1659354503;
+        bh=C87C7EzLl4tWVgrvdxffYag5TQAHIvH812FsT8eBZRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IYMa+UcEm9LEATYTFCywOk/j13yjqA+jTVVqvJ5EKoQ8isp4oTWHgSAMuI2P2pkN0
-         oCg8BvmgmzKPGh07YCl3os7rBhLFgmoZ08RtXNk/pWfVsCmocOrTVg7B0DyzsCIJMq
-         qQn1NHWQKzWBf0e0Ska9GsupD1cn8L3NEQXY5p/8=
+        b=JS+wuthP94xyVCchaJjdUxeua7kTNrNu9TtAULkRwUG8keUYAOWGnKViDwJ17FBHw
+         XcnrJ4W+ZmjEhDCvuWZYDy8oTHn3D4JZn0NqDswH4ZrPxdc78nBYfAi2E4MilIJ3YE
+         aMfQ1m/FigSq8GWNjMgtdIYudxoIivxQ9geiodRo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 17/34] net: sungem_phy: Add of_node_put() for reference returned by of_get_parent()
-Date:   Mon,  1 Aug 2022 13:46:57 +0200
-Message-Id: <20220801114128.706540590@linuxfoundation.org>
+Subject: [PATCH 5.4 19/34] tcp: Fix a data-race around sysctl_tcp_min_rtt_wlen.
+Date:   Mon,  1 Aug 2022 13:46:59 +0200
+Message-Id: <20220801114128.774532066@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114128.025615151@linuxfoundation.org>
 References: <20220801114128.025615151@linuxfoundation.org>
@@ -49,34 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit ebbbe23fdf6070e31509638df3321688358cc211 ]
+[ Upstream commit 1330ffacd05fc9ac4159d19286ce119e22450ed2 ]
 
-In bcm5421_init(), we should call of_node_put() for the reference
-returned by of_get_parent() which has increased the refcount.
+While reading sysctl_tcp_min_rtt_wlen, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 3c326fe9cb7a ("[PATCH] ppc64: Add new PHY to sungem")
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220720131003.1287426-1-windhl@126.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: f672258391b4 ("tcp: track min RTT using windowed min-filter")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/sungem_phy.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/ipv4/tcp_input.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/sungem_phy.c b/drivers/net/sungem_phy.c
-index 291fa449993f..45f295403cb5 100644
---- a/drivers/net/sungem_phy.c
-+++ b/drivers/net/sungem_phy.c
-@@ -454,6 +454,7 @@ static int bcm5421_init(struct mii_phy* phy)
- 		int can_low_power = 1;
- 		if (np == NULL || of_get_property(np, "no-autolowpower", NULL))
- 			can_low_power = 0;
-+		of_node_put(np);
- 		if (can_low_power) {
- 			/* Enable automatic low-power */
- 			sungem_phy_write(phy, 0x1c, 0x9002);
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index a8d8ff488281..b760ad0b16d9 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -2914,7 +2914,7 @@ static void tcp_fastretrans_alert(struct sock *sk, const u32 prior_snd_una,
+ 
+ static void tcp_update_rtt_min(struct sock *sk, u32 rtt_us, const int flag)
+ {
+-	u32 wlen = sock_net(sk)->ipv4.sysctl_tcp_min_rtt_wlen * HZ;
++	u32 wlen = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_min_rtt_wlen) * HZ;
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 
+ 	if ((flag & FLAG_ACK_MAYBE_DELAYED) && rtt_us > tcp_min_rtt(tp)) {
 -- 
 2.35.1
 
