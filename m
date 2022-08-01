@@ -2,165 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A6AC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 997F5C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233317AbiHAMjE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37606 "EHLO
+        id S234686AbiHAMj2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:39:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232374AbiHAMiY (ORCPT
+        with ESMTP id S234594AbiHAMjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:38:24 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10BD29F045
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:17:36 -0700 (PDT)
-Received: from localhost.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxAM9WxOdiKTUAAA--.1249S6;
-        Mon, 01 Aug 2022 20:17:30 +0800 (CST)
-From:   Qing Zhang <zhangqing@loongson.cn>
-To:     Huacai Chen <chenhuacai@kernel.org>
-Cc:     WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
-        linux-kernel@vger.kernel.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>, hejinyang@loongson.cn,
-        zhangqing@loongson.cn
-Subject: [PATCH 4/4] LoongArch: Add USER_STACKTRACE support
-Date:   Mon,  1 Aug 2022 20:17:26 +0800
-Message-Id: <20220801121726.9681-5-zhangqing@loongson.cn>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220801121726.9681-1-zhangqing@loongson.cn>
-References: <20220801121726.9681-1-zhangqing@loongson.cn>
+        Mon, 1 Aug 2022 08:39:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA377E002;
+        Mon,  1 Aug 2022 05:18:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFE906102A;
+        Mon,  1 Aug 2022 12:17:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEE70C43142;
+        Mon,  1 Aug 2022 12:17:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659356279;
+        bh=fwQmGYNAwnwhmTNS6sohSMaV1Xzon+6Fu2cbg6wDZdo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gj2vL+hWAQcyAOIPJ422UhRsPi++CbwD9SLnTploLfWmwSuUSq5hWQAET7Jll5zGS
+         KZE7IfkxppcrHgDenW4WAyK2Uh69jPPcrTNVdu1+QBM3eJRm7Pcf6717Wneqd/zi2u
+         t1f3VkVa9+qp6orCRk4Na6GGrRWeaI1iO0mfhVo53i4APrGAndJX78vcZqPuBF/GFT
+         mbBPqAfx0292gWntUJNBZyl9ErXrv2Nfo+xH5NTYgypd2eGiy7IoGxzQsrsbxCuqJk
+         u3OXjskuRwgEC1Fb5U8ZqkymqOXnixNLCFPiUYbA3fjkAFVQQrZG/h0zjyR3cIvizg
+         J3R9UFRSluLAg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id B0F5B40736; Mon,  1 Aug 2022 09:17:55 -0300 (-03)
+Date:   Mon, 1 Aug 2022 09:17:55 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ian Rogers <irogers@google.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Rob Herring <robh@kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v3 1/3] perf: Align user space counter reading with code
+Message-ID: <YufEc1i32OOa+6u8@kernel.org>
+References: <20220719223946.176299-1-irogers@google.com>
+ <20220719223946.176299-2-irogers@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9DxAM9WxOdiKTUAAA--.1249S6
-X-Coremail-Antispam: 1UD129KBjvJXoWxCryUZw1rCF1DtrW5KFWxWFg_yoW5ZFy5pF
-        nFy3ZxtrWUWw4Skr9xZry8Xr98Jw4kG3y2gFZxta45Zr17Xry8Xr4IyFyvqFyUJ393Ja4S
-        ga43Kr1qqF4DZa7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBv14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_JF0E3s1l82xGYI
-        kIc2x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2
-        z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr
-        1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0D
-        M2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjx
-        v20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1l
-        F7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW5JwCF04
-        k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18
-        MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr4
-        1lIxAIcVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l
-        IxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4
-        A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUseOJUUUUU=
-X-CM-SenderInfo: x2kd0wptlqwqxorr0wxvrqhubq/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719223946.176299-2-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To get the best output you can compile your userspace programs with
-frame pointers (at least glibc + the app you are tracing export "CC
-=gcc -fno-omit-frame-pointer".
+Em Tue, Jul 19, 2022 at 03:39:44PM -0700, Ian Rogers escreveu:
+> Align the user space counter reading documentation with the code in
+> perf_mmap__read_self. Previously the documentation was based on the perf
+> rdpmc test, but now general purpose code is provided by libperf.
 
-...
-     echo 'p:malloc /usr/lib64/libc.so.6:0x0a4704 size=%r4:u64'
-                                                > uprobe_events
-     echo 'p:free /usr/lib64/libc.so.6:0x0a4d50 ptr=%r4:x64'
-                                               >> uprobe_events
-     echo 'comm == "demo"' > ./events/uprobes/malloc/filter
-     echo 'comm == "demo"' > ./events/uprobes/free/filter
-     echo 1 > ./options/userstacktrace
-     echo 1 > ./options/sym-userobj
- ...
+Peter, can you merge this so as not to make Linus raise eyebrows with me
+processing things outside tools/perf/ when asking him to pull perf
+userspace?
 
-Signed-off-by: Qing Zhang <zhangqing@loongson.cn>
----
- arch/loongarch/Kconfig                  |  1 +
- arch/loongarch/include/asm/stacktrace.h |  5 +++
- arch/loongarch/kernel/stacktrace.c      | 42 +++++++++++++++++++++++++
- 3 files changed, 48 insertions(+)
+- Arnaldo
+ 
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  include/uapi/linux/perf_event.h       | 35 +++++++++++++++++----------
+>  tools/include/uapi/linux/perf_event.h | 35 +++++++++++++++++----------
+>  2 files changed, 44 insertions(+), 26 deletions(-)
+> 
+> diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+> index d37629dbad72..6826dabb7e03 100644
+> --- a/include/uapi/linux/perf_event.h
+> +++ b/include/uapi/linux/perf_event.h
+> @@ -538,9 +538,13 @@ struct perf_event_mmap_page {
+>  	 *
+>  	 *     if (pc->cap_usr_time && enabled != running) {
+>  	 *       cyc = rdtsc();
+> -	 *       time_offset = pc->time_offset;
+>  	 *       time_mult   = pc->time_mult;
+>  	 *       time_shift  = pc->time_shift;
+> +	 *       time_offset = pc->time_offset;
+> +	 *       if (pc->cap_user_time_short) {
+> +	 *         time_cycles = pc->time_cycles;
+> +	 *         time_mask = pc->time_mask;
+> +	 *       }
+>  	 *     }
+>  	 *
+>  	 *     index = pc->index;
+> @@ -548,6 +552,9 @@ struct perf_event_mmap_page {
+>  	 *     if (pc->cap_user_rdpmc && index) {
+>  	 *       width = pc->pmc_width;
+>  	 *       pmc = rdpmc(index - 1);
+> +	 *       pmc <<= 64 - width;
+> +	 *       pmc >>= 64 - width;
+> +	 *       count += pmc;
+>  	 *     }
+>  	 *
+>  	 *     barrier();
+> @@ -590,25 +597,27 @@ struct perf_event_mmap_page {
+>  	 * If cap_usr_time the below fields can be used to compute the time
+>  	 * delta since time_enabled (in ns) using rdtsc or similar.
+>  	 *
+> -	 *   u64 quot, rem;
+> -	 *   u64 delta;
+> -	 *
+> -	 *   quot = (cyc >> time_shift);
+> -	 *   rem = cyc & (((u64)1 << time_shift) - 1);
+> -	 *   delta = time_offset + quot * time_mult +
+> -	 *              ((rem * time_mult) >> time_shift);
+> +	 *   cyc = time_cycles + ((cyc - time_cycles) & time_mask);
+> +	 *   delta = time_offset + mul_u64_u32_shr(cyc, time_mult, time_shift);
+>  	 *
+>  	 * Where time_offset,time_mult,time_shift and cyc are read in the
+> -	 * seqcount loop described above. This delta can then be added to
+> -	 * enabled and possible running (if index), improving the scaling:
+> +	 * seqcount loop described above. mul_u64_u32_shr will compute:
+> +	 *
+> +	 *   (u64)(((unsigned __int128)cyc * time_mult) >> time_shift)
+> +	 *
+> +	 * This delta can then be added to enabled and possible running (if
+> +	 * index) to improve the scaling. Due to event multiplexing, running
+> +	 * may be zero and so care is needed to avoid division by zero.
+>  	 *
+>  	 *   enabled += delta;
+>  	 *   if (index)
+>  	 *     running += delta;
+>  	 *
+> -	 *   quot = count / running;
+> -	 *   rem  = count % running;
+> -	 *   count = quot * enabled + (rem * enabled) / running;
+> +	 *   if (running != 0) {
+> +	 *     quot = count / running;
+> +	 *     rem  = count % running;
+> +	 *     count = quot * enabled + (rem * enabled) / running;
+> +	 *   }
+>  	 */
+>  	__u16	time_shift;
+>  	__u32	time_mult;
+> diff --git a/tools/include/uapi/linux/perf_event.h b/tools/include/uapi/linux/perf_event.h
+> index d37629dbad72..6826dabb7e03 100644
+> --- a/tools/include/uapi/linux/perf_event.h
+> +++ b/tools/include/uapi/linux/perf_event.h
+> @@ -538,9 +538,13 @@ struct perf_event_mmap_page {
+>  	 *
+>  	 *     if (pc->cap_usr_time && enabled != running) {
+>  	 *       cyc = rdtsc();
+> -	 *       time_offset = pc->time_offset;
+>  	 *       time_mult   = pc->time_mult;
+>  	 *       time_shift  = pc->time_shift;
+> +	 *       time_offset = pc->time_offset;
+> +	 *       if (pc->cap_user_time_short) {
+> +	 *         time_cycles = pc->time_cycles;
+> +	 *         time_mask = pc->time_mask;
+> +	 *       }
+>  	 *     }
+>  	 *
+>  	 *     index = pc->index;
+> @@ -548,6 +552,9 @@ struct perf_event_mmap_page {
+>  	 *     if (pc->cap_user_rdpmc && index) {
+>  	 *       width = pc->pmc_width;
+>  	 *       pmc = rdpmc(index - 1);
+> +	 *       pmc <<= 64 - width;
+> +	 *       pmc >>= 64 - width;
+> +	 *       count += pmc;
+>  	 *     }
+>  	 *
+>  	 *     barrier();
+> @@ -590,25 +597,27 @@ struct perf_event_mmap_page {
+>  	 * If cap_usr_time the below fields can be used to compute the time
+>  	 * delta since time_enabled (in ns) using rdtsc or similar.
+>  	 *
+> -	 *   u64 quot, rem;
+> -	 *   u64 delta;
+> -	 *
+> -	 *   quot = (cyc >> time_shift);
+> -	 *   rem = cyc & (((u64)1 << time_shift) - 1);
+> -	 *   delta = time_offset + quot * time_mult +
+> -	 *              ((rem * time_mult) >> time_shift);
+> +	 *   cyc = time_cycles + ((cyc - time_cycles) & time_mask);
+> +	 *   delta = time_offset + mul_u64_u32_shr(cyc, time_mult, time_shift);
+>  	 *
+>  	 * Where time_offset,time_mult,time_shift and cyc are read in the
+> -	 * seqcount loop described above. This delta can then be added to
+> -	 * enabled and possible running (if index), improving the scaling:
+> +	 * seqcount loop described above. mul_u64_u32_shr will compute:
+> +	 *
+> +	 *   (u64)(((unsigned __int128)cyc * time_mult) >> time_shift)
+> +	 *
+> +	 * This delta can then be added to enabled and possible running (if
+> +	 * index) to improve the scaling. Due to event multiplexing, running
+> +	 * may be zero and so care is needed to avoid division by zero.
+>  	 *
+>  	 *   enabled += delta;
+>  	 *   if (index)
+>  	 *     running += delta;
+>  	 *
+> -	 *   quot = count / running;
+> -	 *   rem  = count % running;
+> -	 *   count = quot * enabled + (rem * enabled) / running;
+> +	 *   if (running != 0) {
+> +	 *     quot = count / running;
+> +	 *     rem  = count % running;
+> +	 *     count = quot * enabled + (rem * enabled) / running;
+> +	 *   }
+>  	 */
+>  	__u16	time_shift;
+>  	__u32	time_mult;
+> -- 
+> 2.37.0.170.g444d1eabd0-goog
 
-diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
-index 85d0fa3147cd..05906384d564 100644
---- a/arch/loongarch/Kconfig
-+++ b/arch/loongarch/Kconfig
-@@ -107,6 +107,7 @@ config LOONGARCH
- 	select SWIOTLB
- 	select TRACE_IRQFLAGS_SUPPORT
- 	select USE_PERCPU_NUMA_NODE_ID
-+	select USER_STACKTRACE_SUPPORT
- 	select ZONE_DMA32
- 	select MMU_GATHER_MERGE_VMAS if MMU
- 
-diff --git a/arch/loongarch/include/asm/stacktrace.h b/arch/loongarch/include/asm/stacktrace.h
-index 49cb89213aeb..77fdb8ad662d 100644
---- a/arch/loongarch/include/asm/stacktrace.h
-+++ b/arch/loongarch/include/asm/stacktrace.h
-@@ -21,6 +21,11 @@ struct stack_info {
- 	unsigned long begin, end, next_sp;
- };
- 
-+struct stack_frame {
-+	unsigned long	fp;
-+	unsigned long	ra;
-+};
-+
- bool in_task_stack(unsigned long stack, struct task_struct *task,
- 			struct stack_info *info);
- bool in_irq_stack(unsigned long stack, struct stack_info *info);
-diff --git a/arch/loongarch/kernel/stacktrace.c b/arch/loongarch/kernel/stacktrace.c
-index f4f4b8ad3917..344224c7cb0e 100644
---- a/arch/loongarch/kernel/stacktrace.c
-+++ b/arch/loongarch/kernel/stacktrace.c
-@@ -6,6 +6,7 @@
-  */
- #include <linux/sched.h>
- #include <linux/stacktrace.h>
-+#include <linux/uaccess.h>
- 
- #include <asm/stacktrace.h>
- #include <asm/unwind.h>
-@@ -35,3 +36,44 @@ void arch_stack_walk(stack_trace_consume_fn consume_entry, void *cookie,
- 			break;
- 	}
- }
-+
-+static int
-+copy_stack_frame(unsigned long fp, struct stack_frame *frame)
-+{
-+	int ret;
-+	unsigned long err;
-+	unsigned long __user *user_frame_tail;
-+
-+	user_frame_tail = (unsigned long *)(fp - sizeof(struct stack_frame));
-+	if (!access_ok(user_frame_tail, sizeof(*frame)))
-+		return 0;
-+
-+	ret = 1;
-+	pagefault_disable();
-+	err = (__copy_from_user_inatomic(frame, user_frame_tail, sizeof(*frame)));
-+	if (err || (unsigned long)user_frame_tail >= frame->fp)
-+		ret = 0;
-+	pagefault_enable();
-+
-+	return ret;
-+}
-+
-+void arch_stack_walk_user(stack_trace_consume_fn consume_entry, void *cookie,
-+			  const struct pt_regs *regs)
-+{
-+	unsigned long fp = regs->regs[22];
-+
-+	while (fp && !((unsigned long)fp & 0xf)) {
-+		struct stack_frame frame;
-+
-+		frame.fp = 0;
-+		frame.ra = 0;
-+		if (!copy_stack_frame(fp, &frame))
-+			break;
-+		if (!frame.ra)
-+			break;
-+		if (!consume_entry(cookie, frame.ra))
-+			break;
-+		fp = frame.fp;
-+	}
-+}
 -- 
-2.20.1
 
+- Arnaldo
