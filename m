@@ -2,74 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29DF4C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:25:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B81EC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:28:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233958AbiHATZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 15:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47406 "EHLO
+        id S233060AbiHAT2F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 15:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229966AbiHATZE (ORCPT
+        with ESMTP id S229901AbiHAT2D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 15:25:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E27A2B260;
-        Mon,  1 Aug 2022 12:25:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D257B8165B;
-        Mon,  1 Aug 2022 19:25:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D33BC433C1;
-        Mon,  1 Aug 2022 19:25:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659381900;
-        bh=EkphSiEPzZcfk1if8b0j8p5iyfVhuflocYAWfz/z4jI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oLk/fb5Z4LqluhUn1lzqmrUPZhINv+0erHHu2lr2aBqjlzCs8KYabeefJUDajb9ot
-         2GsUuYcob+13QutflZnujP5bAxLMOzdAJN4egobeOkRNJrle6al3NKc4WaVcS6ECdC
-         sc+GipKrf4QP+tAFSENHJuCyhzRHB2injSWWm3B4PLkvsQ/T3hd44gLoKd/bKO9vez
-         PcNcTvtQZIFjh5OBogxYMKxjqmtwAye81cipadY4M7nDUfvZfWl6HMxPyF/+P1I2Oi
-         vnJ+g4H4+TLiphqQvyxwm4BJ+zm+AhsRyxfyK5COHptwWSSH7547i1oo/Zx9Y/zTvH
-         +qwYyPjnsRlHQ==
-Date:   Mon, 1 Aug 2022 12:24:59 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] tls: rx: Fix less than zero check on unsigned
- variable sz
-Message-ID: <20220801122459.57b7df02@kernel.org>
-In-Reply-To: <20220730114027.142376-1-colin.i.king@gmail.com>
-References: <20220730114027.142376-1-colin.i.king@gmail.com>
+        Mon, 1 Aug 2022 15:28:03 -0400
+X-Greylist: delayed 463 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 01 Aug 2022 12:28:01 PDT
+Received: from vmicros1.altlinux.org (vmicros1.altlinux.org [194.107.17.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 98983B71
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 12:28:01 -0700 (PDT)
+Received: from imap.altlinux.org (imap.altlinux.org [194.107.17.38])
+        by vmicros1.altlinux.org (Postfix) with ESMTP id 74D8E72C90B;
+        Mon,  1 Aug 2022 22:20:17 +0300 (MSK)
+Received: from altlinux.org (sole.flsd.net [185.75.180.6])
+        by imap.altlinux.org (Postfix) with ESMTPSA id 40D424A5058;
+        Mon,  1 Aug 2022 22:20:17 +0300 (MSK)
+Date:   Mon, 1 Aug 2022 22:20:16 +0300
+From:   Vitaly Chikunov <vt@altlinux.org>
+To:     linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Miroslav Benes <mbenes@suse.cz>
+Cc:     Vitaly Chikunov <vt@altlinux.org>,
+        "Dmitry V. Levin" <ldv@altlinux.org>
+Subject: tools/objtool: check.c:11:10: fatal error: arch/elf.h: No such file
+ or directory
+Message-ID: <20220801192016.raoab6wtuimosocg@altlinux.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=koi8-r
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 30 Jul 2022 12:40:27 +0100 Colin Ian King wrote:
-> Variable sz is declared as an unsigned size_t and is being checked
-> for an less than zero error return on a call to tls_rx_msg_size.
-> Fix this by making sz an int.
-> 
-> Fixes: 84c61fe1a75b ("tls: rx: do not use the standard strparser")
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> ---
->  net/tls/tls_strp.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+Hello,
 
-Already fixed 2 days before you posted, I guess linux-next lagged.
+git bisect shows that commit b51277eb9775 ("objtool: Ditch subcommands")
+included in v5.19 introduces build failure on aarch64 for tools/objtool:
 
-commit 8fd1e151779285b211e7184e9237bba69bd74386
-Author:     Yang Li <yang.lee@linux.alibaba.com>
-AuthorDate: Wed Jul 27 20:10:19 2022
-Commit:     Jakub Kicinski <kuba@kernel.org>
-CommitDate: Thu Jul 28 21:50:39 2022
+  builder@aarch64:~/linux/tools$ make clean
+  builder@aarch64:~/linux/tools$ make objtool
+    DESCEND objtool
+  make -C /usr/src/linux/tools/build CFLAGS= LDFLAGS= fixdep
+    HOSTCC  fixdep.o
+    HOSTLD  fixdep-in.o
+    LINK    fixdep
+  make -C /usr/src/linux/tools/lib/subcmd/ OUTPUT=/usr/src/linux/tools/objtool/
+  make -C /usr/src/linux/tools/build CFLAGS= LDFLAGS= /usr/src/linux/tools/objtool/fixdep
+    HOSTCC  /usr/src/linux/tools/objtool/fixdep.o
+    HOSTLD  /usr/src/linux/tools/objtool/fixdep-in.o
+    LINK    /usr/src/linux/tools/objtool/fixdep
+    CC      /usr/src/linux/tools/objtool/exec-cmd.o
+    CC      /usr/src/linux/tools/objtool/help.o
+    CC      /usr/src/linux/tools/objtool/pager.o
+    CC      /usr/src/linux/tools/objtool/parse-options.o
+    CC      /usr/src/linux/tools/objtool/run-command.o
+    CC      /usr/src/linux/tools/objtool/sigchain.o
+    CC      /usr/src/linux/tools/objtool/subcmd-config.o
+    LD      /usr/src/linux/tools/objtool/libsubcmd-in.o
+    AR      /usr/src/linux/tools/objtool/libsubcmd.a
+    LD      arch/arm64/objtool-in.o
+    CC      weak.o
+    CC      check.o
+  check.c:11:10: fatal error: arch/elf.h: No such file or directory
+     11 | #include <arch/elf.h>
+	|          ^~~~~~~~~~~~
+  compilation terminated.
+  make[2]: *** [/usr/src/linux/tools/build/Makefile.build:97: check.o] Error 1
+  make[1]: *** [Makefile:54: objtool-in.o] Error 2
+  make: *** [Makefile:73: objtool] Error 2
 
-    tls: rx: Fix unsigned comparison with less than zero
+This is on ALT Linux using gcc-12.
+
+Thanks,
+
