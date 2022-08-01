@@ -2,71 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CBB3C25B06
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 06:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6CEC19F2B
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 06:48:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232911AbiHAGsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 02:48:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45674 "EHLO
+        id S234265AbiHAGsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 02:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231836AbiHAGrg (ORCPT
+        with ESMTP id S234192AbiHAGro (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 02:47:36 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A917C266;
-        Sun, 31 Jul 2022 23:45:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659336338; x=1690872338;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DHX+Z4xvrQF68kEA0CuDzi0u0vWaW4w0gl4GfmgkvFI=;
-  b=NBCZeP1TVBYBeOyBo+coyLZBsgoIDtZT6zgyEggl2VWbjCoPkaUnLuCV
-   vMbcmXaHqIWbg3xby6OVTKMk4NgEmQ6jQQCMa9/5FXS49nEXN10OJ1D04
-   fi7OvkvHCWYIiP1GBbs0AN0sTXa0UDqROYZTuFLBa9BoHN97Gyb3MyI/H
-   Jyrayb9vY7AhGxftNisyexBcXQtmVTF4KT2JuMNDy0nzaRFB1Enm7dkx1
-   JD9O3Cd7aUDPSalVYeCvNgHI0rUHalw6HBsc8HCPCPT0TOsPFTZYO3Yka
-   exKxr1+oN9EUxOUdS4LNkh9zlhrVyRQg+XPomPNbxNFJCGTtckFTLYNyF
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10425"; a="289848254"
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="289848254"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 23:45:31 -0700
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="691360372"
-Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 23:45:29 -0700
-Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
-        by paasikivi.fi.intel.com (Postfix) with SMTP id D1D702019B;
-        Mon,  1 Aug 2022 09:45:27 +0300 (EEST)
-Date:   Mon, 1 Aug 2022 06:45:27 +0000
-From:   Sakari Ailus <sakari.ailus@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 1/1] media: atomisp_gmin_platform: Switch to use
- acpi_evaluate_dsm_typed()
-Message-ID: <Yud2hzq3JQBzf+oK@paasikivi.fi.intel.com>
-References: <20220730155905.90091-1-andriy.shevchenko@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220730155905.90091-1-andriy.shevchenko@linux.intel.com>
+        Mon, 1 Aug 2022 02:47:44 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF5AD6391
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 23:46:50 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 23so8892867pgc.8
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 23:46:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=synaptics-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=JAtDb2BzsZbrhrNn0Iwjw4diHPiR7j2cRNNJMQMKcFo=;
+        b=adGHt2GNY2NtBhIvrMdkPDf1jxWGv0quQnTqqjQPc9ipa/ZVFndMnnqjwVmsY5bMXW
+         nZdkTHoZXHXwlVWAW2sdxwW38NWkLicK8pK37a3GzwDFkqoZfmZ00um6maNoTV9PnCYr
+         4G8FXomYnMVRjaNU+PfOMwp27mM+zpRj6ZN6uqIpC9XgMSmW/dUW3IzphA94q46CxQwR
+         cXbsrR3HXG92aIt5r/25JNDzEH5YuLE3h1iFxFOUGGX2xA1t4rI614WJnELvXU+HpcJl
+         3+c8fOEMZRcQqiQHWbzYEMfK8C5GF8YF9eVVwPRv9vMVHDQuq7sKIMAJpP8YPN1aieCc
+         bv8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=JAtDb2BzsZbrhrNn0Iwjw4diHPiR7j2cRNNJMQMKcFo=;
+        b=ahj2zwC0AMkudKdMtrFfZ8zr5zLTXan7C9bFnUtfWq0OftBCPvfR9Y5PqM7ok91J8Q
+         HphCPARoFCa/V7i5CHMAes3EuPVJF3gjiw8mMqU52zXRBcoCEZ4yAcofujh6lZjBnv8C
+         bKEmx1emEcf+XSfIftkUd494Iw6oYKDYR2g6vDnBOjx3bwEyYk5kR/df6hwmEMwbV6Ct
+         4tlRUlRSK1LYwgKm4/ppXF9vrwoMmOD9x69fXovOrHfDKTt3GgsA/QdgHZ9phTUt1MJJ
+         2q+AxgoyMlz8lVi4bpfTEOxbXHtWX/A2rQW733EHIwmtTx3ErYv9d2zsOLaDgmPRbf3l
+         RDBg==
+X-Gm-Message-State: AJIora/mfx2FP5rXCDnQ6+LhlPJA3K/K8ysSyuDMwfXBCKp6qcNYMVDX
+        IsJmndX3CHRZIm2lNuvFfM4gag==
+X-Google-Smtp-Source: AGRyM1vrF9MftH4pfwtuio+gHfJvK0ADlPo2skMM2GtEl+P10maUNds+goB13nmWHd6y9dqepW6lhg==
+X-Received: by 2002:a63:1324:0:b0:419:afb2:af7b with SMTP id i36-20020a631324000000b00419afb2af7bmr12010926pgl.367.1659336410259;
+        Sun, 31 Jul 2022 23:46:50 -0700 (PDT)
+Received: from localhost.localdomain ([63.222.17.38])
+        by smtp.gmail.com with ESMTPSA id x22-20020aa78f16000000b0052cec54e3b8sm4766853pfr.215.2022.07.31.23.46.47
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 31 Jul 2022 23:46:49 -0700 (PDT)
+From:   margeyang <marge.yang@synaptics.corp-partner.google.com>
+To:     dmitry.torokhov@gmail.com, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     marge.yang@tw.synaptics.com, derek.chegn@tw.synaptcs.com,
+        vincent.huang@tw.synaptics.com,
+        Marge Yang <marge.yang@synaptics.corp-partner.google.com>
+Subject: [PATCH] Input: HID-rmi - ignore to rmi_hid_read_block after system resumes.
+Date:   Mon,  1 Aug 2022 14:46:43 +0800
+Message-Id: <1659336403-2546-1-git-send-email-marge.yang@synaptics.corp-partner.google.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 30, 2022 at 06:59:04PM +0300, Andy Shevchenko wrote:
-> The acpi_evaluate_dsm_typed() provides a way to check the type of the
-> object evaluated by _DSM call. Use it instead of open coded variant.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Marge Yang <marge.yang@synaptics.corp-partner.google.com>
 
-Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+ignore to rmi_hid_read_block function once after system resumes.
+Because
 
+Signed-off-by: Marge Yang<marge.yang@synaptics.corp-partner.google.com>
+---
+ drivers/hid/hid-rmi.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
+index 311eee599ce9..1b038f3db0f1 100644
+--- a/drivers/hid/hid-rmi.c
++++ b/drivers/hid/hid-rmi.c
+@@ -101,7 +101,7 @@ struct rmi_data {
+ };
+ 
+ #define RMI_PAGE(addr) (((addr) >> 8) & 0xff)
+-
++int ignoreonce;
+ static int rmi_write_report(struct hid_device *hdev, u8 *report, int len);
+ 
+ /**
+@@ -203,7 +203,13 @@ static int rmi_hid_read_block(struct rmi_transport_dev *xport, u16 addr,
+ 		if (ret < 0)
+ 			goto exit;
+ 	}
+-
++	if (ignoreonce == 1) {
++		dev_err(&hdev->dev,
++			"ignoreonce (%d)\n",
++			ignoreonce);
++		ignoreonce = 0;
++		goto exit;
++	}
+ 	for (retries = 5; retries > 0; retries--) {
+ 		data->writeReport[0] = RMI_READ_ADDR_REPORT_ID;
+ 		data->writeReport[1] = 0; /* old 1 byte read count */
+@@ -468,7 +474,10 @@ static int rmi_post_resume(struct hid_device *hdev)
+ 	ret = hid_hw_open(hdev);
+ 	if (ret)
+ 		return ret;
+-
++	// Avoid to read rmi_hid_read_block once after system resumes.
++	// The interrupt will be pulled down
++	// after RMI Read command(Report ID:0x0A).
++	ignoreonce = 1;
+ 	ret = rmi_reset_attn_mode(hdev);
+ 	if (ret)
+ 		goto out;
 -- 
-Sakari Ailus
+2.22.0.windows.1
+
