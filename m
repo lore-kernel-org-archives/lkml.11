@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EFF0C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0212BC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:15:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233899AbiHAMPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:15:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56724 "EHLO
+        id S234288AbiHAMPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:15:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234171AbiHAMOM (ORCPT
+        with ESMTP id S234220AbiHAMOY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:14:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B9648CAD;
-        Mon,  1 Aug 2022 04:57:55 -0700 (PDT)
+        Mon, 1 Aug 2022 08:14:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316A077A48;
+        Mon,  1 Aug 2022 04:57:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE89DB81171;
-        Mon,  1 Aug 2022 11:57:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15405C433D6;
-        Mon,  1 Aug 2022 11:57:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67AA8B8117A;
+        Mon,  1 Aug 2022 11:57:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2F02C433D7;
+        Mon,  1 Aug 2022 11:57:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355072;
-        bh=Pjt9arz70V3SkAfZi0jUYYdS/BqTVgwJMR24cK/ZAFQ=;
+        s=korg; t=1659355075;
+        bh=Rw/7w+b4/HttnljXh90geiflsimlF4zzYeRoJGJY7zU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ooQ7hbvh+3VeMbAT08BakWYozKOFLZA+ZzMAm7Vw0jrbZkMTJOpT81mtzrpufGDmo
-         S7v6DK39+Rb7H5vdvRWSOUDl8LGs4/fOZHucpugOJ11P67CAP7EmMSe4CtfX+XQN2x
-         FSi0Ov7ETXZkswysX3PdagCuBlIEWGbxfJyLGSyQ=
+        b=Cg9y0fGLb3svhvtFbqa7vnDgmg1WoMWR0r6xZqb2FyI7kIgeRGHLfJKqtt8fAj1vM
+         ++5LiRiPqlGZjzFlemj4arZ3mTVmfsKz85g74aKR1jIG/oRRlBkeukzuVfbL3rsFhD
+         0YNrhnAVXtuNswQGUsj04QS6adRXediP9G77ctWs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Frantisek Sumsal <fsumsal@redhat.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
+        stable@vger.kernel.org, Sabrina Dubroca <sd@queasysnail.net>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 52/88] macsec: fix NULL deref in macsec_add_rxsa
-Date:   Mon,  1 Aug 2022 13:47:06 +0200
-Message-Id: <20220801114140.404494468@linuxfoundation.org>
+Subject: [PATCH 5.18 53/88] macsec: fix error message in macsec_add_rxsa and _txsa
+Date:   Mon,  1 Aug 2022 13:47:07 +0200
+Message-Id: <20220801114140.452947608@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -52,41 +51,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sabrina Dubroca <sd@queasysnail.net>
 
-[ Upstream commit f46040eeaf2e523a4096199fd93a11e794818009 ]
+[ Upstream commit 3240eac4ff20e51b87600dbd586ed814daf313db ]
 
-Commit 48ef50fa866a added a test on tb_sa[MACSEC_SA_ATTR_PN], but
-nothing guarantees that it's not NULL at this point. The same code was
-added to macsec_add_txsa, but there it's not a problem because
-validate_add_txsa checks that the MACSEC_SA_ATTR_PN attribute is
-present.
-
-Note: it's not possible to reproduce with iproute, because iproute
-doesn't allow creating an SA without specifying the PN.
+The expected length is MACSEC_SALT_LEN, not MACSEC_SA_ATTR_SALT.
 
 Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites (IEEE 802.1AEbw)")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=208315
-Reported-by: Frantisek Sumsal <fsumsal@redhat.com>
 Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macsec.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/macsec.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 817577e713d7..769a1eca6bd8 100644
+index 769a1eca6bd8..634452d3ecc5 100644
 --- a/drivers/net/macsec.c
 +++ b/drivers/net/macsec.c
-@@ -1753,7 +1753,8 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 	}
- 
- 	pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
--	if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
-+	if (tb_sa[MACSEC_SA_ATTR_PN] &&
-+	    nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
- 		pr_notice("macsec: nl: add_rxsa: bad pn length: %d != %d\n",
- 			  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
- 		rtnl_unlock();
+@@ -1770,7 +1770,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
+ 		if (nla_len(tb_sa[MACSEC_SA_ATTR_SALT]) != MACSEC_SALT_LEN) {
+ 			pr_notice("macsec: nl: add_rxsa: bad salt length: %d != %d\n",
+ 				  nla_len(tb_sa[MACSEC_SA_ATTR_SALT]),
+-				  MACSEC_SA_ATTR_SALT);
++				  MACSEC_SALT_LEN);
+ 			rtnl_unlock();
+ 			return -EINVAL;
+ 		}
+@@ -2012,7 +2012,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
+ 		if (nla_len(tb_sa[MACSEC_SA_ATTR_SALT]) != MACSEC_SALT_LEN) {
+ 			pr_notice("macsec: nl: add_txsa: bad salt length: %d != %d\n",
+ 				  nla_len(tb_sa[MACSEC_SA_ATTR_SALT]),
+-				  MACSEC_SA_ATTR_SALT);
++				  MACSEC_SALT_LEN);
+ 			rtnl_unlock();
+ 			return -EINVAL;
+ 		}
 -- 
 2.35.1
 
