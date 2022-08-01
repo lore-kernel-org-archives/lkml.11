@@ -2,130 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9993BC19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 02:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D293FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 03:00:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239444AbiHAC6o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 22:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38610 "EHLO
+        id S239459AbiHADAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 23:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238241AbiHAC6m (ORCPT
+        with ESMTP id S238241AbiHADAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 22:58:42 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964FCDEFC;
-        Sun, 31 Jul 2022 19:58:41 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id bq11so10184777lfb.5;
-        Sun, 31 Jul 2022 19:58:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=4PUW35Z98Oz3GKgcOUm+Y7kv0FX17sX3vwCDCp2HW74=;
-        b=XiXlx6p8Um99lzIHizjEqBOBY3WY5XMxC2b6+HjzF4cozzUWdTyzmK2AHSD6K6S+7I
-         0047Tv6qHYK2KCJ1a8ke1ALewQ/Rv/scuGG4b4gxCzzdKjx8MP3akB0coQg/gerxqmzU
-         OSC8e5CEbR1NxTUNFFhmKvnxBoG+kMBpZwDapX0Jr6TGriN5GGRa2p7ShQcL+8EPjrOx
-         LmJNQDmFQ8iomSKarCsys/XZqZOXUwRvXxfeLISBVZrmLNi1bzS5iDOyzAlAOu7gZtPE
-         1oJTkThe0sWsLoUA1fjeCt4d9C0eR5gtfQuLAMl7SlkvnSBV+gvnPeXlFjqKm9PGwT3R
-         VKYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=4PUW35Z98Oz3GKgcOUm+Y7kv0FX17sX3vwCDCp2HW74=;
-        b=6ipEtFxtHLjsuLasq4wGqIRPVTFoHTc54yr7vcuQbrybzs7xlVexcOuW1KdNv4/iuj
-         9RR4RK8mLT3DrO/0V0kloEvHLjDzpveJqH66WQALvOqL4o2oVgYW6EWfDomZXaH7TaJs
-         GIb+mLKMFl2/Ddl/jZ28KTHLEg+yTbllEANH2Ae8hJKat5TSpYt16Ot5RogrB3/xUrOW
-         quh96BA0KroI7t9LgDpJZ35rkyoWTHa+zl8Zgte17r94dNm8yNHqXxdLrkDBqoMuADk3
-         iR0pScgKCSKvn1JKO6Dt0/jcyj10MExe8kZf4bjM0d29LLGafuvYgOOfotuW/aLykjGd
-         7CZQ==
-X-Gm-Message-State: AJIora9/E9KPUkYIAfMB25wlF9qxK7qGEppI6T/XLZDtw/huuwB9GGBC
-        20xp52OcwKa0xFzNuR7WI7bGtwlCvwpURBJkdrk=
-X-Google-Smtp-Source: AGRyM1uc8D+MSD46tu2Un7YpdehzU3bq/0FFaNSuxHlDhg0Je/WlITUI5E/e59ZGLRo0vmXUJ+RGnzaDdEIGpaXgnKk=
-X-Received: by 2002:a05:6512:1319:b0:482:b8ce:a278 with SMTP id
- x25-20020a056512131900b00482b8cea278mr5121005lfu.8.1659322719820; Sun, 31 Jul
- 2022 19:58:39 -0700 (PDT)
+        Sun, 31 Jul 2022 23:00:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F0A639A
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 20:00:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00D2E61253
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 03:00:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37955C433C1;
+        Mon,  1 Aug 2022 03:00:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659322844;
+        bh=XRHvX67Bg42gEMEXV/ANvXzl9ZybUFkGyKgZc85LmD0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PKmBzIH+ImwL8JxP+e07jZIBFytGbynHScXQFDPn9hnkXJfiF/YYWDF0+DBrDPYkN
+         lgRQWdQoKhLP4lCPN2BLQnqVMnOATggquMKun8uKzwi5d/wHqG0Gv7utwIfqk+ktbs
+         Im0t0hq8CjaVIWsm3kgk7L3u/qnauKrF4xrSEvq89Hj3Ndr7zRg7xG56j7IQbJwgrI
+         6x7MGKkRpi3mahENO1FTyEOlkbAw/SdN5EFSCFLf5x/7tHLKgFWKX4TEJK2LJ0UwrP
+         YNELrXFgkOgpQ0oP/RRDx91Oqh249pdDq49GwBTuSbFDY3ulTUl49sD4FdBCvcDDXj
+         CLucszb9htVcQ==
+From:   "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Tom Zanussi <zanussi@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] tracing/hist: Add percentage histogram suffixes
+Date:   Mon,  1 Aug 2022 12:00:40 +0900
+Message-Id: <165932284025.2881436.6085809619146158354.stgit@devnote2>
+X-Mailer: git-send-email 2.25.1
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-References: <20220725030605.1808710-1-klimov.linux@gmail.com>
- <573466e4-e836-d053-d1b9-dc04c6a046e5@roeck-us.net> <CALW4P+JjO5zxEP4aLGzzcvK2QO0Ea_uYACjuOV6GZEMfh3Q5RA@mail.gmail.com>
- <20220726032425.GA1331080@roeck-us.net>
-In-Reply-To: <20220726032425.GA1331080@roeck-us.net>
-From:   Alexey Klimov <klimov.linux@gmail.com>
-Date:   Mon, 1 Aug 2022 03:58:28 +0100
-Message-ID: <CALW4P+LmMJAm=3PWQfiEgYS7d_q0M0rdSJVhpZw9x9w3fQQMRA@mail.gmail.com>
-Subject: Re: [PATCH v5] watchdog: add driver for StreamLabs USB watchdog device
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Oliver Neukum <oneukum@suse.com>, linux-watchdog@vger.kernel.org,
-        wim@linux-watchdog.org, USB list <linux-usb@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        atishp@rivosinc.com, atishp@atishpatra.org,
-        Yury Norov <yury.norov@gmail.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        Aaron Tomlin <atomlin@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 4:24 AM Guenter Roeck <linux@roeck-us.net> wrote:
->
+Hi,
 
-[...]
+Here are a couple of patches to add .percent and .graph histogram
+value suffixes to show the value in percentage and in bar-graph.
 
-> > > > +
-> > > > +     streamlabs_wdt->intf = intf;
-> > > > +     usb_set_intfdata(intf, &streamlabs_wdt->wdt_dev);
-> > > > +     watchdog_set_drvdata(&streamlabs_wdt->wdt_dev, streamlabs_wdt);
-> > > > +     watchdog_set_nowayout(&streamlabs_wdt->wdt_dev, nowayout);
-> > > > +
-> > > > +     retval = usb_streamlabs_wdt_stop(&streamlabs_wdt->wdt_dev);
-> > > > +     if (retval)
-> > > > +             return -ENODEV;
-> > > > +
-> > >
-> > > A comment explaining why the watchdog is explicitly stopped when running
-> > > might be useful.
-> >
-> > What do you mean by saying "when running"?
-> > Everytime during my testing the initial state is "stopped" on
-> > boot/power on/after reset, so not sure what you mean by saying "when
-> > running".
->
-> Should I have used the term "active" ? "started" ?
->
-> > There is a comment above that explains the stop command but I will
-> > add/change comments that explain things better.
-> > The point of executing "stop" command here is to check that device
-> > being probed behaves like we expect it to. This is a bit paranoid
-> > check since I am a not 100% sure that all devices with such USB ids
-> > are watchdogs -- that's why additional checks for usbdev->product and
-> > usbdev->manufacturer and this stop command that doesn't change the
-> > initial state. In theory, I can remove this stop command at all.
-> >
->
-> Normally one does not want a watchdog to stop if it is running (started ?
-> active ? pick your term) when the device is instantiated to avoid gaps
-> in watchdog coverage. The watchdog core provides a flag, WDOG_HW_RUNNING,
-> for this purpose (sorry, there is the 'running' term again). It is used
-> by many drivers, and ensures that the time from loading the Linux kernel
-> to opening the watchdog device is protected by the watchdog.
->
-> Calling the stop function during probe suggests that you at least
-> considered the possibility that the watchdog may be running/started/active.
-> Per your explanation, you still want it to stop explicitly if/when that
-> happens.  All I am asking you is to add a comment explaining why this is
-> not needed/wanted/relevant/supported for this driver. One explanation
-> might, for example, be that the state can not be detected reliably.
+This will help us to check the trend of the histogram instantly
+without the post processing tool.
 
-Thanks for the explanation. I was confused initially by the phrase
-"explicitly stopped when running" since in reality it is "explicitly
-stopped when stopped" (or not active, not running).
-On the second thought, I can issue a start command and indicate to the
-watchdog core via set_bit(WDOG_HW_RUNNING, &wdd->status) that it is
-running or return -ENODEV if the start fails instead of stopping the
-watchdog. I just would like to have a command sent to the device in
-->probe() that checks that the device behaves like expected. If there
-are no objects I'll change it like this.
+Here shows the example of the percentage and the bar graph of
+the runtime of the running tasks.
 
-Best regards,
-Alexey
+/sys/kernel/tracing # echo hist:keys=pid:vals=runtime.percent,runtime.graph:sort
+=pid >> events/sched/sched_stat_runtime/trigger
+/sys/kernel/tracing # sleep 10
+/sys/kernel/tracing # cat events/sched/sched_stat_runtime/hist
+# event histogram
+#
+# trigger info: hist:keys=pid:vals=hitcount,runtime.percent,runtime.graph:sort=pid:size=2048 [active]
+#
+
+{ pid:          8 } hitcount:         11  runtime:       4.11  runtime: #                   
+{ pid:          9 } hitcount:          4  runtime:       1.28  runtime:                     
+{ pid:         14 } hitcount:         10  runtime:       2.22  runtime:                     
+{ pid:         15 } hitcount:          1  runtime:       0.07  runtime:                     
+{ pid:         16 } hitcount:         21  runtime:       3.35  runtime: #                   
+{ pid:         57 } hitcount:          6  runtime:       2.41  runtime: #                   
+{ pid:         61 } hitcount:         42  runtime:       9.79  runtime: ####                
+{ pid:         66 } hitcount:          5  runtime:       0.69  runtime:                     
+{ pid:        147 } hitcount:         36  runtime:      45.33  runtime: ####################
+{ pid:       8548 } hitcount:          9  runtime:      17.25  runtime: #######             
+{ pid:       8549 } hitcount:          8  runtime:      13.43  runtime: #####               
+
+Totals:
+    Hits: 153
+    Entries: 11
+    Dropped: 0
+
+
+Thank you,
+
+---
+
+Masami Hiramatsu (Google) (2):
+      tracing: Add .percent suffix option to histogram values
+      tracing: Add .graph suffix option to histogram value
+
+
+ kernel/trace/trace.c             |    3 +
+ kernel/trace/trace_events_hist.c |  110 ++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 105 insertions(+), 8 deletions(-)
+
+--
+Masami Hiramatsu (Google) <mhiramat@kernel.org>
