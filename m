@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7CFC19F29
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:14:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51AD7C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:14:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233794AbiHAMOQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:14:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56258 "EHLO
+        id S233270AbiHAMOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:14:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234140AbiHAMNZ (ORCPT
+        with ESMTP id S233782AbiHAMNi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:13:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9589753AD;
-        Mon,  1 Aug 2022 04:57:35 -0700 (PDT)
+        Mon, 1 Aug 2022 08:13:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A6940BE3;
+        Mon,  1 Aug 2022 04:57:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A05AAB81177;
-        Mon,  1 Aug 2022 11:57:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0AAFC43470;
-        Mon,  1 Aug 2022 11:57:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDE5A601C0;
+        Mon,  1 Aug 2022 11:57:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9768C433D6;
+        Mon,  1 Aug 2022 11:57:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355050;
-        bh=FyEep/jFRSTtylJI1Fb5kcB37dDN715UCJD70qJGHJE=;
+        s=korg; t=1659355053;
+        bh=y6ETTkAbglq6SU4Bo2p1DDhR7aHNjAN+eDL61AvGvuw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lzdlSMpy0In8chgiOrBZx1yozdP81uRKxMMII4XrvIKoJm+OhhE/s9NryJAJ1oyhV
-         pP6kJegIDcA1Cy0jgV3T3Qaq2oShwetdTWpop6WhOfCwYvmYiJhtu4tYqqOqCWieEZ
-         njFvr7pMJ64+8DhFW+HABlFcJAkJLq6rGoPcWjOU=
+        b=Irjo7jRENnP8AlbTMlOodhlIpwYT9e4HY6khHsk4Jf7gArH59qZXJG0cs6YRltURH
+         hrvkUABNlYnWdPjQNJ/bOYFDIVl7q6nPs6WYnJknhOszQwU42BagUWqdSWbMfH9D10
+         b5L1kznkV8g6EZ2oFsCPNZ9fDUTFEQPnrBIJzbhg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 45/88] mlxsw: spectrum_router: simplify list unwinding
-Date:   Mon,  1 Aug 2022 13:46:59 +0200
-Message-Id: <20220801114140.109582978@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.18 28/88] ice: check (DD | EOF) bits on Rx descriptor rather than (EOP | RS)
+Date:   Mon,  1 Aug 2022 13:46:42 +0200
+Message-Id: <20220801114139.305607949@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -50,97 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-[ Upstream commit 6f2f36e5f932c58e370bff79aba7f05963ea1c2a ]
+commit 283d736ff7c7e96ac5b32c6c0de40372f8eb171e upstream.
 
-The setting of i here
-err_nexthop6_group_get:
-	i = nrt6;
-Is redundant, i is already nrt6.  So remove
-this statement.
+Tx side sets EOP and RS bits on descriptors to indicate that a
+particular descriptor is the last one and needs to generate an irq when
+it was sent. These bits should not be checked on completion path
+regardless whether it's the Tx or the Rx. DD bit serves this purpose and
+it indicates that a particular descriptor is either for Rx or was
+successfully Txed. EOF is also set as loopback test does not xmit
+fragmented frames.
 
-The for loop for the unwinding
-err_rt6_create:
-	for (i--; i >= 0; i--) {
-Is equivelent to
-	for (; i > 0; i--) {
+Look at (DD | EOF) bits setting in ice_lbtest_receive_frames() instead
+of EOP and RS pair.
 
-Two consecutive labels can be reduced to one.
-
-Signed-off-by: Tom Rix <trix@redhat.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Link: https://lore.kernel.org/r/20220402121516.2750284-1-trix@redhat.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0e674aeb0b77 ("ice: Add handler for ethtool selftest")
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 20 ++++++++-----------
- 1 file changed, 8 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_ethtool.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index c00d6c4ed37c..245d36696486 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -7022,7 +7022,7 @@ mlxsw_sp_fib6_entry_nexthop_add(struct mlxsw_sp *mlxsw_sp,
- 		mlxsw_sp_rt6 = mlxsw_sp_rt6_create(rt_arr[i]);
- 		if (IS_ERR(mlxsw_sp_rt6)) {
- 			err = PTR_ERR(mlxsw_sp_rt6);
--			goto err_rt6_create;
-+			goto err_rt6_unwind;
- 		}
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -660,7 +660,8 @@ static int ice_lbtest_receive_frames(str
+ 		rx_desc = ICE_RX_DESC(rx_ring, i);
  
- 		list_add_tail(&mlxsw_sp_rt6->list, &fib6_entry->rt6_list);
-@@ -7031,14 +7031,12 @@ mlxsw_sp_fib6_entry_nexthop_add(struct mlxsw_sp *mlxsw_sp,
+ 		if (!(rx_desc->wb.status_error0 &
+-		    cpu_to_le16(ICE_TX_DESC_CMD_EOP | ICE_TX_DESC_CMD_RS)))
++		    (cpu_to_le16(BIT(ICE_RX_FLEX_DESC_STATUS0_DD_S)) |
++		     cpu_to_le16(BIT(ICE_RX_FLEX_DESC_STATUS0_EOF_S)))))
+ 			continue;
  
- 	err = mlxsw_sp_nexthop6_group_update(mlxsw_sp, op_ctx, fib6_entry);
- 	if (err)
--		goto err_nexthop6_group_update;
-+		goto err_rt6_unwind;
- 
- 	return 0;
- 
--err_nexthop6_group_update:
--	i = nrt6;
--err_rt6_create:
--	for (i--; i >= 0; i--) {
-+err_rt6_unwind:
-+	for (; i > 0; i--) {
- 		fib6_entry->nrt6--;
- 		mlxsw_sp_rt6 = list_last_entry(&fib6_entry->rt6_list,
- 					       struct mlxsw_sp_rt6, list);
-@@ -7166,7 +7164,7 @@ mlxsw_sp_fib6_entry_create(struct mlxsw_sp *mlxsw_sp,
- 		mlxsw_sp_rt6 = mlxsw_sp_rt6_create(rt_arr[i]);
- 		if (IS_ERR(mlxsw_sp_rt6)) {
- 			err = PTR_ERR(mlxsw_sp_rt6);
--			goto err_rt6_create;
-+			goto err_rt6_unwind;
- 		}
- 		list_add_tail(&mlxsw_sp_rt6->list, &fib6_entry->rt6_list);
- 		fib6_entry->nrt6++;
-@@ -7174,7 +7172,7 @@ mlxsw_sp_fib6_entry_create(struct mlxsw_sp *mlxsw_sp,
- 
- 	err = mlxsw_sp_nexthop6_group_get(mlxsw_sp, fib6_entry);
- 	if (err)
--		goto err_nexthop6_group_get;
-+		goto err_rt6_unwind;
- 
- 	err = mlxsw_sp_nexthop_group_vr_link(fib_entry->nh_group,
- 					     fib_node->fib);
-@@ -7193,10 +7191,8 @@ mlxsw_sp_fib6_entry_create(struct mlxsw_sp *mlxsw_sp,
- 	mlxsw_sp_nexthop_group_vr_unlink(fib_entry->nh_group, fib_node->fib);
- err_nexthop_group_vr_link:
- 	mlxsw_sp_nexthop6_group_put(mlxsw_sp, fib_entry);
--err_nexthop6_group_get:
--	i = nrt6;
--err_rt6_create:
--	for (i--; i >= 0; i--) {
-+err_rt6_unwind:
-+	for (; i > 0; i--) {
- 		fib6_entry->nrt6--;
- 		mlxsw_sp_rt6 = list_last_entry(&fib6_entry->rt6_list,
- 					       struct mlxsw_sp_rt6, list);
--- 
-2.35.1
-
+ 		rx_buf = &rx_ring->rx_buf[i];
 
 
