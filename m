@@ -2,169 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A90CAC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:20:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B6FC19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231368AbiHATUW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 15:20:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44118 "EHLO
+        id S233530AbiHATUl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 15:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232194AbiHATUT (ORCPT
+        with ESMTP id S232194AbiHATUi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 15:20:19 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419846273;
-        Mon,  1 Aug 2022 12:20:18 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id bh13so10512475pgb.4;
-        Mon, 01 Aug 2022 12:20:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=heBhDPAZZcza0ZAAL/XaeCAoRWcoC2O1hG9RrLQTw+Q=;
-        b=FsrlOE4tsSZYBIhg7eL1cGLNkbr5s7AQ6MDD86FOtmiPsPlVzuukphx8rvCvD9lFrG
-         OYVMyEmS45kDwd8iEqotzTxYfQZtdH9O86Z46Rni4GbggDC1CsEM0s33s/QGSnWkQiq8
-         ieJTOtAzAsitMOtoBvKuDVqDK+NpqWs5eO9lrMy/iriWwE8H7QKSRoluPyjF+7wuYM2m
-         XKgdnVbL+6FBR/vPZKushZ9U4ceplKg2nCF6+ptHc1SZutef8Kx6hwOQmWZV1LHEvn35
-         9UQr6pO/J8Q7g+IoI8AqqKenCi9FwgE/MCBBmXlTX901iqMCPI3UscgT3E9llrn25Pzh
-         L/Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=heBhDPAZZcza0ZAAL/XaeCAoRWcoC2O1hG9RrLQTw+Q=;
-        b=uwQBJDjo3dIf1vK9UugVk5dkD4Uqs2a5DhC+sHtxoDnAe5YCs8i92Sx5m9Y78V2ffU
-         mqjKUP4wDq9Ep3R2NDWAr+hpJd8ga0g9SREN05OmqmrKwg27kCl3EAyQyLn/eMTvDXnb
-         mr+sjfxzy3LKd26prsaVCEEHY7gMgc/YyQq9zSGOKQcexnxkDE8jA+ABFp34pUCjXzqU
-         Tm3+QF5LtVPiESeOfDL6kA5zEw9o1tqmSZo+HKo0dTAPY7iZnTqeIPW8O1CFnKFTaLyS
-         KCJ8oWDp64JEwxJHXhqK7nABRxqpEBNG6sxM96X1UIcpAlqbCVlqD212vDtw/6xgDo0z
-         CAxw==
-X-Gm-Message-State: AJIora8CsQex9JWFXB/7ZBgilxwBq6z6aCzAcNmgfCyQXaE1BbyF8dGe
-        YIYKAiYnjhJeMWXobovV1DZ+s5dZLT8=
-X-Google-Smtp-Source: AGRyM1vHqknvJ1u8gmAcJyP+QQSyrQnRqaiz75jjFE5Xhn8w0b7H3adnxYr7Xs+Mi40lMMuAhModng==
-X-Received: by 2002:a05:6a00:14c1:b0:52b:4602:5af1 with SMTP id w1-20020a056a0014c100b0052b46025af1mr17111525pfu.24.1659381617595;
-        Mon, 01 Aug 2022 12:20:17 -0700 (PDT)
-Received: from localhost.localdomain (ec2-13-113-80-70.ap-northeast-1.compute.amazonaws.com. [13.113.80.70])
-        by smtp.gmail.com with ESMTPSA id a7-20020a1709027e4700b0016b865ea2ddsm9849318pln.85.2022.08.01.12.20.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Aug 2022 12:20:17 -0700 (PDT)
-From:   Zhang Boyang <zhangboyang.id@gmail.com>
-To:     linux-block@vger.kernel.org
-Cc:     Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
-        linux-kernel@vger.kernel.org,
-        Zhang Boyang <zhangboyang.id@gmail.com>
-Subject: [PATCH 6.0 RESEND] loop: introduce LO_FLAGS_NODEALLOC
-Date:   Tue,  2 Aug 2022 03:20:00 +0800
-Message-Id: <20220801192000.15365-1-zhangboyang.id@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 1 Aug 2022 15:20:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82091B0D;
+        Mon,  1 Aug 2022 12:20:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05E6160D33;
+        Mon,  1 Aug 2022 19:20:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56689C433D6;
+        Mon,  1 Aug 2022 19:20:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659381636;
+        bh=zzXyf7TJzmP7QyPlXsvbbhy9XsF6eg6AGGTJjS/KQ8A=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=q1GNB9G6PpUUqsGTikI74F1iV0ghrhGbMMpvAz5OaprUZ/JyecWcFshywi+0dwCv7
+         qNUHk719JJc1qisCycKETZjzBJQ7PL5JvjF4+RBU7cvuwAFojugW7kTYbUVg/jV9Vl
+         S7poi65EORt/dfg+5auNWlWVEPjq9/QJh4Nnl+VR53ZpMiTJBpLD6OVnCoRf/2kYjY
+         W5A4XZBJ0LQWumP/ELCZYbxFJm+fX2qNfx+fG8TTzwRrB4c9D7OPOyTpZcqbSDB6tj
+         O5vtFnCtuoBeHHfrhpVGl0XkUuqtWfBgSmKdWcBvOaXEzzRd2BNzaOYseyIrWiOlod
+         fHUBNlZCriybg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id DFD105C0D2B; Mon,  1 Aug 2022 12:20:35 -0700 (PDT)
+Date:   Mon, 1 Aug 2022 12:20:35 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Will Deacon <will@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Mikulas Patocka <mpatocka@redhat.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v2] make buffer_locked provide an acquire semantics
+Message-ID: <20220801192035.GA2860372@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <alpine.LRH.2.02.2207310703170.14394@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAMj1kXFYRNrP2k8yppgfdKg+CxWeYfHTbzLBuyBqJ9UVAR_vaQ@mail.gmail.com>
+ <alpine.LRH.2.02.2207310920390.6506@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2207311104020.16444@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wiC_oidYZeMD7p0E-=TAuLgrNQ86-sB99=hRqFM8fVLDQ@mail.gmail.com>
+ <20220731173011.GX2860372@paulmck-ThinkPad-P17-Gen-1>
+ <20220801154108.GA26280@willie-the-truck>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220801154108.GA26280@willie-the-truck>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Previously, for file-backed loop devices, REQ_OP_DISCARD and
-REQ_OP_WRITE_ZEROES (without REQ_NOUNMAP) are implemented using
-fallocate(FALLOC_FL_PUNCH_HOLE), which will cause the underlying file to
-be sparse and disk space freed. The users have no choice to prevent this
-this from happening.
+On Mon, Aug 01, 2022 at 04:41:09PM +0100, Will Deacon wrote:
+> Hi Linus, Paul,
+> 
+> Apologies for the slow response here; believe it or not, I was attending
+> a workshop about memory ordering.
 
-This patch introduces LO_FLAGS_NODEALLOC. With this flag set,
-REQ_OP_DISCARD and REQ_OP_WRITE_ZEROES are forced to use
-fallocate(FALLOC_FL_ZERO_RANGE). The disk space of underlying file is
-kept allocated. This is useful if users, for example, want to use a
-preallocated file as the backing file.
+Nice!!!  Anything that I can/should know from that gathering?  ;-)
 
-Signed-off-by: Zhang Boyang <zhangboyang.id@gmail.com>
----
- drivers/block/loop.c      | 17 +++++++++++++++--
- include/uapi/linux/loop.h | 15 +++++++++++----
- 2 files changed, 26 insertions(+), 6 deletions(-)
+> On Sun, Jul 31, 2022 at 10:30:11AM -0700, Paul E. McKenney wrote:
+> > On Sun, Jul 31, 2022 at 09:51:47AM -0700, Linus Torvalds wrote:
+> > > Even alpha is specified to be locally ordered wrt *one* memory
+> > > location, including for reads (See table 5-1: "Processor issue order",
+> > > and also 5.6.2.2: "Litmus test 2"). So if a previous read has seen a
+> > > new value, a subsequent read is not allowed to see an older one - even
+> > > without a memory barrier.
+> > > 
+> > > Will, Paul? Maybe that's only for overlapping loads/stores, not for
+> > > loads/loads. Because maybe alpha for once isn't the weakest possible
+> > > ordering.
+> > 
+> > The "bad boy" in this case is Itanium, which can do some VLIW reordering
+> > of accesses.  Or could, I am not sure that newer Itanium hardware
+> > does this.  But this is why Itanium compilers made volatile loads use
+> > the ld,acq instruction.
+> > 
+> > Which means that aligned same-sized marked accesses to a single location
+> > really do execute consistently with some global ordering, even on Itanium.
+> 
+> Although this is true, there's a really subtle issue which crops up if you
+> try to compose this read-after-read ordering with dependencies in the case
+> where the two reads read the same value (which is encapsulated by the
+> unusual RSW litmus test that I've tried to convert to C below):
 
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index 084f9b8a0ba3..a52ef0787202 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -483,11 +483,15 @@ static int do_req_filebacked(struct loop_device *lo, struct request *rq)
- 		 * write zeroes the range.  Otherwise, punch them out.
- 		 */
- 		return lo_fallocate(lo, rq, pos,
--			(rq->cmd_flags & REQ_NOUNMAP) ?
-+			((rq->cmd_flags & REQ_NOUNMAP) ||
-+			 (lo->lo_flags & LO_FLAGS_NODEALLOC)) ?
- 				FALLOC_FL_ZERO_RANGE :
- 				FALLOC_FL_PUNCH_HOLE);
- 	case REQ_OP_DISCARD:
--		return lo_fallocate(lo, rq, pos, FALLOC_FL_PUNCH_HOLE);
-+		return lo_fallocate(lo, rq, pos,
-+			(lo->lo_flags & LO_FLAGS_NODEALLOC) ?
-+				FALLOC_FL_ZERO_RANGE :
-+				FALLOC_FL_PUNCH_HOLE);
- 	case REQ_OP_WRITE:
- 		if (cmd->use_aio)
- 			return lo_rw_aio(lo, cmd, pos, WRITE);
-@@ -719,12 +723,20 @@ static ssize_t loop_attr_dio_show(struct loop_device *lo, char *buf)
- 	return sysfs_emit(buf, "%s\n", dio ? "1" : "0");
- }
- 
-+static ssize_t loop_attr_nodealloc_show(struct loop_device *lo, char *buf)
-+{
-+	int nodealloc = (lo->lo_flags & LO_FLAGS_NODEALLOC);
-+
-+	return sysfs_emit(buf, "%s\n", nodealloc ? "1" : "0");
-+}
-+
- LOOP_ATTR_RO(backing_file);
- LOOP_ATTR_RO(offset);
- LOOP_ATTR_RO(sizelimit);
- LOOP_ATTR_RO(autoclear);
- LOOP_ATTR_RO(partscan);
- LOOP_ATTR_RO(dio);
-+LOOP_ATTR_RO(nodealloc);
- 
- static struct attribute *loop_attrs[] = {
- 	&loop_attr_backing_file.attr,
-@@ -733,6 +745,7 @@ static struct attribute *loop_attrs[] = {
- 	&loop_attr_autoclear.attr,
- 	&loop_attr_partscan.attr,
- 	&loop_attr_dio.attr,
-+	&loop_attr_nodealloc.attr,
- 	NULL,
- };
- 
-diff --git a/include/uapi/linux/loop.h b/include/uapi/linux/loop.h
-index 6f63527dd2ed..a6afd06ffa07 100644
---- a/include/uapi/linux/loop.h
-+++ b/include/uapi/linux/loop.h
-@@ -18,17 +18,24 @@ enum {
- 	LO_FLAGS_AUTOCLEAR	= 4,
- 	LO_FLAGS_PARTSCAN	= 8,
- 	LO_FLAGS_DIRECT_IO	= 16,
-+	LO_FLAGS_NODEALLOC	= 32,
- };
- 
- /* LO_FLAGS that can be set using LOOP_SET_STATUS(64) */
--#define LOOP_SET_STATUS_SETTABLE_FLAGS (LO_FLAGS_AUTOCLEAR | LO_FLAGS_PARTSCAN)
-+#define LOOP_SET_STATUS_SETTABLE_FLAGS (LO_FLAGS_AUTOCLEAR		\
-+					| LO_FLAGS_PARTSCAN		\
-+					| LO_FLAGS_NODEALLOC)
- 
- /* LO_FLAGS that can be cleared using LOOP_SET_STATUS(64) */
--#define LOOP_SET_STATUS_CLEARABLE_FLAGS (LO_FLAGS_AUTOCLEAR)
-+#define LOOP_SET_STATUS_CLEARABLE_FLAGS (LO_FLAGS_AUTOCLEAR		\
-+					 | LO_FLAGS_NODEALLOC)
- 
- /* LO_FLAGS that can be set using LOOP_CONFIGURE */
--#define LOOP_CONFIGURE_SETTABLE_FLAGS (LO_FLAGS_READ_ONLY | LO_FLAGS_AUTOCLEAR \
--				       | LO_FLAGS_PARTSCAN | LO_FLAGS_DIRECT_IO)
-+#define LOOP_CONFIGURE_SETTABLE_FLAGS (LO_FLAGS_READ_ONLY		\
-+				       | LO_FLAGS_AUTOCLEAR		\
-+				       | LO_FLAGS_PARTSCAN		\
-+				       | LO_FLAGS_DIRECT_IO		\
-+				       | LO_FLAGS_NODEALLOC)
- 
- #include <asm/posix_types.h>	/* for __kernel_old_dev_t */
- #include <linux/types.h>	/* for __u64 */
--- 
-2.30.2
+RSW from the infamous test6.pdf, correct?
 
+> /* Global definitions; assume everything zero-initialised */
+> struct foo {
+> 	int *x;
+> };
+> 
+> int x;
+> struct foo foo;
+> struct foo *ptr;
+> 
+> 
+> /* CPU 0 */
+> WRITE_ONCE(x, 1);
+
+Your x is RSW's z?
+
+> WRITE_ONCE(foo.x, &x);
+
+And your foo.x is RSW's x?  If so, the above WRITE_ONCE() could happen at
+compile time, correct?  Or in the initialization clause of a litmus test?
+
+> /*
+>  * Release ordering to ensure that somebody following a non-NULL ptr will
+>  * see a fully-initialised 'foo'. smp_[w]mb() would work as well.
+>  */
+> smp_store_release(&ptr, &foo);
+
+Your ptr is RSW's y, correct?
+
+> /* CPU 1 */
+> int *xp1, *xp2, val;
+> struct foo *foop;
+> 
+> /* Load the global pointer and check that it's not NULL. */
+> foop = READ_ONCE(ptr);
+> if (!foop)
+> 	return;
+
+A litmus tests can do this via the filter clause.
+
+> /*
+>  * Load 'foo.x' via the pointer we just loaded. This is ordered after the
+>  * previous READ_ONCE() because of the address dependency.
+>  */
+> xp1 = READ_ONCE(foop->x);
+> 
+> /*
+>  * Load 'foo.x' directly via the global 'foo'.
+>  * _This is loading the same address as the previous READ_ONCE() and
+>  *  therefore cannot return a stale (NULL) value!_
+>  */
+> xp2 = READ_ONCE(foo.x);
+
+OK, same location, but RSW calls only for po, not addr from the initial
+read to this read, got it.  (My first attempt left out this nuance,
+in case you were wondering.)
+
+> /*
+>  * Load 'x' via the pointer we just loaded.
+>  * _We may see zero here!_
+>  */
+> val = READ_ONCE(*xp2);
+
+And herd7/LKMM agree with this, at least assuming I got the litmus
+test right.  (I used RSW's variables as a cross-check.)
+
+> So in this case, the two same-location reads on CPU1 are actually executed
+> out of order, but you can't tell just by looking at them in isolation
+> because they returned the same value (i.e. xp1 == xp2 == &x). However, you
+> *can* tell when you compose them in funny situations such as above (and I
+> believe that this is demonstrably true on PPC and Arm; effectively the
+> read-after-read ordering machinery only triggers in response to incoming
+> snoops).
+
+Again, I leave the hardware specifics to the respective maintainers.
+
+> There's probably a more-compelling variant using an (RCpc) load acquire
+> instead of the last address dependency on CPU 1 as well.
+> 
+> Anyway, I think all I'm trying to say is that I'd tend to shy away from
+> relying on read-after-read ordering if it forms part of a more involved
+> ordering relationship.
+
+Agreed.  As soon as you add that second variable, you need more ordering.
+The read-after-read ordering applies only within the confines of a single
+variable, and you need more ordering when you add that second variable.
+And as Will's RSW example shows, more ordering than you might think.
+
+> > > But the patch looks fine, though I agree that the ordering in
+> > > __wait_on_buffer should probably be moved into
+> > > wait_on_bit/wait_on_bit_io.
+> > > 
+> > > And would we perhaps want the bitops to have the different ordering
+> > > versions? Like "set_bit_release()" and "test_bit_acquire()"? That
+> > > would seem to be (a) cleaner and (b) possibly generate better code for
+> > > architectures where that makes a difference?
+> > 
+> > As always, I defer to the architecture maintainers on this one.
+> 
+> FWIW, that makes sense to me. We already have release/acquire/releaxed
+> variants of the bitops in the atomic_t API so it seems natural to have
+> a counterpart in the actual bitops API as well.
+
+Just to join you guys in liking acquire and release better than smp_wmb()
+and smp_rmb().  My RCU life got much better after update-side uses of
+smp_wmb() were replaced by rcu_assign_pointer() and read-side uses of
+smp_read_barrier_depends() were replaced by rcu_dereference().
+
+							Thanx, Paul
+
+------------------------------------------------------------------------
+
+C rsw
+
+{
+	a=0;
+	x=z;
+	y=a;
+	z=0;
+}
+
+P0(int *x, int **y, int *z)
+{
+	WRITE_ONCE(*z, 1);
+	WRITE_ONCE(*y, x);
+}
+
+P1(int *x, int **y, int *z)
+{
+	r1 = READ_ONCE(*y);
+	r2 = READ_ONCE(*r1);
+	r3 = READ_ONCE(*x);
+	r4 = READ_ONCE(*r3);
+}
+
+filter(1:r1=x)
+exists(1:r2=z /\ 1:r3=z /\ 1:r4=0)
+
+------------------------------------------------------------------------
+
+$ herd7 -conf linux-kernel.cfg /tmp/rsw.litmus
+Test rsw Allowed
+States 2
+1:r2=z; 1:r3=z; 1:r4=0;
+1:r2=z; 1:r3=z; 1:r4=1;
+Ok
+Witnesses
+Positive: 1 Negative: 1
+Condition exists (1:r2=z /\ 1:r3=z /\ 1:r4=0)
+Observation rsw Sometimes 1 1
+Time rsw 0.00
+Hash=03618e3079eb0d371ca0f1ab679f3eae
