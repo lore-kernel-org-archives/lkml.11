@@ -2,170 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DFA9C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB4CC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235020AbiHAMr0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:47:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
+        id S235031AbiHAMr3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234594AbiHAMrA (ORCPT
+        with ESMTP id S230110AbiHAMrA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 1 Aug 2022 08:47:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F9ABF47
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:38:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0655CDFA5;
+        Mon,  1 Aug 2022 05:38:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76A1761128
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 12:38:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8404FC433D6;
-        Mon,  1 Aug 2022 12:38:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99CD161187;
+        Mon,  1 Aug 2022 12:38:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3D09C433D6;
+        Mon,  1 Aug 2022 12:38:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659357496;
-        bh=YbiPaRADfaZdOZqXAevhYBvKljj3zyXSlE1baUc/s0Y=;
-        h=From:To:Cc:Subject:Date:From;
-        b=tet6769k0e/Q6sRLmiByELahRfoTrDi4EtkD8RqCLuGivE40Ve231b15VPzA4q8cf
-         Ut7x+PBD1XPhTRKFR2XNiF3L0gLZ/woCpf2zqD92xOqwhQgittod0rgBCNnVnxDqFx
-         XPQyiGUI3G6mEfvbHgNdOnstcMa9YdCfv2Vr6WjHx852y1qNx4bjh9RXqlNRHtT6aT
-         zI6p75N06HlSIHdL7vkUi6Jq3GbuBwhIHnmhbbw4HJMZGNBTPTFqIC5iMqzsFpTn0q
-         LEDuE5LZYrthBf9k4SCovWY4JsvqPxooYvMJLmjU/kQAnDy3mXeIE/QHqxpmKvDwfO
-         fYX0dJC6GUGcw==
-From:   Mark Brown <broonie@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>, linux-kernel@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>
-Subject: [GIT PULL] regulator updates for v5.20
-Date:   Mon, 01 Aug 2022 13:38:03 +0100
-Message-Id: <20220801123816.8404FC433D6@smtp.kernel.org>
+        s=k20201202; t=1659357506;
+        bh=ajvGSPHi7s/PBQgVUp/8yoUUDSIpjZEtd1Glw97tgok=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LZqIFqp6ijlSg1qyppx2Fo88DBX5AjZ8nURUeKSHoMpq21YlZ1unVYRHs7SLgghi1
+         i8NPoy2+GfVXxEy8Je4XK6rvIHbAia+NerbUIhE8fskKOWgCT95WWTjpKyGHwrhib+
+         1n8m1iPVNHelMtDPev6Pm9hNeGzB4dEbSkgYCBaYMV2sPUp/G0Fxzi4IB6pj+d0VLj
+         azCA2DC00t9SAU+UsLOf5+UNJjO9O8eMFwe2AFCiGpZ+4inWPaKOKlcxArl1/S/njJ
+         A00YT4u4N3ggjt44jFO3IiW7snAZwBWLTtnce9I05gXNz4pQAnWelMekkVx+LWv/1A
+         ZASDM6VztVdTw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 523AB40736; Mon,  1 Aug 2022 09:38:23 -0300 (-03)
+Date:   Mon, 1 Aug 2022 09:38:23 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Leo Yan <leo.yan@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH] perf symbol: Fail to read phdr workaround
+Message-ID: <YufJP5YqeEBM51HL@kernel.org>
+References: <20220731164923.691193-1-irogers@google.com>
+ <20220801015259.GA101027@leoy-ThinkPad-X240s>
+ <CAP-5=fVSjCQ4jeAeyP5THnQVyXDpKd6Ob33C7PDwFB_6+YSXuw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAP-5=fVSjCQ4jeAeyP5THnQVyXDpKd6Ob33C7PDwFB_6+YSXuw@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 122e951eb8045338089b086c8bd9b0b9afb04a92:
+Em Sun, Jul 31, 2022 at 11:19:15PM -0700, Ian Rogers escreveu:
+> On Sun, Jul 31, 2022, 6:53 PM Leo Yan <leo.yan@linaro.org> wrote:
+> 
+> > On Sun, Jul 31, 2022 at 09:49:23AM -0700, Ian Rogers wrote:
+> > > The perf jvmti agent doesn't create program headers, in this case
+> > > fallback on section headers as happened previously.
+> > >
+> > > Fixes: 882528d2e776 ("perf symbol: Skip symbols if SHF_ALLOC flag is not
+> > set")
+> >
+> > It's good to change fix tag as:
+> > Fixes: 2d86612aacb7 ("perf symbol: Correct address for bss symbols")
+> >
+> 
+> Doh! I was rushing this morning. Thanks for catching and reviewing!
 
-  regulator: qcom_smd: correct MP5496 ranges (2022-06-07 20:38:09 +0100)
+I made the adjustments and added a note with the repro, to help in the
+future when trying to test this area.
 
-are available in the Git repository at:
+I also think we could have something like a 'perf test' mode where, when
+asked to, it would enable tests that involve downloading such files to
+perform tests, such as this dacapo benchmark, and then would test if the
+output matches expectations.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git tags/regulator-v5.20
+- Arnaldo
 
-for you to fetch changes up to efc93392960cb9c3534e7aed15481ca7bcfdf15c:
+commit 6d518ac7be6223811ab947897273b1bbef846180
+Author: Ian Rogers <irogers@google.com>
+Date:   Sun Jul 31 09:49:23 2022 -0700
 
-  regulator: Consumer load management improvements (2022-07-28 00:01:30 +0100)
+    perf symbol: Fail to read phdr workaround
+    
+    The perf jvmti agent doesn't create program headers, in this case
+    fallback on section headers as happened previously.
+    
+    Committer notes:
+    
+    To test this, from a public post by Ian:
+    
+    1) download a Java workload dacapo-9.12-MR1-bach.jar from
+    https://sourceforge.net/projects/dacapobench/
+    
+    2) build perf such as "make -C tools/perf O=/tmp/perf NO_LIBBFD=1" it
+    should detect Java and create /tmp/perf/libperf-jvmti.so
+    
+    3) run perf with the jvmti agent:
+    
+      perf record -k 1 java -agentpath:/tmp/perf/libperf-jvmti.so -jar dacapo-9.12-MR1-bach.jar -n 10 fop
+    
+    4) run perf inject:
+    
+      perf inject -i perf.data -o perf-injected.data -j
+    
+    5) run perf report
+    
+      perf report -i perf-injected.data | grep org.apache.fop
+    
+    With this patch reverted I see lots of symbols like:
+    
+         0.00%  java             jitted-388040-4656.so  [.] org.apache.fop.fo.FObj.bind(org.apache.fop.fo.PropertyList)
+    
+    With the patch (2d86612aacb7805f ("perf symbol: Correct address for bss
+    symbols")) I see lots of:
+    
+      dso__load_sym_internal: failed to find program header for symbol:
+      Lorg/apache/fop/fo/FObj;bind(Lorg/apache/fop/fo/PropertyList;)V
+      st_value: 0x40
+    
+    Fixes: 2d86612aacb7805f ("perf symbol: Correct address for bss symbols")
+    Reviewed-by: Leo Yan <leo.yan@linaro.org>
+    Signed-off-by: Ian Rogers <irogers@google.com>
+    Tested-by: Leo Yan <leo.yan@linaro.org>
+    Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+    Cc: Jiri Olsa <jolsa@kernel.org>
+    Cc: Leo Yan <leo.yan@linaro.org>
+    Cc: Mark Rutland <mark.rutland@arm.com>
+    Cc: Namhyung Kim <namhyung@kernel.org>
+    Cc: Peter Zijlstra <peterz@infradead.org>
+    Cc: Stephane Eranian <eranian@google.com>
+    Link: http://lore.kernel.org/lkml/20220731164923.691193-1-irogers@google.com
+    Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-----------------------------------------------------------------
-regulator: Updates for v5.20
-
-This has been a fairly quiet release for the regulator API, a few new
-drivers and a small API update:
-
- - Support for specifying an initial load as part of requesting
-   regulators through the bulk API.
- - Support for Maxim MAX597x, Qualcomm PM8074, PM8909 and Realtek RT5120
-   devices.
-
-----------------------------------------------------------------
-Axel Lin (1):
-      regulator: max597x: Don't return uninitialized variable in .probe
-
-ChiYuan Huang (5):
-      regulator: rt5190a: check if init_data is NULL, bypass rt5190a_of_parse_cb
-      regulator: rt5120: Add PMIC regulator support
-      regulator: mt6370: Add mt6370 DisplayBias and VibLDO support
-      regulator: mt6370: Use 'fwnode_gpiod_get_index' to fix gpio parsing
-      regulator: mt6370: Use the correct header for platform_device_id
-
-Christian Kohlschütter (1):
-      regulator: core: Fix off-on-delay-us for always-on/boot-on regulators
-
-Douglas Anderson (2):
-      regulator: core: Allow specifying an initial load w/ the bulk API
-      regulator: core: Allow drivers to define their init data as const
-
-Jean Delvare (1):
-      regulator: mt6380: Fix unused array warning
-
-Jiapeng Chong (1):
-      regulator: max597x: Remove unused including <linux/version.h>
-
-Lee Jones (1):
-      regulator: pwm: Update Lee Jones' email address
-
-Liang He (2):
-      regulator: scmi: Add missing of_node_get()
-      regulator: of: Fix refcount leak bug in of_get_regulation_constraints()
-
-Mark Brown (3):
-      regulator: qcom_smd: Add PM8909 and fix pm8916_pldo range
-      regulator: Fix MFD_MAX597X dependency
-      regulator: Consumer load management improvements
-
-Mauro Carvalho Chehab (1):
-      regulator: fix a kernel-doc warning
-
-Patrick Rudolph (1):
-      regulator: max597x: Add support for max597x regulator
-
-Rob Herring (2):
-      regulator: dt-bindings: Convert pwm-regulator to DT schema
-      regulator: Add missing type for 'regulator-microvolt-offset'
-
-Robert Marko (11):
-      regulator: dt-bindings: mps,mp5416: add MP5496 compatible
-      regulator: mp5416: alphabetically sort header includes
-      regulator: mp5416: use OF match data
-      regulator: mp5416: add support for MP5496
-      regulator: mp5416: remove kernel.h include
-      regulator: qcom_smd: add get_voltage to MP5496
-      regulator: qcom_spmi: add support for HT_P150
-      regulator: qcom_spmi: add support for HT_P600
-      regulator: qcom_spmi: add support for PMP8074 regulators
-      regulator: qcom,spmi-regulator: Convert to dtschema
-      regulator: qcom,spmi-regulator: add PMP8074 PMIC
-
-Stephan Gerhold (3):
-      regulator: qcom_smd: Fix pm8916_pldo range
-      regulator: dt-bindings: qcom,smd-rpm: Add PM8909
-      regulator: qcom_smd: Add PM8909 RPM regulators
-
-Stephen Kitt (1):
-      regulator: rpi-panel-attiny: Use backlight helper
-
-Zhang Jiaming (1):
-      regulator: Fix parameter declaration and spelling mistake.
-
- .../devicetree/bindings/regulator/mps,mp5416.yaml  |   1 +
- .../bindings/regulator/pwm-regulator.txt           |  92 ----
- .../bindings/regulator/pwm-regulator.yaml          | 126 ++++++
- .../bindings/regulator/qcom,smd-rpm-regulator.yaml |   4 +
- .../bindings/regulator/qcom,spmi-regulator.txt     | 347 --------------
- .../bindings/regulator/qcom,spmi-regulator.yaml    | 323 +++++++++++++
- .../devicetree/bindings/regulator/regulator.yaml   |   1 +
- drivers/regulator/Kconfig                          |  28 ++
- drivers/regulator/Makefile                         |   3 +
- drivers/regulator/core.c                           |  25 +-
- drivers/regulator/devres.c                         |  28 ++
- drivers/regulator/max597x-regulator.c              | 502 +++++++++++++++++++++
- drivers/regulator/mp5416.c                         |  30 +-
- drivers/regulator/mt6370-regulator.c               | 390 ++++++++++++++++
- drivers/regulator/mt6380-regulator.c               |   2 +-
- drivers/regulator/of_regulator.c                   |   6 +-
- drivers/regulator/qcom_smd-regulator.c             |  29 +-
- drivers/regulator/qcom_spmi-regulator.c            |  37 ++
- drivers/regulator/rpi-panel-attiny-regulator.c     |   6 +-
- drivers/regulator/rt5120-regulator.c               | 420 +++++++++++++++++
- drivers/regulator/rt5190a-regulator.c              |   3 +
- drivers/regulator/scmi-regulator.c                 |   1 +
- drivers/regulator/ti-abb-regulator.c               |   4 +-
- include/linux/regulator/consumer.h                 |  16 +-
- include/linux/regulator/driver.h                   |   1 +
- 25 files changed, 1955 insertions(+), 470 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/regulator/pwm-regulator.txt
- create mode 100644 Documentation/devicetree/bindings/regulator/pwm-regulator.yaml
- delete mode 100644 Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.txt
- create mode 100644 Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
- create mode 100644 drivers/regulator/max597x-regulator.c
- create mode 100644 drivers/regulator/mt6370-regulator.c
- create mode 100644 drivers/regulator/rt5120-regulator.c
+diff --git a/tools/perf/util/symbol-elf.c b/tools/perf/util/symbol-elf.c
+index b3be5b1d9dbb00bc..75bec32d4f571319 100644
+--- a/tools/perf/util/symbol-elf.c
++++ b/tools/perf/util/symbol-elf.c
+@@ -1305,16 +1305,29 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
+ 
+ 			if (elf_read_program_header(syms_ss->elf,
+ 						    (u64)sym.st_value, &phdr)) {
+-				pr_warning("%s: failed to find program header for "
++				pr_debug4("%s: failed to find program header for "
+ 					   "symbol: %s st_value: %#" PRIx64 "\n",
+ 					   __func__, elf_name, (u64)sym.st_value);
+-				continue;
++				pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
++					"sh_addr: %#" PRIx64 " sh_offset: %#" PRIx64 "\n",
++					__func__, (u64)sym.st_value, (u64)shdr.sh_addr,
++					(u64)shdr.sh_offset);
++				/*
++				 * Fail to find program header, let's rollback
++				 * to use shdr.sh_addr and shdr.sh_offset to
++				 * calibrate symbol's file address, though this
++				 * is not necessary for normal C ELF file, we
++				 * still need to handle java JIT symbols in this
++				 * case.
++				 */
++				sym.st_value -= shdr.sh_addr - shdr.sh_offset;
++			} else {
++				pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
++					"p_vaddr: %#" PRIx64 " p_offset: %#" PRIx64 "\n",
++					__func__, (u64)sym.st_value, (u64)phdr.p_vaddr,
++					(u64)phdr.p_offset);
++				sym.st_value -= phdr.p_vaddr - phdr.p_offset;
+ 			}
+-			pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
+-				  "p_vaddr: %#" PRIx64 " p_offset: %#" PRIx64 "\n",
+-				  __func__, (u64)sym.st_value, (u64)phdr.p_vaddr,
+-				  (u64)phdr.p_offset);
+-			sym.st_value -= phdr.p_vaddr - phdr.p_offset;
+ 		}
+ 
+ 		demangled = demangle_sym(dso, kmodule, elf_name);
