@@ -2,93 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E15C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 02:35:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 442ECC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 02:35:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239154AbiHACfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 22:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52060 "EHLO
+        id S239164AbiHACfg convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 22:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237027AbiHACfD (ORCPT
+        with ESMTP id S239186AbiHACfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 22:35:03 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7166912D18;
-        Sun, 31 Jul 2022 19:35:02 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id t2so9246525ply.2;
-        Sun, 31 Jul 2022 19:35:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=05yqPtQPTf7ci9YCnKgRef4tjyfFywaN/GoiFJ0YjOE=;
-        b=I7J1Tt2AoMlpWf7ocbBYJyXVFnGRake41dwUCDfgo04DRKkXDA83/TwaZfnII6HmTI
-         PY/h2yeLaIeDEmiCLrg8rRJ7gBeYG5enucjxqLCrVmpvoI87i1aP5lgFinwcoqgNyA1C
-         0vNvlssNXWIWFvcTELv7P/Bv15uQmploiYXbfD1zr/lnO2QGXl+5TMAeD8Ue9X6rbN1v
-         qJLR+CHFOzcdOLxkWR4wknaRuajUYinbKD9yfyueiuiUcMd1U91dmPuExOoAmYinz9Xc
-         dE+8fTlkpSL9ZyoCjjxa4QDEcXT4iWihb5LSOlhpW4zyVhgCh1QxQfYW2okpkHAsRybK
-         fpXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=05yqPtQPTf7ci9YCnKgRef4tjyfFywaN/GoiFJ0YjOE=;
-        b=cSrkdaP6wJeIMMJA2P+aJq+kt/i7mvPkMZA7otD35CMSx7uRT8uth2pY537ylMr9Md
-         8mTQG7wCS8OTS5lYEQ91quFWp4bxISMRG/WZl8GUqqUj6+4JXHBY80vKDNkbmDixEx/9
-         ib6i2PZxO00ZhbqTZa+Tf8hTIM2bfeUjFKiPbYC1gzftFjxKDNNPFYML2vgDH3uynjf8
-         EWzu91Zvt4my++IpSgMAtN8U2MOIt+IClxT/PCU+5rsnV4DwbBcDYjRPtvhpM43LbrGx
-         B6N12vhNAjk7ym3bwAfGMboqkue40R1UOw3tVRafsSiXTNLmBYDSbK04zLyaUIM4xeAO
-         nhKw==
-X-Gm-Message-State: ACgBeo33eLP65nWl9KIEIjCVm8MBX6qM349d7mmaqLagE52RwDowq5ZK
-        U7xwOnUlm5yX3zP9Jf5ycRN7nKX+O9M=
-X-Google-Smtp-Source: AA6agR5ANAUOldoWBdgDfPgTkC2NwGER016r7xM3vQLroEoUjf81/eG4YADIx+t9uOGcoXwHYf/4gg==
-X-Received: by 2002:a17:903:4054:b0:16d:afc6:e7b5 with SMTP id n20-20020a170903405400b0016dafc6e7b5mr14536856pla.55.1659321301738;
-        Sun, 31 Jul 2022 19:35:01 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id s5-20020a17090a2f0500b001f218ddd5e2sm10205068pjd.32.2022.07.31.19.35.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Jul 2022 19:35:01 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: ye.xingchen@zte.com.cn
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-remoteproc@vger.kernel.org,
-        ye xingchen <ye.xingchen@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] remoteproc: qcom:q6v5_pas:using the pm_runtime_resume_and_get to  simplify the code
-Date:   Mon,  1 Aug 2022 02:34:29 +0000
-Message-Id: <20220801023429.1595033-1-ye.xingchen@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Sun, 31 Jul 2022 22:35:18 -0400
+Received: from mo-csw.securemx.jp (mo-csw1115.securemx.jp [210.130.202.157])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94575F8B
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 19:35:15 -0700 (PDT)
+Received: by mo-csw.securemx.jp (mx-mo-csw1115) id 2712Z2W8008345; Mon, 1 Aug 2022 11:35:02 +0900
+X-Iguazu-Qid: 2wHHO7BV2BP5Pw8oLY
+X-Iguazu-QSIG: v=2; s=0; t=1659321302; q=2wHHO7BV2BP5Pw8oLY; m=VWKCbd3swS4MQkOZXM8gQUiSHyZhj2fEUdSpPY6AYLE=
+Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
+        by relay.securemx.jp (mx-mr1112) id 2712Z1mL026867
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 1 Aug 2022 11:35:01 +0900
+X-SA-MID: 43019813
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SlTxhPd5BbHElnSC9vsrvs92vx/H9bTLooZPXzdFkVQ0Z2WxWC5ihoHCNXAserJVu0cIOIpK9yMNYsYg0fsfB8Ap2gVIl+jtzg9GgJIUagoNWd9OjJMmUITQgZqDkf5pafnHG6tcSC1rJ36jkaSE44bc4e+0sV+erht55NLDZcau/U2wGXcUNrpsTpWr3n4PBMSUjLrtl7ExkunFsMrMIPh5IikQIkMVgiUxtDArBgPNsGMnLdAHZ9ggOUM2fXQU2F3tkaskXxKw+GPPnmceijksVhSU81kyKEkd6kmrXfmW35guYVBiytbw48iY2mZo5UdREUmKkWQXLgycax8EVQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2d7pDosfllaY2p3Fj0vFyDQZ9yw1/Xphckf/Ff0iJ+0=;
+ b=RnMn7+iTkzMzShbo/Dl8liq1femPh20f/U4hQMYsIcIqb9b0a+YUaCBzgjd49xYm7yjL2fY5OHRAxT+nFm1NMfKQdwtkLuSbirU0HkzK7eAg9br9dffXyfXo0UNizFuixJWgFoVvkqkAo03GY8Spjovt6/imyaLYbSJ5jAD9bWlJYsvh399fEI1paJ6+cgNMeVVs1Vd49qOtwoj9YmVJ19iGHqMQKiVHgIDyITunwUWdzoRjBDysiMj8H8WncOdS1kWKbyNrdnyZi89SY/f38bqjgL1N4DGbPTctN5QfTkZGpnNnAYWtybSnIXgtbdpd76G3fL7Xv1ZpyaGImi3fqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toshiba.co.jp; dmarc=pass action=none
+ header.from=toshiba.co.jp; dkim=pass header.d=toshiba.co.jp; arc=none
+From:   <yuji2.ishikawa@toshiba.co.jp>
+To:     <gregkh@linuxfoundation.org>, <oded.gabbay@gmail.com>
+CC:     <jiho.chu@samsung.com>, <arnd@arndb.de>,
+        <linux-kernel@vger.kernel.org>
+Subject: RE: New subsystem for acceleration devices
+Thread-Topic: New subsystem for acceleration devices
+Thread-Index: AQHYpNMiuKJkJQ8DYkaebqXY59xh6q2YnUkAgACqcZA=
+Date:   Mon, 1 Aug 2022 02:29:52 +0000
+X-TSB-HOP2: ON
+Message-ID: <TYAPR01MB62013A228CD094847524F8D8929A9@TYAPR01MB6201.jpnprd01.prod.outlook.com>
+References: <CAFCwf11=9qpNAepL7NL+YAV_QO=Wv6pnWPhKHKAepK3fNn+2Dg@mail.gmail.com>
+ <YuahxB6geST6ZtGN@kroah.com>
+In-Reply-To: <YuahxB6geST6ZtGN@kroah.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=toshiba.co.jp;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0e61a0f6-7084-4de0-6467-08da7365b6cb
+x-ms-traffictypediagnostic: TY2PR01MB2458:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3WMG0dTUufEJe9nkZw52LlRtxjIc9d2OcDUssVntGrJhrnFCvE3O0p1wasGk35zMHBK4CrDWdHI7jl24LP1+Rd2SzdF/7AHZJELGPyueC+1GbB/CJ9iuOwdNtUUD5yOL5ltcsZgUZFL2/ebrJs9k1kOHsPy4R/jwOSJwbzNSM3TxONbbFuSx4yER5OKCO+PVrP+AXEauwc27BxXsjs9D0713yfWJSeEXWvreUD6cRm/N6sjulqL9tQLnoNRD+IuxIESbfJmn43wbU2E289F6OBegprUvespnPtzR8jyaSsOxnwXvGFdDAoOe1f2M668r5YFbYCH5eJFswPF6ZMheQV9Mx+yvzJ90MkoO/0BVNnBHlwxD1u0cj0RwWbpvsNeQJ5iRkSDFe9BmfN/TW9AnKQYufH2L0sOJPeF+i1irLjuUC/gRj2kTY2dh6j4s7n0q24Ey3MP5gVzI8tfkZ83Q+dbcPYpqd+x+3q3CMRE0Apg1k1WE19VsEjGeDbBXJmigqty6WTeqivJFR687dN6IKn/lYabZIlKDfbaQ0PzM6CCsve2ZOlEWlz6anx8ZOb7PW9lQrcBp9nV2Gd8fG88y2fttWROrODtwSNTaMXwUCbgZ7e5OreoObeLw90lY05h8r6Bdno4GyyP5nam0oLSGs+Pl1ypKI6wZqiWUr5Rnnt2ufDO9IStgxhsM2lEQCzb1Kd4YFmRiqGmq2VOT1i9/ylKty1PPiWOF1Iq3hP5bP/QHVx+ZGu6+yqMatgYR9vXUcbx07M3cK+f5WhJxyQceQojyDSrzWdetHtEx+51BEAl1qepdAFsiZk6QNDga/lVy
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYAPR01MB6201.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(346002)(39860400002)(136003)(396003)(55016003)(2906002)(5660300002)(33656002)(8936002)(76116006)(4326008)(66446008)(64756008)(66556008)(66476007)(8676002)(66946007)(41300700001)(316002)(110136005)(54906003)(478600001)(6506007)(53546011)(55236004)(71200400001)(7696005)(38100700002)(122000001)(38070700005)(26005)(9686003)(186003)(86362001)(83380400001)(52536014);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-2022-jp?B?WG14WVc5MUxuN2FBVWVpWUczcFo2a1M5SFNiazhtYy9kZXJ0RTY0VGU5?=
+ =?iso-2022-jp?B?MFRXMkdYSHhXR1dDSW5TUmN3Q295ZXNtRm9ROExSNkZYVmtyNnpBSThh?=
+ =?iso-2022-jp?B?VGQ3NnFUQmZUaW9aVjdxVTZrR3V3dlF0UDMrZTlyQlRWcndJZUpsYytn?=
+ =?iso-2022-jp?B?S2JIMEdyd29ObmZmSnFVMkJJNndqMWNQUkRYNmFNc0VnWmtVS1ZnS2Fx?=
+ =?iso-2022-jp?B?NWQ3WUc2bEpPeXBkcHNyNTQrKzFiWVlCT3libmlpQWs5bWtIUFNBWUEw?=
+ =?iso-2022-jp?B?MnlpVUZtT3FrdHhSRUhvZzFiUk5yTUpYQW5MVndvMkhLRndCdmZRRE03?=
+ =?iso-2022-jp?B?TThBdVdKbGlrTTV4b1dTdTI3YzNUWXBReXMrbUhmQjJPRnlha2FWUFdZ?=
+ =?iso-2022-jp?B?RDk2dHFhZFlPVmpoelpEdng2UlZLRGN3UnU4a0twQWZ2VWo4QTFCRGls?=
+ =?iso-2022-jp?B?aG1GeDhDOTQxTUxSbkxrWVZjbXNNSzRUNkxOeGk4bzZXTGdoYm9MS2R0?=
+ =?iso-2022-jp?B?SmFmeW5CUis1anZLdHROMjFEVGZFd0lXV0lmQUIvSmJLY2RHUi9BaXR4?=
+ =?iso-2022-jp?B?TndEU3ZiUEhjeS9qQVFjenpwTTByYmE3Z3hXMFhLbE5lc3ZkZnJJV1NH?=
+ =?iso-2022-jp?B?bTFIbGFTanVsYTc3Y2VPQ1hlZzIvMGx4ZjR5eWxzM3FGMkhaeFVuSVlo?=
+ =?iso-2022-jp?B?MldYMmZBd2JOQVFzVVQrd0kvSEs5cnUwQjdOVGtHVHRsMFJZOW9zTU9J?=
+ =?iso-2022-jp?B?NDNZOFpmWUlLdEYyTHRhMmRIdlpaTk1rQ3pKMXJ6aUVoOEJhKzg1bzhy?=
+ =?iso-2022-jp?B?c1JmTnJVcFkxY2wvRHdxR0N5REJTVm0rd0l2S1AvUXh0OFVhcVdwcEZX?=
+ =?iso-2022-jp?B?b0c3elVQQytLSHhzZCs3WTFYQWlYcllpR2lDZ29sdy9mNEpFTENZbWcz?=
+ =?iso-2022-jp?B?VkxBNUdtWWRISlZrdnZRNm9NR3hNYjVOY1ZEWVhGUFB3ZXdhbTNmNkhn?=
+ =?iso-2022-jp?B?RTJtQmpiYTNKdkthekIyQXlibVJyV3F1TUcyL3lJdENBUkRvdHgzK3pa?=
+ =?iso-2022-jp?B?WjhiRzhjaWNoYmNNbnVBTUR5VmFweC8yenRidTlmSUE5dC83NkFKL3RG?=
+ =?iso-2022-jp?B?a0c0MGJOVXVCT0txWEs4Ny9zdy9KYnlQU0Y1clVGdmMyMWdtRjNuWVM5?=
+ =?iso-2022-jp?B?MzIyTTU5Nm1qd0VzNDNOeEI1RzFrQzJxa3Irc2JkK3dlQUF6M3hoN2FE?=
+ =?iso-2022-jp?B?TlI5SHpKZlpDbWl0ZUk1akhiaThpM0lROVlUWE1KVjBJR2dKczNzRWg2?=
+ =?iso-2022-jp?B?bEVWMHp4SnIybHFuSFM0cDd0UnBmVW0wMTlvcmJGZXprbW54ZnlvbjRN?=
+ =?iso-2022-jp?B?Smd1dHJrVkdmRDVhandnWkdhRUhVSWtaWEZKempkWEtzdUNSVmN2UWFV?=
+ =?iso-2022-jp?B?UWtMb0Q4TmtabkRwc3pBRm5NZnlHcWs5R01ZNkt3T0gzbG0yMnhlV094?=
+ =?iso-2022-jp?B?VDc4ckZQV0lPUytwY3lhWXBpVVN4dVR5THJkazdMQUNNa3pJemNtUEt3?=
+ =?iso-2022-jp?B?SzlYNm55N2sydmFFTFpLTHk3ejhuVzZTOFRyTzdaa29nM2hyd05qckhN?=
+ =?iso-2022-jp?B?SnhpWS9POFVIbndiSjRkc1FOMU9GVWdRZWZ6QTRSTlJHSGZ4bnl3bTBt?=
+ =?iso-2022-jp?B?bFZrRFdvMERWRU9WNysyMk1tTTA5TE4zM0p0MWZvdWpwbVQyVUFzSEUw?=
+ =?iso-2022-jp?B?VU41b2Q1Tlg3U3J2b1ptVjF5dzN3a1c3WEgyeWJUOHFKUjJNVzlHMFpi?=
+ =?iso-2022-jp?B?WTZ2Zmt1ZWRFRDlFaXlxcm50MElLaVdFaVFRcUNkb3VYbmV2YmNHcmJm?=
+ =?iso-2022-jp?B?L3NzZlZxa1pLWUU0QmZRNkx2L2l5ZUpqR3B2RXNDdkVIS2w4aVhzTkxu?=
+ =?iso-2022-jp?B?a216a0VSK2xzYjlWRndrNkt0ckl5dnRiZFQwR29RZktxTXpCMnVMeHQy?=
+ =?iso-2022-jp?B?dTZYdVJWbXJpZWZTK0hCenl1ZHl5MTlKY1hDRlFSTTVHN0dHcll3MXBQ?=
+ =?iso-2022-jp?B?b3BNTXliYXk2NXg2aUNMWU5MV04zT1JscTRLbHFvMHptTlI5Y1hsT1Zt?=
+ =?iso-2022-jp?B?S3BoM3ZsdnlNVU9aTk5ubTJqUDU2R2JJNC9vSzFuWS9kZEJpeXBBdmxy?=
+ =?iso-2022-jp?B?Z3hvdFEzM0lOZWFFYjFHYmxDUnVZdThxQ040dGtnVk9uVmlPVmMwVkx5?=
+ =?iso-2022-jp?B?MXVPckVPekZVNGZHQ0E3K2s4UVovMklvTmo3eGZHVWlxZW9EV2NSeks5?=
+ =?iso-2022-jp?B?dWVqRHBPY1BmR3pnUWZhRkVnc0tZbGdSb0E9PQ==?=
+Content-Type: text/plain; charset="iso-2022-jp"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYAPR01MB6201.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e61a0f6-7084-4de0-6467-08da7365b6cb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Aug 2022 02:29:52.1708
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: f109924e-fb71-4ba0-b2cc-65dcdf6fbe4f
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: VwVlEBEdQrVzrNcoehJ9x6d99OStKmxaADnEkIn/DK+X6bYNhlR32WYAQupLEN7MSHRYonhNFABs3Wh3RZDkwtEBqDjAYieAPCLEw96tz6g=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB2458
+X-OriginatorOrg: toshiba.co.jp
+MSSCP.TransferMailToMossAgent: 103
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ye xingchen <ye.xingchen@zte.com.cn>
+> -----Original Message-----
+> From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Sent: Monday, August 1, 2022 12:38 AM
+> To: Oded Gabbay <oded.gabbay@gmail.com>
+> Cc: ishikawa yuji(石川 悠司 ○ＲＤＣ□ＡＩＴＣ○ＥＡ開)
+> <yuji2.ishikawa@toshiba.co.jp>; Jiho Chu <jiho.chu@samsung.com>; Arnd
+> Bergmann <arnd@arndb.de>; Linux-Kernel@Vger. Kernel. Org
+> <linux-kernel@vger.kernel.org>
+> Subject: Re: New subsystem for acceleration devices
+> 
+> On Sun, Jul 31, 2022 at 02:45:34PM +0300, Oded Gabbay wrote:
+> > Hi,
+> > Greg and I talked a couple of months ago about preparing a new accel
+> > subsystem for compute/acceleration devices that are not GPUs and I
+> > think your drivers that you are now trying to upstream fit it as well.
+> >
+> > Would you be open/interested in migrating your drivers to this new
+> subsystem ?
+> >
+> > Because there were no outstanding candidates, I have done so far only
+> > a basic and partial implementation of the infrastructure for this
+> > subsystem, but if you are willing to join I believe I can finish it
+> > rather quickly.
+> >
+> > At start, the new subsystem will provide only a common device
+> > character (e.g. /dev/acX) so everyone will do open/close/ioctl on the
+> > same device character. Also sysfs/debugfs entries will be under that
+> > device and maybe an IOCTL to retrieve information.
+> >
+> > In the future I plan to move some of habanalabs driver's code into the
+> > subsystem itself, for common tasks such as memory management, dma
+> > memory allocation, etc.
+> >
+> > Of course, you will be able to add your own IOCTLs as you see fit.
+> > There will be a range of IOCTLs which are device-specific (similar to
+> > drm).
+> >
+> > wdyt ?
+> 
+> That sounds reasonable to me as a sane plan forward, thanks for working on
+> this.
+> 
+> greg k-h
 
-Using pm_runtime_resume_and_get() to instade of  pm_runtime_get_sync
-and pm_runtime_put_noidle.
+Hi,
+Thank you for your suggestion.
+I'm really interested in the idea to have a dedicated subsystem for accelerators.
+Let me challenge if the Visconti DNN driver can be re-written to the framework.
+As Visconti SoC has several accelerators as well as DNN,
+having a general/common interface will be a big benefit for us to maintain drivers for a long time.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
----
- drivers/remoteproc/qcom_q6v5_pas.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+I've heard that the framework has some basic implementation.
+Do you have some sample code or enumeration of idea to describe the framework?
+Would you share them with me? if that does not bother you.
 
-diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
-index 98f133f9bb60..6da68a4e5fe9 100644
---- a/drivers/remoteproc/qcom_q6v5_pas.c
-+++ b/drivers/remoteproc/qcom_q6v5_pas.c
-@@ -106,9 +106,8 @@ static int adsp_pds_enable(struct qcom_adsp *adsp, struct device **pds,
- 
- 	for (i = 0; i < pd_count; i++) {
- 		dev_pm_genpd_set_performance_state(pds[i], INT_MAX);
--		ret = pm_runtime_get_sync(pds[i]);
-+		ret = pm_runtime_resume_and_get(pds[i]);
- 		if (ret < 0) {
--			pm_runtime_put_noidle(pds[i]);
- 			dev_pm_genpd_set_performance_state(pds[i], 0);
- 			goto unroll_pd_votes;
- 		}
--- 
-2.25.1
+If you need further information on the current DNN driver, please let me know.
+Also, I can provide some for other accelerator drivers which are currently under cleaning up for contribution.
+
+Regards,
+	Yuji
+
