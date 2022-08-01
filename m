@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D4FDC19F29
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 320E1C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233281AbiHAMEH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34420 "EHLO
+        id S232953AbiHAMEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233908AbiHAMCC (ORCPT
+        with ESMTP id S232777AbiHAMCb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:02:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3CD154669;
-        Mon,  1 Aug 2022 04:53:57 -0700 (PDT)
+        Mon, 1 Aug 2022 08:02:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E80E54CA3;
+        Mon,  1 Aug 2022 04:54:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12568612E9;
-        Mon,  1 Aug 2022 11:53:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CA21C433D6;
-        Mon,  1 Aug 2022 11:53:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70E75B80E8F;
+        Mon,  1 Aug 2022 11:54:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1D2AC433D7;
+        Mon,  1 Aug 2022 11:53:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354836;
-        bh=F9pxzWaFExZc72a2VmO0mWpFCFZ99faa32kDZsNKF9k=;
+        s=korg; t=1659354839;
+        bh=iK4b8g/7nH1wBTsDaWuZzdBFa+OXGbijtK8FFi9mvZ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BWRy6xkt8CLGvFnogKUYdlAySXc5aMbzzTjDMRmVaN/65L1suqA6wPehKCDHxKrGK
-         Iv4J/VPIUsFIa0IB3N5p0w70k1m+5zIMFN+BWsZDZAXKyeHyBuhZKxsqJIv+dVuKsp
-         CnhEE5jC4POtKecSyHymMra+Q+8cHhxrhPcawwug=
+        b=1z8qlOWHKEc9PfRT+U7Klyn6uHF2wYKcJQng2ny2kESjxRx05wE3G6k3KAqPku4BI
+         bvhLUPRSppbW3wW6HHPkYvcndwzsXM5uLPctAfml2eZhjCRNA/cJDt4o+Pf1pvqVan
+         BvWVx18axiHlHZ1iF9U9pYZUb8D2v9Ec7zybQfDI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alistair Popple <apopple@nvidia.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.15 10/69] nouveau/svm: Fix to migrate all requested pages
-Date:   Mon,  1 Aug 2022 13:46:34 +0200
-Message-Id: <20220801114134.904362573@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 37/69] tcp: Fix a data-race around sysctl_tcp_min_rtt_wlen.
+Date:   Mon,  1 Aug 2022 13:47:01 +0200
+Message-Id: <20220801114135.995249238@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -49,46 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alistair Popple <apopple@nvidia.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 66cee9097e2b74ff3c8cc040ce5717c521a0c3fa upstream.
+[ Upstream commit 1330ffacd05fc9ac4159d19286ce119e22450ed2 ]
 
-Users may request that pages from an OpenCL SVM allocation be migrated
-to the GPU with clEnqueueSVMMigrateMem(). In Nouveau this will call into
-nouveau_dmem_migrate_vma() to do the migration. If the total range to be
-migrated exceeds SG_MAX_SINGLE_ALLOC the pages will be migrated in
-chunks of size SG_MAX_SINGLE_ALLOC. However a typo in updating the
-starting address means that only the first chunk will get migrated.
+While reading sysctl_tcp_min_rtt_wlen, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fix the calculation so that the entire range will get migrated if
-possible.
-
-Signed-off-by: Alistair Popple <apopple@nvidia.com>
-Fixes: e3d8b0890469 ("drm/nouveau/svm: map pages after migration")
-Reviewed-by: Ralph Campbell <rcampbell@nvidia.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220720062745.960701-1-apopple@nvidia.com
-Cc: <stable@vger.kernel.org> # v5.8+
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f672258391b4 ("tcp: track min RTT using windowed min-filter")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_dmem.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/ipv4/tcp_input.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/nouveau/nouveau_dmem.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_dmem.c
-@@ -679,7 +679,11 @@ nouveau_dmem_migrate_vma(struct nouveau_
- 		goto out_free_dma;
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index a5357ebfbcc0..b925c766f1d2 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3050,7 +3050,7 @@ static void tcp_fastretrans_alert(struct sock *sk, const u32 prior_snd_una,
  
- 	for (i = 0; i < npages; i += max) {
--		args.end = start + (max << PAGE_SHIFT);
-+		if (args.start + (max << PAGE_SHIFT) > end)
-+			args.end = end;
-+		else
-+			args.end = args.start + (max << PAGE_SHIFT);
-+
- 		ret = migrate_vma_setup(&args);
- 		if (ret)
- 			goto out_free_pfns;
+ static void tcp_update_rtt_min(struct sock *sk, u32 rtt_us, const int flag)
+ {
+-	u32 wlen = sock_net(sk)->ipv4.sysctl_tcp_min_rtt_wlen * HZ;
++	u32 wlen = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_min_rtt_wlen) * HZ;
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 
+ 	if ((flag & FLAG_ACK_MAYBE_DELAYED) && rtt_us > tcp_min_rtt(tp)) {
+-- 
+2.35.1
+
 
 
