@@ -2,166 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F42C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 09:55:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47823C19F29
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 09:56:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230080AbiHAJzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 05:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41008 "EHLO
+        id S229978AbiHAJ40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 05:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiHAJze (ORCPT
+        with ESMTP id S229961AbiHAJ4Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 05:55:34 -0400
-Received: from xry111.site (xry111.site [89.208.246.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE67A456
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 02:55:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1659347731;
-        bh=FR/txEqoWPrIigVkHFZzkPXBbv8QXt0Khc3wKvIA9kw=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=OIHY5amPN4Wd08csTgQgnpbEvdK0IJnf74jdAJOMBBtCHCNHLyBoEYbDBXbzmi5Fh
-         Oao6nweN1BCC9zKBnqGs8L6W0HftkL4rfqyN2GuhXi37/Yl5I9ePgxN7wQHXoupcl4
-         E7hJ5j80LQn0aUddpFC9kCa8eioKxqBAZ6qNwJ2g=
-Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id 0558A66787;
-        Mon,  1 Aug 2022 05:55:28 -0400 (EDT)
-Message-ID: <10751c9af5d45fea741e0bbed6c818ddb9db3ac3.camel@xry111.site>
-Subject: Re: [PATCH v4 0/4] LoongArch: Support new relocation types
-From:   Xi Ruoyao <xry111@xry111.site>
-To:     Huacai Chen <chenhuacai@kernel.org>,
-        Youling Tang <tangyouling@loongson.cn>
-Cc:     loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
-        WANG Xuerui <kernel@xen0n.name>,
-        Jinyang He <hejinyang@loongson.cn>,
-        Lulu Cheng <chenglulu@loongson.cn>
-Date:   Mon, 01 Aug 2022 17:55:26 +0800
-In-Reply-To: <CAAhV-H5wSJZ2X46ySqoaJd7Z2soGcYKRNixnghmE3f3zEzyS+w@mail.gmail.com>
-References: <32a74a218c76611f897fd1df1ad0059068621133.camel@xry111.site>
-         <ec52fd49-4a30-15d9-3d32-fd7bc6d8b3f0@loongson.cn>
-         <0179679b736aea7258981dec2d83107cce74dfc1.camel@xry111.site>
-         <a139a8475fe295ac9f17064269cd0312dca6f96e.camel@xry111.site>
-         <6b5d2188f93ed72b67a4bbb7116113f833fe1ee5.camel@xry111.site>
-         <d7670b60-2782-4642-995b-7baa01779a66@loongson.cn>
-         <7cad6e78014168a8906e130e1cf3809077d2bda7.camel@xry111.site>
-         <1d0783b87bda3e454a111862fcc5b5faffcb16b0.camel@xry111.site>
-         <00eede4b1380888a500f74b1e818bb25a550632b.camel@xry111.site>
-         <7512ae16-b171-d072-674f-a6b9a5e764d6@loongson.cn>
-         <CAAhV-H5wSJZ2X46ySqoaJd7Z2soGcYKRNixnghmE3f3zEzyS+w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 
+        Mon, 1 Aug 2022 05:56:24 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6FE2BB31
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 02:56:23 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id h10-20020a5ecb4a000000b0067bcc5ff59bso3500716iok.18
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 02:56:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=sVvRetvU66viZg03zt42J481swUWQOVgkFgrLPfYY/8=;
+        b=eRNkG5nRPgIuxIEOaGpdNjiUMB7F5m04LPpWyqOtCWS841YSao0UVSmQUAVYOMh61k
+         mUHBZRB1VEXmOzX6kL2wUz31QcUED3sTBbLwKXWlEkICf/7BOS6mKs0Dy2rvjpYZfYqp
+         dJyf0XDLlKFIFpDX6e4uN9OU/3f0NsDWH45BeBajs3/IKgV84iRHSbyHhOWrfK8xxsDH
+         mzE5JsthfLrYpqagT0o5i7km8f54AI3WMmSdStisCxaXd3j21omSZugvYJY2IlQ6C7o8
+         iHOrl5ElgaFKMu4RugtIHEqoLlD+HwFe1VFm2lAX/5O6uRF+YXEo0DjaXwbGRF/QEMql
+         QGgw==
+X-Gm-Message-State: AJIora8vNwaKDEtpdXOEXGyOFM/VH+1KvTNDzhVNA5Gyp5+OCrVZZR2h
+        KjaErJr8U4ol+eEyLRwMZyAMTQ0gqz8Jr7tY50FpX0nFcZkb
+X-Google-Smtp-Source: AGRyM1uAv384XmYFLje5oK1UbKPaO9DcSJodVy0T7Oavv/IaWgl4yFi49IoDV4lBszGsWPPz5Qxd9PUDRLeL11k9ouC4lDqFTIgs
 MIME-Version: 1.0
+X-Received: by 2002:a05:6638:3e12:b0:33f:2c4f:a2af with SMTP id
+ co18-20020a0566383e1200b0033f2c4fa2afmr6013533jab.97.1659347783075; Mon, 01
+ Aug 2022 02:56:23 -0700 (PDT)
+Date:   Mon, 01 Aug 2022 02:56:23 -0700
+In-Reply-To: <000000000000b960c00594598949@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000002b4cd505e52b03db@google.com>
+Subject: Re: KASAN: use-after-free Read in tc_chain_fill_node
+From:   syzbot <syzbot+5f229e48cccc804062c0@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, gregkh@linuxfoundation.org, jiri@mellanox.com,
+        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+        stable-commits@vger.kernel.org, stable@vger.kernel.org,
+        syzkaller-lts-bugs@googlegroups.com, vladbu@mellanox.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-08-01 at 10:34 +0800, Huacai Chen wrote:
-> Hi, all,
->=20
-> On Mon, Aug 1, 2022 at 10:16 AM Youling Tang <tangyouling@loongson.cn>
-> wrote:
-> >=20
-> > Hi, Ruoyao
-> >=20
-> > On 07/30/2022 10:52 AM, Xi Ruoyao wrote:
-> > > On Sat, 2022-07-30 at 10:24 +0800, Xi Ruoyao wrote:
-> > > > On Sat, 2022-07-30 at 01:55 +0800, Xi Ruoyao wrote:
-> > > > > On Fri, 2022-07-29 at 20:19 +0800, Youling Tang wrote:
-> > > > >=20
-> > > > > > On 07/29/2022 07:45 PM, Xi Ruoyao wrote:
-> > > > > > > Hmm... The problem is the "addresses" of per-cpu symbols
-> > > > > > > are
-> > > > > > > faked: they
-> > > > > > > are actually offsets from $r21.=C2=A0 So we can't just load
-> > > > > > > such an
-> > > > > > > offset
-> > > > > > > with PCALA addressing.
-> > > > > > >=20
-> > > > > > > It looks like we'll need to introduce an attribute for GCC
-> > > > > > > to
-> > > > > > > make
-> > > > > > > an
-> > > > > > > variable "must be addressed via GOT", and add the
-> > > > > > > attribute into
-> > > > > > > PER_CPU_ATTRIBUTES.
-> > > > >=20
-> > > > > > Yes, we need a GCC attribute to specify the per-cpu
-> > > > > > variable.
-> > > > >=20
-> > > > > GCC patch adding "addr_global" attribute for LoongArch:
-> > > > > https://gcc.gnu.org/pipermail/gcc-patches/2022-July/599064.html
-> > > > >=20
-> > > > > An experiment to use it:
-> > > > > https://github.com/xry111/linux/commit/c1d5d70
-> > > >=20
-> > > > Correction: https://github.com/xry111/linux/commit/c1d5d708
-> > > >=20
-> > > > It seems 7-bit SHA is not enough for kernel repo.
-> > >=20
-> > > If addr_global is rejected or not implemented (for example,
-> > > building the
-> > > kernel with GCC 12), *I expect* the following hack to work (I've
-> > > not
-> > > tested it because I'm AFK now).=C2=A0 Using visibility in kernel seem=
-s
-> > > strange, but I think it may make some sense because the modules
-> > > are some
-> > > sort of similar to an ELF shared object being dlopen()'ed, and our
-> > > way
-> > > to inject per-CPU symbols is analog to ELF interposition.
-> > >=20
-> > > arch/loongarch/include/asm/percpu.h:
-> > >=20
-> > > =C2=A0=C2=A0 #if !__has_attribute(__addr_global__) && defined(MODULE)
-> > > =C2=A0=C2=A0 /* Magically remove "static" for per-CPU variables.=C2=
-=A0 */
-> > > =C2=A0=C2=A0 # define ARCH_NEEDS_WEAK_PER_CPU
-> > > =C2=A0=C2=A0 /* Force GOT-relocation for per-CPU variables.=C2=A0 */
-> > > =C2=A0=C2=A0 # define PER_CPU_ATTRIBUTES
-> > > __attribute__((__visibility__("default")))
-> > > =C2=A0=C2=A0 #endif
-> > >=20
-> > > arch/loongarch/Makefile:
-> > >=20
-> > > =C2=A0=C2=A0 # Hack for per-CPU variables, see PER_CPU_ATTRIBUTES in
-> > > =C2=A0=C2=A0 # include/asm/percpu.h
-> > > =C2=A0=C2=A0 if (call gcc-does-not-support-addr-global)
-> > > =C2=A0=C2=A0=C2=A0=C2=A0 KBUILD_CFLAGS_MODULE +=3D -fPIC -fvisibility=
-=3Dhidden
-> > > =C2=A0=C2=A0 endif
-> > >=20
-> > Using the old toolchain (GCC 12) can successfully load the
-> > nf_tables.ko
-> > module after applying the above patch.
-> I don't like such a hack..., can we consider using old relocation
-> types when building by old toolchains?
-
-
-I don't like the hack too.  I only developed it as an intellectual game.
-
-We need to consider multiple combinations:
-
-(1) Old GCC + old Binutils.  We need -mla-local-with-abs for
-KBUILD_CFLAGS_MODULE.
-
-(2) Old GCC + new Binutils.  We need -mla-local-with-abs for
-KBUILD_CFLAGS_MODULE, *and* adding the support for
-R_LARCH_ABS{_HI20,_LO12,64_LO20,64_HI12} in the kernel module loader.
-
-(3) New GCC + old Binutils.  As new GCC should support our new attribute
-(I now intend to send V2 patch to gcc-patches using "movable" as the
-attribute name), no special action is needed.
-
-Basically, we need:
-
-(1) Handle R_LARCH_ABS{_HI20,_LO12,64_LO20,64_HI12} in the kernel module
-loader.
-(2) Add -Wa,-mla-local-with-abs into KBUILD_CFLAGS_MODULE if GCC version
-is <=3D 12.=20
---=20
-Xi Ruoyao <xry111@xry111.site>
-School of Aerospace Science and Technology, Xidian University
+This bug is marked as fixed by commit:
+net: core: netlink: add helper refcount dec and lock function
+net: sched: add helper function to take reference to Qdisc
+net: sched: extend Qdisc with rcu
+net: sched: rename qdisc_destroy() to qdisc_put()
+net: sched: use Qdisc rcu API instead of relying on rtnl lock
+But I can't find it in any tested tree for more than 90 days.
+Is it a correct commit? Please update it by replying:
+#syz fix: exact-commit-title
+Until then the bug is still considered open and
+new crashes with the same signature are ignored.
