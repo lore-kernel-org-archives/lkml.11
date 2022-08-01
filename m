@@ -2,80 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BACAC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:49:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A83C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231215AbiHAMtx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51706 "EHLO
+        id S234740AbiHAMt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232452AbiHAMtY (ORCPT
+        with ESMTP id S234963AbiHAMtY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 1 Aug 2022 08:49:24 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3774C103
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:42:26 -0700 (PDT)
-Date:   Mon, 1 Aug 2022 14:42:23 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1659357744;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sJsPGtEi3Iln+558Jldw3Iv4IN5TJ47fe8SK6ZlLY5o=;
-        b=hD2gkX1P3hPSkoAxHscnXMw9Blj33qs2rY4PFw5WWLWLQBU2eN+1e0OtjHs+NYKTJmrySW
-        9KorD0yljbYci65tOrxyQY6gE4bUgAgrreO3Mv3Z9l203EvW5LxHMQhftUQ8V5ElpWDnKP
-        g4Ol+zcejI3vAyZYVibTKxTC+iZ5IVK+wa+Ib/e1APgS2bLvdwrkZgQ/PEAAohIRInbZPQ
-        RnEiDY9o4mFurFlh8JXMHLMdJH2DKgXYvaK8xIvysRLsxaPzJz0VkiEtfKTCspuKVwvwnI
-        UP7qBD2YxcKb3j64i0ICsnxvRua6+rkCfaoVna+yV2d+1ZPgOYM/a6M9L3VDiQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1659357744;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sJsPGtEi3Iln+558Jldw3Iv4IN5TJ47fe8SK6ZlLY5o=;
-        b=QukwVvpQ1UUF1WTBE1R7OAo/WYfuWlvmwgV5o6jbwxQNaFNE/xC0bXWyoR0JQ3tg+HbgzP
-        jfKHSWNcMRtUQwBA==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Mike Galbraith <efault@gmx.de>, Petr Mladek <pmladek@suse.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH 1/2 v2] lib/vsprintf: Remove static_branch_likely() from
- __ptr_to_hashval().
-Message-ID: <YufKL+3AKhLmlAcK@linutronix.de>
-References: <20220729154716.429964-1-bigeasy@linutronix.de>
- <20220729154716.429964-2-bigeasy@linutronix.de>
- <YufDcPfth9JH6SaV@zx2c4.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YufDcPfth9JH6SaV@zx2c4.com>
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86863232
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:42:35 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 0228A20148F;
+        Mon,  1 Aug 2022 14:42:34 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id BEB9220130A;
+        Mon,  1 Aug 2022 14:42:33 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 4C22A180031C;
+        Mon,  1 Aug 2022 20:42:32 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: imx-rpmsg: Support configure sysclk for codec dai
+Date:   Mon,  1 Aug 2022 20:26:13 +0800
+Message-Id: <1659356773-8315-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-01 14:13:36 [+0200], Jason A. Donenfeld wrote:
-> Also,
-> 
-> On Fri, Jul 29, 2022 at 05:47:15PM +0200, Sebastian Andrzej Siewior wrote:
-> >  		if (!filled) {
-> >  			get_random_bytes(&ptr_key, sizeof(ptr_key));
-> > -			queue_work(system_unbound_wq, &enable_ptr_key_work);
-> > +			/* Pairs with smp_rmb() before reading ptr_key. */
-> > +			smp_wmb();
-> > +			WRITE_ONCE(filled_random_ptr_key, true);
-> >  			filled = true;
-> 
-> Also, should `filled` be changed there?
+Some codecs need to configure the sysclk even with slave
+mode, otherwise it may not work properly with some case.
 
-you change `filled` as in read_mostly?
+wm8960 is the one that need sysclk be configured, so add
+late_probe() to call the snd_soc_dai_set_sysclk() of codec
 
-> Jason
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ sound/soc/fsl/imx-rpmsg.c | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
-Sebastian
+diff --git a/sound/soc/fsl/imx-rpmsg.c b/sound/soc/fsl/imx-rpmsg.c
+index 2e117311e582..bef4bd997c98 100644
+--- a/sound/soc/fsl/imx-rpmsg.c
++++ b/sound/soc/fsl/imx-rpmsg.c
+@@ -19,6 +19,7 @@
+ struct imx_rpmsg {
+ 	struct snd_soc_dai_link dai;
+ 	struct snd_soc_card card;
++	unsigned int sysclk;
+ };
+ 
+ static const struct snd_soc_dapm_widget imx_rpmsg_dapm_widgets[] = {
+@@ -28,6 +29,27 @@ static const struct snd_soc_dapm_widget imx_rpmsg_dapm_widgets[] = {
+ 	SND_SOC_DAPM_MIC("Main MIC", NULL),
+ };
+ 
++static int imx_rpmsg_late_probe(struct snd_soc_card *card)
++{
++	struct imx_rpmsg *data = snd_soc_card_get_drvdata(card);
++	struct snd_soc_pcm_runtime *rtd = list_first_entry(&card->rtd_list,
++							   struct snd_soc_pcm_runtime, list);
++	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
++	struct device *dev = card->dev;
++	int ret;
++
++	if (!data->sysclk)
++		return 0;
++
++	ret = snd_soc_dai_set_sysclk(codec_dai, 0, data->sysclk, SND_SOC_CLOCK_IN);
++	if (ret && ret != -ENOTSUPP) {
++		dev_err(dev, "failed to set sysclk in %s\n", __func__);
++		return ret;
++	}
++
++	return 0;
++}
++
+ static int imx_rpmsg_probe(struct platform_device *pdev)
+ {
+ 	struct snd_soc_dai_link_component *dlc;
+@@ -72,12 +94,18 @@ static int imx_rpmsg_probe(struct platform_device *pdev)
+ 		data->dai.codecs->dai_name = "snd-soc-dummy-dai";
+ 		data->dai.codecs->name = "snd-soc-dummy";
+ 	} else {
++		struct clk *clk;
++
+ 		data->dai.codecs->of_node = args.np;
+ 		ret = snd_soc_get_dai_name(&args, &data->dai.codecs->dai_name);
+ 		if (ret) {
+ 			dev_err(&pdev->dev, "Unable to get codec_dai_name\n");
+ 			goto fail;
+ 		}
++
++		clk = devm_get_clk_from_child(&pdev->dev, args.np, NULL);
++		if (!IS_ERR(clk))
++			data->sysclk = clk_get_rate(clk);
+ 	}
+ 
+ 	data->dai.cpus->dai_name = dev_name(&rpmsg_pdev->dev);
+@@ -103,6 +131,7 @@ static int imx_rpmsg_probe(struct platform_device *pdev)
+ 	data->card.owner = THIS_MODULE;
+ 	data->card.dapm_widgets = imx_rpmsg_dapm_widgets;
+ 	data->card.num_dapm_widgets = ARRAY_SIZE(imx_rpmsg_dapm_widgets);
++	data->card.late_probe = imx_rpmsg_late_probe;
+ 	/*
+ 	 * Inoder to use common api to get card name and audio routing.
+ 	 * Use parent of_node for this device, revert it after finishing using
+-- 
+2.34.1
+
