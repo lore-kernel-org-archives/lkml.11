@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6985EC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34BDCC19F29
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:16:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234415AbiHAMQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
+        id S234325AbiHAMQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233283AbiHAMPf (ORCPT
+        with ESMTP id S234360AbiHAMPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:15:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE4FA7AB08;
-        Mon,  1 Aug 2022 04:58:27 -0700 (PDT)
+        Mon, 1 Aug 2022 08:15:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301C17A519;
+        Mon,  1 Aug 2022 04:58:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 590B0B8117B;
-        Mon,  1 Aug 2022 11:58:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA11BC433D6;
-        Mon,  1 Aug 2022 11:58:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 76E7D601BD;
+        Mon,  1 Aug 2022 11:58:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DC71C433D6;
+        Mon,  1 Aug 2022 11:58:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355105;
-        bh=FAVsQMKM+xWsrgh2OtFVs4D7ZSSDfn563TOdSHFaIPA=;
+        s=korg; t=1659355107;
+        bh=o8COW7HGUbdghPKHXH+743bq+xK9nKbl1dSwaMzfLyg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WjuWALTGNy7naGHN/kx8H1TlxzWyeXs2YG3cUX9LD3RCqOoVOLXEciogAeny2Y9cU
-         /o4mIFnFZ/Uny7Comd23SaVYYCIQrn48EFkis556JqMHfaD0wjPzqx6172iD5fPMJ5
-         iHdvNUgD5l4ypyabs9K/1IeXewjpnEPF0DWD1+lk=
+        b=GKARKcSN+nb6WqmzQzB/OGywAuYhrlnbnR9XiUF6RfKu+SX68IdiTIrwHAT1vENau
+         8CELF4+P6WwRMdpuV54etP5ns4quZZk7XDthCwu8sU+XFAGL5ibxG8aI5seSPsZuZ5
+         dfLQm3o9b0QrHzxXPhEEWfFNvaj3LZtcL3GlHmWw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Vazquez <brianvv@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>,
-        Dmitry Safonov <dima@arista.com>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 34/88] tcp: md5: fix IPv4-mapped support
-Date:   Mon,  1 Aug 2022 13:46:48 +0200
-Message-Id: <20220801114139.588702628@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.18 35/88] tcp: Fix data-races around sysctl_tcp_moderate_rcvbuf.
+Date:   Mon,  1 Aug 2022 13:46:49 +0200
+Message-Id: <20220801114139.634683929@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -52,60 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit e62d2e110356093c034998e093675df83057e511 upstream.
+commit 780476488844e070580bfc9e3bc7832ec1cea883 upstream.
 
-After the blamed commit, IPv4 SYN packets handled
-by a dual stack IPv6 socket are dropped, even if
-perfectly valid.
+While reading sysctl_tcp_moderate_rcvbuf, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its readers.
 
-$ nstat | grep MD5
-TcpExtTCPMD5Failure             5                  0.0
-
-For a dual stack listener, an incoming IPv4 SYN packet
-would call tcp_inbound_md5_hash() with @family == AF_INET,
-while tp->af_specific is pointing to tcp_sock_ipv6_specific.
-
-Only later when an IPv4-mapped child is created, tp->af_specific
-is changed to tcp_sock_ipv6_mapped_specific.
-
-Fixes: 7bbb765b7349 ("net/tcp: Merge TCP-MD5 inbound callbacks")
-Reported-by: Brian Vazquez <brianvv@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Reviewed-by: Dmitry Safonov <dima@arista.com>
-Tested-by: Leonard Crestez <cdleonard@gmail.com>
-Link: https://lore.kernel.org/r/20220726115743.2759832-1-edumazet@google.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ net/ipv4/tcp_input.c |    2 +-
+ net/mptcp/protocol.c |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4481,9 +4481,18 @@ tcp_inbound_md5_hash(const struct sock *
- 		return SKB_DROP_REASON_TCP_MD5UNEXPECTED;
- 	}
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -724,7 +724,7 @@ void tcp_rcv_space_adjust(struct sock *s
+ 	 * <prev RTT . ><current RTT .. ><next RTT .... >
+ 	 */
  
--	/* check the signature */
--	genhash = tp->af_specific->calc_md5_hash(newhash, hash_expected,
--						 NULL, skb);
-+	/* Check the signature.
-+	 * To support dual stack listeners, we need to handle
-+	 * IPv4-mapped case.
-+	 */
-+	if (family == AF_INET)
-+		genhash = tcp_v4_md5_hash_skb(newhash,
-+					      hash_expected,
-+					      NULL, skb);
-+	else
-+		genhash = tp->af_specific->calc_md5_hash(newhash,
-+							 hash_expected,
-+							 NULL, skb);
+-	if (sock_net(sk)->ipv4.sysctl_tcp_moderate_rcvbuf &&
++	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_moderate_rcvbuf) &&
+ 	    !(sk->sk_userlocks & SOCK_RCVBUF_LOCK)) {
+ 		int rcvmem, rcvbuf;
+ 		u64 rcvwin, grow;
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -1882,7 +1882,7 @@ static void mptcp_rcv_space_adjust(struc
+ 	if (msk->rcvq_space.copied <= msk->rcvq_space.space)
+ 		goto new_measure;
  
- 	if (genhash || memcmp(hash_location, newhash, 16) != 0) {
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMD5FAILURE);
+-	if (sock_net(sk)->ipv4.sysctl_tcp_moderate_rcvbuf &&
++	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_moderate_rcvbuf) &&
+ 	    !(sk->sk_userlocks & SOCK_RCVBUF_LOCK)) {
+ 		int rcvmem, rcvbuf;
+ 		u64 rcvwin, grow;
 
 
