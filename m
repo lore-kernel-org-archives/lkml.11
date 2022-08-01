@@ -2,88 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E02C19F2D
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 10:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3656BC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 10:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230246AbiHAK3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 06:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59068 "EHLO
+        id S230335AbiHAK3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 06:29:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230501AbiHAK2z (ORCPT
+        with ESMTP id S230236AbiHAK3O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 06:28:55 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B94019C00;
-        Mon,  1 Aug 2022 03:28:42 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 114A4139F;
-        Mon,  1 Aug 2022 03:28:43 -0700 (PDT)
-Received: from bogus (unknown [10.57.11.114])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4978D3F67D;
-        Mon,  1 Aug 2022 03:28:41 -0700 (PDT)
-Date:   Mon, 1 Aug 2022 11:28:38 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Jassi Brar <jassisinghbrar@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: mailbox: arm,mhu: Make secure interrupt
- optional
-Message-ID: <20220801102838.u3hcziiwts7bpxt2@bogus>
-References: <20220728190810.1290857-1-robh@kernel.org>
- <CABb+yY2jV7c8oX7=F=nocfvGrOMHJAYov7zS2nT0=qFoNyoxJQ@mail.gmail.com>
- <CABb+yY0JzztBB+giBu+RCt-dzgwYWF32sCR3WKKP9U5K9UvhxA@mail.gmail.com>
- <20220729111051.5me4vklrzskvsj4w@bogus>
- <CAL_JsqLwk+=CeDWqXzhrVESzhJnNjOjyR-TtisKGgjMUi7TivQ@mail.gmail.com>
+        Mon, 1 Aug 2022 06:29:14 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9740219C1F
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 03:29:12 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id a17-20020a056e0208b100b002dc52b51d98so6439214ilt.0
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 03:29:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=Phl643nnc/FDyRycl+fWVvHz7FFpnTlNljAnj8E2g68=;
+        b=o41BmLTruCNPiEj8p8atk/FXX1rBlYnXMAshv10IU80XxEU5EvB/QM9trJJ8eEv5fZ
+         DVVc8BcDfBWaJO2Mrqx+V0enbWLcaw4zu7oyViAT1lY6RG5ENazjWzApQdDL5PssCnUE
+         /cP0Nwr+yqHs5nzQvE3jBXDBYAuKtbFGJ9kpPuWB5VK/Nnu7DdQoUEfKvA5aSciBZILl
+         0rOb83q8jZAV5+rLvZ0jECyxTsxZX3/fGWSWF/2GVbmSOza2xECjrEfEfq6+QUTBA0cN
+         trq/7/jR3p0Y9vgQX8fQzWzKdqOrlkLfLISM5DQM3/DAUEDBxOf7u4+d9xVjebYVzFG1
+         dI2Q==
+X-Gm-Message-State: AJIora/+wuEnnbTzBzgrOZTzKj2Y17muKaAuG8oo2PNUAZDs13J19/Jh
+        avusF7vUQQqZvfrUo4l0jtPiUESjczNZBUcl4FT1dpo/snJ6
+X-Google-Smtp-Source: AGRyM1vl4xHfpqmTU76tijGfMYhdfQMe8gxHA3I4cWFMxPSp1vMy1HcQa7pgVpqLfHM6pm3hIU7Vk1sbXkri7r0ASrNwG4EsLjK1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAL_JsqLwk+=CeDWqXzhrVESzhJnNjOjyR-TtisKGgjMUi7TivQ@mail.gmail.com>
+X-Received: by 2002:a05:6e02:20ca:b0:2dc:90fa:af35 with SMTP id
+ 10-20020a056e0220ca00b002dc90faaf35mr5844322ilq.302.1659349751878; Mon, 01
+ Aug 2022 03:29:11 -0700 (PDT)
+Date:   Mon, 01 Aug 2022 03:29:11 -0700
+In-Reply-To: <CAJfpeguM-DdeAL3cSJB3csD6VcaqQRiSmHvwPicQpKL5Wu6QLQ@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000084d95d05e52b7822@google.com>
+Subject: Re: [syzbot] memory leak in cap_inode_getsecurity
+From:   syzbot <syzbot+942d5390db2d9624ced8@syzkaller.appspotmail.com>
+To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marka@mediation.com, miklos@szeredi.hu, phind.uet@gmail.com,
+        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 05:17:26PM -0600, Rob Herring wrote:
-> On Fri, Jul 29, 2022 at 5:10 AM Sudeep Holla <sudeep.holla@arm.com> wrote:
+Hello,
 
-[...]
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-> >
-> > No this doesn't work IMO. Yes standalone everything looks fine, but you can
-> > insert a module requesting this channel and bring down the system. So I am
-> > not for this change.
->
-> Not having the interrupt listed in DT doesn't prevent that. Is this
-> security by obscurity?
->
+Reported-and-tested-by: syzbot+942d5390db2d9624ced8@syzkaller.appspotmail.com
 
-I agree, as I mentioned in the other thread, if we had a way to mark that
-channel as used elsewhere or disabled or unavailable, it would have been
-great.
+Tested on:
 
-> I don't really care which way this is fixed though.
+commit:         3d7cb6b0 Linux 5.19
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10aa0c2e080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5466231eb53fa40e
+dashboard link: https://syzkaller.appspot.com/bug?extid=942d5390db2d9624ced8
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=10e003a6080000
 
-Understood.
-
-> I just want the warning gone. We've all got better things to worry about.
-
-Agreed.
-
-> The DT not having the interrupt has been that way for years (presumably)
-> and the kernel never needs the interrupt, so the schema should reflect
-> reality.
-
-I prefer this approach.
-
-> On the flip side, considering it *can* be present already, there's not
-> really much argument for not having it.
->
-
-Can't disagree/argue that 😄.
-
---
-Regards,
-Sudeep
+Note: testing is done by a robot and is best-effort only.
