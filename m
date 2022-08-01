@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3042C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE08C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234361AbiHAMR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40174 "EHLO
+        id S234576AbiHAMSD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234318AbiHAMQe (ORCPT
+        with ESMTP id S234332AbiHAMQk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:16:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5F93ED6A;
-        Mon,  1 Aug 2022 04:58:57 -0700 (PDT)
+        Mon, 1 Aug 2022 08:16:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F547E022;
+        Mon,  1 Aug 2022 04:59:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89409B81163;
-        Mon,  1 Aug 2022 11:58:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0A3EC433D6;
-        Mon,  1 Aug 2022 11:58:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E0FAB80E8F;
+        Mon,  1 Aug 2022 11:58:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98ED3C433D6;
+        Mon,  1 Aug 2022 11:58:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355135;
-        bh=TQns3hjRBLYuanL/YF6iu0M/uuZZf7+dlf8QceGSMv8=;
+        s=korg; t=1659355138;
+        bh=501OjYb5HYrJrfCdqJVm4WnrudaBA4TQcWrbApMwIqU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RjmU+5VfKdsWsaZ4CzwJOt4X6dby1s7wKjW3fLyvXjqj3pZnVXfXZnalZnqUw5D6D
-         sePTRLD4dxB9MyDmYVxmIjuGQpO0tlJzKSO8Szi85yu+v8iR3056Qi75zDUvAZd2UX
-         S6yuG4DpD9oCmPe6O6USuLzkoh0mefGYTJ/PPQEE=
+        b=EXtt9CvBA+zBrkgEKMLjFbxo+2efwRy9Q1VPtcJ9apw5U3aRTDZF/xOYsBAhGQNmT
+         D6CJ95CQb9BInoPdY2zTsbPhM/gtXO17s/aBWyOeg+XuC1pT3IjPs+0IFGw+XBzAkj
+         poWqnTnVFIuSmrbMcM7F4mHvd/hjN7J87pc76z58=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wei Chen <harperchen1110@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Dimitris Michailidis <dmichail@fungible.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 76/88] sctp: leave the err path free in sctp_stream_init to sctp_stream_free
-Date:   Mon,  1 Aug 2022 13:47:30 +0200
-Message-Id: <20220801114141.504347668@linuxfoundation.org>
+Subject: [PATCH 5.18 77/88] net/funeth: Fix fun_xdp_tx() and XDP packet reclaim
+Date:   Mon,  1 Aug 2022 13:47:31 +0200
+Message-Id: <20220801114141.551590329@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -50,107 +50,147 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Dimitris Michailidis <d.michailidis@fungible.com>
 
-[ Upstream commit 181d8d2066c000ba0a0e6940a7ad80f1a0e68e9d ]
+[ Upstream commit 51a83391d77bb0f7ff0aef06ca4c7f5aa9e80b4c ]
 
-A NULL pointer dereference was reported by Wei Chen:
+The current implementation of fun_xdp_tx(), used for XPD_TX, is
+incorrect in that it takes an address/length pair and later releases it
+with page_frag_free(). It is OK for XDP_TX but the same code is used by
+ndo_xdp_xmit. In that case it loses the XDP memory type and releases the
+packet incorrectly for some of the types. Assorted breakage follows.
 
-  BUG: kernel NULL pointer dereference, address: 0000000000000000
-  RIP: 0010:__list_del_entry_valid+0x26/0x80
-  Call Trace:
-   <TASK>
-   sctp_sched_dequeue_common+0x1c/0x90
-   sctp_sched_prio_dequeue+0x67/0x80
-   __sctp_outq_teardown+0x299/0x380
-   sctp_outq_free+0x15/0x20
-   sctp_association_free+0xc3/0x440
-   sctp_do_sm+0x1ca7/0x2210
-   sctp_assoc_bh_rcv+0x1f6/0x340
+Change fun_xdp_tx() to take xdp_frame and rely on xdp_return_frame() in
+reclaim.
 
-This happens when calling sctp_sendmsg without connecting to server first.
-In this case, a data chunk already queues up in send queue of client side
-when processing the INIT_ACK from server in sctp_process_init() where it
-calls sctp_stream_init() to alloc stream_in. If it fails to alloc stream_in
-all stream_out will be freed in sctp_stream_init's err path. Then in the
-asoc freeing it will crash when dequeuing this data chunk as stream_out
-is missing.
-
-As we can't free stream out before dequeuing all data from send queue, and
-this patch is to fix it by moving the err path stream_out/in freeing in
-sctp_stream_init() to sctp_stream_free() which is eventually called when
-freeing the asoc in sctp_association_free(). This fix also makes the code
-in sctp_process_init() more clear.
-
-Note that in sctp_association_init() when it fails in sctp_stream_init(),
-sctp_association_free() will not be called, and in that case it should
-go to 'stream_free' err path to free stream instead of 'fail_init'.
-
-Fixes: 5bbbbe32a431 ("sctp: introduce stream scheduler foundations")
-Reported-by: Wei Chen <harperchen1110@gmail.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Link: https://lore.kernel.org/r/831a3dc100c4908ff76e5bcc363be97f2778bc0b.1658787066.git.lucien.xin@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: db37bc177dae ("net/funeth: add the data path")
+Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
+Link: https://lore.kernel.org/r/20220726215923.7887-1-dmichail@fungible.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/associola.c |  5 ++---
- net/sctp/stream.c    | 19 +++----------------
- 2 files changed, 5 insertions(+), 19 deletions(-)
+ .../net/ethernet/fungible/funeth/funeth_rx.c  |  5 ++++-
+ .../net/ethernet/fungible/funeth/funeth_tx.c  | 20 +++++++++----------
+ .../ethernet/fungible/funeth/funeth_txrx.h    |  6 +++---
+ 3 files changed, 16 insertions(+), 15 deletions(-)
 
-diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-index be29da09cc7a..3460abceba44 100644
---- a/net/sctp/associola.c
-+++ b/net/sctp/associola.c
-@@ -229,9 +229,8 @@ static struct sctp_association *sctp_association_init(
- 	if (!sctp_ulpq_init(&asoc->ulpq, asoc))
- 		goto fail_init;
+diff --git a/drivers/net/ethernet/fungible/funeth/funeth_rx.c b/drivers/net/ethernet/fungible/funeth/funeth_rx.c
+index 0f6a549b9f67..29a6c2ede43a 100644
+--- a/drivers/net/ethernet/fungible/funeth/funeth_rx.c
++++ b/drivers/net/ethernet/fungible/funeth/funeth_rx.c
+@@ -142,6 +142,7 @@ static void *fun_run_xdp(struct funeth_rxq *q, skb_frag_t *frags, void *buf_va,
+ 			 int ref_ok, struct funeth_txq *xdp_q)
+ {
+ 	struct bpf_prog *xdp_prog;
++	struct xdp_frame *xdpf;
+ 	struct xdp_buff xdp;
+ 	u32 act;
  
--	if (sctp_stream_init(&asoc->stream, asoc->c.sinit_num_ostreams,
--			     0, gfp))
--		goto fail_init;
-+	if (sctp_stream_init(&asoc->stream, asoc->c.sinit_num_ostreams, 0, gfp))
-+		goto stream_free;
+@@ -163,7 +164,9 @@ static void *fun_run_xdp(struct funeth_rxq *q, skb_frag_t *frags, void *buf_va,
+ 	case XDP_TX:
+ 		if (unlikely(!ref_ok))
+ 			goto pass;
+-		if (!fun_xdp_tx(xdp_q, xdp.data, xdp.data_end - xdp.data))
++
++		xdpf = xdp_convert_buff_to_frame(&xdp);
++		if (!xdpf || !fun_xdp_tx(xdp_q, xdpf))
+ 			goto xdp_error;
+ 		FUN_QSTAT_INC(q, xdp_tx);
+ 		q->xdp_flush |= FUN_XDP_FLUSH_TX;
+diff --git a/drivers/net/ethernet/fungible/funeth/funeth_tx.c b/drivers/net/ethernet/fungible/funeth/funeth_tx.c
+index ff6e29237253..2f6698b98b03 100644
+--- a/drivers/net/ethernet/fungible/funeth/funeth_tx.c
++++ b/drivers/net/ethernet/fungible/funeth/funeth_tx.c
+@@ -466,7 +466,7 @@ static unsigned int fun_xdpq_clean(struct funeth_txq *q, unsigned int budget)
  
- 	/* Initialize default path MTU. */
- 	asoc->pathmtu = sp->pathmtu;
-diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-index 6dc95dcc0ff4..ef9fceadef8d 100644
---- a/net/sctp/stream.c
-+++ b/net/sctp/stream.c
-@@ -137,7 +137,7 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
+ 		do {
+ 			fun_xdp_unmap(q, reclaim_idx);
+-			page_frag_free(q->info[reclaim_idx].vaddr);
++			xdp_return_frame(q->info[reclaim_idx].xdpf);
  
- 	ret = sctp_stream_alloc_out(stream, outcnt, gfp);
- 	if (ret)
--		goto out_err;
-+		return ret;
+ 			trace_funeth_tx_free(q, reclaim_idx, 1, head);
  
- 	for (i = 0; i < stream->outcnt; i++)
- 		SCTP_SO(stream, i)->state = SCTP_STREAM_OPEN;
-@@ -145,22 +145,9 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
- handle_in:
- 	sctp_stream_interleave_init(stream);
- 	if (!incnt)
--		goto out;
--
--	ret = sctp_stream_alloc_in(stream, incnt, gfp);
--	if (ret)
--		goto in_err;
--
--	goto out;
-+		return 0;
- 
--in_err:
--	sched->free(stream);
--	genradix_free(&stream->in);
--out_err:
--	genradix_free(&stream->out);
--	stream->outcnt = 0;
--out:
--	return ret;
-+	return sctp_stream_alloc_in(stream, incnt, gfp);
+@@ -479,11 +479,11 @@ static unsigned int fun_xdpq_clean(struct funeth_txq *q, unsigned int budget)
+ 	return npkts;
  }
  
- int sctp_stream_init_ext(struct sctp_stream *stream, __u16 sid)
+-bool fun_xdp_tx(struct funeth_txq *q, void *data, unsigned int len)
++bool fun_xdp_tx(struct funeth_txq *q, struct xdp_frame *xdpf)
+ {
+ 	struct fun_eth_tx_req *req;
+ 	struct fun_dataop_gl *gle;
+-	unsigned int idx;
++	unsigned int idx, len;
+ 	dma_addr_t dma;
+ 
+ 	if (fun_txq_avail(q) < FUN_XDP_CLEAN_THRES)
+@@ -494,7 +494,8 @@ bool fun_xdp_tx(struct funeth_txq *q, void *data, unsigned int len)
+ 		return false;
+ 	}
+ 
+-	dma = dma_map_single(q->dma_dev, data, len, DMA_TO_DEVICE);
++	len = xdpf->len;
++	dma = dma_map_single(q->dma_dev, xdpf->data, len, DMA_TO_DEVICE);
+ 	if (unlikely(dma_mapping_error(q->dma_dev, dma))) {
+ 		FUN_QSTAT_INC(q, tx_map_err);
+ 		return false;
+@@ -514,7 +515,7 @@ bool fun_xdp_tx(struct funeth_txq *q, void *data, unsigned int len)
+ 	gle = (struct fun_dataop_gl *)req->dataop.imm;
+ 	fun_dataop_gl_init(gle, 0, 0, len, dma);
+ 
+-	q->info[idx].vaddr = data;
++	q->info[idx].xdpf = xdpf;
+ 
+ 	u64_stats_update_begin(&q->syncp);
+ 	q->stats.tx_bytes += len;
+@@ -545,12 +546,9 @@ int fun_xdp_xmit_frames(struct net_device *dev, int n,
+ 	if (unlikely(q_idx >= fp->num_xdpqs))
+ 		return -ENXIO;
+ 
+-	for (q = xdpqs[q_idx], i = 0; i < n; i++) {
+-		const struct xdp_frame *xdpf = frames[i];
+-
+-		if (!fun_xdp_tx(q, xdpf->data, xdpf->len))
++	for (q = xdpqs[q_idx], i = 0; i < n; i++)
++		if (!fun_xdp_tx(q, frames[i]))
+ 			break;
+-	}
+ 
+ 	if (unlikely(flags & XDP_XMIT_FLUSH))
+ 		fun_txq_wr_db(q);
+@@ -577,7 +575,7 @@ static void fun_xdpq_purge(struct funeth_txq *q)
+ 		unsigned int idx = q->cons_cnt & q->mask;
+ 
+ 		fun_xdp_unmap(q, idx);
+-		page_frag_free(q->info[idx].vaddr);
++		xdp_return_frame(q->info[idx].xdpf);
+ 		q->cons_cnt++;
+ 	}
+ }
+diff --git a/drivers/net/ethernet/fungible/funeth/funeth_txrx.h b/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
+index 04c9f91b7489..8708e2895946 100644
+--- a/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
++++ b/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
+@@ -95,8 +95,8 @@ struct funeth_txq_stats {  /* per Tx queue SW counters */
+ 
+ struct funeth_tx_info {      /* per Tx descriptor state */
+ 	union {
+-		struct sk_buff *skb; /* associated packet */
+-		void *vaddr;         /* start address for XDP */
++		struct sk_buff *skb;    /* associated packet (sk_buff path) */
++		struct xdp_frame *xdpf; /* associated XDP frame (XDP path) */
+ 	};
+ };
+ 
+@@ -245,7 +245,7 @@ static inline int fun_irq_node(const struct fun_irq *p)
+ int fun_rxq_napi_poll(struct napi_struct *napi, int budget);
+ int fun_txq_napi_poll(struct napi_struct *napi, int budget);
+ netdev_tx_t fun_start_xmit(struct sk_buff *skb, struct net_device *netdev);
+-bool fun_xdp_tx(struct funeth_txq *q, void *data, unsigned int len);
++bool fun_xdp_tx(struct funeth_txq *q, struct xdp_frame *xdpf);
+ int fun_xdp_xmit_frames(struct net_device *dev, int n,
+ 			struct xdp_frame **frames, u32 flags);
+ 
 -- 
 2.35.1
 
