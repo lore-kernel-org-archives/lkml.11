@@ -2,74 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78001C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 16:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D708DC19F2B
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 16:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232747AbiHAQeu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 12:34:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54736 "EHLO
+        id S233160AbiHAQf0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 12:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232223AbiHAQer (ORCPT
+        with ESMTP id S232827AbiHAQfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 12:34:47 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791D137187
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 09:34:44 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id ss3so21314867ejc.11
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 09:34:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=xlS2N1OjIb+Mlm2noxBpchpMfEINKP6/+80ohklA0v0=;
-        b=S6+Xh17ADpvkHb70HUY1m75bVZCuHKqEJP8QQVK73WynzOhNMUclcRD6wdSwMfQN3r
-         SXiJ0w43oLZjGDxkK0Pr++zEhsvlQo9Feqil+xBrlJdcNXojVLFTdULOxjvchXL61V72
-         XdH3Zx9uCFkjZDR0t9Df22ikHOQLzg6bFlKpM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=xlS2N1OjIb+Mlm2noxBpchpMfEINKP6/+80ohklA0v0=;
-        b=FX4qEStHPGa0Ce9W6zgLO41f3F9lyuXiiPZ68v8y6HQRU0PyUobTK3aE0K347EzYxZ
-         aNxKZ7cpJc57a4vTORbOc/jth7yiegjCh9THdNuSgubDZSRnu4TVTP1pSIHr37LpHMqT
-         x+FeNwMwjN5cIDVDg3c+68giFwdXRfamKVhf20X0mOIUTEfYopSh3efQmK3NVw3FOpWO
-         43ur4I8c7SDVe7kSPgb1hFi4mdNkfxHbmnTa7B3DHKhtn0mtV1I09AdQGhg6+xP5q/LD
-         EsFBX3IBWcVqxSOT1HQMuHUXNSDxtNks4DY5M+sAWMQgd3eCR9UId6/cQFHQn6YO8cVd
-         h/Ow==
-X-Gm-Message-State: ACgBeo3aMcfYm04RB2PE1pW94PqfQE0PwBaQpI9Q/Di+lYfYj7tQTV4Q
-        7td0/N/1fJUYHYWYM5tIWMkqdWCqDnt3X/3uyUA=
-X-Google-Smtp-Source: AA6agR6HZFwFSna3GaIocaFlLV8SjYbGnDorcaboyetSknjawv9VuETWED/huLKbn3LK/jLwVkPSxg==
-X-Received: by 2002:a17:907:1dd3:b0:730:9340:a0a with SMTP id og19-20020a1709071dd300b0073093400a0amr2743535ejc.316.1659371682904;
-        Mon, 01 Aug 2022 09:34:42 -0700 (PDT)
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
-        by smtp.gmail.com with ESMTPSA id ta13-20020a1709078c0d00b007304a28471dsm3172104ejc.43.2022.08.01.09.34.42
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Aug 2022 09:34:42 -0700 (PDT)
-Received: by mail-wr1-f52.google.com with SMTP id v3so13895198wrp.0
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 09:34:42 -0700 (PDT)
-X-Received: by 2002:a5d:638b:0:b0:220:6e1a:8794 with SMTP id
- p11-20020a5d638b000000b002206e1a8794mr132531wru.193.1659371682031; Mon, 01
- Aug 2022 09:34:42 -0700 (PDT)
+        Mon, 1 Aug 2022 12:35:06 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEB543E74B
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 09:35:05 -0700 (PDT)
+Received: from localhost.localdomain (unknown [92.49.173.143])
+        by mail.ispras.ru (Postfix) with ESMTPSA id B1AB540D403E;
+        Mon,  1 Aug 2022 16:35:03 +0000 (UTC)
+From:   Evgeniy Baskov <baskov@ispras.ru>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Evgeniy Baskov <baskov@ispras.ru>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>
+Subject: [PATCH v5 0/5] Parse CONFIG_CMDLINE in compressed kernel
+Date:   Mon,  1 Aug 2022 19:34:56 +0300
+Message-Id: <cover.1658843651.git.baskov@ispras.ru>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <YueXA90ePDFY7mKf@zn.tnic>
-In-Reply-To: <YueXA90ePDFY7mKf@zn.tnic>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 1 Aug 2022 09:34:26 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wiy+R8dW4RCV4-1ydh-JTy+4LCn4BbqNvBqxshDtp-XGA@mail.gmail.com>
-Message-ID: <CAHk-=wiy+R8dW4RCV4-1ydh-JTy+4LCn4BbqNvBqxshDtp-XGA@mail.gmail.com>
-Subject: Re: [GIT PULL] x86/cleanups for v6.0
-To:     Borislav Petkov <bp@suse.de>
-Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 2:04 AM Borislav Petkov <bp@suse.de> wrote:
->
-> pls pull what is probably the most boring branch this merge window.
+CONFIG_CMDLINE_BOOL and CONFIG_CMDLINE_OVERRIDE were ignored during
+options lookup in compressed kernel, including earlyprintk option,
+so it was impossible to get earlyprintk messages from that stage
+of boot process via command line provided at compile time.
+Being able to enable earlyprintk via compile-time option might
+be desirable for booting on systems with broken UEFI command line
+arguments via EFISTUB.
 
-Hey, I like boring.
+Changes in v2:
 
-              Linus
+* Compute resulting cmdline string once if needed and then reuse it.
+  Store concatenation result in a static buffer.
+* Add strlcat() to compressed kernel to simplify the code.
+
+Changes in v3:
+
+v2 had a bug: cmd_line_ptr was set to a pointer to a buffer inside
+a kernel before kernel relocation, that makes this pointer invalid.
+
+* Replace the pointer by a boolean variable to avoid storing a pointer,
+  since it becomes invalid during kernel relocation.
+
+Changes in v4:
+
+* Use better wording for commit messages.
+* Add buffer overflow check to strlcat().
+* Factor out common logic of cmdline resolving into helper function.
+
+Changes in v5:
+
+* Use strscpy() instead of strlcpy().
+
+Baskov Evgeniy (5):
+  x86/boot: Add strlcat() and strscpy() to compressed kernel
+  x86: Add resolve_cmdline() helper
+  x86/setup: Use resolve_cmdline() in setup.c
+  x86/boot: Use resolve_cmdline() in compressed kernel
+  x86/boot: Remove no longer needed includes
+
+ arch/x86/boot/compressed/cmdline.c          | 24 +++++++++-
+ arch/x86/boot/compressed/ident_map_64.c     |  4 --
+ arch/x86/boot/compressed/kaslr.c            |  4 --
+ arch/x86/boot/compressed/misc.h             |  1 +
+ arch/x86/boot/compressed/string.c           | 50 +++++++++++++++++++++
+ arch/x86/include/asm/shared/setup-cmdline.h | 38 ++++++++++++++++
+ arch/x86/kernel/setup.c                     | 22 ++-------
+ arch/x86/purgatory/purgatory.c              |  1 +
+ 8 files changed, 116 insertions(+), 28 deletions(-)
+ create mode 100644 arch/x86/include/asm/shared/setup-cmdline.h
+
+-- 
+2.35.1
+
