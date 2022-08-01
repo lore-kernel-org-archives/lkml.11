@@ -2,288 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BADC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 09:42:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B84EBC19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 09:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230376AbiHAJmI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 05:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58708 "EHLO
+        id S230307AbiHAJmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 05:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230174AbiHAJl6 (ORCPT
+        with ESMTP id S230255AbiHAJmC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 05:41:58 -0400
-Received: from conuserg-10.nifty.com (conuserg-10.nifty.com [210.131.2.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E33837192;
-        Mon,  1 Aug 2022 02:41:57 -0700 (PDT)
-Received: from grover.sesame ([133.106.54.139]) (authenticated)
-        by conuserg-10.nifty.com with ESMTP id 2719ejxu028043;
-        Mon, 1 Aug 2022 18:40:45 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 2719ejxu028043
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1659346846;
-        bh=t99GlSsT7vbIGrGiCUuJvD+nKsJBskTcdf/ObhFgXWI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YXzWfU9BtSCQtsx4ZQhSFcNG51BH/46O/St8t+dyveoQ/8SURDGcJ1v6ZnesvRR2e
-         kXvgxlb60DftfQCVLDNpzHH3JBx6v8KSD5uxahsCWJXs/CwLleSUyfh5EpNhY5HaN2
-         z0J+1A2wR/ntMcjIiiVguF9zB06wPW7N6PEGnurWyJPde4HC5R+/jj2UQsUu4ANlWN
-         4595RoCYdCBqeIusgc8onF/VGIjrwgWdhZIiaxcppeVDi/sOJpsXl+3AVqEaiQI5gy
-         d/n7mbv5l0F/nohGBCZbnDOxEbrwJSPvxjZk++cPB2NK4WeZ41ia/8upKoImF2t5pF
-         DPl+6CcEZjTiw==
-X-Nifty-SrcIP: [133.106.54.139]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
+        Mon, 1 Aug 2022 05:42:02 -0400
+Received: from mail.itpri.com (mx1.itpri.com [185.125.111.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0206E37195
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 02:42:00 -0700 (PDT)
+X-Virus-Scanned: Yes
+From:   Alexander Atanasov <alexander.atanasov@virtuozzo.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     kernel@openvz.org,
+        Alexander Atanasov <alexander.atanasov@virtuozzo.com>,
+        virtualization@lists.linux-foundation.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/4] modpost: shorten warning messages in report_sec_mismatch()
-Date:   Mon,  1 Aug 2022 18:38:59 +0900
-Message-Id: <20220801093902.1506297-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
+Subject: [PATCH v3 1/1] virtio: Restore semantics of vq->broken in virtqueues and improve irq handling
+Date:   Mon,  1 Aug 2022 09:39:41 +0000
+Message-Id: <20220801093940.2343377-1-alexander.atanasov@virtuozzo.com>
+In-Reply-To: <20220627144544.1947013-1-alexander.atanasov@virtuozzo.com>
+References: <20220627144544.1947013-1-alexander.atanasov@virtuozzo.com>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Each section mismatch results in long warning messages. Too much.
+virtio: harden vring IRQ (8b4ec69d7e09) changed the meaning
+of vq->broken which results in vring_interrupt handles IRQs for
+broken drivers as IRQ_NONE and not IRQ_HANDLED and made impossible
+to initiallize vqs before the driver is ready, i.e. in probe method.
+Balloon driver does this and it can not load because it fails in
+vqs_init with -EIO.
 
-Make each warning fit in one line, and remove a lot of messy code.
+So instead of changing the original intent ot the flag introduce
+a new flag vq->ready which servers the purpose to check of early IRQs.
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+With the new flag improve the logic of IRQ handling like this:
+Until the driver is ready return IRQ_HANDLED so the IRQ does not get
+disabled while starting up.
+If the driver gets broken return IRQ_NONE so the IRQ gets disabled.
+
+Signed-off-by: Alexander Atanasov <alexander.atanasov@virtuozzo.com>
 ---
+ drivers/virtio/virtio_ring.c  | 34 ++++++++++++++++++++++------------
+ include/linux/virtio.h        |  4 +++-
+ include/linux/virtio_config.h | 12 ++++++------
+ 3 files changed, 31 insertions(+), 19 deletions(-)
 
- scripts/mod/modpost.c | 179 +++---------------------------------------
- 1 file changed, 9 insertions(+), 170 deletions(-)
+V2:
+  Reworked on top of config option to disable the hardening.
+V3:
+  Changed irq handling logic depending on the flags
 
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index a8ee27496da7..9e8ae2636ec1 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1238,42 +1238,6 @@ static Elf_Sym *find_elf_symbol2(struct elf_info *elf, Elf_Addr addr,
- 	return near;
- }
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index 643ca779fcc6..a385d563c71f 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -100,6 +100,9 @@ struct vring_virtqueue {
+ 	/* Other side has made a mess, don't try any more. */
+ 	bool broken;
  
--/*
-- * Convert a section name to the function/data attribute
-- * .init.text => __init
-- * .memexitconst => __memconst
-- * etc.
-- *
-- * The memory of returned value has been allocated on a heap. The user of this
-- * method should free it after usage.
--*/
--static char *sec2annotation(const char *s)
--{
--	if (match(s, init_exit_sections)) {
--		char *p = NOFAIL(malloc(20));
--		char *r = p;
--
--		*p++ = '_';
--		*p++ = '_';
--		if (*s == '.')
--			s++;
--		while (*s && *s != '.')
--			*p++ = *s++;
--		*p = '\0';
--		if (*s == '.')
--			s++;
--		if (strstr(s, "rodata") != NULL)
--			strcat(p, "const ");
--		else if (strstr(s, "data") != NULL)
--			strcat(p, "data ");
--		else
--			strcat(p, " ");
--		return r;
--	} else {
--		return NOFAIL(strdup(""));
--	}
--}
--
- static int is_function(Elf_Sym *sym)
- {
- 	if (sym)
-@@ -1282,19 +1246,6 @@ static int is_function(Elf_Sym *sym)
- 		return -1;
- }
++	/* the queue is ready to handle interrupts */
++	bool ready;
++
+ 	/* Host supports indirect buffers */
+ 	bool indirect;
  
--static void print_section_list(const char * const list[20])
--{
--	const char *const *s = list;
--
--	while (*s) {
--		fprintf(stderr, "%s", *s);
--		s++;
--		if (*s)
--			fprintf(stderr, ", ");
--	}
--	fprintf(stderr, "\n");
--}
--
- static inline void get_pretty_name(int is_func, const char** name, const char** name_p)
- {
- 	switch (is_func) {
-@@ -1312,141 +1263,31 @@ static inline void get_pretty_name(int is_func, const char** name, const char**
- static void report_sec_mismatch(const char *modname,
- 				const struct sectioncheck *mismatch,
- 				const char *fromsec,
--				unsigned long long fromaddr,
- 				const char *fromsym,
--				int from_is_func,
--				const char *tosec, const char *tosym,
--				int to_is_func)
-+				const char *tosec, const char *tosym)
- {
--	const char *from, *from_p;
--	const char *to, *to_p;
--	char *prl_from;
--	char *prl_to;
--
- 	sec_mismatch_count++;
- 
--	get_pretty_name(from_is_func, &from, &from_p);
--	get_pretty_name(to_is_func, &to, &to_p);
--
--	warn("%s(%s+0x%llx): Section mismatch in reference from the %s %s%s "
--	     "to the %s %s:%s%s\n",
--	     modname, fromsec, fromaddr, from, fromsym, from_p, to, tosec,
--	     tosym, to_p);
--
- 	switch (mismatch->mismatch) {
- 	case TEXT_TO_ANY_INIT:
--		prl_from = sec2annotation(fromsec);
--		prl_to = sec2annotation(tosec);
--		fprintf(stderr,
--		"The function %s%s() references\n"
--		"the %s %s%s%s.\n"
--		"This is often because %s lacks a %s\n"
--		"annotation or the annotation of %s is wrong.\n",
--		prl_from, fromsym,
--		to, prl_to, tosym, to_p,
--		fromsym, prl_to, tosym);
--		free(prl_from);
--		free(prl_to);
--		break;
--	case DATA_TO_ANY_INIT: {
--		prl_to = sec2annotation(tosec);
--		fprintf(stderr,
--		"The variable %s references\n"
--		"the %s %s%s%s\n"
--		"If the reference is valid then annotate the\n"
--		"variable with __init* or __refdata (see linux/init.h) "
--		"or name the variable:\n",
--		fromsym, to, prl_to, tosym, to_p);
--		print_section_list(mismatch->symbol_white_list);
--		free(prl_to);
--		break;
--	}
-+	case DATA_TO_ANY_INIT:
- 	case TEXT_TO_ANY_EXIT:
--		prl_to = sec2annotation(tosec);
--		fprintf(stderr,
--		"The function %s() references a %s in an exit section.\n"
--		"Often the %s %s%s has valid usage outside the exit section\n"
--		"and the fix is to remove the %sannotation of %s.\n",
--		fromsym, to, to, tosym, to_p, prl_to, tosym);
--		free(prl_to);
--		break;
--	case DATA_TO_ANY_EXIT: {
--		prl_to = sec2annotation(tosec);
--		fprintf(stderr,
--		"The variable %s references\n"
--		"the %s %s%s%s\n"
--		"If the reference is valid then annotate the\n"
--		"variable with __exit* (see linux/init.h) or "
--		"name the variable:\n",
--		fromsym, to, prl_to, tosym, to_p);
--		print_section_list(mismatch->symbol_white_list);
--		free(prl_to);
--		break;
--	}
-+	case DATA_TO_ANY_EXIT:
- 	case XXXINIT_TO_SOME_INIT:
- 	case XXXEXIT_TO_SOME_EXIT:
--		prl_from = sec2annotation(fromsec);
--		prl_to = sec2annotation(tosec);
--		fprintf(stderr,
--		"The %s %s%s%s references\n"
--		"a %s %s%s%s.\n"
--		"If %s is only used by %s then\n"
--		"annotate %s with a matching annotation.\n",
--		from, prl_from, fromsym, from_p,
--		to, prl_to, tosym, to_p,
--		tosym, fromsym, tosym);
--		free(prl_from);
--		free(prl_to);
--		break;
- 	case ANY_INIT_TO_ANY_EXIT:
--		prl_from = sec2annotation(fromsec);
--		prl_to = sec2annotation(tosec);
--		fprintf(stderr,
--		"The %s %s%s%s references\n"
--		"a %s %s%s%s.\n"
--		"This is often seen when error handling "
--		"in the init function\n"
--		"uses functionality in the exit path.\n"
--		"The fix is often to remove the %sannotation of\n"
--		"%s%s so it may be used outside an exit section.\n",
--		from, prl_from, fromsym, from_p,
--		to, prl_to, tosym, to_p,
--		prl_to, tosym, to_p);
--		free(prl_from);
--		free(prl_to);
--		break;
- 	case ANY_EXIT_TO_ANY_INIT:
--		prl_from = sec2annotation(fromsec);
--		prl_to = sec2annotation(tosec);
--		fprintf(stderr,
--		"The %s %s%s%s references\n"
--		"a %s %s%s%s.\n"
--		"This is often seen when error handling "
--		"in the exit function\n"
--		"uses functionality in the init path.\n"
--		"The fix is often to remove the %sannotation of\n"
--		"%s%s so it may be used outside an init section.\n",
--		from, prl_from, fromsym, from_p,
--		to, prl_to, tosym, to_p,
--		prl_to, tosym, to_p);
--		free(prl_from);
--		free(prl_to);
-+		warn("%s: section mismatch in reference: %s (section: %s) -> %s (section: %s)\n",
-+		     modname, fromsym, fromsec, tosym, tosec);
- 		break;
- 	case EXPORT_TO_INIT_EXIT:
--		prl_to = sec2annotation(tosec);
--		fprintf(stderr,
--		"The symbol %s is exported and annotated %s\n"
--		"Fix this by removing the %sannotation of %s "
--		"or drop the export.\n",
--		tosym, prl_to, prl_to, tosym);
--		free(prl_to);
-+		warn("%s: EXPORT_SYMBOL used for init/exit symbol: %s (section: %s)\n",
-+		     modname, tosym, tosec);
- 		break;
- 	case EXTABLE_TO_NON_TEXT:
--		fatal("There's a special handler for this mismatch type, "
--		      "we should never get here.");
-+		fatal("There's a special handler for this mismatch type, we should never get here.\n");
- 		break;
+@@ -1708,10 +1711,9 @@ static struct virtqueue *vring_create_virtqueue_packed(
+ 	vq->we_own_ring = true;
+ 	vq->notify = notify;
+ 	vq->weak_barriers = weak_barriers;
+-#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
+-	vq->broken = true;
+-#else
+ 	vq->broken = false;
++#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
++	vq->ready = false;
+ #endif
+ 	vq->last_used_idx = 0 | (1 << VRING_PACKED_EVENT_F_WRAP_CTR);
+ 	vq->event_triggered = false;
+@@ -2160,13 +2162,21 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
+ 	if (unlikely(vq->broken)) {
+ #ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
+ 		dev_warn_once(&vq->vq.vdev->dev,
+-			      "virtio vring IRQ raised before DRIVER_OK");
++			      "virtio vring IRQ raised for broken vq");
+ 		return IRQ_NONE;
+ #else
+ 		return IRQ_HANDLED;
+ #endif
  	}
--	fprintf(stderr, "\n");
- }
  
- static void default_mismatch_handler(const char *modname, struct elf_info *elf,
-@@ -1470,9 +1311,7 @@ static void default_mismatch_handler(const char *modname, struct elf_info *elf,
- 	if (secref_whitelist(mismatch,
- 			     fromsec, fromsym, tosec, tosym)) {
- 		report_sec_mismatch(modname, mismatch,
--				    fromsec, r->r_offset, fromsym,
--				    is_function(from), tosec, tosym,
--				    is_function(to));
-+				    fromsec, fromsym, tosec, tosym);
++#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
++	if (unlikely(!vq->ready)) {
++		dev_warn_once(&vq->vq.vdev->dev,
++			      "virtio vring IRQ raised before DRIVER_OK");
++		return IRQ_HANDLED;
++	}
++#endif
++
+ 	/* Just a hint for performance: so it's ok that this can be racy! */
+ 	if (vq->event)
+ 		vq->event_triggered = true;
+@@ -2207,10 +2217,9 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
+ 	vq->we_own_ring = false;
+ 	vq->notify = notify;
+ 	vq->weak_barriers = weak_barriers;
+-#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
+-	vq->broken = true;
+-#else
+ 	vq->broken = false;
++#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
++	vq->ready = false;
+ #endif
+ 	vq->last_used_idx = 0;
+ 	vq->event_triggered = false;
+@@ -2429,14 +2438,15 @@ void virtio_break_device(struct virtio_device *dev)
+ }
+ EXPORT_SYMBOL_GPL(virtio_break_device);
+ 
++#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
+ /*
+  * This should allow the device to be used by the driver. You may
+  * need to grab appropriate locks to flush the write to
+- * vq->broken. This should only be used in some specific case e.g
++ * vq->ready. This should only be used in some specific case e.g
+  * (probing and restoring). This function should only be called by the
+  * core, not directly by the driver.
+  */
+-void __virtio_unbreak_device(struct virtio_device *dev)
++void __virtio_device_ready(struct virtio_device *dev)
+ {
+ 	struct virtqueue *_vq;
+ 
+@@ -2444,12 +2454,12 @@ void __virtio_unbreak_device(struct virtio_device *dev)
+ 	list_for_each_entry(_vq, &dev->vqs, list) {
+ 		struct vring_virtqueue *vq = to_vvq(_vq);
+ 
+-		/* Pairs with READ_ONCE() in virtqueue_is_broken(). */
+-		WRITE_ONCE(vq->broken, false);
++		WRITE_ONCE(vq->ready, true);
  	}
+ 	spin_unlock(&dev->vqs_list_lock);
  }
+-EXPORT_SYMBOL_GPL(__virtio_unbreak_device);
++EXPORT_SYMBOL_GPL(__virtio_device_ready);
++#endif
  
+ dma_addr_t virtqueue_get_desc_addr(struct virtqueue *_vq)
+ {
+diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+index d8fdf170637c..a63120477ae1 100644
+--- a/include/linux/virtio.h
++++ b/include/linux/virtio.h
+@@ -131,7 +131,9 @@ void unregister_virtio_device(struct virtio_device *dev);
+ bool is_virtio_device(struct device *dev);
+ 
+ void virtio_break_device(struct virtio_device *dev);
+-void __virtio_unbreak_device(struct virtio_device *dev);
++#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
++void __virtio_device_ready(struct virtio_device *dev);
++#endif
+ 
+ void virtio_config_changed(struct virtio_device *dev);
+ #ifdef CONFIG_PM_SLEEP
+diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
+index b47c2e7ed0ee..472d4703d499 100644
+--- a/include/linux/virtio_config.h
++++ b/include/linux/virtio_config.h
+@@ -260,22 +260,22 @@ void virtio_device_ready(struct virtio_device *dev)
+ #ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
+ 	/*
+ 	 * The virtio_synchronize_cbs() makes sure vring_interrupt()
+-	 * will see the driver specific setup if it sees vq->broken
+-	 * as false (even if the notifications come before DRIVER_OK).
++	 * will see the driver specific setup if it sees vq->ready
++	 * as true (even if the notifications come before DRIVER_OK).
+ 	 */
+ 	virtio_synchronize_cbs(dev);
+-	__virtio_unbreak_device(dev);
++	__virtio_device_ready(dev);
+ #endif
+ 	/*
+-	 * The transport should ensure the visibility of vq->broken
++	 * The transport should ensure the visibility of vq->ready
+ 	 * before setting DRIVER_OK. See the comments for the transport
+ 	 * specific set_status() method.
+ 	 *
+ 	 * A well behaved device will only notify a virtqueue after
+ 	 * DRIVER_OK, this means the device should "see" the coherenct
+-	 * memory write that set vq->broken as false which is done by
++	 * memory write that set vq->ready as true which is done by
+ 	 * the driver when it sees DRIVER_OK, then the following
+-	 * driver's vring_interrupt() will see vq->broken as false so
++	 * driver's vring_interrupt() will see vq->ready as true so
+ 	 * we won't lose any notification.
+ 	 */
+ 	dev->config->set_status(dev, status | VIRTIO_CONFIG_S_DRIVER_OK);
 -- 
-2.34.1
+2.25.1
 
