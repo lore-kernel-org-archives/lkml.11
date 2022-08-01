@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48AA2C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB163C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233217AbiHAMD5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34982 "EHLO
+        id S233105AbiHAMD7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233826AbiHAMBx (ORCPT
+        with ESMTP id S233880AbiHAMB7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:01:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668C55073D;
-        Mon,  1 Aug 2022 04:53:52 -0700 (PDT)
+        Mon, 1 Aug 2022 08:01:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD81A54644;
+        Mon,  1 Aug 2022 04:53:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9733761344;
-        Mon,  1 Aug 2022 11:53:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B9D2C433D6;
-        Mon,  1 Aug 2022 11:53:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4F17B81170;
+        Mon,  1 Aug 2022 11:53:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53FFEC433C1;
+        Mon,  1 Aug 2022 11:53:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354831;
-        bh=Z2nPSpHn1y5163xrsf+ZmDTgWIF3XTh49tZw0iUcB1g=;
+        s=korg; t=1659354833;
+        bh=bxxh2+IAkN+4Lan9mYGUY8Cn1sojk6XXjZ4q9Cgsc3U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=um/clWAcFqQffRbwINXvI2jGtMo5dk94qH8XKn18kNnYVUuS56MGdmIwUcv6jnrtk
-         wK36K8wvRwRSxL6sl09kRowrr1S5sdOpEKP50M4TBG2ik2e1eE8hVCg39b7n3vvNzj
-         OjO9TybWQlwXtMMEk++pmxC+Z/qxE7YC01fZqn5U=
+        b=c1r7uWxlceSryZTwwFQf3rD152XTqt3+iNxwpMXDknDXQb+MRDI2kmXVMkAWnQkd/
+         xMFAuYciXDE3n+m8Qap3/lkbL2gqZs3UHOksaXv44NrBGKY8/QeaeSIYi6hnUnrkCE
+         HZtaNXw8J2lEcDiF6kH5ccdzJXkEETH1EDU3k2ck=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 35/69] net: sungem_phy: Add of_node_put() for reference returned by of_get_parent()
-Date:   Mon,  1 Aug 2022 13:46:59 +0200
-Message-Id: <20220801114135.935603482@linuxfoundation.org>
+Subject: [PATCH 5.15 36/69] tcp: Fix a data-race around sysctl_tcp_min_tso_segs.
+Date:   Mon,  1 Aug 2022 13:47:00 +0200
+Message-Id: <20220801114135.964647047@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -49,36 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit ebbbe23fdf6070e31509638df3321688358cc211 ]
+[ Upstream commit e0bb4ab9dfddd872622239f49fb2bd403b70853b ]
 
-In bcm5421_init(), we should call of_node_put() for the reference
-returned by of_get_parent() which has increased the refcount.
+While reading sysctl_tcp_min_tso_segs, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 3c326fe9cb7a ("[PATCH] ppc64: Add new PHY to sungem")
-Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220720131003.1287426-1-windhl@126.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 95bd09eb2750 ("tcp: TSO packets automatic sizing")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/sungem_phy.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/ipv4/tcp_output.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/sungem_phy.c b/drivers/net/sungem_phy.c
-index 291fa449993f..45f295403cb5 100644
---- a/drivers/net/sungem_phy.c
-+++ b/drivers/net/sungem_phy.c
-@@ -454,6 +454,7 @@ static int bcm5421_init(struct mii_phy* phy)
- 		int can_low_power = 1;
- 		if (np == NULL || of_get_property(np, "no-autolowpower", NULL))
- 			can_low_power = 0;
-+		of_node_put(np);
- 		if (can_low_power) {
- 			/* Enable automatic low-power */
- 			sungem_phy_write(phy, 0x1c, 0x9002);
--- 
-2.35.1
-
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1986,7 +1986,7 @@ static u32 tcp_tso_segs(struct sock *sk,
+ 
+ 	min_tso = ca_ops->min_tso_segs ?
+ 			ca_ops->min_tso_segs(sk) :
+-			sock_net(sk)->ipv4.sysctl_tcp_min_tso_segs;
++			READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_min_tso_segs);
+ 
+ 	tso_segs = tcp_tso_autosize(sk, mss_now, min_tso);
+ 	return min_t(u32, tso_segs, sk->sk_gso_max_segs);
 
 
