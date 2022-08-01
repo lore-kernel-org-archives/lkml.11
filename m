@@ -2,98 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF7CC19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 20:15:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E70BC19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 20:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234571AbiHAUP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 16:15:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55560 "EHLO
+        id S234529AbiHAUPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 16:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235035AbiHAUOw (ORCPT
+        with ESMTP id S234232AbiHAUPW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 16:14:52 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD9543E68;
-        Mon,  1 Aug 2022 13:14:02 -0700 (PDT)
+        Mon, 1 Aug 2022 16:15:22 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D055E45F59
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 13:14:23 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id w29so8936642qtv.9
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 13:14:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1659384842; x=1690920842;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=n6IukTgG6N+YuAzTEhN370nFPejMJyHqYPVPP8VIqXc=;
-  b=Hgg2AIPZyAvDGQlYOJuRFZyTf4WdgIHrWLkmotRdr8FrhJN2YDacdK6Z
-   u8CZyYgCmjNJwVARP1EZ/gViJwxFIv8ynQBXoY31oZ/bcVRd2IbtHTY4/
-   6Ea/Nl3x7IaVuEUMbOaXoIv35TPGXGqIA9QU/i2gVOW4vahul3/8CtM6Q
-   Q=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 01 Aug 2022 13:14:01 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 13:14:00 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 1 Aug 2022 13:13:59 -0700
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 1 Aug 2022 13:13:59 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
-        <dianders@chromium.org>, <vkoul@kernel.org>, <daniel@ffwll.ch>,
-        <airlied@linux.ie>, <agross@kernel.org>,
-        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
-CC:     <quic_aravindh@quicinc.com>, <quic_khsieh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] drm/msm/dp: delete DP_RECOVERED_CLOCK_OUT_EN to fix tps4
-Date:   Mon, 1 Aug 2022 13:13:50 -0700
-Message-ID: <1659384830-9909-1-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=hefring-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eEVJVI7ZHSfxXmecZ7P8AtoCE66RlHY49+eIUnnu+00=;
+        b=ibXN/3C4tzWEWtqX2Fgim0+ZN2LlTdvveKO5yKYY/752MdiTb2MyZDFF511ZPAOFXf
+         OR+b68+f5yxY9kOwhd1Gnt6PhkkwyTOn/lbZj3u37XssrpIpd6nPLqGl3VcVDXdDZCip
+         vKozvHxKQvZB4dRZ4NoyLZwFcxNcblqSLRJKYTWXO5E8OJm5bVN2jFG5RAmB7lN89jEP
+         UzU0bX1oFq5BOOw1bT7euje8PGZ1ZQLgBPHa/QfE5/5qXld6ClmHr7xFXH9xytKuZGRn
+         TCYnMwxMJyF7HfviMtL7YbjtGgp6mnMF8PlUW8yhpIJ53X74Z3pmARkehV3DfYxUPGsH
+         F2Ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eEVJVI7ZHSfxXmecZ7P8AtoCE66RlHY49+eIUnnu+00=;
+        b=sReIniB7xekHvFtb4EGeGjrWz/ylrF9u59iG89tsPnhRpGJ88DaXtUP2tuEmMNO0wu
+         Nx6CGe5OjQ3wknBwr1xWrNc2doY8/lYP9fcGa0C8+wCWiWWJZUBW4LCzBd5tgaFMqqSr
+         sHjsCFEjyhkzW+evDmEYHkoHM/uqy48URP8Qm+MSDIh9dMa9nB8ekZEYTykSv4FKOIel
+         JObNfFdbkI9sU0a/RaddQFuctWy2bKoETPQc4IAIzgQXBWDn6gjdFkjH3DGxfOgxjjoX
+         8eyDLKR1gkKlVwH8rvybgS4xYlxtTBRZg2ycnwokeWJYArGpMs+R0+bjpp9NW5gsbtYe
+         HGEQ==
+X-Gm-Message-State: AJIora8DLS4c1/WFP+Vuux4d1qa4dxUHIFhvSJ4d3n+djxKzhdoZWiF5
+        LBdBPZiMIJPqdm2UCQfTopgdMw==
+X-Google-Smtp-Source: AGRyM1uWTfS2YCHrnGWCx6rTienxTjs9YGc2SzlErgnBKQjE3z7DqcxkZiuoquBx4Ax1K1ro3GQ43g==
+X-Received: by 2002:a05:622a:2d6:b0:31f:3670:3d2b with SMTP id a22-20020a05622a02d600b0031f36703d2bmr15673451qtx.412.1659384862954;
+        Mon, 01 Aug 2022 13:14:22 -0700 (PDT)
+Received: from hefring.. ([50.212.55.89])
+        by smtp.gmail.com with ESMTPSA id r20-20020a05620a299400b006b59ddb4bc5sm9288317qkp.84.2022.08.01.13.14.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 13:14:22 -0700 (PDT)
+From:   Ben Wolsieffer <ben.wolsieffer@hefring.com>
+X-Google-Original-From: Ben Wolsieffer <Ben.Wolsieffer@hefring.com>
+Cc:     Ben Wolsieffer <Ben.Wolsieffer@hefring.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Vladimir Murzin <vladimir.murzin@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] ARM: v7m: handle faults and enable debugging
+Date:   Mon,  1 Aug 2022 16:13:37 -0400
+Message-Id: <20220801201347.1255392-1-Ben.Wolsieffer@hefring.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Data Symbols scrambled is required for tps4 at link training 2.
-Therefore SCRAMBLING_DISABLE bit should not be set for tps4 to
-work.
-RECOVERED_CLOCK_OUT_EN is for enable simple EYE test for jitter
-measurement with minimal equipment for embedded applications purpose
-and is not required to be set during normal operation.
-Current implementation always have RECOVERED_CLOCK_OUT_EN bit set
-which cause SCRAMBLING_DISABLE bit wrongly set at tps4 which prevent
-tps4 from working.
-This patch delete setting RECOVERED_CLOCK_OUT_EN to fix SCRAMBLING_DISABLE
-be wrongly set at tps4.
+This series enables real exception handlers on no-MMU systems,
+increasing robustness in the face of buggy user- or kernel-space
+software. Previously, any fault would trigger the invalid exception
+handler, which would hang the system. With this series, faults only
+kill the offending process and allow the rest of the system to
+continue operating.
 
-Changes in v2:
--- fix Fixes tag
+The second patch in this series adds support for undefined instruction
+hooks, enabling software breakpoints through ptrace. Using this
+functionality currently requires a patch to gdb.
 
-Fixes: c943b4948b58 ("drm/msm/dp: add displayPort driver support")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
----
- drivers/gpu/drm/msm/dp/dp_ctrl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This series has been tested on an STM32F746 (Cortex-M7).
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index ab6aa13..013ca02 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -1214,7 +1214,7 @@ static int dp_ctrl_link_train_2(struct dp_ctrl_private *ctrl,
- 	if (ret)
- 		return ret;
- 
--	dp_ctrl_train_pattern_set(ctrl, pattern | DP_RECOVERED_CLOCK_OUT_EN);
-+	dp_ctrl_train_pattern_set(ctrl, pattern);
- 
- 	for (tries = 0; tries <= maximum_retries; tries++) {
- 		drm_dp_link_train_channel_eq_delay(ctrl->aux, ctrl->panel->dpcd);
+I would appreciate feedback in particular on the following questions:
+* Is the fault table formatting acceptable? Or should the lines be
+  wrapped/shortened?
+* Does my chosen mapping between faults and signals make sense?
+
+
+Ben Wolsieffer (2):
+  ARM: v7m: handle faults
+  ARM: v7m: support undefined instruction hooks
+
+ arch/arm/include/asm/traps.h |   2 +
+ arch/arm/include/asm/v7m.h   |  29 +++++++
+ arch/arm/kernel/Makefile     |   2 +-
+ arch/arm/kernel/entry-v7m.S  |  68 ++++++++++++++-
+ arch/arm/kernel/traps-v7m.c  | 162 +++++++++++++++++++++++++++++++++++
+ 5 files changed, 258 insertions(+), 5 deletions(-)
+ create mode 100644 arch/arm/kernel/traps-v7m.c
+
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.37.0
 
