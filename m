@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C8AC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F5CC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234729AbiHAMT4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:19:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42948 "EHLO
+        id S231193AbiHAMT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231378AbiHAMTG (ORCPT
+        with ESMTP id S234277AbiHAMTG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 1 Aug 2022 08:19:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652F24AD45;
-        Mon,  1 Aug 2022 04:59:44 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F60541D22;
+        Mon,  1 Aug 2022 04:59:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22487B80EAC;
-        Mon,  1 Aug 2022 11:59:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CFC5C433C1;
-        Mon,  1 Aug 2022 11:59:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D56B9B810A2;
+        Mon,  1 Aug 2022 11:59:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 421B7C433C1;
+        Mon,  1 Aug 2022 11:59:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355181;
-        bh=qJYfpNfc+4KP8CSpvZvaVKXZu6g86yS2Eu6wdrnHf2A=;
+        s=korg; t=1659355184;
+        bh=kEWNh5s559gADhfV8Rv7aum1MxgKxuQ87EdsTHhgQLQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vLfAq8mXP9i5LNwM2sq2qLULEIRCEOVQAktdK2KYFJOGiFMVUvr+O7IYtFpxhVp9x
-         VD00g6pAbNioeG1tASx7u1JFY13aOTS3Q5SzLhZ0fJACnv/Ge7jjwouPTH2D7FILaB
-         gkqEGg0ydIULJCtNfSoGk1WBs80yX35UVd9y3xJE=
+        b=lkvuuynnDJ3A8W/WcB94/aGXi/0eazIW9CsVL9wd97pHHY4NNiR0luLd7ph99iV9z
+         UTcfbgLUhzb7SA4HXir+aF7ot8bGUykX3X6HtjUkTBCuj3AszXcjLgWyjYrOcaKpNf
+         /wVJFETRd0xzxehZJM2pCoE0TeOZM+cbXRy9yIw8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dawid Lukwinski <dawid.lukwinski@intel.com>,
-        Michal Maloszewski <michal.maloszewski@intel.com>,
-        Dave Switzer <david.switzer@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 65/88] i40e: Fix interface init with MSI interrupts (no MSI-X)
-Date:   Mon,  1 Aug 2022 13:47:19 +0200
-Message-Id: <20220801114141.029897335@linuxfoundation.org>
+Subject: [PATCH 5.18 66/88] net: dsa: fix reference counting for LAG FDBs
+Date:   Mon,  1 Aug 2022 13:47:20 +0200
+Message-Id: <20220801114141.068425530@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -53,47 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Maloszewski <michal.maloszewski@intel.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 5fcbb711024aac6d4db385623e6f2fdf019f7782 ]
+[ Upstream commit c7560d1203b7a1ea0b99a5c575547e95d564b2a8 ]
 
-Fix the inability to bring an interface up on a setup with
-only MSI interrupts enabled (no MSI-X).
-Solution is to add a default number of QPs = 1. This is enough,
-since without MSI-X support driver enables only a basic feature set.
+Due to an invalid conflict resolution on my side while working on 2
+different series (LAG FDBs and FDB isolation), dsa_switch_do_lag_fdb_add()
+does not store the database associated with a dsa_mac_addr structure.
 
-Fixes: bc6d33c8d93f ("i40e: Fix the number of queues available to be mapped for use")
-Signed-off-by: Dawid Lukwinski <dawid.lukwinski@intel.com>
-Signed-off-by: Michal Maloszewski <michal.maloszewski@intel.com>
-Tested-by: Dave Switzer <david.switzer@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Link: https://lore.kernel.org/r/20220722175401.112572-1-anthony.l.nguyen@intel.com
+So after adding an FDB entry associated with a LAG, dsa_mac_addr_find()
+fails to find it while deleting it, because &a->db is zeroized memory
+for all stored FDB entries of lag->fdbs, and dsa_switch_do_lag_fdb_del()
+returns -ENOENT rather than deleting the entry.
+
+Fixes: c26933639b54 ("net: dsa: request drivers to perform FDB isolation")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20220723012411.1125066-1-vladimir.oltean@nxp.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/dsa/switch.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 6f01bffd7e5c..9471f47089b2 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -1920,11 +1920,15 @@ static void i40e_vsi_setup_queue_map(struct i40e_vsi *vsi,
- 		 * non-zero req_queue_pairs says that user requested a new
- 		 * queue count via ethtool's set_channels, so use this
- 		 * value for queues distribution across traffic classes
-+		 * We need at least one queue pair for the interface
-+		 * to be usable as we see in else statement.
- 		 */
- 		if (vsi->req_queue_pairs > 0)
- 			vsi->num_queue_pairs = vsi->req_queue_pairs;
- 		else if (pf->flags & I40E_FLAG_MSIX_ENABLED)
- 			vsi->num_queue_pairs = pf->num_lan_msix;
-+		else
-+			vsi->num_queue_pairs = 1;
- 	}
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index d8a80cf9742c..52f84ea349d2 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -363,6 +363,7 @@ static int dsa_switch_do_lag_fdb_add(struct dsa_switch *ds, struct dsa_lag *lag,
  
- 	/* Number of queues per enabled TC */
+ 	ether_addr_copy(a->addr, addr);
+ 	a->vid = vid;
++	a->db = db;
+ 	refcount_set(&a->refcount, 1);
+ 	list_add_tail(&a->list, &lag->fdbs);
+ 
 -- 
 2.35.1
 
