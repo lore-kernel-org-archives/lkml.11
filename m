@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 251E6C19F29
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:07:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56835C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:07:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233683AbiHAMHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42984 "EHLO
+        id S233653AbiHAMHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233570AbiHAMGp (ORCPT
+        with ESMTP id S233618AbiHAMHF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:06:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98688E0E9;
-        Mon,  1 Aug 2022 04:55:16 -0700 (PDT)
+        Mon, 1 Aug 2022 08:07:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84BB272A;
+        Mon,  1 Aug 2022 04:55:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BD2CB81171;
-        Mon,  1 Aug 2022 11:55:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E890C433D7;
-        Mon,  1 Aug 2022 11:55:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB3ADB81163;
+        Mon,  1 Aug 2022 11:55:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12322C433D6;
+        Mon,  1 Aug 2022 11:55:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354913;
-        bh=Kr1Yx27AWLh+1gvT8gaFpSOhnROqSVu0uXH2DRg+H2g=;
+        s=korg; t=1659354910;
+        bh=tuaWM0RS08UKYD1ZGPzHKRoYPvP0Ao/9TYJpx7LX5Ek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ch5G/XY5LNhTWwxHJz60Nvwm6dXfzFHVfXkcf6gasCbc7QDUlXE8qumFZH2yUxz6k
-         bPYHCpPtKiKO5D7HEssFMdSTdUEZqHJAXmxQurPEDIi7Cn607dhVQr1atSbwOoqGNd
-         9m4Hja57jR0S8z1KTiWesOaASvi/lPcg0+dNIdYE=
+        b=csvEaXXIQyJk1ld5u7w9NIm0iu3n4cl98KW5peDREWCGDYqVQBS0gfpEzuy8dQiKR
+         JSrgvEKffI0s+d64vZcl1aMVCXENH98hrLDqRgAhkzDjlx51jIN1cm2qSbFc7FwQ9g
+         lS8JPfsNgUPAp0O2GKaPj1wfuYOFTPoDU59ROTLs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 65/69] ARM: 9216/1: Fix MAX_DMA_ADDRESS overflow
-Date:   Mon,  1 Aug 2022 13:47:29 +0200
-Message-Id: <20220801114137.083821084@linuxfoundation.org>
+        stable@vger.kernel.org, Jaewon Kim <jaewon31.kim@samsung.com>,
+        GyeongHwan Hong <gh21.hong@samsung.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Minchan Kim <minchan@kernel.org>, Baoquan He <bhe@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Yong-Taek Lee <ytk.lee@samsung.com>, stable@vger.kerenl.org,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 64/69] page_alloc: fix invalid watermark check on a negative value
+Date:   Mon,  1 Aug 2022 13:47:28 +0200
+Message-Id: <20220801114137.047337783@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -50,52 +55,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Jaewon Kim <jaewon31.kim@samsung.com>
 
-[ Upstream commit fb0fd3469ead5b937293c213daa1f589b4b7ce46 ]
+commit 9282012fc0aa248b77a69f5eb802b67c5a16bb13 upstream.
 
-Commit 26f09e9b3a06 ("mm/memblock: add memblock memory allocation apis")
-added a check to determine whether arm_dma_zone_size is exceeding the
-amount of kernel virtual address space available between the upper 4GB
-virtual address limit and PAGE_OFFSET in order to provide a suitable
-definition of MAX_DMA_ADDRESS that should fit within the 32-bit virtual
-address space. The quantity used for comparison was off by a missing
-trailing 0, leading to MAX_DMA_ADDRESS to be overflowing a 32-bit
-quantity.
+There was a report that a task is waiting at the
+throttle_direct_reclaim. The pgscan_direct_throttle in vmstat was
+increasing.
 
-This was caught thanks to CONFIG_DEBUG_VIRTUAL on the bcm2711 platform
-where we define a dma_zone_size of 1GB and we have a PAGE_OFFSET value
-of 0xc000_0000 (CONFIG_VMSPLIT_3G) leading to MAX_DMA_ADDRESS being
-0x1_0000_0000 which overflows the unsigned long type used throughout
-__pa() and then __virt_addr_valid(). Because the virtual address passed
-to __virt_addr_valid() would now be 0, the function would loudly warn
-and flood the kernel log, thus making the platform unable to boot
-properly.
+This is a bug where zone_watermark_fast returns true even when the free
+is very low. The commit f27ce0e14088 ("page_alloc: consider highatomic
+reserve in watermark fast") changed the watermark fast to consider
+highatomic reserve. But it did not handle a negative value case which
+can be happened when reserved_highatomic pageblock is bigger than the
+actual free.
 
-Fixes: 26f09e9b3a06 ("mm/memblock: add memblock memory allocation apis")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+If watermark is considered as ok for the negative value, allocating
+contexts for order-0 will consume all free pages without direct reclaim,
+and finally free page may become depleted except highatomic free.
+
+Then allocating contexts may fall into throttle_direct_reclaim. This
+symptom may easily happen in a system where wmark min is low and other
+reclaimers like kswapd does not make free pages quickly.
+
+Handle the negative case by using MIN.
+
+Link: https://lkml.kernel.org/r/20220725095212.25388-1-jaewon31.kim@samsung.com
+Fixes: f27ce0e14088 ("page_alloc: consider highatomic reserve in watermark fast")
+Signed-off-by: Jaewon Kim <jaewon31.kim@samsung.com>
+Reported-by: GyeongHwan Hong <gh21.hong@samsung.com>
+Acked-by: Mel Gorman <mgorman@techsingularity.net>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Baoquan He <bhe@redhat.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Yong-Taek Lee <ytk.lee@samsung.com>
+Cc: <stable@vger.kerenl.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/include/asm/dma.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/page_alloc.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/include/asm/dma.h b/arch/arm/include/asm/dma.h
-index a81dda65c576..45180a2cc47c 100644
---- a/arch/arm/include/asm/dma.h
-+++ b/arch/arm/include/asm/dma.h
-@@ -10,7 +10,7 @@
- #else
- #define MAX_DMA_ADDRESS	({ \
- 	extern phys_addr_t arm_dma_zone_size; \
--	arm_dma_zone_size && arm_dma_zone_size < (0x10000000 - PAGE_OFFSET) ? \
-+	arm_dma_zone_size && arm_dma_zone_size < (0x100000000ULL - PAGE_OFFSET) ? \
- 		(PAGE_OFFSET + arm_dma_zone_size) : 0xffffffffUL; })
- #endif
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -3928,11 +3928,15 @@ static inline bool zone_watermark_fast(s
+ 	 * need to be calculated.
+ 	 */
+ 	if (!order) {
+-		long fast_free;
++		long usable_free;
++		long reserved;
  
--- 
-2.35.1
-
+-		fast_free = free_pages;
+-		fast_free -= __zone_watermark_unusable_free(z, 0, alloc_flags);
+-		if (fast_free > mark + z->lowmem_reserve[highest_zoneidx])
++		usable_free = free_pages;
++		reserved = __zone_watermark_unusable_free(z, 0, alloc_flags);
++
++		/* reserved may over estimate high-atomic reserves. */
++		usable_free -= min(usable_free, reserved);
++		if (usable_free > mark + z->lowmem_reserve[highest_zoneidx])
+ 			return true;
+ 	}
+ 
 
 
