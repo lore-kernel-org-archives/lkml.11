@@ -2,374 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0851CC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:38:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3ECC19F29
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:38:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231464AbiHAMim (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:38:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39408 "EHLO
+        id S234681AbiHAMit (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232212AbiHAMiU (ORCPT
+        with ESMTP id S234066AbiHAMiV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:38:20 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7BC099EC62
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:17:33 -0700 (PDT)
-Received: from localhost.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxAM9WxOdiKTUAAA--.1249S3;
-        Mon, 01 Aug 2022 20:17:27 +0800 (CST)
-From:   Qing Zhang <zhangqing@loongson.cn>
-To:     Huacai Chen <chenhuacai@kernel.org>
-Cc:     WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
-        linux-kernel@vger.kernel.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>, hejinyang@loongson.cn,
-        zhangqing@loongson.cn
-Subject: [PATCH 1/4] LoongArch: Add guess unwinder support
-Date:   Mon,  1 Aug 2022 20:17:23 +0800
-Message-Id: <20220801121726.9681-2-zhangqing@loongson.cn>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220801121726.9681-1-zhangqing@loongson.cn>
-References: <20220801121726.9681-1-zhangqing@loongson.cn>
+        Mon, 1 Aug 2022 08:38:21 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BCA9EC6E
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:17:34 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R231e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xhao@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VL6DdJj_1659356251;
+Received: from localhost.localdomain(mailfrom:xhao@linux.alibaba.com fp:SMTPD_---0VL6DdJj_1659356251)
+          by smtp.aliyun-inc.com;
+          Mon, 01 Aug 2022 20:17:31 +0800
+From:   Xin Hao <xhao@linux.alibaba.com>
+To:     willy@infradead.org
+Cc:     akpm@linux-foundation.org, adobriyan@gmail.com,
+        keescook@chromium.org, xhao@linux.alibaba.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: [RFC PATCH V4 1/1] mm: add last level page table numa info to /proc/pid/numa_pgtable
+Date:   Mon,  1 Aug 2022 20:17:27 +0800
+Message-Id: <20220801121727.76186-2-xhao@linux.alibaba.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220801121727.76186-1-xhao@linux.alibaba.com>
+References: <20220801121727.76186-1-xhao@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9DxAM9WxOdiKTUAAA--.1249S3
-X-Coremail-Antispam: 1UD129KBjvJXoW3Jr4fuFWktF1xGFyUur4kWFg_yoWfCr13pF
-        98C3Z3WrW5G34Igr9xXr18Zrn8Gr4kCw12gF9xtFyFkF12qFyfXrnaya4DZFs8J3ykW3Wx
-        WF95KrZ8Ka1UXaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBI14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jr4l82xGYIkIc2
-        x26xkF7I0E14v26r1I6r4UM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l84
-        ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I2
-        62IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcV
-        AFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG
-        0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6ryUMxAIw28Icx
-        kI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2Iq
-        xVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42
-        IY6xIIjxv20xvE14v26r1I6r4UMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY
-        6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aV
-        CY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUUiF4tUUUUU==
-X-CM-SenderInfo: x2kd0wptlqwqxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Name "guess unwinder" comes from x86, It scans the stack and reports
-every kernel text address it finds.
+In many data center servers, the shared memory architectures is
+Non-Uniform Memory Access (NUMA), remote numa node data access
+often brings a high latency problem, but what we are easy to ignore
+is that the page table remote numa access, It can also leads to a
+performance degradation.
 
-Three stages when we do unwind,
-  (1)unwind_start(), the prapare of unwinding, fill unwind_state.
-  (2)unwind_done(), judge whether the unwind process is finished or not.
-  (3)unwind_next_frame(), unwind the next frame.
+So there add a new interface in /proc, This will help developers to
+get more info about performance issues if they are caused by cross-NUMA.
 
-Make the dump_stack process go through unwind process.
-Add get_stack_info() to get stack info. At present we have irq stack and
-task stack. Maybe add another type in future. The next_sp means the key
-info between this type stack and next type stack.
-
-Dividing unwinder helps to add new unwinders in the future.
-
-Signed-off-by: Qing Zhang <zhangqing@loongson.cn>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Xin Hao <xhao@linux.alibaba.com>
 ---
- arch/loongarch/Kconfig.debug            |  9 ++++
- arch/loongarch/include/asm/stacktrace.h | 17 +++++++
- arch/loongarch/include/asm/unwind.h     | 37 ++++++++++++++
- arch/loongarch/kernel/Makefile          |  2 +
- arch/loongarch/kernel/process.c         | 61 +++++++++++++++++++++++
- arch/loongarch/kernel/traps.c           | 22 ++++-----
- arch/loongarch/kernel/unwind_guess.c    | 65 +++++++++++++++++++++++++
- 7 files changed, 202 insertions(+), 11 deletions(-)
- create mode 100644 arch/loongarch/include/asm/unwind.h
- create mode 100644 arch/loongarch/kernel/unwind_guess.c
+ fs/proc/base.c     |  2 ++
+ fs/proc/internal.h |  1 +
+ fs/proc/task_mmu.c | 87 ++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 90 insertions(+)
 
-diff --git a/arch/loongarch/Kconfig.debug b/arch/loongarch/Kconfig.debug
-index e69de29bb2d1..68634d4fa27b 100644
---- a/arch/loongarch/Kconfig.debug
-+++ b/arch/loongarch/Kconfig.debug
-@@ -0,0 +1,9 @@
-+config UNWINDER_GUESS
-+	bool "Guess unwinder"
-+	help
-+	  This option enables the "guess" unwinder for unwinding kernel stack
-+	  traces.  It scans the stack and reports every kernel text address it
-+	  finds.  Some of the addresses it reports may be incorrect.
-+
-+	  While this option often produces false positives, it can still be
-+	  useful in many cases.
-diff --git a/arch/loongarch/include/asm/stacktrace.h b/arch/loongarch/include/asm/stacktrace.h
-index 6b5c2a7aa706..49cb89213aeb 100644
---- a/arch/loongarch/include/asm/stacktrace.h
-+++ b/arch/loongarch/include/asm/stacktrace.h
-@@ -10,6 +10,23 @@
- #include <asm/loongarch.h>
- #include <linux/stringify.h>
- 
-+enum stack_type {
-+	STACK_TYPE_UNKNOWN,
-+	STACK_TYPE_TASK,
-+	STACK_TYPE_IRQ,
-+};
-+
-+struct stack_info {
-+	enum stack_type type;
-+	unsigned long begin, end, next_sp;
-+};
-+
-+bool in_task_stack(unsigned long stack, struct task_struct *task,
-+			struct stack_info *info);
-+bool in_irq_stack(unsigned long stack, struct stack_info *info);
-+int get_stack_info(unsigned long stack, struct task_struct *task,
-+			struct stack_info *info);
-+
- #define STR_LONG_L    __stringify(LONG_L)
- #define STR_LONG_S    __stringify(LONG_S)
- #define STR_LONGSIZE  __stringify(LONGSIZE)
-diff --git a/arch/loongarch/include/asm/unwind.h b/arch/loongarch/include/asm/unwind.h
-new file mode 100644
-index 000000000000..243330b39d0d
---- /dev/null
-+++ b/arch/loongarch/include/asm/unwind.h
-@@ -0,0 +1,37 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Most of this ideas comes from x86.
-+ *
-+ * Copyright (C) 2022 Loongson Technology Corporation Limited
-+ */
-+#ifndef _ASM_UNWIND_H
-+#define _ASM_UNWIND_H
-+
-+#include <linux/sched.h>
-+
-+#include <asm/stacktrace.h>
-+
-+struct unwind_state {
-+	struct stack_info stack_info;
-+	struct task_struct *task;
-+	unsigned long sp, pc;
-+	bool first;
-+	bool error;
-+};
-+
-+void unwind_start(struct unwind_state *state, struct task_struct *task,
-+		      struct pt_regs *regs);
-+bool unwind_next_frame(struct unwind_state *state);
-+unsigned long unwind_get_return_address(struct unwind_state *state);
-+
-+static inline bool unwind_done(struct unwind_state *state)
-+{
-+	return state->stack_info.type == STACK_TYPE_UNKNOWN;
-+}
-+
-+static inline bool unwind_error(struct unwind_state *state)
-+{
-+	return state->error;
-+}
-+
-+#endif /* _ASM_UNWIND_H */
-diff --git a/arch/loongarch/kernel/Makefile b/arch/loongarch/kernel/Makefile
-index 940de9173542..c5fa4adb23b6 100644
---- a/arch/loongarch/kernel/Makefile
-+++ b/arch/loongarch/kernel/Makefile
-@@ -22,4 +22,6 @@ obj-$(CONFIG_SMP)		+= smp.o
- 
- obj-$(CONFIG_NUMA)		+= numa.o
- 
-+obj-$(CONFIG_UNWINDER_GUESS)	+= unwind_guess.o
-+
- CPPFLAGS_vmlinux.lds		:= $(KBUILD_CFLAGS)
-diff --git a/arch/loongarch/kernel/process.c b/arch/loongarch/kernel/process.c
-index bfa0dfe8b7d7..709b7a1664f8 100644
---- a/arch/loongarch/kernel/process.c
-+++ b/arch/loongarch/kernel/process.c
-@@ -44,6 +44,7 @@
- #include <asm/pgtable.h>
- #include <asm/processor.h>
- #include <asm/reg.h>
-+#include <asm/unwind.h>
- #include <asm/vdso.h>
- 
- /*
-@@ -183,6 +184,66 @@ unsigned long __get_wchan(struct task_struct *task)
- 	return 0;
- }
- 
-+bool in_task_stack(unsigned long stack, struct task_struct *task,
-+			struct stack_info *info)
-+{
-+	unsigned long begin = (unsigned long)task_stack_page(task);
-+	unsigned long end = begin + THREAD_SIZE - 32;
-+
-+	if (stack < begin || stack >= end)
-+		return false;
-+
-+	info->type = STACK_TYPE_TASK;
-+	info->begin = begin;
-+	info->end = end;
-+	info->next_sp = 0;
-+
-+	return true;
-+}
-+
-+bool in_irq_stack(unsigned long stack, struct stack_info *info)
-+{
-+	unsigned long nextsp;
-+	unsigned long begin = (unsigned long)this_cpu_read(irq_stack);
-+	unsigned long end = begin + IRQ_STACK_START;
-+
-+	if (stack < begin || stack >= end)
-+		return false;
-+
-+	nextsp = *(unsigned long *)end;
-+	if (nextsp & (SZREG - 1))
-+		return false;
-+
-+	info->type = STACK_TYPE_IRQ;
-+	info->begin = begin;
-+	info->end = end;
-+	info->next_sp = nextsp;
-+
-+	return true;
-+}
-+
-+int get_stack_info(unsigned long stack, struct task_struct *task,
-+		   struct stack_info *info)
-+{
-+	task = task ? : current;
-+
-+	if (!stack || stack & (SZREG - 1))
-+		goto unknown;
-+
-+	if (in_task_stack(stack, task, info))
-+		return 0;
-+
-+	if (task != current)
-+		goto unknown;
-+
-+	if (in_irq_stack(stack, info))
-+		return 0;
-+
-+unknown:
-+	info->type = STACK_TYPE_UNKNOWN;
-+	return -EINVAL;
-+}
-+
- unsigned long stack_top(void)
- {
- 	unsigned long top = TASK_SIZE & PAGE_MASK;
-diff --git a/arch/loongarch/kernel/traps.c b/arch/loongarch/kernel/traps.c
-index 1bf58c65e2bf..ef2c3aeb1dab 100644
---- a/arch/loongarch/kernel/traps.c
-+++ b/arch/loongarch/kernel/traps.c
-@@ -43,6 +43,7 @@
- #include <asm/stacktrace.h>
- #include <asm/tlb.h>
- #include <asm/types.h>
-+#include <asm/unwind.h>
- 
- #include "access-helper.h"
- 
-@@ -64,19 +65,18 @@ static void show_backtrace(struct task_struct *task, const struct pt_regs *regs,
- 			   const char *loglvl, bool user)
- {
- 	unsigned long addr;
--	unsigned long *sp = (unsigned long *)(regs->regs[3] & ~3);
-+	struct unwind_state state;
-+	struct pt_regs *pregs = (struct pt_regs *)regs;
-+
-+	if (!task)
-+		task = current;
-+
-+	unwind_start(&state, task, pregs);
- 
- 	printk("%sCall Trace:", loglvl);
--#ifdef CONFIG_KALLSYMS
--	printk("%s\n", loglvl);
--#endif
--	while (!kstack_end(sp)) {
--		if (__get_addr(&addr, sp++, user)) {
--			printk("%s (Bad stack address)", loglvl);
--			break;
--		}
--		if (__kernel_text_address(addr))
--			print_ip_sym(loglvl, addr);
-+	for (; !unwind_done(&state); unwind_next_frame(&state)) {
-+		addr = unwind_get_return_address(&state);
-+		print_ip_sym(loglvl, addr);
- 	}
- 	printk("%s\n", loglvl);
- }
-diff --git a/arch/loongarch/kernel/unwind_guess.c b/arch/loongarch/kernel/unwind_guess.c
-new file mode 100644
-index 000000000000..7eeb3e1a989d
---- /dev/null
-+++ b/arch/loongarch/kernel/unwind_guess.c
-@@ -0,0 +1,65 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2022 Loongson Technology Corporation Limited
-+ */
-+#include <linux/kernel.h>
-+
-+#include <asm/unwind.h>
-+
-+unsigned long unwind_get_return_address(struct unwind_state *state)
-+{
-+	if (unwind_done(state))
-+		return 0;
-+	else if (state->first)
-+		return state->pc;
-+
-+	return *(unsigned long *)(state->sp);
-+}
-+EXPORT_SYMBOL_GPL(unwind_get_return_address);
-+
-+bool unwind_next_frame(struct unwind_state *state)
-+{
-+	struct stack_info *info = &state->stack_info;
-+	unsigned long addr;
-+
-+	if (unwind_done(state))
-+		return false;
-+
-+	if (state->first)
-+		state->first = false;
-+
-+	do {
-+		for (state->sp += sizeof(unsigned long);
-+		     state->sp < info->end;
-+		     state->sp += sizeof(unsigned long)) {
-+			addr = *(unsigned long *)(state->sp);
-+
-+			if (__kernel_text_address(addr))
-+				return true;
-+		}
-+
-+		state->sp = info->next_sp;
-+
-+	} while (!get_stack_info(state->sp, state->task, info));
-+
-+	return false;
-+}
-+EXPORT_SYMBOL_GPL(unwind_next_frame);
-+
-+void unwind_start(struct unwind_state *state, struct task_struct *task,
-+		    struct pt_regs *regs)
-+{
-+	memset(state, 0, sizeof(*state));
-+
-+	state->task = task;
-+
-+	state->sp = regs->regs[3];
-+	state->pc = regs->csr_era;
-+	state->first = true;
-+
-+	get_stack_info(state->sp, state->task, &state->stack_info);
-+
-+	if (!unwind_done(state) && !__kernel_text_address(state->pc))
-+		unwind_next_frame(state);
-+}
-+EXPORT_SYMBOL_GPL(unwind_start);
--- 
-2.20.1
+diff --git a/fs/proc/base.c b/fs/proc/base.c
+index 8dfa36a99c74..487e82dd3275 100644
+--- a/fs/proc/base.c
++++ b/fs/proc/base.c
+@@ -3224,6 +3224,7 @@ static const struct pid_entry tgid_base_stuff[] = {
+ 	REG("maps",       S_IRUGO, proc_pid_maps_operations),
+ #ifdef CONFIG_NUMA
+ 	REG("numa_maps",  S_IRUGO, proc_pid_numa_maps_operations),
++	REG("numa_pgtable", S_IRUGO, proc_pid_numa_pgtable_operations),
+ #endif
+ 	REG("mem",        S_IRUSR|S_IWUSR, proc_mem_operations),
+ 	LNK("cwd",        proc_cwd_link),
+@@ -3571,6 +3572,7 @@ static const struct pid_entry tid_base_stuff[] = {
+ #endif
+ #ifdef CONFIG_NUMA
+ 	REG("numa_maps", S_IRUGO, proc_pid_numa_maps_operations),
++	REG("numa_pgtable", S_IRUGO, proc_pid_numa_pgtable_operations),
+ #endif
+ 	REG("mem",       S_IRUSR|S_IWUSR, proc_mem_operations),
+ 	LNK("cwd",       proc_cwd_link),
+diff --git a/fs/proc/internal.h b/fs/proc/internal.h
+index 06a80f78433d..e7ed9ef097b6 100644
+--- a/fs/proc/internal.h
++++ b/fs/proc/internal.h
+@@ -296,6 +296,7 @@ struct mm_struct *proc_mem_open(struct inode *inode, unsigned int mode);
 
+ extern const struct file_operations proc_pid_maps_operations;
+ extern const struct file_operations proc_pid_numa_maps_operations;
++extern const struct file_operations proc_pid_numa_pgtable_operations;
+ extern const struct file_operations proc_pid_smaps_operations;
+ extern const struct file_operations proc_pid_smaps_rollup_operations;
+ extern const struct file_operations proc_clear_refs_operations;
+diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
+index 2d04e3470d4c..77b7a49757f5 100644
+--- a/fs/proc/task_mmu.c
++++ b/fs/proc/task_mmu.c
+@@ -1999,4 +1999,91 @@ const struct file_operations proc_pid_numa_maps_operations = {
+ 	.release	= proc_map_release,
+ };
+
++struct pgtable_numa_private {
++	struct proc_maps_private proc_maps;
++	unsigned long node[MAX_NUMNODES];
++};
++
++static int gather_pgtable_numa_stats(pmd_t *pmd, unsigned long addr,
++				     unsigned long end, struct mm_walk *walk)
++{
++	struct pgtable_numa_private *priv = walk->private;
++	struct page *page;
++	int nid;
++
++	if (pmd_huge(*pmd)) {
++		page = virt_to_page(pmd);
++	} else {
++		page = pmd_page(*pmd);
++	}
++
++	nid = page_to_nid(page);
++	priv->node[nid]++;
++
++	return 0;
++}
++
++static const struct mm_walk_ops show_numa_pgtable_ops = {
++	.pmd_entry = gather_pgtable_numa_stats,
++};
++
++/*
++ * Display the page talbe allocated per node via /proc.
++ */
++static int show_numa_pgtable(struct seq_file *m, void *v)
++{
++	struct pgtable_numa_private *numa_priv = m->private;
++	struct vm_area_struct *vma = v;
++	struct mm_struct *mm = vma->vm_mm;
++	struct file *file = vma->vm_file;
++	int nid;
++
++	if (!mm)
++		return 0;
++
++	memset(numa_priv->node, 0, sizeof(numa_priv->node));
++
++	seq_printf(m, "%08lx ", vma->vm_start);
++
++	if (file) {
++		seq_puts(m, " file=");
++		seq_file_path(m, file, "\n\t= ");
++	} else if (vma->vm_start <= mm->brk && vma->vm_end >= mm->start_brk) {
++		seq_puts(m, " heap");
++	} else if (is_stack(vma)) {
++		seq_puts(m, " stack");
++	}
++
++	/* mmap_lock is held by m_start */
++	walk_page_vma(vma, &show_numa_pgtable_ops, numa_priv);
++
++	for_each_node_state(nid, N_MEMORY) {
++		if (numa_priv->node[nid])
++			seq_printf(m, " N%d=%lu", nid, numa_priv->node[nid]);
++	}
++	seq_putc(m, '\n');
++
++	return 0;
++}
++
++static const struct seq_operations proc_pid_numa_pgtable_op = {
++	.start  = m_start,
++	.next   = m_next,
++	.stop   = m_stop,
++	.show   = show_numa_pgtable,
++};
++
++static int pid_numa_pgtable_open(struct inode *inode, struct file *file)
++{
++	return proc_maps_open(inode, file, &proc_pid_numa_pgtable_op,
++			sizeof(struct pgtable_numa_private));
++}
++
++const struct file_operations proc_pid_numa_pgtable_operations = {
++	.open		= pid_numa_pgtable_open,
++	.read		= seq_read,
++	.llseek		= seq_lseek,
++	.release	= proc_map_release,
++};
++
+ #endif /* CONFIG_NUMA */
+--
+2.31.0
