@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34BDCC19F29
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:16:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7433C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234325AbiHAMQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:16:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39370 "EHLO
+        id S234430AbiHAMRA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:17:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234360AbiHAMPt (ORCPT
+        with ESMTP id S234432AbiHAMPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:15:49 -0400
+        Mon, 1 Aug 2022 08:15:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301C17A519;
-        Mon,  1 Aug 2022 04:58:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F39A48EAD;
+        Mon,  1 Aug 2022 04:58:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76E7D601BD;
-        Mon,  1 Aug 2022 11:58:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DC71C433D6;
-        Mon,  1 Aug 2022 11:58:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DDD0B601BD;
+        Mon,  1 Aug 2022 11:58:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9A9EC433C1;
+        Mon,  1 Aug 2022 11:58:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355107;
-        bh=o8COW7HGUbdghPKHXH+743bq+xK9nKbl1dSwaMzfLyg=;
+        s=korg; t=1659355113;
+        bh=GvhLsL9sI+LkSkyCeIUMTRPmGOnwnbk37qSVBg/HNKM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GKARKcSN+nb6WqmzQzB/OGywAuYhrlnbnR9XiUF6RfKu+SX68IdiTIrwHAT1vENau
-         8CELF4+P6WwRMdpuV54etP5ns4quZZk7XDthCwu8sU+XFAGL5ibxG8aI5seSPsZuZ5
-         dfLQm3o9b0QrHzxXPhEEWfFNvaj3LZtcL3GlHmWw=
+        b=1YZzY4J/dZk5T0tEWFL1OmdP0Sx3eXhHlWtVFyjgDvrqdmLrBOjFLzj7y26WiyERY
+         lZwIjrVn8Ygv/QyG/l7X4aPdCLvTIlRREIlkGuoI/PyGCLWFp3lOagX2zFIMWzd8gm
+         zeKo3DnCylKDQvVXCM3XT0wCTJUwTACPBR2jBuPc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.18 35/88] tcp: Fix data-races around sysctl_tcp_moderate_rcvbuf.
-Date:   Mon,  1 Aug 2022 13:46:49 +0200
-Message-Id: <20220801114139.634683929@linuxfoundation.org>
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 60/88] tcp: Fix a data-race around sysctl_tcp_comp_sack_delay_ns.
+Date:   Mon,  1 Aug 2022 13:47:14 +0200
+Message-Id: <20220801114140.799477571@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -50,41 +51,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 780476488844e070580bfc9e3bc7832ec1cea883 upstream.
+[ Upstream commit 4866b2b0f7672b6d760c4b8ece6fb56f965dcc8a ]
 
-While reading sysctl_tcp_moderate_rcvbuf, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+While reading sysctl_tcp_comp_sack_delay_ns, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 6d82aa242092 ("tcp: add tcp_comp_sack_delay_ns sysctl")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_input.c |    2 +-
- net/mptcp/protocol.c |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_input.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index f09b1321a960..3591a25a8631 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -724,7 +724,7 @@ void tcp_rcv_space_adjust(struct sock *s
- 	 * <prev RTT . ><current RTT .. ><next RTT .... >
- 	 */
+@@ -5546,7 +5546,8 @@ static void __tcp_ack_snd_check(struct sock *sk, int ofo_possible)
+ 	if (tp->srtt_us && tp->srtt_us < rtt)
+ 		rtt = tp->srtt_us;
  
--	if (sock_net(sk)->ipv4.sysctl_tcp_moderate_rcvbuf &&
-+	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_moderate_rcvbuf) &&
- 	    !(sk->sk_userlocks & SOCK_RCVBUF_LOCK)) {
- 		int rcvmem, rcvbuf;
- 		u64 rcvwin, grow;
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -1882,7 +1882,7 @@ static void mptcp_rcv_space_adjust(struc
- 	if (msk->rcvq_space.copied <= msk->rcvq_space.space)
- 		goto new_measure;
- 
--	if (sock_net(sk)->ipv4.sysctl_tcp_moderate_rcvbuf &&
-+	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_moderate_rcvbuf) &&
- 	    !(sk->sk_userlocks & SOCK_RCVBUF_LOCK)) {
- 		int rcvmem, rcvbuf;
- 		u64 rcvwin, grow;
+-	delay = min_t(unsigned long, sock_net(sk)->ipv4.sysctl_tcp_comp_sack_delay_ns,
++	delay = min_t(unsigned long,
++		      READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_comp_sack_delay_ns),
+ 		      rtt * (NSEC_PER_USEC >> 3)/20);
+ 	sock_hold(sk);
+ 	hrtimer_start_range_ns(&tp->compressed_ack_timer, ns_to_ktime(delay),
+-- 
+2.35.1
+
 
 
