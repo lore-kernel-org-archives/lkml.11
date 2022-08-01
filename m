@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FFC1C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:03:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCF9C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:03:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233056AbiHAMC5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:02:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36932 "EHLO
+        id S233069AbiHAMDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233319AbiHAMBE (ORCPT
+        with ESMTP id S233367AbiHAMBH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:01:04 -0400
+        Mon, 1 Aug 2022 08:01:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DAC84F65C;
-        Mon,  1 Aug 2022 04:53:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655E43E74D;
+        Mon,  1 Aug 2022 04:53:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD99DB810A2;
-        Mon,  1 Aug 2022 11:53:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23C5FC433D6;
-        Mon,  1 Aug 2022 11:53:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8361CB8116B;
+        Mon,  1 Aug 2022 11:53:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9C77C433C1;
+        Mon,  1 Aug 2022 11:53:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354800;
-        bh=xxhsfMY3ok9TbG2hC+nbsICfFlUN65e0HBoVgAo4llM=;
+        s=korg; t=1659354803;
+        bh=GoJUjGDLu5b4YuY3GqakxNvKzpbcOpD4ilatK9hD9Uc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RaLwhs3xNdkfljlR0O6egFGZp4vxj584btuqeUagUP0K77Ert2Te8usnqY32JoQDO
-         DjxyJQ/RKgv1CJUAc7gd32JaJmidGQcYr6+xKQfEbxzkcjGOIYQcRfrmPfjoHtIjef
-         rcxH5dJKghme8W/Mfcywv5Rajxmt1d5S4DBcwsLg=
+        b=Lt0e4y+P9g+aIHIRlVe5WzzACDCqQnpOAeHi47Z04UKw6y2CO/jHSWkI1cNAm+lel
+         E0ASMm8lX0SZQkoqLz1bPjSaRF300wb3ZFLIwwRMJ6laI7dTlsl3xZXIQIBazSjo0H
+         6aUdlk8lowEfvDOZueMJ+RE8OO4pALF0X/KNLW14=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 25/69] tcp: Fix data-races around sysctl_tcp_moderate_rcvbuf.
-Date:   Mon,  1 Aug 2022 13:46:49 +0200
-Message-Id: <20220801114135.534159123@linuxfoundation.org>
+Subject: [PATCH 5.15 26/69] tcp: Fix a data-race around sysctl_tcp_limit_output_bytes.
+Date:   Mon,  1 Aug 2022 13:46:50 +0200
+Message-Id: <20220801114135.585672578@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -50,41 +50,29 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 780476488844e070580bfc9e3bc7832ec1cea883 upstream.
+commit 9fb90193fbd66b4c5409ef729fd081861f8b6351 upstream.
 
-While reading sysctl_tcp_moderate_rcvbuf, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+While reading sysctl_tcp_limit_output_bytes, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 46d3ceabd8d9 ("tcp: TCP Small Queues")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_input.c |    2 +-
- net/mptcp/protocol.c |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_output.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -716,7 +716,7 @@ void tcp_rcv_space_adjust(struct sock *s
- 	 * <prev RTT . ><current RTT .. ><next RTT .... >
- 	 */
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -2503,7 +2503,7 @@ static bool tcp_small_queue_check(struct
+ 		      sk->sk_pacing_rate >> READ_ONCE(sk->sk_pacing_shift));
+ 	if (sk->sk_pacing_status == SK_PACING_NONE)
+ 		limit = min_t(unsigned long, limit,
+-			      sock_net(sk)->ipv4.sysctl_tcp_limit_output_bytes);
++			      READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_limit_output_bytes));
+ 	limit <<= factor;
  
--	if (sock_net(sk)->ipv4.sysctl_tcp_moderate_rcvbuf &&
-+	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_moderate_rcvbuf) &&
- 	    !(sk->sk_userlocks & SOCK_RCVBUF_LOCK)) {
- 		int rcvmem, rcvbuf;
- 		u64 rcvwin, grow;
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -1881,7 +1881,7 @@ static void mptcp_rcv_space_adjust(struc
- 	if (msk->rcvq_space.copied <= msk->rcvq_space.space)
- 		goto new_measure;
- 
--	if (sock_net(sk)->ipv4.sysctl_tcp_moderate_rcvbuf &&
-+	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_moderate_rcvbuf) &&
- 	    !(sk->sk_userlocks & SOCK_RCVBUF_LOCK)) {
- 		int rcvmem, rcvbuf;
- 		u64 rcvwin, grow;
+ 	if (static_branch_unlikely(&tcp_tx_delay_enabled) &&
 
 
