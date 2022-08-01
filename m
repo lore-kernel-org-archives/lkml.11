@@ -2,80 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B10C19F29
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:27:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BADAC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbiHAL1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43670 "EHLO
+        id S230232AbiHAL2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:28:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229983AbiHAL1g (ORCPT
+        with ESMTP id S229935AbiHAL2s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:27:36 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E4A654C
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:27:35 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id m8so13286942edd.9
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 04:27:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=dat9EDJ040kndZ5sQxnXUzu3M1MzMzRUr44UWyA8lX8=;
-        b=cv9HYwCdIDZqoezKrlQReS9ds2IdjVRJsQDacwHmGJgt8BqryJt6NFU5QPx+2y0k2I
-         u3aYQV4ynH359nR07D5C/tHcVp9yhlzd7Khe6WD1z1/EntaVMP/IC5OT5kt99Il3YBZI
-         Vw5IhXXS9DX7BfF1BI9h9ogX/ZQ2dCtWnFVsSZSM+Het+o9OKAqXYfizvDtbKJKSUKGS
-         KzEk7EsM99f5SOpzNT3W0mmlj4EP+0TeZL4HRHe2EEb+pcMLOFTV9EnaNWKejiOrhpCe
-         jsjTiXAyO8aStJwj6tef9kPpS/HUgS/HWGikeL8totedX97UFN5ly7BpVL0OJmsmL2z2
-         X0WA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=dat9EDJ040kndZ5sQxnXUzu3M1MzMzRUr44UWyA8lX8=;
-        b=qStQALQlqNNcDnYjPhrvnknKp+aoz38/dFAec37CvNGNlAZdRq1sBqEnSAlT/djRue
-         kX1gDW45aQm0dRUtJGcJyAkxoGXKugbbQRNU89jusohUyoigVRtmHt+WUrET/kE/OPeX
-         UcP26RE08C1IXDT1p95TZwysS4fo9mZIwHWi2Wfumsb5fH1CJTXyhUZbDUeB5OiGFgTo
-         gIHbERXPvPaGiQxy6U00XQIEfFR6ED0SfXij+cNEbdBXeV96tWGRxMq32ieIT43G6CuD
-         qt5fDj8JvCYf2m9k18b3AXw0UoiU6PuUEOvtEAW+yk1XhzwMn2d6ZDV4KSH5j/asL8op
-         AFow==
-X-Gm-Message-State: AJIora81yJGNTKJ4FphtyIhU7l5sIAiaWo+M6yBeZV+2J1FDZOnZ1DHa
-        3BAjnPJyabsM/Zyldhj9D8lOCw==
-X-Google-Smtp-Source: AGRyM1vg0Oq8o4qygVWEYpvOuucQ6QroIxWwBd6jz5TMXL3lbGD6M5oPEcui+hva6pDc8rebAeinuQ==
-X-Received: by 2002:a05:6402:5cb:b0:434:eb48:754f with SMTP id n11-20020a05640205cb00b00434eb48754fmr15986528edx.421.1659353253624;
-        Mon, 01 Aug 2022 04:27:33 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s ([104.245.98.208])
-        by smtp.gmail.com with ESMTPSA id v14-20020a170906380e00b007262b9f7120sm5029347ejc.167.2022.08.01.04.27.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Aug 2022 04:27:33 -0700 (PDT)
-Date:   Mon, 1 Aug 2022 19:27:27 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     =?iso-8859-1?Q?Adri=E1n?= Herrera Arcila <adrian.herrera@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, namhyung@kernel.org, songliubraving@fb.com,
-        james.clark@arm.com
-Subject: Re: [PATCH 1/2] perf stat: refactor __run_perf_stat common code
-Message-ID: <20220801112726.GA73228@leoy-ThinkPad-X240s>
-References: <20220729161244.10522-1-adrian.herrera@arm.com>
+        Mon, 1 Aug 2022 07:28:48 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1B63226
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:28:46 -0700 (PDT)
+Received: from [10.130.0.193] (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxAM_ruOdiVSoAAA--.951S3;
+        Mon, 01 Aug 2022 19:28:44 +0800 (CST)
+Subject: Re: [PATCH v4 0/4] LoongArch: Support new relocation types
+To:     Jinyang He <hejinyang@loongson.cn>
+References: <32a74a218c76611f897fd1df1ad0059068621133.camel@xry111.site>
+ <ec52fd49-4a30-15d9-3d32-fd7bc6d8b3f0@loongson.cn>
+ <0179679b736aea7258981dec2d83107cce74dfc1.camel@xry111.site>
+ <a139a8475fe295ac9f17064269cd0312dca6f96e.camel@xry111.site>
+ <6b5d2188f93ed72b67a4bbb7116113f833fe1ee5.camel@xry111.site>
+ <d7670b60-2782-4642-995b-7baa01779a66@loongson.cn>
+ <7cad6e78014168a8906e130e1cf3809077d2bda7.camel@xry111.site>
+ <1d0783b87bda3e454a111862fcc5b5faffcb16b0.camel@xry111.site>
+ <00eede4b1380888a500f74b1e818bb25a550632b.camel@xry111.site>
+ <7512ae16-b171-d072-674f-a6b9a5e764d6@loongson.cn>
+ <CAAhV-H5wSJZ2X46ySqoaJd7Z2soGcYKRNixnghmE3f3zEzyS+w@mail.gmail.com>
+ <10751c9af5d45fea741e0bbed6c818ddb9db3ac3.camel@xry111.site>
+ <7b1f9813-85fc-acfd-8e24-7e01469ded3a@loongson.cn>
+Cc:     Xi Ruoyao <xry111@xry111.site>,
+        Huacai Chen <chenhuacai@kernel.org>, loongarch@lists.linux.dev,
+        LKML <linux-kernel@vger.kernel.org>,
+        WANG Xuerui <kernel@xen0n.name>,
+        Lulu Cheng <chenglulu@loongson.cn>
+From:   Youling Tang <tangyouling@loongson.cn>
+Message-ID: <ba5e99de-0719-af88-4d94-8860787a4251@loongson.cn>
+Date:   Mon, 1 Aug 2022 19:28:43 +0800
+User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
+ Thunderbird/45.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220729161244.10522-1-adrian.herrera@arm.com>
+In-Reply-To: <7b1f9813-85fc-acfd-8e24-7e01469ded3a@loongson.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: AQAAf9DxAM_ruOdiVSoAAA--.951S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxAF43Jr4ktF1kJry3CrW8tFb_yoWrAw4rpF
+        ZrGFWUKr4DJr1Fyanrtw1Uua4jvws8JryxXw15tryUZFyqvrn3Kr47tw45uFy7Xr1kG3WU
+        ZrWUA34xXrW5ZwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvv14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IY64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7Mxk0xIA0c2IEe2xFo4CEbIxv
+        r21lc2xSY4AK67AK6r4kMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI
+        8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AK
+        xVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI
+        8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E
+        87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73Uj
+        IFyTuYvjfU0PEfUUUUU
+X-CM-SenderInfo: 5wdqw5prxox03j6o00pqjv00gofq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 04:12:43PM +0000, Adrián Herrera Arcila wrote:
-> This extracts common code from the branches of the forks if-then-else.
-> enable_counters(), which was at the beginning of both branches of the
-> conditional, is now unconditional; evlist__start_workload is extracted
-> to a different if, which enables making the common clocking code
-> unconditional.
-> 
-> Signed-off-by: Adrián Herrera Arcila <adrian.herrera@arm.com>
+Hi, Jinyang
 
-Reviewed-by: Leo Yan <leo.yan@linaro.org>
+On 08/01/2022 06:08 PM, Jinyang He wrote:
+> On 08/01/2022 05:55 PM, Xi Ruoyao wrote:
+>
+>> On Mon, 2022-08-01 at 10:34 +0800, Huacai Chen wrote:
+>>> Hi, all,
+>>>
+>>> On Mon, Aug 1, 2022 at 10:16 AM Youling Tang <tangyouling@loongson.cn>
+>>> wrote:
+>>>> Hi, Ruoyao
+>>>>
+>>>> On 07/30/2022 10:52 AM, Xi Ruoyao wrote:
+>>>>> On Sat, 2022-07-30 at 10:24 +0800, Xi Ruoyao wrote:
+>>>>>> On Sat, 2022-07-30 at 01:55 +0800, Xi Ruoyao wrote:
+>>>>>>> On Fri, 2022-07-29 at 20:19 +0800, Youling Tang wrote:
+>>>>>>>
+>>>>>>>> On 07/29/2022 07:45 PM, Xi Ruoyao wrote:
+>>>>>>>>> Hmm... The problem is the "addresses" of per-cpu symbols
+>>>>>>>>> are
+>>>>>>>>> faked: they
+>>>>>>>>> are actually offsets from $r21.  So we can't just load
+>>>>>>>>> such an
+>>>>>>>>> offset
+>>>>>>>>> with PCALA addressing.
+>>>>>>>>>
+>>>>>>>>> It looks like we'll need to introduce an attribute for GCC
+>>>>>>>>> to
+>>>>>>>>> make
+>>>>>>>>> an
+>>>>>>>>> variable "must be addressed via GOT", and add the
+>>>>>>>>> attribute into
+>>>>>>>>> PER_CPU_ATTRIBUTES.
+>>>>>>>> Yes, we need a GCC attribute to specify the per-cpu
+>>>>>>>> variable.
+>>>>>>> GCC patch adding "addr_global" attribute for LoongArch:
+>>>>>>> https://gcc.gnu.org/pipermail/gcc-patches/2022-July/599064.html
+>>>>>>>
+>>>>>>> An experiment to use it:
+>>>>>>> https://github.com/xry111/linux/commit/c1d5d70
+>>>>>> Correction: https://github.com/xry111/linux/commit/c1d5d708
+>>>>>>
+>>>>>> It seems 7-bit SHA is not enough for kernel repo.
+>>>>> If addr_global is rejected or not implemented (for example,
+>>>>> building the
+>>>>> kernel with GCC 12), *I expect* the following hack to work (I've
+>>>>> not
+>>>>> tested it because I'm AFK now).  Using visibility in kernel seems
+>>>>> strange, but I think it may make some sense because the modules
+>>>>> are some
+>>>>> sort of similar to an ELF shared object being dlopen()'ed, and our
+>>>>> way
+>>>>> to inject per-CPU symbols is analog to ELF interposition.
+>>>>>
+>>>>> arch/loongarch/include/asm/percpu.h:
+>>>>>
+>>>>>     #if !__has_attribute(__addr_global__) && defined(MODULE)
+>>>>>     /* Magically remove "static" for per-CPU variables.  */
+>>>>>     # define ARCH_NEEDS_WEAK_PER_CPU
+>>>>>     /* Force GOT-relocation for per-CPU variables.  */
+>>>>>     # define PER_CPU_ATTRIBUTES
+>>>>> __attribute__((__visibility__("default")))
+>>>>>     #endif
+>>>>>
+>>>>> arch/loongarch/Makefile:
+>>>>>
+>>>>>     # Hack for per-CPU variables, see PER_CPU_ATTRIBUTES in
+>>>>>     # include/asm/percpu.h
+>>>>>     if (call gcc-does-not-support-addr-global)
+>>>>>       KBUILD_CFLAGS_MODULE += -fPIC -fvisibility=hidden
+>>>>>     endif
+>>>>>
+>>>> Using the old toolchain (GCC 12) can successfully load the
+>>>> nf_tables.ko
+>>>> module after applying the above patch.
+>>> I don't like such a hack..., can we consider using old relocation
+>>> types when building by old toolchains?
+>>
+>> I don't like the hack too.  I only developed it as an intellectual game.
+>>
+>> We need to consider multiple combinations:
+>>
+>> (1) Old GCC + old Binutils.  We need -mla-local-with-abs for
+>> KBUILD_CFLAGS_MODULE.
+>>
+>> (2) Old GCC + new Binutils.  We need -mla-local-with-abs for
+>> KBUILD_CFLAGS_MODULE, *and* adding the support for
+>> R_LARCH_ABS{_HI20,_LO12,64_LO20,64_HI12} in the kernel module loader.
+>>
+>> (3) New GCC + old Binutils.  As new GCC should support our new attribute
+>> (I now intend to send V2 patch to gcc-patches using "movable" as the
+>> attribute name), no special action is needed.
+>>
+>> Basically, we need:
+>>
+>> (1) Handle R_LARCH_ABS{_HI20,_LO12,64_LO20,64_HI12} in the kernel module
+>> loader.
+>> (2) Add -Wa,-mla-local-with-abs into KBUILD_CFLAGS_MODULE if GCC version
+>> is <= 12.
+>
+> Actually, I really hope kernel image is in the XKVRANGE, rather
+> than being in XKPRANGE. So that we can limit kernel and modules
+> be in 4GB range. I think it will make all work normally. :-(
+>
+
+Assuming that the kernel and modules are limited to 4G, the external
+symbols will be accessed through pcrel32, which means that there is no
+need to pass the GOT table entry, and there is no need for got support,
+so there will be no percpu problem, and it will make all work normally?
+
+Youling.
+
