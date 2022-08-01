@@ -2,50 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E40BC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BCE1C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233522AbiHAMGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
+        id S233550AbiHAMGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:06:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232844AbiHAMFd (ORCPT
+        with ESMTP id S233546AbiHAMFm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:05:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11EDD5A898;
-        Mon,  1 Aug 2022 04:54:55 -0700 (PDT)
+        Mon, 1 Aug 2022 08:05:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1883A3DBE2;
+        Mon,  1 Aug 2022 04:54:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C862612D0;
-        Mon,  1 Aug 2022 11:54:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AA08C433B5;
-        Mon,  1 Aug 2022 11:54:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 452A961227;
+        Mon,  1 Aug 2022 11:54:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 553DFC433C1;
+        Mon,  1 Aug 2022 11:54:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354894;
-        bh=6LDtu3xfLD3w2Kt9zGVdzUU8HzppBADqvcuwSBLmMK4=;
+        s=korg; t=1659354896;
+        bh=CNw/7brM5jrLWQwSiP+kjevAisFkviPlhD85FH8R8r8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WCit6fv0QNlpCAe0Vxi5OvHSVwh4cT2YIuBMpbEtmjpP40sDLyuPuKD+xfQWCOr2a
-         qYDzUmXA2DEoXcnZhzIDIAqIElHshxgXPy/yVlKYgwMKVcFUsRpXQtJHeXcLEVRcAr
-         Lrz30rhj21ji1u1GMJ6mv5y4MS98lqW75beS7+m0=
+        b=iYjnakJVVrSe7tuZ1sCum8n34T5E1xRfWFi/TsNL5+/lF2BwIqXMhfznZTXDPm293
+         E8iVwTr7qYijdI5ubcCfixb0xoW2stQTKqbonocr4lhX6PZs+IQUQAVEwVRpfEUO8x
+         4wS4i72iQiLqK2Yafq0XRLCXJxRjvNBIMdcTiXM8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chang Rui <changruinj@gmail.com>,
-        Fangrui Song <maskray@google.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        stable@vger.kernel.org, Sabrina Dubroca <sd@queasysnail.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 59/69] perf symbol: Correct address for bss symbols
-Date:   Mon,  1 Aug 2022 13:47:23 +0200
-Message-Id: <20220801114136.859810226@linuxfoundation.org>
+Subject: [PATCH 5.15 42/69] macsec: fix error message in macsec_add_rxsa and _txsa
+Date:   Mon,  1 Aug 2022 13:47:06 +0200
+Message-Id: <20220801114136.173024277@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -57,180 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Yan <leo.yan@linaro.org>
+From: Sabrina Dubroca <sd@queasysnail.net>
 
-[ Upstream commit 2d86612aacb7805f72873691a2644d7279ed0630 ]
+[ Upstream commit 3240eac4ff20e51b87600dbd586ed814daf313db ]
 
-When using 'perf mem' and 'perf c2c', an issue is observed that tool
-reports the wrong offset for global data symbols.  This is a common
-issue on both x86 and Arm64 platforms.
+The expected length is MACSEC_SALT_LEN, not MACSEC_SA_ATTR_SALT.
 
-Let's see an example, for a test program, below is the disassembly for
-its .bss section which is dumped with objdump:
-
-  ...
-
-  Disassembly of section .bss:
-
-  0000000000004040 <completed.0>:
-  	...
-
-  0000000000004080 <buf1>:
-  	...
-
-  00000000000040c0 <buf2>:
-  	...
-
-  0000000000004100 <thread>:
-  	...
-
-First we used 'perf mem record' to run the test program and then used
-'perf --debug verbose=4 mem report' to observe what's the symbol info
-for 'buf1' and 'buf2' structures.
-
-  # ./perf mem record -e ldlat-loads,ldlat-stores -- false_sharing.exe 8
-  # ./perf --debug verbose=4 mem report
-    ...
-    dso__load_sym_internal: adjusting symbol: st_value: 0x40c0 sh_addr: 0x4040 sh_offset: 0x3028
-    symbol__new: buf2 0x30a8-0x30e8
-    ...
-    dso__load_sym_internal: adjusting symbol: st_value: 0x4080 sh_addr: 0x4040 sh_offset: 0x3028
-    symbol__new: buf1 0x3068-0x30a8
-    ...
-
-The perf tool relies on libelf to parse symbols, in executable and
-shared object files, 'st_value' holds a virtual address; 'sh_addr' is
-the address at which section's first byte should reside in memory, and
-'sh_offset' is the byte offset from the beginning of the file to the
-first byte in the section.  The perf tool uses below formula to convert
-a symbol's memory address to a file address:
-
-  file_address = st_value - sh_addr + sh_offset
-                    ^
-                    ` Memory address
-
-We can see the final adjusted address ranges for buf1 and buf2 are
-[0x30a8-0x30e8) and [0x3068-0x30a8) respectively, apparently this is
-incorrect, in the code, the structure for 'buf1' and 'buf2' specifies
-compiler attribute with 64-byte alignment.
-
-The problem happens for 'sh_offset', libelf returns it as 0x3028 which
-is not 64-byte aligned, combining with disassembly, it's likely libelf
-doesn't respect the alignment for .bss section, therefore, it doesn't
-return the aligned value for 'sh_offset'.
-
-Suggested by Fangrui Song, ELF file contains program header which
-contains PT_LOAD segments, the fields p_vaddr and p_offset in PT_LOAD
-segments contain the execution info.  A better choice for converting
-memory address to file address is using the formula:
-
-  file_address = st_value - p_vaddr + p_offset
-
-This patch introduces elf_read_program_header() which returns the
-program header based on the passed 'st_value', then it uses the formula
-above to calculate the symbol file address; and the debugging log is
-updated respectively.
-
-After applying the change:
-
-  # ./perf --debug verbose=4 mem report
-    ...
-    dso__load_sym_internal: adjusting symbol: st_value: 0x40c0 p_vaddr: 0x3d28 p_offset: 0x2d28
-    symbol__new: buf2 0x30c0-0x3100
-    ...
-    dso__load_sym_internal: adjusting symbol: st_value: 0x4080 p_vaddr: 0x3d28 p_offset: 0x2d28
-    symbol__new: buf1 0x3080-0x30c0
-    ...
-
-Fixes: f17e04afaff84b5c ("perf report: Fix ELF symbol parsing")
-Reported-by: Chang Rui <changruinj@gmail.com>
-Suggested-by: Fangrui Song <maskray@google.com>
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
-Acked-by: Namhyung Kim <namhyung@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220724060013.171050-2-leo.yan@linaro.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites (IEEE 802.1AEbw)")
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/symbol-elf.c | 45 ++++++++++++++++++++++++++++++++----
- 1 file changed, 41 insertions(+), 4 deletions(-)
+ drivers/net/macsec.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/perf/util/symbol-elf.c b/tools/perf/util/symbol-elf.c
-index ecd377938eea..ef6ced5c5746 100644
---- a/tools/perf/util/symbol-elf.c
-+++ b/tools/perf/util/symbol-elf.c
-@@ -233,6 +233,33 @@ Elf_Scn *elf_section_by_name(Elf *elf, GElf_Ehdr *ep,
- 	return NULL;
- }
- 
-+static int elf_read_program_header(Elf *elf, u64 vaddr, GElf_Phdr *phdr)
-+{
-+	size_t i, phdrnum;
-+	u64 sz;
-+
-+	if (elf_getphdrnum(elf, &phdrnum))
-+		return -1;
-+
-+	for (i = 0; i < phdrnum; i++) {
-+		if (gelf_getphdr(elf, i, phdr) == NULL)
-+			return -1;
-+
-+		if (phdr->p_type != PT_LOAD)
-+			continue;
-+
-+		sz = max(phdr->p_memsz, phdr->p_filesz);
-+		if (!sz)
-+			continue;
-+
-+		if (vaddr >= phdr->p_vaddr && (vaddr < phdr->p_vaddr + sz))
-+			return 0;
-+	}
-+
-+	/* Not found any valid program header */
-+	return -1;
-+}
-+
- static bool want_demangle(bool is_kernel_sym)
- {
- 	return is_kernel_sym ? symbol_conf.demangle_kernel : symbol_conf.demangle;
-@@ -1209,6 +1236,7 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
- 					sym.st_value);
- 			used_opd = true;
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index f72d4380374d..9ede0d7cd0b5 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -1768,7 +1768,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
+ 		if (nla_len(tb_sa[MACSEC_SA_ATTR_SALT]) != MACSEC_SALT_LEN) {
+ 			pr_notice("macsec: nl: add_rxsa: bad salt length: %d != %d\n",
+ 				  nla_len(tb_sa[MACSEC_SA_ATTR_SALT]),
+-				  MACSEC_SA_ATTR_SALT);
++				  MACSEC_SALT_LEN);
+ 			rtnl_unlock();
+ 			return -EINVAL;
  		}
-+
- 		/*
- 		 * When loading symbols in a data mapping, ABS symbols (which
- 		 * has a value of SHN_ABS in its st_shndx) failed at
-@@ -1262,11 +1290,20 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
- 				goto out_elf_end;
- 		} else if ((used_opd && runtime_ss->adjust_symbols) ||
- 			   (!used_opd && syms_ss->adjust_symbols)) {
-+			GElf_Phdr phdr;
-+
-+			if (elf_read_program_header(syms_ss->elf,
-+						    (u64)sym.st_value, &phdr)) {
-+				pr_warning("%s: failed to find program header for "
-+					   "symbol: %s st_value: %#" PRIx64 "\n",
-+					   __func__, elf_name, (u64)sym.st_value);
-+				continue;
-+			}
- 			pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
--				  "sh_addr: %#" PRIx64 " sh_offset: %#" PRIx64 "\n", __func__,
--				  (u64)sym.st_value, (u64)shdr.sh_addr,
--				  (u64)shdr.sh_offset);
--			sym.st_value -= shdr.sh_addr - shdr.sh_offset;
-+				  "p_vaddr: %#" PRIx64 " p_offset: %#" PRIx64 "\n",
-+				  __func__, (u64)sym.st_value, (u64)phdr.p_vaddr,
-+				  (u64)phdr.p_offset);
-+			sym.st_value -= phdr.p_vaddr - phdr.p_offset;
+@@ -2010,7 +2010,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
+ 		if (nla_len(tb_sa[MACSEC_SA_ATTR_SALT]) != MACSEC_SALT_LEN) {
+ 			pr_notice("macsec: nl: add_txsa: bad salt length: %d != %d\n",
+ 				  nla_len(tb_sa[MACSEC_SA_ATTR_SALT]),
+-				  MACSEC_SA_ATTR_SALT);
++				  MACSEC_SALT_LEN);
+ 			rtnl_unlock();
+ 			return -EINVAL;
  		}
- 
- 		demangled = demangle_sym(dso, kmodule, elf_name);
 -- 
 2.35.1
 
