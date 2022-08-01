@@ -2,288 +2,304 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6B56C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 02:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C535C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 02:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239219AbiHAChz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 22:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54324 "EHLO
+        id S239217AbiHACiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 22:38:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239203AbiHAChu (ORCPT
+        with ESMTP id S239213AbiHACiC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 22:37:50 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9963C13D00
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 19:37:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659321469; x=1690857469;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=fLOqIaghCnBMA/V/2uzDON1uQCBgbi8n/oBdERYXHgk=;
-  b=UcZWVY4fQlpuufGY2mIXO4CvdvKw6tFFiuJFgRdd+b/qtfJalANGb4BM
-   cUXBgXXQReJH+T4GHF0p0iSz/E+Dy2PogHmzRkk5869LnZkZqEy1V6Rc+
-   wxInvTpBuDVbz1N+dVzOjAjDOn9F0xGYDN2FvlFXqxWEq6h0mSFlKcuIu
-   bIBAu+IToRAnTBaG3jf2DTb+4TGtE30zrh+Fd4Qyg1Wvpq3GdJ/CKbz3Q
-   rHIHmf//DoWvaHHBUKDHT0i26CgpVeUsNrLCdQ4CHGBpfVHYmkVuXrWvt
-   Z18DX9/52usDR5ileeSfsYGFnnzs1Su3M4KFMD2PIjEJN6qauIAN1gGA9
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10425"; a="375352763"
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="375352763"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 19:37:49 -0700
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="728300221"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.238.208.55])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 19:37:45 -0700
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
-        Wei Xu <weixugc@google.com>, Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
-        Jagdish Gediya <jvgediya@linux.ibm.com>
-Subject: Re: [PATCH v12 1/8] mm/demotion: Add support for explicit memory tiers
-References: <20220729061349.968148-1-aneesh.kumar@linux.ibm.com>
-        <20220729061349.968148-2-aneesh.kumar@linux.ibm.com>
-Date:   Mon, 01 Aug 2022 10:37:41 +0800
-In-Reply-To: <20220729061349.968148-2-aneesh.kumar@linux.ibm.com> (Aneesh
-        Kumar K. V.'s message of "Fri, 29 Jul 2022 11:43:42 +0530")
-Message-ID: <877d3slmdm.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Sun, 31 Jul 2022 22:38:02 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2087.outbound.protection.outlook.com [40.107.95.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B28F13D0E
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 19:37:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Fz3lpTViTjhva6J1mqXYwfFNVzAly7AjTXtmnThk/c4oJc2z/ZC+bqIHs3eEyRKMRUFFLhx+FDJvVYRQYaqs+SmKUMfBxg/wh7YfVxZXaD8wvQmE8cOQmi+2wRqT+voUa9wURk+svd2ml1OED7cycKqqNv8AjU7a3qSLfvJxy/C3neUf1Z0MYItdafW/UWpXpjBYVDWQ+HK+zdvZHLnrQZyxvNOO90VS9Bxx2Qip5CuxvHBW93x+snQWM+0Ayu50+0vVhq3t7ygPmpVHy0XqKjQ7wQE0gARilfv2mIuAJX4hLx0Sjy5NoER88RGJLKEf+K6Hs9nTQ3uCm0jznNKO4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qrcUps18vB5bod0fOJ3KuFyo0PmOkDg1fSqhtR0+Yxk=;
+ b=gnsOXGx0IGu3ta9tWVYdPXlEGhdCpn+Xjiv+WXgLnG7FZN4YonOYNPdn2RtUjS2YQ17Mu/eVNsOAIfm9Lzr9XmD1B9bDpey91YsdipkysvL+2X7oEHUPL3CIQJLJFS5DNwhl3lnMkqlzaNhuroFB93uIwnGjDd58AdkbsozAu2knUWV/J5wxbEmGmj5xRuegcwg7v+aLgOTVRS5GA1UGSgvP5BsA05Ozw63YFM5otPV9OyfwyWdG2UzigESWBQ/wo/pTJmetzjOV2cqWhh2RHf3l5mdvF4o7jsP16cQfsrAGNRAM2ot4+cHQ5JNJTUxL41fVPAVDQzAUzY8GTmVs9Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qrcUps18vB5bod0fOJ3KuFyo0PmOkDg1fSqhtR0+Yxk=;
+ b=oO8ezzL/WS70NjvkcF2JAi9SCi649rE1G4UlB5vHBLVtJPw27U2uAkL8/eeG0AKqMTV+soo2oIQhkTe3rbZXNFfiqtwoR5Oz5yR3pE+rlGu7eZNqs6oG73nkCxzI9txUmdevLChcphqIX9BY3JPlRzjmzqfxALaBpoKKhbqXpLRGPL8tqLBtdudtdGA1hydoMc3UptMN6YPYqu95t6nGiTp1r1ljYxIV0+JTkx/3AkGN7E0VrLKT6sqlM2vOcTXlBcqplO3b00VMu0GCuE0/I8NiEExgqHMaQY14tHbMbO59SuwtNPyVfaOK5IhhJC7RUysz6tkFjj2B+jlyOR5nmA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
+ by BN9PR12MB5365.namprd12.prod.outlook.com (2603:10b6:408:102::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.12; Mon, 1 Aug
+ 2022 02:37:57 +0000
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::eca6:a4a7:e2b2:27e7]) by BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::eca6:a4a7:e2b2:27e7%5]) with mapi id 15.20.5482.016; Mon, 1 Aug 2022
+ 02:37:57 +0000
+References: <20220729024645.764366-1-apopple@nvidia.com>
+ <YuQ4mJqjIUncf7iF@nvidia.com>
+User-agent: mu4e 1.6.9; emacs 27.1
+From:   Alistair Popple <apopple@nvidia.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     akpm@linux-foundation.org, minchan@kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, jhubbard@nvidia.com,
+        pasha.tatashin@soleen.com
+Subject: Re: [PATCH] mm/gup.c: Simplify and fix
+ check_and_migrate_movable_pages() return codes
+Date:   Mon, 01 Aug 2022 12:18:53 +1000
+In-reply-to: <YuQ4mJqjIUncf7iF@nvidia.com>
+Message-ID: <87wnbsd6yp.fsf@nvdebian.thelocal>
+Content-Type: text/plain
+X-ClientProxiedBy: SY3PR01CA0085.ausprd01.prod.outlook.com
+ (2603:10c6:0:19::18) To BYAPR12MB3176.namprd12.prod.outlook.com
+ (2603:10b6:a03:134::26)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e7c38368-6f37-4a71-9dff-08da7366d79a
+X-MS-TrafficTypeDiagnostic: BN9PR12MB5365:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ni5r0hSaNgnY8HjevBxBaNdDmmfeUa/5V4KtBapct1TgHwiYaGnspyGd1wyUovkS85NrGP6kd5oEVhnrJVRhvBGKYvBquxctlA9P0KYvzTyXNBQoR9TdSh1C/8Knu2IRLquFg+o2/sy2jdBMrW83O9t2X23YzoKHctk2A1EMTZHe3t4mKHiK0xMg/oUptBo7hqXC38Lwh4ojz1VWrNIpKPqoE1WYP9AhIkiuacez5X2NQC/oDc9TuuoE9+jjcSkjpQGciIOrKOsMOLbTwHk3gGeA7ZNEa+bYUeFprd2l2lt+JbPCwaQX5u1BU9OTkce1ABp9IlPAhwYHYFCu/myV7NZEbexRzE+cXrM3kTu1gjs+k225CpQdOHLewXvyjhqKs5KQVHbgsYMdxejUxuUGR6BjN3Z2G4zsvPxhDXsK9Ga16G30D6+zb87QPEyGmATa81mO7PrV3kk8NYm8bU7vzqGdTnqUFja5/XR1reeOhPUEh6DUMSzMGlqrjvM4bL0ByUgMiSDMfj3jbmVB7KNhN45dYPvWlSnGwWiaMZXHPib4GOpLrVlBrizxyUhPsALZw+0CuXvsFU9CTWi+2wdxmv0j5Dkag5Q7VwwTyTx2lAYLs9eh2p0sQrVXX5+u6Ui+CVhshPXLOiaAXAwmaKLBDsIJSVkSXiCaRFuLfLOeWKXSp+CCOhT9AQ3h/GSwElgZpPwK0khQqT3J8Zx1IfBGugsHnTR3VFnTchLly+XjMVrbzd65K/Yn8UNxkf+GDIHZ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(366004)(39860400002)(346002)(136003)(83380400001)(316002)(186003)(38100700002)(4326008)(66556008)(66946007)(6636002)(8676002)(66476007)(8936002)(6862004)(5660300002)(478600001)(6486002)(26005)(6506007)(86362001)(6512007)(9686003)(6666004)(41300700001)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?n6nihQf7sMoRLouvH9okDAWwIRgIlZ9oBegbom5h12YMlRUaVidEGVj4VVaK?=
+ =?us-ascii?Q?tEWB5913JiFWbnZbKjgiTtfVnVi0sscSB3GTVtzn1sLkvT9QQGittF49M7oZ?=
+ =?us-ascii?Q?hL2AsiN4zgjdv5Mm9T3YefsZ1l+citA0XUevLu8j6CMT3di8+I5GHNAte5qn?=
+ =?us-ascii?Q?Zq4RfxI00V7j8ypAC56H1X/389MXUii2kLdmteTANHYEdEZVEUGQbhqBFYkN?=
+ =?us-ascii?Q?BoOyRy5DkOSdVr7gh/cNJPz1Atn5dXa4IlFkrBLg4w85vB6Zpu9dvKpnQcf4?=
+ =?us-ascii?Q?muhzs5lyVo0ukABhECI4HjQyBMLXHo7g3ws3UfbTyTSekMMSCICCxtrFgt0i?=
+ =?us-ascii?Q?SYFHrBXfjebfJJw5UsSBtAxKxDWyv9vQew0QtP8eDWva0QC6D0Irz2NZOM8N?=
+ =?us-ascii?Q?YLQl1l26xrNZisYS+UE+0jiub2cFifVlEJa+Ou7vOWAoDomvMF5eU9ygo0MZ?=
+ =?us-ascii?Q?oyy4lEx2FaJByuqxIgO+J/MzSeWeK6U1TQflDcHsS7HEpGczsNNVVOrMLIAy?=
+ =?us-ascii?Q?zB6or2Z9Wik1Clu2+2nr3JHu3xIB98GwG6C0QBlWhV8zMYZ4zIQTXVIEe1JF?=
+ =?us-ascii?Q?5M/CH+g1fW9bb6S0OfO8cs4YtcMvKbhVYWTN8kHl9zhnuID+gATrpEnI6NnU?=
+ =?us-ascii?Q?NgDtz5UXLmB4AewI5z5W+6CXNGWZThECXEOWh7ba5KsFKE77L9YtCV9ll99y?=
+ =?us-ascii?Q?4t0Zoss/rX30pI7SB7epM2TDlvMpWlbwRc/oyFORy45Mg+j0GNlJQRpjHT3I?=
+ =?us-ascii?Q?ryWJAj5yiZI/aPkJxnDG0z1QR5ysVSxXBD6Vwuv1C0zI3kBWqEwgQo8U3ZcE?=
+ =?us-ascii?Q?V2q4z8GLqC19dtouEahotaQypeTpjqPdHB8x+z31EBHTkBzjpzC7M+mdbVEb?=
+ =?us-ascii?Q?c589OJl7Ksp6JXDNW9xBwz9NHUPAqEfZhuAMxVg/8PwAWlxwfx0PjU55Dop3?=
+ =?us-ascii?Q?OsIbCAaNd5517rzHyQZjcwimYHA2BG68iHuoaFFWcutQOkGwfywREjGR1n6M?=
+ =?us-ascii?Q?xB+gEp7B1RGMcgb9DMzAaOhTgs1PQEY1hI328pRfpN6Zu8idE70pg0OQxD89?=
+ =?us-ascii?Q?UqZK3vYTIIUcdOXF6r+sU3e8D64DIeOnn04NxGxYToI8DrVju04tk83KChvm?=
+ =?us-ascii?Q?Uan3CJAL9Z2UZI/dEkLOQ1s30xIrBtojf3HcSbWkHmeJm9DVM8TXBFuipOQR?=
+ =?us-ascii?Q?Wiv5VDivwbiuCZqohuygPzGIfwRBt/H4sHRnWotPvGMRQkPI6XLXE5rtW5rC?=
+ =?us-ascii?Q?Gcc8nMVsnxDFrHhcrqS0gVE6XxuO3u4zLv6JK05kF06Tm5LnTUT1h4GzVQ5D?=
+ =?us-ascii?Q?CkoqjeaCKKqDEPmBhy8fzeWFp7S+ngYRYasuwuQexcNWugfppMhv6/raFQu8?=
+ =?us-ascii?Q?ZBAYKJJZLt4Dikvnd5b5jG6Id9nLUlWcb72aVkNrc64f6ioHvz7irYAL1RFC?=
+ =?us-ascii?Q?A1rHd0RDiFP7Mp4TtnQ5+La9p3cKMhwulX6o6vSjiqm1f2OEUy7jwb1400JB?=
+ =?us-ascii?Q?SItRet54J3Sze1cYebcqHgZWP6eTLFD0cOTR5fvoOiInxND8CZqT+4tT0rID?=
+ =?us-ascii?Q?pdfphtsFpHL9GKCdQRdUndEd/ECBvfubxWZPuqWT?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e7c38368-6f37-4a71-9dff-08da7366d79a
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Aug 2022 02:37:56.9314
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: mGz2sx6yONjaqLv0gRxgQm8MVGTY+YCeYpwNqjnyWVCdVJTJ/iFGGOrSVgIKaOUCpfK1WUm21ovMHciolAWhNg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5365
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
 
-> In the current kernel, memory tiers are defined implicitly via a demotion path
-> relationship between NUMA nodes, which is created during the kernel
-> initialization and updated when a NUMA node is hot-added or hot-removed. The
-> current implementation puts all nodes with CPU into the highest tier, and builds
-> the tier hierarchy tier-by-tier by establishing the per-node demotion targets
-> based on the distances between nodes.
->
-> This current memory tier kernel implementation needs to be improved for several
-> important use cases,
->
-> The current tier initialization code always initializes each memory-only NUMA
-> node into a lower tier. But a memory-only NUMA node may have a high performance
-> memory device (e.g. a DRAM-backed memory-only node on a virtual machine) that
-> should be put into a higher tier.
->
-> The current tier hierarchy always puts CPU nodes into the top tier. But on a
-> system with HBM or GPU devices, the memory-only NUMA nodes mapping these devices
-> should be in the top tier, and DRAM nodes with CPUs are better to be placed into
-> the next lower tier.
->
-> With current kernel higher tier node can only be demoted to nodes with shortest
-> distance on the next lower tier as defined by the demotion path, not any other
-> node from any lower tier. This strict, demotion order does not work in all use
-> cases (e.g. some use cases may want to allow cross-socket demotion to another
-> node in the same demotion tier as a fallback when the preferred demotion node is
-> out of space), This demotion order is also inconsistent with the page allocation
-> fallback order when all the nodes in a higher tier are out of space: The page
-> allocation can fall back to any node from any lower tier, whereas the demotion
-> order doesn't allow that.
->
-> This patch series address the above by defining memory tiers explicitly.
->
-> Linux kernel presents memory devices as NUMA nodes and each memory device is of
-> a specific type. The memory type of a device is represented by its abstract
-> distance. A memory tier corresponds to a range of abstract distance. This allows
-> for classifying memory devices with a specific performance range into a memory
-> tier.
->
-> This patch configures the range/chunk size to be 128. The default DRAM
-> abstract distance is 512. We can have 4 memory tiers below the default DRAM
-                                                       ~~~~~
+Jason Gunthorpe <jgg@nvidia.com> writes:
 
-above?
+> On Fri, Jul 29, 2022 at 12:46:45PM +1000, Alistair Popple wrote:
 
-> abstract distance which cover the range 0 - 127, 127 - 255, 256- 383, 384 - 511.
-> Slower memory devices like persistent memory will have abstract distance higher
-> than the default DRAM level.
+[...]
+
+> I have to say I prefer the usual style where all the places that error
+> exit do 'goto error' instead of trying to keep track in 'ret'
+
+Ok. Part of the complexity was my understanding from the documentation
+for migrate_pages() is that putback_movable_pages() should only be
+called if migrate_pages() != 0:
+
+ * It is caller's responsibility to call putback_movable_pages() to return pages
+ * to the LRU or free list only if ret != 0.
+
+But I think it should be fine to do regardless, because on success the
+pages will be deleted from movable_page_list. Eg. From unmap_and_move():
+
+	if (rc != -EAGAIN) {
+		/*
+		 * A page that has been migrated has all references
+		 * removed and will be freed. A page that has not been
+		 * migrated will have kept its references and be restored.
+		 */
+		list_del(&page->lru);
+	}
+
+So will post a v2 doing this.
+
+> AFAICT there is no reason to 'continue' in most of these paths since
+> we intend to return to userspace with an error anyhow? Why try to
+> isolate more pages?
+
+The main reason would be if callers want to retry the operation. AFAIK
+isolate_folio_lru() can have transient failures, so if callers want to
+retry it makes sense to isolate and migrate as many pages as possible
+rather than one page at a time as subsequent retries may find different
+pages that can't be isolated.
+
+Actually I should have called this out more clearly - the previous
+behaviour on isolation failure was to retry indefinitely which is what
+lead to looping in the kernel. This patch turns isolation failure into
+an error and doesn't retry. I wonder though if we need to maintain a
+retry count similar to what migrate_pages() does if there are unexpected
+page refs?
+
+>> @@ -1980,19 +1980,18 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
+>>  				    folio_nr_pages(folio));
+>>  	}
+>>
+>> -	if (!list_empty(&movable_page_list) || isolation_error_count
+>> -		|| coherent_pages)
+>> -		goto unpin_pages;
+>> -
+>>  	/*
+>>  	 * If list is empty, and no isolation errors, means that all pages are
+>> -	 * in the correct zone.
+>> +	 * in the correct zone. If there were device coherent pages some pages
+>> +	 * have been unpinned.
+>>  	 */
 >
-> Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
-> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-> ---
->  include/linux/memory-tiers.h |  16 ++++++
->  mm/Makefile                  |   1 +
->  mm/memory-tiers.c            | 107 +++++++++++++++++++++++++++++++++++
->  3 files changed, 124 insertions(+)
->  create mode 100644 include/linux/memory-tiers.h
->  create mode 100644 mm/memory-tiers.c
+> That comment is a bit confusing.. I guess it is trying to explain why
+> coherent_pages is doing?
 >
-> diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
-> new file mode 100644
-> index 000000000000..9238c3291aaf
-> --- /dev/null
-> +++ b/include/linux/memory-tiers.h
-> @@ -0,0 +1,16 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _LINUX_MEMORY_TIERS_H
-> +#define _LINUX_MEMORY_TIERS_H
-> +
-> +/*
-> + * Each tier cover a abstrace distance chunk size of 128
-> + */
-> +#define MEMTIER_CHUNK_BITS	7
-> +#define MEMTIER_CHUNK_SIZE	(1 << MEMTIER_CHUNK_BITS)
-> +/*
-> + * Smaller abstract distance value imply faster(higher) memory tiers.
-> + */
-> +#define MEMTIER_ADISTANCE_DRAM	(1 << (MEMTIER_CHUNK_BITS + 2))
-> +#define MEMTIER_ADISTANCE_PMEM	(1 << (MEMTIER_CHUNK_BITS + 3))
+> Maybe just:
+>
+> All the given pages are fine, nothing was done
 
-Not a big issue, I am easier to understand it with the following format,
+Ok.
 
-#define MEMTIER_ADISTANCE_DRAM	\
-        (4 * MEMTIER_CHUNK_SIZE + #MEMTIER_CHUNK_SIZE / 2)
-#define MEMTIER_ADISTANCE_PMEM	\
-        (8 * MEMTIER_CHUNK_SIZE + #MEMTIER_CHUNK_SIZE / 2)
+>> +	if (list_empty(&movable_page_list) && !ret && !coherent_pages)
 
-And it appears better to put the predefined abstract distance at the
-middle of the range.
+Actually I think we can drop the coherent_pages variable too. At this
+point coherent_pages will either be in the correct zone or we will have
+jumped to the error label.
 
-Best Regards,
-Huang, Ying
+>> +		return 0;
+>>
+>> -unpin_pages:
+>
+> Now that this label is removed this if following it
+>
+> 	if (!list_empty(&movable_page_list)) {
+>
+> is also now unneeded because the above 'return 0' already checked it
+>
+> I came up with this ontop:
 
-> +
-> +#endif  /* _LINUX_MEMORY_TIERS_H */
-> diff --git a/mm/Makefile b/mm/Makefile
-> index 6f9ffa968a1a..d30acebc2164 100644
-> --- a/mm/Makefile
-> +++ b/mm/Makefile
-> @@ -92,6 +92,7 @@ obj-$(CONFIG_KFENCE) += kfence/
->  obj-$(CONFIG_FAILSLAB) += failslab.o
->  obj-$(CONFIG_MEMTEST)		+= memtest.o
->  obj-$(CONFIG_MIGRATION) += migrate.o
-> +obj-$(CONFIG_NUMA) += memory-tiers.o
->  obj-$(CONFIG_DEVICE_MIGRATION) += migrate_device.o
->  obj-$(CONFIG_TRANSPARENT_HUGEPAGE) += huge_memory.o khugepaged.o
->  obj-$(CONFIG_PAGE_COUNTER) += page_counter.o
-> diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-> new file mode 100644
-> index 000000000000..60f82667d942
-> --- /dev/null
-> +++ b/mm/memory-tiers.c
-> @@ -0,0 +1,107 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <linux/types.h>
-> +#include <linux/nodemask.h>
-> +#include <linux/slab.h>
-> +#include <linux/lockdep.h>
-> +#include <linux/memory-tiers.h>
-> +
-> +struct memory_tier {
-> +	/* hierarchy of memory tiers */
-> +	struct list_head list;
-> +	/* list of all memory types part of this tier */
-> +	struct list_head memory_types;
-> +	/*
-> +	 * start value of abstract distance. memory tier maps
-> +	 * an abstract distance  range,
-> +	 * adistance_start .. adistance_start + MEMTIER_CHUNK_SIZE
-> +	 */
-> +	int adistance_start;
-> +};
-> +
-> +struct memory_dev_type {
-> +	/* list of memory types that are are part of same tier as this type */
-> +	struct list_head tier_sibiling;
-> +	/* abstract distance for this specific memory type */
-> +	int adistance;
-> +	/* Nodes of same abstract distance */
-> +	nodemask_t nodes;
-> +	struct memory_tier *memtier;
-> +};
-> +
-> +static DEFINE_MUTEX(memory_tier_lock);
-> +static LIST_HEAD(memory_tiers);
-> +struct memory_dev_type *node_memory_types[MAX_NUMNODES];
-> +/*
-> + * For now let's have 4 memory tier below default DRAM tier.
-> + */
-> +static struct memory_dev_type default_dram_type  = {
-> +	.adistance = MEMTIER_ADISTANCE_DRAM,
-> +	.tier_sibiling = LIST_HEAD_INIT(default_dram_type.tier_sibiling),
-> +};
-> +
-> +static struct memory_tier *find_create_memory_tier(struct memory_dev_type *memtype)
-> +{
-> +	bool found_slot = false;
-> +	struct memory_tier *memtier, *new_memtier;
-> +	int adistance = memtype->adistance;
-> +	unsigned int memtier_adistance_chunk_size = MEMTIER_CHUNK_SIZE;
-> +
-> +	lockdep_assert_held_once(&memory_tier_lock);
-> +
-> +	/*
-> +	 * If the memtype is already part of a memory tier,
-> +	 * just return that.
-> +	 */
-> +	if (memtype->memtier)
-> +		return memtype->memtier;
-> +
-> +	adistance = round_down(adistance, memtier_adistance_chunk_size);
-> +	list_for_each_entry(memtier, &memory_tiers, list) {
-> +		if (adistance == memtier->adistance_start) {
-> +			memtype->memtier = memtier;
-> +			list_add(&memtype->tier_sibiling, &memtier->memory_types);
-> +			return memtier;
-> +		} else if (adistance < memtier->adistance_start) {
-> +			found_slot = true;
-> +			break;
-> +		}
-> +	}
-> +
-> +	new_memtier = kzalloc(sizeof(struct memory_tier), GFP_KERNEL);
-> +	if (!new_memtier)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	new_memtier->adistance_start = adistance;
-> +	INIT_LIST_HEAD(&new_memtier->list);
-> +	INIT_LIST_HEAD(&new_memtier->memory_types);
-> +	if (found_slot)
-> +		list_add_tail(&new_memtier->list, &memtier->list);
-> +	else
-> +		list_add_tail(&new_memtier->list, &memory_tiers);
-> +	memtype->memtier = new_memtier;
-> +	list_add(&memtype->tier_sibiling, &new_memtier->memory_types);
-> +	return new_memtier;
-> +}
-> +
-> +static int __init memory_tier_init(void)
-> +{
-> +	int node;
-> +	struct memory_tier *memtier;
-> +
-> +	mutex_lock(&memory_tier_lock);
-> +	/* CPU only nodes are not part of memory tiers. */
-> +	default_dram_type.nodes = node_states[N_MEMORY];
-> +
-> +	memtier = find_create_memory_tier(&default_dram_type);
-> +	if (IS_ERR(memtier))
-> +		panic("%s() failed to register memory tier: %ld\n",
-> +		      __func__, PTR_ERR(memtier));
-> +
-> +	for_each_node_state(node, N_MEMORY)
-> +		node_memory_types[node] = &default_dram_type;
-> +
-> +	mutex_unlock(&memory_tier_lock);
-> +
-> +	return 0;
-> +}
-> +subsys_initcall(memory_tier_init);
+Thanks for the suggestions.
+
+ - Alistair
+
+> diff --git a/mm/gup.c b/mm/gup.c
+> index 9e7c76d1e4ee3c..eddcf3c0eba727 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -1912,11 +1912,15 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
+>  					    struct page **pages,
+>  					    unsigned int gup_flags)
+>  {
+> +	struct migration_target_control mtc = {
+> +		.nid = NUMA_NO_NODE,
+> +		.gfp_mask = GFP_USER | __GFP_NOWARN,
+> +	};
+>  	unsigned long i;
+>  	struct folio *prev_folio = NULL;
+>  	LIST_HEAD(movable_page_list);
+>  	bool drain_allow = true, coherent_pages = false;
+> -	int ret = 0;
+> +	int ret = -EBUSY;
+>
+>  	for (i = 0; i < nr_pages; i++) {
+>  		struct folio *folio = page_folio(pages[i]);
+> @@ -1948,10 +1952,8 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
+>  				unpin_user_page(&folio->page);
+>  			}
+>
+> -			if (migrate_device_coherent_page(&folio->page)) {
+> -				ret = -EBUSY;
+> -				break;
+> -			}
+> +			if (migrate_device_coherent_page(&folio->page))
+> +				goto error;
+>  			continue;
+>  		}
+>
+> @@ -1963,7 +1965,7 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
+>  		if (folio_test_hugetlb(folio)) {
+>  			if (isolate_hugetlb(&folio->page,
+>  						&movable_page_list))
+> -				ret = -EBUSY;
+> +				goto error;
+>  			continue;
+>  		}
+>
+> @@ -1972,10 +1974,8 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
+>  			drain_allow = false;
+>  		}
+>
+> -		if (folio_isolate_lru(folio)) {
+> -			ret = -EBUSY;
+> -			continue;
+> -		}
+> +		if (folio_isolate_lru(folio))
+> +			goto error;
+>  		list_add_tail(&folio->lru, &movable_page_list);
+>  		node_stat_mod_folio(folio,
+>  				    NR_ISOLATED_ANON + folio_is_file_lru(folio),
+> @@ -1987,7 +1987,7 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
+>  	 * in the correct zone. If there were device coherent pages some pages
+>  	 * have been unpinned.
+>  	 */
+> -	if (list_empty(&movable_page_list) && !ret && !coherent_pages)
+> +	if (list_empty(&movable_page_list) && !coherent_pages)
+>  		return 0;
+>
+>  	/*
+> @@ -2005,23 +2005,19 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
+>  			put_page(pages[i]);
+>  	}
+>
+> -	if (!list_empty(&movable_page_list)) {
+> -		struct migration_target_control mtc = {
+> -			.nid = NUMA_NO_NODE,
+> -			.gfp_mask = GFP_USER | __GFP_NOWARN,
+> -		};
+> -
+> -		ret = migrate_pages(&movable_page_list, alloc_migration_target,
+> -				    NULL, (unsigned long)&mtc, MIGRATE_SYNC,
+> -				    MR_LONGTERM_PIN, NULL);
+> -		if (ret > 0) /* number of pages not migrated */
+> -			ret = -ENOMEM;
+> +	not_migrated = migrate_pages(&movable_page_list, alloc_migration_target,
+> +				     NULL, (unsigned long)&mtc, MIGRATE_SYNC,
+> +				     MR_LONGTERM_PIN, NULL);
+> +	if (not_migrated > 0) {
+> +		ret = -ENOMEM;
+> +		goto error;
+>  	}
+> +	return -EAGAIN;
+>
+> -	if (ret && !list_empty(&movable_page_list))
+> +error:
+> +	if (!list_empty(&movable_page_list))
+>  		putback_movable_pages(&movable_page_list);
+> -
+> -	return ret ? ret : -EAGAIN;
+> +	return ret;
+>  }
+>  #else
+>  static long check_and_migrate_movable_pages(unsigned long nr_pages,
