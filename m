@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66831C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA780C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:09:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233641AbiHAMJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43066 "EHLO
+        id S233741AbiHAMJK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:09:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233620AbiHAMIS (ORCPT
+        with ESMTP id S233735AbiHAMI3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:08:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E20945F6B;
-        Mon,  1 Aug 2022 04:55:53 -0700 (PDT)
+        Mon, 1 Aug 2022 08:08:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6258945F7E;
+        Mon,  1 Aug 2022 04:55:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DE06B80E8F;
-        Mon,  1 Aug 2022 11:55:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64268C433D6;
-        Mon,  1 Aug 2022 11:55:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C76DD61227;
+        Mon,  1 Aug 2022 11:55:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D34E2C433D7;
+        Mon,  1 Aug 2022 11:55:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354950;
-        bh=6HuTgiNfY4n1mFptF3vAN268xiOhkWFB+72RZlZBRQY=;
+        s=korg; t=1659354956;
+        bh=Jizby1RHFzU4Ah7+X4auJpnP6fL8l4UvXwDc5hix7e0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PCPxHu2G2uSnx4Sb+gOdXWam3/dwy0bhfDrooFpJBvY/lm/juibM8iY9V7RAoDCAY
-         G7r+SUggjJY7v0eMdne7x1AbHELHp48bIhswvs+rSI2bV8UXyA/n+Bei39KGfvyRz/
-         n3p8VubS7GwHVVzf2OEeJT/etn/BxOwtt10z1S4g=
+        b=GK3f6Uf778ITwYLp3UNSdgE5mvcIiT3ff7wgyQnOMQGEo6Oqct29KflfJpNWTk2j8
+         M38kWOxecBUD8IwxMZHPe436y17Siu/ibNrXySMCU9OkD5AaR77I0cBBW1b3q8JtRB
+         WsqfGTdNVAdGbGbDXoWQqQxipJlrEEo7jLZv+xq8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 5.18 01/88] Bluetooth: Always set event mask on suspend
-Date:   Mon,  1 Aug 2022 13:46:15 +0200
-Message-Id: <20220801114138.109716229@linuxfoundation.org>
+        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        John Hubbard <jhubbard@nvidia.com>,
+        William Kucharski <william.kucharski@oracle.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Jan Kara <jack@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.18 11/88] mm: fix missing wake-up event for FSDAX pages
+Date:   Mon,  1 Aug 2022 13:46:25 +0200
+Message-Id: <20220801114138.573589322@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,44 +54,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+From: Muchun Song <songmuchun@bytedance.com>
 
-commit ef61b6ea154464fefd8a6712d7a3b43b445c3d4a upstream.
+commit f4f451a16dd1f478fdb966bcbb612c1e4ce6b962 upstream.
 
-When suspending, always set the event mask once disconnects are
-successful. Otherwise, if wakeup is disallowed, the event mask is not
-set before suspend continues and can result in an early wakeup.
+FSDAX page refcounts are 1-based, rather than 0-based: if refcount is
+1, then the page is freed.  The FSDAX pages can be pinned through GUP,
+then they will be unpinned via unpin_user_page() using a folio variant
+to put the page, however, folio variants did not consider this special
+case, the result will be to miss a wakeup event (like the user of
+__fuse_dax_break_layouts()).  This results in a task being permanently
+stuck in TASK_INTERRUPTIBLE state.
 
-Fixes: 182ee45da083 ("Bluetooth: hci_sync: Rework hci_suspend_notifier")
-Cc: stable@vger.kernel.org
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Since FSDAX pages are only possibly obtained by GUP users, so fix GUP
+instead of folio_put() to lower overhead.
+
+Link: https://lkml.kernel.org/r/20220705123532.283-1-songmuchun@bytedance.com
+Fixes: d8ddc099c6b3 ("mm/gup: Add gup_put_folio()")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Suggested-by: Matthew Wilcox <willy@infradead.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: John Hubbard <jhubbard@nvidia.com>
+Cc: William Kucharski <william.kucharski@oracle.com>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Jan Kara <jack@suse.cz>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/hci_sync.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ include/linux/mm.h |   14 +++++++++-----
+ mm/gup.c           |    6 ++++--
+ mm/memremap.c      |    6 +++---
+ 3 files changed, 16 insertions(+), 10 deletions(-)
 
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -4942,6 +4942,9 @@ int hci_suspend_sync(struct hci_dev *hde
- 		return err;
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1130,23 +1130,27 @@ static inline bool is_zone_movable_page(
+ #if defined(CONFIG_ZONE_DEVICE) && defined(CONFIG_FS_DAX)
+ DECLARE_STATIC_KEY_FALSE(devmap_managed_key);
+ 
+-bool __put_devmap_managed_page(struct page *page);
+-static inline bool put_devmap_managed_page(struct page *page)
++bool __put_devmap_managed_page_refs(struct page *page, int refs);
++static inline bool put_devmap_managed_page_refs(struct page *page, int refs)
+ {
+ 	if (!static_branch_unlikely(&devmap_managed_key))
+ 		return false;
+ 	if (!is_zone_device_page(page))
+ 		return false;
+-	return __put_devmap_managed_page(page);
++	return __put_devmap_managed_page_refs(page, refs);
+ }
+-
+ #else /* CONFIG_ZONE_DEVICE && CONFIG_FS_DAX */
+-static inline bool put_devmap_managed_page(struct page *page)
++static inline bool put_devmap_managed_page_refs(struct page *page, int refs)
+ {
+ 	return false;
+ }
+ #endif /* CONFIG_ZONE_DEVICE && CONFIG_FS_DAX */
+ 
++static inline bool put_devmap_managed_page(struct page *page)
++{
++	return put_devmap_managed_page_refs(page, 1);
++}
++
+ /* 127: arbitrary random number, small enough to assemble well */
+ #define folio_ref_zero_or_close_to_overflow(folio) \
+ 	((unsigned int) folio_ref_count(folio) + 127u <= 127u)
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -54,7 +54,8 @@ retry:
+ 	 * belongs to this folio.
+ 	 */
+ 	if (unlikely(page_folio(page) != folio)) {
+-		folio_put_refs(folio, refs);
++		if (!put_devmap_managed_page_refs(&folio->page, refs))
++			folio_put_refs(folio, refs);
+ 		goto retry;
  	}
  
-+	/* Update event mask so only the allowed event can wakeup the host */
-+	hci_set_event_mask_sync(hdev);
-+
- 	/* Only configure accept list if disconnect succeeded and wake
- 	 * isn't being prevented.
+@@ -143,7 +144,8 @@ static void gup_put_folio(struct folio *
+ 			refs *= GUP_PIN_COUNTING_BIAS;
+ 	}
+ 
+-	folio_put_refs(folio, refs);
++	if (!put_devmap_managed_page_refs(&folio->page, refs))
++		folio_put_refs(folio, refs);
+ }
+ 
+ /**
+--- a/mm/memremap.c
++++ b/mm/memremap.c
+@@ -489,7 +489,7 @@ void free_zone_device_page(struct page *
+ }
+ 
+ #ifdef CONFIG_FS_DAX
+-bool __put_devmap_managed_page(struct page *page)
++bool __put_devmap_managed_page_refs(struct page *page, int refs)
+ {
+ 	if (page->pgmap->type != MEMORY_DEVICE_FS_DAX)
+ 		return false;
+@@ -499,9 +499,9 @@ bool __put_devmap_managed_page(struct pa
+ 	 * refcount is 1, then the page is free and the refcount is
+ 	 * stable because nobody holds a reference on the page.
  	 */
-@@ -4953,9 +4956,6 @@ int hci_suspend_sync(struct hci_dev *hde
- 	/* Unpause to take care of updating scanning params */
- 	hdev->scanning_paused = false;
- 
--	/* Update event mask so only the allowed event can wakeup the host */
--	hci_set_event_mask_sync(hdev);
--
- 	/* Enable event filter for paired devices */
- 	hci_update_event_filter_sync(hdev);
- 
+-	if (page_ref_dec_return(page) == 1)
++	if (page_ref_sub_return(page, refs) == 1)
+ 		wake_up_var(&page->_refcount);
+ 	return true;
+ }
+-EXPORT_SYMBOL(__put_devmap_managed_page);
++EXPORT_SYMBOL(__put_devmap_managed_page_refs);
+ #endif /* CONFIG_FS_DAX */
 
 
