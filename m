@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF8BC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:05:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99161C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:05:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234614AbiHATFa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 15:05:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52754 "EHLO
+        id S234626AbiHATFe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 15:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234388AbiHATEj (ORCPT
+        with ESMTP id S234382AbiHATEi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 15:04:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 315B54198A;
-        Mon,  1 Aug 2022 12:03:18 -0700 (PDT)
+        Mon, 1 Aug 2022 15:04:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B77E41985;
+        Mon,  1 Aug 2022 12:03:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 713EF61229;
-        Mon,  1 Aug 2022 19:03:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D981C43470;
-        Mon,  1 Aug 2022 19:03:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4300AB81603;
+        Mon,  1 Aug 2022 19:03:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2E11C433D6;
+        Mon,  1 Aug 2022 19:03:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659380596;
-        bh=AUD2YRSKrurU/v6HsvLglxCz/I21f5Z1sO8HDOk/ie0=;
+        s=k20201202; t=1659380592;
+        bh=l8enj4MTrzaffRymhY9N+ZvA53+ALJIfwRiVZI2HHvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l8954r4ULSyE4AO6OYPdJJYyGawBqjuHPMERO4LJuupUxx+cXBoiiOmIgs4WcvcOE
-         F5uwELLs0YO9SxX7pwYdBc4Yl6EuXn+S+4kPeOBQY2QYFf9YvWYTptBK3zqEjKVGmP
-         ht+5+KXFAJ7xiUw08+MKfb7KJ71HYhzFfRTHRloVqT2LDqaxiRF6Ul5qXUshWVKQ5P
-         VkuFjA8frfhuoZjBXFW6lvu5sGFDkfcAtjlUtIenfUVaeLNVoDzHXDXQhzHZicC56M
-         av3lVtY/kKOZzAz3xr2hseawiiTwg+5H0ZseNjIFrm+vqQXaL27HI7Su8LpbCUCLLR
-         BfdwbEjEnAASw==
+        b=eTobRXmRMJqo7gJNkVU9ipopTGLh4eAc/JpFoy9/XvBDHrfWf+z8wuTOBkHYtmdF5
+         nRG80861TJ9EjKP/8vHncX/m8YAUfdvc1im1RTNsfkLhpBH0KACTLCtKA6solik926
+         lm2E3W82HOmMgrjTbNcJVZkFv+yP2UQ736e2g7YGOJuusGy7kPmZ5mhUaQkTi+J3Qg
+         RcS8z38pM0kfKF5tVh4qjUVVC41JG4RvKprrA3+C7gBurwJoGgXvpDRMiwT//mtq6K
+         fzBOwX6nti5mxW/n8HJY4aXP3xqJEiul4Se4h/gnOpWOSsOQX5pUlu145+4M/+BhEL
+         YB024g1nq4FMQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 7/7] ARM: findbit: fix overflowing offset
-Date:   Mon,  1 Aug 2022 15:03:01 -0400
-Message-Id: <20220801190301.3819065-7-sashal@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, aneesh.kumar@linux.ibm.com,
+        npiggin@gmail.com, linux-arch@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH AUTOSEL 5.10 5/7] mmu_gather: Force tlb-flush VM_PFNMAP vmas
+Date:   Mon,  1 Aug 2022 15:02:59 -0400
+Message-Id: <20220801190301.3819065-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220801190301.3819065-1-sashal@kernel.org>
 References: <20220801190301.3819065-1-sashal@kernel.org>
@@ -52,74 +53,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit ec85bd369fd2bfaed6f45dd678706429d4f75b48 ]
+[ Upstream commit b67fbebd4cf980aecbcc750e1462128bffe8ae15 ]
 
-When offset is larger than the size of the bit array, we should not
-attempt to access the array as we can perform an access beyond the
-end of the array. Fix this by changing the pre-condition.
+Jann reported a race between munmap() and unmap_mapping_range(), where
+unmap_mapping_range() will no-op once unmap_vmas() has unlinked the
+VMA; however munmap() will not yet have invalidated the TLBs.
 
-Using "cmp r2, r1; bhs ..." covers us for the size == 0 case, since
-this will always take the branch when r1 is zero, irrespective of
-the value of r2. This means we can fix this bug without adding any
-additional code!
+Therefore unmap_mapping_range() will complete while there are still
+(stale) TLB entries for the specified range.
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Mitigate this by force flushing TLBs for VM_PFNMAP ranges.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Will Deacon <will@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/lib/findbit.S | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ include/asm-generic/tlb.h | 31 ++++++++++++++++---------------
+ 1 file changed, 16 insertions(+), 15 deletions(-)
 
-diff --git a/arch/arm/lib/findbit.S b/arch/arm/lib/findbit.S
-index b5e8b9ae4c7d..7fd3600db8ef 100644
---- a/arch/arm/lib/findbit.S
-+++ b/arch/arm/lib/findbit.S
-@@ -40,8 +40,8 @@ ENDPROC(_find_first_zero_bit_le)
-  * Prototype: int find_next_zero_bit(void *addr, unsigned int maxbit, int offset)
-  */
- ENTRY(_find_next_zero_bit_le)
--		teq	r1, #0
--		beq	3b
-+		cmp	r2, r1
-+		bhs	3b
- 		ands	ip, r2, #7
- 		beq	1b			@ If new byte, goto old routine
-  ARM(		ldrb	r3, [r0, r2, lsr #3]	)
-@@ -81,8 +81,8 @@ ENDPROC(_find_first_bit_le)
-  * Prototype: int find_next_zero_bit(void *addr, unsigned int maxbit, int offset)
-  */
- ENTRY(_find_next_bit_le)
--		teq	r1, #0
--		beq	3b
-+		cmp	r2, r1
-+		bhs	3b
- 		ands	ip, r2, #7
- 		beq	1b			@ If new byte, goto old routine
-  ARM(		ldrb	r3, [r0, r2, lsr #3]	)
-@@ -115,8 +115,8 @@ ENTRY(_find_first_zero_bit_be)
- ENDPROC(_find_first_zero_bit_be)
+diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
+index a8112510522b..171bd6347f74 100644
+--- a/include/asm-generic/tlb.h
++++ b/include/asm-generic/tlb.h
+@@ -286,6 +286,7 @@ struct mmu_gather {
+ 	 */
+ 	unsigned int		vma_exec : 1;
+ 	unsigned int		vma_huge : 1;
++	unsigned int		vma_pfn  : 1;
  
- ENTRY(_find_next_zero_bit_be)
--		teq	r1, #0
--		beq	3b
-+		cmp	r2, r1
-+		bhs	3b
- 		ands	ip, r2, #7
- 		beq	1b			@ If new byte, goto old routine
- 		eor	r3, r2, #0x18		@ big endian byte ordering
-@@ -149,8 +149,8 @@ ENTRY(_find_first_bit_be)
- ENDPROC(_find_first_bit_be)
+ 	unsigned int		batch_count;
  
- ENTRY(_find_next_bit_be)
--		teq	r1, #0
--		beq	3b
-+		cmp	r2, r1
-+		bhs	3b
- 		ands	ip, r2, #7
- 		beq	1b			@ If new byte, goto old routine
- 		eor	r3, r2, #0x18		@ big endian byte ordering
+@@ -356,7 +357,6 @@ tlb_update_vma_flags(struct mmu_gather *tlb, struct vm_area_struct *vma) { }
+ #else /* CONFIG_MMU_GATHER_NO_RANGE */
+ 
+ #ifndef tlb_flush
+-
+ /*
+  * When an architecture does not provide its own tlb_flush() implementation
+  * but does have a reasonably efficient flush_vma_range() implementation
+@@ -376,6 +376,9 @@ static inline void tlb_flush(struct mmu_gather *tlb)
+ 		flush_tlb_range(&vma, tlb->start, tlb->end);
+ 	}
+ }
++#endif
++
++#endif /* CONFIG_MMU_GATHER_NO_RANGE */
+ 
+ static inline void
+ tlb_update_vma_flags(struct mmu_gather *tlb, struct vm_area_struct *vma)
+@@ -393,17 +396,9 @@ tlb_update_vma_flags(struct mmu_gather *tlb, struct vm_area_struct *vma)
+ 	 */
+ 	tlb->vma_huge = is_vm_hugetlb_page(vma);
+ 	tlb->vma_exec = !!(vma->vm_flags & VM_EXEC);
++	tlb->vma_pfn  = !!(vma->vm_flags & (VM_PFNMAP|VM_MIXEDMAP));
+ }
+ 
+-#else
+-
+-static inline void
+-tlb_update_vma_flags(struct mmu_gather *tlb, struct vm_area_struct *vma) { }
+-
+-#endif
+-
+-#endif /* CONFIG_MMU_GATHER_NO_RANGE */
+-
+ static inline void tlb_flush_mmu_tlbonly(struct mmu_gather *tlb)
+ {
+ 	/*
+@@ -492,12 +487,18 @@ static inline void tlb_end_vma(struct mmu_gather *tlb, struct vm_area_struct *vm
+ 		return;
+ 
+ 	/*
+-	 * Do a TLB flush and reset the range at VMA boundaries; this avoids
+-	 * the ranges growing with the unused space between consecutive VMAs,
+-	 * but also the mmu_gather::vma_* flags from tlb_start_vma() rely on
+-	 * this.
++	 * VM_PFNMAP is more fragile because the core mm will not track the
++	 * page mapcount -- there might not be page-frames for these PFNs after
++	 * all. Force flush TLBs for such ranges to avoid munmap() vs
++	 * unmap_mapping_range() races.
+ 	 */
+-	tlb_flush_mmu_tlbonly(tlb);
++	if (tlb->vma_pfn || !IS_ENABLED(CONFIG_MMU_GATHER_MERGE_VMAS)) {
++		/*
++		 * Do a TLB flush and reset the range at VMA boundaries; this avoids
++		 * the ranges growing with the unused space between consecutive VMAs.
++		 */
++		tlb_flush_mmu_tlbonly(tlb);
++	}
+ }
+ 
+ /*
 -- 
 2.35.1
 
