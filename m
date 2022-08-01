@@ -2,81 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B36F2C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6889C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233635AbiHAMNe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
+        id S233701AbiHAMNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234794AbiHAMLv (ORCPT
+        with ESMTP id S234879AbiHAML4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:11:51 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C932872EC8;
-        Mon,  1 Aug 2022 04:57:17 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id D090A18854E6;
-        Mon,  1 Aug 2022 11:57:10 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id C5E6A25032B7;
-        Mon,  1 Aug 2022 11:57:10 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id BD43CA1E00B7; Mon,  1 Aug 2022 11:57:10 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-MIME-Version: 1.0
-Date:   Mon, 01 Aug 2022 13:57:10 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        Mon, 1 Aug 2022 08:11:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCBAD74367;
+        Mon,  1 Aug 2022 04:57:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBCFF601BF;
+        Mon,  1 Aug 2022 11:57:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C531CC433C1;
+        Mon,  1 Aug 2022 11:57:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659355036;
+        bh=OhfhvKc1nqIDSzYblobrHs06fcDNb0jZmJLLMzOVQZU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ta8YRB3W4lOxZvX/0lwMe2YWgdTNcJ2gtwXogA6jXQE/oVaJ17Zg4fqsrKKC3Gnlm
+         /tlF22BYrl7i61MH78ZaGqNsek3CQPvgqlOMbdoeN6E0+ph72yg2FdKpEAoSSdfyCZ
+         UsYeKv+TmsPDhIGEEkJzaWFrVZ6nr06FixSask/w=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com,
+        Ayushman Dutta <ayudutta@amazon.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-In-Reply-To: <Yt0ouiEcAHs8AqAA@shredder>
-References: <723e2995314b41ff323272536ef27341@kapio-technology.com>
- <YsqPWK67U0+Iw2Ru@shredder>
- <d3f674dc6b4f92f2fda3601685c78ced@kapio-technology.com>
- <Ys69DiAwT0Md+6ai@shredder>
- <648ba6718813bf76e7b973150b73f028@kapio-technology.com>
- <YtQosZV0exwyH6qo@shredder>
- <4500e01ec4e2f34a8bbb58ac9b657a40@kapio-technology.com>
- <20220721115935.5ctsbtoojtoxxubi@skbuf> <YtlUWGdgViyjF6MK@shredder>
- <20220721142001.twcmiyvhvlxmp24j@skbuf> <Yt0ouiEcAHs8AqAA@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <474a24ff806bfb8142f3e65eecc665e7@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.18 40/88] net: ping6: Fix memleak in ipv6_renew_options().
+Date:   Mon,  1 Aug 2022 13:46:54 +0200
+Message-Id: <20220801114139.874563134@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
+References: <20220801114138.041018499@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-24 13:10, Ido Schimmel wrote:
-> On Thu, Jul 21, 2022 at 05:20:01PM +0300, Vladimir Oltean wrote:
->> On Thu, Jul 21, 2022 at 04:27:52PM +0300, Ido Schimmel wrote:
->> > I tried looking information about MAB online, but couldn't find
->> > detailed material that answers my questions, so my answers are based
->> > on what I believe is logical, which might be wrong.
->> 
->> I'm kind of in the same situation here.
-> 
-> :(
-> 
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-Sorry for being off here a while... here is my best link regarding MAB. 
-Maybe it can answer some of your questions...
+commit e27326009a3d247b831eda38878c777f6f4eb3d1 upstream.
 
-https://www.cisco.com/c/en/us/td/docs/solutions/Enterprise/Security/TrustSec_1-99/MAB/MAB_Dep_Guide.html#wp392522
+When we close ping6 sockets, some resources are left unfreed because
+pingv6_prot is missing sk->sk_prot->destroy().  As reported by
+syzbot [0], just three syscalls leak 96 bytes and easily cause OOM.
+
+    struct ipv6_sr_hdr *hdr;
+    char data[24] = {0};
+    int fd;
+
+    hdr = (struct ipv6_sr_hdr *)data;
+    hdr->hdrlen = 2;
+    hdr->type = IPV6_SRCRT_TYPE_4;
+
+    fd = socket(AF_INET6, SOCK_DGRAM, NEXTHDR_ICMP);
+    setsockopt(fd, IPPROTO_IPV6, IPV6_RTHDR, data, 24);
+    close(fd);
+
+To fix memory leaks, let's add a destroy function.
+
+Note the socket() syscall checks if the GID is within the range of
+net.ipv4.ping_group_range.  The default value is [1, 0] so that no
+GID meets the condition (1 <= GID <= 0).  Thus, the local DoS does
+not succeed until we change the default value.  However, at least
+Ubuntu/Fedora/RHEL loosen it.
+
+    $ cat /usr/lib/sysctl.d/50-default.conf
+    ...
+    -net.ipv4.ping_group_range = 0 2147483647
+
+Also, there could be another path reported with these options, and
+some of them require CAP_NET_RAW.
+
+  setsockopt
+      IPV6_ADDRFORM (inet6_sk(sk)->pktoptions)
+      IPV6_RECVPATHMTU (inet6_sk(sk)->rxpmtu)
+      IPV6_HOPOPTS (inet6_sk(sk)->opt)
+      IPV6_RTHDRDSTOPTS (inet6_sk(sk)->opt)
+      IPV6_RTHDR (inet6_sk(sk)->opt)
+      IPV6_DSTOPTS (inet6_sk(sk)->opt)
+      IPV6_2292PKTOPTIONS (inet6_sk(sk)->opt)
+
+  getsockopt
+      IPV6_FLOWLABEL_MGR (inet6_sk(sk)->ipv6_fl_list)
+
+For the record, I left a different splat with syzbot's one.
+
+  unreferenced object 0xffff888006270c60 (size 96):
+    comm "repro2", pid 231, jiffies 4294696626 (age 13.118s)
+    hex dump (first 32 bytes):
+      01 00 00 00 44 00 00 00 00 00 00 00 00 00 00 00  ....D...........
+      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    backtrace:
+      [<00000000f6bc7ea9>] sock_kmalloc (net/core/sock.c:2564 net/core/sock.c:2554)
+      [<000000006d699550>] do_ipv6_setsockopt.constprop.0 (net/ipv6/ipv6_sockglue.c:715)
+      [<00000000c3c3b1f5>] ipv6_setsockopt (net/ipv6/ipv6_sockglue.c:1024)
+      [<000000007096a025>] __sys_setsockopt (net/socket.c:2254)
+      [<000000003a8ff47b>] __x64_sys_setsockopt (net/socket.c:2265 net/socket.c:2262 net/socket.c:2262)
+      [<000000007c409dcb>] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+      [<00000000e939c4a9>] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
+
+[0]: https://syzkaller.appspot.com/bug?extid=a8430774139ec3ab7176
+
+Fixes: 6d0bfe226116 ("net: ipv6: Add IPv6 support to the ping socket.")
+Reported-by: syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
+Reported-by: Ayushman Dutta <ayudutta@amazon.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220728012220.46918-1-kuniyu@amazon.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/ipv6/ping.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+--- a/net/ipv6/ping.c
++++ b/net/ipv6/ping.c
+@@ -22,6 +22,11 @@
+ #include <linux/proc_fs.h>
+ #include <net/ping.h>
+ 
++static void ping_v6_destroy(struct sock *sk)
++{
++	inet6_destroy_sock(sk);
++}
++
+ /* Compatibility glue so we can support IPv6 when it's compiled as a module */
+ static int dummy_ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
+ 				 int *addr_len)
+@@ -181,6 +186,7 @@ struct proto pingv6_prot = {
+ 	.owner =	THIS_MODULE,
+ 	.init =		ping_init_sock,
+ 	.close =	ping_close,
++	.destroy =	ping_v6_destroy,
+ 	.connect =	ip6_datagram_connect_v6_only,
+ 	.disconnect =	__udp_disconnect,
+ 	.setsockopt =	ipv6_setsockopt,
+
+
