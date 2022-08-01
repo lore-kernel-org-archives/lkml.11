@@ -2,111 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD30C19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9834DC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:46:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231441AbiHALqJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32902 "EHLO
+        id S231464AbiHALqa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229892AbiHALqG (ORCPT
+        with ESMTP id S229892AbiHALq3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:46:06 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D56357CF
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:46:05 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id rq15so13799970ejc.10
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 04:46:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=WBE7JiuZZ2jU9paVTeguzhA90wR1T04XPqUxNbs3ffc=;
-        b=eYZqdT8l68Fwz64K4ZVZoUG/4DrNnQBSOtsniZYWu2BDmnvmyOXUjLMafRsLVqcSxq
-         kEPGApKNCqqWpe7iw3twrQpmGvdnmKNSsScdKdO6obRbWpOX4iZoUorBrzakUtjMZH0a
-         f+gUZKyAjBp7eicGlL4+d3fLfKFXkT6CJLxSJqk7kZKGApANplFW4EdlvAU7wY7255MO
-         BCh4Nre9li7f6E5hhWDHjN8in3N/UKki744YAzmh9B0nT3FBJ2y/qGgFTD8YbB/RjqQH
-         wleZ5h2KTbS2hcNhbqkaz36wx0IJPO9T0UzlSpyQyPlpnEZmizfRQXS/GQw0m9p9n1Aw
-         lflA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=WBE7JiuZZ2jU9paVTeguzhA90wR1T04XPqUxNbs3ffc=;
-        b=iNM/QPPeL3OL5QZn0STkOujEtZdMVz6x6sNfQfe0F0afUnfCf+WVHDNKopFyy9ZoZi
-         OT4IrCFp1OiuxiLmr23KeGXWSDojQB+PDht5dOCK73dO5zVpVxiaf4S85UqncQYny7iu
-         q/dM/jzE31HN3SKPV6yJ5j6bTN0FYNd9lPY6KXrQkZ2edjcAGrGms/GeoX/xD12Deem3
-         sGJ5QwAmQbAUqMaZucL8GnNjfMfPkppckjwHMHYOFWmH0xbLhNwTvUfLux+pIu2K66MP
-         tF2WXCyqZjuYbbNa5P4V3vitdOE7n9WRbbcMtBWjiB0dRxKqSdMlIonpGQU1AgsE+zsz
-         P+8Q==
-X-Gm-Message-State: AJIora+sqGcUHCULVwswvuyWdyBsXFTmIgWdHqmB/KJlXmPf2kIAj0J/
-        pFNzt9hmR7hxuuvwfigumzBPpA==
-X-Google-Smtp-Source: AGRyM1sE5hfkOOXQpHXoqKcX6x/Y4vdeFJD7RCZnlSrNZ0DGHQxXuLmXNQhU4Zbzmck5c7APkubPkw==
-X-Received: by 2002:a17:907:1c11:b0:72f:20:e1ea with SMTP id nc17-20020a1709071c1100b0072f0020e1eamr12032887ejc.427.1659354363610;
-        Mon, 01 Aug 2022 04:46:03 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s ([104.245.98.208])
-        by smtp.gmail.com with ESMTPSA id wc7-20020a170907124700b0072b55713daesm1340370ejb.56.2022.08.01.04.46.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Aug 2022 04:46:02 -0700 (PDT)
-Date:   Mon, 1 Aug 2022 19:45:58 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     =?iso-8859-1?Q?Adri=E1n?= Herrera Arcila <adrian.herrera@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, namhyung@kernel.org, songliubraving@fb.com,
-        james.clark@arm.com
-Subject: Re: [PATCH 2/2] perf stat: fix unexpected delay behaviour
-Message-ID: <20220801114558.GB73228@leoy-ThinkPad-X240s>
-References: <20220729161244.10522-1-adrian.herrera@arm.com>
- <20220729161244.10522-2-adrian.herrera@arm.com>
+        Mon, 1 Aug 2022 07:46:29 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219B0357E5
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:46:28 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id BA3154DC25;
+        Mon,  1 Aug 2022 11:46:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1659354386; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=qNd2da+ped5af3bAA+RfV2DV9zxTIUEcxQB5O8P8qeM=;
+        b=h/CWLyG/iPcxNauNxR6QHHabWWMotBeR84mb2GmU5s8XQvioptIx7yJYKOZvWIx/7CD0Tr
+        sjyFqlggJoB6Kh3jCUA7WzRhGgUuVWr+Lnf9vZzmry03IDwR6pgarvljoK1gVFZxGU3PmN
+        jjpPPTi5Hw1xMW4W5aRZ0r0Lp0zp0gY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1659354386;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=qNd2da+ped5af3bAA+RfV2DV9zxTIUEcxQB5O8P8qeM=;
+        b=3RN+s3RinkUnyXQoLoWpbkbrDNBAItSVhXiBdq4EuQPrTVR8mJam2vyu55qbz/JUPixNv3
+        Rqo3ydS3pjK32WDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AD81913AAE;
+        Mon,  1 Aug 2022 11:46:26 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Rj9QKhK952KfCgAAMHmgww
+        (envelope-from <bp@suse.de>); Mon, 01 Aug 2022 11:46:26 +0000
+Date:   Mon, 1 Aug 2022 13:46:22 +0200
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] x86/core for v6.0
+Message-ID: <Yue9DqpfTtzdkCBr@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220729161244.10522-2-adrian.herrera@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 04:12:44PM +0000, Adrián Herrera Arcila wrote:
-> The described --delay behaviour is to delay the enablement of events, but
-> not the execution of the command, if one is passed, which is incorrectly
-> the current behaviour.
-> 
-> This patch decouples the enablement from the delay, and enables events
-> before or after launching the workload dependent on the options passed
-> by the user. This code structure is inspired by that in perf-record, and
-> tries to be consistent with it.
-> 
-> Link: https://lore.kernel.org/linux-perf-users/7BFD066E-B0A8-49D4-B635-379328F0CF4C@fb.com
-> Fixes: d0a0a511493d ("perf stat: Fix forked applications enablement of counters")
-> Signed-off-by: Adrián Herrera Arcila <adrian.herrera@arm.com>
+Hi Linus,
 
-bpf_counter() is not enabled for delay in this patch, but I think this
-is purposed to keep the same behaviour with before.  I would leave it
-to Song for a call.
+please pull two x86/core fixes for 6.0.
 
-The patch LGTM and I tested with commands:
+Thx.
 
-$ time ./perf stat --delay 2000 --quiet sleep 2
-Events disabled
-Events enabled
+---
 
-real	0m2.039s
-user	0m0.007s
-sys	0m0.016s
+The following changes since commit ff6992735ade75aae3e35d16b17da1008d753d28:
 
-$ ./perf stat --delay 2000 --quiet echo "marking"
-Events disabled
-marking
-Events enabled
+  Linux 5.19-rc7 (2022-07-17 13:30:22 -0700)
 
-Reviewed-by: Leo Yan <leo.yan@linaro.org>
-Tested-by: Leo Yan <leo.yan@linaro.org>
+are available in the Git repository at:
 
-P.s. I took a bit time to get clear how 'perf stat' set enable_on_exec
-flag, which is set in the function create_perf_stat_counter(), so this
-can enable PMU event for the case when delay is zero, and this can
-avoid losing PMU tracing for workload.
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_core_for_v6.0_rc1
+
+for you to fetch changes up to a1a5482a2c6e38a3ebed32e571625c56a8cc41a6:
+
+  x86/extable: Fix ex_handler_msr() print condition (2022-07-21 10:39:42 +0200)
+
+----------------------------------------------------------------
+- Have invalid MSR accesses warnings appear only once after a
+pr_warn_once() change broke that
+
+- Simplify {JMP,CALL}_NOSPEC and let the objtool retpoline patching
+infra take care of them instead of having unreadable alternative macros
+there
+
+----------------------------------------------------------------
+Peter Zijlstra (2):
+      x86,nospec: Simplify {JMP,CALL}_NOSPEC
+      x86/extable: Fix ex_handler_msr() print condition
+
+ arch/x86/include/asm/nospec-branch.h | 24 ++++++++++++++++++------
+ arch/x86/mm/extable.c                | 16 +++++++++-------
+ include/linux/once_lite.h            | 20 ++++++++++++++++----
+ 3 files changed, 43 insertions(+), 17 deletions(-)
+
+-- 
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Martje Boudien Moerman
+(HRB 36809, AG NÃ¼rnberg)
