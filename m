@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9926AC25B06
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8079BC25B06
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232769AbiHAMCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33192 "EHLO
+        id S232882AbiHAMCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232935AbiHAMAf (ORCPT
+        with ESMTP id S232954AbiHAMAh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:00:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564FE4E601;
-        Mon,  1 Aug 2022 04:52:58 -0700 (PDT)
+        Mon, 1 Aug 2022 08:00:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B513942ADD;
+        Mon,  1 Aug 2022 04:53:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D51F4B81171;
-        Mon,  1 Aug 2022 11:52:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 427DDC433D6;
-        Mon,  1 Aug 2022 11:52:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CAB2A612E9;
+        Mon,  1 Aug 2022 11:53:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3748C433C1;
+        Mon,  1 Aug 2022 11:53:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354775;
-        bh=QdhoJKHWHOYGae7EJTZdGq1HN/BPTPc3s5JJatJcrEw=;
+        s=korg; t=1659354781;
+        bh=nWkaHB4aObE4+ORXQz/gbELbp69I+2ype2nxZe9a19U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1vhoft/hTOHG9sQeGQMcyqYK1zL7MekI+4gS9C6x4hYDFg4y6tH4IE1nuJKPIHrFD
-         Llt8lyhLcaAyu66my58HbRXNakqagyTdCXG5t2TrRguFK3y4nCMfuB1Ntohcb2YEyO
-         nghjOECO0YuIkPvVRs5MUikwFrcFoalO8bzEoQXc=
+        b=CAB5PcVt8myx2h/rHToQNqP8u5c44gy+8SNJz0cDvehAZHue+HjeXZNFslgssdkbJ
+         MNLtOIJybGPmTLm4dw0wWQrSJeboG39zWsOpLTjqx9SP6MvIbNIT3RzVv0BXFHKY35
+         mfC2yRbu5qJaIiOiaq3I6ssIXr0rgNA/FbncMMEk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.15 08/69] asm-generic: remove a broken and needless ifdef conditional
-Date:   Mon,  1 Aug 2022 13:46:32 +0200
-Message-Id: <20220801114134.815320414@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 18/69] tcp: Fix a data-race around sysctl_tcp_nometrics_save.
+Date:   Mon,  1 Aug 2022 13:46:42 +0200
+Message-Id: <20220801114135.235052420@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -48,51 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit e2a619ca0b38f2114347b7078b8a67d72d457a3d upstream.
+commit 8499a2454d9e8a55ce616ede9f9580f36fd5b0f3 upstream.
 
-Commit 527701eda5f1 ("lib: Add a generic version of devmem_is_allowed()")
-introduces the config symbol GENERIC_LIB_DEVMEM_IS_ALLOWED, but then
-falsely refers to CONFIG_GENERIC_DEVMEM_IS_ALLOWED (note the missing LIB
-in the reference) in ./include/asm-generic/io.h.
+While reading sysctl_tcp_nometrics_save, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Luckily, ./scripts/checkkconfigsymbols.py warns on non-existing configs:
-
-GENERIC_DEVMEM_IS_ALLOWED
-Referencing files: include/asm-generic/io.h
-
-The actual fix, though, is simply to not to make this function declaration
-dependent on any kernel config. For architectures that intend to use
-the generic version, the arch's 'select GENERIC_LIB_DEVMEM_IS_ALLOWED' will
-lead to picking the function definition, and for other architectures, this
-function is simply defined elsewhere.
-
-The wrong '#ifndef' on a non-existing config symbol also always had the
-same effect (although more by mistake than by intent). So, there is no
-functional change.
-
-Remove this broken and needless ifdef conditional.
-
-Fixes: 527701eda5f1 ("lib: Add a generic version of devmem_is_allowed()")
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/asm-generic/io.h |    2 --
- 1 file changed, 2 deletions(-)
+ net/ipv4/tcp_metrics.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/asm-generic/io.h
-+++ b/include/asm-generic/io.h
-@@ -1125,9 +1125,7 @@ static inline void memcpy_toio(volatile
- }
- #endif
+--- a/net/ipv4/tcp_metrics.c
++++ b/net/ipv4/tcp_metrics.c
+@@ -329,7 +329,7 @@ void tcp_update_metrics(struct sock *sk)
+ 	int m;
  
--#ifndef CONFIG_GENERIC_DEVMEM_IS_ALLOWED
- extern int devmem_is_allowed(unsigned long pfn);
--#endif
+ 	sk_dst_confirm(sk);
+-	if (net->ipv4.sysctl_tcp_nometrics_save || !dst)
++	if (READ_ONCE(net->ipv4.sysctl_tcp_nometrics_save) || !dst)
+ 		return;
  
- #endif /* __KERNEL__ */
- 
+ 	rcu_read_lock();
 
 
