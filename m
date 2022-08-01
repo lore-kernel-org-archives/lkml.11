@@ -2,86 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C16C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 14:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 253BFC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 14:26:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231416AbiHAO0X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 10:26:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42122 "EHLO
+        id S231784AbiHAO0y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 10:26:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232547AbiHAO0S (ORCPT
+        with ESMTP id S232158AbiHAO0t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 10:26:18 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 390EE27B19
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 07:26:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=jdl0neQFEwslAPL0Xr+d7m5DRmkVE7MWA6Ch3NRMkb4=; b=iISIOWfbioAAFSye3WBrO9ap/Y
-        ZUPH7SsN3oZC7xpZKD2Hd0W80y7T5bmzOYFGjzWPT3/ybMwnbHPYtCEJzAtIL8kNUNt7LQAHBgCNa
-        Q47r+sZik4DH34TskHKz7od1UUQ+F7maadNzg2PwEtOS4507aZBbTZWDijJYkUiwb6SpPBCWOgbZr
-        7wsimOh/koYFJS68b7S0AXVkU8hzfpwXwefMYNF35B+dBMx/PRgJHWXLGicONMA4nJqpwh2tLyOtp
-        HrwQe529N1CN7lrBBJzalMpVRgYmdk5Sln6Pgn8WwS4xQIox88pRyYhdroV9OR3+pUd7EyrVU/8ps
-        g77urFbg==;
-Received: from [187.56.70.103] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oIWMi-00DqPK-AP; Mon, 01 Aug 2022 16:25:52 +0200
-Message-ID: <3509f2c9-2ab9-c1f5-8c27-ab8be771360d@igalia.com>
-Date:   Mon, 1 Aug 2022 11:25:34 -0300
+        Mon, 1 Aug 2022 10:26:49 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE60D1BE9C
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 07:26:48 -0700 (PDT)
+Date:   Mon, 1 Aug 2022 16:26:46 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1659364007;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yXNbE+CrfQls7lAueunZZAuWwyqhIjnfIFJdeDpt5x8=;
+        b=lKUwIlTipqFXwsuy7e7dGdA4aCX78a5cenHiQx5maS5yP9DoZwsciQg8z9zcm27pD1AOm1
+        P2cgcGhUhxzyDPtklGxN5aNSDphfJVGwZ0VWIXuueEJnbZ7SqyUJ8jQwA5X8Um8Z9wSkMv
+        qWGxMYZb+SGhuF3kjI2UZYat55dzdxhCpr67KBqCMa2pAliCZu3wYxeTWtU7TtWs5NCPzR
+        6CQXVoSnlyDpiV3HGv7+7+jAgQZpYPSwIHEf8dGIl7X3d+sQxyoU23NBJ94OfFqIi3ApMn
+        9QECqIxM3FIkbaXYWIlTH0PkErDgRgTvzAVZOh62bx7rODYLK/HP002SEHoslQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1659364007;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yXNbE+CrfQls7lAueunZZAuWwyqhIjnfIFJdeDpt5x8=;
+        b=iM8hsZyo9pCKc6pHOx5yCgimXlS7qQnMRyEXOG56P7EL5lKRYhgTYJIhCa8DAONBNOVnvv
+        8A+P+honpfGHhPAA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Mike Galbraith <efault@gmx.de>, Petr Mladek <pmladek@suse.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v5] lib/vsprintf: defer filling siphash key on RT
+Message-ID: <YufiprsbKxO7r9F5@linutronix.de>
+References: <CAHmME9qP2ZR6oQY3bf8W42RHW+-DamrzT=Gh1XJ3O7f72NU_bQ@mail.gmail.com>
+ <20220801141245.124787-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH -next] panic: Add register_panic_notifier and
- unregister_panic_notifier
-Content-Language: en-US
-To:     "xuqiang (M)" <xuqiang36@huawei.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "elver@google.com" <elver@google.com>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "tangmeng@uniontech.com" <tangmeng@uniontech.com>,
-        "yangtiezhu@loongson.cn" <yangtiezhu@loongson.cn>,
-        "john.ogness@linutronix.de" <john.ogness@linutronix.de>,
-        "bigeasy@linutronix.de" <bigeasy@linutronix.de>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>,
-        "weiyongjun (A)" <weiyongjun1@huawei.com>
-References: <20220801100509.62282-1-xuqiang36@huawei.com>
- <2d4fa03a-f460-d995-88e8-7f0e58e557bd@igalia.com>
- <d6ba371d778842bead73e62fc04d612f@huawei.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <d6ba371d778842bead73e62fc04d612f@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220801141245.124787-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/08/2022 10:58, xuqiang (M) wrote:
-> 在 2022/8/1 20:12, Guilherme G. Piccoli 写道:
->> On 01/08/2022 07:05, Xu Qiang wrote:
->>> Add two methods to manipulate panic_notifier_list and export them.
->>> Subsequently, panic_notifier_list is changed to static variable.
->>>
->>> Signed-off-by: Xu Qiang <xuqiang36@huawei.com>
->> Hi Xu Qiang, first of all, thanks for your patch!
->> I'd like to mention 2 things about it:
->>
->> (a) As-is, there's no much use for it - I mean, you're adding a helper
->> but you didn't change the uses of such notifier list addition (and there
->> are plenty of them). Are you intend to change it, or just use the new
->> API in new calls?
-> After this patch comes in, I will replace all the old interfaces with
-> the new ones.
->>
->> (b) Even more important: we are working in a panic notifier refactor
->> [0], and that'll add new lists. I'm still working on that, plan to
->> submit (relatively) soon. Maybe worth to wait it, if this one is not urgent?
-> I can wait for your patch to be incorporated before submitting it.
+On 2022-08-01 16:12:45 [+0200], Jason A. Donenfeld wrote:
+> Sebastian - again, feel free to take this and modify it as needed. Just
+> posting ideas... -Jason
 
-Great, thanks Xu! I'll include you in the CC list of the V2 =)
+The plan is to make CONFIG_PROVE_RAW_LOCK_NESTING part of LOCKDEP once
+the issues have been sorted out.
+
+Sebastian
