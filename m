@@ -2,144 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F6C6C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6737C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:49:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234990AbiHAMtR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49392 "EHLO
+        id S235067AbiHAMtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:49:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234979AbiHAMs7 (ORCPT
+        with ESMTP id S231215AbiHAMtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:48:59 -0400
-Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCEF12AF1
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:40:17 -0700 (PDT)
-Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4LxHlN4nPRzDqGt;
-        Mon,  1 Aug 2022 12:40:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1659357616; bh=DrT1LeaDfNwwsNUchbsuDRJXsZzb3gVGQhZQOPYtNzQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mf6jZmQoGkE+u3cUdqqccDw0O7OZ7rmt2eodyOCULd4653wzwBwtbzXearfN0Ic+W
-         FZZ8nfp1QR5wG9jij0300mtz03P0TAknWvYNNnDVVj9xK/eH4dKj3ZVEsytOtnrdVI
-         8OMiP/xWuwW/mSrfRQMmOYNyYQiCBV2f6GxnWiro=
-X-Riseup-User-ID: ECBF70E8AE18FA2C3A4503D85996DE13307D642BFD9025435F88ABC64A82DC45
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews1.riseup.net (Postfix) with ESMTPSA id 4LxHlJ1fnBz5vMX;
-        Mon,  1 Aug 2022 12:40:12 +0000 (UTC)
-From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
-To:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        mwen@igalia.com, andrealmeid@riseup.net,
-        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
-Subject: [PATCH] drm/amd/display: Drop XFCEnabled parameter from CalculatePrefetchSchedule
-Date:   Mon,  1 Aug 2022 09:40:06 -0300
-Message-Id: <20220801124006.89027-1-mairacanal@riseup.net>
+        Mon, 1 Aug 2022 08:49:02 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A242C6258;
+        Mon,  1 Aug 2022 05:40:20 -0700 (PDT)
+X-UUID: f1ea4fb8317843ab8017207144315c28-20220801
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:def95827-f715-4d59-ad3a-30f9aec44f66,OB:0,LO
+        B:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:90
+X-CID-INFO: VERSION:1.1.8,REQID:def95827-f715-4d59-ad3a-30f9aec44f66,OB:0,LOB:
+        10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:90
+X-CID-META: VersionHash:0f94e32,CLOUDID:9cdce8d0-841b-4e95-ad42-8f86e18f54fc,C
+        OID:1254dfa547d3,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: f1ea4fb8317843ab8017207144315c28-20220801
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1614910273; Mon, 01 Aug 2022 20:40:15 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Mon, 1 Aug 2022 20:39:55 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Mon, 1 Aug 2022 20:39:55 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Chen-Yu Tsai <wenst@chromium.org>, <hsinyi@chromium.org>,
+        Allen-kh Cheng <allen-kh.cheng@mediatek.corp-partner.google.com>
+Subject: [PATCH v12 0/1] Add basic node support for MediaTek MT8186 SoC
+Date:   Mon, 1 Aug 2022 20:39:51 +0800
+Message-ID: <20220801123952.18932-1-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The XFCEnabled parameter from the CalculatePrefetchSchedule function is
-not used and is only mentioned in a couple of comments. Therefore,
-remove the argument and the comments.
+From: Allen-kh Cheng <allen-kh.cheng@mediatek.corp-partner.google.com>
 
-Signed-off-by: Maíra Canal <mairacanal@riseup.net>
----
- .../dc/dml/dcn21/display_mode_vba_21.c        | 21 +++----------------
- 1 file changed, 3 insertions(+), 18 deletions(-)
+MT8186 is a SoC based on 64bit ARMv8 architecture. It contains 6 CA55 and
+2 CA76 cores. MT8186 share many HW IP with MT65xx series. This patchset was 
+tested on MT8186 evaluation board to shell.
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c b/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c
-index 8a7485e21d53..05cbc6968cde 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c
-+++ b/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.c
-@@ -120,7 +120,6 @@ static bool CalculatePrefetchSchedule(
- 		unsigned int SwathHeightY,
- 		unsigned int SwathHeightC,
- 		double TWait,
--		bool XFCEnabled,
- 		double XFCRemoteSurfaceFlipDelay,
- 		bool ProgressiveToInterlaceUnitInOPP,
- 		double *DSTXAfterScaler,
-@@ -673,7 +672,6 @@ static bool CalculatePrefetchSchedule(
- 		unsigned int SwathHeightY,
- 		unsigned int SwathHeightC,
- 		double TWait,
--		bool XFCEnabled,
- 		double XFCRemoteSurfaceFlipDelay,
- 		bool ProgressiveToInterlaceUnitInOPP,
- 		double *DSTXAfterScaler,
-@@ -910,12 +908,7 @@ static bool CalculatePrefetchSchedule(
- 			TimeForFetchingMetaPTE = dml_max(*Tno_bw + (double) PDEAndMetaPTEBytesFrame * HostVMInefficiencyFactor / *PrefetchBandwidth,
- 					dml_max(UrgentExtraLatency + UrgentLatency * (GPUVMPageTableLevels * (HostVMDynamicLevels + 1) - 1), LineTime / 4));
- 		} else {
--// 5/30/2018 - This was an optimization requested from Sy but now NumberOfCursors is no longer a factor
--//             so if this needs to be reinstated, then it should be officially done in the VBA code as well.
--//			if (mode_lib->NumberOfCursors > 0 || XFCEnabled)
--				TimeForFetchingMetaPTE = LineTime / 4;
--//			else
--//				TimeForFetchingMetaPTE = 0.0;
-+			TimeForFetchingMetaPTE = LineTime / 4;
- 		}
- 
- 		if ((GPUVMEnable == true || DCCEnable == true)) {
-@@ -931,11 +924,7 @@ static bool CalculatePrefetchSchedule(
- 											LineTime
- 													/ 4.0)));
- 		} else {
--// See note above dated 5/30/2018
--//			if (NumberOfCursors > 0 || XFCEnabled)
--				TimeForFetchingRowInVBlank = (LineTime - TimeForFetchingMetaPTE) / 2.0;
--//			else // TODO: Did someone else add this??
--//				TimeForFetchingRowInVBlank = 0.0;
-+			TimeForFetchingRowInVBlank = (LineTime - TimeForFetchingMetaPTE) / 2.0;
- 		}
- 
- 		*DestinationLinesToRequestVMInVBlank = dml_ceil(4.0 * TimeForFetchingMetaPTE / LineTime, 1.0) / 4.0;
-@@ -943,11 +932,9 @@ static bool CalculatePrefetchSchedule(
- 		*DestinationLinesToRequestRowInVBlank = dml_ceil(4.0 * TimeForFetchingRowInVBlank / LineTime, 1.0) / 4.0;
- 
- 		LinesToRequestPrefetchPixelData = *DestinationLinesForPrefetch
--// See note above dated 5/30/2018
--//						- ((NumberOfCursors > 0 || GPUVMEnable || DCCEnable) ?
- 						- ((GPUVMEnable || DCCEnable) ?
- 								(*DestinationLinesToRequestVMInVBlank + 2 * *DestinationLinesToRequestRowInVBlank) :
--								0.0); // TODO: Did someone else add this??
-+								0.0);
- 
- 		if (LinesToRequestPrefetchPixelData > 0) {
- 
-@@ -2200,7 +2187,6 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
- 							mode_lib->vba.SwathHeightY[k],
- 							mode_lib->vba.SwathHeightC[k],
- 							TWait,
--							mode_lib->vba.XFCEnabled[k],
- 							mode_lib->vba.XFCRemoteSurfaceFlipDelay,
- 							mode_lib->vba.ProgressiveToInterlaceUnitInOPP,
- 							&locals->DSTXAfterScaler[k],
-@@ -3493,7 +3479,6 @@ static noinline void CalculatePrefetchSchedulePerPlane(
- 			locals->SwathHeightYThisState[k],
- 			locals->SwathHeightCThisState[k],
- 			mode_lib->vba.TWait,
--			mode_lib->vba.XFCEnabled[k],
- 			mode_lib->vba.XFCRemoteSurfaceFlipDelay,
- 			mode_lib->vba.ProgressiveToInterlaceUnitInOPP,
- 			&locals->dst_x_after_scaler,
+This series is based on tag: next-20220728, linux-next/master
+Since we have a another dts series of mt8195 [1] which is waiting for review from
+maintainers. I remove power domains controller node from this series.
+
+There are some corrections in mt8186 hardware bindings. We need to apply the below patches.
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220725110702.11362-2-allen-kh.cheng@mediatek.com/
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220725110702.11362-3-allen-kh.cheng@mediatek.com/
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220720130604.14113-2-allen-kh.cheng@mediatek.com/
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220721014845.19044-2-allen-kh.cheng@mediatek.com/
+
+[1]
+https://patchwork.kernel.org/project/linux-mediatek/list/?series=663978
+
+changes since v11:
+ - add #cooling-cells in cpu nodes
+ - add pmu nodes for mt8186
+ - change #interrupt-cells from 3 to 4
+ - correct interrupts property in each nodes for 4 interrupt cells
+ - remove power domains controller node
+ - move #address-cells and #size-cells into mt8186.dts
+ - remove unused ahb_cg clock in mmc0
+ - add efuse node
+ - add dsi node and remove dpi node
+ - move i2c status position in mt8186-evb.dts
+ - change i2c child nodee name in pio node to *-pins
+ - change property from mediatek,drive-strength-adv to drive-strength-microamp in i2c child nodes of pio
+ - change drive-strength value from MTK_DRIVE_4mA to 4 in i2c child nodes of pio
+ - change i2c child nodes from pins-sda-sc1 to pins-bus
+ - correct pintctrl clk names
+
+changes since v10:
+ - remove merged PATCHes
+ - add pmu nodes
+ - add #cooling-cells
+ - change #interrupt-cells number from 3 to 4
+ - remove power domains controller node
+ - move #address-cells/#size-cells into mt8186.dts from evb dts for i2c
+ - move status = 'okay' position in i2cx
+ - fix pinctrl patternproperties name in pio
+ - add efuse node
+ - fix dsi node
+ - add #reset-cells in infracfg_ao: syscon
+
+changes since v9:
+ - remove some merged PATCHs from series
+ - reorder nodes in dts (cpu-map)
+ - remove okay status in auxadc
+ - remove unnecessary suffix node name for i2c
+ - add pwm node 
+ - add dsi-phy node 
+ - add dpi node 
+
+changes since v9:
+ - add one space before equal sign of drive-strength-adv
+ - corect compatible name for big cores (ca76)
+ - use upper case of address in pinctrl
+ - add pwrap node
+ - add pwm node
+
+changes since v8:
+ - change name from pins_bus to pins-sda-scl
+ - correct email address
+ - add capacity-dmips-mhz for each CPU
+ - add ppi-partitions in gic node
+ - change name to power-domain
+ - remove status "okay" in scp node
+ - update timer and pericfg compatible in series
+
+changes since v7:
+ - add scp&auxadc node
+
+changes since v6:
+ - remove unnecessary blank line
+
+changes since v5:
+ - replace Mediatek a to MediaTek
+ - use GPL-2.0-only OR BSD-2-Clause
+
+changes since v4:
+ - correct driver clock of mt8186
+ - add power domains controller and clock controllers
+ - add pinctrl, usb host, spi and i2c nodes
+ - add node status in mt8186-evb.dts
+ - correct some dtbs_check warnings
+
+changes since v3:
+ - remove serial, mmc and phy patch from series. (already merged)
+ - remove mcusysoff node
+ - move oscillator nodes at the head of dts
+ - change name from usb-phy to t-phy
+
+changes since v2:
+ - add soc {} in mt8186.dtsi
+
+changes since v1:
+ - add dt-bindings: arm: Add compatible for MediaTek MT8186
+
+Allen-KH Cheng (1):
+  arm64: dts: Add MediaTek MT8186 dts and evaluation board and Makefile
+
+ arch/arm64/boot/dts/mediatek/Makefile       |   1 +
+ arch/arm64/boot/dts/mediatek/mt8186-evb.dts | 238 ++++++
+ arch/arm64/boot/dts/mediatek/mt8186.dtsi    | 874 ++++++++++++++++++++
+ 3 files changed, 1113 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8186-evb.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8186.dtsi
+
 -- 
-2.37.1
+2.18.0
 
