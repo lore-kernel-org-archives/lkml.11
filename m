@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E628DC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49CC7C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:08:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233711AbiHAMIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
+        id S233729AbiHAMIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:08:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233394AbiHAMHv (ORCPT
+        with ESMTP id S233419AbiHAMHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 1 Aug 2022 08:07:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2C461708;
-        Mon,  1 Aug 2022 04:55:33 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F285F135;
+        Mon,  1 Aug 2022 04:55:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F61361227;
-        Mon,  1 Aug 2022 11:55:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 434C4C433D6;
-        Mon,  1 Aug 2022 11:55:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25FBBB8117D;
+        Mon,  1 Aug 2022 11:55:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75ADDC43142;
+        Mon,  1 Aug 2022 11:55:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354931;
-        bh=4V5+XiK0m6/bCnVOtzLGj1OssD/oLnrY/TKdeaTsV7A=;
+        s=korg; t=1659354928;
+        bh=QMw995bFN4btZZcVAz0aVohWTc+76L26YjLiWXMto/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jUpM8huI6a7BfRXRyO89fxzDyW6cuR9Z3xBBUgpQWsRzLk99ugUYpBOSreeBms5zj
-         wK32bA5wExWEMFFHO6L3SHUx8BMU0VxOJTMjXJmgphdFUaIxva5d0K5hBe+AHaHX0Z
-         GYpolBqBfhNx3lkWNa9D6iroD/gBjEkoM1r139ls=
+        b=XV+bDg4zYLEO+rOGKly/t+brWwA9WwJ0eZQ//1AIAK7evx6oKdzUF3ScbIQNH1EOI
+         XfoscSvAnd5NbRhz9nC2xh+bt09n90gS1aIc4baWjntI88N193ffeAXF7ipU/qyHvS
+         VRDtR7H9vcsCWhLGfRpVWgYXuzhC3yd6LPxaSA3M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Sabrina Dubroca <sd@queasysnail.net>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 44/69] macsec: always read MACSEC_SA_ATTR_PN as a u64
-Date:   Mon,  1 Aug 2022 13:47:08 +0200
-Message-Id: <20220801114136.263042256@linuxfoundation.org>
+Subject: [PATCH 5.15 43/69] macsec: limit replay window size with XPN
+Date:   Mon,  1 Aug 2022 13:47:07 +0200
+Message-Id: <20220801114136.220910073@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -51,58 +51,77 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sabrina Dubroca <sd@queasysnail.net>
 
-[ Upstream commit c630d1fe6219769049c87d1a6a0e9a6de55328a1 ]
+[ Upstream commit b07a0e2044057f201d694ab474f5c42a02b6465b ]
 
-Currently, MACSEC_SA_ATTR_PN is handled inconsistently, sometimes as a
-u32, sometimes forced into a u64 without checking the actual length of
-the attribute. Instead, we can use nla_get_u64 everywhere, which will
-read up to 64 bits into a u64, capped by the actual length of the
-attribute coming from userspace.
+IEEE 802.1AEbw-2013 (section 10.7.8) specifies that the maximum value
+of the replay window is 2^30-1, to help with recovery of the upper
+bits of the PN.
 
-This fixes several issues:
- - the check in validate_add_rxsa doesn't work with 32-bit attributes
- - the checks in validate_add_txsa and validate_upd_sa incorrectly
-   reject X << 32 (with X != 0)
+To avoid leaving the existing macsec device in an inconsistent state
+if this test fails during changelink, reuse the cleanup mechanism
+introduced for HW offload. This wasn't needed until now because
+macsec_changelink_common could not fail during changelink, as
+modifying the cipher suite was not allowed.
+
+Finally, this must happen after handling IFLA_MACSEC_CIPHER_SUITE so
+that secy->xpn is set.
 
 Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites (IEEE 802.1AEbw)")
 Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macsec.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/macsec.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 1f2eb576533c..3e74dcc1f875 100644
+index 9ede0d7cd0b5..1f2eb576533c 100644
 --- a/drivers/net/macsec.c
 +++ b/drivers/net/macsec.c
-@@ -1696,7 +1696,7 @@ static bool validate_add_rxsa(struct nlattr **attrs)
- 		return false;
+@@ -241,6 +241,7 @@ static struct macsec_cb *macsec_skb_cb(struct sk_buff *skb)
+ #define DEFAULT_SEND_SCI true
+ #define DEFAULT_ENCRYPT false
+ #define DEFAULT_ENCODING_SA 0
++#define MACSEC_XPN_MAX_REPLAY_WINDOW (((1 << 30) - 1))
  
- 	if (attrs[MACSEC_SA_ATTR_PN] &&
--	    *(u64 *)nla_data(attrs[MACSEC_SA_ATTR_PN]) == 0)
-+	    nla_get_u64(attrs[MACSEC_SA_ATTR_PN]) == 0)
- 		return false;
+ static bool send_sci(const struct macsec_secy *secy)
+ {
+@@ -3739,9 +3740,6 @@ static int macsec_changelink_common(struct net_device *dev,
+ 		secy->operational = tx_sa && tx_sa->active;
+ 	}
  
- 	if (attrs[MACSEC_SA_ATTR_ACTIVE]) {
-@@ -1939,7 +1939,7 @@ static bool validate_add_txsa(struct nlattr **attrs)
- 	if (nla_get_u8(attrs[MACSEC_SA_ATTR_AN]) >= MACSEC_NUM_AN)
- 		return false;
+-	if (data[IFLA_MACSEC_WINDOW])
+-		secy->replay_window = nla_get_u32(data[IFLA_MACSEC_WINDOW]);
+-
+ 	if (data[IFLA_MACSEC_ENCRYPT])
+ 		tx_sc->encrypt = !!nla_get_u8(data[IFLA_MACSEC_ENCRYPT]);
  
--	if (nla_get_u32(attrs[MACSEC_SA_ATTR_PN]) == 0)
-+	if (nla_get_u64(attrs[MACSEC_SA_ATTR_PN]) == 0)
- 		return false;
+@@ -3787,6 +3785,16 @@ static int macsec_changelink_common(struct net_device *dev,
+ 		}
+ 	}
  
- 	if (attrs[MACSEC_SA_ATTR_ACTIVE]) {
-@@ -2293,7 +2293,7 @@ static bool validate_upd_sa(struct nlattr **attrs)
- 	if (nla_get_u8(attrs[MACSEC_SA_ATTR_AN]) >= MACSEC_NUM_AN)
- 		return false;
++	if (data[IFLA_MACSEC_WINDOW]) {
++		secy->replay_window = nla_get_u32(data[IFLA_MACSEC_WINDOW]);
++
++		/* IEEE 802.1AEbw-2013 10.7.8 - maximum replay window
++		 * for XPN cipher suites */
++		if (secy->xpn &&
++		    secy->replay_window > MACSEC_XPN_MAX_REPLAY_WINDOW)
++			return -EINVAL;
++	}
++
+ 	return 0;
+ }
  
--	if (attrs[MACSEC_SA_ATTR_PN] && nla_get_u32(attrs[MACSEC_SA_ATTR_PN]) == 0)
-+	if (attrs[MACSEC_SA_ATTR_PN] && nla_get_u64(attrs[MACSEC_SA_ATTR_PN]) == 0)
- 		return false;
+@@ -3816,7 +3824,7 @@ static int macsec_changelink(struct net_device *dev, struct nlattr *tb[],
  
- 	if (attrs[MACSEC_SA_ATTR_ACTIVE]) {
+ 	ret = macsec_changelink_common(dev, data);
+ 	if (ret)
+-		return ret;
++		goto cleanup;
+ 
+ 	/* If h/w offloading is available, propagate to the device */
+ 	if (macsec_is_offloaded(macsec)) {
 -- 
 2.35.1
 
