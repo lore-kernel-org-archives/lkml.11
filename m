@@ -2,106 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 011CCC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 07:39:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EDDEC19F2D
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 07:41:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229816AbiHAHjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 03:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41090 "EHLO
+        id S229814AbiHAHlC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 03:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiHAHjS (ORCPT
+        with ESMTP id S229695AbiHAHk7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 03:39:18 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270E73A4AA;
-        Mon,  1 Aug 2022 00:39:18 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2717YJ7F029450;
-        Mon, 1 Aug 2022 07:39:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2022-7-12; bh=NsBa7DGC9faUA1dOH811TIzi5P9/Syp89idMZPaQges=;
- b=OQLqSXrxBbpJ1jhbWRTT0y4Zotf/w8m6dcaZQi6MauFtHpRnrouSQ13HUO64U1QEBREy
- EdYij2zQlUTiFPmu1NGAoqNS60+QhMDeh7aW522P51sErPuQwj6b2ccbi8ifrw0mqkF4
- mDLvRlHlPboMtFOTZ0v0ry0dBCwt5OW7tbsHQkhi8WvGfidly+D5XiW0rrbcVCj1jO37
- 4nPnoiOd6VQVlSwG1Hi6bmEl8oTWrgap1OJ0Z1IU0JoCp0RD8wTtmtu/qzHVRZ7U5RDi
- Xs4DdNe8g8s5p3RogGSzNKylIBfTiTikp0HyU6s0q0zpTn+Z8Sk/0jKD8dsbshRCPYli ZA== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hmu80tt5j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 01 Aug 2022 07:39:08 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 2716hlpb001018;
-        Mon, 1 Aug 2022 07:39:07 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3hp57px0b5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 01 Aug 2022 07:39:07 +0000
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2717d7Re020359;
-        Mon, 1 Aug 2022 07:39:07 GMT
-Received: from localhost.us.oracle.com (iret.us.oracle.com [10.135.120.58])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3hp57px0ar-1;
-        Mon, 01 Aug 2022 07:39:07 +0000
-From:   William Kucharski <william.kucharski@oracle.com>
-To:     Zhu Yanjun <zyjzyj2000@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>, rpearsonhpe@gmail.com,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     William Kucharski <william.kucharski@oracle.com>
-Subject: [PATCH] RDMA/rxe: Correct error handling in routines allocating xarray entries
-Date:   Mon,  1 Aug 2022 01:38:50 -0600
-Message-Id: <20220801073850.841628-1-william.kucharski@oracle.com>
-X-Mailer: git-send-email 2.37.1
+        Mon, 1 Aug 2022 03:40:59 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93DEE59;
+        Mon,  1 Aug 2022 00:40:58 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id b21so11367299ljk.8;
+        Mon, 01 Aug 2022 00:40:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3CySBFeUWN85aXoonRz+AZDirKDNsX9iBAr2bBqFmHU=;
+        b=eTu6j9zzaLbBPXTYLnqfHsSDrQNeiG8n4svWVAROvuNolOkayxxX1ArmqdYOJngEM7
+         tIGROr+VLARtg1ZJXR/u1A0AgkXu+iespBhq2+tZ3yDLJc4D6QCAo8TlEGeBkhwrZzPP
+         u0h913n4nfmLmAjmTbd4j6qvRppKi0/FfQsVB4tSRdp2H3LuJiI1Ss4fQRZ7XixxC9hg
+         j0zJjX+wTo6lFctiIOdL5jC+pZsjxrsF48GWU40kvkGGQZF3aUmnSyVjTQZFy+nqrQun
+         w3zzVXIhw6XYfsP+1/h4jlbocUhf8aTI7J7Axrk64rZE+yUPJzoqvNyqkGPQ1cae8x4d
+         5D/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3CySBFeUWN85aXoonRz+AZDirKDNsX9iBAr2bBqFmHU=;
+        b=cKAhqCypgNHvugMsCARBwtVlP0dwuVnkYA3/xg41tzAedZu0cFtxM9Ld5SrhjV1E2B
+         JA7N5SLAEYR6/LrBHWypohgGor7HBUChB96jd1uvUsS9TZW+iqZZjmZZfqssBrMTdzbO
+         CgmREcx2+JqB9b5doRPXFUt1FH2dvmANpDdtGPIdypx1h/gOxj4XF2O1bLldIDkqAegK
+         wTe93dxEq8cMM/mNh71926qcYn1KX7ON6wrs1YuEbqm3FqVoZlA87eXZ6+vUSC1SFMcj
+         Mcqzw651SBJOOEJVLhKuAtrB7HlVtNjhJYuuvmDA+2eCBbmGbNpDfhrxhRlfFA47R7TM
+         EmwA==
+X-Gm-Message-State: ACgBeo2haNHbmC89WEm1HKypK0d0LfByw/z4z6GqNcZxxoLVZL2Oc8zK
+        LACZkKwlk2tCT0phrvdPLwY=
+X-Google-Smtp-Source: AA6agR60lgw2vb7OWO93hjNB85sYnk9WjvegobksCPHLQnpGTAEzdAsDbc8DqH5esnhPzmHMNcUpLg==
+X-Received: by 2002:a2e:a168:0:b0:25e:4dbc:2ac0 with SMTP id u8-20020a2ea168000000b0025e4dbc2ac0mr1359949ljl.187.1659339657265;
+        Mon, 01 Aug 2022 00:40:57 -0700 (PDT)
+Received: from gmail.com (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id v8-20020a2ea448000000b0025e2c5a12b6sm1511078ljn.129.2022.08.01.00.40.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 00:40:56 -0700 (PDT)
+Date:   Mon, 1 Aug 2022 09:45:07 +0200
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Kent Gustavsson <kent@minoris.se>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 0/9] Improve MCP3911 driver
+Message-ID: <YueEg0tmKpc4kdLO@gmail.com>
+References: <20220722130726.7627-1-marcus.folkesson@gmail.com>
+ <20220731174112.072345e3@jic23-huawei>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-01_03,2022-07-28_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=999
- adultscore=0 spamscore=0 bulkscore=0 suspectscore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2208010036
-X-Proofpoint-ORIG-GUID: IJT2fa4bPg_zcpmGDNBhEjGBxAqPHKfB
-X-Proofpoint-GUID: IJT2fa4bPg_zcpmGDNBhEjGBxAqPHKfB
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="W/hEucp5LQz60B6z"
+Content-Disposition: inline
+In-Reply-To: <20220731174112.072345e3@jic23-huawei>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current code will report an error if xa_alloc_cyclic() returns
-non-zero, but it will return 1 if it wrapped indices before successfully
-allocating an entry.
 
-An error should only be reported if the call actually failed (denoted by
-a return value < 0.)
+--W/hEucp5LQz60B6z
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: 3225717f6dfa2 ("RDMA/rxe: Replace red-black trees by xarrays")
-Signed-off-by: William Kucharski <william.kucharski@oracle.com>
----
- drivers/infiniband/sw/rxe/rxe_pool.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On Sun, Jul 31, 2022 at 05:41:12PM +0100, Jonathan Cameron wrote:
+> On Fri, 22 Jul 2022 15:07:17 +0200
+> Marcus Folkesson <marcus.folkesson@gmail.com> wrote:
+>=20
+> > Hi,
+> >=20
+> > This patch series intend to fix bugs and improve functionality of the
+> > MCP3911 driver.
+> > The main features added are
+> > - Support for buffers
+> > - Interrupt driven readings
+> > - Support for oversampling ratio
+> > - Support for set scale values (Gain)
+> >=20
+> > Among the bug fixes, there are changes in the formula for calculate raw
+> > value and a fix for mismatch in the devicetree property.
+> >=20
+> > Another general improvement for the driver is to use managed resources
+> > for all allocated resources.
+> >=20
+> Hi Marcus,
+>=20
+> The first 3 fixes look good to me.  Do you want me to pick those up to
+> go in after rc1 via my togreg-fixes branch?  The side effect of doing
+> that is it'll be a little while before they are upstream in the branch
+> I'll want to pick the rest of the series on top of.
+>=20
+> So it's a trade off between getting fixes in as soon as possible and
+> slowing down other improvements a little.
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_pool.c b/drivers/infiniband/sw/rxe/rxe_pool.c
-index 19b14826385b..e9f3bbd8d605 100644
---- a/drivers/infiniband/sw/rxe/rxe_pool.c
-+++ b/drivers/infiniband/sw/rxe/rxe_pool.c
-@@ -139,7 +139,7 @@ void *rxe_alloc(struct rxe_pool *pool)
- 
- 	err = xa_alloc_cyclic(&pool->xa, &elem->index, elem, pool->limit,
- 			      &pool->next, GFP_KERNEL);
--	if (err)
-+	if (err < 0)
- 		goto err_free;
- 
- 	return obj;
-@@ -167,7 +167,7 @@ int __rxe_add_to_pool(struct rxe_pool *pool, struct rxe_pool_elem *elem)
- 
- 	err = xa_alloc_cyclic(&pool->xa, &elem->index, elem, pool->limit,
- 			      &pool->next, GFP_KERNEL);
--	if (err)
-+	if (err < 0)
- 		goto err_cnt;
- 
- 	return 0;
--- 
-2.37.1
+Both ways works for me.
+I guess it is preferable to get the fixes in as soon as possible?
 
+If so, do you want me to rebase the series on your togreg-fixes branch
+or wait to send v5 until the patches are upstream?
+
+Or simply keep sending the whole series?
+
+Thanks,
+Marcus Folkesson
+
+>=20
+> Jonathan
+>=20
+
+--W/hEucp5LQz60B6z
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEBVGi6LZstU1kwSxliIBOb1ldUjIFAmLnhH4ACgkQiIBOb1ld
+UjKmEg//cqbYKmFpcnaOrWMfyZOZHbWE7RbHs+5DupY019C250WBr+p/esK/vNJU
+IsY2r2eHswuxECGCAU4BytjWcNDqLLSOZbewyJC5Xc6KhFZ/jmpsBjPPvr0ifSgd
+H+kFkuNuXWAuXwekJHycgyveghSpP3GhqFUR435pDrQhaW7Vqt9yiGccwqYcaE2n
+DJc7xkjYXF2k+KoNRwZ4LaDqUX/4450+wlHgBI6FRFMDESCdui9wXPl/D5tULYo1
+kGogWuZtwjYXW+Fjn5zsIwoNwJPZixNQl1pXQFd2TSoCtWM90ZcVHqMSkvuvZYTb
+fAOuv60VOXGvbB6yNPKPnnGL0JEOFeKXxRulm/Cn2nOTD2483wdR80DYChMuaHUL
+Y+OE9DVTz1sUXhW9Oae4af7A7CS6T5zxX5a3TjbmgjzPCs5FlfHOqpXf5AR9AzSp
+vEvyXTmyagLrFsDcxaAmEog7zFafWi4hnl4dgKdHTa5SfbHC2ws14BiyHZuk4zyx
+2Xqk1picambN3kaL3TbTGMruWFrgRVhav9GM4PBZZyGnx37pcB7UqEGu6Yea8nm6
+/sib0CgxwSmyXmg3kr9HxtGOOo7bADe4JK2MvJ9tHhz4oR37ruxS2E2SUI75Mlaf
+dA1kvXTzu1MwOEvEyRcRpcH2B2A+Dodmqjn7BqHtcFi7Z9lAQ/k=
+=xvHz
+-----END PGP SIGNATURE-----
+
+--W/hEucp5LQz60B6z--
