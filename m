@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C88C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49611C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:59:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232720AbiHAL64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
+        id S232252AbiHAL7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232793AbiHAL6I (ORCPT
+        with ESMTP id S231432AbiHAL6J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:58:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174E43ED40;
-        Mon,  1 Aug 2022 04:52:15 -0700 (PDT)
+        Mon, 1 Aug 2022 07:58:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7E9419A2;
+        Mon,  1 Aug 2022 04:52:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B485AB81163;
-        Mon,  1 Aug 2022 11:52:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BC12C433D6;
-        Mon,  1 Aug 2022 11:52:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9930612E3;
+        Mon,  1 Aug 2022 11:52:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1A28C433C1;
+        Mon,  1 Aug 2022 11:52:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354732;
-        bh=leCcDXVwFKyrHfzPGTJDJSc271rjYnDLjod5ht6pc34=;
+        s=korg; t=1659354735;
+        bh=v3eMzd9USaj7O5CPtj1Ypzb355onBF7y+Urro/QYSdE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fqLahw+bCdCL9G4ui0348DkMlqciMYpdB5qP99mIU0nOcFVNeMzVSOfLEAdu+ijal
-         7p4QaxbxUTdbQ+HgLPrnV+qboO3RMf28fDPKiXIdVjTguf7+fhhvUeCePrmzw1j5/N
-         QJ3hqqJ42+ruuI+rowX4CFM+TsqwMmDVq6yJwvus=
+        b=enHaUITfRKojnOT1HvUWttU1GdrZkCUypqeLD1DfDlOOT1Iv9MTmajgsXqqPanZeX
+         OhbUldg5SXoctRiFNbXhjFOvF38DM6V2QmqQQkoPjy8qNwUTp8yyzK2vNKEGhV9xdE
+         FW+xI4FnyIVP6jgk1vquUoy+cuxjKugfgUmKDYHo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenz Bauer <lmb@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Tianchen Ding <dtcccc@linux.alibaba.com>
-Subject: [PATCH 5.10 65/65] selftests: bpf: Dont run sk_lookup in verifier tests
-Date:   Mon,  1 Aug 2022 13:47:22 +0200
-Message-Id: <20220801114136.323243588@linuxfoundation.org>
+        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 35/65] net: macsec: fix potential resource leak in macsec_add_rxsa() and macsec_add_txsa()
+Date:   Mon,  1 Aug 2022 13:46:52 +0200
+Message-Id: <20220801114135.176779971@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114133.641770326@linuxfoundation.org>
 References: <20220801114133.641770326@linuxfoundation.org>
@@ -49,58 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tianchen Ding <dtcccc@linux.alibaba.com>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-From: Lorenz Bauer <lmb@cloudflare.com>
+[ Upstream commit c7b205fbbf3cffa374721bb7623f7aa8c46074f1 ]
 
-commit b4f894633fa14d7d46ba7676f950b90a401504bb upstream.
+init_rx_sa() allocates relevant resource for rx_sa->stats and rx_sa->
+key.tfm with alloc_percpu() and macsec_alloc_tfm(). When some error
+occurs after init_rx_sa() is called in macsec_add_rxsa(), the function
+released rx_sa with kfree() without releasing rx_sa->stats and rx_sa->
+key.tfm, which will lead to a resource leak.
 
-sk_lookup doesn't allow setting data_in for bpf_prog_run. This doesn't
-play well with the verifier tests, since they always set a 64 byte
-input buffer. Allow not running verifier tests by setting
-bpf_test.runs to a negative value and don't run the ctx access case
-for sk_lookup. We have dedicated ctx access tests so skipping here
-doesn't reduce coverage.
+We should call macsec_rxsa_put() instead of kfree() to decrease the ref
+count of rx_sa and release the relevant resource if the refcount is 0.
+The same bug exists in macsec_add_txsa() for tx_sa as well. This patch
+fixes the above two bugs.
 
-Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20210303101816.36774-6-lmb@cloudflare.com
-Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 3cf3227a21d1 ("net: macsec: hardware offloading infrastructure")
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/test_verifier.c          |    4 ++--
- tools/testing/selftests/bpf/verifier/ctx_sk_lookup.c |    1 +
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/macsec.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/tools/testing/selftests/bpf/test_verifier.c
-+++ b/tools/testing/selftests/bpf/test_verifier.c
-@@ -100,7 +100,7 @@ struct bpf_test {
- 	enum bpf_prog_type prog_type;
- 	uint8_t flags;
- 	void (*fill_helper)(struct bpf_test *self);
--	uint8_t runs;
-+	int runs;
- #define bpf_testdata_struct_t					\
- 	struct {						\
- 		uint32_t retval, retval_unpriv;			\
-@@ -1054,7 +1054,7 @@ static void do_test_single(struct bpf_te
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index 8d73b72d6179..70c5905a916b 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -1841,7 +1841,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
+ 	return 0;
  
- 	run_errs = 0;
- 	run_successes = 0;
--	if (!alignment_prevented_execution && fd_prog >= 0) {
-+	if (!alignment_prevented_execution && fd_prog >= 0 && test->runs >= 0) {
- 		uint32_t expected_val;
- 		int i;
+ cleanup:
+-	kfree(rx_sa);
++	macsec_rxsa_put(rx_sa);
+ 	rtnl_unlock();
+ 	return err;
+ }
+@@ -2084,7 +2084,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
  
---- a/tools/testing/selftests/bpf/verifier/ctx_sk_lookup.c
-+++ b/tools/testing/selftests/bpf/verifier/ctx_sk_lookup.c
-@@ -239,6 +239,7 @@
- 	.result = ACCEPT,
- 	.prog_type = BPF_PROG_TYPE_SK_LOOKUP,
- 	.expected_attach_type = BPF_SK_LOOKUP,
-+	.runs = -1,
- },
- /* invalid 8-byte reads from a 4-byte fields in bpf_sk_lookup */
- {
+ cleanup:
+ 	secy->operational = was_operational;
+-	kfree(tx_sa);
++	macsec_txsa_put(tx_sa);
+ 	rtnl_unlock();
+ 	return err;
+ }
+-- 
+2.35.1
+
 
 
