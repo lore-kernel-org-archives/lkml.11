@@ -2,182 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BADAC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F47CC19F2D
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230232AbiHAL2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
+        id S230334AbiHALaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbiHAL2s (ORCPT
+        with ESMTP id S229815AbiHALaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:28:48 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1B63226
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:28:46 -0700 (PDT)
-Received: from [10.130.0.193] (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxAM_ruOdiVSoAAA--.951S3;
-        Mon, 01 Aug 2022 19:28:44 +0800 (CST)
-Subject: Re: [PATCH v4 0/4] LoongArch: Support new relocation types
-To:     Jinyang He <hejinyang@loongson.cn>
-References: <32a74a218c76611f897fd1df1ad0059068621133.camel@xry111.site>
- <ec52fd49-4a30-15d9-3d32-fd7bc6d8b3f0@loongson.cn>
- <0179679b736aea7258981dec2d83107cce74dfc1.camel@xry111.site>
- <a139a8475fe295ac9f17064269cd0312dca6f96e.camel@xry111.site>
- <6b5d2188f93ed72b67a4bbb7116113f833fe1ee5.camel@xry111.site>
- <d7670b60-2782-4642-995b-7baa01779a66@loongson.cn>
- <7cad6e78014168a8906e130e1cf3809077d2bda7.camel@xry111.site>
- <1d0783b87bda3e454a111862fcc5b5faffcb16b0.camel@xry111.site>
- <00eede4b1380888a500f74b1e818bb25a550632b.camel@xry111.site>
- <7512ae16-b171-d072-674f-a6b9a5e764d6@loongson.cn>
- <CAAhV-H5wSJZ2X46ySqoaJd7Z2soGcYKRNixnghmE3f3zEzyS+w@mail.gmail.com>
- <10751c9af5d45fea741e0bbed6c818ddb9db3ac3.camel@xry111.site>
- <7b1f9813-85fc-acfd-8e24-7e01469ded3a@loongson.cn>
-Cc:     Xi Ruoyao <xry111@xry111.site>,
-        Huacai Chen <chenhuacai@kernel.org>, loongarch@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>,
-        WANG Xuerui <kernel@xen0n.name>,
-        Lulu Cheng <chenglulu@loongson.cn>
-From:   Youling Tang <tangyouling@loongson.cn>
-Message-ID: <ba5e99de-0719-af88-4d94-8860787a4251@loongson.cn>
-Date:   Mon, 1 Aug 2022 19:28:43 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
- Thunderbird/45.4.0
+        Mon, 1 Aug 2022 07:30:14 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F29EE56;
+        Mon,  1 Aug 2022 04:30:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659353413; x=1690889413;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=a61lpXtFRcD7rCy0IlruL3g3efXxumVvdinkbqWTrRw=;
+  b=PqTiIoHNzwSUDQU+6gyCj9go+IbQr5PBo+u2KyPdufCPrfgP8KQkytVl
+   ll5X3eqhZnMiGmTCc0BO1KMFERZSgOU5kf7GVrKMiKK/q2C1WT+P99KRL
+   JGvsKJKtOfdRk9iNPkuGILd4/jfTBWywLy06QeHlCN6FLmzdedBCpyMfP
+   pFPump3Y796chP+pUqHTxeDfq4bqOsJ4KSIhI6ddURruizlY0oKe5QxOI
+   mqD8ClRH0geGgWnRQZQQg7H+zwIFn5UUz9q2rtjo6D48RwS4yctCwtSMK
+   JcIUyCGvJygeBdOkVTx0WcLRoO9HtUBTp53uIfaV0SkoJqRGKLsj8hQui
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10425"; a="276024209"
+X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
+   d="scan'208";a="276024209"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 04:30:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
+   d="scan'208";a="634860829"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga001.jf.intel.com with ESMTP; 01 Aug 2022 04:30:11 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id F2C8BF7; Mon,  1 Aug 2022 14:30:21 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Mark Gross <markgross@kernel.org>
+Subject: [PATCH v1 1/4] platform/x86: pmc_atom: Fix SLP_TYPx bitfield mask
+Date:   Mon,  1 Aug 2022 14:30:15 +0300
+Message-Id: <20220801113018.9882-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-In-Reply-To: <7b1f9813-85fc-acfd-8e24-7e01469ded3a@loongson.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: AQAAf9DxAM_ruOdiVSoAAA--.951S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxAF43Jr4ktF1kJry3CrW8tFb_yoWrAw4rpF
-        ZrGFWUKr4DJr1Fyanrtw1Uua4jvws8JryxXw15tryUZFyqvrn3Kr47tw45uFy7Xr1kG3WU
-        ZrWUA34xXrW5ZwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvv14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
-        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr
-        1lF7xvr2IY64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7Mxk0xIA0c2IEe2xFo4CEbIxv
-        r21lc2xSY4AK67AK6r4kMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI
-        8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AK
-        xVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI
-        8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E
-        87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73Uj
-        IFyTuYvjfU0PEfUUUUU
-X-CM-SenderInfo: 5wdqw5prxox03j6o00pqjv00gofq/
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Jinyang
+On Intel hardware the SLP_TYPx bitfield occupies bits 10-12 as per ACPI
+specification (see Table 4.13 "PM1 Control Registers Fixed Hardware
+Feature Control Bits" for the details).
 
-On 08/01/2022 06:08 PM, Jinyang He wrote:
-> On 08/01/2022 05:55 PM, Xi Ruoyao wrote:
->
->> On Mon, 2022-08-01 at 10:34 +0800, Huacai Chen wrote:
->>> Hi, all,
->>>
->>> On Mon, Aug 1, 2022 at 10:16 AM Youling Tang <tangyouling@loongson.cn>
->>> wrote:
->>>> Hi, Ruoyao
->>>>
->>>> On 07/30/2022 10:52 AM, Xi Ruoyao wrote:
->>>>> On Sat, 2022-07-30 at 10:24 +0800, Xi Ruoyao wrote:
->>>>>> On Sat, 2022-07-30 at 01:55 +0800, Xi Ruoyao wrote:
->>>>>>> On Fri, 2022-07-29 at 20:19 +0800, Youling Tang wrote:
->>>>>>>
->>>>>>>> On 07/29/2022 07:45 PM, Xi Ruoyao wrote:
->>>>>>>>> Hmm... The problem is the "addresses" of per-cpu symbols
->>>>>>>>> are
->>>>>>>>> faked: they
->>>>>>>>> are actually offsets from $r21.  So we can't just load
->>>>>>>>> such an
->>>>>>>>> offset
->>>>>>>>> with PCALA addressing.
->>>>>>>>>
->>>>>>>>> It looks like we'll need to introduce an attribute for GCC
->>>>>>>>> to
->>>>>>>>> make
->>>>>>>>> an
->>>>>>>>> variable "must be addressed via GOT", and add the
->>>>>>>>> attribute into
->>>>>>>>> PER_CPU_ATTRIBUTES.
->>>>>>>> Yes, we need a GCC attribute to specify the per-cpu
->>>>>>>> variable.
->>>>>>> GCC patch adding "addr_global" attribute for LoongArch:
->>>>>>> https://gcc.gnu.org/pipermail/gcc-patches/2022-July/599064.html
->>>>>>>
->>>>>>> An experiment to use it:
->>>>>>> https://github.com/xry111/linux/commit/c1d5d70
->>>>>> Correction: https://github.com/xry111/linux/commit/c1d5d708
->>>>>>
->>>>>> It seems 7-bit SHA is not enough for kernel repo.
->>>>> If addr_global is rejected or not implemented (for example,
->>>>> building the
->>>>> kernel with GCC 12), *I expect* the following hack to work (I've
->>>>> not
->>>>> tested it because I'm AFK now).  Using visibility in kernel seems
->>>>> strange, but I think it may make some sense because the modules
->>>>> are some
->>>>> sort of similar to an ELF shared object being dlopen()'ed, and our
->>>>> way
->>>>> to inject per-CPU symbols is analog to ELF interposition.
->>>>>
->>>>> arch/loongarch/include/asm/percpu.h:
->>>>>
->>>>>     #if !__has_attribute(__addr_global__) && defined(MODULE)
->>>>>     /* Magically remove "static" for per-CPU variables.  */
->>>>>     # define ARCH_NEEDS_WEAK_PER_CPU
->>>>>     /* Force GOT-relocation for per-CPU variables.  */
->>>>>     # define PER_CPU_ATTRIBUTES
->>>>> __attribute__((__visibility__("default")))
->>>>>     #endif
->>>>>
->>>>> arch/loongarch/Makefile:
->>>>>
->>>>>     # Hack for per-CPU variables, see PER_CPU_ATTRIBUTES in
->>>>>     # include/asm/percpu.h
->>>>>     if (call gcc-does-not-support-addr-global)
->>>>>       KBUILD_CFLAGS_MODULE += -fPIC -fvisibility=hidden
->>>>>     endif
->>>>>
->>>> Using the old toolchain (GCC 12) can successfully load the
->>>> nf_tables.ko
->>>> module after applying the above patch.
->>> I don't like such a hack..., can we consider using old relocation
->>> types when building by old toolchains?
->>
->> I don't like the hack too.  I only developed it as an intellectual game.
->>
->> We need to consider multiple combinations:
->>
->> (1) Old GCC + old Binutils.  We need -mla-local-with-abs for
->> KBUILD_CFLAGS_MODULE.
->>
->> (2) Old GCC + new Binutils.  We need -mla-local-with-abs for
->> KBUILD_CFLAGS_MODULE, *and* adding the support for
->> R_LARCH_ABS{_HI20,_LO12,64_LO20,64_HI12} in the kernel module loader.
->>
->> (3) New GCC + old Binutils.  As new GCC should support our new attribute
->> (I now intend to send V2 patch to gcc-patches using "movable" as the
->> attribute name), no special action is needed.
->>
->> Basically, we need:
->>
->> (1) Handle R_LARCH_ABS{_HI20,_LO12,64_LO20,64_HI12} in the kernel module
->> loader.
->> (2) Add -Wa,-mla-local-with-abs into KBUILD_CFLAGS_MODULE if GCC version
->> is <= 12.
->
-> Actually, I really hope kernel image is in the XKVRANGE, rather
-> than being in XKPRANGE. So that we can limit kernel and modules
-> be in 4GB range. I think it will make all work normally. :-(
->
+Fix the mask and other related definitions accordingly.
 
-Assuming that the kernel and modules are limited to 4G, the external
-symbols will be accessed through pcrel32, which means that there is no
-need to pass the GOT table entry, and there is no need for got support,
-so there will be no percpu problem, and it will make all work normally?
+Fixes: 93e5eadd1f6e ("x86/platform: New Intel Atom SOC power management controller driver")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/platform/x86/pmc_atom.c            | 2 +-
+ include/linux/platform_data/x86/pmc_atom.h | 6 ++++--
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
-Youling.
+diff --git a/drivers/platform/x86/pmc_atom.c b/drivers/platform/x86/pmc_atom.c
+index b8b1ed1406de..c220172fefbb 100644
+--- a/drivers/platform/x86/pmc_atom.c
++++ b/drivers/platform/x86/pmc_atom.c
+@@ -232,7 +232,7 @@ static void pmc_power_off(void)
+ 	pm1_cnt_port = acpi_base_addr + PM1_CNT;
+ 
+ 	pm1_cnt_value = inl(pm1_cnt_port);
+-	pm1_cnt_value &= SLEEP_TYPE_MASK;
++	pm1_cnt_value &= ~SLEEP_TYPE_MASK;
+ 	pm1_cnt_value |= SLEEP_TYPE_S5;
+ 	pm1_cnt_value |= SLEEP_ENABLE;
+ 
+diff --git a/include/linux/platform_data/x86/pmc_atom.h b/include/linux/platform_data/x86/pmc_atom.h
+index 6807839c718b..1fee5d85f75d 100644
+--- a/include/linux/platform_data/x86/pmc_atom.h
++++ b/include/linux/platform_data/x86/pmc_atom.h
+@@ -7,6 +7,8 @@
+ #ifndef PMC_ATOM_H
+ #define PMC_ATOM_H
+ 
++#include <bits.h>
++
+ /* ValleyView Power Control Unit PCI Device ID */
+ #define	PCI_DEVICE_ID_VLV_PMC	0x0F1C
+ /* CherryTrail Power Control Unit PCI Device ID */
+@@ -139,9 +141,9 @@
+ #define	ACPI_MMIO_REG_LEN	0x100
+ 
+ #define	PM1_CNT			0x4
+-#define	SLEEP_TYPE_MASK		0xFFFFECFF
++#define	SLEEP_TYPE_MASK		GENMASK(12, 10)
+ #define	SLEEP_TYPE_S5		0x1C00
+-#define	SLEEP_ENABLE		0x2000
++#define	SLEEP_ENABLE		BIT(13)
+ 
+ extern int pmc_atom_read(int offset, u32 *value);
+ 
+-- 
+2.35.1
 
