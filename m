@@ -2,85 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1CAC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:15:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A419CC19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:19:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230523AbiHALPd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:15:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36372 "EHLO
+        id S230326AbiHALTo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:19:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231373AbiHALPZ (ORCPT
+        with ESMTP id S229862AbiHALTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:15:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36141CE25
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:15:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6F2060C24
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 11:15:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 144E3C433C1;
-        Mon,  1 Aug 2022 11:15:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659352522;
-        bh=Ir7MX8zgwtyV8QO9JWew7x+i5RBi3lcDrkhFzja7Kaw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=asjieE3y0N7OSZlRWKdh0AfmKg+qYFm+4t1flF9OR2lppfL8jx48V2NdpTQjIjBR3
-         l+DpX5ONcAc26Fg70uSGQT3y0i6EH94crbx4AaO8E9lNERJ90AO6m+NSOAecTu3/XP
-         nLvi9z1alc6k2wHtLnjfIk7TT/6Z9l0d9aJKwwoGDa+ZJX0+l+CT9Rqhq7J2aw+sCA
-         wgwFRYrwzXdKZLDNu+lW8EaVF3QTdz3M8noPoMGeugqRr5oJ/N7prIhANpjZNfRaiJ
-         kMXsq6XFzWDNwjmseDi6iPHG+fNjMAWzsOu+qNmjIJkYRHpGN9XsvG0cehXp2vcMDT
-         gfmTLpHr0C+lw==
-Date:   Mon, 1 Aug 2022 12:15:17 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Kevin Lu <luminlong@139.com>
-Cc:     linux-kernel@vger.kernel.org, shenghao-ding@ti.com, kevin-lu@ti.com
-Subject: Re: [PATCH v1 0/1]
-Message-ID: <Yue1xaX7UhSR6jGW@sirena.org.uk>
-References: <20220801025939.2343-1-luminlong@139.com>
+        Mon, 1 Aug 2022 07:19:42 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B3502A734;
+        Mon,  1 Aug 2022 04:19:41 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id r14so11950336ljp.2;
+        Mon, 01 Aug 2022 04:19:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:from:to:cc;
+        bh=cVKCQmfhIvkGCVTm3lz/sFT/n7O8Mosh0c/OeiuxeuM=;
+        b=ZwSXnv4x7nD0q4YM9Sf53WgSKUUU1y4YcMxtQAW8j8LHmpeQm1MWU1nnMPD9hkwqHt
+         6cqjtB+K3kdi8gWXHXWAmTo+iYDqKKU/jWLUhShPeKYcLJmzQOML6EDhDm7Hp4o2ISGI
+         6ESwLaWDJhbivekjI+lr9t4+D644d2N6ij/25lzBSofxwYl/EgnsyFqIOI2t+BAOpBgr
+         S6+BCslx0UP+JLS3jQKgmb2N82YnthbaWZ4sWuDm1DmMB6phkDJTrZ+UhWMuZo4BE2Pg
+         2yzv5ufvzPoHxY3eoqF7xSakVggsF9ANNe023T+KdmJUd55FakCKEKYeR9k8SnPKVFN0
+         9eBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=cVKCQmfhIvkGCVTm3lz/sFT/n7O8Mosh0c/OeiuxeuM=;
+        b=sCsM4LFRNGzxXnuDn0LCGJxuP6AYM87j67Vx2WJoVaqff9aT81PJTA0euNGHoZwTDv
+         iXfs9gQOMx7CdWjp8861Z1ruu0U6CWh6xVZSLWlV6P4ZWRtMrL6MLn8lPCgz0PYsuvBA
+         BoWKtyIAqqsC6L4kppioF0VJJuO2rR+yNDSmTrT7ulRkg5RWvlSO3zZiuZHWiLg/SXNy
+         UtQyeZTxW3PqqcDQ4nvKixduV9o2MtzChd89rHlsAvZulJw1PEGWx193tB9QRFp75uQv
+         x3VFd24Ng35Y3ZdjwVW5GMHzbwkPjYG60CLmau18tqnfebwYiyE08FVMRyYgGZQkiwL5
+         XrTg==
+X-Gm-Message-State: AJIora+bw8BNGBXpY1Ow7d5erQWlEssoUs3n0yU0wiO3U8vowvtU6pJS
+        vrlK3bFDEUi7dlrlEf1iRzFlIDewClVF6A==
+X-Google-Smtp-Source: AGRyM1uxPvfE5Rt9VBSRXdBOXDP+CUfxTeH3fU5XELqwu1eT30Hjgdra+1ZRsxkpVweWZvWzG7lq9Q==
+X-Received: by 2002:a2e:b525:0:b0:25e:115c:9021 with SMTP id z5-20020a2eb525000000b0025e115c9021mr5045505ljm.452.1659352778636;
+        Mon, 01 Aug 2022 04:19:38 -0700 (PDT)
+Received: from [10.0.0.42] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
+        by smtp.gmail.com with ESMTPSA id z5-20020a2eb525000000b0025dc0adf38csm1510685ljm.61.2022.08.01.04.19.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Aug 2022 04:19:37 -0700 (PDT)
+Message-ID: <3776eba2-0f36-7ba6-d49a-0f896754612e@gmail.com>
+Date:   Mon, 1 Aug 2022 14:27:41 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="oDBfGM6p6jSuf12z"
-Content-Disposition: inline
-In-Reply-To: <20220801025939.2343-1-luminlong@139.com>
-X-Cookie: Dieters live life in the fasting lane.
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Vaishnav Achath <vaishnav.a@ti.com>, vkoul@kernel.org,
+        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     nm@ti.com, vigneshr@ti.com, p.yadav@ti.com, j-keerthy@ti.com,
+        m-khayami@ti.com, stanley_liu@ti.com
+References: <20220727140837.25877-1-vaishnav.a@ti.com>
+From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
+Subject: Re: [PATCH v2] dmaengine: ti: k3-udma: Reset UDMA_CHAN_RT byte
+ counters to prevent overflow
+In-Reply-To: <20220727140837.25877-1-vaishnav.a@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---oDBfGM6p6jSuf12z
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 01, 2022 at 10:59:38AM +0800, Kevin Lu wrote:
-> *** BLURB HERE ***
->=20
-> Kevin Lu (1):
->   Add a new kcontrol for phase calib, remove unnecessary header file,
->     make code more comply with linux coding style
+On 7/27/22 17:08, Vaishnav Achath wrote:
+> UDMA_CHAN_RT_*BCNT_REG stores the real-time channel bytecount statistics.
+> These registers are 32-bit hardware counters and the driver uses these
+> counters to monitor the operational progress status for a channel, when
+> transferring more than 4GB of data it was observed that these counters
+> overflow and completion calculation of a operation gets affected and the
+> transfer hangs indefinitely.
+> 
+> This commit adds changes to decrease the byte count for every complete
+> transaction so that these registers never overflow and the proper byte
+> count statistics is maintained for ongoing transaction by the RT counters.
+> 
+> Earlier uc->bcnt used to maintain a count of the completed bytes at driver
+> side, since the RT counters maintain the statistics of current transaction
+> now, the maintenance of uc->bcnt is not necessary.
+> 
+> Signed-off-by: Vaishnav Achath <vaishnav.a@ti.com>
+> ---
+> V1->V2 :
+>         * Update bcnt reset based on uc->desc->dir
+>         * change order of udma_decrement_byte_counters() to before udma_start()
+>         * update subsystem tag
+> 
+>  drivers/dma/ti/k3-udma.c | 25 +++++++++++++++++--------
+>  1 file changed, 17 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/dma/ti/k3-udma.c b/drivers/dma/ti/k3-udma.c
+> index 2f0d2c68c93c..39b330ada200 100644
+> --- a/drivers/dma/ti/k3-udma.c
+> +++ b/drivers/dma/ti/k3-udma.c
+> @@ -300,8 +300,6 @@ struct udma_chan {
+>  
+>  	struct udma_tx_drain tx_drain;
+>  
+> -	u32 bcnt; /* number of bytes completed since the start of the channel */
+> -
+>  	/* Channel configuration parameters */
+>  	struct udma_chan_config config;
+>  
+> @@ -757,6 +755,20 @@ static void udma_reset_rings(struct udma_chan *uc)
+>  	}
+>  }
+>  
+> +static void udma_decrement_byte_counters(struct udma_chan *uc, u32 val)
+> +{
+> +	if (uc->desc->dir == DMA_DEV_TO_MEM && uc->rchan) {
 
-Please don't send cover letters for single patches, if there is anything
-that needs saying put it in the changelog of the patch or after the ---
-if it's administrative stuff.  This reduces mail volume and ensures that=20
-any important information is recorded in the changelog rather than being
-lost.=20
+if the dir is DMA_DEV_TO_MEM then we have rchan, no need for checking it.
 
---oDBfGM6p6jSuf12z
-Content-Type: application/pgp-signature; name="signature.asc"
+> +		udma_rchanrt_write(uc, UDMA_CHAN_RT_BCNT_REG, val);
+> +		udma_rchanrt_write(uc, UDMA_CHAN_RT_SBCNT_REG, val);
+> +		udma_rchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
+> +	} else if (uc->tchan) {
 
------BEGIN PGP SIGNATURE-----
+in other directions (MEM_TO_DEV, MEM_TO_MEM) we have tchan.
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLntcUACgkQJNaLcl1U
-h9DtaAf9FgQkEWECKCuz40o6NjXZOC5eZgszuU02NrpB6HzrzlaIHxv3BDOdJ/vz
-4VmaOyWEioJo4q+1b80AqUbSKJjMBclutYkE3RpSHtqiEGtZcQ4pcnRNK4dofvtD
-eJBXmX/USxiaOkChrLNUaGz1HCFzdF+9K7mYsWIUMQtHjnmuMphOizpViEYI59Yv
-9sbNuvQ8BYPyR4pWbDjqstho+LgRP+fV+XIbZbXRfhbhUZIwS1IV7iKucxxZTGaw
-DfNDqTds7mDutI2p47ImUUvJz7gZeBxIbll91YtzBIm9XGS+qV18a8OESeIroWH+
-Zz/QMPUfOA6Dp9YI3uF256IWgr/MzQ==
-=uj8Q
------END PGP SIGNATURE-----
+> +		udma_tchanrt_write(uc, UDMA_CHAN_RT_BCNT_REG, val);
+> +		udma_tchanrt_write(uc, UDMA_CHAN_RT_SBCNT_REG, val);
+> +		if (!uc->bchan)
+> +			udma_tchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
+> +	}
+> +}
 
---oDBfGM6p6jSuf12z--
+Thus we only need this type of decision:
+
+if (uc->desc->dir == DMA_DEV_TO_MEM) {
+	udma_rchanrt_write(uc, UDMA_CHAN_RT_BCNT_REG, val);
+	udma_rchanrt_write(uc, UDMA_CHAN_RT_SBCNT_REG, val);
+	udma_rchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
+} else {
+	udma_tchanrt_write(uc, UDMA_CHAN_RT_BCNT_REG, val);
+	udma_tchanrt_write(uc, UDMA_CHAN_RT_SBCNT_REG, val);
+	if (!uc->bchan)
+		udma_tchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
+}
+
+> +
+>  static void udma_reset_counters(struct udma_chan *uc)
+>  {
+>  	u32 val;
+> @@ -790,8 +802,6 @@ static void udma_reset_counters(struct udma_chan *uc)
+>  		val = udma_rchanrt_read(uc, UDMA_CHAN_RT_PEER_BCNT_REG);
+>  		udma_rchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
+>  	}
+> -
+> -	uc->bcnt = 0;
+>  }
+>  
+>  static int udma_reset_chan(struct udma_chan *uc, bool hard)
+> @@ -1115,7 +1125,7 @@ static void udma_check_tx_completion(struct work_struct *work)
+>  		if (uc->desc) {
+>  			struct udma_desc *d = uc->desc;
+>  
+> -			uc->bcnt += d->residue;
+> +			udma_decrement_byte_counters(uc, d->residue);
+>  			udma_start(uc);
+>  			vchan_cookie_complete(&d->vd);
+>  			break;
+> @@ -1168,7 +1178,7 @@ static irqreturn_t udma_ring_irq_handler(int irq, void *data)
+>  				vchan_cyclic_callback(&d->vd);
+>  			} else {
+>  				if (udma_is_desc_really_done(uc, d)) {
+> -					uc->bcnt += d->residue;
+> +					udma_decrement_byte_counters(uc, d->residue);
+>  					udma_start(uc);
+>  					vchan_cookie_complete(&d->vd);
+>  				} else {
+> @@ -1204,7 +1214,7 @@ static irqreturn_t udma_udma_irq_handler(int irq, void *data)
+>  			vchan_cyclic_callback(&d->vd);
+>  		} else {
+>  			/* TODO: figure out the real amount of data */
+> -			uc->bcnt += d->residue;
+> +			udma_decrement_byte_counters(uc, d->residue);
+>  			udma_start(uc);
+>  			vchan_cookie_complete(&d->vd);
+>  		}
+> @@ -3809,7 +3819,6 @@ static enum dma_status udma_tx_status(struct dma_chan *chan,
+>  			bcnt = udma_tchanrt_read(uc, UDMA_CHAN_RT_BCNT_REG);
+>  		}
+>  
+> -		bcnt -= uc->bcnt;
+>  		if (bcnt && !(bcnt % uc->desc->residue))
+>  			residue = 0;
+>  		else
+
+-- 
+Péter
