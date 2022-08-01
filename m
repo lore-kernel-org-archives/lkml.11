@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 306CCC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 04:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA62C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 04:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239308AbiHAE2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 00:28:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53230 "EHLO
+        id S239394AbiHAE2f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 00:28:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239227AbiHAE2L (ORCPT
+        with ESMTP id S238580AbiHAE23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 00:28:11 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0EB2DFBD
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 21:28:09 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id q22so1235214plr.9
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 21:28:09 -0700 (PDT)
+        Mon, 1 Aug 2022 00:28:29 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C09013E0E
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 21:28:17 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id f11so8680607pgj.7
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 21:28:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uFH8NHGJSUxhHtDtnk+1UL0mZ/w91LaurRijcSElzyc=;
-        b=Ha82v9KNGhCiFujRAf0gBjJg8QepWcRRBMiEJ0OWomqfxXW7Uu7JIaHfkhH7v1xyJb
-         0BimZu2020tux6gYkxv8xAzCWLA5PlFd1MSC1W7X6xkJZKaWvNwn1IPS0UOUWARrOWJp
-         9ApMIdatqLjpyxQtV6bpwR+umQ7hwy6iYqmCrunhgGi+tVA7lcGabFWWw+WLc8gkSBW/
-         kMp73uxtzB8EspQwoON/ZsSFdclmGJyctw4l/yZ1iW0aijEgEjLJXvumGVxVA+1FEw8m
-         iN3iUTeDYCYZ4gSWOkzJ8eo0kBD+uBpYy4hzDURn1BnlriCzun8h3GTJ1nkEQz7xHtlZ
-         PYMw==
+        bh=udDFRX/Zxv8XpR6w6oj8eI1Kuby9UyxSYlMsPVhSx90=;
+        b=4CvWm6wUWPIhkVslOOClBwYVsWG4ehAm7PCpN1HNR0wHswd9vKabaskfLF5F2S9ki3
+         Q3nt+vF/SP6MhjH7JDIVewtkJfuO1EpPEyFbRdK2gbw8ZhviNJf1T9F39DYfwDT+WFX8
+         qkLuHCLEM5d5Q1OuZCg/ZZoaF0VB7YOCNb5SUdZe0HNv8Oj8xaYvAJkZpSmX5ZLfwzJL
+         4oykFqPDCVP2lMteOlo/ynczqhKkGUs5NMIm+tT8ZDd6I3HcZ47ZqUrhH3XRpVPIBLZs
+         ixaIMJK84QM6UAFLNdBF77r+rimM9cQ9f+guqUpFuOwB+B56PWltea0HxvRXbi9TzEaT
+         kK0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uFH8NHGJSUxhHtDtnk+1UL0mZ/w91LaurRijcSElzyc=;
-        b=PZDkxZdWYzg3mNMvz6fY2q2UOU9Ag++A9Sothi11f94WgXwxOGO5OQjizbcHa9K6U5
-         jbORuvQiqu6t6m0/TQnGWiUIr17xF0g7yEwXYKli3ClnEr1WD/hv+bs510Gdjjfe2kVl
-         KLjAPQY2MC0A+C+IIAtOmW77/JfSyFHznQy0esTxoN5uf5AQWQlfqZTPDhYn2CJJtS+T
-         u2GCJpp92LNsWDoJTOh6Agvlu6fIPP+KxTs96FZmKwWnPPTUKJQoWF5jgaK/+cdnYxMb
-         2hghxRIz8BHaWnmdK+dRcDiB2xX7XJtI1YIGVMJMd/IBr5l03ONYieS17ovFUptaQxZr
-         BjnQ==
-X-Gm-Message-State: ACgBeo1OfRt9lS5aI9IWzeE6AvWH3yFXGavaYg2uXyNxbOcOSZmaoKrr
-        rp5ZvQq1agPJG5XITwbb848+bw==
-X-Google-Smtp-Source: AA6agR4PdlbV0N3lzrlOFesTrwTTeKDgxIxFuz10fcTjT/8h7hJ099PHU6qVgKJQxMVh5hFizv/diA==
-X-Received: by 2002:a17:902:e750:b0:16c:761:6e96 with SMTP id p16-20020a170902e75000b0016c07616e96mr14716714plf.0.1659328089424;
-        Sun, 31 Jul 2022 21:28:09 -0700 (PDT)
+        bh=udDFRX/Zxv8XpR6w6oj8eI1Kuby9UyxSYlMsPVhSx90=;
+        b=R2kHtT5fWLekHDF7nPPTWqz3DXecuWA1/2fFh65f7VRRxP5b9DM1cVN+SKVTcAVoD6
+         q48c+z0lRzfPYn+CNcu1/3F3rHvnQ/pJZjjExx7mD3Ge988/OGWKQATzB5MSOFYnzESP
+         0EvuI+2k6gRoUwQvTvsq5zmv007WpAeWLOehBlNyKuZlZqgbNcPLM4vvI+Ukz56eqRX6
+         szjopqUcHs6/fY9iui9ajckdr3doXfLFvDqh8UUmgXFvG/hTnx5WGyTrD0I2f1SWh3Nb
+         4D22wMi9pfFUgkwhk/mOYT262pVW3HaZ119WoEHTHeC3Y7NKhrZxgEgOMh6ZtmmGE7Xy
+         z+Eg==
+X-Gm-Message-State: AJIora/R/4jsEy+AmKFms4jwE3cJdo6hdKuoiiyG0NLfp0eAZsF+u9cK
+        nGLRMU4KYblkNKjszTl8HWDJTw==
+X-Google-Smtp-Source: AGRyM1sWUk4GUtJoZg6ZjANvTTM0kTJ1AA8tbdM1jC4zNYd81f0VkmUfoqud/e1od45z3YsE8tQP+w==
+X-Received: by 2002:a63:d244:0:b0:41a:6769:104a with SMTP id t4-20020a63d244000000b0041a6769104amr11583612pgi.525.1659328096766;
+        Sun, 31 Jul 2022 21:28:16 -0700 (PDT)
 Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.241])
-        by smtp.gmail.com with ESMTPSA id ot10-20020a17090b3b4a00b001f326ead012sm7012202pjb.37.2022.07.31.21.28.06
+        by smtp.gmail.com with ESMTPSA id ot10-20020a17090b3b4a00b001f326ead012sm7012202pjb.37.2022.07.31.21.28.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Jul 2022 21:28:09 -0700 (PDT)
+        Sun, 31 Jul 2022 21:28:16 -0700 (PDT)
 From:   Chengming Zhou <zhouchengming@bytedance.com>
 To:     mingo@redhat.com, peterz@infradead.org, vincent.guittot@linaro.org,
         dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
         vschneid@redhat.com
 Cc:     linux-kernel@vger.kernel.org,
         Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH v3 02/10] sched/fair: remove redundant cpu_cgrp_subsys->fork()
-Date:   Mon,  1 Aug 2022 12:27:37 +0800
-Message-Id: <20220801042745.7794-3-zhouchengming@bytedance.com>
+Subject: [PATCH v3 04/10] sched/fair: update comments in enqueue/dequeue_entity()
+Date:   Mon,  1 Aug 2022 12:27:39 +0800
+Message-Id: <20220801042745.7794-5-zhouchengming@bytedance.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220801042745.7794-1-zhouchengming@bytedance.com>
 References: <20220801042745.7794-1-zhouchengming@bytedance.com>
@@ -66,166 +66,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We use cpu_cgrp_subsys->fork() to set task group for the new fair task
-in cgroup_post_fork().
+When reading the sched_avg related code, I found the comments in
+enqueue/dequeue_entity() are not updated with the current code.
 
-Since commit b1e8206582f9 ("sched: Fix yet more sched_fork() races")
-has already set_task_rq() for the new fair task in sched_cgroup_fork(),
-so cpu_cgrp_subsys->fork() can be removed.
+We don't add/subtract entity's runnable_avg from cfs_rq->runnable_avg
+during enqueue/dequeue_entity(), those are done only for attach/detach.
 
-  cgroup_can_fork()	--> pin parent's sched_task_group
-  sched_cgroup_fork()
-    __set_task_cpu()
-      set_task_rq()
-  cgroup_post_fork()
-    ss->fork() := cpu_cgroup_fork()
-      sched_change_group(..., TASK_SET_GROUP)
-        task_set_group_fair()
-          set_task_rq()  --> can be removed
-
-After this patch's change, task_change_group_fair() only need to
-care about task cgroup migration, make the code much simplier.
+This patch updates the comments to reflect the current code working.
 
 Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Acked-by: Vincent Guittot <vincent.guittot@linaro.org>
 ---
- kernel/sched/core.c  | 27 ++++-----------------------
- kernel/sched/fair.c  | 23 +----------------------
- kernel/sched/sched.h |  5 +----
- 3 files changed, 6 insertions(+), 49 deletions(-)
+ kernel/sched/fair.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 5555e49c4e12..614d7180c99e 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -481,8 +481,7 @@ sched_core_dequeue(struct rq *rq, struct task_struct *p, int flags) { }
-  *				p->se.load, p->rt_priority,
-  *				p->dl.dl_{runtime, deadline, period, flags, bw, density}
-  *  - sched_setnuma():		p->numa_preferred_nid
-- *  - sched_move_task()/
-- *    cpu_cgroup_fork():	p->sched_task_group
-+ *  - sched_move_task():	p->sched_task_group
-  *  - uclamp_update_active()	p->uclamp*
-  *
-  * p->state <- TASK_*:
-@@ -10125,7 +10124,7 @@ void sched_release_group(struct task_group *tg)
- 	spin_unlock_irqrestore(&task_group_lock, flags);
- }
- 
--static void sched_change_group(struct task_struct *tsk, int type)
-+static void sched_change_group(struct task_struct *tsk)
- {
- 	struct task_group *tg;
- 
-@@ -10141,7 +10140,7 @@ static void sched_change_group(struct task_struct *tsk, int type)
- 
- #ifdef CONFIG_FAIR_GROUP_SCHED
- 	if (tsk->sched_class->task_change_group)
--		tsk->sched_class->task_change_group(tsk, type);
-+		tsk->sched_class->task_change_group(tsk);
- 	else
- #endif
- 		set_task_rq(tsk, task_cpu(tsk));
-@@ -10172,7 +10171,7 @@ void sched_move_task(struct task_struct *tsk)
- 	if (running)
- 		put_prev_task(rq, tsk);
- 
--	sched_change_group(tsk, TASK_MOVE_GROUP);
-+	sched_change_group(tsk);
- 
- 	if (queued)
- 		enqueue_task(rq, tsk, queue_flags);
-@@ -10250,23 +10249,6 @@ static void cpu_cgroup_css_free(struct cgroup_subsys_state *css)
- 	sched_unregister_group(tg);
- }
- 
--/*
-- * This is called before wake_up_new_task(), therefore we really only
-- * have to set its group bits, all the other stuff does not apply.
-- */
--static void cpu_cgroup_fork(struct task_struct *task)
--{
--	struct rq_flags rf;
--	struct rq *rq;
--
--	rq = task_rq_lock(task, &rf);
--
--	update_rq_clock(rq);
--	sched_change_group(task, TASK_SET_GROUP);
--
--	task_rq_unlock(rq, task, &rf);
--}
--
- static int cpu_cgroup_can_attach(struct cgroup_taskset *tset)
- {
- 	struct task_struct *task;
-@@ -11132,7 +11114,6 @@ struct cgroup_subsys cpu_cgrp_subsys = {
- 	.css_released	= cpu_cgroup_css_released,
- 	.css_free	= cpu_cgroup_css_free,
- 	.css_extra_stat_show = cpu_extra_stat_show,
--	.fork		= cpu_cgroup_fork,
- 	.can_attach	= cpu_cgroup_can_attach,
- 	.attach		= cpu_cgroup_attach,
- 	.legacy_cftypes	= cpu_legacy_files,
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 77cd2bad17a8..89626b115660 100644
+index 948b4cd2a024..956aed56ac1e 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -11661,15 +11661,7 @@ void init_cfs_rq(struct cfs_rq *cfs_rq)
- }
- 
- #ifdef CONFIG_FAIR_GROUP_SCHED
--static void task_set_group_fair(struct task_struct *p)
--{
--	struct sched_entity *se = &p->se;
--
--	set_task_rq(p, task_cpu(p));
--	se->depth = se->parent ? se->parent->depth + 1 : 0;
--}
--
--static void task_move_group_fair(struct task_struct *p)
-+static void task_change_group_fair(struct task_struct *p)
- {
- 	detach_task_cfs_rq(p);
- 	set_task_rq(p, task_cpu(p));
-@@ -11681,19 +11673,6 @@ static void task_move_group_fair(struct task_struct *p)
- 	attach_task_cfs_rq(p);
- }
- 
--static void task_change_group_fair(struct task_struct *p, int type)
--{
--	switch (type) {
--	case TASK_SET_GROUP:
--		task_set_group_fair(p);
--		break;
--
--	case TASK_MOVE_GROUP:
--		task_move_group_fair(p);
--		break;
--	}
--}
--
- void free_fair_sched_group(struct task_group *tg)
- {
- 	int i;
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 8cc3eb7b86cd..19e0076e4245 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -2203,11 +2203,8 @@ struct sched_class {
- 
- 	void (*update_curr)(struct rq *rq);
- 
--#define TASK_SET_GROUP		0
--#define TASK_MOVE_GROUP		1
--
- #ifdef CONFIG_FAIR_GROUP_SCHED
--	void (*task_change_group)(struct task_struct *p, int type);
-+	void (*task_change_group)(struct task_struct *p);
- #endif
- };
- 
+@@ -4434,7 +4434,8 @@ enqueue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
+ 	/*
+ 	 * When enqueuing a sched_entity, we must:
+ 	 *   - Update loads to have both entity and cfs_rq synced with now.
+-	 *   - Add its load to cfs_rq->runnable_avg
++	 *   - For group_entity, update its runnable_weight to reflect the new
++	 *     h_nr_running of its group cfs_rq.
+ 	 *   - For group_entity, update its weight to reflect the new share of
+ 	 *     its group cfs_rq
+ 	 *   - Add its new weight to cfs_rq->load.weight
+@@ -4519,7 +4520,8 @@ dequeue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
+ 	/*
+ 	 * When dequeuing a sched_entity, we must:
+ 	 *   - Update loads to have both entity and cfs_rq synced with now.
+-	 *   - Subtract its load from the cfs_rq->runnable_avg.
++	 *   - For group_entity, update its runnable_weight to reflect the new
++	 *     h_nr_running of its group cfs_rq.
+ 	 *   - Subtract its previous weight from cfs_rq->load.weight.
+ 	 *   - For group entity, update its weight to reflect the new share
+ 	 *     of its group cfs_rq.
 -- 
 2.36.1
 
