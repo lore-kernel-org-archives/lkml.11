@@ -2,120 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DCEBC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 20:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4821EC19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 20:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233653AbiHAUld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 16:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48172 "EHLO
+        id S233721AbiHAUmu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 16:42:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231549AbiHAUl1 (ORCPT
+        with ESMTP id S231549AbiHAUms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 16:41:27 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C369013F99;
-        Mon,  1 Aug 2022 13:41:23 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id m4so670555ejr.3;
-        Mon, 01 Aug 2022 13:41:23 -0700 (PDT)
+        Mon, 1 Aug 2022 16:42:48 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1EC13F99;
+        Mon,  1 Aug 2022 13:42:47 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id y11so19085036lfs.6;
+        Mon, 01 Aug 2022 13:42:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc;
-        bh=VICbJqTA7Gsy++ODC7DXtU58D84eyPqwBWnbSfvcRPE=;
-        b=bMlVt0yY1v4of4NbdhbwF2Xi0To5mGndYpZw6xlEymr2AtDhdreVT+qJmo3pMDHLaQ
-         eXraoGEq5RIQBgQSbB/1W4RMiloM3D1wkxEYSujJMXZ+bbb+0fHkBerl/jkLbhEUfOpk
-         5QyeN9QT4PB1wf/vEdxs/xLE4cFCnR5hzHw8OibaHJsr5epe4jQua+BnTB7qmkb4ZLEi
-         ooaS/cqD3EKr1PXjssIkZM02pWhvDcOEADTorIFtP88hV9dtSbhP3QGiEb/DlQQnttuU
-         iitMoPTEjaS0nUVP3YmRUdzpH9SKttuGWgr0+751TGp1OrML6di31+Ew8RKCCMWbIjA4
-         Cqsw==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=kIthB6TdDhvPyIaexnTVyNbX/FCo84yFP9KPpNhWWBY=;
+        b=j5MzaMTJnqz34fw2Csn3rJvONY9AS+T7ZuCnNuEncmdiqawrf3dEvAWUK/l/ifXNpY
+         f9yQT1qgelDTxzM7vKCNjQEXOSdxokMVX2uisDsUoMSP/ckxTJPivRSnBhUe8w9H9L+s
+         r9buZwZv5h7nQ3u696dl6dRlS/0cfc8zMH11Du4ZeFyRfcs0YZvABnxuDlUFk4nI0amC
+         74S6c4DYN1QeUY33mD0yMOTRTA5xQ1ZheteO8wVfbJV2O7ZmBf0eOkEwnn4MR9PDYkOD
+         egI1v6NsRu6NiR+ye/zAIyWCXR0QWx6zhsEaIlUAcg6vAQyjSEpzZh/J9xDTEcp5wp36
+         G7xA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc;
-        bh=VICbJqTA7Gsy++ODC7DXtU58D84eyPqwBWnbSfvcRPE=;
-        b=RXN5SL96RaQ3S2IOl2Wl+RU6YaeBPgpDm1muzYdtHpbgKA2+AXfe+9PBtGjP3RhDI2
-         CYF4PPH/SggL2sDvgnkgOGM+4UtKeCUE4UxjEWGvcDMeslAoFYypKaJjZcrVsL5d77JU
-         gpf75T7avVQJYiLWnhQVkjhB90i99UXTS7x+1qgg023ba1oJbbNQMDLbI125P6grjybF
-         sE4C3kzkcNlA0eQpKUdwZJWruZyLQ253MY9cJvHA8RZ7aopqdi8+EoAt6u7fHsz1gccS
-         kmaiHr5d+XV49Zfh//K+kCWCu3iDU2ytm00PSLIOQuXk67y74PrstY605yNBdZSmIA9b
-         ZbFg==
-X-Gm-Message-State: AJIora9PYuRe6MWV++P6mmZaGmNBqRgYHiKRc9M2UizGK/ejF0rd7Z/z
-        rDnvbgpJO5fl+UUUCbcZTsg=
-X-Google-Smtp-Source: AGRyM1tT3Ku9zybdd1Js8ZNNMZZP1xqaG40sJycdZi71xI2Fyyx5Tcc1lngszvPPLyGICCaH+bB5Qw==
-X-Received: by 2002:a17:907:8a0e:b0:72b:9d03:fbdb with SMTP id sc14-20020a1709078a0e00b0072b9d03fbdbmr13491983ejc.447.1659386482278;
-        Mon, 01 Aug 2022 13:41:22 -0700 (PDT)
-Received: from krava ([83.240.62.89])
-        by smtp.gmail.com with ESMTPSA id r9-20020a1709061ba900b0071cef8bafc3sm5486494ejg.1.2022.08.01.13.41.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Aug 2022 13:41:21 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Mon, 1 Aug 2022 22:41:19 +0200
-To:     Chen Zhongjin <chenzhongjin@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        naveen.n.rao@linux.ibm.com, anil.s.keshavamurthy@intel.com,
-        davem@davemloft.net, mhiramat@kernel.org, peterz@infradead.org,
-        mingo@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH v3] kprobes: Forbid probing on trampoline and bpf prog
-Message-ID: <Yug6bx7T4GzqUf2a@krava>
-References: <20220801033719.228248-1-chenzhongjin@huawei.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=kIthB6TdDhvPyIaexnTVyNbX/FCo84yFP9KPpNhWWBY=;
+        b=0eY8Ktn7CyifusKcT86zLZuRpaV0HL0coqwxipOCPOUWx6KGSpVNOflIEFdCJiv4iC
+         xh6ZwSSpCNMiH2UpFZG2aRukwejMhA9NGgShNn6JMB2X4WE0xgqWc947PCczQDSAVHLU
+         ORfS6wu3GnwtzQscLNxZ4J0z810XlO/niYzWuXD1eQcI/+H5LtIgQwwj8U1L4qnQOxoB
+         d4SZqwFaL1PAA/+D6sm/b3G0ACpzw2HWwAQu2ffS7sL57A/t7g9rORY/IoUzjCys6Xrf
+         HucmAwhmDGgCWVjtOpylZ1qOqwN7p9Buo5TUGhliraF9gkW5vtk+7IfNl+YOSfdE7Yo5
+         UaHg==
+X-Gm-Message-State: AJIora/VlBSjRAG7HLml11QUc+IShdpCQD2xg8fFR9+k/CJKfpc82hxE
+        EMF2M4utK48+WKYZtiBH2zn64MjwLLzSGsfYJ4o=
+X-Google-Smtp-Source: AGRyM1skt9q0ry/mgHPex0SgVfhaLl0kYvKNgfxFdnPqi7je6iVIXJWKfJkgv19VqjAta18vJNQs/Cr++y8j7e0NBV8=
+X-Received: by 2002:ac2:4f03:0:b0:481:50f7:ac07 with SMTP id
+ k3-20020ac24f03000000b0048150f7ac07mr5817490lfr.422.1659386565885; Mon, 01
+ Aug 2022 13:42:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220801033719.228248-1-chenzhongjin@huawei.com>
+References: <20220726175043.1027731-1-robdclark@gmail.com> <20220726175043.1027731-10-robdclark@gmail.com>
+ <def8e47c-067e-0841-4ae4-1eb90244cd50@collabora.com> <CAF6AEGtV4GY6=PmQh0wrKxjxk_baRCzOo=s=Uz-uKBNEn7SBBg@mail.gmail.com>
+ <6b35b912-68e5-e722-0b5a-0f7bd06c22c2@collabora.com> <733f5d3f-293e-f951-a00b-fcd3052f68e7@collabora.com>
+ <88576d7a-da5f-753d-51cf-08ed22f7c81e@collabora.com>
+In-Reply-To: <88576d7a-da5f-753d-51cf-08ed22f7c81e@collabora.com>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Mon, 1 Aug 2022 13:42:33 -0700
+Message-ID: <CAF6AEGu1_5EBmKQR8cMs=or6o_ALBWxTyKA_JL-G-AhemDyaww@mail.gmail.com>
+Subject: Re: [PATCH v3 09/15] drm/gem: Add LRU/shrinker helper
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Cc:     dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 01, 2022 at 11:37:19AM +0800, Chen Zhongjin wrote:
-> kernel_text_address returns ftrace_trampoline, kprobe_insn_slot
-> and bpf_text_address as kprobe legal address.
-> 
-> These text are removable and changeable without any notifier to
-> kprobes. Probing on them can trigger some unexpected behavior[1].
-> 
-> Considering that jump_label and static_call text are already be
-> forbiden to probe, kernel_text_address should be replaced with
-> core_kernel_text and is_module_text_address to check other text
-> which is unsafe to kprobe.
-> 
-> [1] https://lkml.org/lkml/2022/7/26/1148
-> 
-> Fixes: 5b485629ba0d ("kprobes, extable: Identify kprobes trampolines as kernel text area")
-> Fixes: 74451e66d516 ("bpf: make jited programs visible in traces")
-> Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
-> ---
-> v2 -> v3:
-> Remove '-next' carelessly added in title.
+On Mon, Aug 1, 2022 at 1:26 PM Dmitry Osipenko
+<dmitry.osipenko@collabora.com> wrote:
+>
+> On 8/1/22 23:13, Dmitry Osipenko wrote:
+> > On 8/1/22 23:11, Dmitry Osipenko wrote:
+> >> On 8/1/22 23:00, Rob Clark wrote:
+> >>> On Mon, Aug 1, 2022 at 12:41 PM Dmitry Osipenko
+> >>> <dmitry.osipenko@collabora.com> wrote:
+> >>>>
+> >>>> On 7/26/22 20:50, Rob Clark wrote:
+> >>>>> +/**
+> >>>>> + * drm_gem_lru_remove - remove object from whatever LRU it is in
+> >>>>> + *
+> >>>>> + * If the object is currently in any LRU, remove it.
+> >>>>> + *
+> >>>>> + * @obj: The GEM object to remove from current LRU
+> >>>>> + */
+> >>>>> +void
+> >>>>> +drm_gem_lru_remove(struct drm_gem_object *obj)
+> >>>>> +{
+> >>>>> +     struct drm_gem_lru *lru = obj->lru;
+> >>>>> +
+> >>>>> +     if (!lru)
+> >>>>> +             return;
+> >>>>> +
+> >>>>> +     mutex_lock(lru->lock);
+> >>>>> +     lru_remove(obj);
+> >>>>> +     mutex_unlock(lru->lock);
+> >>>>> +}
+> >>>>> +EXPORT_SYMBOL(drm_gem_lru_remove);
+> >>>>
+> >>>> I made a preliminary port of the DRM-SHMEM shrinker on top of the the
+> >>>> latest version of dma-buf locking convention and yours LRU patches. It
+> >>>> all works good, the only thing that is missing for the DRM-SHMEM
+> >>>> shrinker is the drm_gem_lru_remove_locked().
+> >>>>
+> >>>> What about to add a locked variant of drm_gem_lru_remove()?
+> >>>
+> >>> Sounds fine to me.. the only reason it didn't exist yet was because it
+> >>> wasn't needed yet..
+> >>
+> >> There is no use for the drm_gem_lru_move_tail_locked() as well, you're
+> >> not using it in the MSM driver. Hence I thought it might be good to add
+> >> the drm_gem_lru_remove_locked(), or maybe the
+> >> drm_gem_lru_move_tail_locked() should be dropped then?
+> >>
+> >>> I can respin w/ an addition of a _locked() version, or you can add it
+> >>> on top in your patchset.  Either is fine by me
+> >>
+> >> The either option is fine by me too. If you'll keep the unused
+> >> drm_gem_lru_move_tail_locked(), then will be nice to add
+> >> drm_gem_lru_remove_locked().
+> >>
+> >
+> > The drm_gem_lru_move_tail_locked() will be needed by DRM-SHMEM shrinker,
+> > BTW.
+>
+> On the other hand, I see now that DRM-SHMEM shrinker can use the
+> unlocked versions only. Hence both drm_gem_lru_move_tail_locked() and
+> drm_gem_lru_remove_locked() aren't needed.
 
-LGTM cc-ing Steven because it affects ftrace as well
+drm_gem_lru_move_tail_locked() is used internally, but I guess it
+could be made static since there ended up not being external users
+(yet?)
 
-jirka
+I could see _move_tail_locked() being useful for a driver that wanted
+to bulk update a bunch of GEM objs, for ex. all the bo's associated
+with a submit/job.
 
-> 
-> v1 -> v2:
-> Check core_kernel_text and is_module_text_address rather than
-> only kprobe_insn.
-> Also fix title and commit message for this. See old patch at [1].
-> ---
->  kernel/kprobes.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-> index f214f8c088ed..80697e5e03e4 100644
-> --- a/kernel/kprobes.c
-> +++ b/kernel/kprobes.c
-> @@ -1560,7 +1560,8 @@ static int check_kprobe_address_safe(struct kprobe *p,
->  	preempt_disable();
->  
->  	/* Ensure it is not in reserved area nor out of text */
-> -	if (!kernel_text_address((unsigned long) p->addr) ||
-> +	if (!(core_kernel_text((unsigned long) p->addr) ||
-> +	    is_module_text_address((unsigned long) p->addr)) ||
->  	    within_kprobe_blacklist((unsigned long) p->addr) ||
->  	    jump_label_text_reserved(p->addr, p->addr) ||
->  	    static_call_text_reserved(p->addr, p->addr) ||
-> -- 
-> 2.17.1
-> 
+BR,
+-R
