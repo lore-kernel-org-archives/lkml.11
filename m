@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9995C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:57:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5AB2C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:57:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232583AbiHAL5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49370 "EHLO
+        id S232594AbiHAL5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232689AbiHALzx (ORCPT
+        with ESMTP id S232740AbiHALz6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:55:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603FC474C0;
-        Mon,  1 Aug 2022 04:51:29 -0700 (PDT)
+        Mon, 1 Aug 2022 07:55:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEF6402CA;
+        Mon,  1 Aug 2022 04:51:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3D9661303;
-        Mon,  1 Aug 2022 11:51:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF589C433B5;
-        Mon,  1 Aug 2022 11:51:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B807B8116E;
+        Mon,  1 Aug 2022 11:51:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DC9FC433C1;
+        Mon,  1 Aug 2022 11:51:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354688;
-        bh=BPh/BTH07jIXHRC9sasVDWYMwiMPYMIst5WIHlFXXw0=;
+        s=korg; t=1659354690;
+        bh=VA2wohoCImHpJ67x4JVTxx0JPiyhyzHT+u6woSJvBRU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MkySJqxDNcN8I7VoynUv33hqWs7YOdWm1L+jHVrCLbleeTJEY/H6Wy8ekQ1znXm9k
-         1GgCgVQeHWvXIkDa3qDvS2m9wOlEuL9YwecF3E208bDCxkK4NMUGBvVs9Y2f0Vs4qT
-         tTvYXGEuGl+ctBQTEWvvY6em8aakg/p724PZ4EX0=
+        b=uWLXyapyjFUuJv54+vYBIHf+FSvUmBsv1HgFbCSNi1CqLyc8m/VV4lMrKswBlbA39
+         HeMsvkIgRk9pdOM1d3J2oa4dt8gYOzFJg+3w0TjGFTxkUM9wwJd163qPVVqFkIjC5P
+         TqO3zgPeZAjQRAFLDVEGcJi0kRWdUk0Cfkvpkrp4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sabrina Dubroca <sd@queasysnail.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 33/65] macsec: limit replay window size with XPN
-Date:   Mon,  1 Aug 2022 13:46:50 +0200
-Message-Id: <20220801114135.098794319@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Richter <rric@kernel.org>,
+        Toshi Kani <toshi.kani@hpe.com>, Borislav Petkov <bp@suse.de>,
+        Robert Elliott <elliott@hpe.com>
+Subject: [PATCH 5.10 51/65] EDAC/ghes: Set the DIMM label unconditionally
+Date:   Mon,  1 Aug 2022 13:47:08 +0200
+Message-Id: <20220801114135.826131097@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114133.641770326@linuxfoundation.org>
 References: <20220801114133.641770326@linuxfoundation.org>
@@ -49,81 +49,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sabrina Dubroca <sd@queasysnail.net>
+From: Toshi Kani <toshi.kani@hpe.com>
 
-[ Upstream commit b07a0e2044057f201d694ab474f5c42a02b6465b ]
+commit 5e2805d5379619c4a2e3ae4994e73b36439f4bad upstream.
 
-IEEE 802.1AEbw-2013 (section 10.7.8) specifies that the maximum value
-of the replay window is 2^30-1, to help with recovery of the upper
-bits of the PN.
+The commit
 
-To avoid leaving the existing macsec device in an inconsistent state
-if this test fails during changelink, reuse the cleanup mechanism
-introduced for HW offload. This wasn't needed until now because
-macsec_changelink_common could not fail during changelink, as
-modifying the cipher suite was not allowed.
+  cb51a371d08e ("EDAC/ghes: Setup DIMM label from DMI and use it in error reports")
 
-Finally, this must happen after handling IFLA_MACSEC_CIPHER_SUITE so
-that secy->xpn is set.
+enforced that both the bank and device strings passed to
+dimm_setup_label() are not NULL.
 
-Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites (IEEE 802.1AEbw)")
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+However, there are BIOSes, for example on a
+
+  HPE ProLiant DL360 Gen10/ProLiant DL360 Gen10, BIOS U32 03/15/2019
+
+which don't populate both strings:
+
+  Handle 0x0020, DMI type 17, 84 bytes
+  Memory Device
+          Array Handle: 0x0013
+          Error Information Handle: Not Provided
+          Total Width: 72 bits
+          Data Width: 64 bits
+          Size: 32 GB
+          Form Factor: DIMM
+          Set: None
+          Locator: PROC 1 DIMM 1        <===== device
+          Bank Locator: Not Specified   <===== bank
+
+This results in a buffer overflow because ghes_edac_register() calls
+strlen() on an uninitialized label, which had non-zero values left over
+from krealloc_array():
+
+  detected buffer overflow in __fortify_strlen
+   ------------[ cut here ]------------
+   kernel BUG at lib/string_helpers.c:983!
+   invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+   CPU: 1 PID: 1 Comm: swapper/0 Tainted: G          I       5.18.6-200.fc36.x86_64 #1
+   Hardware name: HPE ProLiant DL360 Gen10/ProLiant DL360 Gen10, BIOS U32 03/15/2019
+   RIP: 0010:fortify_panic
+   ...
+   Call Trace:
+    <TASK>
+    ghes_edac_register.cold
+    ghes_probe
+    platform_probe
+    really_probe
+    __driver_probe_device
+    driver_probe_device
+    __driver_attach
+    ? __device_attach_driver
+    bus_for_each_dev
+    bus_add_driver
+    driver_register
+    acpi_ghes_init
+    acpi_init
+    ? acpi_sleep_proc_init
+    do_one_initcall
+
+The label contains garbage because the commit in Fixes reallocs the
+DIMMs array while scanning the system but doesn't clear the newly
+allocated memory.
+
+Change dimm_setup_label() to always initialize the label to fix the
+issue. Set it to the empty string in case BIOS does not provide both
+bank and device so that ghes_edac_register() can keep the default label
+given by edac_mc_alloc_dimms().
+
+  [ bp: Rewrite commit message. ]
+
+Fixes: b9cae27728d1f ("EDAC/ghes: Scan the system once on driver init")
+Co-developed-by: Robert Richter <rric@kernel.org>
+Signed-off-by: Robert Richter <rric@kernel.org>
+Signed-off-by: Toshi Kani <toshi.kani@hpe.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Tested-by: Robert Elliott <elliott@hpe.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220719220124.760359-1-toshi.kani@hpe.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/macsec.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/edac/ghes_edac.c |   11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index c2d8bcda2503..96dc7bd4813d 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -240,6 +240,7 @@ static struct macsec_cb *macsec_skb_cb(struct sk_buff *skb)
- #define DEFAULT_SEND_SCI true
- #define DEFAULT_ENCRYPT false
- #define DEFAULT_ENCODING_SA 0
-+#define MACSEC_XPN_MAX_REPLAY_WINDOW (((1 << 30) - 1))
+--- a/drivers/edac/ghes_edac.c
++++ b/drivers/edac/ghes_edac.c
+@@ -101,9 +101,14 @@ static void dimm_setup_label(struct dimm
  
- static bool send_sci(const struct macsec_secy *secy)
- {
-@@ -3738,9 +3739,6 @@ static int macsec_changelink_common(struct net_device *dev,
- 		secy->operational = tx_sa && tx_sa->active;
- 	}
+ 	dmi_memdev_name(handle, &bank, &device);
  
--	if (data[IFLA_MACSEC_WINDOW])
--		secy->replay_window = nla_get_u32(data[IFLA_MACSEC_WINDOW]);
--
- 	if (data[IFLA_MACSEC_ENCRYPT])
- 		tx_sc->encrypt = !!nla_get_u8(data[IFLA_MACSEC_ENCRYPT]);
- 
-@@ -3786,6 +3784,16 @@ static int macsec_changelink_common(struct net_device *dev,
- 		}
- 	}
- 
-+	if (data[IFLA_MACSEC_WINDOW]) {
-+		secy->replay_window = nla_get_u32(data[IFLA_MACSEC_WINDOW]);
-+
-+		/* IEEE 802.1AEbw-2013 10.7.8 - maximum replay window
-+		 * for XPN cipher suites */
-+		if (secy->xpn &&
-+		    secy->replay_window > MACSEC_XPN_MAX_REPLAY_WINDOW)
-+			return -EINVAL;
-+	}
-+
- 	return 0;
+-	/* both strings must be non-zero */
+-	if (bank && *bank && device && *device)
+-		snprintf(dimm->label, sizeof(dimm->label), "%s %s", bank, device);
++	/*
++	 * Set to a NULL string when both bank and device are zero. In this case,
++	 * the label assigned by default will be preserved.
++	 */
++	snprintf(dimm->label, sizeof(dimm->label), "%s%s%s",
++		 (bank && *bank) ? bank : "",
++		 (bank && *bank && device && *device) ? " " : "",
++		 (device && *device) ? device : "");
  }
  
-@@ -3815,7 +3823,7 @@ static int macsec_changelink(struct net_device *dev, struct nlattr *tb[],
- 
- 	ret = macsec_changelink_common(dev, data);
- 	if (ret)
--		return ret;
-+		goto cleanup;
- 
- 	/* If h/w offloading is available, propagate to the device */
- 	if (macsec_is_offloaded(macsec)) {
--- 
-2.35.1
-
+ static void assign_dmi_dimm_info(struct dimm_info *dimm, struct memdev_dmi_entry *entry)
 
 
