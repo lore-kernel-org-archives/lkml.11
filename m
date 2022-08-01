@@ -2,65 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B05B8C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 03:05:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78336C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 03:05:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239554AbiHADFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 23:05:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42860 "EHLO
+        id S239587AbiHADFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 23:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238263AbiHADFV (ORCPT
+        with ESMTP id S239502AbiHADFY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 23:05:21 -0400
+        Sun, 31 Jul 2022 23:05:24 -0400
 Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F2FF2186;
-        Sun, 31 Jul 2022 20:05:18 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id D311A32003F4;
-        Sun, 31 Jul 2022 23:05:13 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5070F21AA;
+        Sun, 31 Jul 2022 20:05:21 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.west.internal (Postfix) with ESMTP id B345832007D7;
+        Sun, 31 Jul 2022 23:05:19 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Sun, 31 Jul 2022 23:05:15 -0400
+  by compute1.internal (MEProxy); Sun, 31 Jul 2022 23:05:20 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm1; t=1659323112; x=1659409512; bh=XxoCxtmkFBHeeLZilKhCk3IDS
-        CHUhmklYh5m1bb0aro=; b=AQp+l24pufoeCGNMU1bnLc4loOJ5rWuoBQ2KGq9w8
-        wHnA2EuyBsSzKQ+66LkZHPpryhPkL05tEPkBGRV7dmqXb4wCy1BABD7WskoiYzcR
-        275TkWENPgTKiO2ymIM3IwuSkq9TiDwKIZqv55rVbqWUULA7P2oQcymxEFR+Xy4y
-        Fqpw3BogfFI1fsRQXaZ6cBoU2Bf7uDg/oitwPZbuxdMoV32FR9lY6j6ifMR4Usor
-        t8hriG0nNvMOlV2hXsn6zVKbwAPTQULWhJyWTCr6E11pyd5FpMPwTLYHnJOlMDOG
-        vBhix9n0uokjbifYsCU9Zw0/p77C/LUrpZ3xIHJ5crd7g==
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm1; t=1659323119; x=1659409519; bh=9D
+        NTC2mZK/vx4J+nMP9mcn6k409H3HxgWzx4BXzvEGc=; b=py/87n3iVOI+rcmVUm
+        MaLITFggHr8YiskCeRPMyKfZeJEJGnYlEATdpxq4gFGFg1ciNozM3sQHWKCoSMVV
+        oH+lJBw4mTp+YDJGUhvDpRCygkIthJww92Z/L3m+Yx5nVIS9/e/89LfOStJ3sEZs
+        CvwKId2qKB4hL0Cit2sZwbCauqlaZNDGLAPR1LIyYKVIMqcEVfu4adRXUZWYsoE0
+        xyBxkTcCU2KndbOt/c40KTLZtdjQXYaTtxbmGcz71RJn9S5DXPa7JkjNXpElfSAm
+        IA4h57YKmzyVD7XnJf19BIy1EPcSxCdRM/6kDCsIsFNxLz1uoN7xHJnfsuXuGaWD
+        PUeg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
-        1659323112; x=1659409512; bh=XxoCxtmkFBHeeLZilKhCk3IDSCHUhmklYh5
-        m1bb0aro=; b=WJK0YjhS57JbI6ZBbL2SquueeUnttMHSuAl0+YbX5FteKA+4SFR
-        G2++qPRQIZc3mb3Pwr0QpKfo2UHtUG5JvV3DMecaRBNiHEMhG/D56Xbyl9Tw/bB5
-        QiioJ0fc/odJppf0sf1uaq84541BZ7Vlg8djrhYqGMULEzv44bse7IdjD1Nm1oBV
-        CzpqURPTsNehQUwZuFULNYa2mGma7i0HjSYE3w0hCBp81yKIzDTaAUhuidUcW9YZ
-        XlNcCaGn44sQ/JGc9Y9To+rw/vTdlAp6HpE5DREYLA4gkBaQ41qkVOCYJSRZzm24
-        DHM7R6mO6T9+I4acs9H+Qikr/zH8iqyKNRw==
-X-ME-Sender: <xms:50LnYiKkNQOiGpe1gHlUQ_2Ik9YUgyCnsCl44ABboGFBA69HUJiGmw>
-    <xme:50LnYqKKm6I3bW73InYsL6YDXLXiOC2Bju05OrFBHHZk2GvYioRAJYNjeoYtCAb48
-    efvbMbq0Hx-RDJJAg>
-X-ME-Received: <xmr:50LnYivrfzvi47NG7EzXk_41bTAqasb0emn89svxNthZ99Dc1W4JDMjD3_0-rocqDPrAhUeKYY4iIjWCCvbYLthRD5k-eCBfEiP7t2WOoXq9yhUUR7pYZLvi_fcEU_rZ58K3kg>
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; t=1659323119; x=1659409519; bh=9DNTC2mZK/vx4
+        J+nMP9mcn6k409H3HxgWzx4BXzvEGc=; b=IZTDjTi9cjjt+BKL+kIUqXmHXdJVg
+        OVrE4VDWvnsMaQhk9bJ2zFTAQQSpI9JufzIhWzJ3Iej2hfwFaJ6nGFEq15sEDl0U
+        Y3IGU5sq9wmROaLKyMn7y1hXubuMV+KgN2Ob89/D6Dsg77NUWfNLOGZ+sfqIRxbx
+        mUZZlnojqaThRkF4Mah1RkgruqzJV9AlnV/039a1QDlMT93JDOg1KEHyykauUmki
+        p+iLIOIw/veE4Xm6leEEDRd7JYIRkMgZUTXBlqybUq3EuLOpMFcMIcT3Wlom6wOV
+        8JbVZBmEp0aSdW+x25WOa2aQABcGHpC7JQ+ETPWEZ1SbM4dtqomvgDjZw==
+X-ME-Sender: <xms:70LnYtX-lNLl1F42UDEbw-5jqzl5uG6wlqwguFxmTJ4nxGjRVB6_qg>
+    <xme:70LnYtn6tXDTE-DGquswazJjvzx_qp02POgSHoGqRGHnmim2BAN_RREWodKVLBTHV
+    ngDAVCUw_2JOmlKGg>
+X-ME-Received: <xmr:70LnYpYcR-Ks9h4DLRKn1PRKGEC4BFfipJs7gjXuUIyq5GIoSFPYPf7BKrZwUJPG7rQmN07AwQtoi3sLQq-wBGkqoBFz0Fb4PGCIjWbcQPaFR3oLft03ctpm4wbgOMRNrWuYxg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddvvddgheejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufgrmhhuvghl
-    ucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecuggftrf
-    grthhtvghrnhepkeevlefhjeeuleeltedvjedvfeefteegleehueejffehgffffeekhefh
-    hfekkeegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:50LnYnYvR53d_HiOb2KT0tJ8NgUC3cG77jlii7Y1iWrNvmj1t0BE9Q>
-    <xmx:50LnYpb9_jy-s6DBv1W7UjF04oaJ4dEW9vS5VFFcyjsBFjE1r78M2w>
-    <xmx:50LnYjBZlWs3uERH0B5CkfIBRP9f7iEfIqE96uAj0R2cG78kIcVVRQ>
-    <xmx:6ELnYvAX9CPME5n9RB1LHjT4R1CUa9jUtdG0HI8VNJWiPSQvQY-8HA>
+    cujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufgrmhhu
+    vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
+    ftrfgrthhtvghrnhepudekteeuudehtdelteevgfduvddvjefhfedulefgudevgeeghefg
+    udefiedtveetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
+    homhepshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
+X-ME-Proxy: <xmx:70LnYgVcIe-dg9d-qf9LnHkGSapk9J-GiVO122EGm576QaUXCQUALw>
+    <xmx:70LnYnlwwDBJ8_-nC4bfP43zYtYQmj95fCRez2OoEADHf2zrOsW_Xw>
+    <xmx:70LnYtc1b8W5u_yrU55Nczk9pRk1deI-i6Ha9MBDT3W9ADosNNwatA>
+    <xmx:70LnYldsqkMMCnvSSPSYmvPD1kGweoPxYzg-x7-5agqI5fvmjgQuWw>
 Feedback-ID: i0ad843c9:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 31 Jul 2022 23:05:10 -0400 (EDT)
+ 31 Jul 2022 23:05:18 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     Chen-Yu Tsai <wens@csie.org>,
         Jernej Skrabec <jernej.skrabec@gmail.com>
@@ -73,42 +74,41 @@ Cc:     Samuel Holland <samuel@sholland.org>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-sunxi@lists.linux.dev
-Subject: [PATCH 0/9] soc: sunxi: sram: Fixes and D1 support
-Date:   Sun, 31 Jul 2022 22:05:00 -0500
-Message-Id: <20220801030509.21966-1-samuel@sholland.org>
+Subject: [PATCH 2/9] soc: sunxi: sram: Actually claim SRAM regions
+Date:   Sun, 31 Jul 2022 22:05:02 -0500
+Message-Id: <20220801030509.21966-3-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220801030509.21966-1-samuel@sholland.org>
+References: <20220801030509.21966-1-samuel@sholland.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series cleans up a few issues in the system controller driver, and
-then expands the exported regmap to support one of the pairs of LDOs
-built in to the D1 SoC.
+sunxi_sram_claim() checks the sram_desc->claimed flag before updating
+the register, with the intent that only one device can claim a region.
+However, this was ineffective because the flag was never set.
 
-Eventually, we will need to update the SRAM region claiming API so
-ownership can be swapped back and forth by consumer drivers. This is
-necessary for uploading firmware to the R329/D1 DSPs, but it is not
-needed for initial bringup.
+Fixes: 4af34b572a85 ("drivers: soc: sunxi: Introduce SoC driver to map SRAMs")
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
 
+ drivers/soc/sunxi/sunxi_sram.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Samuel Holland (9):
-  dt-bindings: sram: sunxi-sram: Add D1 compatible string
-  soc: sunxi: sram: Actually claim SRAM regions
-  soc: sunxi: sram: Prevent the driver from being unbound
-  soc: sunxi: sram: Fix probe function ordering issues
-  soc: sunxi: sram: Fix debugfs info for A64 SRAM C
-  soc: sunxi: sram: Return void from the release function
-  soc: sunxi: sram: Save a pointer to the OF match data
-  soc: sunxi: sram: Export the LDO control register
-  soc: sunxi: sram: Add support for the D1 system control
-
- .../allwinner,sun4i-a10-system-control.yaml   |  1 +
- drivers/soc/sunxi/sunxi_sram.c                | 74 ++++++++++---------
- include/linux/soc/sunxi/sunxi_sram.h          |  2 +-
- 3 files changed, 42 insertions(+), 35 deletions(-)
-
+diff --git a/drivers/soc/sunxi/sunxi_sram.c b/drivers/soc/sunxi/sunxi_sram.c
+index a8f3876963a0..f3d3f9259df9 100644
+--- a/drivers/soc/sunxi/sunxi_sram.c
++++ b/drivers/soc/sunxi/sunxi_sram.c
+@@ -254,6 +254,7 @@ int sunxi_sram_claim(struct device *dev)
+ 	writel(val | ((device << sram_data->offset) & mask),
+ 	       base + sram_data->reg);
+ 
++	sram_desc->claimed = true;
+ 	spin_unlock(&sram_lock);
+ 
+ 	return 0;
 -- 
 2.35.1
 
