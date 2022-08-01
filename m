@@ -2,122 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4A7DC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F7DC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230374AbiHAMZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:25:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55102 "EHLO
+        id S234381AbiHAM2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234350AbiHAMZQ (ORCPT
+        with ESMTP id S234464AbiHAM1y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:25:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88C358C8DD
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:05:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659355501;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nAFx/nR5JRxzgXY+0POxZcF09LGwe2BEj2vlxuyMKXI=;
-        b=byDQGecULH0q/lYUtMAKg4ENf8epoz0ym2mDppRhwUUp7ixdYHyHF8jxQmWYMoeOVTuu5u
-        V8kwUx1lCOFLcUrvWgZDOzuKPM1ou7n7zQ7IgUhg80vRhwm1mHqD2lN07fBnQ6GItYSd8G
-        4mTIlFEmP+fp6RkOSMwWv7vmd9mxGSk=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-150-1wEvXxh6P-yrQgqA_0UQFQ-1; Mon, 01 Aug 2022 08:05:00 -0400
-X-MC-Unique: 1wEvXxh6P-yrQgqA_0UQFQ-1
-Received: by mail-wm1-f71.google.com with SMTP id bh18-20020a05600c3d1200b003a32044cc9fso5105338wmb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 05:04:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=nAFx/nR5JRxzgXY+0POxZcF09LGwe2BEj2vlxuyMKXI=;
-        b=m/eZt9/4SCcC2t3UIERpavbNHSKl+A8DgOKaqJcDkBgA63Zu5BCI7DJywFfCV1W03D
-         2GxtsKaE+gyTjRR1TrU8inySlfxoFKDfcUZzqbR1ducc59poPEI3i5hnKG7zmBvZlpmO
-         t2Y5vyVBPVZH+hLIOdhHpeYHvF74f38HIcQhN3X5D/RVAp+6VUmdfH8JVnR+jsi86503
-         V96TA/VEa6vHGmcgwubl7soi6yFhZ/Nucby1n9qGFN+bnmpj/lTyGGOgo3pYoOqCX7v+
-         Sa5+4tyQpRKIdC8j1yc4dtmfedaiACXMxbSHcbzm3/ZtNRTf/WZOaKyI+PCOtm4n+bQB
-         Mb2w==
-X-Gm-Message-State: ACgBeo34/OQh5qASbDi7CbFoktvK6pOTSnbJkgttUEEiNWITLLZABULK
-        X4JzmhIrpHee2uAhAvjf4ok7wYYaPHdNOLXGGO2571HfkstAoTlWsSR2Eyku2Ntcc1vEtrtF7qg
-        q6ZVVd7dW2v2ajlpq2V97QGNF
-X-Received: by 2002:a5d:5b18:0:b0:220:63db:c7ca with SMTP id bx24-20020a5d5b18000000b0022063dbc7camr2330062wrb.719.1659355498741;
-        Mon, 01 Aug 2022 05:04:58 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4WhA7Gu8I94G14EK2BGE5HtXyv2sE5bayVydnVs25b6svQ5MUeXsCZln3fHArfJ7k0WuOhYw==
-X-Received: by 2002:a5d:5b18:0:b0:220:63db:c7ca with SMTP id bx24-20020a5d5b18000000b0022063dbc7camr2330033wrb.719.1659355498440;
-        Mon, 01 Aug 2022 05:04:58 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c704:6900:6d08:8df1:dd2c:bf00? (p200300cbc70469006d088df1dd2cbf00.dip0.t-ipconnect.de. [2003:cb:c704:6900:6d08:8df1:dd2c:bf00])
-        by smtp.gmail.com with ESMTPSA id n5-20020a05600c3b8500b003a03185231bsm9034633wms.31.2022.08.01.05.04.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Aug 2022 05:04:58 -0700 (PDT)
-Message-ID: <a6f28a45-ee0a-183f-fa60-28a56e1c506c@redhat.com>
-Date:   Mon, 1 Aug 2022 14:04:57 +0200
+        Mon, 1 Aug 2022 08:27:54 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E82D7904D0
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:07:18 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 326EC139F;
+        Mon,  1 Aug 2022 05:07:18 -0700 (PDT)
+Received: from [10.57.10.23] (unknown [10.57.10.23])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6162E3F73B;
+        Mon,  1 Aug 2022 05:07:15 -0700 (PDT)
+Message-ID: <19a0a508-fb39-8b06-ce0f-ce26767ef57f@arm.com>
+Date:   Mon, 1 Aug 2022 13:07:10 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH V2] mm: fix use-after free of page_ext after race with
- memory-offline
-Content-Language: en-US
-To:     Charan Teja Kalla <quic_charante@quicinc.com>,
-        akpm@linux-foundation.org, quic_pkondeti@quicinc.com,
-        pasha.tatashin@soleen.com, sjpark@amazon.de, sieberf@amazon.com,
-        shakeelb@google.com, dhowells@redhat.com, willy@infradead.org,
-        liuting.0x7c00@bytedance.com, minchan@kernel.org,
-        Michal Hocko <mhocko@suse.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
-References: <1658931303-17024-1-git-send-email-quic_charante@quicinc.com>
- <6168cf49-bf75-2ebb-ab55-30de473835e3@redhat.com>
- <a26ce299-aed1-b8ad-711e-a49e82bdd180@quicinc.com>
- <3fc8a61b-ad70-8092-9197-4920e0897593@redhat.com>
- <f670c6ee-1c20-570f-68f9-42a3e1e85557@quicinc.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <f670c6ee-1c20-570f-68f9-42a3e1e85557@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH] dma-debug: Remove warning in dma_debug_entry
+Content-Language: en-GB
+To:     yf.wang@mediatek.com, Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+Cc:     wsd_upstream@mediatek.com, Libo Kang <Libo.Kang@mediatek.com>,
+        Ning Li <Ning.Li@mediatek.com>, Yong Wu <Yong.Wu@mediatek.com>,
+        Miles Chen <miles.chen@mediatek.com>
+References: <20220730085657.31977-1-yf.wang@mediatek.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220730085657.31977-1-yf.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01.08.22 13:50, Charan Teja Kalla wrote:
-> Thanks David!!
+On 2022-07-30 09:56, yf.wang@mediatek.com wrote:
+> From: Yunfei Wang <yf.wang@mediatek.com>
 > 
-> On 8/1/2022 2:00 PM, David Hildenbrand wrote:
->>> Having said that, I am open to go for call_rcu() and infact it will be a
->>> much simple change where I can do the freeing of page_ext in the
->>> __free_page_ext() itself which is called for every section there by
->>> avoid the extra tracking flag PAGE_EXT_INVALID.
->>>       ...........
->>>         WRITE_ONCE(ms->page_ext, NULL);
->>> 	call_rcu(rcu_head, fun); // Free in fun()
->>>        .............
->>>
->>> Or your opinion is to use call_rcu () only once in place of
->>> synchronize_rcu() after invalidating all the page_ext's of memory block?
->>
->> Yeah, that would be an option. And if you fail to allocate a temporary
->> buffer to hold the data-to-free (structure containing rcu_head), the
->> slower fallback path would be synchronize_rcu().
->>
+> The same physical address can be mapped multiple times, and it is not
+> required to have attributes such as DMA_ATTR_SKIP_CPU_SYNC, but
+> dma_debug_entry will report an warning if active_cacheline_insert
+> returns -EEXIST, which can cause a lot of trouble.
 > 
-> I will add this as a note in the code that in future If some
-> optimizations needs to be done in this path, this option can be
-> considered.  Hope this will be fine for now?
+> For example, if two dma engine share the same dma-buf, the two dma
+> engine drivers will call the DMA API to map their own dma address
+> respectively, which is normal follow, but dma_debug_entry will
+> report an warning.
+> 
+> In addition, if active_cacheline_insert returns -EEXIST, the
+> active_cacheline_inc_overlap function already has the logic to
+> check overlapping mappings counter, if it exceeded
+> ACTIVE_CACHELINE_MAX_OVERLAP overlapping mappings, it already
+> has a warning.
+> And also, if warning as panic is turned on, it will cause KE.
+> 
+> So, dma_debug_entry does not need report warning.
 
-IMHO yes. But not need to add all these details to the patch description
-(try keeping it short and precise). You can always just link to the
-discussion, e.g., via
+I'm sure this has come up before, but I can't remember enough of the 
+context to easily search for the previous thread.
 
-https://lkml.kernel.org/r/a26ce299-aed1-b8ad-711e-a49e82bdd180@quicinc.com
+In short, this check is not entirely correct, but removing it isn't 
+right either, since that would be too much of a step backwards in terms 
+of debug coverage IMO. What we need here is to do a bit more work to 
+differentiate between mappings of the exact same buffer, which are 
+allowed, vs. any other kind of partial overlaps which are still illegal 
+and definitely deserve a warning.
 
--- 
+Furthermore, even for the valid dma-buf import case I'm not convinced 
+that the SKIP_CPU_SYNC check can be dropped either. If one device can 
+import a buffer while another device is already accessing it, there are 
+definitely combinations of parameters which could lead to potential data 
+loss (e.g. a non-coherent DMA_TO_DEVICE mapping during a non-coherent 
+DMA_FROM_DEVICE access, a or non-coherent DMA_FROM_DEVICE mapping during 
+a coherent DMA_TO_DEVICE access).
+
 Thanks,
+Robin.
 
-David / dhildenb
-
+> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+> ---
+>   kernel/dma/debug.c | 3 ---
+>   1 file changed, 3 deletions(-)
+> 
+> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+> index 2caafd13f8aa..ad731f7858c9 100644
+> --- a/kernel/dma/debug.c
+> +++ b/kernel/dma/debug.c
+> @@ -566,9 +566,6 @@ static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
+>   	if (rc == -ENOMEM) {
+>   		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");
+>   		global_disable = true;
+> -	} else if (rc == -EEXIST && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
+> -		err_printk(entry->dev, entry,
+> -			"cacheline tracking EEXIST, overlapping mappings aren't supported\n");
+>   	}
+>   }
+>   
