@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 346ABC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD31C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233535AbiHATCo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 15:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51096 "EHLO
+        id S233406AbiHATCv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 15:02:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232741AbiHATCh (ORCPT
+        with ESMTP id S233217AbiHATCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 15:02:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9865D2BB3E;
-        Mon,  1 Aug 2022 12:02:35 -0700 (PDT)
+        Mon, 1 Aug 2022 15:02:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7CE2ED71;
+        Mon,  1 Aug 2022 12:02:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04B7BB81616;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6A096121C;
+        Mon,  1 Aug 2022 19:02:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47A23C433C1;
         Mon,  1 Aug 2022 19:02:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 624A3C433D6;
-        Mon,  1 Aug 2022 19:02:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659380552;
-        bh=8TuZYBANaANy8tBI2NDEhOSwYzvW/85ai8F71UZsmK0=;
+        s=k20201202; t=1659380555;
+        bh=Bj0wVDsSnZRsEnQn0a5XbJSomxQzw+EhnKcIW2H2auk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ee7sS+WjoKsphXm66prEadyQX1DQgMBZO1yMuoKsg6JsJdFBn7zgDeBDDoMeny9S3
-         Vc+qqsVb2sX+q/6wcgD3dA1vhXPagwHjH0/7fHeu+T4HznDsUqJGu/UvZa+eBQo/Sz
-         uLmHke+6xZjCfAwZZ0+7eTn+GeE9aAFJIbBdGTj22J7HivLtZbheHphFLgVU5DXgGo
-         WVZi107lIHUjT0Mn3c70laXxR8Wltjys+ddE7HqIJyhm7yJf93jaOCJSf6ftwYfDfu
-         O+f3tq7iogbHnLFCKnEfXpB5alNEuN8luqlXTsxCxWaaRBOVibmAXN0t3KbqTFh4Y6
-         10FM5iORe/t+g==
+        b=vEDa9VWz8SYJEqcLVYPy4szy4HmfX8EJW1s2RK1gQXUB4VpJWHCK9FOYrtqD86yiN
+         kZY5usdKov8NgjXMJ2sjd+haFY5EUC1Pd51Cs5pzrN9/syowugdC9Msqc4DRnWSISm
+         /WgIQV3pNZEcM7Cq/ewtaXgL5+T8Jh2OPTKnMcXyg4xWKCvm2/APdgq0T53JQ0RP4H
+         rk5wbHYa/wRWWbsVscxcYd+LzUx+aW4UhuptqYNNBye+iANEMvy2v8N196XWicNlIW
+         3j5MLgrfXhY9ihuVfBv1tQ9IYsntntz8lEMqOh8sIyJLRQvkmadPy13HFvghWDKck4
+         waUhqAK+sG3qg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, christophe.leroy@csgroup.eu,
-        ast@kernel.org, peterz@infradead.org, paulus@ozlabs.org,
-        npiggin@gmail.com, dja@axtens.net, masahiroy@kernel.org,
-        aneesh.kumar@linux.ibm.com, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.18 04/10] powerpc/64s: Disable stack variable initialisation for prom_init
-Date:   Mon,  1 Aug 2022 15:02:16 -0400
-Message-Id: <20220801190222.3818378-4-sashal@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, aneesh.kumar@linux.ibm.com,
+        npiggin@gmail.com, linux-arch@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH AUTOSEL 5.18 06/10] mmu_gather: Let there be one tlb_{start,end}_vma() implementation
+Date:   Mon,  1 Aug 2022 15:02:18 -0400
+Message-Id: <20220801190222.3818378-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220801190222.3818378-1-sashal@kernel.org>
 References: <20220801190222.3818378-1-sashal@kernel.org>
@@ -54,53 +53,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit be640317a1d0b9cf42fedb2debc2887a7cfa38de ]
+[ Upstream commit 18ba064e42df3661e196ab58a23931fc732a420b ]
 
-With GCC 12 allmodconfig prom_init fails to build:
+Now that architectures are no longer allowed to override
+tlb_{start,end}_vma() re-arrange code so that there is only one
+implementation for each of these functions.
 
-  Error: External symbol 'memset' referenced from prom_init.c
-  make[2]: *** [arch/powerpc/kernel/Makefile:204: arch/powerpc/kernel/prom_init_check] Error 1
+This much simplifies trying to figure out what they actually do.
 
-The allmodconfig build enables KASAN, so all calls to memset in
-prom_init should be converted to __memset by the #ifdefs in
-asm/string.h, because prom_init must use the non-KASAN instrumented
-versions.
-
-The build failure happens because there's a call to memset that hasn't
-been caught by the pre-processor and converted to __memset. Typically
-that's because it's a memset generated by the compiler itself, and that
-is the case here.
-
-With GCC 12, allmodconfig enables CONFIG_INIT_STACK_ALL_PATTERN, which
-causes the compiler to emit memset calls to initialise on-stack
-variables with a pattern.
-
-Because prom_init is non-user-facing boot-time only code, as a
-workaround just disable stack variable initialisation to unbreak the
-build.
-
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220718134418.354114-1-mpe@ellerman.id.au
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Will Deacon <will@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+ include/asm-generic/tlb.h | 15 ++-------------
+ 1 file changed, 2 insertions(+), 13 deletions(-)
 
-diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
-index 4ddd161aef32..63c384c3e6d4 100644
---- a/arch/powerpc/kernel/Makefile
-+++ b/arch/powerpc/kernel/Makefile
-@@ -20,6 +20,7 @@ CFLAGS_prom.o += $(DISABLE_LATENT_ENTROPY_PLUGIN)
- CFLAGS_prom_init.o += -fno-stack-protector
- CFLAGS_prom_init.o += -DDISABLE_BRANCH_PROFILING
- CFLAGS_prom_init.o += -ffreestanding
-+CFLAGS_prom_init.o += $(call cc-option, -ftrivial-auto-var-init=uninitialized)
+diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
+index eee6f7763a39..11ad549b5014 100644
+--- a/include/asm-generic/tlb.h
++++ b/include/asm-generic/tlb.h
+@@ -334,8 +334,8 @@ static inline void __tlb_reset_range(struct mmu_gather *tlb)
  
- ifdef CONFIG_FUNCTION_TRACER
- # Do not trace early boot code
+ #ifdef CONFIG_MMU_GATHER_NO_RANGE
+ 
+-#if defined(tlb_flush) || defined(tlb_start_vma) || defined(tlb_end_vma)
+-#error MMU_GATHER_NO_RANGE relies on default tlb_flush(), tlb_start_vma() and tlb_end_vma()
++#if defined(tlb_flush)
++#error MMU_GATHER_NO_RANGE relies on default tlb_flush()
+ #endif
+ 
+ /*
+@@ -355,17 +355,10 @@ static inline void tlb_flush(struct mmu_gather *tlb)
+ static inline void
+ tlb_update_vma_flags(struct mmu_gather *tlb, struct vm_area_struct *vma) { }
+ 
+-#define tlb_end_vma tlb_end_vma
+-static inline void tlb_end_vma(struct mmu_gather *tlb, struct vm_area_struct *vma) { }
+-
+ #else /* CONFIG_MMU_GATHER_NO_RANGE */
+ 
+ #ifndef tlb_flush
+ 
+-#if defined(tlb_start_vma) || defined(tlb_end_vma)
+-#error Default tlb_flush() relies on default tlb_start_vma() and tlb_end_vma()
+-#endif
+-
+ /*
+  * When an architecture does not provide its own tlb_flush() implementation
+  * but does have a reasonably efficient flush_vma_range() implementation
+@@ -486,7 +479,6 @@ static inline unsigned long tlb_get_unmap_size(struct mmu_gather *tlb)
+  * case where we're doing a full MM flush.  When we're doing a munmap,
+  * the vmas are adjusted to only cover the region to be torn down.
+  */
+-#ifndef tlb_start_vma
+ static inline void tlb_start_vma(struct mmu_gather *tlb, struct vm_area_struct *vma)
+ {
+ 	if (tlb->fullmm)
+@@ -495,9 +487,7 @@ static inline void tlb_start_vma(struct mmu_gather *tlb, struct vm_area_struct *
+ 	tlb_update_vma_flags(tlb, vma);
+ 	flush_cache_range(vma, vma->vm_start, vma->vm_end);
+ }
+-#endif
+ 
+-#ifndef tlb_end_vma
+ static inline void tlb_end_vma(struct mmu_gather *tlb, struct vm_area_struct *vma)
+ {
+ 	if (tlb->fullmm)
+@@ -511,7 +501,6 @@ static inline void tlb_end_vma(struct mmu_gather *tlb, struct vm_area_struct *vm
+ 	 */
+ 	tlb_flush_mmu_tlbonly(tlb);
+ }
+-#endif
+ 
+ /*
+  * tlb_flush_{pte|pmd|pud|p4d}_range() adjust the tlb->start and tlb->end,
 -- 
 2.35.1
 
