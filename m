@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8EA0C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A5D6C19F29
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:05:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233110AbiHAME5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34984 "EHLO
+        id S233353AbiHAMFI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:05:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232952AbiHAMEQ (ORCPT
+        with ESMTP id S233336AbiHAME0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:04:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CB82B263;
-        Mon,  1 Aug 2022 04:54:22 -0700 (PDT)
+        Mon, 1 Aug 2022 08:04:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0655B57273;
+        Mon,  1 Aug 2022 04:54:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6F79612C6;
-        Mon,  1 Aug 2022 11:54:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D31E9C433C1;
-        Mon,  1 Aug 2022 11:54:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40839B81163;
+        Mon,  1 Aug 2022 11:54:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1F60C433C1;
+        Mon,  1 Aug 2022 11:54:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354861;
-        bh=kbEJTP1nNFy1JVGXuJlzyiNRIsRWkWCHoDEpzst2oYA=;
+        s=korg; t=1659354864;
+        bh=kdVP2qKbvN4yMUOSpwx8raN54nwWbc4Q2QdJKyqjSgY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hzbJMdDXBA09XTLW41A8Iv9bbAEVdoXJI+CETIxvesiyy4O6AUqPAZnihlTC3vLQ+
-         p0cs6ecGytmc+UxnzXnC1LbpcQ9jg6EaE6oHykfD7VG5XFMgugg0vBi72NI2WAYp4Z
-         e+DQsmZFEfZNdgc+C9YsQUicVsXudV3AkZ9SMVhk=
+        b=J2Grp/VLrbgeiJ9i73E0u7sUBuRpnr7yOdB1PBtZwIqxjGNlWhZGvMbKFY8IEjykH
+         RnDB1sCO+Coc1c20CVcrR9Xu4ENi8ViC5Tquulf4YqiutcHqSfnQ6g20ncgvChwpG1
+         d0rWHzBOS+8BM+FQJRxuoRb2ndD2OwDmqvxEFTFg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 16/69] tcp: Fix a data-race around sysctl_tcp_adv_win_scale.
-Date:   Mon,  1 Aug 2022 13:46:40 +0200
-Message-Id: <20220801114135.148257162@linuxfoundation.org>
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 07/69] hugetlb: fix memoryleak in hugetlb_mcopy_atomic_pte
+Date:   Mon,  1 Aug 2022 13:46:31 +0200
+Message-Id: <20220801114134.777267366@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -48,31 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-commit 36eeee75ef0157e42fb6593dcc65daab289b559e upstream.
+commit da9a298f5fad0dc615079a340da42928bc5b138e upstream.
 
-While reading sysctl_tcp_adv_win_scale, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+When alloc_huge_page fails, *pagep is set to NULL without put_page first.
+So the hugepage indicated by *pagep is leaked.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lkml.kernel.org/r/20220709092629.54291-1-linmiaohe@huawei.com
+Fixes: 8cc5fcbb5be8 ("mm, hugetlb: fix racy resv_huge_pages underflow on UFFDIO_COPY")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Acked-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/tcp.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/hugetlb.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1406,7 +1406,7 @@ void tcp_select_initial_window(const str
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -5314,6 +5314,7 @@ int hugetlb_mcopy_atomic_pte(struct mm_s
  
- static inline int tcp_win_from_space(const struct sock *sk, int space)
- {
--	int tcp_adv_win_scale = sock_net(sk)->ipv4.sysctl_tcp_adv_win_scale;
-+	int tcp_adv_win_scale = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_adv_win_scale);
- 
- 	return tcp_adv_win_scale <= 0 ?
- 		(space>>(-tcp_adv_win_scale)) :
+ 		page = alloc_huge_page(dst_vma, dst_addr, 0);
+ 		if (IS_ERR(page)) {
++			put_page(*pagep);
+ 			ret = -ENOMEM;
+ 			*pagep = NULL;
+ 			goto out;
 
 
