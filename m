@@ -2,111 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F52EC19F2B
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 16:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A0BC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 16:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233036AbiHAQRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 12:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42888 "EHLO
+        id S233069AbiHAQRy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 12:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232936AbiHAQRP (ORCPT
+        with ESMTP id S231294AbiHAQRu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 12:17:15 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41A73C150;
-        Mon,  1 Aug 2022 09:17:11 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id CF75E32003AC;
-        Mon,  1 Aug 2022 12:17:07 -0400 (EDT)
-Received: from imap42 ([10.202.2.92])
-  by compute2.internal (MEProxy); Mon, 01 Aug 2022 12:17:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1659370627; x=1659457027; bh=jSlZW82kJO
-        trbsQe+JWb98zS2xjRzoI5vbOs5++NnLQ=; b=j+GWpCvsQyFaFkCglcB0vStu9k
-        LNvemfQuROlI50kri4OODR1wwspPqN0P9b/KZ6Mi4pA3nb9vTv/a2XpeCnPz8s1Q
-        ZyrOOMAj1vCo3mv7VHRvIm3+ndYLyuqUi6P6Hoeh749xVq0VCMfqQRMB03Y7Q2mp
-        5Jk7DVRA2I8TGr11UbdyujuBpZ67/R9dtg3NVwQFAcadZlVFAiMi+o1T/TOkukJf
-        60TrbGvISdZiTg+nvlq+ipJfVYOT86qZ5hs4KbneZ/YlFRqDQp57lB+PJFFtlXAJ
-        vsfTkDBeRy3Vpi7UUifih3F/Kin4YzkHt/HLZ4FGJvfLgRBKM1DT5azrt90w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1659370627; x=1659457027; bh=jSlZW82kJOtrbsQe+JWb98zS2xjR
-        zoI5vbOs5++NnLQ=; b=UFLGOg8bmfKGjg6eBmzPiEALlv2ne6zwLHkf6CAKKPTe
-        q+WBVhjtEeFcP+knkt4R1KvIhFMF887xyT/yv3L0FHCEM959bUQZJbhwBnh8hA8c
-        vGyD20iqFFbli43+jXAngETlBE1fan3wBzYcPJ9TL5mgpCn8TUYtiu1pInOAJaF1
-        DXaMg0F8ahp0KFnHzCkGxLEBtyldkcMT81Bm00Z9cfJWsyzQURK9OfcQRSI+1fxi
-        NyaxhdYZA9kN4XrAgRW30DmQHbzAreSCUoVWEHe6LTG8QUBx6pfQLfeh5jagFNAp
-        /LrCuCh8MPQRpRRiE+JuSYdzbFEapvcma+go5D1UlA==
-X-ME-Sender: <xms:gvznYkqjDpOKirvF_YfHCLNGsdf6JyxGZ7xKM0hT5KIT-rwLotCMpA>
-    <xme:gvznYqoeHsCzDexZniUgW_xxHQy_rodn9VNwWyP4VrWDRpEY1sLuUvuLDUfDXOSe-
-    jZ_Uv5Ny5JaLfT4Aw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddvfedgleelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    gfrhhlucfvnfffucdlfeehmdenucfjughrpefofgggkfgjfhffhffvvefutgesthdtredt
-    reertdenucfhrhhomhepfdffrghnihgvlhcuighufdcuoegugihusegugihuuhhurdighi
-    iiqeenucggtffrrghtthgvrhhnpedtudehudfhveduieeikeejudeljeffuddtieffieel
-    jedtudehhfekheehuedvkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmh
-    grihhlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:g_znYpMieIStRIn2GW82fu5o1RUabVAJRoznglkT1kFd_j4lAcFoGQ>
-    <xmx:g_znYr42nvQcT5Omno-WOsekr5KvRASGi0_a6ctcE1Xkz74NrrceHw>
-    <xmx:g_znYj7H98NjvGqIfdqPzSO3wRyiVQXH0ohybUdDjF01ZwndKYzJ8Q>
-    <xmx:g_znYlmKQhqep1_Zew9lQ338OcaWvWBh_DYbnWAHGTygEODgWKPsYA>
-Feedback-ID: i6a694271:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id EBBA2BC0075; Mon,  1 Aug 2022 12:17:06 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-758-ge0d20a54e1-fm-20220729.001-ge0d20a54
-Mime-Version: 1.0
-Message-Id: <6ce70dc2-7c4a-4048-aa45-9954082c0f29@www.fastmail.com>
-In-Reply-To: <CAP01T75LMwpz3ZPSUgtX2_RDUhB33djJmJs8W--Qh4H8J9iNsQ@mail.gmail.com>
-References: <cover.1659209738.git.dxu@dxuuu.xyz>
- <abd424ee71675e3008acd4a2c1fd136cb7dbf8be.1659209738.git.dxu@dxuuu.xyz>
- <CAP01T75LMwpz3ZPSUgtX2_RDUhB33djJmJs8W--Qh4H8J9iNsQ@mail.gmail.com>
-Date:   Mon, 01 Aug 2022 10:16:46 -0600
-From:   "Daniel Xu" <dxu@dxuuu.xyz>
-To:     "Kumar Kartikeya Dwivedi" <memxor@gmail.com>
-Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: Add connmark read/write test
-Content-Type: text/plain
+        Mon, 1 Aug 2022 12:17:50 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585192AC42
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 09:17:49 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id a7so8307520ejp.2
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 09:17:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=gbhIr0dMzm81+SDBkNEjnMlQtKTmm0VmrGqMRqLxYPs=;
+        b=NDxKoaJiNPQBSEq08NX3l0jM8LCk8mtj7rxUXmG2bPj5YQFFaQqM/wNFRi9l8jtYUy
+         iLIL9lX0aereoQUPGAFZAWwJ1EJ3X4xQfQkWsVVzrj8kzUc6MWrZ+u68R30AUXKiD9Xs
+         idhNYaYWb9LnOFTpLDDxd9gm+Ca8arF9Ry65s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=gbhIr0dMzm81+SDBkNEjnMlQtKTmm0VmrGqMRqLxYPs=;
+        b=Eo9Gu6aTm70CsXoFrBTIAxlAv0Ni7ye4Kz4BY5X5qPbR6b3FTQYKxiBPUtgtNfvpCd
+         rYvzfEsGZkY5KmQjdrcK3RZKa1vIf1gQKQa/fRnHQJj+2WewKE5zTjj3EMtPT6w4gXJ+
+         Jw9/70rvvnTnIIIigC/z7mFjAQLHA7G9kmBgtBUnFFq1cwkzBXM6J3eifHH1JtZ8/p5J
+         8HfLgV9DEKEiJpZdXGK70LV5QcIcmo7vZrGSVXHBQcBlkbGxS9geA8fQ42Hmu7bHIcGk
+         weCq4+n70i4gKGtuhACMjFAQ4/wUsNmxU9W567ZA8tjJc8cntfPtRRasO6yENhfmcaG0
+         kn2g==
+X-Gm-Message-State: AJIora+QUuKYQ34P97OX+2GbAC2T9H6m7Stykty9AgYrHjLFaUTrmL0i
+        dNUbFz3WofjLB9PynQfjY2sFN/giWShm0Y6zLZo=
+X-Google-Smtp-Source: AGRyM1vK6l3tSeN1ClKHd4RBIXihD+Gl3L1SC1EgcojmOKaiNCT8lMqxLI9d/Z+iVJCyEq2+9/EH4Q==
+X-Received: by 2002:a17:907:7d8b:b0:72f:2306:329a with SMTP id oz11-20020a1709077d8b00b0072f2306329amr12615439ejc.369.1659370667731;
+        Mon, 01 Aug 2022 09:17:47 -0700 (PDT)
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com. [209.85.128.46])
+        by smtp.gmail.com with ESMTPSA id ek6-20020a056402370600b0043a2b8ab377sm7017051edb.88.2022.08.01.09.17.47
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Aug 2022 09:17:47 -0700 (PDT)
+Received: by mail-wm1-f46.google.com with SMTP id v5so6040431wmj.0
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 09:17:47 -0700 (PDT)
+X-Received: by 2002:a05:600c:21d7:b0:3a3:2088:bbc6 with SMTP id
+ x23-20020a05600c21d700b003a32088bbc6mr11480857wmj.68.1659370666735; Mon, 01
+ Aug 2022 09:17:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220801144329.GA10643@redhat.com> <CAHk-=wgCi2LLzSJg_7nRs+nQbVgT8HwEKzjMae_4geVCA+1SNg@mail.gmail.com>
+ <20220801155028.GA12328@redhat.com> <20220801155624.GB12328@redhat.com>
+In-Reply-To: <20220801155624.GB12328@redhat.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 1 Aug 2022 09:17:30 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wi07ue68JuYXDdPD-s93UTs0Tp0oAvdnyxS3zQQSosEOA@mail.gmail.com>
+Message-ID: <CAHk-=wi07ue68JuYXDdPD-s93UTs0Tp0oAvdnyxS3zQQSosEOA@mail.gmail.com>
+Subject: Re: [GIT PULL] dlm updates for 6.0
+To:     David Teigland <teigland@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, cluster-devel@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kumar,
-
-On Mon, Aug 1, 2022, at 8:51 AM, Kumar Kartikeya Dwivedi wrote:
-> On Sat, 30 Jul 2022 at 21:40, Daniel Xu <dxu@dxuuu.xyz> wrote:
->>
->> Test that the prog can read/write to/from the connection mark. This
->> test is nice because it ensures progs can interact with netfilter
->> subsystem correctly.
->>
+On Mon, Aug 1, 2022 at 8:56 AM David Teigland <teigland@redhat.com> wrote:
 >
-> Commit message is a bit misleading, where are you writing to ct->mark? :)
-> The cover letter also mentions "reading and writing from nf_conn". Do
-> you have patches whitelisting nf_conn::mark for writes?
-> If not, drop the writing related bits from the commit log. The rest
-> looks ok to me.
+> At risk of compounding your trouble, I could have added that you can use
+> the original merge and have me send the fixup.
 
-Ah good catch, thanks. I've neglected to actually test writing to the mark.
-I'll follow up with another patch to enable writing to mark and testing it.
+Well, I only had something like 4 other merges on top, none of them
+*that* complicated.
 
-And in meantime let's just change the commit msg on this patchset.
+And I hadn't pushed out, so I just redid them.
 
-I'm in the middle of a move right now so I probably can't respin the patch
-for a few more days. Feel free to edit the commit msgs. Or I'll send it again
-when I set my computer up.
+I did notice your "v2" pull request fairly quickly, because I try to
+do my pulls (when I have lots of them, like at the beginning of the
+merge window) in some kind of "order of areas", so I was doing
+filesystem and vfs stuff, and  your v2 ended up showing up in that
+bunch too, and I hadn't done too much.
 
-[...]
+I doubt I would have needed help with the conflicts, but I decided to
+not even look at them, because even with them resolved it would just
+have been ugly to have that pointless duplication from the rebase when
+I could just start from scratch again.
 
-Thanks,
-Daniel
+But again: please don't rebase stuff you have already exposed to
+others. It causes real issues. This was just one example of it.
+
+And if you *do* have to rebase for a real technical reason ("Oh, that
+was a disaster, it absolutely *must* be fixed"), please let involved
+people know asap.
+
+And a version number change is not a "huge disaster, must rebase".
+
+           Linus
