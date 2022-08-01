@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D9DC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C69C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:57:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232631AbiHAL5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
+        id S232662AbiHAL5X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:57:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232871AbiHAL4J (ORCPT
+        with ESMTP id S232893AbiHAL4K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:56:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A33E3E749;
-        Mon,  1 Aug 2022 04:51:40 -0700 (PDT)
+        Mon, 1 Aug 2022 07:56:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687EC40BE2;
+        Mon,  1 Aug 2022 04:51:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2AFCB81170;
-        Mon,  1 Aug 2022 11:51:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 334BCC433C1;
-        Mon,  1 Aug 2022 11:51:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C634B612D0;
+        Mon,  1 Aug 2022 11:51:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBDD1C433C1;
+        Mon,  1 Aug 2022 11:51:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354696;
-        bh=TBaPcf8ji5KmfeLiWir8lhWYb1nLLVbFM9xBxGqqqEg=;
+        s=korg; t=1659354702;
+        bh=mv0aYFd+kZcamZVPp66sFy9oCHth0flSFZGtEyseNT8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q33VbcDRVlUfhqeRrKfkipOV83MpcFYpiv2HJtRLfOnAcrIdvv1/JcxG5ungOo1t1
-         s925BjZ/mf7EPtnDQ9EBHNDIVHJikibN36KpN1rivGkWVFc3dK1ZKOAOZIbouif3XO
-         nA4O/DB3C0FOZz36Djtmt/VphkRfy+GPbRhYeaNw=
+        b=oGBK20Pk5sBVamSa423yGyNBNlfPGA+1h14EBRowKg6UaVeBc5e+SQKDpIHVDBAQt
+         8fZ68fInmCLkRK5tqCXJFYdnMCeBxRu3/wt4j+nhdlNIa9Fr/JYlKZ/N4Dyu+NTGNY
+         cii9ZxS6BXJUumUcHs8xAN0Lbf8Lrn2Wp4xPxmMo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Brian Foster <bfoster@redhat.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
+        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
         Dave Chinner <dchinner@redhat.com>,
         Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 53/65] xfs: refactor xfs_file_fsync
-Date:   Mon,  1 Aug 2022 13:47:10 +0200
-Message-Id: <20220801114135.892518156@linuxfoundation.org>
+Subject: [PATCH 5.10 55/65] xfs: prevent UAF in xfs_log_item_in_current_chkpt
+Date:   Mon,  1 Aug 2022 13:47:12 +0200
+Message-Id: <20220801114135.982924672@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114133.641770326@linuxfoundation.org>
 References: <20220801114133.641770326@linuxfoundation.org>
@@ -51,133 +49,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-commit f22c7f87777361f94aa17f746fbadfa499248dc8 upstream.
+commit f8d92a66e810acbef6ddbc0bd0cbd9b117ce8acd upstream.
 
-[backported for dependency]
+While I was running with KASAN and lockdep enabled, I stumbled upon an
+KASAN report about a UAF to a freed CIL checkpoint.  Looking at the
+comment for xfs_log_item_in_current_chkpt, it seems pretty obvious to me
+that the original patch to xfs_defer_finish_noroll should have done
+something to lock the CIL to prevent it from switching the CIL contexts
+while the predicate runs.
 
-Factor out the log syncing logic into two helpers to make the code easier
-to read and more maintainable.
+For upper level code that needs to know if a given log item is new
+enough not to need relogging, add a new wrapper that takes the CIL
+context lock long enough to sample the current CIL context.  This is
+kind of racy in that the CIL can switch the contexts immediately after
+sampling, but that's ok because the consequence is that the defer ops
+code is a little slow to relog items.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Brian Foster <bfoster@redhat.com>
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+ ==================================================================
+ BUG: KASAN: use-after-free in xfs_log_item_in_current_chkpt+0x139/0x160 [xfs]
+ Read of size 8 at addr ffff88804ea5f608 by task fsstress/527999
+
+ CPU: 1 PID: 527999 Comm: fsstress Tainted: G      D      5.16.0-rc4-xfsx #rc4
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x45/0x59
+  print_address_description.constprop.0+0x1f/0x140
+  kasan_report.cold+0x83/0xdf
+  xfs_log_item_in_current_chkpt+0x139/0x160
+  xfs_defer_finish_noroll+0x3bb/0x1e30
+  __xfs_trans_commit+0x6c8/0xcf0
+  xfs_reflink_remap_extent+0x66f/0x10e0
+  xfs_reflink_remap_blocks+0x2dd/0xa90
+  xfs_file_remap_range+0x27b/0xc30
+  vfs_dedupe_file_range_one+0x368/0x420
+  vfs_dedupe_file_range+0x37c/0x5d0
+  do_vfs_ioctl+0x308/0x1260
+  __x64_sys_ioctl+0xa1/0x170
+  do_syscall_64+0x35/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7f2c71a2950b
+ Code: 0f 1e fa 48 8b 05 85 39 0d 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff
+ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa b8 10 00 00 00 0f 05 <48> 3d 01
+f0 ff ff 73 01 c3 48 8b 0d 55 39 0d 00 f7 d8 64 89 01 48
+ RSP: 002b:00007ffe8c0e03c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+ RAX: ffffffffffffffda RBX: 00005600862a8740 RCX: 00007f2c71a2950b
+ RDX: 00005600862a7be0 RSI: 00000000c0189436 RDI: 0000000000000004
+ RBP: 000000000000000b R08: 0000000000000027 R09: 0000000000000003
+ R10: 0000000000000000 R11: 0000000000000246 R12: 000000000000005a
+ R13: 00005600862804a8 R14: 0000000000016000 R15: 00005600862a8a20
+  </TASK>
+
+ Allocated by task 464064:
+  kasan_save_stack+0x1e/0x50
+  __kasan_kmalloc+0x81/0xa0
+  kmem_alloc+0xcd/0x2c0 [xfs]
+  xlog_cil_ctx_alloc+0x17/0x1e0 [xfs]
+  xlog_cil_push_work+0x141/0x13d0 [xfs]
+  process_one_work+0x7f6/0x1380
+  worker_thread+0x59d/0x1040
+  kthread+0x3b0/0x490
+  ret_from_fork+0x1f/0x30
+
+ Freed by task 51:
+  kasan_save_stack+0x1e/0x50
+  kasan_set_track+0x21/0x30
+  kasan_set_free_info+0x20/0x30
+  __kasan_slab_free+0xed/0x130
+  slab_free_freelist_hook+0x7f/0x160
+  kfree+0xde/0x340
+  xlog_cil_committed+0xbfd/0xfe0 [xfs]
+  xlog_cil_process_committed+0x103/0x1c0 [xfs]
+  xlog_state_do_callback+0x45d/0xbd0 [xfs]
+  xlog_ioend_work+0x116/0x1c0 [xfs]
+  process_one_work+0x7f6/0x1380
+  worker_thread+0x59d/0x1040
+  kthread+0x3b0/0x490
+  ret_from_fork+0x1f/0x30
+
+ Last potentially related work creation:
+  kasan_save_stack+0x1e/0x50
+  __kasan_record_aux_stack+0xb7/0xc0
+  insert_work+0x48/0x2e0
+  __queue_work+0x4e7/0xda0
+  queue_work_on+0x69/0x80
+  xlog_cil_push_now.isra.0+0x16b/0x210 [xfs]
+  xlog_cil_force_seq+0x1b7/0x850 [xfs]
+  xfs_log_force_seq+0x1c7/0x670 [xfs]
+  xfs_file_fsync+0x7c1/0xa60 [xfs]
+  __x64_sys_fsync+0x52/0x80
+  do_syscall_64+0x35/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+ The buggy address belongs to the object at ffff88804ea5f600
+  which belongs to the cache kmalloc-256 of size 256
+ The buggy address is located 8 bytes inside of
+  256-byte region [ffff88804ea5f600, ffff88804ea5f700)
+ The buggy address belongs to the page:
+ page:ffffea00013a9780 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88804ea5ea00 pfn:0x4ea5e
+ head:ffffea00013a9780 order:1 compound_mapcount:0
+ flags: 0x4fff80000010200(slab|head|node=1|zone=1|lastcpupid=0xfff)
+ raw: 04fff80000010200 ffffea0001245908 ffffea00011bd388 ffff888004c42b40
+ raw: ffff88804ea5ea00 0000000000100009 00000001ffffffff 0000000000000000
+ page dumped because: kasan: bad access detected
+
+ Memory state around the buggy address:
+  ffff88804ea5f500: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+  ffff88804ea5f580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ >ffff88804ea5f600: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                       ^
+  ffff88804ea5f680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88804ea5f700: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ==================================================================
+
+Fixes: 4e919af7827a ("xfs: periodically relog deferred intent items")
 Signed-off-by: Darrick J. Wong <djwong@kernel.org>
 Reviewed-by: Dave Chinner <dchinner@redhat.com>
 Signed-off-by: Amir Goldstein <amir73il@gmail.com>
 Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_file.c |   81 +++++++++++++++++++++++++++++++++---------------------
- 1 file changed, 50 insertions(+), 31 deletions(-)
+ fs/xfs/xfs_log_cil.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/fs/xfs/xfs_file.c
-+++ b/fs/xfs/xfs_file.c
-@@ -118,6 +118,54 @@ xfs_dir_fsync(
- 	return xfs_log_force_inode(ip);
+--- a/fs/xfs/xfs_log_cil.c
++++ b/fs/xfs/xfs_log_cil.c
+@@ -1179,9 +1179,9 @@ out_shutdown:
+  */
+ bool
+ xfs_log_item_in_current_chkpt(
+-	struct xfs_log_item *lip)
++	struct xfs_log_item	*lip)
+ {
+-	struct xfs_cil_ctx *ctx = lip->li_mountp->m_log->l_cilp->xc_ctx;
++	struct xfs_cil		*cil = lip->li_mountp->m_log->l_cilp;
+ 
+ 	if (list_empty(&lip->li_cil))
+ 		return false;
+@@ -1191,7 +1191,7 @@ xfs_log_item_in_current_chkpt(
+ 	 * first checkpoint it is written to. Hence if it is different to the
+ 	 * current sequence, we're in a new checkpoint.
+ 	 */
+-	return lip->li_seq == ctx->sequence;
++	return lip->li_seq == READ_ONCE(cil->xc_current_sequence);
  }
  
-+static xfs_lsn_t
-+xfs_fsync_lsn(
-+	struct xfs_inode	*ip,
-+	bool			datasync)
-+{
-+	if (!xfs_ipincount(ip))
-+		return 0;
-+	if (datasync && !(ip->i_itemp->ili_fsync_fields & ~XFS_ILOG_TIMESTAMP))
-+		return 0;
-+	return ip->i_itemp->ili_last_lsn;
-+}
-+
-+/*
-+ * All metadata updates are logged, which means that we just have to flush the
-+ * log up to the latest LSN that touched the inode.
-+ *
-+ * If we have concurrent fsync/fdatasync() calls, we need them to all block on
-+ * the log force before we clear the ili_fsync_fields field. This ensures that
-+ * we don't get a racing sync operation that does not wait for the metadata to
-+ * hit the journal before returning.  If we race with clearing ili_fsync_fields,
-+ * then all that will happen is the log force will do nothing as the lsn will
-+ * already be on disk.  We can't race with setting ili_fsync_fields because that
-+ * is done under XFS_ILOCK_EXCL, and that can't happen because we hold the lock
-+ * shared until after the ili_fsync_fields is cleared.
-+ */
-+static  int
-+xfs_fsync_flush_log(
-+	struct xfs_inode	*ip,
-+	bool			datasync,
-+	int			*log_flushed)
-+{
-+	int			error = 0;
-+	xfs_lsn_t		lsn;
-+
-+	xfs_ilock(ip, XFS_ILOCK_SHARED);
-+	lsn = xfs_fsync_lsn(ip, datasync);
-+	if (lsn) {
-+		error = xfs_log_force_lsn(ip->i_mount, lsn, XFS_LOG_SYNC,
-+					  log_flushed);
-+
-+		spin_lock(&ip->i_itemp->ili_lock);
-+		ip->i_itemp->ili_fsync_fields = 0;
-+		spin_unlock(&ip->i_itemp->ili_lock);
-+	}
-+	xfs_iunlock(ip, XFS_ILOCK_SHARED);
-+	return error;
-+}
-+
- STATIC int
- xfs_file_fsync(
- 	struct file		*file,
-@@ -125,13 +173,10 @@ xfs_file_fsync(
- 	loff_t			end,
- 	int			datasync)
- {
--	struct inode		*inode = file->f_mapping->host;
--	struct xfs_inode	*ip = XFS_I(inode);
--	struct xfs_inode_log_item *iip = ip->i_itemp;
-+	struct xfs_inode	*ip = XFS_I(file->f_mapping->host);
- 	struct xfs_mount	*mp = ip->i_mount;
- 	int			error = 0;
- 	int			log_flushed = 0;
--	xfs_lsn_t		lsn = 0;
- 
- 	trace_xfs_file_fsync(ip);
- 
-@@ -155,33 +200,7 @@ xfs_file_fsync(
- 	else if (mp->m_logdev_targp != mp->m_ddev_targp)
- 		xfs_blkdev_issue_flush(mp->m_ddev_targp);
- 
--	/*
--	 * All metadata updates are logged, which means that we just have to
--	 * flush the log up to the latest LSN that touched the inode. If we have
--	 * concurrent fsync/fdatasync() calls, we need them to all block on the
--	 * log force before we clear the ili_fsync_fields field. This ensures
--	 * that we don't get a racing sync operation that does not wait for the
--	 * metadata to hit the journal before returning. If we race with
--	 * clearing the ili_fsync_fields, then all that will happen is the log
--	 * force will do nothing as the lsn will already be on disk. We can't
--	 * race with setting ili_fsync_fields because that is done under
--	 * XFS_ILOCK_EXCL, and that can't happen because we hold the lock shared
--	 * until after the ili_fsync_fields is cleared.
--	 */
--	xfs_ilock(ip, XFS_ILOCK_SHARED);
--	if (xfs_ipincount(ip)) {
--		if (!datasync ||
--		    (iip->ili_fsync_fields & ~XFS_ILOG_TIMESTAMP))
--			lsn = iip->ili_last_lsn;
--	}
--
--	if (lsn) {
--		error = xfs_log_force_lsn(mp, lsn, XFS_LOG_SYNC, &log_flushed);
--		spin_lock(&iip->ili_lock);
--		iip->ili_fsync_fields = 0;
--		spin_unlock(&iip->ili_lock);
--	}
--	xfs_iunlock(ip, XFS_ILOCK_SHARED);
-+	error = xfs_fsync_flush_log(ip, datasync, &log_flushed);
- 
- 	/*
- 	 * If we only have a single device, and the log force about was
+ /*
 
 
