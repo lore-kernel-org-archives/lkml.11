@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55B3CC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C8ABC19F29
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:51:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231876AbiHALue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
+        id S230246AbiHALvE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:51:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231685AbiHALti (ORCPT
+        with ESMTP id S231589AbiHALt4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:49:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04CA3FA02;
-        Mon,  1 Aug 2022 04:48:55 -0700 (PDT)
+        Mon, 1 Aug 2022 07:49:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCA93FA03;
+        Mon,  1 Aug 2022 04:49:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC31A612C5;
-        Mon,  1 Aug 2022 11:48:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B529DC433D7;
-        Mon,  1 Aug 2022 11:48:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51FFDB80EAC;
+        Mon,  1 Aug 2022 11:48:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5481C433D6;
+        Mon,  1 Aug 2022 11:48:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354534;
-        bh=LzTJG1XNCjSRF1wHLFmQcTc2ZzSUHNVIbWaXQvT0CFs=;
+        s=korg; t=1659354537;
+        bh=0DOI+tH+obLM/ah1ir/rAmzRsoGfunCYQfDTahRUfW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=unmoSEC7/BN3iZepgJVn+VsFjMu4YQAxo7iL8EPgpYuut+xpPE+dOKQgKZn+Y8fPc
-         MGiKeJvr1DKB9pr2SEeS5q+wsiIGcVOPyHajyN5PpbJteiri6usLV/GT70BmH25dcv
-         /4d+/P6wxGC6xJJE7tYvjEO9qUYMMN4EOiiEKR44=
+        b=c8iLnzGsdgsElllUtLEAGy7Kk0JXFeISIpRQu4hudicQrYVupMNaXDp8eRnKRBf29
+         OW6MDza9nyri7fgBM0H3WoSf9XRzG/7XP6FJJimLCAsFI4Zp5P02JqBtB2N3dBlATM
+         MaRlInLRp+biODfXQWV4MgxKVxsitb7jPRZR3bAI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chang Rui <changruinj@gmail.com>,
-        Fangrui Song <maskray@google.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 29/34] perf symbol: Correct address for bss symbols
-Date:   Mon,  1 Aug 2022 13:47:09 +0200
-Message-Id: <20220801114129.124587020@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Juergen Christ <jchrist@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>
+Subject: [PATCH 5.4 03/34] s390/archrandom: prevent CPACF trng invocations in interrupt context
+Date:   Mon,  1 Aug 2022 13:46:43 +0200
+Message-Id: <20220801114128.180782961@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114128.025615151@linuxfoundation.org>
 References: <20220801114128.025615151@linuxfoundation.org>
@@ -57,182 +51,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leo Yan <leo.yan@linaro.org>
+From: Harald Freudenberger <freude@linux.ibm.com>
 
-[ Upstream commit 2d86612aacb7805f72873691a2644d7279ed0630 ]
+commit 918e75f77af7d2e049bb70469ec0a2c12782d96a upstream.
 
-When using 'perf mem' and 'perf c2c', an issue is observed that tool
-reports the wrong offset for global data symbols.  This is a common
-issue on both x86 and Arm64 platforms.
+This patch slightly reworks the s390 arch_get_random_seed_{int,long}
+implementation: Make sure the CPACF trng instruction is never
+called in any interrupt context. This is done by adding an
+additional condition in_task().
 
-Let's see an example, for a test program, below is the disassembly for
-its .bss section which is dumped with objdump:
+Justification:
 
-  ...
+There are some constrains to satisfy for the invocation of the
+arch_get_random_seed_{int,long}() functions:
+- They should provide good random data during kernel initialization.
+- They should not be called in interrupt context as the TRNG
+  instruction is relatively heavy weight and may for example
+  make some network loads cause to timeout and buck.
 
-  Disassembly of section .bss:
+However, it was not clear what kind of interrupt context is exactly
+encountered during kernel init or network traffic eventually calling
+arch_get_random_seed_long().
 
-  0000000000004040 <completed.0>:
-  	...
+After some days of investigations it is clear that the s390
+start_kernel function is not running in any interrupt context and
+so the trng is called:
 
-  0000000000004080 <buf1>:
-  	...
+Jul 11 18:33:39 t35lp54 kernel:  [<00000001064e90ca>] arch_get_random_seed_long.part.0+0x32/0x70
+Jul 11 18:33:39 t35lp54 kernel:  [<000000010715f246>] random_init+0xf6/0x238
+Jul 11 18:33:39 t35lp54 kernel:  [<000000010712545c>] start_kernel+0x4a4/0x628
+Jul 11 18:33:39 t35lp54 kernel:  [<000000010590402a>] startup_continue+0x2a/0x40
 
-  00000000000040c0 <buf2>:
-  	...
+The condition in_task() is true and the CPACF trng provides random data
+during kernel startup.
 
-  0000000000004100 <thread>:
-  	...
+The network traffic however, is more difficult. A typical call stack
+looks like this:
 
-First we used 'perf mem record' to run the test program and then used
-'perf --debug verbose=4 mem report' to observe what's the symbol info
-for 'buf1' and 'buf2' structures.
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b5600fc>] extract_entropy.constprop.0+0x23c/0x240
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b560136>] crng_reseed+0x36/0xd8
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b5604b8>] crng_make_state+0x78/0x340
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b5607e0>] _get_random_bytes+0x60/0xf8
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b56108a>] get_random_u32+0xda/0x248
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008aefe7a8>] kfence_guarded_alloc+0x48/0x4b8
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008aeff35e>] __kfence_alloc+0x18e/0x1b8
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008aef7f10>] __kmalloc_node_track_caller+0x368/0x4d8
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b611eac>] kmalloc_reserve+0x44/0xa0
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b611f98>] __alloc_skb+0x90/0x178
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b6120dc>] __napi_alloc_skb+0x5c/0x118
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b8f06b4>] qeth_extract_skb+0x13c/0x680
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b8f6526>] qeth_poll+0x256/0x3f8
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b63d76e>] __napi_poll.constprop.0+0x46/0x2f8
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b63dbec>] net_rx_action+0x1cc/0x408
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b937302>] __do_softirq+0x132/0x6b0
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008abf46ce>] __irq_exit_rcu+0x13e/0x170
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008abf531a>] irq_exit_rcu+0x22/0x50
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b922506>] do_io_irq+0xe6/0x198
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b935826>] io_int_handler+0xd6/0x110
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b9358a6>] psw_idle_exit+0x0/0xa
+Jul 06 17:37:07 t35lp54 kernel: ([<000000008ab9c59a>] arch_cpu_idle+0x52/0xe0)
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b933cfe>] default_idle_call+0x6e/0xd0
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008ac59f4e>] do_idle+0xf6/0x1b0
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008ac5a28e>] cpu_startup_entry+0x36/0x40
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008abb0d90>] smp_start_secondary+0x148/0x158
+Jul 06 17:37:07 t35lp54 kernel:  [<000000008b935b9e>] restart_int_handler+0x6e/0x90
 
-  # ./perf mem record -e ldlat-loads,ldlat-stores -- false_sharing.exe 8
-  # ./perf --debug verbose=4 mem report
-    ...
-    dso__load_sym_internal: adjusting symbol: st_value: 0x40c0 sh_addr: 0x4040 sh_offset: 0x3028
-    symbol__new: buf2 0x30a8-0x30e8
-    ...
-    dso__load_sym_internal: adjusting symbol: st_value: 0x4080 sh_addr: 0x4040 sh_offset: 0x3028
-    symbol__new: buf1 0x3068-0x30a8
-    ...
+which confirms that the call is in softirq context. So in_task() covers exactly
+the cases where we want to have CPACF trng called: not in nmi, not in hard irq,
+not in soft irq but in normal task context and during kernel init.
 
-The perf tool relies on libelf to parse symbols, in executable and
-shared object files, 'st_value' holds a virtual address; 'sh_addr' is
-the address at which section's first byte should reside in memory, and
-'sh_offset' is the byte offset from the beginning of the file to the
-first byte in the section.  The perf tool uses below formula to convert
-a symbol's memory address to a file address:
-
-  file_address = st_value - sh_addr + sh_offset
-                    ^
-                    ` Memory address
-
-We can see the final adjusted address ranges for buf1 and buf2 are
-[0x30a8-0x30e8) and [0x3068-0x30a8) respectively, apparently this is
-incorrect, in the code, the structure for 'buf1' and 'buf2' specifies
-compiler attribute with 64-byte alignment.
-
-The problem happens for 'sh_offset', libelf returns it as 0x3028 which
-is not 64-byte aligned, combining with disassembly, it's likely libelf
-doesn't respect the alignment for .bss section, therefore, it doesn't
-return the aligned value for 'sh_offset'.
-
-Suggested by Fangrui Song, ELF file contains program header which
-contains PT_LOAD segments, the fields p_vaddr and p_offset in PT_LOAD
-segments contain the execution info.  A better choice for converting
-memory address to file address is using the formula:
-
-  file_address = st_value - p_vaddr + p_offset
-
-This patch introduces elf_read_program_header() which returns the
-program header based on the passed 'st_value', then it uses the formula
-above to calculate the symbol file address; and the debugging log is
-updated respectively.
-
-After applying the change:
-
-  # ./perf --debug verbose=4 mem report
-    ...
-    dso__load_sym_internal: adjusting symbol: st_value: 0x40c0 p_vaddr: 0x3d28 p_offset: 0x2d28
-    symbol__new: buf2 0x30c0-0x3100
-    ...
-    dso__load_sym_internal: adjusting symbol: st_value: 0x4080 p_vaddr: 0x3d28 p_offset: 0x2d28
-    symbol__new: buf1 0x3080-0x30c0
-    ...
-
-Fixes: f17e04afaff84b5c ("perf report: Fix ELF symbol parsing")
-Reported-by: Chang Rui <changruinj@gmail.com>
-Suggested-by: Fangrui Song <maskray@google.com>
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
-Acked-by: Namhyung Kim <namhyung@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220724060013.171050-2-leo.yan@linaro.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Harald Freudenberger <freude@linux.ibm.com>
+Acked-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reviewed-by: Juergen Christ <jchrist@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220713131721.257907-1-freude@linux.ibm.com
+Fixes: e4f74400308c ("s390/archrandom: simplify back to earlier design and initialize earlier")
+[agordeev@linux.ibm.com changed desc, added Fixes and Link, removed -stable]
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/symbol-elf.c | 45 ++++++++++++++++++++++++++++++++----
- 1 file changed, 41 insertions(+), 4 deletions(-)
+ arch/s390/include/asm/archrandom.h |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/tools/perf/util/symbol-elf.c b/tools/perf/util/symbol-elf.c
-index 2ec0a32da579..0b185b1090ff 100644
---- a/tools/perf/util/symbol-elf.c
-+++ b/tools/perf/util/symbol-elf.c
-@@ -230,6 +230,33 @@ Elf_Scn *elf_section_by_name(Elf *elf, GElf_Ehdr *ep,
- 	return NULL;
- }
+--- a/arch/s390/include/asm/archrandom.h
++++ b/arch/s390/include/asm/archrandom.h
+@@ -2,7 +2,7 @@
+ /*
+  * Kernel interface for the s390 arch_random_* functions
+  *
+- * Copyright IBM Corp. 2017, 2020
++ * Copyright IBM Corp. 2017, 2022
+  *
+  * Author: Harald Freudenberger <freude@de.ibm.com>
+  *
+@@ -14,6 +14,7 @@
+ #ifdef CONFIG_ARCH_RANDOM
  
-+static int elf_read_program_header(Elf *elf, u64 vaddr, GElf_Phdr *phdr)
-+{
-+	size_t i, phdrnum;
-+	u64 sz;
-+
-+	if (elf_getphdrnum(elf, &phdrnum))
-+		return -1;
-+
-+	for (i = 0; i < phdrnum; i++) {
-+		if (gelf_getphdr(elf, i, phdr) == NULL)
-+			return -1;
-+
-+		if (phdr->p_type != PT_LOAD)
-+			continue;
-+
-+		sz = max(phdr->p_memsz, phdr->p_filesz);
-+		if (!sz)
-+			continue;
-+
-+		if (vaddr >= phdr->p_vaddr && (vaddr < phdr->p_vaddr + sz))
-+			return 0;
-+	}
-+
-+	/* Not found any valid program header */
-+	return -1;
-+}
-+
- static bool want_demangle(bool is_kernel_sym)
+ #include <linux/static_key.h>
++#include <linux/preempt.h>
+ #include <linux/atomic.h>
+ #include <asm/cpacf.h>
+ 
+@@ -32,7 +33,8 @@ static inline bool __must_check arch_get
+ 
+ static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
  {
- 	return is_kernel_sym ? symbol_conf.demangle_kernel : symbol_conf.demangle;
-@@ -1091,6 +1118,7 @@ int dso__load_sym(struct dso *dso, struct map *map, struct symsrc *syms_ss,
- 					sym.st_value);
- 			used_opd = true;
- 		}
-+
- 		/*
- 		 * When loading symbols in a data mapping, ABS symbols (which
- 		 * has a value of SHN_ABS in its st_shndx) failed at
-@@ -1127,11 +1155,20 @@ int dso__load_sym(struct dso *dso, struct map *map, struct symsrc *syms_ss,
- 				goto out_elf_end;
- 		} else if ((used_opd && runtime_ss->adjust_symbols) ||
- 			   (!used_opd && syms_ss->adjust_symbols)) {
-+			GElf_Phdr phdr;
-+
-+			if (elf_read_program_header(syms_ss->elf,
-+						    (u64)sym.st_value, &phdr)) {
-+				pr_warning("%s: failed to find program header for "
-+					   "symbol: %s st_value: %#" PRIx64 "\n",
-+					   __func__, elf_name, (u64)sym.st_value);
-+				continue;
-+			}
- 			pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
--				  "sh_addr: %#" PRIx64 " sh_offset: %#" PRIx64 "\n", __func__,
--				  (u64)sym.st_value, (u64)shdr.sh_addr,
--				  (u64)shdr.sh_offset);
--			sym.st_value -= shdr.sh_addr - shdr.sh_offset;
-+				  "p_vaddr: %#" PRIx64 " p_offset: %#" PRIx64 "\n",
-+				  __func__, (u64)sym.st_value, (u64)phdr.p_vaddr,
-+				  (u64)phdr.p_offset);
-+			sym.st_value -= phdr.p_vaddr - phdr.p_offset;
- 		}
+-	if (static_branch_likely(&s390_arch_random_available)) {
++	if (static_branch_likely(&s390_arch_random_available) &&
++	    in_task()) {
+ 		cpacf_trng(NULL, 0, (u8 *)v, sizeof(*v));
+ 		atomic64_add(sizeof(*v), &s390_arch_random_counter);
+ 		return true;
+@@ -42,7 +44,8 @@ static inline bool __must_check arch_get
  
- 		demangled = demangle_sym(dso, kmodule, elf_name);
--- 
-2.35.1
-
+ static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
+ {
+-	if (static_branch_likely(&s390_arch_random_available)) {
++	if (static_branch_likely(&s390_arch_random_available) &&
++	    in_task()) {
+ 		cpacf_trng(NULL, 0, (u8 *)v, sizeof(*v));
+ 		atomic64_add(sizeof(*v), &s390_arch_random_counter);
+ 		return true;
 
 
