@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F9E9C19F29
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:07:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 251E6C19F29
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:07:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233607AbiHAMHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:07:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
+        id S233683AbiHAMHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233817AbiHAMGI (ORCPT
+        with ESMTP id S233570AbiHAMGp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:06:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2995C94C;
-        Mon,  1 Aug 2022 04:55:08 -0700 (PDT)
+        Mon, 1 Aug 2022 08:06:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98688E0E9;
+        Mon,  1 Aug 2022 04:55:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D898B8117D;
-        Mon,  1 Aug 2022 11:55:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FB0EC433C1;
-        Mon,  1 Aug 2022 11:55:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BD2CB81171;
+        Mon,  1 Aug 2022 11:55:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E890C433D7;
+        Mon,  1 Aug 2022 11:55:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354905;
-        bh=ovaRUObMAvZXzLI3pFsi8aRPVpgULcDH1zTnBrKal/Q=;
+        s=korg; t=1659354913;
+        bh=Kr1Yx27AWLh+1gvT8gaFpSOhnROqSVu0uXH2DRg+H2g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UOWcQD83Yk3LYxSfqH/nNnKwW4eTw3quYuKaAT6l6m1GFM4tSHqxrf5O1/3f3HM9a
-         uqJr5HpSOE0X5qvFigMHM0mw1pWUJLQp6F6bnvIlf4NXlRaF1puE4U+84yWN6Saxbr
-         gJJyb1RSS+dbWYegieACDtfcLbAyYcxWohiB6fq0=
+        b=ch5G/XY5LNhTWwxHJz60Nvwm6dXfzFHVfXkcf6gasCbc7QDUlXE8qumFZH2yUxz6k
+         bPYHCpPtKiKO5D7HEssFMdSTdUEZqHJAXmxQurPEDIi7Cn607dhVQr1atSbwOoqGNd
+         9m4Hja57jR0S8z1KTiWesOaASvi/lPcg0+dNIdYE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        "Justin M. Forbes" <jforbes@fedoraproject.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Nicolas Pitre <nico@linaro.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: [PATCH 5.15 62/69] ARM: crypto: comment out gcc warning that breaks clang builds
-Date:   Mon,  1 Aug 2022 13:47:26 +0200
-Message-Id: <20220801114136.985467005@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 65/69] ARM: 9216/1: Fix MAX_DMA_ADDRESS overflow
+Date:   Mon,  1 Aug 2022 13:47:29 +0200
+Message-Id: <20220801114137.083821084@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -52,38 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-The gcc build warning prevents all clang-built kernels from working
-properly, so comment it out to fix the build.
+[ Upstream commit fb0fd3469ead5b937293c213daa1f589b4b7ce46 ]
 
-This is a -stable kernel only patch for now, it will be resolved
-differently in mainline releases in the future.
+Commit 26f09e9b3a06 ("mm/memblock: add memblock memory allocation apis")
+added a check to determine whether arm_dma_zone_size is exceeding the
+amount of kernel virtual address space available between the upper 4GB
+virtual address limit and PAGE_OFFSET in order to provide a suitable
+definition of MAX_DMA_ADDRESS that should fit within the 32-bit virtual
+address space. The quantity used for comparison was off by a missing
+trailing 0, leading to MAX_DMA_ADDRESS to be overflowing a 32-bit
+quantity.
 
-Cc: "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc: "Justin M. Forbes" <jforbes@fedoraproject.org>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Nicolas Pitre <nico@linaro.org>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This was caught thanks to CONFIG_DEBUG_VIRTUAL on the bcm2711 platform
+where we define a dma_zone_size of 1GB and we have a PAGE_OFFSET value
+of 0xc000_0000 (CONFIG_VMSPLIT_3G) leading to MAX_DMA_ADDRESS being
+0x1_0000_0000 which overflows the unsigned long type used throughout
+__pa() and then __virt_addr_valid(). Because the virtual address passed
+to __virt_addr_valid() would now be 0, the function would loudly warn
+and flood the kernel log, thus making the platform unable to boot
+properly.
+
+Fixes: 26f09e9b3a06 ("mm/memblock: add memblock memory allocation apis")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/lib/xor-neon.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/include/asm/dma.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm/lib/xor-neon.c
-+++ b/arch/arm/lib/xor-neon.c
-@@ -26,8 +26,9 @@ MODULE_LICENSE("GPL");
-  * While older versions of GCC do not generate incorrect code, they fail to
-  * recognize the parallel nature of these functions, and emit plain ARM code,
-  * which is known to be slower than the optimized ARM code in asm-arm/xor.h.
-+ *
-+ * #warning This code requires at least version 4.6 of GCC
-  */
--#warning This code requires at least version 4.6 of GCC
+diff --git a/arch/arm/include/asm/dma.h b/arch/arm/include/asm/dma.h
+index a81dda65c576..45180a2cc47c 100644
+--- a/arch/arm/include/asm/dma.h
++++ b/arch/arm/include/asm/dma.h
+@@ -10,7 +10,7 @@
+ #else
+ #define MAX_DMA_ADDRESS	({ \
+ 	extern phys_addr_t arm_dma_zone_size; \
+-	arm_dma_zone_size && arm_dma_zone_size < (0x10000000 - PAGE_OFFSET) ? \
++	arm_dma_zone_size && arm_dma_zone_size < (0x100000000ULL - PAGE_OFFSET) ? \
+ 		(PAGE_OFFSET + arm_dma_zone_size) : 0xffffffffUL; })
  #endif
  
- #pragma GCC diagnostic ignored "-Wunused-variable"
+-- 
+2.35.1
+
 
 
