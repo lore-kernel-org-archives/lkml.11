@@ -2,138 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A277C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:46:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64073C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:46:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234913AbiHAMp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:45:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44168 "EHLO
+        id S234978AbiHAMqN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:46:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234981AbiHAMph (ORCPT
+        with ESMTP id S232363AbiHAMpr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:45:37 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 376B946DA4
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:32:54 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id j7so13933990wrh.3
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 05:32:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=nQEpMirCobOsOWattp713R2f+EJsY/28eyyRhLTxB+E=;
-        b=1MBkA4LqiF8fI0dfhCjDcznALsi41csR8RWo8B2vXIaEqFfOsFRqiHCRFevYzqX8lq
-         tdSDgz5bwsQG79hc3kd4cKyzpweWaDLj5euZHMZ8Q9zdEYqsShIHDKDFttv68frF9K51
-         8F5YFa7BDVVbtQov0QIiY5bRRnf8WJxlf6auhTUNV9Po0xjI+/zxML6w8lS1N1rA5T3e
-         2v+pH+AERHtt+02YqoXwVpiKGavKriiDMsM2ynRux63XWQdHX37BU//YBoiIm55BZ0X7
-         RJq13GSYT2uWpGCrcFYjI2eWBsvW5nfLl9VW3XHlujK3xt5LVd9Ii05ttsfsiRg4YDAN
-         gAtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=nQEpMirCobOsOWattp713R2f+EJsY/28eyyRhLTxB+E=;
-        b=hjQaujE/DsrL47KuwmB5e/dJP6eAhdC4EIOphIqtnziqEvDy9BNzp09QUCcwYId8QF
-         /EqF9U685/DHsRFpRrZLt3eRGAARnOV7YCTOlsONH3FPQ1KdS4XKmmKoNNGhZGCeey76
-         PgnoRhXOJUeYJQDITLK/VGsOdmBaDsv9CNDsE7K+zraof8UkKDNqSsLVYxC/R9HHf8oc
-         hOCSNVbKYaIXtfjSzTY1stnoqb1Yrk9A2ojl2m4fc1gWw+3hF+jl1UcjrnJhRFN7J2F3
-         szVSMS4oqjTl+TyVU9d39LDGhilWvSD6TjmvMvkxeseeeFPYEFFC1Xz+oFTwLgxNd+6q
-         LdFA==
-X-Gm-Message-State: ACgBeo0hhkQx/2LMT6bhSeM1U2mx2EiPPXEvjwB18giW46nKXTCeCSvz
-        RrkKZSpQD2CoITMKWGjFqMTQtW/kfL0W6A==
-X-Google-Smtp-Source: AA6agR7944sGCx6WI3LpU8LVDq4T/AE2Sxg90GKPb2BHCCrbdYHuOAn49HeQwObUPDO+UkB9PjVvcA==
-X-Received: by 2002:adf:db4c:0:b0:21e:ef46:af22 with SMTP id f12-20020adfdb4c000000b0021eef46af22mr9755067wrj.424.1659357172791;
-        Mon, 01 Aug 2022 05:32:52 -0700 (PDT)
-Received: from localhost ([109.180.234.208])
-        by smtp.gmail.com with ESMTPSA id e13-20020a5d65cd000000b0020fcaba73bcsm11806263wrw.104.2022.08.01.05.32.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Aug 2022 05:32:52 -0700 (PDT)
-From:   Punit Agrawal <punit.agrawal@bytedance.com>
-To:     Jeremy Linton <jeremy.linton@arm.com>
-Cc:     Punit Agrawal <punit.agrawal@bytedance.com>,
-        linux-pm@vger.kernel.org, rafael@kernel.org, lenb@kernel.org,
-        viresh.kumar@linaro.org, robert.moore@intel.com, devel@acpica.org,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] ACPI: CPPC: Disable FIE if registers in PCC regions
-References: <20220728221043.4161903-1-jeremy.linton@arm.com>
-        <20220728221043.4161903-2-jeremy.linton@arm.com>
-        <871qu4krb4.fsf@stealth>
-        <a0bdc45a-c5c6-65ba-1ab8-e52dd26652d7@arm.com>
-Date:   Mon, 01 Aug 2022 13:32:51 +0100
-In-Reply-To: <a0bdc45a-c5c6-65ba-1ab8-e52dd26652d7@arm.com> (Jeremy Linton's
-        message of "Fri, 29 Jul 2022 10:20:46 -0500")
-Message-ID: <87tu6wjg98.fsf@stealth>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 1 Aug 2022 08:45:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F5E47BB4;
+        Mon,  1 Aug 2022 05:33:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62DBC6115D;
+        Mon,  1 Aug 2022 12:33:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2247CC433D6;
+        Mon,  1 Aug 2022 12:33:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659357228;
+        bh=cUtyBDgVVj8a2DbWuYT23A9XZzN6tatVF6DfpqOHBm0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ClllzYyOR3dE2PIjBhiD9mIY0evMgFfq96zdfbiZZoJpUaM3xfKYvT4OJLpl/+hwn
+         wAmAQHl59WTf3EmMFJwyj1uh4dteRpGUtPJ+XGqAmPSM9miXINyvlG8jbT/Mx6VQ8b
+         30L9Efuvo6xM5QgI1c19qvmWZcg2hIRplCFsW/csfP+qXz9jXKI4SeXTDGEy9iItpE
+         ZFf4sLJCmB50r/kXG0a4Dv0Su6fduhwhabIqj0GE+9zQ/63+CbpRkXvMIaVkMlOQTE
+         wOWV67NWq3v6V9J8xNR+GZzQ80A27Xiy2j7qhpIOq3qtW18nVeOZG5ptihphxuSeum
+         uI7wpsyEFm2ew==
+Date:   Mon, 1 Aug 2022 13:33:43 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Conor.Dooley@microchip.com
+Cc:     Nagasuresh.Relli@microchip.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] spi: microchip-core-qspi: Add support for microchip
+ fpga qspi controllers
+Message-ID: <YufIJ9JtTKaUjRqZ@sirena.org.uk>
+References: <20220801094255.664548-1-nagasuresh.relli@microchip.com>
+ <20220801094255.664548-3-nagasuresh.relli@microchip.com>
+ <283bdfef-cbd9-5d87-f77d-10f007c37a0c@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wK8xglAK6STQSGFE"
+Content-Disposition: inline
+In-Reply-To: <283bdfef-cbd9-5d87-f77d-10f007c37a0c@microchip.com>
+X-Cookie: Dieters live life in the fasting lane.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jeremy Linton <jeremy.linton@arm.com> writes:
 
-> Hi,
->
-> On 7/29/22 07:59, Punit Agrawal wrote:
->> Hi Jeremy,
->> One comment / query below.
->> Jeremy Linton <jeremy.linton@arm.com> writes:
->> 
->>> PCC regions utilize a mailbox to set/retrieve register values used by
->>> the CPPC code. This is fine as long as the operations are
->>> infrequent. With the FIE code enabled though the overhead can range
->>> from 2-11% of system CPU overhead (ex: as measured by top) on Arm
->>> based machines.
->>>
->>> So, before enabling FIE assure none of the registers used by
->>> cppc_get_perf_ctrs() are in the PCC region. Furthermore lets also
->>> enable a module parameter which can also disable it at boot or module
->>> reload.
->>>
->>> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
->>> ---
->>>   drivers/acpi/cppc_acpi.c       | 41 ++++++++++++++++++++++++++++++++++
->>>   drivers/cpufreq/cppc_cpufreq.c | 19 ++++++++++++----
->>>   include/acpi/cppc_acpi.h       |  5 +++++
->>>   3 files changed, 61 insertions(+), 4 deletions(-)
->>>
->> [...]
->> 
->>> diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
->>> index 24eaf0ec344d..ed607e27d6bb 100644
->>> --- a/drivers/cpufreq/cppc_cpufreq.c
->>> +++ b/drivers/cpufreq/cppc_cpufreq.c
->> [...]
->> 
->>> @@ -229,7 +233,12 @@ static void __init cppc_freq_invariance_init(void)
->>>   	};
->>>   	int ret;
->>>   -	if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
->>> +	if (cppc_perf_ctrs_in_pcc()) {
->>> +		pr_debug("FIE not enabled on systems with registers in PCC\n");
->> The message should probably be promoted to a pr_info() and exposed
->> as
->> part of the kernel logs. It is a change in the default behaviour we've
->> had until now. The message will provide some hint about why it was
->> disabled.
->> Thoughts?
->
-> I personally flip flopped between making it pr_info or pr_debug and
-> settled on debug because no one else was complaining about the
-> cppc_fie consumption. Which to me, meant that the users of platforms
-> utilizing PCC regions weren't sensitive to the problem, or weren't yet
-> running a distro/kernel with it enabled, or any number of other
-> reasons why the problem wasn't getting more attention. Mostly I
-> concluded the FIE code hadn't shown up in "enterprise" distros yet..
+--wK8xglAK6STQSGFE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I too was thinking that likely enterprise users haven't started digging
-into the performance impact of enabling frequency invariance.
+On Mon, Aug 01, 2022 at 10:40:33AM +0000, Conor.Dooley@microchip.com wrote:
+> On 01/08/2022 10:42, Naga Sureshkumar Relli wrote:
 
-> But, yah, if no one is going to complain about the extra messages
-> pr_info() is a better plan.
+> > +	qspi = spi_controller_get_devdata(ctlr);
 
-Thanks! I'll look out for the updated patch.
+> Is there a reason to use spi_controller_get_devdata() rather than
+> spi_master_get_devdata() ?
 
-FIE was designed to improve load balancing (and arguably fairness
-too). Hopefully, the message will aid users in looking more closely and
-complain to system vendor / upstream if it matters to their workloads.
+We are trying to move everything away from the old terminonlogy to using
+controller, this also applies to the the other API functions.
+
+> > +clk_dis_all:
+> > +	clk_disable_unprepare(qspi->clk);
+
+> If we move the clk prepare & enable later in probe, ie after
+> getting the irq, this goto could be removed too because the
+> only place requiring teardown of the clock would be the error
+> path of devm_spi_register_controller().
+
+Is the clock needed for handling of the interrupt?
+
+--wK8xglAK6STQSGFE
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLnyCcACgkQJNaLcl1U
+h9DxVwf/W1ICkrqkCv2q0uPZM2Bc0iszQetiS5Eo6c4OxfHShFWnnGBHw3fT+EaL
+dLlNzAB4FXCohs4U8rnww3yqyW9cGJDxLiROxdvWKvZUEmVCFqUX1xrJWXQAPorN
+z5TIgfJA0lAaDuAywSBNP/v2NIojASHEp2bY8Qk2WhUkDy4KYd2lei5H6T9MenHO
+r0kmbaG+Q366FrANMcHQBrmn5OaTIcmtEKbyqJYzE71uFwTYHR5qrVdTDC/dCiPm
+H9c+jB4t1cZ+krcxnqWxM5KJlsSk3TReAEY0Z8FPz00iVLpY9Gisdj88NF6lkNOy
+eof9krPC1BSU5fJZWWGBuxzbvteqtA==
+=hglu
+-----END PGP SIGNATURE-----
+
+--wK8xglAK6STQSGFE--
