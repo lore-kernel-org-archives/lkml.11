@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92F5DC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B7CC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231932AbiHALvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34580 "EHLO
+        id S231964AbiHALvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:51:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232016AbiHALuu (ORCPT
+        with ESMTP id S232062AbiHALuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:50:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E6240BC3;
-        Mon,  1 Aug 2022 04:49:19 -0700 (PDT)
+        Mon, 1 Aug 2022 07:50:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E57940BF0;
+        Mon,  1 Aug 2022 04:49:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48C896125A;
-        Mon,  1 Aug 2022 11:49:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52717C433D6;
-        Mon,  1 Aug 2022 11:49:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3447B81055;
+        Mon,  1 Aug 2022 11:49:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D8FCC433D7;
+        Mon,  1 Aug 2022 11:49:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354558;
-        bh=nWkaHB4aObE4+ORXQz/gbELbp69I+2ype2nxZe9a19U=;
+        s=korg; t=1659354561;
+        bh=NxgMr9IOK2r74FmzVfDcwXghgS/ZLi9ZSMBfS4OirPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G6n6+c2EuJafW0K/ICF3Q/PKOll5LPbpeIVYXShB+JFVM14JU9Pb8XVR9bXOTi4n3
-         6LRtkBZQcolDYQRWN//2lvfBfopM87LXmzUxGrvYwIBsN9gK1JGnkTlOsZZ85hz7Q5
-         TGDFMyhNuHDCnOE6HCjgUR16n0dLyg8M6kZK2eQ4=
+        b=iXKyqGEn+Uak2ciWDp/KIUC0WJ7nXlb1n8z3hPWkGhrp5v5h1SWnVcK24R/JJK+mR
+         ynKHJSIYkOhcxIZUU25uVuv7YFdGLb/PU+NY6CQnLZVl2DWhBvjqcFrZTJky7sWcN9
+         2x/4CvR0LMgloGMJuoSnoXZ7SCAi+GLNB6tIkT8U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 08/34] tcp: Fix a data-race around sysctl_tcp_nometrics_save.
-Date:   Mon,  1 Aug 2022 13:46:48 +0200
-Message-Id: <20220801114128.364618769@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.4 09/34] ice: check (DD | EOF) bits on Rx descriptor rather than (EOP | RS)
+Date:   Mon,  1 Aug 2022 13:46:49 +0200
+Message-Id: <20220801114128.406083028@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114128.025615151@linuxfoundation.org>
 References: <20220801114128.025615151@linuxfoundation.org>
@@ -48,31 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-commit 8499a2454d9e8a55ce616ede9f9580f36fd5b0f3 upstream.
+commit 283d736ff7c7e96ac5b32c6c0de40372f8eb171e upstream.
 
-While reading sysctl_tcp_nometrics_save, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+Tx side sets EOP and RS bits on descriptors to indicate that a
+particular descriptor is the last one and needs to generate an irq when
+it was sent. These bits should not be checked on completion path
+regardless whether it's the Tx or the Rx. DD bit serves this purpose and
+it indicates that a particular descriptor is either for Rx or was
+successfully Txed. EOF is also set as loopback test does not xmit
+fragmented frames.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Look at (DD | EOF) bits setting in ice_lbtest_receive_frames() instead
+of EOP and RS pair.
+
+Fixes: 0e674aeb0b77 ("ice: Add handler for ethtool selftest")
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_metrics.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_ethtool.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/net/ipv4/tcp_metrics.c
-+++ b/net/ipv4/tcp_metrics.c
-@@ -329,7 +329,7 @@ void tcp_update_metrics(struct sock *sk)
- 	int m;
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -619,7 +619,8 @@ static int ice_lbtest_receive_frames(str
+ 		rx_desc = ICE_RX_DESC(rx_ring, i);
  
- 	sk_dst_confirm(sk);
--	if (net->ipv4.sysctl_tcp_nometrics_save || !dst)
-+	if (READ_ONCE(net->ipv4.sysctl_tcp_nometrics_save) || !dst)
- 		return;
+ 		if (!(rx_desc->wb.status_error0 &
+-		    cpu_to_le16(ICE_TX_DESC_CMD_EOP | ICE_TX_DESC_CMD_RS)))
++		    (cpu_to_le16(BIT(ICE_RX_FLEX_DESC_STATUS0_DD_S)) |
++		     cpu_to_le16(BIT(ICE_RX_FLEX_DESC_STATUS0_EOF_S)))))
+ 			continue;
  
- 	rcu_read_lock();
+ 		rx_buf = &rx_ring->rx_buf[i];
 
 
