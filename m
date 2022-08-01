@@ -2,144 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EFA7C19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 09:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB589C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 09:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229905AbiHAJ3W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 05:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50010 "EHLO
+        id S230012AbiHAJ3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 05:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbiHAJ3U (ORCPT
+        with ESMTP id S229909AbiHAJ3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 05:29:20 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3499C3A48E
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 02:29:19 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id f22so1963289edc.7
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 02:29:19 -0700 (PDT)
+        Mon, 1 Aug 2022 05:29:44 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526453A48E
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 02:29:42 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id s11so1532476edd.13
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 02:29:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=obTtYKen62thne/B0uGj9je/51gZFs6diILR5ElHHDY=;
-        b=hsWLa4BrC0o0QXd6SkiuRmKS5roYPCvtJuVmU/ICM2nMQxkoAzQFQ06Dc/+OAsnWg+
-         zC7LXjv5ZoNPQH09XJoFSg3XQU/yea67tSXJoaD/8BnfdSAwnMw2XDnHfX0ITFaml8Fd
-         A9Ogarcyhhe6c6+/OQDQ2CigICMfPtOKR1NK8=
+        bh=dbzg+GPWLRcgadG8H1umO0RU/iJrt3Fpb+tnPvJIv50=;
+        b=bZGcwf1PF/s8iE6aOi/Tbp9xcDN9oP2wsGD24ZxwSmopeRyeKqyhoLMh2aoFQQ9LEZ
+         8k6wMJgHfm20Mr1jzyDAcFC0GiLa5mbvVKMBgKWB3mmNiVbV2u4D5RUTMan2cgU5+ZJr
+         h1CZhFSWkDC5QqGnfs4SIuejzMDZk84uYQ5+fX/WML+MkYKQOtT/HVv6sN4heFQScs/W
+         +ytoaxtlRgd5azF+GZHll7kFOFmHfoIa3zgp0h6IqVVUrEWSNo4dTi1s0lrNirdALpbL
+         WNbXQ2J5jgir12ojygb53BccGe4T4OptrB7/41cks84xBw8DK/cq8dYYZzL3OW0nxUOE
+         eR2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=obTtYKen62thne/B0uGj9je/51gZFs6diILR5ElHHDY=;
-        b=ZCFkHl7mzVNceqZy6tnutnWkLYUI0zBpSDUXDBwNoZfSsZK8DI5p/1mliI4c3D1gNy
-         Y9kGjw1AxWYMHNyROXxgYTh5GTNSzgTjxiMpOAmmDsWrIB/vIUMRVcmSUfEEqCLPgzDY
-         1CqfWs28v4nzRBQEjCHPVL2gWxPZ21TMYwFyPD4jhuOTjTOqL6++GyRHFDZ+pX4rgDji
-         HK1IEY6DBArMNEstewkC9SEGb783CVuWULjkBTFyGD8/jmOn3QvDj1wVrRH0Rj1HwNLM
-         /OgPeuUebIMTauz/5HnvJGE2/HBH2rhhePPzXskzok1M3BCnxhI/Kv/3/iunw2SASNir
-         EkPw==
-X-Gm-Message-State: AJIora+IwjGPRAWA9C0NgssJPB5B3WwoSzP8FhaFU2YHJrv5JUowBGv0
-        LpOUj0KFVk2GHKL5Fpp9freNctj8ULX2XO0kAi8g1g==
-X-Google-Smtp-Source: AGRyM1tRH4RzrfzNVoO0RpBTUEIib7rIt1ZOlTCzF7HaSBEwbGmu9ZFb9JEy+ezMdtCPlSTh4FFkAMTlPmHhLDRdr00=
-X-Received: by 2002:a05:6402:5513:b0:43a:b866:b9ab with SMTP id
- fi19-20020a056402551300b0043ab866b9abmr15337086edb.290.1659346157810; Mon, 01
- Aug 2022 02:29:17 -0700 (PDT)
+        bh=dbzg+GPWLRcgadG8H1umO0RU/iJrt3Fpb+tnPvJIv50=;
+        b=PYKSvZxKnAN6R6DTda2YtyUersYGLVSVRwhGT0ny2tUKxetTNJEdtwBwd2dyJs0GKw
+         VV7KvtER9ZHDVZQWWWTserAewC2DgWPHUESei79U5b0K8uLjWF67ZZnNukRJOJUwUYUo
+         xbd2j24UcAooM2Qe2XvFLCjhJ1MFunoatnDCAeoaJcFXFGtHpWomMa9fKH/bmXmzo/fN
+         lWDnsek2hWh++Lz71zY6SkfSmOZ8RCFeiv82I+Avy73ofiWvHTSq33eW1JowYfyHH5uN
+         r55PMe1uBvLHnUudYHW7b4GabdjqOI5PwTitj3o++mTJUT7/5O5YDHipxW7eSwqAholb
+         oeUg==
+X-Gm-Message-State: AJIora9tvZH4LWm+EROXT+nkqQWHGikb9W6+lhmZnQaSdMu1KrAg02th
+        dGI9pNRxDRupQY5hm1PxOOJmtp1YyK6ALZm1K6g=
+X-Google-Smtp-Source: AGRyM1t1hGvLmwbSGPn5h+yEyR3ix5Tb3AyJexwfnSLIS2WAIZrDS1BN6pfc1dDw0GiR+jWiFEm2eINvwnGhV2ooyFw=
+X-Received: by 2002:a05:6402:40c3:b0:43b:d65a:cbf7 with SMTP id
+ z3-20020a05640240c300b0043bd65acbf7mr15295117edb.380.1659346180866; Mon, 01
+ Aug 2022 02:29:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220721014845.19044-1-allen-kh.cheng@mediatek.com> <20220721014845.19044-2-allen-kh.cheng@mediatek.com>
-In-Reply-To: <20220721014845.19044-2-allen-kh.cheng@mediatek.com>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Mon, 1 Aug 2022 17:29:06 +0800
-Message-ID: <CAGXv+5HXwVpaJPV-4Z6qw14xZzEkx_E7dVks6-GBa7bQyN8hCg@mail.gmail.com>
-Subject: Re: [PATCH v4 1/4] dt-bindings: mediatek: watchdog: Fix compatible
- fallbacks and example
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        nfraprado@collabora.com, angelogioacchino.delregno@collabora.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
+References: <20220731201258.11262-1-andriy.shevchenko@linux.intel.com>
+ <9b9abdf0-7cd5-df51-adbf-2225291f0dd2@redhat.com> <CAHp75VduSG=BerPJo9phXJKWa-yu_uXbP+ifkax=3FUTE7et+Q@mail.gmail.com>
+In-Reply-To: <CAHp75VduSG=BerPJo9phXJKWa-yu_uXbP+ifkax=3FUTE7et+Q@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 1 Aug 2022 11:29:04 +0200
+Message-ID: <CAHp75VcmuVcA_heURNh96zBDtpeNvx0t9buDOxnWNoea2G1uDg@mail.gmail.com>
+Subject: Re: [PATCH v2 01/10] mfd: intel_soc_pmic: Fix an error handling path
+ in intel_soc_pmic_i2c_probe()
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Lee Jones <lee@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 10:50 AM Allen-KH Cheng
-<allen-kh.cheng@mediatek.com> wrote:
->
-> The watchdog timer of mt8186. mt8195 and mt7986 have their DT data.
-> We should not use 'mediatek,mt6589-wdt' as fallback.
->
-> For mediatek,wdt example of mt8183, We remove mediatek,mt6589-wdt fallback.
+On Mon, Aug 1, 2022 at 11:14 AM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Mon, Aug 1, 2022 at 10:43 AM Hans de Goede <hdegoede@redhat.com> wrote:
+> > On 7/31/22 22:12, Andy Shevchenko wrote:
 
-I think this needs some more information.
+...
 
-Right now on the kernel side, mt6589-wdt provides just watchdog support.
-The SoC-specific compatibles that are touched by this patch provide reset
-controls in addition to the standard watchdog, which remains the same.
+> > >  err_del_irq_chip:
+> > > +     pwm_remove_table(crc_pwm_lookup, ARRAY_SIZE(crc_pwm_lookup));
+> > >       regmap_del_irq_chip(pmic->irq, pmic->irq_chip_data);
+> > >       return ret;
+> >
+> > Note alternatively we could just move the pwm_add_table() to just before the "return 0",
+> > there is no strict ordering between adding the mfd devices and the pwm_add_table()
+> > (the pwm device only becomes available after the pwm-driver has bound to the mfd
+> > instantiated platform device which happens later).
 
-If that is the case, then the fallback compatibles are correct. A fallback
-says that the new hardware is compatible with some older hardware, and
-can be run with the driver supporting that older hardware, likely with
-reduced functionality.
+Just to be sure... How is it guaranteed that that happens later?
 
-As an example, if mt8195-wdt is backward compatible with mt6589-wdt,
-then it should run as mt6589-wdt, and would just be missing new
-functionality, in this case the reset controls.
-
-So either mt6589-wdt also contains a reset control that is not the same
-as the other newer chips, or has some other functionality that the other
-chips contain, and justifies the removal of the fallback, or this patch
-is incorrect. Note that mt2701-wdt and mt762*-wdt are still listed as
-compatible with mt6589-wdt. So I think a better explanation is required.
-
-
-Regards
-ChenYu
-
-
-> Fixes:a45b408a020b("dt-bindings: watchdog: Add compatible for MediaTek MT8186")
-> Fixes:b326f2c85f3d("dt-bindings: watchdog: Add compatible for Mediatek MT8195")
-> Fixes:41e73feb1024("dt-bindings: watchdog: Add compatible for Mediatek MT7986")
-> Fixes:f43f97a0fc0e("dt-bindings: mediatek: mt8183: Add #reset-cells")
-> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  Documentation/devicetree/bindings/watchdog/mtk-wdt.txt | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-> index 762c62e428ef..67ef991ec4cf 100644
-> --- a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-> +++ b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-> @@ -14,12 +14,12 @@ Required properties:
->         "mediatek,mt7622-wdt", "mediatek,mt6589-wdt": for MT7622
->         "mediatek,mt7623-wdt", "mediatek,mt6589-wdt": for MT7623
->         "mediatek,mt7629-wdt", "mediatek,mt6589-wdt": for MT7629
-> -       "mediatek,mt7986-wdt", "mediatek,mt6589-wdt": for MT7986
-> +       "mediatek,mt7986-wdt": for MT7986
->         "mediatek,mt8183-wdt": for MT8183
-> -       "mediatek,mt8186-wdt", "mediatek,mt6589-wdt": for MT8186
-> +       "mediatek,mt8186-wdt": for MT8186
->         "mediatek,mt8516-wdt", "mediatek,mt6589-wdt": for MT8516
->         "mediatek,mt8192-wdt": for MT8192
-> -       "mediatek,mt8195-wdt", "mediatek,mt6589-wdt": for MT8195
-> +       "mediatek,mt8195-wdt": for MT8195
->
->  - reg : Specifies base physical address and size of the registers.
->
-> @@ -32,8 +32,7 @@ Optional properties:
->  Example:
->
->  watchdog: watchdog@10007000 {
-> -       compatible = "mediatek,mt8183-wdt",
-> -                    "mediatek,mt6589-wdt";
-> +       compatible = "mediatek,mt8183-wdt";
->         mediatek,disable-extrst;
->         reg = <0 0x10007000 0 0x100>;
->         interrupts = <GIC_SPI 139 IRQ_TYPE_NONE>;
-> --
-> 2.18.0
->
->
+-- 
+With Best Regards,
+Andy Shevchenko
