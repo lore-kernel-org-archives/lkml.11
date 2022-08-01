@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04131C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:12:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD1D6C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233055AbiHAMM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56260 "EHLO
+        id S234015AbiHAMMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:12:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234107AbiHAMKo (ORCPT
+        with ESMTP id S234222AbiHAMKy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:10:44 -0400
+        Mon, 1 Aug 2022 08:10:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACCB691E4;
-        Mon,  1 Aug 2022 04:56:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 801846BC03;
+        Mon,  1 Aug 2022 04:56:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C661B81163;
-        Mon,  1 Aug 2022 11:56:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AEBDC433C1;
-        Mon,  1 Aug 2022 11:56:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B547B80EAC;
+        Mon,  1 Aug 2022 11:56:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C54F7C433C1;
+        Mon,  1 Aug 2022 11:56:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354994;
-        bh=nWkaHB4aObE4+ORXQz/gbELbp69I+2ype2nxZe9a19U=;
+        s=korg; t=1659355003;
+        bh=UNsBv5enHLJ3J/h7oyP4hiTFaz+6uZq+D1FX11qoP+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MBql2zbhH+JB1XtgZ91eTmV/Eq76ZDixjYEy7OOa1hxLr6IUmtNjKNuJwe8tuI3qk
-         EDrjUmie7sSjBXjpSliLXMPl9BZfYh8eBxRV3W6GlKKM5+F5KM6RTr/1mOegZwKbW7
-         eLymWbtxSS27YZMZRT0Yg+veAXE8QQQMBOFV0yMs=
+        b=wARRNarHHyRnY2a9M1fqrKIHw/S+vzvBXVCV4bd9eSxY5D2ERhg+CwY0Gfui2rqwA
+         5EpUMJgvjjuATxLt1NRO3WscCWAFnW/EfYWjIOU6yU5PmL1ziwk8Y0YikXSb+glnZW
+         4PQeYaOBWaXdXbJdN66y+abfP5VlAbcY/KaOHu7E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.18 24/88] tcp: Fix a data-race around sysctl_tcp_nometrics_save.
-Date:   Mon,  1 Aug 2022 13:46:38 +0200
-Message-Id: <20220801114139.148269148@linuxfoundation.org>
+        stable@vger.kernel.org, Laurence de Bruxelles <lfdebrux@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.18 04/88] ARM: pxa2xx: Fix GPIO descriptor tables
+Date:   Mon,  1 Aug 2022 13:46:18 +0200
+Message-Id: <20220801114138.238581181@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -48,31 +49,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-commit 8499a2454d9e8a55ce616ede9f9580f36fd5b0f3 upstream.
+commit c5cdb9286913aa5a5ebb81bcca0c17df3b0e2c79 upstream.
 
-While reading sysctl_tcp_nometrics_save, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+Laurence reports:
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+"Kernel >5.18 on Zaurus has a bug where the power management code can't
+talk to devices, emitting the following errors:
+
+sharpsl-pm sharpsl-pm: Error: AC check failed: voltage -22.
+sharpsl-pm sharpsl-pm: Charging Error!
+sharpsl-pm sharpsl-pm: Warning: Cannot read main battery!
+
+Looking at the recent changes, I found that commit 31455bbda208 ("spi:
+pxa2xx_spi: Convert to use GPIO descriptors") replaced the deprecated
+SPI chip select platform device code with a gpiod lookup table. However,
+this didn't seem to work until I changed the `dev_id` member from the
+device name to the bus id. I'm not entirely sure why this is necessary,
+but I suspect it is related to the fact that in sysfs SPI devices are
+attached under /sys/devices/.../dev_name/spi_master/spiB/spiB.C, rather
+than directly to the device."
+
+After reviewing the change I conclude that the same fix is needed
+for all affected boards.
+
+Fixes: 31455bbda208 ("spi: pxa2xx_spi: Convert to use GPIO descriptors")
+Reported-by: Laurence de Bruxelles <lfdebrux@gmail.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220722114611.1517414-1-linus.walleij@linaro.org'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_metrics.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-pxa/corgi.c     |    2 +-
+ arch/arm/mach-pxa/hx4700.c    |    2 +-
+ arch/arm/mach-pxa/icontrol.c  |    4 ++--
+ arch/arm/mach-pxa/littleton.c |    2 +-
+ arch/arm/mach-pxa/magician.c  |    2 +-
+ arch/arm/mach-pxa/spitz.c     |    2 +-
+ arch/arm/mach-pxa/z2.c        |    4 ++--
+ 7 files changed, 9 insertions(+), 9 deletions(-)
 
---- a/net/ipv4/tcp_metrics.c
-+++ b/net/ipv4/tcp_metrics.c
-@@ -329,7 +329,7 @@ void tcp_update_metrics(struct sock *sk)
- 	int m;
+--- a/arch/arm/mach-pxa/corgi.c
++++ b/arch/arm/mach-pxa/corgi.c
+@@ -531,7 +531,7 @@ static struct pxa2xx_spi_controller corg
+ };
  
- 	sk_dst_confirm(sk);
--	if (net->ipv4.sysctl_tcp_nometrics_save || !dst)
-+	if (READ_ONCE(net->ipv4.sysctl_tcp_nometrics_save) || !dst)
- 		return;
+ static struct gpiod_lookup_table corgi_spi_gpio_table = {
+-	.dev_id = "pxa2xx-spi.1",
++	.dev_id = "spi1",
+ 	.table = {
+ 		GPIO_LOOKUP_IDX("gpio-pxa", CORGI_GPIO_ADS7846_CS, "cs", 0, GPIO_ACTIVE_LOW),
+ 		GPIO_LOOKUP_IDX("gpio-pxa", CORGI_GPIO_LCDCON_CS, "cs", 1, GPIO_ACTIVE_LOW),
+--- a/arch/arm/mach-pxa/hx4700.c
++++ b/arch/arm/mach-pxa/hx4700.c
+@@ -635,7 +635,7 @@ static struct pxa2xx_spi_controller pxa_
+ };
  
- 	rcu_read_lock();
+ static struct gpiod_lookup_table pxa_ssp2_gpio_table = {
+-	.dev_id = "pxa2xx-spi.2",
++	.dev_id = "spi2",
+ 	.table = {
+ 		GPIO_LOOKUP_IDX("gpio-pxa", GPIO88_HX4700_TSC2046_CS, "cs", 0, GPIO_ACTIVE_LOW),
+ 		{ },
+--- a/arch/arm/mach-pxa/icontrol.c
++++ b/arch/arm/mach-pxa/icontrol.c
+@@ -140,7 +140,7 @@ struct platform_device pxa_spi_ssp4 = {
+ };
+ 
+ static struct gpiod_lookup_table pxa_ssp3_gpio_table = {
+-	.dev_id = "pxa2xx-spi.3",
++	.dev_id = "spi3",
+ 	.table = {
+ 		GPIO_LOOKUP_IDX("gpio-pxa", ICONTROL_MCP251x_nCS1, "cs", 0, GPIO_ACTIVE_LOW),
+ 		GPIO_LOOKUP_IDX("gpio-pxa", ICONTROL_MCP251x_nCS2, "cs", 1, GPIO_ACTIVE_LOW),
+@@ -149,7 +149,7 @@ static struct gpiod_lookup_table pxa_ssp
+ };
+ 
+ static struct gpiod_lookup_table pxa_ssp4_gpio_table = {
+-	.dev_id = "pxa2xx-spi.4",
++	.dev_id = "spi4",
+ 	.table = {
+ 		GPIO_LOOKUP_IDX("gpio-pxa", ICONTROL_MCP251x_nCS3, "cs", 0, GPIO_ACTIVE_LOW),
+ 		GPIO_LOOKUP_IDX("gpio-pxa", ICONTROL_MCP251x_nCS4, "cs", 1, GPIO_ACTIVE_LOW),
+--- a/arch/arm/mach-pxa/littleton.c
++++ b/arch/arm/mach-pxa/littleton.c
+@@ -208,7 +208,7 @@ static struct spi_board_info littleton_s
+ };
+ 
+ static struct gpiod_lookup_table littleton_spi_gpio_table = {
+-	.dev_id = "pxa2xx-spi.2",
++	.dev_id = "spi2",
+ 	.table = {
+ 		GPIO_LOOKUP_IDX("gpio-pxa", LITTLETON_GPIO_LCD_CS, "cs", 0, GPIO_ACTIVE_LOW),
+ 		{ },
+--- a/arch/arm/mach-pxa/magician.c
++++ b/arch/arm/mach-pxa/magician.c
+@@ -946,7 +946,7 @@ static struct pxa2xx_spi_controller magi
+ };
+ 
+ static struct gpiod_lookup_table magician_spi_gpio_table = {
+-	.dev_id = "pxa2xx-spi.2",
++	.dev_id = "spi2",
+ 	.table = {
+ 		/* NOTICE must be GPIO, incompatibility with hw PXA SPI framing */
+ 		GPIO_LOOKUP_IDX("gpio-pxa", GPIO14_MAGICIAN_TSC2046_CS, "cs", 0, GPIO_ACTIVE_LOW),
+--- a/arch/arm/mach-pxa/spitz.c
++++ b/arch/arm/mach-pxa/spitz.c
+@@ -578,7 +578,7 @@ static struct pxa2xx_spi_controller spit
+ };
+ 
+ static struct gpiod_lookup_table spitz_spi_gpio_table = {
+-	.dev_id = "pxa2xx-spi.2",
++	.dev_id = "spi2",
+ 	.table = {
+ 		GPIO_LOOKUP_IDX("gpio-pxa", SPITZ_GPIO_ADS7846_CS, "cs", 0, GPIO_ACTIVE_LOW),
+ 		GPIO_LOOKUP_IDX("gpio-pxa", SPITZ_GPIO_LCDCON_CS, "cs", 1, GPIO_ACTIVE_LOW),
+--- a/arch/arm/mach-pxa/z2.c
++++ b/arch/arm/mach-pxa/z2.c
+@@ -623,7 +623,7 @@ static struct pxa2xx_spi_controller pxa_
+ };
+ 
+ static struct gpiod_lookup_table pxa_ssp1_gpio_table = {
+-	.dev_id = "pxa2xx-spi.1",
++	.dev_id = "spi1",
+ 	.table = {
+ 		GPIO_LOOKUP_IDX("gpio-pxa", GPIO24_ZIPITZ2_WIFI_CS, "cs", 0, GPIO_ACTIVE_LOW),
+ 		{ },
+@@ -631,7 +631,7 @@ static struct gpiod_lookup_table pxa_ssp
+ };
+ 
+ static struct gpiod_lookup_table pxa_ssp2_gpio_table = {
+-	.dev_id = "pxa2xx-spi.2",
++	.dev_id = "spi2",
+ 	.table = {
+ 		GPIO_LOOKUP_IDX("gpio-pxa", GPIO88_ZIPITZ2_LCD_CS, "cs", 0, GPIO_ACTIVE_LOW),
+ 		{ },
 
 
