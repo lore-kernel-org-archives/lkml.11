@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDDA6C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF97C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:07:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233696AbiHAMH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:07:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42708 "EHLO
+        id S233439AbiHAMFj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:05:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233656AbiHAMHJ (ORCPT
+        with ESMTP id S233326AbiHAMFE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:07:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF71B357D1;
-        Mon,  1 Aug 2022 04:55:17 -0700 (PDT)
+        Mon, 1 Aug 2022 08:05:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797933DBC9;
+        Mon,  1 Aug 2022 04:54:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C89A261210;
-        Mon,  1 Aug 2022 11:55:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4915C433C1;
-        Mon,  1 Aug 2022 11:55:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04441B81177;
+        Mon,  1 Aug 2022 11:54:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 607D3C433D6;
+        Mon,  1 Aug 2022 11:54:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354916;
-        bh=VA2wohoCImHpJ67x4JVTxx0JPiyhyzHT+u6woSJvBRU=;
+        s=korg; t=1659354877;
+        bh=QCM+pkoBB3k0TyrYAg7KgYY8WjHYnJqZJO075BhLf2o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S3+VNpqk0yV64tZbO5VK4vxK+ByuE8S3N6RdrHPCnATxfH84EbCbPxZPGF2W2g1fl
-         HzSBGKM75ZqRuN1i3yCbJdJcjL+nIA9HQjWHezUO8/dnW1Ews8HDV9h9iHmILuzjkt
-         JarISAZ7U/x6nAfDFrgf5MKz0Oa+IF1Ev7kWfbQI=
+        b=UHc9dFVxKxx6Th2YhTD3/u44JeuKGHjLIEwsKJaKACQgWKqQOg6WBhHLIP1ukPqMU
+         9YnRrCxkFPePC930LUDYE91f/Vcpgh9BCPV74IKjZRtUOKR0V4CgC525oJZUaDoLkf
+         HQtvoD4zrplJgYsFSabW9p/H+PpuohLbY5GC9Z6k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Richter <rric@kernel.org>,
-        Toshi Kani <toshi.kani@hpe.com>, Borislav Petkov <bp@suse.de>,
-        Robert Elliott <elliott@hpe.com>
-Subject: [PATCH 5.15 66/69] EDAC/ghes: Set the DIMM label unconditionally
-Date:   Mon,  1 Aug 2022 13:47:30 +0200
-Message-Id: <20220801114137.129963445@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 53/69] ipv4: Fix data-races around sysctl_fib_notify_on_flag_change.
+Date:   Mon,  1 Aug 2022 13:47:17 +0200
+Message-Id: <20220801114136.635281463@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -49,108 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Toshi Kani <toshi.kani@hpe.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 5e2805d5379619c4a2e3ae4994e73b36439f4bad upstream.
+[ Upstream commit 96b9bd8c6d125490f9adfb57d387ef81a55a103e ]
 
-The commit
+While reading sysctl_fib_notify_on_flag_change, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its readers.
 
-  cb51a371d08e ("EDAC/ghes: Setup DIMM label from DMI and use it in error reports")
-
-enforced that both the bank and device strings passed to
-dimm_setup_label() are not NULL.
-
-However, there are BIOSes, for example on a
-
-  HPE ProLiant DL360 Gen10/ProLiant DL360 Gen10, BIOS U32 03/15/2019
-
-which don't populate both strings:
-
-  Handle 0x0020, DMI type 17, 84 bytes
-  Memory Device
-          Array Handle: 0x0013
-          Error Information Handle: Not Provided
-          Total Width: 72 bits
-          Data Width: 64 bits
-          Size: 32 GB
-          Form Factor: DIMM
-          Set: None
-          Locator: PROC 1 DIMM 1        <===== device
-          Bank Locator: Not Specified   <===== bank
-
-This results in a buffer overflow because ghes_edac_register() calls
-strlen() on an uninitialized label, which had non-zero values left over
-from krealloc_array():
-
-  detected buffer overflow in __fortify_strlen
-   ------------[ cut here ]------------
-   kernel BUG at lib/string_helpers.c:983!
-   invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
-   CPU: 1 PID: 1 Comm: swapper/0 Tainted: G          I       5.18.6-200.fc36.x86_64 #1
-   Hardware name: HPE ProLiant DL360 Gen10/ProLiant DL360 Gen10, BIOS U32 03/15/2019
-   RIP: 0010:fortify_panic
-   ...
-   Call Trace:
-    <TASK>
-    ghes_edac_register.cold
-    ghes_probe
-    platform_probe
-    really_probe
-    __driver_probe_device
-    driver_probe_device
-    __driver_attach
-    ? __device_attach_driver
-    bus_for_each_dev
-    bus_add_driver
-    driver_register
-    acpi_ghes_init
-    acpi_init
-    ? acpi_sleep_proc_init
-    do_one_initcall
-
-The label contains garbage because the commit in Fixes reallocs the
-DIMMs array while scanning the system but doesn't clear the newly
-allocated memory.
-
-Change dimm_setup_label() to always initialize the label to fix the
-issue. Set it to the empty string in case BIOS does not provide both
-bank and device so that ghes_edac_register() can keep the default label
-given by edac_mc_alloc_dimms().
-
-  [ bp: Rewrite commit message. ]
-
-Fixes: b9cae27728d1f ("EDAC/ghes: Scan the system once on driver init")
-Co-developed-by: Robert Richter <rric@kernel.org>
-Signed-off-by: Robert Richter <rric@kernel.org>
-Signed-off-by: Toshi Kani <toshi.kani@hpe.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Tested-by: Robert Elliott <elliott@hpe.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220719220124.760359-1-toshi.kani@hpe.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 680aea08e78c ("net: ipv4: Emit notification when fib hardware flags are changed")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/edac/ghes_edac.c |   11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ net/ipv4/fib_trie.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/edac/ghes_edac.c
-+++ b/drivers/edac/ghes_edac.c
-@@ -101,9 +101,14 @@ static void dimm_setup_label(struct dimm
+diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+index a9cd9c2bd84e..19c6e7b93d3d 100644
+--- a/net/ipv4/fib_trie.c
++++ b/net/ipv4/fib_trie.c
+@@ -1037,6 +1037,7 @@ fib_find_matching_alias(struct net *net, const struct fib_rt_info *fri)
  
- 	dmi_memdev_name(handle, &bank, &device);
+ void fib_alias_hw_flags_set(struct net *net, const struct fib_rt_info *fri)
+ {
++	u8 fib_notify_on_flag_change;
+ 	struct fib_alias *fa_match;
+ 	struct sk_buff *skb;
+ 	int err;
+@@ -1058,14 +1059,16 @@ void fib_alias_hw_flags_set(struct net *net, const struct fib_rt_info *fri)
+ 	WRITE_ONCE(fa_match->offload, fri->offload);
+ 	WRITE_ONCE(fa_match->trap, fri->trap);
  
--	/* both strings must be non-zero */
--	if (bank && *bank && device && *device)
--		snprintf(dimm->label, sizeof(dimm->label), "%s %s", bank, device);
-+	/*
-+	 * Set to a NULL string when both bank and device are zero. In this case,
-+	 * the label assigned by default will be preserved.
-+	 */
-+	snprintf(dimm->label, sizeof(dimm->label), "%s%s%s",
-+		 (bank && *bank) ? bank : "",
-+		 (bank && *bank && device && *device) ? " " : "",
-+		 (device && *device) ? device : "");
- }
++	fib_notify_on_flag_change = READ_ONCE(net->ipv4.sysctl_fib_notify_on_flag_change);
++
+ 	/* 2 means send notifications only if offload_failed was changed. */
+-	if (net->ipv4.sysctl_fib_notify_on_flag_change == 2 &&
++	if (fib_notify_on_flag_change == 2 &&
+ 	    READ_ONCE(fa_match->offload_failed) == fri->offload_failed)
+ 		goto out;
  
- static void assign_dmi_dimm_info(struct dimm_info *dimm, struct memdev_dmi_entry *entry)
+ 	WRITE_ONCE(fa_match->offload_failed, fri->offload_failed);
+ 
+-	if (!net->ipv4.sysctl_fib_notify_on_flag_change)
++	if (!fib_notify_on_flag_change)
+ 		goto out;
+ 
+ 	skb = nlmsg_new(fib_nlmsg_size(fa_match->fa_info), GFP_ATOMIC);
+-- 
+2.35.1
+
 
 
