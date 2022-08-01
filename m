@@ -2,65 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5B2C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 16:18:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2638C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 16:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234014AbiHAQSc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 12:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43950 "EHLO
+        id S234058AbiHAQSf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 12:18:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233855AbiHAQSJ (ORCPT
+        with ESMTP id S233840AbiHAQSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 12:18:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4234F3E77D
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 09:18:06 -0700 (PDT)
+        Mon, 1 Aug 2022 12:18:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B40B73E74D;
+        Mon,  1 Aug 2022 09:18:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E62A6B815A6
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 16:18:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 84F12C43142;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47AD6B812A2;
+        Mon,  1 Aug 2022 16:18:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 010B5C433D7;
         Mon,  1 Aug 2022 16:18:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1659370683;
-        bh=cCZw+mC5AUx8GHUZHP/7slrWF+REQUUg2wxposz99R8=;
+        bh=LykFEOHq/aeDFRNdmo0JTTnYeIahKFi85gTgILHpzkw=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=MsbmzXm+L1oRTZDSaJSbSU7G/13a4WN2r/+JYR7GPy5UWI/aXzFi4eBR93A9/3lNA
-         ocKJgyrfR4/i+zdi2Eh5pFI58qM+7BCn1w6cAFNRjyVP6fgwD5jTFgoR7hlbXGnEUe
-         xcMfDiyvIy8+VirFjJNNqI6K0Jrbif9d8mSGx8WwBKzWYNbu61sSxCOsQXL6fxIwLR
-         UFeRTqYwW7Uk9Qw3yKEVyRlznlbql0qTsu/x3AyC1KLfk75db7Kb2rpsJqm9dtymdX
-         mgdxw6EBJL4uQr2tDXysezCIZAJ7IqtfPt3f/gfwVBRaKW+Lg9sQ+Rqaqx705/KM5v
-         L7g/quXnr9fWQ==
+        b=GjauYRNOQKICXLEUegFd618KZyqS7hYTS4Hx8CqYYOlM7FUoQcPhddtx039xJzZAy
+         Op1OvimQNNBzY8NxbHASyiw+5YwTLkjD/Oaqlhk4SE3NOxGFtC+IRjjW6hdl02Wg6V
+         1K+pR+CehP6Y+/HJNxyGastLmliuvOnVt8GArvJkJSUmBJn47BXbzAljYP9CNgQuEg
+         ZM0nK0bRKnweiCcF5/sgfeFOftlRatyCYXjUYM6hqdajDiXtkVQ2FxpMgCqlJlqCnl
+         rT8R04Kw97o1fxQ/IlDQzUohu8wwd0fyE5ebHYl4Vf6+t6DxQDgVOrbW69yu8vUl5f
+         Wf0AkKMTFPtaQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 71B32C43140;
-        Mon,  1 Aug 2022 16:18:03 +0000 (UTC)
-Subject: Re: [GIT PULL] dlm updates for 6.0
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E07E0C43140;
+        Mon,  1 Aug 2022 16:18:02 +0000 (UTC)
+Subject: Re: [GIT PULL] file locking changes for v6.0
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220801144329.GA10643@redhat.com>
-References: <20220801144329.GA10643@redhat.com>
+In-Reply-To: <6dfd152d3643c568b928a96d334b50754cd752d4.camel@kernel.org>
+References: <6dfd152d3643c568b928a96d334b50754cd752d4.camel@kernel.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220801144329.GA10643@redhat.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/teigland/linux-dlm.git dlm-6.0
-X-PR-Tracked-Commit-Id: 958589892218e43ec83d5562438e0c1cc44a4716
+X-PR-Tracked-Message-Id: <6dfd152d3643c568b928a96d334b50754cd752d4.camel@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git tags/filelock-v6.0
+X-PR-Tracked-Commit-Id: db4abb4a32ec979ea5deea4d0095fa22ec99a623
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: eb43bbac4c3c97b34b72e1dbd91544ee0d48e8d6
-Message-Id: <165937068345.17475.17761614919373675607.pr-tracker-bot@kernel.org>
-Date:   Mon, 01 Aug 2022 16:18:03 +0000
-To:     David Teigland <teigland@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, cluster-devel@redhat.com
+X-PR-Merge-Commit-Id: e6a7cf70a3ca9dc83419dd3d8ef09a800da3d7c1
+Message-Id: <165937068291.17475.9653797655780712882.pr-tracker-bot@kernel.org>
+Date:   Mon, 01 Aug 2022 16:18:02 +0000
+To:     Jeff Layton <jlayton@kernel.org>
+Cc:     Linus Torvalds <torvalds@linuxfoundation.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 1 Aug 2022 09:43:29 -0500:
+The pull request you sent on Mon, 01 Aug 2022 07:07:57 -0400:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/teigland/linux-dlm.git dlm-6.0
+> git://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git tags/filelock-v6.0
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/eb43bbac4c3c97b34b72e1dbd91544ee0d48e8d6
+https://git.kernel.org/torvalds/c/e6a7cf70a3ca9dc83419dd3d8ef09a800da3d7c1
 
 Thank you!
 
