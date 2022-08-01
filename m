@@ -2,67 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64776C19F2B
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA01C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233574AbiHAT2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 15:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49602 "EHLO
+        id S234108AbiHATaX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 15:30:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233302AbiHAT2Q (ORCPT
+        with ESMTP id S232622AbiHATaT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 15:28:16 -0400
-Received: from smtp.smtpout.orange.fr (smtp04.smtpout.orange.fr [80.12.242.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB74B71
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 12:28:13 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id Ib5Fo6JKAGWJJIb5FoUmw3; Mon, 01 Aug 2022 21:28:11 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Mon, 01 Aug 2022 21:28:11 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Huacai Chen <chenhuacai@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Jianmin Lv <lvjianmin@loongson.cn>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-mips@vger.kernel.org
-Subject: [PATCH] irqchip/loongson-liointc: Fix an error handling path in liointc_init()
-Date:   Mon,  1 Aug 2022 21:28:07 +0200
-Message-Id: <1a6d74ab70712279023aa7bdbd31bd3aec103bc0.1659382063.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Mon, 1 Aug 2022 15:30:19 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E072ACC;
+        Mon,  1 Aug 2022 12:30:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id ED8D4CE1882;
+        Mon,  1 Aug 2022 19:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3ECA8C433D7;
+        Mon,  1 Aug 2022 19:30:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659382214;
+        bh=RSdenKgzgDbUZ1xdn72P3IXWtBaRKTopIQ2me2+7W3U=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=pckv6hSar7rbmrQOoTGxdJaoesk9NPjb3lW/xylQYd8b82lLZTEpFn7vc7qY7qOPH
+         0E3WHtrvAbASozW805CQ/AmNCHNPqdSR0rpiIPgWZ8oXqTzTb5lANYCeLmScNWdh4h
+         WKYprdx8hnIF3HMvcSoB1AMI2aYWUZ+4406SNvPCvGPOcyrCiFfVT+IjlRQqRFHfVG
+         +yQWqwpeYeUiEQs6vAVWwcnj7Cce+ZVHQGkfYJj2NnYONZ0AQJtD4maxzTnj7Scvnb
+         N93kIhA4+JwJGYWJEgeEeMW66A/j8B6C5Jp9KcJrXj73O1t36fAjl79/0ADrpEZLR1
+         V8/qosEbSmHxA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 23F8FC43143;
+        Mon,  1 Aug 2022 19:30:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: txgbe: Fix an error handling path in txgbe_probe()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165938221414.30942.4902074793645744820.git-patchwork-notify@kernel.org>
+Date:   Mon, 01 Aug 2022 19:30:14 +0000
+References: <082003d00be1f05578c9c6434272ceb314609b8e.1659285240.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <082003d00be1f05578c9c6434272ceb314609b8e.1659285240.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     jiawenwu@trustnetic.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All errors lead to the error handling path, except this one.
-Fix it and release some resources before returning if this test fails.
+Hello:
 
-Fixes: 0858ed035a85 ("irqchip/loongson-liointc: Add ACPI init support")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/irqchip/irq-loongson-liointc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/drivers/irqchip/irq-loongson-liointc.c b/drivers/irqchip/irq-loongson-liointc.c
-index c4f3c886ad61..8ab59b658913 100644
---- a/drivers/irqchip/irq-loongson-liointc.c
-+++ b/drivers/irqchip/irq-loongson-liointc.c
-@@ -207,7 +207,7 @@ static int liointc_init(phys_addr_t addr, unsigned long size, int revision,
- 					"reg-names", core_reg_names[i]);
- 
- 			if (index < 0)
--				return -EINVAL;
-+				goto out_iounmap;
- 
- 			priv->core_isr[i] = of_iomap(node, index);
- 		}
+On Sun, 31 Jul 2022 18:34:15 +0200 you wrote:
+> A pci_enable_pcie_error_reporting() should be balanced by a corresponding
+> pci_disable_pcie_error_reporting() call in the error handling path, as
+> already done in the remove function.
+> 
+> Fixes: 3ce7547e5b71 ("net: txgbe: Add build support for txgbe")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> 
+> [...]
+
+Here is the summary with links:
+  - net: txgbe: Fix an error handling path in txgbe_probe()
+    https://git.kernel.org/netdev/net-next/c/2e8f205d910e
+
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
