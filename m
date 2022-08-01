@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BCE1C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75CA8C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233550AbiHAMGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42750 "EHLO
+        id S233561AbiHAMGp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:06:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233546AbiHAMFm (ORCPT
+        with ESMTP id S233647AbiHAMFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:05:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1883A3DBE2;
-        Mon,  1 Aug 2022 04:54:57 -0700 (PDT)
+        Mon, 1 Aug 2022 08:05:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE8D93DF36;
+        Mon,  1 Aug 2022 04:55:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 452A961227;
-        Mon,  1 Aug 2022 11:54:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 553DFC433C1;
-        Mon,  1 Aug 2022 11:54:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CA866122C;
+        Mon,  1 Aug 2022 11:55:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22A7BC433D6;
+        Mon,  1 Aug 2022 11:54:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354896;
-        bh=CNw/7brM5jrLWQwSiP+kjevAisFkviPlhD85FH8R8r8=;
+        s=korg; t=1659354899;
+        bh=FjzBCPAb7C25Y28emX03KeTIQr80qdVVFHA6xEHStRY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iYjnakJVVrSe7tuZ1sCum8n34T5E1xRfWFi/TsNL5+/lF2BwIqXMhfznZTXDPm293
-         E8iVwTr7qYijdI5ubcCfixb0xoW2stQTKqbonocr4lhX6PZs+IQUQAVEwVRpfEUO8x
-         4wS4i72iQiLqK2Yafq0XRLCXJxRjvNBIMdcTiXM8=
+        b=T2j75sL1H/VV4nQCA4HSLR1mF9trWYEvEqxWdEcC99l80WTXTk0WE5+YvTk7VM8HF
+         0oIDCIhyOWwjog6JHVpI953eENPcV06e3EZxCr+OWXtaieDFUQJmCsQXS9ziyEbh1A
+         qDZatlSSd3iR8cPOM/2oYxxYm/B15RDZn9fy6wYc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sabrina Dubroca <sd@queasysnail.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Alejandro Lucero <alejandro.lucero-palau@amd.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 42/69] macsec: fix error message in macsec_add_rxsa and _txsa
-Date:   Mon,  1 Aug 2022 13:47:06 +0200
-Message-Id: <20220801114136.173024277@linuxfoundation.org>
+Subject: [PATCH 5.15 60/69] sfc: disable softirqs for ptp TX
+Date:   Mon,  1 Aug 2022 13:47:24 +0200
+Message-Id: <20220801114136.906733549@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -49,42 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sabrina Dubroca <sd@queasysnail.net>
+From: Alejandro Lucero <alejandro.lucero-palau@amd.com>
 
-[ Upstream commit 3240eac4ff20e51b87600dbd586ed814daf313db ]
+[ Upstream commit 67c3b611d92fc238c43734878bc3e232ab570c79 ]
 
-The expected length is MACSEC_SALT_LEN, not MACSEC_SA_ATTR_SALT.
+Sending a PTP packet can imply to use the normal TX driver datapath but
+invoked from the driver's ptp worker. The kernel generic TX code
+disables softirqs and preemption before calling specific driver TX code,
+but the ptp worker does not. Although current ptp driver functionality
+does not require it, there are several reasons for doing so:
 
-Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites (IEEE 802.1AEbw)")
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+   1) The invoked code is always executed with softirqs disabled for non
+      PTP packets.
+   2) Better if a ptp packet transmission is not interrupted by softirq
+      handling which could lead to high latencies.
+   3) netdev_xmit_more used by the TX code requires preemption to be
+      disabled.
+
+Indeed a solution for dealing with kernel preemption state based on static
+kernel configuration is not possible since the introduction of dynamic
+preemption level configuration at boot time using the static calls
+functionality.
+
+Fixes: f79c957a0b537 ("drivers: net: sfc: use netdev_xmit_more helper")
+Signed-off-by: Alejandro Lucero <alejandro.lucero-palau@amd.com>
+Link: https://lore.kernel.org/r/20220726064504.49613-1-alejandro.lucero-palau@amd.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macsec.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/sfc/ptp.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index f72d4380374d..9ede0d7cd0b5 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -1768,7 +1768,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 		if (nla_len(tb_sa[MACSEC_SA_ATTR_SALT]) != MACSEC_SALT_LEN) {
- 			pr_notice("macsec: nl: add_rxsa: bad salt length: %d != %d\n",
- 				  nla_len(tb_sa[MACSEC_SA_ATTR_SALT]),
--				  MACSEC_SA_ATTR_SALT);
-+				  MACSEC_SALT_LEN);
- 			rtnl_unlock();
- 			return -EINVAL;
- 		}
-@@ -2010,7 +2010,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 		if (nla_len(tb_sa[MACSEC_SA_ATTR_SALT]) != MACSEC_SALT_LEN) {
- 			pr_notice("macsec: nl: add_txsa: bad salt length: %d != %d\n",
- 				  nla_len(tb_sa[MACSEC_SA_ATTR_SALT]),
--				  MACSEC_SA_ATTR_SALT);
-+				  MACSEC_SALT_LEN);
- 			rtnl_unlock();
- 			return -EINVAL;
- 		}
+diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
+index 725b0f38813a..a2b4e3befa59 100644
+--- a/drivers/net/ethernet/sfc/ptp.c
++++ b/drivers/net/ethernet/sfc/ptp.c
+@@ -1100,7 +1100,29 @@ static void efx_ptp_xmit_skb_queue(struct efx_nic *efx, struct sk_buff *skb)
+ 
+ 	tx_queue = efx_channel_get_tx_queue(ptp_data->channel, type);
+ 	if (tx_queue && tx_queue->timestamping) {
++		/* This code invokes normal driver TX code which is always
++		 * protected from softirqs when called from generic TX code,
++		 * which in turn disables preemption. Look at __dev_queue_xmit
++		 * which uses rcu_read_lock_bh disabling preemption for RCU
++		 * plus disabling softirqs. We do not need RCU reader
++		 * protection here.
++		 *
++		 * Although it is theoretically safe for current PTP TX/RX code
++		 * running without disabling softirqs, there are three good
++		 * reasond for doing so:
++		 *
++		 *      1) The code invoked is mainly implemented for non-PTP
++		 *         packets and it is always executed with softirqs
++		 *         disabled.
++		 *      2) This being a single PTP packet, better to not
++		 *         interrupt its processing by softirqs which can lead
++		 *         to high latencies.
++		 *      3) netdev_xmit_more checks preemption is disabled and
++		 *         triggers a BUG_ON if not.
++		 */
++		local_bh_disable();
+ 		efx_enqueue_skb(tx_queue, skb);
++		local_bh_enable();
+ 	} else {
+ 		WARN_ONCE(1, "PTP channel has no timestamped tx queue\n");
+ 		dev_kfree_skb_any(skb);
 -- 
 2.35.1
 
