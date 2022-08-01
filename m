@@ -2,112 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F7DC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 352EDC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234381AbiHAM2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57650 "EHLO
+        id S231986AbiHAM2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:28:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234464AbiHAM1y (ORCPT
+        with ESMTP id S231689AbiHAM16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:27:54 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E82D7904D0
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:07:18 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 326EC139F;
-        Mon,  1 Aug 2022 05:07:18 -0700 (PDT)
-Received: from [10.57.10.23] (unknown [10.57.10.23])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6162E3F73B;
-        Mon,  1 Aug 2022 05:07:15 -0700 (PDT)
-Message-ID: <19a0a508-fb39-8b06-ce0f-ce26767ef57f@arm.com>
-Date:   Mon, 1 Aug 2022 13:07:10 +0100
+        Mon, 1 Aug 2022 08:27:58 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF4FC33A25;
+        Mon,  1 Aug 2022 05:07:24 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LxGyL3qRHzlVvX;
+        Mon,  1 Aug 2022 20:04:42 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 1 Aug
+ 2022 20:07:22 +0800
+From:   Xu Qiang <xuqiang36@huawei.com>
+To:     <robh+dt@kernel.org>, <frowand.list@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <guohanjun@huawei.com>, <weiyongjun1@huawei.com>,
+        <xuqiang36@huawei.com>
+Subject: [PATCH -next] of/fdt: declared return type does not match actual return type
+Date:   Mon, 1 Aug 2022 12:05:06 +0000
+Message-ID: <20220801120506.11461-2-xuqiang36@huawei.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220801120506.11461-1-xuqiang36@huawei.com>
+References: <20220801120506.11461-1-xuqiang36@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] dma-debug: Remove warning in dma_debug_entry
-Content-Language: en-GB
-To:     yf.wang@mediatek.com, Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Cc:     wsd_upstream@mediatek.com, Libo Kang <Libo.Kang@mediatek.com>,
-        Ning Li <Ning.Li@mediatek.com>, Yong Wu <Yong.Wu@mediatek.com>,
-        Miles Chen <miles.chen@mediatek.com>
-References: <20220730085657.31977-1-yf.wang@mediatek.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220730085657.31977-1-yf.wang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-30 09:56, yf.wang@mediatek.com wrote:
-> From: Yunfei Wang <yf.wang@mediatek.com>
-> 
-> The same physical address can be mapped multiple times, and it is not
-> required to have attributes such as DMA_ATTR_SKIP_CPU_SYNC, but
-> dma_debug_entry will report an warning if active_cacheline_insert
-> returns -EEXIST, which can cause a lot of trouble.
-> 
-> For example, if two dma engine share the same dma-buf, the two dma
-> engine drivers will call the DMA API to map their own dma address
-> respectively, which is normal follow, but dma_debug_entry will
-> report an warning.
-> 
-> In addition, if active_cacheline_insert returns -EEXIST, the
-> active_cacheline_inc_overlap function already has the logic to
-> check overlapping mappings counter, if it exceeded
-> ACTIVE_CACHELINE_MAX_OVERLAP overlapping mappings, it already
-> has a warning.
-> And also, if warning as panic is turned on, it will cause KE.
-> 
-> So, dma_debug_entry does not need report warning.
+The commit 649cab56de8e (“of: properly check for error returned
+by fdt_get_name()”) changed the return value type from bool to int,
+but forgot to change the return value simultaneously.
 
-I'm sure this has come up before, but I can't remember enough of the 
-context to easily search for the previous thread.
+populate_node was only called in unflatten_dt_nodes, and returns
+with values greater than or equal to 0 were discarded without further
+processing. Considering that return 0 usually indicates success,
+return 0 instead of return true.
 
-In short, this check is not entirely correct, but removing it isn't 
-right either, since that would be too much of a step backwards in terms 
-of debug coverage IMO. What we need here is to do a bit more work to 
-differentiate between mappings of the exact same buffer, which are 
-allowed, vs. any other kind of partial overlaps which are still illegal 
-and definitely deserve a warning.
+Fixes: 649cab56de8e (“of: properly check for error returned by fdt_get_name()”)
+Signed-off-by: Xu Qiang <xuqiang36@huawei.com>
+---
+ drivers/of/fdt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Furthermore, even for the valid dma-buf import case I'm not convinced 
-that the SKIP_CPU_SYNC check can be dropped either. If one device can 
-import a buffer while another device is already accessing it, there are 
-definitely combinations of parameters which could lead to potential data 
-loss (e.g. a non-coherent DMA_TO_DEVICE mapping during a non-coherent 
-DMA_FROM_DEVICE access, a or non-coherent DMA_FROM_DEVICE mapping during 
-a coherent DMA_TO_DEVICE access).
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 22b3d35a5e76..4fe448d8d2ae 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -246,7 +246,7 @@ static int populate_node(const void *blob,
+ 	}
+ 
+ 	*pnp = np;
+-	return true;
++	return 0;
+ }
+ 
+ static void reverse_nodes(struct device_node *parent)
+-- 
+2.17.1
 
-Thanks,
-Robin.
-
-> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-> ---
->   kernel/dma/debug.c | 3 ---
->   1 file changed, 3 deletions(-)
-> 
-> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-> index 2caafd13f8aa..ad731f7858c9 100644
-> --- a/kernel/dma/debug.c
-> +++ b/kernel/dma/debug.c
-> @@ -566,9 +566,6 @@ static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
->   	if (rc == -ENOMEM) {
->   		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");
->   		global_disable = true;
-> -	} else if (rc == -EEXIST && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
-> -		err_printk(entry->dev, entry,
-> -			"cacheline tracking EEXIST, overlapping mappings aren't supported\n");
->   	}
->   }
->   
