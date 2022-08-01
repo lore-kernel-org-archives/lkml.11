@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AFC9C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 231BEC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233098AbiHAMDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33134 "EHLO
+        id S233119AbiHAMDY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233562AbiHAMBY (ORCPT
+        with ESMTP id S233616AbiHAMBb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:01:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC8751416;
-        Mon,  1 Aug 2022 04:53:35 -0700 (PDT)
+        Mon, 1 Aug 2022 08:01:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396EE51A10;
+        Mon,  1 Aug 2022 04:53:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0F2361344;
-        Mon,  1 Aug 2022 11:53:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEFA4C433C1;
-        Mon,  1 Aug 2022 11:53:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FC8B61346;
+        Mon,  1 Aug 2022 11:53:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83A3BC433C1;
+        Mon,  1 Aug 2022 11:53:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354814;
-        bh=nD4Jw/AEkwftyi/ilIfxVsQWBaTUwluPwcx9dvaFgZo=;
+        s=korg; t=1659354816;
+        bh=XOpb2CXKFtXe5At9Dw0CarN+eLf69nnV4G0OdhwVCuk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GyYMxkx6OvGVf4s8O9wmufyfgQMr5YHdcWrr6HU9XkAwJwzKbaE5EuZPO6sUxO1qG
-         kzrm0O+qxuDhYlbn+dlc5jwbCVNtW8Hx6bQgpysj8ZtWbCk81PuAWMTV2tAT8SxBsY
-         40m2K5k8V3Lg64FQanswJqfvzbGmgp5JCKzreX1U=
+        b=puh5Mh05UNrpRfdpspe1Lg4QiUK2AvWUcfNgDH47Oc+TZxkAFj9c/iUAhLrdJjSMd
+         0ThABWjUoVO17aQ+LcgkKtzToqJuuF0awxvtkTVHig0q37ECAgVzQNz3lzOSWQKEib
+         UkBLsn7WAQsnMnwRfG4HhHafMjiGwqgZnJO6Z5b0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Laurence Oberman <loberman@redhat.com>,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        David Jeffery <djeffery@redhat.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 29/69] scsi: mpt3sas: Stop fw fault watchdog work item during system shutdown
-Date:   Mon,  1 Aug 2022 13:46:53 +0200
-Message-Id: <20220801114135.705169228@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com,
+        Ayushman Dutta <ayudutta@amazon.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 30/69] net: ping6: Fix memleak in ipv6_renew_options().
+Date:   Mon,  1 Aug 2022 13:46:54 +0200
+Message-Id: <20220801114135.745146111@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -50,40 +53,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Jeffery <djeffery@redhat.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 0fde22c5420ed258ee538a760291c2f3935f6a01 upstream.
+commit e27326009a3d247b831eda38878c777f6f4eb3d1 upstream.
 
-During system shutdown or reboot, mpt3sas will reset the firmware back to
-ready state. However, the driver leaves running a watchdog work item
-intended to keep the firmware in operational state. This causes a second,
-unneeded reset on shutdown and moves the firmware back to operational
-instead of in ready state as intended. And if the mpt3sas_fwfault_debug
-module parameter is set, this extra reset also panics the system.
+When we close ping6 sockets, some resources are left unfreed because
+pingv6_prot is missing sk->sk_prot->destroy().  As reported by
+syzbot [0], just three syscalls leak 96 bytes and easily cause OOM.
 
-mpt3sas's scsih_shutdown needs to stop the watchdog before resetting the
-firmware back to ready state.
+    struct ipv6_sr_hdr *hdr;
+    char data[24] = {0};
+    int fd;
 
-Link: https://lore.kernel.org/r/20220722142448.6289-1-djeffery@redhat.com
-Fixes: fae21608c31c ("scsi: mpt3sas: Transition IOC to Ready state during shutdown")
-Tested-by: Laurence Oberman <loberman@redhat.com>
-Acked-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
-Signed-off-by: David Jeffery <djeffery@redhat.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+    hdr = (struct ipv6_sr_hdr *)data;
+    hdr->hdrlen = 2;
+    hdr->type = IPV6_SRCRT_TYPE_4;
+
+    fd = socket(AF_INET6, SOCK_DGRAM, NEXTHDR_ICMP);
+    setsockopt(fd, IPPROTO_IPV6, IPV6_RTHDR, data, 24);
+    close(fd);
+
+To fix memory leaks, let's add a destroy function.
+
+Note the socket() syscall checks if the GID is within the range of
+net.ipv4.ping_group_range.  The default value is [1, 0] so that no
+GID meets the condition (1 <= GID <= 0).  Thus, the local DoS does
+not succeed until we change the default value.  However, at least
+Ubuntu/Fedora/RHEL loosen it.
+
+    $ cat /usr/lib/sysctl.d/50-default.conf
+    ...
+    -net.ipv4.ping_group_range = 0 2147483647
+
+Also, there could be another path reported with these options, and
+some of them require CAP_NET_RAW.
+
+  setsockopt
+      IPV6_ADDRFORM (inet6_sk(sk)->pktoptions)
+      IPV6_RECVPATHMTU (inet6_sk(sk)->rxpmtu)
+      IPV6_HOPOPTS (inet6_sk(sk)->opt)
+      IPV6_RTHDRDSTOPTS (inet6_sk(sk)->opt)
+      IPV6_RTHDR (inet6_sk(sk)->opt)
+      IPV6_DSTOPTS (inet6_sk(sk)->opt)
+      IPV6_2292PKTOPTIONS (inet6_sk(sk)->opt)
+
+  getsockopt
+      IPV6_FLOWLABEL_MGR (inet6_sk(sk)->ipv6_fl_list)
+
+For the record, I left a different splat with syzbot's one.
+
+  unreferenced object 0xffff888006270c60 (size 96):
+    comm "repro2", pid 231, jiffies 4294696626 (age 13.118s)
+    hex dump (first 32 bytes):
+      01 00 00 00 44 00 00 00 00 00 00 00 00 00 00 00  ....D...........
+      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    backtrace:
+      [<00000000f6bc7ea9>] sock_kmalloc (net/core/sock.c:2564 net/core/sock.c:2554)
+      [<000000006d699550>] do_ipv6_setsockopt.constprop.0 (net/ipv6/ipv6_sockglue.c:715)
+      [<00000000c3c3b1f5>] ipv6_setsockopt (net/ipv6/ipv6_sockglue.c:1024)
+      [<000000007096a025>] __sys_setsockopt (net/socket.c:2254)
+      [<000000003a8ff47b>] __x64_sys_setsockopt (net/socket.c:2265 net/socket.c:2262 net/socket.c:2262)
+      [<000000007c409dcb>] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+      [<00000000e939c4a9>] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
+
+[0]: https://syzkaller.appspot.com/bug?extid=a8430774139ec3ab7176
+
+Fixes: 6d0bfe226116 ("net: ipv6: Add IPv6 support to the ping socket.")
+Reported-by: syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
+Reported-by: Ayushman Dutta <ayudutta@amazon.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220728012220.46918-1-kuniyu@amazon.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/mpt3sas/mpt3sas_scsih.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/ipv6/ping.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-@@ -11386,6 +11386,7 @@ scsih_shutdown(struct pci_dev *pdev)
- 	_scsih_ir_shutdown(ioc);
- 	_scsih_nvme_shutdown(ioc);
- 	mpt3sas_base_mask_interrupts(ioc);
-+	mpt3sas_base_stop_watchdog(ioc);
- 	ioc->shost_recovery = 1;
- 	mpt3sas_base_make_ioc_ready(ioc, SOFT_RESET);
- 	ioc->shost_recovery = 0;
+--- a/net/ipv6/ping.c
++++ b/net/ipv6/ping.c
+@@ -22,6 +22,11 @@
+ #include <linux/proc_fs.h>
+ #include <net/ping.h>
+ 
++static void ping_v6_destroy(struct sock *sk)
++{
++	inet6_destroy_sock(sk);
++}
++
+ /* Compatibility glue so we can support IPv6 when it's compiled as a module */
+ static int dummy_ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
+ 				 int *addr_len)
+@@ -166,6 +171,7 @@ struct proto pingv6_prot = {
+ 	.owner =	THIS_MODULE,
+ 	.init =		ping_init_sock,
+ 	.close =	ping_close,
++	.destroy =	ping_v6_destroy,
+ 	.connect =	ip6_datagram_connect_v6_only,
+ 	.disconnect =	__udp_disconnect,
+ 	.setsockopt =	ipv6_setsockopt,
 
 
