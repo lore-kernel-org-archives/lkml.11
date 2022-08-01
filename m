@@ -2,158 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA673C19F29
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 10:54:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC9FC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:01:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231295AbiHAKyU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 06:54:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52392 "EHLO
+        id S231245AbiHALBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231298AbiHAKyQ (ORCPT
+        with ESMTP id S230021AbiHALBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 06:54:16 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86892D1D7
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 03:54:14 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id ss3so19550931ejc.11
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 03:54:14 -0700 (PDT)
+        Mon, 1 Aug 2022 07:01:45 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60082.outbound.protection.outlook.com [40.107.6.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD01F2B608
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:01:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PKoNmswKQ4f3g8kyo6fl8KsF9PO0eUMvYQRSmiw3P+OVmZIRiFccqaGr06d/LD5HxRnAR7KIfVKgZxYdF114bOO7OkPdrrJG21iaFySURQKkdSNmJD1o+gQB4UC1T4AFNxBaZ2PkQQXEDaRMleSfu1BVsjA14u/3K2lVjZK48/gyVqeVHfW+ceyAvyt0MAW8XNjFjwubPVuWFMiZrO6I0X0jqut4Nj1wRqkYNO2wFL3HvVJ0g/ChMEVK/tLfulYQEW9i1KD96YLRRDCVP1l3xKUWz5DbHXqCu7XtdR1e6PHRGJxieKsne+B2bZ/muvXc5ganE23FDHtO/uktNlDxrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nfaWl8ED+UYhVYfWeL4Id0d7tMFHpc5j8rhhsHdd0pY=;
+ b=bdL9C/bO1Vpq5tgxeliGCGMCFfLyp9r22YiXyLv4WPympFfC8PFPSk18Bgnlb2ST9KbBWYgzxKO4mKv63sjGWJULFd6f+DYe5dRu/swC+HoAEPigfO2JjqKSCAG+ZXyprvSJDtxt8+HFbzwqv7oNLme60+8NSYd/Uj4/7ONXjJVUJsZTsNa5pm2G7hrY9lbTyG34bGZTsU4VrbTjZUN3PCvB+sUJR4AXMa6BU0HPoDUkvYwukmTQNISnqZiZ5fl8XY8ax2f3zLbBoiMW2DPfcugnFcgzkLCDY4UkR+gewbzZ7v032TiZBqyNZ5ZNgwbbZh1QE1ykBhl2eyVb2HA/yQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
+ is 193.240.239.45) smtp.rcpttodomain=linuxfoundation.org
+ smtp.mailfrom=diasemi.com; dmarc=fail (p=none sp=none pct=100) action=none
+ header.from=dm.renesas.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Wbcc09xUaIf01C1E4HXm0dIDLsAKCmlGM3/QPcRFjyo=;
-        b=PsE/4CIWpVzsAX4KrNjGaY5eP7PjaJ+eVshBNmEg6EF1jLsSaHI3fOjqlHEPtclF18
-         QuPts7lzxQGe7dh8OrgVKcm8yrJ6DrsAJ6kJX5kq0VaNymOK2Zo1pmAr4OMJux/flYtG
-         PT3mIEKgnF7Kpkq1tbUmgSEwTLmCezPPvfBnnD8XpNrVP8qkV2WMp1e3qQl9QhPkmr9r
-         aENjATsYRUl7HGCgJvr0ncXWIjicBieSVXeHXDoWWQjVeT1MbrdSXfYthA4rvEdtAKNE
-         6nHNpcq1YxiUwzfDSSv/wtZj+vt1fc1HoCTIYiiDThgSsS1gEqAszxAGMZoCHnZXrmJP
-         OD8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Wbcc09xUaIf01C1E4HXm0dIDLsAKCmlGM3/QPcRFjyo=;
-        b=jHmXHcAKPPcC+tGWj+QRASSL6xLICjKN1LTHVnIUxyQ2Swm1yxflOtTwiuT03z5exq
-         91JPLafuUGPENjGSVsvT83LjAWhpGyyt8pAnqPdSsgATriZb9LacdV4cDqygsA1OTfLZ
-         TYLd4KXEcHZyqse7XLiVbZe0LbAH7thYujYNcuEXht3B8zhba+WzbTrNtSahflFH4KCJ
-         6ynaBzy1RgzVal/iZ66Cm/IIKlAZ3WPB23/2Ep8HZQzifTtpCq+p0tBbRs2jJUbXJOeG
-         0ZvPcuCsA1uhqnLi11RKPA8Owmn1Au099HHYXfFqZiJIumrcaYfMH5POOIkkD4s+dA0u
-         /E7w==
-X-Gm-Message-State: AJIora95rECp8kJL2MYFJDYfnd0IbHm7Z5T3RvVxoeLNGpmsFrZ51jPN
-        K6olnkkdG6WNMsXZQxP3+YEpx/S1iIQk7Boqg/A=
-X-Google-Smtp-Source: AGRyM1sCUcD7NqeJM5MgA4r77ZTTgYdj2zBCrytU/4cA3J1S85UcqaGpqyd5zZybVr5SM1fkJ4KPykuQvSDHU0einh0=
-X-Received: by 2002:a17:907:6e12:b0:72e:6774:cb80 with SMTP id
- sd18-20020a1709076e1200b0072e6774cb80mr11686350ejc.504.1659351253340; Mon, 01
- Aug 2022 03:54:13 -0700 (PDT)
+ d=dialogsemiconductor.onmicrosoft.com;
+ s=selector1-dialogsemiconductor-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nfaWl8ED+UYhVYfWeL4Id0d7tMFHpc5j8rhhsHdd0pY=;
+ b=rP+2JU2sJ8VeSmyjxMmooGm+lLiWgUSoFR5o6KT1zF4PZgWJ3vCVGorAeEnfXIPx+yIvDXKy/+AxNZQ+PIMl7LFVb7/rDeWYd82K1X6aInZbuEHL+MVkP/y6winfd38dnvYFd7SbuFL6iG3LQtc8gWnJJ7p2hD8qXu0irNO7fsM=
+Received: from DB9PR05CA0017.eurprd05.prod.outlook.com (2603:10a6:10:1da::22)
+ by DB8PR10MB3193.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:114::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.10; Mon, 1 Aug
+ 2022 11:01:41 +0000
+Received: from DB8EUR05FT035.eop-eur05.prod.protection.outlook.com
+ (2603:10a6:10:1da:cafe::4a) by DB9PR05CA0017.outlook.office365.com
+ (2603:10a6:10:1da::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.16 via Frontend
+ Transport; Mon, 1 Aug 2022 11:01:41 +0000
+X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
+ 193.240.239.45) smtp.mailfrom=diasemi.com; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=none header.from=dm.renesas.com;
+Received-SPF: SoftFail (protection.outlook.com: domain of transitioning
+ diasemi.com discourages use of 193.240.239.45 as permitted sender)
+Received: from mailrelay1.diasemi.com (193.240.239.45) by
+ DB8EUR05FT035.mail.protection.outlook.com (10.233.238.241) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5482.10 via Frontend Transport; Mon, 1 Aug 2022 11:01:41 +0000
+Received: from nbsrvex-01v.diasemi.com (10.1.17.243) by
+ nbsrvex-01v.diasemi.com (10.1.17.243) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 1 Aug 2022 13:01:40 +0200
+Received: from slsrvapps-01.diasemi.com (10.24.28.40) by
+ nbsrvex-01v.diasemi.com (10.1.17.243) with Microsoft SMTP Server id
+ 15.1.2176.2 via Frontend Transport; Mon, 1 Aug 2022 13:01:40 +0200
+Received: by slsrvapps-01.diasemi.com (Postfix, from userid 22379)
+        id 7DF6280007F; Mon,  1 Aug 2022 11:01:40 +0000 (UTC)
+From:   Adam Thomson <DLG-Adam.Thomson.Opensource@dm.renesas.com>
+Date:   Mon, 1 Aug 2022 11:01:40 +0000
+Subject: [PATCH] MAINTAINERS: Update Dialog Semiconductor mailing list,
+ website
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     DLG Support Opensource <DLG-Support.Opensource@lm.renesas.com>
+Message-ID: <20220801110140.7DF6280007F@slsrvapps-01.diasemi.com>
 MIME-Version: 1.0
-References: <CAHCN7xJ=N1vWVTBjArskJ59fyaLzmAGWfc0E=_iGizrDNR_Udw@mail.gmail.com>
- <20220801061956.3wkakhwatvqlngff@pengutronix.de>
-In-Reply-To: <20220801061956.3wkakhwatvqlngff@pengutronix.de>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Mon, 1 Aug 2022 05:54:02 -0500
-Message-ID: <CAHCN7xLSqyGHZwo=brm4xrj0jVi6R43wE8EJmWrYF72qDtYV0g@mail.gmail.com>
-Subject: Re: imx8mm lcdif->dsi->adv7535 no video, no errors
-To:     Marco Felsch <m.felsch@pengutronix.de>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        Marek Vasut <marex@denx.de>, Stefan Agner <stefan@agner.ch>,
-        Fabio Estevam <festevam@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        David Airlie <airlied@linux.ie>,
-        Robert Foss <robert.foss@linaro.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        arm-soc <linux-arm-kernel@lists.infradead.org>,
-        Jagan Teki <jagan@amarulasolutions.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0db090b2-b094-4443-addb-08da73ad36d1
+X-MS-TrafficTypeDiagnostic: DB8PR10MB3193:EE_
+X-MS-Exchange-SenderADCheck: 2
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?keFEL9u1fpZ0b6rQmWxWoHXF2JY5UrWd+rSKY5rwx3yA3IekH4ynpLRAo9t+?=
+ =?us-ascii?Q?VBliUQyePaqFOayBlW/aIG8Zs0oU7zj73Efj21ZteHsNzxw42SnJoVTJnGxh?=
+ =?us-ascii?Q?kcMZtf4bzAue3b+EpieKBgZQvb/64uIqHBwAk2YuMGYzqQEAG8gx5fbLOQCY?=
+ =?us-ascii?Q?XtfYcNAqnZebFaidxMsmrAOER3NF7y3oad64gl3kcTCenuuRdjboQm5CkK5G?=
+ =?us-ascii?Q?dgClyH9T4goGnNvv+F+Pi1l8G650RLxrh2YNkr5eBZAvrsU+nIY4J8wp7YkA?=
+ =?us-ascii?Q?AVUHlam63/95CVGQ9cNXg9eDCeEGkV/fP7jWGxvLAukVuvSJaWTazu2zPK7t?=
+ =?us-ascii?Q?+WC6wJrywA5TM2qh2e0ZIEzc6fd3c1w99L1v10GD5y1QvFUz8uV7/JcpeO0Z?=
+ =?us-ascii?Q?3GgjtNHplHsmC3ysnwo8UqpOf8P/1XG5/A5nmLfpb/m7U0WyjVn1h7LuIuEZ?=
+ =?us-ascii?Q?ezUG/E7EoRqWOW2nWbPbsdPBDe5K3iH1FxsTRXevksu3euoAPUJ2JJUwMWhN?=
+ =?us-ascii?Q?Z/fuufFaAAMfsoFwj19rhhjYqX95VytbuiJbPKJJgPGujfgUCIuzCIQeJgor?=
+ =?us-ascii?Q?iY70PlbmqqGuvwmRXXQCz43kmXkhyrTJXYXhpZh9P7Wk8uKtzJzwfwh+HbII?=
+ =?us-ascii?Q?Lo47F7I0yta/AxxQL81jT2KuCTnyPRPWNb8LJ4gYYXJTzgYm25tqrNj9NgZP?=
+ =?us-ascii?Q?YQg7m96PaWuF6SPxjFGzeH4/XyWpT0igIdYnLj01ONZAWZ/uwclXTu0WzyMc?=
+ =?us-ascii?Q?R42QVs+i5YGGv2wJ1bwJwJPV8MdxGEgqvXeBfcesiFERbX1daP8tzfwt2Gxe?=
+ =?us-ascii?Q?gj7t76h12eDQh3tbLbYc74WHdvgAgGro6cCeFyaQyzEkfiF7a43jpisp/hpy?=
+ =?us-ascii?Q?mjXBYncge+eNRXut8r0TucujrWyQL6EtA7CBI8RrZe4MRsVTA7Gb6hDlXKxF?=
+ =?us-ascii?Q?WApfmTcWi9ST1HeBBIROCg=3D=3D?=
+X-Forefront-Antispam-Report: CIP:193.240.239.45;CTRY:GB;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mailrelay1.diasemi.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(346002)(136003)(376002)(46966006)(40470700004)(36840700001)(2906002)(36860700001)(70206006)(70586007)(15650500001)(83380400001)(81166007)(8676002)(82740400003)(356005)(4326008)(83170400001)(47076005)(966005)(478600001)(42186006)(110136005)(40460700003)(1076003)(186003)(316002)(42882007)(4744005)(336012)(41300700001)(9686003)(26005)(6266002)(8936002)(5660300002)(82310400005)(40480700001)(33656002)(223123001)(36900700001)(130980200001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: diasemi.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Aug 2022 11:01:41.1969
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0db090b2-b094-4443-addb-08da73ad36d1
+X-MS-Exchange-CrossTenant-Id: 511e3c0e-ee96-486e-a2ec-e272ffa37b7c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=511e3c0e-ee96-486e-a2ec-e272ffa37b7c;Ip=[193.240.239.45];Helo=[mailrelay1.diasemi.com]
+X-MS-Exchange-CrossTenant-AuthSource: DB8EUR05FT035.eop-eur05.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3193
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 1:20 AM Marco Felsch <m.felsch@pengutronix.de> wrote:
->
-> Hi Adam,
->
-> On 22-07-30, Adam Ford wrote:
-> > Hey all,
-> >
-> > I am trying to test Jagan's patch series [1] to add support for the
-> > samsung dsim bridge which is used on the imx8mm to output DSI video.
-> > The DSIM gets the video from the mxsfb, and in my case, the DSI is
-> > sent to the adv7535 for connecting to HDMI.
->
-> So you're using the NXP recommended evalboard setup :)
+Now Dialog Semiconductor is part of Renesas, the mailing list and
+web addresses have been updated. This commit aligns with those
+recent changes.
 
-Yes and no.  Our design also adds audio to theADV7535 in addition to
-the video signal.
-For the 8M Plus design, we're looking to see if there are any 4K
-DSI->HDMI bridge chips available.
+Signed-off-by: Adam Thomson <DLG-Adam.Thomson.Opensource@dm.renesas.com>
+---
+ MAINTAINERS | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
->
-> > I have been able to get the device tree setup and I don't get any
-> > errors.  The Linux system appears to think the video is connected as
-> > determined by modetest:
->
-> ...
->
-> > Unfortunately, there is no video in my monitor, and my monitor states
-> > there is no signal.
->
-> This is pretty much known, at least on our side. We also have a few more
-> patches on top of the series [1] for fixing the horizontal porches.  Our
-> current status is that we can get only one mode out of the ADV7535 which
-> is 1080P. Our assumption is that the ADV7535 needs some attentions
-> (fixes) but we can't verify that since the documentation is under NDA.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 64379c699903..b1015d06d429 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -5923,9 +5923,9 @@ F:	arch/arm/boot/dts/stm32mp1*-dhcom-*
+ F:	arch/arm/boot/dts/stm32mp1*-dhcor-*
+ 
+ DIALOG SEMICONDUCTOR DRIVERS
+-M:	Support Opensource <support.opensource@diasemi.com>
++M:	DLG Support Opensource <DLG-Support.Opensource@lm.renesas.com>
+ S:	Supported
+-W:	http://www.dialog-semiconductor.com/products
++W:	https://www.renesas.com
+ F:	Documentation/devicetree/bindings/input/da90??-onkey.txt
+ F:	Documentation/devicetree/bindings/input/dlg,da72??.txt
+ F:	Documentation/devicetree/bindings/mfd/da90*.txt
+-- 
+2.17.1
 
-I am glad I am not alone.   Thanks for the tip.  That gives me
-something to investigate.
->
-> > If I use NXP's downstream kernel, this same hardware configuration
-> > works fine and I can see the video.
->
-> This is because of the NXP downstream kernel porch 'calculation' and
-> workarounds. The values they are using for calculation don't take any
-> mode values into account and instead they are using a table. We don't
-> know where those values come from.
-
-I would think the VESA group would have something like these published.
->
-> > I have checked the clk_summary, and the working and non-working
-> > conditions both have clock rates that are the same for DSI, LCDIF and
-> > related items.  The power domains connected to the lcdif and the dsi
-> > show they are active.
-> >
-> > Since I go no errors, and  Linux looks like it's happy, I was hoping
-> > someone from who better understands the interconnections between all
-> > these bridge layers might be able to offer a suggestion of something
-> > to investigate and/or try.
-> >
-> > The kernel repo I am using is from Jagan located here:
-> >
-> > [1] - https://github.com/openedev/kernel
-> >
-> > I am not convinced it's a device tree issue since I get no errors when
-> > the drivers enumerate, but I can provide my device tree updates if
-> > that helps.
->
-> Please see above. Our debugging showed that there is a strange behaviour
-> of the ADV7535 but we don't have any documentation.
-Thanks for the comments.
-
-I'll look to see what I have for documentation.  I know my company
-signed a bunch of NDA stuff and we have an HDMI license.  I'll go
-through NXP's patches to their kernel and compare with whatever
-documentation I can find to see if I can make any improvements.
-
-adam
->
-> Regards,
->   Marco
