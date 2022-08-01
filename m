@@ -2,150 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB26C19F2B
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 20:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A88C8C19F2B
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 20:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233521AbiHAUDK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 16:03:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49724 "EHLO
+        id S233658AbiHAUGN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 16:06:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230320AbiHAUDJ (ORCPT
+        with ESMTP id S230320AbiHAUGL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 16:03:09 -0400
-Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 589641A801
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 13:03:07 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id Ibd2oiUWV0DonIbd2oUBZk; Mon, 01 Aug 2022 22:03:05 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Mon, 01 Aug 2022 22:03:05 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: [PATCH] usb: dwc3: qcom: Fox some error handling path in dwc3_qcom_probe()
-Date:   Mon,  1 Aug 2022 22:03:03 +0200
-Message-Id: <baf14163148998215eca3eb7d754cc63e1e376dd.1659384164.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Mon, 1 Aug 2022 16:06:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 978C527B00;
+        Mon,  1 Aug 2022 13:06:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C431B8168A;
+        Mon,  1 Aug 2022 20:06:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95BCCC433D6;
+        Mon,  1 Aug 2022 20:06:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659384367;
+        bh=WEfadwtwz1ZbDqKtLh/CEmqHOJQ2a2CMdD1ufn/kk+A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=sIfw4sa5IQatyQgEjM6DSnnr6BY9jgW7F9hxQxRPoVhZ4kRT3AHxD3HdZIQZ2kSxm
+         eeFlGhAhQ3YtiZEHX8kHJyQrsfRIBNnQ7tKcqiK9uSiXuqqPxl+NCKRuWbT9CrgMgW
+         K4lhnu3x00yaIjB6upiUJeNYNvElcI0R9TVH0NdZyxB5G6Bv3rwYB3aCGqcGc8+2fx
+         inSGq3c2asCQ7OMXTU7SJVTyG7Cd4QX5Z10b5FHvZ7XcX8BFhOl0o+SiZ/r1p035U1
+         Q//HjPiIRxk7pbjW1O8ruaExBRaqR75vz9QPuhqFjnJkOFuPul+jsnDErYnT9IB1BC
+         T0q0tBRFEjmIQ==
+Date:   Mon, 1 Aug 2022 15:06:06 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND v4 04/15] PCI: dwc: Add IP-core version detection
+ procedure
+Message-ID: <20220801200606.GA622066@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220801131219.GD93763@thinkpad>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace some direct return with goto to the existing error handling path.
-Also release 'parent_res', if needed.
+On Mon, Aug 01, 2022 at 06:42:19PM +0530, Manivannan Sadhasivam wrote:
+> On Fri, Jun 24, 2022 at 05:39:36PM +0300, Serge Semin wrote:
+> > Since DWC PCIe v4.70a the controller version and version type can be read
+> > from the PORT_LOGIC.PCIE_VERSION_OFF and PORT_LOGIC.PCIE_VERSION_TYPE_OFF
+> > registers respectively. Seeing the generic code has got version-dependent
+> > parts let's use these registers to find out the controller version.  The
+> > detection procedure is executed for both RC and EP modes right after the
+> > platform-specific initialization. We can't do that earlier since the
+> > glue-drivers can perform the DBI-related setups there including the bus
+> > reference clocks activation, without which the CSRs just can't be read.
+> > 
+> > Note the CSRs content is zero on the older DWC PCIe controller. In that
+> > case we have no choice but to rely on the platform setup.
+> > 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> 
+> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> 
+> > Reviewed-by: Rob Herring <robh@kernel.org>
 
+> > @@ -711,6 +711,8 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+> >  	ep->phys_base = res->start;
+> >  	ep->addr_size = resource_size(res);
+> >  
+> > +	dw_pcie_version_detect(pci);
+> > +
+> 
+> There is still an ongoing debate about moving all DBI accesses to
+> init_complete. But this is fine atm.
 
-In the remove function, handle the case where 'np' is set or not, to call
-the right function as already done in the error handling path of the probe.
+Well, if I understand it correctly, e966f7390da9 ("PCI: dwc: Refactor
+core initialization code for EP mode") claims that all DBI accesses
+should be in dw_pcie_ep_init_complete(), so it's not so much a debate
+as a discussion about how best to achieve that.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-The patch looks not complete and dwc3_qcom_create_urs_usb_platdev() (and
-its acpi_create_platform_device() call) still need undone in the error
-handling path, right?
+But you're right, we can fix that up later if necessary.
 
-This looks more tricky to me, so I just point it out and leave it to
-anyone who cares.
-
-The remove function is also likely incomplete (for example 'parent_res'
-leaks if !np).
-
-Even if not perfect, this patch makes code already "better" :)
-
-Comments and follow-up by others welcomed.
-
-
-Finally, I've not searched for Fixes tag because it is likely that these
-issues have been added in several patches. I have the courage to dig into
-this log history.
----
- drivers/usb/dwc3/dwc3-qcom.c | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
-index c5e482f53e9d..1fe83fd51947 100644
---- a/drivers/usb/dwc3/dwc3-qcom.c
-+++ b/drivers/usb/dwc3/dwc3-qcom.c
-@@ -815,9 +815,10 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
- 		parent_res = res;
- 	} else {
- 		parent_res = kmemdup(res, sizeof(struct resource), GFP_KERNEL);
--		if (!parent_res)
--			return -ENOMEM;
--
-+		if (!parent_res) {
-+			ret = -ENOMEM;
-+			goto clk_disable;
-+		}
- 		parent_res->start = res->start +
- 			qcom->acpi_pdata->qscratch_base_offset;
- 		parent_res->end = parent_res->start +
-@@ -828,9 +829,10 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
- 			if (IS_ERR_OR_NULL(qcom->urs_usb)) {
- 				dev_err(dev, "failed to create URS USB platdev\n");
- 				if (!qcom->urs_usb)
--					return -ENODEV;
-+					ret = -ENODEV;
- 				else
--					return PTR_ERR(qcom->urs_usb);
-+					ret = PTR_ERR(qcom->urs_usb);
-+				goto free_parent_res;
- 			}
- 		}
- 	}
-@@ -838,13 +840,13 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
- 	qcom->qscratch_base = devm_ioremap_resource(dev, parent_res);
- 	if (IS_ERR(qcom->qscratch_base)) {
- 		ret = PTR_ERR(qcom->qscratch_base);
--		goto clk_disable;
-+		goto free_parent_res;
- 	}
- 
- 	ret = dwc3_qcom_setup_irq(pdev);
- 	if (ret) {
- 		dev_err(dev, "failed to setup IRQs, err=%d\n", ret);
--		goto clk_disable;
-+		goto free_parent_res;
- 	}
- 
- 	/*
-@@ -906,6 +908,9 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
- 		of_platform_depopulate(&pdev->dev);
- 	else
- 		platform_device_put(pdev);
-+free_parent_res:
-+	if (!np)
-+		kfree(parent_res);
- clk_disable:
- 	for (i = qcom->num_clocks - 1; i >= 0; i--) {
- 		clk_disable_unprepare(qcom->clks[i]);
-@@ -920,11 +925,15 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
- static int dwc3_qcom_remove(struct platform_device *pdev)
- {
- 	struct dwc3_qcom *qcom = platform_get_drvdata(pdev);
-+	struct device_node *np = pdev->dev.of_node;
- 	struct device *dev = &pdev->dev;
- 	int i;
- 
- 	device_remove_software_node(&qcom->dwc3->dev);
--	of_platform_depopulate(dev);
-+	if (np)
-+		of_platform_depopulate(&pdev->dev);
-+	else
-+		platform_device_put(pdev);
- 
- 	for (i = qcom->num_clocks - 1; i >= 0; i--) {
- 		clk_disable_unprepare(qcom->clks[i]);
--- 
-2.34.1
-
+> >  	dw_pcie_iatu_detect(pci);
