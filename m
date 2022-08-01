@@ -2,76 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7DF6C19F2B
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 17:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89669C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 17:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232305AbiHARVQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 13:21:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37054 "EHLO
+        id S232695AbiHAR1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 13:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232386AbiHARVN (ORCPT
+        with ESMTP id S232536AbiHAR1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 13:21:13 -0400
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD6C9FD3;
-        Mon,  1 Aug 2022 10:21:12 -0700 (PDT)
-Received: by mail-pj1-f54.google.com with SMTP id pm17so5706809pjb.3;
-        Mon, 01 Aug 2022 10:21:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=PIN4B1+zujt9LiBMql7z7J0iPpi02q4Ca3aFC6/SCYg=;
-        b=uX0Zi/juFXI8I7baEHIRUIu8+mj60p1BlJp+TK5qkjkrJh3d+sNI5b/ii52MhBwXDa
-         ubcELTGiemLkU2AO975hDKkvSZYdsyJItilEUML+thiftoX/c2Mg7SqLkD3s50O+OkpF
-         jyGlXkvpG7eaUsN3IyBp2JrEScZreq07KgvSmu7nK4VR8UX48zmU4DlkH+mrzKPLDqNU
-         kHOx5ndPCBzwRLndY+RKvTFTELJCknfokq8iV7V6TbSH4v1y4xwhIVSWeJJMt82wvFet
-         aWK5Xrlp6Mqhpi6b88xVh+D+8dG0utH+MZttdFD91vz83QSxdG8fAysUjHFnpzm9hQji
-         rozQ==
-X-Gm-Message-State: ACgBeo1eMrD5wf4C3HygWZHYN1s1bD969740ObDKvME+/My0FvNEzQbv
-        wOkFUzUTrOBxSEcJADAz2y4=
-X-Google-Smtp-Source: AA6agR6ETjSTmK+NOR8RRKSSy2RLoYq0f95Q5qBeCvVX2eqgmgjwfpPciLHhaHLL9Vibz7xBwoR/EQ==
-X-Received: by 2002:a17:902:8206:b0:16e:c738:d492 with SMTP id x6-20020a170902820600b0016ec738d492mr13180712pln.5.1659374471426;
-        Mon, 01 Aug 2022 10:21:11 -0700 (PDT)
-Received: from ?IPV6:2620:15c:211:201:6496:b2a7:616f:954d? ([2620:15c:211:201:6496:b2a7:616f:954d])
-        by smtp.gmail.com with ESMTPSA id s2-20020a632142000000b0041a8f882e5bsm7833024pgm.42.2022.08.01.10.21.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Aug 2022 10:21:10 -0700 (PDT)
-Message-ID: <1809cefc-0c59-ef6c-c3da-7695722a8b78@acm.org>
-Date:   Mon, 1 Aug 2022 10:21:08 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [RESEND PATCH v1] scsi: ufs: enable link lost interrupt
-Content-Language: en-US
-To:     Kiwoong Kim <kwmad.kim@samsung.com>, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com,
-        avri.altman@wdc.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, beanhuo@micron.com,
-        adrian.hunter@intel.com, sc.suh@samsung.com, hy50.seo@samsung.com,
-        sh425.lee@samsung.com, bhoon95.kim@samsung.com
-References: <CGME20220801031300epcas2p25866dfc0158ecdd33ef18c44aa23b155@epcas2p2.samsung.com>
- <1659323380-161341-1-git-send-email-kwmad.kim@samsung.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <1659323380-161341-1-git-send-email-kwmad.kim@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Mon, 1 Aug 2022 13:27:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3424EC
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 10:27:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60CB960FF1
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 17:27:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C6EA2C4347C;
+        Mon,  1 Aug 2022 17:27:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659374826;
+        bh=wbjCPPTesc8Re7V65yX94jKUHYVC6D/pbRhcqtnn038=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=hufujMt6Nk3FCEbo3gZVeTLuWLgQRAaXyiE+3e/pVCxCZkchjI0qoOv1ICn/BChww
+         B69C4HLlCH6RgY88mvZzOUaJi5cHg5DJMCgM+iLohjM8RTdESpv7EAUW6PuSfgRQXE
+         LLvnTr/x3tTIYaH11jm792P+dhY7H+ejF62nOyjqLhIeAXGKVer6jmb4vzxwjQyJvs
+         4gNHZy7wVaEitbbrJPOw6RBNvt2YPtyXng7xhK3BYpPnOLoxH1mVUQB7z/26JA04Fq
+         76jOIZFUU79FmBVnA/P5xxv820g5kNqpJjO6Q46EOKW/5G7XnHStkG7PEqhBNrBZvY
+         eDrfkeVu22ilg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AF9D8C43140;
+        Mon,  1 Aug 2022 17:27:06 +0000 (UTC)
+Subject: Re: [GIT PULL] x86/cleanups for v6.0
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YueXA90ePDFY7mKf@zn.tnic>
+References: <YueXA90ePDFY7mKf@zn.tnic>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YueXA90ePDFY7mKf@zn.tnic>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_cleanups_for_v6.0_rc1
+X-PR-Tracked-Commit-Id: 9de76f41ea2188f2784f48352f9278819d249afc
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 94e37e84891900f56a01f49ac173bcb15e42e461
+Message-Id: <165937482671.24126.2818345942496019292.pr-tracker-bot@kernel.org>
+Date:   Mon, 01 Aug 2022 17:27:06 +0000
+To:     Borislav Petkov <bp@suse.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/31/22 20:09, Kiwoong Kim wrote:
-> Link lost is treated as fatal error with the following
-> patch, but its event isn't registered as interrupt source,
-> so I enable it.
-> --
-> scsi: ufs: Treat link loss as fatal error
+The pull request you sent on Mon, 1 Aug 2022 11:04:03 +0200:
 
-Is this patch perhaps intended as a fix for patch "scsi: ufs: Treat link 
-loss as fatal error"? If so, does it need a Fixes: tag?
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_cleanups_for_v6.0_rc1
 
-Thanks,
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/94e37e84891900f56a01f49ac173bcb15e42e461
 
-Bart.
+Thank you!
 
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
