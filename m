@@ -2,126 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03813C00140
-	for <linux-kernel@archiver.kernel.org>; Sun, 31 Jul 2022 23:31:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18BDAC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 00:28:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238586AbiGaXbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 19:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
+        id S237850AbiHAA15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 20:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbiGaXbE (ORCPT
+        with ESMTP id S232846AbiHAA1y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 19:31:04 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C6A11A0D
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 16:31:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659310261; x=1690846261;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=yVHqvUoE5HERyWFBC98VpBqCS2cdtSxp50XlxNO/c30=;
-  b=QANo+JavC0TJmCdi9om6ncrQFvX6ZIInxRqgs0A7ojq8d6rV388Qfd0B
-   Zp6P5tcpNAI5ptfjcF1ku0eJ5McypVpbNfXM7Qib7w7SiO0CbJONWjMlA
-   PiZW5S7wSCA7GIfSNrfvTvUNj9k0KBPVxiG5uzJ0wr/q5cA1GGqxfy2No
-   BhVcIXw7fIFTT0toqN7X0vZx4iWUKGsT6NM79MbWiiSh9i4VSzKw8ev6z
-   Y7sQasYvNDWIprpJNFdOxGbwIHDVq9kHR/MdZ5w9iJPCzXR2QDKN5F66g
-   u9/KOZoKuahm3KtHLYIs0V3xd9BfWVK1td2ClJami00P/ZoUzzUgtY8Mj
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10425"; a="286592642"
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="286592642"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 16:31:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="634705046"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 31 Jul 2022 16:30:59 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oIIOg-000Ecv-1i;
-        Sun, 31 Jul 2022 23:30:58 +0000
-Date:   Mon, 1 Aug 2022 07:30:35 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [jic23-iio:testing 21/30] drivers/iio/adc/at91-sama5d2_adc.c:790:11:
- warning: variable 'nbits' is used uninitialized whenever 'if' condition is
- false
-Message-ID: <202208010745.QZRYCihu-lkp@intel.com>
+        Sun, 31 Jul 2022 20:27:54 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id C36016571
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 17:27:52 -0700 (PDT)
+Received: (qmail 554189 invoked by uid 1000); 31 Jul 2022 20:27:51 -0400
+Date:   Sun, 31 Jul 2022 20:27:51 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Mikulas Patocka <mpatocka@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Will Deacon <will@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] wait_bit: do read barrier after testing a bit
+Message-ID: <YuceB1x8twgpM7Bl@rowland.harvard.edu>
+References: <alpine.LRH.2.02.2207310703170.14394@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAMj1kXFYRNrP2k8yppgfdKg+CxWeYfHTbzLBuyBqJ9UVAR_vaQ@mail.gmail.com>
+ <alpine.LRH.2.02.2207310920390.6506@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2207311104020.16444@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wiC_oidYZeMD7p0E-=TAuLgrNQ86-sB99=hRqFM8fVLDQ@mail.gmail.com>
+ <alpine.LRH.2.02.2207311542280.21273@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2207311639360.21350@file01.intranet.prod.int.rdu2.redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <alpine.LRH.2.02.2207311639360.21350@file01.intranet.prod.int.rdu2.redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git testing
-head:   e776e5ec0a21cc38f5e853d4dc98845d6e7f76b0
-commit: 1c890d33c115b6331d8df8c06e46d3fc4e4e9d42 [21/30] iio: adc: at91-sama5d2_adc: adjust osr based on specific platform data
-config: arm-randconfig-r026-20220731 (https://download.01.org/0day-ci/archive/20220801/202208010745.QZRYCihu-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?id=1c890d33c115b6331d8df8c06e46d3fc4e4e9d42
-        git remote add jic23-iio https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
-        git fetch --no-tags jic23-iio testing
-        git checkout 1c890d33c115b6331d8df8c06e46d3fc4e4e9d42
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/iio/adc/
+On Sun, Jul 31, 2022 at 04:40:59PM -0400, Mikulas Patocka wrote:
+> wait_on_bit tests the bit without any memory barriers, consequently the
+> code that follows wait_on_bit may be moved before testing the bit on
+> architectures with weak memory ordering. When the code tests for some
+> event using wait_on_bit and then performs a load operation, the load may
+> be unexpectedly moved before wait_on_bit and it may return data that
+> existed before the event occurred.
+> 
+> Such bugs exist in fs/buffer.c:__wait_on_buffer,
+> drivers/md/dm-bufio.c:new_read,
+> drivers/media/usb/dvb-usb-v2/dvb_usb_core.c:dvb_usb_start_feed,
+> drivers/bluetooth/btusb.c:btusb_mtk_hci_wmt_sync
+> and perhaps in other places.
+> 
+> We fix this class of bugs by adding a read barrier after test_bit().
+> 
+> Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+> Cc: stable@vger.kernel.org
+> 
+> Index: linux-2.6/include/linux/wait_bit.h
+> ===================================================================
+> --- linux-2.6.orig/include/linux/wait_bit.h
+> +++ linux-2.6/include/linux/wait_bit.h
+> @@ -71,8 +71,10 @@ static inline int
+>  wait_on_bit(unsigned long *word, int bit, unsigned mode)
+>  {
+>  	might_sleep();
+> -	if (!test_bit(bit, word))
+> +	if (!test_bit(bit, word)) {
+> +		smp_rmb();
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Any new code using smp_rmb or an acquire access should always include a 
+comment that explains where the matching smp_wmb or release access is.
 
-All warnings (new ones prefixed by >>):
+Alan Stern
 
->> drivers/iio/adc/at91-sama5d2_adc.c:790:11: warning: variable 'nbits' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           else if (st->oversampling_ratio == 16)
-                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iio/adc/at91-sama5d2_adc.c:797:48: note: uninitialized use occurs here
-           diff = st->soc_info.platform->chan_realbits - nbits;
-                                                         ^~~~~
-   drivers/iio/adc/at91-sama5d2_adc.c:790:7: note: remove the 'if' if its condition is always true
-           else if (st->oversampling_ratio == 16)
-                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iio/adc/at91-sama5d2_adc.c:784:11: note: initialize the variable 'nbits' to silence this warning
-           int nbits, diff;
-                    ^
-                     = 0
-   1 warning generated.
-
-
-vim +790 drivers/iio/adc/at91-sama5d2_adc.c
-
-   781	
-   782	static int at91_adc_adjust_val_osr(struct at91_adc_state *st, int *val)
-   783	{
-   784		int nbits, diff;
-   785	
-   786		if (st->oversampling_ratio == 1)
-   787			nbits = 12;
-   788		else if (st->oversampling_ratio == 4)
-   789			nbits = 13;
- > 790		else if (st->oversampling_ratio == 16)
-   791			nbits = 14;
-   792	
-   793		/*
-   794		 * We have nbits of real data and channel is registered as
-   795		 * st->soc_info.platform->chan_realbits, so shift left diff bits.
-   796		 */
-   797		diff = st->soc_info.platform->chan_realbits - nbits;
-   798		*val <<= diff;
-   799	
-   800		return IIO_VAL_INT;
-   801	}
-   802	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>  		return 0;
+> +	}
+>  	return out_of_line_wait_on_bit(word, bit,
+>  				       bit_wait,
+>  				       mode);
+> @@ -96,8 +98,10 @@ static inline int
+>  wait_on_bit_io(unsigned long *word, int bit, unsigned mode)
+>  {
+>  	might_sleep();
+> -	if (!test_bit(bit, word))
+> +	if (!test_bit(bit, word)) {
+> +		smp_rmb();
+>  		return 0;
+> +	}
+>  	return out_of_line_wait_on_bit(word, bit,
+>  				       bit_wait_io,
+>  				       mode);
+> @@ -123,8 +127,10 @@ wait_on_bit_timeout(unsigned long *word,
+>  		    unsigned long timeout)
+>  {
+>  	might_sleep();
+> -	if (!test_bit(bit, word))
+> +	if (!test_bit(bit, word)) {
+> +		smp_rmb();
+>  		return 0;
+> +	}
+>  	return out_of_line_wait_on_bit_timeout(word, bit,
+>  					       bit_wait_timeout,
+>  					       mode, timeout);
+> @@ -151,8 +157,10 @@ wait_on_bit_action(unsigned long *word,
+>  		   unsigned mode)
+>  {
+>  	might_sleep();
+> -	if (!test_bit(bit, word))
+> +	if (!test_bit(bit, word)) {
+> +		smp_rmb();
+>  		return 0;
+> +	}
+>  	return out_of_line_wait_on_bit(word, bit, action, mode);
+>  }
+>  
+> Index: linux-2.6/kernel/sched/wait_bit.c
+> ===================================================================
+> --- linux-2.6.orig/kernel/sched/wait_bit.c
+> +++ linux-2.6/kernel/sched/wait_bit.c
+> @@ -51,6 +51,8 @@ __wait_on_bit(struct wait_queue_head *wq
+>  
+>  	finish_wait(wq_head, &wbq_entry->wq_entry);
+>  
+> +	smp_rmb();
+> +
+>  	return ret;
+>  }
+>  EXPORT_SYMBOL(__wait_on_bit);
+> 
