@@ -2,114 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38E64C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 18:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0830BC19F2B
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 18:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231797AbiHASsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 14:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41532 "EHLO
+        id S233335AbiHASsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 14:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233319AbiHASsG (ORCPT
+        with ESMTP id S231675AbiHASsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 14:48:06 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629532529A
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 11:48:05 -0700 (PDT)
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 271GAp1k009761
-        for <linux-kernel@vger.kernel.org>; Mon, 1 Aug 2022 11:48:04 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=/0Ba2BW84txtNVUrI6XJ5P58G9O2nZCOBVVyrrbvLJM=;
- b=KjsEEFCrhCrTXrG2s0W8PGbKnOpceSsX7WI/vOk/ONLAPON5BgOg+ChsFMTxAiKuFBIH
- +2SuGM5RtRZV/XzxDolQ87kK5z3WJ4rV27kMh0YMSxx8V08hZziQdHJEFWyQbA/fQFDb
- xPsWHQG3NsKs4ysJvyPei2wzwIIBZgG2JXk= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hn2bn5hba-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 11:48:04 -0700
-Received: from twshared5413.23.frc3.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Mon, 1 Aug 2022 11:48:03 -0700
-Received: by devvm6390.atn0.facebook.com (Postfix, from userid 352741)
-        id D2E391AAF666; Mon,  1 Aug 2022 11:47:55 -0700 (PDT)
-From:   <alexlzhu@fb.com>
-To:     <kernel-team@fb.com>, <linux-mm@kvack.org>, <clm@fb.com>,
-        <josef@toxicpanda.com>, <dsterba@suse.com>,
-        <linux-btrfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     alexlzhu <alexlzhu@fb.com>
-Subject: [PATCH v2] mm: fix alginment of VMA for memory mapped files on THP
-Date:   Mon, 1 Aug 2022 11:47:40 -0700
-Message-ID: <20220801184740.2134364-1-alexlzhu@fb.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 1 Aug 2022 14:48:45 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F45222BC5
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 11:48:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659379724; x=1690915724;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=5AiKL+DvuSxKnf3kFLABHhMOxVxvLs3s3mUnLtOtRwE=;
+  b=gRhHsaR2Uow1NQkwMNzDonaciv07zZBARqsMickG1JdfNCn745N+NoSV
+   C80lJ3uVbj8e6vClQ4VsZ7zPoz9z1ylEpC+igmxVgJlIzIgiViVDIb1b+
+   EDLBY4A/jaqD+MQhFn99z+dj/+gwUVV4yKMk5tSWctH6tnpOZ60h1IISJ
+   hqWl0L6rhIoqJM0OhVJ92pDpMY8QgRCaXrMBia3HHJNMXrNzlwtLQ/llZ
+   lF9m/aRy56+244i9CDn7XCOCpDyn/DcfT5gCeO8EP4bVClkbEblyg3QFy
+   qBKB8N7mgjrLHNB31rOxdHuCldIDRys98f1eCtyowdndTpQy0q+glvged
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10426"; a="375522738"
+X-IronPort-AV: E=Sophos;i="5.93,208,1654585200"; 
+   d="scan'208";a="375522738"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 11:48:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,208,1654585200"; 
+   d="scan'208";a="670144043"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 01 Aug 2022 11:48:42 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oIaT4-000FE1-0S;
+        Mon, 01 Aug 2022 18:48:42 +0000
+Date:   Tue, 2 Aug 2022 02:48:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:crng/random/jd/vdso 9/9]
+ include/vdso/processor.h:10:10: fatal error: 'asm/vdso/processor.h' file not
+ found
+Message-ID: <202208020231.SlFNUKqj-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: ba9NxA9jV-Lrw02eZZwHFkf4XyfCUgqA
-X-Proofpoint-ORIG-GUID: ba9NxA9jV-Lrw02eZZwHFkf4XyfCUgqA
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-01_08,2022-08-01_01,2022-06-22_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: alexlzhu <alexlzhu@fb.com>
+tree:   https://github.com/ammarfaizi2/linux-block crng/random/jd/vdso
+head:   352e85344386bb54dc19717319667b114cff5082
+commit: 352e85344386bb54dc19717319667b114cff5082 [9/9] random: implement getrandom() in vDSO
+config: hexagon-randconfig-r041-20220801 (https://download.01.org/0day-ci/archive/20220802/202208020231.SlFNUKqj-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/352e85344386bb54dc19717319667b114cff5082
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block crng/random/jd/vdso
+        git checkout 352e85344386bb54dc19717319667b114cff5082
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/char/
 
-With CONFIG_READ_ONLY_THP_FOR_FS, the Linux kernel supports using THPs fo=
-r
-read-only mmapped files, such as shared libraries. However, the
-kernel makes no attempt to actually align those mappings on 2MB boundarie=
-s,
-which makes it impossible to use those THPs most of the time. This issue
-applies to general file mapping THP as well as existing setups using
-CONFIG_READ_ONLY_THP_FOR_FS. This is easily fixed by using
-thp_get_unmapped_area for the unmapped_area function in btrfs, which is
-what ext2, ext4, fuse, and xfs all use. The problem can be seen in
-/proc/PID/smaps where THPeligible is set to 0 on mappings to eligible
-shared object files as shown below.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Before this patch:
+All errors (new ones prefixed by >>):
 
-7fc6a7e18000-7fc6a80cc000 r-xp 00000000 00:1e 199856
-/usr/lib64/libcrypto.so.1.1.1k
-Size:               2768 kB
-THPeligible:    0
-VmFlags: rd ex mr mw me
+   In file included from drivers/char/random.c:62:
+   In file included from include/vdso/datapage.h:17:
+>> include/vdso/processor.h:10:10: fatal error: 'asm/vdso/processor.h' file not found
+   #include <asm/vdso/processor.h>
+            ^~~~~~~~~~~~~~~~~~~~~~
+   1 error generated.
 
-With this patch the library is mapped at a 2MB aligned address:
 
-fbdfe200000-7fbdfe4b4000 r-xp 00000000 00:1e 199856
-/usr/lib64/libcrypto.so.1.1.1k
-Size:               2768 kB
-THPeligible:    1
-VmFlags: rd ex mr mw me
+vim +10 include/vdso/processor.h
 
-This fixes the alignment of VMAs for any mmap of a file that has the
-rd and ex permissions and size >=3D 2MB. The VMA alignment and
-THPeligible field for anonymous memory is handled separately and
-is thus not effected by this change.
+d8bb6993d871f5 Vincenzo Frascino 2020-03-20   9  
+d8bb6993d871f5 Vincenzo Frascino 2020-03-20 @10  #include <asm/vdso/processor.h>
+d8bb6993d871f5 Vincenzo Frascino 2020-03-20  11  
 
-Signed-off-by: alexlzhu <alexlzhu@fb.com>
----
- fs/btrfs/file.c | 1 +
- 1 file changed, 1 insertion(+)
+:::::: The code at line 10 was first introduced by commit
+:::::: d8bb6993d871f5d3cd6d65d3772e4b1f4ef17380 common: Introduce processor.h
 
-diff --git a/fs/btrfs/file.c b/fs/btrfs/file.c
-index 9dfde1af8a64..2423040db167 100644
---- a/fs/btrfs/file.c
-+++ b/fs/btrfs/file.c
-@@ -3808,6 +3808,7 @@ const struct file_operations btrfs_file_operations =
-=3D {
- 	.mmap		=3D btrfs_file_mmap,
- 	.open		=3D btrfs_file_open,
- 	.release	=3D btrfs_release_file,
-+	.get_unmapped_area =3D thp_get_unmapped_area,
- 	.fsync		=3D btrfs_sync_file,
- 	.fallocate	=3D btrfs_fallocate,
- 	.unlocked_ioctl	=3D btrfs_ioctl,
---=20
-2.30.2
+:::::: TO: Vincenzo Frascino <vincenzo.frascino@arm.com>
+:::::: CC: Thomas Gleixner <tglx@linutronix.de>
 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
