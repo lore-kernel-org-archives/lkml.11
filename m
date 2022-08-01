@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 332C6C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 16:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA51DC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 16:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234134AbiHAQn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 12:43:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37934 "EHLO
+        id S234240AbiHAQoB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 12:44:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234102AbiHAQni (ORCPT
+        with ESMTP id S233298AbiHAQnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 12:43:38 -0400
-Received: from aer-iport-4.cisco.com (aer-iport-4.cisco.com [173.38.203.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9F6BF40
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 09:43:36 -0700 (PDT)
+        Mon, 1 Aug 2022 12:43:39 -0400
+Received: from aer-iport-3.cisco.com (aer-iport-3.cisco.com [173.38.203.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67EF21CB2D
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 09:43:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=1963; q=dns/txt; s=iport;
-  t=1659372217; x=1660581817;
+  d=cisco.com; i=@cisco.com; l=1812; q=dns/txt; s=iport;
+  t=1659372218; x=1660581818;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Rbl5a3sCt+315DhFMGRBqCnTcR0L3yULt7Gy7tgeKUU=;
-  b=CoKXYwcazdACEJQrs7X0MEg5sR6tFp3jlNjdzNnemFtt3m3gbhG8UsNf
-   ImvBs5Q2CF5wXuAnxUjceVQI+HQa+I5dLS3kvXGJWpguoMTSxf9qsDGjD
-   va6ju4tg4nMgaOxCMs1lUNys3t9fnsY+LYaLtG/DtwT04KPIZYn479/ze
-   k=;
+  bh=/YFYhKFlG4eL8qi07k8+Dxmz4ofUBREJaJtFpI9ocRY=;
+  b=D/hoVa4FoxbrPFRLxodW9SPsEe3yDJ2gRi08LT6QjO9rIn6a86rBiU4l
+   boVU6uUN+bu+pJwmlDxisFpCQIg/SQ+THajt13ThiLbYOBRjNZEezF6ib
+   NNmUZpotOOhJBu+5oUwNfIevA2zZ0T6AFJvC1yllL606wPQH78cz1IEBh
+   w=;
 X-IronPort-AV: E=Sophos;i="5.93,208,1654560000"; 
-   d="scan'208";a="3295291"
+   d="scan'208";a="3296646"
 Received: from aer-iport-nat.cisco.com (HELO aer-core-1.cisco.com) ([173.38.203.22])
-  by aer-iport-4.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 01 Aug 2022 16:43:33 +0000
+  by aer-iport-3.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 01 Aug 2022 16:43:34 +0000
 Received: from hce-anki.rd.cisco.com ([10.47.79.243])
-        by aer-core-1.cisco.com (8.15.2/8.15.2) with ESMTP id 271GhT0T012552;
-        Mon, 1 Aug 2022 16:43:32 GMT
+        by aer-core-1.cisco.com (8.15.2/8.15.2) with ESMTP id 271GhT0V012552;
+        Mon, 1 Aug 2022 16:43:34 GMT
 From:   Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, Laura Abbott <lauraa@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
+Cc:     gregkh@linuxfoundation.org, Kees Cook <keescook@chromium.org>,
         "Theodore Ts'o" <tytso@mit.edu>,
-        Daniel Micay <danielmicay@gmail.com>,
-        Nick Kralevich <nnk@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
         Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
-Subject: [v4.9 PATCH v2 4/6] init: move stack canary initialization after setup_arch
-Date:   Mon,  1 Aug 2022 18:43:26 +0200
-Message-Id: <20220801164328.2205839-4-hegtvedt@cisco.com>
+Subject: [v4.9 PATCH v2 6/6] random: move rand_initialize() earlier
+Date:   Mon,  1 Aug 2022 18:43:28 +0200
+Message-Id: <20220801164328.2205839-6-hegtvedt@cisco.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220801164328.2205839-1-hegtvedt@cisco.com>
 References: <20220801164328.2205839-1-hegtvedt@cisco.com>
@@ -57,60 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laura Abbott <lauraa@codeaurora.org>
+From: Kees Cook <keescook@chromium.org>
 
-Patch series "Command line randomness", v3.
+Right now rand_initialize() is run as an early_initcall(), but it only
+depends on timekeeping_init() (for mixing ktime_get_real() into the
+pools). However, the call to boot_init_stack_canary() for stack canary
+initialization runs earlier, which triggers a warning at boot:
 
-A series to add the kernel command line as a source of randomness.
+random: get_random_bytes called from start_kernel+0x357/0x548 with crng_init=0
 
-This patch (of 2):
+Instead, this moves rand_initialize() to after timekeeping_init(), and moves
+canary initialization here as well.
 
-Stack canary intialization involves getting a random number.  Getting this
-random number may involve accessing caches or other architectural specific
-features which are not available until after the architecture is setup.
-Move the stack canary initialization later to accommodate this.
+Note that this warning may still remain for machines that do not have
+UEFI RNG support (which initializes the RNG pools during setup_arch()),
+or for x86 machines without RDRAND (or booting without "random.trust=on"
+or CONFIG_RANDOM_TRUST_CPU=y).
 
-Link: http://lkml.kernel.org/r/20170816231458.2299-2-labbott@redhat.com
-Signed-off-by: Laura Abbott <lauraa@codeaurora.org>
-Signed-off-by: Laura Abbott <labbott@redhat.com>
-Acked-by: Kees Cook <keescook@chromium.org>
-Cc: "Theodore Ts'o" <tytso@mit.edu>
-Cc: Daniel Micay <danielmicay@gmail.com>
-Cc: Nick Kralevich <nnk@google.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-(cherry picked from commit 121388a31362b0d3176dc1190ac8064b98a61b20)
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+(cherry picked from commit d55535232c3dbde9a523a9d10d68670f5fe5dec3)
 Signed-off-by: Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
+
+Adjusted to fit on top of linux-4.9.y branch, suspecting a wrongly
+solved conflict when cherry picked earlier.
 ---
- init/main.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ init/main.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
 diff --git a/init/main.c b/init/main.c
-index 8b803078d7b..67fa94c5967 100644
+index 6bc1a3fa152..6537f51a0ba 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -487,12 +487,6 @@ asmlinkage __visible void __init start_kernel(void)
- 	smp_setup_processor_id();
- 	debug_objects_early_init();
- 
--	/*
--	 * Set up the initial canary ASAP:
--	 */
--	add_latent_entropy();
--	boot_init_stack_canary();
--
- 	cgroup_init_early();
- 
- 	local_irq_disable();
-@@ -506,6 +500,11 @@ asmlinkage __visible void __init start_kernel(void)
+@@ -500,13 +500,6 @@ asmlinkage __visible void __init start_kernel(void)
  	page_address_init();
  	pr_notice("%s", linux_banner);
  	setup_arch(&command_line);
-+	/*
-+	 * Set up the the initial canary and entropy after arch
-+	 */
-+	add_latent_entropy();
-+	boot_init_stack_canary();
+-	/*
+-	 * Set up the the initial canary and entropy after arch
+-	 * and after adding latent and command line entropy.
+-	 */
+-	add_latent_entropy();
+-	add_device_randomness(command_line, strlen(command_line));
+-	boot_init_stack_canary();
  	mm_init_cpumask(&init_mm);
  	setup_command_line(command_line);
  	setup_nr_cpu_ids();
