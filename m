@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49611C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97938C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:59:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232252AbiHAL7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48830 "EHLO
+        id S232621AbiHAL7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:59:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231432AbiHAL6J (ORCPT
+        with ESMTP id S232338AbiHAL6a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:58:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7E9419A2;
-        Mon,  1 Aug 2022 04:52:16 -0700 (PDT)
+        Mon, 1 Aug 2022 07:58:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695A8491E8;
+        Mon,  1 Aug 2022 04:52:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9930612E3;
-        Mon,  1 Aug 2022 11:52:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1A28C433C1;
-        Mon,  1 Aug 2022 11:52:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7701CB81174;
+        Mon,  1 Aug 2022 11:52:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA88BC433D7;
+        Mon,  1 Aug 2022 11:52:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354735;
-        bh=v3eMzd9USaj7O5CPtj1Ypzb355onBF7y+Urro/QYSdE=;
+        s=korg; t=1659354738;
+        bh=1Jb9KCiZQXynU1UIIOvCFTAA45UZmR0WpEu5sAJWlMk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=enHaUITfRKojnOT1HvUWttU1GdrZkCUypqeLD1DfDlOOT1Iv9MTmajgsXqqPanZeX
-         OhbUldg5SXoctRiFNbXhjFOvF38DM6V2QmqQQkoPjy8qNwUTp8yyzK2vNKEGhV9xdE
-         FW+xI4FnyIVP6jgk1vquUoy+cuxjKugfgUmKDYHo=
+        b=yOoNykbNgytfJGByROqFhzZyL8o/HhK4B+jHbOSb5kh7VW5fa/h4nqqpJajdcgeWy
+         NVDkv5Pi9tBCRg1s4v919uTcWkInEST2mIFw7pb2wZAC7Ug/1oyYADkCKWDcM0qoTD
+         0IvOjujjJ3sLFLs9KBkTWEjb0NlhPc60x3oefgrs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 35/65] net: macsec: fix potential resource leak in macsec_add_rxsa() and macsec_add_txsa()
-Date:   Mon,  1 Aug 2022 13:46:52 +0200
-Message-Id: <20220801114135.176779971@linuxfoundation.org>
+Subject: [PATCH 5.10 36/65] tcp: Fix a data-race around sysctl_tcp_comp_sack_delay_ns.
+Date:   Mon,  1 Aug 2022 13:46:53 +0200
+Message-Id: <20220801114135.211332199@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114133.641770326@linuxfoundation.org>
 References: <20220801114133.641770326@linuxfoundation.org>
@@ -49,51 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit c7b205fbbf3cffa374721bb7623f7aa8c46074f1 ]
+[ Upstream commit 4866b2b0f7672b6d760c4b8ece6fb56f965dcc8a ]
 
-init_rx_sa() allocates relevant resource for rx_sa->stats and rx_sa->
-key.tfm with alloc_percpu() and macsec_alloc_tfm(). When some error
-occurs after init_rx_sa() is called in macsec_add_rxsa(), the function
-released rx_sa with kfree() without releasing rx_sa->stats and rx_sa->
-key.tfm, which will lead to a resource leak.
+While reading sysctl_tcp_comp_sack_delay_ns, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-We should call macsec_rxsa_put() instead of kfree() to decrease the ref
-count of rx_sa and release the relevant resource if the refcount is 0.
-The same bug exists in macsec_add_txsa() for tx_sa as well. This patch
-fixes the above two bugs.
-
-Fixes: 3cf3227a21d1 ("net: macsec: hardware offloading infrastructure")
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Fixes: 6d82aa242092 ("tcp: add tcp_comp_sack_delay_ns sysctl")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macsec.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_input.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 8d73b72d6179..70c5905a916b 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -1841,7 +1841,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 	return 0;
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 716bc95ebfb0..b86d98c07cdf 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5461,7 +5461,8 @@ static void __tcp_ack_snd_check(struct sock *sk, int ofo_possible)
+ 	if (tp->srtt_us && tp->srtt_us < rtt)
+ 		rtt = tp->srtt_us;
  
- cleanup:
--	kfree(rx_sa);
-+	macsec_rxsa_put(rx_sa);
- 	rtnl_unlock();
- 	return err;
- }
-@@ -2084,7 +2084,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 
- cleanup:
- 	secy->operational = was_operational;
--	kfree(tx_sa);
-+	macsec_txsa_put(tx_sa);
- 	rtnl_unlock();
- 	return err;
- }
+-	delay = min_t(unsigned long, sock_net(sk)->ipv4.sysctl_tcp_comp_sack_delay_ns,
++	delay = min_t(unsigned long,
++		      READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_comp_sack_delay_ns),
+ 		      rtt * (NSEC_PER_USEC >> 3)/20);
+ 	sock_hold(sk);
+ 	hrtimer_start_range_ns(&tp->compressed_ack_timer, ns_to_ktime(delay),
 -- 
 2.35.1
 
