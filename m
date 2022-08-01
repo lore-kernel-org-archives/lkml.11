@@ -2,81 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29755C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 531E9C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:42:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230404AbiHALkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53918 "EHLO
+        id S230452AbiHALmI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:42:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229903AbiHALj7 (ORCPT
+        with ESMTP id S229939AbiHALmG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:39:59 -0400
-Received: from xry111.site (xry111.site [89.208.246.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B55C31928
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:39:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1659353997;
-        bh=ukpOVj7fywYhR//4Lwx/zQHnRpAGRXXiUEyJ/bF1jLk=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=AFxh0lL88VO4a68vgwlsX9uTwCwmVGzGmWbsuGkK4AgZoTVOGg1ljULjvS9OrDK3M
-         KEl33Ee60LYiiRoAZVzEgP7ocwp3WBEn89MtLhAgsI2yAxXtb2EGE4GB4XX3gqafJs
-         eH6K/Z73Tiy2uQD2e6ACbinDYXnnp/BdJ1fuXcrE=
-Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id 2837466945;
-        Mon,  1 Aug 2022 07:39:55 -0400 (EDT)
-Message-ID: <d6cab26afc5829c1b93bc1cc5867ebf22f5c7f47.camel@xry111.site>
-Subject: Re: [PATCH v4 0/4] LoongArch: Support new relocation types
-From:   Xi Ruoyao <xry111@xry111.site>
-To:     Youling Tang <tangyouling@loongson.cn>,
-        Jinyang He <hejinyang@loongson.cn>
-Cc:     Huacai Chen <chenhuacai@kernel.org>, loongarch@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>,
-        WANG Xuerui <kernel@xen0n.name>,
-        Lulu Cheng <chenglulu@loongson.cn>
-Date:   Mon, 01 Aug 2022 19:39:54 +0800
-In-Reply-To: <ba5e99de-0719-af88-4d94-8860787a4251@loongson.cn>
-References: <32a74a218c76611f897fd1df1ad0059068621133.camel@xry111.site>
-         <ec52fd49-4a30-15d9-3d32-fd7bc6d8b3f0@loongson.cn>
-         <0179679b736aea7258981dec2d83107cce74dfc1.camel@xry111.site>
-         <a139a8475fe295ac9f17064269cd0312dca6f96e.camel@xry111.site>
-         <6b5d2188f93ed72b67a4bbb7116113f833fe1ee5.camel@xry111.site>
-         <d7670b60-2782-4642-995b-7baa01779a66@loongson.cn>
-         <7cad6e78014168a8906e130e1cf3809077d2bda7.camel@xry111.site>
-         <1d0783b87bda3e454a111862fcc5b5faffcb16b0.camel@xry111.site>
-         <00eede4b1380888a500f74b1e818bb25a550632b.camel@xry111.site>
-         <7512ae16-b171-d072-674f-a6b9a5e764d6@loongson.cn>
-         <CAAhV-H5wSJZ2X46ySqoaJd7Z2soGcYKRNixnghmE3f3zEzyS+w@mail.gmail.com>
-         <10751c9af5d45fea741e0bbed6c818ddb9db3ac3.camel@xry111.site>
-         <7b1f9813-85fc-acfd-8e24-7e01469ded3a@loongson.cn>
-         <ba5e99de-0719-af88-4d94-8860787a4251@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 
+        Mon, 1 Aug 2022 07:42:06 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA78F33372
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:42:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659354125; x=1690890125;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=GuzQiJ2YB1b08Bw3C4FZ4eXUc4rZ/ThGZYAuDfVZj2Y=;
+  b=VzSASqkbxgMAUFXSHm8US0MQmEFSkky58008WJ/nr4CtuUKaW15la5R5
+   sGCCZh9ev5mvk5uoCL5y0EWRh27LxuX/+cBW/4PFz8HbQBBlDvNrYB/kj
+   BTpmocdt6B0/ccsQ6bLccaddlbX8lFJoCMT8cGa9iDOqu4QgKk932GMx3
+   Radz3Yu6JKphwMLonx6zhhgVLdbglVkRkpmpDlGLLF+I3sXJiXGHuUCZG
+   qxmpy2hi7g70WA3RiTzNFMh2N4/2nJ4+WJazpHB1gV0zDniyC7DpE/+n0
+   NApOyfBbYwO/O/t/UtMgrkyjBw8as3RV2x32pQAwc9OUod6wZOo//l4Lg
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10425"; a="286683361"
+X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
+   d="scan'208";a="286683361"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 04:42:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
+   d="scan'208";a="598909957"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga007.jf.intel.com with ESMTP; 01 Aug 2022 04:42:03 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id DF527F7; Mon,  1 Aug 2022 14:42:13 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Lee Jones <lee.jones@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Lee Jones <lee@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH v3 01/10] mfd: intel_soc_pmic: Fix an error handling path in intel_soc_pmic_i2c_probe()
+Date:   Mon,  1 Aug 2022 14:42:02 +0300
+Message-Id: <20220801114211.36267-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-08-01 at 19:28 +0800, Youling Tang wrote:
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-> > Actually, I really hope kernel image is in the XKVRANGE, rather
-> > than being in XKPRANGE. So that we can limit kernel and modules
-> > be in 4GB range. I think it will make all work normally. :-(
-> >=20
->=20
-> Assuming that the kernel and modules are limited to 4G, the external
-> symbols will be accessed through pcrel32, which means that there is no
-> need to pass the GOT table entry and there is no need for got support
+The commit in Fixes: has added a pwm_add_table() call in the probe() and
+a pwm_remove_table() call in the remove(), but forget to update the error
+handling path of the probe.
 
-We'll still need to modify GCC to use PC-rel for accessing an object in
-another TU (by default, or an option to control), instead of GOT.  Or
-just add support to GOT relocations here.  But anyway it will be much
-easier as we won't need to handle per-CPU variables specially.
---=20
-Xi Ruoyao <xry111@xry111.site>
-School of Aerospace Science and Technology, Xidian University
+Add the missing pwm_remove_table() call.
+
+Fixes: a3aa9a93df9f ("mfd: intel_soc_pmic_core: ADD PWM lookup table for CRC PMIC based PWM")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+---
+
+v3: added tag (Hans)
+v2: new patch
+
+ drivers/mfd/intel_soc_pmic_core.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/mfd/intel_soc_pmic_core.c b/drivers/mfd/intel_soc_pmic_core.c
+index 5e8c94e008ed..85d070bce0e2 100644
+--- a/drivers/mfd/intel_soc_pmic_core.c
++++ b/drivers/mfd/intel_soc_pmic_core.c
+@@ -77,6 +77,7 @@ static int intel_soc_pmic_i2c_probe(struct i2c_client *i2c,
+ 	return 0;
+ 
+ err_del_irq_chip:
++	pwm_remove_table(crc_pwm_lookup, ARRAY_SIZE(crc_pwm_lookup));
+ 	regmap_del_irq_chip(pmic->irq, pmic->irq_chip_data);
+ 	return ret;
+ }
+-- 
+2.35.1
+
