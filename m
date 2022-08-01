@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 474ACC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:15:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C884C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:15:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232649AbiHAMPf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:15:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38844 "EHLO
+        id S234158AbiHAMPi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:15:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233228AbiHAMOu (ORCPT
+        with ESMTP id S234247AbiHAMOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:14:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13AF7858C;
-        Mon,  1 Aug 2022 04:58:05 -0700 (PDT)
+        Mon, 1 Aug 2022 08:14:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0363A481EC;
+        Mon,  1 Aug 2022 04:58:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 671D3B80E8F;
-        Mon,  1 Aug 2022 11:58:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D049CC433C1;
-        Mon,  1 Aug 2022 11:58:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94DD9601C5;
+        Mon,  1 Aug 2022 11:58:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C091C433C1;
+        Mon,  1 Aug 2022 11:58:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355083;
-        bh=iv8aXyOYAKbnZ+8BSaqMJfr4nzdWoMVAHy3Es2WIAeU=;
+        s=korg; t=1659355086;
+        bh=zJ4Z8/RkB+FSPyYto9uDx3KooRWP8varH59P/whIp1M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TB7WjXDmV6PqsY1JhJAjkgdj8YLzBAJ+1KCzPXnLtFocuY7HVfkP3/601bQLx1XKI
-         YWmJT8JE4pmp955svSi1tR1iWmkNMwh+3fkALlOga6jN3QjjTkOerz4OnVzXfaJ4/x
-         f3B8wdtVjuqCd8l8vo3WtQkk24/TGwygE2BJo4aU=
+        b=zpQCWof719R20/ifENJ/R8bYotZb4jTmSbTOoM8AJmAaZaP7IpmhgU0kn6BWS0ZNW
+         MMWRkGl0v6Y9N3U36xmmrciotciLAhj4ivgNBgXcCIV6F9LK+0ws9gYT6CGKReWdyP
+         uXo+HQBi+KQP8+XiTD/zWlxGyeTFavIZADHOgLZU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.18 29/88] ice: do not setup vlan for loopback VSI
-Date:   Mon,  1 Aug 2022 13:46:43 +0200
-Message-Id: <20220801114139.353024978@linuxfoundation.org>
+        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 56/88] net: macsec: fix potential resource leak in macsec_add_rxsa() and macsec_add_txsa()
+Date:   Mon,  1 Aug 2022 13:47:10 +0200
+Message-Id: <20220801114140.595300677@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -50,39 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-commit cc019545a238518fa9da1e2a889f6e1bb1005a63 upstream.
+[ Upstream commit c7b205fbbf3cffa374721bb7623f7aa8c46074f1 ]
 
-Currently loopback test is failiing due to the error returned from
-ice_vsi_vlan_setup(). Skip calling it when preparing loopback VSI.
+init_rx_sa() allocates relevant resource for rx_sa->stats and rx_sa->
+key.tfm with alloc_percpu() and macsec_alloc_tfm(). When some error
+occurs after init_rx_sa() is called in macsec_add_rxsa(), the function
+released rx_sa with kfree() without releasing rx_sa->stats and rx_sa->
+key.tfm, which will lead to a resource leak.
 
-Fixes: 0e674aeb0b77 ("ice: Add handler for ethtool selftest")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+We should call macsec_rxsa_put() instead of kfree() to decrease the ref
+count of rx_sa and release the relevant resource if the refcount is 0.
+The same bug exists in macsec_add_txsa() for tx_sa as well. This patch
+fixes the above two bugs.
+
+Fixes: 3cf3227a21d1 ("net: macsec: hardware offloading infrastructure")
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/macsec.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5994,10 +5994,12 @@ int ice_vsi_cfg(struct ice_vsi *vsi)
- 	if (vsi->netdev) {
- 		ice_set_rx_mode(vsi->netdev);
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index 95578f04f212..f354fad05714 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -1844,7 +1844,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
+ 	return 0;
  
--		err = ice_vsi_vlan_setup(vsi);
-+		if (vsi->type != ICE_VSI_LB) {
-+			err = ice_vsi_vlan_setup(vsi);
+ cleanup:
+-	kfree(rx_sa);
++	macsec_rxsa_put(rx_sa);
+ 	rtnl_unlock();
+ 	return err;
+ }
+@@ -2087,7 +2087,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
  
--		if (err)
--			return err;
-+			if (err)
-+				return err;
-+		}
- 	}
- 	ice_vsi_cfg_dcb_rings(vsi);
- 
+ cleanup:
+ 	secy->operational = was_operational;
+-	kfree(tx_sa);
++	macsec_txsa_put(tx_sa);
+ 	rtnl_unlock();
+ 	return err;
+ }
+-- 
+2.35.1
+
 
 
