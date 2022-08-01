@@ -2,63 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47823C19F29
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 09:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EB09C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 09:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbiHAJ40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 05:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41516 "EHLO
+        id S231147AbiHAJ4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 05:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229961AbiHAJ4Y (ORCPT
+        with ESMTP id S230240AbiHAJ4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 05:56:24 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6FE2BB31
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 02:56:23 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id h10-20020a5ecb4a000000b0067bcc5ff59bso3500716iok.18
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 02:56:23 -0700 (PDT)
+        Mon, 1 Aug 2022 05:56:36 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C95332BA7
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 02:56:33 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id p10so9251689wru.8
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 02:56:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=2FuACtaCS0L8dCebZDq4RRCEXB3kt6E3Inml0wlV6gg=;
+        b=KDTn7Mup8NyF9qvcEMDqDfbVO2sbgiHPBc4jBKd8h+ncGfBZcDWsKsW90yNAOA4i9F
+         1X7g37grnvEnO3ePr5Oa22V1G3p/1UsB+mrONfDsfgZ3ZjlTy7a3GbYpdyFNryYBAS6J
+         OsRXwDfl4bwzlqZBA+SuugJZh8vcHlKagX063SlJsRcEs8coyUJJVdxRR/CmOpa5FFW4
+         MondDpwWVbhyQB2qYJZYLi9YrXXsxdGjT712KyGd2UaQwVLqkrRAe//rpkVXkGUxg1wd
+         Sw9NGXwPl+AOddashnMdhi43W8EJa9yAXudzKqndtaoxz88nXHDghoYExfIHh4k4va2H
+         FZdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=sVvRetvU66viZg03zt42J481swUWQOVgkFgrLPfYY/8=;
-        b=eRNkG5nRPgIuxIEOaGpdNjiUMB7F5m04LPpWyqOtCWS841YSao0UVSmQUAVYOMh61k
-         mUHBZRB1VEXmOzX6kL2wUz31QcUED3sTBbLwKXWlEkICf/7BOS6mKs0Dy2rvjpYZfYqp
-         dJyf0XDLlKFIFpDX6e4uN9OU/3f0NsDWH45BeBajs3/IKgV84iRHSbyHhOWrfK8xxsDH
-         mzE5JsthfLrYpqagT0o5i7km8f54AI3WMmSdStisCxaXd3j21omSZugvYJY2IlQ6C7o8
-         iHOrl5ElgaFKMu4RugtIHEqoLlD+HwFe1VFm2lAX/5O6uRF+YXEo0DjaXwbGRF/QEMql
-         QGgw==
-X-Gm-Message-State: AJIora8vNwaKDEtpdXOEXGyOFM/VH+1KvTNDzhVNA5Gyp5+OCrVZZR2h
-        KjaErJr8U4ol+eEyLRwMZyAMTQ0gqz8Jr7tY50FpX0nFcZkb
-X-Google-Smtp-Source: AGRyM1uAv384XmYFLje5oK1UbKPaO9DcSJodVy0T7Oavv/IaWgl4yFi49IoDV4lBszGsWPPz5Qxd9PUDRLeL11k9ouC4lDqFTIgs
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=2FuACtaCS0L8dCebZDq4RRCEXB3kt6E3Inml0wlV6gg=;
+        b=DSqnnWQAzBPgeuySsYW1Ab8zvsinNJnZuAUCJaZR5m6Mk8b76l7YKFYKKSb72E+K9O
+         dmmWY1HaRrNklc0XnTtgA+/Ne/byM0/SMGWgOT6Xy3pyz1nO0I9JMNdhR89ApQ1sVr4w
+         Vo9bMsQcY8ZjOsu9rtwtMTKMBVL5faCL4tiqnfdya/r1cCHvieyF31VWiWdLVLHfYIBE
+         bmu5RSzUYUF55uMnzYr4MNGxbFumU1800MzdfszfCkgh0Jp+9bmeAHAy7l13s+tit5rV
+         bKlT/aYO/Dlc6PvuLwuVOT/AIdOOgAGylDBEECIsOzuNUHOYsRVnNp7zesUswMFlFIXM
+         zmmw==
+X-Gm-Message-State: ACgBeo01XwybcfPyH02j20p63dg2aMeLDfy4LdWjrlwz6c7YzjeSAkMd
+        HETxzxqbtfv+SOeimo4bhCNnMg==
+X-Google-Smtp-Source: AA6agR6Vju81GPvCd056EAYe+Qntgu2/heORygcItwiYQvkGp7kpXFKHykQIDzVmzYL7aR+ExGYGTw==
+X-Received: by 2002:a05:6000:2a8:b0:220:6893:4ff6 with SMTP id l8-20020a05600002a800b0022068934ff6mr1108386wry.170.1659347792321;
+        Mon, 01 Aug 2022 02:56:32 -0700 (PDT)
+Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:b04a:b59f:f2d8:e65c])
+        by smtp.gmail.com with ESMTPSA id d14-20020adfef8e000000b0021d6dad334bsm11430204wro.4.2022.08.01.02.56.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 02:56:32 -0700 (PDT)
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+To:     daniel.lezcano@linaro.org, rafael@kernel.org
+Cc:     vadimp@mellanox.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH 1/2] Revert "mlxsw: core: Use different get_trend() callbacks for different thermal zones"
+Date:   Mon,  1 Aug 2022 11:56:21 +0200
+Message-Id: <20220801095622.949079-1-daniel.lezcano@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3e12:b0:33f:2c4f:a2af with SMTP id
- co18-20020a0566383e1200b0033f2c4fa2afmr6013533jab.97.1659347783075; Mon, 01
- Aug 2022 02:56:23 -0700 (PDT)
-Date:   Mon, 01 Aug 2022 02:56:23 -0700
-In-Reply-To: <000000000000b960c00594598949@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002b4cd505e52b03db@google.com>
-Subject: Re: KASAN: use-after-free Read in tc_chain_fill_node
-From:   syzbot <syzbot+5f229e48cccc804062c0@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, gregkh@linuxfoundation.org, jiri@mellanox.com,
-        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-        stable-commits@vger.kernel.org, stable@vger.kernel.org,
-        syzkaller-lts-bugs@googlegroups.com, vladbu@mellanox.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This bug is marked as fixed by commit:
-net: core: netlink: add helper refcount dec and lock function
-net: sched: add helper function to take reference to Qdisc
-net: sched: extend Qdisc with rcu
-net: sched: rename qdisc_destroy() to qdisc_put()
-net: sched: use Qdisc rcu API instead of relying on rtnl lock
-But I can't find it in any tested tree for more than 90 days.
-Is it a correct commit? Please update it by replying:
-#syz fix: exact-commit-title
-Until then the bug is still considered open and
-new crashes with the same signature are ignored.
+This reverts commit 2dc2f760052da4925482ecdcdc5c94d4a599153c.
+
+As discussed in the thread:
+
+https://lore.kernel.org/all/f3c62ebe-7d59-c537-a010-bff366c8aeba@linaro.org/
+
+the feature provided by commits 2dc2f760052da and 6f73862fabd93 is
+actually already handled by the thermal framework via the cooling
+device state aggregation, thus all this code is pointless.
+
+No conflict happened when reverting the patch.
+
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+---
+ .../ethernet/mellanox/mlxsw/core_thermal.c    | 23 ++++---------------
+ 1 file changed, 4 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+index 05f54bd982c0..f5751242653b 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+@@ -345,7 +345,8 @@ static int mlxsw_thermal_set_trip_hyst(struct thermal_zone_device *tzdev,
+ static int mlxsw_thermal_trend_get(struct thermal_zone_device *tzdev,
+ 				   int trip, enum thermal_trend *trend)
+ {
+-	struct mlxsw_thermal *thermal = tzdev->devdata;
++	struct mlxsw_thermal_module *tz = tzdev->devdata;
++	struct mlxsw_thermal *thermal = tz->parent;
+ 
+ 	if (trip < 0 || trip >= MLXSW_THERMAL_NUM_TRIPS)
+ 		return -EINVAL;
+@@ -537,22 +538,6 @@ mlxsw_thermal_module_trip_hyst_set(struct thermal_zone_device *tzdev, int trip,
+ 	return 0;
+ }
+ 
+-static int mlxsw_thermal_module_trend_get(struct thermal_zone_device *tzdev,
+-					  int trip, enum thermal_trend *trend)
+-{
+-	struct mlxsw_thermal_module *tz = tzdev->devdata;
+-	struct mlxsw_thermal *thermal = tz->parent;
+-
+-	if (trip < 0 || trip >= MLXSW_THERMAL_NUM_TRIPS)
+-		return -EINVAL;
+-
+-	if (tzdev == thermal->tz_highest_dev)
+-		return 1;
+-
+-	*trend = THERMAL_TREND_STABLE;
+-	return 0;
+-}
+-
+ static struct thermal_zone_device_ops mlxsw_thermal_module_ops = {
+ 	.bind		= mlxsw_thermal_module_bind,
+ 	.unbind		= mlxsw_thermal_module_unbind,
+@@ -562,7 +547,7 @@ static struct thermal_zone_device_ops mlxsw_thermal_module_ops = {
+ 	.set_trip_temp	= mlxsw_thermal_module_trip_temp_set,
+ 	.get_trip_hyst	= mlxsw_thermal_module_trip_hyst_get,
+ 	.set_trip_hyst	= mlxsw_thermal_module_trip_hyst_set,
+-	.get_trend	= mlxsw_thermal_module_trend_get,
++	.get_trend	= mlxsw_thermal_trend_get,
+ };
+ 
+ static int mlxsw_thermal_gearbox_temp_get(struct thermal_zone_device *tzdev,
+@@ -599,7 +584,7 @@ static struct thermal_zone_device_ops mlxsw_thermal_gearbox_ops = {
+ 	.set_trip_temp	= mlxsw_thermal_module_trip_temp_set,
+ 	.get_trip_hyst	= mlxsw_thermal_module_trip_hyst_get,
+ 	.set_trip_hyst	= mlxsw_thermal_module_trip_hyst_set,
+-	.get_trend	= mlxsw_thermal_module_trend_get,
++	.get_trend	= mlxsw_thermal_trend_get,
+ };
+ 
+ static int mlxsw_thermal_get_max_state(struct thermal_cooling_device *cdev,
+-- 
+2.25.1
+
