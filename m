@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56835C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDDA6C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233653AbiHAMHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:07:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
+        id S233696AbiHAMH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233618AbiHAMHF (ORCPT
+        with ESMTP id S233656AbiHAMHJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:07:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84BB272A;
-        Mon,  1 Aug 2022 04:55:13 -0700 (PDT)
+        Mon, 1 Aug 2022 08:07:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF71B357D1;
+        Mon,  1 Aug 2022 04:55:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB3ADB81163;
-        Mon,  1 Aug 2022 11:55:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12322C433D6;
-        Mon,  1 Aug 2022 11:55:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C89A261210;
+        Mon,  1 Aug 2022 11:55:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4915C433C1;
+        Mon,  1 Aug 2022 11:55:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354910;
-        bh=tuaWM0RS08UKYD1ZGPzHKRoYPvP0Ao/9TYJpx7LX5Ek=;
+        s=korg; t=1659354916;
+        bh=VA2wohoCImHpJ67x4JVTxx0JPiyhyzHT+u6woSJvBRU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=csvEaXXIQyJk1ld5u7w9NIm0iu3n4cl98KW5peDREWCGDYqVQBS0gfpEzuy8dQiKR
-         JSrgvEKffI0s+d64vZcl1aMVCXENH98hrLDqRgAhkzDjlx51jIN1cm2qSbFc7FwQ9g
-         lS8JPfsNgUPAp0O2GKaPj1wfuYOFTPoDU59ROTLs=
+        b=S3+VNpqk0yV64tZbO5VK4vxK+ByuE8S3N6RdrHPCnATxfH84EbCbPxZPGF2W2g1fl
+         HzSBGKM75ZqRuN1i3yCbJdJcjL+nIA9HQjWHezUO8/dnW1Ews8HDV9h9iHmILuzjkt
+         JarISAZ7U/x6nAfDFrgf5MKz0Oa+IF1Ev7kWfbQI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaewon Kim <jaewon31.kim@samsung.com>,
-        GyeongHwan Hong <gh21.hong@samsung.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Minchan Kim <minchan@kernel.org>, Baoquan He <bhe@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Yong-Taek Lee <ytk.lee@samsung.com>, stable@vger.kerenl.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 64/69] page_alloc: fix invalid watermark check on a negative value
-Date:   Mon,  1 Aug 2022 13:47:28 +0200
-Message-Id: <20220801114137.047337783@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Richter <rric@kernel.org>,
+        Toshi Kani <toshi.kani@hpe.com>, Borislav Petkov <bp@suse.de>,
+        Robert Elliott <elliott@hpe.com>
+Subject: [PATCH 5.15 66/69] EDAC/ghes: Set the DIMM label unconditionally
+Date:   Mon,  1 Aug 2022 13:47:30 +0200
+Message-Id: <20220801114137.129963445@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -55,70 +49,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jaewon Kim <jaewon31.kim@samsung.com>
+From: Toshi Kani <toshi.kani@hpe.com>
 
-commit 9282012fc0aa248b77a69f5eb802b67c5a16bb13 upstream.
+commit 5e2805d5379619c4a2e3ae4994e73b36439f4bad upstream.
 
-There was a report that a task is waiting at the
-throttle_direct_reclaim. The pgscan_direct_throttle in vmstat was
-increasing.
+The commit
 
-This is a bug where zone_watermark_fast returns true even when the free
-is very low. The commit f27ce0e14088 ("page_alloc: consider highatomic
-reserve in watermark fast") changed the watermark fast to consider
-highatomic reserve. But it did not handle a negative value case which
-can be happened when reserved_highatomic pageblock is bigger than the
-actual free.
+  cb51a371d08e ("EDAC/ghes: Setup DIMM label from DMI and use it in error reports")
 
-If watermark is considered as ok for the negative value, allocating
-contexts for order-0 will consume all free pages without direct reclaim,
-and finally free page may become depleted except highatomic free.
+enforced that both the bank and device strings passed to
+dimm_setup_label() are not NULL.
 
-Then allocating contexts may fall into throttle_direct_reclaim. This
-symptom may easily happen in a system where wmark min is low and other
-reclaimers like kswapd does not make free pages quickly.
+However, there are BIOSes, for example on a
 
-Handle the negative case by using MIN.
+  HPE ProLiant DL360 Gen10/ProLiant DL360 Gen10, BIOS U32 03/15/2019
 
-Link: https://lkml.kernel.org/r/20220725095212.25388-1-jaewon31.kim@samsung.com
-Fixes: f27ce0e14088 ("page_alloc: consider highatomic reserve in watermark fast")
-Signed-off-by: Jaewon Kim <jaewon31.kim@samsung.com>
-Reported-by: GyeongHwan Hong <gh21.hong@samsung.com>
-Acked-by: Mel Gorman <mgorman@techsingularity.net>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Baoquan He <bhe@redhat.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Yong-Taek Lee <ytk.lee@samsung.com>
-Cc: <stable@vger.kerenl.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+which don't populate both strings:
+
+  Handle 0x0020, DMI type 17, 84 bytes
+  Memory Device
+          Array Handle: 0x0013
+          Error Information Handle: Not Provided
+          Total Width: 72 bits
+          Data Width: 64 bits
+          Size: 32 GB
+          Form Factor: DIMM
+          Set: None
+          Locator: PROC 1 DIMM 1        <===== device
+          Bank Locator: Not Specified   <===== bank
+
+This results in a buffer overflow because ghes_edac_register() calls
+strlen() on an uninitialized label, which had non-zero values left over
+from krealloc_array():
+
+  detected buffer overflow in __fortify_strlen
+   ------------[ cut here ]------------
+   kernel BUG at lib/string_helpers.c:983!
+   invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+   CPU: 1 PID: 1 Comm: swapper/0 Tainted: G          I       5.18.6-200.fc36.x86_64 #1
+   Hardware name: HPE ProLiant DL360 Gen10/ProLiant DL360 Gen10, BIOS U32 03/15/2019
+   RIP: 0010:fortify_panic
+   ...
+   Call Trace:
+    <TASK>
+    ghes_edac_register.cold
+    ghes_probe
+    platform_probe
+    really_probe
+    __driver_probe_device
+    driver_probe_device
+    __driver_attach
+    ? __device_attach_driver
+    bus_for_each_dev
+    bus_add_driver
+    driver_register
+    acpi_ghes_init
+    acpi_init
+    ? acpi_sleep_proc_init
+    do_one_initcall
+
+The label contains garbage because the commit in Fixes reallocs the
+DIMMs array while scanning the system but doesn't clear the newly
+allocated memory.
+
+Change dimm_setup_label() to always initialize the label to fix the
+issue. Set it to the empty string in case BIOS does not provide both
+bank and device so that ghes_edac_register() can keep the default label
+given by edac_mc_alloc_dimms().
+
+  [ bp: Rewrite commit message. ]
+
+Fixes: b9cae27728d1f ("EDAC/ghes: Scan the system once on driver init")
+Co-developed-by: Robert Richter <rric@kernel.org>
+Signed-off-by: Robert Richter <rric@kernel.org>
+Signed-off-by: Toshi Kani <toshi.kani@hpe.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Tested-by: Robert Elliott <elliott@hpe.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220719220124.760359-1-toshi.kani@hpe.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/page_alloc.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/edac/ghes_edac.c |   11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -3928,11 +3928,15 @@ static inline bool zone_watermark_fast(s
- 	 * need to be calculated.
- 	 */
- 	if (!order) {
--		long fast_free;
-+		long usable_free;
-+		long reserved;
+--- a/drivers/edac/ghes_edac.c
++++ b/drivers/edac/ghes_edac.c
+@@ -101,9 +101,14 @@ static void dimm_setup_label(struct dimm
  
--		fast_free = free_pages;
--		fast_free -= __zone_watermark_unusable_free(z, 0, alloc_flags);
--		if (fast_free > mark + z->lowmem_reserve[highest_zoneidx])
-+		usable_free = free_pages;
-+		reserved = __zone_watermark_unusable_free(z, 0, alloc_flags);
-+
-+		/* reserved may over estimate high-atomic reserves. */
-+		usable_free -= min(usable_free, reserved);
-+		if (usable_free > mark + z->lowmem_reserve[highest_zoneidx])
- 			return true;
- 	}
+ 	dmi_memdev_name(handle, &bank, &device);
  
+-	/* both strings must be non-zero */
+-	if (bank && *bank && device && *device)
+-		snprintf(dimm->label, sizeof(dimm->label), "%s %s", bank, device);
++	/*
++	 * Set to a NULL string when both bank and device are zero. In this case,
++	 * the label assigned by default will be preserved.
++	 */
++	snprintf(dimm->label, sizeof(dimm->label), "%s%s%s",
++		 (bank && *bank) ? bank : "",
++		 (bank && *bank && device && *device) ? " " : "",
++		 (device && *device) ? device : "");
+ }
+ 
+ static void assign_dmi_dimm_info(struct dimm_info *dimm, struct memdev_dmi_entry *entry)
 
 
