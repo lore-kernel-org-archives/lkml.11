@@ -2,96 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B83BDC19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:05:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBCA2C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234099AbiHATFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 15:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52286 "EHLO
+        id S232720AbiHATF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 15:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234530AbiHATE4 (ORCPT
+        with ESMTP id S234514AbiHATEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 15:04:56 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9DF441D17;
-        Mon,  1 Aug 2022 12:03:25 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 271HsHW9025312;
-        Mon, 1 Aug 2022 19:03:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2022-7-12; bh=BbFNxr6tjxw9VIW8unVKeDr44rwjxC/Z2yvXUqJcDCw=;
- b=ueQ0b6ffvGNY0WKaKAxOYt7xHvUnMs4Z4jovAwWFIKcaJJoeKF7jKVyTRzC6FgpXWTlk
- +hNLSa3leeiSHZDYo0ow2K3IIyYOan2TNg4f4VhO9b4eQ17/HQWZbDdbF3NR+2B7szCH
- Pb4hEJaMqw6sSJZbkFwJLsSQl1+D0JuKdgmYgOI/qAofPmaflhwHyvmu9lGl0IRCvXJk
- p8xcUYGciwjbXfsBoRL6uy7RIGOOOwzOoRsjqoNcMFTDxy2Y7XWOFzl1Zx7kGEEFbuve
- 08kZI5xUBCP9U/4mrNN/xsbM7yCwZvTJ+xUfLv6/NrJswP9f/3Rnj/X6soSL30RxiEeo 9Q== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hmw6tcmpa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 01 Aug 2022 19:03:13 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 271I3ag3001480;
-        Mon, 1 Aug 2022 19:03:12 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3hp57qg2c1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 01 Aug 2022 19:03:12 +0000
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 271J3CoW023542;
-        Mon, 1 Aug 2022 19:03:12 GMT
-Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 3hp57qg2bh-1;
-        Mon, 01 Aug 2022 19:03:12 +0000
-From:   Sherry Yang <sherry.yang@oracle.com>
-To:     djwong@kernel.org, dchinner@redhat.com,
-        allison.henderson@oracle.com, chandanrlinux@gmail.com,
-        bfoster@redhat.com
-Cc:     linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sherry.yang@oracle.com
-Subject: [PATCH v1] xfs: initialize error in xfs_defer_finish_one
-Date:   Mon,  1 Aug 2022 12:03:11 -0700
-Message-Id: <20220801190311.65703-1-sherry.yang@oracle.com>
-X-Mailer: git-send-email 2.31.1
+        Mon, 1 Aug 2022 15:04:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F59532EFC;
+        Mon,  1 Aug 2022 12:03:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F09561223;
+        Mon,  1 Aug 2022 19:03:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29A78C433B5;
+        Mon,  1 Aug 2022 19:03:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659380602;
+        bh=lpSj1NNhiHPnDfqWLUp3MPq8+c3a0hP1j7exSHushs0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=b2CwuiVl0jzImDm1oHBbJugY8pm4llok9eXr9FPJWAndLRXqHw5of+xcgv+intrjm
+         H9MJmqVmURpAmZhz9kB7DdEKTtPRv+osEcZp5I1YZqRqmUnoYU8QqwYbizhBpGk98/
+         6+2165JB7VRg2dOpwL5I+frfAgzIszYGl1MKT0O7iAtZzA+zRExFUysSCCQCrPQJhn
+         mLx20NahuwTZBVBrxyl3S0cRowszyndReUUNkwVEBHIuldo4O2+5qDreq9MEXKvTMx
+         OIo2cNC4gIQc7vswqHJ4Taa9kKJcPQBH4j4l5oLJFfLRtRObeTp0l/5frlcnDKcmmk
+         xTvkHzj+ohN4g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-spi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 2/6] spi: spi-rspi: Fix PIO fallback on RZ platforms
+Date:   Mon,  1 Aug 2022 15:03:13 -0400
+Message-Id: <20220801190317.3819520-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220801190317.3819520-1-sashal@kernel.org>
+References: <20220801190317.3819520-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-01_08,2022-08-01_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=999
- adultscore=0 spamscore=0 bulkscore=0 suspectscore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2208010095
-X-Proofpoint-GUID: uNFatD76gB1qiLt5X6VLMjIai8QjcPJx
-X-Proofpoint-ORIG-GUID: uNFatD76gB1qiLt5X6VLMjIai8QjcPJx
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Path through non-void function 'xfs_defer_finish_one' may return error
-uninitialized if no iteration of 'list_for_each_safe' occurs. Fix this
-by initializing error.
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-Fixes: bb47d79750f1 ("xfs: refactor xfs_defer_finish_noroll")
-Cc: stable@vger.kernel.org
-Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
+[ Upstream commit b620aa3a7be346f04ae7789b165937615c6ee8d3 ]
+
+RSPI IP on RZ/{A, G2L} SoC's has the same signal for both interrupt
+and DMA transfer request. Setting DMARS register for DMA transfer
+makes the signal to work as a DMA transfer request signal and
+subsequent interrupt requests to the interrupt controller
+are masked.
+
+PIO fallback does not work as interrupt signal is disabled.
+
+This patch fixes this issue by re-enabling the interrupts by
+calling dmaengine_synchronize().
+
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220721143449.879257-1-biju.das.jz@bp.renesas.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/xfs/libxfs/xfs_defer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/spi/spi-rspi.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/fs/xfs/libxfs/xfs_defer.c b/fs/xfs/libxfs/xfs_defer.c
-index 5a321b783398..3188712ff34e 100644
---- a/fs/xfs/libxfs/xfs_defer.c
-+++ b/fs/xfs/libxfs/xfs_defer.c
-@@ -468,7 +468,7 @@ xfs_defer_finish_one(
- 	const struct xfs_defer_op_type	*ops = defer_op_types[dfp->dfp_type];
- 	struct xfs_btree_cur		*state = NULL;
- 	struct list_head		*li, *n;
--	int				error;
-+	int				error = 0;
- 
- 	trace_xfs_defer_pending_finish(tp->t_mountp, dfp);
- 
+diff --git a/drivers/spi/spi-rspi.c b/drivers/spi/spi-rspi.c
+index 0524741d73b9..8ae2ac40b4b2 100644
+--- a/drivers/spi/spi-rspi.c
++++ b/drivers/spi/spi-rspi.c
+@@ -595,6 +595,10 @@ static int rspi_dma_transfer(struct rspi_data *rspi, struct sg_table *tx,
+ 					       rspi->dma_callbacked, HZ);
+ 	if (ret > 0 && rspi->dma_callbacked) {
+ 		ret = 0;
++		if (tx)
++			dmaengine_synchronize(rspi->ctlr->dma_tx);
++		if (rx)
++			dmaengine_synchronize(rspi->ctlr->dma_rx);
+ 	} else {
+ 		if (!ret) {
+ 			dev_err(&rspi->ctlr->dev, "DMA timeout\n");
 -- 
-2.31.1
+2.35.1
 
