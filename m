@@ -2,192 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF237C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 03:27:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48254C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 03:33:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238752AbiHAD1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 23:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55334 "EHLO
+        id S238760AbiHADd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 23:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237074AbiHAD1N (ORCPT
+        with ESMTP id S229569AbiHADdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 23:27:13 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC212101F8
-        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 20:27:10 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xhao@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VL-ioRj_1659324426;
-Received: from localhost.localdomain(mailfrom:xhao@linux.alibaba.com fp:SMTPD_---0VL-ioRj_1659324426)
-          by smtp.aliyun-inc.com;
-          Mon, 01 Aug 2022 11:27:07 +0800
-From:   Xin Hao <xhao@linux.alibaba.com>
-To:     willy@infradead.org
-Cc:     akpm@linux-foundation.org, adobriyan@gmail.com,
-        keescook@chromium.org, xhao@linux.alibaba.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: [RFC V3 PATCH] mm: add last level page table numa info to /proc/pid/numa_pgtable
-Date:   Mon,  1 Aug 2022 11:27:04 +0800
-Message-Id: <20220801032704.64356-1-xhao@linux.alibaba.com>
-X-Mailer: git-send-email 2.31.0
+        Sun, 31 Jul 2022 23:33:25 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A153D114;
+        Sun, 31 Jul 2022 20:33:23 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2713X22I050303;
+        Sun, 31 Jul 2022 22:33:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1659324782;
+        bh=7B069uNIbizG2Scyb7mJP42slsILM1cjLIHQt/v7SUw=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=wrUhdqh4r7+wfsrQJvKz1GBqjboNkZ1H/Mnemnr63/YIQWeK9Bk6xLoJNxzt40g4r
+         jP3ALc2VEMWhUZRukbBk1cTLljwk2eA3P8NHiD8vOFZ+edLUFvB8JUcASn1cyxGsyv
+         Ebs0DrOHQaZC+E3hm5vMhuz3xqaJ0Fzt/u0Al+yM=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2713X2Wp022620
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sun, 31 Jul 2022 22:33:02 -0500
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Sun, 31
+ Jul 2022 22:33:01 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Sun, 31 Jul 2022 22:33:01 -0500
+Received: from [172.24.157.172] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2713WuJj091250;
+        Sun, 31 Jul 2022 22:32:57 -0500
+Message-ID: <ffe8a97d-0c79-c08f-7cfa-83eb6bbc2d39@ti.com>
+Date:   Mon, 1 Aug 2022 09:02:55 +0530
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.3
+Subject: Re: [PATCH 4/8] drm/tidss: Add support for Dual Link LVDS Bus Format
+Content-Language: en-US
+To:     Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+CC:     Nishanth Menon <nm@ti.com>,
+        Devicetree List <devicetree@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Devarsh Thakkar <devarsht@ti.com>,
+        David Airlie <airlied@linux.ie>,
+        Linux Kernel List <linux-kernel@vger.kernel.org>,
+        DRI Development List <dri-devel@lists.freedesktop.org>,
+        Darren Etheridge <detheridge@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jyri Sarha <jyri.sarha@iki.fi>, Rahul T R <r-ravikumar@ti.com>,
+        Krunal Bhargav <k-bhargav@ti.com>
+References: <20220719080845.22122-1-a-bhatia1@ti.com>
+ <20220719080845.22122-5-a-bhatia1@ti.com>
+ <f2909af1-be23-009b-ba71-34206f099473@ideasonboard.com>
+From:   Aradhya Bhatia <a-bhatia1@ti.com>
+In-Reply-To: <f2909af1-be23-009b-ba71-34206f099473@ideasonboard.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In many data center servers, the shared memory architectures is
-Non-Uniform Memory Access (NUMA), remote numa node data access
-often brings a high latency problem, but what we are easy to ignore
-is that the page table remote numa access, It can also leads to a
-performance degradation.
 
-So there add a new interface in /proc, This will help developers to
-get more info about performance issues if they are caused by cross-NUMA.
 
-V2 -> V3
-1, Fix compile warning bug.
+On 28-Jul-22 16:33, Tomi Valkeinen wrote:
+> On 19/07/2022 11:08, Aradhya Bhatia wrote:
+>> The 2 OLDI TXes in the AM625 SoC can be synced together to output a 2K
+>> resolution video.
+>>
+>> Add support in the driver for the discovery of such a dual mode
+>> connection on the OLDI video port, using the values of "ti,oldi-mode"
+>> property.
+>>
+>> Signed-off-by: Aradhya Bhatia <a-bhatia1@ti.com>
+>> ---
+>>   drivers/gpu/drm/tidss/tidss_dispc.c | 39 +++++++++++++++++++++--------
+>>   1 file changed, 28 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/tidss/tidss_dispc.c 
+>> b/drivers/gpu/drm/tidss/tidss_dispc.c
+>> index add725fa682b..fb1fdecfc83a 100644
+>> --- a/drivers/gpu/drm/tidss/tidss_dispc.c
+>> +++ b/drivers/gpu/drm/tidss/tidss_dispc.c
+>> @@ -853,25 +853,36 @@ void dispc_set_irqenable(struct dispc_device 
+>> *dispc, dispc_irq_t mask)
+>>       }
+>>   }
+>> -enum dispc_oldi_mode_reg_val { SPWG_18 = 0, JEIDA_24 = 1, SPWG_24 = 2 };
+>> +enum dispc_oldi_mode_reg_val {
+>> +    SPWG_18        = 0,
+>> +    JEIDA_24    = 1,
+>> +    SPWG_24        = 2,
+>> +    DL_SPWG_18    = 4,
+>> +    DL_JEIDA_24    = 5,
+>> +    DL_SPWG_24    = 6,
+>> +};
+>>   struct dispc_bus_format {
+>>       u32 bus_fmt;
+>>       u32 data_width;
+>>       bool is_oldi_fmt;
+>> +    bool is_dual_link;
+>>       enum dispc_oldi_mode_reg_val oldi_mode_reg_val;
+>>   };
+>>   static const struct dispc_bus_format dispc_bus_formats[] = {
+>> -    { MEDIA_BUS_FMT_RGB444_1X12,        12, false, 0 },
+>> -    { MEDIA_BUS_FMT_RGB565_1X16,        16, false, 0 },
+>> -    { MEDIA_BUS_FMT_RGB666_1X18,        18, false, 0 },
+>> -    { MEDIA_BUS_FMT_RGB888_1X24,        24, false, 0 },
+>> -    { MEDIA_BUS_FMT_RGB101010_1X30,        30, false, 0 },
+>> -    { MEDIA_BUS_FMT_RGB121212_1X36,        36, false, 0 },
+>> -    { MEDIA_BUS_FMT_RGB666_1X7X3_SPWG,    18, true, SPWG_18 },
+>> -    { MEDIA_BUS_FMT_RGB888_1X7X4_SPWG,    24, true, SPWG_24 },
+>> -    { MEDIA_BUS_FMT_RGB888_1X7X4_JEIDA,    24, true, JEIDA_24 },
+>> +    { MEDIA_BUS_FMT_RGB444_1X12,        12, false, false, 0 },
+>> +    { MEDIA_BUS_FMT_RGB565_1X16,        16, false, false, 0 },
+>> +    { MEDIA_BUS_FMT_RGB666_1X18,        18, false, false, 0 },
+>> +    { MEDIA_BUS_FMT_RGB888_1X24,        24, false, false, 0 },
+>> +    { MEDIA_BUS_FMT_RGB101010_1X30,        30, false, false, 0 },
+>> +    { MEDIA_BUS_FMT_RGB121212_1X36,        36, false, false, 0 },
+>> +    { MEDIA_BUS_FMT_RGB666_1X7X3_SPWG,    18, true, false, SPWG_18 },
+>> +    { MEDIA_BUS_FMT_RGB888_1X7X4_SPWG,    24, true, false, SPWG_24 },
+>> +    { MEDIA_BUS_FMT_RGB888_1X7X4_JEIDA,    24, true, false, JEIDA_24 },
+>> +    { MEDIA_BUS_FMT_RGB666_1X7X3_SPWG,    18, true, true, DL_SPWG_18 },
+>> +    { MEDIA_BUS_FMT_RGB888_1X7X4_SPWG,    24, true, true, DL_SPWG_24 },
+>> +    { MEDIA_BUS_FMT_RGB888_1X7X4_JEIDA,    24, true, true, 
+>> DL_JEIDA_24 },
+>>   };
+> 
+> So the dual link sends two pixels per clock, right? Are there panel or 
+> bridge drivers that support this? My initial thought was that it should 
+> be a new bus format.
+In dual link, we are having 2 OLDI TXes simultaneously send pixels, at a
+fraction of the pixel frequency clock. Both the TXes have their own
+clock lanes and they are in sync.
 
-V1 -> V2
-1, As Matthew Wilcox advise, Simplify the code.
-2, Do some codes format fix.
+At the moment, we are not modeling the OLDI TXes as bridges in the DT,
+nor are the drivers for these written. The tidss driver handles the
+configuration, as the register is inside the DSS video ports address
+space.
 
-V2: https://lore.kernel.org/linux-mm/20220731155223.60238-1-xhao@linux.alibaba.com/
-V1: https://lore.kernel.org/linux-mm/YuVqdcY8Ibib2LJa@casper.infradead.org/T/
+The need to add a dual link field in the above patch is there because
+the OLDI config registers needs to know so. The output from both the
+TXes remains according to the standard bus formats.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Xin Hao <xhao@linux.alibaba.com>
----
- fs/proc/base.c     |  2 ++
- fs/proc/internal.h |  1 +
- fs/proc/task_mmu.c | 87 ++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 90 insertions(+)
-
-diff --git a/fs/proc/base.c b/fs/proc/base.c
-index 8dfa36a99c74..487e82dd3275 100644
---- a/fs/proc/base.c
-+++ b/fs/proc/base.c
-@@ -3224,6 +3224,7 @@ static const struct pid_entry tgid_base_stuff[] = {
- 	REG("maps",       S_IRUGO, proc_pid_maps_operations),
- #ifdef CONFIG_NUMA
- 	REG("numa_maps",  S_IRUGO, proc_pid_numa_maps_operations),
-+	REG("numa_pgtable", S_IRUGO, proc_pid_numa_pgtable_operations),
- #endif
- 	REG("mem",        S_IRUSR|S_IWUSR, proc_mem_operations),
- 	LNK("cwd",        proc_cwd_link),
-@@ -3571,6 +3572,7 @@ static const struct pid_entry tid_base_stuff[] = {
- #endif
- #ifdef CONFIG_NUMA
- 	REG("numa_maps", S_IRUGO, proc_pid_numa_maps_operations),
-+	REG("numa_pgtable", S_IRUGO, proc_pid_numa_pgtable_operations),
- #endif
- 	REG("mem",       S_IRUSR|S_IWUSR, proc_mem_operations),
- 	LNK("cwd",       proc_cwd_link),
-diff --git a/fs/proc/internal.h b/fs/proc/internal.h
-index 06a80f78433d..e7ed9ef097b6 100644
---- a/fs/proc/internal.h
-+++ b/fs/proc/internal.h
-@@ -296,6 +296,7 @@ struct mm_struct *proc_mem_open(struct inode *inode, unsigned int mode);
-
- extern const struct file_operations proc_pid_maps_operations;
- extern const struct file_operations proc_pid_numa_maps_operations;
-+extern const struct file_operations proc_pid_numa_pgtable_operations;
- extern const struct file_operations proc_pid_smaps_operations;
- extern const struct file_operations proc_pid_smaps_rollup_operations;
- extern const struct file_operations proc_clear_refs_operations;
-diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-index 2d04e3470d4c..77b7a49757f5 100644
---- a/fs/proc/task_mmu.c
-+++ b/fs/proc/task_mmu.c
-@@ -1999,4 +1999,91 @@ const struct file_operations proc_pid_numa_maps_operations = {
- 	.release	= proc_map_release,
- };
-
-+struct pgtable_numa_private {
-+	struct proc_maps_private proc_maps;
-+	unsigned long node[MAX_NUMNODES];
-+};
-+
-+static int gather_pgtable_numa_stats(pmd_t *pmd, unsigned long addr,
-+				     unsigned long end, struct mm_walk *walk)
-+{
-+	struct pgtable_numa_private *priv = walk->private;
-+	struct page *page;
-+	int nid;
-+
-+	if (pmd_huge(*pmd)) {
-+		page = virt_to_page(pmd);
-+	} else {
-+		page = pmd_page(*pmd);
-+	}
-+
-+	nid = page_to_nid(page);
-+	priv->node[nid]++;
-+
-+	return 0;
-+}
-+
-+static const struct mm_walk_ops show_numa_pgtable_ops = {
-+	.pmd_entry = gather_pgtable_numa_stats,
-+};
-+
-+/*
-+ * Display the page talbe allocated per node via /proc.
-+ */
-+static int show_numa_pgtable(struct seq_file *m, void *v)
-+{
-+	struct pgtable_numa_private *numa_priv = m->private;
-+	struct vm_area_struct *vma = v;
-+	struct mm_struct *mm = vma->vm_mm;
-+	struct file *file = vma->vm_file;
-+	int nid;
-+
-+	if (!mm)
-+		return 0;
-+
-+	memset(numa_priv->node, 0, sizeof(numa_priv->node));
-+
-+	seq_printf(m, "%08lx ", vma->vm_start);
-+
-+	if (file) {
-+		seq_puts(m, " file=");
-+		seq_file_path(m, file, "\n\t= ");
-+	} else if (vma->vm_start <= mm->brk && vma->vm_end >= mm->start_brk) {
-+		seq_puts(m, " heap");
-+	} else if (is_stack(vma)) {
-+		seq_puts(m, " stack");
-+	}
-+
-+	/* mmap_lock is held by m_start */
-+	walk_page_vma(vma, &show_numa_pgtable_ops, numa_priv);
-+
-+	for_each_node_state(nid, N_MEMORY) {
-+		if (numa_priv->node[nid])
-+			seq_printf(m, " N%d=%lu", nid, numa_priv->node[nid]);
-+	}
-+	seq_putc(m, '\n');
-+
-+	return 0;
-+}
-+
-+static const struct seq_operations proc_pid_numa_pgtable_op = {
-+	.start  = m_start,
-+	.next   = m_next,
-+	.stop   = m_stop,
-+	.show   = show_numa_pgtable,
-+};
-+
-+static int pid_numa_pgtable_open(struct inode *inode, struct file *file)
-+{
-+	return proc_maps_open(inode, file, &proc_pid_numa_pgtable_op,
-+			sizeof(struct pgtable_numa_private));
-+}
-+
-+const struct file_operations proc_pid_numa_pgtable_operations = {
-+	.open		= pid_numa_pgtable_open,
-+	.read		= seq_read,
-+	.llseek		= seq_lseek,
-+	.release	= proc_map_release,
-+};
-+
- #endif /* CONFIG_NUMA */
---
-2.31.0
+Regards
+Aradhya
