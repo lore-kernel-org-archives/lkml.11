@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 169EBC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:17:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA58C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:17:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234125AbiHAMRF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:17:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40600 "EHLO
+        id S234445AbiHAMRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:17:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234422AbiHAMPy (ORCPT
+        with ESMTP id S234475AbiHAMP6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:15:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6814D7AC17;
-        Mon,  1 Aug 2022 04:58:33 -0700 (PDT)
+        Mon, 1 Aug 2022 08:15:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298873E77E;
+        Mon,  1 Aug 2022 04:58:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EDA0AB81171;
-        Mon,  1 Aug 2022 11:58:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 422B2C433C1;
-        Mon,  1 Aug 2022 11:58:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A257C601BD;
+        Mon,  1 Aug 2022 11:58:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AABDDC433C1;
+        Mon,  1 Aug 2022 11:58:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355110;
-        bh=eJKRV90rG1YYkyI0zQh3lPHiACffaEECIn1A0+30NFM=;
+        s=korg; t=1659355116;
+        bh=BQthgXHp2KBr8hYl964q2/BtVKsb92ooOktuAdYPSsw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hFNowBi6OWKyMFe1Yc1XRpzRcfZrp1NJfFGyfb7b/24T2fCCstY139t3uKaxa6lbt
-         oOp1/Cs165Z32tCYsOCmnWrzP+L6ssStveMn41QXpBWIJ8se9qx0E4Pu3+wtSpoGvD
-         BdZY8z6wAE6c5hsYPb4IsBpmWQMdWVc3pt+N9Fps=
+        b=lcC2vh6FM95hZRTO6mrwpNp2T1g504ZR1VZUPWYlr6UHOZk5tVKtyB/sY3Fqy9TIz
+         xsQaKUche6W1u9+ceoQxL/zj58ZEgSeQEQmHjfe6QqF/o78cj7A29iS6LTr47D5iGE
+         5GJN86ywk2vQvP4SapSEERrnkuiEzBq8pdKJZGuE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
-        Benjamin Poirier <bpoirier@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH 5.18 26/88] bridge: Do not send empty IFLA_AF_SPEC attribute
-Date:   Mon,  1 Aug 2022 13:46:40 +0200
-Message-Id: <20220801114139.231282517@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Domingo Dirutigliano <pwnzer0tt1@proton.me>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 69/88] netfilter: nf_queue: do not allow packet truncation below transport header offset
+Date:   Mon,  1 Aug 2022 13:47:23 +0200
+Message-Id: <20220801114141.198676600@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -50,51 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Poirier <bpoirier@nvidia.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit 9b134b1694ec8926926ba6b7b80884ea829245a0 upstream.
+[ Upstream commit 99a63d36cb3ed5ca3aa6fcb64cffbeaf3b0fb164 ]
 
-After commit b6c02ef54913 ("bridge: Netlink interface fix."),
-br_fill_ifinfo() started to send an empty IFLA_AF_SPEC attribute when a
-bridge vlan dump is requested but an interface does not have any vlans
-configured.
+Domingo Dirutigliano and Nicola Guerrera report kernel panic when
+sending nf_queue verdict with 1-byte nfta_payload attribute.
 
-iproute2 ignores such an empty attribute since commit b262a9becbcb
-("bridge: Fix output with empty vlan lists") but older iproute2 versions as
-well as other utilities have their output changed by the cited kernel
-commit, resulting in failed test cases. Regardless, emitting an empty
-attribute is pointless and inefficient.
+The IP/IPv6 stack pulls the IP(v6) header from the packet after the
+input hook.
 
-Avoid this change by canceling the attribute if no AF_SPEC data was added.
+If user truncates the packet below the header size, this skb_pull() will
+result in a malformed skb (skb->len < 0).
 
-Fixes: b6c02ef54913 ("bridge: Netlink interface fix.")
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Benjamin Poirier <bpoirier@nvidia.com>
-Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
-Link: https://lore.kernel.org/r/20220725001236.95062-1-bpoirier@nvidia.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7af4cc3fa158 ("[NETFILTER]: Add "nfnetlink_queue" netfilter queue handler over nfnetlink")
+Reported-by: Domingo Dirutigliano <pwnzer0tt1@proton.me>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Reviewed-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/br_netlink.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ net/netfilter/nfnetlink_queue.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -589,9 +589,13 @@ static int br_fill_ifinfo(struct sk_buff
- 	}
+diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
+index a364f8e5e698..87a9009d5234 100644
+--- a/net/netfilter/nfnetlink_queue.c
++++ b/net/netfilter/nfnetlink_queue.c
+@@ -843,11 +843,16 @@ nfqnl_enqueue_packet(struct nf_queue_entry *entry, unsigned int queuenum)
+ }
  
- done:
-+	if (af) {
-+		if (nlmsg_get_pos(skb) - (void *)af > nla_attr_size(0))
-+			nla_nest_end(skb, af);
-+		else
-+			nla_nest_cancel(skb, af);
-+	}
+ static int
+-nfqnl_mangle(void *data, int data_len, struct nf_queue_entry *e, int diff)
++nfqnl_mangle(void *data, unsigned int data_len, struct nf_queue_entry *e, int diff)
+ {
+ 	struct sk_buff *nskb;
  
--	if (af)
--		nla_nest_end(skb, af);
- 	nlmsg_end(skb, nlh);
- 	return 0;
- 
+ 	if (diff < 0) {
++		unsigned int min_len = skb_transport_offset(e->skb);
++
++		if (data_len < min_len)
++			return -EINVAL;
++
+ 		if (pskb_trim(e->skb, data_len))
+ 			return -ENOMEM;
+ 	} else if (diff > 0) {
+-- 
+2.35.1
+
 
 
