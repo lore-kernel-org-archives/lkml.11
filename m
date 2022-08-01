@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 015D2C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 20:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B79C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 20:56:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234869AbiHAU4H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 16:56:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57512 "EHLO
+        id S234923AbiHAU4N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 16:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234741AbiHAUz7 (ORCPT
+        with ESMTP id S234734AbiHAU4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 16:55:59 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2062.outbound.protection.outlook.com [40.107.243.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6008A2ED71;
-        Mon,  1 Aug 2022 13:55:56 -0700 (PDT)
+        Mon, 1 Aug 2022 16:56:01 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B303F324;
+        Mon,  1 Aug 2022 13:55:58 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WusqwZtznrwu+chpRvIHbQogJTMCSv50ZimvV+XqGHYn3WIuD7FFJ+SXAAGRazGUAtGIxNWG6v0awig928oOOBHuO9Wo806S1rrMgkqplmPNGeh2M/WK5gpbcRKQLwjwEaeIp3riRtiClwB7HNE7T73zYLee9jSuXTmajpCdQnNsgzXb9IudIS9StHAM57kyAu5wodmBv5MPWY43DGQbnddxfd4G5EmxuTs3v7GZxMeq0bJD70q4eXl4I8u5aXzE2I84AIGWEOhT3ehbCvor5bttWjGxnsI7X9gvhahXHp7jcC36MLNMK6fm3gYFMyPw46+ve3synJUyibW8VyGF9Q==
+ b=kPcKQmOrP2R3a0QiITew3kg6dyK6j4reHT8QIuBOLiPFKFAePTkoXcIrbwB3O2+TSezPIrsgJfqBRlR/Wnm3rByou9HNwcybFkWtYtnG/zo+XIJPhV3UggY1CNzzSjWtloCwldpBEFfwNWsz9y5ZHRUW6gES9uNETnELqS/XNC4Z3OC9/VaGWBJw56FE4jSxdzFpc30AKmP3Wb9U4TkSlalHOuHL0Kjf9nBdR3CCJB3EXWN3howmWhPoEZeDR8+VBk5eKh0sv6ZQfzgnw6v3RSGaysBHW2KCByFdZVQzZ+kotFeRV1JV5cmMvtTGShZbY0obprpF2cN7w4PktSre0g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cAPC+/0pPZjLINrW2aMLR421RjOQFbPxaM1soFYrU2o=;
- b=LuX5oGelLhYIle47+W2DniQl9HxHi17y2lJ4DKpUIRl57No+/EKfVnllnpWeoRJzbO6GncMd7owHJfsG3oqCy9Vlby9lM8wnrm9YDxo8JhlaBUVnw65KygaA4Ngr6bcoNELyBXRJd19gPwja+PcXUDf0f8HYBjzr/wHIQ1Lk25Bcef1ueuW8tKQuCLGCOzAvT0EeZIwc21l8pMg3R+y0DYJSsAkZKnFidzv5ldSyjFUm2fEhwIJ0sJPsfc2YotsEx4t3MAdK6qufMQs8rzMwWHS9OmNlus2BxRYELwEs6ZY5DzZsKc2CnJ9g4OLvxBcQXL23L08YIzIYfRXpDlXj8Q==
+ bh=dGcR8Bn9Juihll8qkfXWCv6P5+f9yNxBdpXQUmyEYfI=;
+ b=D1XoyseBIjdOsiHZ1iKyiS8qaNaskwe+svHJ4zb8UeHtxzosSvJZ2IfBabkX2bvrYreUdYNQ9SoC1WijKRavIntvA+rFuy10wCA+oPwOwv8W91zu2NjkxIYKO88kHFIQFJ72hxXcbe+JyzmNAS9cQNkJo76fvNtIC7AqpH4C8GCfZaHA/5ldqIF24ZV1lbc3Ry0mnYXNAfrwCQYbgI50rlU9kxfrTu7b/sWWImBVnLxK4NkCsmKCXxIFUl2zTiR1FTnvoIDXm9Xsv04SoC74kobSFwNHmQ1o6OJS+ywhk0qTLQj5d/8rn1Zy1Cq2PY9Blzkm9cL39Q6bC+l+amFZGw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cAPC+/0pPZjLINrW2aMLR421RjOQFbPxaM1soFYrU2o=;
- b=HIcU935TNXyjMC58Wwa01JLD5cjWGm2VNKz6EBJNtceYSYAr1KjGMQXeetsaclP4tY9fgjxlzziYv+LN+R7WSKE8GZpBHo+cDrRF1SAPbBJaSWhai10OHaeBDA5/waNROMlyYpTLkPx7BAGhaGR050PzIkw7O1N4+uios7ZVNJE=
-Received: from BN8PR04CA0017.namprd04.prod.outlook.com (2603:10b6:408:70::30)
- by MW2PR12MB2362.namprd12.prod.outlook.com (2603:10b6:907:e::26) with
+ bh=dGcR8Bn9Juihll8qkfXWCv6P5+f9yNxBdpXQUmyEYfI=;
+ b=IMp2MuJw7/dP8iPIZN6x7ohNRvdGyuC9ayOdJtrSUKxTbeZeOJjYpDtxyCG4bjcpKM3TFxJDvZeECg8cBvddr/BBvBOWyQJ0cnbPhgHDtClcbbeOo1hFgbf24udQ997xGS3V6/cWPlPD+Hy/ifwemSR521d2L59dcx8MKa4tjMo=
+Received: from BN8PR04CA0004.namprd04.prod.outlook.com (2603:10b6:408:70::17)
+ by BY5PR12MB4193.namprd12.prod.outlook.com (2603:10b6:a03:20c::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.12; Mon, 1 Aug
- 2022 20:55:52 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.6; Mon, 1 Aug
+ 2022 20:55:56 +0000
 Received: from BN8NAM11FT050.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:70:cafe::d5) by BN8PR04CA0017.outlook.office365.com
- (2603:10b6:408:70::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.24 via Frontend
- Transport; Mon, 1 Aug 2022 20:55:52 +0000
+ (2603:10b6:408:70:cafe::e) by BN8PR04CA0004.outlook.office365.com
+ (2603:10b6:408:70::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.13 via Frontend
+ Transport; Mon, 1 Aug 2022 20:55:55 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -49,13 +49,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
  BN8NAM11FT050.mail.protection.outlook.com (10.13.177.5) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5482.10 via Frontend Transport; Mon, 1 Aug 2022 20:55:52 +0000
+ 15.20.5482.10 via Frontend Transport; Mon, 1 Aug 2022 20:55:55 +0000
 Received: from [127.0.1.1] (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 1 Aug
- 2022 15:55:41 -0500
-Subject: [PATCH v2 00/10] x86/resctrl: Support for AMD QoS new features and
- bug fix
+ 2022 15:55:53 -0500
+Subject: [PATCH v2 02/10] x86/cpufeatures: Add Slow Memory Bandwidth
+ Allocation feature flag
 From:   Babu Moger <babu.moger@amd.com>
 To:     <fenghua.yu@intel.com>, <reinette.chatre@intel.com>,
         <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>
@@ -63,8 +63,10 @@ CC:     <eranian@google.com>, <dave.hansen@linux.intel.com>,
         <x86@kernel.org>, <hpa@zytor.com>, <corbet@lwn.net>,
         <hpa@zytor.com>, <linux-kernel@vger.kernel.org>,
         <linux-doc@vger.kernel.org>
-Date:   Mon, 1 Aug 2022 15:55:40 -0500
-Message-ID: <165938717220.724959.10931629283087443782.stgit@bmoger-ubuntu>
+Date:   Mon, 1 Aug 2022 15:55:53 -0500
+Message-ID: <165938735329.724959.1672436410988441536.stgit@bmoger-ubuntu>
+In-Reply-To: <165938717220.724959.10931629283087443782.stgit@bmoger-ubuntu>
+References: <165938717220.724959.10931629283087443782.stgit@bmoger-ubuntu>
 User-Agent: StGit/1.1.dev103+g5369f4c
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -74,54 +76,39 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 964b2e38-e43a-4265-4524-08da74003890
-X-MS-TrafficTypeDiagnostic: MW2PR12MB2362:EE_
+X-MS-Office365-Filtering-Correlation-Id: 317209df-5955-4412-c360-08da74003a7d
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4193:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: slnww9YCOwUoqbGkxYJHB55sZi5271iL+I11KOpHMB2/mvKX+o2hIHy3bjQVTzwKhRxcRTxxkruqpCviEBEqIJPcedqo7QGkx33x/YDRQFuCI+m6eQqYguFj1J4xe7NopwTUVjnOtBguCjRi0VBMdJirEShXHocRVI/wLnIVUfxgfKIGlToNLeOfxgpZn5HcBZtGP+J5pqVzCPkGwKKHqWA7V5jcowcdjk54oYlwMCwfijvtjxkSy8G+FDNMDC/ZwenDfy8CCi2xoUvxpOi+L1i6dfuJa1ZD/XzI3dRIesL4jDuj0rts+Ezk2mD/YpIL+WXD/70sY9rkpDUmbfVGN5sOx0C05K+I+WImoG3Su+CXXqgzGHv7LoIuWyxg6fap/s2A3MwVI990nwogKtwST1l+98a7nG03p10jnLeY7Bt6Q1ML0ZxKjKcDjgr5UsV8kFFoiCxwJxTKqnRFFMpGrxf8IOBW2qhlBg6SWixiwI1JR0hEi9AdQuUngJVg0t0Q06Oh41zjwl+983Nuvt65ovjzTjZzFaGFemniR7NdaJcwOWzy3xYGUVvwACkB50TMJOhsJurIEbjJa7xRrinyhMN1tCPK3ay2XnQBmTW1VVSr+nuYcVC66RiGOAAf+rgUxZF7/bZsFpdRFSEQMNMTDx0FCZm4Bfw0Z464jhceohUWC3IfSfQx34w0tlyM5chBs1OWZiVROx/6kyXujtnIJU9u4cnyFVGzRBQV/IoI5NXIyjzCxe6e/3sNDKxNK8vizxj8Eue1M65LnLYg/29L9i9YLMF7rGKcayYySR5axHhzi5Xk3xQDOyq9fhSjzmy9r2v3soEo5rkDNcj+wQXAj8vwzhst4SrVr06RbWyIGTVtHufnDdx95b70C8S4whjj8pTfJvBZvHJwYFtDFwQdqErYJKJ5m0BPszSUVkZB77VzNsqvY+SLcvJye3BqZwhY
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(7916004)(4636009)(136003)(396003)(39860400002)(376002)(346002)(46966006)(40470700004)(36840700001)(86362001)(110136005)(2906002)(54906003)(40480700001)(81166007)(36860700001)(41300700001)(16576012)(316002)(9686003)(40460700003)(82310400005)(82740400003)(26005)(356005)(426003)(83380400001)(336012)(47076005)(8936002)(7416002)(966005)(33716001)(66574015)(478600001)(70586007)(5660300002)(70206006)(16526019)(44832011)(186003)(103116003)(8676002)(4326008)(71626007)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: qkq9Xt9lrI7mkHX6JposUxItAepU9yTtWNNeNbInyEa69IlweP1ehDe+OoFL2Ow4SO7uuwluTk7HVwHofEgbKOIRVxziQ/ODx21N4yBz4e2IZWlFfAdfKGGLjy0olHlO0SYYVLGfSePKVW5r4PyM62Qp4y2yW+/LPfX2VSR+lyYDu2yjWS2998uIOn5vcIYyU+1id878uQkZm6prk9F9PokgPjZTpjik0emSu4SaNnTuTwsh59MaxNyaOAESs96dLoX0Yo07yz1iCEPjFrah4yH3BBqnDNV+83udZBtLuyPT92ih8oe6vd9KLvjivR85zXJgmjfvdjLlqLJP86KURmHsbNFm8n4pi3Y/KhzqWMojS+F84He19bhfgWcsT5HZypEjrrhfEiqUkmS5u3w9E6P4y3zs6DNWstDjLdBiR8V72XARVTeNArgRBV3OGd3ckcLkKZjPZskXzd6JxRviT6xFEW57mDuW2mVhuynmz/d4edMgQ3sSBeRyqk9sxBla/jozMpNGFp/Kdfc0qXOxQ8CWTv52b+Y2FTPLdJG0gXtVV0IF4xebCFJONmRBvBPqFIwkonh3na86/2s4iofQkpmlKKP7qRlPzdWHGlAyhNYEMVCeJCTmV5pIgRjBKdm8QoaQ3+uk4VAjg78IqzVvcL0+dlDlDlcpo4IzUnnFUSeYJJD2rdqvcMCd4juGvj/hmHdAQXgSDH3fK9t5SpDTh/QauiS7MYu6n0p6WoKDtzV+YgMn9k8ufzz8VPq8dNXVCfrPhDp8yyBTfaSxCIL/XAfKgOfD/qqjBnBM1noaYcVl393yyini4H/zHgD0gZ80fP+eHmJz6OAXNm/UMer5gxW+kx/2tM9/gHfD08UCqb+KR0rOsRLpJ4d5OKkgHsP0pIIG58RYHhM7U5kyae/hZAW3lgUKnrpgWVQ5pGqF8OzrCK7iPbTN9crnF3gDI6ba
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(7916004)(396003)(376002)(39860400002)(346002)(136003)(36840700001)(46966006)(40470700004)(103116003)(36860700001)(81166007)(82740400003)(356005)(9686003)(86362001)(426003)(336012)(47076005)(26005)(83380400001)(16526019)(186003)(110136005)(2906002)(478600001)(41300700001)(54906003)(16576012)(316002)(966005)(7416002)(44832011)(70206006)(70586007)(40460700003)(8676002)(8936002)(5660300002)(4326008)(82310400005)(33716001)(40480700001)(71626007)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Aug 2022 20:55:52.3366
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Aug 2022 20:55:55.5707
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 964b2e38-e43a-4265-4524-08da74003890
+X-MS-Exchange-CrossTenant-Network-Message-Id: 317209df-5955-4412-c360-08da74003a7d
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT050.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2362
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4193
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-New AMD processors can now support following QoS features.=0A=
-1. Slow Memory Bandwidth Con=EF=AC=81guration=0A=
-   With this feature, the QOS enforcement policies can be applied=0A=
-   to the external slow memory connected to the host. QOS enforcement=0A=
-   is accomplished by assigning a Class Of Service (COS) to a processor=0A=
-   and specifying allocations or limits for that COS for each resource=0A=
-   to be allocated.=0A=
+Adds the new AMD feature X86_FEATURE_SMBA. With this feature, the QOS=0A=
+enforcement policies can be applied to external slow memory connected=0A=
+to the host. QOS enforcement is accomplished by assigning a Class Of=0A=
+Service (COS) to a processor and specifying allocations or limits for=0A=
+that COS for each resource to be allocated.=0A=
 =0A=
-2. Bandwidth Monitoring Event Configuration (BMEC)=0A=
-   The bandwidth monitoring events mbm_total_event and mbm_local_event =0A=
-   are set to count all the total and local reads/writes respectively.=0A=
-   With the introduction of slow memory, the two counters are not enough=0A=
-   to count all the different types are memory events. With the feature=0A=
-   BMEC, the users have the option to configure mbm_total_event and=0A=
-   mbm_local_event to count the specific type of events.=0A=
+This feature is identified by the CPUID Function 8000_0020_EBX_x0.=0A=
 =0A=
-   Following are the bitmaps of events supported.=0A=
-   Bits    Description=0A=
-      6       Dirty Victims from the QOS domain to all types of memory=0A=
-      5       Reads to slow memory in the non-local NUMA domain=0A=
-      4       Reads to slow memory in the local NUMA domain=0A=
-      3       Non-temporal writes to non-local NUMA domain=0A=
-      2       Non-temporal writes to local NUMA domain=0A=
-      1       Reads to memory in the non-local NUMA domain=0A=
-      0       Reads to memory in the local NUMA domain=0A=
-=0A=
-This series adds support for these features.=0A=
+CPUID Fn8000_0020_EBX_x0 AMD Bandwidth Enforcement Feature Identifiers (ECX=
+=3D0)=0A=
+Bits    Field Name      Description=0A=
+2       L3SBE           L3 external slow memory bandwidth enforcement=0A=
 =0A=
 Feature description is available in the specification, "AMD64 Technology Pl=
 atform Quality=0A=
@@ -131,50 +118,40 @@ sue Date: February 2022".=0A=
 Link: https://www.amd.com/en/support/tech-docs/amd64-technology-platform-qu=
 ality-service-extensions=0A=
 Link: https://bugzilla.kernel.org/show_bug.cgi?id=3D206537=0A=
-=0A=
-Also added a bugfix submitted by Stephane Eranian.=0A=
-=0A=
+Signed-off-by: Babu Moger <babu.moger@amd.com>=0A=
 ---=0A=
-v2:=0A=
-  a. Rebased the patches to latest stable tree (v5.18.15). Resolved some co=
-nflicts.=0A=
-  b. Added the patch to fix CBM issue on AMD. This was originally discussed=
+ arch/x86/include/asm/cpufeatures.h |    1 +=0A=
+ arch/x86/kernel/cpu/scattered.c    |    1 +=0A=
+ 2 files changed, 2 insertions(+)=0A=
 =0A=
-     https://lore.kernel.org/lkml/20220517001234.3137157-1-eranian@google.c=
-om/=0A=
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpuf=
+eatures.h=0A=
+index a77b915d36a8..14b5cc8da75c 100644=0A=
+--- a/arch/x86/include/asm/cpufeatures.h=0A=
++++ b/arch/x86/include/asm/cpufeatures.h=0A=
+@@ -303,6 +303,7 @@=0A=
+ #define X86_FEATURE_RETHUNK		(11*32+14) /* "" Use REturn THUNK */=0A=
+ #define X86_FEATURE_UNRET		(11*32+15) /* "" AMD BTB untrain return */=0A=
+ #define X86_FEATURE_USE_IBPB_FW		(11*32+16) /* "" Use IBPB during runtime =
+firmware calls */=0A=
++#define X86_FEATURE_SMBA		(11*32+17) /* SLOW Memory Bandwidth Allocation *=
+/=0A=
+ =0A=
+ /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */=
 =0A=
-v1:=0A=
-  https://lore.kernel.org/lkml/165757543252.416408.13547339307237713464.stg=
-it@bmoger-ubuntu/=0A=
+ #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */=0A=
+diff --git a/arch/x86/kernel/cpu/scattered.c b/arch/x86/kernel/cpu/scattere=
+d.c=0A=
+index fd44b54c90d5..885ecf46abb2 100644=0A=
+--- a/arch/x86/kernel/cpu/scattered.c=0A=
++++ b/arch/x86/kernel/cpu/scattered.c=0A=
+@@ -44,6 +44,7 @@ static const struct cpuid_bit cpuid_bits[] =3D {=0A=
+ 	{ X86_FEATURE_CPB,		CPUID_EDX,  9, 0x80000007, 0 },=0A=
+ 	{ X86_FEATURE_PROC_FEEDBACK,    CPUID_EDX, 11, 0x80000007, 0 },=0A=
+ 	{ X86_FEATURE_MBA,		CPUID_EBX,  6, 0x80000008, 0 },=0A=
++	{ X86_FEATURE_SMBA,             CPUID_EBX,  2, 0x80000020, 0 },=0A=
+ 	{ X86_FEATURE_PERFMON_V2,	CPUID_EAX,  0, 0x80000022, 0 },=0A=
+ 	{ 0, 0, 0, 0, 0 }=0A=
+ };=0A=
 =0A=
-Babu Moger (10):=0A=
-      x86/resctrl: Fix min_cbm_bits for AMD=0A=
-      x86/cpufeatures: Add Slow Memory Bandwidth Allocation feature flag=0A=
-      x86/resctrl: Add a new resource type RDT_RESOURCE_SMBA=0A=
-      x86/resctrl: Detect and configure Slow Memory Bandwidth allocation=0A=
-      x86/cpufeatures: Add Bandwidth Monitoring Event Configuration feature=
- flag=0A=
-      x86/resctrl: Introduce mon_configurable to detect Bandwidth Monitorin=
-g Event Configuration=0A=
-      x86/resctrl: Add sysfs interface files to read/write event configurat=
-ion=0A=
-      x86/resctrl: Add the sysfs interface to read the event configuration=
-=0A=
-      x86/resctrl: Add sysfs interface to write the event configuration=0A=
-      Documentation/x86: Update resctrl_ui.rst for new features=0A=
-=0A=
-=0A=
- Documentation/x86/resctrl.rst             | 123 +++++++++++=0A=
- arch/x86/include/asm/cpufeatures.h        |   2 +=0A=
- arch/x86/kernel/cpu/resctrl/core.c        |  70 ++++++-=0A=
- arch/x86/kernel/cpu/resctrl/ctrlmondata.c |   2 +-=0A=
- arch/x86/kernel/cpu/resctrl/internal.h    |  26 +++=0A=
- arch/x86/kernel/cpu/resctrl/monitor.c     |  16 ++=0A=
- arch/x86/kernel/cpu/resctrl/rdtgroup.c    | 237 +++++++++++++++++++++-=0A=
- arch/x86/kernel/cpu/scattered.c           |   2 +=0A=
- include/linux/resctrl.h                   |   1 +=0A=
- 9 files changed, 469 insertions(+), 10 deletions(-)=0A=
-=0A=
---=0A=
-Signature=0A=
 
