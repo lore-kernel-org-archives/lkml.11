@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EF33C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:03:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA529C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233145AbiHAMDa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:03:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34080 "EHLO
+        id S233157AbiHAMDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233692AbiHAMBk (ORCPT
+        with ESMTP id S233750AbiHAMBq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:01:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9E452DE3;
-        Mon,  1 Aug 2022 04:53:42 -0700 (PDT)
+        Mon, 1 Aug 2022 08:01:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D952727;
+        Mon,  1 Aug 2022 04:53:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E066DB81170;
-        Mon,  1 Aug 2022 11:53:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52168C433C1;
-        Mon,  1 Aug 2022 11:53:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7E4761227;
+        Mon,  1 Aug 2022 11:53:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED14C433D6;
+        Mon,  1 Aug 2022 11:53:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354819;
-        bh=WuhQ8glCoCgZcuHqBbEAvdh4TYzU60trc0vQAcMLLBY=;
+        s=korg; t=1659354825;
+        bh=tibhsVDevrLKk51mgxXMlnBRi49+5WF//Mq1yFm4vFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bf63rCi2RjREB1JRX4kXW/oX8PoYCNWTgcAZbRmwvwJMZVP94hZspIyqT01yJBNbT
-         cg33THGbKk1SsnkBRzH8S2PoD0SaNJONgOA/64lUfI4Nkjvnzt8VjOGhTFSrsughuR
-         AxPam/QZ7kiSytRBMwOk50flq37pEVcEdjbu/cd4=
+        b=qISLVCDVjb5wWFt4maGTaeKpykrOvs3KEO9f0wJ0qbpGtlYu7euvcN3d2QkYRDg/7
+         enFgSf7AcItU/2+ZoUWe1a9/zkgHtWvhDIttF68UpU08VZWOwf50yeR8UKq4HtSFdH
+         Q/Z4cMrFxXuHABQtc6guNa1r/O2y7qpFVdJ8U3/4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ziyang Xuan <william.xuanziyang@huawei.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 31/69] ipv6/addrconf: fix a null-ptr-deref bug for ip6_ptr
-Date:   Mon,  1 Aug 2022 13:46:55 +0200
-Message-Id: <20220801114135.774760661@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 33/69] igmp: Fix data-races around sysctl_igmp_qrv.
+Date:   Mon,  1 Aug 2022 13:46:57 +0200
+Message-Id: <20220801114135.859831873@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -50,97 +49,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ziyang Xuan <william.xuanziyang@huawei.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 85f0173df35e5462d89947135a6a5599c6c3ef6f upstream.
+[ Upstream commit 8ebcc62c738f68688ee7c6fec2efe5bc6d3d7e60 ]
 
-Change net device's MTU to smaller than IPV6_MIN_MTU or unregister
-device while matching route. That may trigger null-ptr-deref bug
-for ip6_ptr probability as following.
+While reading sysctl_igmp_qrv, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-=========================================================
-BUG: KASAN: null-ptr-deref in find_match.part.0+0x70/0x134
-Read of size 4 at addr 0000000000000308 by task ping6/263
+This test can be packed into a helper, so such changes will be in the
+follow-up series after net is merged into net-next.
 
-CPU: 2 PID: 263 Comm: ping6 Not tainted 5.19.0-rc7+ #14
-Call trace:
- dump_backtrace+0x1a8/0x230
- show_stack+0x20/0x70
- dump_stack_lvl+0x68/0x84
- print_report+0xc4/0x120
- kasan_report+0x84/0x120
- __asan_load4+0x94/0xd0
- find_match.part.0+0x70/0x134
- __find_rr_leaf+0x408/0x470
- fib6_table_lookup+0x264/0x540
- ip6_pol_route+0xf4/0x260
- ip6_pol_route_output+0x58/0x70
- fib6_rule_lookup+0x1a8/0x330
- ip6_route_output_flags_noref+0xd8/0x1a0
- ip6_route_output_flags+0x58/0x160
- ip6_dst_lookup_tail+0x5b4/0x85c
- ip6_dst_lookup_flow+0x98/0x120
- rawv6_sendmsg+0x49c/0xc70
- inet_sendmsg+0x68/0x94
+  qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
 
-Reproducer as following:
-Firstly, prepare conditions:
-$ip netns add ns1
-$ip netns add ns2
-$ip link add veth1 type veth peer name veth2
-$ip link set veth1 netns ns1
-$ip link set veth2 netns ns2
-$ip netns exec ns1 ip -6 addr add 2001:0db8:0:f101::1/64 dev veth1
-$ip netns exec ns2 ip -6 addr add 2001:0db8:0:f101::2/64 dev veth2
-$ip netns exec ns1 ifconfig veth1 up
-$ip netns exec ns2 ifconfig veth2 up
-$ip netns exec ns1 ip -6 route add 2000::/64 dev veth1 metric 1
-$ip netns exec ns2 ip -6 route add 2001::/64 dev veth2 metric 1
-
-Secondly, execute the following two commands in two ssh windows
-respectively:
-$ip netns exec ns1 sh
-$while true; do ip -6 addr add 2001:0db8:0:f101::1/64 dev veth1; ip -6 route add 2000::/64 dev veth1 metric 1; ping6 2000::2; done
-
-$ip netns exec ns1 sh
-$while true; do ip link set veth1 mtu 1000; ip link set veth1 mtu 1500; sleep 5; done
-
-It is because ip6_ptr has been assigned to NULL in addrconf_ifdown() firstly,
-then ip6_ignore_linkdown() accesses ip6_ptr directly without NULL check.
-
-	cpu0			cpu1
-fib6_table_lookup
-__find_rr_leaf
-			addrconf_notify [ NETDEV_CHANGEMTU ]
-			addrconf_ifdown
-			RCU_INIT_POINTER(dev->ip6_ptr, NULL)
-find_match
-ip6_ignore_linkdown
-
-So we can add NULL check for ip6_ptr before using in ip6_ignore_linkdown() to
-fix the null-ptr-deref bug.
-
-Fixes: dcd1f572954f ("net/ipv6: Remove fib6_idev")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220728013307.656257-1-william.xuanziyang@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a9fe8e29945d ("ipv4: implement igmp_qrv sysctl to tune igmp robustness variable")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/addrconf.h |    3 +++
- 1 file changed, 3 insertions(+)
+ net/ipv4/igmp.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -403,6 +403,9 @@ static inline bool ip6_ignore_linkdown(c
- {
- 	const struct inet6_dev *idev = __in6_dev_get(dev);
- 
-+	if (unlikely(!idev))
-+		return true;
-+
- 	return !!idev->cnf.ignore_routes_with_linkdown;
+diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+index 9f4674244aff..e07d10b2c486 100644
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -827,7 +827,7 @@ static void igmp_ifc_event(struct in_device *in_dev)
+ 	struct net *net = dev_net(in_dev->dev);
+ 	if (IGMP_V1_SEEN(in_dev) || IGMP_V2_SEEN(in_dev))
+ 		return;
+-	WRITE_ONCE(in_dev->mr_ifc_count, in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv);
++	WRITE_ONCE(in_dev->mr_ifc_count, in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv));
+ 	igmp_ifc_start_timer(in_dev, 1);
  }
  
+@@ -1009,7 +1009,7 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
+ 		 * received value was zero, use the default or statically
+ 		 * configured value.
+ 		 */
+-		in_dev->mr_qrv = ih3->qrv ?: net->ipv4.sysctl_igmp_qrv;
++		in_dev->mr_qrv = ih3->qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		in_dev->mr_qi = IGMPV3_QQIC(ih3->qqic)*HZ ?: IGMP_QUERY_INTERVAL;
+ 
+ 		/* RFC3376, 8.3. Query Response Interval:
+@@ -1189,7 +1189,7 @@ static void igmpv3_add_delrec(struct in_device *in_dev, struct ip_mc_list *im,
+ 	pmc->interface = im->interface;
+ 	in_dev_hold(in_dev);
+ 	pmc->multiaddr = im->multiaddr;
+-	pmc->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++	pmc->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 	pmc->sfmode = im->sfmode;
+ 	if (pmc->sfmode == MCAST_INCLUDE) {
+ 		struct ip_sf_list *psf;
+@@ -1240,9 +1240,11 @@ static void igmpv3_del_delrec(struct in_device *in_dev, struct ip_mc_list *im)
+ 			swap(im->tomb, pmc->tomb);
+ 			swap(im->sources, pmc->sources);
+ 			for (psf = im->sources; psf; psf = psf->sf_next)
+-				psf->sf_crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++				psf->sf_crcount = in_dev->mr_qrv ?:
++					READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		} else {
+-			im->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++			im->crcount = in_dev->mr_qrv ?:
++				READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		}
+ 		in_dev_put(pmc->interface);
+ 		kfree_pmc(pmc);
+@@ -1349,7 +1351,7 @@ static void igmp_group_added(struct ip_mc_list *im)
+ 	if (in_dev->dead)
+ 		return;
+ 
+-	im->unsolicit_count = net->ipv4.sysctl_igmp_qrv;
++	im->unsolicit_count = READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 	if (IGMP_V1_SEEN(in_dev) || IGMP_V2_SEEN(in_dev)) {
+ 		spin_lock_bh(&im->lock);
+ 		igmp_start_timer(im, IGMP_INITIAL_REPORT_DELAY);
+@@ -1363,7 +1365,7 @@ static void igmp_group_added(struct ip_mc_list *im)
+ 	 * IN() to IN(A).
+ 	 */
+ 	if (im->sfmode == MCAST_EXCLUDE)
+-		im->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++		im->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 
+ 	igmp_ifc_event(in_dev);
+ #endif
+@@ -1754,7 +1756,7 @@ static void ip_mc_reset(struct in_device *in_dev)
+ 
+ 	in_dev->mr_qi = IGMP_QUERY_INTERVAL;
+ 	in_dev->mr_qri = IGMP_QUERY_RESPONSE_INTERVAL;
+-	in_dev->mr_qrv = net->ipv4.sysctl_igmp_qrv;
++	in_dev->mr_qrv = READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ }
+ #else
+ static void ip_mc_reset(struct in_device *in_dev)
+@@ -1888,7 +1890,7 @@ static int ip_mc_del1_src(struct ip_mc_list *pmc, int sfmode,
+ #ifdef CONFIG_IP_MULTICAST
+ 		if (psf->sf_oldin &&
+ 		    !IGMP_V1_SEEN(in_dev) && !IGMP_V2_SEEN(in_dev)) {
+-			psf->sf_crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++			psf->sf_crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 			psf->sf_next = pmc->tomb;
+ 			pmc->tomb = psf;
+ 			rv = 1;
+@@ -1952,7 +1954,7 @@ static int ip_mc_del_src(struct in_device *in_dev, __be32 *pmca, int sfmode,
+ 		/* filter mode change */
+ 		pmc->sfmode = MCAST_INCLUDE;
+ #ifdef CONFIG_IP_MULTICAST
+-		pmc->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++		pmc->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		WRITE_ONCE(in_dev->mr_ifc_count, pmc->crcount);
+ 		for (psf = pmc->sources; psf; psf = psf->sf_next)
+ 			psf->sf_crcount = 0;
+@@ -2131,7 +2133,7 @@ static int ip_mc_add_src(struct in_device *in_dev, __be32 *pmca, int sfmode,
+ #ifdef CONFIG_IP_MULTICAST
+ 		/* else no filters; keep old mode for reports */
+ 
+-		pmc->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++		pmc->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		WRITE_ONCE(in_dev->mr_ifc_count, pmc->crcount);
+ 		for (psf = pmc->sources; psf; psf = psf->sf_next)
+ 			psf->sf_crcount = 0;
+-- 
+2.35.1
+
 
 
