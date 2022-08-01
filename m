@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FEAAC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:08:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42865C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:08:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233527AbiHAMIk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43564 "EHLO
+        id S233817AbiHAMIn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:08:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233704AbiHAMIM (ORCPT
+        with ESMTP id S233417AbiHAMIO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:08:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF6F6554D;
-        Mon,  1 Aug 2022 04:55:43 -0700 (PDT)
+        Mon, 1 Aug 2022 08:08:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFC54599F;
+        Mon,  1 Aug 2022 04:55:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 175E3B80EAC;
-        Mon,  1 Aug 2022 11:55:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66647C433D6;
-        Mon,  1 Aug 2022 11:55:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00952612D0;
+        Mon,  1 Aug 2022 11:55:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06C52C433C1;
+        Mon,  1 Aug 2022 11:55:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354939;
-        bh=x+kigi7rCL6sNSqk2rscGr1xJcwUdCGThWCHSNNxY44=;
+        s=korg; t=1659354945;
+        bh=mLadbu3800i5r5iIgAG1IyEtKy/YVSLVnQdkYX4SKF4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1MRL7A8Db6mtQZ5UyXd6g9DYPnRHX4hpapqHSnVuJNrLKRuw0l5jxhJRjB4RZBIDR
-         5G5Jh8cZGnrv0OvpojA9lH1ueJnM72/0zzbZEMuww5JAasRnSshQgb8rIp3GY+99CR
-         UamSiYuIY36Qn5W5IdoD5R0h5uNsQdwF7RxAihYE=
+        b=t4Ag6o9L1SCjPvvDIgiuP6gSeODK0FfTOp76uYkQ279VWc6oCrH5FgPZi2D3Qfvkt
+         vg08qB8YExfGmkrUyllJHjsl4aG/1kzOie6n53ZuSoc+YYS7Oya45Vu3Yj1OK6bh31
+         mFp6GTBdiyGhsqvdwM/BoOuGRb2TFAY+e/LUQ5hQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 47/69] tcp: Fix data-races around sk_pacing_rate.
-Date:   Mon,  1 Aug 2022 13:47:11 +0200
-Message-Id: <20220801114136.378943057@linuxfoundation.org>
+Subject: [PATCH 5.15 49/69] tcp: Fix a data-race around sysctl_tcp_comp_sack_delay_ns.
+Date:   Mon,  1 Aug 2022 13:47:13 +0200
+Message-Id: <20220801114136.458289877@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -51,35 +51,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 59bf6c65a09fff74215517aecffbbdcd67df76e3 ]
+[ Upstream commit 4866b2b0f7672b6d760c4b8ece6fb56f965dcc8a ]
 
-While reading sysctl_tcp_pacing_(ss|ca)_ratio, they can be changed
-concurrently.  Thus, we need to add READ_ONCE() to their readers.
+While reading sysctl_tcp_comp_sack_delay_ns, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 43e122b014c9 ("tcp: refine pacing rate determination")
+Fixes: 6d82aa242092 ("tcp: add tcp_comp_sack_delay_ns sysctl")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_input.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_input.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 018be3f346e6..566745f527fe 100644
+index e007bdc20e82..486ca1d5b436 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -902,9 +902,9 @@ static void tcp_update_pacing_rate(struct sock *sk)
- 	 *	 end of slow start and should slow down.
- 	 */
- 	if (tcp_snd_cwnd(tp) < tp->snd_ssthresh / 2)
--		rate *= sock_net(sk)->ipv4.sysctl_tcp_pacing_ss_ratio;
-+		rate *= READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_pacing_ss_ratio);
- 	else
--		rate *= sock_net(sk)->ipv4.sysctl_tcp_pacing_ca_ratio;
-+		rate *= READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_pacing_ca_ratio);
+@@ -5512,7 +5512,8 @@ static void __tcp_ack_snd_check(struct sock *sk, int ofo_possible)
+ 	if (tp->srtt_us && tp->srtt_us < rtt)
+ 		rtt = tp->srtt_us;
  
- 	rate *= max(tcp_snd_cwnd(tp), tp->packets_out);
- 
+-	delay = min_t(unsigned long, sock_net(sk)->ipv4.sysctl_tcp_comp_sack_delay_ns,
++	delay = min_t(unsigned long,
++		      READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_comp_sack_delay_ns),
+ 		      rtt * (NSEC_PER_USEC >> 3)/20);
+ 	sock_hold(sk);
+ 	hrtimer_start_range_ns(&tp->compressed_ack_timer, ns_to_ktime(delay),
 -- 
 2.35.1
 
