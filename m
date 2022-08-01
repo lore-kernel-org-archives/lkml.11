@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A5DC19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 350FFC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:48:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231529AbiHALsY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:48:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34192 "EHLO
+        id S230350AbiHALs1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:48:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230341AbiHALsS (ORCPT
+        with ESMTP id S231490AbiHALsS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 1 Aug 2022 07:48:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF9D3718A;
-        Mon,  1 Aug 2022 04:48:09 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7036371A4;
+        Mon,  1 Aug 2022 04:48:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06497B8116B;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20725612D1;
+        Mon,  1 Aug 2022 11:48:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02F9CC433C1;
         Mon,  1 Aug 2022 11:48:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 521E7C433C1;
-        Mon,  1 Aug 2022 11:48:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354486;
-        bh=5jsYKvFithK8eTXHWGltLi44W3zkQVTfFRkqq2VC5c8=;
+        s=korg; t=1659354489;
+        bh=EOul90MskSWn6XeK6wDr/oY0DuWr8HwC3vEHSZhflBk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TzR+FNHfJt72BRrJ0oSDNYyEOK0/IQu3UenVItKOBZdxYoUHeVfL2X6c5FJWYiMlA
-         lzpDBAP8u958Y9PzaSBRftXdbxgzJgIpb9+XzbSbioLPMsIWnPq0GUlpDTzf7BkerI
-         V9olSd6ZKTnaAf4V3TzZPToS8JG1bH7P9HIHGIB0=
+        b=d0PCDyQ0yTxyoXy8zry0zINy6sWFWCsW/g2uh87iLcrrpwY162nxphWj9puWdBlP0
+         JISn3zbiQXyRM4qgNDIeL82Z9qAOWiVo3bd3au+kGF9DewHnTtkaCjgqzoL+GD6RIJ
+         zf6DiginYvIJRk3OoWv3eZ1NefRUscv4ifJ2z2h0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 13/34] tcp: Fix a data-race around sysctl_tcp_challenge_ack_limit.
-Date:   Mon,  1 Aug 2022 13:46:53 +0200
-Message-Id: <20220801114128.544074282@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com,
+        Ayushman Dutta <ayudutta@amazon.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 14/34] net: ping6: Fix memleak in ipv6_renew_options().
+Date:   Mon,  1 Aug 2022 13:46:54 +0200
+Message-Id: <20220801114128.583899296@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114128.025615151@linuxfoundation.org>
 References: <20220801114128.025615151@linuxfoundation.org>
@@ -50,29 +55,103 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit db3815a2fa691da145cfbe834584f31ad75df9ff upstream.
+commit e27326009a3d247b831eda38878c777f6f4eb3d1 upstream.
 
-While reading sysctl_tcp_challenge_ack_limit, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its reader.
+When we close ping6 sockets, some resources are left unfreed because
+pingv6_prot is missing sk->sk_prot->destroy().  As reported by
+syzbot [0], just three syscalls leak 96 bytes and easily cause OOM.
 
-Fixes: 282f23c6ee34 ("tcp: implement RFC 5961 3.2")
+    struct ipv6_sr_hdr *hdr;
+    char data[24] = {0};
+    int fd;
+
+    hdr = (struct ipv6_sr_hdr *)data;
+    hdr->hdrlen = 2;
+    hdr->type = IPV6_SRCRT_TYPE_4;
+
+    fd = socket(AF_INET6, SOCK_DGRAM, NEXTHDR_ICMP);
+    setsockopt(fd, IPPROTO_IPV6, IPV6_RTHDR, data, 24);
+    close(fd);
+
+To fix memory leaks, let's add a destroy function.
+
+Note the socket() syscall checks if the GID is within the range of
+net.ipv4.ping_group_range.  The default value is [1, 0] so that no
+GID meets the condition (1 <= GID <= 0).  Thus, the local DoS does
+not succeed until we change the default value.  However, at least
+Ubuntu/Fedora/RHEL loosen it.
+
+    $ cat /usr/lib/sysctl.d/50-default.conf
+    ...
+    -net.ipv4.ping_group_range = 0 2147483647
+
+Also, there could be another path reported with these options, and
+some of them require CAP_NET_RAW.
+
+  setsockopt
+      IPV6_ADDRFORM (inet6_sk(sk)->pktoptions)
+      IPV6_RECVPATHMTU (inet6_sk(sk)->rxpmtu)
+      IPV6_HOPOPTS (inet6_sk(sk)->opt)
+      IPV6_RTHDRDSTOPTS (inet6_sk(sk)->opt)
+      IPV6_RTHDR (inet6_sk(sk)->opt)
+      IPV6_DSTOPTS (inet6_sk(sk)->opt)
+      IPV6_2292PKTOPTIONS (inet6_sk(sk)->opt)
+
+  getsockopt
+      IPV6_FLOWLABEL_MGR (inet6_sk(sk)->ipv6_fl_list)
+
+For the record, I left a different splat with syzbot's one.
+
+  unreferenced object 0xffff888006270c60 (size 96):
+    comm "repro2", pid 231, jiffies 4294696626 (age 13.118s)
+    hex dump (first 32 bytes):
+      01 00 00 00 44 00 00 00 00 00 00 00 00 00 00 00  ....D...........
+      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    backtrace:
+      [<00000000f6bc7ea9>] sock_kmalloc (net/core/sock.c:2564 net/core/sock.c:2554)
+      [<000000006d699550>] do_ipv6_setsockopt.constprop.0 (net/ipv6/ipv6_sockglue.c:715)
+      [<00000000c3c3b1f5>] ipv6_setsockopt (net/ipv6/ipv6_sockglue.c:1024)
+      [<000000007096a025>] __sys_setsockopt (net/socket.c:2254)
+      [<000000003a8ff47b>] __x64_sys_setsockopt (net/socket.c:2265 net/socket.c:2262 net/socket.c:2262)
+      [<000000007c409dcb>] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80)
+      [<00000000e939c4a9>] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:120)
+
+[0]: https://syzkaller.appspot.com/bug?extid=a8430774139ec3ab7176
+
+Fixes: 6d0bfe226116 ("net: ipv6: Add IPv6 support to the ping socket.")
+Reported-by: syzbot+a8430774139ec3ab7176@syzkaller.appspotmail.com
+Reported-by: Ayushman Dutta <ayudutta@amazon.com>
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220728012220.46918-1-kuniyu@amazon.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_input.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv6/ping.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -3484,7 +3484,7 @@ static void tcp_send_challenge_ack(struc
- 	/* Then check host-wide RFC 5961 rate limit. */
- 	now = jiffies / HZ;
- 	if (now != challenge_timestamp) {
--		u32 ack_limit = net->ipv4.sysctl_tcp_challenge_ack_limit;
-+		u32 ack_limit = READ_ONCE(net->ipv4.sysctl_tcp_challenge_ack_limit);
- 		u32 half = (ack_limit + 1) >> 1;
+--- a/net/ipv6/ping.c
++++ b/net/ipv6/ping.c
+@@ -22,6 +22,11 @@
+ #include <linux/proc_fs.h>
+ #include <net/ping.h>
  
- 		challenge_timestamp = now;
++static void ping_v6_destroy(struct sock *sk)
++{
++	inet6_destroy_sock(sk);
++}
++
+ /* Compatibility glue so we can support IPv6 when it's compiled as a module */
+ static int dummy_ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
+ 				 int *addr_len)
+@@ -165,6 +170,7 @@ struct proto pingv6_prot = {
+ 	.owner =	THIS_MODULE,
+ 	.init =		ping_init_sock,
+ 	.close =	ping_close,
++	.destroy =	ping_v6_destroy,
+ 	.connect =	ip6_datagram_connect_v6_only,
+ 	.disconnect =	__udp_disconnect,
+ 	.setsockopt =	ipv6_setsockopt,
 
 
