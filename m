@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6BE4C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F28AEC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 19:06:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234534AbiHATGD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 15:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53228 "EHLO
+        id S234638AbiHATGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 15:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234520AbiHATEy (ORCPT
+        with ESMTP id S234054AbiHATEz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 15:04:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC0532452;
-        Mon,  1 Aug 2022 12:03:23 -0700 (PDT)
+        Mon, 1 Aug 2022 15:04:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A492E3343F;
+        Mon,  1 Aug 2022 12:03:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB541B81628;
-        Mon,  1 Aug 2022 19:03:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A66AC433D6;
-        Mon,  1 Aug 2022 19:03:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E1FDB81645;
+        Mon,  1 Aug 2022 19:03:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 968C4C43470;
+        Mon,  1 Aug 2022 19:03:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659380600;
-        bh=WO0Is6Ap7HPT+oMAFCBFYAkwz657lC7CvErEigQn9to=;
-        h=From:To:Cc:Subject:Date:From;
-        b=HcM6yjNbxNIpULQ1Ko1vSEx0o2o/42zXGAO/vipKMbQHr78lyesCUPAgAdEbSKzxV
-         lCXzXADMlxpv0soXbDSFIN0CdmjSRYi7iks1pvYj0KLf6hJKdPdwBThs+gB2VMd+Zr
-         7WlFAqEvzq5I1fwgzNzGQPRXyiNomBif8J0sLxvs7dQIm2XyE+6z8jk7D2J4gJp4DJ
-         eAFUBgHCkrY21+kx+x/rHY41h8/63zcnaY8tWfSJijcUKoAKustZH7czueFGAO7kny
-         gZ/nZ5vDV1+iURmFNPV98k/QZR/TISny9S+poaVGuIn4LjPPLG6jDMHw99qQ4PkOLi
-         GHdQAv1mcytdg==
+        s=k20201202; t=1659380603;
+        bh=Vk1fyfOrmClDp1ULmnoVQSdLcNlKkxopQ7DU/cAEJ3g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=d5/E6pEP+zuhEfvyWTGMPkZTLrXBeWh3KyoRBRgGuBNmwm7Li40wKLwKideCqjVsq
+         dvVUW3ZYz9b1JbCvhl5aOAhblkN4G5jnV2IN2xOzNi8D5kfab0OlJ/vEWv2bp8ne2L
+         ckCwOEx3LZI2/gsnIx4HfUdGEMWBuUf7PsAIarErPoya8AHJHosuS6jvYHFl7Tan9h
+         RMpiBpERdQivoo6p92CIdOPmLH8oIv8J0VIxlEtTi5h5bF7NYioU9Ezc9VSN8iIait
+         zm85QjMyBGrxcqxRHIoAsJC1k81nvEnJodw/sCdI1PKgF9DmZz/rMaKdjIsRJ5EJ6F
+         pjB+4VCqtviJg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     ChenXiaoSong <chenxiaosong2@huawei.com>,
-        Hawkins Jiawei <yin31149@gmail.com>,
-        Anton Altaparmakov <anton@tuxera.com>,
-        Yongqiang Liu <liuyongqiang13@huawei.com>,
-        Zhang Yi <yi.zhang@huawei.com>,
-        Zhang Xiaoxu <zhangxiaoxu5@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-ntfs-dev@lists.sourceforge.net
-Subject: [PATCH AUTOSEL 5.4 1/6] ntfs: fix use-after-free in ntfs_ucsncmp()
-Date:   Mon,  1 Aug 2022 15:03:12 -0400
-Message-Id: <20220801190317.3819520-1-sashal@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, aneesh.kumar@linux.ibm.com,
+        npiggin@gmail.com, linux-arch@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH AUTOSEL 5.4 3/6] mmu_gather: Let there be one tlb_{start,end}_vma() implementation
+Date:   Mon,  1 Aug 2022 15:03:14 -0400
+Message-Id: <20220801190317.3819520-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220801190317.3819520-1-sashal@kernel.org>
+References: <20220801190317.3819520-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,110 +53,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChenXiaoSong <chenxiaosong2@huawei.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 38c9c22a85aeed28d0831f230136e9cf6fa2ed44 ]
+[ Upstream commit 18ba064e42df3661e196ab58a23931fc732a420b ]
 
-Syzkaller reported use-after-free bug as follows:
+Now that architectures are no longer allowed to override
+tlb_{start,end}_vma() re-arrange code so that there is only one
+implementation for each of these functions.
 
-==================================================================
-BUG: KASAN: use-after-free in ntfs_ucsncmp+0x123/0x130
-Read of size 2 at addr ffff8880751acee8 by task a.out/879
+This much simplifies trying to figure out what they actually do.
 
-CPU: 7 PID: 879 Comm: a.out Not tainted 5.19.0-rc4-next-20220630-00001-gcc5218c8bd2c-dirty #7
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x1c0/0x2b0
- print_address_description.constprop.0.cold+0xd4/0x484
- print_report.cold+0x55/0x232
- kasan_report+0xbf/0xf0
- ntfs_ucsncmp+0x123/0x130
- ntfs_are_names_equal.cold+0x2b/0x41
- ntfs_attr_find+0x43b/0xb90
- ntfs_attr_lookup+0x16d/0x1e0
- ntfs_read_locked_attr_inode+0x4aa/0x2360
- ntfs_attr_iget+0x1af/0x220
- ntfs_read_locked_inode+0x246c/0x5120
- ntfs_iget+0x132/0x180
- load_system_files+0x1cc6/0x3480
- ntfs_fill_super+0xa66/0x1cf0
- mount_bdev+0x38d/0x460
- legacy_get_tree+0x10d/0x220
- vfs_get_tree+0x93/0x300
- do_new_mount+0x2da/0x6d0
- path_mount+0x496/0x19d0
- __x64_sys_mount+0x284/0x300
- do_syscall_64+0x3b/0xc0
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f3f2118d9ea
-Code: 48 8b 0d a9 f4 0b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 76 f4 0b 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffc269deac8 EFLAGS: 00000202 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f3f2118d9ea
-RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ffc269dec00
-RBP: 00007ffc269dec80 R08: 00007ffc269deb00 R09: 00007ffc269dec44
-R10: 0000000000000000 R11: 0000000000000202 R12: 000055f81ab1d220
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-
-The buggy address belongs to the physical page:
-page:0000000085430378 refcount:1 mapcount:1 mapping:0000000000000000 index:0x555c6a81d pfn:0x751ac
-memcg:ffff888101f7e180
-anon flags: 0xfffffc00a0014(uptodate|lru|mappedtodisk|swapbacked|node=0|zone=1|lastcpupid=0x1fffff)
-raw: 000fffffc00a0014 ffffea0001bf2988 ffffea0001de2448 ffff88801712e201
-raw: 0000000555c6a81d 0000000000000000 0000000100000000 ffff888101f7e180
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8880751acd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880751ace00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8880751ace80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-                                                          ^
- ffff8880751acf00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880751acf80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-==================================================================
-
-The reason is that struct ATTR_RECORD->name_offset is 6485, end address of
-name string is out of bounds.
-
-Fix this by adding sanity check on end address of attribute name string.
-
-[akpm@linux-foundation.org: coding-style cleanups]
-[chenxiaosong2@huawei.com: cleanup suggested by Hawkins Jiawei]
-  Link: https://lkml.kernel.org/r/20220709064511.3304299-1-chenxiaosong2@huawei.com
-Link: https://lkml.kernel.org/r/20220707105329.4020708-1-chenxiaosong2@huawei.com
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
-Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
-Cc: Anton Altaparmakov <anton@tuxera.com>
-Cc: ChenXiaoSong <chenxiaosong2@huawei.com>
-Cc: Yongqiang Liu <liuyongqiang13@huawei.com>
-Cc: Zhang Yi <yi.zhang@huawei.com>
-Cc: Zhang Xiaoxu <zhangxiaoxu5@huawei.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Will Deacon <will@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ntfs/attrib.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ include/asm-generic/tlb.h | 15 ++-------------
+ 1 file changed, 2 insertions(+), 13 deletions(-)
 
-diff --git a/fs/ntfs/attrib.c b/fs/ntfs/attrib.c
-index d563abc3e136..914e99173130 100644
---- a/fs/ntfs/attrib.c
-+++ b/fs/ntfs/attrib.c
-@@ -592,8 +592,12 @@ static int ntfs_attr_find(const ATTR_TYPE type, const ntfschar *name,
- 		a = (ATTR_RECORD*)((u8*)ctx->attr +
- 				le32_to_cpu(ctx->attr->length));
- 	for (;;	a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
--		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > (u8*)ctx->mrec +
--				le32_to_cpu(ctx->mrec->bytes_allocated))
-+		u8 *mrec_end = (u8 *)ctx->mrec +
-+		               le32_to_cpu(ctx->mrec->bytes_allocated);
-+		u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
-+			       a->name_length * sizeof(ntfschar);
-+		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
-+		    name_end > mrec_end)
- 			break;
- 		ctx->attr = a;
- 		if (unlikely(le32_to_cpu(a->type) > le32_to_cpu(type) ||
+diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
+index 268674c1d568..fe05a8562c52 100644
+--- a/include/asm-generic/tlb.h
++++ b/include/asm-generic/tlb.h
+@@ -321,8 +321,8 @@ static inline void __tlb_reset_range(struct mmu_gather *tlb)
+ 
+ #ifdef CONFIG_MMU_GATHER_NO_RANGE
+ 
+-#if defined(tlb_flush) || defined(tlb_start_vma) || defined(tlb_end_vma)
+-#error MMU_GATHER_NO_RANGE relies on default tlb_flush(), tlb_start_vma() and tlb_end_vma()
++#if defined(tlb_flush)
++#error MMU_GATHER_NO_RANGE relies on default tlb_flush()
+ #endif
+ 
+ /*
+@@ -342,17 +342,10 @@ static inline void tlb_flush(struct mmu_gather *tlb)
+ static inline void
+ tlb_update_vma_flags(struct mmu_gather *tlb, struct vm_area_struct *vma) { }
+ 
+-#define tlb_end_vma tlb_end_vma
+-static inline void tlb_end_vma(struct mmu_gather *tlb, struct vm_area_struct *vma) { }
+-
+ #else /* CONFIG_MMU_GATHER_NO_RANGE */
+ 
+ #ifndef tlb_flush
+ 
+-#if defined(tlb_start_vma) || defined(tlb_end_vma)
+-#error Default tlb_flush() relies on default tlb_start_vma() and tlb_end_vma()
+-#endif
+-
+ /*
+  * When an architecture does not provide its own tlb_flush() implementation
+  * but does have a reasonably efficient flush_vma_range() implementation
+@@ -468,7 +461,6 @@ static inline unsigned long tlb_get_unmap_size(struct mmu_gather *tlb)
+  * case where we're doing a full MM flush.  When we're doing a munmap,
+  * the vmas are adjusted to only cover the region to be torn down.
+  */
+-#ifndef tlb_start_vma
+ static inline void tlb_start_vma(struct mmu_gather *tlb, struct vm_area_struct *vma)
+ {
+ 	if (tlb->fullmm)
+@@ -477,9 +469,7 @@ static inline void tlb_start_vma(struct mmu_gather *tlb, struct vm_area_struct *
+ 	tlb_update_vma_flags(tlb, vma);
+ 	flush_cache_range(vma, vma->vm_start, vma->vm_end);
+ }
+-#endif
+ 
+-#ifndef tlb_end_vma
+ static inline void tlb_end_vma(struct mmu_gather *tlb, struct vm_area_struct *vma)
+ {
+ 	if (tlb->fullmm)
+@@ -493,7 +483,6 @@ static inline void tlb_end_vma(struct mmu_gather *tlb, struct vm_area_struct *vm
+ 	 */
+ 	tlb_flush_mmu_tlbonly(tlb);
+ }
+-#endif
+ 
+ /*
+  * tlb_flush_{pte|pmd|pud|p4d}_range() adjust the tlb->start and tlb->end,
 -- 
 2.35.1
 
