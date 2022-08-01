@@ -2,222 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33EA6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 01:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56155C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 01:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239087AbiHABjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 31 Jul 2022 21:39:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48032 "EHLO
+        id S238912AbiHABkm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 31 Jul 2022 21:40:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238779AbiHABim (ORCPT
+        with ESMTP id S239055AbiHABkX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 31 Jul 2022 21:38:42 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7FB711C04;
-        Sun, 31 Jul 2022 18:38:41 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 02122320070D;
-        Sun, 31 Jul 2022 21:38:39 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Sun, 31 Jul 2022 21:38:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm3; t=1659317919; x=1659404319; bh=oS
-        FTQojBZ/1qGNcUG/xxkjgz71sl82f+LgDJhWiGZqU=; b=pb3sFrip5okyDi1vzq
-        rFD56uavUvzVIs2skzmLy270uvhJbpu8kGI8xaZFis9UFlbRjZ15f+ujPF0aYjxA
-        QhoHz+3AZ1jypYhhAFkwi+Ehl/yD8MYbbugWaddPh+D60NVPw9sErWA0tdD6o9Oy
-        bUUrK+2j7QESs+gMuu+C4V/72OrkVGkTOu3edZ3WGF8x4fq/4JIVU6EGIsoVqUcH
-        cvI/3MeJcXCLXS/oxP5HsJBErzGAsUwsCrUO2EapCztBV89x7Up187hYKoVnF7Cg
-        uOaUhTX4LDe9z+UvOqHRj9eYAiqek1CuO6PUc6TCGCCpsfwWrzVjC0Xpq9vyZtMN
-        4cMQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; t=1659317919; x=1659404319; bh=oSFTQojBZ/1qG
-        NcUG/xxkjgz71sl82f+LgDJhWiGZqU=; b=zXtAJJoKRiKCzdoRvahlX09cNLdj9
-        SPFFWVl01J8A83cBneacsWx+EV3Qaczjh5UuGMkVlUaS8Qqrpbrkyj7LGvSRklgM
-        qFzkZUAJg8apv+mcpyOX8qqCrBg6zXa8CWnHHdqVxhpUqjnE71/DuS7tQhjnlWUn
-        2vZHfgHaxvRasp7G1DZnc+dpXcCwXk95xlo9pqeQM74HMQ1svHMFAdPxt8SidoBV
-        N+9vnJwonnuPUFU0kYkLe5RNSzwDf+czjX1gvAaMHrGJNmip/hjDmoAuJ1oPyFgJ
-        crNabezgQGJLVnOl1rV0Hf0/h5bpYhgcs4f6bYJP5Dne5CcMJuEDp18XA==
-X-ME-Sender: <xms:ny7nYtYpP2i9r921-iEyEYC7DjKFBeE8SXvzPt8i--MeiyZ3-vXYRg>
-    <xme:ny7nYkYwuY_bwAXY8PIkAjgc4-rLF3fphdI2aLNqCEbq7B3sZhTFizs_iX-lCfqfD
-    hAl8NH9djwLtSOoxg>
-X-ME-Received: <xmr:ny7nYv_JIL9nZxrouzuSxipdhhLD71__jGIOcdBTFw5wGxSMTH9MArqzRsmWjHG1q-_MRjGHClnYzkUuCbQ2y79xg7yZFK2GRbaa8m2b2R33jUMM4gXlYJY8Ibfw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddvvddggedtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomheptehnughr
-    vghsucfhrhgvuhhnugcuoegrnhgurhgvshesrghnrghrrgiivghlrdguvgeqnecuggftrf
-    grthhtvghrnhepleejgfdvfefhudektddtveegtdekieegffdtkeeljeetudevffeltdei
-    feeugeeinecuffhomhgrihhnpehsohhurhgtvgifrghrvgdrohhrghdpkhgvrhhnvghlrd
-    horhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhep
-    rghnughrvghssegrnhgrrhgriigvlhdruggv
-X-ME-Proxy: <xmx:ny7nYrqHaHSR4UCJJ_IPf3e82HvCe8BCmDvMHuyjB675Z3_kA2MUqQ>
-    <xmx:ny7nYoqqLiIeoNfkE0ee6WXg4RGwNav9ct1fnL-h1kNk7geOoTnwKA>
-    <xmx:ny7nYhQ1Nd9nNO6TjGAicgjmHVTN37P1Z3PIXPT0__5xwvmVf4CNcg>
-    <xmx:ny7nYpewwtahoNWuoeYXhRwKkDbLLawAEdMjRVYzlyYizYN0Pa-Zig>
-Feedback-ID: id4a34324:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 31 Jul 2022 21:38:38 -0400 (EDT)
-From:   Andres Freund <andres@anarazel.de>
-To:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Ben Hutchings <benh@debian.org>
-Subject: [PATCH v3 7/8] tools bpftool: Fix compilation error with new binutils
-Date:   Sun, 31 Jul 2022 18:38:33 -0700
-Message-Id: <20220801013834.156015-8-andres@anarazel.de>
-X-Mailer: git-send-email 2.37.0.3.g30cc8d0f14
-In-Reply-To: <20220801013834.156015-1-andres@anarazel.de>
-References: <20220622231624.t63bkmkzphqvh3kx@alap3.anarazel.de>
- <20220801013834.156015-1-andres@anarazel.de>
+        Sun, 31 Jul 2022 21:40:23 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5CB13E98;
+        Sun, 31 Jul 2022 18:39:31 -0700 (PDT)
+X-UUID: 213dae2b2dec447c8b97c3e895659d9e-20220801
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:ae1fe426-8d54-41d4-b68e-b743b9e7b799,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:0f94e32,CLOUDID:b6fbe4cf-a6cf-4fb6-be1b-c60094821ca2,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 213dae2b2dec447c8b97c3e895659d9e-20220801
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <jianjun.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 754513474; Mon, 01 Aug 2022 09:39:24 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Mon, 1 Aug 2022 09:39:23 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Mon, 1 Aug 2022 09:39:22 +0800
+Message-ID: <989faa34506ab4db8b8ce6eae5457ad07b1a2dee.camel@mediatek.com>
+Subject: Re: [PATCH v2] dt-bindings: PCI: mediatek-gen3: Add support for
+ MT8188 and MT8195
+From:   Jianjun Wang <jianjun.wang@mediatek.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Bjorn Helgaas <bhelgaas@google.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-pci@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        "Ryder Lee" <ryder.lee@mediatek.com>, <Rex-BC.Chen@mediatek.com>,
+        <TingHan.Shen@mediatek.com>, <Liju-clr.Chen@mediatek.com>,
+        <Jian.Yang@mediatek.com>
+Date:   Mon, 1 Aug 2022 09:39:22 +0800
+In-Reply-To: <20220729225320.GA82746-robh@kernel.org>
+References: <20220729033331.3075-1-jianjun.wang@mediatek.com>
+         <20220729225320.GA82746-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-binutils changed the signature of init_disassemble_info(), which now causes
-compilation to fail for tools/bpf/bpftool/jit_disasm.c, e.g. on debian
-unstable. Relevant binutils commit:
-https://sourceware.org/git/?p=binutils-gdb.git;a=commit;h=60a3da00bd5407f07
+Hi Rob,
 
-Wire up the feature test and switch to init_disassemble_info_compat(),
-which were introduced in prior commits, fixing the compilation failure.
+Thanks for your comment.
 
-I verified that bpftool can still disassemble bpf programs, both with an
-old and new dis-asm.h API. There are no output changes for plain and json
-formats. When comparing the output from old binutils (2.35)
-to new bintuils with the patch (upstream snapshot) there are a few output
-differences, but they are unrelated to this patch. An example hunk is:
-   2f:	pop    %r14
-   31:	pop    %r13
-   33:	pop    %rbx
--  34:	leaveq
--  35:	retq
-+  34:	leave
-+  35:	ret
+On Fri, 2022-07-29 at 16:53 -0600, Rob Herring wrote:
+> On Fri, Jul 29, 2022 at 11:33:31AM +0800, Jianjun Wang wrote:
+> > MT8188 and MT8195 are ARM platform SoCs with the same PCIe IP as
+> > MT8192.
+> > 
+> > Also add new clock name "peri_mem" since the MT8188 and MT8195 use
+> > clock
+> > "peri_mem" instead of "top_133m".
+> > 
+> > Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+> > ---
+> > Changes in v2:
+> > Merge two patches into one.
+> > ---
+> >  .../bindings/pci/mediatek-pcie-gen3.yaml      | 51
+> > +++++++++++++++----
+> >  1 file changed, 40 insertions(+), 11 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/pci/mediatek-pcie-
+> > gen3.yaml b/Documentation/devicetree/bindings/pci/mediatek-pcie-
+> > gen3.yaml
+> > index 0499b94627ae..038e25ae0be7 100644
+> > --- a/Documentation/devicetree/bindings/pci/mediatek-pcie-gen3.yaml
+> > +++ b/Documentation/devicetree/bindings/pci/mediatek-pcie-gen3.yaml
+> > @@ -43,12 +43,16 @@ description: |+
+> >    each set has its own address for MSI message, and supports 32
+> > MSI vectors
+> >    to generate interrupt.
+> >  
+> > -allOf:
+> > -  - $ref: /schemas/pci/pci-bus.yaml#
+> > -
+> >  properties:
+> >    compatible:
+> > -    const: mediatek,mt8192-pcie
+> > +    oneOf:
+> > +      - items:
+> > +          - enum:
+> > +              - mediatek,mt8188-pcie
+> > +              - mediatek,mt8195-pcie
+> > +          - const: mediatek,mt8192-pcie
+> > +      - items:
+> > +          - const: mediatek,mt8192-pcie
+> >  
+> >    reg:
+> >      maxItems: 1
+> > @@ -78,13 +82,7 @@ properties:
+> >      maxItems: 6
+> >  
+> >    clock-names:
+> > -    items:
+> > -      - const: pl_250m
+> > -      - const: tl_26m
+> > -      - const: tl_96m
+> > -      - const: tl_32k
+> > -      - const: peri_26m
+> > -      - const: top_133m
+> > +    maxItems: 6
+> >  
+> >    assigned-clocks:
+> >      maxItems: 1
+> > @@ -126,9 +124,40 @@ required:
+> >    - interrupts
+> >    - ranges
+> >    - clocks
+> > +  - clock-names
+> >    - '#interrupt-cells'
+> >    - interrupt-controller
+> >  
+> > +allOf:
+> > +  - $ref: /schemas/pci/pci-bus.yaml#
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          contains:
+> > +            enum:
+> > +              - mediatek,mt8188-pcie
+> > +              - mediatek,mt8195-pcie
+> > +    then:
+> > +      properties:
+> > +        clock-names:
+> > +          items:
+> > +            - const: pl_250m
+> > +            - const: tl_26m
+> > +            - const: tl_96m
+> > +            - const: tl_32k
+> > +            - const: peri_26m
+> > +            - const: peri_mem
+> > +    else:
+> > +      properties:
+> > +        clock-names:
+> > +          items:
+> > +            - const: pl_250m
+> > +            - const: tl_26m
+> > +            - const: tl_96m
+> > +            - const: tl_32k
+> > +            - const: peri_26m
+> > +            - const: top_133m
+> 
+> I'm not sure it's worth enforcing just the last clock name. Just do:
+> 
+> enum: [ peri_mem, top_133m ]
+> 
+> And key in the top level.
+OK, I'll use "enum" to add the new clock name in the next version.
 
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Sedat Dilek <sedat.dilek@gmail.com>
-Cc: Quentin Monnet <quentin@isovalent.com>
-Link: http://lore.kernel.org/lkml/20220622181918.ykrs5rsnmx3og4sv@alap3.anarazel.de
-Signed-off-by: Andres Freund <andres@anarazel.de>
----
- tools/bpf/bpftool/Makefile     |  5 +++-
- tools/bpf/bpftool/jit_disasm.c | 42 +++++++++++++++++++++++++++-------
- 2 files changed, 38 insertions(+), 9 deletions(-)
-
-diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-index c6d2c77d0252..436e671b2657 100644
---- a/tools/bpf/bpftool/Makefile
-+++ b/tools/bpf/bpftool/Makefile
-@@ -93,7 +93,7 @@ INSTALL ?= install
- RM ?= rm -f
- 
- FEATURE_USER = .bpftool
--FEATURE_TESTS = libbfd disassembler-four-args zlib libcap \
-+FEATURE_TESTS = libbfd disassembler-four-args disassembler-init-styled zlib libcap \
- 	clang-bpf-co-re
- FEATURE_DISPLAY = libbfd disassembler-four-args zlib libcap \
- 	clang-bpf-co-re
-@@ -117,6 +117,9 @@ endif
- ifeq ($(feature-disassembler-four-args), 1)
- CFLAGS += -DDISASM_FOUR_ARGS_SIGNATURE
- endif
-+ifeq ($(feature-disassembler-init-styled), 1)
-+    CFLAGS += -DDISASM_INIT_STYLED
-+endif
- 
- LIBS = $(LIBBPF) -lelf -lz
- LIBS_BOOTSTRAP = $(LIBBPF_BOOTSTRAP) -lelf -lz
-diff --git a/tools/bpf/bpftool/jit_disasm.c b/tools/bpf/bpftool/jit_disasm.c
-index 24734f2249d6..aaf99a0168c9 100644
---- a/tools/bpf/bpftool/jit_disasm.c
-+++ b/tools/bpf/bpftool/jit_disasm.c
-@@ -24,6 +24,7 @@
- #include <sys/stat.h>
- #include <limits.h>
- #include <bpf/libbpf.h>
-+#include <tools/dis-asm-compat.h>
- 
- #include "json_writer.h"
- #include "main.h"
-@@ -39,15 +40,12 @@ static void get_exec_path(char *tpath, size_t size)
- }
- 
- static int oper_count;
--static int fprintf_json(void *out, const char *fmt, ...)
-+static int printf_json(void *out, const char *fmt, va_list ap)
- {
--	va_list ap;
- 	char *s;
- 	int err;
- 
--	va_start(ap, fmt);
- 	err = vasprintf(&s, fmt, ap);
--	va_end(ap);
- 	if (err < 0)
- 		return -1;
- 
-@@ -73,6 +71,32 @@ static int fprintf_json(void *out, const char *fmt, ...)
- 	return 0;
- }
- 
-+static int fprintf_json(void *out, const char *fmt, ...)
-+{
-+	va_list ap;
-+	int r;
-+
-+	va_start(ap, fmt);
-+	r = printf_json(out, fmt, ap);
-+	va_end(ap);
-+
-+	return r;
-+}
-+
-+static int fprintf_json_styled(void *out,
-+			       enum disassembler_style style __maybe_unused,
-+			       const char *fmt, ...)
-+{
-+	va_list ap;
-+	int r;
-+
-+	va_start(ap, fmt);
-+	r = printf_json(out, fmt, ap);
-+	va_end(ap);
-+
-+	return r;
-+}
-+
- void disasm_print_insn(unsigned char *image, ssize_t len, int opcodes,
- 		       const char *arch, const char *disassembler_options,
- 		       const struct btf *btf,
-@@ -99,11 +123,13 @@ void disasm_print_insn(unsigned char *image, ssize_t len, int opcodes,
- 	assert(bfd_check_format(bfdf, bfd_object));
- 
- 	if (json_output)
--		init_disassemble_info(&info, stdout,
--				      (fprintf_ftype) fprintf_json);
-+		init_disassemble_info_compat(&info, stdout,
-+					     (fprintf_ftype) fprintf_json,
-+					     fprintf_json_styled);
- 	else
--		init_disassemble_info(&info, stdout,
--				      (fprintf_ftype) fprintf);
-+		init_disassemble_info_compat(&info, stdout,
-+					     (fprintf_ftype) fprintf,
-+					     fprintf_styled);
- 
- 	/* Update architecture info for offload. */
- 	if (arch) {
--- 
-2.37.0.3.g30cc8d0f14
+Thanks.
+> 
+> Rob
 
