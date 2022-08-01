@@ -2,107 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D34CC19F2C
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:38:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29755C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:40:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230455AbiHALiw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53246 "EHLO
+        id S230404AbiHALkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229903AbiHALiv (ORCPT
+        with ESMTP id S229903AbiHALj7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:38:51 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06AED31928;
-        Mon,  1 Aug 2022 04:38:50 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LxGKM6tWSzlW4H;
-        Mon,  1 Aug 2022 19:36:07 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 1 Aug 2022 19:38:48 +0800
-Received: from huawei.com (10.174.176.191) by dggpemm500018.china.huawei.com
- (7.185.36.111) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 1 Aug
- 2022 19:38:47 +0800
-From:   l00581214 <liutie4@huawei.com>
-To:     <jstultz@google.com>, <tglx@linutronix.de>, <sboyd@kernel.org>
-CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <hewenliang4@huawei.com>, <linfeilong@huawei.com>
-Subject: [PATCH] clocksource: Resolve some coding specification issues about spaces
-Date:   Mon, 1 Aug 2022 19:38:44 +0800
-Message-ID: <20220801113844.982-1-liutie4@huawei.com>
-X-Mailer: git-send-email 2.28.0.windows.1
+        Mon, 1 Aug 2022 07:39:59 -0400
+Received: from xry111.site (xry111.site [89.208.246.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B55C31928
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:39:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1659353997;
+        bh=ukpOVj7fywYhR//4Lwx/zQHnRpAGRXXiUEyJ/bF1jLk=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=AFxh0lL88VO4a68vgwlsX9uTwCwmVGzGmWbsuGkK4AgZoTVOGg1ljULjvS9OrDK3M
+         KEl33Ee60LYiiRoAZVzEgP7ocwp3WBEn89MtLhAgsI2yAxXtb2EGE4GB4XX3gqafJs
+         eH6K/Z73Tiy2uQD2e6ACbinDYXnnp/BdJ1fuXcrE=
+Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id 2837466945;
+        Mon,  1 Aug 2022 07:39:55 -0400 (EDT)
+Message-ID: <d6cab26afc5829c1b93bc1cc5867ebf22f5c7f47.camel@xry111.site>
+Subject: Re: [PATCH v4 0/4] LoongArch: Support new relocation types
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     Youling Tang <tangyouling@loongson.cn>,
+        Jinyang He <hejinyang@loongson.cn>
+Cc:     Huacai Chen <chenhuacai@kernel.org>, loongarch@lists.linux.dev,
+        LKML <linux-kernel@vger.kernel.org>,
+        WANG Xuerui <kernel@xen0n.name>,
+        Lulu Cheng <chenglulu@loongson.cn>
+Date:   Mon, 01 Aug 2022 19:39:54 +0800
+In-Reply-To: <ba5e99de-0719-af88-4d94-8860787a4251@loongson.cn>
+References: <32a74a218c76611f897fd1df1ad0059068621133.camel@xry111.site>
+         <ec52fd49-4a30-15d9-3d32-fd7bc6d8b3f0@loongson.cn>
+         <0179679b736aea7258981dec2d83107cce74dfc1.camel@xry111.site>
+         <a139a8475fe295ac9f17064269cd0312dca6f96e.camel@xry111.site>
+         <6b5d2188f93ed72b67a4bbb7116113f833fe1ee5.camel@xry111.site>
+         <d7670b60-2782-4642-995b-7baa01779a66@loongson.cn>
+         <7cad6e78014168a8906e130e1cf3809077d2bda7.camel@xry111.site>
+         <1d0783b87bda3e454a111862fcc5b5faffcb16b0.camel@xry111.site>
+         <00eede4b1380888a500f74b1e818bb25a550632b.camel@xry111.site>
+         <7512ae16-b171-d072-674f-a6b9a5e764d6@loongson.cn>
+         <CAAhV-H5wSJZ2X46ySqoaJd7Z2soGcYKRNixnghmE3f3zEzyS+w@mail.gmail.com>
+         <10751c9af5d45fea741e0bbed6c818ddb9db3ac3.camel@xry111.site>
+         <7b1f9813-85fc-acfd-8e24-7e01469ded3a@loongson.cn>
+         <ba5e99de-0719-af88-4d94-8860787a4251@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.176.191]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tie Liu <liutie4@huawei.com>
+On Mon, 2022-08-01 at 19:28 +0800, Youling Tang wrote:
 
-When I read the code, I noticed that some spaces were not used in accordance with current encoding specifications, so I tried to modify them.
+> > Actually, I really hope kernel image is in the XKVRANGE, rather
+> > than being in XKPRANGE. So that we can limit kernel and modules
+> > be in 4GB range. I think it will make all work normally. :-(
+> >=20
+>=20
+> Assuming that the kernel and modules are limited to 4G, the external
+> symbols will be accessed through pcrel32, which means that there is no
+> need to pass the GOT table entry and there is no need for got support
 
-Signed-off-by: Liu Tie <liutie4@huawei.com>
----
- kernel/time/clocksource.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/kernel/time/clocksource.c b/kernel/time/clocksource.c
-index cee5da1e5..46b738696 100644
---- a/kernel/time/clocksource.c
-+++ b/kernel/time/clocksource.c
-@@ -47,7 +47,7 @@ void
- clocks_calc_mult_shift(u32 *mult, u32 *shift, u32 from, u32 to, u32 maxsec)
- {
- 	u64 tmp;
--	u32 sft, sftacc= 32;
-+	u32 sft, sftacc = 32;
- 
- 	/*
- 	 * Calculate the shift factor which is limiting the conversion
-@@ -55,7 +55,7 @@ clocks_calc_mult_shift(u32 *mult, u32 *shift, u32 from, u32 to, u32 maxsec)
- 	 */
- 	tmp = ((u64)maxsec * from) >> 32;
- 	while (tmp) {
--		tmp >>=1;
-+		tmp >>= 1;
- 		sftacc--;
- 	}
- 
-@@ -863,7 +863,7 @@ static u32 clocksource_max_adjustment(struct clocksource *cs)
- 	 * We won't try to correct for more than 11% adjustments (110,000 ppm),
- 	 */
- 	ret = (u64)cs->mult * 11;
--	do_div(ret,100);
-+	do_div(ret, 100);
- 	return (u32)ret;
- }
- 
-@@ -1446,7 +1446,7 @@ device_initcall(init_clocksource_sysfs);
-  * Takes a clocksource= boot argument and uses it
-  * as the clocksource override name.
-  */
--static int __init boot_override_clocksource(char* str)
-+static int __init boot_override_clocksource(char *str)
- {
- 	mutex_lock(&clocksource_mutex);
- 	if (str)
-@@ -1464,7 +1464,7 @@ __setup("clocksource=", boot_override_clocksource);
-  * DEPRECATED! Takes a clock= boot argument and uses it
-  * as the clocksource override name
-  */
--static int __init boot_override_clock(char* str)
-+static int __init boot_override_clock(char *str)
- {
- 	if (!strcmp(str, "pmtmr")) {
- 		pr_warn("clock=pmtmr is deprecated - use clocksource=acpi_pm\n");
--- 
-2.27.0
-
+We'll still need to modify GCC to use PC-rel for accessing an object in
+another TU (by default, or an option to control), instead of GOT.  Or
+just add support to GOT relocations here.  But anyway it will be much
+easier as we won't need to handle per-CPU variables specially.
+--=20
+Xi Ruoyao <xry111@xry111.site>
+School of Aerospace Science and Technology, Xidian University
