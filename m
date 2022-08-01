@@ -2,185 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB4CC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:47:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F7E0C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:47:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235031AbiHAMr3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:47:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
+        id S235042AbiHAMrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230110AbiHAMrA (ORCPT
+        with ESMTP id S234977AbiHAMrC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:47:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0655CDFA5;
-        Mon,  1 Aug 2022 05:38:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99CD161187;
-        Mon,  1 Aug 2022 12:38:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3D09C433D6;
-        Mon,  1 Aug 2022 12:38:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659357506;
-        bh=ajvGSPHi7s/PBQgVUp/8yoUUDSIpjZEtd1Glw97tgok=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LZqIFqp6ijlSg1qyppx2Fo88DBX5AjZ8nURUeKSHoMpq21YlZ1unVYRHs7SLgghi1
-         i8NPoy2+GfVXxEy8Je4XK6rvIHbAia+NerbUIhE8fskKOWgCT95WWTjpKyGHwrhib+
-         1n8m1iPVNHelMtDPev6Pm9hNeGzB4dEbSkgYCBaYMV2sPUp/G0Fxzi4IB6pj+d0VLj
-         azCA2DC00t9SAU+UsLOf5+UNJjO9O8eMFwe2AFCiGpZ+4inWPaKOKlcxArl1/S/njJ
-         A00YT4u4N3ggjt44jFO3IiW7snAZwBWLTtnce9I05gXNz4pQAnWelMekkVx+LWv/1A
-         ZASDM6VztVdTw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 523AB40736; Mon,  1 Aug 2022 09:38:23 -0300 (-03)
-Date:   Mon, 1 Aug 2022 09:38:23 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Leo Yan <leo.yan@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH] perf symbol: Fail to read phdr workaround
-Message-ID: <YufJP5YqeEBM51HL@kernel.org>
-References: <20220731164923.691193-1-irogers@google.com>
- <20220801015259.GA101027@leoy-ThinkPad-X240s>
- <CAP-5=fVSjCQ4jeAeyP5THnQVyXDpKd6Ob33C7PDwFB_6+YSXuw@mail.gmail.com>
+        Mon, 1 Aug 2022 08:47:02 -0400
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C7C10FF3
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 05:38:29 -0700 (PDT)
+Received: from ramsan.of.borg ([84.195.186.194])
+        by albert.telenet-ops.be with bizsmtp
+        id 2CeS280064C55Sk06CeSqv; Mon, 01 Aug 2022 14:38:26 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1oIUgj-005kjs-RQ; Mon, 01 Aug 2022 14:38:25 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1oIUgj-008Vk2-B6; Mon, 01 Aug 2022 14:38:25 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [GIT PULL] m68k updates for v5.20
+Date:   Mon,  1 Aug 2022 14:38:21 +0200
+Message-Id: <20220801123821.2028594-1-geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAP-5=fVSjCQ4jeAeyP5THnQVyXDpKd6Ob33C7PDwFB_6+YSXuw@mail.gmail.com>
-X-Url:  http://acmel.wordpress.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Sun, Jul 31, 2022 at 11:19:15PM -0700, Ian Rogers escreveu:
-> On Sun, Jul 31, 2022, 6:53 PM Leo Yan <leo.yan@linaro.org> wrote:
-> 
-> > On Sun, Jul 31, 2022 at 09:49:23AM -0700, Ian Rogers wrote:
-> > > The perf jvmti agent doesn't create program headers, in this case
-> > > fallback on section headers as happened previously.
-> > >
-> > > Fixes: 882528d2e776 ("perf symbol: Skip symbols if SHF_ALLOC flag is not
-> > set")
-> >
-> > It's good to change fix tag as:
-> > Fixes: 2d86612aacb7 ("perf symbol: Correct address for bss symbols")
-> >
-> 
-> Doh! I was rushing this morning. Thanks for catching and reviewing!
+	Hi Linus,
 
-I made the adjustments and added a note with the repro, to help in the
-future when trying to test this area.
+The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
 
-I also think we could have something like a 'perf test' mode where, when
-asked to, it would enable tests that involve downloading such files to
-perform tests, such as this dacapo benchmark, and then would test if the
-output matches expectations.
+  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
 
-- Arnaldo
+are available in the Git repository at:
 
-commit 6d518ac7be6223811ab947897273b1bbef846180
-Author: Ian Rogers <irogers@google.com>
-Date:   Sun Jul 31 09:49:23 2022 -0700
+  git://git.kernel.org/pub/scm/linux/kernel/git/geert/linux-m68k.git tags/m68k-for-v5.20-tag1
 
-    perf symbol: Fail to read phdr workaround
-    
-    The perf jvmti agent doesn't create program headers, in this case
-    fallback on section headers as happened previously.
-    
-    Committer notes:
-    
-    To test this, from a public post by Ian:
-    
-    1) download a Java workload dacapo-9.12-MR1-bach.jar from
-    https://sourceforge.net/projects/dacapobench/
-    
-    2) build perf such as "make -C tools/perf O=/tmp/perf NO_LIBBFD=1" it
-    should detect Java and create /tmp/perf/libperf-jvmti.so
-    
-    3) run perf with the jvmti agent:
-    
-      perf record -k 1 java -agentpath:/tmp/perf/libperf-jvmti.so -jar dacapo-9.12-MR1-bach.jar -n 10 fop
-    
-    4) run perf inject:
-    
-      perf inject -i perf.data -o perf-injected.data -j
-    
-    5) run perf report
-    
-      perf report -i perf-injected.data | grep org.apache.fop
-    
-    With this patch reverted I see lots of symbols like:
-    
-         0.00%  java             jitted-388040-4656.so  [.] org.apache.fop.fo.FObj.bind(org.apache.fop.fo.PropertyList)
-    
-    With the patch (2d86612aacb7805f ("perf symbol: Correct address for bss
-    symbols")) I see lots of:
-    
-      dso__load_sym_internal: failed to find program header for symbol:
-      Lorg/apache/fop/fo/FObj;bind(Lorg/apache/fop/fo/PropertyList;)V
-      st_value: 0x40
-    
-    Fixes: 2d86612aacb7805f ("perf symbol: Correct address for bss symbols")
-    Reviewed-by: Leo Yan <leo.yan@linaro.org>
-    Signed-off-by: Ian Rogers <irogers@google.com>
-    Tested-by: Leo Yan <leo.yan@linaro.org>
-    Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-    Cc: Jiri Olsa <jolsa@kernel.org>
-    Cc: Leo Yan <leo.yan@linaro.org>
-    Cc: Mark Rutland <mark.rutland@arm.com>
-    Cc: Namhyung Kim <namhyung@kernel.org>
-    Cc: Peter Zijlstra <peterz@infradead.org>
-    Cc: Stephane Eranian <eranian@google.com>
-    Link: http://lore.kernel.org/lkml/20220731164923.691193-1-irogers@google.com
-    Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+for you to fetch changes up to b508128bb0d1e243beb56cca5d819bcbb5c269b1:
 
-diff --git a/tools/perf/util/symbol-elf.c b/tools/perf/util/symbol-elf.c
-index b3be5b1d9dbb00bc..75bec32d4f571319 100644
---- a/tools/perf/util/symbol-elf.c
-+++ b/tools/perf/util/symbol-elf.c
-@@ -1305,16 +1305,29 @@ dso__load_sym_internal(struct dso *dso, struct map *map, struct symsrc *syms_ss,
- 
- 			if (elf_read_program_header(syms_ss->elf,
- 						    (u64)sym.st_value, &phdr)) {
--				pr_warning("%s: failed to find program header for "
-+				pr_debug4("%s: failed to find program header for "
- 					   "symbol: %s st_value: %#" PRIx64 "\n",
- 					   __func__, elf_name, (u64)sym.st_value);
--				continue;
-+				pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
-+					"sh_addr: %#" PRIx64 " sh_offset: %#" PRIx64 "\n",
-+					__func__, (u64)sym.st_value, (u64)shdr.sh_addr,
-+					(u64)shdr.sh_offset);
-+				/*
-+				 * Fail to find program header, let's rollback
-+				 * to use shdr.sh_addr and shdr.sh_offset to
-+				 * calibrate symbol's file address, though this
-+				 * is not necessary for normal C ELF file, we
-+				 * still need to handle java JIT symbols in this
-+				 * case.
-+				 */
-+				sym.st_value -= shdr.sh_addr - shdr.sh_offset;
-+			} else {
-+				pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
-+					"p_vaddr: %#" PRIx64 " p_offset: %#" PRIx64 "\n",
-+					__func__, (u64)sym.st_value, (u64)phdr.p_vaddr,
-+					(u64)phdr.p_offset);
-+				sym.st_value -= phdr.p_vaddr - phdr.p_offset;
- 			}
--			pr_debug4("%s: adjusting symbol: st_value: %#" PRIx64 " "
--				  "p_vaddr: %#" PRIx64 " p_offset: %#" PRIx64 "\n",
--				  __func__, (u64)sym.st_value, (u64)phdr.p_vaddr,
--				  (u64)phdr.p_offset);
--			sym.st_value -= phdr.p_vaddr - phdr.p_offset;
- 		}
- 
- 		demangled = demangle_sym(dso, kmodule, elf_name);
+  m68k: defconfig: Update defconfigs for v5.19-rc1 (2022-07-12 10:48:21 +0200)
+
+----------------------------------------------------------------
+m68k updates for v5.20
+
+  - Use RNG seed from bootinfo block on virt platform,
+  - Defconfig updates,
+  - Minor fixes and improvements.
+
+Thanks for pulling!
+
+----------------------------------------------------------------
+Amadeusz Sławiński (1):
+      m68k: bitops: Change __fls to return and accept unsigned long
+
+Geert Uytterhoeven (3):
+      m68k: mac: Remove forward declaration for mac_nmi_handler()
+      m68k: Add common forward declaration for show_registers()
+      m68k: defconfig: Update defconfigs for v5.19-rc1
+
+Jason A. Donenfeld (1):
+      m68k: virt: Use RNG seed from bootinfo block
+
+Jiang Jian (1):
+      m68k: q40: Align '*' in comments
+
+Juerg Haefliger (3):
+      m68k: Kconfig.cpu: Fix indentation and add endif comments
+      m68k: Kconfig.debug: Replace single quotes
+      m68k: Kconfig.machine: Add endif comment
+
+Laurent Vivier (1):
+      m68k: virt: Kconfig minor fixes
+
+Xiang wangx (1):
+      m68k: mac: Fix typos in comments
+
+XueBing Chen (1):
+      m68k: sun3: Use __func__ to get function's name in an output message
+
+Yang Yingliang (1):
+      m68k: virt: Fix missing platform_device_unregister() on error in virt_platform_init()
+
+ arch/m68k/Kconfig.cpu                      |  7 ++--
+ arch/m68k/Kconfig.debug                    |  6 ++--
+ arch/m68k/Kconfig.machine                  |  5 +--
+ arch/m68k/configs/amiga_defconfig          | 14 +++-----
+ arch/m68k/configs/apollo_defconfig         | 14 +++-----
+ arch/m68k/configs/atari_defconfig          | 14 +++-----
+ arch/m68k/configs/bvme6000_defconfig       | 14 +++-----
+ arch/m68k/configs/hp300_defconfig          | 14 +++-----
+ arch/m68k/configs/mac_defconfig            | 14 +++-----
+ arch/m68k/configs/multi_defconfig          | 14 +++-----
+ arch/m68k/configs/mvme147_defconfig        | 14 +++-----
+ arch/m68k/configs/mvme16x_defconfig        | 14 +++-----
+ arch/m68k/configs/q40_defconfig            | 14 +++-----
+ arch/m68k/configs/sun3_defconfig           | 14 +++-----
+ arch/m68k/configs/sun3x_defconfig          | 14 +++-----
+ arch/m68k/include/asm/bitops.h             |  2 +-
+ arch/m68k/include/asm/processor.h          |  1 +
+ arch/m68k/include/uapi/asm/bootinfo-virt.h |  8 +++++
+ arch/m68k/kernel/traps.c                   |  1 +
+ arch/m68k/mac/iop.c                        |  4 +--
+ arch/m68k/mac/macints.c                    | 35 +++++++++---------
+ arch/m68k/q40/q40ints.c                    |  2 +-
+ arch/m68k/sun3/mmu_emu.c                   | 11 +++---
+ arch/m68k/virt/config.c                    | 11 ++++++
+ arch/m68k/virt/ints.c                      |  3 +-
+ arch/m68k/virt/platform.c                  | 58 +++++++++++++++++-------------
+ 26 files changed, 149 insertions(+), 173 deletions(-)
+
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
