@@ -2,130 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87BC2C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C212C19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234379AbiHAM4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
+        id S233221AbiHAM5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235208AbiHAMzn (ORCPT
+        with ESMTP id S235115AbiHAM45 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:55:43 -0400
-Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C38E0E9;
-        Mon,  1 Aug 2022 05:52:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1659358334; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=dLCP1LRwIl1bWr8nAoLKsw1Rq7+h63BO/8yjOSVc6ZDf4CcNU138KdA9XBBeAiNcuTLphxxmkBuVD4VvOINKdQlY08JUgW9B71G++jML1beJJ0+8VeEFVnBWYr7rrXgdywf+ITQMynkrkEzaVGfNJgaD94zDC3OzfZ3vqf/LYYs=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1659358334; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=ZucGc/xaWsMqpRuxte5cdZ6+7d5BRfDSRyYsk/WnebM=; 
-        b=WTkJI9gGhmc2i7zlqK1rCijL1fEd63fgjmGv+CSCky/PpQOK2lDb7THdt51c0DH4DDkutb1V6PRfB3OIBZptJ5OksU7+NVkh/FuDNcijXc05nuj1LhP8JwMkkDkfrTuzONclPHwppoKmqsLtUr7kNGdprp/H3M7I2hdv4CsCsz4=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659358334;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=ZucGc/xaWsMqpRuxte5cdZ6+7d5BRfDSRyYsk/WnebM=;
-        b=qzQZespJ/Q8jGtl1GDqJIF5aC+wrNQOdlAjDIZ1rQ+rFaF0kP9Jgya4nD+YWbST/
-        7uJSeO1mAuzwfoGYwA1crDvg+m2MbKcSf3kDCrSWnz/FpbQ/JfDQR0JVXVy3O7hcROW
-        yYoU2p3xKikOAq0SK9+/hKqakcM6fvJffR9VzMXE=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 1659358322294738.2309151863757; Mon, 1 Aug 2022 18:22:02 +0530 (IST)
-Date:   Mon, 01 Aug 2022 18:22:02 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "hdanton" <hdanton@sina.com>
-Cc:     "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "linux-mm" <linux-mm@kvack.org>,
-        "Dipanjan Das" <mail.dipanjan.das@gmail.com>,
-        "David Howells" <dhowells@redhat.com>,
-        "Greg KH" <gregkh@linuxfoundation.org>,
-        "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        "linux-security-modules" <linux-security-module@vger.kernel.org>,
-        "linux-kernel-mentees" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        "syzbot+c70d87ac1d001f29a058" 
-        <syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com>,
-        "Marius Fleischer" <fleischermarius@googlemail.com>,
-        "Priyanka Bose" <its.priyanka.bose@gmail.com>
-Message-ID: <18259769e5e.52eb2082293078.3991591702430862151@siddh.me>
-In-Reply-To: <20220801121513.28E4B5204D1@webmail.sinamail.sina.com.cn>
-References: <20220801121513.28E4B5204D1@webmail.sinamail.sina.com.cn>
-Subject: Re: [PATCH] kernel/watch_queue: Make pipe NULL while clearing
- watch_queue
+        Mon, 1 Aug 2022 08:56:57 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD11B19C36;
+        Mon,  1 Aug 2022 05:56:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1659358592; x=1690894592;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=Ah6rbgFOTQZN8lkf4n2RhQ7TAJnuIb3vzooan+RAnss=;
+  b=kxPQOrnLj2RzsqKaQ0NvrKm/PoPRjZNVvE5TyUP5+2Pyg/JwGK28n4UZ
+   f3atMiLY/MZxLfU2njtmtHKgidFfzakdbyBcLZb0CYPKUefdCfb8WV3uL
+   ZjTNSGnF/xY+/5L0UCBrxdihgN8c0mDhVovo+l/yKfq7S2o5A1SEZ3CDz
+   V9eaYnJulhg4FWpQn/OUxVQw9jVWdcZyjONSiwgA9fQvEBGsf0XhVeMrZ
+   /6iiZCNVvX4XeCP013h3BBmxHadBvJvFrGdYsLk7qu4G868ZGJndZIaFS
+   75aUjzR8J9FXxa0LgMgABtgL+bfnYnnkwbQvHT2imj1iPxhQQPCdY1OLn
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,208,1654585200"; 
+   d="scan'208";a="107017749"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Aug 2022 05:56:32 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Mon, 1 Aug 2022 05:56:31 -0700
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
+ Transport; Mon, 1 Aug 2022 05:56:31 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oIctqLyJKYZspW2+kBETBZll5FmzWT0odqElChX0iiiWp5Hfw/kSvxKEx+9DgVOwpOZ1dIqczlos8n98sNL+wQLQwWlPPGJj2mPFPj1hF7lZU2BvzCGdj/JWwVcUge2VYpJiXIge5KwzYpl2RV+L2wYCT4gTfuqn58tnFTzwdrCPIOW4kOWEhEXkQKh9Z/eokfiTnNQ26GltlXX2set9UE6S6MKgaQVLvHM6WU+NHd/bkL846dOvypoQWmKqj5CZRB8F8Bk7lojbx299h3r+3x36Vc2S/sje0rToX1tH13AJVi7gbAkskGb08bXq/UVymqzLKQ2GZMKbt3GK/0ILlg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ah6rbgFOTQZN8lkf4n2RhQ7TAJnuIb3vzooan+RAnss=;
+ b=O1vLtvyUJPUCdFePJbEbU1LbgjFs4F3A9mpSiZLK5aFjc74Mm0lTjlGqMnWGJbz+OTcXlCsKiKj7TwjVQsXdTiBOwj2G09zT25b4paDxiRglDvAg3NtvXYas05qYLMm58liKHFfF6NgdZm+IXbSPU4e7zx5K4f7u9bPu6koSnY1RDzDfPOPOTSUTbTzqfzqkQ9kTMPl5do2kc+Umh7LidpYlSYOhNlUuLesjL3xQhTqQg47N4rzKHGxU0jZKFVIccjNeFA+hZVwHpb0crHCqx3h3Hl1Kp+48wjktP06X6qq6Na70M0GkKlwIt1+QSpM47phsAZG/CI6oXv6Rrd7yJw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ah6rbgFOTQZN8lkf4n2RhQ7TAJnuIb3vzooan+RAnss=;
+ b=PaIzbVkx8gFANDO1RADU+lJutkS34GTx4lH/LC2nkiZ2tiXwbsMzmds7hsic/hd/BbexVlZNH1WZ9/QETj332jiBMldXT6EkjChbRq2/xRCFcY4IftQEDb6AfBkLr7SrntZujOsai0rHoS9sElHVBZMDuJ0V8fIgcs/K1MZOCyM=
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
+ by SN6PR11MB2639.namprd11.prod.outlook.com (2603:10b6:805:59::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.6; Mon, 1 Aug
+ 2022 12:56:26 +0000
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::ac89:75cd:26e0:51c3]) by CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::ac89:75cd:26e0:51c3%9]) with mapi id 15.20.5482.016; Mon, 1 Aug 2022
+ 12:56:26 +0000
+From:   <Conor.Dooley@microchip.com>
+To:     <broonie@kernel.org>
+CC:     <Nagasuresh.Relli@microchip.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux-spi@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] spi: microchip-core-qspi: Add support for microchip
+ fpga qspi controllers
+Thread-Topic: [PATCH 2/2] spi: microchip-core-qspi: Add support for microchip
+ fpga qspi controllers
+Thread-Index: AQHYpYscI+Kkk/PiAEWVZ6Ma6620dK2Z2ykAgAAfn4CAAAZYgA==
+Date:   Mon, 1 Aug 2022 12:56:26 +0000
+Message-ID: <3ec68df2-7843-abc9-c490-29cbbac80edc@microchip.com>
+References: <20220801094255.664548-1-nagasuresh.relli@microchip.com>
+ <20220801094255.664548-3-nagasuresh.relli@microchip.com>
+ <283bdfef-cbd9-5d87-f77d-10f007c37a0c@microchip.com>
+ <YufIJ9JtTKaUjRqZ@sirena.org.uk>
+In-Reply-To: <YufIJ9JtTKaUjRqZ@sirena.org.uk>
+Accept-Language: en-IE, en-US
+Content-Language: en-IE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b25cd121-95f6-4df4-81e8-08da73bd3e98
+x-ms-traffictypediagnostic: SN6PR11MB2639:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 7FMyR2YsiBIWUCy4llNK++tKWzkNpsB14Rq9biu2URbJcokqH/Qtb8mWRydesGXJ3e05bxw4VxQ5VdEuewkPYwNskr7sNMePmPQqDk1w47e53O4xla/KAo/eaE9hXC20+LuY0rqf8BZKT0tD41tjX3SkyZVqJIG5mlmr4TmeNoOGuAqgArb1aVplJjsGKMwMcTDADHa3KTyFpG6txzPIJdsaaaBvQKr1TeWwgy01JvCeQF/F/d0ldPEBCAukYV60eQ2NbZejAZPu+HJwquHpyf6lYSMPqo+7z9vj8W3c5nuLiQC22w1JEtpX4XYvhYtYFdSCb+PyKI0UwwPpXdRk3Qn9cCluwcCborsj/K3385BNPleky0gVb+QX/HHZtbdUnDMcjazrPsNaZkS5cW2SpCnUPu4ys8QZLeApEdGYPj9rII8AjbBvhbuuIYk2CkD+p9Q+HcjyDRtQ2YlXZznuzxNLo1rA61GtNFGIJCndn90/IWJsTjgClXabNrv3oM/7pw9rht0Dg/5O5V2X67jurs13khuB2pTHWO7iRs84TUeTMPW9/UgQVm+7pF4XzxmRR/sqtE96AOGhUMYkp4cS+PD2VyPiUVogw7qCYQtGRnOEsxhikp/9ScyNRo+dDeLopZXxz4WV/PQjrxrL+9oSEAEKBxhWBOFk1tPSlEzHgXLwtj1E1dI3xGu8ZR+sQUorZNeSVcro/GHLoIn7s1T7tqLt4+4yLafMC68o4dW9+Oja4H0JhcgfT3L8dknOaypQleQJIBPZk4vOQPF2hrL2DEodSrigAXs7lpMjcie6qiCDUzjhMD17qSOaG4R07gHWALYEOuHuPiDtURc8kvMLbyYo3FVObP6L3YA/1Q/Ss6g=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(346002)(396003)(376002)(136003)(39860400002)(71200400001)(8676002)(4326008)(91956017)(41300700001)(6506007)(53546011)(6486002)(478600001)(31696002)(36756003)(31686004)(6916009)(54906003)(66556008)(86362001)(76116006)(66476007)(66946007)(66446008)(64756008)(2906002)(316002)(186003)(38070700005)(2616005)(26005)(6512007)(83380400001)(8936002)(5660300002)(122000001)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Q3UzamhGQmtub2ZTanZ6ZHJscE96dS9tSkkwSW91VmdQNTNZV3ZLT1BoM0Jx?=
+ =?utf-8?B?UnV6RmxvWGdvWStrM1lKZmJPa2U1U0pVSmR6eWtyTEE1UC9XSUdRcG1wdFd1?=
+ =?utf-8?B?K2diTFc5TzA4R2lzY3pVbXFUTDNjMWJzemdkaGlPVEcyaXYxZDdLekthRVZj?=
+ =?utf-8?B?aTBqRllCaGgwNndhejZ3MHNrUFNyTGpPYUo1MDBxZ2ZUczBiSXM5RjJVd1Na?=
+ =?utf-8?B?dUcxOWVZV3FrbUpYSjQ0ZXNOZm1rU092aFUvL2JEZzd6Q0FxU0pObk9lYktu?=
+ =?utf-8?B?ejZoTUpvM0JGRHFWcnZtcmxvbEhxSlM1ZWNpTnJHMzE5ZFI3emE0cGd0OEg2?=
+ =?utf-8?B?Tm95T1duNmFQT05taUo3MzBOeTNtRVlTM3QwbWpDZHI4UEc4NUJhQ3ZDVzdN?=
+ =?utf-8?B?bUhGSFFuMGtZS01IMXFUbEdvOTVXaTUvQnVNZFQ3ZU1XZXRmSGp5a0xEZUlO?=
+ =?utf-8?B?RnRPb0MzZm80a2J3ZkIxOHRpa1paWWluY2dCU3JxNXN3dGEvZGpWcmVCbTRF?=
+ =?utf-8?B?ZDhMK2xGdkJwVmFUSU9iOCtnSTVFWkNIeXVzMk01ZEsvM3E0akc1aXAzWGl1?=
+ =?utf-8?B?WWZ6ckkrSmNkK3ZhdVlScEJycjlLL2U2Sm0vc3hzK0dXa0xySGtvZWVxN1By?=
+ =?utf-8?B?Qkg4TUdWeXE1WlVkeWUzTmRTdHdpZngzUjRRWjd1dWExY3R0Uzl1M2FSckRq?=
+ =?utf-8?B?eGVzcDk4bTBvTTkweDQ3Wjl6YmE3T3FHQlpwWmRDelUvdGRQM1pPOThucndU?=
+ =?utf-8?B?bmVHb1lHYXJyTFZxVEp4VjZQMjBXU2VPZUxBZXhMLzNRRXFHVkdTK1FUdi9B?=
+ =?utf-8?B?elA4b001UUdkb3VRY3g0VHBIaC9EeUpnQ3B4eXlDa3NNeTJqdVM1RmpFL2Uy?=
+ =?utf-8?B?ajdKSUlFY005NkRpMWF2UzM5VnBUV0ZyM1N1TlEwcnZaeGtUbkFxejRmZ3NZ?=
+ =?utf-8?B?WmhOay9ZeEY3Z1hUNkRaM2lQM3hpV0FQaThoekdQY0pvTkVWcHMxOVVJcXl6?=
+ =?utf-8?B?U2hjeEU3WThiWS9vd3dJajFtOEU4dFk0VFdrTHM3YmRHeFo0eDd1ZERXOXgw?=
+ =?utf-8?B?bUNXdGRES1lOZ1RBbDlwUWNyZ0tXWjJxQUdkblpYL2loSHcvYTJSSmw4eWRa?=
+ =?utf-8?B?eTVHekhZaStBWW51RzQ5dEZQdzRENTcraHNpMURFTGlCaGMzMEI3bWlzdmk0?=
+ =?utf-8?B?YXI0a0E2bUdJKzNIK2dKa0k5RmZDM2FFbzhPVW9PZnlOWm55UWdCZTRIc0FJ?=
+ =?utf-8?B?NWxBRTdlR2x0YXJWNFRmS0dLRm9xZytoVUppU1ZpV3VWOTc2K04ya0xzZ0VZ?=
+ =?utf-8?B?eWhYN2dYU0ZLMmlHZkRqMFdYbVFqbFZkcEcvQkJRKytLdlVZR2hTTXVLMXJH?=
+ =?utf-8?B?WkNKVmxmbTA5ZGM4MVUzcE51bXBMSmtzeDZPZ2lUQmlqRGxDcU9zWGs3OEZR?=
+ =?utf-8?B?ckQ5K2VNYWtQZDgweGkyTG82VU1sVkxFSm9NR3dUTmxySi9LUzI2WjlIcGhX?=
+ =?utf-8?B?SXJrZGxQSWRtT1I0MG44YjBRdVArWXlnWlVYUVZqOExSaUJGbmhNVmJxckNZ?=
+ =?utf-8?B?Q1cwTG4yMU54WE5RYklLcGhnd3o2RVNVK0s1d1lTZkJhekZXSytTWTFqd2J1?=
+ =?utf-8?B?RDRrWTlJaExjV0lMTjAxcXFkU0plRTE2NytwdTJ6MTRWS1J3UmhPUlhKQW0z?=
+ =?utf-8?B?TnQ2UFJma1FlTE5ucEVoOTQ1VkFQb29OM001M0NkRlRkRFlHK1AwVXEvSGpC?=
+ =?utf-8?B?SkZBMTJ1MFdDMXd4SnZJM1c5eVBidkRVaE55RGRLcm9sS2o3MGR1cWpIRkdh?=
+ =?utf-8?B?V0FnSmVrQUdVRm43Ym1WV0R6RC9aNFREUnpiVytXU2JCcGRQdk90ckRCdisw?=
+ =?utf-8?B?TUp0dmFBMHpvMlIxcEEyOGNIazZpRUlQSGtZOEdUemJMM3BmVzJCKzE3eDgv?=
+ =?utf-8?B?NVVKM1h1S2tJZTV3TEtRbXFSUjIxSHRCZlN1M00zNUx5c09mOW05UFBObWZP?=
+ =?utf-8?B?azV4MUF0RzRZK1JiV0tVWWVEd1VLSGdGb1RVVUwyZWxLdklkVlFRQ0hZOEpD?=
+ =?utf-8?B?eWJqZFZhZFprRERHdzBmUVdVT3I0V2V3MmIyVGpDT3Y5R3l4TFF1NVpoQ3JQ?=
+ =?utf-8?Q?4s0eQUjx7u4e39q2S+Gg+1ecl?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DBD66C3F6D61754FB8E67F8ADC022D5C@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b25cd121-95f6-4df4-81e8-08da73bd3e98
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Aug 2022 12:56:26.2229
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: TNUpmbe0aDe0rUrocqV/bnqvzAvvvZoGcvmRPOzInRTB7gPagsZixXpOkxw+DWmnJR55xAKyM+KKgK8+epXEWrl5+QdNhzme/dxoA18lNpw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2639
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 01 Aug 2022 17:45:13 +0530  Hillf Danton <hdanton@sina.com> wrote:
-> What is not clear is what you are fixing, with CVE-2022-1882 put aside,
-> given the mainline tree survived the syzbot test [1] irrespective of
-> other fixing efforts [2, 3].
-> 
-> Hillf
-> 
-> [1] https://lore.kernel.org/lkml/000000000000c7a83905e52bd127@google.com/
-> 
-> //	syzbot has tested the proposed patch and the reproducer did not trigger any issue:
-> //	
-> //	Reported-and-tested-by: syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com
-> //	
-> //	Tested on:
-> //	
-> //	commit:         3d7cb6b0 Linux 5.19
-> //	git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> //	console output: https://syzkaller.appspot.com/x/log.txt?x=14066d7a080000
-> //	kernel config:  https://syzkaller.appspot.com/x/.config?x=70dd99d568a89e0
-> //	dashboard link: https://syzkaller.appspot.com/bug?extid=c70d87ac1d001f29a058
-> //	compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> //	
-> //	Note: no patches were applied.
-> //	Note: testing is done by a robot and is best-effort only.
-> 
-> [2] https://lore.kernel.org/lkml/0000000000000dac0205e479ea39@google.com/
-> 
-> [3] https://lore.kernel.org/lkml/00000000000014c7ad05e4d535fc@google.com/
-> 
-
-(Fixed broken formatting)
-
-This bug is about watch_queue still having a reference to a freed pipe,
-which was being accessed by post_one_notification() at the time of when
-I posted the v1 patch for fixing it on 23rd July, by removing the
-reference to the freed pipe in the watch_queue.
-
-Given ref. [3] by you leads to a bug about UAF in __post_watch_notification():
-https://syzkaller.appspot.com/bug?extid=03d7b43290037d1f87ca
-
-That bug is fixed by the following commit by David Howells on 28th July:
-e64ab2dbd882 ("watch_queue: Fix missing locking in add_watch_to_object()")
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e64ab2dbd882933b65cd82ff6235d705ad65dbb6
-
-Given ref. [2] by you is of a patch tested by you, which can be found below:
-https://groups.google.com/g/syzkaller-bugs/c/RbmAFTAIuyY/m/-vMjf-BXAQAJ
-
-This had overlooked the existing serialization of wqueue->defunct, which
-you had yourself pointed out in the reply to v2, which can be found below:
-https://lore.kernel.org/linux-kernel-mentees/20220724071958.2557-1-hdanton@sina.com/
-
-Given ref. [1] by you is about a syzbot test which was ran today, which no
-longer triggers the issue. This probably happens due to the commit by David
-Howells referenced earlier by me. While it does cause the reproducer to fail,
-it doesn't really fix the particular issue concerned by this patch, which is
-that the watch_queue has a reference to a freed pipe, which had caused a UAF.
-
-Hope everything is clear.
-
-Thanks,
-Siddh
+T24gMDEvMDgvMjAyMiAxMzozMywgTWFyayBCcm93biB3cm90ZToNCj4gRVhURVJOQUwgRU1BSUw6
+IERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3Uga25vdyB0
+aGUgY29udGVudCBpcyBzYWZlDQo+IE9uIE1vbiwgQXVnIDAxLCAyMDIyIGF0IDEwOjQwOjMzQU0g
+KzAwMDAsIENvbm9yLkRvb2xleUBtaWNyb2NoaXAuY29tIHdyb3RlOg0KPj4gT24gMDEvMDgvMjAy
+MiAxMDo0MiwgTmFnYSBTdXJlc2hrdW1hciBSZWxsaSB3cm90ZToNCj4NCj4+PiArCXFzcGkgPSBz
+cGlfY29udHJvbGxlcl9nZXRfZGV2ZGF0YShjdGxyKTsNCj4NCj4+IElzIHRoZXJlIGEgcmVhc29u
+IHRvIHVzZSBzcGlfY29udHJvbGxlcl9nZXRfZGV2ZGF0YSgpIHJhdGhlciB0aGFuDQo+PiBzcGlf
+bWFzdGVyX2dldF9kZXZkYXRhKCkgPw0KPg0KPiBXZSBhcmUgdHJ5aW5nIHRvIG1vdmUgZXZlcnl0
+aGluZyBhd2F5IGZyb20gdGhlIG9sZCB0ZXJtaW5vbmxvZ3kgdG8gdXNpbmcNCj4gY29udHJvbGxl
+ciwgdGhpcyBhbHNvIGFwcGxpZXMgdG8gdGhlIHRoZSBvdGhlciBBUEkgZnVuY3Rpb25zLg0KPg0K
+DQpSaWdodCwgbWFrZXMgc2Vuc2UuDQoNCj4+PiArY2xrX2Rpc19hbGw6DQo+Pj4gKwljbGtfZGlz
+YWJsZV91bnByZXBhcmUocXNwaS0+Y2xrKTsNCj4NCj4+IElmIHdlIG1vdmUgdGhlIGNsayBwcmVw
+YXJlICYgZW5hYmxlIGxhdGVyIGluIHByb2JlLCBpZSBhZnRlcg0KPj4gZ2V0dGluZyB0aGUgaXJx
+LCB0aGlzIGdvdG8gY291bGQgYmUgcmVtb3ZlZCB0b28gYmVjYXVzZSB0aGUNCj4+IG9ubHkgcGxh
+Y2UgcmVxdWlyaW5nIHRlYXJkb3duIG9mIHRoZSBjbG9jayB3b3VsZCBiZSB0aGUgZXJyb3INCj4+
+IHBhdGggb2YgZGV2bV9zcGlfcmVnaXN0ZXJfY29udHJvbGxlcigpLg0KPg0KPiBJcyB0aGUgY2xv
+Y2sgbmVlZGVkIGZvciBoYW5kbGluZyBvZiB0aGUgaW50ZXJydXB0Pw0KDQpJIGd1ZXNzIEkgd2Fz
+IHRoaW5raW5nIGluIHRlcm1zIG9mIHRoZSAiaGFyZCIgY29udHJvbGxlci4gSW4gdGhhdCBjYXNl
+LA0Kd2l0aG91dCBhIGNsb2NrIHlvdSdyZSBub3QgZ29pbmcgdG8gZ2V0IGFuIGludGVycnVwdCBp
+biB0aGUgZmlyc3QgcGxhY2UNCnNpbmNlIGl0IGlzIG5vdCBhIHNoYXJlZCBsaW5lIChub3IgYSBz
+aGFyZWQgY2xvY2spLiBCdXQgdGhhdCBpcyBub3QgdGhlDQpjYXNlIGZvciB0aGUgInNvZnQiIGNv
+bnRyb2xsZXIsIHNvIGtlZXBpbmcgdGhlIGNsa19wcmVwYXJlX2VuYWJsZSgpDQpwcmlvciB0byBy
+ZWdpc3RlcmluZyB0aGUgaW50ZXJydXB0IGlzIGEgZ29vZCBpZGVhLiBTb3JyeSBmb3IgdGhlIG5v
+aXNlDQpTdXJlc2ghDQoNClRoYXQgZGlkIG1ha2UgbWUgY2hlY2sgdGhlIGZsYWdzIGZvciBkZXZt
+X3JlcXVlc3RfaXJxKCksIHdoaWNoIG5lZWRzIHRvDQpiZSBjaGFuZ2VkIHRvIHN1cHBvcnQgc2hh
+cmVkIElSUXMuIFRoZSBoYW5kbGVyIGFscmVhZHkgY2hlY2tzIHRvIG1ha2UNCnN1cmUgdGhhdCBp
+dCdzIGl0cyBpbnRlcnJ1cHQgc28gd2UganVzdCBuZWVkIHRoYXQgc21hbGwgY2hhbmdlIGluIHBy
+b2JlLg0KDQpUaGFua3MsDQpDb25vcg0K
