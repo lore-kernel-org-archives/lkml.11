@@ -2,171 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B93ACC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 22:33:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C93C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 22:35:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235414AbiHAWdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 18:33:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45016 "EHLO
+        id S235426AbiHAWf0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 18:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235403AbiHAWdb (ORCPT
+        with ESMTP id S235402AbiHAWfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 18:33:31 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF66325EB7
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 15:33:29 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id k25-20020a056830169900b0061c6f68f451so9189182otr.9
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 15:33:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LI7JfBTHXcIfr/9UgMaMzqcZcXHkE1NiQIHzTU9OMbY=;
-        b=cF+PM2YAd/AUT5qzQ0nJgW7ok1vFg9j5ZWOyJvGxFUYr7Zvy6AanzGkLbB529Gl+Qc
-         YO0AcazHdcSnFyDrtq047WoUQLzvGI1DZh5TKK7xC0VpxBOn4CICGP0cnP5x/zklP9Qi
-         99CZwd4H+SfwuCwqCcvmMHs1IXVcieCMIfit0=
+        Mon, 1 Aug 2022 18:35:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6B0B0165AA
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 15:35:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659393321;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BGq/9sKWsp0P6HkN6ECK5vjCzI7FVypb04D1n+18zbc=;
+        b=gRSBAiNg3akrW3bOuWMCrI4NxNntvvMIZOyG/br2uietjYrT2er+FvDjwPTJsAHYXPujsL
+        wRMxdLiDCpuVQqyAPZ9gCw8EdPsDUtuaifxqPmnq27StWYrMHdbknMuNaj2Oycb1iMCa9o
+        rWfdnrnM9VhQmLJKVr5rL4SZ0HYT/fg=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-552-iyIRC1BLNk-9l9FDRzElcA-1; Mon, 01 Aug 2022 18:35:20 -0400
+X-MC-Unique: iyIRC1BLNk-9l9FDRzElcA-1
+Received: by mail-qv1-f71.google.com with SMTP id q1-20020a056214018100b0047464a85fc4so7167705qvr.7
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 15:35:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LI7JfBTHXcIfr/9UgMaMzqcZcXHkE1NiQIHzTU9OMbY=;
-        b=aXV7G/Ue2SFinj3i9lHIyYH1o8PdMKzNbSuJLdz0IDreGgC3jXFylCE9dY+7oaC0iu
-         tW3TWtbnpl5WcWb+l405kXE+WqYkcezWKRN34mt6MlAQxjS0ljHkxln4mRsoqcZ8FHhq
-         M9FI5Y/HXJJRvfJNR6/+CEQFx9SP8v6Lbxt3ozJo/S7bM7Xod4k2XtmRl8HuYYb0WxKg
-         rEtRVbf8DVxVcczfaj7AE5fBvwXCG34LnH1bJrjFwApPuW9fQmtkRqUkROEJt9J/STUa
-         +/qk3fDXceYEyxE3CHH4n76CvSPD78YuMAdQ2N3OKHK9Slc415Er6ifM3xEl/6+yzc3c
-         GZww==
-X-Gm-Message-State: AJIora+uCnexrOgED9PG00Scf/Xf84Eg+TwkAtLjs0svO5bDZpV1Xmyn
-        hr4V+CWAeESRssZ8gwytlI7paNqN3MgvTg==
-X-Google-Smtp-Source: AGRyM1uD22299VF8u/W8u2GYtL78jALP5c8qdJx6l4mP1moZnqlvmXKsS/lQK4ZeTQJI9WWYNF89+g==
-X-Received: by 2002:a05:6830:d81:b0:616:c424:6f22 with SMTP id bv1-20020a0568300d8100b00616c4246f22mr6734679otb.77.1659393208815;
-        Mon, 01 Aug 2022 15:33:28 -0700 (PDT)
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com. [209.85.167.176])
-        by smtp.gmail.com with ESMTPSA id a15-20020aca1a0f000000b00339c8aab320sm2700726oia.3.2022.08.01.15.33.27
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Aug 2022 15:33:27 -0700 (PDT)
-Received: by mail-oi1-f176.google.com with SMTP id h188so14270719oia.13
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 15:33:27 -0700 (PDT)
-X-Received: by 2002:a05:6808:14d4:b0:33b:1489:8752 with SMTP id
- f20-20020a05680814d400b0033b14898752mr7607300oiw.174.1659393206929; Mon, 01
- Aug 2022 15:33:26 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BGq/9sKWsp0P6HkN6ECK5vjCzI7FVypb04D1n+18zbc=;
+        b=E4xlGKiJiqsfJ3z2YmdsyulWas60Z2J7jgQDbQXshyAzVfmjteCtFF2/ycGYYpm+Ax
+         T1jl0G+ayevcsg7rqH1ojm2pa3RajyDIqgBsnW05BwVsA0/jWZ4RjQ9BfGO7HDGT5cEM
+         7FVwHlpwxF1bVb4JzFdmD3T6mtzIH+owbdjFcztkhBneES/1xJulRqPVIW51fpAMXDKY
+         /LCVOVkA+ROW4BwSH1b7uuVPrWwo6ZHI6+snE6gUN0ap2Ulx4Gow7Eph084iMjdQ8Qrs
+         JX+7Rhx5PkvaUS8J/qa1VPBnvjda1J38N6Rs9kaEPHAYv2VhJOiqv8i+yNYsoRklhUQX
+         QA9g==
+X-Gm-Message-State: AJIora86PGGgaop5fF4Z55vNSp9hMZDhwlK/WkPm2vHFXBj+cvjTYrPL
+        6UQGj0E9oHf6z9/4Ou3M7Ggrs0Ix/LyV5+Mah4RHLKIDPXy+r/sTe3dzTrIpYBuMCflv164iWp3
+        kQAsmeNB2asKqXD8Q33nZHZ54
+X-Received: by 2002:a05:620a:2804:b0:6b8:62a5:71bf with SMTP id f4-20020a05620a280400b006b862a571bfmr12962975qkp.545.1659393320210;
+        Mon, 01 Aug 2022 15:35:20 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1smlmETeKn/0A2gBE08E372BSHdi6gbCTTefeQWYqHn5sTafMHwXCGBPznb08dz8HUSiP5Vbw==
+X-Received: by 2002:a05:620a:2804:b0:6b8:62a5:71bf with SMTP id f4-20020a05620a280400b006b862a571bfmr12962958qkp.545.1659393319964;
+        Mon, 01 Aug 2022 15:35:19 -0700 (PDT)
+Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
+        by smtp.gmail.com with ESMTPSA id d17-20020a05622a15d100b0031eb215a682sm8346216qty.13.2022.08.01.15.35.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 15:35:19 -0700 (PDT)
+Date:   Mon, 1 Aug 2022 18:35:18 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Huang Ying <ying.huang@intel.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Hugh Dickins <hughd@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH RFC 0/4] mm: Remember young bit for migration entries
+Message-ID: <YuhVJmSsgs4Q1bYJ@xz-m1.local>
+References: <20220729014041.21292-1-peterx@redhat.com>
+ <f23b71e5-a5f5-bb39-dbec-3e85af344185@redhat.com>
 MIME-Version: 1.0
-References: <20220504232102.469959-1-evgreen@chromium.org> <20220506160807.GA1060@bug>
- <CAE=gft6m75T0UC2DBhfFhuSMW6TK7aatD_04sQ18WosgGVsATw@mail.gmail.com>
- <CAJZ5v0gxq=EA_WWUiCR_w8o87iTHDR7OC5wi=GRBaAQS2ofd5w@mail.gmail.com>
- <CAE=gft6V6RLc-d4AOuRUVU2u1jMGghDRSrFqiCqMCLxemui8Pw@mail.gmail.com> <CAE=gft5OYAgosqmwNkk=Cwoooeg93Njmnzfz=gwCaLB0Ts+=sw@mail.gmail.com>
-In-Reply-To: <CAE=gft5OYAgosqmwNkk=Cwoooeg93Njmnzfz=gwCaLB0Ts+=sw@mail.gmail.com>
-From:   Evan Green <evgreen@chromium.org>
-Date:   Mon, 1 Aug 2022 15:32:50 -0700
-X-Gmail-Original-Message-ID: <CAE=gft6sPkhNcz7+fJuDzQo2f8fM_0Wv_OWC9W2LyvXd6M6zeQ@mail.gmail.com>
-Message-ID: <CAE=gft6sPkhNcz7+fJuDzQo2f8fM_0Wv_OWC9W2LyvXd6M6zeQ@mail.gmail.com>
-Subject: Re: [PATCH 00/10] Encrypted Hibernation
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Pavel Machek <pavel@ucw.cz>, LKML <linux-kernel@vger.kernel.org>,
-        Matthew Garrett <mgarrett@aurora.tech>,
-        Daniil Lunev <dlunev@google.com>, zohar@linux.ibm.com,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        linux-integrity@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        Hao Wu <hao.wu@rubrik.com>, James Morris <jmorris@namei.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Len Brown <len.brown@intel.com>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        "Serge E. Hallyn" <serge@hallyn.com>, axelj <axelj@axis.com>,
-        keyrings@vger.kernel.org,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-security-module@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <f23b71e5-a5f5-bb39-dbec-3e85af344185@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 8:42 AM Evan Green <evgreen@chromium.org> wrote:
->
-> On Tue, May 17, 2022 at 10:34 AM Evan Green <evgreen@chromium.org> wrote:
-> >
-> > Hi Rafael,
-> >
-> > On Tue, May 17, 2022 at 9:06 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
-> > >
-> > > On Mon, May 9, 2022 at 6:44 PM Evan Green <evgreen@chromium.org> wrote:
-> > > >
-> > > > On Fri, May 6, 2022 at 9:08 AM Pavel Machek <pavel@ucw.cz> wrote:
-> > > > >
-> > > > > Hi!
-> > > > >
-> > > > > > We are exploring enabling hibernation in some new scenarios. However,
-> > > > > > our security team has a few requirements, listed below:
-> > > > > > 1. The hibernate image must be encrypted with protection derived from
-> > > > > >    both the platform (eg TPM) and user authentication data (eg
-> > > > > >    password).
-> > > > > > 2. Hibernation must not be a vector by which a malicious userspace can
-> > > > > >    escalate to the kernel.
-> > > > >
-> > > > > Can you (or your security team) explain why requirement 2. is needed?
-> > > > >
-> > > > > On normal systems, trusted userspace handles kernel upgrades (for example),
-> > > > > so it can escalate to kernel priviledges.
-> > > > >
-> > > >
-> > > > Our systems are a little more sealed up than a normal distro, we use
-> > > > Verified Boot [1]. To summarize, RO firmware with an embedded public
-> > > > key verifies that the kernel+commandline was signed by Google. The
-> > > > commandline includes the root hash of the rootfs as well (where the
-> > > > modules live). So when an update is applied (A/B style, including the
-> > > > whole rootfs), assuming the RO firmware stayed RO (which requires
-> > > > physical measures to defeat), we can guarantee that the kernel,
-> > > > commandline, and rootfs have not been tampered with.
-> > > >
-> > > > Verified boot gives us confidence that on each boot, we're at least
-> > > > starting from known code. This makes it more challenging for an
-> > > > attacker to persist an exploit across reboot. With the kernel and
-> > > > modules verified, we try to make it non-trivial for someone who does
-> > > > manage to gain root execution once from escalating to kernel
-> > > > execution. Hibernation would be one obvious escalation route, so we're
-> > > > hoping to find a way to enable it without handing out that easy
-> > > > primitive.
-> > > >
-> > > > [1] https://www.chromium.org/chromium-os/chromiumos-design-docs/verified-boot/
-> > >
-> > > So I guess this really is an RFC.
-> >
-> > Yes, I suppose it is.
-> >
-> > >
-> > > Honestly, I need more time to go through this and there are pieces of
-> > > it that need to be looked at other people (like the TPM-related
-> > > changes).
-> >
-> > No problem, thanks for the reply to let me know. I expect some back
-> > and forth in terms of what should be hidden behind abstractions and
-> > where exactly things should live. But I wanted to get this out to
-> > upstream as early as I could, just to get initial reactions on the
-> > overall concept and design. Looking forward to hearing your thoughts
-> > when you get a chance, and let me know if there are others I should be
-> > adding that I've missed.
->
-> Gentle bump in case this dropped off of radars, I'd still appreciate
-> any feedback folks had on this series.
+On Mon, Aug 01, 2022 at 10:21:32AM +0200, David Hildenbrand wrote:
+> On 29.07.22 03:40, Peter Xu wrote:
+> > [Marking as RFC; only x86 is supported for now, plan to add a few more
+> >  archs when there's a formal version]
+> > 
+> > Problem
+> > =======
+> > 
+> > When migrate a page, right now we always mark the migrated page as old.
+> > The reason could be that we don't really know whether the page is hot or
+> > cold, so we could have taken it a default negative assuming that's safer.
+> > 
+> > However that could lead to at least two problems:
+> > 
+> >   (1) We lost the real hot/cold information while we could have persisted.
+> >       That information shouldn't change even if the backing page is changed
+> >       after the migration,
+> > 
+> >   (2) There can be always extra overhead on the immediate next access to
+> >       any migrated page, because hardware MMU needs cycles to set the young
+> >       bit again (as long as the MMU supports).
+> > 
+> > Many of the recent upstream works showed that (2) is not something trivial
+> > and actually very measurable.  In my test case, reading 1G chunk of memory
+> > - jumping in page size intervals - could take 99ms just because of the
+> > extra setting on the young bit on a generic x86_64 system, comparing to 4ms
+> > if young set.
+> > 
+> > This issue is originally reported by Andrea Arcangeli.
+> > 
+> > Solution
+> > ========
+> > 
+> > To solve this problem, this patchset tries to remember the young bit in the
+> > migration entries and carry it over when recovering the ptes.
+> > 
+> > We have the chance to do so because in many systems the swap offset is not
+> > really fully used.  Migration entries use swp offset to store PFN only,
+> > while the PFN is normally not as large as swp offset and normally smaller.
+> > It means we do have some free bits in swp offset that we can use to store
+> > things like young, and that's how this series tried to approach this
+> > problem.
+> > 
+> > One tricky thing here is even though we're embedding the information into
+> > swap entry which seems to be a very generic data structure, the number of
+> > bits that are free is still arch dependent.  Not only because the size of
+> > swp_entry_t differs, but also due to the different layouts of swap ptes on
+> > different archs.
+> > 
+> > Here, this series requires specific arch to define an extra macro called
+> > __ARCH_SWP_OFFSET_BITS represents the size of swp offset.  With this
+> > information, the swap logic can know whether there's extra bits to use,
+> > then it'll remember the young bits when possible.  By default, it'll keep
+> > the old behavior of keeping all migrated pages cold.
+> > 
+> 
+> 
+> I played with a similar idea when working on pte_swp_exclusive() but
+> gave up, because it ended up looking too hacky. Looking at patch #2, I
+> get the same feeling again. Kind of hacky.
 
-One more bump here, as we'd really love to get encrypted hibernation
-to a form upstream would accept if at all possible. We were
-considering landing this in our Chrome OS tree for now, then coming
-back in a couple months with a "we've been baking this ourselves and
-it's going so great, oooh yeah". I'm not sure if upstream would find
-that compelling or not. But in any case, some guidance towards making
-this more upstream friendly would be well appreciated.
+Could you explain what's the "hacky" part you mentioned?
 
-One thing I realized in attempting to pick this myself is that the
-trusted key blob format has moved to ASN.1. So I should really move
-the creation ticket to the new ASN.1 format (if I can figure out the
-right OID for that piece), which would allow me to drop a lot of the
-ugly stuff in tpm2_unpack_blob(). Maybe if I get no other comments
-I'll work on that and resend.
+I used swap entry to avoid per-arch operations. I failed to figure out a
+common way to know swp offset length myself so unluckily in this RFC I
+still needed one macro per-arch.  Ying's suggestion seems to be a good fit
+here to me to remove the last arch-specific dependency.
 
--Evan
+> 
+> 
+> If we mostly only care about x86_64, and it's a performance improvement
+> after all, why not simply do it like
+> pte_swp_mkexclusive/pte_swp_exclusive/ ... and reuse a spare PTE bit?
+
+Page migration works for most archs, I want to have it work for all archs
+that can easily benefit from it.
+
+Besides I actually have a question on the anon exclusive bit in the swap
+pte: since we have that anyway, why we need a specific migration type for
+anon exclusive pages?  Can it be simply read migration entries with anon
+exclusive bit set?
+
+Thanks,
+
+-- 
+Peter Xu
+
