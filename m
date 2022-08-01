@@ -2,99 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E30E9C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 17:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED623C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 17:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231836AbiHARa0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 13:30:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44406 "EHLO
+        id S232487AbiHARcK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 13:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232417AbiHARaV (ORCPT
+        with ESMTP id S231779AbiHARcI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 13:30:21 -0400
-Received: from mail-il1-f173.google.com (mail-il1-f173.google.com [209.85.166.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBB626EE;
-        Mon,  1 Aug 2022 10:30:20 -0700 (PDT)
-Received: by mail-il1-f173.google.com with SMTP id s16so2207728ilp.3;
-        Mon, 01 Aug 2022 10:30:20 -0700 (PDT)
+        Mon, 1 Aug 2022 13:32:08 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 996C16313
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 10:32:07 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id f65so10267293pgc.12
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 10:32:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=Oes67+Ylc8hvEPTUUvcsJqVHsb6Ia9jyLiE8hgCVNoY=;
+        b=T1jFPqf9wVODHTeJONRr9EOi7wNtPB+eoTceHo+25lPpxLhaDKmEaTE0l8nXc6XqX9
+         NuUJGQV27xk9kGPp+GKQRyU0rrcggjp6JWDrhKdzDkDVTootOd88OwpFBK4hX8XkFdm3
+         qvWoUKI0V2ok6SdATji0mXb8wXUniuuI3U8m4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=0LWhWxKEK9e9eqjUyOZZ8NVIggUUXhWj4ioBL7S50EQ=;
-        b=1LNbUKMHFJQpuH+e5ETZkYzVYwK/0UuSZSwh+VuE6h0Ny9LUjkXENxy13MDAc8l2yi
-         B8boc2H6cr7FyHdskxXRtTicgQon9to60vNxduMYly+0fCAjXWBK8gzx8LnTaBaB+FLf
-         vJf3uXmHYHqUDX2p4tCvEYbedPM0SWH/ZkHCN/FBpoc6PXCLj6wiq0ijq1eWDAYdqMs6
-         Jx0ZMcAG34Zvt0rrl6qryC3vjl6PTwkCkJppQu9LUFuCYccDoTJRTytsAEnIucB55qMk
-         M0wu6cWYpF79FnMfloTqEyIzoI5vxeY5BAtNe/wZFl/E86R4DhhZg8sXn2nS2COe09+1
-         gmqA==
-X-Gm-Message-State: ACgBeo3woR/kxkjxbI/YFKU0jNwPIW1T81WSWU0odRLsRexA7aiX3byk
-        FI+uSrsl9Ifv+Pz8SvbzvA==
-X-Google-Smtp-Source: AA6agR5vgSzZo7CA10FZ++gLwwH0vmNXaPRlHfPRzbPu2sVj4x2fE8QJdkfxldaj9o0Ag5kQ0I97Eg==
-X-Received: by 2002:a05:6e02:12c3:b0:2de:79d9:f408 with SMTP id i3-20020a056e0212c300b002de79d9f408mr3517874ilm.107.1659375019748;
-        Mon, 01 Aug 2022 10:30:19 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id x14-20020a92de0e000000b002dd0cf02f42sm4958665ilm.44.2022.08.01.10.30.17
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=Oes67+Ylc8hvEPTUUvcsJqVHsb6Ia9jyLiE8hgCVNoY=;
+        b=Iwe7kh/KgPr0YEv5eiD9hROCG2+zQ3j3qIQjatWl8jiMTCbaeNdpLB8O6k82+di7zU
+         AemcvpYYuqYaWPnTuIRkUSrPpCc8sHTV9ugqZu8Bm9uCCfTJYtokoKGm1Kw7XyiRCYNd
+         0VYH/fuMwSffYm7Eh2K3H98bffuTd6nIKlYmBsAVoEw/WXAjXTIlh2QoQCz7wdzRjCDn
+         I6mlwu4j0zurj6rmNLEQUXaccZxyptqbG7KtOcL0DqeoX8iN13cgER7c+SngJMGLVdfG
+         Yudl98M4qbw8gzvtf/qDV7zPrmNFc0Ls+I9lHmOp1ePUD1i11amcdlwIe/2iSsQQZtL4
+         9w3w==
+X-Gm-Message-State: ACgBeo1KW0btG+16hUNJEPWeYsy7SNmF2zFPI8rel84bhKv3pONLTDA7
+        mc07CSxg1uBRdugP09bj9e0RvQ==
+X-Google-Smtp-Source: AA6agR7NnPUJRs48F3s0ZZprsEavv77hy5g1o+FyMRU18b91gvKvhCbSSLcbY/yEIdJGd6An1iBiXQ==
+X-Received: by 2002:a62:52c3:0:b0:52d:c062:27d2 with SMTP id g186-20020a6252c3000000b0052dc06227d2mr1945806pfb.53.1659375127034;
+        Mon, 01 Aug 2022 10:32:07 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id r7-20020a63ce47000000b004114aad90ebsm7794642pgi.49.2022.08.01.10.32.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Aug 2022 10:30:18 -0700 (PDT)
-Received: (nullmailer pid 1218214 invoked by uid 1000);
-        Mon, 01 Aug 2022 17:30:16 -0000
-Date:   Mon, 1 Aug 2022 11:30:16 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        linux-kernel@vger.kernel.org, Jingoo Han <jingoohan1@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Serge Semin <fancer.lancer@gmail.com>
-Subject: Re: [PATCH v4 01/17] dt-bindings: PCI: dwc: Detach common RP/EP DT
- bindings
-Message-ID: <20220801173016.GA1218163-robh@kernel.org>
-References: <20220728143427.13617-1-Sergey.Semin@baikalelectronics.ru>
- <20220728143427.13617-2-Sergey.Semin@baikalelectronics.ru>
+        Mon, 01 Aug 2022 10:32:02 -0700 (PDT)
+Date:   Mon, 1 Aug 2022 10:32:00 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [GIT PULL] pstore updates for v5.20-rc1
+Message-ID: <202208011029.A1E7EE281@keescook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220728143427.13617-2-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 28 Jul 2022 17:34:11 +0300, Serge Semin wrote:
-> Currently both DW PCIe Root Port and End-point DT bindings are defined as
-> separate schemas. Carefully looking at them, at the hardware reference
-> manuals and seeing there is a generic part of the driver used by the both
-> RP and EP drivers we can greatly simplify the DW PCIe controller bindings
-> by moving some of the properties into the common DT schema. It concerns
-> the PERST GPIO control, number of lanes, number of iATU windows and CDM
-> check properties. They will be defined in the snps,dw-pcie-common.yaml
-> schema which will be referenced in the DW PCIe Root Port and End-point DT
-> bindings in order to evaluate the common for both of these controllers
-> properties. The rest of properties like reg{,-names}, clock{s,-names},
-> reset{s,-names}, etc will be consolidate there in one of the next commits.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> 
-> ---
-> 
-> Changelog v3:
-> - This is a new patch unpinned from the next one:
->   https://lore.kernel.org/linux-pci/20220503214638.1895-2-Sergey.Semin@baikalelectronics.ru/
->   by the Rob' request. (@Rob)
-> ---
->  .../bindings/pci/snps,dw-pcie-common.yaml     | 76 +++++++++++++++++++
->  .../bindings/pci/snps,dw-pcie-ep.yaml         | 31 +-------
->  .../devicetree/bindings/pci/snps,dw-pcie.yaml | 33 +-------
->  3 files changed, 78 insertions(+), 62 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/pci/snps,dw-pcie-common.yaml
-> 
+Hi Linus,
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Please pull these pstore updates for v5.20-rc1. The base (v5.18-rc2) is
+correct -- I intentionally skipped this tree last merge window.
+
+Thanks!
+
+-Kees
+
+The following changes since commit ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e:
+
+  Linux 5.18-rc2 (2022-04-10 14:21:36 -1000)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git tags/pstore-v5.20-rc1
+
+for you to fetch changes up to 2c09d1443b9b8b6e25bfb2acf51ad442cf9b314e:
+
+  pstore/zone: cleanup "rcnt" type (2022-06-23 08:27:52 -0700)
+
+----------------------------------------------------------------
+pstore updates for v5.20-rc1
+
+- Migrate to modern acomp crypto interface (Ard Biesheuvel)
+
+- Use better return type for "rcnt" (Dan Carpenter)
+
+----------------------------------------------------------------
+Ard Biesheuvel (1):
+      pstore: migrate to crypto acomp interface
+
+Dan Carpenter (1):
+      pstore/zone: cleanup "rcnt" type
+
+ fs/pstore/platform.c | 63 ++++++++++++++++++++++++++++++++++++++++++----------
+ fs/pstore/zone.c     | 12 +++++-----
+ 2 files changed, 57 insertions(+), 18 deletions(-)
+
+-- 
+Kees Cook
