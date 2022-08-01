@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC1CC19F29
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 503A7C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:02:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232971AbiHAMCm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:02:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34980 "EHLO
+        id S233006AbiHAMCr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:02:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233032AbiHAMAm (ORCPT
+        with ESMTP id S233116AbiHAMAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:00:42 -0400
+        Mon, 1 Aug 2022 08:00:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 053654E87E;
-        Mon,  1 Aug 2022 04:53:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB604E872;
+        Mon,  1 Aug 2022 04:53:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A05D612C6;
-        Mon,  1 Aug 2022 11:53:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47314C433C1;
-        Mon,  1 Aug 2022 11:53:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08559612C6;
+        Mon,  1 Aug 2022 11:53:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CEFBC433D6;
+        Mon,  1 Aug 2022 11:53:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354786;
-        bh=ylwYwQBHKHrrf5WERfOmLKeWNJrYqbbBICcC7Ddjhpg=;
+        s=korg; t=1659354789;
+        bh=h2cD6mP9oo859yPB9nAEQNjXoWrMcTRTI3Ci+qVuKZg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jxhRYgA3Ag4bB822X3tSBEcRT6EQ5Y/EWHqkrF8obB1oessRDT/F7OoIyB8buAVE1
-         JwesmDNfeV5ry5ykIEd8DjyRpAT21+0Ej3dV4X72aGKfBRcTO5CGkqplg3h1jDkPlC
-         DBvR6N/AGXaUDJHuGSkQdl4s7uGmA7ve1XOF/MsI=
+        b=wbS6eeRImnpwXY3RoMIkqRmy+FmbSd7dNLx5QyDYILz8xLIFqHbpyFVjL4CkwFo0U
+         mG8rEOTjekz3kD1ofWGMFPaI8LHuMDiHQ2cN30985YBDQqNA4jUQEASYvAArn0awpa
+         CusKtdinTxbFuwRZHf1jS/6KX38vl7/C0GXyMDhs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         George Kuruvinakunnel <george.kuruvinakunnel@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.15 20/69] ice: check (DD | EOF) bits on Rx descriptor rather than (EOP | RS)
-Date:   Mon,  1 Aug 2022 13:46:44 +0200
-Message-Id: <20220801114135.330401083@linuxfoundation.org>
+Subject: [PATCH 5.15 21/69] ice: do not setup vlan for loopback VSI
+Date:   Mon,  1 Aug 2022 13:46:45 +0200
+Message-Id: <20220801114135.369470914@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -52,18 +52,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-commit 283d736ff7c7e96ac5b32c6c0de40372f8eb171e upstream.
+commit cc019545a238518fa9da1e2a889f6e1bb1005a63 upstream.
 
-Tx side sets EOP and RS bits on descriptors to indicate that a
-particular descriptor is the last one and needs to generate an irq when
-it was sent. These bits should not be checked on completion path
-regardless whether it's the Tx or the Rx. DD bit serves this purpose and
-it indicates that a particular descriptor is either for Rx or was
-successfully Txed. EOF is also set as loopback test does not xmit
-fragmented frames.
-
-Look at (DD | EOF) bits setting in ice_lbtest_receive_frames() instead
-of EOP and RS pair.
+Currently loopback test is failiing due to the error returned from
+ice_vsi_vlan_setup(). Skip calling it when preparing loopback VSI.
 
 Fixes: 0e674aeb0b77 ("ice: Add handler for ethtool selftest")
 Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
@@ -71,20 +63,26 @@ Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ice/ice_ethtool.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_main.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -651,7 +651,8 @@ static int ice_lbtest_receive_frames(str
- 		rx_desc = ICE_RX_DESC(rx_ring, i);
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -5481,10 +5481,12 @@ int ice_vsi_cfg(struct ice_vsi *vsi)
+ 	if (vsi->netdev) {
+ 		ice_set_rx_mode(vsi->netdev);
  
- 		if (!(rx_desc->wb.status_error0 &
--		    cpu_to_le16(ICE_TX_DESC_CMD_EOP | ICE_TX_DESC_CMD_RS)))
-+		    (cpu_to_le16(BIT(ICE_RX_FLEX_DESC_STATUS0_DD_S)) |
-+		     cpu_to_le16(BIT(ICE_RX_FLEX_DESC_STATUS0_EOF_S)))))
- 			continue;
+-		err = ice_vsi_vlan_setup(vsi);
++		if (vsi->type != ICE_VSI_LB) {
++			err = ice_vsi_vlan_setup(vsi);
  
- 		rx_buf = &rx_ring->rx_buf[i];
+-		if (err)
+-			return err;
++			if (err)
++				return err;
++		}
+ 	}
+ 	ice_vsi_cfg_dcb_rings(vsi);
+ 
 
 
