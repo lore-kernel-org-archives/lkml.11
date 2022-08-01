@@ -2,202 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE118C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 22:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A4CC19F2C
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 22:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235395AbiHAWbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 18:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43964 "EHLO
+        id S235406AbiHAWde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 18:33:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234773AbiHAWba (ORCPT
+        with ESMTP id S234773AbiHAWd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 18:31:30 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2074.outbound.protection.outlook.com [40.107.223.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA651137;
-        Mon,  1 Aug 2022 15:31:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Kd4u44E1uD0WjF9wsZHVD+LB6A0ZYfrDQ86uWMIj+rlQUTrdXZT8wkk8L73NZsIOgCegJRwB/ov/dWq//tfBAofW92iDQEpjxGaLvo3QUURMni9cZzVREUxsSZUQn+dd7L+RBgctCDWEiiSQsHE3pLHugasOimgeCT+xCdnyh1ZfP5WmAlMXrRpaNCUsNhddp1Ng7jAjen2G7l9e+I1sLcGkrPxYG+oNYX/2q1FtpDMkZr7XoF5N6/UeFi5dgfEQptSOY9RiIYJ6vXxVXcHKiYg1U6Gd0XTQ7jZOgNj+Jm9hGLm2cU0JRHSegzYlN8oNHZcK+wNwQPeN3VnEGahmnA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LWSGKpvGkFcO/0jvufZiFG2ETT12MwGKKKv4QDJq7n0=;
- b=eYWsRO8ue/bQyjTx6doZ/cy00d3tWrEydeIJKi7YsrhafN9LQhvIYC3KuAXKrnDpPGtO49hRpo/TcocVWHQbwOVgQjrejEVc+fIll5Bly5dq7YUalhodrAjHR5046NDB5jCyTyPQ1Rtu4pvTZKqFq8KkjP2YB/P4kAdZDRZSstLp3DWYh5FNgQGkcyq8VvaqsHcp+VUyFk+HyJmBM19/Fv8GCzEjkWE6PRnF/sd/GMNJtkSzZTS6wUyELWJf287fgjifbqnW49bZyJhLe33xdSPn01SPWaiiH4Gx96OKnTMsnOQfpIvgR1kIKxfWp5Rkxu9CW5ZqxLBsMXaOxAGfHg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LWSGKpvGkFcO/0jvufZiFG2ETT12MwGKKKv4QDJq7n0=;
- b=JTE/A1NEBKB3uDNMxYtWfJa6XndmDbUlCIKaxw3nxuA6R543K8I+Do8+qzANQZYnOSMqRR8uoeQBK2yGbDy0thw+ASPt43a0pO3B+Nc/YbRS/yQNv2n0A8Rw52J2WRgkAwDqK2mNA2+1G8EKGWKitfkxVYX0vC1fAV0mgyJQlNk=
-Received: from SN6PR12MB2767.namprd12.prod.outlook.com (2603:10b6:805:75::23)
- by CY4PR1201MB0024.namprd12.prod.outlook.com (2603:10b6:910:1b::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.14; Mon, 1 Aug
- 2022 22:31:27 +0000
-Received: from SN6PR12MB2767.namprd12.prod.outlook.com
- ([fe80::8953:6baa:97bb:a15d]) by SN6PR12MB2767.namprd12.prod.outlook.com
- ([fe80::8953:6baa:97bb:a15d%7]) with mapi id 15.20.5482.016; Mon, 1 Aug 2022
- 22:31:27 +0000
-From:   "Kalra, Ashish" <Ashish.Kalra@amd.com>
-To:     Borislav Petkov <bp@alien8.de>
-CC:     "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "jroedel@suse.de" <jroedel@suse.de>,
-        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "ardb@kernel.org" <ardb@kernel.org>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "seanjc@google.com" <seanjc@google.com>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "jmattson@google.com" <jmattson@google.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "slp@redhat.com" <slp@redhat.com>,
-        "pgonda@google.com" <pgonda@google.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "srinivas.pandruvada@linux.intel.com" 
-        <srinivas.pandruvada@linux.intel.com>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "dovmurik@linux.ibm.com" <dovmurik@linux.ibm.com>,
-        "tobin@ibm.com" <tobin@ibm.com>,
-        "Roth, Michael" <Michael.Roth@amd.com>,
-        "vbabka@suse.cz" <vbabka@suse.cz>,
-        "kirill@shutemov.name" <kirill@shutemov.name>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "marcorr@google.com" <marcorr@google.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "alpergun@google.com" <alpergun@google.com>,
-        "dgilbert@redhat.com" <dgilbert@redhat.com>,
-        "jarkko@kernel.org" <jarkko@kernel.org>
-Subject: RE: [PATCH Part2 v6 06/49] x86/sev: Add helper functions for
- RMPUPDATE and PSMASH instruction
-Thread-Topic: [PATCH Part2 v6 06/49] x86/sev: Add helper functions for
- RMPUPDATE and PSMASH instruction
-Thread-Index: AQHYoDP+ulHh/HmbIUq97K70l/FApa2aqV5g
-Date:   Mon, 1 Aug 2022 22:31:26 +0000
-Message-ID: <SN6PR12MB2767A5C613388594D7EAD3528E9A9@SN6PR12MB2767.namprd12.prod.outlook.com>
-References: <cover.1655761627.git.ashish.kalra@amd.com>
- <e4643e9d37fcb025d0aec9080feefaae5e9245d5.1655761627.git.ashish.kalra@amd.com>
- <Yt6qit4al5/eM7YO@zn.tnic>
-In-Reply-To: <Yt6qit4al5/eM7YO@zn.tnic>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Enabled=true;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SetDate=2022-08-01T22:20:21Z;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Method=Standard;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Name=General;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ActionId=b0f0cfce-9c30-4490-bf8a-ba7bd4d8db07;
- MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ContentBits=1
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_enabled: true
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_setdate: 2022-08-01T22:31:25Z
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_method: Standard
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_name: General
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_actionid: e8caff76-2f36-4003-be50-79ad439eec77
-msip_label_4342314e-0df4-4b58-84bf-38bed6170a0f_contentbits: 0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 76e7d27c-0287-48fa-8aca-08da740d92a5
-x-ms-traffictypediagnostic: CY4PR1201MB0024:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qoTTJiTYrES1fpwEGwyfUKDPnaDyfiOaYpcyNslXIA1QafYaJvaXCXUuVqeSgICvBBrHd5sCeLB7934dAoCIR0jyHFaw77/jFpIoSKQTxuv+00wKJTy2sq38UrJ/9l/CrOAp9Lrc5XCJv2g2RPpkQbemrRtJRgduSegsthHECj1mkNutCc3IfJy7cOVI28Tk2ayyTcJW62toWF33d9y6R6DPcuNeEG/Ga1sU2jqLO0D0ft0rjSwXuKHQscFIG8GUSt/z4lvPvX96cqqZGapR4Qa0Jz2gLQHX9SQupG0SnKrYL0iSWqs1MS3dzje3Juv/OaApWmz26577hC8fr7YrgpDqSNqGtVlaHQ09jxWnp83BYl3DaIOJ2FyTEs8jXmr+KZJh+uuWQevsu9gquRW84zUn8KTGqybIG8LWIzCm6N2fEGU7oJZDbyTXzhpPJvwnVxu1kGDgeQltqgF5poIw7S9BDrtwK5jIslF+CPx/ZCqHP3w/i9kBjD+lGuvWePMWjYa4qNa70l+K0XTF6EEQsRde4MCXRiELmXfgrGwtYidbJydvgblj7TdvI01oscueWd47UhsMNf2p1JP7ec7Gs+0JhOePXSNF4Y0DtCG8dlkr3tVQvWjIv66DAu3CPNa7vK7UldR6+RfgVmZAnG3ohDjQgQMrakImKr/6Paa2P9ibZVmatKYHe7EBk5ZL5Viq7k/ZJiL7EhJeNh87dj05Ka3Vhrl5MNF7IGvnHlX1alB21DVw24cWWfNNvHkVa4e7vC5H/Ux1HujaGdsIRvXnPKXczQkk71slVQlP+W9Cmv0egTI87/7iImX8u5LvIT9H
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR12MB2767.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(376002)(39860400002)(136003)(396003)(4744005)(66446008)(55016003)(66946007)(2906002)(5660300002)(7406005)(33656002)(7416002)(66476007)(76116006)(8936002)(8676002)(64756008)(66556008)(4326008)(54906003)(41300700001)(316002)(6916009)(6506007)(7696005)(71200400001)(478600001)(38100700002)(122000001)(38070700005)(9686003)(86362001)(26005)(83380400001)(186003)(52536014);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?XZAbQO5vVfnBHLUnVfWxV4YiMpjtWez84W/6HX2SsxxOBiM2KkwISHwKDTF6?=
- =?us-ascii?Q?4lfXvW+bSPewuM8ImsBl+VyGx2Vx+04+HFIqjOGwMu78FVnn3EoFTFMHPVIB?=
- =?us-ascii?Q?6t6XavQ+DYu60E5fOxetaKht5xeW568NnjyIXMpZhXDSh0jSyqTeYW4ScC+H?=
- =?us-ascii?Q?PfJumzO3F2kvZTC4l8P3KKXyU3epOV618r3izED9JDOUm+v48TUbvLtW+XBU?=
- =?us-ascii?Q?1i2B9+R14pUEBhbzgar2RPGEF7zFiCtWRLYwi8Kovj0h98CpYYBSxPnD9W75?=
- =?us-ascii?Q?IKGSXlhK7hRkA2obkB+BblYZdBS1bZtvzRf/OgFt6Iv7HF0d8VQEREsXe51U?=
- =?us-ascii?Q?2QtCVIq6ArHWnQVurekeNJGnm6VXtmGPJgDdfj95JRqEAeSma5p3V+LldwmE?=
- =?us-ascii?Q?ovWju+fT0aPaBIyMJ+20buAfi272J4PaDneNiUeLJ9GxF5mBEAglM3cBbNjM?=
- =?us-ascii?Q?7vc2TLyHEw2D6obTiCRoxOY3CT676JqKntszmWkxJxwp9LHFpkDrcQnDFBSn?=
- =?us-ascii?Q?zfNjPTRFoHjCFXWMQ4DCaSQ+K00JnEnRv/C25BLaL60r9mlfstSSSM0k4NoR?=
- =?us-ascii?Q?7Zq2xa7iGquzR2Ae3wFFd5REdyhRnP1o2ySzFisnj/8BHu80Gc1J0GAo3sR9?=
- =?us-ascii?Q?fLDNm5Kglxb3UWkat2R0nTAJ7VHn3q/abyCsq0ECDXAyVwil1ODuz92IEdsr?=
- =?us-ascii?Q?244bqiMxmQKYoXlsr3L4pYYL/VY1ukFC0HhevrRFpET28QmnOy6ATlKarOwH?=
- =?us-ascii?Q?tO8kElCu6cHwoeLeo/NVZ7qLdbWm3uSWwKkXpwIDpNSZW241PayxJBC3mo0q?=
- =?us-ascii?Q?w7uNfxNeRDA94+F/UU1wn4ZJTT/Ki/vtkbR5Xg3Po0xWLdPWS90lKZ+VwyXn?=
- =?us-ascii?Q?gk6WuKEYKt0rwMurVO6pV5RadtNj/q7h4Sy48YySSE3bVNdPiNAAFEmxClHU?=
- =?us-ascii?Q?3vGnLaVKRKZnTKymD1Ixp3wZaVEUv4tHV+pS127Vp9fVC3RiMtkdzldGrTRs?=
- =?us-ascii?Q?Ubc/PGGmbSnMuP9TDzU8b4leT/0uusPW1zUadoo3Bv2pbObB09YCGl3gNcCj?=
- =?us-ascii?Q?aHB54j0ntXrSVtFjzWFs+lmASN/W7RIpiqqkTGx8JdV6ax4nRGXB0dL4DN4Z?=
- =?us-ascii?Q?LbtXXkVFKUjAygkXyEgRzvTP1IuJ/td3s2RAFHg6itzed3HKJWTRF584hfqX?=
- =?us-ascii?Q?XzyBEjGlccwfApygp62u9MgrFXDyxnno41J3X4coL+aZykkEZh+qoGQYYrky?=
- =?us-ascii?Q?UiNFislVpo/nPWl4c5p/5yfyy2YQeO9CK1cFriH2hxQ9rEYaJcWT28O8QduM?=
- =?us-ascii?Q?aSzfXty5kGta/CdY9yBflFNidnOur5a2UoQB6pkAKzG7yiO5a8LSp8dXzDgP?=
- =?us-ascii?Q?DFe5u204qQyeFIcODH64TZtkDSKA+Qk85d5m+cUBVh/a7jc4U+pugzi4uWeF?=
- =?us-ascii?Q?PkythWzKU0Zr+y7VeP+u/CRc8znnlC9/lbcTH3vSfwgIP0HtcpXcs+8heoJO?=
- =?us-ascii?Q?aCkF9Qd8B936fL/X095zPh9Efb9zAmcEvXKJRxDBdaIahOQLVUxkI8m5/c1f?=
- =?us-ascii?Q?YmVESNjBagQoX7RBa1I=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 1 Aug 2022 18:33:29 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B2F72228E
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 15:33:26 -0700 (PDT)
+Received: from [192.168.1.206] (unknown [109.252.119.247])
+        by mail.ispras.ru (Postfix) with ESMTPSA id 6979540D403E;
+        Mon,  1 Aug 2022 22:33:21 +0000 (UTC)
+Subject: Re: [POSSIBLE BUG] iommu/io-pgtable-arm: possible dereferencing of
+ NULL pointer
+To:     Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+        Subkhankulov Rustam <subkhankulov@ispras.ru>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
+References: <28df50012344fb1c925a7ceaf55ae400152ffb48.camel@ispras.ru>
+ <20220719173610.GA14526@willie-the-truck>
+ <71774d67-6c7f-ea42-2911-a3eb1955777d@arm.com>
+From:   Alexey Khoroshilov <khoroshilov@ispras.ru>
+Autocrypt: addr=khoroshilov@ispras.ru; prefer-encrypt=mutual; keydata=
+ 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
+ kK2E04Fb+Zk1eJvHYRc=
+Message-ID: <39d8ceb6-6982-f4b9-1ed6-c2daea051386@ispras.ru>
+Date:   Tue, 2 Aug 2022 01:33:20 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR12MB2767.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 76e7d27c-0287-48fa-8aca-08da740d92a5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Aug 2022 22:31:26.9909
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kNBGlzOJSUmuE/WK2f9nHncKTMOSTyudGC9uy5vZ0NTnvZtqH+nkhY6IhbU8c9lSlIxFQutqH+kyIN+bhwv/6Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB0024
+In-Reply-To: <71774d67-6c7f-ea42-2911-a3eb1955777d@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: ru-RU
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[AMD Official Use Only - General]
+On 01.08.2022 14:06, Robin Murphy wrote:
+> On 2022-07-19 18:36, Will Deacon wrote:
+>> On Mon, Jul 18, 2022 at 12:20:06PM +0300, Subkhankulov Rustam wrote:
+>>> Version: 5-19-rc6
+>>>
+>>> In function '__arm_lpae_alloc_pages' pointer 'dev' is compared with
+>>> NULL at [drivers/iommu/io-pgtable-arm.c: 203]. This means that the
+>>> pointer can be NULL.
+>>>
+>>> -----------------------------------------------------------------------
+>>> 203     p = alloc_pages_node(dev ? dev_to_node(dev) : NUMA_NO_NODE,
+>>> 204                  gfp | __GFP_ZERO, order);
+>>> -----------------------------------------------------------------------
+>>>
+>>> Then, if cfg->coherent_walk == 0 at [drivers/iommu/io-pgtable-arm.c:
+>>> 209], function 'dma_map_single', which is defined as
+>>> 'dma_map_single_attrs', is called and pointer dev is passed as
+>>> first parameter.
+>>>
+>>> -----------------------------------------------------------------------
+>>> 209     if (!cfg->coherent_walk) {
+>>> 208         dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
+>>> -----------------------------------------------------------------------
+>>>
+>>> Therefore, pointer 'dev' passed to function 'dev_driver_string'
+>>> in macro 'dev_WARN_ONCE' at [include/linux/dma-mapping.h: 326],
+>>> where it is dereferenced at [drivers/base/core.c: 2091].
+>>>
+>>> -----------------------------------------------------------------------
+>>> 2083    const char *dev_driver_string(const struct device *dev)
+>>> 2084    {
+>>> 2085        struct device_driver *drv;
+>>> 2086
+>>> ---
+>>> 2091        drv = READ_ONCE(dev->driver);
+>>> -----------------------------------------------------------------------
+>>>
+>>> Thus, if it is possible that 'dev' is null at the same time
+>>> that flag 'coherent_walk' is 0, then NULL pointer will be
+>>> dereferenced.
+>>>
+>>> Should we somehow avoid NULL pointer dereference or is this
+>>> situation impossible and we should remove comparison with NULL?
+>>
+>> I think 'dev' is only null in the case of the selftest initcall
+>> (see arm_lpae_do_selftests()), and 'coherent_walk' is always true there.
+> 
+> Indeed, the intent is that cfg->iommu_dev == NULL is a special case for
+> the selftest, which must always claim coherency as well for this reason.
+> I suppose we could add an explicit assertion along those lines in
+> alloc_pgtable if anyone really thinks it matters.
 
-Hello Boris,
+Yes, we believe it make sense. It will help to document the intention
+and to avoid future questions.
 
->> +struct rmpupdate {
+Thank you,
+Alexey
 
-Why is there a struct rmpupdate *and* a struct rmpentry?!
-
-The struct rmpentry is the raw layout of the RMP table entry while struct r=
-mpupdate is the structure
-expected by the rmpupdate instruction for programming the RMP table entries=
-.
-
-Arguably, we can program a struct rmpupdate internally from a struct rmpent=
-ry.
-
-But we will still need struct rmpupdate for issuing the rmpupdate instructi=
-on, so it is probably cleaner
-to keep it this way, as it only has two main callers - rmp_make_private() a=
-nd rmp_make_shared(). =09
-
-Also due to non-architectural aspect of struct rmpentry, the above function=
-s may need to be modified
-If there are changes in struct rmpentry, while struct rmpupdate remains con=
-sistent and persistent.=20
-=20
->One should be enough.
-
->> +	u64 gpa;
->> +	u8 assigned;
->> +	u8 pagesize;
->> +	u8 immutable;
->> +	u8 rsvd;
->> +	u32 asid;
->> +} __packed;
->> +
-
-Thanks,
-Ashish
