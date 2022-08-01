@@ -2,158 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67304C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:54:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 558EBC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:54:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232046AbiHALyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:54:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49312 "EHLO
+        id S232373AbiHALyv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:54:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232168AbiHALyR (ORCPT
+        with ESMTP id S231951AbiHALyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:54:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128C53D5B3;
-        Mon,  1 Aug 2022 04:50:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 1 Aug 2022 07:54:18 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7B93D5B8
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:50:34 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 505D66122C;
-        Mon,  1 Aug 2022 11:50:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58AD0C433D6;
+        by smtp-out2.suse.de (Postfix) with ESMTPS id A3E1566D06;
         Mon,  1 Aug 2022 11:50:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354632;
-        bh=VBH1TpZZyZwT5mtyysWp68ObVLFEUBt+O5pRICLEnDY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tGXG361IQh5QOZDI//yj6vAZ0CmtDxoEY+i3rzNRw+FPvQblCE6g8aINXQ8p6Hx8Q
-         L6OY0VNVFe7Iym2PIIGvNmKiwl34iyBbFnzapWe3fi/zIRdqgkD3jk8GpBZ9W/osqp
-         6bv5fBA54CqLR6rmTkN8gw/Qs600R5FvqNe8bKPE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
-        Hawkins Jiawei <yin31149@gmail.com>,
-        Anton Altaparmakov <anton@tuxera.com>,
-        Yongqiang Liu <liuyongqiang13@huawei.com>,
-        Zhang Yi <yi.zhang@huawei.com>,
-        Zhang Xiaoxu <zhangxiaoxu5@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.10 03/65] ntfs: fix use-after-free in ntfs_ucsncmp()
-Date:   Mon,  1 Aug 2022 13:46:20 +0200
-Message-Id: <20220801114133.797062024@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220801114133.641770326@linuxfoundation.org>
-References: <20220801114133.641770326@linuxfoundation.org>
-User-Agent: quilt/0.66
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1659354632; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=j2vlYIzw1z7eYxghzcCES9qKW7rI0I/r5Kp98c3NyCI=;
+        b=PULHzQObWEebinSD7RXLXFjB9cCI51Eiw9dvcw+5kPJF81dgTGWD1SBzyPK9EjTl66drsw
+        dfimcPXfeuaB3jQt/pkWhALjIjVG+U0X06gE4wABywjKxYwzn/VxSpDzqwqpWTlNikfZGG
+        5nrJFCc51M2gQ1uQZ6QhDB60cp/9mT0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1659354632;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=j2vlYIzw1z7eYxghzcCES9qKW7rI0I/r5Kp98c3NyCI=;
+        b=RBgL8VfJRQhU4xXdZtWgAwjXwNzWZwL82sF559H/7HOZ4WAZYHxzuCtrjf2s8+I0NpOpjA
+        g6bmAxRr3eE99tCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9756E13AAE;
+        Mon,  1 Aug 2022 11:50:32 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id iUnjJAi+52KTDAAAMHmgww
+        (envelope-from <bp@suse.de>); Mon, 01 Aug 2022 11:50:32 +0000
+Date:   Mon, 1 Aug 2022 13:50:32 +0200
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] x86/build for v6.0
+Message-ID: <Yue+CFzVZusSJeZc@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChenXiaoSong <chenxiaosong2@huawei.com>
+Hi Linus,
 
-commit 38c9c22a85aeed28d0831f230136e9cf6fa2ed44 upstream.
+pls pull a couple of x86 build fixes for 6.0.
 
-Syzkaller reported use-after-free bug as follows:
+Thx.
 
-==================================================================
-BUG: KASAN: use-after-free in ntfs_ucsncmp+0x123/0x130
-Read of size 2 at addr ffff8880751acee8 by task a.out/879
-
-CPU: 7 PID: 879 Comm: a.out Not tainted 5.19.0-rc4-next-20220630-00001-gcc5218c8bd2c-dirty #7
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x1c0/0x2b0
- print_address_description.constprop.0.cold+0xd4/0x484
- print_report.cold+0x55/0x232
- kasan_report+0xbf/0xf0
- ntfs_ucsncmp+0x123/0x130
- ntfs_are_names_equal.cold+0x2b/0x41
- ntfs_attr_find+0x43b/0xb90
- ntfs_attr_lookup+0x16d/0x1e0
- ntfs_read_locked_attr_inode+0x4aa/0x2360
- ntfs_attr_iget+0x1af/0x220
- ntfs_read_locked_inode+0x246c/0x5120
- ntfs_iget+0x132/0x180
- load_system_files+0x1cc6/0x3480
- ntfs_fill_super+0xa66/0x1cf0
- mount_bdev+0x38d/0x460
- legacy_get_tree+0x10d/0x220
- vfs_get_tree+0x93/0x300
- do_new_mount+0x2da/0x6d0
- path_mount+0x496/0x19d0
- __x64_sys_mount+0x284/0x300
- do_syscall_64+0x3b/0xc0
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f3f2118d9ea
-Code: 48 8b 0d a9 f4 0b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 76 f4 0b 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffc269deac8 EFLAGS: 00000202 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f3f2118d9ea
-RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ffc269dec00
-RBP: 00007ffc269dec80 R08: 00007ffc269deb00 R09: 00007ffc269dec44
-R10: 0000000000000000 R11: 0000000000000202 R12: 000055f81ab1d220
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-
-The buggy address belongs to the physical page:
-page:0000000085430378 refcount:1 mapcount:1 mapping:0000000000000000 index:0x555c6a81d pfn:0x751ac
-memcg:ffff888101f7e180
-anon flags: 0xfffffc00a0014(uptodate|lru|mappedtodisk|swapbacked|node=0|zone=1|lastcpupid=0x1fffff)
-raw: 000fffffc00a0014 ffffea0001bf2988 ffffea0001de2448 ffff88801712e201
-raw: 0000000555c6a81d 0000000000000000 0000000100000000 ffff888101f7e180
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8880751acd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880751ace00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8880751ace80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-                                                          ^
- ffff8880751acf00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880751acf80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-==================================================================
-
-The reason is that struct ATTR_RECORD->name_offset is 6485, end address of
-name string is out of bounds.
-
-Fix this by adding sanity check on end address of attribute name string.
-
-[akpm@linux-foundation.org: coding-style cleanups]
-[chenxiaosong2@huawei.com: cleanup suggested by Hawkins Jiawei]
-  Link: https://lkml.kernel.org/r/20220709064511.3304299-1-chenxiaosong2@huawei.com
-Link: https://lkml.kernel.org/r/20220707105329.4020708-1-chenxiaosong2@huawei.com
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
-Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
-Cc: Anton Altaparmakov <anton@tuxera.com>
-Cc: ChenXiaoSong <chenxiaosong2@huawei.com>
-Cc: Yongqiang Liu <liuyongqiang13@huawei.com>
-Cc: Zhang Yi <yi.zhang@huawei.com>
-Cc: Zhang Xiaoxu <zhangxiaoxu5@huawei.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ntfs/attrib.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/fs/ntfs/attrib.c
-+++ b/fs/ntfs/attrib.c
-@@ -592,8 +592,12 @@ static int ntfs_attr_find(const ATTR_TYP
- 		a = (ATTR_RECORD*)((u8*)ctx->attr +
- 				le32_to_cpu(ctx->attr->length));
- 	for (;;	a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
--		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > (u8*)ctx->mrec +
--				le32_to_cpu(ctx->mrec->bytes_allocated))
-+		u8 *mrec_end = (u8 *)ctx->mrec +
-+		               le32_to_cpu(ctx->mrec->bytes_allocated);
-+		u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
-+			       a->name_length * sizeof(ntfschar);
-+		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
-+		    name_end > mrec_end)
- 			break;
- 		ctx->attr = a;
- 		if (unlikely(le32_to_cpu(a->type) > le32_to_cpu(type) ||
+The following changes since commit 32346491ddf24599decca06190ebca03ff9de7f8:
 
+  Linux 5.19-rc6 (2022-07-10 14:40:51 -0700)
 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_build_for_v6.0_rc1
+
+for you to fetch changes up to 2d17bd24b0169d3fdbf003dfd55af600e9a30553:
+
+  x86/purgatory: Omit use of bin2c (2022-07-25 10:32:32 +0200)
+
+----------------------------------------------------------------
+- Fix stack protector builds when cross compiling with Clang
+
+- Other Kbuild improvements and fixes
+
+----------------------------------------------------------------
+Masahiro Yamada (3):
+      x86/build: Remove unused OBJECT_FILES_NON_STANDARD_test_nx.o
+      x86/purgatory: Hard-code obj-y in Makefile
+      x86/purgatory: Omit use of bin2c
+
+Nathan Chancellor (1):
+      x86/Kconfig: Fix CONFIG_CC_HAS_SANE_STACKPROTECTOR when cross compiling with clang
+
+ arch/x86/.gitignore                  |  2 --
+ arch/x86/Kconfig                     |  5 ++---
+ arch/x86/kernel/Makefile             |  2 --
+ arch/x86/purgatory/Makefile          | 10 ++--------
+ arch/x86/purgatory/kexec-purgatory.S | 14 ++++++++++++++
+ scripts/remove-stale-files           |  2 ++
+ 6 files changed, 20 insertions(+), 15 deletions(-)
+ create mode 100644 arch/x86/purgatory/kexec-purgatory.S
+
+-- 
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Martje Boudien Moerman
+(HRB 36809, AG Nürnberg)
