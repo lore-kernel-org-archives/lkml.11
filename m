@@ -2,285 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71267C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 15:20:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2554C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 15:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233557AbiHAPUt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 11:20:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54674 "EHLO
+        id S233706AbiHAPU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 11:20:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233479AbiHAPUX (ORCPT
+        with ESMTP id S233520AbiHAPUp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 11:20:23 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9344163A1;
-        Mon,  1 Aug 2022 08:20:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1659367217;
-        bh=XAqn83IU+p5xFWZru1M9Z/Koix/dbCBx8Z5S9dSn99A=;
-        h=X-UI-Sender-Class:From:To:Subject:Date:In-Reply-To:References;
-        b=Gjk4VomK6CdEwTXU3N5RkIrq9nMEhhS8FcIOKifgPKqpRHESK6h70fD8LWnbQAmXz
-         Arh/XiwlmLdEvoSFDbE91O8AcaoJPE5hzHMlMa4OsLUlohVMdNPwRi9gbTivfgNgeT
-         3JtxJJ+uDOzAhlDqlHJ7WdkKdPqJ0/qr6/a1Ijxk=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from p100.fritz.box ([92.116.150.19]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MFbRs-1oEeWV01oU-00H8j0; Mon, 01
- Aug 2022 17:20:17 +0200
-From:   Helge Deller <deller@gmx.de>
-To:     linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] proc: Add get_task_cmdline_kernel() function
-Date:   Mon,  1 Aug 2022 17:20:14 +0200
-Message-Id: <20220801152016.36498-2-deller@gmx.de>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220801152016.36498-1-deller@gmx.de>
-References: <20220801152016.36498-1-deller@gmx.de>
+        Mon, 1 Aug 2022 11:20:45 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A63AFB49A;
+        Mon,  1 Aug 2022 08:20:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1659367243; x=1690903243;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=2DXcIe7hUnldJ+7bWfHGOv4iXtFwQUzM3UzzWrBzOUs=;
+  b=tI8cjlW8Dnw6seHPjRh0QMTaVhs4p0V1EPvNf57/SbmeXPMSF4vgSoFK
+   vgwjo0/jF3+Ll8ne42heV07x6cq2lOH47r3Jj1hgr6ohm+laI8rXLjQae
+   7EELxaMcb8KwJoqrziw0K4iu7duZhMjTzvYUDHWyTqxdkb07taFoCKKG6
+   o=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 01 Aug 2022 08:20:43 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 08:20:42 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 1 Aug 2022 08:20:42 -0700
+Received: from [10.216.14.65] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 1 Aug 2022
+ 08:20:35 -0700
+Message-ID: <b3c5dec2-6d73-4d7a-8a2f-194672f2c675@quicinc.com>
+Date:   Mon, 1 Aug 2022 20:50:29 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:BFaP3rjvpSIG2hRN1WaPfMJ7qZIYqn3KORPcHU+KRnhnoJoCrjC
- Qx2pflJ1Y78Ewr6EXBdlvFq4k3DIpIucP2wNPnqeqjAKMXo0F9PX2gg0jlLVcZbDiCRmy0q
- WR+pIDaFSvvbZIFUTBzwnzcCQLN01ihEIQ6LnyIs2dk00qkzuPNYe3oHnUKtnpgIn2jkoq1
- 49+z0Mk9K2QEIFV35J1eg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:yKP4hPGbm58=:7JpKpTDiGTz7ruDCLz1ZeN
- 5o8HlgRHqg/6545pO10M/mOKKthHSZjklBMOL8M/HzY+/zJ3BggYA6ECcJj46tWZQa+NSsTdo
- TsQm5MQ+LcEiAmU6PuI5c4uU+WU+2Pp3LVvPFxIiwRbTT95W1MG6QsU8OJujS08vVjrW7uVgl
- Uf965u6Xph/sWSd3oXDBEdSSUM5VCG2l9UcWLSLzKURvlNgVyAbaM1PT/41cc5Mq/x9HX3KIf
- JSCeQLIoWtIx9wm2TutVngv5wMm0HDfBU4w/Wq86mHE+Zw7v+NiRTCwxz3kTVt137Byq2IQ/p
- Hyw6xmBSNUiuMHXIYCVFl2p+jLdd/nIdZ9E35lyGDtOitKVHASxQ2BvDkwV5Bh/aP6dTeeZdZ
- hQiyBHzVsSqyQ50U3/+oWuz076ZS1VCq9VJkzdTEs8uC8vwRsr/cgr4ENImNTqOHT91LhUn37
- 96ewlbZyEi53ipiXhFEIF/yH4g3RN8K4c4fPAu/2Ckru/PTGqkdHzwnJ0kKoXZGT6TniShPFB
- 7B+mEvR9gbWrLfjq+x9JUoxwhMr3Ezh1rGtnnA2Ct5++kwq3biYvo0s6wYkhtChSFAsLv0zyH
- fnjKTEzWgYADqqIujSWq4TGObIOALESzWvG3HhWout47RzhIRlodTINR0DPBRSyLpJG0u50Ee
- A5nQZd8V1/rIbqp9CKv2yR3kroSGalEU4vdjHtM2Y7ZNnyADEC79YGoNzmEQ0hUByIxippd/c
- pzl1y6mbJuUJ3pcNdczRIrxKBZpSp5/19kIHDFtM2B1ZRfUNDckrIihEzUxG67thwRw56gG1a
- Fq2WOmtkQVFfL1fDMDHZCsqxUACAH6HGdwVuHNT8yL1NGaVHw9yD0WMlj0ZQw2kjjjhrKWrnV
- ZwoxQdwovvtY0PdUzC/zMRj5xIa5rv4y08F9GAy88Q8la70+bF5/9Tf++HpfjQRPmDzyGzWzt
- MXcTI7/dGt86f1evFzWehCMhPbYM3v/hygsocewda8/+qt7iRH6PVnyoWBs1F+HPQeatUrF2U
- ysViHw1wQV9wNQNTcs4lqchMb+23l7cpYwEknTe7T9rtuR1Z9cGQvhqpucE1uL3VYkprwU9mZ
- GgMKVTBHiPy+7GxjD0VtdD7OIRnOLsj+G7lxI9KKCuKTG6yeR6zErVc8g==
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [Freedreno] [PATCH 2/5] clk: qcom: Allow custom reset ops
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>
+CC:     <kbuild-all@lists.01.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        <linux-kernel@vger.kernel.org>, Andy Gross <agross@kernel.org>,
+        <linux-clk@vger.kernel.org>
+References: <20220730144713.2.I4b69f984a97535179acd9637426a1331f84f6646@changeid>
+ <202207302137.mPbHPaHz-lkp@intel.com>
+From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
+In-Reply-To: <202207302137.mPbHPaHz-lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new function get_task_cmdline_kernel() which reads the command
-line of a process into a kernel buffer. This command line can then be
-dumped by arch code to print additional debug info on how a faulting
-process was started.
+On 7/30/2022 6:40 PM, kernel test robot wrote:
+> Hi Akhil,
+>
+> Thank you for the patch! Perhaps something to improve:
+>
+> [auto build test WARNING on clk/clk-next]
+> [also build test WARNING on robh/for-next drm-misc/drm-misc-next drm-tip/drm-tip linus/master v5.19-rc8 next-20220728]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch#_base_tree_information]
+>
+> url:    https://github.com/intel-lab-lkp/linux/commits/Akhil-P-Oommen/clk-qcom-Support-gdsc-collapse-polling-using-reset-inteface/20220730-171922
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/clk/linux.git clk-next
+> config: ia64-randconfig-r031-20220729 (https://download.01.org/0day-ci/archive/20220730/202207302137.mPbHPaHz-lkp@intel.com/config)
+> compiler: ia64-linux-gcc (GCC) 12.1.0
+> reproduce (this is a W=1 build):
+>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>          chmod +x ~/bin/make.cross
+>          # https://github.com/intel-lab-lkp/linux/commit/971a03493e9854ff4a227ee4d80b533997959891
+>          git remote add linux-review https://github.com/intel-lab-lkp/linux
+>          git fetch --no-tags linux-review Akhil-P-Oommen/clk-qcom-Support-gdsc-collapse-polling-using-reset-inteface/20220730-171922
+>          git checkout 971a03493e9854ff4a227ee4d80b533997959891
+>          # save the config file
+>          mkdir build_dir && cp config build_dir/.config
+>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/clk/qcom/
+>
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All warnings (new ones prefixed by >>):
+>
+>     drivers/clk/qcom/reset.c: In function 'qcom_reset':
+>>> drivers/clk/qcom/reset.c:17:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+>        17 |         const struct qcom_reset_map *map = &rst->reset_map[id];
+>           |         ^~~~~
+>
+>
+> vim +17 drivers/clk/qcom/reset.c
+>
+>      13	
+>      14	static int qcom_reset(struct reset_controller_dev *rcdev, unsigned long id)
+>      15	{
+>      16		struct qcom_reset_controller *rst = to_qcom_reset_controller(rcdev);
+>    > 17		const struct qcom_reset_map *map = &rst->reset_map[id];
+>      18	
+>      19		if (map->op)
+>      20			return map->op(map);
+>      21	
+>      22		rcdev->ops->assert(rcdev, id);
+>      23		udelay(1);
+>      24		rcdev->ops->deassert(rcdev, id);
+>      25		return 0;
+>      26	}
+>      27	
+>
+Will fix this and send another version of this patch. Please let me know 
+if there is any feedback to the whole series.
 
-The new function re-uses the existing code which provides the cmdline
-for the procfs. For that the existing functions were modified so that
-the buffer page is allocated outside of get_mm_proctitle() and
-get_mm_cmdline() and instead provided as parameter.
-
-Signed-off-by: Helge Deller <deller@gmx.de>
-=2D--
- fs/proc/base.c          | 68 +++++++++++++++++++++++++++--------------
- include/linux/proc_fs.h |  5 +++
- 2 files changed, 50 insertions(+), 23 deletions(-)
-
-diff --git a/fs/proc/base.c b/fs/proc/base.c
-index 8dfa36a99c74..4da9a8b3c7d1 100644
-=2D-- a/fs/proc/base.c
-+++ b/fs/proc/base.c
-@@ -217,20 +217,17 @@ static int proc_root_link(struct dentry *dentry, str=
-uct path *path)
-  */
- static ssize_t get_mm_proctitle(struct mm_struct *mm, char __user *buf,
- 				size_t count, unsigned long pos,
--				unsigned long arg_start)
-+				unsigned long arg_start, char *page)
- {
--	char *page;
- 	int ret, got;
-+	size_t size;
-
--	if (pos >=3D PAGE_SIZE)
-+	size =3D min_t(size_t, PAGE_SIZE, count);
-+	if (pos >=3D size)
- 		return 0;
-
--	page =3D (char *)__get_free_page(GFP_KERNEL);
--	if (!page)
--		return -ENOMEM;
--
- 	ret =3D 0;
--	got =3D access_remote_vm(mm, arg_start, page, PAGE_SIZE, FOLL_ANON);
-+	got =3D access_remote_vm(mm, arg_start, page, size, FOLL_ANON);
- 	if (got > 0) {
- 		int len =3D strnlen(page, got);
-
-@@ -238,7 +235,9 @@ static ssize_t get_mm_proctitle(struct mm_struct *mm, =
-char __user *buf,
- 		if (len < got)
- 			len++;
-
--		if (len > pos) {
-+		if (!buf)
-+			ret =3D len;
-+		else if (len > pos) {
- 			len -=3D pos;
- 			if (len > count)
- 				len =3D count;
-@@ -248,16 +247,15 @@ static ssize_t get_mm_proctitle(struct mm_struct *mm=
-, char __user *buf,
- 			ret =3D len;
- 		}
- 	}
--	free_page((unsigned long)page);
- 	return ret;
- }
-
- static ssize_t get_mm_cmdline(struct mm_struct *mm, char __user *buf,
--			      size_t count, loff_t *ppos)
-+			      size_t count, loff_t *ppos, char *page)
- {
- 	unsigned long arg_start, arg_end, env_start, env_end;
- 	unsigned long pos, len;
--	char *page, c;
-+	char c;
-
- 	/* Check if process spawned far enough to have cmdline. */
- 	if (!mm->env_end)
-@@ -283,7 +281,7 @@ static ssize_t get_mm_cmdline(struct mm_struct *mm, ch=
-ar __user *buf,
- 	len =3D env_end - arg_start;
-
- 	/* We're not going to care if "*ppos" has high bits set */
--	pos =3D *ppos;
-+	pos =3D ppos ? *ppos : 0;
- 	if (pos >=3D len)
- 		return 0;
- 	if (count > len - pos)
-@@ -299,7 +297,7 @@ static ssize_t get_mm_cmdline(struct mm_struct *mm, ch=
-ar __user *buf,
- 	 * pos is 0, and set a flag in the 'struct file'.
- 	 */
- 	if (access_remote_vm(mm, arg_end-1, &c, 1, FOLL_ANON) =3D=3D 1 && c)
--		return get_mm_proctitle(mm, buf, count, pos, arg_start);
-+		return get_mm_proctitle(mm, buf, count, pos, arg_start, page);
-
- 	/*
- 	 * For the non-setproctitle() case we limit things strictly
-@@ -311,10 +309,6 @@ static ssize_t get_mm_cmdline(struct mm_struct *mm, c=
-har __user *buf,
- 	if (count > arg_end - pos)
- 		count =3D arg_end - pos;
-
--	page =3D (char *)__get_free_page(GFP_KERNEL);
--	if (!page)
--		return -ENOMEM;
--
- 	len =3D 0;
- 	while (count) {
- 		int got;
-@@ -323,7 +317,8 @@ static ssize_t get_mm_cmdline(struct mm_struct *mm, ch=
-ar __user *buf,
- 		got =3D access_remote_vm(mm, pos, page, size, FOLL_ANON);
- 		if (got <=3D 0)
- 			break;
--		got -=3D copy_to_user(buf, page, got);
-+		if (buf)
-+			got -=3D copy_to_user(buf, page, got);
- 		if (unlikely(!got)) {
- 			if (!len)
- 				len =3D -EFAULT;
-@@ -335,12 +330,11 @@ static ssize_t get_mm_cmdline(struct mm_struct *mm, =
-char __user *buf,
- 		count -=3D got;
- 	}
-
--	free_page((unsigned long)page);
- 	return len;
- }
-
- static ssize_t get_task_cmdline(struct task_struct *tsk, char __user *buf=
-,
--				size_t count, loff_t *pos)
-+				size_t count, loff_t *pos, char *page)
- {
- 	struct mm_struct *mm;
- 	ssize_t ret;
-@@ -349,23 +343,51 @@ static ssize_t get_task_cmdline(struct task_struct *=
-tsk, char __user *buf,
- 	if (!mm)
- 		return 0;
-
--	ret =3D get_mm_cmdline(mm, buf, count, pos);
-+	ret =3D get_mm_cmdline(mm, buf, count, pos, page);
- 	mmput(mm);
- 	return ret;
- }
-
-+/*
-+ * Place up to maxcount chars of the command line of the process into the
-+ * cmdline buffer.
-+ */
-+void get_task_cmdline_kernel(struct task_struct *tsk,
-+			char *cmdline, size_t maxcount)
-+{
-+	int i;
-+
-+	memset(cmdline, 0, maxcount);
-+	get_task_cmdline(tsk, NULL, maxcount - 1, NULL, cmdline);
-+
-+	/* remove NULs between parameters */
-+	for (i =3D 0; i < maxcount - 2; i++) {
-+		if (cmdline[i])
-+			continue;
-+		if (cmdline[i+1] =3D=3D 0)
-+			break;
-+		cmdline[i] =3D ' ';
-+	}
-+}
-+
- static ssize_t proc_pid_cmdline_read(struct file *file, char __user *buf,
- 				     size_t count, loff_t *pos)
- {
- 	struct task_struct *tsk;
- 	ssize_t ret;
-+	char *page;
-
- 	BUG_ON(*pos < 0);
-
- 	tsk =3D get_proc_task(file_inode(file));
- 	if (!tsk)
- 		return -ESRCH;
--	ret =3D get_task_cmdline(tsk, buf, count, pos);
-+	page =3D (char *)__get_free_page(GFP_KERNEL);
-+	if (page) {
-+		ret =3D get_task_cmdline(tsk, buf, count, pos, page);
-+		free_page((unsigned long)page);
-+	} else
-+		ret =3D -ENOMEM;
- 	put_task_struct(tsk);
- 	if (ret > 0)
- 		*pos +=3D ret;
-diff --git a/include/linux/proc_fs.h b/include/linux/proc_fs.h
-index 81d6e4ec2294..9a256e86205c 100644
-=2D-- a/include/linux/proc_fs.h
-+++ b/include/linux/proc_fs.h
-@@ -158,6 +158,9 @@ int proc_pid_arch_status(struct seq_file *m, struct pi=
-d_namespace *ns,
- 			struct pid *pid, struct task_struct *task);
- #endif /* CONFIG_PROC_PID_ARCH_STATUS */
-
-+void get_task_cmdline_kernel(struct task_struct *tsk,
-+			char *cmdline, size_t maxcount);
-+
- #else /* CONFIG_PROC_FS */
-
- static inline void proc_root_init(void)
-@@ -216,6 +219,8 @@ static inline struct pid *tgid_pidfd_to_pid(const stru=
-ct file *file)
- 	return ERR_PTR(-EBADF);
- }
-
-+static inline void get_task_cmdline_kernel(struct task_struct *, char *, =
-size_t) { }
-+
- #endif /* CONFIG_PROC_FS */
-
- struct net;
-=2D-
-2.37.1
-
+-Akhil.
