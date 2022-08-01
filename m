@@ -2,99 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E3EC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 17:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2F86C19F2B
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 17:29:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232660AbiHAR2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 13:28:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40250 "EHLO
+        id S233568AbiHAR3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 13:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232953AbiHAR1L (ORCPT
+        with ESMTP id S233396AbiHAR2t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 13:27:11 -0400
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DBDEC;
-        Mon,  1 Aug 2022 10:27:10 -0700 (PDT)
-Received: by mail-pj1-f51.google.com with SMTP id ha11so11544194pjb.2;
-        Mon, 01 Aug 2022 10:27:09 -0700 (PDT)
+        Mon, 1 Aug 2022 13:28:49 -0400
+Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92DB422DB;
+        Mon,  1 Aug 2022 10:28:02 -0700 (PDT)
+Received: by mail-il1-f176.google.com with SMTP id d4so5860537ilc.8;
+        Mon, 01 Aug 2022 10:28:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=nr9rJS7HHDAsJ3c3o2JmPMTLZcjCDSrntaUfrab90gA=;
-        b=DqLC0wm3alcPZQWeskhrH5M29+aBsbxsoeH1csTPznatBSrSyD8R12LU50W5HuNiq+
-         Kw3G8HtPk+gDqwPTl/ppUNCFqCZ3bodGYAQqf2MevMkfsMtEXzOQrs29LAVtcMujnHGI
-         NvWCFQIYv7hV4mEfgNUWtFTHCR4s2dGhRrGGl8GLTiD4rv8V9bAcFXki9pEHfswV05c9
-         TLJsymrdMg0TALJLueQNhYdI7wk3OXcdN+pStUMG4F7+42VA8NkYP044sTwMhuZfG3yf
-         ixkCQT+xOsnuTO/JMBrraPG+tvSZqY23GRfbPl8oet4aIT8fwL7Lihq3sRI4Gq4QLQ2i
-         wG4A==
-X-Gm-Message-State: ACgBeo2VCnMk84+lyheBNkE8JqXwo/th1ZngREbgfulmFst29392jY7B
-        ac+98QxUGfhQgPG5xh73F3Qq/3erdSs=
-X-Google-Smtp-Source: AA6agR46C0GeD25vxGuaYhM5OK0cjGYXueWe4bvmvaPaGfKnwiejdLdxIhaEjh40lkwF8zK/OJ+ISA==
-X-Received: by 2002:a17:90b:1d10:b0:1f0:76f7:d154 with SMTP id on16-20020a17090b1d1000b001f076f7d154mr21135866pjb.79.1659374829278;
-        Mon, 01 Aug 2022 10:27:09 -0700 (PDT)
-Received: from ?IPV6:2620:15c:211:201:6496:b2a7:616f:954d? ([2620:15c:211:201:6496:b2a7:616f:954d])
-        by smtp.gmail.com with ESMTPSA id b12-20020a17090a550c00b001f2fbf2c42esm9185845pji.26.2022.08.01.10.27.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Aug 2022 10:27:07 -0700 (PDT)
-Message-ID: <bb84d2cd-afd7-f2fb-785f-5bf6ef6f9be6@acm.org>
-Date:   Mon, 1 Aug 2022 10:27:05 -0700
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=DT2Geze8xZk20nzhJQnuaecT6m/qepz1PXwiI2wJ8mo=;
+        b=a5TpexsfR0+tGnn4AXrnLB/LP09aQVQirLpX3+wwC+Xah3xzDWs7Wkxt1W58FQHubj
+         /TM9n3hBYHHEE4GUCDj7qLDR0KUUdk/DW1iqGrHMrnfhQs9RlrxdMR782PphKpHRTzGT
+         YAAK56yrwN7kqi4xNvlouewC3aexpc3Ajz7arGT73U5XCk8KMahsHRLxUnTt2oJEUHKG
+         ndXYsRx+TlCiwofkbYEWJGytErp0KrfliOnoFMnxiXBIabPPzVSfjyddKGWZ5J/FCKq3
+         OMmxO2M2lAB3TtuIhAgC0BKkGb05Ym7/mUeS2IN1LYXLYJkwUL8v+6AIzHZNpqYVyXa3
+         mU6w==
+X-Gm-Message-State: ACgBeo3xz/LpTIEGAkzKu2VfggOOla3k3DjABU8W9CMsCj2ZUtJKoXwR
+        7jNuvcq6XnDWoNOm9ZwSNg==
+X-Google-Smtp-Source: AA6agR74AJrs16WLEPSZfKvH/nCWTfqHGbm7FoFlr61YvcMuA85bUtzPe+FO0BVG+LydNvaDZJ2l5A==
+X-Received: by 2002:a05:6e02:1546:b0:2de:2a87:b9d0 with SMTP id j6-20020a056e02154600b002de2a87b9d0mr6113732ilu.134.1659374873632;
+        Mon, 01 Aug 2022 10:27:53 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id c10-20020a0566022d0a00b0067c09fd0b53sm5847043iow.21.2022.08.01.10.27.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 10:27:52 -0700 (PDT)
+Received: (nullmailer pid 1211753 invoked by uid 1000);
+        Mon, 01 Aug 2022 17:27:50 -0000
+Date:   Mon, 1 Aug 2022 11:27:50 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH 1/2] regulator: dt-bindings: Add Allwinner D1 LDOs
+Message-ID: <20220801172750.GA1198151-robh@kernel.org>
+References: <20220801044758.12679-1-samuel@sholland.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH V3] scsi: ufs: Get boot device storage type from command
- line
-Content-Language: en-US
-To:     "Chetan Chinnadagudihundi Ravindranath (Consultant) (QUIC)" 
-        <quic_cchinnad@quicinc.com>
-Cc:     jejb@linux.ibm.com, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, Christoph Hellwig <hch@lst.de>
-References: <1659034814-3473-1-git-send-email-quic_cchinnad@quicinc.com>
- <77330f3a-5f73-e10f-7e85-f3df304aa4d7@acm.org>
- <f1cf652a-4a36-fe60-5a98-14b9d97c9a41@quicinc.com>
- <d473f4b3-9aba-fe39-d88c-b762d9d779b0@acm.org>
- <d620614b-6c20-d7ed-af19-ca0accb427d6@quicinc.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <d620614b-6c20-d7ed-af19-ca0accb427d6@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220801044758.12679-1-samuel@sholland.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/30/22 00:54, Chetan Chinnadagudihundi Ravindranath (Consultant) 
-(QUIC) wrote:
->  > why a change is being made:
-> There are 2 variants of the android bootdev device. One is EMMC and 
-> other is UFS. We would be not knowing the android boot storage type at 
-> build time. So, we need to know the storage type at run time(bootup 
-> time) by reading the  "androidboot.bootdevice=". We need to distinguish 
-> between EMMC and UFS at bootup time and take appropriate action.
+On Sun, Jul 31, 2022 at 11:47:57PM -0500, Samuel Holland wrote:
+> The Allwinner D1 SoC contains two pairs of in-package LDOs. One pair is
+> for general purpose use. LDOA generally powers the board's 1.8 V rail.
+> LDOB generally powers the in-package DRAM, where applicable.
 > 
->  > Information about why support is being added for the 
-> androidboot.bootdevice parameter in the Qualcomm UFS host controller 
-> driver:
+> The other pair of LDOs powers the analog power domains inside the SoC,
+> including the audio codec, thermal sensor, and ADCs. These LDOs require
+> a 0.9 V bandgap voltage reference. The calibration value for the voltage
+> reference is stored in an eFuse, accessed via an NVMEM cell.
 > 
-> We will get the "androidboot.bootdevice=" by reading cmdline
-> case 1: if the boot image header version is 3
->          We get the bootdevice info by reading /proc/cmdline ( 
-> __setup("androidboot.bootdevice=", get_android_boot_dev_v3);
+> Neither LDO control register is in its own MMIO range; instead, each
+> regulator device relies on a syscon exported by some "host" device node.
+> Getting the register via a syscon avoids a dependency on the subsystem/
+> driver for that host device (e.g. a functioning thermal sensor should
+> not depend on having the audio codec driver loaded).
 > 
-> Case 2: if the boot image header version is 4
->          We get the bootdevice info by reading /proc/bootconfig 
-> (android_boot_dev_v4 = xbc_find_value("androidboot.bootdevice", &vnode))
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> ---
 > 
-> Qualcomm UFS modules(ufs-qcom.c) calls this 
-> get_storage_boot_device()(ufs-cmdline.c)   and get the bootdevice info 
-> and take appropriate action. This code is yet to be upstreamed. Please 
-> let me know if this info convincing.
+>  .../allwinner,sun20i-d1-analog-ldos.yaml      | 77 +++++++++++++++++++
+>  .../allwinner,sun20i-d1-system-ldos.yaml      | 55 +++++++++++++
+>  2 files changed, 132 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/regulator/allwinner,sun20i-d1-analog-ldos.yaml
+>  create mode 100644 Documentation/devicetree/bindings/regulator/allwinner,sun20i-d1-system-ldos.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/regulator/allwinner,sun20i-d1-analog-ldos.yaml b/Documentation/devicetree/bindings/regulator/allwinner,sun20i-d1-analog-ldos.yaml
+> new file mode 100644
+> index 000000000000..df648c56123d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/regulator/allwinner,sun20i-d1-analog-ldos.yaml
+> @@ -0,0 +1,77 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/regulator/allwinner,sun20i-d1-analog-ldos.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Allwinner D1 Analog LDOs
+> +
+> +description:
+> +  Allwinner D1 contains a set of LDOs which are designed to supply analog power
+> +  inside and outside the SoC. They are controlled by a register within the audio
+> +  codec MMIO space, but which is not part of the audio codec clock/reset domain,
+> +  and so is exposed as a syscon.
+> +
+> +maintainers:
+> +  - Samuel Holland <samuel@sholland.org>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - allwinner,sun20i-d1-analog-ldos
+> +
+> +  nvmem-cells:
+> +    items:
+> +      - description: NVMEM cell for the calibrated bandgap reference trim value
+> +
+> +  nvmem-cell-names:
+> +    items:
+> +      - const: bg_trim
+> +
+> +  syscon:
 
-Instead of posting the above information on the linux-scsi mailing list, 
-it should be integrated in the description of the patch. Please do that 
-before reposting this patch and also make sure that the code that uses 
-this new kernel command line parameter is included in the same patch series.
+'syscon' is not a generic property. Name it based on the block you are 
+linking to or what the control is. 
 
-Thanks,
+Or better yet, if this is the only control interface, make this a child 
+node of the referenced node instead.
 
-Bart.
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: phandle of the device containing the power register
+> +
+> +patternProperties:
+> +  "^(aldo|hpldo)$":
+> +    type: object
+> +    $ref: regulator.yaml#
+
+       unevaluatedProperties: false
+
+> +
+> +required:
+> +  - compatible
+> +  - nvmem-cells
+> +  - nvmem-cell-names
+> +  - syscon
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    sid: efuse {
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +
+> +        bg_trim: bg-trim@28 {
+> +            reg = <0x28 0x4>;
+> +            bits = <16, 8>;
+> +        };
+> +    };
+> +
+> +    ldos-analog {
+> +        compatible = "allwinner,sun20i-d1-analog-ldos";
+> +        nvmem-cells = <&bg_trim>;
+> +        nvmem-cell-names = "bg_trim";
+> +        syscon = <&codec>;
+> +
+> +        reg_aldo: aldo {
+> +            regulator-min-microvolt = <1800000>;
+> +            regulator-max-microvolt = <1800000>;
+> +        };
+> +
+> +        reg_hpldo: hpldo {
+> +            regulator-min-microvolt = <1800000>;
+> +            regulator-max-microvolt = <1800000>;
+> +        };
+> +    };
+> +
+> +...
+> diff --git a/Documentation/devicetree/bindings/regulator/allwinner,sun20i-d1-system-ldos.yaml b/Documentation/devicetree/bindings/regulator/allwinner,sun20i-d1-system-ldos.yaml
+> new file mode 100644
+> index 000000000000..13b2e8c84f1d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/regulator/allwinner,sun20i-d1-system-ldos.yaml
+> @@ -0,0 +1,55 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/regulator/allwinner,sun20i-d1-system-ldos.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Allwinner D1 System LDOs
+> +
+> +description:
+> +  Allwinner D1 contains a pair of general-purpose LDOs which are designed to
+> +  supply power inside and outside the SoC. They are controlled by a register
+> +  within the system controller MMIO space.
+> +
+> +maintainers:
+> +  - Samuel Holland <samuel@sholland.org>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - allwinner,sun20i-d1-system-ldos
+> +
+> +  syscon:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: phandle of the device containing the LDO control register
+> +
+> +patternProperties:
+> +  "^(ldoa|ldob)$":
+> +    type: object
+> +    $ref: regulator.yaml#
+> +
+> +required:
+> +  - compatible
+> +  - syscon
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    ldos-system {
+> +        compatible = "allwinner,sun20i-d1-system-ldos";
+> +        syscon = <&syscon>;
+> +
+> +        reg_ldoa: ldoa {
+> +            regulator-min-microvolt = <1800000>;
+> +            regulator-max-microvolt = <1800000>;
+> +        };
+> +
+> +        reg_ldob: ldob {
+> +            regulator-name = "vcc-dram";
+> +            regulator-min-microvolt = <1500000>;
+> +            regulator-max-microvolt = <1500000>;
+> +        };
+> +    };
+> +
+> +...
+> -- 
+> 2.35.1
+> 
+> 
