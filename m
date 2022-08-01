@@ -2,148 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF40CC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B10C19F29
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:27:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230525AbiHALZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42482 "EHLO
+        id S230136AbiHAL1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230405AbiHALZr (ORCPT
+        with ESMTP id S229983AbiHAL1g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:25:47 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04olkn2058.outbound.protection.outlook.com [40.92.47.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174732F395;
-        Mon,  1 Aug 2022 04:25:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LfLcb//upCAIebxy8hI65TTFIiEMTfRkZ91Tra86ZQQVf/LMOaUPwixE61BMqDsfmqUMMdRDbOb3ROOjn4ca8T7A2hqBA0DntKkBWyJY3/xF2leIEoHOrz9+SntVlzg0Ff4n1plrbaiDohR8xWMd0Uu5ihN5rPdzNppnp2klE3yQBrFzh9E0gwlyJBu/7vFID8fRocKSlvWxDbqWzIEONAUyKFHFz8FNPcTajrlQN0NmAjGS7RoEdByD2edI+PwVO34TqozdP0aUHMg2LzegkQ5z4KNjE+PSU8nZgxkYWId+8vnAG+UD1KMqddnn0RrEYZrXAugR5WtEzDvj1yJPaA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0HatgaQ3m+WxFt/4aARX0T2yoRMtbI4h8QXbAWWB3AI=;
- b=NVeTQaOB84IuG7XfL9HDEkS/XU2JV1CxxANwPK9S7rWdC3k9Ogk7dplIxIMVSHozfI1uJNcDbzhYqzo0iONqmw8m2v55oD/6s6ONkns3TuYC1nqeP2YCqpaEWe8IDejnnjXHl0ml5/MP94fn5bd00anwgjAv+xO9ZuqCpHUQR5GeL7JLLnSVymEfH9bgoN781G5C6NYA/ztrLf4mpGkc28AyfM+CHEttxOuFPaXOcjEAQwpG2LsaH9o14I3Lavi1q45Az4LJ+jzExta4je4vN6gSgo0hMIq/mKfFtNvI4zzv1hhzCCnmFFeVmr7NCkr7z9sCqKCMGI6MHA5+lv2LCA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0HatgaQ3m+WxFt/4aARX0T2yoRMtbI4h8QXbAWWB3AI=;
- b=tMJwTSZ2/agmfdVPD/NccBw5/Yqr6aXX8oPOlhDNSUytDAM+gIsxPh0oh3MnZMFD2lJWrLV7Rcy4icRLYCdE/93ZqmoXc3GbSUq8GLQFvAkvEGmYiTE7pWqGCJQ545ikL4Azz+A9ij8WdWq1pZAIx6leCo8ZSFRhLRLuZuJP+FW/42xg+I32dxZ74cFLMuVtCJQ9rBDjRSzRKdWh1VwhSGMAMKXzrWBMZDUtOq1MJ3O/x33BIyUC2q7pI6LgR0MQJjr6amKpQA8lWpHD7VFD4TZ7DGb8naQCdd6+dg1pCpNgqZQ3FyERDTxkSC9b72GRJBotny3ZEKuy6SY9EcfqmA==
-Received: from BY5PR02MB7009.namprd02.prod.outlook.com (2603:10b6:a03:236::13)
- by CO6PR02MB7666.namprd02.prod.outlook.com (2603:10b6:303:a4::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.6; Mon, 1 Aug
- 2022 11:25:40 +0000
-Received: from BY5PR02MB7009.namprd02.prod.outlook.com
- ([fe80::e080:d670:29c7:9180]) by BY5PR02MB7009.namprd02.prod.outlook.com
- ([fe80::e080:d670:29c7:9180%8]) with mapi id 15.20.5482.016; Mon, 1 Aug 2022
- 11:25:40 +0000
-From:   Joel Selvaraj <joel.selvaraj@outlook.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Joel Selvaraj <joel.selvaraj@outlook.com>
-Subject: [PATCH v3 3/3] arm64: dts: qcom: sdm845-xiaomi-beryllium-ebbg: introduce Xiaomi Poco F1 EBBG variant
-Date:   Mon,  1 Aug 2022 16:55:12 +0530
-Message-ID: <BY5PR02MB70091B1231831E56B40D3C89EA9A9@BY5PR02MB7009.namprd02.prod.outlook.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220801112512.209047-1-joel.selvaraj@outlook.com>
-References: <20220801112512.209047-1-joel.selvaraj@outlook.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-TMN:  [Vt55p9XIn5OIO+gxuLyAo3TlxQuBz//kNIJ0lr1sljRuFz7bfRN0pKu11c4+xWOX]
-X-ClientProxiedBy: PN2PR01CA0107.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:27::22) To BY5PR02MB7009.namprd02.prod.outlook.com
- (2603:10b6:a03:236::13)
-X-Microsoft-Original-Message-ID: <20220801112512.209047-4-joel.selvaraj@outlook.com>
+        Mon, 1 Aug 2022 07:27:36 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E4A654C
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:27:35 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id m8so13286942edd.9
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 04:27:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=dat9EDJ040kndZ5sQxnXUzu3M1MzMzRUr44UWyA8lX8=;
+        b=cv9HYwCdIDZqoezKrlQReS9ds2IdjVRJsQDacwHmGJgt8BqryJt6NFU5QPx+2y0k2I
+         u3aYQV4ynH359nR07D5C/tHcVp9yhlzd7Khe6WD1z1/EntaVMP/IC5OT5kt99Il3YBZI
+         Vw5IhXXS9DX7BfF1BI9h9ogX/ZQ2dCtWnFVsSZSM+Het+o9OKAqXYfizvDtbKJKSUKGS
+         KzEk7EsM99f5SOpzNT3W0mmlj4EP+0TeZL4HRHe2EEb+pcMLOFTV9EnaNWKejiOrhpCe
+         jsjTiXAyO8aStJwj6tef9kPpS/HUgS/HWGikeL8totedX97UFN5ly7BpVL0OJmsmL2z2
+         X0WA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=dat9EDJ040kndZ5sQxnXUzu3M1MzMzRUr44UWyA8lX8=;
+        b=qStQALQlqNNcDnYjPhrvnknKp+aoz38/dFAec37CvNGNlAZdRq1sBqEnSAlT/djRue
+         kX1gDW45aQm0dRUtJGcJyAkxoGXKugbbQRNU89jusohUyoigVRtmHt+WUrET/kE/OPeX
+         UcP26RE08C1IXDT1p95TZwysS4fo9mZIwHWi2Wfumsb5fH1CJTXyhUZbDUeB5OiGFgTo
+         gIHbERXPvPaGiQxy6U00XQIEfFR6ED0SfXij+cNEbdBXeV96tWGRxMq32ieIT43G6CuD
+         qt5fDj8JvCYf2m9k18b3AXw0UoiU6PuUEOvtEAW+yk1XhzwMn2d6ZDV4KSH5j/asL8op
+         AFow==
+X-Gm-Message-State: AJIora81yJGNTKJ4FphtyIhU7l5sIAiaWo+M6yBeZV+2J1FDZOnZ1DHa
+        3BAjnPJyabsM/Zyldhj9D8lOCw==
+X-Google-Smtp-Source: AGRyM1vg0Oq8o4qygVWEYpvOuucQ6QroIxWwBd6jz5TMXL3lbGD6M5oPEcui+hva6pDc8rebAeinuQ==
+X-Received: by 2002:a05:6402:5cb:b0:434:eb48:754f with SMTP id n11-20020a05640205cb00b00434eb48754fmr15986528edx.421.1659353253624;
+        Mon, 01 Aug 2022 04:27:33 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([104.245.98.208])
+        by smtp.gmail.com with ESMTPSA id v14-20020a170906380e00b007262b9f7120sm5029347ejc.167.2022.08.01.04.27.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 04:27:33 -0700 (PDT)
+Date:   Mon, 1 Aug 2022 19:27:27 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     =?iso-8859-1?Q?Adri=E1n?= Herrera Arcila <adrian.herrera@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org, songliubraving@fb.com,
+        james.clark@arm.com
+Subject: Re: [PATCH 1/2] perf stat: refactor __run_perf_stat common code
+Message-ID: <20220801112726.GA73228@leoy-ThinkPad-X240s>
+References: <20220729161244.10522-1-adrian.herrera@arm.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a33831f0-623e-48cf-4d12-08da73b090d1
-X-MS-Exchange-SLBlob-MailProps: tBYDyRQCPckhYfnxUdDn+O6zSuD/K+SSYADPTPgxcy2o9hu/U4OyO230tApN0+e6ylrn4fDskN/5K2HDIuhgxwh/SRbHm/6vUf70u7p4VajsN9KdXbhRGNGDdVojYYLX9SqQVOd3gCFGsCuVbFBFt0n63s80ap6Xmi39JUJyVnZI/+VQhyPzWdE2MRxXOpaovb4byejaRA1/7NIzMQY77V6jPQ0grCvKlHZ1m46qgESgQ1RkcdyewcsjQzpoLdnOgO7rRX6ZgU81Ax5NObIrv6eQ5GlkCOcufhnwDYnzk/xS+dVGzuX152wypXP4H/qeMoQR20aXeWa7n8aVpg7WSJyLH0fYnTUgwnVfO5BzSW2LddO1MpAdToIQoF8A7bwJDSzJZUHcjWsAuiZV65PTPpFB/Bk2GG4KNvGUtztCw8KyElJQ7SGET0mC3hFhUcQJg7XXhIQ3H2kayTQFV5149Xe8msCJDrsYMQMuhrttozaBWe7JuCMiL2jy7I5yNRrxJLVWy8qSoyo5uzX0UHCybfiiGum5dFPWv04eNujJSNiCxNbnccaITDo0/94zMTcojSZKwdCkd+1T3vLOd5x8DM7EcOfXdTvway0I6xuuVhKApyOaEul4OTvU088FlslNowvMHozrmfvVYG/LGoW3sDRKUBTtHGxeikWndYt3rwMDNAEsv5kFQGew4xK4REOhFGv+38JXxD8ag5AeBerzyEa3r/pvPMg4Dr/DBa2LoWX607ZoafnDnQ8i9V1s45iFjbEfGq3yLCI=
-X-MS-TrafficTypeDiagnostic: CO6PR02MB7666:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: etU8csTljBwXMle5kXJ7G2MBzsszNJUSQQuZBkf+WQ/cLLQPWniLLtBmxjJp0y7eqCZWq+tBn26opnbO+CSig/g66E0muVahLEiPg0ehuwhZWvZSDRH8jlkLZCV4IEeuUs2BLjNMIJnOm70rjVQeFilwhHwiER2X2+wGFNTDhx7wEHCCUQe5+0MSfvIvwKG4/n/AlokrZDbMolN1ZbR6We1E9z80UBjqzzkvxBHoFQ+JLKv++GDvD+ABWc+UMFtop0HJmHz3YhxqLm1dqSQzLIBopDIwI68xkEBsCJ6xG2uCMq87f0P1kImKBLASLGMHiQYAgI+K/9bDZpPbO2epjUfqI3Sp97H5NRq9riYj7AFgofaY9Bvb5jwmxAoAGYAMeylja6khpWJYOeQoPp0/eGNoh5zgLoAAjCNUtBCLkadL04Xm/0otlfuRS3d0BLbok+kXVXiZejK/7XNqjuQ0wWpf0kJ81/yFR+FL13/GbEg7ToyTmdbpOQnRLJq+AIv/aedR0Zi6aXtTxv3NoEI4Z3ehz0qoC9fRHTnH+25h0E3RYuVuFep2ypHzkPgth8/VFykaqoUs4OcPpuHFW/0lTKF2Lr57zlZhjqrdIHucSapYvVBv4JcOyNepvSQ51jgz/0xbPBXU85Dxardg0v9Teg==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PXVmMPpcns9TnVU3lntfDzHoZ87DCrvNu3uEUk5qTEDOU382YsoawBsgbNT4?=
- =?us-ascii?Q?GVg32E0hGF4YRfiXSOCla8EHt6yyJME8XwiVjo31xGBn8N2uY8Vc3fF3NFUB?=
- =?us-ascii?Q?zdRiR0mm1pclqeL1XxGPVDuIBfkwrMdMbdNdLzIm6t0LUPOM1aXfhmjIFjxf?=
- =?us-ascii?Q?xRQJ6xGfZqBrSRCtMfN6iAzIu01rrBt5TUbNSqn6nN43MBf4AKGkyFvhKr/9?=
- =?us-ascii?Q?0vj4wE1MGD4Nj4AFZcceqecD1t33ALgCAKCnVhQQ0QZtC1X0BEB/irWwoTax?=
- =?us-ascii?Q?XQ42GpgbzSZziHqieJ+FhNB5chrKS78F6SLZqMsb4wZFxXyhD6XgyGm+jk0b?=
- =?us-ascii?Q?DkQ9Ty2SgEZptUsydc4ssGtdYVWIRVEUDlGdh3xjDPU3HjYGQ2R/13jO+IES?=
- =?us-ascii?Q?58rscAc7KgD9HGC/NTgqctKQUvXm7bS1zceJSS1Qu8JTdQ6679IQKtdkoVsB?=
- =?us-ascii?Q?xdzFon8CcQ59MQPE5ipdbWYmfPfVcF7qO7us6hzEpf/dNmsmqI6moiflr46S?=
- =?us-ascii?Q?abXIh48LnWN5cXe/eMZ3C+zx5PAoGy8NtVwfVrQNm1qKF1/PS+QyXNGst5+A?=
- =?us-ascii?Q?FB1Eij2jsO85bliioQ0Xca6Kqk0rCqI84Tr7rr+bcHY3PdQsFuWs+UqL/ztO?=
- =?us-ascii?Q?8QYga6y85Mjw7koVJ6MOSTBfpPFjpR6pEhU2ixOzWpzW+9Mr7d31l3S4DFwO?=
- =?us-ascii?Q?kWiogbUOxuX0cucnghwOKPaaD3eCkeYAcI1CGHWkHhna28EqftrirwZeLalf?=
- =?us-ascii?Q?a7Jr9VKkCJD9tYRQmotwhGWGKh2zMAYLI9Qqs0j5j39CwwtzFNK/iA6JwBH/?=
- =?us-ascii?Q?0NfVKCAoKbyhNbYCROwnDsvtuuibsRED7PvRhWJ/pfTnrMtWzN/IhkAAI/0f?=
- =?us-ascii?Q?VZ2frh4Pu8rTvir4A4s91e8CRXISxILcqr2XRPQfzq5TAs9ty8z4DDOeflXt?=
- =?us-ascii?Q?5d57E/F2FjyOw75d6PTwLqt/FTM2aPjRL/65p0MKLlR/kQVk0uSnoV1By8pA?=
- =?us-ascii?Q?+M1ypavtTQZStJpOuS2kFxgINkzgslkS9O2dsYxgE4KuUmzt99YqhEPrvixX?=
- =?us-ascii?Q?q+vKYTaIo2eqz1gSUfO+eEyPZtE/Ys85wG8bYCcmTIFMj0Uxthvcceyt41rU?=
- =?us-ascii?Q?xdWj75TOzH1x4IGbfi9dX8tsVxxy3WqN+gaW0K1GXVkXU39w/kCw0QUZwxHJ?=
- =?us-ascii?Q?4tjxTjTsDo/TPsjPKNJB9e54VtlgNOQROH0z2kTiL1qAMbHNmlv3+RO4Ci6c?=
- =?us-ascii?Q?AAr2rZBv341+zsTElmuxiVsNH4wkRQOB9As8bVBfx9k37A8DtZMm0lgw1Yvi?=
- =?us-ascii?Q?YoitPmcYfv4Rcfeb7Dk5/VwitqfJbl9zaHmaMIt2Fxf0Pw=3D=3D?=
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a33831f0-623e-48cf-4d12-08da73b090d1
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR02MB7009.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Aug 2022 11:25:40.8982
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR02MB7666
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220729161244.10522-1-adrian.herrera@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce support for the Xiaomi Poco F1 EBBG variant. The EBBG variant
-uses EBBG FT8719 panel manufactured by EBBG.
+On Fri, Jul 29, 2022 at 04:12:43PM +0000, Adrián Herrera Arcila wrote:
+> This extracts common code from the branches of the forks if-then-else.
+> enable_counters(), which was at the beginning of both branches of the
+> conditional, is now unconditional; evlist__start_workload is extracted
+> to a different if, which enables making the common clocking code
+> unconditional.
+> 
+> Signed-off-by: Adrián Herrera Arcila <adrian.herrera@arm.com>
 
-Signed-off-by: Joel Selvaraj <joel.selvaraj@outlook.com>
----
- arch/arm64/boot/dts/qcom/Makefile                      |  1 +
- .../boot/dts/qcom/sdm845-xiaomi-beryllium-ebbg.dts     | 10 ++++++++++
- 2 files changed, 11 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-ebbg.dts
-
-diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-index 02db413b228c..29f15031a199 100644
---- a/arch/arm64/boot/dts/qcom/Makefile
-+++ b/arch/arm64/boot/dts/qcom/Makefile
-@@ -106,6 +106,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-oneplus-fajita.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-sony-xperia-tama-akari.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-sony-xperia-tama-akatsuki.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-sony-xperia-tama-apollo.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-xiaomi-beryllium-ebbg.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-xiaomi-beryllium-tianma.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-shift-axolotl.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sdm850-lenovo-yoga-c630.dtb
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-ebbg.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-ebbg.dts
-new file mode 100644
-index 000000000000..1e0be481b9da
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-ebbg.dts
-@@ -0,0 +1,10 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/dts-v1/;
-+
-+#include "sdm845-xiaomi-beryllium-common.dtsi"
-+
-+&display_panel {
-+	compatible = "ebbg,ft8719";
-+	status = "okay";
-+};
--- 
-2.37.1
-
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
