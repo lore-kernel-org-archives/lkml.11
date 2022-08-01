@@ -2,326 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0364EC00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AE15C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234760AbiHAMrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50320 "EHLO
+        id S235039AbiHAMsR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:48:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234991AbiHAMrC (ORCPT
+        with ESMTP id S234740AbiHAMro (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:47:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDAB2314A;
-        Mon,  1 Aug 2022 05:38:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75E6BB81196;
-        Mon,  1 Aug 2022 12:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1E2EC433D6;
-        Mon,  1 Aug 2022 12:38:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659357513;
-        bh=lpkeeEGnbHYXaYsdZmTigYZ6q+Wyz9lzV6GrtxhtCrg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=G/x+T31VPzNrbnrRKR0BVv22C45b00Bq6PuTS9ihPVsnRqVdL4JgnMreB2kVwuDW0
-         SNEzVxL9Z4vOr4/lFIRWf/Gw3y+ZH8NCP1NGY4mPGd1HhTaQYSlQvwY+LhIao3K9VO
-         8OcfvBaNstvOrF1D7NEdIejHQ70De6DZX7Qe8zkYjmGPLe5ibj/I+kDjTdlEvYbS8F
-         oSv/I6z1xYEJHGnBCfx5Y8YDzI9+JDRT6kT6W6DCUx8/mmdWThoZ8I1sBzv7FaZVvH
-         Kix1Nl49uh/+7cC+IyXoV3G0o/CQr4pYZrHtQwtGfK2WnIxewEbw44qF30ipIwRSN6
-         xaCrqSdbXgQ/A==
-From:   Mark Brown <broonie@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>
-Subject: [GIT PULL] SPI updates for v5.20
-Date:   Mon, 01 Aug 2022 13:38:22 +0100
-Message-Id: <20220801123832.C1E2EC433D6@smtp.kernel.org>
+        Mon, 1 Aug 2022 08:47:44 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C818250181;
+        Mon,  1 Aug 2022 05:38:51 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 271A12YR031410;
+        Mon, 1 Aug 2022 05:38:39 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=AH3eQitAxYvhy4/RzAP+//HGTXu655O4Xsd9zGjJRZU=;
+ b=HVFdXMKhCP7o4jUKI4O5FY1YtlHTXb/eAqu2ZnTZLDgauPEwfY14AHiYOu6yMrUAR1gq
+ Ugz576RlMScn9iq+An/HTgHdTJ+2ULstYL52gHVTqpyQivJYYyxptyOjC0bkV7qbP2yS
+ fr8whjxWoxKplVvRM+OUY7MZ28chUIHIgp+Rlm16e7h92XhFWEYTz5+bPi/Lx+sLbYVu
+ Xs0HzMnPohm1ubsdh9P0DN5rWR8olE5+dw+34qUTeOp4YVebTSGgV7ewO4w50MXrUQF1
+ qMR2xhGTJ+ov23tNJ2oULw2cqyZWeSfHjlhtdm3cJ83ZsIfH1lp2WnYaMu0eL76jnmUG hw== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3hn45m6j2v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 01 Aug 2022 05:38:39 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 1 Aug
+ 2022 05:38:37 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 1 Aug 2022 05:38:37 -0700
+Received: from #hyd1583.marvell.com (unknown [10.29.37.44])
+        by maili.marvell.com (Postfix) with ESMTP id EF6173F70A1;
+        Mon,  1 Aug 2022 05:38:34 -0700 (PDT)
+From:   Naveen Mamindlapalli <naveenm@marvell.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>
+CC:     Naveen Mamindlapalli <naveenm@marvell.com>
+Subject: [net PATCH v2] octeontx2-pf: Fix NIX_AF_TL3_TL2X_LINKX_CFG register configuration
+Date:   Mon, 1 Aug 2022 18:08:31 +0530
+Message-ID: <20220801123831.9370-1-naveenm@marvell.com>
+X-Mailer: git-send-email 2.16.5
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-GUID: 0hIy8DYg4P1hoWGWyO0HKR9NYw6czMHh
+X-Proofpoint-ORIG-GUID: 0hIy8DYg4P1hoWGWyO0HKR9NYw6czMHh
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-01_07,2022-08-01_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 6ece49c56965544262523dae4a071ace3db63507:
+For packets scheduled to RPM and LBK, NIX_AF_PSE_CHANNEL_LEVEL[BP_LEVEL]
+selects the TL3 or TL2 scheduling level as the one used for link/channel
+selection and backpressure. For each scheduling queue at the selected
+level: Setting NIX_AF_TL3_TL2(0..255)_LINK(0..12)_CFG[ENA] = 1 allows
+the TL3/TL2 queue to schedule packets to a specified RPM or LBK link
+and channel.
 
-  spi: amd: Limit max transfer and message size (2022-07-06 15:20:46 +0100)
+There is an issue in the code where NIX_AF_PSE_CHANNEL_LEVEL[BP_LEVEL]
+is set to TL3 where as the NIX_AF_TL3_TL2(0..255)_LINK(0..12)_CFG is
+configured for TL2 queue in some cases. As a result packets will not
+transmit on that link/channel. This patch fixes the issue by configuring
+the NIX_AF_TL3_TL2(0..255)_LINK(0..12)_CFG register depending on the
+NIX_AF_PSE_CHANNEL_LEVEL[BP_LEVEL] value.
 
-are available in the Git repository at:
+Fixes: 5d9b976d4480 ("octeontx2-af: Support fixed transmit scheduler topology")
+Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+---
+v2:
+  - Added more details about the fix in commit message.
+  - Added fixes Tag.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git tags/spi-v5.20
+---
+ .../net/ethernet/marvell/octeontx2/nic/otx2_common.c  | 19 ++++++++++++++-----
+ .../net/ethernet/marvell/octeontx2/nic/otx2_common.h  |  1 +
+ 2 files changed, 15 insertions(+), 5 deletions(-)
 
-for you to fetch changes up to 69243df953e70c134c6735b31ba0e658c53d3cda:
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index fb8db5888d2f..d686c7b6252f 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -632,6 +632,12 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
+ 		req->num_regs++;
+ 		req->reg[1] = NIX_AF_TL3X_SCHEDULE(schq);
+ 		req->regval[1] = dwrr_val;
++		if (lvl == hw->txschq_link_cfg_lvl) {
++			req->num_regs++;
++			req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
++			/* Enable this queue and backpressure */
++			req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
++		}
+ 	} else if (lvl == NIX_TXSCH_LVL_TL2) {
+ 		parent =  hw->txschq_list[NIX_TXSCH_LVL_TL1][0];
+ 		req->reg[0] = NIX_AF_TL2X_PARENT(schq);
+@@ -641,11 +647,12 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
+ 		req->reg[1] = NIX_AF_TL2X_SCHEDULE(schq);
+ 		req->regval[1] = TXSCH_TL1_DFLT_RR_PRIO << 24 | dwrr_val;
+ 
+-		req->num_regs++;
+-		req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
+-		/* Enable this queue and backpressure */
+-		req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
+-
++		if (lvl == hw->txschq_link_cfg_lvl) {
++			req->num_regs++;
++			req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
++			/* Enable this queue and backpressure */
++			req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
++		}
+ 	} else if (lvl == NIX_TXSCH_LVL_TL1) {
+ 		/* Default config for TL1.
+ 		 * For VF this is always ignored.
+@@ -1591,6 +1598,8 @@ void mbox_handler_nix_txsch_alloc(struct otx2_nic *pf,
+ 		for (schq = 0; schq < rsp->schq[lvl]; schq++)
+ 			pf->hw.txschq_list[lvl][schq] =
+ 				rsp->schq_list[lvl][schq];
++
++	pf->hw.txschq_link_cfg_lvl = rsp->link_cfg_lvl;
+ }
+ EXPORT_SYMBOL(mbox_handler_nix_txsch_alloc);
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index ce2766317c0b..f9c0d2f08e87 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -195,6 +195,7 @@ struct otx2_hw {
+ 	u16			sqb_size;
+ 
+ 	/* NIX */
++	u8			txschq_link_cfg_lvl;
+ 	u16		txschq_list[NIX_TXSCH_LVL_CNT][MAX_TXSCHQ_PER_FUNC];
+ 	u16			matchall_ipolicer;
+ 	u32			dwrr_mtu;
+-- 
+2.16.5
 
-  Add SPI Driver to HPE GXP Architecture (2022-07-29 20:22:22 +0100)
-
-----------------------------------------------------------------
-spi: Updates for v5.20
-
-The big update this time around is some excellent work from David Jander
-who went through the fast path and really eliminated overheads, meaning
-that we are seeing a huge reduction in the time spent between transfers
-for single threaded clients. Benchmarking has been coming out at about a
-halving of overhead which is clearly visible in system level usage that
-stresses SPI like some CAN and IIO applications, especially with small
-transfers. Thanks to David for taking the time to drill down into this
-and push the work upstream.
-
-Otherwise there's been a bunch of new device support and the usual
-
- - Optimisation of the fast path, particularly around the number and
-   types of locking operations, from David Jander.
- - Support for Arbel NPCM845, HP GXP, Intel Meteor Lake and Thunder Bay,
-   MediaTek MT8188 and MT8365, Microchip FPGAs, nVidia Tegra 241 and
-   Samsung Exynos Auto v9 and 4210.
-
-----------------------------------------------------------------
-Adithya K V (1):
-      spi: s3c64xx: requests spi-dma channel only during data transfer
-
-Allen-KH Cheng (1):
-      spi: dt-bindings: mediatek,spi-mtk-nor: Update bindings for nor flash
-
-Amit Kumar Mahapatra (1):
-      spi: spi-zynqmp-gqspi: Add two chip select support
-
-Andy Chiu (1):
-      spi: sifive: add PM callbacks to support suspend/resume
-
-Andy Shevchenko (3):
-      spi: Return deferred probe error when controller isn't yet available
-      spi: propagate error code to the caller of acpi_spi_device_alloc()
-      spi: remove duplicate parameters check in acpi_spi_add_resource()
-
-Atsushi Nemoto (1):
-      spi: spi-ti-qspi: Support per-transfer and per-slave speed_hz settings
-
-Biju Das (1):
-      ASoC: dt-bindings: renesas,rz-ssi: Document RZ/G2UL SoC
-
-Chanho Park (5):
-      spi: s3c64xx: move dma_release_channel to unprepare
-      spi: s3c64xx: support loopback mode
-      spi: s3c64xx: support custom value of internal clock divider
-      spi: s3c64xx: add spi port configuration for Exynos Auto v9 SoC
-      spi: s3c64xx: define exynosautov9 compatible
-
-Christophe JAILLET (2):
-      spi: spi-altera-dfl: Fix an error handling path
-      spi: intel: Use correct order for the parameters of devm_kcalloc()
-
-Claudiu Beznea (4):
-      spi: atmel-quadspi: add runtime pm support
-      spi: atmel-quadspi: use pm_ptr()
-      spi: atmel-quadspi: align condition to parenthesis
-      spi: atmel: remove #ifdef CONFIG_{PM, SLEEP}
-
-Colin Ian King (2):
-      spi: s3c64xx: Fix spelling mistake "hannel" -> "channel"
-      spi: s3c64xx: set pointers to null using NULL rather than 0
-
-Conor Dooley (5):
-      spi: add support for microchip fpga spi controllers
-      MAINTAINERS: add spi to PolarFire SoC entry
-      spi: microchip-core: fix potentially incorrect return from probe
-      spi: microchip-core: fix passing zero to PTR_ERR warning
-      spi: dt-bindings: dw-apb-ssi: update spi-{r,t}x-bus-width
-
-Cristian Ciocaltea (4):
-      spi: amd: Make use of devm_spi_alloc_master()
-      spi: amd: Make use of dev_err_probe()
-      spi: amd: Drop io_base_addr member from struct amd_spi
-      spi: amd: Add struct and enum kernel-doc comments
-
-Dan Carpenter (1):
-      spi: core: Fix error code in spi_register_controller()
-
-David Fries (1):
-      spi: spidev_test: Warn when the mode is not the requested mode
-
-David Jander (17):
-      spi: spi.c: Convert statistics to per-cpu u64_stats_t
-      spi: <linux/spi/spi.h>: Add missing documentation for struct members
-      spi: Fix per-cpu stats access on 32 bit systems
-      spi: Move ctlr->cur_msg_prepared to struct spi_message
-      spi: Don't use the message queue if possible in spi_sync
-      spi: Lock controller idling transition inside the io_mutex
-      spi: __spi_pump_messages: Consolidate spin_unlocks to goto target
-      spi: Remove check for controller idling in spi sync path
-      spi: Remove check for idling in __spi_pump_messages()
-      spi: Remove the now unused ctlr->idling flag
-      spi: Remove unneeded READ_ONCE for ctlr->busy flag
-      spi: Set ctlr->cur_msg also in the sync transfer case
-      spi: Ensure the io_mutex is held until spi_finalize_current_message()
-      spi: opportunistically skip ctlr->cur_msg_completion
-      spi: spi.c: White-space fix in __spi_pump_messages()
-      spi: spi.c: Fix comment style
-      spi: spi.c: Remove redundant else block
-
-Eddie James (1):
-      spi: fsi: Increase timeout and ensure status is checked
-
-Fabien Parent (1):
-      spi: mt65xx: add MT8365 SoC bindings
-
-Guo Mengqi (1):
-      spi: synquacer: Add missing clk_disable_unprepare()
-
-Jarkko Nikula (1):
-      spi: pxa2xx: Add support for Intel Meteor Lake-P
-
-Johnson Wang (1):
-      spi: dt-bindings: Add compatible for MediaTek MT8188
-
-Julia Lawall (1):
-      spi: fix typo in comment
-
-Krishna Yarlagadda (3):
-      spi: tegra210-quad: Multi-cs support
-      spi: dt-bindings: split peripheral prods
-      spi: dt-bindings: Add compatible for Tegra241 QSPI
-
-Krzysztof Kozlowski (7):
-      spi: s3c64xx: constify fsd_spi_port_config
-      spi: dt-bindings: samsung: Add Exynos4210 SPI
-      spi: dt-bindings: cadence: add missing 'required'
-      spi: dt-bindings: zynqmp-qspi: add missing 'required'
-      spi: dt-bindings: qcom,spi-geni-qcom: allow three interconnects
-      spi: dt-bindings: spi-controller: correct example indentation
-      spi/panel: dt-bindings: drop CPHA and CPOL from common properties
-
-Mark Brown (15):
-      spi: stm32-qspi: Remove unused parameters
-      Add support for PolarFire SoC's spi controllers
-      spi: atmel-quadspi: add runtime pm support
-      spi: tegra quad: Add Tegra Grace features
-      spi: topcliff-pch: Use core message validation
-      spi: sh: Switch to using core message queue
-      spi: mpc52xx-psc: Switch to using core message queue
-      Optimize spi_sync path
-      spi support for Exynos Auto v9 SoC
-      Fix some coding style issues
-      spi: AMD SPI controller driver bug fix and cleanups
-      spi: microchip-core: fix and cleanups
-      Add support for Intel Thunder Bay SPI controller
-      spi: npcm-fiu: add Arbel NPCM8XX support
-      Add SPI Driver to HPE GXP Architecture
-
-Martin Sperl (1):
-      spi: bcm2835: enable shared interrupt support
-
-Mika Westerberg (1):
-      spi: intel: Add support for Intel Meteor Lake-P SPI serial flash
-
-Nandhini Srikandan (4):
-      spi: dw: Fix IP-core versions macro
-      spi: Add bindings for Intel Thunder Bay SOC
-      spi: dw: Add support for master mode selection for DWC SSI controller
-      spi: dw: Add support for Intel Thunder Bay SPI controller
-
-Nick Hawkins (3):
-      spi: spi-gxp: Add support for HPE GXP SoCs
-      spi: dt-bindings: add documentation for hpe,gxp-spifi
-      MAINTAINERS: add spi support to GXP
-
-Noam (1):
-      spi: a3700: support BE for AC5 SPI driver
-
-Patrice Chotard (3):
-      spi: stm32-qspi: Remove stm32_qspi_get_mode() unused parameter
-      spi: stm32-qspi: Remove stm32_qspi_wait_cmd() unused parameter
-      spi: stm32-qspi: Remove stm32_qspi_wait_poll_status() unused parameter
-
-Peng Wu (1):
-      spi: micro: fix unreasonable clk_prepare_enable() on error in mchp_corespi_probe()
-
-Rob Herring (1):
-      spi: dt-bindings: Move 'rx-sample-delay-ns' to spi-peripheral-props.yaml
-
-Serge Semin (1):
-      spi: dw: Add deferred DMA-channels setup support
-
-Sergiu Moga (1):
-      spi: dt-bindings: atmel,at91rm9200-spi: convert to json-schema
-
-Tomer Maimon (3):
-      spi: npcm-fiu: Modify direct read dummy configuration
-      dt-binding: spi: Add npcm845 compatible to npcm-fiu document
-      spi: npcm-fiu: Add NPCM8XX support
-
-Vaishnav Achath (1):
-      spi: cadence-quadspi: Remove spi_master_put() in probe failure path
-
-Yang Li (2):
-      spi: fix platform_no_drv_owner.cocci warning
-      spi: Return true/false (not 1/0) from bool function
-
-Yang Yingliang (5):
-      spi: microchip-core: fix UAF in mchp_corespi_remove()
-      spi: microchip-core: switch to use devm_spi_alloc_master()
-      spi: microchip-core: switch to use dev_err_probe()
-      spi: Fix simplification of devm_spi_register_controller
-      spi: tegra20-slink: fix UAF in tegra_slink_remove()
-
- .../bindings/display/panel/lgphilips,lb035q02.yaml |   3 +
- .../bindings/display/panel/samsung,ld9040.yaml     |   3 +
- .../bindings/display/panel/sitronix,st7789v.yaml   |   3 +
- .../devicetree/bindings/display/panel/tpo,td.yaml  |   3 +
- .../devicetree/bindings/sound/renesas,rz-ssi.yaml  |   3 +-
- .../bindings/spi/atmel,at91rm9200-spi.yaml         |  75 +++
- .../devicetree/bindings/spi/hpe,gxp-spifi.yaml     |  56 ++
- .../bindings/spi/mediatek,spi-mt65xx.yaml          |   2 +
- .../bindings/spi/mediatek,spi-mtk-nor.yaml         |  15 +-
- .../devicetree/bindings/spi/nuvoton,npcm-fiu.txt   |  13 +-
- .../spi/nvidia,tegra210-quad-peripheral-props.yaml |  33 ++
- .../bindings/spi/nvidia,tegra210-quad.yaml         |  22 +-
- .../bindings/spi/qcom,spi-geni-qcom.yaml           |   5 +-
- .../devicetree/bindings/spi/samsung,spi.yaml       |   6 +-
- .../devicetree/bindings/spi/snps,dw-apb-ssi.yaml   |  26 +-
- .../devicetree/bindings/spi/spi-cadence.yaml       |   7 +
- .../devicetree/bindings/spi/spi-controller.yaml    |  19 +-
- .../bindings/spi/spi-peripheral-props.yaml         |  16 +-
- .../devicetree/bindings/spi/spi-zynqmp-qspi.yaml   |   7 +
- .../devicetree/bindings/spi/spi_atmel.txt          |  36 --
- MAINTAINERS                                        |   3 +
- drivers/spi/Kconfig                                |  16 +
- drivers/spi/Makefile                               |   2 +
- drivers/spi/atmel-quadspi.c                        | 104 +++-
- drivers/spi/spi-altera-dfl.c                       |  14 +-
- drivers/spi/spi-amd.c                              |  45 +-
- drivers/spi/spi-armada-3700.c                      |   4 +-
- drivers/spi/spi-atmel.c                            |  15 +-
- drivers/spi/spi-bcm2835.c                          |   8 +-
- drivers/spi/spi-cadence-quadspi.c                  |  19 +-
- drivers/spi/spi-dw-core.c                          |  10 +-
- drivers/spi/spi-dw-dma.c                           |  25 +-
- drivers/spi/spi-dw-mmio.c                          |   8 +-
- drivers/spi/spi-dw.h                               |  13 +-
- drivers/spi/spi-fsi.c                              |  19 +-
- drivers/spi/spi-gxp.c                              | 325 +++++++++++
- drivers/spi/spi-intel-pci.c                        |   1 +
- drivers/spi/spi-intel.c                            |   4 +-
- drivers/spi/spi-microchip-core.c                   | 617 +++++++++++++++++++++
- drivers/spi/spi-mpc52xx-psc.c                      | 116 ++--
- drivers/spi/spi-npcm-fiu.c                         |  28 +-
- drivers/spi/spi-pxa2xx.c                           |   4 +
- drivers/spi/spi-s3c64xx.c                          | 123 ++--
- drivers/spi/spi-sh.c                               |  94 +---
- drivers/spi/spi-sifive.c                           |  39 ++
- drivers/spi/spi-stm32-qspi.c                       |  18 +-
- drivers/spi/spi-synquacer.c                        |   1 +
- drivers/spi/spi-tegra20-slink.c                    |   3 +-
- drivers/spi/spi-tegra210-quad.c                    |  33 +-
- drivers/spi/spi-ti-qspi.c                          |  75 +--
- drivers/spi/spi-topcliff-pch.c                     |  30 +-
- drivers/spi/spi-zynqmp-gqspi.c                     |  25 +-
- drivers/spi/spi.c                                  | 566 +++++++++++--------
- include/linux/spi/spi.h                            | 169 +++---
- tools/spi/spidev_test.c                            |  11 +
- 55 files changed, 2183 insertions(+), 757 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.yaml
- create mode 100644 Documentation/devicetree/bindings/spi/hpe,gxp-spifi.yaml
- create mode 100644 Documentation/devicetree/bindings/spi/nvidia,tegra210-quad-peripheral-props.yaml
- delete mode 100644 Documentation/devicetree/bindings/spi/spi_atmel.txt
- create mode 100644 drivers/spi/spi-gxp.c
- create mode 100644 drivers/spi/spi-microchip-core.c
