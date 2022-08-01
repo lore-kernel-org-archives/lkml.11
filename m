@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF34C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9926AC25B06
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232644AbiHAMCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36926 "EHLO
+        id S232769AbiHAMCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232308AbiHAMAc (ORCPT
+        with ESMTP id S232935AbiHAMAf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:00:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D58A4E61A;
-        Mon,  1 Aug 2022 04:52:59 -0700 (PDT)
+        Mon, 1 Aug 2022 08:00:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564FE4E601;
+        Mon,  1 Aug 2022 04:52:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F970612C6;
-        Mon,  1 Aug 2022 11:52:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B1F9C433C1;
-        Mon,  1 Aug 2022 11:52:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D51F4B81171;
+        Mon,  1 Aug 2022 11:52:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 427DDC433D6;
+        Mon,  1 Aug 2022 11:52:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354778;
-        bh=TV9or4cVvHCFAXczizAjkTsOYTGZ/NNgwRCztI24QcE=;
+        s=korg; t=1659354775;
+        bh=QdhoJKHWHOYGae7EJTZdGq1HN/BPTPc3s5JJatJcrEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W30yFdZF0Ut5kU7gWtARFOjGXJKrcQ0NzRU9Nyk9E8nLusFbq7uU9Aq1ACvViTf0v
-         YJnvoJjorUYcP+oiGEvto5nPYzr889a3829saNszQX78VWxcRJtUHmhxk1kfwlBs8N
-         oIZfq7hqoKzL3uyGEJL5lBjvyn5a9nmcYq+DyH3k=
+        b=1vhoft/hTOHG9sQeGQMcyqYK1zL7MekI+4gS9C6x4hYDFg4y6tH4IE1nuJKPIHrFD
+         Llt8lyhLcaAyu66my58HbRXNakqagyTdCXG5t2TrRguFK3y4nCMfuB1Ntohcb2YEyO
+         nghjOECO0YuIkPvVRs5MUikwFrcFoalO8bzEoQXc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 17/69] tcp: Fix a data-race around sysctl_tcp_frto.
-Date:   Mon,  1 Aug 2022 13:46:41 +0200
-Message-Id: <20220801114135.185605997@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.15 08/69] asm-generic: remove a broken and needless ifdef conditional
+Date:   Mon,  1 Aug 2022 13:46:32 +0200
+Message-Id: <20220801114134.815320414@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
 References: <20220801114134.468284027@linuxfoundation.org>
@@ -48,31 +48,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-commit 706c6202a3589f290e1ef9be0584a8f4a3cc0507 upstream.
+commit e2a619ca0b38f2114347b7078b8a67d72d457a3d upstream.
 
-While reading sysctl_tcp_frto, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+Commit 527701eda5f1 ("lib: Add a generic version of devmem_is_allowed()")
+introduces the config symbol GENERIC_LIB_DEVMEM_IS_ALLOWED, but then
+falsely refers to CONFIG_GENERIC_DEVMEM_IS_ALLOWED (note the missing LIB
+in the reference) in ./include/asm-generic/io.h.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Luckily, ./scripts/checkkconfigsymbols.py warns on non-existing configs:
+
+GENERIC_DEVMEM_IS_ALLOWED
+Referencing files: include/asm-generic/io.h
+
+The actual fix, though, is simply to not to make this function declaration
+dependent on any kernel config. For architectures that intend to use
+the generic version, the arch's 'select GENERIC_LIB_DEVMEM_IS_ALLOWED' will
+lead to picking the function definition, and for other architectures, this
+function is simply defined elsewhere.
+
+The wrong '#ifndef' on a non-existing config symbol also always had the
+same effect (although more by mistake than by intent). So, there is no
+functional change.
+
+Remove this broken and needless ifdef conditional.
+
+Fixes: 527701eda5f1 ("lib: Add a generic version of devmem_is_allowed()")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_input.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/asm-generic/io.h |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -2167,7 +2167,7 @@ void tcp_enter_loss(struct sock *sk)
- 	 * loss recovery is underway except recurring timeout(s) on
- 	 * the same SND.UNA (sec 3.2). Disable F-RTO on path MTU probing
- 	 */
--	tp->frto = net->ipv4.sysctl_tcp_frto &&
-+	tp->frto = READ_ONCE(net->ipv4.sysctl_tcp_frto) &&
- 		   (new_recovery || icsk->icsk_retransmits) &&
- 		   !inet_csk(sk)->icsk_mtup.probe_size;
+--- a/include/asm-generic/io.h
++++ b/include/asm-generic/io.h
+@@ -1125,9 +1125,7 @@ static inline void memcpy_toio(volatile
  }
+ #endif
+ 
+-#ifndef CONFIG_GENERIC_DEVMEM_IS_ALLOWED
+ extern int devmem_is_allowed(unsigned long pfn);
+-#endif
+ 
+ #endif /* __KERNEL__ */
+ 
 
 
