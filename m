@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB67C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9966C19F29
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:56:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232531AbiHAL4p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:56:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52892 "EHLO
+        id S232539AbiHAL4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:56:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232494AbiHALz1 (ORCPT
+        with ESMTP id S232596AbiHALzq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:55:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00D545F5B;
-        Mon,  1 Aug 2022 04:51:17 -0700 (PDT)
+        Mon, 1 Aug 2022 07:55:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB76246DAC;
+        Mon,  1 Aug 2022 04:51:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA5A7B80E8F;
-        Mon,  1 Aug 2022 11:51:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2B96C433C1;
-        Mon,  1 Aug 2022 11:51:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20F9EB80E8F;
+        Mon,  1 Aug 2022 11:51:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 420B8C433C1;
+        Mon,  1 Aug 2022 11:51:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354674;
-        bh=zBdGI8o8H4l7saZFE93kxeJhGBWoit7hYH+sBaWW+kQ=;
+        s=korg; t=1659354679;
+        bh=TMbu5e55FoenH/oVv0gxfe7FcSg3WrAqZYWfZqObFfo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xOQqhVXfZyvILrQ/mI2T+sFgBmJvwKk9P+ozx8L18bP0gGUB+r2sIrdl8bvQRd7P/
-         ckWt1d4A6HrRAj0oeAA6fPfTx1+DWVvvLPBHBAlS1tNrluq9B669ukjUh0H/PFS5gZ
-         eSdz15EPe3MVEXEwOpqePXWHMOAh6aCAa6cDE/MU=
+        b=UaYhCphwr3DhfoolbR/E9qmHukA7V0iXxq5ht3Wmz0ZRGpJTFV5zeCRefds79sbsW
+         2CHxxr+Cd9Qpie7309kiJnj6qglVpd6Oo66w2at8yiysJibVam9nbmYsQ4csV+JkSd
+         k0fEE3KhNcC8C3Kj2dBpS7YgddiKzb6IWBdxl5fY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wei Chen <harperchen1110@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 46/65] sctp: leave the err path free in sctp_stream_init to sctp_stream_free
-Date:   Mon,  1 Aug 2022 13:47:03 +0200
-Message-Id: <20220801114135.658956418@linuxfoundation.org>
+        stable@vger.kernel.org, Jaewon Kim <jaewon31.kim@samsung.com>,
+        GyeongHwan Hong <gh21.hong@samsung.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Minchan Kim <minchan@kernel.org>, Baoquan He <bhe@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Yong-Taek Lee <ytk.lee@samsung.com>, stable@vger.kerenl.org,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.10 48/65] page_alloc: fix invalid watermark check on a negative value
+Date:   Mon,  1 Aug 2022 13:47:05 +0200
+Message-Id: <20220801114135.727370291@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114133.641770326@linuxfoundation.org>
 References: <20220801114133.641770326@linuxfoundation.org>
@@ -50,109 +55,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Jaewon Kim <jaewon31.kim@samsung.com>
 
-[ Upstream commit 181d8d2066c000ba0a0e6940a7ad80f1a0e68e9d ]
+commit 9282012fc0aa248b77a69f5eb802b67c5a16bb13 upstream.
 
-A NULL pointer dereference was reported by Wei Chen:
+There was a report that a task is waiting at the
+throttle_direct_reclaim. The pgscan_direct_throttle in vmstat was
+increasing.
 
-  BUG: kernel NULL pointer dereference, address: 0000000000000000
-  RIP: 0010:__list_del_entry_valid+0x26/0x80
-  Call Trace:
-   <TASK>
-   sctp_sched_dequeue_common+0x1c/0x90
-   sctp_sched_prio_dequeue+0x67/0x80
-   __sctp_outq_teardown+0x299/0x380
-   sctp_outq_free+0x15/0x20
-   sctp_association_free+0xc3/0x440
-   sctp_do_sm+0x1ca7/0x2210
-   sctp_assoc_bh_rcv+0x1f6/0x340
+This is a bug where zone_watermark_fast returns true even when the free
+is very low. The commit f27ce0e14088 ("page_alloc: consider highatomic
+reserve in watermark fast") changed the watermark fast to consider
+highatomic reserve. But it did not handle a negative value case which
+can be happened when reserved_highatomic pageblock is bigger than the
+actual free.
 
-This happens when calling sctp_sendmsg without connecting to server first.
-In this case, a data chunk already queues up in send queue of client side
-when processing the INIT_ACK from server in sctp_process_init() where it
-calls sctp_stream_init() to alloc stream_in. If it fails to alloc stream_in
-all stream_out will be freed in sctp_stream_init's err path. Then in the
-asoc freeing it will crash when dequeuing this data chunk as stream_out
-is missing.
+If watermark is considered as ok for the negative value, allocating
+contexts for order-0 will consume all free pages without direct reclaim,
+and finally free page may become depleted except highatomic free.
 
-As we can't free stream out before dequeuing all data from send queue, and
-this patch is to fix it by moving the err path stream_out/in freeing in
-sctp_stream_init() to sctp_stream_free() which is eventually called when
-freeing the asoc in sctp_association_free(). This fix also makes the code
-in sctp_process_init() more clear.
+Then allocating contexts may fall into throttle_direct_reclaim. This
+symptom may easily happen in a system where wmark min is low and other
+reclaimers like kswapd does not make free pages quickly.
 
-Note that in sctp_association_init() when it fails in sctp_stream_init(),
-sctp_association_free() will not be called, and in that case it should
-go to 'stream_free' err path to free stream instead of 'fail_init'.
+Handle the negative case by using MIN.
 
-Fixes: 5bbbbe32a431 ("sctp: introduce stream scheduler foundations")
-Reported-by: Wei Chen <harperchen1110@gmail.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Link: https://lore.kernel.org/r/831a3dc100c4908ff76e5bcc363be97f2778bc0b.1658787066.git.lucien.xin@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lkml.kernel.org/r/20220725095212.25388-1-jaewon31.kim@samsung.com
+Fixes: f27ce0e14088 ("page_alloc: consider highatomic reserve in watermark fast")
+Signed-off-by: Jaewon Kim <jaewon31.kim@samsung.com>
+Reported-by: GyeongHwan Hong <gh21.hong@samsung.com>
+Acked-by: Mel Gorman <mgorman@techsingularity.net>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Baoquan He <bhe@redhat.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Yong-Taek Lee <ytk.lee@samsung.com>
+Cc: <stable@vger.kerenl.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sctp/associola.c |  5 ++---
- net/sctp/stream.c    | 19 +++----------------
- 2 files changed, 5 insertions(+), 19 deletions(-)
+ mm/page_alloc.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-index fdb69d46276d..2d4ec6187755 100644
---- a/net/sctp/associola.c
-+++ b/net/sctp/associola.c
-@@ -226,9 +226,8 @@ static struct sctp_association *sctp_association_init(
- 	if (!sctp_ulpq_init(&asoc->ulpq, asoc))
- 		goto fail_init;
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -3679,11 +3679,15 @@ static inline bool zone_watermark_fast(s
+ 	 * need to be calculated.
+ 	 */
+ 	if (!order) {
+-		long fast_free;
++		long usable_free;
++		long reserved;
  
--	if (sctp_stream_init(&asoc->stream, asoc->c.sinit_num_ostreams,
--			     0, gfp))
--		goto fail_init;
-+	if (sctp_stream_init(&asoc->stream, asoc->c.sinit_num_ostreams, 0, gfp))
-+		goto stream_free;
+-		fast_free = free_pages;
+-		fast_free -= __zone_watermark_unusable_free(z, 0, alloc_flags);
+-		if (fast_free > mark + z->lowmem_reserve[highest_zoneidx])
++		usable_free = free_pages;
++		reserved = __zone_watermark_unusable_free(z, 0, alloc_flags);
++
++		/* reserved may over estimate high-atomic reserves. */
++		usable_free -= min(usable_free, reserved);
++		if (usable_free > mark + z->lowmem_reserve[highest_zoneidx])
+ 			return true;
+ 	}
  
- 	/* Initialize default path MTU. */
- 	asoc->pathmtu = sp->pathmtu;
-diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-index 6dc95dcc0ff4..ef9fceadef8d 100644
---- a/net/sctp/stream.c
-+++ b/net/sctp/stream.c
-@@ -137,7 +137,7 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
- 
- 	ret = sctp_stream_alloc_out(stream, outcnt, gfp);
- 	if (ret)
--		goto out_err;
-+		return ret;
- 
- 	for (i = 0; i < stream->outcnt; i++)
- 		SCTP_SO(stream, i)->state = SCTP_STREAM_OPEN;
-@@ -145,22 +145,9 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
- handle_in:
- 	sctp_stream_interleave_init(stream);
- 	if (!incnt)
--		goto out;
--
--	ret = sctp_stream_alloc_in(stream, incnt, gfp);
--	if (ret)
--		goto in_err;
--
--	goto out;
-+		return 0;
- 
--in_err:
--	sched->free(stream);
--	genradix_free(&stream->in);
--out_err:
--	genradix_free(&stream->out);
--	stream->outcnt = 0;
--out:
--	return ret;
-+	return sctp_stream_alloc_in(stream, incnt, gfp);
- }
- 
- int sctp_stream_init_ext(struct sctp_stream *stream, __u16 sid)
--- 
-2.35.1
-
 
 
