@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A644C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C55C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:13:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234121AbiHAMNU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:13:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57016 "EHLO
+        id S234146AbiHAMN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234193AbiHAMKw (ORCPT
+        with ESMTP id S234730AbiHAMLp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 08:10:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE99D6AA1B;
-        Mon,  1 Aug 2022 04:56:44 -0700 (PDT)
+        Mon, 1 Aug 2022 08:11:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF670481C9;
+        Mon,  1 Aug 2022 04:57:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2A5F5CE13B9;
-        Mon,  1 Aug 2022 11:56:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C3C3C433D6;
-        Mon,  1 Aug 2022 11:56:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7001DB81171;
+        Mon,  1 Aug 2022 11:57:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2D3DC433D6;
+        Mon,  1 Aug 2022 11:57:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659355000;
-        bh=oONK/2x2HZCKsDsB+GoDk34waBGsK8OQ/Klc1ODe+zU=;
+        s=korg; t=1659355025;
+        bh=duJXs/MwYWe9WFVVbbIUKq3oSqOCvs+9Q1cghxhSnzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wCpaoGXEBw3pl+pA5nqe1F/phWDjBSf/taSsKZj+A0I9FzcrHuOj8f3/omTy5+6NF
-         4NLo6JiOyxRU7TAS3w/cFZvzT1yrl5jJb0ldqswteB7yUU9E+NvozwtK8m+JJP04tH
-         R3bmKSYKwat1+2Rv4HedXwILDD8EKBaVgE3OlQUg=
+        b=MGEuqoIzKbsX4DnFlVfU1T7QTQC9fnUmKIunM5GyKg27a/9AP3YCjF9okiF/Y2xC7
+         dv1AqM6vkE/oQg/Rs30PIpsjd+q+llqbG1NzqIGO8mwR0Xs0RRLbWddhFb11PP+KL1
+         Lh7F0iIfCpKcRft8xDJYzepQlyqwG9CRtjfM1nKI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 5.18 03/88] ARM: dts: lan966x: fix sys_clk frequency
-Date:   Mon,  1 Aug 2022 13:46:17 +0200
-Message-Id: <20220801114138.189784913@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.18 36/88] tcp: Fix a data-race around sysctl_tcp_limit_output_bytes.
+Date:   Mon,  1 Aug 2022 13:46:50 +0200
+Message-Id: <20220801114139.684478849@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 References: <20220801114138.041018499@linuxfoundation.org>
@@ -49,62 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit ef0324b6415db6742bd632dc0dfbb8fbc111473b upstream.
+commit 9fb90193fbd66b4c5409ef729fd081861f8b6351 upstream.
 
-The sys_clk frequency is 165.625MHz. The register reference of the
-Generic Clock controller lists the CPU clock as 600MHz, the DDR clock as
-300MHz and the SYS clock as 162.5MHz. This is wrong. It was first
-noticed during the fan driver development and it was measured and
-verified via the CLK_MON output of the SoC which can be configured to
-output sys_clk/64.
+While reading sysctl_tcp_limit_output_bytes, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-The core PLL settings (which drives the SYS clock) seems to be as
-follows:
-  DIVF = 52
-  DIVQ = 3
-  DIVR = 1
-
-With a refernce clock of 25MHz, this means we have a post divider clock
-  Fpfd = Fref / (DIVR + 1) = 25MHz / (1 + 1) = 12.5MHz
-
-The resulting VCO frequency is then
-  Fvco = Fpfd * (DIVF + 1) * 2 = 12.5MHz * (52 + 1) * 2 = 1325MHz
-
-And the output frequency is
-  Fout = Fvco / 2^DIVQ = 1325MHz / 2^3 = 165.625Mhz
-
-This all adds up to the constrains of the PLL:
-    10MHz <= Fpfd <= 200MHz
-    20MHz <= Fout <= 1000MHz
-  1000MHz <= Fvco <= 2000MHz
-
-Fixes: 290deaa10c50 ("ARM: dts: add DT for lan966 SoC and 2-port board pcb8291")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220326194028.2945985-1-michael@walle.cc
+Fixes: 46d3ceabd8d9 ("tcp: TCP Small Queues")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/lan966x.dtsi | 2 +-
+ net/ipv4/tcp_output.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/lan966x.dtsi b/arch/arm/boot/dts/lan966x.dtsi
-index 3cb02fffe716..38e90a31d2dd 100644
---- a/arch/arm/boot/dts/lan966x.dtsi
-+++ b/arch/arm/boot/dts/lan966x.dtsi
-@@ -38,7 +38,7 @@ clocks {
- 		sys_clk: sys_clk {
- 			compatible = "fixed-clock";
- 			#clock-cells = <0>;
--			clock-frequency = <162500000>;
-+			clock-frequency = <165625000>;
- 		};
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -2502,7 +2502,7 @@ static bool tcp_small_queue_check(struct
+ 		      sk->sk_pacing_rate >> READ_ONCE(sk->sk_pacing_shift));
+ 	if (sk->sk_pacing_status == SK_PACING_NONE)
+ 		limit = min_t(unsigned long, limit,
+-			      sock_net(sk)->ipv4.sysctl_tcp_limit_output_bytes);
++			      READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_limit_output_bytes));
+ 	limit <<= factor;
  
- 		cpu_clk: cpu_clk {
--- 
-2.37.1
-
+ 	if (static_branch_unlikely(&tcp_tx_delay_enabled) &&
 
 
