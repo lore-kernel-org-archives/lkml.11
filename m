@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6311C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:00:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52086C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 12:00:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232920AbiHAMAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 08:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33392 "EHLO
+        id S232223AbiHAMAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 08:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232891AbiHAL66 (ORCPT
+        with ESMTP id S232976AbiHAL7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:58:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BE94A80D;
-        Mon,  1 Aug 2022 04:52:28 -0700 (PDT)
+        Mon, 1 Aug 2022 07:59:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84B7B4C60F;
+        Mon,  1 Aug 2022 04:52:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C6BDB81173;
-        Mon,  1 Aug 2022 11:52:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F02C5C43140;
-        Mon,  1 Aug 2022 11:52:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 211B5B81170;
+        Mon,  1 Aug 2022 11:52:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70702C433D6;
+        Mon,  1 Aug 2022 11:52:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659354746;
-        bh=/aiidocJnBedxF7hINvURb2iXWFTCt5ZfPgv11oB8As=;
+        s=korg; t=1659354759;
+        bh=VBH1TpZZyZwT5mtyysWp68ObVLFEUBt+O5pRICLEnDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SLsQGX2FdKb6UPoJhK4PIuZSc3vR6zaH6oTSMbcvJhuEMY+/QVScaQwvXKXU845hA
-         glaPHgG/p2NLCEvF9T2NE0Sf6n+Nasoxd3prg8DyGWEXntH38AY9w6QdR0wShgQFCp
-         RYsEmoBN329N0IjR2cYUxF4udEzCzEWsrlTBmefY=
+        b=da/8Z+JCceaWwFvF0yVPqfSBDLysSTkQKa4AZZMXrbfrB6Ryl8RzkXbFMClTlS4jX
+         ZLp0EozeMQCSBGh06oTKacm8+Z0J3s6mb0dUkBQoRIr0E9L5wVHxxhk1jzGe+n+30m
+         1H9I9prH90vgv+d+T6p7/ZBInpV+qwmMbHzFbR5o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Wei Wang <weiwan@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 39/65] tcp: Fix data-races around sysctl_tcp_reflect_tos.
-Date:   Mon,  1 Aug 2022 13:46:56 +0200
-Message-Id: <20220801114135.345687804@linuxfoundation.org>
+        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
+        Hawkins Jiawei <yin31149@gmail.com>,
+        Anton Altaparmakov <anton@tuxera.com>,
+        Yongqiang Liu <liuyongqiang13@huawei.com>,
+        Zhang Yi <yi.zhang@huawei.com>,
+        Zhang Xiaoxu <zhangxiaoxu5@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 03/69] ntfs: fix use-after-free in ntfs_ucsncmp()
+Date:   Mon,  1 Aug 2022 13:46:27 +0200
+Message-Id: <20220801114134.611030451@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220801114133.641770326@linuxfoundation.org>
-References: <20220801114133.641770326@linuxfoundation.org>
+In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
+References: <20220801114134.468284027@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,69 +53,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: ChenXiaoSong <chenxiaosong2@huawei.com>
 
-[ Upstream commit 870e3a634b6a6cb1543b359007aca73fe6a03ac5 ]
+commit 38c9c22a85aeed28d0831f230136e9cf6fa2ed44 upstream.
 
-While reading sysctl_tcp_reflect_tos, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+Syzkaller reported use-after-free bug as follows:
 
-Fixes: ac8f1710c12b ("tcp: reflect tos value received in SYN to the socket")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Acked-by: Wei Wang <weiwan@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+==================================================================
+BUG: KASAN: use-after-free in ntfs_ucsncmp+0x123/0x130
+Read of size 2 at addr ffff8880751acee8 by task a.out/879
+
+CPU: 7 PID: 879 Comm: a.out Not tainted 5.19.0-rc4-next-20220630-00001-gcc5218c8bd2c-dirty #7
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x1c0/0x2b0
+ print_address_description.constprop.0.cold+0xd4/0x484
+ print_report.cold+0x55/0x232
+ kasan_report+0xbf/0xf0
+ ntfs_ucsncmp+0x123/0x130
+ ntfs_are_names_equal.cold+0x2b/0x41
+ ntfs_attr_find+0x43b/0xb90
+ ntfs_attr_lookup+0x16d/0x1e0
+ ntfs_read_locked_attr_inode+0x4aa/0x2360
+ ntfs_attr_iget+0x1af/0x220
+ ntfs_read_locked_inode+0x246c/0x5120
+ ntfs_iget+0x132/0x180
+ load_system_files+0x1cc6/0x3480
+ ntfs_fill_super+0xa66/0x1cf0
+ mount_bdev+0x38d/0x460
+ legacy_get_tree+0x10d/0x220
+ vfs_get_tree+0x93/0x300
+ do_new_mount+0x2da/0x6d0
+ path_mount+0x496/0x19d0
+ __x64_sys_mount+0x284/0x300
+ do_syscall_64+0x3b/0xc0
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f3f2118d9ea
+Code: 48 8b 0d a9 f4 0b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 76 f4 0b 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffc269deac8 EFLAGS: 00000202 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f3f2118d9ea
+RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ffc269dec00
+RBP: 00007ffc269dec80 R08: 00007ffc269deb00 R09: 00007ffc269dec44
+R10: 0000000000000000 R11: 0000000000000202 R12: 000055f81ab1d220
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+
+The buggy address belongs to the physical page:
+page:0000000085430378 refcount:1 mapcount:1 mapping:0000000000000000 index:0x555c6a81d pfn:0x751ac
+memcg:ffff888101f7e180
+anon flags: 0xfffffc00a0014(uptodate|lru|mappedtodisk|swapbacked|node=0|zone=1|lastcpupid=0x1fffff)
+raw: 000fffffc00a0014 ffffea0001bf2988 ffffea0001de2448 ffff88801712e201
+raw: 0000000555c6a81d 0000000000000000 0000000100000000 ffff888101f7e180
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8880751acd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8880751ace00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff8880751ace80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                                                          ^
+ ffff8880751acf00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8880751acf80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
+The reason is that struct ATTR_RECORD->name_offset is 6485, end address of
+name string is out of bounds.
+
+Fix this by adding sanity check on end address of attribute name string.
+
+[akpm@linux-foundation.org: coding-style cleanups]
+[chenxiaosong2@huawei.com: cleanup suggested by Hawkins Jiawei]
+  Link: https://lkml.kernel.org/r/20220709064511.3304299-1-chenxiaosong2@huawei.com
+Link: https://lkml.kernel.org/r/20220707105329.4020708-1-chenxiaosong2@huawei.com
+Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
+Cc: Anton Altaparmakov <anton@tuxera.com>
+Cc: ChenXiaoSong <chenxiaosong2@huawei.com>
+Cc: Yongqiang Liu <liuyongqiang13@huawei.com>
+Cc: Zhang Yi <yi.zhang@huawei.com>
+Cc: Zhang Xiaoxu <zhangxiaoxu5@huawei.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_ipv4.c | 4 ++--
- net/ipv6/tcp_ipv6.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ fs/ntfs/attrib.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index d5f13ff7d900..0d165ce2d80a 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -983,7 +983,7 @@ static int tcp_v4_send_synack(const struct sock *sk, struct dst_entry *dst,
- 	if (skb) {
- 		__tcp_v4_send_check(skb, ireq->ir_loc_addr, ireq->ir_rmt_addr);
- 
--		tos = sock_net(sk)->ipv4.sysctl_tcp_reflect_tos ?
-+		tos = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reflect_tos) ?
- 				(tcp_rsk(req)->syn_tos & ~INET_ECN_MASK) |
- 				(inet_sk(sk)->tos & INET_ECN_MASK) :
- 				inet_sk(sk)->tos;
-@@ -1558,7 +1558,7 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
- 	/* Set ToS of the new socket based upon the value of incoming SYN.
- 	 * ECT bits are set later in tcp_init_transfer().
- 	 */
--	if (sock_net(sk)->ipv4.sysctl_tcp_reflect_tos)
-+	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reflect_tos))
- 		newinet->tos = tcp_rsk(req)->syn_tos & ~INET_ECN_MASK;
- 
- 	if (!dst) {
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 303b54414a6c..8d91f36cb11b 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -542,7 +542,7 @@ static int tcp_v6_send_synack(const struct sock *sk, struct dst_entry *dst,
- 		if (np->repflow && ireq->pktopts)
- 			fl6->flowlabel = ip6_flowlabel(ipv6_hdr(ireq->pktopts));
- 
--		tclass = sock_net(sk)->ipv4.sysctl_tcp_reflect_tos ?
-+		tclass = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reflect_tos) ?
- 				(tcp_rsk(req)->syn_tos & ~INET_ECN_MASK) |
- 				(np->tclass & INET_ECN_MASK) :
- 				np->tclass;
-@@ -1344,7 +1344,7 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
- 	/* Set ToS of the new socket based upon the value of incoming SYN.
- 	 * ECT bits are set later in tcp_init_transfer().
- 	 */
--	if (sock_net(sk)->ipv4.sysctl_tcp_reflect_tos)
-+	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reflect_tos))
- 		newnp->tclass = tcp_rsk(req)->syn_tos & ~INET_ECN_MASK;
- 
- 	/* Clone native IPv6 options from listening socket (if any)
--- 
-2.35.1
-
+--- a/fs/ntfs/attrib.c
++++ b/fs/ntfs/attrib.c
+@@ -592,8 +592,12 @@ static int ntfs_attr_find(const ATTR_TYP
+ 		a = (ATTR_RECORD*)((u8*)ctx->attr +
+ 				le32_to_cpu(ctx->attr->length));
+ 	for (;;	a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
+-		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > (u8*)ctx->mrec +
+-				le32_to_cpu(ctx->mrec->bytes_allocated))
++		u8 *mrec_end = (u8 *)ctx->mrec +
++		               le32_to_cpu(ctx->mrec->bytes_allocated);
++		u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
++			       a->name_length * sizeof(ntfschar);
++		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
++		    name_end > mrec_end)
+ 			break;
+ 		ctx->attr = a;
+ 		if (unlikely(le32_to_cpu(a->type) > le32_to_cpu(type) ||
 
 
