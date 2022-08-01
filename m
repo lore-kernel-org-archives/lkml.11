@@ -2,184 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB9F5C19F2B
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 06:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B0CC00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 06:49:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233882AbiHAGsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 02:48:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48604 "EHLO
+        id S230321AbiHAGtk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 02:49:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234727AbiHAGsW (ORCPT
+        with ESMTP id S233223AbiHAGr1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 02:48:22 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F96A13F49;
-        Sun, 31 Jul 2022 23:48:13 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id o1so7734990qkg.9;
-        Sun, 31 Jul 2022 23:48:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0pCQwRUtQqbmZSwhlAYKv7D+OaWBuV6jzuOG3pLiqnE=;
-        b=ln2eP881w+pJWsnC+kYg6rYGAd3maj9S7mJ+gV/lLUoTHa07yJ7pdTT1iddtkvut7G
-         wCE3Vn0TT0sSu2CGZvq/wm0E+8dX8DAzc0wcrTU8f68Bf945HKsgWEqdxw/iLewJID2+
-         U3xISuK9fbiy0BRYeJ5aJIV0S+Q+NI5ty1LBv5VOtK4++uo7wdiHC9lGtmGhCbrpNouT
-         poWweP7l/AaVWeIy/2bVG85dC0G/EueHZA6lUebLElpHSoCxf4b25lXpFCUPSvI2lhdW
-         7jc02DOr4iyObq+BZvCMVIS2hbqCqgw3xx0epY1nfMPIBNYZpFTwGEBUDoh2MKMua6y2
-         T4rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0pCQwRUtQqbmZSwhlAYKv7D+OaWBuV6jzuOG3pLiqnE=;
-        b=Y97cQMDQsqGK7AYWLfOKdA8pvvi9aEfceRVlMf3wL/m6lPqs47koW/+OhY9eyN1wkg
-         pK0cDrMXcIjTVa0EyQHvpuPLThUewNvCcuBk8viNdK4geO0JfT8x4FlZzB9ijjvsafqL
-         KGZz8LoxAzCVh4uFSLaGXCpBwaP9mVp1/VDGlXRyxduwr86NbL2cfvnGeSwXnQ1OZiNa
-         HxWPTomC4xKawKmjBpHtdNs1+5OKJir14AtnUFQTOiA7Q+mM7Kfb/oymAm4JETnVZ/9Q
-         RMw9vjpUaqQZ/AmqmQMHBTVIpccUTDMeLAFEpq1PPbX1LDJTcD1ghg4EnpiBZVuPmAsA
-         hzXw==
-X-Gm-Message-State: AJIora8FopjwlP1rSx/ZiX8GU9Ml6sQ5dwYKhNl+ABKNwpljS/SabVTB
-        3yFUopDMAgRVTFtAi/wOQsmnzKvv9Rzze5tpm3k=
-X-Google-Smtp-Source: AGRyM1vi8vD3grhYbZ/WLviZ2IFccZbjNO75ItldTtC+nPOI6OOaG7LKKV2FJNQbFGfWSid26gTwustg4ausWvfIn5M=
-X-Received: by 2002:a05:620a:1706:b0:6b8:705a:c61e with SMTP id
- az6-20020a05620a170600b006b8705ac61emr8915998qkb.129.1659336492750; Sun, 31
- Jul 2022 23:48:12 -0700 (PDT)
+        Mon, 1 Aug 2022 02:47:27 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E2CE41C106
+        for <linux-kernel@vger.kernel.org>; Sun, 31 Jul 2022 23:44:42 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D865A1515;
+        Sun, 31 Jul 2022 23:44:29 -0700 (PDT)
+Received: from e120937-lin (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D94B73F73B;
+        Sun, 31 Jul 2022 23:44:27 -0700 (PDT)
+Date:   Mon, 1 Aug 2022 07:44:21 +0100
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     Arun KS <arunks.linux@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        sudeep.holla@arm.com, james.quinlan@broadcom.com,
+        Jonathan.Cameron@huawei.com, f.fainelli@gmail.com,
+        vincent.guittot@linaro.org, souvik.chakravarty@arm.com,
+        peter.hilber@opensynergy.com
+Subject: Re: [RFC PATCH 14/16] firmware: arm_scmi: Add testing Voltage
+ protocol support
+Message-ID: <Yud2RbgHEiMz2OvD@e120937-lin>
+References: <20220227205608.30812-1-cristian.marussi@arm.com>
+ <20220227205608.30812-15-cristian.marussi@arm.com>
+ <CAKZGPANYh4aS47WH8UBPiTVdE9sOstZD+yZgHkPcUAWX=Gc-dQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220722102407.2205-1-peterwu.pub@gmail.com> <20220722102407.2205-6-peterwu.pub@gmail.com>
-In-Reply-To: <20220722102407.2205-6-peterwu.pub@gmail.com>
-From:   ChiaEn Wu <peterwu.pub@gmail.com>
-Date:   Mon, 1 Aug 2022 14:47:36 +0800
-Message-ID: <CABtFH5L83d5Di6O9TC-L3UX2ma5J3PE47ihfJFfPD5YGJ43NxQ@mail.gmail.com>
-Subject: Re: [PATCH v6 05/13] dt-bindings: backlight: Add MediaTek MT6370 backlight
-To:     Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
-        Helge Deller <deller@gmx.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     ChiaEn Wu <chiaen_wu@richtek.com>,
-        Alice Chen <alice_chen@richtek.com>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        USB <linux-usb@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
-        szuni chen <szunichen@gmail.com>, Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKZGPANYh4aS47WH8UBPiTVdE9sOstZD+yZgHkPcUAWX=Gc-dQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 6:24 PM ChiaEn Wu <peterwu.pub@gmail.com> wrote:
->
-> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> ---
+On Mon, Aug 01, 2022 at 10:17:00AM +0530, Arun KS wrote:
+> Hi Cristian,
+> 
 
-[snip]
+Hi Arun,
 
-> +  compatible:
-> +    const: mediatek,mt6370-backlight
-> +
-> +  default-brightness:
-> +    minimum: 0
-> +    maximum: 2048
-> +
-> +  max-brightness:
-> +    minimum: 0
-> +    maximum: 2048
-> +
+first of all thanks for the feedback !
 
-Hi Rob, Krzysztof,
+> On Mon, Feb 28, 2022 at 4:23 AM Cristian Marussi
+> <cristian.marussi@arm.com> wrote:
+> >
+> > firmware: arm_scmi: Add testing Voltage protocol support
+> >
+> > Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+> > ---
+> >  .../arm_scmi/scmi_test_driver/Makefile        |  2 +-
+> >  .../arm_scmi/scmi_test_driver/scmi_test.c     |  2 +
+> >  .../arm_scmi/scmi_test_driver/test_common.h   |  1 +
+> >  .../arm_scmi/scmi_test_driver/test_voltages.c | 51 +++++++++++++++++++
+> >  4 files changed, 55 insertions(+), 1 deletion(-)
+> >  create mode 100644 drivers/firmware/arm_scmi/scmi_test_driver/test_voltages.c
+> >
+> > diff --git a/drivers/firmware/arm_scmi/scmi_test_driver/Makefile b/drivers/firmware/arm_scmi/scmi_test_driver/Makefile
+> > index 68a3d94a6a88..3b7df18de250 100644
+> > --- a/drivers/firmware/arm_scmi/scmi_test_driver/Makefile
+> > +++ b/drivers/firmware/arm_scmi/scmi_test_driver/Makefile
+> > @@ -1,5 +1,5 @@
+> >  # SPDX-License-Identifier: GPL-2.0-only
+> >  scmi_test_driver-objs := scmi_test.o test_common.o test_clocks.o test_sensors.o \
+> > -       test_powers.o
+> > +       test_powers.o test_voltages.o
+> >  obj-$(CONFIG_ARM_SCMI_TEST_DRIVER) += scmi_test_driver.o
+> >
+> > diff --git a/drivers/firmware/arm_scmi/scmi_test_driver/scmi_test.c b/drivers/firmware/arm_scmi/scmi_test_driver/scmi_test.c
+> > index df0d3e572010..2ca9f82c5bf3 100644
+> > --- a/drivers/firmware/arm_scmi/scmi_test_driver/scmi_test.c
+> > +++ b/drivers/firmware/arm_scmi/scmi_test_driver/scmi_test.c
+> > @@ -26,6 +26,7 @@ int (*scmi_test_init[SCMI_MAX_PROTOCOLS])(struct scmi_test_setup *) = {
+> >         [SCMI_PROTOCOL_POWER] = scmi_test_power_init,
+> >         [SCMI_PROTOCOL_CLOCK] = scmi_test_clock_init,
+> >         [SCMI_PROTOCOL_SENSOR] = scmi_test_sensor_init,
+> > +       [SCMI_PROTOCOL_VOLTAGE] = scmi_test_voltage_init,
+> >  };
+> >
+> >  static void
+> > @@ -125,6 +126,7 @@ static int scmi_testing_probe(struct scmi_device *sdev)
+> >  }
+> >
+> >  static const struct scmi_device_id scmi_id_table[] = {
+> > +       { SCMI_PROTOCOL_VOLTAGE, "__scmi_test-voltage" },
+> >         { SCMI_PROTOCOL_CLOCK, "__scmi_test-clock" },
+> >         { SCMI_PROTOCOL_SENSOR, "__scmi_test-sensor" },
+> >         { SCMI_PROTOCOL_POWER, "__scmi_test-power" },
+> > diff --git a/drivers/firmware/arm_scmi/scmi_test_driver/test_common.h b/drivers/firmware/arm_scmi/scmi_test_driver/test_common.h
+> > index 9f3d35ba4477..338b65da593f 100644
+> > --- a/drivers/firmware/arm_scmi/scmi_test_driver/test_common.h
+> > +++ b/drivers/firmware/arm_scmi/scmi_test_driver/test_common.h
+> > @@ -102,6 +102,7 @@ int scmi_test_release(struct inode *ino, struct file *filp);
+> >
+> >  int scmi_test_clock_init(struct scmi_test_setup *tsp);
+> >  int scmi_test_sensor_init(struct scmi_test_setup *tsp);
+> > +int scmi_test_voltage_init(struct scmi_test_setup *tsp);
+> >  int scmi_test_power_init(struct scmi_test_setup *tsp);
+> >
+> >  #endif /* __SCMI_TEST_COMMON_H */
+> > diff --git a/drivers/firmware/arm_scmi/scmi_test_driver/test_voltages.c b/drivers/firmware/arm_scmi/scmi_test_driver/test_voltages.c
+> > new file mode 100644
+> > index 000000000000..ab91080e3a0f
+> > --- /dev/null
+> > +++ b/drivers/firmware/arm_scmi/scmi_test_driver/test_voltages.c
+> > @@ -0,0 +1,51 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/*
+> > + * SCMI Testing Driver - Voltage Protocol
+> > + *
+> > + * Copyright (C) 2022 ARM Ltd.
+> > + */
+> > +
+> > +#include <linux/dcache.h>
+> > +#include <linux/debugfs.h>
+> > +#include <linux/err.h>
+> > +#include <linux/fs.h>
+> > +#include <linux/io.h>
+> > +#include <linux/kstrtox.h>
+> > +#include <linux/module.h>
+> > +#include <linux/scmi_protocol.h>
+> > +#include <linux/slab.h>
+> > +
+> > +#include "test_common.h"
+> > +
+> > +struct scmi_voltage_data {
+> > +       unsigned int version;
+> > +       int count;
+> > +};
+> > +
+> > +int scmi_test_voltage_init(struct scmi_test_setup *tsp)
+> > +{
+> > +       struct scmi_voltage_data *vdata;
+> > +       struct device *dev = &tsp->sdev->dev;
+> > +       const struct scmi_voltage_proto_ops *voltage_ops;
+> > +
+> > +       vdata = devm_kzalloc(dev, sizeof(*vdata), GFP_KERNEL);
+> > +       if (!vdata)
+> > +               return -ENOMEM;
+> > +
+> > +       voltage_ops = tsp->ops;
+> > +       vdata->version = voltage_ops->version_get(tsp->ph);
+> > +       vdata->count = voltage_ops->num_domains_get(tsp->ph);
+> > +
+> > +       if (vdata->count <= 0) {
+> > +               dev_err(dev, "number of voltage doms invalid: %d\n",
+> > +                       vdata->count);
+> > +               return vdata->count ?: -EINVAL;
+> > +       }
+> > +
+> > +       dev_info(dev, "Found %d voltage resources.\n", vdata->count);
+> > +
+> > +       tsp->priv = vdata;
+> > +       debugfs_create_x32("version", 0400, tsp->parent, &vdata->version);
+> Any particular reason, why we are not creating debugfs entires for
+> regulator level_get/level_set like it was done for
+> clocks(rate_get_set)?
 
-First, I'm so sorry for our SoB writing wrong, I'll fix it in the next patch.
-Because of this mail thread
-(https://lore.kernel.org/all/20220728113109.7gf3b36mqjxlhcq3@maple.lan/),
-I would like to discuss with you that I may change the following in
-this DT document, I am not sure whether you agree or not.
+No, it is just that this RFC initial series was meant to gather feedback
+on this approach at testing and to experiment with this solution itself
+a bit, before committing more work to more extensive cover all SCMI protocols
+and ops... so the series is 'incomplete' by design :P
 
-1. Add some descriptions about MT6372, which supports 16384 steps (14
-bits) and is different from MT6370/MT6371 (2048 steps, 11 bits)
-2. Modify the format of 'compatible' as follows to distinguish between
-MT6370/MT6371 or MT6372
-------------------------------------------
-properties:
-  compatible:
-    enum:
-      - mediatek,mt6370-backlight
-      - mediatek,mt6372-backlight
-------------------------------------------
+... having said that, despite the series had not received so much
+feedback at the end, I have worked in the background on extending its
+SCMI coverage, so that now I can support all SCMI protocols (exposing all
+ops on debugfs) ... I'll plan to post a new more extensive series in the
+near(-ish) future once I'll have the time to clean it up and add more
+example KSFT testcases (and fix the dummy ones ...)
 
-3. Remove the 'maximum' value of 'default-brightness' and
-'max-brightness', and add "if-else" to determine the "maximum" value
-as follows
-------------------------------------------
-  default-brightness:
-    minimum: 0
+Thanks,
+Cristian
 
-  max-brightness:
-    minimum: 0
-
-...
-
-if:
-  properties:
-    compatible:
-      contains:
-        const: mediatek,mt6372-backlight
-
-then:
-  properties:
-    default-brightness:
-      maximum: 16384
-
-    max-brightness:
-      maximum: 16384
-
-else:
-  properties:
-    default-brightness:
-      maximum: 2048
-
-    max-brightness:
-      maximum: 2048
-------------------------------------------
-
-4. Add a new boolean property to allow the user to determine whether
-to enable the exponential mode of backlight brightness or not. Like
-this,
-------------------------------------------
-  mediatek,bled-exponential-mode-enable:
-    description: |
-      Enable the exponential mode of backlight brightness. If this property
-      is not enabled, the default is to use linear mode.
-    type: boolean
-------------------------------------------
-
-I hope these changes I have added will meet your expectations.
-And I'm not sure if I should remove 'Reviewed-By' first until it
-passes your review.
-Thanks.
-
--- 
-Best Regards,
-ChiaEn Wu
