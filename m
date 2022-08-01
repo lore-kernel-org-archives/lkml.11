@@ -2,110 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28266C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:43:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40853C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 11:43:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231459AbiHALnW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 07:43:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56280 "EHLO
+        id S231496AbiHALni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 07:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231444AbiHALnC (ORCPT
+        with ESMTP id S231540AbiHALnQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 07:43:02 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A15937FB2
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:42:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659354158; x=1690890158;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=dmN4Hd+xVrr9IuBeHO6Y541u5D0Czse4LPOkuWPDwKw=;
-  b=iRXl3LthhtmS8GYGHK5OOS/4vATtz7fKvNzZQ47vbeAeWCrA5oMQCcR8
-   x1L7wHCiRPoxVzmUhGbenfjGWgY/3R1pwXToTaqusAzeyOrxrWfd1fhI/
-   VmkNmiclsCZA0jxBzzkRnnwALw9TX+b6s2Pke2yKBr9BXbL3JzT0cvR+7
-   mrFyJVr2MXNbo+R3YFFsaitz3R6irqSlgZxxIIv8nyhkv9OBHfaaJdXrP
-   uXF4oB1J6TmEEkiixQ/NUgqQwJYnPRsRrVneHPm0+VB/zbMV17nNMkk/A
-   TrWfIkERMa2yMGWXRCAk7/Bp9Q/NRSAp0by6ygxA3nhDlukzVX748B1wq
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10425"; a="289897067"
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="289897067"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 04:42:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="605633583"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 01 Aug 2022 04:42:26 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 21AD9303; Mon,  1 Aug 2022 14:42:14 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lee Jones <lee.jones@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Lee Jones <lee@kernel.org>, Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v3 06/10] mfd: intel_soc_pmic_crc: Switch from CONFIG_PM_SLEEP guards to pm_sleep_ptr() etc
-Date:   Mon,  1 Aug 2022 14:42:07 +0300
-Message-Id: <20220801114211.36267-6-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220801114211.36267-1-andriy.shevchenko@linux.intel.com>
-References: <20220801114211.36267-1-andriy.shevchenko@linux.intel.com>
+        Mon, 1 Aug 2022 07:43:16 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33A533418
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 04:43:04 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id s206so9453688pgs.3
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 04:43:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=jCZfqgpMIYNePan17xLuQgg/2P+1/yoh0ZDJdZ/18tI=;
+        b=IDlZWskTF70cLwVWU511IykP7AjcAZQRAs8VbYY0NylYCYM0GJ2goPqkXxs1+3oyAL
+         xruycQ6vh21/kXgFQ6YyXhYqPqZ1o1sM/twBunN/05CtkUSL5NTNSUCHOQL3+WBfWj1S
+         4AcaDOZME9ihzikOxhHpu0dIqXM/TVkSLeCIYgjNTgNpA/o/fx8RZj6i7fG4XxG7J857
+         a+TOwHrJ0DMEUMKTcXDe6HvsFadmvS+FKR7TchULQyxH8Pc9IWAUDAD5cFxGV9PfKnH7
+         6kWiotPrDaGVwgmgJ1jE5AIkwo8+ZF8NPfTbwRjIc/oXl6AWhp/dOZfbjp2DwFyzAKT7
+         8P9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=jCZfqgpMIYNePan17xLuQgg/2P+1/yoh0ZDJdZ/18tI=;
+        b=CCkVyoIkQ54h8UOPkEDa0T8EX839DAXVE0hBESbLJJeiczCzmEPvQZva7/0W8kWUCa
+         gAJi0qFl8+27DsO0PGtjfon7upf1JLszjmIAYSz1a114bkyTSCp/ePhGZ2jrm6HQTy7W
+         Tpg/fpEog7iuL/tHGjQfjPRXhYEC2dkxvIob9p7FmQ2uQ4+4HyLaK4LRhdeiRx9ig6HQ
+         g93AUD8JkSLl+LQ6fC/MeFR/9VhbiCuLJtY6kpI4Xqi5ZNT0BwYKFCLZipxEbcafpLiA
+         usOGS5LaMYIbPlFX5YjtFg2Mf7pskDhW8J9yVYHSZTpXdfCodg9eYyAwzhg1pVxv77F1
+         /33g==
+X-Gm-Message-State: AJIora/Q5jUngiB4hrVZRQnw8Xq0mZZkzDxgfC/nCwLDljagu7AO5DMV
+        MM+qbvInATe/xAqInGh5JxfbuQ==
+X-Google-Smtp-Source: AGRyM1sy7zJbZBiuLqJ7c7UTW7/Bu4BYqPzTf/WcI22nbTu9nQpq2LYP0aw6jf2JYIEIq3ZhrUjwiA==
+X-Received: by 2002:a05:6a00:17aa:b0:52a:e94b:67e5 with SMTP id s42-20020a056a0017aa00b0052ae94b67e5mr16104010pfg.76.1659354184093;
+        Mon, 01 Aug 2022 04:43:04 -0700 (PDT)
+Received: from localhost ([122.171.18.80])
+        by smtp.gmail.com with ESMTPSA id n16-20020a170902e55000b0016d5cf36ff8sm9496422plf.274.2022.08.01.04.43.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 04:43:03 -0700 (PDT)
+Date:   Mon, 1 Aug 2022 17:13:01 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mansur Alisha Shaik <mansur@codeaurora.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        regressions@lists.linux.dev, Linux PM <linux-pm@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>
+Subject: Re: WARNING: CPU: 4 PID: 326 at drivers/opp/core.c:2471
+ dev_pm_opp_set_config+0x344/0x620
+Message-ID: <20220801114301.k6ya3gfyy3pcrzwx@vireshk-i7>
+References: <CA+G9fYuGFReF0Z9qj7-80eY0gz-J2C5MVpno_8NjrGSH5_RB0Q@mail.gmail.com>
+ <20220725102711.p6eerjjzgeqi4blu@vireshk-i7>
+ <f914f5c5-dd61-8495-b362-3043406582da@linaro.org>
+ <20220801023636.p5ytjqasedpohmdy@vireshk-i7>
+ <d074daf4-c8e1-927d-9edd-2575f2335aa1@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <d074daf4-c8e1-927d-9edd-2575f2335aa1@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Letting the compiler remove these functions when the kernel is built
-without CONFIG_PM_SLEEP support is simpler and less error prone than the
-use of #ifdef based kernel configuration guards.
+On 01-08-22, 14:36, Stanimir Varbanov wrote:
+> Viresh,
+> 
+> On 8/1/22 05:36, Viresh Kumar wrote:
+> > On 25-07-22, 14:55, Stanimir Varbanov wrote:
+> >> Hi Viresh,
+> >>
+> >> I can take a look and provide a patch to fix that.
+> > 
+> > Any update on this ? I am going to send pull request for 5.20 very soon and it
+> > would have been much better if this was fixed before I send that.
+> > 
+> 
+> I'm trying on next-20220728, but applying [1] gives below errors:
+> 
+> /linux-next/drivers/media/platform/qcom/venus/pm_helpers.c: In function
+> ‘core_get_v1’:
+> /linux-next/drivers/media/platform/qcom/venus/pm_helpers.c:299:4: error:
+> ‘struct dev_pm_opp_config’ has no member named ‘clk_count’
+>   299 |   .clk_count = 1,
+>       |    ^~~~~~~~~
+> 
+> 
+> Do you have v3 for Venus driver ?
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Hans de Goede <hdegoede@redhat.com>
-Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
----
+You don't need to apply anything over linux-next, it has everything you need.
+The patch you mention is dropped and we carry separate calls to configure OPP
+resources for now.
 
-v3: no changes
-v2: added tags and rebased on top of new patch 1
-
- drivers/mfd/intel_soc_pmic_crc.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/mfd/intel_soc_pmic_crc.c b/drivers/mfd/intel_soc_pmic_crc.c
-index 082007485cda..d68ed5b35fd9 100644
---- a/drivers/mfd/intel_soc_pmic_crc.c
-+++ b/drivers/mfd/intel_soc_pmic_crc.c
-@@ -234,7 +234,6 @@ static void intel_soc_pmic_shutdown(struct i2c_client *i2c)
- 	return;
- }
- 
--#if defined(CONFIG_PM_SLEEP)
- static int intel_soc_pmic_suspend(struct device *dev)
- {
- 	struct intel_soc_pmic *pmic = dev_get_drvdata(dev);
-@@ -252,10 +251,8 @@ static int intel_soc_pmic_resume(struct device *dev)
- 
- 	return 0;
- }
--#endif
- 
--static SIMPLE_DEV_PM_OPS(intel_soc_pmic_pm_ops, intel_soc_pmic_suspend,
--			 intel_soc_pmic_resume);
-+static DEFINE_SIMPLE_DEV_PM_OPS(crystal_cove_pm_ops, intel_soc_pmic_suspend, intel_soc_pmic_resume);
- 
- static const struct i2c_device_id intel_soc_pmic_i2c_id[] = {
- 	{ }
-@@ -273,7 +270,7 @@ MODULE_DEVICE_TABLE(acpi, intel_soc_pmic_acpi_match);
- static struct i2c_driver intel_soc_pmic_i2c_driver = {
- 	.driver = {
- 		.name = "intel_soc_pmic_i2c",
--		.pm = &intel_soc_pmic_pm_ops,
-+		.pm = pm_sleep_ptr(&crystal_cove_pm_ops),
- 		.acpi_match_table = ACPI_PTR(intel_soc_pmic_acpi_match),
- 	},
- 	.probe = intel_soc_pmic_i2c_probe,
 -- 
-2.35.1
-
+viresh
