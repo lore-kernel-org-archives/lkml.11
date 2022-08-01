@@ -2,116 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B784C00144
-	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 09:07:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5CC2C00144
+	for <linux-kernel@archiver.kernel.org>; Mon,  1 Aug 2022 09:15:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230334AbiHAJH4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 05:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38982 "EHLO
+        id S230345AbiHAJPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 05:15:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229709AbiHAJHy (ORCPT
+        with ESMTP id S229709AbiHAJPG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 05:07:54 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976F528E3D
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 02:07:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659344873; x=1690880873;
-  h=subject:references:in-reply-to:to:cc:from:message-id:
-   date:mime-version:content-transfer-encoding;
-  bh=x9bmLfqCPADKO2VY/iNwV4o1wHzfaCzuIvmDlwgtyz8=;
-  b=LhwkloXG5Scc2hiDUSiI7d1Z3U23Ft4M7XP77HEyB3IPyBRqMYwKo/rB
-   ZR0ftJEjW7I/ubgAPVooBDQC92I8TRdBpMZ10//JnE9YRHA3J1BcP3dSN
-   P1oiQgDfrmVdT2qwyBsuGHDi6RO6r5eoqM/3OnYxWHFNQCXRMGfIPwwTF
-   dme9ljDovu0rFFNOLSek5JFbECoWul+Fi4s8B5WaL3FPnmaXzKWiUEKQO
-   WlC0SWfvETNcT2akS2EfdBa+orv+RB22MeNhl3qvrkoF0iKPnjBsColUx
-   gql+SnXymrpQDNgi12kcSopyyqKUFJVgFZEuSvrlaWNnwbqrwJ1MsMkNr
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10425"; a="314922841"
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="314922841"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 02:07:53 -0700
-X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="661067254"
-Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.249.172.209]) ([10.249.172.209])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 02:07:50 -0700
-Subject: Re: [PATCH drm-misc-next v6 3/5] drm/gem: rename GEM CMA helpers to
- GEM DMA helpers
-References: <202207312337.CwA6jvYb-lkp@intel.com>
-In-Reply-To: <202207312337.CwA6jvYb-lkp@intel.com>
-To:     Danilo Krummrich <dakr@redhat.com>, daniel@ffwll.ch,
-        laurent.pinchart@ideasonboard.com, airlied@linux.ie,
-        tzimmermann@suse.de, mripard@kernel.org, sam@ravnborg.org
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, Danilo Krummrich <dakr@redhat.com>
-From:   kernel test robot <rong.a.chen@intel.com>
-X-Forwarded-Message-Id: <202207312337.CwA6jvYb-lkp@intel.com>
-Message-ID: <c1fb382d-b8ff-5e68-5c50-bf820704ceec@intel.com>
-Date:   Mon, 1 Aug 2022 17:07:48 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.12.0
+        Mon, 1 Aug 2022 05:15:06 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1ADC1DA43
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 02:15:04 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id kb8so4600409ejc.4
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 02:15:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=nB0ZRcjHZMk2tgYdKDIpiNEK8D7kZup7/hRGKDPsck4=;
+        b=TbF5k8lyU8bYSJIOuZfc6dx3Pu2cpOLaSdtPvHDtFTEGT1CpqKn5DYiTKT6YjXrbKa
+         pGP3AEGJSE59P+Tj6IxfhCLBkb75gBAyOXdEoMu8Uz9snItXHj05Bw/RkjDlcs4HApj7
+         /5+Pj0fLBpIfOQnm7ZT//8mWu1EAhkj9WP20V7Tf1wixsGdfiNvbYokNwL9GtKu1XzAk
+         CBkVoh2fCOgB6gniZH2xIcKxiv5KXGVJ54irhasRjnP9ucIOdmUkrwQLfhs6KkylN2Rw
+         hwgumJxPaiUKuiXVCHByZNqOmWe1bQOqK4Sa1mIvPAW8RBXneUoEN8ImnRpu7cY2an0V
+         RYdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=nB0ZRcjHZMk2tgYdKDIpiNEK8D7kZup7/hRGKDPsck4=;
+        b=yFNhi91vVphG2e95fECECSoGNs1cjs8xTiOPCdlwdtyzjGaPyiPhjBDCVn58A4Eekw
+         Ga6WjAUwj/BZ8dDyg29wFn3M9aR6wvlA6xPLKbIHXdgViuVQNECHrIwLTTal7AMtvrMj
+         Ux84b+LCziusAZpD1RErgkHf3zZ/dBdfe9FMyTYOD0PZI0nKFgaXm4Ve/oDJIeM7bHEb
+         MHi8T3MfO8ePGuX0KsiZocWcakoYUlLD0ZQR8rXugXrcRe4XJ8SMf/OICQMyEruqlIg9
+         iU6xHvOLoQKsqXnRdKc7upqxQI8Gok59lVO8F8CO3OlkptVLe5J44t25fTY9v9fz/DXq
+         aKvQ==
+X-Gm-Message-State: AJIora984Geh+HXDWwT+at4tJpad5YCcWNKFAGwQnjh3LY1KWxwdJvXO
+        zmy4x6GIjNkXcmHgoYZ06PrQ9dGwwKwVXeBtTiM=
+X-Google-Smtp-Source: AGRyM1tdqEZNvEHN17gL0IdChWTy1N9Y3rhfLEmxfsEOT1JID0/U8cF+R1tUlSDF+kQdnPrj2/EPqtjLnReIkf5/h48=
+X-Received: by 2002:a17:907:c06:b0:701:eb60:ded with SMTP id
+ ga6-20020a1709070c0600b00701eb600dedmr12205508ejc.178.1659345303440; Mon, 01
+ Aug 2022 02:15:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20220731201258.11262-1-andriy.shevchenko@linux.intel.com> <9b9abdf0-7cd5-df51-adbf-2225291f0dd2@redhat.com>
+In-Reply-To: <9b9abdf0-7cd5-df51-adbf-2225291f0dd2@redhat.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 1 Aug 2022 11:14:26 +0200
+Message-ID: <CAHp75VduSG=BerPJo9phXJKWa-yu_uXbP+ifkax=3FUTE7et+Q@mail.gmail.com>
+Subject: Re: [PATCH v2 01/10] mfd: intel_soc_pmic: Fix an error handling path
+ in intel_soc_pmic_i2c_probe()
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Lee Jones <lee@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Danilo,
+On Mon, Aug 1, 2022 at 10:43 AM Hans de Goede <hdegoede@redhat.com> wrote:
+> On 7/31/22 22:12, Andy Shevchenko wrote:
 
-Thank you for the patch! Yet something to improve:
+...
 
-[auto build test ERROR on drm-misc/drm-misc-next]
-[cannot apply to linus/master v5.19-rc8 next-20220728]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> >  err_del_irq_chip:
+> > +     pwm_remove_table(crc_pwm_lookup, ARRAY_SIZE(crc_pwm_lookup));
+> >       regmap_del_irq_chip(pmic->irq, pmic->irq_chip_data);
+> >       return ret;
+>
+> Note alternatively we could just move the pwm_add_table() to just before the "return 0",
+> there is no strict ordering between adding the mfd devices and the pwm_add_table()
+> (the pwm device only becomes available after the pwm-driver has bound to the mfd
+> instantiated platform device which happens later).
+>
+> IMHO that would be a bit cleaner.
 
-url: 
-https://github.com/intel-lab-lkp/linux/commits/Danilo-Krummrich/drm-rename-CMA-helpers-to-DMA-helpers/20220721-210404
-base:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
-config: nios2-buildonly-randconfig-r006-20220721 
-(https://download.01.org/0day-ci/archive/20220731/202207312337.CwA6jvYb-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-         wget 
-https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross 
--O ~/bin/make.cross
-         chmod +x ~/bin/make.cross
-         # 
-https://github.com/intel-lab-lkp/linux/commit/140c3d95439b5852acd816850625036ac3a1019d
-         git remote add linux-review https://github.com/intel-lab-lkp/linux
-         git fetch --no-tags linux-review 
-Danilo-Krummrich/drm-rename-CMA-helpers-to-DMA-helpers/20220721-210404
-         git checkout 140c3d95439b5852acd816850625036ac3a1019d
-         # save the config file
-         mkdir build_dir && cp config build_dir/.config
-         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross 
-W=1 O=build_dir ARCH=nios2 SHELL=/bin/bash
+Good suggestion!
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> nios2-linux-ld: drivers/gpu/drm/mxsfb/lcdif_drv.o:(.rodata+0x218): undefined reference to `drm_gem_dma_prime_import_sg_table'
->> nios2-linux-ld: drivers/gpu/drm/mxsfb/lcdif_drv.o:(.rodata+0x220): undefined reference to `drm_gem_dma_dumb_create'
-    nios2-linux-ld: drivers/gpu/drm/mxsfb/lcdif_kms.o: in function 
-`lcdif_plane_primary_atomic_update':
->> lcdif_kms.c:(.text+0x3a8): undefined reference to `drm_fb_dma_get_gem_addr'
-    lcdif_kms.c:(.text+0x3a8): relocation truncated to fit: 
-R_NIOS2_CALL26 against `drm_fb_dma_get_gem_addr'
-    nios2-linux-ld: drivers/gpu/drm/mxsfb/lcdif_kms.o: in function 
-`lcdif_crtc_atomic_enable':
-    lcdif_kms.c:(.text+0x658): undefined reference to 
-`drm_fb_dma_get_gem_addr'
-    lcdif_kms.c:(.text+0x658): relocation truncated to fit: 
-R_NIOS2_CALL26 against `drm_fb_dma_get_gem_addr'
+Since I need to send a v3 anyway, I will fix this accordingly.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
-
+With Best Regards,
+Andy Shevchenko
