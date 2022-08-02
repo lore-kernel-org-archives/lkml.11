@@ -2,83 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD02CC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 22:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57ED4C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 22:12:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235453AbiHBWLu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 18:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
+        id S235303AbiHBWL4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 18:11:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235173AbiHBWLi (ORCPT
+        with ESMTP id S235239AbiHBWLj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 18:11:38 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9657332DB6
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 15:11:36 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id kb8so13730787ejc.4
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 15:11:36 -0700 (PDT)
+        Tue, 2 Aug 2022 18:11:39 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2990339B96;
+        Tue,  2 Aug 2022 15:11:38 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id tl27so10445175ejc.1;
+        Tue, 02 Aug 2022 15:11:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=k6pIxoS6xr69cL31tnJGd/edjv23VUk7urmVJKHeHw8=;
-        b=FwrSh8M2yilbskdsO4gXxUoC2Ed+FeryminZgruVH00UecbUpXqRgNsVHrZfOtz6xc
-         ib05vYtYPKWhkIqV87INC126FLDR+3Wl/KgQ7OB87pUtFbUh3h4sX0GHaJUVqmIocbuN
-         5gXLQkyeN80KnkVUepMPBUS/nqR8X4BXEHwZ0=
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=lYDOfJllHJUoNnBsvIq7J6znJT06Hkpj2bFt2tNhaMU=;
+        b=hHTs/zZt5+dVuhfSMPVWAX/q16D0enV5XKD3jpGTWGWFpZJjsiRVSl+T035ZylgP0j
+         RcKVq+XXqKMBxWgWuxO0T6TyNBGMLEqJebZFwxLLVxz18i+InFGLqkqoS40++qjXsCi9
+         6fN916ByKa1Mhv8dZudmfs65fSN/S0ZMfSvxjNf/81E66nkxsAZrQp96gM5KSeLWXbdb
+         TGvjqhq26VZgGs3SgZCvWn8bL4s1Kk99NvXKw93bKZNEtltYeU5+MGHFQ+yhWcIRkduU
+         FxqPN0Xs008E76iNObWhCbOFdDLKyJ7URQt7xYj2duwAxpnpUoWXjUduXKjFiqlEG3uq
+         L2DQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=k6pIxoS6xr69cL31tnJGd/edjv23VUk7urmVJKHeHw8=;
-        b=2FK8DCGSsG57kXW1cRx/fuEt9ctcbi4ZReBptye70GjUFSNf7RTLONpQTUL9cAhsfz
-         aIyAyUs1jLz1kbAwc6Yr94urILKFI4QxFg+OP8u6myn4FqhElvsoKCulThSGEFLrgQl9
-         ZLayfJ0yQHK3o97JguCc8y3+Kz6G7yBgfNUQK5zbOWOP7odhzZp4w+2UEQ527VpEbG6Z
-         jCwHOUTGRKveAfQT2G2gNDtUGKr0XmyuwKIZbqZS+aCrQLXL9KnNg3bDO/z6a0lky2bB
-         2yWCWH0hM5vE/hiGlTdimSyMi164GA300bJ9qhxVBrWuVnWYi9I4wt8XQ9uWN1fQnQ45
-         988A==
-X-Gm-Message-State: ACgBeo05BIpZqyOKx6ZB0229R8VSDnC0WnOMv1J6i+o68CfAvGrdedwD
-        IBmNMjY/baH+MkV+kDvzQMbZ1V1sPb+AJGyA
-X-Google-Smtp-Source: AA6agR7PQopi89Lcy3aQIOiMg4duSwjQMqI8yZypKnF+m97EQ0J0XUdPbmHH1FO61E73DdREdje3TA==
-X-Received: by 2002:a17:906:8a6c:b0:730:a322:6f69 with SMTP id hy12-20020a1709068a6c00b00730a3226f69mr3182641ejc.585.1659478295893;
-        Tue, 02 Aug 2022 15:11:35 -0700 (PDT)
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com. [209.85.128.52])
-        by smtp.gmail.com with ESMTPSA id x25-20020aa7d6d9000000b0043bc4b28464sm8759758edr.34.2022.08.02.15.11.35
-        for <linux-kernel@vger.kernel.org>
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=lYDOfJllHJUoNnBsvIq7J6znJT06Hkpj2bFt2tNhaMU=;
+        b=iBeQB0lRTCH1uX1nI2j/efT1F6yFbFpaX2/XfdVUSmCzTklr313Vo9SuLizjj9iWp7
+         hNsQKkDevKXkb47hrUtMvkPHUljtoot4xnvU5zyNlmRi2yzWSmBjLeDbyUAyqI80k3Ex
+         pH03PdDP0mY8w5hS7Hiw9uir5+J2Lc3lHoTRAssyfXZawp23chn9YVD2P7FJUDVTrwxC
+         4i2uQiYuPEfGwkjrWADWaAh+/lzPq6+nQKLRkcfvbarg/goCeBJHm1EXH+4vEA3tGkol
+         0lolWIKq2jejpwE0mrYUiTTvTsXIZ/0ufVCgnJ71L1OPeEdRiXE7cV7uaOxGVw2jnDs4
+         Ru4g==
+X-Gm-Message-State: AJIora/YXacT+1R8xLkjjizJt3mw/2ZvUOnVsXbUcH+fm51O+cPSXM1S
+        Ha/rmQnY1REWQ+HMdahPoH7R27M2xyFLlJ+H
+X-Google-Smtp-Source: AGRyM1uhUT73uWyPk/EGUoeCJecWdzkDb+GpPc8pF5wJIm6ntsG0nvq4NHtzX9nnnzVqzHGbCrPPmA==
+X-Received: by 2002:a17:907:7b95:b0:72f:9c64:4061 with SMTP id ne21-20020a1709077b9500b0072f9c644061mr18178688ejc.351.1659478296652;
+        Tue, 02 Aug 2022 15:11:36 -0700 (PDT)
+Received: from localhost ([77.78.38.236])
+        by smtp.gmail.com with ESMTPSA id qc19-20020a170906d8b300b007305d408b3dsm3869524ejb.78.2022.08.02.15.11.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Aug 2022 15:11:35 -0700 (PDT)
-Received: by mail-wm1-f52.google.com with SMTP id v131-20020a1cac89000000b003a4bb3f786bso54749wme.0
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 15:11:35 -0700 (PDT)
-X-Received: by 2002:a05:600c:21d7:b0:3a3:2088:bbc6 with SMTP id
- x23-20020a05600c21d700b003a32088bbc6mr843858wmj.68.1659478294886; Tue, 02 Aug
- 2022 15:11:34 -0700 (PDT)
+        Tue, 02 Aug 2022 15:11:36 -0700 (PDT)
+From:   Iskren Chernev <iskren.chernev@gmail.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robert Marko <robimarko@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Iskren Chernev <iskren.chernev@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v4 03/13] dt-bindings: regulator: qcom_smd: Sort compatibles alphabetically
+Date:   Wed,  3 Aug 2022 01:11:02 +0300
+Message-Id: <20220802221112.2280686-4-iskren.chernev@gmail.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220802221112.2280686-1-iskren.chernev@gmail.com>
+References: <20220802221112.2280686-1-iskren.chernev@gmail.com>
 MIME-Version: 1.0
-References: <827a0fe0-03a3-b5ca-db34-daff17095b8f.ref@schaufler-ca.com> <827a0fe0-03a3-b5ca-db34-daff17095b8f@schaufler-ca.com>
-In-Reply-To: <827a0fe0-03a3-b5ca-db34-daff17095b8f@schaufler-ca.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 2 Aug 2022 15:11:18 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjsM9cUHfmGMcco5zCuBqMpM-97hBkBX5_vzoRLm5SvJw@mail.gmail.com>
-Message-ID: <CAHk-=wjsM9cUHfmGMcco5zCuBqMpM-97hBkBX5_vzoRLm5SvJw@mail.gmail.com>
-Subject: Re: [GIT PULL] Smack patches for v6.0
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     LSM List <linux-security-module@vger.kernel.org>,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 1:13 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
->
-> There are two minor code clean-ups. One removes a touch of
-> dead code and the other replaces an instance of kzalloc + strncpy
-> with kstrndup.
+As requested by Krzysztof Kozlowski.
 
-Hmm. That second one looks like it really should have just used
-"kmemdup()" (and a zero termination) instead, since it has already
-done all the string length calculations.
+Signed-off-by: Iskren Chernev <iskren.chernev@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../regulator/qcom,smd-rpm-regulator.yaml     | 22 +++++++++----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-Oh well. I guess the strndup() works too, but it seems kind of odd to
-do a strnlen() there when you have literally limited 'len' to smaller
-than the string you are going to duplicate.
+diff --git a/Documentation/devicetree/bindings/regulator/qcom,smd-rpm-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,smd-rpm-regulator.yaml
+index c233461cc980..39802c1223c6 100644
+--- a/Documentation/devicetree/bindings/regulator/qcom,smd-rpm-regulator.yaml
++++ b/Documentation/devicetree/bindings/regulator/qcom,smd-rpm-regulator.yaml
+@@ -24,6 +24,14 @@ description:
+ 
+   For mp5496, s2
+ 
++  For pm2250, s1, s2, s3, s4, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11,
++  l12, l13, l14, l15, l16, l17, l18, l19, l20, l21, l22
++
++  For pm660, s1, s2, s3, s4, s5, s6, l1, l2, l3, l5, l6, l7, l8, l9, l10, l22,
++  l12, l13, l14, l15, l16, l17, l18, l19
++
++  For pm660l s1, s2, s3, s5, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, bob
++
+   For pm8226, s1, s2, s3, s4, s5, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10,
+   l11, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21, l22, l23, l24, l25,
+   l26, l27, l28, lvs1
+@@ -52,11 +60,6 @@ description:
+   l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19,
+   l20, l21, l22, l23, l24, l25, l26, l27, l28, lvs1, lvs2
+ 
+-  For pm660, s1, s2, s3, s4, s5, s6, l1, l2, l3, l5, l6, l7, l8, l9, l10, l22,
+-  l12, l13, l14, l15, l16, l17, l18, l19
+-
+-  For pm660l s1, s2, s3, s5, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, bob
+-
+   For pma8084, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, l1, l2, l3,
+   l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19,
+   l20, l21, l22, l23, l24, l25, l26, l27, lvs1, lvs2, lvs3, lvs4, 5vs1
+@@ -68,9 +71,6 @@ description:
+   For pms405, s1, s2, s3, s4, s5, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11,
+   l12, l13
+ 
+-  For pm2250, s1, s2, s3, s4, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11,
+-  l12, l13, l14, l15, l16, l17, l18, l19, l20, l21, l22
+-
+ maintainers:
+   - Andy Gross <agross@kernel.org>
+   - Bjorn Andersson <bjorn.andersson@linaro.org>
+@@ -79,6 +79,9 @@ properties:
+   compatible:
+     enum:
+       - qcom,rpm-mp5496-regulators
++      - qcom,rpm-pm2250-regulators
++      - qcom,rpm-pm660-regulators
++      - qcom,rpm-pm660l-regulators
+       - qcom,rpm-pm8226-regulators
+       - qcom,rpm-pm8841-regulators
+       - qcom,rpm-pm8909-regulators
+@@ -88,13 +91,10 @@ properties:
+       - qcom,rpm-pm8953-regulators
+       - qcom,rpm-pm8994-regulators
+       - qcom,rpm-pm8998-regulators
+-      - qcom,rpm-pm660-regulators
+-      - qcom,rpm-pm660l-regulators
+       - qcom,rpm-pma8084-regulators
+       - qcom,rpm-pmi8994-regulators
+       - qcom,rpm-pmi8998-regulators
+       - qcom,rpm-pms405-regulators
+-      - qcom,rpm-pm2250-regulators
+ 
+ patternProperties:
+   ".*-supply$":
+-- 
+2.37.1
 
-                   Linus
