@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC712C19F28
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:14:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 243ADC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237396AbiHBPOg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 11:14:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53258 "EHLO
+        id S237404AbiHBPOj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 11:14:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234433AbiHBPOT (ORCPT
+        with ESMTP id S236168AbiHBPOU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 11:14:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B66417E12;
+        Tue, 2 Aug 2022 11:14:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0FC418373;
         Tue,  2 Aug 2022 08:14:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5C9D60682;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7DBF1B81F47;
         Tue,  2 Aug 2022 15:14:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A83C43470;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AB9AC433D6;
         Tue,  2 Aug 2022 15:14:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659453257;
-        bh=hWf/PttupFOeNrraP/UCkmJULP8/JeCaWQYuByvGBJ4=;
+        s=k20201202; t=1659453256;
+        bh=j2nJx8as9UlVhaaVa9FxipRqThk43lXnnVB/YIARXa4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WsMAAOaNz6It61LU7U0hj9yT6Jep64APeNUprgTkP4sBE6sH2iXKoQPlLgi5QPAgg
-         L3YRjT8D6TKyYsPhlDTp9gCpMWOTt+rfAVfQVrKBTwU48lxPycwXcKYgeNf+t0bx5U
-         //toRJ0q/OL8TBrgKBfc9EqA5WbE+3RyLsdicjdpBhv39LNIf1Ypx5Qloq8P6JjBUz
-         qBghT+50Z+FNYALrbWWltqjTFSdnBH1bbgnLRseSbK337upz4HXhKHpou3VgnNK080
-         lnQnw01yN+sMp+ySHAVciPORh69LtKVjN0YF8S7HM+ourkQQYYBHYlngyKlzYxvlyh
-         k/4OrrZfqN0hQ==
+        b=pbvJQq8pE6Ks5bYHErzelIKTO/zg9HHbBjyIxtk/eXSDKrLiAdSND7WzKypwWeI1G
+         HQ5uIzSC7gq7gEYaewaIqKd9K/1xAtioRdg4f36aYJ1Ok36/krOUToQnTV64k18Wup
+         vLSDKDFUGoHf1A1A7yr6Q1vnjjG+17jqWpt/ipCEhNHC8wUIQ0oVRfYSiAopFYp75o
+         mJpx5DtgibmUZLHzxK//RdcDYevTzrV3jDhI++MVYc8eiO0RZLLQy3bTxUNUR24kJX
+         6KBre9MVd47+kyLUQZ+wxsM5gtkKoxE9x6JliFUWTlqYxtLkOcq1hrENCNKbL5idg5
+         dQqIq7MhJkw/g==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oItbM-0000Tc-EW; Tue, 02 Aug 2022 17:14:32 +0200
+        id 1oItbM-0000TY-8k; Tue, 02 Aug 2022 17:14:32 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Felipe Balbi <balbi@kernel.org>
@@ -53,9 +53,9 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 5/8] Revert "dt-bindings: usb: dwc3: Add wakeup-source property support"
-Date:   Tue,  2 Aug 2022 17:14:01 +0200
-Message-Id: <20220802151404.1797-6-johan+linaro@kernel.org>
+Subject: [PATCH 3/8] usb: dwc3: qcom: fix broken non-host-mode suspend
+Date:   Tue,  2 Aug 2022 17:13:59 +0200
+Message-Id: <20220802151404.1797-4-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220802151404.1797-1-johan+linaro@kernel.org>
 References: <20220802151404.1797-1-johan+linaro@kernel.org>
@@ -65,43 +65,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 098c4d43b91a269e89f60331a26a3f3b914677ed.
+A recent commit implementing wakeup support in host mode instead broke
+suspend for peripheral and OTG mode.
 
-A devicetree binding should describe hardware capabilities and not be
-used to configure power-management policies (even if things are a bit
-blurry when it comes to "wakeup-source"). It should also not be used to
-work around Linux driver implementation issues such as how to coordinate
-the glue and core dwc3 drivers.
+The hack that was added in the suspend path to determine the speed of
+any device connected to the USB2 bus not only accesses internal driver
+data for a child device, but also dereferences a NULL pointer when not
+in host mode and there is no HCD.
 
-For the Qualcomm dwc3 controllers, it is the glue device that manages
-the wakeup interrupts, which may or may not be able to wake the system
-up from system suspend.
+As the controller can switch role at any time when in OTG mode, there's
+no quick fix to this, and since reverting would leave us with broken
+suspend in host-mode (wakeup triggers immediately), keep the hack for
+now and only fix the NULL-pointer dereference.
 
-Also note that USB remote wakeup is always enabled during runtime
-suspend.
-
-Fixes: 098c4d43b91a ("dt-bindings: usb: dwc3: Add wakeup-source property support")
+Fixes: 6895ea55c385 ("usb: dwc3: qcom: Configure wakeup interrupts during suspend")
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- Documentation/devicetree/bindings/usb/snps,dwc3.yaml | 5 -----
- 1 file changed, 5 deletions(-)
+ drivers/usb/dwc3/dwc3-qcom.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/usb/snps,dwc3.yaml b/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
-index 1779d08ba1c0..d41265ba8ce2 100644
---- a/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
-+++ b/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
-@@ -343,11 +343,6 @@ properties:
-       This port is used with the 'usb-role-switch' property  to connect the
-       dwc3 to type C connector.
+diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
+index be2e3dd36440..b75ff40f75a2 100644
+--- a/drivers/usb/dwc3/dwc3-qcom.c
++++ b/drivers/usb/dwc3/dwc3-qcom.c
+@@ -301,8 +301,17 @@ static void dwc3_qcom_interconnect_exit(struct dwc3_qcom *qcom)
+ static enum usb_device_speed dwc3_qcom_read_usb2_speed(struct dwc3_qcom *qcom)
+ {
+ 	struct dwc3 *dwc = platform_get_drvdata(qcom->dwc3);
+-	struct usb_hcd *hcd = platform_get_drvdata(dwc->xhci);
+ 	struct usb_device *udev;
++	struct usb_hcd *hcd;
++
++	if (qcom->mode != USB_DR_MODE_HOST)
++		return USB_SPEED_UNKNOWN;
++
++	/*
++	 * FIXME: Fix this nasty layering violation which currently only
++	 *        "works" in host mode.
++	 */
++	hcd = platform_get_drvdata(dwc->xhci);
  
--  wakeup-source:
--    $ref: /schemas/types.yaml#/definitions/flag
--    description:
--      Enable USB remote wakeup.
--
- unevaluatedProperties: false
- 
- required:
+ 	/*
+ 	 * It is possible to query the speed of all children of
 -- 
 2.35.1
 
