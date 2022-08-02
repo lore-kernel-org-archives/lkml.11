@@ -2,212 +2,368 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76FD1C19F29
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:00:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A1C1C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:03:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237363AbiHBQAb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 12:00:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35538 "EHLO
+        id S229875AbiHBQDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 12:03:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237525AbiHBQAN (ORCPT
+        with ESMTP id S229613AbiHBQDL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 12:00:13 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on20614.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e1b::614])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B053E9C;
-        Tue,  2 Aug 2022 09:00:11 -0700 (PDT)
+        Tue, 2 Aug 2022 12:03:11 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0858A23D
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:03:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659456190; x=1690992190;
+  h=date:from:to:cc:subject:message-id:references:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=FSPCEqsYveaMrsftrcsj04lHGY4OgT3j1VGIoAe75gE=;
+  b=THDJHnYAwj6XDn2B3oXKY36D55eOtO4Mw1+OJCPbcuavJzURuCHmw/lQ
+   kHzWY6kZIgJYSnluJvCQQ4Gjhtsa95d1Z5qwTIndehyoJzrqStUxwtVCw
+   PbfNWLPkY7A66o0lOm7pR3Sgvxaa9t+txFwtPfmI6h7xfVo4iwAowFN1y
+   eGg5yW9bBD+zy56sUVRQkglrQ7SPbUuS+/c+kBq4Z7e/zxv5rVJBuXFMm
+   ZFtf3gu0nIrmneDhOVJ+how1IB/+FkmymdQaHrWcPiinZsiSwodaKhEhH
+   ambvu64nLYmjNBCBIU1hvpjLLuRhT+WlGWIF9e1yLZcFTxw/VBZYg2WgK
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="290664936"
+X-IronPort-AV: E=Sophos;i="5.93,211,1654585200"; 
+   d="scan'208";a="290664936"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 09:03:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,211,1654585200"; 
+   d="scan'208";a="728879670"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga004.jf.intel.com with ESMTP; 02 Aug 2022 09:03:09 -0700
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Tue, 2 Aug 2022 09:03:09 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28 via Frontend Transport; Tue, 2 Aug 2022 09:03:09 -0700
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.40) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.28; Tue, 2 Aug 2022 09:03:02 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aZ8bwUS69x4x6TaDmzB++p9zlunu7wT1gVVRMTKXAwl4TkiyEO3XysoFxLqbjxMq0oWrltwrK2CbVt2vJi7nxW+nmwLfAYb+ZbSnNHC92lBmXJ0Fl8lDuKE415TTJVe7q4B+lfoLNf1+9b22F4q5QpMb+aGIQ8ZbHLflTU6mFFenBft0Un5n70uGiUxOwqGKq+AZZhzxefHleMR82zd2kSsPHTYGd0MAHO7jZhLayPsmkIr2kmqM5kHtcJJgiuL7DIo/jwbTTofZmq1jpzaVFg9bxPEkZN4KeAQMhEYWoJ5/SWP3VqJZT07S9lq6SRMv7bMAbKApilSV+E6CC9jnOA==
+ b=hoOUgxynlFNiKEubokJrIuAsi8kFwsFKuBkWPxA7/njBmwg2zd1k3flx+ou7HQueQP7glhU5LFmOD+tw1SnndZgP/hI3ygZgvMj/0ScpifHkUAt9YDCuVPqFkNiQhFKurReVGclpm8Jig1T1ctLAJJdQWmbWb2Sv+ahCGggnpz3/YwN39uMhBB8rpZymmUImBy94xevxq4wG9OCZUXRiMd651mWvs1b82tWllgROxfboSYPBZwqb/oHHgIGUnt6IwtEByjCPSQTImLE6sRTVCueihQ2pzx6K8qa9xi+BTu4OQddWscNcDWcvkwCDV1ce/e5Hvu32I2/o2DTZqAOuSA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xxhNg2lo9oFql/xA9YKHjcmjftjQv3+7x7woWbwwrZU=;
- b=lVFWiJWxjmdsd4KZyuxidqfn935x2l2TAqHBGvyMLTJEABkb7+rrIg3b95L2fehc/1sIQOZTJXqQ+z1q0TjEGMAbCJ/pxTY1/q9pc6Y2MQyYePAzMxWyPruxAi8b0yu2zfuEni0zE/LzF7lG/yFTXD2T9DVVHXMlxcTmGUpWZRKXrQTDO6rogSSTnV8kHhTo+pbyz12djNKO3bKZbA1nWxLKTEUQAJrdGcvJvkhSamGKBLpaD6bsdYPVaDGa4JUNcXD7YPJgXqMhKU/h/YnncNmMJNkarx4JFdeBw2hl/ovs2w5ttVMam9Qr7DafCeheoqsHGE3osCteFcQnd3UsCQ==
+ bh=kqjYYWWq3gOYs5VyQcyfnNaw9K6Ttvlj5+fR0/jjcfU=;
+ b=XSPwQmQwtBllfqsU4ixaNTd/TFZy/ctnnD7mvDjZtPcXsFw3k9SZdLQKyFBfTROfHDibmlX/Qq6yU63HGFfe+DtzCZU7e+rW1gMXufHSlLKZmpegQHExgJARpfoD68kf1Rrtn8Ru1TaCwE3QU+4ItloX2nTjlsy4eVWBlVFcTQr+yBpN2ca66ErcFCJ3SUyxQ/WRl1mkrcaQWuzd1KQlr4yNT8I9alw8/HHy3kHBMn8WVpsTvCkiHWS2Q8TtzfAgNPUT+JDGKTTft9kFXrMdaIqpzSHstbI+mMw60IjeF/qJTrIcAp7iKR16QIWCZhCBEd1DHCQW7mbfoPEZAY54Mw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=stud.acs.upb.ro; dmarc=pass action=none
- header.from=stud.acs.upb.ro; dkim=pass header.d=stud.acs.upb.ro; arc=none
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=stud.acs.upb.ro;
-Received: from VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
- (2603:10a6:803:e::11) by AM9PR01MB7252.eurprd01.prod.exchangelabs.com
- (2603:10a6:20b:2cf::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.10; Tue, 2 Aug
- 2022 16:00:05 +0000
-Received: from VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
- ([fe80::85e9:83cf:765b:ca12]) by
- VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
- ([fe80::85e9:83cf:765b:ca12%5]) with mapi id 15.20.5482.016; Tue, 2 Aug 2022
- 16:00:05 +0000
-From:   andrei.tachici@stud.acs.upb.ro
-To:     linux-kernel@vger.kernel.org
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        vegard.nossum@oracle.com, joel@jms.id.au, l.stelmach@samsung.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        devicetree@vger.kernel.org
-Subject: [net-next v3 3/3] dt-bindings: net: adin1110: Add docs
-Date:   Tue,  2 Aug 2022 18:59:47 +0300
-Message-Id: <20220802155947.83060-4-andrei.tachici@stud.acs.upb.ro>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220802155947.83060-1-andrei.tachici@stud.acs.upb.ro>
-References: <20220802155947.83060-1-andrei.tachici@stud.acs.upb.ro>
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: FR2P281CA0009.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a::19) To VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
- (2603:10a6:803:e::11)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CY5PR11MB6139.namprd11.prod.outlook.com (2603:10b6:930:29::17)
+ by CY5PR11MB6137.namprd11.prod.outlook.com (2603:10b6:930:2b::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.16; Tue, 2 Aug
+ 2022 16:02:41 +0000
+Received: from CY5PR11MB6139.namprd11.prod.outlook.com
+ ([fe80::a012:82da:5edb:513]) by CY5PR11MB6139.namprd11.prod.outlook.com
+ ([fe80::a012:82da:5edb:513%9]) with mapi id 15.20.5482.011; Tue, 2 Aug 2022
+ 16:02:41 +0000
+Date:   Tue, 2 Aug 2022 12:02:37 -0400
+From:   Lucas De Marchi <lucas.demarchi@intel.com>
+To:     "Liang, Kan" <kan.liang@linux.intel.com>
+CC:     <peterz@infradead.org>, <mingo@kernel.org>, <acme@redhat.com>,
+        <linux-kernel@vger.kernel.org>,
+        <alexander.shishkin@linux.intel.com>, <jolsa@redhat.com>,
+        <eranian@google.com>, <namhyung@kernel.org>, <ak@linux.intel.com>,
+        <tilak.tangudu@intel.com>
+Subject: Re: [PATCH V2 1/5] perf/x86/intel/uncore: Parse uncore discovery
+ tables
+Message-ID: <20220802160237.uqgez4f3ctm7rpyc@ldmartin-desk2>
+References: <1616003977-90612-1-git-send-email-kan.liang@linux.intel.com>
+ <1616003977-90612-2-git-send-email-kan.liang@linux.intel.com>
+ <20220722125552.fmljascpvmi2b6ec@ldmartin-desk2>
+ <8c122462-afa5-bdf2-8bfb-910ff59ada03@linux.intel.com>
+ <20220723185617.vz3swht66lbtuwzl@ldmartin-desk2>
+ <bec1bc73-b3bc-50da-8aa7-0aab2328d62f@linux.intel.com>
+ <20220802142213.d2f6qzwl2w3sfm5g@ldmartin-desk2.lan>
+ <b0bd2b88-2ac8-42f2-22dd-587a21a7e9dd@linux.intel.com>
+Content-Type: text/plain; charset="iso-8859-1"; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b0bd2b88-2ac8-42f2-22dd-587a21a7e9dd@linux.intel.com>
+X-ClientProxiedBy: BYAPR06CA0062.namprd06.prod.outlook.com
+ (2603:10b6:a03:14b::39) To CY5PR11MB6139.namprd11.prod.outlook.com
+ (2603:10b6:930:29::17)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 44d732ab-2f5f-4e2b-698e-08da74a010c9
-X-MS-TrafficTypeDiagnostic: AM9PR01MB7252:EE_
+X-MS-Office365-Filtering-Correlation-Id: 422a015e-74fb-4abe-9e55-08da74a06d82
+X-MS-TrafficTypeDiagnostic: CY5PR11MB6137:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jCa+b3ksnLSR/T3L6xUgDjWziaVTGAWAECMiFzCg60kzBasPTZmvZdlOf9WfSOFjberFfeEzndzfc8LUVl0eMs/2/6B1xK4qC2drO846IoxUDEemH/7vYUMlxtwQatfAWLh3S5gvyrr7sQHLz7dKBcc5JDcgpD2h2Kjyn0KlCEv5SeuAqpPWahm9OCEvCxvrL3qGv+78r7ztnRtPQdX+navKJ40t5/yFuuSxja920jaLk5xiQDbhFxPEeakXWy5cGGMnUXZHSeN37QK6kA8ZtWjX9e+PPf28kWW2FURM3mcocC5M/up1lfWmUJVE1y86rJuXLh+ioc3oFbIVmMV7M67FF3jq0fUQbf9gCLHxQ7EVRCwinloFpCZD7LICm+J4mO0QvfH3Evh/q8MIOEwukt/Qd+bk9TvG1iYzzlMqMWSyVTGEsB3DW6qu76RyeJI7RYeIlB2wJyLeLevE2opbnN0cvSk1+EoC5Ed1cdIohYdwivdLyEdfWA14cxy4rX5hgHVVVIegJP6VPCpLbvbPk65cuTxfS0A9zS5MvoHxf0rnYMuB32SYncvXv+7Jb8/1cihMsk2+nyLZu57UpNwWoqGL3I8UqJPmEGGnq8bnBDQyxlMoS9aTrKSqiaHMYBQ1cVKko5kgkjUhhawtZcHpDJraQECPsFWtXATFyAHKgAUAWSZAuf7TzNXdT12KtWw1LT0ZgM0+4oyVireaJvfJpTPh5vbxPJGgli557U3S59q5ykV7VFY4bXP3YFII7+Cn9hj0cvPsvLDaEIjTWrZUPg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0102MB3166.eurprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(366004)(39850400004)(376002)(346002)(136003)(41300700001)(2906002)(2616005)(83380400001)(86362001)(6666004)(6916009)(52116002)(6506007)(1076003)(9686003)(6512007)(186003)(38100700002)(7416002)(6486002)(5660300002)(66476007)(66946007)(66556008)(8936002)(478600001)(8676002)(4326008)(41320700001)(786003)(316002)(966005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 9+xkq9Do/F2QFUDIwS5QV75y7yL+keQKHL3mslhgKS4EQsWLTjcdQ0nCvLyUkTHbyscYLXNUp58s4Q4pRtPhhZW/QxQmwJqWRX2OkcSYMu6ERXzTl91GYrFa3UaRMxMf1IgsNEnTbHS4sDirbK1VOCMmgXYciwrgLVKZbvJiRjGN0MVNdTCkYTNhDubWr7HIc3afYxqlGmv9/10WgkZGo5iN6+hbe/RSzEPDO5K0drkGFO796nvWM3FPmDu5+DUSBbaieBAJ9GMuu/OOmPIHVyWR8yqTJD+YQkYKNP0KST3rNzS/f4UXPhuNsTGMqWuU3RHqRn9XRlHhtrZQxYPYvaknOfja6pflgrGnXlzuuhJwKswxa+wG8A7WSVnwJQ1zNo+XYFUK8HPq+66RwW5VOAulVWLbXopN4VT6ethnPk4hkqpXrVTqAbxJIbWF9Yz5gUF8apdUPCg2rhesiV+SLh9Z3J5wSzs4cGARZQIK+m0sVfh2mI6xZ0+ICwzMLBmXse9XB2JQ2+RHykHHAXXFhoegWUOXlWSwWSoNZdF2smycCzuP0lfqYjlkrRRV1ubnFmhZnbg0hHjWvmL9oAtWToPc2pH43Ap0km+B3rvG+SZJoYhYFoA2eTPzV9+A2DNnNC1R9bFF13+a8JpZtqz6qHpmcYwt/o1b0q/BtKj+jDoH1C0npvQ1Ft61c55qVi0W3qg4rBlJBNxpaUbxPcyHa0GvQj9Ucd0nzkoIHb+tFZ8bpgHQTh+t72RzRcpmxjJVV2C6X13bgOu8JuOH5DdEpg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR11MB6139.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(396003)(366004)(346002)(136003)(39860400002)(376002)(1076003)(186003)(86362001)(83380400001)(8936002)(5660300002)(4326008)(7416002)(66946007)(66476007)(8676002)(66556008)(2906002)(33716001)(478600001)(966005)(41300700001)(38100700002)(6666004)(6486002)(26005)(316002)(6506007)(6512007)(9686003)(53546011)(6916009)(82960400001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VAGkTeybK6EuG17FYgdRLOvaBt3oTGrCKcbisEO6e5japTzYqV1lgHTBi9Lv?=
- =?us-ascii?Q?zKPB745d5Kk/t6a7CSZmFnNN+qIIXYsnWCm+nPMgHNvzJE57lKI8XWFl77tf?=
- =?us-ascii?Q?exhJcG5XSkJWvkUtbAtUv7s1hkV2xL2L1AN4t4F73flsRDZIrtobt51D0z3H?=
- =?us-ascii?Q?EfO/iiqNwp9aTcUSEGDkbx36QdB6uQebleaRD8cESWzR+f7r4bCOv7g4uze4?=
- =?us-ascii?Q?whNAfXaQog9CZJkyxw4JyFeLZZ6BG5Cxno5/1WL8DvimrqneDAF8E7Uov9sD?=
- =?us-ascii?Q?9WJrZNtVvvUwnUzQ0p+kPUQJKPES5nxi7i7DGEhDw8pSH/vnozlLspw3So2i?=
- =?us-ascii?Q?syL9Mtm31shRYbac5VZRx8odsJjBwoGBS2od0KyATWBBjzeaP0EGefmoEmQU?=
- =?us-ascii?Q?QStURmWMt0GUH+ESsW0trNq9kAy4+logoMpIRHwCmWe+OLT/eNuRL62T3+hD?=
- =?us-ascii?Q?LBd8DSymtH7utYKZocgaBxmCWzur5nQAkuokHdvxV0Daa+fg0t7Ixs/acWxB?=
- =?us-ascii?Q?vCSBy4kOf6VeDvZJDmE0BTSNg4vboPo61iZyWQkR/7WKps8Jt1g5S6qQj6MG?=
- =?us-ascii?Q?08TL9+Hd9v797a8eUA5SeDoW/Ym2ZDY/vyTPXaxyyJFxU1tGs1z2a9sJFaN2?=
- =?us-ascii?Q?nWaamHIAhVDf3Xn6mlKabRXJm6AU6UW/SynlYgD0ULeAeurDo+lKV4VOZJn1?=
- =?us-ascii?Q?3806F/0WPfm47hUWQtwRbm9yU6zBvapHMSrWtGWbdTGHgXk/rBIaft44/vFe?=
- =?us-ascii?Q?jrbb3C0EJ4WvtHXOtfDhqzX8DZl0EIjwVvbqDzI25hE+EBN8OWe8oWfJ7IFq?=
- =?us-ascii?Q?C9TL4Sjmc++IRvRTpM5cbmQ2z/5az37TOmYXjVfI8Z9XU88pXwMP2m4Se3dQ?=
- =?us-ascii?Q?0il66ckJUbqIMfa1iwID/CWJ5xi+Xu4KB+1lEcP1NhUTrh5sY0lva16Mc4FD?=
- =?us-ascii?Q?ziNVbXMtqX/XBKH7e1PiQZykSRd3qbdMVGPottqLr0hwl7oac/zTEIMxqKek?=
- =?us-ascii?Q?uvWdoTjl3TZuC5g2sgVK8oKAjuR5zuYZ/0RW2nOGaDjYlfyPSuzDvsmqtTpt?=
- =?us-ascii?Q?FOOKdDMmwu3cobdDAwOsBAPjH7U769en/FyIS50tSWqBD/Z1Rak3+tbhc9Xf?=
- =?us-ascii?Q?bFh3wgFegzkIh1APEodtxiebDfHL1kEOwtQLGAK/wgGWF2F3xO4HNgFAk+l8?=
- =?us-ascii?Q?avzURJqhEe5DsMmV4KrazeeYdDl9tSrWkI5970xoTES9MhvJyEeb2f8cPGe/?=
- =?us-ascii?Q?R/9aCsuSzulwts3lt6f6Pd7PWB2vM9Vg2TdZ2kSlvDjI2IDlpwNpd3EVVOao?=
- =?us-ascii?Q?nV59al9yUoH0xk0rqUeQwKp6aIi0ZLD0Tsq3Hfv3w/Sfm+nlW2zOmbDxF7H3?=
- =?us-ascii?Q?iPynLmL4zla29/jB0oMuZ9XyCoCJW9IvoiG3kNLO6vbVW24Tn7czleTfh2kb?=
- =?us-ascii?Q?AcNUIZXo/jNfQshGhm9Nh2FpajSTSLjEllGVYcrLn1+01Bi6LOsPYFZelcoM?=
- =?us-ascii?Q?8FPoOyt3/qzUOR98JcmGv2HK/wd4EakSXutXrO26niJP9+lTwOoHeHu+i0K+?=
- =?us-ascii?Q?uFJ8iAMVlxBurTbe+MWhuo30+qyi1DxMqWCR+GSj94dVyVVMHiYSsg/TiE2W?=
- =?us-ascii?Q?TeR7+1+5uYWc763+MZBYuWXuXYL2OJOT8X/Xmzze4IBN4AADx5pms2ywy7JT?=
- =?us-ascii?Q?8zFfSweBBvPNGTvVsaU33xtUNmI=3D?=
-X-OriginatorOrg: stud.acs.upb.ro
-X-MS-Exchange-CrossTenant-Network-Message-Id: 44d732ab-2f5f-4e2b-698e-08da74a010c9
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?hHO22GYXwxkyEMaAzT8C3vAybdyvHyovjJBN2vSmlUWGp0O5XxifDRf9Y0?=
+ =?iso-8859-1?Q?A0+6BNXKR8WiRcThrhuRQg3WRBZCDJ13kNxcfDkTzyrM9Jn49kWLk7P4rJ?=
+ =?iso-8859-1?Q?DrJeCCec/nbXwC2BakTid9xz93Fdtc0ZKwyDIfzqxXPyEC+hT/t0oWFBJy?=
+ =?iso-8859-1?Q?giasbAbXbGgWdbjiVgt27NnKkp6hsp9lUuwdqMarVD1p4txPVw/v61N36L?=
+ =?iso-8859-1?Q?/AwrptLTD1ZmzLeLYe2m1ymkfiELXYtat2XjEG7NZkAUxA80HgGWdWnbQ/?=
+ =?iso-8859-1?Q?wVnxNY2ZpWQSP9XsXBuF7LSRtyq36giJYMSSmTTe9SKwnAcF2xgZLin8eZ?=
+ =?iso-8859-1?Q?byN1IcpbekR/zbtTNRvAez8HTiq8y1Ep9z2QudSUoTL9XywMOd2VGFR5TT?=
+ =?iso-8859-1?Q?QneSWsiy+o6OsGNsoZj5pxEpJ3YPTUVwXBPByRJjk48Lsys9dnp36zYr/+?=
+ =?iso-8859-1?Q?zzIeYD0NhSSX5dRaNIBh7zwYOoZvV7PmmLMhEaBhO9FHeD54OxSyIko/1d?=
+ =?iso-8859-1?Q?sLqTlrqmNDTm4U/CFIfX2EC+Xokrqar0/QXJGmrRpix7LJq8kCWxMQcPxs?=
+ =?iso-8859-1?Q?EY9TWs6Mv/rkZsUCkA7VKmvs2uWff5MPMhfNlZsrwRE0UVknHAubqwPNcz?=
+ =?iso-8859-1?Q?0oyouBR7qw2dvJQ+/mcLIJq54SFTIMO3ETt0cXMETKfPcFVaFlr6dF36Ga?=
+ =?iso-8859-1?Q?PRCZS0JKbV+Cc+LBSHxf6nXu5KwfuZJxOqlkSNOx0gDs0TldhZNRLy3Hqi?=
+ =?iso-8859-1?Q?YabCjD+tQHt975X4zQKUa+b5AAkn/j4teJTVkP9nRZa5Y5ALiYXs0INnCt?=
+ =?iso-8859-1?Q?e1O2+4g8aPfXpg89Im4rKwI8j1/BJVnZ2x794wUAHn5eUBA5hFYG0aGCv+?=
+ =?iso-8859-1?Q?XyOqx9lMznrTV5Ocl1VYUS9toslaed9eJTbs3WFpztAfbVcrQwdrrcfjxk?=
+ =?iso-8859-1?Q?cAk7QV1xiIY/pXB+9a0vFH3y4UoHQpIRqpGUPNW/517WE9ljYZP1uLiQ6P?=
+ =?iso-8859-1?Q?Hhz9Kz6gSBmu6BifWiZhJXK89+M8l/b0pfNYIO/caDmNN1fL8B1Htejcbw?=
+ =?iso-8859-1?Q?v234obUGoqrFlKZ7TInU8pByQR5z08SQSA5LEeBB6DdVNtlQqmO8K83tPf?=
+ =?iso-8859-1?Q?tgBqz5qV21mlHrrYso4Z46DKXAkPyrU9fmh59r5IcW+QpAVi7yuClLZ5PA?=
+ =?iso-8859-1?Q?YpqTO6iF9gcFAlz57vfCLslrV3X/v6kcZTGESfBLixi0JUJAxp3gjrtc5n?=
+ =?iso-8859-1?Q?yyAauMuTSBAC77peDdvA1t7qEdyFmsHwXZS+K+eOP+WunSWWAlgMAKjtQt?=
+ =?iso-8859-1?Q?x913UspFBthzYFKbBYKl1P9ZKy2b2kpg79sCT2qCpmTI2sNx52yY9asN+G?=
+ =?iso-8859-1?Q?2ulrJ3ucwdxW5Fit0NYq2bkIpFiVT/aijJ6UyYnDCEmeNVT1PRiakDtw/C?=
+ =?iso-8859-1?Q?84iw2lzgOlMJAZ3IFdfo+TV0MwnGgJaHr2UIQDYDdnSRCWnNVfWb1JXYio?=
+ =?iso-8859-1?Q?EO3aS/vQVLar5lZ+Py4+++R1YV7C/83eQoukfUaqKDfTYAb/LayeWwgldT?=
+ =?iso-8859-1?Q?WS4D3jwtrWstlHvlbkhl0XMl/WD6yIKFQid/24rQzJBSodDUfYLYbs0cLq?=
+ =?iso-8859-1?Q?0o2SJ/9hy2UTaSAvKp6i6Ry0msi7zeDYcODnCQM67hC/2i1ZfEGuRzBw?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 422a015e-74fb-4abe-9e55-08da74a06d82
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR11MB6139.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2022 16:00:05.2977
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2022 16:02:40.8931
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 2d8cc8ba-8dda-4334-9e5c-fac2092e9bac
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7z18Xag6Jsy8AsyGUUhQERMC+vMYfF33x/72uGw/0k6I/0xPcENDyQZs0fRk8WreRUYmMCO6lpr/lc/JNdjitVyFHML3G0FNUNI+h2V+NxA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR01MB7252
+X-MS-Exchange-CrossTenant-UserPrincipalName: WDpVTpjB6QyUaUhmD91NQ3ZIup29RWvKULxb9gPx4Wqyu0BAyBBwHZLcXj1XVWxExGnSDLEjy4THEx+JIl7tnJMSJ8uJWEp6HRpHp20IjVA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR11MB6137
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandru Tachici <alexandru.tachici@analog.com>
+On Tue, Aug 02, 2022 at 11:43:36AM -0400, Liang, Kan wrote:
+>
+>
+>On 2022-08-02 10:22 a.m., Lucas De Marchi wrote:
+>> On Mon, Jul 25, 2022 at 10:51:44AM -0400, Liang, Kan wrote:
+>>>
+>>>
+>>> On 2022-07-23 2:56 p.m., Lucas De Marchi wrote:
+>>>> On Fri, Jul 22, 2022 at 09:04:43AM -0400, Liang, Kan wrote:
+>>>>>
+>>>>>
+>>>>> On 2022-07-22 8:55 a.m., Lucas De Marchi wrote:
+>>>>>> Hi Kan,
+>>>>>>
+>>>>>> On Wed, Mar 17, 2021 at 10:59:33AM -0700, kan.liang@linux.intel.com
+>>>>>> wrote:
+>>>>>>> From: Kan Liang <kan.liang@linux.intel.com>
+>>>>>>>
+>>>>>>> A self-describing mechanism for the uncore PerfMon hardware has been
+>>>>>>> introduced with the latest Intel platforms. By reading through an
+>>>>>>> MMIO
+>>>>>>> page worth of information, perf can 'discover' all the standard
+>>>>>>> uncore
+>>>>>>> PerfMon registers in a machine.
+>>>>>>>
+>>>>>>> The discovery mechanism relies on BIOS's support. With a proper BIOS,
+>>>>>>> a PCI device with the unique capability ID 0x23 can be found on each
+>>>>>>> die. Perf can retrieve the information of all available uncore
+>>>>>>> PerfMons
+>>>>>>> from the device via MMIO. The information is composed of one global
+>>>>>>> discovery table and several unit discovery tables.
+>>>>>>> - The global discovery table includes global uncore information of
+>>>>>>> the
+>>>>>>>  die, e.g., the address of the global control register, the offset of
+>>>>>>>  the global status register, the number of uncore units, the
+>>>>>>> offset of
+>>>>>>>  unit discovery tables, etc.
+>>>>>>> - The unit discovery table includes generic uncore unit information,
+>>>>>>>  e.g., the access type, the counter width, the address of counters,
+>>>>>>>  the address of the counter control, the unit ID, the unit type, etc.
+>>>>>>>  The unit is also called "box" in the code.
+>>>>>>> Perf can provide basic uncore support based on this information
+>>>>>>> with the following patches.
+>>>>>>>
+>>>>>>> To locate the PCI device with the discovery tables, check the generic
+>>>>>>> PCI ID first. If it doesn't match, go through the entire PCI device
+>>>>>>> tree
+>>>>>>> and locate the device with the unique capability ID.
+>>>>>>>
+>>>>>>> The uncore information is similar among dies. To save parsing time
+>>>>>>> and
+>>>>>>> space, only completely parse and store the discovery tables on the
+>>>>>>> first
+>>>>>>> die and the first box of each die. The parsed information is
+>>>>>>> stored in
+>>>>>>> an
+>>>>>>> RB tree structure, intel_uncore_discovery_type. The size of the
+>>>>>>> stored
+>>>>>>> discovery tables varies among platforms. It's around 4KB for a
+>>>>>>> Sapphire
+>>>>>>> Rapids server.
+>>>>>>>
+>>>>>>> If a BIOS doesn't support the 'discovery' mechanism, the uncore
+>>>>>>> driver
+>>>>>>> will exit with -ENODEV. There is nothing changed.
+>>>>>>>
+>>>>>>> Add a module parameter to disable the discovery feature. If a BIOS
+>>>>>>> gets
+>>>>>>> the discovery tables wrong, users can have an option to disable the
+>>>>>>> feature. For the current patchset, the uncore driver will exit with
+>>>>>>> -ENODEV. In the future, it may fall back to the hardcode uncore
+>>>>>>> driver
+>>>>>>> on a known platform.
+>>>>>>>
+>>>>>>> Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+>>>>>>
+>>>>>> I observed one issue when upgrading a kernel from 5.10 to 5.15 and
+>>>>>> after
+>>>>>> bisecting it arrived to this commit. I also verified the same issue is
+>>>>>> present in 5.19-rc7 and that the issue is gone when booting with
+>>>>>> intel_uncore.uncore_no_discover.
+>>>>>>
+>>>>>> Test system is a SPR host with a PVC gpu. Issue is that PVC is not
+>>>>>> reaching pkg c6 state, even if we put it in rc6 state. It seems the
+>>>>>> pcie
+>>>>>> link is not idling, preventing it to go to pkg c6.
+>>>>>>
+>>>>>> PMON discovery in bios is set to "auto".
+>>>>>>
+>>>>>> We do see the following on dmesg while going through this code path:
+>>>>>>
+>>>>>>     intel_uncore: Invalid Global Discovery State: 0xffffffffffffffff
+>>>>>> 0xffffffffffffffff 0xffffffffffffffff
+>>>>>
+>>>>> On SPR, the uncore driver relies on the discovery table provided by the
+>>>>> BIOS/firmware. It looks like your BIOS/firmware is out of date. Could
+>>>>> you please update to the latest BIOS/firmware and have a try?
+>>>>
+>>>> hum, the BIOS is up to date. It seems PVC itself has a 0x09a7 device
+>>>> and it remains in D3, so the 0xffffffffffffffff we se below is
+>>>> just the auto completion. No wonder the values don't match what we are
+>>>> expecting here.
+>>>>
+>>>> Is it expected the device to be in D0? Or should we do anything here to
+>>>> move it to D0 before doing these reads?
+>>>>
+>>>
+>>> It's OK to have a 0x09a7 device. But the device should not claim to
+>>> support the PMON Discovery if it doesn't comply the PMON discovery
+>>> mechanism.
+>>>
+>>> See 1.10.1 Guidance on Finding PMON Discovery and Reading it in SPR
+>>> uncore document. https://cdrdv2.intel.com/v1/dl/getContent/642245
+>>> It demonstrates how the uncore driver find the device with the PMON
+>>> discovery mechanism.
+>>
+>> ok, this is exactly the code in the kernel.
+>>
+>>>
+>>> Simply speaking, the uncore driver looks for a DVSEC
+>>> structure with an unique capability ID 0x23. Then it checks whether the
+>>> PMON discovery entry (0x1) is supported. If both are detected, it means
+>>> that the device comply the PMON discovery mechanism. The uncore driver
+>>> will be enabled to parse the discovery table.
+>>>
+>>> AFAIK, the PVC gpu doesn't support the PMON discovery mechanism. I guess
+>>> the firmwire of the PVC gpu mistakenly set the PMON discovery entry
+>>> (0x1). You may want to check the extended capabilities (DVSEC) in the
+>>> PCIe configuration space of the PVC gpu device.
+>>
+>> However here it seems we have 2 issues being mixed:
+>>
+>> 1) PVC with that capability when it shouldn't
+>
+>This is a firmware/HW issue. If PVC doesn't support the PMON discovery
+>mechanism, the PVC and its attached OOBMSM device should not enumerate
+>the discovery mechanism. However, the PVC enumerates the discovery
+>mechanism here, which doesn't comply the spec.
+>
+>The uncore driver prints errors when the in-compliance is detected.
+>That's expected. There is noting more SW can do here.
+>
+>The firmware issue must be fixed.
 
-Add bindings for the ADIN1110/2111 MAC-PHY/SWITCH.
+yes, that's what I said. It's exposing the capability when it shouldn't.
+That's being worked on from the firmware side already.
 
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
----
- .../devicetree/bindings/net/adi,adin1110.yaml | 82 +++++++++++++++++++
- 1 file changed, 82 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/adi,adin1110.yaml
+>
+>> 2) Trying to read the MMIOs when device is possibly in D3 state:
+>
+>The uncore driver skips the device which doesn't support the discovery
+>mechanism.
+>If 1) is fixed, the uncore driver will not touch the MMIO space of a PVC
+>device. The power issue should be gone.
+>
+>I've already sent you a patch to ignore the PVC added OOBMSM device, you
+>can double check with the patch.
 
-diff --git a/Documentation/devicetree/bindings/net/adi,adin1110.yaml b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
-new file mode 100644
-index 000000000000..b929b677f16a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
-@@ -0,0 +1,82 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/adi,adin1110.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ADI ADIN1110 MAC-PHY
-+
-+maintainers:
-+  - Alexandru Tachici <alexandru.tachici@analog.com>
-+
-+description: |
-+  The ADIN1110 is a low power single port 10BASE-T1L MAC-
-+  PHY designed for industrial Ethernet applications. It integrates
-+  an Ethernet PHY core with a MAC and all the associated analog
-+  circuitry, input and output clock buffering.
-+
-+  The ADIN2111 is a low power, low complexity, two-Ethernet ports
-+  switch with integrated 10BASE-T1L PHYs and one serial peripheral
-+  interface (SPI) port. The device is designed for industrial Ethernet
-+  applications using low power constrained nodes and is compliant
-+  with the IEEE 802.3cg-2019 Ethernet standard for long reach
-+  10 Mbps single pair Ethernet (SPE).
-+
-+  The device has a 4-wire SPI interface for communication
-+  between the MAC and host processor.
-+
-+allOf:
-+  - $ref: ethernet-controller.yaml#
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adin1110
-+      - adi,adin2111
-+
-+  '#address-cells':
-+    const: 1
-+
-+  '#size-cells':
-+    const: 0
-+
-+  reg:
-+    maxItems: 1
-+
-+  adi,spi-crc:
-+    description: |
-+      Enable CRC8 checks on SPI read/writes.
-+    type: boolean
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    spi {
-+        ethernet@0 {
-+            compatible = "adi,adin2111";
-+            reg = <0>;
-+            spi-max-frequency = <24500000>;
-+
-+            adi,spi-crc;
-+
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            interrupt-parent = <&gpio>;
-+            interrupts = <25 IRQ_TYPE_LEVEL_LOW>;
-+
-+            local-mac-address = [ 00 11 22 33 44 55 ];
-+        };
-+    };
--- 
-2.25.1
+(2) is a more generic issue that I'm mentioning. Forget for a moment we
+are talking about PVC - that will be fixed by (1). We are trying to read
+the mmio from a device that can be in D3, either because it started in
+D3 or because a driver, loaded before intel_uncore, moved it to that
+state. That won't work even if the device supports the discovery
+mechanism.
 
+Lucas De Marchi
+
+>
+>Thanks,
+>Kan
+>
+>>
+>>     /* Map whole discovery table */
+>>     addr = pci_dword & ~(PAGE_SIZE - 1);
+>>     io_addr = ioremap(addr, UNCORE_DISCOVERY_MAP_SIZE);
+>>
+>>     /* Read Global Discovery table */
+>>     memcpy_fromio(&global, io_addr, sizeof(struct
+>> uncore_global_discovery));
+>>
+>> Unless it's guaranteed that at this point the device must be in D0
+>> state, this doesn't look right.  When we are binding a driver to a PCI
+>> device, pci core will move it to D0 for us:
+>>
+>>     static long local_pci_probe(void *_ddi)
+>>     {
+>>         ...
+>>         /*
+>>          * Unbound PCI devices are always put in D0, regardless of
+>>          * runtime PM status.  During probe, the device is set to
+>>          * active and the usage count is incremented.  If the driver
+>>          * supports runtime PM, it should call pm_runtime_put_noidle(),
+>>          * or any other runtime PM helper function decrementing the usage
+>>          * count, in its probe routine and pm_runtime_get_noresume() in
+>>          * its remove routine.
+>>          */
+>>          pm_runtime_get_sync(dev);
+>>          ...
+>>
+>> But here we are traversing the entire PCI device tree by ourselves.
+>> Considering intel_uncore is a module that can be loaded at any time
+>> (even after the driver supporting PVC, which already called
+>> pm_runtime_put_noidle(), it looks like we are missing the pm integration
+>> here.
+>>
+>> On a quick hack, just forcing the device into D0 before doing the MMIO,
+>> the PM issue is gone (but we still hit the problem of PVC having the cap
+>> when it shouldn't)
+>>
+>> thanks
+>> Lucas De Marchi
+>>
+>>>
+>>> Thanks,
+>>> Kan
