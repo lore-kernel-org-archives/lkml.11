@@ -2,103 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3671BC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A1BCC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:10:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232333AbiHBRK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 13:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
+        id S232853AbiHBRKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 13:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232853AbiHBRKU (ORCPT
+        with ESMTP id S233741AbiHBRKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 13:10:20 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3986BB851;
-        Tue,  2 Aug 2022 10:10:17 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id z16so18609601wrh.12;
-        Tue, 02 Aug 2022 10:10:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=czLWa8cP/unPIagRRBnhnz+Pt7dNkxuC1wA+KZkcpew=;
-        b=RdXXWKNtAKCEaWRexR2u8UOhLyMpWgVdJ8HTtIoHtIxpVlWKT92p5ANyXXhCow6nmX
-         D92z3bPCbubbijuFLnvXUDvBe7aoMfdppKqEL19J0tus4HOLwOjGDQO1Q/8luSsmgqhv
-         MGdeVmxCkrLKssfqn2tk1QJbG/go4a4egxaXsLjAq0pN5euDciHY3LptFYt+stoue09V
-         jk6JiOEPox355T9+60H6Q+isdWY/H0YAbYaj30x9uMr/p6aHzIl6RwLsBv2kWACwFBqX
-         fFRBOIycQaXGJWaOAq//ax5Ee1mYJNJKGd9cmX6Nzd4w8bntvv4VwzxPJ9vxb1B5/HRm
-         bgJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=czLWa8cP/unPIagRRBnhnz+Pt7dNkxuC1wA+KZkcpew=;
-        b=wlMBcknbXC+6J4/7oKUa4HA4jJd1G4l/kZsHfxdhJYwHb1Pa2Q6b0kDeJ/U06UnfnB
-         oFjsePFbfVyBHtx/PFswhpmNs9QM4vTPQ3dL2LPaDyWed1XPAy7XdflsjMDoakBHr/s8
-         6RbjCVEmXjcyAoebpEtsWEQ6Byr3cy2xFKvoL98OVGTpOt0uALq4qy4EbX6IwtqODqv3
-         X4xrV8ZwdMiQQNhLFSA1lc8Tib4hLANa2Djj+TPKIZkoYkBF6Vh+qSMue6xG51HdMZ41
-         U+tb4LxXEcbDnSDLVScz222CaDtzTjCJI2WtQo/yutNxDPwvHHAT4u7qWDPPUQH+YYIq
-         V/qQ==
-X-Gm-Message-State: ACgBeo2xo8wGuigTg+txTmM+PeHrEByC8xAwGBEGO7v0t32bs9ul+izp
-        Xry557BNIRxdC2gAQ9lPc6Y=
-X-Google-Smtp-Source: AA6agR4dycwR7OVTAaVEpSKazlUMkVOEgFRbB7mdDKY2GqScUaVcxj7nqgVq1JO6kmqj4R78FYxGOw==
-X-Received: by 2002:a05:6000:184c:b0:21d:beaf:c2d2 with SMTP id c12-20020a056000184c00b0021dbeafc2d2mr13671151wri.562.1659460215693;
-        Tue, 02 Aug 2022 10:10:15 -0700 (PDT)
-Received: from debian ([2405:201:8005:8149:e5c9:c0ac:4d82:e94b])
-        by smtp.gmail.com with ESMTPSA id y14-20020a5d620e000000b0021db7b0162esm16136645wru.105.2022.08.02.10.10.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 10:10:14 -0700 (PDT)
-Date:   Tue, 2 Aug 2022 18:10:04 +0100
-From:   "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, slade@sladewatkins.com
-Subject: Re: [PATCH 5.4 00/34] 5.4.209-rc1 review
-Message-ID: <YulabDDJ9gu7nl7n@debian>
-References: <20220801114128.025615151@linuxfoundation.org>
+        Tue, 2 Aug 2022 13:10:49 -0400
+Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7D41EAE6;
+        Tue,  2 Aug 2022 10:10:47 -0700 (PDT)
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 272HAXwx017499;
+        Wed, 3 Aug 2022 02:10:34 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 272HAXwx017499
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1659460234;
+        bh=H30PAH1MVagmr+DocuLDEfTLf80xpGIilp7LXmrFWDA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Kb7f/tdIPYeAHcEGjMrCdmaIM2M9EG8Ly7RLUOr2UAzE0w57Xq2sClimpSdWb+wkZ
+         bf2pDsUHWWiOaIpUOukO1DRdMEednH8giZDq2UpSlzSVkL6yZYt+qCTS9rW0o0VnQi
+         b2VwymG8p3tVOOWTLPsTXWHo4R+eRy7VohKIfQ4MvctTa433DPSYL/rDMubeNYoT13
+         vjfCwtMoaKMph9QGVqds8pA+o8KQ7GpcQFjoVe3FzqqgK2FwwWywDUgRMjqhwuYoSB
+         IvX0MTLYC2j34pXQvy1uz/GDDE5xkdi4H3h3k8xMg1m8mpbuv0e5gmvu4GP3gI5WbK
+         I29dbh7WAjWKA==
+X-Nifty-SrcIP: [209.85.128.53]
+Received: by mail-wm1-f53.google.com with SMTP id i128-20020a1c3b86000000b003a3a22178beso571554wma.3;
+        Tue, 02 Aug 2022 10:10:33 -0700 (PDT)
+X-Gm-Message-State: ACgBeo2YWwwIYhxP6PtDutZVJSXPJn+IY7fAGomi4czdi0GW74DKtKzK
+        LXv+fST+WxuNqfycaIrREd4Knxvrn5n86CL2xfg=
+X-Google-Smtp-Source: AA6agR4WDUvwILyzHBc8Y5fxbKXqaQqBUelJlkN0GZTbZz+5ss+2UTV07uzo3adpUpnkYrQQFpyUXJIxFkhMEkdX/zM=
+X-Received: by 2002:a05:600c:35ce:b0:3a3:1b7f:bbd8 with SMTP id
+ r14-20020a05600c35ce00b003a31b7fbbd8mr288103wmq.22.1659460232334; Tue, 02 Aug
+ 2022 10:10:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220801114128.025615151@linuxfoundation.org>
+References: <20220730173636.1303357-1-masahiroy@kernel.org> <b655dfc5-f490-9722-6ac6-ac4b7e8b7b5b@quicinc.com>
+In-Reply-To: <b655dfc5-f490-9722-6ac6-ac4b7e8b7b5b@quicinc.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Wed, 3 Aug 2022 02:09:29 +0900
+X-Gmail-Original-Message-ID: <CAK7LNATWYdcUkRXVANG4Dc-3Fr-qyh1y8ZcM0knY1f3KEsKspw@mail.gmail.com>
+Message-ID: <CAK7LNATWYdcUkRXVANG4Dc-3Fr-qyh1y8ZcM0knY1f3KEsKspw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] modpost: add array range check to sec_name()
+To:     Jeff Johnson <quic_jjohnson@quicinc.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+On Tue, Aug 2, 2022 at 5:29 AM Jeff Johnson <quic_jjohnson@quicinc.com> wrote:
+>
+> On 7/30/2022 10:36 AM, Masahiro Yamada wrote:
+> > The section index is always positive, so the argunent, secindex, should
+>
+> nit: s/argunent/argument/
 
-On Mon, Aug 01, 2022 at 01:46:40PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.209 release.
-> There are 34 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 03 Aug 2022 11:41:16 +0000.
-> Anything received after that time might be too late.
+Thanks.
+I will not send v2 just because of this typo.
+I locally fixed it.
 
-Build test (gcc version 11.3.1 20220724):
-mips: 65 configs -> no failure
-arm: 106 configs -> no failure
-arm64: 2 configs -> no failure
-x86_64: 4 configs -> no failure
-alpha allmodconfig -> no failure
-powerpc allmodconfig -> no failure
-riscv allmodconfig -> no failure
-s390 allmodconfig -> no failure
-xtensa allmodconfig -> no failure
-
-
-Boot test:
-x86_64: Booted on my test laptop. No regression.
-x86_64: Booted on qemu. No regression. [1]
-
-[1]. https://openqa.qa.codethink.co.uk/tests/1602
-
-
-Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
-
---
-Regards
-Sudip
+-- 
+Best Regards
+Masahiro Yamada
