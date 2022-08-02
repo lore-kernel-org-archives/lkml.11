@@ -2,143 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCACEC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 19:49:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36BBCC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 19:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232884AbiHBTtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 15:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39950 "EHLO
+        id S232977AbiHBTur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 15:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229804AbiHBTth (ORCPT
+        with ESMTP id S229646AbiHBTup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 15:49:37 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5134652FE4
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 12:49:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659469773; x=1691005773;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zmPtAOPVbSDxbUqsp3XrcnHHC7daC7WFB7HOchrngtM=;
-  b=EcdwCt4hr/BziIIho4MnOLToYqJVVE0jMBSz4e1pmz1lnN4WTCSbxqun
-   l5IGTa8kVNsqnv6DSspbXVFqTr7xg/M5bXryXkIVHsQdf8jLiPlMbgoNg
-   CYGyWi1LAAt9eUOxKSSfEOZ7GCLSx+LNAyIMD62BFPM0qQjxfcXi9QX4O
-   P//tJtkg2UgG160nvrjfDdOB45rxn6ENvYwdaUZHTbVGVZc3sbrPcHEm1
-   TuI1c2OFJ9T9cK8el+AV8qzCpw590Yk74XIMYuOAjV9pyxij7xFydeoRf
-   LuFzf76/pwAELv243mOgHFBwGKnBTtVMUlR3C49FwdgSmHX/21pzKD5Va
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="269886261"
-X-IronPort-AV: E=Sophos;i="5.93,211,1654585200"; 
-   d="scan'208";a="269886261"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 12:49:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,211,1654585200"; 
-   d="scan'208";a="691976360"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 02 Aug 2022 12:49:31 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oIxtS-000GNI-2f;
-        Tue, 02 Aug 2022 19:49:30 +0000
-Date:   Wed, 3 Aug 2022 03:49:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
-Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        Tue, 2 Aug 2022 15:50:45 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35F7913F24;
+        Tue,  2 Aug 2022 12:50:44 -0700 (PDT)
+Date:   Tue, 02 Aug 2022 19:50:39 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1659469841;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WbydiD59EY0s4CYP7LwTpVU/3s7lkYvlJnK1ItKcre8=;
+        b=Wrk7QsAiPv/du052Da2PsWto9098zQQEKRVx/AvwKr0/Ch71tnDh1WnPbO8NeSN6KAqnyo
+        dZgqiBIkT66v4XGQ64+0+k6aYDLbfkDAP8Do21WTqqPVpFQb0WVf7MGYqZStTV76xrDUlx
+        eCL8LHfUp1pYj0UIyW4iTWZwrSCAiccqLM0BnfuHJKqK9WKLS+LB6bwJbcXZl21n386JoA
+        OlCEoKmggJNQDtzsYqPLkGYcV1Z0JGtquvN8qjFraKU7KZNQtcTfIj/nEQcLhrCqw8Glbi
+        Iv7GqXVrS7/Scx4zU6Xevsms81R9pwbdxYta/IhIycywKjHVYhIfc60v67RbaQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1659469841;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WbydiD59EY0s4CYP7LwTpVU/3s7lkYvlJnK1ItKcre8=;
+        b=n+iPboLTBvwVW7LJI94NzgyzF4aEcMPJQeJv6rlqhM3aozDcyo2TJyUuUtRQtfqmRVU3Rt
+        5KoPLCG09UfWHlCg==
+From:   "tip-bot2 for Zhen Lei" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: sched/core] sched/debug: Print each field value left-aligned in
+ sched_show_task()
+Cc:     Zhen Lei <thunder.leizhen@huawei.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Valentin Schneider <vschneid@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:crng/random/jd/getrandom-batch 9/9]
- include/linux/fortify-string.h:47:33: warning: '__builtin_memset' pointer
- overflow between offset [0, 255] and size [2147483648, 4294967295]
-Message-ID: <202208030326.kgXt6SdF-lkp@intel.com>
+In-Reply-To: <20220727060819.1085-1-thunder.leizhen@huawei.com>
+References: <20220727060819.1085-1-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Message-ID: <165946983999.15455.573652282122630497.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block crng/random/jd/getrandom-batch
-head:   99a314f603c9cd173e6db2e3776eb76477283e1a
-commit: 99a314f603c9cd173e6db2e3776eb76477283e1a [9/9] random: batch getrandom() output per-task
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220803/202208030326.kgXt6SdF-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/99a314f603c9cd173e6db2e3776eb76477283e1a
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block crng/random/jd/getrandom-batch
-        git checkout 99a314f603c9cd173e6db2e3776eb76477283e1a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/char/
+The following commit has been merged into the sched/core branch of tip:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Commit-ID:     0f03d6805bfc454279169a1460abb3f6b3db317f
+Gitweb:        https://git.kernel.org/tip/0f03d6805bfc454279169a1460abb3f6b3db317f
+Author:        Zhen Lei <thunder.leizhen@huawei.com>
+AuthorDate:    Wed, 27 Jul 2022 14:08:19 +08:00
+Committer:     Ingo Molnar <mingo@kernel.org>
+CommitterDate: Tue, 02 Aug 2022 21:45:35 +02:00
 
-All warnings (new ones prefixed by >>):
+sched/debug: Print each field value left-aligned in sched_show_task()
 
-   In file included from include/linux/string.h:253,
-                    from arch/x86/include/asm/page_32.h:22,
-                    from arch/x86/include/asm/page.h:14,
-                    from arch/x86/include/asm/thread_info.h:12,
-                    from include/linux/thread_info.h:60,
-                    from arch/x86/include/asm/preempt.h:7,
-                    from include/linux/preempt.h:78,
-                    from include/linux/rcupdate.h:27,
-                    from include/linux/rculist.h:11,
-                    from include/linux/pid.h:5,
-                    from include/linux/sched.h:14,
-                    from include/linux/utsname.h:6,
-                    from drivers/char/random.c:28:
-   drivers/char/random.c: In function 'get_random_bytes_user':
->> include/linux/fortify-string.h:47:33: warning: '__builtin_memset' pointer overflow between offset [0, 255] and size [2147483648, 4294967295] [-Warray-bounds]
-      47 | #define __underlying_memset     __builtin_memset
-         |                                 ^
-   include/linux/fortify-string.h:281:9: note: in expansion of macro '__underlying_memset'
-     281 |         __underlying_memset(p, c, __fortify_size);                      \
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/fortify-string.h:288:25: note: in expansion of macro '__fortify_memset_chk'
-     288 | #define memset(p, c, s) __fortify_memset_chk(p, c, s,                   \
-         |                         ^~~~~~~~~~~~~~~~~~~~
-   drivers/char/random.c:425:17: note: in expansion of macro 'memset'
-     425 |                 memset(current->rng_batch.buf + current->rng_batch.position, 0, batch_len);
-         |                 ^~~~~~
+Currently, the values of some fields are printed right-aligned, causing
+the field value to be next to the next field name rather than next to its
+own field name. So print each field value left-aligned, to make it more
+readable.
 
+ Before:
+	stack:    0 pid:  307 ppid:     2 flags:0x00000008
+ After:
+	stack:0     pid:308   ppid:2      flags:0x0000000a
 
-vim +/__builtin_memset +47 include/linux/fortify-string.h
+This also makes them print in the same style as the other two fields:
 
-3009f891bb9f32 Kees Cook      2021-08-02  30  
-a28a6e860c6cf2 Francis Laniel 2021-02-25  31  #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
-a28a6e860c6cf2 Francis Laniel 2021-02-25  32  extern void *__underlying_memchr(const void *p, int c, __kernel_size_t size) __RENAME(memchr);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  33  extern int __underlying_memcmp(const void *p, const void *q, __kernel_size_t size) __RENAME(memcmp);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  34  extern void *__underlying_memcpy(void *p, const void *q, __kernel_size_t size) __RENAME(memcpy);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  35  extern void *__underlying_memmove(void *p, const void *q, __kernel_size_t size) __RENAME(memmove);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  36  extern void *__underlying_memset(void *p, int c, __kernel_size_t size) __RENAME(memset);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  37  extern char *__underlying_strcat(char *p, const char *q) __RENAME(strcat);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  38  extern char *__underlying_strcpy(char *p, const char *q) __RENAME(strcpy);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  39  extern __kernel_size_t __underlying_strlen(const char *p) __RENAME(strlen);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  40  extern char *__underlying_strncat(char *p, const char *q, __kernel_size_t count) __RENAME(strncat);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  41  extern char *__underlying_strncpy(char *p, const char *q, __kernel_size_t size) __RENAME(strncpy);
-a28a6e860c6cf2 Francis Laniel 2021-02-25  42  #else
-a28a6e860c6cf2 Francis Laniel 2021-02-25  43  #define __underlying_memchr	__builtin_memchr
-a28a6e860c6cf2 Francis Laniel 2021-02-25  44  #define __underlying_memcmp	__builtin_memcmp
-a28a6e860c6cf2 Francis Laniel 2021-02-25  45  #define __underlying_memcpy	__builtin_memcpy
-a28a6e860c6cf2 Francis Laniel 2021-02-25  46  #define __underlying_memmove	__builtin_memmove
-a28a6e860c6cf2 Francis Laniel 2021-02-25 @47  #define __underlying_memset	__builtin_memset
-a28a6e860c6cf2 Francis Laniel 2021-02-25  48  #define __underlying_strcat	__builtin_strcat
-a28a6e860c6cf2 Francis Laniel 2021-02-25  49  #define __underlying_strcpy	__builtin_strcpy
-a28a6e860c6cf2 Francis Laniel 2021-02-25  50  #define __underlying_strlen	__builtin_strlen
-a28a6e860c6cf2 Francis Laniel 2021-02-25  51  #define __underlying_strncat	__builtin_strncat
-a28a6e860c6cf2 Francis Laniel 2021-02-25  52  #define __underlying_strncpy	__builtin_strncpy
-a28a6e860c6cf2 Francis Laniel 2021-02-25  53  #endif
-a28a6e860c6cf2 Francis Laniel 2021-02-25  54  
+	task:demo0           state:R  running task
 
-:::::: The code at line 47 was first introduced by commit
-:::::: a28a6e860c6cf231cf3c5171c75c342adcd00406 string.h: move fortified functions definitions in a dedicated header.
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Reviewed-by: Valentin Schneider <vschneid@redhat.com>
+Link: https://lore.kernel.org/r/20220727060819.1085-1-thunder.leizhen@huawei.com
+---
+ kernel/sched/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-:::::: TO: Francis Laniel <laniel_francis@privacyrequired.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 5555e49..6785e3b 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -8825,7 +8825,7 @@ void sched_show_task(struct task_struct *p)
+ 	if (pid_alive(p))
+ 		ppid = task_pid_nr(rcu_dereference(p->real_parent));
+ 	rcu_read_unlock();
+-	pr_cont(" stack:%5lu pid:%5d ppid:%6d flags:0x%08lx\n",
++	pr_cont(" stack:%-5lu pid:%-5d ppid:%-6d flags:0x%08lx\n",
+ 		free, task_pid_nr(p), ppid,
+ 		read_task_thread_flags(p));
+ 
