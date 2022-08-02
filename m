@@ -2,77 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EC1CC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:37:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E420AC19F29
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:38:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235981AbiHBHhm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 03:37:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42820 "EHLO
+        id S235997AbiHBHiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 03:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235987AbiHBHhf (ORCPT
+        with ESMTP id S236008AbiHBHiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 03:37:35 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C588FB86E
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 00:37:33 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 573EA203AE;
-        Tue,  2 Aug 2022 07:37:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1659425852; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=I/fg8txpSAtyJTnoIbKN0qFtAj2rAgtTdzaptbHxtuM=;
-        b=Ru6r0D+lF4I/Kh4I/7Y6rPWQemGjTV8up7B6jv+mB2WhLw5B5kEFCFOCRuq+Wq8h0zl3t9
-        R3zPpL1gwaSj1mMENZHQZJMURoZBbR9jc9c775mt7SUrr5BLsGKAtcQjTUjimSBembgUyI
-        Hr32aOx6OyqL7WVZ/HgJTvaolMGR2w0=
-Received: from suse.cz (unknown [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 713092C141;
-        Tue,  2 Aug 2022 07:37:31 +0000 (UTC)
-Date:   Tue, 2 Aug 2022 09:37:28 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>, Jan Kara <jack@suse.cz>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [GIT PULL] printk for 5.20
-Message-ID: <YujUOEVXYpZBq5jz@alley>
-References: <YufsTLpighCI7qSf@alley>
- <16ef8dbc4bdf4120b046ebacaf1f3cf2@AcuMS.aculab.com>
+        Tue, 2 Aug 2022 03:38:03 -0400
+Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 24296E008;
+        Tue,  2 Aug 2022 00:38:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=l0q+Q
+        YiG/Eqa3mATE+vLJIuo/ItC1B0Gui0igDzgwt4=; b=UuR1oIOZkpDf12FOYjgYW
+        RIddEflkNmVKmZRjpsA5uPYeWwlAMLZs8ys8V/uv9ENXEx6ipjji8FKO1jJqCq6L
+        hNx4FQ8a0i1e/05vATssKO7SEWGXnhNgfJkU4APJYpXsbI6aiXz18Wh4W+7ISt8W
+        IYxcjeZEWyX9ePq+EoF08k=
+Received: from localhost.localdomain (unknown [123.58.221.99])
+        by smtp1 (Coremail) with SMTP id GdxpCgCXJZbw0+hiFYdnSA--.5473S2;
+        Tue, 02 Aug 2022 15:36:18 +0800 (CST)
+From:   studentxswpy@163.com
+To:     jejb@linux.ibm.com, martin.petersen@oracle.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Xie Shaowen <studentxswpy@163.com>,
+        Hacash Robot <hacashRobot@santino.com>
+Subject: [PATCH] scsi: sun3x_esp: check the return value of ioremap() in esp_sun3x_probe()
+Date:   Tue,  2 Aug 2022 15:36:14 +0800
+Message-Id: <20220802073614.3213171-1-studentxswpy@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <16ef8dbc4bdf4120b046ebacaf1f3cf2@AcuMS.aculab.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GdxpCgCXJZbw0+hiFYdnSA--.5473S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Xw4DCrW8tF47XFW8JryfXrb_yoWfWwc_Wa
+        1Svrs7WF4Yyw1xtF17Cwn8Z34Ikr1kZr4kuF1FqFy3Cw1UZ3WDXa9F9rn7ua45WaykGayF
+        y3s0vF4Fv34SgjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8JGYJUUUUU==
+X-Originating-IP: [123.58.221.99]
+X-CM-SenderInfo: xvwxvv5qw024ls16il2tof0z/xtbB0wpRJFXlwVHQtwAAsr
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-08-01 15:45:13, David Laight wrote:
-> > - Completely disable printing on consoles with CONFIG_RT. They break
-> >   RT guarantees. They are too slow to be called with raw spinlocks.
-> >   They can't be called with normal spinlocks in an atomic context because
-> >   RT spinlocks might sleep. It is going to get fixed by the kthreads and
-> >   atomic consoles. In the meantime, the debugging of CONFIG_RT kernel
-> >   will be possible only by the user space kernel log readers.
-> 
-> SYSV used to be like that if you were running syslogd.
-> Used to make debugging some issues completely impossible.
+From: Xie Shaowen <studentxswpy@163.com>
 
-Sure. My understanding is that this is how RT guys want it in
-4.19. There is no quick magic solution. Either printk() would break
-RT guarantees or messages will not be seen on consoles. The blank
-consoles were chosen as the least bad solution. Of course, we
-are still working on the printk kthreads and atomic consoles
-that would allow debugging using consoles on RT again.
+The function ioremap() in esp_sun3x_probe() can fail, so
+its return value should be checked.
 
-Best Regards,
-Petr
+Fixes: 4bdc0d676a643 ("remove ioremap_nocache and devm_ioremap_nocache")
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: Xie Shaowen <studentxswpy@163.com>
+---
+ drivers/scsi/sun3x_esp.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/scsi/sun3x_esp.c b/drivers/scsi/sun3x_esp.c
+index d3489ac7ab28..cc670b50a357 100644
+--- a/drivers/scsi/sun3x_esp.c
++++ b/drivers/scsi/sun3x_esp.c
+@@ -199,6 +199,8 @@ static int esp_sun3x_probe(struct platform_device *dev)
+ 		goto fail_unmap_regs;
+ 
+ 	esp->dma_regs = ioremap(res->start, 0x10);
++	if (!esp->dma_regs)
++		goto fail_unmap_regs;
+ 
+ 	esp->command_block = dma_alloc_coherent(esp->dev, 16,
+ 						&esp->command_block_dma,
+-- 
+2.25.1
+
