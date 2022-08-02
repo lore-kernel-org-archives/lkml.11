@@ -2,96 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 545FFC19F28
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48332C19F28
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:30:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237690AbiHBQ3D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 12:29:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37736 "EHLO
+        id S232487AbiHBQa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 12:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237224AbiHBQ3B (ORCPT
+        with ESMTP id S230482AbiHBQaT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 12:29:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD9E33E0E;
-        Tue,  2 Aug 2022 09:29:00 -0700 (PDT)
+        Tue, 2 Aug 2022 12:30:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ACE56262;
+        Tue,  2 Aug 2022 09:30:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51B95B81FA2;
-        Tue,  2 Aug 2022 16:28:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90B8CC433C1;
-        Tue,  2 Aug 2022 16:28:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659457738;
-        bh=Hj/CQNaxBVLSLl5kQyeXMjIf/ndHxdLkWD0KIYWve38=;
-        h=From:To:Cc:Subject:Date:From;
-        b=vy61WoC9aEy7G5ERSRAVWNEYFlE7mQfxgGlhedlsD7Pt/Gqb9CI23xUqgX0+894gI
-         VYkMqFSYCrais5okjO6NVFxS8XMdzhSSJ5rC4rGZvjLROuT4lMXd2hrZ0HR1+N/Yu8
-         3g01W8slD9mUK1yR+hveeaQpHgPrZqPTpxiu7X18=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-input@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "jingle.wu" <jingle.wu@emc.com.tw>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] Input: elan_i2c - convert to use dev_groups
-Date:   Tue,  2 Aug 2022 18:28:54 +0200
-Message-Id: <20220802162854.3015369-1-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C904B81FA1;
+        Tue,  2 Aug 2022 16:30:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1FF4C433D7;
+        Tue,  2 Aug 2022 16:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659457815;
+        bh=VeLurwGxR30GtM5SeSZWafh3FNbK4ffoLCs50abMsyI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=bLfA82nLK7vOkso4Uh48U0ipF3AZFk4DroBfT0hYZIDZQ0RbCdxSRGKYmi3sLQzIb
+         1GiIjJVtrDl0HEb71zgQZPRnEU6esdUo21sFgYP88FUSW3HhYURoye4cIlr0fku2Hv
+         CUWvWyxxwe13xPoXsXtk2aJxoIiLL3LqtVr/TSt4MhePhCfuNdX7SkdWrZPhLYyHzT
+         kU+KkhY0oRvCtCsr6bMl27Nn6byziJ8Dp60lKoSJcQQXCnV5Nbrk0ism7Stnzv1/e+
+         LDSBP/2Mx0RjnCJ9kNaLCsAceVQUuaZPSb2Cw1GJ9e3FAVUBA6sgWyDQ652KCdWB+2
+         Jn5rvhu5HUb5Q==
+Received: by mail-yb1-f170.google.com with SMTP id 7so24444333ybw.0;
+        Tue, 02 Aug 2022 09:30:15 -0700 (PDT)
+X-Gm-Message-State: ACgBeo3o73Rb3OW5Q3nkNFyEVjwSOE0R1JNgjR587XziA4L1DYSMQyMI
+        hIoIcfH1HoFNNmW1/hJAeZnd2B6jKA8kDs0frT8=
+X-Google-Smtp-Source: AA6agR6PSSqZ7q1ceG6hzbb78ReaWO2Pt+7JC8R0WOtp4QIqJwfIq5Lxxb5H2W3s//8Igj7ToX2ruWrko7AbmuMAGtM=
+X-Received: by 2002:a25:41d6:0:b0:673:817c:e163 with SMTP id
+ o205-20020a2541d6000000b00673817ce163mr14789383yba.561.1659457814933; Tue, 02
+ Aug 2022 09:30:14 -0700 (PDT)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1775; i=gregkh@linuxfoundation.org; h=from:subject; bh=Hj/CQNaxBVLSLl5kQyeXMjIf/ndHxdLkWD0KIYWve38=; b=owGbwMvMwCRo6H6F97bub03G02pJDEkvA47sKH1Y2DPx+BLVr9dWi0zSlFpdFen7Ue10lI6QIN+i u8oHOmJZGASZGGTFFFm+bOM5ur/ikKKXoe1pmDmsTCBDGLg4BWAilx4wzM+0uaA+PTbX3Poe15vjca kW8puPvmNY0PWmtaEijumxzpbw2M6ow/45ah8ZAA==
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
-Content-Transfer-Encoding: 8bit
+References: <20220721175147.214642-1-song@kernel.org> <20220726233302.zwloxsammnu7clu4@treble>
+ <CAPhsuW7tmRt=yx1+i62HPRJJ4Gp8xB_3XvpVxUC=SyGv6iCBEQ@mail.gmail.com>
+ <CAPhsuW4F8f9GLHF9C54oWyFiyJ0eT5HOwfhmoxSJ3HeRr8zCSw@mail.gmail.com>
+ <CAPhsuW4VFjyoYta6fEGXg4S1dbg8ynkdKZzuwYSp3FMEGPP0aA@mail.gmail.com>
+ <Yuep+uKnDc0L2ICi@alley> <CAPhsuW7FLVQ4CeBp0crTh5TQk30E113=ZMz_iHh5xK-QGNcT+g@mail.gmail.com>
+ <d216c822-aa79-7ad8-2f6c-d74406ee8632@redhat.com>
+In-Reply-To: <d216c822-aa79-7ad8-2f6c-d74406ee8632@redhat.com>
+From:   Song Liu <song@kernel.org>
+Date:   Tue, 2 Aug 2022 09:30:04 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW5sQX53W8_8vvPk_Uhj5LCF-k_7-b8uCnOu-safdRRi=A@mail.gmail.com>
+Message-ID: <CAPhsuW5sQX53W8_8vvPk_Uhj5LCF-k_7-b8uCnOu-safdRRi=A@mail.gmail.com>
+Subject: Re: [PATCH v3] livepatch: Clear relocation targets on a module removal
+To:     Joe Lawrence <joe.lawrence@redhat.com>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        live-patching@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>, X86 ML <x86@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no need for a driver to individually add/create device groups,
-the driver core will do it automatically for you.  Convert the elan_i2c
-driver to use the dev_groups pointer instead of manually calling the
-driver core to create the group and have it be cleaned up later on by
-the devm core.
+Hi Joe,
 
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "jingle.wu" <jingle.wu@emc.com.tw>
-Cc: linux-input@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
-v2: change text based on Dmitry's review, it's not a race condition,
-    it's just less code to worry about in a driver.
+On Tue, Aug 2, 2022 at 5:31 AM Joe Lawrence <joe.lawrence@redhat.com> wrote:
+>
+> On 8/1/22 17:19, Song Liu wrote:
+> > On Mon, Aug 1, 2022 at 3:25 AM Petr Mladek <pmladek@suse.com> wrote:
+> >>
+> >> On Sat 2022-07-30 20:20:22, Song Liu wrote:
+> >>> On Sat, Jul 30, 2022 at 3:32 PM Song Liu <song@kernel.org> wrote:
+> >>>>
+> >>>> On Tue, Jul 26, 2022 at 8:54 PM Song Liu <song@kernel.org> wrote:
+> >>>>>
+> >>>>> On Tue, Jul 26, 2022 at 4:33 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+> >>>>>>
+> >>>>>> On Thu, Jul 21, 2022 at 10:51:47AM -0700, Song Liu wrote:
+> >>>>>>> From: Miroslav Benes <mbenes@suse.cz>
+> >>>>>>>
+> >>>>>>> Josh reported a bug:
+> >>>>>>>
+> >>>>>>>   When the object to be patched is a module, and that module is
+> >>>>>>>   rmmod'ed and reloaded, it fails to load with:
+> >>>>>>>
+> >>>>>>>   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+> >>>>>>>   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> >>>>>>>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> >>>>>>>
+> >>>>>>>   The livepatch module has a relocation which references a symbol
+> >>>>>>>   in the _previous_ loading of nfsd. When apply_relocate_add()
+> >>>>>>>   tries to replace the old relocation with a new one, it sees that
+> >>>>>>>   the previous one is nonzero and it errors out.
+> >>>>>>>
+> >>>>>>>   On ppc64le, we have a similar issue:
+> >>>>>>>
+> >>>>>>>   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
+> >>>>>>>   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+> >>>>>>>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> >>>>>>>
+> >>>>>> 3) A selftest would be a good idea.
+> >>>>>
+> >>>>
+> >>>> I found it is pretty tricky to run the selftests inside a qemu VM. How about
+> >>>> we test it with modules in samples/livepatch? Specifically, we can add a
+> >>>> script try to reload livepatch-shadow-mod.ko.
+> >>>
+> >>> Actually, livepatch-shadow-mod.ko doesn't have the reload problem before
+> >>> the fix. Is this expected?
+> >>
+> >> Good question. I am afraid that there is no easy way to prepare
+> >> the selftest at the moment.
+> >>
+> >> There are two situations when a symbol from the livepatched module is
+> >> relocated:
+> >>
+> >>
+> >> 1. The livepatch might access a symbol exported by the module via
+> >>    EXPORT_SYMBOL(). In this case, it is "normal" external symbol
+> >>    and it gets relocated by the module loader.
+> >>
+> >>    But EXPORT_SYMBOL() will create an explicit dependency between the
+> >>    livepatch and livepatched module. As a result, the livepatch
+> >>    module could be loaded only when the livepatched module is loaded.
+> >>    And the livepatched module could not be removed when the livepatch
+> >>    module is loaded.
+> >>
+> >>    In this case, the problem will not exist. Well, the developers
+> >>    of the livepatch module will probably want to avoid this
+> >>    dependency.
+> >>
+> >>
+> >> 2. The livepatch module might access a non-exported symbol from another
+> >>    module using the special elf section for klp relocation, see
+> >>    section, see Documentation/livepatch/module-elf-format.rst
+> >>
+> >>    These symbols are relocated in klp_apply_section_relocs().
+> >>
+> >>    The problem is that upstream does not have a support to
+> >>    create this elf section. There is a patchset for this, see
+> >>    https://lore.kernel.org/all/20220216163940.228309-1-joe.lawrence@redhat.com/
+> >>    It requires some more review.
+> >>
+> >>
+> >> Resume: I think that we could not prepare the selftest without
+> >>         upstreaming klp-convert tool.
+> >
+> > Thanks for the explanation! I suspected the same issue, but couldn't
+> > connect all the logic.
+> >
+> > I guess the selftests can wait until the klp-convert tool.
+> >
+>
+> Hi Song,
+>
+> Petr is correct about selftests and these relocations.  Let me know if
+> rebasing the klp-convert patchset would be helpful in your testing.
+> Otherwise kpatch-build is the only (easy?) way to create klp-relocations
+> as far as I know.  (For limited arches anyway.)
 
- drivers/input/mouse/elan_i2c_core.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+I was able to test the patch on x86_64 with kpatch-build. I will look into
+klp-convert later (after I fix kpatch-build for some OOT modules..)
 
-diff --git a/drivers/input/mouse/elan_i2c_core.c b/drivers/input/mouse/elan_i2c_core.c
-index e1758d5ffe42..d4eb59b55bf1 100644
---- a/drivers/input/mouse/elan_i2c_core.c
-+++ b/drivers/input/mouse/elan_i2c_core.c
-@@ -1311,12 +1311,6 @@ static int elan_probe(struct i2c_client *client,
- 		return error;
- 	}
- 
--	error = devm_device_add_groups(dev, elan_sysfs_groups);
--	if (error) {
--		dev_err(dev, "failed to create sysfs attributes: %d\n", error);
--		return error;
--	}
--
- 	error = input_register_device(data->input);
- 	if (error) {
- 		dev_err(dev, "failed to register input device: %d\n", error);
-@@ -1442,6 +1436,7 @@ static struct i2c_driver elan_driver = {
- 		.acpi_match_table = ACPI_PTR(elan_acpi_id),
- 		.of_match_table = of_match_ptr(elan_of_match),
- 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
-+		.dev_groups = elan_sysfs_groups,
- 	},
- 	.probe		= elan_probe,
- 	.id_table	= elan_id,
--- 
-2.37.1
+I the meanwhile, I guess this patch doesn't need to wait for klp-convert
+and the selftest?
 
+Thanks,
+Song
