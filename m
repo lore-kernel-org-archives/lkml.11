@@ -2,92 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D739CC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB5EC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232681AbiHBRgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 13:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60720 "EHLO
+        id S232983AbiHBRk0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 13:40:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231450AbiHBRgn (ORCPT
+        with ESMTP id S231160AbiHBRkV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 13:36:43 -0400
-Received: from mailserv1.kapsi.fi (mailserv1.kapsi.fi [IPv6:2001:67c:1be8::25:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBC6DF00;
-        Tue,  2 Aug 2022 10:36:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=ext.kapsi.fi; s=20161220; h=Subject:Content-Transfer-Encoding:Content-Type:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Cc:To:From:Sender:
-        Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-        :Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=/XIWlzqkr1Js3B0BB649mTkJR8GdTs5awWpSmRtzimU=; b=DYxK+YN8QnkGK/pQ5PewvbG0Xv
-        2TAU9t48tYA1cJuRBgw8hSX/9yrkqa7mI31CL0kU0lNeB8iQWYf7TpajxxaWUv6o5y9T15ZSHZG9t
-        pjqcIRwDsP1eaEkLVUYVQU2DhrcQPKHDoH8RttlVqMLu5Wvm750mWd+2EpxzAo7OoQa+TztaDrOiM
-        EU1Gs9UJHEZdmsOZMrhcu1GRqvMOvgf1VbzC+sUDrVf+bLOdbq9dT0OJThMzRAB9fQD0Fr+ghdvBn
-        bKoWfHucaHUIkpmQMPr/FndznXt/UYIk7PpVObmI1JjDzK14nSZLry/sNcXzkZnoxgkA6P6cBCuhy
-        F1Jk6wOg==;
-Received: from a82-197-11-249.mpynet.fi ([82.197.11.249]:55982 helo=localhost)
-        by mailserv1.kapsi.fi with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maukka@ext.kapsi.fi>)
-        id 1oIvon-008Ymu-9I; Tue, 02 Aug 2022 20:36:34 +0300
-Received: by localhost (sSMTP sendmail emulation); Tue, 02 Aug 2022 20:36:31 +0300
-From:   Mauri Sandberg <maukka@ext.kapsi.fi>
-To:     linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     bhelgaas@google.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, andrew@lunn.ch,
-        sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
-        linux@armlinux.org.uk, lpieralisi@kernel.org, kw@linux.com,
-        thomas.petazzoni@bootlin.com, pali@kernel.org,
-        Mauri Sandberg <maukka@ext.kapsi.fi>
-Date:   Tue,  2 Aug 2022 20:34:21 +0300
-Message-Id: <20220802173423.47230-1-maukka@ext.kapsi.fi>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220718202843.6766-1-maukka@ext.kapsi.fi>
-References: <20220718202843.6766-1-maukka@ext.kapsi.fi>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 82.197.11.249
-X-SA-Exim-Mail-From: maukka@ext.kapsi.fi
-Subject: [PATCH v2 0/2] PCI: mvebu: add support for orion soc
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on mailserv1.kapsi.fi)
+        Tue, 2 Aug 2022 13:40:21 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBA610EA
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 10:40:17 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31f5960500bso122626457b3.14
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 10:40:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=ONVk+IwfQtxkQMEE1txHxraIYz5uS1JfsA6nTBwgy+I=;
+        b=VPi1EX9sV3DI3/6YfkpEke2lO5PZ2alhRTtje8l5A7fsDOKzH3zs6lpGJSy3VD1Kwc
+         gSTmLomYI5iNuo+5Dqa+wxPnj84hVgh40XecRcNFbjGl/DcJomF4EL5SW2MQzR0HRS3o
+         0GRMM0y9FmEbHuaDTRci/3TrTZRz5Qkwp9ZLY0htMy51YggPCh+k6riQG7qBynu6Ljt7
+         txyB+cVI8TajmI/Z4yiE37p1A9Wz+9JSgHW4g3VQLlfsiVZGY4znC33U/QUu/zKe1xeK
+         dX9bi2BWvBTIC+gFLiM97+BKol+uHfNy3wfz3NdjPaTTpLfjFQs7vf9UrHszGXJQ4/5N
+         zgpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=ONVk+IwfQtxkQMEE1txHxraIYz5uS1JfsA6nTBwgy+I=;
+        b=If1wRt0ywiCrXmUHC9X3/NXZsMYovK6oV82SQbCYxchfb6sDqZs2D8XuwzHcQUFWFG
+         /qMvGZyk1LUCteBauPbf6xT5olRcKqO7Sntnhlj/U5JdjIusxFUnuILGU1Uh2B/pwLwx
+         /wqkXJ9GJa2xz7BUm5b5ezN7+pf93fVQ/A8wqNRQyT4KnhdkYwYfkM3roXomzOZE1RmC
+         xy8enpZV0/beGh/0C1BfS9KainrRWqpnhbpCtgja186cAq/JOYXP7aXB5h4gX4tGVfmf
+         Yj4NRm+tNTI7uXa6dojz1ASGsy/m+BK079/tBheuEuPGqadVOllOx788pRHZzCjrw0+y
+         lXkw==
+X-Gm-Message-State: ACgBeo0Y7W/gH4kx6PJ616dnausVgnxXn++LSI5Ojd0Jky+3FskCRj0r
+        nT2bxhUcXWE0XFz7poSwKJ1REJXglA==
+X-Google-Smtp-Source: AA6agR6G2fc61/vdfjDY2CqjeZK0f37dBSOoZhf6/RxQc1A4UreeeeNwIkSFEV8AcCr2cuFO5qqUDWYlZw==
+X-Received: from timvp.bld.corp.google.com ([2620:15c:183:200:61dc:f28d:ccc1:638a])
+ (user=timvp job=sendgmr) by 2002:a05:6902:1404:b0:64e:1ec0:cec with SMTP id
+ z4-20020a056902140400b0064e1ec00cecmr15406103ybu.588.1659462017098; Tue, 02
+ Aug 2022 10:40:17 -0700 (PDT)
+Date:   Tue,  2 Aug 2022 11:40:08 -0600
+Message-Id: <20220802113957.v3.1.I2c8c550183162e7594309b66d19af696b8d84552@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
+Subject: [PATCH v3] platform/chrome: cros_ec: Send host event for prepare/complete
+From:   Tim Van Patten <timvp@google.com>
+To:     rrangel@chromium.org, robbarnes@google.com
+Cc:     Tim Van Patten <timvp@google.com>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello all,
+Update cros_ec_lpc_pm_ops to call cros_ec_lpc_prepare() during PM
+.prepare() and cros_ec_lpc_complete() during .complete(). This allows the
+EC to log entry/exit of AP's suspend/resume more accurately.
 
-Here a cleaned up version of the previous series.
+Signed-off-by: Tim Van Patten <timvp@google.com>
+---
 
-Changes
- - instead of removing PCIe related mvebu windows add them in pcie_setup()
+Changes in v3:
+- Update cros_ec_lpc_suspend() to cros_ec_lpc_prepare()
+- Update cros_ec_lpc_resume() to cros_ec_lpc_complete()
 
-I intentionally left the ORION5X_PCIE_WA_VIRT_BASE in place as all pieces
-in the puzzle have not found their place yet. It will be replaced with
-ioremap() or similar when the problem of passing the address to
-configuration space from a device tree is solved.
+Changes in v2:
+- Include cros_ec_resume() return value in dev_info() output.
+- Guard setting .prepare/.complete with #ifdef CONFIG_PM_SLEEP.
 
-Tested with DNS323 both DT and non-DT builds.
+ drivers/platform/chrome/cros_ec_lpc.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-Thanks,
-Mauri
+diff --git a/drivers/platform/chrome/cros_ec_lpc.c b/drivers/platform/chrome/cros_ec_lpc.c
+index 7677ab3c0ead9..4158bdeee197b 100644
+--- a/drivers/platform/chrome/cros_ec_lpc.c
++++ b/drivers/platform/chrome/cros_ec_lpc.c
+@@ -530,23 +530,31 @@ static const struct dmi_system_id cros_ec_lpc_dmi_table[] __initconst = {
+ MODULE_DEVICE_TABLE(dmi, cros_ec_lpc_dmi_table);
+ 
+ #ifdef CONFIG_PM_SLEEP
+-static int cros_ec_lpc_suspend(struct device *dev)
++static int cros_ec_lpc_prepare(struct device *dev)
+ {
+ 	struct cros_ec_device *ec_dev = dev_get_drvdata(dev);
+ 
++	dev_info(dev, "Prepare EC suspend\n");
++
+ 	return cros_ec_suspend(ec_dev);
+ }
+ 
+-static int cros_ec_lpc_resume(struct device *dev)
++static void cros_ec_lpc_complete(struct device *dev)
+ {
+ 	struct cros_ec_device *ec_dev = dev_get_drvdata(dev);
++	int ret;
++
++	ret = cros_ec_resume(ec_dev);
+ 
+-	return cros_ec_resume(ec_dev);
++	dev_info(dev, "EC resume completed: ret = %d\n", ret);
+ }
+ #endif
+ 
+ static const struct dev_pm_ops cros_ec_lpc_pm_ops = {
+-	SET_LATE_SYSTEM_SLEEP_PM_OPS(cros_ec_lpc_suspend, cros_ec_lpc_resume)
++#ifdef CONFIG_PM_SLEEP
++	.prepare = cros_ec_lpc_prepare,
++	.complete = cros_ec_lpc_complete
++#endif
+ };
+ 
+ static struct platform_driver cros_ec_lpc_driver = {
+-- 
+2.37.1.455.g008518b4e5-goog
 
-Mauri Sandberg (2):
-  dt-bindings: PCI: mvebu: Add orion5x compatible
-  PCI: mvebu: add support for orion5x
-
- .../devicetree/bindings/pci/mvebu-pci.txt     |  1 +
- arch/arm/mach-orion5x/common.c                | 13 ----
- arch/arm/mach-orion5x/pci.c                   | 14 +++++
- drivers/pci/controller/Kconfig                |  2 +-
- drivers/pci/controller/pci-mvebu.c            | 59 +++++++++++++++++++
- 5 files changed, 75 insertions(+), 14 deletions(-)
-
-
-base-commit: 7d0d3fa7339ed5a06d6608b7cde9f079eba62bb1
---
-2.25.1
