@@ -2,161 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57194C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 21:22:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC08C19F2B
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 21:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232202AbiHBVWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 17:22:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34586 "EHLO
+        id S231807AbiHBVZI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 17:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231972AbiHBVWD (ORCPT
+        with ESMTP id S229482AbiHBVZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 17:22:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F06251408
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 14:22:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659475320;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=jQhPEwH3goRpU8FRyBDXxZC2WkI1FDwYRPXft+9J3uE=;
-        b=ZTG1Sx+FvItbv8eyevjwp5VAd6fSkvewaLSLH0lpfj6mogUb4yqJyqYlm7r4G/z24zpHB3
-        bfb17PCZJCWIqsgSvWeFROW8+DxY+y7c6pkXemyJvsGoxGcHMt3XgTNuR9ZnH0QxWsWaT6
-        8LdkFgG78E3qQxMV9xqIsM+6xPSgYK4=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-26-iMVDjm1oPWSNE6qZ8Sih2A-1; Tue, 02 Aug 2022 17:21:59 -0400
-X-MC-Unique: iMVDjm1oPWSNE6qZ8Sih2A-1
-Received: by mail-qv1-f72.google.com with SMTP id er2-20020a056214190200b00474479acbcfso9050432qvb.23
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 14:21:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jQhPEwH3goRpU8FRyBDXxZC2WkI1FDwYRPXft+9J3uE=;
-        b=qk0woRzxSABmNptUiIRkRtX2w8EwYbdROY2aw+o0R/ngG0FE0PwDwHQYhl8IHJNpnT
-         ZFzFkma8jIUUNzXiashCCx0KAFsiDPu05Gw62MMMoo/jtDm137ZTYIPwlgq5TcaSojfm
-         Kd0kzMvXw5CrLy9HmpJUovEoN5gbQcYhgkQXY3Xhg2Fw75tP93DzMTAhsTiGjBptzNka
-         ueZD4vM/NiYXQlmWpm7uh+8vww0nw+1anY81uIx1TD9U/FmaJkjr1LhO+J1rcF9uEbRZ
-         feGkTun4tQl+H/dkcL1O7A40gAGTEYqAUlEBWB1gSrHhtiOeb97hTiNX+oa+BRjMeXcQ
-         MtRQ==
-X-Gm-Message-State: AJIora+0v9Ac/m9LL3QhOgwOQmbR9XHlKGP/P0eIb2JJNMCWxiCMUEiP
-        oDDEsB0mhLq71CInt2mseakSJWhFR5hM6GJw8lDcvl14RbBo7JPQFBPZVfL0as/8bdEPstzk8L/
-        7JwF8nxHvrOx47tOCAfRbblwW
-X-Received: by 2002:ac8:7c4e:0:b0:31f:36ad:e809 with SMTP id o14-20020ac87c4e000000b0031f36ade809mr19580847qtv.441.1659475318577;
-        Tue, 02 Aug 2022 14:21:58 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1up+f0v7Bn9Uarm0rhHT+yPJxwAn6o3wRiFDpB+iSM6ATGR0cOoe0i5MAVMSQg4awnLzQAyQg==
-X-Received: by 2002:ac8:7c4e:0:b0:31f:36ad:e809 with SMTP id o14-20020ac87c4e000000b0031f36ade809mr19580823qtv.441.1659475318372;
-        Tue, 02 Aug 2022 14:21:58 -0700 (PDT)
-Received: from halaneylaptop ([2600:1700:1ff0:d0e0::2e])
-        by smtp.gmail.com with ESMTPSA id m26-20020ac866da000000b00339163a06fcsm2047794qtp.6.2022.08.02.14.21.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 14:21:57 -0700 (PDT)
-Date:   Tue, 2 Aug 2022 16:21:54 -0500
-From:   Andrew Halaney <ahalaney@redhat.com>
-To:     Johan Hovold <johan+linaro@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krishna Kurapati <quic_kriskura@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
-        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH 1/8] usb: dwc3: fix PHY disable sequence
-Message-ID: <20220802212154.jh65gds4jpzbvqn6@halaneylaptop>
-References: <20220802151404.1797-1-johan+linaro@kernel.org>
- <20220802151404.1797-2-johan+linaro@kernel.org>
+        Tue, 2 Aug 2022 17:25:02 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98383474CD;
+        Tue,  2 Aug 2022 14:25:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659475501; x=1691011501;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=jvEYSO7lW++ymJ0bBLH7ZRL0Q9IiAhclprxNUtYU6Os=;
+  b=Byo+ti7NWEJtWVpn1qwwe+BxGyCSVfgE6PNoM303QYv12DGSPWf94yWa
+   t8/LwyLkWxZ4FXlwgoreysAMHjBbPQCzt7XX5gAU5LU0uWC7Z8LV+EimT
+   55y4GvtRZRHD9aOWLb2CrOosWXtS3dfpQSIszxV/ZsBVPatbgMfEvNchJ
+   lJMT+YWqKFRaMkNaQnne4dc162ttL+F/vLlwadpIw2OT2o8/WM/sDNmkC
+   KfbixBHL32yN/1d7YdlErjh4febnXloEouAHC3vPbKkLdH9UfIQ8jyxxx
+   z1XjWEOTB5MRAN725d7uT9esYRxwf8WR5mTf7A0slNk7P2qQPv0EkAoke
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="289534171"
+X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
+   d="scan'208";a="289534171"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 14:25:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
+   d="scan'208";a="728977295"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga004.jf.intel.com with ESMTP; 02 Aug 2022 14:24:59 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id AECF5F7; Wed,  3 Aug 2022 00:25:10 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Pavel Machek <pavel@ucw.cz>
+Subject: [PATCH v1 1/1] leds: syscon: Get rid of custom led_init_default_state_get()
+Date:   Wed,  3 Aug 2022 00:25:07 +0300
+Message-Id: <20220802212507.6995-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220802151404.1797-2-johan+linaro@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 02, 2022 at 05:13:57PM +0200, Johan Hovold wrote:
-> Generic PHYs must be powered-off before they can be tore down.
-> 
-> Similarly, suspending legacy PHYs after having powered them off makes no
-> sense.
-> 
-> Fix the dwc3_core_exit() (e.g. called during suspend) and open-coded
-> dwc3_probe() error-path sequences that got this wrong.
-> 
-> Note that this makes dwc3_core_exit() match the dwc3_core_init() error
-> path with respect to powering off the PHYs.
-> 
-> Fixes: 03c1fd622f72 ("usb: dwc3: core: add phy cleanup for probe error handling")
-> Fixes: c499ff71ff2a ("usb: dwc3: core: re-factor init and exit paths")
-> Cc: stable@vger.kernel.org      # 4.8
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> ---
+LED core provides a helper to parse default state from firmware node.
+Use it instead of custom implementation.
 
-Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/leds/leds-syscon.c | 49 ++++++++++++++++++--------------------
+ 1 file changed, 23 insertions(+), 26 deletions(-)
 
->  drivers/usb/dwc3/core.c | 19 ++++++++++---------
->  1 file changed, 10 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-> index c5c238ab3083..16d1f328775f 100644
-> --- a/drivers/usb/dwc3/core.c
-> +++ b/drivers/usb/dwc3/core.c
-> @@ -833,15 +833,16 @@ static void dwc3_core_exit(struct dwc3 *dwc)
->  {
->  	dwc3_event_buffers_cleanup(dwc);
->  
-> +	usb_phy_set_suspend(dwc->usb2_phy, 1);
-> +	usb_phy_set_suspend(dwc->usb3_phy, 1);
-> +	phy_power_off(dwc->usb2_generic_phy);
-> +	phy_power_off(dwc->usb3_generic_phy);
-> +
->  	usb_phy_shutdown(dwc->usb2_phy);
->  	usb_phy_shutdown(dwc->usb3_phy);
->  	phy_exit(dwc->usb2_generic_phy);
->  	phy_exit(dwc->usb3_generic_phy);
->  
-> -	usb_phy_set_suspend(dwc->usb2_phy, 1);
-> -	usb_phy_set_suspend(dwc->usb3_phy, 1);
-> -	phy_power_off(dwc->usb2_generic_phy);
-> -	phy_power_off(dwc->usb3_generic_phy);
->  	dwc3_clk_disable(dwc);
->  	reset_control_assert(dwc->reset);
->  }
-> @@ -1879,16 +1880,16 @@ static int dwc3_probe(struct platform_device *pdev)
->  	dwc3_debugfs_exit(dwc);
->  	dwc3_event_buffers_cleanup(dwc);
->  
-> -	usb_phy_shutdown(dwc->usb2_phy);
-> -	usb_phy_shutdown(dwc->usb3_phy);
-> -	phy_exit(dwc->usb2_generic_phy);
-> -	phy_exit(dwc->usb3_generic_phy);
-> -
->  	usb_phy_set_suspend(dwc->usb2_phy, 1);
->  	usb_phy_set_suspend(dwc->usb3_phy, 1);
->  	phy_power_off(dwc->usb2_generic_phy);
->  	phy_power_off(dwc->usb3_generic_phy);
->  
-> +	usb_phy_shutdown(dwc->usb2_phy);
-> +	usb_phy_shutdown(dwc->usb3_phy);
-> +	phy_exit(dwc->usb2_generic_phy);
-> +	phy_exit(dwc->usb3_generic_phy);
-> +
->  	dwc3_ulpi_exit(dwc);
->  
->  err4:
-> -- 
-> 2.35.1
-> 
+diff --git a/drivers/leds/leds-syscon.c b/drivers/leds/leds-syscon.c
+index 7eddb8ecb44e..e38abb5e60c1 100644
+--- a/drivers/leds/leds-syscon.c
++++ b/drivers/leds/leds-syscon.c
+@@ -61,7 +61,8 @@ static int syscon_led_probe(struct platform_device *pdev)
+ 	struct device *parent;
+ 	struct regmap *map;
+ 	struct syscon_led *sled;
+-	const char *state;
++	enum led_default_state state;
++	u32 value;
+ 	int ret;
+ 
+ 	parent = dev->parent;
+@@ -86,34 +87,30 @@ static int syscon_led_probe(struct platform_device *pdev)
+ 	if (of_property_read_u32(np, "mask", &sled->mask))
+ 		return -EINVAL;
+ 
+-	state = of_get_property(np, "default-state", NULL);
+-	if (state) {
+-		if (!strcmp(state, "keep")) {
+-			u32 val;
+-
+-			ret = regmap_read(map, sled->offset, &val);
+-			if (ret < 0)
+-				return ret;
+-			sled->state = !!(val & sled->mask);
+-		} else if (!strcmp(state, "on")) {
+-			sled->state = true;
+-			ret = regmap_update_bits(map, sled->offset,
+-						 sled->mask,
+-						 sled->mask);
+-			if (ret < 0)
+-				return ret;
+-		} else {
+-			sled->state = false;
+-			ret = regmap_update_bits(map, sled->offset,
+-						 sled->mask, 0);
+-			if (ret < 0)
+-				return ret;
+-		}
++	init_data.fwnode = of_fwnode_handle(np);
++
++	state = led_init_default_state_get(init_data.fwnode);
++	switch (state) {
++	case LEDS_DEFSTATE_ON:
++		ret = regmap_update_bits(map, sled->offset, sled->mask, sled->mask);
++		if (ret < 0)
++			return ret;
++		sled->state = true;
++		break;
++	case LEDS_DEFSTATE_KEEP:
++		ret = regmap_read(map, sled->offset, &value);
++		if (ret < 0)
++			return ret;
++		sled->state = !!(value & sled->mask);
++		break;
++	default:
++		ret = regmap_update_bits(map, sled->offset, sled->mask, 0);
++		if (ret < 0)
++			return ret;
++		sled->state = false;
+ 	}
+ 	sled->cdev.brightness_set = syscon_led_set;
+ 
+-	init_data.fwnode = of_fwnode_handle(np);
+-
+ 	ret = devm_led_classdev_register_ext(dev, &sled->cdev, &init_data);
+ 	if (ret < 0)
+ 		return ret;
+-- 
+2.35.1
 
