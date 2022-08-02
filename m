@@ -2,96 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25F83C19F29
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 06:44:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23CE8C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 06:44:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235408AbiHBGoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 02:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60580 "EHLO
+        id S235447AbiHBGo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 02:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235263AbiHBGoD (ORCPT
+        with ESMTP id S233221AbiHBGox (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 02:44:03 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F8F45074
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 23:44:02 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id c17so2092743lfb.3
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 23:44:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=ZOIv/vib2AyO0KkqSUf/4LiDcnhQnMzPWNm6fTpfwe4=;
-        b=zRsdTe2s2ok+tSA85hlsvI3Tp6wFqiwLQLGt0x5DWPDzHm3bXY1/ITRMp6N3Jo+x7p
-         4pKD7OIvDedM5gi0YEQ4Z4v1ftVyjzsl1wFe4zma6Pv7sNCLToGtd08gqYlI39sN8fRW
-         KGTHJ0N71mA6p05A4zRR3+2FK7Kb5EhYSz14PVS0G3m/XUv7I1zeRs2w3kdiZBMNeUPG
-         tIuDT4HQ3L5BPCoqRAzEQjHb3xwZhw6DpC3aqUsjyyg864A1PpQQK/Z1VZV9gJ38kDfg
-         z2OUYd22s9uATlIViBwdaZvCRIfF/YEcGqUdrh+pv9Pz/BsqaazOGmGEF24DHdlLpt3r
-         pPTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=ZOIv/vib2AyO0KkqSUf/4LiDcnhQnMzPWNm6fTpfwe4=;
-        b=nxxuLxINQK744dp26QV6PnwdNa9m1tarHhk1YONO3XVsEXNs3WXl+JRr/oYwHQ9Igo
-         oYxQuU+F1BwTCXiupjTa3gyEvuf6HIpzTa3rGsjAiFXoP3SgVwnnyKHeOmLlwgKwBli4
-         bVt6ruCEB+Uq/mxqttWejgU4L3DHg0HQckwXTMWwjLm3Ddc0qRCWD/dJ8+1zNAG0rXsz
-         AZrNYqBTw3MWurmV7NQwiaeQvTaoCTF+auNCLD5OeO6ZUKldN09N7NoUDYMZviPxw610
-         tpa9bjH4cVZfXXDgUDEkBHyTbyaT9B/pwEwBCt9zc4L9Po9SnoJUis4k38efPLkQ095F
-         PdrA==
-X-Gm-Message-State: AJIora/efzhw/wqrO2gPcEqKqVThIwk8JYXnIKDCXzQ48M+8rHAla2Uo
-        Nl1zDDMvKifW0m2fwEPJr0q9Tw==
-X-Google-Smtp-Source: AGRyM1tb/aedcmiebbe1NUyI4UkGBdIxQqcLT2KKnD0mSMr6dbKmSZ1Ja9uT9FYb+wh62/LMA5bbWA==
-X-Received: by 2002:a05:6512:3f1e:b0:48a:74cb:1409 with SMTP id y30-20020a0565123f1e00b0048a74cb1409mr6807833lfa.546.1659422640532;
-        Mon, 01 Aug 2022 23:44:00 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id b14-20020a05651c032e00b0025d5eb5dde7sm704460ljp.104.2022.08.01.23.43.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Aug 2022 23:44:00 -0700 (PDT)
-Message-ID: <1948d519-9ec0-e874-d51a-6d9f2f5ca3f6@linaro.org>
-Date:   Tue, 2 Aug 2022 09:43:59 +0300
+        Tue, 2 Aug 2022 02:44:53 -0400
+Received: from mail.fris.de (mail.fris.de [116.203.77.234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3129439BAC;
+        Mon,  1 Aug 2022 23:44:52 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 96941BFABF;
+        Tue,  2 Aug 2022 08:44:46 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
+        t=1659422689; h=from:subject:date:message-id:to:cc:mime-version:
+         content-transfer-encoding; bh=pJXkxfTuy2Kfs/9METJXWpjXexPS9YQvPhg+a91+jm8=;
+        b=HwXTSahXlNtyhKr+seQrRKkgVhcOWwQ4GnhyogdmqzM7T5DwaRnAwaNBbAE/QV9kPFAnN8
+        xYF9REZ32ZwwS1ehuybrcG8mp7xX5Km/g0aK9Xv24iwzE7aqQ6ClARTc6+lV+D12p1KI70
+        q5Pb2vyxAnIn3qz1+sQ49QZX34kxhwC5p4Ab3LRgAl8CyBoU+Mk3uMSS6wt67kxsWB6TZu
+        6Pib62noZgiXt7z8D3d9SlsooF5HX4dGHA7PVXceZ74CN/GLjeIPPI45AmQcLjGuXhbGOe
+        4xD4VOSIBs28TEof42+q9j6ed/JwoV3VAhJThBzpxEhvVUOLQvvsHWsKm4KjUA==
+From:   Frieder Schrempf <frieder@fris.de>
+To:     devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robin Gong <yibin.gong@nxp.com>
+Cc:     Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Per-Daniel Olsson <perdo@axis.com>,
+        Rickard x Andersson <rickaran@axis.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH] dt-bindings: regulator: pca9450: Remove restrictions for regulator-name
+Date:   Tue,  2 Aug 2022 08:43:34 +0200
+Message-Id: <20220802064335.8481-1-frieder@fris.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] drm/msm/gpu: Drop qos request if
- devm_devfreq_add_device() fails
-Content-Language: en-GB
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>
-Cc:     Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <20220708162632.3529864-1-bjorn.andersson@linaro.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220708162632.3529864-1-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/07/2022 19:26, Bjorn Andersson wrote:
-> In the event that devm_devfreq_add_device() fails the device's qos freq
-> list is left referencing df->idle_freq and df->boost_freq. Attempting to
-> initialize devfreq again after a probe deferral will then cause invalid
-> memory accesses in dev_pm_qos_add_request().
-> 
-> Fix this by dropping the requests in the error path.
-> 
-> Fixes: 7c0ffcd40b16 ("drm/msm/gpu: Respect PM QoS constraints")
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+The device bindings shouldn't put any constraints on the regulator-name
+property specified in the generic bindings. This allows using arbitrary
+and descriptive names for the regulators.
 
-> ---
->   drivers/gpu/drm/msm/msm_gpu_devfreq.c | 2 ++
->   1 file changed, 2 insertions(+)
+Suggested-by: Mark Brown <broonie@kernel.org>
+Fixes: 7ae9e3a6bf3f ("dt-bindings: regulator: add pca9450 regulator yaml")
+Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+---
+ .../bindings/regulator/nxp,pca9450-regulator.yaml     | 11 -----------
+ 1 file changed, 11 deletions(-)
 
-
+diff --git a/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml b/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml
+index b539781e39aa..835b53302db8 100644
+--- a/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml
++++ b/Documentation/devicetree/bindings/regulator/nxp,pca9450-regulator.yaml
+@@ -47,12 +47,6 @@ properties:
+         description:
+           Properties for single LDO regulator.
+ 
+-        properties:
+-          regulator-name:
+-            pattern: "^LDO[1-5]$"
+-            description:
+-              should be "LDO1", ..., "LDO5"
+-
+         unevaluatedProperties: false
+ 
+       "^BUCK[1-6]$":
+@@ -62,11 +56,6 @@ properties:
+           Properties for single BUCK regulator.
+ 
+         properties:
+-          regulator-name:
+-            pattern: "^BUCK[1-6]$"
+-            description:
+-              should be "BUCK1", ..., "BUCK6"
+-
+           nxp,dvs-run-voltage:
+             $ref: "/schemas/types.yaml#/definitions/uint32"
+             minimum: 600000
 -- 
-With best wishes
-Dmitry
+2.37.1
