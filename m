@@ -2,99 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59FB7C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:13:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C98FC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236764AbiHBMNI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 08:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60410 "EHLO
+        id S236838AbiHBMNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 08:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233690AbiHBMM5 (ORCPT
+        with ESMTP id S236793AbiHBMM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 08:12:57 -0400
-Received: from mx07-0057a101.pphosted.com (mx07-0057a101.pphosted.com [205.220.184.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DC252871E;
-        Tue,  2 Aug 2022 05:12:56 -0700 (PDT)
-Received: from pps.filterd (m0214197.ppops.net [127.0.0.1])
-        by mx07-0057a101.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 272AlwVo013562;
-        Tue, 2 Aug 2022 14:09:55 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=westermo.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=12052020;
- bh=SIiCmJXt9v+lY7Nu2rajGi53+FPokSY1UdV8paIPp1w=;
- b=QcIpp/EOeZ5NNaVIpOMti3p/BCFb4iG2FDeHECjVDodf7ehwboHV+Z24WO5wybVwdD6T
- c07bpJSi4fmELH+8oAqtU+8q+qs7EK1LCh0OHR4962N12Jbe5TOgoyhZWHDUUFaCOgpy
- lOdEYWPxHSsq4sd9e99IyS28V2d2H1Pc4asqdmQApSYz5zURtIxzmIydKTOHYseRuWxv
- x26tEw202BQ0Xb1/6NZDMxWRDdLm6m3ngLVkkNBBDcli+iEAHmPpWxnwzOfXf048RngV
- PrOwixH9r9/EYgkR7vIbilCx5/ZQMXJmjqMAxS/ZkaWp+DklaqaAfhemZBC3bGthEz3j yw== 
-Received: from mail.beijerelectronics.com ([195.67.87.131])
-        by mx07-0057a101.pphosted.com (PPS) with ESMTPS id 3hms0c2wbu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 02 Aug 2022 14:09:55 +0200
-Received: from Orpheus.westermo.com (172.29.101.13) by
- EX01GLOBAL.beijerelectronics.com (10.101.10.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.2375.17; Tue, 2 Aug 2022 14:09:53 +0200
-From:   Matthias May <matthias.may@westermo.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <roopa@nvidia.com>,
-        <eng.alaamohamedsoliman.am@gmail.com>, <bigeasy@linutronix.de>,
-        <saeedm@nvidia.com>, <leon@kernel.org>, <roid@nvidia.com>,
-        <maord@nvidia.com>, <lariel@nvidia.com>, <vladbu@nvidia.com>,
-        <cmi@nvidia.com>, <gnault@redhat.com>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <nicolas.dichtel@6wind.com>, <eyal.birger@gmail.com>,
-        <jesse@nicira.com>, <linville@tuxdriver.com>,
-        <daniel@iogearbox.net>, <hadarh@mellanox.com>,
-        <ogerlitz@mellanox.com>, <willemb@google.com>,
-        <martin.varghese@nokia.com>,
-        Matthias May <matthias.may@westermo.com>
-Subject: [PATCH v2 net 1/4] geneve: do not use RT_TOS for IPv6 flowlabel
-Date:   Tue, 2 Aug 2022 14:09:32 +0200
-Message-ID: <20220802120935.1363001-2-matthias.may@westermo.com>
+        Tue, 2 Aug 2022 08:12:58 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF294D83A;
+        Tue,  2 Aug 2022 05:12:54 -0700 (PDT)
+X-QQ-mid: bizesmtp76t1659442224t38kaiui
+Received: from kali.lan ( [125.69.43.47])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 02 Aug 2022 20:10:22 +0800 (CST)
+X-QQ-SSF: 01000000002000F0U000B00A0000000
+X-QQ-FEAT: CR3LFp2JE4kvdAkg1838GGR9h1B20aUDo+DYhQrsi99En5o0bwJthNDcQ5DRs
+        JeCQObOQ6GIX+kQ3dyrpJ/BF0TKQy+sJ/aUL9tLn/3HCTAKAbIV7ymKxd3SXN42eW4mHV13
+        wpBrTKmJKRDMSoPKfhdQok1XXDawHk7IQl9HLb9C8S+G5G8M2W4vkRrBV70xVv4HqnDCe4H
+        tHYcYv7hN7ahNU6DmniODa+05HuEtXQJT+pj7Y7RtlnirqmLN3F7r6RfgjLxCbvVmxWKI4j
+        Z3dmVJq+5Dvm3pLPliri0QN6wuZmf6nogCL7Lvb0q0mBk5zYgSA27oq2lAFYiMlcEkSPuyb
+        G3f8zyjHgcB3p4U5W7k2Yq9f39P/x581896qnbRvx38D86dtCy7cNvQvBPG3Q==
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     mathias.nyman@linux.intel.com
+Cc:     gregkh@linuxfoundation.org, stern@rowland.harvard.edu,
+        kai.heng.feng@canonical.com, dianders@chromium.org,
+        dan.carpenter@oracle.com, m.grzeschik@pengutronix.de,
+        mka@chromium.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] usb: core: hub: Fix comment typo
+Date:   Wed,  3 Aug 2022 04:10:19 +0800
+Message-Id: <20220802201019.6657-1-wangborong@cdjrlc.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220802120935.1363001-1-matthias.may@westermo.com>
-References: <20220802120935.1363001-1-matthias.may@westermo.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.29.101.13]
-X-ClientProxiedBy: wsevst-s0023.westermo.com (192.168.130.120) To
- EX01GLOBAL.beijerelectronics.com (10.101.10.25)
-X-Proofpoint-GUID: TXRr773tnxTrfU_syFXSbJceHVQAeTpn
-X-Proofpoint-ORIG-GUID: TXRr773tnxTrfU_syFXSbJceHVQAeTpn
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According to Guillaume Nault RT_TOS should never be used for IPv6.
+The double `can' is duplicated in the comment, remove one.
 
-Fixes: 3a56f86f1be6a ("geneve: handle ipv6 priority like ipv4 tos")
-Signed-off-by: Matthias May <matthias.may@westermo.com>
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 ---
-v1 -> v2:
- - Fix spacing of "Fixes" tag.
- - Add missing CCs
----
- drivers/net/geneve.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/usb/core/hub.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index 4c380c06f178..e1a4480e6f17 100644
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -877,8 +877,7 @@ static struct dst_entry *geneve_get_v6_dst(struct sk_buff *skb,
- 		use_cache = false;
- 	}
- 
--	fl6->flowlabel = ip6_make_flowinfo(RT_TOS(prio),
--					   info->key.label);
-+	fl6->flowlabel = ip6_make_flowinfo(prio, info->key.label);
- 	dst_cache = (struct dst_cache *)&info->dst_cache;
- 	if (use_cache) {
- 		dst = dst_cache_get_ip6(dst_cache, &fl6->saddr);
+diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+index 2633acde7ac1..7d19f09dbd01 100644
+--- a/drivers/usb/core/hub.c
++++ b/drivers/usb/core/hub.c
+@@ -2036,7 +2036,7 @@ static void recursively_mark_NOTATTACHED(struct usb_device *udev)
+  *
+  * udev->state is _not_ fully protected by the device lock.  Although
+  * most transitions are made only while holding the lock, the state can
+- * can change to USB_STATE_NOTATTACHED at almost any time.  This
++ * change to USB_STATE_NOTATTACHED at almost any time.  This
+  * is so that devices can be marked as disconnected as soon as possible,
+  * without having to wait for any semaphores to be released.  As a result,
+  * all changes to any device's state must be protected by the
 -- 
 2.35.1
 
