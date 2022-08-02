@@ -2,278 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C265C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 20:16:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D4CC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 20:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234444AbiHBUQW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 16:16:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57462 "EHLO
+        id S234364AbiHBUX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 16:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234530AbiHBUQS (ORCPT
+        with ESMTP id S229663AbiHBUXz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 16:16:18 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0759D54653
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 13:16:16 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id w14so1404549plp.9
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 13:16:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=/MAG9t6WYn5YwOOz8KJK3JJWRPzE1bp64265jp1tLTQ=;
-        b=eq1yzcWro6QZgfUShmNXxn/PjqlKKO62h83y8DGSuByLxH/elZngN0EtT4odDbzddm
-         7aXtmn/4R4ypBmy7rbLF8lug41WPx4sSk1VDZF1c2Y+EWsvE43+h7Xlwgss8K5fPe/Ye
-         9gOeubsxx2mvZgehgHed+EeqOUvbdeg0mzouo=
+        Tue, 2 Aug 2022 16:23:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB2381928E
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 13:23:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659471833;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hHWhRmPR1pZp1I/u9ioQ+8YdKH4+dcWOy4DQBKc/PhU=;
+        b=DBuGvOYDkorLyR4nMMFN0QoEZ1DIuLdV6djo3rCe57+KSQ2VQci4FkkYMoNFMHwwaTcRO5
+        dPspiBS8e2tWzYYHkoCepIXuEFrj5IcPeKSnw6U1f3R4WKwZQrSDRdI1mqg8bVX/JyXtk/
+        CqH45PUlw0zRWZEW36FYmnO7ZLYLdOQ=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-638-XsVMKtFAP0exStLDO2p8Ag-1; Tue, 02 Aug 2022 16:23:52 -0400
+X-MC-Unique: XsVMKtFAP0exStLDO2p8Ag-1
+Received: by mail-wm1-f69.google.com with SMTP id i81-20020a1c3b54000000b003a4a76942ddso3810635wma.4
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 13:23:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=/MAG9t6WYn5YwOOz8KJK3JJWRPzE1bp64265jp1tLTQ=;
-        b=VEtIyVa3MLOldn9fobJTNHdOD86Fs6C6FrTWcMSJoAyCF5VXAxIqbc5fph7WfDsCy4
-         X07NSFlBEroy98YgG2b2knECF/2axl3fHL6Nwsdxr2R2HFphimAoFuyaVvljoXeN2cwu
-         5hOHauzTkEEjZoftcJ6KZY55aoYyt35TWI5MiVOsDEKXKFcQXk4a8iCbYuvtpuccUePa
-         T0oLPAUuDpVSyJ0Vi8Lep7jJ3/aGoPWy9baBYJ1S7SP0cu1XTC9tcj1DeyCkEZK70M0c
-         /vhUfdE/wIKOQAYZtmVkmZ82kh3xBVqkDg1FfPivq5YHnOhUAeB+vGCk3QZPAV1ST1Ju
-         W+/A==
-X-Gm-Message-State: ACgBeo2SqqP7PD+PAeWZawihOERp80LCgY4DNlTTC+w/m5Kwn+x5rp/R
-        BGZLPkFK0O/jfITXTxG3uuFz+w==
-X-Google-Smtp-Source: AA6agR49p4VyEMHRKiOKE5JpDnlS7wZ/jQa/eeH2eoeBKCCwhQTPuHnx+QYK8ChtXuRJqeYK63318A==
-X-Received: by 2002:a17:902:ce0a:b0:16d:737b:feed with SMTP id k10-20020a170902ce0a00b0016d737bfeedmr22772225plg.152.1659471375383;
-        Tue, 02 Aug 2022 13:16:15 -0700 (PDT)
-Received: from localhost.localdomain ([183.83.136.224])
-        by smtp.gmail.com with ESMTPSA id w18-20020a170902a71200b0016ee26224a4sm80863plq.305.2022.08.02.13.16.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 13:16:15 -0700 (PDT)
-From:   Suniel Mahesh <sunil@amarulasolutions.com>
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Zachary Holland <Zachary.Holland@biamp.com>,
-        Daniel McLean <Daniel.McLean@biamp.com>,
-        Rene Samson Ambrose <renesamson.ambrose@biamp.com>,
-        David Sands <David.Sands@biamp.com>
-Cc:     linux-kernel@vger.kernel.org, linux-amarula@amarulasolutions.com,
-        USB list <linux-usb@vger.kernel.org>
-Subject: [RFC v2 2/2] HID: ghid: add example program for GET_REPORT
-Date:   Wed,  3 Aug 2022 01:45:56 +0530
-Message-Id: <20220802201556.1510069-3-sunil@amarulasolutions.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220802201556.1510069-1-sunil@amarulasolutions.com>
-References: <20220802201556.1510069-1-sunil@amarulasolutions.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=hHWhRmPR1pZp1I/u9ioQ+8YdKH4+dcWOy4DQBKc/PhU=;
+        b=Nxogll39yIn2BuzFd3OGfj+8nBB4f2SNcOPXtpsqzg2quzO3QEQh6AxNaDK0HVRpwo
+         6W0S4ZjclWBrbpuXSpIk6nPP0mNGEsFGczhKnlyl9eGtpZmUIds6m+PG1uO7MkGBAJVR
+         a/v8GFAeWmzLS+fAuyoQNafPOhVqscuyVB1zTOxvPut7AqpLf4xroIVIpEqX+VmIH5lJ
+         qsWBsi3i/JHCNzNEjhR8qnCjGbduALf5QHE0Mv4xo+U1Z5ZBUf+zqWLyTAeOU5ivlpJV
+         H8J0dBT7/OESMgXDsvDoafNto61rFn4YouRbI55JA1/gZzHcsI46SrVMNgsYj54kAkVW
+         OgvA==
+X-Gm-Message-State: ACgBeo1wfmQ7la5RydRr5wfZdwxAgQWzQkjTOLzTh9774KPy6MbS3r1u
+        Ld+2TPt7juBzS8TeJNqfQh1+oYfRThJndqEtsdawetbKR/l6IckInsPjCHqLAIGgtSks56w2bNl
+        kEf4Yq/YJ0Ek6xWarJlP5s/2S
+X-Received: by 2002:a05:6000:178e:b0:220:635f:eb13 with SMTP id e14-20020a056000178e00b00220635feb13mr6818163wrg.634.1659471831314;
+        Tue, 02 Aug 2022 13:23:51 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5vksWm/3+8rmd/sp3eh73T8iiQEcMgMRwpn/DJHIZzLLqst23rQ7ipqTx8/HuWW2AUJpX4aA==
+X-Received: by 2002:a05:6000:178e:b0:220:635f:eb13 with SMTP id e14-20020a056000178e00b00220635feb13mr6818151wrg.634.1659471830994;
+        Tue, 02 Aug 2022 13:23:50 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:3800:8435:659e:f80:9b3d? (p200300cbc70738008435659e0f809b3d.dip0.t-ipconnect.de. [2003:cb:c707:3800:8435:659e:f80:9b3d])
+        by smtp.gmail.com with ESMTPSA id bg26-20020a05600c3c9a00b003a3279b9037sm25789082wmb.16.2022.08.02.13.23.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 13:23:50 -0700 (PDT)
+Message-ID: <24ffea6e-ca66-2b94-c682-48a42a655fd1@redhat.com>
+Date:   Tue, 2 Aug 2022 22:23:49 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Peter Xu <peterx@redhat.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Huang Ying <ying.huang@intel.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Hugh Dickins <hughd@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+References: <20220729014041.21292-1-peterx@redhat.com>
+ <f23b71e5-a5f5-bb39-dbec-3e85af344185@redhat.com>
+ <YuhVJmSsgs4Q1bYJ@xz-m1.local>
+ <49434bea-3862-1052-2993-8ccad985708b@redhat.com>
+ <YumFs0jpCc/Mwjzf@xz-m1.local>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH RFC 0/4] mm: Remember young bit for migration entries
+In-Reply-To: <YumFs0jpCc/Mwjzf@xz-m1.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds a user-space ghid sample get report program at
-gadget side. This program sends reports from userspace(gadget side)
-which are saved in the kernel in a list.
+> I don't think we only care about x86_64?  Should other archs have the same
+> issue as long as there's the hardware young bit?
+> 
+> Even without it, it'll affect page reclaim logic too, and that's also not
+> x86 only.
 
-When a host requests a particular report based on report number
-and type, corresponding report can be send to host, instead of a
-zero filled in report.
+Okay, reading the cover letter and looking at the code my understanding
+was that x86-64 is the real focus.
 
-This program can add, delete reports and modify an existing report.
+>>
+>>>
+>>> Besides I actually have a question on the anon exclusive bit in the swap
+>>> pte: since we have that anyway, why we need a specific migration type for
+>>> anon exclusive pages?  Can it be simply read migration entries with anon
+>>> exclusive bit set?
+>>
+>> Not before all arch support pte_swp_mkexclusive/pte_swp_exclusive/.
+>>
+>> As pte_swp_mkexclusive/pte_swp_exclusive/ only applies to actual swap
+>> PTEs, you could even reuse that bit for migration entries and get at
+>> alteast the most relevant 64bit architectures supported easily.
+> 
+> Yes, but I think having two mechanisms for the single problem can confuse
+> people.
+> 
 
-Signed-off-by: Suniel Mahesh <sunil@amarulasolutions.com>
----
-Changes for v2:
-- no changes
----
- samples/Kconfig         |  10 +++
- samples/Makefile        |   1 +
- samples/ghid/Makefile   |   4 ++
- samples/ghid/test-hid.c | 134 ++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 149 insertions(+)
- create mode 100644 samples/ghid/Makefile
- create mode 100644 samples/ghid/test-hid.c
+It would be one bit with two different meanings depending on the swp type.
 
-diff --git a/samples/Kconfig b/samples/Kconfig
-index 470ee3baf2e1..f3d7873bb966 100644
---- a/samples/Kconfig
-+++ b/samples/Kconfig
-@@ -86,6 +86,16 @@ config SAMPLE_FPROBE
- 	  This builds a fprobe example module. This module has an option 'symbol'.
- 	  You can specify a probed symbol or symbols separated with ','.
- 
-+config SAMPLE_GHID_GET_REPORT
-+        bool "GHID sample get report"
-+        depends on CC_CAN_LINK && HEADERS_INSTALL
-+        help
-+          Build GHID sample get report program. This program can send reports from
-+	  userspace(gadget side) which are saved in the kernel in a linked list.
-+	  When a host requests a particular report based on report number and type,
-+	  corresponding report can be send to host, instead of a zero filled in report.
-+	  This program can add, delete reports and modify an existing report.
-+
- config SAMPLE_KFIFO
- 	tristate "Build kfifo examples -- loadable modules only"
- 	depends on m
-diff --git a/samples/Makefile b/samples/Makefile
-index 701e912ab5af..1d58f7a0381e 100644
---- a/samples/Makefile
-+++ b/samples/Makefile
-@@ -6,6 +6,7 @@ subdir-$(CONFIG_SAMPLE_ANDROID_BINDERFS) += binderfs
- obj-$(CONFIG_SAMPLE_CONFIGFS)		+= configfs/
- obj-$(CONFIG_SAMPLE_CONNECTOR)		+= connector/
- obj-$(CONFIG_SAMPLE_FANOTIFY_ERROR)	+= fanotify/
-+subdir-$(SAMPLE_GHID_GET_REPORT)	+= ghid
- subdir-$(CONFIG_SAMPLE_HIDRAW)		+= hidraw
- obj-$(CONFIG_SAMPLE_HW_BREAKPOINT)	+= hw_breakpoint/
- obj-$(CONFIG_SAMPLE_KDB)		+= kdb/
-diff --git a/samples/ghid/Makefile b/samples/ghid/Makefile
-new file mode 100644
-index 000000000000..8c93ded625c1
---- /dev/null
-+++ b/samples/ghid/Makefile
-@@ -0,0 +1,4 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+userprogs-always-y += test-hid
-+
-+userccflags += -I usr/include
-diff --git a/samples/ghid/test-hid.c b/samples/ghid/test-hid.c
-new file mode 100644
-index 000000000000..f76786509047
---- /dev/null
-+++ b/samples/ghid/test-hid.c
-@@ -0,0 +1,134 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * usb hidg GET_REPORT example, device/gadget side
-+ * This program tests the newly implemented GET_REPORT feature
-+ *
-+ * Copyright (c) 2022 Amarula Solutions India PVT LTD
-+ *
-+ * Authors:
-+ * Copyright (c) 2022 Suniel Mahesh <sunil@amarulasolutions.com>
-+ *
-+ */
-+
-+#include <pthread.h>
-+/* Linux */
-+#include <linux/types.h>
-+#include <linux/input.h>
-+#include <linux/hidraw.h>
-+#include <linux/uhid.h>
-+#include <uapi/linux/usb/g_hid.h>
-+
-+/* Unix */
-+#include <sys/ioctl.h>
-+#include <sys/types.h>
-+#include <sys/stat.h>
-+#include <fcntl.h>
-+#include <unistd.h>
-+
-+/* C */
-+#include <stdio.h>
-+#include <string.h>
-+#include <stdlib.h>
-+#include <stdint.h>
-+#include <errno.h>
-+
-+/*
-+ * fix for failing compilation on systems that don't
-+ * yet populate new version of uapi/linux/usb/g_hid.h
-+ * to userspace.
-+ */
-+#define GADGET_ADD_REPORT_STATUS	_IOWR('g', 0x41, struct uhid_set_report_req)
-+#define GADGET_REMOVE_REPORT_STATUS	_IOWR('g', 0x42, struct uhid_get_report_req)
-+#define GADGET_UPDATE_REPORT_STATUS	_IOWR('g', 0x43, struct uhid_set_report_req)
-+
-+struct uhid_set_report_req *create_report(void)
-+{
-+	struct uhid_set_report_req *rep;
-+	int i;
-+
-+	rep = (struct uhid_set_report_req *)calloc(1, sizeof(struct uhid_set_report_req));
-+	if (rep == NULL) {
-+		perror("calloc() failed");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	printf("enter report id:\n");
-+	scanf("%u", &rep->id);
-+	printf("enter report number:\n");
-+	scanf("%hhu", &rep->rnum);
-+	printf("enter report type:\n");
-+	scanf("%hhu", &rep->rtype);
-+	printf("enter report size:\n");
-+	scanf("%hu", &rep->size);
-+	printf("enter report data:\n");
-+
-+	for (i = 0; i < rep->size; i++)
-+		scanf("%hhu", &rep->data[i]);
-+
-+	return rep;
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	const char *filename = NULL;
-+	struct uhid_set_report_req *report;
-+	int fd = 0, res = 0, i, reports;
-+
-+	if (argc < 1) {
-+		fprintf(stderr, "Usage: %s /dev/hidg0\n", argv[0]);
-+		return -1;
-+	}
-+
-+	filename = argv[1];
-+	fd = open(filename, O_RDWR, 0666);
-+
-+	if (fd == -1) {
-+		perror(filename);
-+		return -2;
-+	}
-+
-+	printf("enter no of reports to send from userspace:\n");
-+	scanf("%d", &reports);
-+
-+	if (reports == 0)
-+		goto out;
-+
-+	for (i = 0; i < reports; i++) {
-+		report = create_report();
-+/* send reports to device */
-+		res = ioctl(fd, GADGET_ADD_REPORT_STATUS, report);
-+		if (res < 0) {
-+			perror("GADGET_ADD_REPORT_STATUS");
-+			res = -3;
-+			goto test_end;
-+		}
-+		free(report);
-+	}
-+
-+/* delete report with report number specified */
-+	printf("deleting report w.r.t rtype and rnum:\n");
-+	report = create_report();
-+	res = ioctl(fd, GADGET_REMOVE_REPORT_STATUS, report);
-+	if (res < 0) {
-+		perror("GADGET_REMOVE_REPORT_STATUS");
-+		res = -4;
-+		goto test_end;
-+	}
-+	free(report);
-+
-+/* modify an existing report identified by report number */
-+	printf("modify report w.r.t rtype and rnum:\n");
-+	report = create_report();
-+	res = ioctl(fd, GADGET_UPDATE_REPORT_STATUS, report);
-+	if (res < 0) {
-+		perror("GADGET_UPDATE_REPORT_STATUS");
-+		res = -5;
-+	}
-+
-+test_end:
-+	free(report);
-+	report = NULL;
-+out:
-+	close(fd);
-+	return res;
-+}
+> IIUC the swap bit is already defined in major archs anyway, and since anon
+> exclusive bit is best-effort (or am I wrong?..), I won't worry too much on
+
+It kind-of is best effort, but the goal is to have all archs support it.
+
+... just like the young bit here?
+
+> archs outside x86/arm/ppc/s390 on having anon exclusive bit lost during
+> migrations, because afaict the whole swap type of ANON_EXCLUSIVE_READ is
+> only servicing that very minority.. which seems to be a pity to waste the
+
+I have a big item on my todo list to support all, but I have different
+priorities right now.
+
+If there is no free bit, simply steal one from the offset ... which is
+the same thing your approach would do, just in a different way, no?
+
+> swp type on all archs even if the archs defined swp pte bits just for anon
+> exclusive.
+
+Why do we care? We walk about one type not one bit.
+
 -- 
-2.25.1
+Thanks,
+
+David / dhildenb
 
