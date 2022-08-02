@@ -2,479 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E493C19F2B
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 19:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71653C19F2B
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 19:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232448AbiHBTXB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 15:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48788 "EHLO
+        id S232418AbiHBTYD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 15:24:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbiHBTW6 (ORCPT
+        with ESMTP id S230151AbiHBTX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 15:22:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 808111EED4
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 12:22:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659468175;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=SJqdLrtIWKkK7GTyrs2VwtXIxPgmqE6N0BxCsJfPXpY=;
-        b=bQLqdbGPNCfJUXQmLVvmHGJuwT5NZdahKQ5roNkwbEt4qdj11eybEEsIMecs6FcLRUEgSx
-        9hyCG5Ltkv7twM8ozpbogafBKB+KKH4Tw/mePCAY5IxrVkvEQwdgKAP9d/DZwcWAvh1rNl
-        ywnWBXSdPCu+92te+pKyENfkMpswenA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-363-vlRqdz01MBqnE8-AkMCbXQ-1; Tue, 02 Aug 2022 15:22:52 -0400
-X-MC-Unique: vlRqdz01MBqnE8-AkMCbXQ-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 2 Aug 2022 15:23:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2B01EED4;
+        Tue,  2 Aug 2022 12:23:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 93ED51C0BC6E;
-        Tue,  2 Aug 2022 19:22:51 +0000 (UTC)
-Received: from jsavitz-csb.redhat.com (unknown [10.22.16.187])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 446A3492C3B;
-        Tue,  2 Aug 2022 19:22:51 +0000 (UTC)
-From:   Joel Savitz <jsavitz@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Joel Savitz <jsavitz@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, Nico Pache <npache@redhat.com>
-Subject: [PATCH linux-next v4] selftests/vm: enable running select groups of tests
-Date:   Tue,  2 Aug 2022 15:22:36 -0400
-Message-Id: <20220802192236.2466828-1-jsavitz@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF12F61311;
+        Tue,  2 Aug 2022 19:23:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A4C8C433C1;
+        Tue,  2 Aug 2022 19:23:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659468237;
+        bh=d0pZ2bL6Yc8g5ifNioCj8/CAd9JQ5Q+HSO37WdnexCc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GOVfLu/W/24gy41zrJ2LFIW5YMMIeNxKOMniirkzyXmkW8p6sj68SC1OYP0aZxHtf
+         /qKG15DZGBRdqSHxrOsD+bV9I8TY0TRb5echhwFDzzEaoKNsO9rg5JpU6XPLkBcZxh
+         5xE/yYuoiSnvuwcjFV3cFSD242oDYwzMpTBgN7jws3sTu0OhJOIKcWohBjT0jGZXyz
+         lzhemgv2YiOgKTetTjFnBVJASZkHMYiKMiqs+kdNLK3k4fArS2ddgPYLD0hHrL8yDf
+         swVP/PKWPNuLWllJ4h5wEwbzboqeEVPHXAo7Tm8QS7DorBh/1CUoPm1Tc6AixcY44e
+         ANIynfRjIYF/w==
+Date:   Tue, 2 Aug 2022 12:23:56 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Bruno Goncalves <bgoncalv@redhat.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        CKI Project <cki-project@redhat.com>
+Subject: Re: RIP: 0010:qede_load+0x128d/0x13b0 [qede] - 5.19.0
+Message-ID: <20220802122356.6f163a79@kernel.org>
+In-Reply-To: <CA+QYu4qxW1BUcbC9MwG1BxXjPO96sa9BOUXOHCj1SLY7ObJnQw@mail.gmail.com>
+References: <CA+QYu4qxW1BUcbC9MwG1BxXjPO96sa9BOUXOHCj1SLY7ObJnQw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Our memory management kernel CI testing at Red Hat uses the VM
-selftests and we have run into two problems:
+On Tue, 2 Aug 2022 13:27:32 +0200 Bruno Goncalves wrote:
+> Hello,
+> 
+> We've noticed the following panic when booting up kernel 5.19.0 on a
+> specific machine.
+> The panic seems to happen when we build the kernel with debug flags.
+> Below is the first crash we noticed, more logs at [1] and the kernel
+> config is at [2].
+> 
+> [   59.207684] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+> [   59.212949] CPU: 32 PID: 1967 Comm: NetworkManager Not tainted 5.19.0-rc3 #1
+> [   59.220041] Hardware name: HPE ProLiant DL325 Gen10 Plus/ProLiant
+> DL325 Gen10 Plus, BIOS A43 08/09/2021
+> [   59.229490] RIP: 0010:qede_load.cold+0x5a1/0x819 [qede]
 
-First, our LTP tests overlap with the VM selftests.
+Is it this warning?
 
-We want to avoid unhelpful redundancy in our testing practices.
+   WARN_ON(xdp_rxq_info_reg(&fp->rxq->xdp_rxq, edev->ndev,
 
-Second, we have observed the current run_vmtests.sh to report overall
-failure/ambiguous results in the case that a machine lacks the necessary
-hardware to perform one or more of the tests. E.g. ksm tests that
-require more than one numa node.
+Would you be able to run the stacktrace thru
+scripts/decode_stacktrace.sh ?
 
-We want to be able to run the vm selftests suitable to particular hardware.
-
-Add the ability to run one or more groups of vm tests via run_vmtests.sh
-instead of simply all-or-none in order to solve these problems.
-
-Preserve existing default behavior of running all tests when the script
-is invoked with no arguments.
-
-Documentation of test groups is included in the patch as follows:
-
-    # ./run_vmtests.sh [ -h || --help ]
-
-    usage: ./tools/testing/selftests/vm/run_vmtests.sh [ -h | -t "<categories>"]
-      -t: specify specific categories to tests to run
-      -h: display this message
-
-    The default behavior is to run all tests.
-
-    Alternatively, specific groups tests can be run by passing a string
-    to the -t argument containing one or more of the following categories
-    separated by spaces:
-    - mmap
-	    tests for mmap(2)
-    - gup_test
-	    tests for gup using gup_test interface
-    - userfaultfd
-	    tests for  userfaultfd(2)
-    - compaction
-	    a test for the patch "Allow compaction of unevictable pages"
-    - mlock
-	    tests for mlock(2)
-    - mremap
-	    tests for mremap(2)
-    - hugevm
-	    tests for very large virtual address space
-    - vmalloc
-	    vmalloc smoke tests
-    - hmm
-	    hmm smoke tests
-    - madv_populate
-	    test memadvise(2) MADV_POPULATE_{READ,WRITE} options
-    - memfd_secret
-	    test memfd_secret(2)
-    - process_mrelease
-	    test process_mrelease(2)
-    - ksm
-	    ksm tests that do not require >=2 NUMA nodes
-    - ksm_numa
-	    ksm tests that require >=2 NUMA nodes
-    - pkey
-	    memory protection key tests
-    example: ./run_vmtests.sh -t "hmm mmap ksm"
-
-Changes from v3:
-	- rename variable TEST_ITEMS as VM_TEST_ITEMS
-
-Changes from v2:
-	- rebase onto the mm-everyting branch in
-	https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git
-	- integrate this functionality with new the tests
-
-Changes from v1:
-	- use a command line argument to pass the test categories to the
-	  script instead of an environmet variable
-	- remove novel prints to avoid messing with extant parsers of this
-	  script
-	- update the usage text
-
-Signed-off-by: Joel Savitz <jsavitz@redhat.com>
----
- tools/testing/selftests/vm/run_vmtests.sh | 239 +++++++++++++++-------
- 1 file changed, 161 insertions(+), 78 deletions(-)
-
-diff --git a/tools/testing/selftests/vm/run_vmtests.sh b/tools/testing/selftests/vm/run_vmtests.sh
-index 249295a10f56..f04beab985ed 100755
---- a/tools/testing/selftests/vm/run_vmtests.sh
-+++ b/tools/testing/selftests/vm/run_vmtests.sh
-@@ -1,6 +1,6 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
--#please run as root
-+# Please run as root
- 
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
-@@ -8,15 +8,75 @@ ksft_skip=4
- mnt=./huge
- exitcode=0
- 
--#get huge pagesize and freepages from /proc/meminfo
--while read -r name size unit; do
--	if [ "$name" = "HugePages_Free:" ]; then
--		freepgs="$size"
--	fi
--	if [ "$name" = "Hugepagesize:" ]; then
--		hpgsize_KB="$size"
-+usage() {
-+	cat <<EOF
-+usage: ${BASH_SOURCE[0]:-$0} [ -h | -t "<categories>"]
-+  -t: specify specific categories to tests to run
-+  -h: display this message
-+
-+The default behavior is to run all tests.
-+
-+Alternatively, specific groups tests can be run by passing a string
-+to the -t argument containing one or more of the following categories
-+separated by spaces:
-+- mmap
-+	tests for mmap(2)
-+- gup_test
-+	tests for gup using gup_test interface
-+- userfaultfd
-+	tests for  userfaultfd(2)
-+- compaction
-+	a test for the patch "Allow compaction of unevictable pages"
-+- mlock
-+	tests for mlock(2)
-+- mremap
-+	tests for mremap(2)
-+- hugevm
-+	tests for very large virtual address space
-+- vmalloc
-+	vmalloc smoke tests
-+- hmm
-+	hmm smoke tests
-+- madv_populate
-+	test memadvise(2) MADV_POPULATE_{READ,WRITE} options
-+- memfd_secret
-+	test memfd_secret(2)
-+- process_mrelease
-+	test process_mrelease(2)
-+- ksm
-+	ksm tests that do not require >=2 NUMA nodes
-+- ksm_numa
-+	ksm tests that require >=2 NUMA nodes
-+- pkey
-+	memory protection key tests
-+example: ./run_vmtests.sh -t "hmm mmap ksm"
-+EOF
-+	exit 0
-+}
-+
-+
-+while getopts "ht:" OPT; do
-+	case ${OPT} in
-+		"h") usage ;;
-+		"t") VM_TEST_ITEMS=${OPTARG} ;;
-+	esac
-+done
-+shift $((OPTIND -1))
-+
-+# default behavior: run all tests
-+VM_TEST_ITEMS=${VM_TEST_ITEMS:-default}
-+
-+test_selected() {
-+	if [ "$VM_TEST_ITEMS" == "default" ]; then
-+		# If no VM_TEST_ITEMS are specified, run all tests
-+		return 0
- 	fi
--done < /proc/meminfo
-+	echo ${VM_TEST_ITEMS} | grep ${1} 2>&1 >/dev/null
-+	return ${?}
-+}
-+
-+# Hugepage setup only needed for hugetlb tests
-+if test_selected "hugetlb"; then
- 
- # Simple hugetlbfs tests have a hardcoded minimum requirement of
- # huge pages totaling 256MB (262144KB) in size.  The userfaultfd
-@@ -28,7 +88,17 @@ hpgsize_MB=$((hpgsize_KB / 1024))
- half_ufd_size_MB=$((((nr_cpus * hpgsize_MB + 127) / 128) * 128))
- needmem_KB=$((half_ufd_size_MB * 2 * 1024))
- 
--#set proper nr_hugepages
-+# get huge pagesize and freepages from /proc/meminfo
-+while read -r name size unit; do
-+	if [ "$name" = "HugePages_Free:" ]; then
-+		freepgs="$size"
-+	fi
-+	if [ "$name" = "Hugepagesize:" ]; then
-+		hpgsize_KB="$size"
-+	fi
-+done < /proc/meminfo
-+
-+# set proper nr_hugepages
- if [ -n "$freepgs" ] && [ -n "$hpgsize_KB" ]; then
- 	nr_hugepgs=$(cat /proc/sys/vm/nr_hugepages)
- 	needpgs=$((needmem_KB / hpgsize_KB))
-@@ -57,140 +127,153 @@ else
- 	exit 1
- fi
- 
--#filter 64bit architectures
-+fi # test_selected "hugetlb"
-+
-+# filter 64bit architectures
- ARCH64STR="arm64 ia64 mips64 parisc64 ppc64 ppc64le riscv64 s390x sh64 sparc64 x86_64"
- if [ -z "$ARCH" ]; then
- 	ARCH=$(uname -m 2>/dev/null | sed -e 's/aarch64.*/arm64/')
- fi
- VADDR64=0
--echo "$ARCH64STR" | grep "$ARCH" && VADDR64=1
-+echo "$ARCH64STR" | grep "$ARCH" &>/dev/null && VADDR64=1
- 
- # Usage: run_test [test binary] [arbitrary test arguments...]
- run_test() {
--	local title="running $*"
--	local sep=$(echo -n "$title" | tr "[:graph:][:space:]" -)
--	printf "%s\n%s\n%s\n" "$sep" "$title" "$sep"
--
--	"$@"
--	local ret=$?
--	if [ $ret -eq 0 ]; then
--		echo "[PASS]"
--	elif [ $ret -eq $ksft_skip ]; then
--		echo "[SKIP]"
--		exitcode=$ksft_skip
--	else
--		echo "[FAIL]"
--		exitcode=1
--	fi
-+	if test_selected ${CATEGORY}; then
-+		local title="running $*"
-+		local sep=$(echo -n "$title" | tr "[:graph:][:space:]" -)
-+		printf "%s\n%s\n%s\n" "$sep" "$title" "$sep"
-+
-+		"$@"
-+		local ret=$?
-+		if [ $ret -eq 0 ]; then
-+			echo "[PASS]"
-+		elif [ $ret -eq $ksft_skip ]; then
-+			echo "[SKIP]"
-+			exitcode=$ksft_skip
-+		else
-+			echo "[FAIL]"
-+			exitcode=1
-+		fi
-+	fi # test_selected
- }
- 
--mkdir "$mnt"
--mount -t hugetlbfs none "$mnt"
-+# setup only needed for hugetlb tests
-+if test_selected "hugetlb"; then
-+	mkdir "$mnt"
-+	mount -t hugetlbfs none "$mnt"
-+fi
- 
--run_test ./hugepage-mmap
-+CATEGORY="hugetlb" run_test ./hugepage-mmap
- 
- shmmax=$(cat /proc/sys/kernel/shmmax)
- shmall=$(cat /proc/sys/kernel/shmall)
- echo 268435456 > /proc/sys/kernel/shmmax
- echo 4194304 > /proc/sys/kernel/shmall
--run_test ./hugepage-shm
-+CATEGORY="hugetlb" run_test ./hugepage-shm
- echo "$shmmax" > /proc/sys/kernel/shmmax
- echo "$shmall" > /proc/sys/kernel/shmall
- 
--run_test ./map_hugetlb
-+CATEGORY="hugetlb" run_test ./map_hugetlb
- 
--run_test ./hugepage-mremap "$mnt"/huge_mremap
--rm -f "$mnt"/huge_mremap
-+CATEGORY="hugetlb" run_test ./hugepage-mremap "$mnt"/huge_mremap
-+test_selected "hugetlb" && rm -f "$mnt"/huge_mremap
- 
--run_test ./hugepage-vmemmap
-+CATEGORY="hugetlb" run_test ./hugepage-vmemmap
- 
--run_test ./hugetlb-madvise "$mnt"/madvise-test
--rm -f "$mnt"/madvise-test
-+CATEGORY="hugetlb" run_test ./hugetlb-madvise "$mnt"/madvise-test
-+test_selected "hugetlb" && rm -f "$mnt"/madvise-test
- 
--echo "NOTE: The above hugetlb tests provide minimal coverage.  Use"
--echo "      https://github.com/libhugetlbfs/libhugetlbfs.git for"
--echo "      hugetlb regression testing."
-+if test_selected "hugetlb"; then
-+	echo "NOTE: These hugetlb tests provide minimal coverage.  Use"
-+	echo "      https://github.com/libhugetlbfs/libhugetlbfs.git for"
-+	echo "      hugetlb regression testing."
-+fi
- 
--run_test ./map_fixed_noreplace
-+CATEGORY="mmap" run_test ./map_fixed_noreplace
- 
- # get_user_pages_fast() benchmark
--run_test ./gup_test -u
-+CATEGORY="gup_test" run_test ./gup_test -u
- # pin_user_pages_fast() benchmark
--run_test ./gup_test -a
-+CATEGORY="gup_test" run_test ./gup_test -a
- # Dump pages 0, 19, and 4096, using pin_user_pages:
--run_test ./gup_test -ct -F 0x1 0 19 0x1000
-+CATEGORY="gup_test" run_test ./gup_test -ct -F 0x1 0 19 0x1000
- 
--run_test ./userfaultfd anon 20 16
--run_test ./userfaultfd anon:dev 20 16
-+CATEGORY="userfaultfd" run_test ./userfaultfd anon 20 16
-+CATEGORY="userfaultfd" run_test ./userfaultfd anon:dev 20 16
- # Hugetlb tests require source and destination huge pages. Pass in half the
- # size ($half_ufd_size_MB), which is used for *each*.
--run_test ./userfaultfd hugetlb "$half_ufd_size_MB" 32
--run_test ./userfaultfd hugetlb:dev "$half_ufd_size_MB" 32
--run_test ./userfaultfd hugetlb_shared "$half_ufd_size_MB" 32 "$mnt"/uffd-test
-+CATEGORY="userfaultfd" run_test ./userfaultfd hugetlb "$half_ufd_size_MB" 32
-+CATEGORY="userfaultfd" run_test ./userfaultfd hugetlb:dev "$half_ufd_size_MB" 32
-+CATEGORY="userfaultfd" run_test ./userfaultfd hugetlb_shared "$half_ufd_size_MB" 32 "$mnt"/uffd-test
- rm -f "$mnt"/uffd-test
--run_test ./userfaultfd hugetlb_shared:dev "$half_ufd_size_MB" 32 "$mnt"/uffd-test
-+CATEGORY="userfaultfd" run_test ./userfaultfd hugetlb_shared:dev "$half_ufd_size_MB" 32 "$mnt"/uffd-test
- rm -f "$mnt"/uffd-test
--run_test ./userfaultfd shmem 20 16
--run_test ./userfaultfd shmem:dev 20 16
--
--#cleanup
--umount "$mnt"
--rm -rf "$mnt"
--echo "$nr_hugepgs" > /proc/sys/vm/nr_hugepages
-+CATEGORY="userfaultfd" run_test ./userfaultfd shmem 20 16
-+CATEGORY="userfaultfd" run_test ./userfaultfd shmem:dev 20 16
-+
-+# cleanup (only needed when running hugetlb tests)
-+if test_selected "hugetlb"; then
-+	umount "$mnt"
-+	rm -rf "$mnt"
-+	echo "$nr_hugepgs" > /proc/sys/vm/nr_hugepages
-+fi
- 
--run_test ./compaction_test
-+CATEGORY="compaction" run_test ./compaction_test
- 
--run_test sudo -u nobody ./on-fault-limit
-+CATEGORY="mlock" run_test sudo -u nobody ./on-fault-limit
- 
--run_test ./map_populate
-+CATEGORY="mmap" run_test ./map_populate
- 
--run_test ./mlock-random-test
-+CATEGORY="mlock" run_test ./mlock-random-test
- 
--run_test ./mlock2-tests
-+CATEGORY="mlock" run_test ./mlock2-tests
- 
--run_test ./mrelease_test
-+CATEGORY="process_mrelease" run_test ./mrelease_test
- 
--run_test ./mremap_test
-+CATEGORY="mremap" run_test ./mremap_test
- 
--run_test ./thuge-gen
-+CATEGORY="hugetlb" run_test ./thuge-gen
- 
- if [ $VADDR64 -ne 0 ]; then
--	run_test ./virtual_address_range
-+	CATEGORY="hugevm" run_test ./virtual_address_range
- 
- 	# virtual address 128TB switch test
--	run_test ./va_128TBswitch.sh
-+	CATEGORY="hugevm" run_test ./va_128TBswitch.sh
- fi # VADDR64
- 
- # vmalloc stability smoke test
--run_test ./test_vmalloc.sh smoke
-+CATEGORY="vmalloc" run_test ./test_vmalloc.sh smoke
- 
--run_test ./mremap_dontunmap
-+CATEGORY="mremap" run_test ./mremap_dontunmap
- 
--run_test ./test_hmm.sh smoke
-+CATEGORY="hmm" run_test ./test_hmm.sh smoke
- 
- # MADV_POPULATE_READ and MADV_POPULATE_WRITE tests
--run_test ./madv_populate
-+CATEGORY="madv_populate" run_test ./madv_populate
- 
--run_test ./memfd_secret
-+CATEGORY="memfd_secret" run_test ./memfd_secret
- 
- # KSM MADV_MERGEABLE test with 10 identical pages
--run_test ./ksm_tests -M -p 10
-+CATEGORY="ksm" run_test ./ksm_tests -M -p 10
- # KSM unmerge test
--run_test ./ksm_tests -U
-+CATEGORY="ksm" run_test ./ksm_tests -U
- # KSM test with 10 zero pages and use_zero_pages = 0
--run_test ./ksm_tests -Z -p 10 -z 0
-+CATEGORY="ksm" run_test ./ksm_tests -Z -p 10 -z 0
- # KSM test with 10 zero pages and use_zero_pages = 1
--run_test ./ksm_tests -Z -p 10 -z 1
-+CATEGORY="ksm" run_test ./ksm_tests -Z -p 10 -z 1
- # KSM test with 2 NUMA nodes and merge_across_nodes = 1
--run_test ./ksm_tests -N -m 1
-+CATEGORY="ksm_numa" run_test ./ksm_tests -N -m 1
- # KSM test with 2 NUMA nodes and merge_across_nodes = 0
--run_test ./ksm_tests -N -m 0
-+CATEGORY="ksm_numa" run_test ./ksm_tests -N -m 0
- 
- # protection_keys tests
- if [ $VADDR64 -eq 0 ]; then
- 	run_test ./protection_keys_32
-+	CATEGORY="pkey" run_test ./protection_keys_32
- else
- 	run_test ./protection_keys_64
-+	CATEGORY="pkey" run_test ./protection_keys_64
- fi
- 
- exit $exitcode
--- 
-2.31.1
+> [   59.234757] Code: 41 88 84 24 b1 00 00 00 41 0f b7 84 24 b6 00 00
+> 00 45 88 b4 24 b3 00 00 00 e9 b8 00 ff ff 48 c7 c1 09 66 46 c1 e9 6f
+> ff ff ff <0f> 0b 49 8b 7c 24 08 e8 82 e2 fe ff 48 89 c1 48 85 c0 74 32
+> ba 2a
+> [   59.253639] RSP: 0018:ffffae1e04593688 EFLAGS: 00010206
+> [   59.258897] RAX: 000000000000006b RBX: 0000000000000000 RCX: 0000000000000006
+> [   59.266073] RDX: ffff8f8f35332be8 RSI: ffffffffaf96411f RDI: ffffffffaf8e4b1e
+> [   59.273250] RBP: ffff8f8f2a87acd0 R08: 0000000000000001 R09: 0000000000000001
+> [   59.280426] R10: 0000000000000000 R11: 000000000f8c087f R12: ffff8f8f2a87ac00
+> [   59.287602] R13: ffff8f8f34d7f928 R14: ffffae1e0c039000 R15: 0000000000000000
+> [   59.294777] FS:  00007f164509f500(0000) GS:ffff8f9dfd800000(0000)
+> knlGS:0000000000000000
+> [   59.302917] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   59.308697] CR2: 00005575f29a5c08 CR3: 0000000163810000 CR4: 0000000000350ee0
+> [   59.315875] Call Trace:
+> [   59.318335]  <TASK>
+> [   59.320458]  qede_open+0x3b/0x90 [qede]
+> [   59.324323]  __dev_open+0xf1/0x1c0
+> [   59.327748]  __dev_change_flags+0x1f8/0x280
+> [   59.331957]  dev_change_flags+0x22/0x60
+> [   59.335816]  do_setlink+0x327/0x1140
+> [   59.339413]  ? lock_is_held_type+0xe3/0x140
+> [   59.343625]  ? lock_is_held_type+0xe3/0x140
+> [   59.347833]  ? __nla_validate_parse+0x5f/0xb70
+> [   59.352307]  ? mark_held_locks+0x49/0x70
+> [   59.356256]  ? _raw_spin_unlock_irqrestore+0x30/0x60
+> [   59.361254]  ? lockdep_hardirqs_on+0x7d/0x100
+> [   59.365640]  __rtnl_newlink+0x59c/0x950
+> [   59.369502]  ? rtnl_newlink+0x2a/0x60
+> [   59.373185]  ? rcu_read_lock_sched_held+0x3c/0x70
+> [   59.377918]  ? trace_kmalloc+0x30/0xf0
+> [   59.381692]  ? kmem_cache_alloc_trace+0x1ad/0x270
+> [   59.386426]  rtnl_newlink+0x43/0x60
+> [   59.389936]  rtnetlink_rcv_msg+0x184/0x540
+> [   59.394057]  ? lock_acquire+0xe2/0x2e0
+> [   59.397830]  ? rtnl_stats_set+0x190/0x190
+> [   59.401863]  netlink_rcv_skb+0x51/0xf0
+> [   59.405639]  netlink_unicast+0x189/0x260
+> [   59.409586]  netlink_sendmsg+0x25a/0x4c0
+> [   59.413536]  sock_sendmsg+0x5c/0x60
+> [   59.417045]  ____sys_sendmsg+0x22b/0x270
+> [   59.420991]  ? import_iovec+0x17/0x20
+> [   59.424675]  ? sendmsg_copy_msghdr+0x78/0xa0
+> [   59.428972]  ___sys_sendmsg+0x85/0xc0
+> [   59.432658]  ? lock_is_held_type+0xe3/0x140
+> [   59.436867]  ? find_held_lock+0x2b/0x80
+> [   59.440727]  ? lock_release+0x145/0x300
+> [   59.444586]  ? __fget_files+0xe5/0x170
+> [   59.448360]  __sys_sendmsg+0x5c/0xb0
+> [   59.451961]  do_syscall_64+0x5b/0x80
+> [   59.455558]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> [   59.460641] RIP: 0033:0x7f164628539d
+> [   59.464251] Code: 28 89 54 24 1c 48 89 74 24 10 89 7c 24 08 e8 0a
+> b1 f7 ff 8b 54 24 1c 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 2e 00 00
+> 00 0f 05 <48> 3d 00 f0 ff ff 77 33 44 89 c7 48 89 44 24 08 e8 5e b1 f7
+> ff 48
+> [   59.483133] RSP: 002b:00007ffd9bf01520 EFLAGS: 00000293 ORIG_RAX:
+> 000000000000002e
+> [   59.490749] RAX: ffffffffffffffda RBX: 000000000000000d RCX: 00007f164628539d
+> [   59.497925] RDX: 0000000000000000 RSI: 00007ffd9bf01560 RDI: 000000000000000c
+> [   59.505100] RBP: 00005575f2915040 R08: 0000000000000000 R09: 0000000000000000
+> [   59.512275] R10: 0000000000000000 R11: 0000000000000293 R12: 0000000000000000
+> [   59.519453] R13: 00007ffd9bf016c0 R14: 00007ffd9bf016bc R15: 0000000000000000
+> [   59.526637]  </TASK>
+> [   59.528834] Modules linked in: rfkill sunrpc intel_rapl_msr
+> intel_rapl_common vfat fat qede qed edac_mce_amd i2c_piix4 crc8 rapl
+> igb ipmi_ssif ptdma ses enclosure pcspkr dca hpilo k10temp acpi_ipmi
+> acpi_tad ipmi_si acpi_power_meter fuse zram xfs crct10dif_pclmul
+> crc32_pclmul crc32c_intel mgag200 i2c_algo_bit drm_shmem_helper
+> drm_kms_helper ghash_clmulni_intel drm hpwdt smartpqi ccp
+> scsi_transport_sas sp5100_tco wmi ipmi_devintf ipmi_msghandler
+> [   59.568459] ---[ end trace 0000000000000000 ]---
+> [   59.632952] RIP: 0010:qede_load.cold+0x5a1/0x819 [qede]
+> [   59.632967] Code: 41 88 84 24 b1 00 00 00 41 0f b7 84 24 b6 00 00
+> 00 45 88 b4 24 b3 00 00 00 e9 b8 00 ff ff 48 c7 c1 09 66 46 c1 e9 6f
+> ff ff ff <0f> 0b 49 8b 7c 24 08 e8 82 e2 fe ff 48 89 c1 48 85 c0 74 32
+> ba 2a
+> [   59.632970] RSP: 0018:ffffae1e04593688 EFLAGS: 00010206
+> [   59.632972] RAX: 000000000000006b RBX: 0000000000000000 RCX: 0000000000000006
+> [   59.632974] RDX: ffff8f8f35332be8 RSI: ffffffffaf96411f RDI: ffffffffaf8e4b1e
+> [   59.632977] RBP: ffff8f8f2a87acd0 R08: 0000000000000001 R09: 0000000000000001
+> [   59.632978] R10: 0000000000000000 R11: 000000000f8c087f R12: ffff8f8f2a87ac00
+> [   59.632980] R13: ffff8f8f34d7f928 R14: ffffae1e0c039000 R15: 0000000000000000
+> [   59.632982] FS:  00007f164509f500(0000) GS:ffff8f9dfd800000(0000)
+> knlGS:0000000000000000
+> [   59.632984] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   59.632986] CR2: 00005575f29a5c08 CR3: 0000000163810000 CR4: 0000000000350ee0
+> [   59.632989] Kernel panic - not syncing: Fatal exception
+> [   59.732905] Kernel Offset: 0x2d000000 from 0xffffffff81000000
+> (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+> [   59.807803] ---[ end Kernel panic - not syncing: Fatal exception ]---
+> 
+> 
+> cki issue tracker: https://datawarehouse.cki-project.org/issue/1470
+> 
+> [1] https://datawarehouse.cki-project.org/kcidb/tests/4002370
+> [2] http://s3.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2022/06/20/568171088/redhat:568171088/redhat:568171088_x86_64_debug/.config
+> 
+> Thanks,
+> Bruno Goncalves
+> 
 
