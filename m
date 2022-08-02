@@ -2,69 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 292A7C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4E52C19F29
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237439AbiHBSDX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 14:03:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47382 "EHLO
+        id S237494AbiHBSDe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 14:03:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237378AbiHBSC7 (ORCPT
+        with ESMTP id S237414AbiHBSDV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 14:02:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3CA1D4;
-        Tue,  2 Aug 2022 11:02:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54A5FB81EC5;
-        Tue,  2 Aug 2022 18:02:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EE90EC433B5;
-        Tue,  2 Aug 2022 18:02:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659463366;
-        bh=CsKzgBUAnJtmMUm1ftRS3DG1tc4yHRK0xI3jqseiPRw=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=F23DVrdResjqO8YZOlpezer1dsdxUAuMWlEjMHQGjYpTr2EhCCfcncupWuSNeGrus
-         AvUHLNy89R2hEFtEISmPSAVZLjkcQtnsm0dYZIXE+O2xl+smXyPrRNo01DSUfcJK5t
-         90399nQkG+Mu+Fvq8rX4xpm/bYXKN+z8BorU5Unzp2lUIn1FBDg6DbtH0Kh8kUo7Ce
-         UCVMZP6POE5HGAhV427BWwNvXYmqtUZmKcfl3qRiHHy2I4VvvAHQgYg9uMbX2F3Ac6
-         SnmlIRWz93NuuRc1GWNANwTfi3G+DGmwP+9EkDnk/XaQEjXej6J9Nk5n0oHzpEHvQ2
-         CYWKPPwT6fVJQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DE0FBC43142;
-        Tue,  2 Aug 2022 18:02:45 +0000 (UTC)
-Subject: Re: [GIT PULL] SPI updates for v5.20
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220801123832.C1E2EC433D6@smtp.kernel.org>
-References: <20220801123832.C1E2EC433D6@smtp.kernel.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220801123832.C1E2EC433D6@smtp.kernel.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git tags/spi-v5.20
-X-PR-Tracked-Commit-Id: 69243df953e70c134c6735b31ba0e658c53d3cda
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 0805c6fb39f66e01cb0adccfae8d9e0615c70fd7
-Message-Id: <165946336590.14716.5030821823359863715.pr-tracker-bot@kernel.org>
-Date:   Tue, 02 Aug 2022 18:02:45 +0000
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>
+        Tue, 2 Aug 2022 14:03:21 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB4CE62
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 11:03:20 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id c185so17369259oia.7
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 11:03:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:from:to:cc;
+        bh=GNoHkmqZpKx9Pktw11GIbNQ2bhjivWnkaFbnDxeXjko=;
+        b=Udpqm0u/iKCRrsXn0zwaQsyNbevqIDy0JDzIIAcMh0IK1K/IwgtExogFGRWKiWTGtI
+         uFfjjNke+0eMux5masDyDxE8wI85IacWFitHG7istD/kZT4u5nGWrNT2MsvqaPsjeDeE
+         oDj1nrKjgBWFF5lT0nE8EDsaoMJeW5ouqZ1zlDb2KbDmKyj0sUtFb2nZ2T4GFw2aIrya
+         apox241/J0FPpHvJKf4/USJnw37uXh1wPG3DnsrVXW3FuIUREHbbI6THvb/sQwxE1o+9
+         A5/zD3/7GUypSEJVUVocU/5eWQgDnt5c4gtSzgAIBNCIL0r5kPKkpyVqAtnU+wFqiJf6
+         R0XQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:x-gm-message-state:from:to:cc;
+        bh=GNoHkmqZpKx9Pktw11GIbNQ2bhjivWnkaFbnDxeXjko=;
+        b=1Iaiauz8uisChbSv7DCpFsn4u4WiEpWwiAbJObFOev06s9dkR1HFBDlRhzV5iYhvTr
+         BXvObZK6i9AikAqipEyxUwg5+8L3H3xEVen0UbCeCQuPCY5xqDIYvSUXLDR+umYM6Gsf
+         tDJ1SFg6/LCDo1wGO/jZ0xmUb+sbuDrIlY8/ECnoiVUJHhwocZooHetHuslfSHyuABvm
+         k7eg2rpZk1sXRPE0u6baK3bq4uFDJQNlUXvrGECOhaCt95fvU9SE51pSXVhb9eCY1UzW
+         0qcgburDlH5Dx+R3OOblKGKRlOgrS3Uod+DKt9zDZWPkobm6nn6RQcOPLzt0Jr6knzjz
+         OQ1A==
+X-Gm-Message-State: ACgBeo3GeXa2m6WfDSQbPZCnwYeZid924jmjdKQJp3rR2A1YC1YNeO89
+        WICQW5RdYft+RXMMKZhGK0U=
+X-Google-Smtp-Source: AA6agR6tKINKcuOaNVqYuLToWlaaeWaMIPBLG88vYHrun7FOyb6H5HO1ZUxOuFlhlSi5vMZ/8Pw79A==
+X-Received: by 2002:a05:6808:bca:b0:33b:2275:27b8 with SMTP id o10-20020a0568080bca00b0033b227527b8mr290247oik.180.1659463399472;
+        Tue, 02 Aug 2022 11:03:19 -0700 (PDT)
+Received: from [192.168.1.108] ([216.130.59.33])
+        by smtp.gmail.com with ESMTPSA id d13-20020a9d5e0d000000b006359cd3e3b0sm836323oti.77.2022.08.02.11.03.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 11:03:18 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Message-ID: <a94b833a-2f3c-a5ba-f2e4-7c7ef0d1e862@lwfinger.net>
+Date:   Tue, 2 Aug 2022 13:03:17 -0500
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] staging: r8188eu: add firmware dependency
+Content-Language: en-US
+To:     Grzegorz Szymaszek <gszymaszek@short.pl>, Greg KH <greg@kroah.com>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+References: <YukkBu3TNODO3or9@nx64de-df6d00> <YukvnVWuhUeOgRyZ@kroah.com>
+ <Yukx8KEEOhKTJ7HQ@nx64de-df6d00>
+ <c82114b6-1003-bfb5-0550-98dcbf1a3761@lwfinger.net>
+ <YulcdKfhA8dPQ78s@nx64de-df6d00>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <YulcdKfhA8dPQ78s@nx64de-df6d00>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 01 Aug 2022 13:38:22 +0100:
+On 8/2/22 12:18, Grzegorz Szymaszek wrote:
+> The old rtl8188eu module, removed in commit 55dfa29b43d2 ("staging:
+> rtl8188eu: remove rtl8188eu driver from staging dir") (Linux kernel
+> v5.15-rc1), required (through a MODULE_FIRMWARE call()) the
+> rtlwifi/rtl8188eufw.bin firmware file, which the new r8188eu driver no
+> longer requires.
+> 
+> I have tested a few RTL8188EUS-based Wi-Fi cards and, while supported by
+> both drivers, they do not work when using the new one and the firmware
+> wasn't manually loaded. According to Larry Finger, the module
+> maintainer, all such cards need the firmware and the driver should
+> depend on it (see the linked mails).
+> 
+> Add a proper MODULE_FIRMWARE() call, like it was done in the old driver.
+> 
+> Thanks to Greg Kroah-Hartman and Larry Finger for quick responses to my
+> questions.
+> 
+> Link: https://answers.launchpad.net/ubuntu/+source/linux-meta-hwe-5.15/+question/702611
+> Link: https://lore.kernel.org/lkml/YukkBu3TNODO3or9@nx64de-df6d00/
+> Signed-off-by: Grzegorz Szymaszek <gszymaszek@short.pl>
+> ---
+>   drivers/staging/r8188eu/os_dep/os_intfs.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/staging/r8188eu/os_dep/os_intfs.c b/drivers/staging/r8188eu/os_dep/os_intfs.c
+> index 891c85b088ca..5bd3022e4b40 100644
+> --- a/drivers/staging/r8188eu/os_dep/os_intfs.c
+> +++ b/drivers/staging/r8188eu/os_dep/os_intfs.c
+> @@ -18,6 +18,7 @@ MODULE_LICENSE("GPL");
+>   MODULE_DESCRIPTION("Realtek Wireless Lan Driver");
+>   MODULE_AUTHOR("Realtek Semiconductor Corp.");
+>   MODULE_VERSION(DRIVERVERSION);
+> +MODULE_FIRMWARE("rtlwifi/rtl8188eufw.bin");
+>   
+>   #define CONFIG_BR_EXT_BRNAME "br0"
+>   #define RTW_NOTCH_FILTER 0 /* 0:Disable, 1:Enable, */
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git tags/spi-v5.20
+Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/0805c6fb39f66e01cb0adccfae8d9e0615c70fd7
+Thanks,
 
-Thank you!
+Larry
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
