@@ -2,199 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D41C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:05:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C0BC19F2B
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:06:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236405AbiHBIFw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 04:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45040 "EHLO
+        id S236355AbiHBIGm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 04:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236360AbiHBIFh (ORCPT
+        with ESMTP id S236210AbiHBIGk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 04:05:37 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD3D19285
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 01:05:32 -0700 (PDT)
-Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220802080531epoutp01c3d40b23eb35ea2959ceb0068f614d28~HeIw3Egqs2456524565epoutp01h
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 08:05:31 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220802080531epoutp01c3d40b23eb35ea2959ceb0068f614d28~HeIw3Egqs2456524565epoutp01h
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1659427531;
-        bh=SVmoLXbtKUB1vIM53WZ3qocmh/3HbPud77tuqhLKnLY=;
-        h=Subject:Reply-To:From:To:In-Reply-To:Date:References:From;
-        b=M/ZjmKuey0Nagm7wYbYbzBUiZGu5xn1x7C+JI040TqhFpAdxB/g2Ya6X3yOmgUFam
-         gOOU45GMpOhFpn7wr5V/ERVuV9zM6mvU0zyyPLYdm6aV3ZQ5LEHYlB7xJ7X9uNyCy2
-         sViMSZugmTP34RQ73dxVV+4iAwlVQBtxOio5Theo=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20220802080530epcas2p1a9b3fd9447d870098239e5c7f2e4364c~HeIwgqFGD0375803758epcas2p1R;
-        Tue,  2 Aug 2022 08:05:30 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.70]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4Lxnbt2RQhz4x9Q9; Tue,  2 Aug
-        2022 08:05:30 +0000 (GMT)
-X-AuditID: b6c32a47-5e1ff700000025aa-6c-62e8daca4b19
-Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        92.33.09642.ACAD8E26; Tue,  2 Aug 2022 17:05:30 +0900 (KST)
-Mime-Version: 1.0
-Subject: [PATCH v6 2/6] scsi: ufs: wb: Change functions name and modify
- parameter name
-Reply-To: j-young.choi@samsung.com
-Sender: Jinyoung CHOI <j-young.choi@samsung.com>
-From:   Jinyoung CHOI <j-young.choi@samsung.com>
-To:     ALIM AKHTAR <alim.akhtar@samsung.com>,
-        "avri.altman@wdc.com" <avri.altman@wdc.com>,
-        "bvanassche@acm.org" <bvanassche@acm.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "beanhuo@micron.com" <beanhuo@micron.com>,
-        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stanley.chu@mediatek.com" <stanley.chu@mediatek.com>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-In-Reply-To: <20220802080146epcms2p24b86bfce3d3c09c79b91d861cb3b2cce@epcms2p2>
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <20220802080530epcms2p8a9bb540dc6f21957148088b7a9b8b6f4@epcms2p8>
-Date:   Tue, 02 Aug 2022 17:05:30 +0900
-X-CMS-MailID: 20220802080530epcms2p8a9bb540dc6f21957148088b7a9b8b6f4
+        Tue, 2 Aug 2022 04:06:40 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630A019283
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 01:06:39 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id a9so8033038lfm.12
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 01:06:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ziFYm8rk88alkwyI6DGKeiYYXv8dOfZWiNNEBAzbbUs=;
+        b=Q8FM7seRKFOLqDs9pbGjh7O9ypmYDNdS02O44fr0uDaD+Ekvix2C28Eu0YTnz4un9E
+         zjZb0kmjzXhhxF2hA2MeGBEhZUMa2/QJ7merfkAYx+/6MBHNZg1vx8bdYF97YjDHoVTq
+         LgeRNFA3ZxvbVMGhNzLcWi3AowWv9gQfOIN9VEPdRqbavEwLcWYz2pkHXeG3wsK20CUp
+         tpChIa1AGzm/UKVSMhOsfVWVx+62gtQHTdGyf6F4anBWut49KD7kwKERKPGjulXz/zwU
+         Zcu1mgRS0QCNWOsHRL3PcYpZM4sPoC0AwrgM3PyBQNCoCpSrp8xPLrt98yJI5L5agObH
+         Tsnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ziFYm8rk88alkwyI6DGKeiYYXv8dOfZWiNNEBAzbbUs=;
+        b=TLoWKg+hUo5RzYtfNvGHzWdpQzgYLCs1l4RdUy1fQdwZeaEbEbkM1VPRLoN3w9lZq4
+         ZbrHYF/IdeJ6kdlibWnSHOazJ38z5nhSnCN7OFRVcTedbxLwXKXDr3DhWGo1tpI9m21J
+         dwrHVP9RDqDeWFo2nbf4I6yMZRzQOfC/9lCgSQkXOjclYBz7mxiPOZX7aeFABnC403SF
+         stxLF+bYVF2RzBQRKo1H9R3KurCPfCNp85dCtu8Cdj5csH1UjQf9s5L4IgsLCfCLuOO8
+         8d0AcIxL08OlK/OQuqScWpgplxHXyEN2uHxmWQR1dB65iPUkyYma2YTwmZOk/QsYrC+D
+         u+tw==
+X-Gm-Message-State: ACgBeo3S7WzF8cuaT3BC1EaetmFb3HygCTPJQ4An7AYNZyEglxu2oplM
+        PU7EKCucE9W9IWqYRYtDdWDHMg==
+X-Google-Smtp-Source: AA6agR6XdqW2PkasC+a1MlQwwoq1vcDKjruY6HOg87UsjC6E5gXtnZmjIUf2X1MMpMjvcyj6YFh0jw==
+X-Received: by 2002:ac2:4e07:0:b0:48a:f6f2:8555 with SMTP id e7-20020ac24e07000000b0048af6f28555mr3101742lfr.200.1659427597773;
+        Tue, 02 Aug 2022 01:06:37 -0700 (PDT)
+Received: from [192.168.1.6] ([213.161.169.44])
+        by smtp.gmail.com with ESMTPSA id o3-20020a2e9b43000000b0025e2cb58c6esm1842316ljj.37.2022.08.02.01.06.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 01:06:37 -0700 (PDT)
+Message-ID: <341b4627-d729-0941-2c35-08c16ac68f3c@linaro.org>
+Date:   Tue, 2 Aug 2022 10:06:35 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/2] dt-bindings: mailbox: add definition for mt8188
+Content-Language: en-US
+To:     Elvis Wang <Elvis.Wang@mediatek.com>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        CK Hu <ck.hu@mediatek.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220729084319.6880-1-Elvis.Wang@mediatek.com>
+ <20220729084319.6880-2-Elvis.Wang@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220729084319.6880-2-Elvis.Wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-CPGSPASS: Y
-CMS-TYPE: 102P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrKJsWRmVeSWpSXmKPExsWy7bCmhe6pWy+SDM71ClqcfLKGzeLBvG1s
-        Fi9/XmWzOPiwk8Vi2oefzBYvD2laLLqxjcni8q45bBbd13ewWSw//o/JYunWm4wO3B6Xr3h7
-        LN7zksljwqIDjB4tJ/ezeHxf38Hm8fHpLRaPvi2rGD0+b5LzaD/QzRTAGZVtk5GamJJapJCa
-        l5yfkpmXbqvkHRzvHG9qZmCoa2hpYa6kkJeYm2qr5OIToOuWmQN0rJJCWWJOKVAoILG4WEnf
-        zqYov7QkVSEjv7jEVim1ICWnwLxArzgxt7g0L10vL7XEytDAwMgUqDAhO2Py8WesBa9kKi6f
-        y29gnC/RxcjBISFgInFvcUYXIyeHkMAORokzJ11AwrwCghJ/dwiDhIUFIiTWr+9mgihRkji3
-        ZhYjSImwgIHErV5zkDCbgJ7EzyUz2LoYuThEBNpYJI51bmUGSUgI8ErMaH/KAmFLS2xfvpUR
-        xOYU8JOYeOMDVI2GxI9lvVC2qMTN1W/ZYez3x+YzQtgiEq33zkLVCEo8+LkbKi4pcejQVzaI
-        T/IlNhwIhAjXSLxdfgCqRF/iWsdGsBN4BXwlfvw8B/YKi4CqxJWnO1ghWl0klrXWgISZBeQl
-        tr+dwwwSZhbQlFi/Sx+iQlniyC0WmJ8aNv5mR2czC/BJdBz+CxffMe8JE0SrmsSiJiOIsIzE
-        18Pz2ScwKs1CBPIsJGtnIaxdwMi8ilEstaA4Nz212KjAGB6pyfm5mxjB6VXLfQfjjLcf9A4x
-        MnEwHmKU4GBWEuG94/I8SYg3JbGyKrUoP76oNCe1+BCjKdC/E5mlRJPzgQk+ryTe0MTSwMTM
-        zNDcyNTAXEmc1ytlQ6KQQHpiSWp2ampBahFMHxMHp1QDE1/OstYpmb5PdOX9rkSl5Mrqfexe
-        uTpsldLk1+VZHJnhl6U+LT25KCinOOXdz0pmvuoD5+RvnmuyMGi7YHhoyyvlo/9/Wpxjyg//
-        /dCw7W56PeOC/ZophUreXv2ODzwPVS9jOvi7Na2XJ3ux8OvbX79GiLIezTCTnjSHf2JY1mkV
-        zxbLaOOLHOe+Fix6Yb7LuTpT0Orj9M9/lt+zixa91PtHzdHm46KHF/VD1iuc1no7++tXxYfH
-        dqkuOfzi/fbHTB5fhG8WpLlvK6nW/Fnp6DRv0o76JQeXvzh6zvxOZkxGmqHStoUuk2N+Piov
-        TQhknPFRWrzlMr+SyjIXD/UpOvaNa5q9dH6XVSXdvPDjhRJLcUaioRZzUXEiADD6BPY4BAAA
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220802080146epcms2p24b86bfce3d3c09c79b91d861cb3b2cce
-References: <20220802080146epcms2p24b86bfce3d3c09c79b91d861cb3b2cce@epcms2p2>
-        <CGME20220802080146epcms2p24b86bfce3d3c09c79b91d861cb3b2cce@epcms2p8>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The parameter name of ufshcd_wb_toggle_flush_during_h8() has been changed
-in the same as other toggle functions.
+On 29/07/2022 10:43, Elvis Wang wrote:
+> Add dt-binding header for mt8188.
+> 
 
-Function names were ambiguous. So changed to suit the meaning.
+Use subject prefix matching the device.
 
-Reviewed-by: Avri Altman <avri.altman@wdc.com>
-Signed-off-by: Jinyoung Choi <j-young.choi@samsung.com>
----
- drivers/ufs/core/ufshcd.c | 30 +++++++++++++++++-------------
- 1 file changed, 17 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
-index b7e7c0c4eb75..df00441f89a1 100644
---- a/drivers/ufs/core/ufshcd.c
-+++ b/drivers/ufs/core/ufshcd.c
-@@ -265,8 +265,9 @@ static int ufshcd_setup_vreg(struct ufs_hba *hba, bool on);
- static inline int ufshcd_config_vreg_hpm(struct ufs_hba *hba,
- 					 struct ufs_vreg *vreg);
- static int ufshcd_try_to_abort_task(struct ufs_hba *hba, int tag);
--static void ufshcd_wb_toggle_flush_during_h8(struct ufs_hba *hba, bool set);
--static inline void ufshcd_wb_toggle_flush(struct ufs_hba *hba, bool enable);
-+static void ufshcd_wb_toggle_buf_flush_during_h8(struct ufs_hba *hba,
-+						 bool enable);
-+static void ufshcd_wb_toggle_buf_flush(struct ufs_hba *hba, bool enable);
- static void ufshcd_hba_vreg_set_lpm(struct ufs_hba *hba);
- static void ufshcd_hba_vreg_set_hpm(struct ufs_hba *hba);
- 
-@@ -286,16 +287,16 @@ static inline void ufshcd_disable_irq(struct ufs_hba *hba)
- 	}
- }
- 
--static inline void ufshcd_wb_config(struct ufs_hba *hba)
-+static void ufshcd_configure_wb(struct ufs_hba *hba)
- {
- 	if (!ufshcd_is_wb_allowed(hba))
- 		return;
- 
- 	ufshcd_wb_toggle(hba, true);
- 
--	ufshcd_wb_toggle_flush_during_h8(hba, true);
-+	ufshcd_wb_toggle_buf_flush_during_h8(hba, true);
- 	if (!(hba->quirks & UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL))
--		ufshcd_wb_toggle_flush(hba, true);
-+		ufshcd_wb_toggle_buf_flush(hba, true);
- }
- 
- static void ufshcd_scsi_unblock_requests(struct ufs_hba *hba)
-@@ -5748,22 +5749,23 @@ int ufshcd_wb_toggle(struct ufs_hba *hba, bool enable)
- 	return ret;
- }
- 
--static void ufshcd_wb_toggle_flush_during_h8(struct ufs_hba *hba, bool set)
-+static void ufshcd_wb_toggle_buf_flush_during_h8(struct ufs_hba *hba,
-+						 bool enable)
- {
- 	int ret;
- 
--	ret = __ufshcd_wb_toggle(hba, set,
-+	ret = __ufshcd_wb_toggle(hba, enable,
- 			QUERY_FLAG_IDN_WB_BUFF_FLUSH_DURING_HIBERN8);
- 	if (ret) {
- 		dev_err(hba->dev, "%s: WB-Buf Flush during H8 %s failed: %d\n",
--			__func__, set ? "enable" : "disable", ret);
-+			__func__, enable ? "enable" : "disable", ret);
- 		return;
- 	}
- 	dev_dbg(hba->dev, "%s WB-Buf Flush during H8 %s\n",
--			__func__, set ? "enabled" : "disabled");
-+			__func__, enable ? "enabled" : "disabled");
- }
- 
--static inline void ufshcd_wb_toggle_flush(struct ufs_hba *hba, bool enable)
-+static void ufshcd_wb_toggle_buf_flush(struct ufs_hba *hba, bool enable)
- {
- 	int ret;
- 
-@@ -5813,9 +5815,9 @@ static bool ufshcd_wb_presrv_usrspc_keep_vcc_on(struct ufs_hba *hba,
- static void ufshcd_wb_force_disable(struct ufs_hba *hba)
- {
- 	if (!(hba->quirks & UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL))
--		ufshcd_wb_toggle_flush(hba, false);
-+		ufshcd_wb_toggle_buf_flush(hba, false);
- 
--	ufshcd_wb_toggle_flush_during_h8(hba, false);
-+	ufshcd_wb_toggle_buf_flush_during_h8(hba, false);
- 	ufshcd_wb_toggle(hba, false);
- 	hba->caps &= ~UFSHCD_CAP_WB_EN;
- 
-@@ -8212,7 +8214,9 @@ static int ufshcd_probe_hba(struct ufs_hba *hba, bool init_dev_params)
- 	 */
- 	ufshcd_set_active_icc_lvl(hba);
- 
--	ufshcd_wb_config(hba);
-+	/* Enable UFS Write Booster if supported */
-+	ufshcd_configure_wb(hba);
-+
- 	if (hba->ee_usr_mask)
- 		ufshcd_write_ee_control(hba);
- 	/* Enable Auto-Hibernate if configured */
--- 
-2.25.1
+Best regards,
+Krzysztof
