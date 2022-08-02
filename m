@@ -2,216 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF1BC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5854AC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235099AbiHBHIv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 03:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48764 "EHLO
+        id S235548AbiHBHKC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 03:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232817AbiHBHIs (ORCPT
+        with ESMTP id S232817AbiHBHKA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 03:08:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B2FFD13A
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 00:08:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659424126;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Lk5fZhTJlKNzqEKorGVmO33xROpi/F0xbp6DLCxyEPg=;
-        b=F2swS8uX3w+nwOAvNMhp77zZgPKZOqyKl5I2KJVsKYD7Utzg/i4tmEtr2AvuhGFauX3AAc
-        ug6h6dlV9t15wQ+SeNWVPflprfZ5vrajbEL/ZOSZNOWq9drvHJCotlWpof9OUpzgDZdxYZ
-        yO07FjbrozJFA2Xp0Csj+eKfXGAxySE=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-14-vF9FLO44MQmSTrt_L6I11Q-1; Tue, 02 Aug 2022 03:08:36 -0400
-X-MC-Unique: vF9FLO44MQmSTrt_L6I11Q-1
-Received: by mail-lj1-f200.google.com with SMTP id d4-20020a2e9284000000b0025e0f56d216so2855483ljh.7
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 00:08:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Lk5fZhTJlKNzqEKorGVmO33xROpi/F0xbp6DLCxyEPg=;
-        b=erXpAQYSYpuasr6XzR36jhWVct8wz8XMgUZeL/V++lOulNUzVv/EhFHt6Lr4JrtiSE
-         fMReLyX4jzzSZAsQF8HnPh43SX/HALWfn9/hyEWe9sGkHlb6SJJKUEwJigGSSAyE09pT
-         BCeNmWIhE6FDObO7U1CdQ+xTbNimcetbrRsRF6OAVK+MdTfPGC8SdHiEI88BR7rzVm8Z
-         K2+73+lkw1odhJ5gg8wm7BOWcMYE4YIMD+z+5Y5XSSHQqwbeKX46IvqFQROMGdj0w4p5
-         8FT3vCUJSYOPUE+WKTbCYVXOXyoZBiXnTy5aUiCBkaaVJ88q9ywysE5hm/7f/AqZHDdY
-         NWiA==
-X-Gm-Message-State: AJIora/mNN583R+cvH9nOTedDUjAd4QKYMBNWF11zY5jhtC4PXGSv98B
-        w9Pmjxw26aTLEW2aBq+ndAV6qScO4QM0znr3W7LNxnKdKH7WBA4Px6wxOHVGJx0a2xXc5xRSQ0M
-        KihVYR01SyGeCzezEMJ0KV9sk1+kJzxmP1ZjQo77Z
-X-Received: by 2002:a19:ac09:0:b0:48a:d1b5:1791 with SMTP id g9-20020a19ac09000000b0048ad1b51791mr7113381lfc.397.1659424114680;
-        Tue, 02 Aug 2022 00:08:34 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1t9tTifp1Bws/2DsfyiDeWIMo2y0L+F8JtPh25awuoqWTlf2NQjl6jxIlIjDgYpJJ5HisW4TjmUWlXN3MNNdv0=
-X-Received: by 2002:a19:ac09:0:b0:48a:d1b5:1791 with SMTP id
- g9-20020a19ac09000000b0048ad1b51791mr7113371lfc.397.1659424114457; Tue, 02
- Aug 2022 00:08:34 -0700 (PDT)
+        Tue, 2 Aug 2022 03:10:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16011EC44;
+        Tue,  2 Aug 2022 00:09:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42E0E6131A;
+        Tue,  2 Aug 2022 07:09:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A95D0C433D7;
+        Tue,  2 Aug 2022 07:09:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659424198;
+        bh=0jhHYyhCK+3Qhtr9ig01rDqez0BJmbBa8YmmaJMFHwQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=e9djQ/IGu8D5BlBmzQCVPktfYtADj9VUlvUc4wHOUshL2ItJTmLGk5XxGmp7LTamK
+         7sQPbPmnl3hD0qR7Yejsjk4DIZCAU6TKTWpf4MKZw7WSqk3DfPQaXo+jQDohTCjNPV
+         wd36oWM8YDqnp9+tgHfBSih4lpv9TKMQXnVjokkHjcLAeL5587NlqlbTwbqnfFT2T1
+         OEdU+zlJejCKZI9AkOTchr4956mPzmMfaluKddsvngFBiS3sEpMtROBhXPudl9mc6V
+         kRj7uZqBVHKB4clcoeybVZE7KqTzzEy7paU+lhmuGQbC08+MteqiGgDo+dKyQtwFSM
+         hsYMDV0RDnyeg==
+Received: by mail-ua1-f43.google.com with SMTP id f10so5468699uap.2;
+        Tue, 02 Aug 2022 00:09:58 -0700 (PDT)
+X-Gm-Message-State: ACgBeo3EqEobFFoqgRYAlWySymh+XzAiagh90Px/kkia3iK1bt5ZccZ7
+        AEnMoqnv2JtAYWmXGUeBnihlk+scn3gnePycmyg=
+X-Google-Smtp-Source: AA6agR6grG2wQ5RJQ1Vef384HnoTVHvPAk/6u5j5UAg5aRz5bLpJE+22XfZgTZMFTDku5HsFuN1bkDeWgrYDh5cNfKk=
+X-Received: by 2002:ab0:2359:0:b0:387:2dff:87d5 with SMTP id
+ h25-20020ab02359000000b003872dff87d5mr7720498uao.104.1659424197668; Tue, 02
+ Aug 2022 00:09:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220728032000.127-1-xieyongji@bytedance.com> <20220728032000.127-6-xieyongji@bytedance.com>
- <CACGkMEuN0zqyLQ6vD7MvjAhtJVvmMhsn_T4b5ww0vviwq5hBrg@mail.gmail.com>
- <CACycT3uYFWvmdJ1MzQZv=L7N0WzEiFvx5wJX+OwM1ew5Z0w0jw@mail.gmail.com>
- <CACGkMEtru8qaebnTXVu94oCV21JovkjshxYxdyzeSf=FTN0=xA@mail.gmail.com>
- <CACycT3swFhETEOPNNmLbSFaYUZEJYUkPXrddQ=w0TALE=D40Lw@mail.gmail.com>
- <CACGkMEsGt4=2c20xfi-4ZYfnn9NYHQ=CQm8TrP7HSYiwwDCWag@mail.gmail.com> <CACycT3vJcJp6dr6XFg=v_EUv05SZRpCzWOEPnXfoLDedBufSnQ@mail.gmail.com>
-In-Reply-To: <CACycT3vJcJp6dr6XFg=v_EUv05SZRpCzWOEPnXfoLDedBufSnQ@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 2 Aug 2022 15:08:22 +0800
-Message-ID: <CACGkMEtTnwG2y4RT6E7tzkWh0rm2xJJEgV8cvjWkqt3th-4DUA@mail.gmail.com>
-Subject: Re: [PATCH v4 5/5] vduse: Support querying information of IOVA regions
-To:     Yongji Xie <xieyongji@bytedance.com>
-Cc:     mst <mst@redhat.com>, Liu Xiaodong <xiaodong.liu@intel.com>,
-        Maxime Coquelin <maxime.coquelin@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20220802053818.18051-1-zhangqing@loongson.cn> <20220802053818.18051-4-zhangqing@loongson.cn>
+ <CAAhV-H4qWTbjb45VNbA0is_2w1sgSW54kSngVhVpac5VehwoEg@mail.gmail.com> <e3df8c34-806c-e4ea-2fcb-df8efd0af610@loongson.cn>
+In-Reply-To: <e3df8c34-806c-e4ea-2fcb-df8efd0af610@loongson.cn>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Tue, 2 Aug 2022 15:09:39 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H59tqWEFMPJ5=01qtYjd3P7xbA=Exgz2pU1nfq4ejiKGg@mail.gmail.com>
+Message-ID: <CAAhV-H59tqWEFMPJ5=01qtYjd3P7xbA=Exgz2pU1nfq4ejiKGg@mail.gmail.com>
+Subject: Re: [PATCH v3 3/4] LoongArch: Add stacktrace support
+To:     Qing Zhang <zhangqing@loongson.cn>
+Cc:     WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jinyang He <hejinyang@loongson.cn>,
+        Youling Tang <tangyouling@loongson.cn>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 11:17 AM Yongji Xie <xieyongji@bytedance.com> wrote:
+Hi, Qing,
+
+On Tue, Aug 2, 2022 at 2:39 PM Qing Zhang <zhangqing@loongson.cn> wrote:
 >
-> On Thu, Jul 28, 2022 at 5:02 PM Jason Wang <jasowang@redhat.com> wrote:
-> >
-> > On Thu, Jul 28, 2022 at 4:27 PM Yongji Xie <xieyongji@bytedance.com> wrote:
-> > >
-> > > On Thu, Jul 28, 2022 at 2:45 PM Jason Wang <jasowang@redhat.com> wrote:
-> > > >
-> > > > On Thu, Jul 28, 2022 at 2:36 PM Yongji Xie <xieyongji@bytedance.com> wrote:
-> > > > >
-> > > > > On Thu, Jul 28, 2022 at 1:58 PM Jason Wang <jasowang@redhat.com> wrote:
-> > > > > >
-> > > > > > On Thu, Jul 28, 2022 at 11:20 AM Xie Yongji <xieyongji@bytedance.com> wrote:
-> > > > > > >
-> > > > > > > This introduces a new ioctl: VDUSE_IOTLB_GET_INFO to
-> > > > > > > support querying some information of IOVA regions.
-> > > > > > >
-> > > > > > > Now it can be used to query whether the IOVA region
-> > > > > > > supports userspace memory registration.
-> > > > > > >
-> > > > > > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > > > > > > ---
-> > > > > > >  drivers/vdpa/vdpa_user/vduse_dev.c | 39 ++++++++++++++++++++++++++++++
-> > > > > > >  include/uapi/linux/vduse.h         | 24 ++++++++++++++++++
-> > > > > > >  2 files changed, 63 insertions(+)
-> > > > > > >
-> > > > > > > diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
-> > > > > > > index eedff0a3885a..e820c37dcba8 100644
-> > > > > > > --- a/drivers/vdpa/vdpa_user/vduse_dev.c
-> > > > > > > +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
-> > > > > > > @@ -1228,6 +1228,45 @@ static long vduse_dev_ioctl(struct file *file, unsigned int cmd,
-> > > > > > >                                            umem.size);
-> > > > > > >                 break;
-> > > > > > >         }
-> > > > > > > +       case VDUSE_IOTLB_GET_INFO: {
-> > > > > > > +               struct vduse_iova_info info;
-> > > > > > > +               struct vhost_iotlb_map *map;
-> > > > > > > +               struct vduse_iova_domain *domain = dev->domain;
-> > > > > > > +
-> > > > > > > +               ret = -EFAULT;
-> > > > > > > +               if (copy_from_user(&info, argp, sizeof(info)))
-> > > > > > > +                       break;
-> > > > > > > +
-> > > > > > > +               ret = -EINVAL;
-> > > > > > > +               if (info.start > info.last)
-> > > > > > > +                       break;
-> > > > > > > +
-> > > > > > > +               if (!is_mem_zero((const char *)info.reserved,
-> > > > > > > +                                sizeof(info.reserved)))
-> > > > > > > +                       break;
-> > > > > > > +
-> > > > > > > +               spin_lock(&domain->iotlb_lock);
-> > > > > > > +               map = vhost_iotlb_itree_first(domain->iotlb,
-> > > > > > > +                                             info.start, info.last);
-> > > > > > > +               if (map) {
-> > > > > > > +                       info.start = map->start;
-> > > > > > > +                       info.last = map->last;
-> > > > > > > +                       info.capability = 0;
-> > > > > > > +                       if (domain->bounce_map && map->start >= 0 &&
-> > > > > > > +                           map->last < domain->bounce_size)
-> > > > > > > +                               info.capability |= VDUSE_IOVA_CAP_UMEM;
-> > > > > > > +               }
-> > > > > > > +               spin_unlock(&domain->iotlb_lock);
-> > > > > > > +               if (!map)
-> > > > > > > +                       break;
-> > > > > > > +
-> > > > > > > +               ret = -EFAULT;
-> > > > > > > +               if (copy_to_user(argp, &info, sizeof(info)))
-> > > > > > > +                       break;
-> > > > > > > +
-> > > > > > > +               ret = 0;
-> > > > > > > +               break;
-> > > > > > > +       }
-> > > > > > >         default:
-> > > > > > >                 ret = -ENOIOCTLCMD;
-> > > > > > >                 break;
-> > > > > > > diff --git a/include/uapi/linux/vduse.h b/include/uapi/linux/vduse.h
-> > > > > > > index 9885e0571f09..11bd48c72c6c 100644
-> > > > > > > --- a/include/uapi/linux/vduse.h
-> > > > > > > +++ b/include/uapi/linux/vduse.h
-> > > > > > > @@ -233,6 +233,30 @@ struct vduse_iova_umem {
-> > > > > > >  /* De-register the userspace memory. Caller should set iova and size field. */
-> > > > > > >  #define VDUSE_IOTLB_DEREG_UMEM _IOW(VDUSE_BASE, 0x19, struct vduse_iova_umem)
-> > > > > > >
-> > > > > > > +/**
-> > > > > > > + * struct vduse_iova_info - information of one IOVA region
-> > > > > > > + * @start: start of the IOVA region
-> > > > > > > + * @last: last of the IOVA region
-> > > > > > > + * @capability: capability of the IOVA regsion
-> > > > > > > + * @reserved: for future use, needs to be initialized to zero
-> > > > > > > + *
-> > > > > > > + * Structure used by VDUSE_IOTLB_GET_INFO ioctl to get information of
-> > > > > > > + * one IOVA region.
-> > > > > > > + */
-> > > > > > > +struct vduse_iova_info {
-> > > > > > > +       __u64 start;
-> > > > > > > +       __u64 last;
-> > > > > > > +#define VDUSE_IOVA_CAP_UMEM (1 << 0)
-> > > > > > > +       __u64 capability;
-> > > > > > > +       __u64 reserved[3];
-> > > > > > > +};
-> > > > > > > +
-> > > > > > > +/*
-> > > > > > > + * Find the first IOVA region that overlaps with the range [start, last]
-> > > > > >
-> > > > > > So the code is actually find the IOVA region that is the super range
-> > > > > > of [start, last] instead of overlap:
-> > > > > >
-> > > > >
-> > > > > This is achieved by vhost_iotlb_itree_first(). And can't the super
-> > > > > range of [start,last] be considered overlapping?
-> > > >
-> > > > Ok, but what I want to ask is, under which condition can we hit the
-> > > > following case
-> > > >
-> > > > map->last >= domain->bounce_size ?
-> > > >
-> > >
-> > > I think we would not hit this case currently.
-> >
-> > I wonder if it's worthwhile to have a WARN or just remove this check.
-> >
 >
-> I think we can't remove the check since not only the bounce region
-> will match the condition: map->start >= 0.
 >
-> Or changing to map->start == 0 && map->last == domain->bounce_size - 1 ?
+> On 2022/8/2 =E4=B8=8B=E5=8D=882:03, Huacai Chen wrote:
+> > Hi, Qing,
+> >
+> > Though we had an offline discussion, I still think adding get_wchan()
+> > support is worthy. :)
+> >
+> ok, I will adding get_wchan() support in v4 and modify the abbreviation
+> of commit messages. :)
+Maybe you can wait for some time to see if others have more comments.
 
-This looks like an assumption that there should be only one single map
-for bound buffer.
-
-It should be fine.
-
-Thanks
-
+Huacai
 >
 > Thanks,
-> Yongji
+> -Qing
+> > Huacai
 >
-
