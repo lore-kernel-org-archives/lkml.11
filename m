@@ -2,93 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E10BC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35951C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:58:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236175AbiHBHs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 03:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54002 "EHLO
+        id S236164AbiHBH6D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 03:58:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236151AbiHBHsg (ORCPT
+        with ESMTP id S233160AbiHBH6A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 03:48:36 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C374BD36;
-        Tue,  2 Aug 2022 00:48:25 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id 206so8201641pgb.0;
-        Tue, 02 Aug 2022 00:48:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=1MS9pf4ztVbyCKv989qflQ+PxKq3BLF8CrASWzL5Thk=;
-        b=lGIiLus4o2SfA2Jxob2Ha+khYgBkKyGJKS+Vcci102rBZUndmRJ5ljsqfYbY9GTCax
-         fWGx7ZodJ5lzCXLb6GCJFPY7/I+iY1UgUaNn51Sg/U06fGB47G7uCY9T8SRtPJTgrqw2
-         /faFbPbiAoTWKxQTHOGn0IKmjo3IYIDfrgVanrSewmwdfqtoMYrUKA5Jd3LBVEdwYgUa
-         kmMbAI2kGntsDeibkuagDFgO++O4jQQfFNwPeB/5bER7mfp9ErYpkOJ1sbabGAJKvQzK
-         nzjdxhwuf5JhrNd5fdB8pXKG8/8y9f1BwOJJ6nf60acaDbFu5N5ek7OVT4wf4xGZ2lKO
-         1OAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=1MS9pf4ztVbyCKv989qflQ+PxKq3BLF8CrASWzL5Thk=;
-        b=PKHnlkln1hi9N3hJCVQN3EzTt4dDzEQN7wHqWd1TmrpheCz58MXRVNtqYDrAwrv7cA
-         DWN5ddaBZlnQY6RNq85fIebyOBUCm+lnXLrdIUTkd4gji2KEmbj6QlAXVkWo9CRR67v9
-         67Vt7XMqoUdNGZgsgFrs+7ApM0h7zlqv49QdivkRS1tWpG73qQUfRFLrDGfZqHHRMpod
-         GLN2xUJVcoOJBWP7tjchJkYh5glf4wHM6eAJbTLJBWYrVV5nXa4jY6tbqPbRNXn2Zfam
-         MA/Vb9gNIZjmm/P7EvdfEkBiUBgYov43REp0caYGjiOMvypQvCGhi5FsFhqiemrBGkoD
-         2l1w==
-X-Gm-Message-State: AJIora+qBydb75fhH8zODjbEFxt5rVWsGve9AfSfZzmDi28QqRPzTjB2
-        cMMQma8svzA51ffsj7cgls0ZZhwLtw4=
-X-Google-Smtp-Source: AGRyM1v1gY2V3nnnptsChGo3jWDB2lLIfhIs+d8gvjTPXPhtu/yYY3HgvYwrtligtEO7ZgSGWqKeoQ==
-X-Received: by 2002:a63:f143:0:b0:41a:3744:8639 with SMTP id o3-20020a63f143000000b0041a37448639mr16131973pgk.254.1659426504327;
-        Tue, 02 Aug 2022 00:48:24 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id m17-20020a170902db1100b0016ec8286733sm7485135plx.243.2022.08.02.00.48.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 00:48:24 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: ye.xingchen@zte.com.cn
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, ye xingchen <ye.xingchen@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] crypto: sun8i-ce:using the pm_runtime_resume_and_get  to simplify the code
-Date:   Tue,  2 Aug 2022 07:48:20 +0000
-Message-Id: <20220802074820.1648786-1-ye.xingchen@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 2 Aug 2022 03:58:00 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EF12F38A;
+        Tue,  2 Aug 2022 00:57:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659427078; x=1690963078;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=o8494un4vXRlvd50TpzXogqNJizswoyXDmZmi+TkmX0=;
+  b=ZTQAEWjCp/Dcra2LEUEQzLviGCfMOuxzX/GVZaDEJzpRP4lQIZcLYgUD
+   qK7i9MfGADx6BWxMEqfmAEE2cWtc56/5azOw6+5N9AxCMCdU95REixyjN
+   egOtBFxuUCHjCNqEKefju3hrnDco9u+YbeKHzOODDhxv4nZXirJv58kCl
+   M6ndhghoqqG5SaGGpBjdnvduTv+lUktS/F3gbt1O5xs1HiKOEj4T43pN5
+   08o0Yjztw/lW+JGwP+IugXaQPe5MWEUgYuxc9H5hlRna06BDf55wqAf1s
+   6VDQjCuYJzcCk19c7jcLqwZLhF+1Yl57k1qCScO0QOpeDSCAqVsEP/PFt
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10426"; a="290563300"
+X-IronPort-AV: E=Sophos;i="5.93,210,1654585200"; 
+   d="scan'208";a="290563300"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 00:57:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,210,1654585200"; 
+   d="scan'208";a="744580849"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 02 Aug 2022 00:57:54 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Tue, 02 Aug 2022 10:57:53 +0300
+Date:   Tue, 2 Aug 2022 10:57:53 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Gene Chen <gene.chen.richtek@gmail.com>
+Cc:     linux@roeck-us.net, gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        gene_chen@richtek.com, cy_huang@richtek.com
+Subject: Re: [PATCH v3 2/7] usb: typec: tcpci_rt1711h: Fix vendor setting
+ when set vconn
+Message-ID: <YujZATquqh0srgHm@kuha.fi.intel.com>
+References: <20220801101447.86207-1-gene.chen.richtek@gmail.com>
+ <20220801101447.86207-3-gene.chen.richtek@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220801101447.86207-3-gene.chen.richtek@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ye xingchen <ye.xingchen@zte.com.cn>
+Hi Gene,
 
-Using pm_runtime_resume_and_get() to instade of  pm_runtime_get_sync
-and pm_runtime_put_noidle.
+On Mon, Aug 01, 2022 at 06:14:42PM +0800, Gene Chen wrote:
+> From: Gene Chen <gene_chen@richtek.com>
+> 
+> replace overwrite whole register with update bits
+> 
+> Signed-off-by: Gene Chen <gene_chen@richtek.com>
+> ---
+>  drivers/usb/typec/tcpm/tcpci_rt1711h.c | 15 +++++++++------
+>  1 file changed, 9 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/usb/typec/tcpm/tcpci_rt1711h.c b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> index b56a0880a044..6197d9a05d36 100644
+> --- a/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> +++ b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> @@ -5,13 +5,15 @@
+>   * Richtek RT1711H Type-C Chip Driver
+>   */
+>  
+> -#include <linux/kernel.h>
+> -#include <linux/module.h>
+> +#include <linux/bits.h>
+> +#include <linux/gpio/consumer.h>
+>  #include <linux/i2c.h>
+>  #include <linux/interrupt.h>
+> -#include <linux/gpio/consumer.h>
+> -#include <linux/usb/tcpm.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+>  #include <linux/regmap.h>
+> +#include <linux/usb/tcpm.h>
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
----
- drivers/crypto/allwinner/sun8i-ce/sun8i-ce-trng.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+That header reshuffling is not necessary for this change - at least you
+are not giving any reason for it in your commit message.
 
-diff --git a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-trng.c b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-trng.c
-index 19cd2e52f89d..ef9cfc61af32 100644
---- a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-trng.c
-+++ b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-trng.c
-@@ -54,9 +54,8 @@ static int sun8i_ce_trng_read(struct hwrng *rng, void *data, size_t max, bool wa
- 		goto err_dst;
- 	}
- 
--	err = pm_runtime_get_sync(ce->dev);
-+	err = pm_runtime_resume_and_get(ce->dev);
- 	if (err < 0) {
--		pm_runtime_put_noidle(ce->dev);
- 		goto err_pm;
- 	}
- 
+If there is no real need for that in this patch, then please leave the
+headers as they are. You can propose changing the order of the headers
+in a separate patch. Though, I would not bother with it unless there
+is some real benefit in doing so, and I'm pretty sure there isn't any.
+
+>  #include "tcpci.h"
+>  
+>  #define RT1711H_VID		0x29CF
+> @@ -23,6 +25,7 @@
+>  #define RT1711H_RTCTRL8_SET(ck300, ship_off, auto_idle, tout) \
+>  			    (((ck300) << 7) | ((ship_off) << 5) | \
+>  			    ((auto_idle) << 3) | ((tout) & 0x07))
+> +#define RT1711H_AUTOIDLEEN	BIT(3)
+>  
+>  #define RT1711H_RTCTRL11	0x9E
+>  
+> @@ -109,8 +112,8 @@ static int rt1711h_set_vconn(struct tcpci *tcpci, struct tcpci_data *tdata,
+>  {
+>  	struct rt1711h_chip *chip = tdata_to_rt1711h(tdata);
+>  
+> -	return rt1711h_write8(chip, RT1711H_RTCTRL8,
+> -			      RT1711H_RTCTRL8_SET(0, 1, !enable, 2));
+> +	return regmap_update_bits(chip->data.regmap, RT1711H_RTCTRL8,
+> +				  RT1711H_AUTOIDLEEN, enable ? 0 : RT1711H_AUTOIDLEEN);
+>  }
+>  
+>  static int rt1711h_start_drp_toggling(struct tcpci *tcpci,
+> -- 
+> 2.25.1
+
+thanks,
+
 -- 
-2.25.1
+heikki
