@@ -2,128 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 022A4C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:58:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D04D6C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235518AbiHBR6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 13:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
+        id S235779AbiHBR6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 13:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235319AbiHBR6i (ORCPT
+        with ESMTP id S235399AbiHBR6l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 13:58:38 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EFE24D801
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 10:58:37 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id d14so11175260lfl.13
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 10:58:37 -0700 (PDT)
+        Tue, 2 Aug 2022 13:58:41 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C3150044
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 10:58:39 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id n20-20020a05600c3b9400b003a4f2261a7eso240871wms.2
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 10:58:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XlyYTnn1kbQZ516FIn+rClIxx0d3BNXJVA7WhFGAQX8=;
-        b=T7Njkv8tzTVHHIvYpT9tG294YaM9GVyg71TOexkCuOgsNTAvaFhaA0Vmm2k2noHMhH
-         O+VWuJaWwm+LjFlWFWVHlwXo4TvjS0+XOfSCCPvqEYqiwcmdQiIBGsFXaqGJ78XoOZZS
-         xWnqhlZ2P61EJ/apxpKqjo2B1Cgy9MBn+/baAzg0ClzSACClmuwVjX2tHTTXL5brtvTZ
-         mAUveI1bX+afXCappQ+YkXMvYHQkhOVMcFqk5AL2a+w/13fm/Hi9CoEpn1DHuy8w67Tq
-         +ldB4hHTSstKkviAnDrL6uZNiXL0isptAOL/FtYjrgq4EwkJgRetWcdPSsfIpIKyW13M
-         HEew==
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=UjGXyUyDLmjMDOf8jNJMvPEYFg/F977ZxHxgmhAvnmc=;
+        b=Qh2sccOhKOymfr5Qop+pGzCH8T+687LGQLFRfVvoM3mFqaGCRJEm0wRxg98se49s0U
+         N+wb1c9mjaL4yVirYDILB0P0YX4NPYi9DAHEV9Eg2iI0V0j1C/dHTMTtSmubquYBNiE7
+         DDnG2uqIJDUgkqbyvgCoOMvk0rA64gM0k18LqPAeHBOB7RprdaxP2Dly/I1A27INmgug
+         J9/3qEKHS2ciOpZsH7KiXSf/iiUZ3lvfArqouhz/x1xSOUF95ftI6SHX2sRSodB3Rnx4
+         vh5gK7ye8THHoD7z30L9YwPyRms6IcJ/FeyrpKmOO3bf4EVLHbxK1WRpsFHzzyT/4nMi
+         ezJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XlyYTnn1kbQZ516FIn+rClIxx0d3BNXJVA7WhFGAQX8=;
-        b=5tVkmhvqgBCtH4fjwPZldjPK8sQszEqSXimt0Mfno50kDDWpHU5ZnX17HvWR5SYQgl
-         jM63edY3Y5Ho1B6cebLJ+NTgujo0JanuUynZIuIzakG/x3lj9dKigqPRcKaB6WVvigf8
-         nYogWXQNFnSrwpk13u90U2LoMnKGkSwJNyBoOZheStKiXI+zxFFO6DMiuItdWDQzbp0i
-         f+RNL/Ai91GBthO7zG9c0JoLDfzM9yWKU5NK5AeriwlyGrq3oMig8t9iHd0VzcSt0NJe
-         Jl31KgT835OODwazjXz+nV251i0JWsBGCO/0fHZ+v3bT03naVEKa7vGqCcSUj1qDoZhk
-         2hMQ==
-X-Gm-Message-State: ACgBeo28jRSDmHMGO12nWH7PrBPTikc4e8j6+JVR31+p8L9t15xsR4Bz
-        zX3W1FKPHfAGQNI/eNEmnT+mrqgzcvvNOXa/666mzQ==
-X-Google-Smtp-Source: AA6agR40G8SCTsMN05WoDpwiLryayqYoZ9acr7piTwCNBrfuVq6ECmM1bRacKcBj0jEU+55VZMSSU8Vxd9uKo7iDo/o=
-X-Received: by 2002:a19:ca50:0:b0:48a:f4ce:4559 with SMTP id
- h16-20020a19ca50000000b0048af4ce4559mr4677864lfj.432.1659463115376; Tue, 02
- Aug 2022 10:58:35 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UjGXyUyDLmjMDOf8jNJMvPEYFg/F977ZxHxgmhAvnmc=;
+        b=nsMIHt2I/i3O3cb4lfkNRbrENkS625IKQhPhlKUPdtlKZzunD2IwWSi9ubW+odX/Be
+         oO6+wxDARsh6RgKzWe36MDjmfHfosvr96Slmt0QSIVlAo5puHnYP52Lgpkz8Fq+n3ztd
+         WcHX1fWhaIRxshLrgKZbfRWNEhNU7Rctp5OJCE8UfYnWRoCHfo1VYIHisLPewO5CJsSa
+         wyma4IwueQGzPND2zHaWvHOqp0XNTy3GizYyw5n+U04DNmuGjR/6PFt8Q3HCbG5CatdI
+         MQCWIsMO5hZ9/bV6rJWKTAElkU4iCftXrZl2Al460PbFCwdhVIZMKPxufpdMixOvmiqq
+         RkDQ==
+X-Gm-Message-State: ACgBeo24Rixh2NhkMUhx4y08fN4nx6arIZhSGe6JrVml7c9sJ3XN9/r3
+        gqhbPHxPLl/UEKJ+R1J8xqby3NYXTTbe1g==
+X-Google-Smtp-Source: AA6agR4jqgI7Xs6iYK8jzlkHDKEuwOrDweCr7U8C/ikyOQNCqpvpyUePii/sxWpyirqjvlfe+oPfuA==
+X-Received: by 2002:a05:600c:19d2:b0:3a3:2cdb:cc02 with SMTP id u18-20020a05600c19d200b003a32cdbcc02mr382332wmq.182.1659463117937;
+        Tue, 02 Aug 2022 10:58:37 -0700 (PDT)
+Received: from debian.office.codethink.co.uk ([2405:201:8005:8149:e5c9:c0ac:4d82:e94b])
+        by smtp.gmail.com with ESMTPSA id 9-20020a05600c020900b003a3187a2d4csm23318222wmi.22.2022.08.02.10.58.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Aug 2022 10:58:37 -0700 (PDT)
+From:   Sudip Mukherjee <sudip.mukherjee@sifive.com>
+To:     Serge Semin <fancer.lancer@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     greentime.hu@sifive.com, jude.onyenegecha@sifive.com,
+        william.salmon@sifive.com, adnan.chowdhury@sifive.com,
+        ben.dooks@sifive.com, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jeegar.lakhani@sifive.com,
+        Sudip Mukherjee <sudip.mukherjee@sifive.com>
+Subject: [PATCH 03/11] spi: dw: define spi_frf for dual/quad/octal modes
+Date:   Tue,  2 Aug 2022 18:57:47 +0100
+Message-Id: <20220802175755.6530-4-sudip.mukherjee@sifive.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220802175755.6530-1-sudip.mukherjee@sifive.com>
+References: <20220802175755.6530-1-sudip.mukherjee@sifive.com>
 MIME-Version: 1.0
-References: <20220730173636.1303357-1-masahiroy@kernel.org> <20220730173636.1303357-2-masahiroy@kernel.org>
-In-Reply-To: <20220730173636.1303357-2-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 2 Aug 2022 10:58:24 -0700
-Message-ID: <CAKwvOdk3-UdsxDwjgF=_=irsGLeDj6LF45oeV+6a5d9CeY-Fkg@mail.gmail.com>
-Subject: Re: [PATCH 2/3] modpost: use more reliable way to get fromsec in section_rel(a)()
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        linux-kernel@vger.kernel.org, Fangrui Song <maskray@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 30, 2022 at 10:37 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> The section name of Rel and Rela starts with ".rel" and ".rela"
-> respectively (but, I do not know whether this is specification or
-> convention).
->
-> For example, ".rela.text" holds relocation entries applied to the
-> ".text" section.
->
-> So, the code chops the ".rel" or ".rela" prefix to get the name of
-> the section to which the relocation applies.
->
-> However, I do not like to skip 4 or 5 bytes blindly because it is
-> potential memory overrun.
->
-> The ELF specification provides a more reliable way to do this.
->
->  - The sh_info field holds extra information, whose interpretation
->    depends on the section type
->
->  - If the section type is SHT_REL or SHT_RELA, the sh_info field holds
->    the section header index of the section to which the relocation
->    applies.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+The SPI mode needs to be mentioned in CTRLR0[23:22] register. Define a
+configuration variable to keep the mode based on the buswidth, which will
+then be used to update CR0. If the transfer is using dual/quad/octal
+mode then mark enhanced_spi as true.
 
-Yes, this seems much safer; thanks for the patch!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Sudip Mukherjee <sudip.mukherjee@sifive.com>
+---
+ drivers/spi/spi-dw-core.c | 29 +++++++++++++++++++++++++++++
+ drivers/spi/spi-dw.h      |  7 +++++++
+ 2 files changed, 36 insertions(+)
 
-> ---
->
->  scripts/mod/modpost.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
->
-> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> index 148b38699889..c6a055c0291e 100644
-> --- a/scripts/mod/modpost.c
-> +++ b/scripts/mod/modpost.c
-> @@ -1723,8 +1723,7 @@ static void section_rela(const char *modname, struct elf_info *elf,
->         Elf_Rela *start = (void *)elf->hdr + sechdr->sh_offset;
->         Elf_Rela *stop  = (void *)start + sechdr->sh_size;
->
-> -       fromsec = sech_name(elf, sechdr);
-> -       fromsec += strlen(".rela");
-> +       fromsec = sec_name(elf, sechdr->sh_info);
->         /* if from section (name) is know good then skip it */
->         if (match(fromsec, section_white_list))
->                 return;
-> @@ -1776,8 +1775,7 @@ static void section_rel(const char *modname, struct elf_info *elf,
->         Elf_Rel *start = (void *)elf->hdr + sechdr->sh_offset;
->         Elf_Rel *stop  = (void *)start + sechdr->sh_size;
->
-> -       fromsec = sech_name(elf, sechdr);
-> -       fromsec += strlen(".rel");
-> +       fromsec = sec_name(elf, sechdr->sh_info);
->         /* if from section (name) is know good then skip it */
->         if (match(fromsec, section_white_list))
->                 return;
-> --
-> 2.34.1
->
-
-
+diff --git a/drivers/spi/spi-dw-core.c b/drivers/spi/spi-dw-core.c
+index 77529e359b6d..8c84a2e991b5 100644
+--- a/drivers/spi/spi-dw-core.c
++++ b/drivers/spi/spi-dw-core.c
+@@ -333,6 +333,14 @@ void dw_spi_update_config(struct dw_spi *dws, struct spi_device *spi,
+ 		/* CTRLR0[11:10] Transfer Mode */
+ 		cr0 |= FIELD_PREP(DW_HSSI_CTRLR0_TMOD_MASK, cfg->tmode);
+ 
++	if (dws->caps & DW_SPI_CAP_EXT_SPI) {
++		if (cfg->spi_frf)
++			cr0 |= FIELD_PREP(DW_HSSI_CTRLR0_SPI_FRF_MASK,
++				cfg->spi_frf);
++		else
++			cr0 &= ~DW_HSSI_CTRLR0_SPI_FRF_MASK;
++	}
++
+ 	dw_writel(dws, DW_SPI_CTRLR0, cr0);
+ 
+ 	if (cfg->tmode == DW_SPI_CTRLR0_TMOD_EPROMREAD ||
+@@ -679,10 +687,31 @@ static void dw_spi_stop_mem_op(struct dw_spi *dws, struct spi_device *spi)
+ static int dw_spi_exec_mem_op(struct spi_mem *mem, const struct spi_mem_op *op)
+ {
+ 	struct dw_spi *dws = spi_controller_get_devdata(mem->spi->controller);
++	bool enhanced_spi = false;
+ 	struct dw_spi_cfg cfg;
+ 	unsigned long flags;
+ 	int ret;
+ 
++	if (dws->caps & DW_SPI_CAP_EXT_SPI) {
++		switch (op->data.buswidth) {
++		case 2:
++			cfg.spi_frf = DW_SSI_CTRLR0_SPI_FRF_DUAL_SPI;
++			enhanced_spi = true;
++			break;
++		case 4:
++			cfg.spi_frf = DW_SSI_CTRLR0_SPI_FRF_QUAD_SPI;
++			enhanced_spi = true;
++			break;
++		case 8:
++			cfg.spi_frf = DW_SSI_CTRLR0_SPI_FRF_OCT_SPI;
++			enhanced_spi = true;
++			break;
++		default:
++			cfg.spi_frf = 0;
++			break;
++		}
++	}
++
+ 	/*
+ 	 * Collect the outbound data into a single buffer to speed the
+ 	 * transmission up at least on the initial stage.
+diff --git a/drivers/spi/spi-dw.h b/drivers/spi/spi-dw.h
+index 71d18e9291a3..b8cc20e0deaa 100644
+--- a/drivers/spi/spi-dw.h
++++ b/drivers/spi/spi-dw.h
+@@ -96,6 +96,12 @@
+ #define DW_HSSI_CTRLR0_SRL			BIT(13)
+ #define DW_HSSI_CTRLR0_MST			BIT(31)
+ 
++/* Bit fields in CTRLR0 for enhanced SPI */
++#define DW_HSSI_CTRLR0_SPI_FRF_MASK		GENMASK(23, 22)
++#define DW_SSI_CTRLR0_SPI_FRF_DUAL_SPI		0x1
++#define DW_SSI_CTRLR0_SPI_FRF_QUAD_SPI		0x2
++#define DW_SSI_CTRLR0_SPI_FRF_OCT_SPI		0x3
++
+ /* Bit fields in CTRLR1 */
+ #define DW_SPI_NDF_MASK				GENMASK(15, 0)
+ 
+@@ -136,6 +142,7 @@ struct dw_spi_cfg {
+ 	u8 dfs;
+ 	u32 ndf;
+ 	u32 freq;
++	u8 spi_frf;
+ };
+ 
+ struct dw_spi;
 -- 
-Thanks,
-~Nick Desaulniers
+2.30.2
+
