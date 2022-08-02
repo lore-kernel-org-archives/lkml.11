@@ -2,98 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F299C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:21:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FDFDC19F28
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:22:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235390AbiHBQVF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 12:21:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59850 "EHLO
+        id S236949AbiHBQWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 12:22:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234352AbiHBQVC (ORCPT
+        with ESMTP id S232582AbiHBQWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 12:21:02 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452EC1580A
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:21:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659457261; x=1690993261;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=odLe469vYRFFk0tiQE748w0fTOIT9bUrSyZmNxifBUU=;
-  b=HTzSERYhYaeCC+3Cv42hmrZ60Vx8+DVEMFqUKI002FjbTY6Oma+Rva2F
-   IiPYKwZxvT390I8J+tvF/DHFogpbCq1egFP04QxPtbOrcP7gz9rix8EIo
-   psC6CLPu1gGUjavRBPEz+lcnGrnQgwn2VSLb0uKGlCANLYWVzpeZP+oNT
-   3oqBuL57+xfHeTrQRoZMwYFUZXgyvICXVzEUBgVzOY9UESompLwLeNTQ2
-   9kZb6+Xm17YgpkJA29o7kDLnk4zL49hG1IPOI7W1xFep3+eS8lksZTaxE
-   spfqxtenDtsccEQFCoNHvG10QcPk3RB5m5ogyeA93qmR/EmQ/eWtfXzTd
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="287014751"
-X-IronPort-AV: E=Sophos;i="5.93,211,1654585200"; 
-   d="scan'208";a="287014751"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 09:18:51 -0700
-X-IronPort-AV: E=Sophos;i="5.93,211,1654585200"; 
-   d="scan'208";a="602491098"
-Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 09:18:49 -0700
-Date:   Tue, 2 Aug 2022 09:18:47 -0700
-From:   Tony Luck <tony.luck@intel.com>
-To:     Yazen Ghannam <yazen.ghannam@amd.com>
-Cc:     bp@alien8.de, linux-kernel@vger.kernel.org,
-        patches@lists.linux.dev, x86@kernel.org
-Subject: [PATCH v2] RAS/CEC: Reduce offline page threshold for Intel systems
-Message-ID: <YulOZ/Eso0bwUcC4@agluck-desk3.sc.intel.com>
-References: <a871b8bd35604921b842dcd65aed0f6c@intel.com>
- <20220701191239.619940-1-tony.luck@intel.com>
- <YukTfuX3QmKV4msI@yaz-fattaah>
+        Tue, 2 Aug 2022 12:22:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CE4F1658D
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:22:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659457358;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=O3tsEKvxskgi9In/Fyj4bXLYVphFO38qknn8fDGj1Oo=;
+        b=N+gp68eQPFsDxv/fBQQS2cR90L0+qplQgLCBs7+OnlA4vfkCTOomFPl5TfqlPJPb0PDm8o
+        LXd3JOAP/nvNMZ64KJ4ceH72GVsD4v5fSanmFBh+KrWGbHggdIzzTERPIaL4CwSJuLaKnQ
+        HZYoX/96gbd1HBOPB07pem8NPjqDg/s=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-632-4hjQWIN6NWSnWYR0iteYJg-1; Tue, 02 Aug 2022 12:22:37 -0400
+X-MC-Unique: 4hjQWIN6NWSnWYR0iteYJg-1
+Received: by mail-pj1-f72.google.com with SMTP id f16-20020a17090a4a9000b001f234757bbbso6371051pjh.6
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 09:22:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=O3tsEKvxskgi9In/Fyj4bXLYVphFO38qknn8fDGj1Oo=;
+        b=3Hf06HyrxUio5lK9U6ZZbAFbSS0tT5aKHH41r24Kx7jR4v4QWcdIShA0ArdFpj75zh
+         ZT3sqF7ykZ6dVlyMIMI7KcZt2u6JcRz8/lPlz+rlThjMz7r6+LEHEuHw8BTpQtySFzjS
+         9xJpCXWSh/mAJ4aC5fkjKk2+MOP8H0zwSW3VV4QquhTCY6I3Yx/+o33c7sT9JjcWQDR0
+         1y01Bs+6FeyT1cvZiVFC3BDu6r3D2z2mhpnil3gXwMSAqes0I0p5JKxsaK1cYslMQlDX
+         xEtefnQdv7O/2PMjxnIYXTo6xoS8kuRfB9bPwLfxiaOHJ6uNWbU/+SyGcEQfy9eNMY3V
+         nXdA==
+X-Gm-Message-State: ACgBeo29O9YYlwZbQSEggoMuwaq2hv/tQ3v1vorZWTPdkLsLWYznhTPH
+        QiXx0GWGf+dquT0vSkS32FDRuKMt5cHVUXmx/8YPiSoxwuncEbT6fJ7xYLOXXsXuS3leBdXNSNT
+        O1Dy8vsTiwSakQkKkVixKD0hs
+X-Received: by 2002:a17:90b:390d:b0:1f2:4dbe:5f44 with SMTP id ob13-20020a17090b390d00b001f24dbe5f44mr253339pjb.27.1659457355671;
+        Tue, 02 Aug 2022 09:22:35 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5r2Bfnmi/4f+Rd86nVyGuOIS5NmcCw3g6A/n5mcpUzWsdYZwfrpmAg/dDCyUCILR43VvmE5w==
+X-Received: by 2002:a17:90b:390d:b0:1f2:4dbe:5f44 with SMTP id ob13-20020a17090b390d00b001f24dbe5f44mr253317pjb.27.1659457355413;
+        Tue, 02 Aug 2022 09:22:35 -0700 (PDT)
+Received: from xps13.. ([240d:1a:c0d:9f00:4f2f:926a:23dd:8588])
+        by smtp.gmail.com with ESMTPSA id z21-20020a630a55000000b00419ab8f8d2csm9342299pgk.20.2022.08.02.09.22.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Aug 2022 09:22:34 -0700 (PDT)
+From:   Shigeru Yoshida <syoshida@redhat.com>
+To:     paulmck@kernel.org, frederic@kernel.org, neeraju@quicinc.com,
+        josh@joshtriplett.org
+Cc:     rostedt@goodmis.org, mathieu.desnoyers@efficios.com,
+        jiangshanlai@gmail.com, joel@joelfernandes.org,
+        rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shigeru Yoshida <syoshida@redhat.com>
+Subject: [PATCH] rcu-tasks: Avoid pr_info() with spin lock in cblist_init_generic()
+Date:   Wed,  3 Aug 2022 01:22:05 +0900
+Message-Id: <20220802162205.817796-1-syoshida@redhat.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YukTfuX3QmKV4msI@yaz-fattaah>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A large scale study of memory errors on Intel systems in data centers
-showed that aggressively taking pages with corrected errors offline is
-the best strategy of using corrected errors as a predictor of future
-uncorrected errors.
+pr_info() is called with rtp->cbs_gbl_lock spin lock locked.  Because
+pr_info() calls printk() that might sleep, this will result in BUG
+like below:
 
-Set the threshold to "2" on Intel systems. AMD guidance is that this is
-not necessary for their systems.
+[    0.206455] cblist_init_generic: Setting adjustable number of callback queues.
+[    0.206463]
+[    0.206464] =============================
+[    0.206464] [ BUG: Invalid wait context ]
+[    0.206465] 5.19.0-00428-g9de1f9c8ca51 #5 Not tainted
+[    0.206466] -----------------------------
+[    0.206466] swapper/0/1 is trying to lock:
+[    0.206467] ffffffffa0167a58 (&port_lock_key){....}-{3:3}, at: serial8250_console_write+0x327/0x4a0
+[    0.206473] other info that might help us debug this:
+[    0.206473] context-{5:5}
+[    0.206474] 3 locks held by swapper/0/1:
+[    0.206474]  #0: ffffffff9eb597e0 (rcu_tasks.cbs_gbl_lock){....}-{2:2}, at: cblist_init_generic.constprop.0+0x14/0x1f0
+[    0.206478]  #1: ffffffff9eb579c0 (console_lock){+.+.}-{0:0}, at: _printk+0x63/0x7e
+[    0.206482]  #2: ffffffff9ea77780 (console_owner){....}-{0:0}, at: console_emit_next_record.constprop.0+0x111/0x330
+[    0.206485] stack backtrace:
+[    0.206486] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.0-00428-g9de1f9c8ca51 #5
+[    0.206488] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-1.fc36 04/01/2014
+[    0.206489] Call Trace:
+[    0.206490]  <TASK>
+[    0.206491]  dump_stack_lvl+0x6a/0x9f
+[    0.206493]  __lock_acquire.cold+0x2d7/0x2fe
+[    0.206496]  ? stack_trace_save+0x46/0x70
+[    0.206497]  lock_acquire+0xd1/0x2f0
+[    0.206499]  ? serial8250_console_write+0x327/0x4a0
+[    0.206500]  ? __lock_acquire+0x5c7/0x2720
+[    0.206502]  _raw_spin_lock_irqsave+0x3d/0x90
+[    0.206504]  ? serial8250_console_write+0x327/0x4a0
+[    0.206506]  serial8250_console_write+0x327/0x4a0
+[    0.206508]  console_emit_next_record.constprop.0+0x180/0x330
+[    0.206511]  console_unlock+0xf7/0x1f0
+[    0.206512]  vprintk_emit+0xf7/0x330
+[    0.206514]  _printk+0x63/0x7e
+[    0.206516]  cblist_init_generic.constprop.0.cold+0x24/0x32
+[    0.206518]  rcu_init_tasks_generic+0x5/0xd9
+[    0.206522]  kernel_init_freeable+0x15b/0x2a2
+[    0.206523]  ? rest_init+0x160/0x160
+[    0.206526]  kernel_init+0x11/0x120
+[    0.206527]  ret_from_fork+0x1f/0x30
+[    0.206530]  </TASK>
+[    0.207018] cblist_init_generic: Setting shift to 1 and lim to 1.
 
-Reviewed-by: Yazen Ghannam <yazen.ghannam@amd.com>
-Signed-off-by: Tony Luck <tony.luck@intel.com>
+This patch moves pr_info() so that it is called without
+rtp->cbs_gbl_lock locked.
+
+Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
 ---
+ kernel/rcu/tasks.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-V2:
-	Fix some spelling errors. 
-	Add note to commit that AMD systems do not need this.
-	Add Yazen's Reviewed-by tag.
-
- drivers/ras/cec.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/ras/cec.c b/drivers/ras/cec.c
-index 42f2fc0bc8a9..321af498ee11 100644
---- a/drivers/ras/cec.c
-+++ b/drivers/ras/cec.c
-@@ -556,6 +556,14 @@ static int __init cec_init(void)
- 	if (ce_arr.disabled)
- 		return -ENODEV;
- 
-+	/*
-+	 * Intel systems may avoid uncorrectable errors
-+	 * if pages with corrected errors are aggressively
-+	 * taken offline.
-+	 */
-+	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL)
-+		action_threshold = 2;
+diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+index 3925e32159b5..d46dd970bf22 100644
+--- a/kernel/rcu/tasks.h
++++ b/kernel/rcu/tasks.h
+@@ -227,7 +227,6 @@ static void cblist_init_generic(struct rcu_tasks *rtp)
+ 	if (rcu_task_enqueue_lim < 0) {
+ 		rcu_task_enqueue_lim = 1;
+ 		rcu_task_cb_adjust = true;
+-		pr_info("%s: Setting adjustable number of callback queues.\n", __func__);
+ 	} else if (rcu_task_enqueue_lim == 0) {
+ 		rcu_task_enqueue_lim = 1;
+ 	}
+@@ -256,6 +255,10 @@ static void cblist_init_generic(struct rcu_tasks *rtp)
+ 		raw_spin_unlock_rcu_node(rtpcp); // irqs remain disabled.
+ 	}
+ 	raw_spin_unlock_irqrestore(&rtp->cbs_gbl_lock, flags);
 +
- 	ce_arr.array = (void *)get_zeroed_page(GFP_KERNEL);
- 	if (!ce_arr.array) {
- 		pr_err("Error allocating CE array page!\n");
++	if (rcu_task_cb_adjust)
++		pr_info("%s: Setting adjustable number of callback queues.\n", __func__);
++
+ 	pr_info("%s: Setting shift to %d and lim to %d.\n", __func__, data_race(rtp->percpu_enqueue_shift), data_race(rtp->percpu_enqueue_lim));
+ }
+ 
 -- 
-2.35.3
+2.37.1
 
