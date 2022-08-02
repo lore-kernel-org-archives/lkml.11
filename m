@@ -2,89 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6ACFC19F2B
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:14:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBEFC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:15:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235738AbiHBHO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 03:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54038 "EHLO
+        id S235776AbiHBHPe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 03:15:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232948AbiHBHOz (ORCPT
+        with ESMTP id S233231AbiHBHPc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 03:14:55 -0400
-X-Greylist: delayed 384 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 02 Aug 2022 00:14:52 PDT
-Received: from smtp-o-1.desy.de (smtp-o-1.desy.de [IPv6:2001:638:700:1038::1:9a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0290627CC5
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 00:14:52 -0700 (PDT)
-Received: from smtp-buf-1.desy.de (smtp-buf-1.desy.de [131.169.56.164])
-        by smtp-o-1.desy.de (Postfix) with ESMTP id AD934E0BCC
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:08:26 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp-o-1.desy.de AD934E0BCC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=desy.de; s=default;
-        t=1659424106; bh=9YqpmsjcwJpikvYLgaXPc7bbeSAIsVszCEI64TpqLe4=;
-        h=Date:From:To:Subject:From;
-        b=v9aDUdn3jHnwa5AEYBFqh2Z+ac5q/T1Ds5O+/5Pk7pV85oDyOvI5Ex7zxrV5jK1n7
-         IeOdYh5HtWdj0ub4w3gK16DVMRUQ7s5GxroZqlbOrpraHVn7nMxgtEK+Vk8QYtII1G
-         k+lnHCgEJ9T8r7wkBWag6qkFjxQpEXLHYvOXm0Pw=
-Received: from smtp-m-1.desy.de (smtp-m-1.desy.de [131.169.56.129])
-        by smtp-buf-1.desy.de (Postfix) with ESMTP id A5E6B1202CC;
-        Tue,  2 Aug 2022 09:08:26 +0200 (CEST)
-Received: from z-mbx-3.desy.de (z-mbx-3.desy.de [131.169.55.141])
-        by smtp-intra-2.desy.de (Postfix) with ESMTP id 988EC1022BA;
-        Tue,  2 Aug 2022 09:08:26 +0200 (CEST)
-Date:   Tue, 2 Aug 2022 09:08:26 +0200 (CEST)
-From:   "Petrosyan, Ludwig" <ludwig.petrosyan@desy.de>
-To:     linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>
-Message-ID: <246771217.25641247.1659424106574.JavaMail.zimbra@desy.de>
-Subject: interesting effect of the get_user_pages and copy_to_user
+        Tue, 2 Aug 2022 03:15:32 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBFF32DA3
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 00:15:30 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id t1so20666487lft.8
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 00:15:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=c61IBeGENLBrfZtlLVNhveGWmLmYNBW+8+c+xekhbN4=;
+        b=xisHHreQsg8+3CNQvjUzLiFcibwj9uUxJ2QlQewRTagHGQoP36+CZbvfc/rrpsOTsr
+         5esKvZs4yhrgNcCEKQfRA3I3wq+Z+aiJ4Y9V4JV9TjrlXTOYVgTtCTsuw7qLBwDyRZ8r
+         WFsaNN8T6wlUS6CDzl9oPjiDS/FhO/T5pJ2zo8hhy/FhwQRYsHZfYcgHV10LIKiWJ/Po
+         lUoNmmJpUGJxZvrh8NRphScyouZmrcNiWwwzMayOFyD/ettTncNk4fs4mGCUJ4OyrRKU
+         1kIDK3/XM4M0j7gW7SDCyhs9oNuaWY1jF6MdTEPNM1s52BlkfE+Zztk6ElhqAeojqbnP
+         NYYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=c61IBeGENLBrfZtlLVNhveGWmLmYNBW+8+c+xekhbN4=;
+        b=3n9J4OLErmEcLjHgCxg3V3ZBCMD7y7mDhM+EQeRxNRtweqjQavaPQ37Zb3APz3NKf1
+         kAHhbt24NOQoxgqSHyYH0YJHk7n0KFUGeHJuBjND34eE49koZv5g+DRrCDr1PFG1DhI3
+         q9otHByLc3U3jIUBwCNYtWAz58IUiVAQ3Vfl81KI0hXrQxFtTuTHAnrj0aoeLsvXF+VI
+         8lqpEcAGzHVc/51/LLvwuhT2c9izUgMPEKpsCTXoK4mkMX5pSLpgsb7p2DIZGvYAs8hA
+         8h0i2u4J2FzJQK4B616TwyeCZ2kicTeOoVeO1IcW2lAxOB147HYDGqbDc8DVE+Bce9Xj
+         pbJw==
+X-Gm-Message-State: ACgBeo1xgzpAIQz4FYzpwveuL+B3eicsFSq6/syxO4Nxh+4Z9YzA4f75
+        c54xbTfZzE/wDsJQ/xWKLgv3JA==
+X-Google-Smtp-Source: AA6agR4DKQ54iF2lBgq5cgDu5t0vw5ELL8IbGd6dlICfMebN3W4GFM72tUtCrYKW0uIY59zfuFAv0Q==
+X-Received: by 2002:a05:6512:3c8d:b0:48a:f74a:67b6 with SMTP id h13-20020a0565123c8d00b0048af74a67b6mr3619423lfv.231.1659424528774;
+        Tue, 02 Aug 2022 00:15:28 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id g12-20020a2ea4ac000000b0025e48907929sm922293ljm.23.2022.08.02.00.15.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 00:15:28 -0700 (PDT)
+Message-ID: <9098554e-5327-0b7f-f4d0-a81880556136@linaro.org>
+Date:   Tue, 2 Aug 2022 10:15:27 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 3/5] clk: qcom: gpucc-sc7280: Add cx collapse reset
+ support
+Content-Language: en-GB
+To:     Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Rob Clark <robdclark@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1659172664-10345-1-git-send-email-quic_akhilpo@quicinc.com>
+ <20220730144713.3.I5e64ff4b77bb9079eb2edeea8a02585c9e76778f@changeid>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220730144713.3.I5e64ff4b77bb9079eb2edeea8a02585c9e76778f@changeid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Mailer: Zimbra 8.8.15_GA_4308 (ZimbraWebClient - FF103 (Linux)/8.8.15_GA_4303)
-Thread-Index: unYvjquHdkJyUs11qpARW7Z/wxD2JQ==
-Thread-Topic: interesting effect of the get_user_pages and copy_to_user
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Linux kernel team
+On 30/07/2022 12:17, Akhil P Oommen wrote:
+> Allow a consumer driver to poll for cx gdsc collapse through Reset
+> framework.
+> 
+> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
+> ---
+> 
+>   drivers/clk/qcom/gpucc-sc7280.c | 6 ++++++
+>   1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/clk/qcom/gpucc-sc7280.c b/drivers/clk/qcom/gpucc-sc7280.c
+> index 9a832f2..f5df51d 100644
+> --- a/drivers/clk/qcom/gpucc-sc7280.c
+> +++ b/drivers/clk/qcom/gpucc-sc7280.c
+> @@ -433,12 +433,18 @@ static const struct regmap_config gpu_cc_sc7280_regmap_config = {
+>   	.fast_io = true,
+>   };
+>   
+> +static const struct qcom_reset_map gpucc_sc7280_resets[] = {
+> +	[GPU_CX_COLLAPSE] = { .op = gdsc_wait_for_collapse, .priv = &cx_gdsc },
+> +};
+> +
+>   static const struct qcom_cc_desc gpu_cc_sc7280_desc = {
+>   	.config = &gpu_cc_sc7280_regmap_config,
+>   	.clks = gpu_cc_sc7280_clocks,
+>   	.num_clks = ARRAY_SIZE(gpu_cc_sc7280_clocks),
+>   	.gdscs = gpu_cc_sc7180_gdscs,
+>   	.num_gdscs = ARRAY_SIZE(gpu_cc_sc7180_gdscs),
+> +	.resets = gpucc_sc7280_resets,
+> +	.num_resets = ARRAY_SIZE(gpucc_sc7280_resets),
 
-I am working on PCIe device driver and need to transfer up to 20MB data,
-unfortunately the device has no scatter/gather controller, so I have to do in usual way.
+An implementation question. Do we have to poll for the GDSC on platforms 
+like sm8150/sm8250 which have the plain BCR resets?
 
-in the code it done in the following way (shortlty):
+>   };
+>   
+>   static const struct of_device_id gpu_cc_sc7280_match_table[] = {
 
-long    ioctl_dma(struct file *filp, unsigned int *cmd_p, unsigned long *arg_p){
- unsigned long  arg;
- arg                              = *arg_p;
- #define SG_MAX_ORDER    10
- max_order_length = (2<<(SG_MAX_ORDER-1))*PAGE_SIZE;
- ppWriteBuf = (void *)__get_free_pages(GFP_KERNEL , SG_MAX_ORDER);
- pTmpDmaHandle      = pci_map_single(pdev, pWriteBuf, max_order_length, PCI_DMA_FROMDEVICE);
- 
- 1. copy_from_user(&dma_data, (device_ioctrl_dma*)arg, (size_t)io_dma_size)) // get user buffer and data
- 2. tmp_dma_size          = dma_data.dma_size;                               // get DMA size from user buffer 
- 3. nr_entries = tmp_dma_size/max_order_length;                              // how many DMAs has to be done
- 4. for(int i=0; i < nr_entries; ++i){
-      Make DMA;
-      pci_dma_sync_single_for_cpu(pdev, pTmpDmaHandle, max_order_length, PCI_DMA_FROMDEVICE);
-      copy_to_user ((void *)(arg + tmp_user_offset), pWriteBuf, max_order_length)
-      pci_dma_sync_single_for_device(pdev,pTmpDmaHandle, max_order_length, PCI_DMA_FROMDEVICE);
-      tmp_user_offset += max_order_length;
-    }
-}
-this work fine and gives in user application around 87ms for 20MB.
-Than I just do:
-get_user_pages( (unsigned long)arg,    // start 
-		pDmaUnit->nr_pages,                   // length in pages 
-		1,                                 // >0 --> write to user space 
-		0,                                  // force. drivers should set 0 
-		pDmaUnit->pages,
-		NULL);
 
-The DMA time goes to ~50ms (was 87ms)
-
-regards
-
-Ludwig
+-- 
+With best wishes
+Dmitry
