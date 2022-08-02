@@ -2,114 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4307C19F28
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 022A4C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235027AbiHBR6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 13:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46242 "EHLO
+        id S235518AbiHBR6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 13:58:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235319AbiHBR6e (ORCPT
+        with ESMTP id S235319AbiHBR6i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 13:58:34 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 745DF4F1BC
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 10:58:32 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id v3so17895766wrp.0
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 10:58:32 -0700 (PDT)
+        Tue, 2 Aug 2022 13:58:38 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EFE24D801
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 10:58:37 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id d14so11175260lfl.13
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 10:58:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4xON5/1RnjBTHOYTi8U3eC1G9Pht10d2+/+PE/oCDM8=;
-        b=kDBdO+hRY7GGEfK3BrZAjRifF/FxSnBpdqBE5RTRkvK2+41NZPoMQ0DSrbX5Vq63HN
-         jv2F8RuSflT3kmgJsznZ3Vw+ZM4dzzIlaiARzmp2HMjwZlnF0DvBYwBSJpO9JQqz/2ua
-         AkF0nVK+2CZw2K/6HS4JmJJBjFCta96WWyKXdyEuNAvWx/fo5qH0VfCLOrYf8o5k5Vey
-         Hzs0Vr/sNMNFqdUZMfRIS8dAE3tgh/r8nRH0luf+CqcDgalKNwOUgYd1XOaewHP3JrfG
-         0PLyhMwOlNBy0XdpblT15qNlmuMhaSeqqCvRNMJrI8WnPEw0xtU8BVoDh0wK8u3763rj
-         9lhA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XlyYTnn1kbQZ516FIn+rClIxx0d3BNXJVA7WhFGAQX8=;
+        b=T7Njkv8tzTVHHIvYpT9tG294YaM9GVyg71TOexkCuOgsNTAvaFhaA0Vmm2k2noHMhH
+         O+VWuJaWwm+LjFlWFWVHlwXo4TvjS0+XOfSCCPvqEYqiwcmdQiIBGsFXaqGJ78XoOZZS
+         xWnqhlZ2P61EJ/apxpKqjo2B1Cgy9MBn+/baAzg0ClzSACClmuwVjX2tHTTXL5brtvTZ
+         mAUveI1bX+afXCappQ+YkXMvYHQkhOVMcFqk5AL2a+w/13fm/Hi9CoEpn1DHuy8w67Tq
+         +ldB4hHTSstKkviAnDrL6uZNiXL0isptAOL/FtYjrgq4EwkJgRetWcdPSsfIpIKyW13M
+         HEew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4xON5/1RnjBTHOYTi8U3eC1G9Pht10d2+/+PE/oCDM8=;
-        b=wHg7XixuSCiUvIn1CzGYRJectBdzEn1Bu6o77EoTV1GyBXl7oYxm72CibaqZlihHwD
-         UtgT16EvHRL0Hvr61kQHja7tnC+k2YPNMe4lYf5vZxmhE2KORpOhez5qFtozfwLdrLNG
-         zvRRp/jXv2WhFoNXfWDjNe7VAiiQSSdLpyGO38cbpJkSDFbpnn6Hwe0v/RnTcmKdXRqj
-         ne2dDfOR1JNFnj3s+rrEKOb2oMo1EcqnkQ2VhmuxEIKnlbdvYTYd45JKthXYbIXRNYk3
-         BKWWORwIJ+sZRJ/Nvxk4jR/4t3N1WTdQ7nES/h/VFOhBTViptlkNf0njG7SBhA15wsI0
-         2q7Q==
-X-Gm-Message-State: ACgBeo2dKJpJAoSQ4KthnyfMv5XvkC5hE0Q198Eqe3ZYcTI5OAGpipm5
-        +eRJfpTJm9f9h6e7eC8qJe4lkA==
-X-Google-Smtp-Source: AA6agR7f7dwanjYpEbjx2VufVCj+4oz4IFATBDBtRwOoC0bEAehgEene0qb5B2gm0Y13e+MUYyqOLQ==
-X-Received: by 2002:adf:e28c:0:b0:21e:660e:26aa with SMTP id v12-20020adfe28c000000b0021e660e26aamr13777281wri.345.1659463110904;
-        Tue, 02 Aug 2022 10:58:30 -0700 (PDT)
-Received: from debian.office.codethink.co.uk ([2405:201:8005:8149:e5c9:c0ac:4d82:e94b])
-        by smtp.gmail.com with ESMTPSA id 9-20020a05600c020900b003a3187a2d4csm23318222wmi.22.2022.08.02.10.58.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 10:58:30 -0700 (PDT)
-From:   Sudip Mukherjee <sudip.mukherjee@sifive.com>
-To:     Serge Semin <fancer.lancer@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     greentime.hu@sifive.com, jude.onyenegecha@sifive.com,
-        william.salmon@sifive.com, adnan.chowdhury@sifive.com,
-        ben.dooks@sifive.com, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jeegar.lakhani@sifive.com,
-        Sudip Mukherjee <sudip.mukherjee@sifive.com>
-Subject: [PATCH 02/11] spi: dw: add check for support of dual/quad/octal
-Date:   Tue,  2 Aug 2022 18:57:46 +0100
-Message-Id: <20220802175755.6530-3-sudip.mukherjee@sifive.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220802175755.6530-1-sudip.mukherjee@sifive.com>
-References: <20220802175755.6530-1-sudip.mukherjee@sifive.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XlyYTnn1kbQZ516FIn+rClIxx0d3BNXJVA7WhFGAQX8=;
+        b=5tVkmhvqgBCtH4fjwPZldjPK8sQszEqSXimt0Mfno50kDDWpHU5ZnX17HvWR5SYQgl
+         jM63edY3Y5Ho1B6cebLJ+NTgujo0JanuUynZIuIzakG/x3lj9dKigqPRcKaB6WVvigf8
+         nYogWXQNFnSrwpk13u90U2LoMnKGkSwJNyBoOZheStKiXI+zxFFO6DMiuItdWDQzbp0i
+         f+RNL/Ai91GBthO7zG9c0JoLDfzM9yWKU5NK5AeriwlyGrq3oMig8t9iHd0VzcSt0NJe
+         Jl31KgT835OODwazjXz+nV251i0JWsBGCO/0fHZ+v3bT03naVEKa7vGqCcSUj1qDoZhk
+         2hMQ==
+X-Gm-Message-State: ACgBeo28jRSDmHMGO12nWH7PrBPTikc4e8j6+JVR31+p8L9t15xsR4Bz
+        zX3W1FKPHfAGQNI/eNEmnT+mrqgzcvvNOXa/666mzQ==
+X-Google-Smtp-Source: AA6agR40G8SCTsMN05WoDpwiLryayqYoZ9acr7piTwCNBrfuVq6ECmM1bRacKcBj0jEU+55VZMSSU8Vxd9uKo7iDo/o=
+X-Received: by 2002:a19:ca50:0:b0:48a:f4ce:4559 with SMTP id
+ h16-20020a19ca50000000b0048af4ce4559mr4677864lfj.432.1659463115376; Tue, 02
+ Aug 2022 10:58:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220730173636.1303357-1-masahiroy@kernel.org> <20220730173636.1303357-2-masahiroy@kernel.org>
+In-Reply-To: <20220730173636.1303357-2-masahiroy@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 2 Aug 2022 10:58:24 -0700
+Message-ID: <CAKwvOdk3-UdsxDwjgF=_=irsGLeDj6LF45oeV+6a5d9CeY-Fkg@mail.gmail.com>
+Subject: Re: [PATCH 2/3] modpost: use more reliable way to get fromsec in section_rel(a)()
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>,
+        linux-kernel@vger.kernel.org, Fangrui Song <maskray@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Before doing the mem op spi controller will be queried about the
-buswidths it supports. Add the dual/quad/octal if the controller
-has the DW_SPI_CAP_EXT_SPI capability.
+On Sat, Jul 30, 2022 at 10:37 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> The section name of Rel and Rela starts with ".rel" and ".rela"
+> respectively (but, I do not know whether this is specification or
+> convention).
+>
+> For example, ".rela.text" holds relocation entries applied to the
+> ".text" section.
+>
+> So, the code chops the ".rel" or ".rela" prefix to get the name of
+> the section to which the relocation applies.
+>
+> However, I do not like to skip 4 or 5 bytes blindly because it is
+> potential memory overrun.
+>
+> The ELF specification provides a more reliable way to do this.
+>
+>  - The sh_info field holds extra information, whose interpretation
+>    depends on the section type
+>
+>  - If the section type is SHT_REL or SHT_RELA, the sh_info field holds
+>    the section header index of the section to which the relocation
+>    applies.
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-Signed-off-by: Sudip Mukherjee <sudip.mukherjee@sifive.com>
----
- drivers/spi/spi-dw-core.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+Yes, this seems much safer; thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-diff --git a/drivers/spi/spi-dw-core.c b/drivers/spi/spi-dw-core.c
-index 97e72da7c120..77529e359b6d 100644
---- a/drivers/spi/spi-dw-core.c
-+++ b/drivers/spi/spi-dw-core.c
-@@ -488,8 +488,23 @@ static int dw_spi_adjust_mem_op_size(struct spi_mem *mem, struct spi_mem_op *op)
- static bool dw_spi_supports_mem_op(struct spi_mem *mem,
- 				   const struct spi_mem_op *op)
- {
--	if (op->data.buswidth > 1 || op->addr.buswidth > 1 ||
--	    op->dummy.buswidth > 1 || op->cmd.buswidth > 1)
-+	struct dw_spi *dws = spi_controller_get_devdata(mem->spi->controller);
-+
-+	/*
-+	 * Only support TT0 mode in enhanced SPI for now.
-+	 * TT0 = Instruction and Address will be sent in
-+	 * Standard SPI Mode.
-+	 */
-+	if (op->addr.buswidth > 1 || op->dummy.buswidth > 1 ||
-+	    op->cmd.buswidth > 1)
-+		return false;
-+
-+	/* In enhanced SPI 1, 2, 4, 8 all are valid modes. */
-+	if (op->data.buswidth > 1 && (!(dws->caps & DW_SPI_CAP_EXT_SPI)))
-+		return false;
-+
-+	/* Only support upto 32 bit address in enhanced SPI for now. */
-+	if (op->data.buswidth > 1 && op->addr.nbytes > 4)
- 		return false;
- 
- 	return spi_mem_default_supports_op(mem, op);
+> ---
+>
+>  scripts/mod/modpost.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+>
+> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+> index 148b38699889..c6a055c0291e 100644
+> --- a/scripts/mod/modpost.c
+> +++ b/scripts/mod/modpost.c
+> @@ -1723,8 +1723,7 @@ static void section_rela(const char *modname, struct elf_info *elf,
+>         Elf_Rela *start = (void *)elf->hdr + sechdr->sh_offset;
+>         Elf_Rela *stop  = (void *)start + sechdr->sh_size;
+>
+> -       fromsec = sech_name(elf, sechdr);
+> -       fromsec += strlen(".rela");
+> +       fromsec = sec_name(elf, sechdr->sh_info);
+>         /* if from section (name) is know good then skip it */
+>         if (match(fromsec, section_white_list))
+>                 return;
+> @@ -1776,8 +1775,7 @@ static void section_rel(const char *modname, struct elf_info *elf,
+>         Elf_Rel *start = (void *)elf->hdr + sechdr->sh_offset;
+>         Elf_Rel *stop  = (void *)start + sechdr->sh_size;
+>
+> -       fromsec = sech_name(elf, sechdr);
+> -       fromsec += strlen(".rel");
+> +       fromsec = sec_name(elf, sechdr->sh_info);
+>         /* if from section (name) is know good then skip it */
+>         if (match(fromsec, section_white_list))
+>                 return;
+> --
+> 2.34.1
+>
+
+
 -- 
-2.30.2
-
+Thanks,
+~Nick Desaulniers
