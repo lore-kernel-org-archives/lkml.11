@@ -2,153 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F05C19F2A
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 02:56:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 839BFC00144
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 03:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235836AbiHBC4t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 22:56:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51862 "EHLO
+        id S232665AbiHBDC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 23:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235798AbiHBC4p (ORCPT
+        with ESMTP id S231180AbiHBDCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 22:56:45 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4BF1D0C0;
-        Mon,  1 Aug 2022 19:56:44 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:58770)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oIi5J-005Yj0-0R; Mon, 01 Aug 2022 20:56:41 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:43358 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oIi5G-006Hfs-Eh; Mon, 01 Aug 2022 20:56:40 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Frederick Lawler <fred@cloudflare.com>
-Cc:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
-        paul@paul-moore.com, stephen.smalley.work@gmail.com,
-        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
-        casey@schaufler-ca.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        cgzones@googlemail.com, karl@bigbadwolfsecurity.com
-In-Reply-To: <20220801180146.1157914-1-fred@cloudflare.com> (Frederick
-        Lawler's message of "Mon, 1 Aug 2022 13:01:42 -0500")
-References: <20220801180146.1157914-1-fred@cloudflare.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
-Date:   Mon, 01 Aug 2022 21:56:28 -0500
-Message-ID: <87les7cq03.fsf@email.froward.int.ebiederm.org>
+        Mon, 1 Aug 2022 23:02:23 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA92A1900A
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 20:02:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659409342; x=1690945342;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ojKsdgAlU+AwiBO7QqMHjQ3Y4cvOyJYrRfNpPAstPZ4=;
+  b=KO3tN6VeDosT+nBFlrbypQg1gUBpgUrc6bpRAcwOctepchUvczDaCXdM
+   CSEN2QnGV2b5Pfk2YrzxSAUcewEb2/csNWJST/o1rtHz+A6GN1dYg0VOz
+   yZNQNGHArUTpUmqTRLdxyyBNVD77vkLG7ulc+kGhrpfEVn0qj7VXHaQvw
+   6Wj+uI7ytw7r0pmT7UcEbNUFbA0WiDwxLrSKomNGNFjFVDudx/sWE2n5U
+   TyXCsgeDDGS9CW+Y6f2Z9eFW382Zxkckacx1pzEhjHv0LAdME53Gz2DB+
+   OKdHHz/wJXlaa3tmyZSgLqzDF3SmtmO1vtzUyegyYV9vyeuY6I2NRSgl3
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10426"; a="315143520"
+X-IronPort-AV: E=Sophos;i="5.93,209,1654585200"; 
+   d="scan'208";a="315143520"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 20:02:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,209,1654585200"; 
+   d="scan'208";a="630525076"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 01 Aug 2022 20:02:01 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oIiAS-000FcJ-0w;
+        Tue, 02 Aug 2022 03:02:00 +0000
+Date:   Tue, 02 Aug 2022 11:01:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:sched/core] BUILD SUCCESS
+ c17a6ff9321355487d7d5ccaa7d406a0ea06b6c4
+Message-ID: <62e8938c.m8JVSS8Vkq2P10yT%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1oIi5G-006Hfs-Eh;;;mid=<87les7cq03.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX19344Ku5G6V0XI6p6QH6VsN2tkU429jDfA=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v4 0/4] Introduce security_create_user_ns()
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Frederick Lawler <fred@cloudflare.com> writes:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
+branch HEAD: c17a6ff9321355487d7d5ccaa7d406a0ea06b6c4  rseq: Kill process when unknown flags are encountered in ABI structures
 
-> While creating a LSM BPF MAC policy to block user namespace creation, we
-> used the LSM cred_prepare hook because that is the closest hook to prevent
-> a call to create_user_ns().
+elapsed time: 721m
 
-Re-nack for all of the same reasons.
-AKA This can only break the users of the user namespace.
+configs tested: 74
+configs skipped: 2
 
-Nacked-by: "Eric W. Biederman" <ebiederm@xmission.com>
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-You aren't fixing what your problem you are papering over it by denying
-access to the user namespace.
+gcc tested configs:
+um                             i386_defconfig
+um                           x86_64_defconfig
+i386                             allyesconfig
+i386                                defconfig
+arc                  randconfig-r043-20220801
+s390                 randconfig-r044-20220801
+riscv                randconfig-r042-20220801
+x86_64                           allyesconfig
+x86_64                               rhel-8.3
+i386                 randconfig-a012-20220801
+i386                 randconfig-a013-20220801
+x86_64                              defconfig
+powerpc                          allmodconfig
+i386                 randconfig-a014-20220801
+i386                 randconfig-a011-20220801
+i386                 randconfig-a016-20220801
+mips                             allyesconfig
+x86_64                           rhel-8.3-kvm
+i386                 randconfig-a015-20220801
+ia64                             allmodconfig
+powerpc                           allnoconfig
+x86_64                    rhel-8.3-kselftests
+alpha                            allyesconfig
+sh                               allmodconfig
+arc                              allyesconfig
+x86_64                           rhel-8.3-syz
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+arm                                 defconfig
+x86_64               randconfig-a011-20220801
+x86_64               randconfig-a012-20220801
+x86_64               randconfig-a013-20220801
+m68k                             allyesconfig
+m68k                             allmodconfig
+x86_64               randconfig-a015-20220801
+x86_64               randconfig-a014-20220801
+x86_64               randconfig-a016-20220801
+arm                              allyesconfig
+arm64                            allyesconfig
+powerpc                      ep88xc_defconfig
+sh                           se7721_defconfig
+powerpc                     tqm8541_defconfig
+sh                           sh2007_defconfig
+powerpc                   motionpro_defconfig
+xtensa                  nommu_kc705_defconfig
+sparc64                          alldefconfig
+mips                           xway_defconfig
+m68k                          amiga_defconfig
+powerpc                     tqm8555_defconfig
+sh                          urquell_defconfig
+csky                              allnoconfig
+alpha                             allnoconfig
+arc                               allnoconfig
+riscv                             allnoconfig
+x86_64               randconfig-k001-20220801
+i386                 randconfig-c001-20220801
+loongarch                           defconfig
+loongarch                         allnoconfig
 
-Nack Nack Nack.
+clang tested configs:
+hexagon              randconfig-r045-20220801
+hexagon              randconfig-r041-20220801
+i386                 randconfig-a004-20220801
+i386                 randconfig-a006-20220801
+i386                 randconfig-a001-20220801
+i386                 randconfig-a002-20220801
+i386                 randconfig-a003-20220801
+x86_64               randconfig-a005-20220801
+x86_64               randconfig-a002-20220801
+i386                 randconfig-a005-20220801
+x86_64               randconfig-a001-20220801
+x86_64               randconfig-a003-20220801
+x86_64               randconfig-a004-20220801
+x86_64               randconfig-a006-20220801
+powerpc                     akebono_defconfig
+arm                   milbeaut_m10v_defconfig
 
-Stop.
-
-Go back to the drawing board.
-
-Do not pass go.
-
-Do not collect $200.
-
-
-> The calls look something like this:
->
->     cred = prepare_creds()
->         security_prepare_creds()
->             call_int_hook(cred_prepare, ...
->     if (cred)
->         create_user_ns(cred)
->
-> We noticed that error codes were not propagated from this hook and
-> introduced a patch [1] to propagate those errors.
->
-> The discussion notes that security_prepare_creds()
-> is not appropriate for MAC policies, and instead the hook is
-> meant for LSM authors to prepare credentials for mutation. [2]
->
-> Ultimately, we concluded that a better course of action is to introduce
-> a new security hook for LSM authors. [3]
->
-> This patch set first introduces a new security_create_user_ns() function
-> and userns_create LSM hook, then marks the hook as sleepable in BPF.
->
-> Links:
-> 1. https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
-> 2. https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
-> 3. https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
->
-> Past discussions:
-> V3: https://lore.kernel.org/all/20220721172808.585539-1-fred@cloudflare.com/
-> V2: https://lore.kernel.org/all/20220707223228.1940249-1-fred@cloudflare.com/
-> V1: https://lore.kernel.org/all/20220621233939.993579-1-fred@cloudflare.com/
->
-> Changes since v3:
-> - Explicitly set CAP_SYS_ADMIN to test namespace is created given
->   permission
-> - Simplify BPF test to use sleepable hook only
-> - Prefer unshare() over clone() for tests
-> Changes since v2:
-> - Rename create_user_ns hook to userns_create
-> - Use user_namespace as an object opposed to a generic namespace object
-> - s/domB_t/domA_t in commit message
-> Changes since v1:
-> - Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook patch
-> - Add selinux: Implement create_user_ns hook patch
-> - Change function signature of security_create_user_ns() to only take
->   struct cred
-> - Move security_create_user_ns() call after id mapping check in
->   create_user_ns()
-> - Update documentation to reflect changes
->
-> Frederick Lawler (4):
->   security, lsm: Introduce security_create_user_ns()
->   bpf-lsm: Make bpf_lsm_userns_create() sleepable
->   selftests/bpf: Add tests verifying bpf lsm userns_create hook
->   selinux: Implement userns_create hook
->
->  include/linux/lsm_hook_defs.h                 |   1 +
->  include/linux/lsm_hooks.h                     |   4 +
->  include/linux/security.h                      |   6 ++
->  kernel/bpf/bpf_lsm.c                          |   1 +
->  kernel/user_namespace.c                       |   5 +
->  security/security.c                           |   5 +
->  security/selinux/hooks.c                      |   9 ++
->  security/selinux/include/classmap.h           |   2 +
->  .../selftests/bpf/prog_tests/deny_namespace.c | 102 ++++++++++++++++++
->  .../selftests/bpf/progs/test_deny_namespace.c |  33 ++++++
->  10 files changed, 168 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/deny_namespace.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_deny_namespace.c
-
-Eric
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
