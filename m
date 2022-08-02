@@ -2,145 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7759C19F2B
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 19:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 744F8C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 19:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232697AbiHBTg3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 15:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58016 "EHLO
+        id S232210AbiHBTgi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 15:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232210AbiHBTg0 (ORCPT
+        with ESMTP id S232646AbiHBTga (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 15:36:26 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C2E1903B;
-        Tue,  2 Aug 2022 12:36:25 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id D192A3874B;
-        Tue,  2 Aug 2022 19:36:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1659468983; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wKwulhIx515tBs9KarM3vkMSrD1Pc01HY8nx9DrB6Ko=;
-        b=lIxgGmgiJjHkY4CpdyLYOyrlEZr6WXWjSxUXwr7T3l6G3upE9bl6mkc06qVICbyJV25D5j
-        NN6IMBnVJ2ikFzF6e3VxiEeAurK54PYq8864I4xh6dLh4NxwezB7QvuJh7TqP2aaMbzwUo
-        7jVXeZ1t2Lcu0SuoH5FUysm4N4xDEv4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1659468983;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wKwulhIx515tBs9KarM3vkMSrD1Pc01HY8nx9DrB6Ko=;
-        b=NQfgJ+ZFnqEBYm9kVtWA/ahzEUqSBoH97VXJ/OSSWF6JgIYf9eKq87vwjCYHFcq5dZwe0B
-        VtNvgOR948PO1lAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4438713A8E;
-        Tue,  2 Aug 2022 19:36:23 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id qliOAbd86WItbAAAMHmgww
-        (envelope-from <ematsumiya@suse.de>); Tue, 02 Aug 2022 19:36:23 +0000
-Date:   Tue, 2 Aug 2022 16:36:20 -0300
-From:   Enzo Matsumiya <ematsumiya@suse.de>
-To:     Jeff Layton <jlayton@kernel.org>
-Cc:     linux-cifs@vger.kernel.org, smfrench@gmail.com, pc@cjr.nz,
-        ronniesahlberg@gmail.com, nspmangalore@gmail.com,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        tom@talpey.com, samba-technical@lists.samba.org,
-        pshilovsky@samba.org
-Subject: Re: [RFC PATCH 0/3] Rename "cifs" module to "smbfs"
-Message-ID: <20220802193620.dyvt5qiszm2pobsr@cyberdelia>
-References: <20220801190933.27197-1-ematsumiya@suse.de>
- <c05f4fc668fa97e737758ab03030d7170c0edbd9.camel@kernel.org>
+        Tue, 2 Aug 2022 15:36:30 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6BE4BD22
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 12:36:29 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id z22so18902474edd.6
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 12:36:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=aaD1/id7gyKouJVmQNJY9f6188MpOysssLKoUbqq4b8=;
+        b=nA/xg0vsdX5YrdNIYVmC2C7Xh/mXbe1P7sJxymX2VUq3fyoCewB0e1URLTDKnK3fYm
+         NxUPE+J079dmSmZG5KpJY1CS53LeGiQYBt3jcfyoHxAHIw/iPGKZvstFc89NodQBkXYd
+         yQUtxta7axgaXWT4YsDO6gRm92NNX8y6jXOOI1yH7Hs92IuuBjfbrlW2udNBYNGBl1wh
+         b7sfnlKUL64mlH1yHLrnFd32bb7w+ovNJnIb7IjZBS9AofHGgbnI2aqCQW3HArseQJOz
+         dsa+1DOmO2sPFyY28RyKYJOHKvW6uMVGcrmo/tIy6Yi8xjHaLTz82vtqiQotKXWIPfDA
+         Gj5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=aaD1/id7gyKouJVmQNJY9f6188MpOysssLKoUbqq4b8=;
+        b=RXNZu+7mfVVp7/m179x90ifvrI+bs/B7M+EDhGZZtyuEPP1BlmtXvOuh3xHFVKijUX
+         Dc1uoZyJ87w8RnxUOazcf9fVKA+XVsfA9QloN5eQQjNKFD341OgE3J7HTGnkV3bIpuUb
+         2HCCV6VOUnv2eamE8z9tnzJMU6bmY7wGfWx24kBQWOHZiq3h0Xy3EKDDHHqkWgH1hGes
+         TUBEuD8/89XxweSYQAfMihZEsc+EuI2CIn6EuKay1a6gTqvFu38T6xN+Q4H6L4uCRg+6
+         xIVzTxztK3lRUuEoa3oK3EscgRh4d/m06HBCzH+9+qTbGc1uN5jsnIQ8umeQsATFGhvr
+         1jjA==
+X-Gm-Message-State: AJIora+Dr1QtwaU6o7uDmI0bszmR8o5vBsACGBzhxtODbLv2DfaR6+KJ
+        k8pwi23HDHyWOS+SAVfgAXHquuFNfAVCR1L88cPwIg==
+X-Google-Smtp-Source: AGRyM1vpKpXO8pOZ5GjGvjcvRwqaS15bgJIcxy2epC3XA7mXS2FyFU/8y3yLjhmGvFNRmmv7VhRXpdOW9OO2Ni5rS94=
+X-Received: by 2002:a50:fb13:0:b0:43c:ef2b:d29 with SMTP id
+ d19-20020a50fb13000000b0043cef2b0d29mr22449354edq.378.1659468987456; Tue, 02
+ Aug 2022 12:36:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
+References: <20220802161206.228707-1-mairacanal@riseup.net>
+ <CAGS_qxoAc934AwB7SZ34PpoVxvF3Eua-g+aO77kjJf6d1m0+Qw@mail.gmail.com> <2a0dcd75-5461-5266-2749-808f638f4c50@riseup.net>
+In-Reply-To: <2a0dcd75-5461-5266-2749-808f638f4c50@riseup.net>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Tue, 2 Aug 2022 12:36:16 -0700
+Message-ID: <CAGS_qxpYYC+k7b+-txWxEgE-VTwCF5R+WVf=qwbf3yFurcLK3w@mail.gmail.com>
+Subject: Re: [PATCH 0/3] Introduce KUNIT_EXPECT_ARREQ and KUNIT_EXPECT_ARRNEQ macros
+To:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <mairacanal@riseup.net>
+Cc:     Brendan Higgins <brendanhiggins@google.com>, davidgow@google.com,
+        airlied@linux.ie, daniel@ffwll.ch, davem@davemloft.net,
+        kuba@kernel.org, jose.exposito89@gmail.com, javierm@redhat.com,
+        andrealmeid@riseup.net, melissa.srw@gmail.com,
+        siqueirajordao@riseup.net, Isabella Basso <isabbasso@riseup.net>,
+        magalilemes00@gmail.com, tales.aparecida@gmail.com,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <c05f4fc668fa97e737758ab03030d7170c0edbd9.camel@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/02, Jeff Layton wrote:
->On Mon, 2022-08-01 at 16:09 -0300, Enzo Matsumiya wrote:
->> Hi,
->>
->> As part of the ongoing effort to remove the "cifs" nomenclature from the
->> Linux SMB client, I'm proposing the rename of the module to "smbfs".
->>
->> As it's widely known, CIFS is associated to SMB1.0, which, in turn, is
->> associated with the security issues it presented in the past. Using
->> "SMBFS" makes clear what's the protocol in use for outsiders, but also
->> unties it from any particular protocol version. It also fits in the
->> already existing "fs/smbfs_common" and "fs/ksmbd" naming scheme.
->>
->> This short patch series only changes directory names and includes/ifdefs=
- in
->> headers and source code, and updates docs to reflect the rename. Other
->> than that, no source code/functionality is modified (WIP though).
->>
->> Patch 1/3: effectively changes the module name to "smbfs" and create a
->> 	   "cifs" module alias to maintain compatibility (a warning
->> 	   should be added to indicate the complete removal/isolation of
->> 	   CIFS/SMB1.0 code).
->> Patch 2/3: rename the source-code directory to align with the new module
->> 	   name
->> Patch 3/3: update documentation references to "fs/cifs" or "cifs.ko" or
->> 	   "cifs module" to use the new name
->>
->> Enzo Matsumiya (3):
->>   cifs: change module name to "smbfs.ko"
->>   smbfs: rename directory "fs/cifs" -> "fs/smbfs"
->>   smbfs: update doc references
->> ...
+On Tue, Aug 2, 2022 at 11:43 AM Ma=C3=ADra Canal <mairacanal@riseup.net> wr=
+ote:
+> > But perhaps we could instead highlight the bad bytes with something lik=
+e
+> > dst =3D=3D
+> > 00000000: 33 0a 60 12 00 a8 00 00 00 00 <8e> 6b 33 0a 60 12
+> > 00000010: 00 00 00 00 <00> a8 8e 6b 33 0a 00 00 00 00
+> > result->expected =3D=3D
+> > 00000000: 31 0a 60 12 00 a8 00 00 00 00 <81> 6b 33 0a 60 12
+> > 00000010: 00 00 00 00 <01> a8 8e 6b 33 0a 00 00 00 00
 >
->Why do this? My inclination is to say NAK here.
+> My problem with this approach is that the bytes get slightly misaligned
+> when adding the <>. Maybe if we aligned as:
 >
->This seems like a lot of change for not a lot of benefit. Renaming the
->directory like this pretty much guarantees that backporting patches
->after this change to kernels that existed before it will be very
->difficult.
+> dst:
+> 00000000: <33> 0a 60 12  00  a8 00 00 00 00 <8e> 6b 33 0a 60 12
+> 00000010:  00  00 00 00 <00> a8 8e 6b 33 0a  00  00 00 00
+> result->expected:
+> 00000000: <31> 0a 60 12  00  a8 00 00 00 00 <81> 6b 33 0a 60 12
+> 00000010:  00  00 00 00 <01> a8 8e 6b 33 0a  00  00 00 00
 
-Hi Jeff, yes that's a big concern that I've discussed internally with my
-team as well, since we'll also suffer from those future backports.
+And yes, that's a good point re alignment. Handling that would be
+annoying and perhaps a reason to leave this off until later.
 
-But, as stated in the commit message, and from what I gathered from
-Steve, it has been an ongoing wish to have the "cifs" name no longer
-associated with a module handling SMB2.0 and SMB3.0, as the name brings
-back old bad memories for several users.
+Perhaps in the short-term, we could add output like
+  First differing byte at index 0
+if others think that could be useful.
 
-There really is no functional benefit for this change, and I have no
-argument against that.
+I'm quite surprised I didn't notice the first bytes differed (as you
+can tell from my example), so I personally would have been helped out
+by such a thing.
 
->Also, bear in mind that there used to be an smbfs in the kernel that
->predated cifs.ko. That was removed ~2010 though, which is long enough
->ago that it shouldn't produce conflicts in currently shipping releases.=A0
+>
+> Although I don't know exactly how we can produce this output. I was
+> using hex_dump_to_buffer to produce the hexdump, so maybe I need to
+> change the strategy to generate the hexdump.
 
-Yes, I was aware of this before sending v1, and it got raised again in
-https://lore.kernel.org/all/20220802135201.4vm36drd5mp57nvv@cyberdelia/
+Indeed, we'd probably have to write our own code to do this.
+I think it might be reasonable to stick with the code as-is so we can
+just reuse hex_dump_to_buffer.
+We'd then be able to think about the format more and bikeshed without
+blocking this patch.
 
-I have no experience on what kind of issues/problems could arise of
-that, aside from the git commit history being weird. If you ever seen
-any problems with that happening, please do share.
+But note: we could leverage string_stream to build up the output a bit
+more easily than you might expect.
+Here's a terrible first pass that you can paste into kunit-example-test.c
 
->Jeff Layton <jlayton@kernel.org>
+#include "string-stream.h"
 
-I sent a v2 with a new "fs/smb" directory name, but kept "smbfs" as the
-module name.
+static void diff_hex_dump(struct kunit *test, const u8 *a, const u8 *b,
+                          size_t num_bytes, size_t row_size)
+{
+        size_t i;
+        struct string_stream *stream1 =3D alloc_string_stream(test, GFP_KER=
+NEL);
+        struct string_stream *stream2 =3D alloc_string_stream(test, GFP_KER=
+NEL);
 
-Sorry I didn't reply to you before that, I got confused as the thread
-replies all went to different folders in my mailbox.
+        for (i =3D 0; i < num_bytes; ++i) {
+                if (i % row_size) {
+                        string_stream_add(stream1, " ");
+                        string_stream_add(stream2, " ");
+                } else {
+                        string_stream_add(stream1, "\n> ");
+                        string_stream_add(stream2, "\n> ");
+                }
+
+                if (a[i] =3D=3D b[i]) {
+                        string_stream_add(stream1, "%02x", a[i]);
+                        string_stream_add(stream2, "%02x", b[i]);
+                } else {
+                        string_stream_add(stream1, "<%02x>", a[i]);
+                        string_stream_add(stream2, "<%02x>", b[i]);
+                }
+        }
+        string_stream_add(stream1, "\nwant");
+        string_stream_append(stream1, stream2);
+
+        kunit_info(test, "got%s\n", string_stream_get_string(stream1));
+}
 
 
-Cheers,
+static void example_hex_test(struct kunit *test) {
+        const u8 a1[] =3D {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0xde,
+0xad, 0xbe, 0xef};
+        const u8 a2[] =3D {0x1, 0x3, 0x2, 0x4, 0x5, 0x6, 0x7, 0xde,
+0xad, 0xbe, 0xef};
 
-Enzo
+        diff_hex_dump(test, a1, a2, sizeof(a1), 8);
+}
+
+It produces the following output:
+    # example_hex_test: got
+> 01 <02> <03> 04 05 06 07 de
+> ad be ef
+want
+> 01 <03> <02> 04 05 06 07 de
+> ad be ef
+
+It doesn't handle re-aligning the other bytes as you'd pointed out above.
+
+>
+> I guess the KASAN approach could be easier to implement. But I guess it
+> can turn out to be a little polluted if many bytes differ. For example:
+>
+> dst:
+> 00000000: 33 31 31 31 31 31 31 31 31 31 8e 31 33 0a 60 12
+>            ^  ^  ^  ^  ^  ^  ^  ^  ^  ^  ^  ^
+> 00000010: 00 00 00 00 00 a8 8e 6b 33 0a 00 00 00 00
+>                        ^
+> result->expected:
+> 00000000: 31 0a 60 12 00 a8 00 00 00 00 81 6b 33 0a 60 12
+>            ^  ^  ^  ^  ^  ^  ^  ^  ^  ^  ^  ^
+> 00000010: 00 00 00 00 01 a8 8e 6b 33 0a 00 00 00 00
+>                        ^
+>
+> I don't know exactly with option I lean.
+
+Agreed, it doesn't scale up too well when pointing out >1 buggy bytes.
