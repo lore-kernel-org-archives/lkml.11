@@ -2,94 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11148C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 11:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A391C19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 11:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236470AbiHBL2T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 07:28:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
+        id S236267AbiHBL3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 07:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233914AbiHBL2Q (ORCPT
+        with ESMTP id S231836AbiHBL3L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 07:28:16 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510A5313AD
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 04:28:15 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id t22so5447181pjy.1
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 04:28:15 -0700 (PDT)
+        Tue, 2 Aug 2022 07:29:11 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33648313AD;
+        Tue,  2 Aug 2022 04:29:11 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id i14so6648487ejg.6;
+        Tue, 02 Aug 2022 04:29:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=heitbaum.com; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=H7FLv+g+HrT2ruIOMeV4n5xPG1bX6rGXZvtrf3Y8n08=;
-        b=Ud3dUUP9vNnB36t2HkbOVN0YSBsQwdk/4ZDmdhGHgWYSrUx37RcmrOAG0g8AZixVrH
-         yMNODhYKywy819T5/opovgrSPbWVSrfPHg515gHHkVee8ptEfoW8228SfJ37eFyOCizv
-         3wVip79nEatmhbGVsSUkh1buB3VLzeHccVg7k=
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=P+fnogDd7o4OY7BAR4CYY7dnrQWbdlhGqxBKs5TNoyM=;
+        b=p1ONeknWmH33zcO71kmb9HqzoGkHWpDgEE8atOi7MdkP7ta85QD8a1BB7FsjU9tY7M
+         znSi989DBBdAxA7cAxJ+rUrJjaz91Facm53mzh3heHvBh6kfgdV5ROMfJnBJqJOS7PBj
+         Il4YgkKrl0dXfrPICezRm+x14Mr0BcQcXrcuDFkpignNqz6BwFCSSVPTAcCsqyrlmgK6
+         S1NUPF7YA2R9B2JeHQGwy1qkftWo040uCqIzGvAgtsnVdIsZ0HBfiC01QE2+ndxR/xsa
+         xnskZt9bQ/32Fz+V0twj0V9C4yrmoZ6V3S+QcVZI2BBUyJBu45L5Pi640AKM+JIX/qbN
+         jvag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=H7FLv+g+HrT2ruIOMeV4n5xPG1bX6rGXZvtrf3Y8n08=;
-        b=LmZVDkjoaZLLvauHtjYTLrlR8YHF2w7lMbk29xKN8qmHHJYU6a0qSPIAnbURWes1up
-         PZd/pdAoo78x19fgRL6fi7K+NntDocePrGD7X4ViMFqNmU/z96dl2y3mx3+bUGkjZYYj
-         74luEW67OzG5z3an29lc8f2UoxT7VeD21rEbuO5TnkibcwDK7RfQiuG+9VuNltNDrPK7
-         fy4npc/IKOykxpkqJxXyyp5f5T2kNFB0uGeyaz86tOGkf1PpGPXy407WZ64Zsha4WhCk
-         g2JWGY7rWJXelnVuxc8J85rWfcJXH4CwKnUicW87eBFCpAtE5Hl8KmtTsYra3xD2HNI0
-         XIuQ==
-X-Gm-Message-State: ACgBeo3oQ1JNhGA8Jy0zFNq/oK+XrDkVK1Y50R1p11ffArEc1Sav50xa
-        wZmbuWr7VtQqVj9ex6G6Isj+V0S6PEQ+tM5s
-X-Google-Smtp-Source: AA6agR4ihKSOfbQu2gENpRSO/07pyOkcoT3oYLHdxCfOdFGe0y8TB1AsbYtqMTko7eh1k4X5Qxe/NA==
-X-Received: by 2002:a17:902:ab14:b0:16d:c234:2bb9 with SMTP id ik20-20020a170902ab1400b0016dc2342bb9mr20565143plb.83.1659439694733;
-        Tue, 02 Aug 2022 04:28:14 -0700 (PDT)
-Received: from 45f01dcb456f ([203.220.223.63])
-        by smtp.gmail.com with ESMTPSA id o70-20020a17090a0a4c00b001e29ddf9f4fsm10702932pjo.3.2022.08.02.04.28.09
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=P+fnogDd7o4OY7BAR4CYY7dnrQWbdlhGqxBKs5TNoyM=;
+        b=BQhfq6BhblC1r+U0xS+zDOL0DpRuOXrfU092dv3/rBhc9DIpnCp8186/mykU/Cvv11
+         aSAWswK4KjobDsFqcrTqG52zqOEYXldsCsU2FC+6iMRb+9RULThzxACHKIyi9/8GiA7o
+         U9Aql+Bs3hP8j7CU+0i3O0Z3oaOqUk9I/+zvpHUS3NxkGX0GTdmmBQ4cD8cRViLg3R1F
+         WNVppS8eM9D5XRE2xjQcH9kqfuJ3VVvH5d9RoFdXZNZx6RYoa6Ju0Sk18LHV0XVv8wtI
+         KUHUfpR6Fd8yiZKmSHwWps2t70LTNRNlmmLnNLZSSrPku+/XItATFHhu9tVVVImoG++b
+         +65w==
+X-Gm-Message-State: AJIora+amyrZ3frTvuhPkbNXJzRjTCgzj7qujY5vzvAC1L3XYDs5Gl2x
+        Qfon406OyeKEOESlSXiSJYs=
+X-Google-Smtp-Source: AGRyM1sdiaGLJPythTDLa/EJL1jnyVY4BuMWtsDpcOqMpoYTh0p4hnVKlYviDnr3SABe/PzHYyLSZg==
+X-Received: by 2002:a17:906:8cb0:b0:72f:367e:9986 with SMTP id qr48-20020a1709068cb000b0072f367e9986mr15375087ejc.80.1659439749769;
+        Tue, 02 Aug 2022 04:29:09 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id s21-20020aa7cb15000000b0043cfda1368fsm7945225edt.82.2022.08.02.04.29.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 04:28:14 -0700 (PDT)
-Date:   Tue, 2 Aug 2022 11:28:06 +0000
-From:   Rudi Heitbaum <rudi@heitbaum.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.10 00/65] 5.10.135-rc1 review
-Message-ID: <20220802112806.GA8@45f01dcb456f>
-References: <20220801114133.641770326@linuxfoundation.org>
+        Tue, 02 Aug 2022 04:29:09 -0700 (PDT)
+Date:   Tue, 2 Aug 2022 14:29:07 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 05/10] net: dsa: microchip: ksz8795: add
+ error handling to ksz8_r/w_phy
+Message-ID: <20220802112907.ktcokf4giwgunekb@skbuf>
+References: <20220729130346.2961889-1-o.rempel@pengutronix.de>
+ <20220729130346.2961889-1-o.rempel@pengutronix.de>
+ <20220729130346.2961889-6-o.rempel@pengutronix.de>
+ <20220729130346.2961889-6-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220801114133.641770326@linuxfoundation.org>
+In-Reply-To: <20220729130346.2961889-6-o.rempel@pengutronix.de>
+ <20220729130346.2961889-6-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 01, 2022 at 01:46:17PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.135 release.
-> There are 65 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Fri, Jul 29, 2022 at 03:03:41PM +0200, Oleksij Rempel wrote:
+> Now ksz_pread/ksz_pwrite can return error value. So, make use of it.
 > 
-> Responses should be made by Wed, 03 Aug 2022 11:41:16 +0000.
-> Anything received after that time might be too late.
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
 
-Hi Greg,
-
-5.10.135-rc1 tested.
-
-Run tested on:
-- Intel Skylake x86_64 (nuc6 i5-6260U)
-
-In addition - build tested for:
-- Allwinner A64
-- Allwinner H3
-- Allwinner H5
-- Allwinner H6
-- Rockchip RK3288
-- Rockchip RK3328
-- Rockchip RK3399pro
-
-Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
---
-Rudi
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
