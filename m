@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E076C19F28
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:14:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC712C19F28
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:14:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237230AbiHBPO1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 11:14:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53252 "EHLO
+        id S237396AbiHBPOg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 11:14:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235854AbiHBPOT (ORCPT
+        with ESMTP id S234433AbiHBPOT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 2 Aug 2022 11:14:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0757F15A3C;
-        Tue,  2 Aug 2022 08:14:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B66417E12;
+        Tue,  2 Aug 2022 08:14:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9870D60276;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5C9D60682;
+        Tue,  2 Aug 2022 15:14:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A83C43470;
         Tue,  2 Aug 2022 15:14:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E513FC433C1;
-        Tue,  2 Aug 2022 15:14:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659453256;
-        bh=/vM1hbYvcMcG5rgPtJ9rOtDS7RIJfleSu0m9KM3s3sk=;
+        s=k20201202; t=1659453257;
+        bh=hWf/PttupFOeNrraP/UCkmJULP8/JeCaWQYuByvGBJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jlZ95wzALbGyX321n1ji2Ck4jAuKFTVOg4FpY+7WMSTTDsG3vh7QBKUWvDaRCt5Rr
-         qdRL7TUySimjCFz+6DzBFSKgIXvNKptyuLW7BSaCB82vskAPh8MUeZxFoL4jqZ1vi3
-         SD+QT4kDcUy2tUxbxSaqzV6xXo7PAW3b+UHcnHZUqq4kI6ykED3jWtbEwZqL2xWSad
-         Ky/kmHQR/QGPHQp4TA3Wg6sOJMDapfU6Kfe5YV0rclfSh+sbaxWY+bm+SjZspsxU67
-         soX5Yy5Vlr0N++u82JsxDQ5WekzmPNzPZmxQQmyYvSvNz8Qzybk+0xpVbQZFw1ytD+
-         DKO6duxbQys7A==
+        b=WsMAAOaNz6It61LU7U0hj9yT6Jep64APeNUprgTkP4sBE6sH2iXKoQPlLgi5QPAgg
+         L3YRjT8D6TKyYsPhlDTp9gCpMWOTt+rfAVfQVrKBTwU48lxPycwXcKYgeNf+t0bx5U
+         //toRJ0q/OL8TBrgKBfc9EqA5WbE+3RyLsdicjdpBhv39LNIf1Ypx5Qloq8P6JjBUz
+         qBghT+50Z+FNYALrbWWltqjTFSdnBH1bbgnLRseSbK337upz4HXhKHpou3VgnNK080
+         lnQnw01yN+sMp+ySHAVciPORh69LtKVjN0YF8S7HM+ourkQQYYBHYlngyKlzYxvlyh
+         k/4OrrZfqN0hQ==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oItbM-0000Tg-JZ; Tue, 02 Aug 2022 17:14:32 +0200
+        id 1oItbM-0000Tc-EW; Tue, 02 Aug 2022 17:14:32 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Felipe Balbi <balbi@kernel.org>
@@ -53,9 +53,9 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 7/8] usb: dwc3: qcom: fix wakeup implementation
-Date:   Tue,  2 Aug 2022 17:14:03 +0200
-Message-Id: <20220802151404.1797-8-johan+linaro@kernel.org>
+Subject: [PATCH 5/8] Revert "dt-bindings: usb: dwc3: Add wakeup-source property support"
+Date:   Tue,  2 Aug 2022 17:14:01 +0200
+Message-Id: <20220802151404.1797-6-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220802151404.1797-1-johan+linaro@kernel.org>
 References: <20220802151404.1797-1-johan+linaro@kernel.org>
@@ -65,81 +65,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is the Qualcomm glue wakeup interrupts that may be able to wake the
-system from suspend and this can now be described in the devicetree.
+This reverts commit 098c4d43b91a269e89f60331a26a3f3b914677ed.
 
-Move the wakeup-source property handling over from the core driver and
-instead propagate the capability setting to the core device during
-probe.
+A devicetree binding should describe hardware capabilities and not be
+used to configure power-management policies (even if things are a bit
+blurry when it comes to "wakeup-source"). It should also not be used to
+work around Linux driver implementation issues such as how to coordinate
+the glue and core dwc3 drivers.
 
-This is needed as there is currently no way for the core driver to query
-the wakeup setting of the glue device, but it is the core driver that
-manages the PHY power state during suspend.
+For the Qualcomm dwc3 controllers, it is the glue device that manages
+the wakeup interrupts, which may or may not be able to wake the system
+up from system suspend.
 
-Also don't leave the PHYs enabled when system wakeup has been disabled
-through sysfs.
+Also note that USB remote wakeup is always enabled during runtime
+suspend.
 
-Fixes: 649f5c842ba3 ("usb: dwc3: core: Host wake up support from system suspend")
+Fixes: 098c4d43b91a ("dt-bindings: usb: dwc3: Add wakeup-source property support")
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- drivers/usb/dwc3/core.c      | 5 ++---
- drivers/usb/dwc3/dwc3-qcom.c | 6 +++++-
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ Documentation/devicetree/bindings/usb/snps,dwc3.yaml | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-index 16d1f328775f..8c8e32651473 100644
---- a/drivers/usb/dwc3/core.c
-+++ b/drivers/usb/dwc3/core.c
-@@ -1822,7 +1822,6 @@ static int dwc3_probe(struct platform_device *pdev)
+diff --git a/Documentation/devicetree/bindings/usb/snps,dwc3.yaml b/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
+index 1779d08ba1c0..d41265ba8ce2 100644
+--- a/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
++++ b/Documentation/devicetree/bindings/usb/snps,dwc3.yaml
+@@ -343,11 +343,6 @@ properties:
+       This port is used with the 'usb-role-switch' property  to connect the
+       dwc3 to type C connector.
  
- 	platform_set_drvdata(pdev, dwc);
- 	dwc3_cache_hwparams(dwc);
--	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
+-  wakeup-source:
+-    $ref: /schemas/types.yaml#/definitions/flag
+-    description:
+-      Enable USB remote wakeup.
+-
+ unevaluatedProperties: false
  
- 	spin_lock_init(&dwc->lock);
- 	mutex_init(&dwc->mutex);
-@@ -1984,7 +1983,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
- 		dwc3_core_exit(dwc);
- 		break;
- 	case DWC3_GCTL_PRTCAP_HOST:
--		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
-+		if (!PMSG_IS_AUTO(msg) && !device_may_wakeup(dwc->dev)) {
- 			dwc3_core_exit(dwc);
- 			break;
- 		}
-@@ -2045,7 +2044,7 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
- 		spin_unlock_irqrestore(&dwc->lock, flags);
- 		break;
- 	case DWC3_GCTL_PRTCAP_HOST:
--		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
-+		if (!PMSG_IS_AUTO(msg) && !device_may_wakeup(dwc->dev)) {
- 			ret = dwc3_core_init_for_resume(dwc);
- 			if (ret)
- 				return ret;
-diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
-index 57d3a0e6f280..1bd2818b4daa 100644
---- a/drivers/usb/dwc3/dwc3-qcom.c
-+++ b/drivers/usb/dwc3/dwc3-qcom.c
-@@ -771,6 +771,7 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
- 	struct resource		*res, *parent_res = NULL;
- 	int			ret, i;
- 	bool			ignore_pipe_clk;
-+	bool			wakeup_source;
- 
- 	qcom = devm_kzalloc(&pdev->dev, sizeof(*qcom), GFP_KERNEL);
- 	if (!qcom)
-@@ -886,7 +887,10 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto interconnect_exit;
- 
--	device_init_wakeup(&pdev->dev, 1);
-+	wakeup_source = of_property_read_bool(dev->of_node, "wakeup-source");
-+	device_init_wakeup(&pdev->dev, wakeup_source);
-+	device_init_wakeup(&qcom->dwc3->dev, wakeup_source);
-+
- 	qcom->is_suspended = false;
- 	pm_runtime_set_active(dev);
- 	pm_runtime_enable(dev);
+ required:
 -- 
 2.35.1
 
