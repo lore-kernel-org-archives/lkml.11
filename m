@@ -2,85 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8318C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:05:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FBAEC19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:08:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231596AbiHBQFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 12:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39362 "EHLO
+        id S235171AbiHBQIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 12:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiHBQFI (ORCPT
+        with ESMTP id S232210AbiHBQIJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 12:05:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E6026D;
-        Tue,  2 Aug 2022 09:05:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 2 Aug 2022 12:08:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6DEC01CFE2
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:08:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659456487;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZBudYlQfwY1bFgy8hf1vbp471K4XLEsuIqWFDRge2Wg=;
+        b=TGxfl4k419MsTOnPhcx3KwlflSek1XAsTQp+TpUElqLZs3Lh9FR0N7JQDu5cH4E8fgd8t+
+        EFv4rZgtkumuIFrlH/EtbM1lmaPE/z6UgCDaCdothz2VgbpT4rRfkqf6QOoM+tlymPEaPY
+        xmMsE/lbW9h5E8A7K6hX3vV2IyddOU0=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-544-mDmJ7M0zOsGOosyAG0AUTg-1; Tue, 02 Aug 2022 12:08:03 -0400
+X-MC-Unique: mDmJ7M0zOsGOosyAG0AUTg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 817C160C3E;
-        Tue,  2 Aug 2022 16:05:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D091C433C1;
-        Tue,  2 Aug 2022 16:05:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659456305;
-        bh=GHAgcZ96JxHC6yhJU2CpSSgMIhMBl+A51ww4q3KpNJw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JRVrwOozvCj1wHy5ejf2rEKmp9+A2MsJplaIqZbotUIgpu6+yFu1wlfmDXRDNMJSJ
-         yedCSDc83Nyi3IJoC804dMw3LtMhcJZhNVXB4wBDtm0/gakhOPEc/kUjpjDEAF1O5y
-         meytAoENsaAga6nfBIi0eMkTRCRNRD7Qcju7TdlrpO74nt8NJoqVskTQuHu42jjzAg
-         gpMOE5Srx8aRBqHC6MMnGbxyHnJuo1RuotdLrV6KgTvbQCjNeSlQj4ukF5A94vRLhi
-         KxOVWVdDBnBhtbR3JjeZolky+6MaqexbvDgBnqQaHEtfzIumgmK64jQQf9jsGAN8PA
-         kj2265zGng3zg==
-Date:   Tue, 2 Aug 2022 09:05:04 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     Tariq Toukan <ttoukan.linux@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Ben Segall <bsegall@google.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>, linux-kernel@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH net-next V4 1/3] sched/topology: Add NUMA-based CPUs
- spread API
-Message-ID: <20220802090504.23bc6ef8@kernel.org>
-In-Reply-To: <xhsmhpmhjc7en.mognet@vschneid.remote.csb>
-References: <20220728191203.4055-1-tariqt@nvidia.com>
-        <20220728191203.4055-2-tariqt@nvidia.com>
-        <7f1ab968-cc10-f0a7-cac8-63dd60021493@gmail.com>
-        <9401f754-d4d6-9fbd-7354-3103ececddda@gmail.com>
-        <xhsmhpmhjc7en.mognet@vschneid.remote.csb>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 051963804502;
+        Tue,  2 Aug 2022 16:08:03 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.108])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 851C82166B26;
+        Tue,  2 Aug 2022 16:08:00 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 01/26] KVM: x86: hyper-v: Expose access to debug MSRs in the partition privilege flags
+Date:   Tue,  2 Aug 2022 18:07:31 +0200
+Message-Id: <20220802160756.339464-2-vkuznets@redhat.com>
+In-Reply-To: <20220802160756.339464-1-vkuznets@redhat.com>
+References: <20220802160756.339464-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 02 Aug 2022 10:38:08 +0100 Valentin Schneider wrote:
-> It's not even been a week since you submitted v4 (and ~3 days since you
-> last pinged this thread), and not all of us are limitless reviewing
-> machines :-)
-> 
-> This is already in my todo-list, but isn't the topmost item yet.
+For some features, Hyper-V spec defines two separate CPUID bits: one
+listing whether the feature is supported or not and another one showing
+whether guest partition was granted access to the feature ("partition
+privilege mask"). 'Debug MSRs available' is one of such features. Add
+the missing 'access' bit.
 
-I'd appreciate a review on this one soonish (as a favor, don't read this
-as a passive aggressive reprimand).
+Note: hv_check_msr_access() deliberately keeps checking
+HV_FEATURE_DEBUG_MSRS_AVAILABLE bit instead of the new HV_ACCESS_DEBUG_MSRS
+to not break existing VMMs (QEMU) which only expose one bit. Normally, VMMs
+should set either both these bits or none.
 
-Tariq got a review on a trivial export patch, which put all the logic 
-in the driver instead, rather promptly. I asked them to go the extra
-mile and move the code to the core so other drivers can benefit.
+Fixes: f97f5a56f597 ("x86/kvm/hyper-v: Add support for synthetic debugger interface")
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/kvm/hyperv.c             | 1 +
+ include/asm-generic/hyperv-tlfs.h | 2 ++
+ 2 files changed, 3 insertions(+)
 
-If this doesn't get into 6.0 it'll be a clear sign for driver
-maintainers that building shared infrastructure is arduous and should
-be avoided at all cost :(
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index ed804447589c..c284a605e453 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -2496,6 +2496,7 @@ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
+ 			ent->eax |= HV_MSR_RESET_AVAILABLE;
+ 			ent->eax |= HV_MSR_REFERENCE_TSC_AVAILABLE;
+ 			ent->eax |= HV_ACCESS_FREQUENCY_MSRS;
++			ent->eax |= HV_ACCESS_DEBUG_MSRS;
+ 			ent->eax |= HV_ACCESS_REENLIGHTENMENT;
+ 
+ 			ent->ebx |= HV_POST_MESSAGES;
+diff --git a/include/asm-generic/hyperv-tlfs.h b/include/asm-generic/hyperv-tlfs.h
+index fdce7a4cfc6f..1d99dd296a76 100644
+--- a/include/asm-generic/hyperv-tlfs.h
++++ b/include/asm-generic/hyperv-tlfs.h
+@@ -70,6 +70,8 @@
+ #define HV_MSR_GUEST_IDLE_AVAILABLE		BIT(10)
+ /* Partition local APIC and TSC frequency registers available */
+ #define HV_ACCESS_FREQUENCY_MSRS		BIT(11)
++/* Debug MSRs available */
++#define HV_ACCESS_DEBUG_MSRS			BIT(12)
+ /* AccessReenlightenmentControls privilege */
+ #define HV_ACCESS_REENLIGHTENMENT		BIT(13)
+ /* AccessTscInvariantControls privilege */
+-- 
+2.35.3
+
