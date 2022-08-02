@@ -2,122 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D63ABC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 06:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50B80C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 06:43:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235201AbiHBGk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 02:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58964 "EHLO
+        id S235211AbiHBGnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 02:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233010AbiHBGky (ORCPT
+        with ESMTP id S231962AbiHBGnq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 02:40:54 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D549FDD;
-        Mon,  1 Aug 2022 23:40:53 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id z17so11912710wrq.4;
-        Mon, 01 Aug 2022 23:40:53 -0700 (PDT)
+        Tue, 2 Aug 2022 02:43:46 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E35CA39B86
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 23:43:43 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id a13so14579289ljr.11
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 23:43:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=IBE6oYJZEYEN3t94Kkqip3PQk025mzEaqe0abRjhYPo=;
-        b=bUiR7Imm0ZElpLBSf6cH/ivmOClW2r/W6fzyOuhmKgMiz/VIPS5+z3UOTuh6W9cqB7
-         Xzh37Cpj6jioElqOOmiF2tvTMdF49j51u4GAQ8C7LJV9GCWEQZ9P3x/dBd3b9dPygrOM
-         uce6m7fmEnU656oaFsf8sG7/Uj5iUwxXKyorXvVWqsFOfAL6gCTWiE7VBL1Y3aa+u+gF
-         3ZlLHwXrBJyHRadzrZZNFZ6q38Q8jEUek+5GruFa2vBRkAXYwMqLPa5cLVNqP9bTd/lm
-         SOcsCI1AUJOfTEc7qQEq+HlHHXmhy+8Y665F2N7yx3IBlvWMPIYXNSg4Kdicc+aiAgt7
-         Dg5A==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=BsVVyC/Z22amNBasFSTwD0frJD17UKZEk4SMZVrNHIU=;
+        b=LqsvxmpWorpzOIuC6m2PTfI3qLyPXcxYoD1BefdsAJ6zN/c+uRM/ZyBDVFvUHqVVr5
+         PFUFNleauUP10jwKwGBZNxk41Ub+2rSxmhC2haoWEvstGEEkiwzM8oRPnPeRsimtAzz0
+         vhS4Mfuf7qZJdQie6g5PllOUJnq4bEz+xirCMM6jEkTP8PwwhgTvFrCwFvBtf0KmP9sd
+         DDYzSf1pbfk1bo5WoU0wIMw7UZTdStKO8lqRy2HCQtCcOGUQVo3Pxom7srF4W3BrfL89
+         GezqyLAknkdh4kLyjB89ZUhQf459poH+NOmqn9si+pcdpduhWx9lnCRxsii7vx2+Nmsw
+         uu/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=IBE6oYJZEYEN3t94Kkqip3PQk025mzEaqe0abRjhYPo=;
-        b=J/HQ6lU3WtYjkyZ1s3GsjYbsfgI8C6rj+jqEFaSHuVtIxcK3UyOwsRJD5tIrLSj//j
-         2BVHHPC76H9MhYhPjrjM/bYL34Ansv+U30OpvLfLITbcBh3jWw/jRAHWepY6b85zx3Uw
-         w9b74IRlTzd/nZ/lax++E97upabHkid4LiziRx2fLEmjeFtgmhMpLWKg9aQqxaRdOt6+
-         7+y+KccrNMNy3QBowpBokD0KDA2XxrPSSFmAfrDghk6VpmoFeMWqtPaLnLh0d6ai9aYM
-         2vWflAmaym4NowbogewMYXAxC2vmGF2grK4N69HGuKnqORKGiA+WtLL7SsAlr3I5S5lG
-         2kLQ==
-X-Gm-Message-State: ACgBeo1yOWxaQ1J2g+Ww7xFvEitH9ikrXPDehyeM14Ka3BSJ1CHqLwaL
-        zp8pb0RXuslUVcp67GPawrw=
-X-Google-Smtp-Source: AA6agR6mDz+qPv0z5ckA8n/R3OqrI9vVZ+MTU18cVPhlC+wZC7KwkgiK6oM93nlqqkMO82cSCoPPfg==
-X-Received: by 2002:a05:6000:1789:b0:220:626a:b69a with SMTP id e9-20020a056000178900b00220626ab69amr5651076wrg.579.1659422452467;
-        Mon, 01 Aug 2022 23:40:52 -0700 (PDT)
-Received: from [192.168.0.104] ([77.126.166.31])
-        by smtp.gmail.com with ESMTPSA id k41-20020a05600c1ca900b003a2e5f536b3sm23451555wms.24.2022.08.01.23.40.50
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=BsVVyC/Z22amNBasFSTwD0frJD17UKZEk4SMZVrNHIU=;
+        b=1Jcvf8ssinVhElT2rM/MdXOjDkpBx/anZIOjBkpTQZhrzSRoMPDWFY5ZMV03NK9Ge3
+         4splkiwxhWUeHSz7Q+dYlriNJ0vMzT6f8SCe3qhzXj86MLQQP3o5dZSexoQCiy6ivjBM
+         thYUjJpRAVmO2xaSnBD82Wc83TOPnSWbVglkY3d0GRk5pwMm2BPLbNZAs5jxbvHBbrDV
+         5X72VkGoHWgztdPnPi0PB5NwzKXpaR47D712hg5HnanYPETrKeHBkdFBTnEnCemG1EdG
+         6paJPNxg1vSg0u9yokUjZ69ngY/qkIFl4pWTFKL4k6Cks06JuKD5WrHY9oOcze19vERs
+         vduA==
+X-Gm-Message-State: ACgBeo1mLWlMc2/lQm3PElFskqhOJJcbRSdxqdcwZznwCsEUMuQ208IG
+        FPhkPFI+cLqPk6zLLO5/2oVshA==
+X-Google-Smtp-Source: AA6agR5W1350TyooKgsucDtF4STvja5/ZEelSzPbU/uzlbpxtdSurx+SHUuqPhe1zxxlb5nMwyCsKg==
+X-Received: by 2002:a2e:a370:0:b0:25e:502a:5308 with SMTP id i16-20020a2ea370000000b0025e502a5308mr2336327ljn.282.1659422622264;
+        Mon, 01 Aug 2022 23:43:42 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id a17-20020a056512201100b0048b08e25979sm199607lfb.199.2022.08.01.23.43.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Aug 2022 23:40:52 -0700 (PDT)
-Message-ID: <9401f754-d4d6-9fbd-7354-3103ececddda@gmail.com>
-Date:   Tue, 2 Aug 2022 09:40:49 +0300
+        Mon, 01 Aug 2022 23:43:41 -0700 (PDT)
+Message-ID: <bdf6abfe-89e3-80bb-6c5e-fcea713814e9@linaro.org>
+Date:   Tue, 2 Aug 2022 09:43:40 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next V4 1/3] sched/topology: Add NUMA-based CPUs
- spread API
-Content-Language: en-US
-To:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Ben Segall <bsegall@google.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>, linux-kernel@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20220728191203.4055-1-tariqt@nvidia.com>
- <20220728191203.4055-2-tariqt@nvidia.com>
- <7f1ab968-cc10-f0a7-cac8-63dd60021493@gmail.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <7f1ab968-cc10-f0a7-cac8-63dd60021493@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] drm/msm/dp: delete DP_RECOVERED_CLOCK_OUT_EN to fix
+ tps4
+Content-Language: en-GB
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, robdclark@gmail.com,
+        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
+        vkoul@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
+        agross@kernel.org, bjorn.andersson@linaro.org
+Cc:     quic_aravindh@quicinc.com, quic_sbillaka@quicinc.com,
+        freedreno@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1659384830-9909-1-git-send-email-quic_khsieh@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <1659384830-9909-1-git-send-email-quic_khsieh@quicinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 01/08/2022 23:13, Kuogee Hsieh wrote:
+> Data Symbols scrambled is required for tps4 at link training 2.
+> Therefore SCRAMBLING_DISABLE bit should not be set for tps4 to
+> work.
+> RECOVERED_CLOCK_OUT_EN is for enable simple EYE test for jitter
+> measurement with minimal equipment for embedded applications purpose
+> and is not required to be set during normal operation.
+> Current implementation always have RECOVERED_CLOCK_OUT_EN bit set
+> which cause SCRAMBLING_DISABLE bit wrongly set at tps4 which prevent
+> tps4 from working.
+> This patch delete setting RECOVERED_CLOCK_OUT_EN to fix SCRAMBLING_DISABLE
+> be wrongly set at tps4.
+
+Minor nits, more likely concerning feature patches:
+- Please insert blank lines between paragraphs, it makes commit message 
+easier to read. And please add no extra line breaks if you do not intent 
+to end the paragraph here.
+
+- "This patch" is generally the frowned upon phrase (see 
+Documentation/process/submitting-patches.rst)
+
+Nevertheless:
+
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+
+> 
+> Changes in v2:
+> -- fix Fixes tag
+> 
+> Fixes: c943b4948b58 ("drm/msm/dp: add displayPort driver support")
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> ---
+>   drivers/gpu/drm/msm/dp/dp_ctrl.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+> index ab6aa13..013ca02 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+> @@ -1214,7 +1214,7 @@ static int dp_ctrl_link_train_2(struct dp_ctrl_private *ctrl,
+>   	if (ret)
+>   		return ret;
+>   
+> -	dp_ctrl_train_pattern_set(ctrl, pattern | DP_RECOVERED_CLOCK_OUT_EN);
+> +	dp_ctrl_train_pattern_set(ctrl, pattern);
+>   
+>   	for (tries = 0; tries <= maximum_retries; tries++) {
+>   		drm_dp_link_train_channel_eq_delay(ctrl->aux, ctrl->panel->dpcd);
 
 
-On 7/30/2022 8:29 PM, Tariq Toukan wrote:
-> 
-> 
-> On 7/28/2022 10:12 PM, Tariq Toukan wrote:
->> Implement and expose API that sets the spread of CPUs based on distance,
->> given a NUMA node.  Fallback to legacy logic that uses
->> cpumask_local_spread.
->>
->> This logic can be used by device drivers to prefer some remote cpus over
->> others.
->>
->> Reviewed-by: Gal Pressman <gal@nvidia.com>
->> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
->> ---
->>   include/linux/sched/topology.h |  5 ++++
->>   kernel/sched/topology.c        | 49 ++++++++++++++++++++++++++++++++++
->>   2 files changed, 54 insertions(+)
->>
-> 
-> ++
-> 
-> Dear SCHEDULER maintainers,
-> 
-> V3 of my series was submitted ~12 days ago and had significant changes.
-> I'd appreciate your review to this patch, so we could make it to the 
-> upcoming kernel.
-> 
-> Regards,
-> Tariq
-
-Hi,
-Another reminder.
-Do you have any comments on this patch?
-If not, please provide your Ack.
+-- 
+With best wishes
+Dmitry
