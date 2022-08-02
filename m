@@ -2,124 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F17C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:10:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8849BC25B0C
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:14:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237128AbiHBPKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 11:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50998 "EHLO
+        id S237097AbiHBPOW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 11:14:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235854AbiHBPKH (ORCPT
+        with ESMTP id S234780AbiHBPOT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 11:10:07 -0400
-Received: from mail-il1-f178.google.com (mail-il1-f178.google.com [209.85.166.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C48C28E17;
-        Tue,  2 Aug 2022 08:10:07 -0700 (PDT)
-Received: by mail-il1-f178.google.com with SMTP id h16so7123057ilc.10;
-        Tue, 02 Aug 2022 08:10:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=UV82uEIsvHDZrliUx1r2+IPpqDlRXG1R8sadUym76Ns=;
-        b=RfFmqqD5MfGy/kbSpySS5uIVrUQzCBqV52bsu3NVJVlEuGzbD+lZwvFA1rMaZR4rbm
-         fT/YVkHmcGvxX54gxT/0ZjYvu2bWW8MTLdmtNQFwiv9O/0HAiMkYd4StfI29P+Rw7sJO
-         xZ26S4pX22QV8eO+LOZvXi3PXllFW0eUgA9bQPdv2LtM/YKf/7lYMTJcFjyXZMzWoRAu
-         IixgBVeIrIQ94WxmaVONIO0hS5M9qFpDA2fqVE/cmuACoeHmX8qSymAr+vrIbjaPTi2c
-         7hRJAUWFtz4zexIhojRlMdKEQa4mtmMKemtE3Q02/pfc55eN1BPP37EJBOmkqRfRR2Ek
-         IAIQ==
-X-Gm-Message-State: ACgBeo0ZSZHNEUlh8XtsOBntvN0+Ij3NVRxo6OBBf8VONlX+JzNeB/6a
-        EsnnQOxM0X/HeWqZyisq6g==
-X-Google-Smtp-Source: AA6agR6qEtPWKu6LQNhC/sCZhdW870Xl86PU7mC8mmdhENczblUR53y2AS/pkKzRkJkzddn98twsjw==
-X-Received: by 2002:a92:d80f:0:b0:2de:d3bc:d553 with SMTP id y15-20020a92d80f000000b002ded3bcd553mr2572195ilm.269.1659453006374;
-        Tue, 02 Aug 2022 08:10:06 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id v18-20020a056e020f9200b002dbfcfa3233sm5871998ilo.37.2022.08.02.08.10.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 08:10:06 -0700 (PDT)
-Received: (nullmailer pid 116902 invoked by uid 1000);
-        Tue, 02 Aug 2022 15:10:04 -0000
-Date:   Tue, 2 Aug 2022 09:10:04 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Alistair Francis <alistair@alistair23.me>
-Cc:     linux-input@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        shawnguo@kernel.org, alistair23@gmail.com,
-        linus.walleij@linaro.org, s.hauer@pengutronix.de,
-        andreas@kemnade.info, krzysztof.kozlowski+dt@linaro.org,
-        rydberg@bitmath.org, dmitry.torokhov@gmail.com
-Subject: Re: [PATCH v8 2/4] dt-bindings: input: Add Cypress TT2100
- touchscreen controller
-Message-ID: <20220802151004.GA112502-robh@kernel.org>
-References: <20220802125827.34509-1-alistair@alistair23.me>
- <20220802125827.34509-3-alistair@alistair23.me>
+        Tue, 2 Aug 2022 11:14:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3875C17581;
+        Tue,  2 Aug 2022 08:14:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB23C60303;
+        Tue,  2 Aug 2022 15:14:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04ED5C433D7;
+        Tue,  2 Aug 2022 15:14:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659453256;
+        bh=m0f8snPhaM+LiCifg3cCGC6xDAvaa10HN0gcVGJbM74=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=j7Za+fK2PUc7lGtw2mlIm40rw6IKQY2EH+JUBHOXhFtsHkedF6k9sc4Vq6bggDgT0
+         yqLDr2W6dhfdduqPF3RYj2+RxJsk9tVpuBzAviH+6iaa9Xaf+wIOZ+w1xizG1p8gGS
+         bAasM/1+SX3v9WAoaHieWTt/WZxsAXAyAvhaSLJ4yw1PaysJQFSvsJYT025a0CkWHr
+         l5fzfFhtFcYYDXdY3/SJ9c4szQaxhtiuNwlxgFsoZDRmq7j6Jak8S6vnhCf6gCeDwJ
+         9ylQFcxfi6qA9DS2++7Jbfm2AwK8g1MB5k5I5T2hU6cZl04zHCYoOvsXatLqIutjic
+         FXGP1AfX81uPQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1oItbM-0000Te-H1; Tue, 02 Aug 2022 17:14:32 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        "Matthias Kaehlcke" <mka@chromium.org>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
+        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH 6/8] dt-bindings: usb: qcom,dwc3: add wakeup-source property
+Date:   Tue,  2 Aug 2022 17:14:02 +0200
+Message-Id: <20220802151404.1797-7-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220802151404.1797-1-johan+linaro@kernel.org>
+References: <20220802151404.1797-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220802125827.34509-3-alistair@alistair23.me>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 02, 2022 at 10:58:25PM +1000, Alistair Francis wrote:
-> Add the Cypress TrueTouch Generation 5 touchscreen device tree bindings
-> documentation. It can use I2C or SPI bus.
-> This touchscreen can handle some defined zone that are designed and
-> sent as button. To be able to customize the keycode sent, the
-> "linux,code" property in a "button" sub-node can be used.
-> 
-> Signed-off-by: Alistair Francis <alistair@alistair23.me>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> ---
->  .../input/touchscreen/cypress,tt21000.yaml    | 101 ++++++++++++++++++
->  1 file changed, 101 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.yaml b/Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.yaml
-> new file mode 100644
-> index 000000000000..3fc4b7011040
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.yaml
-> @@ -0,0 +1,101 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/input/touchscreen/cypress,tt21000.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Cypress TT2100 touchscreen controller
-> +
-> +description: The Cypress TT2100 series (also known as "CYTTSP5" after
-> +  the marketing name Cypress TrueTouch Standard Product series 5).
-> +
-> +maintainers:
-> +  - Alistair Francis <alistair@alistair23.me>
-> +
-> +allOf:
-> +  - $ref: touchscreen.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: cypress,tt21000
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  vdd-supply:
-> +    description: Regulator for voltage.
-> +
-> +  reset-gpios:
-> +    maxItems: 1
-> +
-> +  linux,keycodes:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: EV_ABS specific event code generated by the axis.
+Add a wakeup-source property to the binding to describe whether the
+wakeup interrupts can wake the system from suspend.
 
-See commit d853cec7306a ("dt-bindings: input: Use common 
-'linux,keycodes' definition") in next.
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
+ Documentation/devicetree/bindings/usb/qcom,dwc3.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Rob
+diff --git a/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml b/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
+index fea3e7092ace..f6e118bf04f6 100644
+--- a/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
++++ b/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
+@@ -108,6 +108,8 @@ properties:
+       HS/FS/LS modes are supported.
+     type: boolean
+ 
++  wakeup-source: true
++
+ # Required child node:
+ 
+ patternProperties:
+-- 
+2.35.1
+
