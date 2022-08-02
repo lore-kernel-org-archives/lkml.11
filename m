@@ -2,198 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC64C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:09:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AACF6C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:11:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237448AbiHBSJQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 14:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57100 "EHLO
+        id S230038AbiHBSLc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 14:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236661AbiHBSJN (ORCPT
+        with ESMTP id S237846AbiHBSLJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 14:09:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DCD51260C;
-        Tue,  2 Aug 2022 11:09:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 2 Aug 2022 14:11:09 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD0517E1C;
+        Tue,  2 Aug 2022 11:11:05 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4FCDB81EE8;
-        Tue,  2 Aug 2022 18:09:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 931E7C433D6;
-        Tue,  2 Aug 2022 18:09:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659463749;
-        bh=3m8XltI+Jl+jFjBten+Mlx06s0qeecBCmc9bi22rqio=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XuAr0J0gEK56Qchy3h2DcX0QGjfWI3dg1sUMOFcAVySs95YRb7e5N+F4lLf0JMDYW
-         uTpRo0JLzZ9lcvMaJZ6FCMxZdMSdNsZVLYHB71VgtRDcHmw+lh9ROq2HVibosRZXTE
-         SGjc+YVTLQqe2DXmqpayhOJmKcEYdnx52Ddl4vCUgxmrycC5y0RxBuuCxmD71CmeIx
-         duO26RTyTbaAhNGDEjDd3gGFzTowItuNY8i1y/jY26YM2Y6FMPmonmFCVVZK+4USQK
-         u8urtU2yho4Xl2RBSjm5onC8SNqJdGqA1VZiEQChABfYvZcMe3puwsn05/sGTmIrIi
-         Ok0iPeMfwvD8g==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id DE2CF40736; Tue,  2 Aug 2022 15:09:05 -0300 (-03)
-Date:   Tue, 2 Aug 2022 15:09:05 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Stephane Eranian <eranian@google.com>,
-        =?utf-8?B?6LCt5qKT54WK?= <tanzixuan.me@gmail.com>,
-        Zixuan Tan <tanzixuangg@gmail.com>, terrelln@fb.com,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] perf build: Suppress openssl v3 deprecation warnings in
- libcrypto feature test
-Message-ID: <YuloQYU72pe4p3eK@kernel.org>
-References: <20220625153439.513559-1-tanzixuan.me@gmail.com>
- <YrhxE4s0hLvbbibp@krava>
- <CABwm_eT_LE6VbLMgT31yqW=tc_obLP=6E0jnMqVn1sMdWrVVNw@mail.gmail.com>
- <Yrqcpr7ICzpsoGrc@krava>
- <YufUAiLqKiuwdvcP@krava>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id A8F3F381C5;
+        Tue,  2 Aug 2022 18:11:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1659463864;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Pz4nohXMnV6DoQDiLTQldnM+q/whU1JUDeaFPyIhZ1g=;
+        b=qbwOAxE67O43QdxlU3BgVNMFcqw+bIAks9zkzBZrdIt+p9QtP3Fv7xMPLaENAdVp7Aedx9
+        XzoRSqRbgRcLUXbFDFMud/GksDdqcgMn+9twIIJ4cRQFVh+siuSiTKL0Shqw/NSsGMSWNj
+        Sj0WJF2iodrQNqR8K7qbSku3yKszI1E=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1659463864;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Pz4nohXMnV6DoQDiLTQldnM+q/whU1JUDeaFPyIhZ1g=;
+        b=B3fB4DC8HPOsEVk5KmGSn/lYbNT4tRMJqrUYo2XAEFOxE+jYElYC0WLOUq4qB59SfGVsCj
+        5wjm/c5z7w+cjuBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6C8841345B;
+        Tue,  2 Aug 2022 18:11:04 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id LWGzGbho6WJzTgAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Tue, 02 Aug 2022 18:11:04 +0000
+Date:   Tue, 2 Aug 2022 20:06:02 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     alexlzhu@fb.com
+Cc:     kernel-team@fb.com, linux-mm@kvack.org, clm@fb.com,
+        josef@toxicpanda.com, dsterba@suse.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] mm: fix alginment of VMA for memory mapped files on
+ THP
+Message-ID: <20220802180602.GX13489@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, alexlzhu@fb.com, kernel-team@fb.com,
+        linux-mm@kvack.org, clm@fb.com, josef@toxicpanda.com,
+        dsterba@suse.com, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220801184740.2134364-1-alexlzhu@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YufUAiLqKiuwdvcP@krava>
-X-Url:  http://acmel.wordpress.com
+In-Reply-To: <20220801184740.2134364-1-alexlzhu@fb.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Mon, Aug 01, 2022 at 03:24:18PM +0200, Jiri Olsa escreveu:
-> On Tue, Jun 28, 2022 at 08:16:06AM +0200, Jiri Olsa wrote:
-> > On Mon, Jun 27, 2022 at 11:08:34AM +0800, 谭梓煊 wrote:
-> > > On Sun, Jun 26, 2022 at 10:45 PM Jiri Olsa <olsajiri@gmail.com> wrote:
-> > > >
-> > > > On Sat, Jun 25, 2022 at 11:34:38PM +0800, Zixuan Tan wrote:
-> > > > > With OpenSSL v3 installed, the libcrypto feature check fails as it use the
-> > > > > deprecated MD5_* API (and is compiled with -Werror). The error message is
-> > > > > as follows.
-> > > > >
-> > > > > $ make tools/perf
-> > > > > ```
-> > > > > Makefile.config:778: No libcrypto.h found, disables jitted code injection,
-> > > > > please install openssl-devel or libssl-dev
-> > > > >
-> > > > > Auto-detecting system features:
-> > > > > ...                         dwarf: [ on  ]
-> > > > > ...            dwarf_getlocations: [ on  ]
-> > > > > ...                         glibc: [ on  ]
-> > > > > ...                        libbfd: [ on  ]
-> > > > > ...                libbfd-buildid: [ on  ]
-> > > > > ...                        libcap: [ on  ]
-> > > > > ...                        libelf: [ on  ]
-> > > > > ...                       libnuma: [ on  ]
-> > > > > ...        numa_num_possible_cpus: [ on  ]
-> > > > > ...                       libperl: [ on  ]
-> > > > > ...                     libpython: [ on  ]
-> > > > > ...                     libcrypto: [ OFF ]
-> > > > > ...                     libunwind: [ on  ]
-> > > > > ...            libdw-dwarf-unwind: [ on  ]
-> > > > > ...                          zlib: [ on  ]
-> > > > > ...                          lzma: [ on  ]
-> > > > > ...                     get_cpuid: [ on  ]
-> > > > > ...                           bpf: [ on  ]
-> > > > > ...                        libaio: [ on  ]
-> > > > > ...                       libzstd: [ on  ]
-> > > > > ...        disassembler-four-args: [ on  ]
-> > > > > ```
-> > > > >
-> > > > > This is very confusing because the suggested library (on my Ubuntu 20.04
-> > > > > it is libssl-dev) is already installed. As the test only checks for the
-> > > > > presence of libcrypto, this commit suppresses the deprecation warning to
-> > > > > allow the test to pass.
-> > > > >
-> > > > > Signed-off-by: Zixuan Tan <tanzixuan.me@gmail.com>
-> > > > > ---
-> > > > >  tools/build/feature/test-libcrypto.c | 6 ++++++
-> > > > >  1 file changed, 6 insertions(+)
-> > > > >
-> > > > > diff --git a/tools/build/feature/test-libcrypto.c b/tools/build/feature/test-libcrypto.c
-> > > > > index a98174e0569c..31afff093d0b 100644
-> > > > > --- a/tools/build/feature/test-libcrypto.c
-> > > > > +++ b/tools/build/feature/test-libcrypto.c
-> > > > > @@ -2,6 +2,12 @@
-> > > > >  #include <openssl/sha.h>
-> > > > >  #include <openssl/md5.h>
-> > > > >
-> > > > > +/*
-> > > > > + * The MD5_* API have been deprecated since OpenSSL 3.0, which causes the
-> > > > > + * feature test to fail silently. This is a workaround.
-> > > > > + */
-> > > >
-> > > > then we use these deprecated MD5 calls in util/genelf.c if libcrypto is detected,
-> > > > so I wonder how come the rest of the compilation passed for you.. do you have
-> > > > CONFIG_JITDUMP disabled?
-> > > >
-> > > > thanks,
-> > > > jirka
-> > > >
-> > > No, CONFIG_JITDUMP is not disabled. I am using the default configuration.
-> > > 
-> > > Yes, you are right. The rest of the compilation should fail, but it doesn't.
-> > > I checked the verbose build commands. This seems to be the result of another
-> > > inconsistency.
-> > > 
-> > > If libcrypto is detected, the macro "HAVE_LIBCRYPTO_SUPPORT" will be
-> > > defined, but in perf/util/genelf.c, "HAVE_LIBCRYPTO" without the "_SUPPORT"
-> > > prefix is checked. This causes urandom always be used to create build id
-> > > rather than MD5 and SHA1, no matter what the detection result is.
-> > > 
-> > > In perf/Makefile.config, from line 776
-> > > ```
-> > > ifndef NO_LIBCRYPTO
-> > >   ifneq ($(feature-libcrypto), 1)
-> > >     msg := $(warning No libcrypto.h found, disables jitted code injection,
-> > >             please install openssl-devel or libssl-dev);
-> > >     NO_LIBCRYPTO := 1
-> > >   else                                  <-- if libcrypto feature detected
-> > >     CFLAGS += -DHAVE_LIBCRYPTO_SUPPORT  <-- define this
-> > >     EXTLIBS += -lcrypto
-> > >     $(call detected,CONFIG_CRYPTO)
-> > >   endif
-> > > endif
-> > > ```
-> > > 
-> > > In perf/util/genelf.c, from line 33
-> > > ```
-> > > #ifdef HAVE_LIBCRYPTO                <-- but check this, it's always false
-> > 
-> > nice :)
-> > 
-> > > 
-> > > #define BUILD_ID_MD5
-> > > #undef BUILD_ID_SHA /* does not seem to work well when linked with Java */
-> > > #undef BUILD_ID_URANDOM /* different uuid for each run */
-> > > 
-> > > #ifdef BUILD_ID_SHA
-> > > #include <openssl/sha.h>
-> > > #endif
-> > > 
-> > > #ifdef BUILD_ID_MD5
-> > > #include <openssl/md5.h>
-> > > #endif
-> > > #endif                               <-- this block will be skipped
-> > > ```
-> > > 
-> > > Maybe we should fix this, to really make use of libcrypto if it is available?
-> > 
-> > yea, I think that was the original idea, let's keep the variable with
-> > SUPPORT suffix and use the -Wdeprecated-declarations for genelf.c
-> > 
-> > full fix would be to detect the new API and use it when it's available but..
-> > given that the check was false at least since 2016, perhaps we could remove
-> > that code? ;-) Stephane?
+On Mon, Aug 01, 2022 at 11:47:40AM -0700, alexlzhu@fb.com wrote:
+> From: alexlzhu <alexlzhu@fb.com>
 > 
-> ping
+> With CONFIG_READ_ONLY_THP_FOR_FS, the Linux kernel supports using THPs for
+> read-only mmapped files, such as shared libraries. However, the
+> kernel makes no attempt to actually align those mappings on 2MB boundaries,
+> which makes it impossible to use those THPs most of the time. This issue
+> applies to general file mapping THP as well as existing setups using
+> CONFIG_READ_ONLY_THP_FOR_FS. This is easily fixed by using
+> thp_get_unmapped_area for the unmapped_area function in btrfs, which is
+> what ext2, ext4, fuse, and xfs all use.
 
-So, we should start with 谭梓煊 patch, then fix that ifdef and go on
-from there?
+Commit dbe6ec815641 ("ext2/4, xfs: call thp_get_unmapped_area() for pmd
+mappings") adds the callback for DAX, that btrfs does not support so it
+was left out.
 
-- Arnaldo
+> The problem can be seen in
+> /proc/PID/smaps where THPeligible is set to 0 on mappings to eligible
+> shared object files as shown below.
+> 
+> Before this patch:
+> 
+> 7fc6a7e18000-7fc6a80cc000 r-xp 00000000 00:1e 199856
+> /usr/lib64/libcrypto.so.1.1.1k
+> Size:               2768 kB
+> THPeligible:    0
+> VmFlags: rd ex mr mw me
+> 
+> With this patch the library is mapped at a 2MB aligned address:
+> 
+> fbdfe200000-7fbdfe4b4000 r-xp 00000000 00:1e 199856
+> /usr/lib64/libcrypto.so.1.1.1k
+> Size:               2768 kB
+> THPeligible:    1
+> VmFlags: rd ex mr mw me
+> 
+> This fixes the alignment of VMAs for any mmap of a file that has the
+> rd and ex permissions and size >= 2MB. The VMA alignment and
+> THPeligible field for anonymous memory is handled separately and
+> is thus not effected by this change.
+> 
+> Signed-off-by: alexlzhu <alexlzhu@fb.com>
+
+Please use full name for signed-off.
+
+Also the subject should start with "btrfs:", this is not a memory
+management patch. Thanks.
