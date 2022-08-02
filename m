@@ -2,126 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADF43C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 22:11:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD02CC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 22:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234497AbiHBWLo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 18:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42032 "EHLO
+        id S235453AbiHBWLu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 18:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234583AbiHBWLh (ORCPT
+        with ESMTP id S235173AbiHBWLi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 18:11:37 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3A92F038;
-        Tue,  2 Aug 2022 15:11:36 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id j8so3055736ejx.9;
-        Tue, 02 Aug 2022 15:11:35 -0700 (PDT)
+        Tue, 2 Aug 2022 18:11:38 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9657332DB6
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 15:11:36 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id kb8so13730787ejc.4
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 15:11:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=8F1zVGH36J0JkdBUBvKRRUtEuBe9FAKq0qw9mWpiyHI=;
-        b=eK1MdAMZ8tMmA4PIq0UT3eU1SqyjQ1Ih0nzCRxWsKy5gM2KWUVNruzoRd0MbU+63SF
-         q3Unkuncwd2xyKCK9fjusdGZNBaFLsLM7cRpluuWZY6XqiozxxWKWyUqVHsWiye6TyQ0
-         +bkt0anPppIQBYRce1BrPvAd8SPRNakB/GspVk3NJrtCFRJAeVc9647Lb2E3aTNjgd6Q
-         B3kanCmqq9OJ16bFutCAkbsfDNc0xEHRDUZJLRYdtPDkbXSd75hYgPjDPhuLDuBr3uP8
-         wbRPrFAI3HDKAWMRSGbqTvZIEZKynXirTNUusd9QC40kH9UKxAXjfIkpV4SY7Lx7SpFH
-         iIDQ==
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=k6pIxoS6xr69cL31tnJGd/edjv23VUk7urmVJKHeHw8=;
+        b=FwrSh8M2yilbskdsO4gXxUoC2Ed+FeryminZgruVH00UecbUpXqRgNsVHrZfOtz6xc
+         ib05vYtYPKWhkIqV87INC126FLDR+3Wl/KgQ7OB87pUtFbUh3h4sX0GHaJUVqmIocbuN
+         5gXLQkyeN80KnkVUepMPBUS/nqR8X4BXEHwZ0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=8F1zVGH36J0JkdBUBvKRRUtEuBe9FAKq0qw9mWpiyHI=;
-        b=zYF7SSmN1wUmv98WzVb6vAlEWtv49TOSw3GU9Xs3ICTIUXB4NGhQzSyZEkWwn6VPDc
-         pYevDGr0MNTPcUkaDBgyNYv09FVuYi4PiIAKcsWiJg6K5banH0rPJPzKxKRc55OFUldr
-         0R+kgIc/rAFfawMj97GzcRqUfe04gXEc11phAOBh1VpJAb800hXb61ig6ZUFfAhULElF
-         oCjZ355+9atlDExHxVZqCoJd5Wynr7WN3I87b4gyvr/fa0qWw9zcC1jyxRhIhys3OfZY
-         Z13DzAj8hE3iSHAF4M9Xa2ZRoqCXRx3P5Z33wqHU7GmcuQzHav0Mw8sKscRWW/0TFhpX
-         g23g==
-X-Gm-Message-State: AJIora9elndikuCcpPrdQSTmEg+nXvK3DEOuvmJwn3nACMrLlGyyQN7z
-        p7h/u+hgMdGv5jmdmsl5WAo=
-X-Google-Smtp-Source: AGRyM1sE27EvWFS3GlkGtuBmJo4IkxXetpDJJ8DezcQnRLWu3Nx1KMQ5kG/xujmdP3PCQB1nUufnyw==
-X-Received: by 2002:a17:907:87b0:b0:72f:8d3d:2010 with SMTP id qv48-20020a17090787b000b0072f8d3d2010mr17947870ejc.743.1659478294501;
-        Tue, 02 Aug 2022 15:11:34 -0700 (PDT)
-Received: from localhost ([77.78.38.236])
-        by smtp.gmail.com with ESMTPSA id wc7-20020a170907124700b0072b55713daesm2885560ejb.56.2022.08.02.15.11.33
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=k6pIxoS6xr69cL31tnJGd/edjv23VUk7urmVJKHeHw8=;
+        b=2FK8DCGSsG57kXW1cRx/fuEt9ctcbi4ZReBptye70GjUFSNf7RTLONpQTUL9cAhsfz
+         aIyAyUs1jLz1kbAwc6Yr94urILKFI4QxFg+OP8u6myn4FqhElvsoKCulThSGEFLrgQl9
+         ZLayfJ0yQHK3o97JguCc8y3+Kz6G7yBgfNUQK5zbOWOP7odhzZp4w+2UEQ527VpEbG6Z
+         jCwHOUTGRKveAfQT2G2gNDtUGKr0XmyuwKIZbqZS+aCrQLXL9KnNg3bDO/z6a0lky2bB
+         2yWCWH0hM5vE/hiGlTdimSyMi164GA300bJ9qhxVBrWuVnWYi9I4wt8XQ9uWN1fQnQ45
+         988A==
+X-Gm-Message-State: ACgBeo05BIpZqyOKx6ZB0229R8VSDnC0WnOMv1J6i+o68CfAvGrdedwD
+        IBmNMjY/baH+MkV+kDvzQMbZ1V1sPb+AJGyA
+X-Google-Smtp-Source: AA6agR7PQopi89Lcy3aQIOiMg4duSwjQMqI8yZypKnF+m97EQ0J0XUdPbmHH1FO61E73DdREdje3TA==
+X-Received: by 2002:a17:906:8a6c:b0:730:a322:6f69 with SMTP id hy12-20020a1709068a6c00b00730a3226f69mr3182641ejc.585.1659478295893;
+        Tue, 02 Aug 2022 15:11:35 -0700 (PDT)
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com. [209.85.128.52])
+        by smtp.gmail.com with ESMTPSA id x25-20020aa7d6d9000000b0043bc4b28464sm8759758edr.34.2022.08.02.15.11.35
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Aug 2022 15:11:34 -0700 (PDT)
-From:   Iskren Chernev <iskren.chernev@gmail.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Robert Marko <robimarko@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Iskren Chernev <iskren.chernev@gmail.com>,
-        Adam Skladowski <a39.skl@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 02/13] dt-bindings: regulator: qcom_spmi: Document PM6125 PMIC
-Date:   Wed,  3 Aug 2022 01:11:01 +0300
-Message-Id: <20220802221112.2280686-3-iskren.chernev@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220802221112.2280686-1-iskren.chernev@gmail.com>
-References: <20220802221112.2280686-1-iskren.chernev@gmail.com>
+        Tue, 02 Aug 2022 15:11:35 -0700 (PDT)
+Received: by mail-wm1-f52.google.com with SMTP id v131-20020a1cac89000000b003a4bb3f786bso54749wme.0
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 15:11:35 -0700 (PDT)
+X-Received: by 2002:a05:600c:21d7:b0:3a3:2088:bbc6 with SMTP id
+ x23-20020a05600c21d700b003a32088bbc6mr843858wmj.68.1659478294886; Tue, 02 Aug
+ 2022 15:11:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <827a0fe0-03a3-b5ca-db34-daff17095b8f.ref@schaufler-ca.com> <827a0fe0-03a3-b5ca-db34-daff17095b8f@schaufler-ca.com>
+In-Reply-To: <827a0fe0-03a3-b5ca-db34-daff17095b8f@schaufler-ca.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 2 Aug 2022 15:11:18 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjsM9cUHfmGMcco5zCuBqMpM-97hBkBX5_vzoRLm5SvJw@mail.gmail.com>
+Message-ID: <CAHk-=wjsM9cUHfmGMcco5zCuBqMpM-97hBkBX5_vzoRLm5SvJw@mail.gmail.com>
+Subject: Re: [GIT PULL] Smack patches for v6.0
+To:     Casey Schaufler <casey@schaufler-ca.com>
+Cc:     LSM List <linux-security-module@vger.kernel.org>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for pm6125 compatible string and add relevant supplies in QCom
-SPMI regulator documentation.
+On Mon, Aug 1, 2022 at 1:13 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
+>
+> There are two minor code clean-ups. One removes a touch of
+> dead code and the other replaces an instance of kzalloc + strncpy
+> with kstrndup.
 
-Signed-off-by: Adam Skladowski <a39.skl@gmail.com>
-Signed-off-by: Iskren Chernev <iskren.chernev@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../regulator/qcom,spmi-regulator.yaml        | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
+Hmm. That second one looks like it really should have just used
+"kmemdup()" (and a zero termination) instead, since it has already
+done all the string length calculations.
 
-diff --git a/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
-index da644c161e99..24108d0e4c4e 100644
---- a/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/qcom,spmi-regulator.yaml
-@@ -12,6 +12,7 @@ maintainers:
- properties:
-   compatible:
-     enum:
-+      - qcom,pm6125-regulators
-       - qcom,pm660-regulators
-       - qcom,pm660l-regulators
-       - qcom,pm8004-regulators
-@@ -106,6 +107,25 @@ required:
-   - compatible
- 
- allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - qcom,pm6125-regulators
-+    then:
-+      properties:
-+        vdd_l1_l7_l17_l18-supply: true
-+        vdd_l2_l3_l4-supply: true
-+        vdd_l5_l15_l19_l20_l21_l22-supply: true
-+        vdd_l6_l8-supply: true
-+        vdd_l9_l11-supply: true
-+        vdd_l10_l13_l14-supply: true
-+        vdd_l12_l16-supply: true
-+        vdd_l23_l24-supply: true
-+      patternProperties:
-+        "^vdd_s[1-8]-supply$": true
-+
-   - if:
-       properties:
-         compatible:
--- 
-2.37.1
+Oh well. I guess the strndup() works too, but it seems kind of odd to
+do a strnlen() there when you have literally limited 'len' to smaller
+than the string you are going to duplicate.
 
+                   Linus
