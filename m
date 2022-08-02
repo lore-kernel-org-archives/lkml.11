@@ -2,110 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F9C3C19F28
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 566ABC19F29
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230482AbiHBQa4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 12:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39820 "EHLO
+        id S230105AbiHBQbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 12:31:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237056AbiHBQax (ORCPT
+        with ESMTP id S229933AbiHBQbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 12:30:53 -0400
-Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9764E12AFB
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:30:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1659457757; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=Djhgp8iXUCsOnH9BSyQXz7FMb/CCtRzW70p2rAlremDefOEUPhcd/lYHd1VRKZeM3YRLOGNNeSKuekz/r9J/Cn49yzNpUMEQk/U7HZ0F0dU6qL7jlpWZjfkeguXXmjpQVrk1nA5k/YeazDLsBEZWRk3lLjVla5iWdRN+d0OlXcI=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1659457757; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=tIaoKZqeKwVm3YXlgfzkmmqa+keWxZ5MypfokfBzu1Q=; 
-        b=AOGAeRcesujq661zWHJWre5A0KEV7ftyIYUHwYhdkcRYgQoTz9AQSSgrxHs1NK9LGIbrboePn5bSh0gR8XBKh6erYOYNUqne/4m0siUOyp+1bs6fuW0+fY4votXtTHTN4gDECXJjXx3b9ZFHqxsyn3XwIq95LbbN7L3HGe9ZlzY=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659457757;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=tIaoKZqeKwVm3YXlgfzkmmqa+keWxZ5MypfokfBzu1Q=;
-        b=oEJBR4ucJWNOr8jLGXAYjnRdA3ARGIT+6lE5L1REVDeYjJryM5Mj3+UeC4HtJ+nz
-        4FEmI2NUKoT5AtsnyZJn4ho0wiCZs8S6B37xp/HmIEanfBVL8r0P40viL3GNKW0cONb
-        /IlFqk+1C4+5t5EqcQkD4v2y1gzj2W7WIFrkVA4I=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 1659457745264923.42593622627; Tue, 2 Aug 2022 21:59:05 +0530 (IST)
-Date:   Tue, 02 Aug 2022 21:59:05 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "Ingo Molnar" <mingo@kernel.org>
-Cc:     "x86" <x86@kernel.org>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "Andy Lutomirski" <luto@kernel.org>,
-        "Peter Zijlstra" <peterz@infradead.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "linux-kernel-mentees" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>
-Message-ID: <1825f63b142.8968bde3116633.1242410031840350968@siddh.me>
-In-Reply-To: <YukFgFTaq4Aw+uht@gmail.com>
-References: <20220731160913.632092-1-code@siddh.me> <YukFgFTaq4Aw+uht@gmail.com>
-Subject: Re: [PATCH] x86/numa: Use cpumask_available instead of hardcoded
- NULL check
+        Tue, 2 Aug 2022 12:31:43 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B781582B
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:31:42 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id s206so12782242pgs.3
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 09:31:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=tZSf07sg0fk/9dgcqNB6Ry/A8jgISpdwbk+jhT7aWZ8=;
+        b=RB37ZYHOrAQN2jfUAsUDBGcG5RLo8Yzn0dRBJvLM4XmpEQz1QhZBtA6kcNEQpNLm9L
+         YOj3HfN+rEiyPkMSt9Cy2pdC6enxOgXO8YTlaWEqliXWbciVKD7diUxzJCR+wCZsGqnL
+         +4Sy7qJaUKBx5zbhO5T+5hzuePieKWbwU1c0NekYSDDEvLAuVCsvCJYOc+ioyQxU7X0/
+         bnkYd/ObTavMHAy1YFdTPaEIOcMr6fAGMtu4G6Lfgfy2YuTx7ju4btLxqTx6jLjEm6Uo
+         tpuRn/DKQKaOaXhiIr7xRBbTFyvHjeTpsFnVL/bPeZHfG+7B5Ch68+lFf8gLmMn9tI4K
+         ZSAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=tZSf07sg0fk/9dgcqNB6Ry/A8jgISpdwbk+jhT7aWZ8=;
+        b=q23RaODENRaHtU78mDxx0VwuewmHBVO2uRn+Rhr+pPgZRMhpd9txClFeZX7+XZUlFW
+         YwPfce2erw/IM9IXVmekgxq/+Yr1KnSV+Yn0dDgGNbFI90Onh8WQqjMobeFXqC0hrLpf
+         gErlI0f+ktqvlT4D1gt/RxXUqTa3hvXbFAldB0j7VNSik8M3CQNAGif8CZJDDhwwiEGm
+         AVwoNuA97jD/o6aMdreQfGwCUIzJHdouLSByuw53AePEDcGU9XNsH5hN1a0F86L6zp9w
+         Jx0e15SDV/FDDrBqIlqus3WfOOSLaPLgGuXrtq8J9v1Pnqz8pnJl1XEoq22KPR0+PQyW
+         qaXQ==
+X-Gm-Message-State: AJIora+kaNzYTejw3+3nxwnoctw0yDzuqHYbBK57uNT1pcYnuBMzcAnT
+        kZLFmowIQMsAT1rHeOsvagY0iA==
+X-Google-Smtp-Source: AGRyM1vtZ/s/QFATV2Lm1/TA0aK3QErLVxPsa4bq3CKtaWgQ3jjed101jiS2kerJCYN2jmGEqBKYFA==
+X-Received: by 2002:a05:6a00:114c:b0:528:2c7a:630e with SMTP id b12-20020a056a00114c00b005282c7a630emr21594186pfm.86.1659457901419;
+        Tue, 02 Aug 2022 09:31:41 -0700 (PDT)
+Received: from google.com (223.103.125.34.bc.googleusercontent.com. [34.125.103.223])
+        by smtp.gmail.com with ESMTPSA id k2-20020aa79722000000b005289bfcee91sm11035213pfg.59.2022.08.02.09.31.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Aug 2022 09:31:40 -0700 (PDT)
+Date:   Tue, 2 Aug 2022 09:31:35 -0700
+From:   David Matlack <dmatlack@google.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Vipin Sharma <vipinsh@google.com>, pbonzini@redhat.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] KVM: x86/mmu: Make page tables for eager page splitting
+ NUMA aware
+Message-ID: <YulRZ+uXFOE1y2dj@google.com>
+References: <20220801151928.270380-1-vipinsh@google.com>
+ <YuhPT2drgqL+osLl@google.com>
+ <YuhoJUoPBOu5eMz8@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuhoJUoPBOu5eMz8@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 02 Aug 2022 16:37:44 +0530  Ingo Molnar <mingo@kernel.org> wrote:
-> Your fix makes sense I suppose, but I'm wondering how testing didn't 
-> trigger this warning.
+On Mon, Aug 01, 2022 at 11:56:21PM +0000, Sean Christopherson wrote:
+> On Mon, Aug 01, 2022, David Matlack wrote:
+> > On Mon, Aug 01, 2022 at 08:19:28AM -0700, Vipin Sharma wrote:
+> > That being said, KVM currently has a gap where a guest doing a lot of
+> > remote memory accesses when touching memory for the first time will
+> > cause KVM to allocate the TDP page tables on the arguably wrong node.
 > 
-> Off-stack isn't a rare config option:
+> Userspace can solve this by setting the NUMA policy on a VMA or shared-object
+> basis.  E.g. create dedicated memslots for each NUMA node, then bind each of the
+> backing stores to the appropriate host node.
 > 
->   kepler:~/tip> make allmodconfig
->   #
->   # No change to .config
->   #
->   kepler:~/tip> grep CPUMASK_OFFSTACK .config
->   CONFIG_CPUMASK_OFFSTACK=y
->   kepler:~/tip> 
+> If there is a gap, e.g. a backing store we want to use doesn't properly support
+> mempolicy for shared mappings, then we should enhance the backing store.
+
+Just to clarify: this patch, and my comment here, is about the NUMA
+locality of KVM's page tables, not guest memory.
+
+KVM allocates all page tables through __get_free_page() which uses the
+current task's mempolicy. This means the only way for userspace to
+control the page table NUMA locality is to set mempolicies on the
+threads on which KVM will allocate page tables (vCPUs and any thread
+doing eager page splitting, i.e. enable dirty logging or
+KVM_CLEAR_DIRTY_LOG).
+
+The ideal setup from a NUMA locality perspective would be that page
+tables are always on the local node, but that would require KVM maintain
+multiple copies of page tables (at minimum one per physical NUMA node),
+which is extra memory and complexity.
+
+With the current KVM MMU (one page table hierarchy shared by all vCPUs),
+the next best setup, I'd argue, is to co-locate the page tables with the
+memory they are mapping. This setup would ensure that a vCPU accessing
+memory in its local virtual node would primarily be accessing page
+tables in the local physical node when doing page walks. Obviously page
+tables at levels 5, 4, and 3, which likely map memory spanning multiple
+nodes, could not always be co-located with all the memory they map.
+
+My comment here is saying that there is no way for userspace to actually
+enforce the above policy. There is no mempolicy userspace can set on
+vCPU threads to ensure that KVM co-locates page tables with the memory
+they are mapping. All userspace can do is force KVM to allocate page
+tables on the same node as the vCPU thread, or on a specific node.
+
+For eager page splitting, userspace can control what range of memory is
+going to be split by controlling the memslot layout, so it is possible
+for userspace to set an appropriate mempolicy on that thread. But if you
+agree about my point about vCPU threads above, I think it would be a
+step in the right direction to have KVM start forcibly co-locating page
+tables with memory for eager page splitting (and we can fix the vCPU
+case later).
+
 > 
-> What am I missing?
-
-Maybe this triggers on certain config options set, or maybe due to new
-gcc version? (I'm using gcc-12, I also likely saw while on gcc-11.)
-It nevertheless is a helpful warning.
-
-I just now tried `make defconfig` (default configuration based on
-'x86_64_defconfig') and compiling with `make -j13 all`, and gcc doesn't
-give any warning. (CONFIG_CPUMASK_OFFSTACK isn't even listed in the
-.config file produced, grep fails.)
-
-The config on which I can reproduce the warning can be found here:
-https://gist.github.com/siddhpant/0197ea2b9873e8719d5d7ef991e2cd89
-(It has 8969 lines, thus uploaded as a gist.)
-
-This is a modification of a config found on syzkaller, which I was using
-to compile and test some bug. I had noticed the gcc warning earlier while
-on similar detours and usually ignored it, but now I finally took a look.
-
-I tested compiling with it 5 times (`make clean` and `make -j13 all`),
-and gcc gave the warning in all attempts. I also tried `make -j1 all`,
-which also had gcc spitting out the warning, so it cannot be any race.
-
-> > Fixes: c032ef60d1aa ("cpumask: convert node_to_cpumask_map[] to cpumask_var_t")
-> > Fixes: de2d9445f162 ("x86: Unify node_to_cpumask_map handling between 32 and 64bit")
+> > > We can improve TDP MMU eager page splitting by making
+> > > tdp_mmu_alloc_sp_for_split() NUMA-aware. Specifically, when splitting a
+> > > huge page, allocate the new lower level page tables on the same node as the
+> > > huge page.
+> > > 
+> > > __get_free_page() is replaced by alloc_page_nodes(). This introduces two
+> > > functional changes.
+> > > 
+> > >   1. __get_free_page() removes gfp flag __GFP_HIGHMEM via call to
+> > >   __get_free_pages(). This should not be an issue  as __GFP_HIGHMEM flag is
+> > >   not passed in tdp_mmu_alloc_sp_for_split() anyway.
+> > > 
+> > >   2. __get_free_page() calls alloc_pages() and use thread's mempolicy for
+> > >   the NUMA node allocation. From this commit, thread's mempolicy will not
+> > >   be used and first preference will be to allocate on the node where huge
+> > >   page was present.
+> > 
+> > It would be worth noting that userspace could change the mempolicy of
+> > the thread doing eager splitting to prefer allocating from the target
+> > NUMA node, as an alternative approach.
+> > 
+> > I don't prefer the alternative though since it bleeds details from KVM
+> > into userspace, such as the fact that enabling dirty logging does eager
+> > page splitting, which allocates page tables. 
 > 
-> These are ancient commits from 2009 & 2011.
+> As above, if userspace is cares about vNUMA, then it already needs to be aware of
+> some of KVM/kernel details.  Separate memslots aren't strictly necessary, e.g.
+> userspace could stitch together contiguous VMAs to create a single mega-memslot,
+> but that seems like it'd be more work than just creating separate memslots.
+> 
+> And because eager page splitting for dirty logging runs with mmu_lock held for,
+> userspace might also benefit from per-node memslots as it can do the splitting on
+> multiple tasks/CPUs.
+> 
+> Regardless of what we do, the behavior needs to be document, i.e. KVM details will
+> bleed into userspace.  E.g. if KVM is overriding the per-task NUMA policy, then
+> that should be documented.
 
-Yes, that's where blaming the file leads me to.
++1
 
-Thanks,
-Siddh
+> 
+> > It's also unnecessary since KVM can infer an appropriate NUMA placement
+> > without the help of userspace, and I can't think of a reason for userspace to
+> > prefer a different policy.
+> 
+> I can't think of a reason why userspace would want to have a different policy for
+> the task that's enabling dirty logging, but I also can't think of a reason why
+> KVM should go out of its way to ignore that policy.
+> 
+> IMO this is a "bug" in dirty_log_perf_test, though it's probably a good idea to
+> document how to effectively configure vNUMA-aware memslots.
