@@ -2,275 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B4AC19F2B
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:07:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B777C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:08:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236374AbiHBIHr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 04:07:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46932 "EHLO
+        id S236251AbiHBIIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 04:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236345AbiHBIHp (ORCPT
+        with ESMTP id S236345AbiHBII2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 04:07:45 -0400
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B55192B2
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 01:07:43 -0700 (PDT)
-Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220802080741epoutp04d0f4144c28f40516697ca3d5bedfb450~HeKqVHBUL0148601486epoutp04P
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 08:07:41 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220802080741epoutp04d0f4144c28f40516697ca3d5bedfb450~HeKqVHBUL0148601486epoutp04P
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1659427661;
-        bh=J8oz7SvYuq/cVltUXxXmeGSSf6xdti5kDUnkXIW6RE4=;
-        h=Subject:Reply-To:From:To:In-Reply-To:Date:References:From;
-        b=ZCrgD2ertiNZwuGL1Lz98lZH2xTq/mgT26elxmguRnL7HPG5oTpGbp7J079Cya3os
-         FDb0p3wt2YJJ4AlFnOvA2g5qvdAeGfp4leIXhOBsdcGF/KGPyLlfDcXkwLtjp5tmGU
-         g7RpxIdv3S46Svvwyfi7STH3L+Sr5tvlPdunWDtw=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
-        20220802080741epcas2p4891b9a178d4a2b44847449b3193af78c~HeKp5mFfU0715207152epcas2p4f;
-        Tue,  2 Aug 2022 08:07:41 +0000 (GMT)
-Received: from epsmges2p1.samsung.com (unknown [182.195.36.88]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4LxnfN5qvWz4x9Q4; Tue,  2 Aug
-        2022 08:07:40 +0000 (GMT)
-X-AuditID: b6c32a45-45bff700000025c2-59-62e8db4c096d
-Received: from epcas2p1.samsung.com ( [182.195.41.53]) by
-        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        99.6B.09666.C4BD8E26; Tue,  2 Aug 2022 17:07:40 +0900 (KST)
-Mime-Version: 1.0
-Subject: [PATCH v6 3/6] scsi: ufs: wb: Add explicit flush sysfs attribute
-Reply-To: j-young.choi@samsung.com
-Sender: Jinyoung CHOI <j-young.choi@samsung.com>
-From:   Jinyoung CHOI <j-young.choi@samsung.com>
-To:     ALIM AKHTAR <alim.akhtar@samsung.com>,
-        "avri.altman@wdc.com" <avri.altman@wdc.com>,
-        "bvanassche@acm.org" <bvanassche@acm.org>,
-        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
-        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
-        "beanhuo@micron.com" <beanhuo@micron.com>,
-        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stanley.chu@mediatek.com" <stanley.chu@mediatek.com>
-X-Priority: 3
-X-Content-Kind-Code: NORMAL
-In-Reply-To: <20220802080146epcms2p24b86bfce3d3c09c79b91d861cb3b2cce@epcms2p2>
-X-CPGS-Detection: blocking_info_exchange
-X-Drm-Type: N,general
-X-Msg-Generator: Mail
-X-Msg-Type: PERSONAL
-X-Reply-Demand: N
-Message-ID: <20220802080740epcms2p3893fd9cfb765d4addbbfe58c68cf5af3@epcms2p3>
-Date:   Tue, 02 Aug 2022 17:07:40 +0900
-X-CMS-MailID: 20220802080740epcms2p3893fd9cfb765d4addbbfe58c68cf5af3
+        Tue, 2 Aug 2022 04:08:28 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255842637
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 01:08:27 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id a9so8038891lfm.12
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 01:08:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=HsSHGNI5OACJwEWXjbDzjjqUsgJ2e/s83LTa6i8r0GI=;
+        b=x9+2qf4ZdKgMTZvBEcj6p1uz8yxPF/KbiP41BT7UBm02nqoaQcV08jWKe5qCE5a4K9
+         iRJ5Hx81rBXLs+eFmpXM02R8pj7Qi5ER5uGEzFauqq8zbP5hI/jNqXErDS2fDjRL3ELA
+         QdJuzdGI0AFGk7ylTyPLFuYEjpV86+tZ82bjBTnaAWNeUUTPJJDeDSJ41K6C9ejCkaSZ
+         JWp3D+OdgZTQki8hyYRZSyyEpbanEwNIHYq2WjRtFa6bUJfeQkaLu3Krk9AACkRYFuoh
+         3HpZ9ksUHPAn8tEWjWh4V0lcJ+ivfWefHK9lslCDHJb3wrGIADIufBGDDIQEMeK4etVO
+         GLlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HsSHGNI5OACJwEWXjbDzjjqUsgJ2e/s83LTa6i8r0GI=;
+        b=EoQ5ULYx/kScb2278610RXRZKBD1NGsKYfcspQKT04sNEt4hoyxIiViIzl/pWk/CjP
+         3uSWH4myYf6dP+ymrzRl1JmxEX16+OvkdQtL0odhrAIAYp9IGXbDlDXgxcNcxe5E2J3F
+         nJCq4m+CRZhPh8ScAFm9FODZrpV8lt7BVELkIoxdD0Y5xOJMvbhBmT41VkXOZ3tMQ1JH
+         5XjN/G6AbSaklKE5cDHS2ZB2TsPS1aYo9rU+iX2ThKLzS/4YsXXyDqCuDhij+0vVSndT
+         zFHSzQ8QTDOHgRv98x9MWY01B1v4Vps547+4+pfSoPEz5479PbkfxFWqNdJdlTBLjvV0
+         8WdQ==
+X-Gm-Message-State: ACgBeo2sIJNMQ1rLSrI5GT3a5hy/laQgKbQ4iBbK4r+qvGX7zz7MAqWJ
+        AigY0U4KxJfyOkh1qJnIROLSrg==
+X-Google-Smtp-Source: AA6agR6fhg7bVDtnj6MaImLAqneEW0TB3bldN3JTZEOELsJkGM35fAWCQzptDK4wcs1ivPOsQuqJbg==
+X-Received: by 2002:a05:6512:3609:b0:48a:ef9f:9465 with SMTP id f9-20020a056512360900b0048aef9f9465mr4871576lfs.115.1659427705492;
+        Tue, 02 Aug 2022 01:08:25 -0700 (PDT)
+Received: from [192.168.1.6] ([213.161.169.44])
+        by smtp.gmail.com with ESMTPSA id f16-20020a056512361000b0048af4dc964asm894454lfs.73.2022.08.02.01.08.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 01:08:25 -0700 (PDT)
+Message-ID: <995fbb2b-2b34-d407-6bfd-4798de2251d7@linaro.org>
+Date:   Tue, 2 Aug 2022 10:08:23 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/2] dt-bindings: gce: add gce header file for mt8188
+Content-Language: en-US
+To:     Elvis Wang <Elvis.Wang@mediatek.com>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        CK Hu <ck.hu@mediatek.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220729084319.6880-1-Elvis.Wang@mediatek.com>
+ <20220729084319.6880-3-Elvis.Wang@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220729084319.6880-3-Elvis.Wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-X-CPGSPASS: Y
-X-CPGSPASS: Y
-CMS-TYPE: 102P
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrOJsWRmVeSWpSXmKPExsWy7bCmqa7P7RdJBi+n61qcfLKGzeLBvG1s
-        Fi9/XmWzOPiwk8Vi2oefzBYvD2laLLqxjcni8q45bBbd13ewWSw//o/JYunWm4wO3B6Xr3h7
-        LN7zksljwqIDjB4tJ/ezeHxf38Hm8fHpLRaPvi2rGD0+b5LzaD/QzRTAGZVtk5GamJJapJCa
-        l5yfkpmXbqvkHRzvHG9qZmCoa2hpYa6kkJeYm2qr5OIToOuWmQN0rJJCWWJOKVAoILG4WEnf
-        zqYov7QkVSEjv7jEVim1ICWnwLxArzgxt7g0L10vL7XEytDAwMgUqDAhO2Pzv6/sBV8MKw7u
-        +MvWwLhXs4uRg0NCwETi5z7DLkYuDiGBHYwSvZtPsYHEeQUEJf7uEAYxhQU8Jd5PD+li5AQq
-        UZI4t2YWI0TYQOJWrzlImE1AT+LnkhlsIFNEBNpYJI51bmUGSUgI8ErMaH/KAmFLS2xfvpUR
-        xOYU8JOYeOMDVI2GxI9lvVC2qMTN1W/ZYez3x+YzQtgiEq33zkLVCEo8+LkbKi4pcejQVzaI
-        T/IlNhwIhAjXSLxdfgCqRF/iWsdGsBN4BXwlth95BRZnEVCVuPZmO1SNi8TirsNgNrOAvMT2
-        t3OYQUYyC2hKrN+lDzFdWeLILRaYpxo2/mZHZzML8El0HP4LF98x7wkTRKuaxKImI4iwjMTX
-        w/PZJzAqzUIE8iwka2chrF3AyLyKUSy1oDg3PbXYqMAQHq3J+bmbGMEpVst1B+Pktx/0DjEy
-        cTAeYpTgYFYS4b3j8jxJiDclsbIqtSg/vqg0J7X4EKMp0MMTmaVEk/OBST6vJN7QxNLAxMzM
-        0NzI1MBcSZzXK2VDopBAemJJanZqakFqEUwfEwenVAMT16T6KdUrvnBOvB5vWbBf81/n4gsb
-        D23xvq5ftunQB8+vN6e+DilbsuGey4V1jRmvDlwzCG1ofOt9uufbw92H5ZK1Pt+4mX1DWW7J
-        55XbDsp0PnHlm7p4wxIXuQVXbs++zhbjuW9602+2jtdvN5bY/7ogIb7HNF1t7ZbZvB8O3Hsl
-        yXG6ddW/01uTSo563Apk1LGqnfjtd9qjbYKtURMmRnGvvvJZ8h5PkfOj9IQ3oSL83llaXx2s
-        +k9afIjfZbp0p/qP6vun5/OU/6noE+H0X2lQuFzgX7tszIX4U1o/o9+4V6YpMzYo35U9wXRD
-        zXhJt84ftoeNwnM3La0w+fMhPOt76dGbe75Or3Xacnler7ISS3FGoqEWc1FxIgB721FAOgQA
-        AA==
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220802080146epcms2p24b86bfce3d3c09c79b91d861cb3b2cce
-References: <20220802080146epcms2p24b86bfce3d3c09c79b91d861cb3b2cce@epcms2p2>
-        <CGME20220802080146epcms2p24b86bfce3d3c09c79b91d861cb3b2cce@epcms2p3>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is the following quirk to bypass "WB Flush" in Write Booster.
+On 29/07/2022 10:43, Elvis Wang wrote:
+> Add gce header file to define the gce subsys id, hardware event id and
+> constant for mt8188.
+> 
+> Signed-off-by: Elvis Wang <Elvis.Wang@mediatek.com>
+> ---
+>  include/dt-bindings/gce/mt8188-gce.h | 1079 ++++++++++++++++++++++++++
+>  1 file changed, 1079 insertions(+)
+>  create mode 100644 include/dt-bindings/gce/mt8188-gce.h
+> 
+> diff --git a/include/dt-bindings/gce/mt8188-gce.h b/include/dt-bindings/gce/mt8188-gce.h
+> new file mode 100644
+> index 000000000000..b15e965fe671
+> --- /dev/null
+> +++ b/include/dt-bindings/gce/mt8188-gce.h
 
-	- UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL
+Use vendor in filename, so mediatek,mt8188-gce.h
 
-If this quirk is not set, there is no knob that can control "WB Flush".
+> @@ -0,0 +1,1079 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
 
-There are three flags that control Write Booster Feature.
-	1. WB ON/OFF
-	2. WB Hibern Flush ON/OFF (implicitly)
-	3. WB Flush ON/OFF (explicit)
+Dual license.
 
-The sysfs attribute that controls the WB was implemented. (1)
+> +/*
+> + * Copyright (c) 2018 MediaTek Inc.
+> + *
+> + */
+> +#ifndef _DT_BINDINGS_GCE_MT8188_H
+> +#define _DT_BINDINGS_GCE_MT8188_H
+> +
+> +/* assign timeout 0 also means default */
+> +#define CMDQ_NO_TIMEOUT		0xffffffff
+> +#define CMDQ_TIMEOUT_DEFAULT	1000
 
-In the case of "Hibern Flush", it is always good to turn on.
-Control may not be required. (2)
+How CMDQ_TIMEOUT_DEFAULT is part of bindings? How is it related to bindings?
 
-Finally, "Flush" may be necessary because the Auto-Hibern8 is not
-supported in a specific environment.
-So the sysfs attribute that controls this is necessary. (3)
+> +
+> +/* GCE thread priority */
+> +#define CMDQ_THR_PRIO_LOWEST	0
+> +#define CMDQ_THR_PRIO_1		1
+> +#define CMDQ_THR_PRIO_2		2
+> +#define CMDQ_THR_PRIO_3		3
+> +#define CMDQ_THR_PRIO_4		4
+> +#define CMDQ_THR_PRIO_5		5
+> +#define CMDQ_THR_PRIO_6		6
+> +#define CMDQ_THR_PRIO_HIGHEST	7
+> +
+> +/* CPR count in 32bit register */
+> +#define GCE_CPR_COUNT		1312
 
-Reviewed-by: Avri Altman <avri.altman@wdc.com>
-Signed-off-by: Jinyoung Choi <j-young.choi@samsung.com>
----
- Documentation/ABI/testing/sysfs-driver-ufs |  9 +++++
- drivers/ufs/core/ufs-sysfs.c               | 46 ++++++++++++++++++++++
- drivers/ufs/core/ufshcd.c                  |  9 +++--
- include/ufs/ufshcd.h                       |  1 +
- 4 files changed, 61 insertions(+), 4 deletions(-)
+No register values in the bindings.
 
-diff --git a/Documentation/ABI/testing/sysfs-driver-ufs b/Documentation/ABI/testing/sysfs-driver-ufs
-index 6b248abb1bd7..1255cbda0ac9 100644
---- a/Documentation/ABI/testing/sysfs-driver-ufs
-+++ b/Documentation/ABI/testing/sysfs-driver-ufs
-@@ -1417,6 +1417,15 @@ Description:	This node is used to set or display whether UFS WriteBooster is
- 		platform that doesn't support UFSHCD_CAP_CLK_SCALING, we can
- 		disable/enable WriteBooster through this sysfs node.
- 
-+What:		/sys/bus/platform/drivers/ufshcd/*/wb_buf_flush_en
-+What:		/sys/bus/platform/devices/*.ufs/wb_buf_flush_en
-+Date:		July 2022
-+Contact:	Jinyoung Choi <j-young.choi@samsung.com>
-+Description:	This entry shows the status of WriteBooster buffer flushing
-+		and it can be used to allow or disallow the flushing.
-+		If the flushing is allowed, the device executes the flush
-+		operation when the command queue is empty.
-+
- What:		/sys/bus/platform/drivers/ufshcd/*/device_descriptor/hpb_version
- What:		/sys/bus/platform/devices/*.ufs/device_descriptor/hpb_version
- Date:		June 2021
-diff --git a/drivers/ufs/core/ufs-sysfs.c b/drivers/ufs/core/ufs-sysfs.c
-index 0a088b47d557..69cc9b26c762 100644
---- a/drivers/ufs/core/ufs-sysfs.c
-+++ b/drivers/ufs/core/ufs-sysfs.c
-@@ -254,6 +254,50 @@ static ssize_t wb_on_store(struct device *dev, struct device_attribute *attr,
- 	return res < 0 ? res : count;
- }
- 
-+static ssize_t wb_buf_flush_en_show(struct device *dev,
-+				    struct device_attribute *attr,
-+				    char *buf)
-+{
-+	struct ufs_hba *hba = dev_get_drvdata(dev);
-+
-+	return sysfs_emit(buf, "%d\n", hba->dev_info.wb_buf_flush_enabled);
-+}
-+
-+static ssize_t wb_buf_flush_en_store(struct device *dev,
-+				     struct device_attribute *attr,
-+				     const char *buf, size_t count)
-+{
-+	struct ufs_hba *hba = dev_get_drvdata(dev);
-+	unsigned int wb_buf_flush_en;
-+	ssize_t res;
-+
-+	if (!ufshcd_is_wb_allowed(hba) ||
-+	    (hba->quirks & UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL)) {
-+		dev_warn(dev, "It is not allowed to configure WB buf flushing!\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (kstrtouint(buf, 0, &wb_buf_flush_en))
-+		return -EINVAL;
-+
-+	if (wb_buf_flush_en != 0 && wb_buf_flush_en != 1)
-+		return -EINVAL;
-+
-+	down(&hba->host_sem);
-+	if (!ufshcd_is_user_access_allowed(hba)) {
-+		res = -EBUSY;
-+		goto out;
-+	}
-+
-+	ufshcd_rpm_get_sync(hba);
-+	res = ufshcd_wb_toggle_buf_flush(hba, wb_buf_flush_en);
-+	ufshcd_rpm_put_sync(hba);
-+
-+out:
-+	up(&hba->host_sem);
-+	return res < 0 ? res : count;
-+}
-+
- static DEVICE_ATTR_RW(rpm_lvl);
- static DEVICE_ATTR_RO(rpm_target_dev_state);
- static DEVICE_ATTR_RO(rpm_target_link_state);
-@@ -262,6 +306,7 @@ static DEVICE_ATTR_RO(spm_target_dev_state);
- static DEVICE_ATTR_RO(spm_target_link_state);
- static DEVICE_ATTR_RW(auto_hibern8);
- static DEVICE_ATTR_RW(wb_on);
-+static DEVICE_ATTR_RW(wb_buf_flush_en);
- 
- static struct attribute *ufs_sysfs_ufshcd_attrs[] = {
- 	&dev_attr_rpm_lvl.attr,
-@@ -272,6 +317,7 @@ static struct attribute *ufs_sysfs_ufshcd_attrs[] = {
- 	&dev_attr_spm_target_link_state.attr,
- 	&dev_attr_auto_hibern8.attr,
- 	&dev_attr_wb_on.attr,
-+	&dev_attr_wb_buf_flush_en.attr,
- 	NULL
- };
- 
-diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
-index df00441f89a1..b7b8efd17659 100644
---- a/drivers/ufs/core/ufshcd.c
-+++ b/drivers/ufs/core/ufshcd.c
-@@ -267,7 +267,6 @@ static inline int ufshcd_config_vreg_hpm(struct ufs_hba *hba,
- static int ufshcd_try_to_abort_task(struct ufs_hba *hba, int tag);
- static void ufshcd_wb_toggle_buf_flush_during_h8(struct ufs_hba *hba,
- 						 bool enable);
--static void ufshcd_wb_toggle_buf_flush(struct ufs_hba *hba, bool enable);
- static void ufshcd_hba_vreg_set_lpm(struct ufs_hba *hba);
- static void ufshcd_hba_vreg_set_hpm(struct ufs_hba *hba);
- 
-@@ -5765,25 +5764,27 @@ static void ufshcd_wb_toggle_buf_flush_during_h8(struct ufs_hba *hba,
- 			__func__, enable ? "enabled" : "disabled");
- }
- 
--static void ufshcd_wb_toggle_buf_flush(struct ufs_hba *hba, bool enable)
-+int ufshcd_wb_toggle_buf_flush(struct ufs_hba *hba, bool enable)
- {
- 	int ret;
- 
- 	if (!ufshcd_is_wb_allowed(hba) ||
- 	    hba->dev_info.wb_buf_flush_enabled == enable)
--		return;
-+		return 0;
- 
- 	ret = __ufshcd_wb_toggle(hba, enable, QUERY_FLAG_IDN_WB_BUFF_FLUSH_EN);
- 	if (ret) {
- 		dev_err(hba->dev, "%s WB-Buf Flush %s failed %d\n", __func__,
- 			enable ? "enable" : "disable", ret);
--		return;
-+		return ret;
- 	}
- 
- 	hba->dev_info.wb_buf_flush_enabled = enable;
- 
- 	dev_dbg(hba->dev, "%s WB-Buf Flush %s\n",
- 			__func__, enable ? "enabled" : "disabled");
-+
-+	return ret;
- }
- 
- static bool ufshcd_wb_presrv_usrspc_keep_vcc_on(struct ufs_hba *hba,
-diff --git a/include/ufs/ufshcd.h b/include/ufs/ufshcd.h
-index 7fe1a926cd99..94bcfec98fb8 100644
---- a/include/ufs/ufshcd.h
-+++ b/include/ufs/ufshcd.h
-@@ -1211,6 +1211,7 @@ int ufshcd_exec_raw_upiu_cmd(struct ufs_hba *hba,
- 			     enum query_opcode desc_op);
- 
- int ufshcd_wb_toggle(struct ufs_hba *hba, bool enable);
-+int ufshcd_wb_toggle_buf_flush(struct ufs_hba *hba, bool enable);
- int ufshcd_suspend_prepare(struct device *dev);
- int __ufshcd_suspend_prepare(struct device *dev, bool rpm_ok_for_spm);
- void ufshcd_resume_complete(struct device *dev);
--- 
-2.25.1
+
+
+> +
+> +/* GCE subsys table */
+> +#define SUBSYS_1400XXXX		0
+> +#define SUBSYS_1401XXXX		1
+> +#define SUBSYS_1402XXXX		2
+> +#define SUBSYS_1c00XXXX		3
+> +#define SUBSYS_1c01XXXX		4
+> +#define SUBSYS_1c02XXXX		5
+> +#define SUBSYS_1c10XXXX		6
+> +#define SUBSYS_1c11XXXX		7
+> +#define SUBSYS_1c12XXXX		8
+> +#define SUBSYS_14f0XXXX		9
+> +#define SUBSYS_14f1XXXX		10
+> +#define SUBSYS_14f2XXXX		11
+> +#define SUBSYS_1800XXXX		12
+> +#define SUBSYS_1801XXXX		13
+> +#define SUBSYS_1802XXXX		14
+> +#define SUBSYS_1803XXXX		15
+> +#define SUBSYS_1032XXXX		16
+> +#define SUBSYS_1033XXXX		17
+> +#define SUBSYS_1600XXXX		18
+> +#define SUBSYS_1601XXXX		19
+> +#define SUBSYS_14e0XXXX		20
+> +#define SUBSYS_1c20XXXX		21
+> +#define SUBSYS_1c30XXXX		22
+> +#define SUBSYS_1c40XXXX		23
+> +#define SUBSYS_1c50XXXX		24
+> +#define SUBSYS_1c60XXXX		25
+> +#define SUBSYS_NO_SUPPORT	99
+> +
+> +/* GCE General Purpose Register (GPR) support
+> + * Leave note for scenario usage here
+> + */
+> +/* GCE: write mask */
+> +#define GCE_GPR_R00		0x00
+> +#define GCE_GPR_R01		0x01
+
+No. These are no bindings. Do not embed device programming model into
+bindings header. I'll stop review.
+
+
+Best regards,
+Krzysztof
