@@ -2,121 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 825B0C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 22:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A99B4C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 22:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236435AbiHBWiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 18:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35314 "EHLO
+        id S236170AbiHBWiF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 18:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235175AbiHBWhw (ORCPT
+        with ESMTP id S233730AbiHBWhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 18:37:52 -0400
-Received: from rcdn-iport-5.cisco.com (rcdn-iport-5.cisco.com [173.37.86.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7D217AA1
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 15:37:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=2671; q=dns/txt; s=iport;
-  t=1659479871; x=1660689471;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pKOnt7OBLC0Sl5DxaQljA8KzE5uazBS88utyntub/94=;
-  b=T/0olTYMBocamuzarv239CBUCc348lWE6wE5vSXDGzHs6JU7CkaBRvWS
-   gBPbP3gTk94gvsqpbjnyzhU7kcpRbrzh6/v41vcLWRg0xK/OnUiZ8yhOq
-   b/l3g1sXZqLIs4eGiFmU3Cjugm90xYmTLJo4u6JbMi1fsmhGcvfPC7Rkc
-   8=;
-X-IronPort-AV: E=Sophos;i="5.91,230,1647302400"; 
-   d="scan'208";a="782774020"
-Received: from rcdn-core-2.cisco.com ([173.37.93.153])
-  by rcdn-iport-5.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 02 Aug 2022 22:37:50 +0000
-Received: from zorba (sjc-vpn6-436.cisco.com [10.21.121.180])
-        by rcdn-core-2.cisco.com (8.15.2/8.15.2) with ESMTPS id 272Mblld013996
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 2 Aug 2022 22:37:49 GMT
-Date:   Tue, 2 Aug 2022 15:37:47 -0700
-From:   Daniel Walker <danielwa@cisco.com>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        George Cherian <george.cherian@marvell.com>,
-        sgoutham@marvell.com, "BOBBY Liu (bobbliu)" <bobbliu@cisco.com>,
-        xe-linux-external@cisco.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] genirq: allow selection of number of sparse irqs
-Message-ID: <20220802223747.GX821407@zorba>
-References: <20220728030420.2279713-1-danielwa@cisco.com>
- <980a561ed87c5530aab2e2b067074862@kernel.org>
- <20220729182156.GS821407@zorba>
- <87wnbuc45y.wl-maz@kernel.org>
+        Tue, 2 Aug 2022 18:37:53 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7080E17E1F
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 15:37:52 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id t22so7017092pjy.1
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 15:37:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=RdEXt6lST7n+LoKcJt89muoRfgacXACJbMNMi2diRZw=;
+        b=meEnV6SKRxCATViJTGiI8yRisfitA/Ifcie2bONs0hT2imac/Ft1IIspNYJbX9Mesy
+         AnXseRu1Y2GlCbGVQG+OMnMhtPuxW/Hi9yVjBpMAsTPuykC0AcVBPE4NtgnN0tIoHnUE
+         9nDDRaQpVrMjnff9i0Puon7FVq++R7V4cSP/E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=RdEXt6lST7n+LoKcJt89muoRfgacXACJbMNMi2diRZw=;
+        b=qvRPKvLp197YwwWlM77dijCS1tv9aMOZon/FYWD9g8IIDddhLxj100eQgUfwp59cn/
+         DNlLlFogA1mTNxjDTFI8hOGGBPpSfHhQugoLWqaePAeRWGnXRse2D3OJp5u+Vw+rXwA5
+         QAqLZ7qvUjhphwCA5Anj55IX5UsvkuEJcNyQb6rzJgnJFDS3lqR8Ky+CsgKDxHJkGT4n
+         hqOIcIXyRMoB9MPI5WpgC76u2O/kCa4oDw6ZnCItFmwnckVOo9DhmB8og9bqLCoEt7/5
+         UvqvvTNLMN4WwV9LTp08g/WkkbJOnBBvy4YW+8jg9WODrG2IchHdZg+WGaFMKGOFb69h
+         kPAw==
+X-Gm-Message-State: ACgBeo13vP0nIMpUnXtITBWSuEimjloWWztHsW5k1Qjkyb52RXuF6G+8
+        XOUmmUgwTkkCOLVZaVQ2BTqyYA==
+X-Google-Smtp-Source: AA6agR6kwuvP8bBPDHcReSHv/U+3Fz0f7n7zbRA+IblQ1fr4TmASpT5VeILMORInZ9BsNAd5WoxSOQ==
+X-Received: by 2002:a17:90b:1e08:b0:1f5:1f0d:3736 with SMTP id pg8-20020a17090b1e0800b001f51f0d3736mr1776097pjb.58.1659479871969;
+        Tue, 02 Aug 2022 15:37:51 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:31c9:9937:c6bb:62f5])
+        by smtp.gmail.com with ESMTPSA id x185-20020a6263c2000000b00528c066678csm11353030pfb.72.2022.08.02.15.37.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Aug 2022 15:37:51 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>,
+        linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Rajeev Nandan <quic_rajeevny@quicinc.com>,
+        Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 2/6] drm/msm/dsi: Fix number of regulators for SDM660
+Date:   Tue,  2 Aug 2022 15:37:34 -0700
+Message-Id: <20220802153434.v3.2.I94b3c3e412b7c208061349f05659e126483171b1@changeid>
+X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
+In-Reply-To: <20220802223738.898592-1-dianders@chromium.org>
+References: <20220802223738.898592-1-dianders@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87wnbuc45y.wl-maz@kernel.org>
-X-Auto-Response-Suppress: DR, OOF, AutoReply
-X-Outbound-SMTP-Client: 10.21.121.180, sjc-vpn6-436.cisco.com
-X-Outbound-Node: rcdn-core-2.cisco.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 30, 2022 at 10:59:05AM +0100, Marc Zyngier wrote:
-> > 
-> > Marvell submitted a similar change, but non-selectable, about a
-> > month ago.
-> 
-> Which wasn't really acceptable either.
-> 
-> > 
-> > The limitation prevents Cisco and Marvell hardware from
-> > functioning. I don't think we're well versed enough on the generic
-> > irq system to implement what your suggesting, even if we did Thomas
-> > would not likely accept it.
-> 
-> I don't think you can speak for Thomas here. In my experience of
-> working with him, he's in general much more inclined to look at a
-> scalable, long term solution than at a point hack. Specially given
-> that we already use xarrays for MSIs.
- 
-Your welcome make the attempt yourself, if you believe in it.
+1 regulators is specified listed but the number 2 is specified. This
+presumably means we try to get a regulator with no name. Fix it.
 
-> > Your suggestion is more of a long term solution vs. our short term
-> > solution.
-> 
-> Exactly. Experience shows that short term hacks are almost always a
-> bad idea and result in something that isn't maintainable.
+Fixes: 033f47f7f121 ("drm/msm/dsi: Add DSI configuration for SDM660")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+---
 
-Thomas introduced the "hack" in c1ee626 in 2011.
+(no changes since v2)
 
-It's more of a question of if someone has the time an and/or inclination to make the changes
-your requesting.
+Changes in v2:
+- ("Fix number of regulators for SDM660") new for v2.
 
-Marvell and Cisco only require to increase the size and keep the status quo, and
-nothing is wrong with that.
+ drivers/gpu/drm/msm/dsi/dsi_cfg.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > I'm not wedded to any solution, we just need to relieve
-> > the limitation so our hardware starts working. I would imagine other
-> > companies have this issue, but I don't know which ones currently.
-> 
-> This architecture has been in the wild for the best part of 10 years,
-> in Linux for 8 years, and nobody so far screamed because of this
-> perceived limitation. It would help if you described exactly what
-> breaks in your system, because just saying "give me more" is not
-> exactly helping (there are other limitations in the GICv3 ITS driver
-> that may bite you anyway).
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_cfg.c b/drivers/gpu/drm/msm/dsi/dsi_cfg.c
+index 02000a7b7a18..72c018e26f47 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_cfg.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_cfg.c
+@@ -148,7 +148,7 @@ static const char * const dsi_sdm660_bus_clk_names[] = {
+ static const struct msm_dsi_config sdm660_dsi_cfg = {
+ 	.io_offset = DSI_6G_REG_SHIFT,
+ 	.reg_cfg = {
+-		.num = 2,
++		.num = 1,
+ 		.regs = {
+ 			{"vdda", 12560, 4 },	/* 1.2 V */
+ 		},
+-- 
+2.37.1.455.g008518b4e5-goog
 
-We need more irq lines because we have a lot of devices.. I suppose it's
-possible there's some defect in the kernel which eats up or wastes irq lines,
-but I don't think so. We have devices which use a lot of irq lines.
-
-> > I would rather to use an upstream solution verses holding the
-> > patches privately.  I would suggest if this limitation would not be
-> > overcome for 3-4 releases the short term solution should be
-> > acceptable over that time frame to be replaced by something else
-> > after that.
-> 
-> If you want to have an impact on the features being merged in the
-> upstream kernel, a good start would be to take feedback on board.
-
-We did that.. I updated the patch from Marvell's original to allow it to be
-selectable, this was requested by someone on this list.
-
-
-Daniel
