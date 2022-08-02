@@ -2,117 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44EC2C00144
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 02:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8989C00144
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 02:08:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235490AbiHBCIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 22:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53402 "EHLO
+        id S235236AbiHBCIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 22:08:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232390AbiHBCIE (ORCPT
+        with ESMTP id S230338AbiHBCId (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 22:08:04 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0B341D10
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 19:08:02 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lxdd93KQqzmVnK;
-        Tue,  2 Aug 2022 10:06:05 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 2 Aug 2022 10:08:00 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 2 Aug 2022 10:08:00 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH] mm: memory-failure: cleanup try_to_split_thp_page()
-Date:   Tue, 2 Aug 2022 10:12:56 +0800
-Message-ID: <20220802021256.162269-1-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <e699cd23-3eeb-7920-accd-b30622efa551@huawei.com>
-References: <e699cd23-3eeb-7920-accd-b30622efa551@huawei.com>
+        Mon, 1 Aug 2022 22:08:33 -0400
+Received: from mail-pl1-f193.google.com (mail-pl1-f193.google.com [209.85.214.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8C64331E;
+        Mon,  1 Aug 2022 19:08:31 -0700 (PDT)
+Received: by mail-pl1-f193.google.com with SMTP id x10so11422311plb.3;
+        Mon, 01 Aug 2022 19:08:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=5t8YdSCit9Ty96RekM4UJNc7grp60HZVSHT6eIxMCH0=;
+        b=kmBnknLPeKUDam4c7UBEkrNkPtQlxMd80yFwjXDaDSU4VDnUkCR7vS7PbV4zBov5c4
+         BCVhOsNJ/2SlRKe3RVi5Vn49BGPLNAkEPHdPMZeQJuQ/aY/wRJc49RNS74OWz6rZdFxQ
+         XsVRC50o1hvrCh2NaOUyALIIuaExsNnQyteHprTw3CTqg8q4utAeDIr+WSz5aajTS9u7
+         61aQR17ljpZrnz21K8L9lDLpmJpvx7Tx9fvOxATb6TF1ppwgCHW1FWThgZJH+ktDoTKc
+         k0z+7T2w3bV4B1uR+VfeHOT67KPhvQPB8nHnLcYoy1JrFdEcOxrdR7/bWgQrGV1G1c53
+         a/wA==
+X-Gm-Message-State: ACgBeo3srDXyBR/ggQapI6HUvsbBJtOHwAFczrtVUR+W/ynj/IODg50a
+        bohAWffxrdJRlYxWNwocSA==
+X-Google-Smtp-Source: AA6agR4uxWsch5pYg/gaUsVGabaIimDA5ozylNx1b/0zOzvhXRQDY4OmqBDM1jvUKD6TOLaENZlqRg==
+X-Received: by 2002:a17:90b:3b49:b0:1f4:df09:d671 with SMTP id ot9-20020a17090b3b4900b001f4df09d671mr13940191pjb.129.1659406110927;
+        Mon, 01 Aug 2022 19:08:30 -0700 (PDT)
+Received: from localhost.localdomain ([156.146.53.107])
+        by smtp.gmail.com with ESMTPSA id n7-20020a622707000000b0052dbad1ea2esm1552941pfn.6.2022.08.01.19.08.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 19:08:30 -0700 (PDT)
+From:   sunliming <sunliming@kylinos.cn>
+To:     wim@linux-watchdog.org, linux@roeck-us.net, arnd@arndb.de
+Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kelulanainsley@gmail.com, sunliming <sunliming@kylinos.cn>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] watchdog: sa1100: make variable sa1100dog_driver static
+Date:   Tue,  2 Aug 2022 10:08:19 +0800
+Message-Id: <20220802020819.1226454-1-sunliming@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 5d1fd5dc877b ("mm,hwpoison: introduce MF_MSG_UNSPLIT_THP"),
-the action_result() called to show memory error event in memory_failure(),
-so the pr_info() in try_to_split_thp_page() is only needed in
-soft_offline_in_use_page().
+This symbol is not used outside of sa1100_wdt.c, so marks it static.
 
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Fixes the following warning:
+
+>> drivers/watchdog/sa1100_wdt.c:241:24: sparse: sparse: symbol 'sa1100dog_driver'
+was not declared. Should it be static?
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: sunliming <sunliming@kylinos.cn>
 ---
- mm/memory-failure.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ drivers/watchdog/sa1100_wdt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index f0e1961d4482..59633a617a0a 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1524,20 +1524,18 @@ static int identify_page_state(unsigned long pfn, struct page *p,
- 	return page_action(ps, p, pfn);
+diff --git a/drivers/watchdog/sa1100_wdt.c b/drivers/watchdog/sa1100_wdt.c
+index 2d0a06a158a8..82ac5d19f519 100644
+--- a/drivers/watchdog/sa1100_wdt.c
++++ b/drivers/watchdog/sa1100_wdt.c
+@@ -238,7 +238,7 @@ static int sa1100dog_remove(struct platform_device *pdev)
+ 	return 0;
  }
  
--static int try_to_split_thp_page(struct page *page, const char *msg)
-+static int try_to_split_thp_page(struct page *page)
- {
-+	int ret;
-+
- 	lock_page(page);
--	if (unlikely(split_huge_page(page))) {
--		unsigned long pfn = page_to_pfn(page);
-+	ret = split_huge_page(page);
-+	unlock_page(page);
- 
--		unlock_page(page);
--		pr_info("%s: %#lx: thp split failed\n", msg, pfn);
-+	if (unlikely(ret))
- 		put_page(page);
--		return -EBUSY;
--	}
--	unlock_page(page);
- 
--	return 0;
-+	return ret;
- }
- 
- static void unmap_and_kill(struct list_head *to_kill, unsigned long pfn,
-@@ -2079,7 +2077,7 @@ int memory_failure(unsigned long pfn, int flags)
- 		 * page is a valid handlable page.
- 		 */
- 		SetPageHasHWPoisoned(hpage);
--		if (try_to_split_thp_page(p, "Memory Failure") < 0) {
-+		if (try_to_split_thp_page(p) < 0) {
- 			action_result(pfn, MF_MSG_UNSPLIT_THP, MF_IGNORED);
- 			res = -EBUSY;
- 			goto unlock_mutex;
-@@ -2503,8 +2501,11 @@ static int soft_offline_in_use_page(struct page *page)
- 	struct page *hpage = compound_head(page);
- 
- 	if (!PageHuge(page) && PageTransHuge(hpage))
--		if (try_to_split_thp_page(page, "soft offline") < 0)
-+		if (try_to_split_thp_page(page) < 0) {
-+			pr_info("soft offline: %#lx: thp split failed\n",
-+				page_to_pfn(page));
- 			return -EBUSY;
-+		}
- 	return __soft_offline_page(page);
- }
- 
+-struct platform_driver sa1100dog_driver = {
++static struct platform_driver sa1100dog_driver = {
+ 	.driver.name = "sa1100_wdt",
+ 	.probe	  = sa1100dog_probe,
+ 	.remove	  = sa1100dog_remove,
 -- 
-2.35.3
+2.25.1
 
