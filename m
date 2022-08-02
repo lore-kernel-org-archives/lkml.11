@@ -2,111 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1727C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 09:55:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A07C19F2B
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 09:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236331AbiHBJzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 05:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40740 "EHLO
+        id S236290AbiHBJ5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 05:57:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235957AbiHBJzk (ORCPT
+        with ESMTP id S231958AbiHBJ5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 05:55:40 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2371F65DA;
-        Tue,  2 Aug 2022 02:55:38 -0700 (PDT)
-Date:   Tue, 02 Aug 2022 09:55:35 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1659434136;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PlK+/AjwBJ+jEPpZkjnGHifK9JOqSjGxvWKQwXq9xDo=;
-        b=nipJZR1RSfHSRgvstpsX1Ja2jNFMMGrMK276PahTgoACLdTDEKn2QbNnOEwZQHPzWfoRKC
-        +D4Ckfe7PQESmVi4mJTXWp9ETx7YHRkK9nRj/R7w5QmYn2nGPIKdW+TaEwjOLi5mlr2EWi
-        IcBitNjKUrYRvsY+0zSc6tJR+MQaov1uqcFwCReicvH9YOC3m2VpzpfZ90jel/UYHNEm5r
-        +f5FaI18ARidh7q5k2cjGad3e9lJ9/Ab0O2QGEzeiFqSWwS377sZPAQffOr2ZayPZDiB6s
-        PLmBi5LXhCm+YEZ1UOZR0iGiOgn3Ivl5r/KCD5ZIY9ayYJLuKZqc0G4/w/ds1Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1659434136;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PlK+/AjwBJ+jEPpZkjnGHifK9JOqSjGxvWKQwXq9xDo=;
-        b=Q+RoLbEe2imC4BOsI7fXXy++syBCFbtzz9Sykve7RGP0NTdcz+c88ynxxprE22Uk8WwsWk
-        MQcQoIDHLY9Z82BA==
-From:   "tip-bot2 for Chen Zhongjin" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/urgent] kprobes: Forbid probing on trampoline and BPF code areas
-Cc:     Chen Zhongjin <chenzhongjin@huawei.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220801033719.228248-1-chenzhongjin@huawei.com>
-References: <20220801033719.228248-1-chenzhongjin@huawei.com>
+        Tue, 2 Aug 2022 05:57:10 -0400
+X-Greylist: delayed 350 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 02 Aug 2022 02:57:07 PDT
+Received: from smtp-42ad.mail.infomaniak.ch (smtp-42ad.mail.infomaniak.ch [IPv6:2001:1600:3:17::42ad])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2951C3E
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 02:57:07 -0700 (PDT)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Lxqxs33g8zMptYk;
+        Tue,  2 Aug 2022 11:51:13 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4Lxqxr590Qzlqwsl;
+        Tue,  2 Aug 2022 11:51:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1659433873;
+        bh=1zHRiAqo3P/dojkNK+hYHzjUFBL4CkZLzF7FK2fml6I=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=yubBe6Oo6HwAr99wsPmEZJALzIaciq9i8qNhdXbQ62s5yam2Z21lr4NT1c76h4xVp
+         EZndDrz2aLGgYqsCnIkP3v6gXa79Prd3jd3wRVYwWxZK9FxtMha8El+S/oYz018ZQv
+         h+Go38FAOlZssRp0+iylAHifHtozQjL+VPDlDORk=
+Message-ID: <2838c247-0648-3828-efb3-e11d7a0616b2@digikod.net>
+Date:   Tue, 2 Aug 2022 11:51:12 +0200
 MIME-Version: 1.0
-Message-ID: <165943413527.15455.6314879465363056432.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+User-Agent: 
+Content-Language: en-US
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Guillaume Tucker <guillaume.tucker@collabora.com>
+Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-security-module <linux-security-module@vger.kernel.org>
+References: <430ef132-2ac7-e1be-68ed-3d9c27382143@linuxfoundation.org>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [GIT PULL] Kselftest update for Linux 5.20-rc1
+In-Reply-To: <430ef132-2ac7-e1be-68ed-3d9c27382143@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/urgent branch of tip:
+Hi,
 
-Commit-ID:     28f6c37a2910f565b4f5960df52b2eccae28c891
-Gitweb:        https://git.kernel.org/tip/28f6c37a2910f565b4f5960df52b2eccae28c891
-Author:        Chen Zhongjin <chenzhongjin@huawei.com>
-AuthorDate:    Mon, 01 Aug 2022 11:37:19 +08:00
-Committer:     Ingo Molnar <mingo@kernel.org>
-CommitterDate: Tue, 02 Aug 2022 11:47:29 +02:00
+This change breaks the Landlock test build when performed on the 
+tools/testing/selftests/landlock directory because the 
+(non-system/up-to-date) kernel headers aren't found. Looking at the use 
+of top_srcdir and HDR_PATH, it seems that multiple subsystems are using 
+this feature. I consider this change a regression.
 
-kprobes: Forbid probing on trampoline and BPF code areas
+It also removes the check on up-to-date kernel headers (thanks to the 
+Makefile's target timestamp).
 
-kernel_text_address() treats ftrace_trampoline, kprobe_insn_slot
-and bpf_text_address as valid kprobe addresses - which is not ideal.
+I wasn't CCed for this change impacting Landlock [1]. Please keep in 
+mind to add at least maintainers and related mailing-lists for changes 
+on related subsystems.
 
-These text areas are removable and changeable without any notification
-to kprobes, and probing on them can trigger unexpected behavior:
+The following patch almost revert commit a917dd94b832 
+("selftests/landlock: drop deprecated headers dependency") and partially 
+fixes commit 49de12ba06ef ("selftests: drop KSFT_KHDR_INSTALL make target"):
 
-  https://lkml.org/lkml/2022/7/26/1148
+--- a/tools/testing/selftests/landlock/Makefile
++++ b/tools/testing/selftests/landlock/Makefile
+@@ -9,10 +9,13 @@ TEST_GEN_PROGS := $(src_test:.c=)
+  TEST_GEN_PROGS_EXTENDED := true
 
-Considering that jump_label and static_call text are already
-forbiden to probe, kernel_text_address() should be replaced with
-core_kernel_text() and is_module_text_address() to check other text
-areas which are unsafe to kprobe.
+  OVERRIDE_TARGETS := 1
++top_srcdir = ../../../..
+  include ../lib.mk
 
-[ mingo: Rewrote the changelog. ]
++khdr_dir = $(top_srcdir)/usr/include
++
+  $(OUTPUT)/true: true.c
+  	$(LINK.c) $< $(LDLIBS) -o $@ -static
 
-Fixes: 5b485629ba0d ("kprobes, extable: Identify kprobes trampolines as kernel text area")
-Fixes: 74451e66d516 ("bpf: make jited programs visible in traces")
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Link: https://lore.kernel.org/r/20220801033719.228248-1-chenzhongjin@huawei.com
----
- kernel/kprobes.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+-$(OUTPUT)/%_test: %_test.c ../kselftest_harness.h common.h
+-	$(LINK.c) $< $(LDLIBS) -o $@ -lcap
++$(OUTPUT)/%_test: %_test.c $(khdr_dir)/linux/landlock.h 
+../kselftest_harness.h common.h
++	$(LINK.c) $< $(LDLIBS) -o $@ -lcap -I$(khdr_dir)
 
-diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-index f214f8c..80697e5 100644
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -1560,7 +1560,8 @@ static int check_kprobe_address_safe(struct kprobe *p,
- 	preempt_disable();
- 
- 	/* Ensure it is not in reserved area nor out of text */
--	if (!kernel_text_address((unsigned long) p->addr) ||
-+	if (!(core_kernel_text((unsigned long) p->addr) ||
-+	    is_module_text_address((unsigned long) p->addr)) ||
- 	    within_kprobe_blacklist((unsigned long) p->addr) ||
- 	    jump_label_text_reserved(p->addr, p->addr) ||
- 	    static_call_text_reserved(p->addr, p->addr) ||
+
+This doesn't fix the header timestamp check though.
+
+Regards,
+  Mickaël
+
+[1] 
+https://lore.kernel.org/all/b79c51ed97219b1c10e2e3f2bcd3269305f0f035.1657694067.git.guillaume.tucker@collabora.com/
+
+
+On 02/08/2022 00:03, Shuah Khan wrote:
+> Hi Linus,
+> 
+> Please pull the following Kselftest update for Linux 5.20-rc1.
+> 
+> This Kselftest update for Linux 5.20-rc1 consists of:
+> 
+> - timers test build fixes and cleanups for new tool chains
+> - removing khdr from kselftest framework and main Makefile
+> - changes to test output messages to improve reports
+> 
+> Please not that this update also included main Makefile change
+> to kselftest build logic in it.
+> 
+> diff is attached.
+> 
+> thanks,
+> -- Shuah
+> 
+> ----------------------------------------------------------------
+> The following changes since commit 03c765b0e3b4cb5063276b086c76f7a612856a9a:
+> 
+>     Linux 5.19-rc4 (2022-06-26 14:22:10 -0700)
+> 
+> are available in the Git repository at:
+> 
+>     git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-next-5.20-rc1
+> 
+> for you to fetch changes up to 4062eba9f3d072e72645860fbc5d160428a75c50:
+> 
+>     Makefile: replace headers_install with headers for kselftest (2022-07-26 18:06:33 -0600)
+> 
+> ----------------------------------------------------------------
+> linux-kselftest-next-5.20-rc1
+> 
+> This Kselftest update for Linux 5.20-rc1 consists of:
+> 
+> - timers test build fixes and cleanups for new tool chains
+> - removing khdr from kselftest framework and main Makefile
+> - changes to test output messages to improve reports
+> 
+> ----------------------------------------------------------------
+> Gautam (2):
+>         kselftests: Enable the echo command to print newlines in Makefile
+>         kselftests/damon: add support for cases where debugfs cannot be read
+> 
+> Gautam Menghani (3):
+>         selftests: Make the usage formatting consistent in kselftest_deps.sh
+>         selftests/drivers/gpu: Add error messages to drm_mm.sh
+>         selftests/kcmp: Make the test output consistent and clear
+> 
+> Guillaume Tucker (6):
+>         selftests: drop khdr make target
+>         selftests: stop using KSFT_KHDR_INSTALL
+>         selftests: drop KSFT_KHDR_INSTALL make target
+>         Makefile: add headers_install to kselftest targets
+>         selftests/landlock: drop deprecated headers dependency
+>         Makefile: replace headers_install with headers for kselftest
+> 
+> Johannes Holland (1):
+>         selftests/tpm2: increase timeout for kselftests
+> 
+> Soumya Negi (1):
+>         selftests: drivers/dma-buf: Improve message in selftest summary
+> 
+> Wolfram Sang (9):
+>         selftests: timers: valid-adjtimex: build fix for newer toolchains
+>         selftests: timers: fix declarations of main()
+>         selftests: timers: nanosleep: adapt to kselftest framework
+>         selftests: timers: inconsistency-check: adapt to kselftest framework
+>         selftests: timers: clocksource-switch: fix passing errors from child
+>         selftests: timers: clocksource-switch: sort includes
+>         selftests: timers: clocksource-switch: add command line switch to skip sanity check
+>         selftests: timers: clocksource-switch: add 'runtime' command line parameter
+>         selftests: timers: clocksource-switch: adapt to kselftest framework
+> 
+> Xiang wangx (1):
+>         userfaultfd/selftests: Fix typo in comment
+> 
+> Zan Aziz (1):
+>         selftests:timers: globals don't need initialization to 0
+> 
+>    Makefile                                           |  4 +-
+>    tools/testing/selftests/Makefile                   | 30 +--------
+>    tools/testing/selftests/arm64/mte/Makefile         |  1 -
+>    tools/testing/selftests/arm64/signal/Makefile      |  1 -
+>    .../testing/selftests/arm64/signal/test_signals.h  |  4 +-
+>    tools/testing/selftests/damon/_chk_dependency.sh   | 10 +++
+>    tools/testing/selftests/drivers/dma-buf/udmabuf.c  |  3 +-
+>    tools/testing/selftests/drivers/gpu/drm_mm.sh      |  4 +-
+>    .../selftests/drivers/s390x/uvdevice/Makefile      |  1 -
+>    tools/testing/selftests/futex/functional/Makefile  |  1 -
+>    tools/testing/selftests/kcmp/kcmp_test.c           |  6 +-
+>    tools/testing/selftests/kselftest_deps.sh          |  2 +-
+>    tools/testing/selftests/kvm/Makefile               |  1 -
+>    tools/testing/selftests/landlock/Makefile          | 10 +--
+>    tools/testing/selftests/lib.mk                     | 38 ------------
+>    tools/testing/selftests/net/Makefile               |  1 -
+>    tools/testing/selftests/net/mptcp/Makefile         |  1 -
+>    tools/testing/selftests/tc-testing/Makefile        |  1 -
+>    tools/testing/selftests/timers/adjtick.c           |  2 +-
+>    .../testing/selftests/timers/alarmtimer-suspend.c  |  2 +-
+>    tools/testing/selftests/timers/change_skew.c       |  2 +-
+>    .../testing/selftests/timers/clocksource-switch.c  | 71 ++++++++++++++--------
+>    .../testing/selftests/timers/inconsistency-check.c | 32 +++++-----
+>    tools/testing/selftests/timers/nanosleep.c         | 18 +++---
+>    tools/testing/selftests/timers/raw_skew.c          |  2 +-
+>    tools/testing/selftests/timers/skew_consistency.c  |  2 +-
+>    tools/testing/selftests/timers/valid-adjtimex.c    |  2 +-
+>    tools/testing/selftests/tpm2/settings              |  1 +
+>    tools/testing/selftests/vm/Makefile                |  1 -
+>    tools/testing/selftests/vm/userfaultfd.c           |  2 +-
+>    30 files changed, 111 insertions(+), 145 deletions(-)
+>    create mode 100644 tools/testing/selftests/tpm2/settings
+> ----------------------------------------------------------------
