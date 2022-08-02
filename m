@@ -2,109 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5407C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 789D4C19F29
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235729AbiHBHNC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 03:13:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52126 "EHLO
+        id S234178AbiHBHOQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 03:14:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232759AbiHBHM4 (ORCPT
+        with ESMTP id S232948AbiHBHON (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 03:12:56 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03C3932DBA;
-        Tue,  2 Aug 2022 00:12:56 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id x2-20020a17090ab00200b001f4da5cdc9cso7513547pjq.0;
-        Tue, 02 Aug 2022 00:12:55 -0700 (PDT)
+        Tue, 2 Aug 2022 03:14:13 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B9848EA2
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 00:14:11 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id e11so14687941ljl.4
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 00:14:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=H+nBQdQuCW3uq6+l/DiJOsc5BtydpsXCE4yEPObq9cM=;
-        b=S8XcWuxRhvqJVqCZ1mQt3cZirZHBpz0stnQbyQ7jBziyzl5P2TIWlFa3rR2VCeP8tu
-         KzU9ugu6MCN2unvnXWYVkY86Ck803pJHXwrhYDRFTubkZVMaVTK83epzzN3HEoKf76yC
-         uxxoIC625B80mJDPAjLNiAdniWh+90k293VuXFWpKP7LF1wEKnOEsg89hW686oFYqudh
-         ahjj7sw61M4gKBPvnklfF6leifjRfU2u5//nezKattkQLRRJKHxVpmvDaK0QTxx7oQQN
-         IzY6qCPKX+DVSt+JxrrJkzhiUQh7DwQr47kB/ZkqBwguElX/wCZfJt/e5BYxsRN0hf2p
-         N/dA==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=VO7iKisYqXn9gq//Drvzc4IU8FHAbNWbiNlXqoODgOM=;
+        b=BHY9W6lthh/+SlYcXhzf70uhuZagL1J/CwBCzUmFuyXKE0AnmUk3pZJ5BbF7yrgkkz
+         4+UKPB7g/1kcN0oJ+P3369aGQq9DXdsqJCtcyvKpib8uWCA3rw/EznQmChAS18o7r2+G
+         cSSHN2xMb7QaroRC3i39Sv9zoEQQBqFhDM/sAJ1Isf4UqXHEPiE4pcCywtmDIXwugaa1
+         pn0vdICsjDOqAiZzdUe8cczXT3mzcme7KmNwtVrKJB3EKwt15P3OZkfj+Pe7ciNZD1mx
+         fC61YXxXrpsD3UibIQTCA/AfZ+y2Nf4bM12NrWSaEEpo3hI4u+g9AefaHxvN1jGXHBRh
+         xljg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=H+nBQdQuCW3uq6+l/DiJOsc5BtydpsXCE4yEPObq9cM=;
-        b=2WAhd34XTVdVj6KVVuKXU8TBVaiYNeRuMfyUlN37pAiyJUWxZZKY/Fwq5S63xbFuSk
-         zndIo0hfJe95eUt0UbUyKMpwTpb8QKli/0cLZQ8A1ZAC882sc7B/ugUDy83Jj29am/eC
-         T+UFiXDnPgA1fs7pmivTVDcjW6FHE11LScRKeKedDXBIwx0YlTfKXbalRHOVC9QF5XFI
-         rIi/NSIt0O4kgp8k+Z5KKTFRUtnS52Ze6wXs+zWhMc3abz5hoIq0Tx0PN01C1at0aIOm
-         CjIQpdpTV827PIWnlU2h0hZ3u6OAqkrC80bzcJQFQZHt0U1LbdtilKd0/ngJ49g/wkWF
-         LQMw==
-X-Gm-Message-State: ACgBeo3sYx0JU5SCj92yyfiCjlik124J8NOuqqjLVJxGXxlQ+1RnnR63
-        gkWYMFheX1y/kX5GAev2EGK9fw+akcY=
-X-Google-Smtp-Source: AA6agR6XWcVoRurLS07GBJOFohs3JZHIf7SiDbCoGZKzwZP6ERMTgzFG0+ZoZt2/Q6XStXyvre4R4g==
-X-Received: by 2002:a17:90b:164b:b0:1f5:15ae:3206 with SMTP id il11-20020a17090b164b00b001f515ae3206mr5331278pjb.140.1659424375397;
-        Tue, 02 Aug 2022 00:12:55 -0700 (PDT)
-Received: from CLOUDLIANG-MB2.tencent.com ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id x21-20020a1709027c1500b0016dd4b1ceb5sm8843833pll.124.2022.08.02.00.12.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 00:12:55 -0700 (PDT)
-From:   Jinrong Liang <ljr.kernel@gmail.com>
-X-Google-Original-From: Jinrong Liang <cloudliang@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Jinrong Liang <cloudliang@tencent.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests: kvm: Fix a compile error in selftests/kvm/rseq_test.c
-Date:   Tue,  2 Aug 2022 15:12:40 +0800
-Message-Id: <20220802071240.84626-1-cloudliang@tencent.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=VO7iKisYqXn9gq//Drvzc4IU8FHAbNWbiNlXqoODgOM=;
+        b=Drvdw90HbCA7k2R0MOwP84cdolDSAzsBbgBrTkhX/jDAu+h0eI/13UKKEQerDBmHy5
+         +w6gWA0HTFpUHyyIjJqEDkcClN2s3BfKcjCuLxmCPiOm3onteSJmRoudnsFMT3f3fnzx
+         JFBOuH1sa2xoFAWmbBAosqNe0yEmZP/8hZ9g3oBLH47h7CcDsk/EqqwVV/nOXQ2Jfz/8
+         SA7rXedSdEbGDCXPxU3Ya/5/734gp4zowjXbvGnhEUzNr9uYO+hafOriCdu2gw9B66iE
+         XxN8FX/MTWs3qkPvX/wxiDRUDo5jkS6V6yvTquEWY6qNZoSiylxjEcDIZa7e+wsVeSLn
+         kzhA==
+X-Gm-Message-State: ACgBeo1e4lpsoeWMUkNngmNZ5o3CBdh+hAaeAxmJTn21AnvhTtJGPho2
+        e0F8tF8Ve/ovieaAz+YM0iH1tg==
+X-Google-Smtp-Source: AA6agR6/Jmi2axMFmM5dshEATFksCp6XfsK+VigG+KH8Rzfsrr0wC0UgMCu/xHtn///Lcw2NpmrIKA==
+X-Received: by 2002:a2e:90c2:0:b0:25e:5d60:14b with SMTP id o2-20020a2e90c2000000b0025e5d60014bmr382110ljg.24.1659424450278;
+        Tue, 02 Aug 2022 00:14:10 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id z19-20020a2ebe13000000b0025e2b567434sm1801513ljq.9.2022.08.02.00.14.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 00:14:09 -0700 (PDT)
+Message-ID: <8715e07f-9d58-1ae3-9a3a-25828b545905@linaro.org>
+Date:   Tue, 2 Aug 2022 10:14:09 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 5/8] drm/msm/a6xx: Ensure CX collapse during gpu
+ recovery
+Content-Language: en-GB
+To:     Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Rob Clark <robdclark@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Jordan Crouse <jordan@cosmicpenguin.net>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Douglas Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        linux-kernel@vger.kernel.org
+References: <1659174051-27816-1-git-send-email-quic_akhilpo@quicinc.com>
+ <20220730150952.v3.5.I176567525af2b9439a7e485d0ca130528666a55c@changeid>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220730150952.v3.5.I176567525af2b9439a7e485d0ca130528666a55c@changeid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jinrong Liang <cloudliang@tencent.com>
+On 30/07/2022 12:40, Akhil P Oommen wrote:
+> Because there could be transient votes from other drivers/tz/hyp which
+> may keep the cx gdsc enabled, we should poll until cx gdsc collapses.
+> We can use the reset framework to poll for cx gdsc collapse from gpucc
+> clk driver.
+> 
+> This feature requires support from the platform's gpucc driver.
+> 
+> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
+> ---
+> 
+> Changes in v3:
+> - Use reset interface from gpucc driver to poll for cx gdsc collapse
+>    https://patchwork.freedesktop.org/series/106860/
+> 
+>   drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 4 ++++
+>   drivers/gpu/drm/msm/msm_gpu.c         | 4 ++++
+>   drivers/gpu/drm/msm/msm_gpu.h         | 4 ++++
+>   3 files changed, 12 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> index 1b049c5..721d5e6 100644
+> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> @@ -10,6 +10,7 @@
+>   
+>   #include <linux/bitfield.h>
+>   #include <linux/devfreq.h>
+> +#include <linux/reset.h>
+>   #include <linux/soc/qcom/llcc-qcom.h>
+>   
+>   #define GPU_PAS_ID 13
+> @@ -1224,6 +1225,9 @@ static void a6xx_recover(struct msm_gpu *gpu)
+>   	/* And the final one from recover worker */
+>   	pm_runtime_put_sync(&gpu->pdev->dev);
+>   
+> +	/* Call into gpucc driver to poll for cx gdsc collapse */
+> +	reset_control_reset(gpu->cx_collapse);
 
-The following warning appears when executing:
-	make -C tools/testing/selftests/kvm
+Do we have a race between the last pm_runtime_put_sync(), this polling 
+and other voters removing their votes beforehand?
 
-rseq_test.c: In function ‘main’:
-rseq_test.c:237:33: warning: implicit declaration of function ‘gettid’; did you mean ‘getgid’? [-Wimplicit-function-declaration]
-          (void *)(unsigned long)gettid());
-                                 ^~~~~~
-                                 getgid
-/usr/bin/ld: /tmp/ccr5mMko.o: in function `main':
-../kvm/tools/testing/selftests/kvm/rseq_test.c:237: undefined reference to `gettid'
-collect2: error: ld returned 1 exit status
-make: *** [../lib.mk:173: ../kvm/tools/testing/selftests/kvm/rseq_test] Error 1
+> +
+>   	pm_runtime_use_autosuspend(&gpu->pdev->dev);
+>   
+>   	if (active_submits)
+> diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+> index 07e55a6..4a57627 100644
+> --- a/drivers/gpu/drm/msm/msm_gpu.c
+> +++ b/drivers/gpu/drm/msm/msm_gpu.c
+> @@ -14,6 +14,7 @@
+>   #include <generated/utsrelease.h>
+>   #include <linux/string_helpers.h>
+>   #include <linux/devcoredump.h>
+> +#include <linux/reset.h>
+>   #include <linux/sched/task.h>
+>   
+>   /*
+> @@ -903,6 +904,9 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
+>   	if (IS_ERR(gpu->gpu_cx))
+>   		gpu->gpu_cx = NULL;
+>   
+> +	gpu->cx_collapse = devm_reset_control_get_optional(&pdev->dev,
+> +			"cx_collapse");
+> +
+>   	gpu->pdev = pdev;
+>   	platform_set_drvdata(pdev, &gpu->adreno_smmu);
+>   
+> diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
+> index 6def008..ab59fd2 100644
+> --- a/drivers/gpu/drm/msm/msm_gpu.h
+> +++ b/drivers/gpu/drm/msm/msm_gpu.h
+> @@ -13,6 +13,7 @@
+>   #include <linux/interconnect.h>
+>   #include <linux/pm_opp.h>
+>   #include <linux/regulator/consumer.h>
+> +#include <linux/reset.h>
+>   
+>   #include "msm_drv.h"
+>   #include "msm_fence.h"
+> @@ -268,6 +269,9 @@ struct msm_gpu {
+>   	bool hw_apriv;
+>   
+>   	struct thermal_cooling_device *cooling;
+> +
+> +	/* To poll for cx gdsc collapse during gpu recovery */
+> +	struct reset_control *cx_collapse;
+>   };
+>   
+>   static inline struct msm_gpu *dev_to_gpu(struct device *dev)
 
-Use the more compatible syscall(SYS_gettid) instead of gettid() to fix it.
-More subsequent reuse may cause it to be wrapped in a lib file.
 
-Signed-off-by: Jinrong Liang <cloudliang@tencent.com>
----
- tools/testing/selftests/kvm/rseq_test.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/kvm/rseq_test.c b/tools/testing/selftests/kvm/rseq_test.c
-index a54d4d05a058..299d316cc759 100644
---- a/tools/testing/selftests/kvm/rseq_test.c
-+++ b/tools/testing/selftests/kvm/rseq_test.c
-@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
- 	ucall_init(vm, NULL);
- 
- 	pthread_create(&migration_thread, NULL, migration_worker,
--		       (void *)(unsigned long)gettid());
-+		       (void *)(unsigned long)syscall(SYS_gettid));
- 
- 	for (i = 0; !done; i++) {
- 		vcpu_run(vcpu);
 -- 
-2.37.1
-
+With best wishes
+Dmitry
