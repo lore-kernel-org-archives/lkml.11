@@ -2,132 +2,348 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B9DC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 10:08:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F05C19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 10:09:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236498AbiHBKI2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 06:08:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50224 "EHLO
+        id S236510AbiHBKJS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 06:09:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236490AbiHBKIZ (ORCPT
+        with ESMTP id S233308AbiHBKJR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 06:08:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A88530F55;
-        Tue,  2 Aug 2022 03:08:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A9B3B819EF;
-        Tue,  2 Aug 2022 10:08:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7382C433C1;
-        Tue,  2 Aug 2022 10:08:14 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V7 4/4] LoongArch: Enable ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-Date:   Tue,  2 Aug 2022 18:05:13 +0800
-Message-Id: <20220802100513.1303717-5-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220802100513.1303717-1-chenhuacai@loongson.cn>
-References: <20220802100513.1303717-1-chenhuacai@loongson.cn>
+        Tue, 2 Aug 2022 06:09:17 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E84C2DA8C;
+        Tue,  2 Aug 2022 03:09:15 -0700 (PDT)
+Date:   Tue, 2 Aug 2022 12:09:11 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1659434953;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=V7NYuUcWnJkrPfTbvdD6RiompurpoY0WN1swUqz0070=;
+        b=cxYHHuwzEUFgW5zeedn/Jjz3FJd01+uuOwcEU1smPxBqubkaHA3aDZGGmteOtZFikWE6CB
+        SGUF0xd0ufSrPEq6bWYvaVL7BZcwMR4A1IzW1WaGuvEKbHoVfjW5rKXyeFp0NGiRDEWzfK
+        hvz8K2HNCqO5ly7TRMG8XchW3iiEbYQ=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Andrew Jones <andrew.jones@linux.dev>
+To:     Peter Gonda <pgonda@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marcorr@google.com, seanjc@google.com, michael.roth@amd.com,
+        thomas.lendacky@amd.com, joro@8bytes.org, mizhang@google.com,
+        pbonzini@redhat.com, Colton Lewis <coltonlewis@google.com>,
+        Andrew Jones <drjones@redhat.com>
+Subject: Re: [V2 06/11] KVM: selftests: Consolidate common code for
+ popuplating
+Message-ID: <20220802100911.5kyfhxdavqtpddma@kamzik>
+References: <20220801201109.825284-1-pgonda@google.com>
+ <20220801201109.825284-7-pgonda@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220801201109.825284-7-pgonda@google.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feiyang Chen <chenfeiyang@loongson.cn>
+On Mon, Aug 01, 2022 at 01:11:04PM -0700, Peter Gonda wrote:
+> From: Sean Christopherson <seanjc@google.com>
+> 
+> Make ucall() a common helper that populates struct ucall, and only calls
+> into arch code to make the actually call out to userspace.
+> 
+> Rename all arch-specific helpers to make it clear they're arch-specific,
+> and to avoid collisions with common helpers (one more on its way...)
+> 
+> No functional change intended.
 
-The feature of minimizing overhead of struct page associated with each
-HugeTLB page is implemented on x86_64. However, the infrastructure of
-this feature is already there, so just select ARCH_WANT_HUGETLB_PAGE_
-OPTIMIZE_VMEMMAP is enough to enable this feature for LoongArch.
+But there is...
 
-To avoid the following build error on LoongArch we should include linux/
-static_key.h in page-flags.h.
+> 
+> Cc: Colton Lewis <coltonlewis@google.com>
+> Cc: Andrew Jones <drjones@redhat.com>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Peter Gonda <pgonda@google.com>
+> ---
+>  tools/testing/selftests/kvm/Makefile          |  1 +
+>  .../selftests/kvm/include/ucall_common.h      | 23 ++++++++++++++++---
+>  .../testing/selftests/kvm/lib/aarch64/ucall.c | 20 ++++------------
+>  tools/testing/selftests/kvm/lib/riscv/ucall.c | 23 ++++---------------
+>  tools/testing/selftests/kvm/lib/s390x/ucall.c | 23 ++++---------------
+>  .../testing/selftests/kvm/lib/ucall_common.c  | 20 ++++++++++++++++
+>  .../testing/selftests/kvm/lib/x86_64/ucall.c  | 23 ++++---------------
+>  7 files changed, 60 insertions(+), 73 deletions(-)
+>  create mode 100644 tools/testing/selftests/kvm/lib/ucall_common.c
+> 
+> diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+> index 690b499c3471..39fc5e8e5594 100644
+> --- a/tools/testing/selftests/kvm/Makefile
+> +++ b/tools/testing/selftests/kvm/Makefile
+> @@ -46,6 +46,7 @@ LIBKVM += lib/perf_test_util.c
+>  LIBKVM += lib/rbtree.c
+>  LIBKVM += lib/sparsebit.c
+>  LIBKVM += lib/test_util.c
+> +LIBKVM += lib/ucall_common.c
+>  
+>  LIBKVM_x86_64 += lib/x86_64/apic.c
+>  LIBKVM_x86_64 += lib/x86_64/handlers.S
+> diff --git a/tools/testing/selftests/kvm/include/ucall_common.h b/tools/testing/selftests/kvm/include/ucall_common.h
+> index ee79d180e07e..5a85f5318bbe 100644
+> --- a/tools/testing/selftests/kvm/include/ucall_common.h
+> +++ b/tools/testing/selftests/kvm/include/ucall_common.h
+> @@ -24,10 +24,27 @@ struct ucall {
+>  	uint64_t args[UCALL_MAX_ARGS];
+>  };
+>  
+> -void ucall_init(struct kvm_vm *vm, void *arg);
+> -void ucall_uninit(struct kvm_vm *vm);
+> +void ucall_arch_init(struct kvm_vm *vm, void *arg);
+> +void ucall_arch_uninit(struct kvm_vm *vm);
+> +void ucall_arch_do_ucall(vm_vaddr_t uc);
+> +uint64_t ucall_arch_get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc);
+> +
+>  void ucall(uint64_t cmd, int nargs, ...);
+> -uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc);
+> +
+> +static inline void ucall_init(struct kvm_vm *vm, void *arg)
+> +{
+> +	ucall_arch_init(vm, arg);
+> +}
+> +
+> +static inline void ucall_uninit(struct kvm_vm *vm)
+> +{
+> +	ucall_arch_uninit(vm);
+> +}
+> +
+> +static inline uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+> +{
+> +	return ucall_arch_get_ucall(vcpu, uc);
+> +}
+>  
+>  #define GUEST_SYNC_ARGS(stage, arg1, arg2, arg3, arg4)	\
+>  				ucall(UCALL_SYNC, 6, "hello", stage, arg1, arg2, arg3, arg4)
+> diff --git a/tools/testing/selftests/kvm/lib/aarch64/ucall.c b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+> index ed237b744690..1c81a6a5c1f2 100644
+> --- a/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+> +++ b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
+> @@ -21,7 +21,7 @@ static bool ucall_mmio_init(struct kvm_vm *vm, vm_paddr_t gpa)
+>  	return true;
+>  }
+>  
+> -void ucall_init(struct kvm_vm *vm, void *arg)
+> +void ucall_arch_init(struct kvm_vm *vm, void *arg)
+>  {
+>  	vm_paddr_t gpa, start, end, step, offset;
+>  	unsigned int bits;
+> @@ -64,30 +64,18 @@ void ucall_init(struct kvm_vm *vm, void *arg)
+>  	TEST_FAIL("Can't find a ucall mmio address");
+>  }
+>  
+> -void ucall_uninit(struct kvm_vm *vm)
+> +void ucall_arch_uninit(struct kvm_vm *vm)
+>  {
+>  	ucall_exit_mmio_addr = 0;
+>  	sync_global_to_guest(vm, ucall_exit_mmio_addr);
+>  }
+>  
+> -void ucall(uint64_t cmd, int nargs, ...)
+> +void ucall_arch_do_ucall(vm_vaddr_t uc)
+>  {
+> -	struct ucall uc = {};
+> -	va_list va;
+> -	int i;
+> -
+> -	WRITE_ONCE(uc.cmd, cmd);
+> -	nargs = min(nargs, UCALL_MAX_ARGS);
+> -
+> -	va_start(va, nargs);
+> -	for (i = 0; i < nargs; ++i)
+> -		WRITE_ONCE(uc.args[i], va_arg(va, uint64_t));
+> -	va_end(va);
+> -
 
-In file included from ./include/linux/mmzone.h:22,
-from ./include/linux/gfp.h:6,
-from ./include/linux/mm.h:7,
-from arch/loongarch/kernel/asm-offsets.c:9:
-./include/linux/page-flags.h:208:1: warning: data definition has no
-type or storage class
-208 | DECLARE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h:208:1: error: type defaults to 'int' in
-declaration of 'DECLARE_STATIC_KEY_MAYBE' [-Werror=implicit-int]
-./include/linux/page-flags.h:209:26: warning: parameter names (without
-types) in function declaration
-209 | hugetlb_optimize_vmemmap_key);
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h: In function 'hugetlb_optimize_vmemmap_enabled':
-./include/linux/page-flags.h:213:16: error: implicit declaration of
-function 'static_branch_maybe' [-Werror=implicit-function-declaration]
-213 | return static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h:213:36: error:
-'CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON' undeclared (first
-use in this function); did you mean
-'CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP'?
-213 | return static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-| CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-./include/linux/page-flags.h:213:36: note: each undeclared identifier
-is reported only once for each function it appears in
-./include/linux/page-flags.h:214:37: error:
-'hugetlb_optimize_vmemmap_key' undeclared (first use in this
-function); did you mean 'hugetlb_optimize_vmemmap_enabled'?
-214 | &hugetlb_optimize_vmemmap_key);
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-| hugetlb_optimize_vmemmap_enabled
+There are WRITE_ONCE's being used here...
 
-Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/Kconfig     | 1 +
- include/linux/page-flags.h | 1 +
- 2 files changed, 2 insertions(+)
+>  	WRITE_ONCE(*ucall_exit_mmio_addr, (vm_vaddr_t)&uc);
+>  }
+>  
+> -uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+> +uint64_t ucall_arch_get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+>  {
+>  	struct kvm_run *run = vcpu->run;
+>  	struct ucall ucall = {};
+> diff --git a/tools/testing/selftests/kvm/lib/riscv/ucall.c b/tools/testing/selftests/kvm/lib/riscv/ucall.c
+> index 087b9740bc8f..b1598f418c1f 100644
+> --- a/tools/testing/selftests/kvm/lib/riscv/ucall.c
+> +++ b/tools/testing/selftests/kvm/lib/riscv/ucall.c
+> @@ -10,11 +10,11 @@
+>  #include "kvm_util.h"
+>  #include "processor.h"
+>  
+> -void ucall_init(struct kvm_vm *vm, void *arg)
+> +void ucall_arch_init(struct kvm_vm *vm, void *arg)
+>  {
+>  }
+>  
+> -void ucall_uninit(struct kvm_vm *vm)
+> +void ucall_arch_uninit(struct kvm_vm *vm)
+>  {
+>  }
+>  
+> @@ -44,27 +44,14 @@ struct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,
+>  	return ret;
+>  }
+>  
+> -void ucall(uint64_t cmd, int nargs, ...)
+> +void ucall_arch_do_ucall(vm_vaddr_t uc)
+>  {
+> -	struct ucall uc = {
+> -		.cmd = cmd,
+> -	};
+> -	va_list va;
+> -	int i;
+> -
+> -	nargs = min(nargs, UCALL_MAX_ARGS);
+> -
+> -	va_start(va, nargs);
+> -	for (i = 0; i < nargs; ++i)
+> -		uc.args[i] = va_arg(va, uint64_t);
+> -	va_end(va);
+> -
+>  	sbi_ecall(KVM_RISCV_SELFTESTS_SBI_EXT,
+>  		  KVM_RISCV_SELFTESTS_SBI_UCALL,
+> -		  (vm_vaddr_t)&uc, 0, 0, 0, 0, 0);
+> +		  uc, 0, 0, 0, 0, 0);
+>  }
+>  
+> -uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+> +uint64_t ucall_arch_get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+>  {
+>  	struct kvm_run *run = vcpu->run;
+>  	struct ucall ucall = {};
+> diff --git a/tools/testing/selftests/kvm/lib/s390x/ucall.c b/tools/testing/selftests/kvm/lib/s390x/ucall.c
+> index 73dc4e21190f..114cb4af295f 100644
+> --- a/tools/testing/selftests/kvm/lib/s390x/ucall.c
+> +++ b/tools/testing/selftests/kvm/lib/s390x/ucall.c
+> @@ -6,34 +6,21 @@
+>   */
+>  #include "kvm_util.h"
+>  
+> -void ucall_init(struct kvm_vm *vm, void *arg)
+> +void ucall_arch_init(struct kvm_vm *vm, void *arg)
+>  {
+>  }
+>  
+> -void ucall_uninit(struct kvm_vm *vm)
+> +void ucall_arch_uninit(struct kvm_vm *vm)
+>  {
+>  }
+>  
+> -void ucall(uint64_t cmd, int nargs, ...)
+> +void ucall_arch_do_ucall(vm_vaddr_t uc)
+>  {
+> -	struct ucall uc = {
+> -		.cmd = cmd,
+> -	};
+> -	va_list va;
+> -	int i;
+> -
+> -	nargs = min(nargs, UCALL_MAX_ARGS);
+> -
+> -	va_start(va, nargs);
+> -	for (i = 0; i < nargs; ++i)
+> -		uc.args[i] = va_arg(va, uint64_t);
+> -	va_end(va);
+> -
+>  	/* Exit via DIAGNOSE 0x501 (normally used for breakpoints) */
+> -	asm volatile ("diag 0,%0,0x501" : : "a"(&uc) : "memory");
+> +	asm volatile ("diag 0,%0,0x501" : : "a"(uc) : "memory");
+>  }
+>  
+> -uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+> +uint64_t ucall_arch_get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+>  {
+>  	struct kvm_run *run = vcpu->run;
+>  	struct ucall ucall = {};
+> diff --git a/tools/testing/selftests/kvm/lib/ucall_common.c b/tools/testing/selftests/kvm/lib/ucall_common.c
+> new file mode 100644
+> index 000000000000..749ffdf23855
+> --- /dev/null
+> +++ b/tools/testing/selftests/kvm/lib/ucall_common.c
+> @@ -0,0 +1,20 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +#include "kvm_util.h"
+> +
+> +void ucall(uint64_t cmd, int nargs, ...)
+> +{
+> +	struct ucall uc = {
+> +		.cmd = cmd,
+> +	};
+> +	va_list va;
+> +	int i;
+> +
+> +	nargs = min(nargs, UCALL_MAX_ARGS);
+> +
+> +	va_start(va, nargs);
+> +	for (i = 0; i < nargs; ++i)
+> +		uc.args[i] = va_arg(va, uint64_t);
+> +	va_end(va);
 
-diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
-index cff781d92c81..de78c86a205c 100644
---- a/arch/loongarch/Kconfig
-+++ b/arch/loongarch/Kconfig
-@@ -49,6 +49,7 @@ config LOONGARCH
- 	select ARCH_USE_CMPXCHG_LOCKREF
- 	select ARCH_USE_QUEUED_RWLOCKS
- 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
-+	select ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
- 	select ARCH_WANTS_NO_INSTR
- 	select BUILDTIME_TABLE_SORT
- 	select COMMON_CLK
-diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index e66f7aa3191d..28a53ac7aa3e 100644
---- a/include/linux/page-flags.h
-+++ b/include/linux/page-flags.h
-@@ -9,6 +9,7 @@
- #include <linux/types.h>
- #include <linux/bug.h>
- #include <linux/mmdebug.h>
-+#include <linux/static_key.h>
- #ifndef __GENERATING_BOUNDS_H
- #include <linux/mm_types.h>
- #include <generated/bounds.h>
--- 
-2.31.1
+...but not here. At least AArch64 needs them, see commit 9e2f6498efbb
+("selftests: KVM: Handle compiler optimizations in ucall")
 
+> +
+> +	ucall_arch_do_ucall((vm_vaddr_t)&uc);
+> +}
+> diff --git a/tools/testing/selftests/kvm/lib/x86_64/ucall.c b/tools/testing/selftests/kvm/lib/x86_64/ucall.c
+> index e5f0f9e0d3ee..9f532dba1003 100644
+> --- a/tools/testing/selftests/kvm/lib/x86_64/ucall.c
+> +++ b/tools/testing/selftests/kvm/lib/x86_64/ucall.c
+> @@ -8,34 +8,21 @@
+>  
+>  #define UCALL_PIO_PORT ((uint16_t)0x1000)
+>  
+> -void ucall_init(struct kvm_vm *vm, void *arg)
+> +void ucall_arch_init(struct kvm_vm *vm, void *arg)
+>  {
+>  }
+>  
+> -void ucall_uninit(struct kvm_vm *vm)
+> +void ucall_arch_uninit(struct kvm_vm *vm)
+>  {
+>  }
+>  
+> -void ucall(uint64_t cmd, int nargs, ...)
+> +void ucall_arch_do_ucall(vm_vaddr_t uc)
+>  {
+> -	struct ucall uc = {
+> -		.cmd = cmd,
+> -	};
+> -	va_list va;
+> -	int i;
+> -
+> -	nargs = min(nargs, UCALL_MAX_ARGS);
+> -
+> -	va_start(va, nargs);
+> -	for (i = 0; i < nargs; ++i)
+> -		uc.args[i] = va_arg(va, uint64_t);
+> -	va_end(va);
+> -
+>  	asm volatile("in %[port], %%al"
+> -		: : [port] "d" (UCALL_PIO_PORT), "D" (&uc) : "rax", "memory");
+> +		: : [port] "d" (UCALL_PIO_PORT), "D" (uc) : "rax", "memory");
+>  }
+>  
+> -uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+> +uint64_t ucall_arch_get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
+>  {
+>  	struct kvm_run *run = vcpu->run;
+>  	struct ucall ucall = {};
+> -- 
+> 2.37.1.455.g008518b4e5-goog
+>
+
+Thanks,
+drew
