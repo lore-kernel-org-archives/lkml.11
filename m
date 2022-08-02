@@ -2,166 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F1E4C19F29
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 19:18:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFB33C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 19:19:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232471AbiHBTS4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 15:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44954 "EHLO
+        id S232631AbiHBTS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 15:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231539AbiHBTSq (ORCPT
+        with ESMTP id S229471AbiHBTSq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 2 Aug 2022 15:18:46 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4D013D15;
-        Tue,  2 Aug 2022 12:18:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2D312D28;
+        Tue,  2 Aug 2022 12:18:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1659467924; x=1691003924;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=CEiM39jmsZQ3Q7QvJYvHTnmSseG/w2PJb9/iJQV5ItM=;
-  b=G1ooD7130QDJFtdZYQq/aPlorsLy4QiBCYbVdDQ6R/OTO7KgFIbrn3Kc
-   nCWfw1xy6UY+nEXNQYqGPFS3+oERqkQPGDds3oJvRfciMNg4AfCWhF2x4
-   abjSuDBlgk5NUhDT/gYdqhTVm6RMKQIKfCfTZbAZEfMYjFp8kLwCSLxDT
-   k=;
+  t=1659467925; x=1691003925;
+  h=from:to:cc:subject:date:message-id;
+  bh=r/XIqJc2dKNK2b3maiJp5sGmbG73g16hBKrnIKFiztA=;
+  b=Nur0TIhOiqGjJwiR047e8XQXxISanqjiVSkLuB/gjr7CDhvJfxD2RuLp
+   1lx57Yasp1ohvGWxO4qUlbcyT644Nn8z4BWAE1R/dBiSlx1w8Y+nJd/OR
+   LfAzV2p48iecGMSTPmm0KmeZLDeRXCfXre48Y25J1qsZZsuf1PLUi38VL
+   c=;
 Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
   by alexa-out.qualcomm.com with ESMTP; 02 Aug 2022 12:18:42 -0700
 X-QCInternal: smtphost
 Received: from hu-eserrao-lv.qualcomm.com (HELO hu-devc-lv-c.qualcomm.com) ([10.47.235.164])
   by ironmsg09-lv.qualcomm.com with ESMTP; 02 Aug 2022 12:18:42 -0700
 Received: by hu-devc-lv-c.qualcomm.com (Postfix, from userid 464172)
-        id 75857211B4; Tue,  2 Aug 2022 12:18:42 -0700 (PDT)
+        id 706982118B; Tue,  2 Aug 2022 12:18:42 -0700 (PDT)
 From:   Elson Roy Serrao <quic_eserrao@quicinc.com>
 To:     balbi@kernel.org, gregkh@linuxfoundation.org
 Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
         quic_wcheng@quicinc.com, quic_jackp@quicinc.com,
         quic_mrana@quicinc.com, Thinh.Nguyen@synopsys.com,
         Elson Roy Serrao <quic_eserrao@quicinc.com>
-Subject: [PATCH 2/5] usb: gadget: Add function wakeup support
-Date:   Tue,  2 Aug 2022 12:18:37 -0700
-Message-Id: <1659467920-9095-3-git-send-email-quic_eserrao@quicinc.com>
+Subject: [PATCH 0/5] Add function suspend/resume and remote wakeup support 
+Date:   Tue,  2 Aug 2022 12:18:35 -0700
+Message-Id: <1659467920-9095-1-git-send-email-quic_eserrao@quicinc.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1659467920-9095-1-git-send-email-quic_eserrao@quicinc.com>
-References: <1659467920-9095-1-git-send-email-quic_eserrao@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-An interface which is in function suspend state has to send a function
-wakeup notification to the host in case it needs to initate any data
-transfer. One notable difference between this and the existing remote
-wakeup mechanism is that this can be called per-interface, and a UDC
-would need to know the particular interface number to convey in its
-Device Notification transaction packet.  Hence, we need to introduce
-a new callback in the gadget_ops structure that UDC device drivers
-can implement.  Similarly add a convenience function in the composite
-driver which function drivers can call. Add support to handle such
-requests in the composite layer and invoke the gadget op.
+An usb device can initate a remote wakeup and bring the link out of
+suspend as dictated by the DEVICE_REMOTE_WAKEUP feature selector.
+To achieve this an interface can invoke gadget_wakeup op and wait for the
+device to come out of LPM. But the current polling based implementation
+fails if the host takes a long time to drive the resume signaling specially
+in high speed capable devices. Switching to an interrupt based approach is
+more robust and efficient. This can be leveraged by enabling link status
+change events and triggering a gadget resume when the link comes to active
+state.
 
-Signed-off-by: Elson Roy Serrao <quic_eserrao@quicinc.com>
----
- drivers/usb/gadget/composite.c | 32 ++++++++++++++++++++++++++++++++
- drivers/usb/gadget/udc/core.c  |  9 +++++++++
- include/linux/usb/composite.h  |  1 +
- include/linux/usb/gadget.h     |  2 ++
- 4 files changed, 44 insertions(+)
+If the device is super-speed/super-speed-plus capable, individual
+interfaces can also be put into suspend state. An interface can be
+in function suspend state even when the device is not in suspend state.
+Function suspend state is retained throughout the device suspend entry
+and exit process. A function can be put to function suspend through
+FUNCTION_SUSPEND feature selector sent by the host. This setup packet also
+decides whether that function is capable of initiating a function remote
+wakeup. When the function sends a wakeup notification to the host the link
+must be first brought to a non-U0 state and then this notification
+is sent.
 
-diff --git a/drivers/usb/gadget/composite.c b/drivers/usb/gadget/composite.c
-index 403563c..6bdce23 100644
---- a/drivers/usb/gadget/composite.c
-+++ b/drivers/usb/gadget/composite.c
-@@ -490,6 +490,38 @@ int usb_interface_id(struct usb_configuration *config,
- }
- EXPORT_SYMBOL_GPL(usb_interface_id);
- 
-+int usb_func_wakeup(struct usb_function *func)
-+{
-+	int ret, id;
-+	unsigned long flags;
-+
-+	if (!func || !func->config || !func->config->cdev ||
-+	    !func->config->cdev->gadget)
-+		return -EINVAL;
-+
-+	DBG(func->config->cdev, "%s function wakeup\n", func->name);
-+
-+	spin_lock_irqsave(&func->config->cdev->lock, flags);
-+
-+	for (id = 0; id < MAX_CONFIG_INTERFACES; id++)
-+		if (func->config->interface[id] == func)
-+			break;
-+
-+	if (id == MAX_CONFIG_INTERFACES) {
-+		ERROR(func->config->cdev, "Invalid function id:%d\n", id);
-+		ret = -EINVAL;
-+		goto err;
-+	}
-+
-+	ret = usb_gadget_func_wakeup(func->config->cdev->gadget, id);
-+
-+err:
-+	spin_unlock_irqrestore(&func->config->cdev->lock, flags);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(usb_func_wakeup);
-+
- static u8 encode_bMaxPower(enum usb_device_speed speed,
- 		struct usb_configuration *c)
- {
-diff --git a/drivers/usb/gadget/udc/core.c b/drivers/usb/gadget/udc/core.c
-index 7886497..fe5c504 100644
---- a/drivers/usb/gadget/udc/core.c
-+++ b/drivers/usb/gadget/udc/core.c
-@@ -816,6 +816,15 @@ int usb_gadget_activate(struct usb_gadget *gadget)
- }
- EXPORT_SYMBOL_GPL(usb_gadget_activate);
- 
-+int usb_gadget_func_wakeup(struct usb_gadget *gadget, int interface_id)
-+{
-+	if (gadget->speed < USB_SPEED_SUPER || !gadget->ops->func_wakeup)
-+		return -EOPNOTSUPP;
-+
-+	return gadget->ops->func_wakeup(gadget, interface_id);
-+}
-+EXPORT_SYMBOL_GPL(usb_gadget_func_wakeup);
-+
- /* ------------------------------------------------------------------------- */
- 
- #ifdef	CONFIG_HAS_DMA
-diff --git a/include/linux/usb/composite.h b/include/linux/usb/composite.h
-index 9d27622..31b35d7 100644
---- a/include/linux/usb/composite.h
-+++ b/include/linux/usb/composite.h
-@@ -254,6 +254,7 @@ int config_ep_by_speed_and_alt(struct usb_gadget *g, struct usb_function *f,
- 
- int config_ep_by_speed(struct usb_gadget *g, struct usb_function *f,
- 			struct usb_ep *_ep);
-+int usb_func_wakeup(struct usb_function *func);
- 
- #define	MAX_CONFIG_INTERFACES		16	/* arbitrary; max 255 */
- 
-diff --git a/include/linux/usb/gadget.h b/include/linux/usb/gadget.h
-index 3ad58b7..76f9de4 100644
---- a/include/linux/usb/gadget.h
-+++ b/include/linux/usb/gadget.h
-@@ -311,6 +311,7 @@ struct usb_udc;
- struct usb_gadget_ops {
- 	int	(*get_frame)(struct usb_gadget *);
- 	int	(*wakeup)(struct usb_gadget *);
-+	int	(*func_wakeup)(struct usb_gadget *gadget, int interface_id);
- 	int	(*set_selfpowered) (struct usb_gadget *, int is_selfpowered);
- 	int	(*vbus_session) (struct usb_gadget *, int is_active);
- 	int	(*vbus_draw) (struct usb_gadget *, unsigned mA);
-@@ -612,6 +613,7 @@ int usb_gadget_disconnect(struct usb_gadget *gadget);
- int usb_gadget_deactivate(struct usb_gadget *gadget);
- int usb_gadget_activate(struct usb_gadget *gadget);
- int usb_gadget_check_config(struct usb_gadget *gadget);
-+int usb_gadget_func_wakeup(struct usb_gadget *gadget, int interface_id);
- #else
- static inline int usb_gadget_frame_number(struct usb_gadget *gadget)
- { return 0; }
+This change adds the infrastructure needed to support the above
+functionalities.
+
+Elson Roy Serrao (5):
+  usb: dwc3: Add remote wakeup handling
+  usb: gadget: Add function wakeup support
+  usb: dwc3: Add function suspend and function wakeup support
+  usb: gadget: f_ecm: Add suspend/resume and remote wakeup support
+  usb: gadget: f_ecm: Add function suspend and wakeup support
+
+ drivers/usb/dwc3/core.h               |  5 ++
+ drivers/usb/dwc3/ep0.c                | 16 +++---
+ drivers/usb/dwc3/gadget.c             | 99 +++++++++++++++++++++++++++++++++--
+ drivers/usb/gadget/composite.c        | 32 +++++++++++
+ drivers/usb/gadget/function/f_ecm.c   | 67 ++++++++++++++++++++++++
+ drivers/usb/gadget/function/u_ether.c | 98 ++++++++++++++++++++++++++++++++++
+ drivers/usb/gadget/function/u_ether.h |  6 +++
+ drivers/usb/gadget/udc/core.c         |  9 ++++
+ include/linux/usb/composite.h         |  1 +
+ include/linux/usb/gadget.h            |  2 +
+ 10 files changed, 324 insertions(+), 11 deletions(-)
+
 -- 
 2.7.4
 
