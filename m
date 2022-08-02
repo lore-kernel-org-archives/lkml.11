@@ -2,183 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C02C5C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:47:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C0D7C19F2B
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235899AbiHBIrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 04:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
+        id S235781AbiHBIwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 04:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235400AbiHBIro (ORCPT
+        with ESMTP id S232224AbiHBIwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 04:47:44 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748884AD68;
-        Tue,  2 Aug 2022 01:47:42 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id p5so16693768edi.12;
-        Tue, 02 Aug 2022 01:47:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=puv0wVuinbvGk6m24vnUVnaprr7raVy2FnF9iWxEgDg=;
-        b=fy5pI89/qCZ86uVbKjW1FbiRmxM4/rk48gHhb5LLNd4ecu1hOXK11Bu6Tqe56E8SCc
-         L+dn3ij2RF2voqhgeBbzUbxLQg7JN163YvlnaVDWvbcWnPQdF1TWTlyT8PXCuqH00Lvm
-         DrdI20Ny5s59MM5bja2VRJh7aCgXmoyjGp+yjUW1oGqUKfrLt/+d9v2zzWabwi1ahTcD
-         v2KEFubO/bSqP+pSSdA8l+JL2juWuynwaDJ9hLm9s73id+pzr7uz+4bfEykNpFdRY+Di
-         ARlOTr78VjUnYKOIsRrPOKKS8ciEY6GOh/Tg08sXeeh6BoVRjGlUJcA8w38BG6PDjgKV
-         LVIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=puv0wVuinbvGk6m24vnUVnaprr7raVy2FnF9iWxEgDg=;
-        b=WALBNPzd9Y/Of8T1l8uI9X/SI1skbkH/DJy3AqtdkcCCU7MVPwCa5eDfxocM9fNb6v
-         w7flqbzL8NSCQOxOCUOGFXSJHW4pykAe6d1G4OlVGOxrEW774FkF5ZjOtDst/IXlmFLf
-         7GqHP3swgYiupcFcJbzngeRvF0JRS/9Gi/+V+cdmCFoGRt2KSCFMpy9KuzwhgfqWR7eN
-         Ylr6U9ID6n5qUl/VA1HCidHbhrrb20IZ+da3jJqmERhcwRMLlsw43VpZrS9G4MdvMVqO
-         pGLLyEAvK9VJqpA0EQENfJMGmGLub066oEMBUSvcEuFoy8k06/0SdfTc72mSgSRWkutG
-         tWNA==
-X-Gm-Message-State: AJIora/aiYnoWCNbF/AJXY3bX4U53raq+tXCfZ6DTAHeueaSuKQzo4kh
-        W7b3faLnDL4Gk38jM5DdPrLCvkGFOCJ8QAtUXmc=
-X-Google-Smtp-Source: AGRyM1utu3QImD9qsURFVtD1OVuARwXFkxr7OiAFJHxCnYpy3UfDVTZIG13xhWJHGIVUaL4XC+zI1ao29MiGikA0TLE=
-X-Received: by 2002:a05:6402:84a:b0:426:262d:967e with SMTP id
- b10-20020a056402084a00b00426262d967emr18807129edz.286.1659430060844; Tue, 02
- Aug 2022 01:47:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220722040609.91703-1-colin.foster@in-advantage.com>
- <20220722040609.91703-10-colin.foster@in-advantage.com> <CAHp75Ve-pqgb56punEL=p=PnEtjRnqTBSqgs+vVn1Zv8F94g9Q@mail.gmail.com>
- <YuiJLK8ncbHH3OhE@euler>
-In-Reply-To: <YuiJLK8ncbHH3OhE@euler>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 2 Aug 2022 10:47:04 +0200
-Message-ID: <CAHp75VcHU+Rh2ROjMcK+Yuyu1Ty9C0Dcx2SjrnrM4BV9NuMZig@mail.gmail.com>
-Subject: Re: [PATCH v14 mfd 9/9] mfd: ocelot: add support for the vsc7512 chip
- via spi
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Tue, 2 Aug 2022 04:52:04 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E2802F67F;
+        Tue,  2 Aug 2022 01:52:02 -0700 (PDT)
+X-UUID: c5605a5eb833454e9840845baab2df4f-20220802
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:a7509fb2-994b-48bf-9510-7fb81aed29df,OB:10,L
+        OB:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
+        ACTION:release,TS:90
+X-CID-INFO: VERSION:1.1.8,REQID:a7509fb2-994b-48bf-9510-7fb81aed29df,OB:10,LOB
+        :10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
+        ACTION:quarantine,TS:90
+X-CID-META: VersionHash:0f94e32,CLOUDID:49c60fd0-a6cf-4fb6-be1b-c60094821ca2,C
+        OID:7d07825c97e3,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: c5605a5eb833454e9840845baab2df4f-20220802
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1209660943; Tue, 02 Aug 2022 16:51:55 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 2 Aug 2022 16:51:54 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Tue, 2 Aug 2022 16:51:54 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>, katie.morris@in-advantage.com
-Content-Type: text/plain; charset="UTF-8"
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Chen-Yu Tsai <wenst@chromium.org>, <hsinyi@chromium.org>,
+        Allen-kh Cheng <allen-kh.cheng@mediatek.corp-partner.google.com>
+Subject: [PATCH v13 0/1] Add basic node support for MediaTek MT8186 SoC
+Date:   Tue, 2 Aug 2022 16:51:51 +0800
+Message-ID: <20220802085152.31284-1-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 2, 2022 at 4:17 AM Colin Foster
-<colin.foster@in-advantage.com> wrote:
+From: Allen-kh Cheng <allen-kh.cheng@mediatek.corp-partner.google.com>
 
-...
+MT8186 is a SoC based on 64bit ARMv8 architecture. It contains 6 CA55
+and 2 CA76 cores. MT8186 share many HW IP with MT65xx series. This
+patchset was tested on MT8186 evaluation board to shell.
 
-> > I'm wondering if you can use in both cases
-> > spi_message_init_with_transfers().
->
-> > > +static int ocelot_spi_regmap_bus_read(void *context, const void *reg, size_t reg_size,
-> > > +                                     void *val, size_t val_size)
-> > > +{
-> > > +       struct spi_transfer tx, padding, rx;
->
-> struct spi_transfer xfers[3] = {0};
-> struct spi_transfer *xfer_tok = xfers;
+This series is based on tag: next-20220728, linux-next/master
+Since we have a another dts series of mt8195 [1] which is waiting for
+review from maintainers. I remove power domains controller node from
+this mt8186 series and will update in another patch.
 
-unsigned int index;
+There are some corrections in mt8186 hardware bindings. We need to
+apply the below patches.
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220725110702.11362-2-allen-kh.cheng@mediatek.com/
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220725110702.11362-3-allen-kh.cheng@mediatek.com/
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220720130604.14113-2-allen-kh.cheng@mediatek.com/
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220721014845.19044-2-allen-kh.cheng@mediatek.com/
 
-> > > +       struct device *dev = context;
-> > > +       struct ocelot_ddata *ddata;
-> > > +       struct spi_device *spi;
-> > > +       struct spi_message msg;
-> > > +
-> > > +       ddata = dev_get_drvdata(dev);
-> > > +       spi = to_spi_device(dev);
-> > > +
-> > > +       spi_message_init(&msg);
-> > > +
-> > > +       memset(&tx, 0, sizeof(tx));
-> > > +
-> > > +       tx.tx_buf = reg;
-> > > +       tx.len = reg_size;
+[1]
+https://patchwork.kernel.org/project/linux-mediatek/list/?series=663978
 
-index = 0;
+changes since v12:
+ - remove drive-strength fom i2c pins
+ - use lowercase hex addresses in pinctrl node
+ - correct clk order in xhci0
+ - add clk26m for dma_ck
 
-> xfer_tok->tx_buf = reg;
-> xfer_tok->len = reg_size;
+changes since v11:
+ - add #cooling-cells in cpu nodes
+ - add pmu nodes for mt8186
+ - change #interrupt-cells from 3 to 4
+ - correct interrupts property in each nodes for 4 interrupt cells
+ - remove power domains controller node
+ - move #address-cells and #size-cells into mt8186.dts
+ - remove unused ahb_cg clock in mmc0
+ - add efuse node
+ - add dsi node and remove dpi node
+ - move i2c status position in mt8186-evb.dts
+ - change i2c child nodee name in pio node to *-pins
+ - change property from mediatek,drive-strength-adv to drive-strength-microamp in i2c child nodes of pio
+ - change drive-strength value from MTK_DRIVE_4mA to 4 in i2c child nodes of pio
+ - change i2c child nodes from pins-sda-sc1 to pins-bus
+ - correct pintctrl clk names
 
-tok[index] = ...;
-index++;
+changes since v10:
+ - remove merged PATCHes
+ - add pmu nodes
+ - add #cooling-cells
+ - change #interrupt-cells number from 3 to 4
+ - remove power domains controller node
+ - move #address-cells/#size-cells into mt8186.dts from evb dts for i2c
+ - move status = 'okay' position in i2cx
+ - fix pinctrl patternproperties name in pio
+ - add efuse node
+ - fix dsi node
+ - add #reset-cells in infracfg_ao: syscon
 
-> xfer_tok++;
->
-> > > +       spi_message_add_tail(&tx, &msg);
-> > > +
-> > > +       if (ddata->spi_padding_bytes) {
-> > > +               memset(&padding, 0, sizeof(padding));
-> > > +
-> > > +               padding.len = ddata->spi_padding_bytes;
-> > > +               padding.tx_buf = ddata->dummy_buf;
-> > > +               padding.dummy_data = 1;
->
-> xfer_tok->len
-> xfer_tok->tx_buf
-> xfer_tok->dummy_data
+changes since v9:
+ - remove some merged PATCHs from series
+ - reorder nodes in dts (cpu-map)
+ - remove okay status in auxadc
+ - remove unnecessary suffix node name for i2c
+ - add pwm node 
+ - add dsi-phy node 
+ - add dpi node 
 
-tok[index] = ...
+changes since v9:
+ - add one space before equal sign of drive-strength-adv
+ - corect compatible name for big cores (ca76)
+ - use upper case of address in pinctrl
+ - add pwrap node
+ - add pwm node
 
-> xfer_tok++;
+changes since v8:
+ - change name from pins_bus to pins-sda-scl
+ - correct email address
+ - add capacity-dmips-mhz for each CPU
+ - add ppi-partitions in gic node
+ - change name to power-domain
+ - remove status "okay" in scp node
+ - update timer and pericfg compatible in series
 
-index++;
+changes since v7:
+ - add scp&auxadc node
 
-> > > +               spi_message_add_tail(&padding, &msg);
-> > > +       }
-> > > +
-> > > +       memset(&rx, 0, sizeof(rx));
-> > > +       rx.rx_buf = val;
-> > > +       rx.len = val_size;
->
-> xfer_tok->rx_buf
-> xfer_tok->len
+changes since v6:
+ - remove unnecessary blank line
 
-tok[index] = ...
+changes since v5:
+ - replace Mediatek a to MediaTek
+ - use GPL-2.0-only OR BSD-2-Clause
 
-> xfer_tok++;
+changes since v4:
+ - correct driver clock of mt8186
+ - add power domains controller and clock controllers
+ - add pinctrl, usb host, spi and i2c nodes
+ - add node status in mt8186-evb.dts
+ - correct some dtbs_check warnings
 
-index++;
+changes since v3:
+ - remove serial, mmc and phy patch from series. (already merged)
+ - remove mcusysoff node
+ - move oscillator nodes at the head of dts
+ - change name from usb-phy to t-phy
 
-> > > +       spi_message_add_tail(&rx, &msg);
->
-> spi_message_init_with_transfers(&msg, xfers, xfer_tok - xfers);
+changes since v2:
+ - add soc {} in mt8186.dtsi
 
-..., index);
+changes since v1:
+ - add dt-bindings: arm: Add compatible for MediaTek MT8186
 
-> > I'm wondering if you can use in both cases
-> > spi_message_init_with_transfers().
->
-> I could see that implementation getting the response of "what the heck
-> were you thinking" or "that looks alright" and I honestly have no idea
-> which pool it will fall into.
+Allen-KH Cheng (1):
+  arm64: dts: Add MediaTek MT8186 dts and evaluation board and Makefile
 
-See above. I.o.w. use index based assignments.
-
-> > > +       return spi_sync(spi, &msg);
-> > > +}
+ arch/arm64/boot/dts/mediatek/Makefile       |   1 +
+ arch/arm64/boot/dts/mediatek/mt8186-evb.dts | 228 +++++
+ arch/arm64/boot/dts/mediatek/mt8186.dtsi    | 875 ++++++++++++++++++++
+ 3 files changed, 1104 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8186-evb.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8186.dtsi
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.18.0
+
