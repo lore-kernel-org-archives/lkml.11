@@ -2,125 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ADD8C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:12:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9EF4C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:13:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237534AbiHBSL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 14:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59646 "EHLO
+        id S232433AbiHBSN2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 14:13:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231440AbiHBSLx (ORCPT
+        with ESMTP id S229499AbiHBSNY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 14:11:53 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2043.outbound.protection.outlook.com [40.107.92.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E7601B792;
-        Tue,  2 Aug 2022 11:11:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gnE6zNQDyuUS0siMpvdiZgtUDB4P6hs29E1Ayuuv/OHn+ZIMAFTy5ksJJ+foy7zr4H3E84xt+q5Dkh/pnu9FwJH6S3xTU+6m20WopBdkljXKkdIu2E9LXEhnS5ut0guX5P3RB6iHNcWCjXcZ404t0I9OOuGY3/qWv95JopQIvRKgRxwNwFq2z9femijJu63tpIIBKkMnuJHC+4p0TzTvfdfo0+K+g6Z2bSwy5wMkbcaAVEa365vB0a183ZIHW/GIM3cr7MXHI1rGKlJYQ8vHKYeRDBXXsjECy53pAjkVFwVtSJk3J75zRe7yExhdzV5E2ZhsFU2iYNIU8CsNVvk0YA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FDdSu01EgAfM6Bz8wpp3oP5AoxeLhVF9RCImp/ulKkw=;
- b=n5KoAOy0yVVa0hEDdV2B+TkCHpMhiP0cuctylLKkddIDdpM13RdI4Sk4r03Rupobo5PMUr3sUQq8SzB7jFquGfIbSRcrv9inkcfx5jHBO4S2FR5/5ILFgWQRdYwurG6SvaMjO0Fmrl6bwXHIDeOg5KvlVufqM4I5sFWwsC9n4HqS9RvxLXJookFGWhMvUiLDId/rqYR5z97YwcVrG/cUsUOaA8fHxcTT22YG12c+3TUh83mHW+DFXfFXLnMMYEqeb9sIokoubtkMeB7yib9wXjhQ8dSRFX1ckxmIOGFo3qJFCyUqTcmOLa3CrBdL5qIVm1pH69YCJdWzvRW4uPNn+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FDdSu01EgAfM6Bz8wpp3oP5AoxeLhVF9RCImp/ulKkw=;
- b=JZbe6tziSkdkxf24tCNBqkdGNjvqrlNl58ocr08my+UFmxhkGAK0pCBsPrXjJ2Sj6nD3uWQQT1P6VaIHxPCKHhiNRfJJSM+bnl6O8d03eD4biqUEFNGIEzUIsZp659UgqNAe2NW877XYkI/BOgqFWVKx5iR56On9rntcBtk+WkmRSm4hShpNVSAt+3RwQwpr+eCGUPRs9fTO1wqQY6CY7H6I6+w8g3Od66m6Kh0AGZUNoNZ08XDkFTJ8KN/qQvVPVV4gkzLqkNq9Z7Gw5ShdQ7g9ZE4lZJxFJNcNEhmO21yeSX/GIJHKrzt4QmwQbCy92Ca2FjxVLpZiJ6RyqtC3cA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by SJ1PR12MB6364.namprd12.prod.outlook.com (2603:10b6:a03:452::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.10; Tue, 2 Aug
- 2022 18:11:35 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::4cce:310f:93:5d58]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::4cce:310f:93:5d58%8]) with mapi id 15.20.5482.016; Tue, 2 Aug 2022
- 18:11:34 +0000
-Date:   Tue, 2 Aug 2022 15:11:33 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Li Zhijian <lizhijian@fujitsu.com>
-Cc:     Bart Van Assche <bvanassche@acm.org>,
-        Leon Romanovsky <leon@kernel.org>, linux-rdma@vger.kernel.org,
-        target-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] RDMA/ib_srpt: unify checking rdma_cm_id condition in
- srpt_cm_req_recv()
-Message-ID: <Yulo1SNrjPYZuIFv@nvidia.com>
-References: <1659336226-2-1-git-send-email-lizhijian@fujitsu.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1659336226-2-1-git-send-email-lizhijian@fujitsu.com>
-X-ClientProxiedBy: BLAPR03CA0082.namprd03.prod.outlook.com
- (2603:10b6:208:329::27) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        Tue, 2 Aug 2022 14:13:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3551817E1C;
+        Tue,  2 Aug 2022 11:13:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9C42B81EF4;
+        Tue,  2 Aug 2022 18:13:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37F43C433D6;
+        Tue,  2 Aug 2022 18:13:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659464000;
+        bh=nQJbrO57DyZP6Khfo1y4+FRa0/uoV/1hWZd8ykEAbQQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KkZKasLRcXY0UBRLQpQCt2HQeH+bQJ1EurBm17qTjnGcjMFX7FlDsFYfMlc//PNrs
+         rFG7UFwDqSKio7gMApA2khxLmHdsWrmSFmlu/5J5VQo2p+fG51lXBQcABrf/owkFq0
+         hnQ+djSIN+1DE05gj0AQAbawTkbxQJTcOUnoQysbS91lTcj/8M6sf/UKwuVpVES1jb
+         N7iQn+MIzbkQyn59h47K0cGQLhExl2cifL9HAklbI6QScYHfNwzRldQq9iXSamtxvB
+         8btn6IUoD0XLlzco8f2s9dLVHg32tpNXRFgTuCCx6tcNHzqZTB2zWIp/y1CZGzHhqY
+         WIOFYjDeMbbcQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 1B8CE40736; Tue,  2 Aug 2022 15:13:18 -0300 (-03)
+Date:   Tue, 2 Aug 2022 15:13:18 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Stephane Eranian <eranian@google.com>,
+        =?utf-8?B?6LCt5qKT54WK?= <tanzixuan.me@gmail.com>,
+        Zixuan Tan <tanzixuangg@gmail.com>, terrelln@fb.com,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] perf build: Suppress openssl v3 deprecation warnings in
+ libcrypto feature test
+Message-ID: <YulpPqXSOG0Q4J1o@kernel.org>
+References: <20220625153439.513559-1-tanzixuan.me@gmail.com>
+ <YrhxE4s0hLvbbibp@krava>
+ <CABwm_eT_LE6VbLMgT31yqW=tc_obLP=6E0jnMqVn1sMdWrVVNw@mail.gmail.com>
+ <Yrqcpr7ICzpsoGrc@krava>
+ <YufUAiLqKiuwdvcP@krava>
+ <YuloQYU72pe4p3eK@kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 71c1669e-ef0d-4c05-0d63-08da74b26f40
-X-MS-TrafficTypeDiagnostic: SJ1PR12MB6364:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1qRbjCcgwGasIwka0YnPVmlG0BYNAuyz6nvJ6qlI93fI5yXhapSSAK1YzIXJxnhQ3Ip2kj1TWBSbExYnb4qXeHQMV1bxU5XcyezQQio0dtmdbm9SXbw+y9O01K2sdeb1XTqXjRhJDMocriO+rpBR39W2aeIeyghdOyCbqelAWnb+WbmEWJz3mtXjFBZgq4PnhbKXlguGHMzHj6NmGsJrlc8OhsCersG2SA5eKkJ7RXp/wBJrUBPax4devqO3iQ/xNHRddg76VjVuT5LDacTlAy+ewZSG9jDE95zZRHNkykTc8tzAOPXa8Xyi6iZXsXSdOCtZrXFpq+ijzOhVUzv2fAB47Xeb0WH1jX01ZKM/0KL3GVm7inaoGv8di6Ky++Xb4h0wYjow4AalYzkPad3ccq/3EiJAn11/4AbGFp11ouJwrQyFjbC8GvqAUJ4VZSz10s/vfyvktQY8e05x7yWW8P4GXWaav0PoJErSlp2/Wmkg0DLYQgkTHLOJrKv/u9NNjIhzFZP5NfwseA/vfX2PKnranflbfw5tDC833sJ9ttG0pDnKKGqYqYpr9IJcfDelHn3j/CSrq8AmYH1pwiMDLviqntcVAfDIQEH+0LPYhW2CJEI73d4gCa0i3VvdPClOohzCMwhpya/xNtYR6kQ7KC+MrZH+seXCZIB8zjXZwXnaox018QMNz/7uNMBKQiqe4+6u5ta1VFv+/MqaeuUqgj6U3WKV30yEO7lyiRKbQTI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(366004)(346002)(136003)(376002)(41300700001)(2906002)(2616005)(83380400001)(86362001)(54906003)(6916009)(6506007)(36756003)(4744005)(26005)(6512007)(186003)(38100700002)(6486002)(5660300002)(66476007)(66946007)(66556008)(8936002)(478600001)(8676002)(4326008)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PdYqzbFkIUYBmS5je89mll9nD9GV75HXH9C92zYhYvdzA30/lgBjVc7Zn7PH?=
- =?us-ascii?Q?v0vzN6rUMrEjbceI8TqxeL/AWN4/2O3MBY8XeiywXr2H2J5Ek0P/ZJZwTZlg?=
- =?us-ascii?Q?wP9b9FfR2QJKqHpgOze/wKHYL2P58h241SdMvFoVquIZoNLq/B3BZPSqcgD3?=
- =?us-ascii?Q?HBiakE92CuD+pSNNd+ZX1xGmOSPDc1uL4Jj2lGjH2Tzg2eZ1ocDYeW+G4/Rn?=
- =?us-ascii?Q?fMeq+d1c02XF4bm3P59MvnQFbR2oMcF5FAVk3e1GjOOkyZ7OCCXQbXP+omxz?=
- =?us-ascii?Q?4BOjqqKs3wardQC4z8QjGKg8fQHTwJiM69xmHgeHkL+pOACFauyQfKm981u2?=
- =?us-ascii?Q?FBeGLw7uh0j3CmVDe6ia5NYnAR8nGz/XZ71pnXbO7Ig2+gVDtoQauIh6nnxG?=
- =?us-ascii?Q?tgSZ+7C4c7Te84HfNHYh8r7+ooYMXIqSkxbpETsidR4prykckac1JMXN/fOy?=
- =?us-ascii?Q?XQq8mqLnrjLT6SAP5mgcoepUlskrrQ2lkfR0u9s34SZdQsJyYlFF9qUEd33y?=
- =?us-ascii?Q?GytASVZmEVeSqSKHbNTqDx7YvDlz0CNQktXAwbZN6V0MBfQleh9ahmtltOSN?=
- =?us-ascii?Q?B0a+9zqc89XJZJz+DAe2hmbyqqLd10dELG7yqo5YJr3ZmfjuNHtXRkk+nUfA?=
- =?us-ascii?Q?p1hU48jefC3z+Wh8AGYBQAGWlLqlIlCF5Y/zVwRks48XvPONIkw+XLKK1mWN?=
- =?us-ascii?Q?VqOxhzPbdaY2rhH+tHfcWF2wz2pLNcRydqAI1DFDhYGwZikH2+B3kapp5RMK?=
- =?us-ascii?Q?n+m3yGCWwR2Sz/a2UySw+67fR0F2fty+2ijnAO4Wmi2a/ApoWBWrdWktzHQb?=
- =?us-ascii?Q?/KyV+mBh3uII7SumUZJlLwUaAyCcnkEa4YiEEn/OIOJzPQ6vQofMvEEZVoAQ?=
- =?us-ascii?Q?VcnnsNiA2psQaiE3g1Ne3+tKb3WKHlw9Zmixmq+2mPfsUI0FaaT739P9dGQN?=
- =?us-ascii?Q?VYZHRrkmNVaC7Uwp8qaPwPy6BjUbeeBt5Q3w/vmXj6/oFCSNeRtBHiZ334/D?=
- =?us-ascii?Q?tywE1pMtAg7TkX8HUck6Gmpfa085X1sKXoLoaKnWJAruvRSvQ45pe/PgX/1t?=
- =?us-ascii?Q?OonQjLBWnUERjY7Cg/RvlX7kS4lYmVwNRRQsNOqZutBQg4mT66AOUL93sM0c?=
- =?us-ascii?Q?UYJOt8ZXbWiAb13PdQaCErOVY9PvJFAfRJ/dKJio4F6v2e7dEoOe64BWkY/7?=
- =?us-ascii?Q?gwNb76GReDJefZD+7Dh35GBPS6OcBU+AhIXHTc9OMshLXL3eu74l+MPptRAb?=
- =?us-ascii?Q?VvU2OrurX7uT2DLI6Gz6kTujoMeXXKfLYkE1nDMSNLj2SvMGKmvoSC7HI/2O?=
- =?us-ascii?Q?XIqTODFPq44A6+UlWE7+pehNxjeplcR10P2Cq+kYOvyydyTR8A2DfvCOHQ8m?=
- =?us-ascii?Q?CzUEVg8VKoFCMmdj9FYbHYdxPcXRpyxTedVpsa4IAtaXGLqtGVfqWdvVrsjH?=
- =?us-ascii?Q?9hIIeTT9UJl2jl2HK73IB28JlxHCkqvzL49T0Q9WYkbNyej1itvwCNQ/3zAV?=
- =?us-ascii?Q?uOyH2OU8NnkgDWO6Gh5l09qa6a7b7THrneowB48W2yIV8u9ugxSyHuwtA4rQ?=
- =?us-ascii?Q?c5hhd3+YUZbNgtvSFZhxJfUN4XYewY+iBt4ij2fG?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71c1669e-ef0d-4c05-0d63-08da74b26f40
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2022 18:11:34.7377
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BkDGTjbmSewq74tLyhR8n208WswblkD8Jf1L2QSEBW8WJMRL5S4SMyM8dURKOpa0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6364
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YuloQYU72pe4p3eK@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 01, 2022 at 06:43:46AM +0000, Li Zhijian wrote:
-> Although rdma_cm_id and ib_cm_id passing to srpt_cm_req_recv() are
-> exclusive currently, all other checking condition are using rdma_cm_id.
-> So unify the 'if' condition to make the code more clear.
+Em Tue, Aug 02, 2022 at 03:09:05PM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Mon, Aug 01, 2022 at 03:24:18PM +0200, Jiri Olsa escreveu:
+> > On Tue, Jun 28, 2022 at 08:16:06AM +0200, Jiri Olsa wrote:
+> > > On Mon, Jun 27, 2022 at 11:08:34AM +0800, 谭梓煊 wrote:
+> > > > On Sun, Jun 26, 2022 at 10:45 PM Jiri Olsa <olsajiri@gmail.com> wrote:
+> > > > >
+> > > > > On Sat, Jun 25, 2022 at 11:34:38PM +0800, Zixuan Tan wrote:
+> > > > > > With OpenSSL v3 installed, the libcrypto feature check fails as it use the
+> > > > > > deprecated MD5_* API (and is compiled with -Werror). The error message is
+> > > > > > as follows.
+> > > > > >
+> > > > > > $ make tools/perf
+> > > > > > ```
+> > > > > > Makefile.config:778: No libcrypto.h found, disables jitted code injection,
+> > > > > > please install openssl-devel or libssl-dev
+> > > > > >
+> > > > > > Auto-detecting system features:
+> > > > > > ...                         dwarf: [ on  ]
+> > > > > > ...            dwarf_getlocations: [ on  ]
+> > > > > > ...                         glibc: [ on  ]
+> > > > > > ...                        libbfd: [ on  ]
+> > > > > > ...                libbfd-buildid: [ on  ]
+> > > > > > ...                        libcap: [ on  ]
+> > > > > > ...                        libelf: [ on  ]
+> > > > > > ...                       libnuma: [ on  ]
+> > > > > > ...        numa_num_possible_cpus: [ on  ]
+> > > > > > ...                       libperl: [ on  ]
+> > > > > > ...                     libpython: [ on  ]
+> > > > > > ...                     libcrypto: [ OFF ]
+> > > > > > ...                     libunwind: [ on  ]
+> > > > > > ...            libdw-dwarf-unwind: [ on  ]
+> > > > > > ...                          zlib: [ on  ]
+> > > > > > ...                          lzma: [ on  ]
+> > > > > > ...                     get_cpuid: [ on  ]
+> > > > > > ...                           bpf: [ on  ]
+> > > > > > ...                        libaio: [ on  ]
+> > > > > > ...                       libzstd: [ on  ]
+> > > > > > ...        disassembler-four-args: [ on  ]
+> > > > > > ```
+> > > > > >
+> > > > > > This is very confusing because the suggested library (on my Ubuntu 20.04
+> > > > > > it is libssl-dev) is already installed. As the test only checks for the
+> > > > > > presence of libcrypto, this commit suppresses the deprecation warning to
+> > > > > > allow the test to pass.
+> > > > > >
+> > > > > > Signed-off-by: Zixuan Tan <tanzixuan.me@gmail.com>
+> > > > > > ---
+> > > > > >  tools/build/feature/test-libcrypto.c | 6 ++++++
+> > > > > >  1 file changed, 6 insertions(+)
+> > > > > >
+> > > > > > diff --git a/tools/build/feature/test-libcrypto.c b/tools/build/feature/test-libcrypto.c
+> > > > > > index a98174e0569c..31afff093d0b 100644
+> > > > > > --- a/tools/build/feature/test-libcrypto.c
+> > > > > > +++ b/tools/build/feature/test-libcrypto.c
+> > > > > > @@ -2,6 +2,12 @@
+> > > > > >  #include <openssl/sha.h>
+> > > > > >  #include <openssl/md5.h>
+> > > > > >
+> > > > > > +/*
+> > > > > > + * The MD5_* API have been deprecated since OpenSSL 3.0, which causes the
+> > > > > > + * feature test to fail silently. This is a workaround.
+> > > > > > + */
+> > > > >
+> > > > > then we use these deprecated MD5 calls in util/genelf.c if libcrypto is detected,
+> > > > > so I wonder how come the rest of the compilation passed for you.. do you have
+> > > > > CONFIG_JITDUMP disabled?
+> > > > >
+> > > > No, CONFIG_JITDUMP is not disabled. I am using the default configuration.
+> > > > 
+> > > > Yes, you are right. The rest of the compilation should fail, but it doesn't.
+> > > > I checked the verbose build commands. This seems to be the result of another
+> > > > inconsistency.
+> > > > 
+> > > > If libcrypto is detected, the macro "HAVE_LIBCRYPTO_SUPPORT" will be
+> > > > defined, but in perf/util/genelf.c, "HAVE_LIBCRYPTO" without the "_SUPPORT"
+> > > > prefix is checked. This causes urandom always be used to create build id
+> > > > rather than MD5 and SHA1, no matter what the detection result is.
+> > > > 
+> > > > In perf/Makefile.config, from line 776
+> > > > ```
+> > > > ifndef NO_LIBCRYPTO
+> > > >   ifneq ($(feature-libcrypto), 1)
+> > > >     msg := $(warning No libcrypto.h found, disables jitted code injection,
+> > > >             please install openssl-devel or libssl-dev);
+> > > >     NO_LIBCRYPTO := 1
+> > > >   else                                  <-- if libcrypto feature detected
+> > > >     CFLAGS += -DHAVE_LIBCRYPTO_SUPPORT  <-- define this
+> > > >     EXTLIBS += -lcrypto
+> > > >     $(call detected,CONFIG_CRYPTO)
+> > > >   endif
+> > > > endif
+> > > > ```
+> > > > 
+> > > > In perf/util/genelf.c, from line 33
+> > > > ```
+> > > > #ifdef HAVE_LIBCRYPTO                <-- but check this, it's always false
+> > > 
+> > > nice :)
+> > > 
+> > > > 
+> > > > #define BUILD_ID_MD5
+> > > > #undef BUILD_ID_SHA /* does not seem to work well when linked with Java */
+> > > > #undef BUILD_ID_URANDOM /* different uuid for each run */
+> > > > 
+> > > > #ifdef BUILD_ID_SHA
+> > > > #include <openssl/sha.h>
+> > > > #endif
+> > > > 
+> > > > #ifdef BUILD_ID_MD5
+> > > > #include <openssl/md5.h>
+> > > > #endif
+> > > > #endif                               <-- this block will be skipped
+> > > > ```
+> > > > 
+> > > > Maybe we should fix this, to really make use of libcrypto if it is available?
+> > > 
+> > > yea, I think that was the original idea, let's keep the variable with
+> > > SUPPORT suffix and use the -Wdeprecated-declarations for genelf.c
+> > > 
+> > > full fix would be to detect the new API and use it when it's available but..
+> > > given that the check was false at least since 2016, perhaps we could remove
+> > > that code? ;-) Stephane?
+> > 
+> > ping
 > 
-> Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
-> Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-> ---
->  drivers/infiniband/ulp/srpt/ib_srpt.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+> So, we should start with 谭梓煊 patch, then fix that ifdef and go on
+> from there?
 
-Applied to for-next.
+I.e. with this:
 
-Thanks,
-Jason
+
+diff --git a/tools/perf/util/genelf.c b/tools/perf/util/genelf.c
+index aed49806a09bab8f..953338b9e887e26f 100644
+--- a/tools/perf/util/genelf.c
++++ b/tools/perf/util/genelf.c
+@@ -30,7 +30,11 @@
+ 
+ #define BUILD_ID_URANDOM /* different uuid for each run */
+ 
+-#ifdef HAVE_LIBCRYPTO
++// FIXME, remove this and fix the deprecation warnings before its removed and
++// We'll break for good here...
++#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
++
++#ifdef HAVE_LIBCRYPTO_SUPPORT
+ 
+ #define BUILD_ID_MD5
+ #undef BUILD_ID_SHA	/* does not seem to work well when linked with Java */
