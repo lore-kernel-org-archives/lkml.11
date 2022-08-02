@@ -2,110 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF4D3C19F29
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA3F0C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 22:12:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237095AbiHBWMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 18:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42498 "EHLO
+        id S236495AbiHBWMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 18:12:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235319AbiHBWLt (ORCPT
+        with ESMTP id S235369AbiHBWLu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 18:11:49 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB5CD42AD1;
-        Tue,  2 Aug 2022 15:11:40 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id gk3so16124981ejb.8;
-        Tue, 02 Aug 2022 15:11:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=2iZS78mXw01epsfevnWqzaIVlWTJFHCguvSE6aPN+5w=;
-        b=b6Tx5foVLxPF944Z0ykOQkntwOdkOXxE6r97APxU4k36SyXy4fslhG7jhkzztLQxrX
-         JoL2SEEIxkRhoWhhf3SJkArSID1mzK47kNVBpc/og2oUGkB2EV1RQEM8yRFxIhSCRwA+
-         /TYFakHK5ZNsSecp2G7P513GRVT2hVIi+LXUZzmkjrCB1tQGFql/XQGSHbYMcDxAQg8w
-         h7Pvem1h5EiaSfhGfoqHf71pFOAbgh7quzzbEvDg+wBH0J9mNmIAHt9yCV/8Oi4eJc3a
-         N8SVQKsoQqcu7g782ysE7ztYYz+45/5e95BLk6aPXjnxgfw+QE7ZFKPYmtF/h1900p45
-         tQjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=2iZS78mXw01epsfevnWqzaIVlWTJFHCguvSE6aPN+5w=;
-        b=r8NhNYQHfjj1FpQNdH0KIMVGPywrseGtTnTcyiIliNjBob1u01RW+RmGnp+lGKOsyf
-         yVXeEjeElr3/DmuzqlFyj/tLV1K5ZjxJAE6UTKe+mYRZ7EHm4FlaA0IUw5sVw/yONgk0
-         LtVziPYaCQVngdX6AWSwuHkzO/vxPZWXcJEcWKJmqpwGZz+5+DzkROOxWK4QzsM0D3Jx
-         b3R8Yw2H+Yv/YODRRfCXVHyPSiDIKdg44Kc9OugkOsnjVV9nDFhEDrogmZuzjd6axQfJ
-         iUCCMAnnUX0/6Wmsz1GAtXhZ0v8UYAHC20nSvNnQ2ef9EW+YYc8RJYN2AHkskjR/GSSs
-         U64Q==
-X-Gm-Message-State: AJIora8TgrKmc1w0HYpBCmYkGPOfSzwLUBy0bF9Hzyk5+WbgfRH56m8r
-        OmA+gB2U0eeUkibQaq4plpyDsCoWQoE6YZ4s
-X-Google-Smtp-Source: AGRyM1vc/W1PjCA5+PpHzM7yJj9XOjB/aSJd/0iw1rfrpPKOAh0eMJyptFcMA7ApG/BipWGouzn+2Q==
-X-Received: by 2002:a17:907:7205:b0:72f:38ec:f70e with SMTP id dr5-20020a170907720500b0072f38ecf70emr17437676ejc.130.1659478298868;
-        Tue, 02 Aug 2022 15:11:38 -0700 (PDT)
-Received: from localhost ([77.78.38.236])
-        by smtp.gmail.com with ESMTPSA id g1-20020a17090604c100b0072b91a3d7e9sm6646391eja.28.2022.08.02.15.11.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Aug 2022 15:11:38 -0700 (PDT)
-From:   Iskren Chernev <iskren.chernev@gmail.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Robert Marko <robimarko@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Iskren Chernev <iskren.chernev@gmail.com>,
-        Adam Skladowski <a39.skl@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 04/13] dt-bindings: regulator: qcom_smd: Document PM6125 PMIC
-Date:   Wed,  3 Aug 2022 01:11:03 +0300
-Message-Id: <20220802221112.2280686-5-iskren.chernev@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220802221112.2280686-1-iskren.chernev@gmail.com>
-References: <20220802221112.2280686-1-iskren.chernev@gmail.com>
+        Tue, 2 Aug 2022 18:11:50 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356063FA29
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 15:11:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659478301; x=1691014301;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Gj1R8PYkuhpliO3kZU490We6AAGLH9lpWLDvSGBIVvM=;
+  b=OWxsodO6afgMwTRYLUa0rOfooq0KNIEvEP6FGj1lFiWHnX6TURr8Mx53
+   Y5sHdDwAXCXJQa118LXjmR8EBG3rtX3V2m8REb7fOKz3FA+Vs+WniiRkT
+   Hm8Kva76uJRnSG0jdmCY3/T6T0HHJAS7/QRDbyORxy9CG2BnvuD7G8tS7
+   Xb1uK4VLHOKpZ6z/A8efEbQLnNW29g84OH8itdhz872SKnVUmpgM/rciS
+   rRTpJMLedlS92iEUvy3U3UwaenF0xI1WnJJETrylsnl4U31mIMrYE2qiL
+   j/ktykVVQMcEKw8sqdZ7a8PoOFcjXSArjOrJ9m97JcHVulGZ7jPpRPbWe
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="315383679"
+X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
+   d="scan'208";a="315383679"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 15:11:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
+   d="scan'208";a="635452902"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 02 Aug 2022 15:11:37 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oJ06y-000GVL-0g;
+        Tue, 02 Aug 2022 22:11:36 +0000
+Date:   Wed, 3 Aug 2022 06:11:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Aaron Tomlin <atomlin@redhat.com>, frederic@kernel.org,
+        mtosatti@redhat.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, cl@linux.com,
+        tglx@linutronix.de, mingo@kernel.org, peterz@infradead.org,
+        pauld@redhat.com, neelx@redhat.com, oleksandr@natalenko.name,
+        atomlin@atomlin.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH v5 2/2] tick/sched: Ensure quiet_vmstat() is called when
+ the idle tick was stopped too
+Message-ID: <202208030608.T5WKMCpb-lkp@intel.com>
+References: <20220801234258.134609-3-atomlin@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220801234258.134609-3-atomlin@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the pm6125 compatible string and available regulators in the QCom
-SMD RPM regulator documentation.
+Hi Aaron,
 
-Signed-off-by: Adam Skladowski <a39.skl@gmail.com>
-Signed-off-by: Iskren Chernev <iskren.chernev@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../devicetree/bindings/regulator/qcom,smd-rpm-regulator.yaml | 4 ++++
- 1 file changed, 4 insertions(+)
+Thank you for the patch! Yet something to improve:
 
-diff --git a/Documentation/devicetree/bindings/regulator/qcom,smd-rpm-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,smd-rpm-regulator.yaml
-index 39802c1223c6..961eed51912c 100644
---- a/Documentation/devicetree/bindings/regulator/qcom,smd-rpm-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/qcom,smd-rpm-regulator.yaml
-@@ -27,6 +27,9 @@ description:
-   For pm2250, s1, s2, s3, s4, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11,
-   l12, l13, l14, l15, l16, l17, l18, l19, l20, l21, l22
- 
-+  For pm6125 s1, s2, s3, s4, s5, s6, s7, s8, l1, l2, l3, l5, l6, l7, l8, l9,
-+  l10, l22, l12, l13, l14, l15, l16, l17, l18, l19, l20, l21, l22, l23, l24
-+
-   For pm660, s1, s2, s3, s4, s5, s6, l1, l2, l3, l5, l6, l7, l8, l9, l10, l22,
-   l12, l13, l14, l15, l16, l17, l18, l19
- 
-@@ -80,6 +83,7 @@ properties:
-     enum:
-       - qcom,rpm-mp5496-regulators
-       - qcom,rpm-pm2250-regulators
-+      - qcom,rpm-pm6125-regulators
-       - qcom,rpm-pm660-regulators
-       - qcom,rpm-pm660l-regulators
-       - qcom,rpm-pm8226-regulators
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.19 next-20220728]
+[cannot apply to tip/timers/nohz]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Aaron-Tomlin/tick-sched-Ensure-quiet_vmstat-is-called-when-the-idle-tick-was-stopped-too/20220802-074341
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 9de1f9c8ca5100a02a2e271bdbde36202e251b4b
+config: i386-randconfig-a002-20220801 (https://download.01.org/0day-ci/archive/20220803/202208030608.T5WKMCpb-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/a0d3b9fe31484c4c44c430d10d0b60e2e0551525
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Aaron-Tomlin/tick-sched-Ensure-quiet_vmstat-is-called-when-the-idle-tick-was-stopped-too/20220802-074341
+        git checkout a0d3b9fe31484c4c44c430d10d0b60e2e0551525
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> ld.lld: error: undefined symbol: tick_nohz_user_enter_prepare
+   >>> referenced by common.c
+   >>>               entry/common.o:(exit_to_user_mode_prepare) in archive kernel/built-in.a
+   >>> referenced by common.c
+   >>>               entry/common.o:(exit_to_user_mode_prepare) in archive kernel/built-in.a
+
 -- 
-2.37.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
