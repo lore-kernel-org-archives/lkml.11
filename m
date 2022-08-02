@@ -2,215 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A07C19F2B
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 09:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 446D6C19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 09:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236290AbiHBJ5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 05:57:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
+        id S236341AbiHBJ6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 05:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231958AbiHBJ5K (ORCPT
+        with ESMTP id S231958AbiHBJ6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 05:57:10 -0400
-X-Greylist: delayed 350 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 02 Aug 2022 02:57:07 PDT
-Received: from smtp-42ad.mail.infomaniak.ch (smtp-42ad.mail.infomaniak.ch [IPv6:2001:1600:3:17::42ad])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2951C3E
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 02:57:07 -0700 (PDT)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Lxqxs33g8zMptYk;
-        Tue,  2 Aug 2022 11:51:13 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4Lxqxr590Qzlqwsl;
-        Tue,  2 Aug 2022 11:51:12 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1659433873;
-        bh=1zHRiAqo3P/dojkNK+hYHzjUFBL4CkZLzF7FK2fml6I=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=yubBe6Oo6HwAr99wsPmEZJALzIaciq9i8qNhdXbQ62s5yam2Z21lr4NT1c76h4xVp
-         EZndDrz2aLGgYqsCnIkP3v6gXa79Prd3jd3wRVYwWxZK9FxtMha8El+S/oYz018ZQv
-         h+Go38FAOlZssRp0+iylAHifHtozQjL+VPDlDORk=
-Message-ID: <2838c247-0648-3828-efb3-e11d7a0616b2@digikod.net>
-Date:   Tue, 2 Aug 2022 11:51:12 +0200
-MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Guillaume Tucker <guillaume.tucker@collabora.com>
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        linux-security-module <linux-security-module@vger.kernel.org>
-References: <430ef132-2ac7-e1be-68ed-3d9c27382143@linuxfoundation.org>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [GIT PULL] Kselftest update for Linux 5.20-rc1
-In-Reply-To: <430ef132-2ac7-e1be-68ed-3d9c27382143@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Tue, 2 Aug 2022 05:58:53 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2081.outbound.protection.outlook.com [40.107.20.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12BD148C9B;
+        Tue,  2 Aug 2022 02:58:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nlCKfZY8lLsI/k1DA4ldja3g8FCRMqqewV+uzFf7mfA13h83oeROB2TSB82dDwPlH72Scb4IOQD17Jsg/KpzF3J2Ey6+wtXId6qtCj7RbcOZHitpACs8831JD0KFBwZq4X2az1RTcFEEU0JNlNXqmotXDgHasTMHMuw6hQMuHQzhFXQs3QU8G0+tYZ2ugmHEI2d8r7LLd6DPzEvYeMVvvFOkuN09RxBCYI2w6DGD4rsubMVSa7Ugxc76UjW/YAe7agekHVUO3rm7E+E6k07y3Bt9iCC0Y/wuNEVhVHLVTQt77/KIWU3X9+LrVhLAgvqJ5vbzx0iZk0prI3d7O0Nmjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IC3i+47QLyTkEmEDsivk+ga+Jtsr9YcwutujgYCa7Xw=;
+ b=EHhq3moZL0tbaGBrV72hUtY5z6LFQ7ijYLhHGxZ5pLBnBZLw6JezQ08Sq5IYOmRsgQ7upEsy1z6regdwpmCX4PMXvowe4zTglby65Xc8LINoBtSQm3mAVd8Y5hDketlQK+HAzfsPoByUSIvXEZLfOqVSXZ8gTPPGlfsfBYW/j+WrPnsoW/uDk68YbDyY4acQEtd8ub7iefFcQFArqmSTaXjpvdrgP+kgoJUsLipXK94U+etzlbcxgquNfn7bl/IXeHAx2AbHXe7Ozm9LKcz4HnWS2al2uGJkXlAKrTqEw3rLMrA61tn3qxgKQhNwiSnULPSLAkX1+ttGeyCmzxZwrA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IC3i+47QLyTkEmEDsivk+ga+Jtsr9YcwutujgYCa7Xw=;
+ b=onKfxLNcOIcrPZf+TVW44NAyNkh55sOl0EGIfYsO3jLgL4j7CC21OoyIHoBVFxzTY8sk6JmfH/6MA0rfW3WX/PQq7Bjoez/jzaWFghR7aKtb0GVTp506qkuvK5ISFcrWO3r0/1jAq0hZ3nCleT53a6Zw2i3dSaaA7o9gV77pMuc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB6737.eurprd04.prod.outlook.com (2603:10a6:208:176::18)
+ by AS8PR04MB8341.eurprd04.prod.outlook.com (2603:10a6:20b:3b0::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.16; Tue, 2 Aug
+ 2022 09:58:49 +0000
+Received: from AM0PR04MB6737.eurprd04.prod.outlook.com
+ ([fe80::6ca7:299e:d92f:7d1b]) by AM0PR04MB6737.eurprd04.prod.outlook.com
+ ([fe80::6ca7:299e:d92f:7d1b%5]) with mapi id 15.20.5482.011; Tue, 2 Aug 2022
+ 09:58:49 +0000
+From:   Olivier Masse <olivier.masse@nxp.com>
+To:     sumit.semwal@linaro.org, benjamin.gaignard@collabora.com,
+        Brian.Starkey@arm.com, christian.koenig@amd.com,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+Cc:     clement.faure@nxp.com, olivier.masse@nxp.com
+Subject: [PATCH 0/5] Add dma-buf secure-heap
+Date:   Tue,  2 Aug 2022 11:58:38 +0200
+Message-Id: <20220802095843.14614-1-olivier.masse@nxp.com>
+X-Mailer: git-send-email 2.25.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: AM3PR07CA0145.eurprd07.prod.outlook.com
+ (2603:10a6:207:8::31) To AM0PR04MB6737.eurprd04.prod.outlook.com
+ (2603:10a6:208:176::18)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0d19be9f-f665-43dc-ba39-08da746d991d
+X-MS-TrafficTypeDiagnostic: AS8PR04MB8341:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: y/EHoZBcLOeabRco/Vx+mj8UuCysnKK4zHFWJJIZXI3HUXXfs3FwrDKOqR6KWpI9FdJOEo1PeVdwMf96JVa3JOUhHcdoVAbR6ipqP2DjUMGprsBh7I3BtLm5CSf2DJbZNrWjcIQB7LdP1PvsbEHXzp/gXeOVuGEemsd9951AsMgJr+XAIC7IevaGt+STYlujv6HP9SxMBOZoINSmBTCK7rd92+mvD+fuCowOWxDGkH1iaAk9sk+6IULqc9H8aLcgf7s5nQpUo1V84sAca58v0mAClDG7rdU8R0vWZI6Whb9+kZdrhTa1SevFFMAPf6FogOm3x9d9GRqk/S+RKxs9jwt6fX0WDFtZyp49F0qzon7uOGRFIdfsvQ1ATPZRkWDb9soEkJ34ZaN9AOjsG9LHaQ7RXVTYur26OfZCY0Jsg5i33DlR93zEgkjHdSFdDRZ37fl1e6ycAFm4Xh4vY+ZmjarwS9zvuLh76gVpLjGA6tKG5EJ2XnhCuU9kCDjvAxUsqtvVbDE1IpuXrqbZbA4qlTS+28Rnn2ejceIYvvujSkuB2ZQVkaSZARDEKPyFhzx56I2bAkB6ovJycwf//WJGOTHQxszWjS8naEQsimiTE7BnAdDkLVrrHyjfdKIFRdJcyWaHzFiSMAlm6rFdKW9062NMzQ2j46KV9MDu8Cogpqz2k6FVbHAKgvrFqXZhz8FSJLnXgg1wZHP9JyBP7bEFd6x8+SkgzMJvKpJfld20zeBtKcgWYhNa5qDBOx+26onAs9HHBKZ44qjbnpMIeJUq8c0mO/Hu8DC0FRBR//wR+S4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6737.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(366004)(136003)(39860400002)(376002)(41300700001)(2906002)(83380400001)(2616005)(86362001)(6666004)(52116002)(6506007)(44832011)(1076003)(36756003)(26005)(6512007)(38100700002)(186003)(38350700002)(6486002)(5660300002)(8676002)(66556008)(66476007)(66946007)(8936002)(478600001)(4326008)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SG1DSTBHM2VDMU9HUXdZNzlGY2piMkN5ZUpnQ3NCdnVYSE10TUpCVzZlejRF?=
+ =?utf-8?B?TjZ3OGFlVUdsZnh5Vm5TcmFPVncwWHZPT1lMQmttczI5V1c1cE5sSm5MejZD?=
+ =?utf-8?B?UklTVmVtUSsyekQ5Nm5icjJoNVNLSlVWMytNYk5kblRJNFU4UURxQUd0cnB0?=
+ =?utf-8?B?ZmlMK0V5S1p5Q1VlNUNEcElyQUxxd1NVRXlDUmcxajRNVmtsdkYrQ0MwSkxQ?=
+ =?utf-8?B?UXIwNjBjWkZFcS85TkVQLzJmdUtGaEJvRzB4amlSamRpN2dDeUlvMWxFLzJI?=
+ =?utf-8?B?MGx4UVVpQkU3UXV4V2g5cGx4VjRwdmU1ZGxZb2Z4OGpNK1Zmc3Y0WTZoa0Vu?=
+ =?utf-8?B?cm5OM0k0MkNUWWkyTHZTZnJ1ejVHN1dhSkNJNlVmeHp1bVNscm9TL1p0bjdE?=
+ =?utf-8?B?eXRnbzBla3laVHd5cXF6eFgzUVpVRys5WTA2UUM1VGJxYUFSdjBCWGdBSkkw?=
+ =?utf-8?B?ZXBiUnA2bHNMclQ0dkpKZ3Nlbjh2R0ZkS0dlY2NSOVkraFBpZW1oQkcyRHhj?=
+ =?utf-8?B?M3dkM2NsSEdIK1gzVXNkNGNnbWF4bTlxS2tCbGY5eEt4ZmVtbVZVQ0hUaElj?=
+ =?utf-8?B?S0RKWTZ6R2VrK2x5dXlWNUN4TXRuRVV5eFpWSE81NmFYV3RMZkpSeFZnVEZG?=
+ =?utf-8?B?NzJyWjg5Z0VtZ0xuMFQrNEUyeW1ycDgrck1EVTVUWGVad3dtcUdLamdHcFVr?=
+ =?utf-8?B?K3JraHF5UGRLWmtDZkEvbEJ4SlBrKzRLMVZsOXZiQTU0dnZMMTFzQVkxM205?=
+ =?utf-8?B?TzAvRzQyU0svRk44Y2RrWVJrKzdFcDN0UjM0M2hONnBXV3hVbG1YMFppeGpP?=
+ =?utf-8?B?L0hmZ0d5bXJnVzNxQlZpSVg1dFpsMTFjOFNJc1hTY2R3OFg2QTBYQUZhWi8r?=
+ =?utf-8?B?bkpGN01zQncrb0E4WUZsQjFqbUs3SzFWeE0xcFJiRi9lbWtoQmZyNWxDUkF6?=
+ =?utf-8?B?eTE5dTZQRW9FQmJGcFNHSVphNGZjZnZLTWdqN3BRZFpHVUcrR29sbDFzSSsr?=
+ =?utf-8?B?LzFCM3A5QUVTbDZmeVhHVGFYcFN5VVFNam5JMWwvVjZRYUVtMVdqTE1SUjhl?=
+ =?utf-8?B?cGw5ZXlJZDZhYUwwR0NDeE1lQm1mZjhobndYOFVieGZKTUovMCtFSDY4NkNp?=
+ =?utf-8?B?Vk81a3k2VHlHWUtaNjl3M2pnV2pQcGpKWUwvOEM2YVk3N3h5YTU3WHFaa3Vo?=
+ =?utf-8?B?M1lyU2pCQ2RpY1lXaytKUUZYSjZ6RGd6a0IzNnk5b2lLaElkZldCTDJDdkJp?=
+ =?utf-8?B?QU42L1pkMlFLaEF5YWEvY29xZy82c2VMRkwxeEdiNms1MFdWZGR3dlhWWmht?=
+ =?utf-8?B?OEJrbXlpcEdYamRqcjFoQkxCZ2hGcmxuWHd6OVFoV1lVTTZZVmI2VVhmdVJ0?=
+ =?utf-8?B?cm9vRUFpZVNPSURFYUdxMUZVNHRwSUN0ZzFWUE92Wnk4b1J3WXFkN211dmNr?=
+ =?utf-8?B?ekt1VFRKUytMK3B6QUcxdlpZdklPRUpaTEdhN0dOM0JHSkFtUzNlYTJibVhp?=
+ =?utf-8?B?eHgvL3JZR01KL0VNakswZ2kvWmUzRXgwZWVNMjJYcklnMmFtL0lsazMyWlhW?=
+ =?utf-8?B?RkZqMjduakVMS3p1a0FZWE9CVUFqUGxHZTBkaXN4Z251Z3hZaFFjazlCOGhv?=
+ =?utf-8?B?NkxmdEkzT2JVc1lhQmRjaW90Njd6ZVk1UVFFV0FFOE1senhGd211Vi9NUU5G?=
+ =?utf-8?B?M0RtNDA0Lzdya3JlYnpsY2lRMVFna1VieDFkRTVqOHQ4RUdNdEhLUUxIR1BO?=
+ =?utf-8?B?ekZqRGxDU1E0Q2E0QUNobEt2R0tmb1p5dGVqWTc0M3B4SlM4N2dpR2wyZHV2?=
+ =?utf-8?B?TWk0OFBINTJGTjkwRmdoZ01pcnVwd3IrMy8vK1NNckxNVFNoZWVLTEI0VnFp?=
+ =?utf-8?B?alFNS1lKN1FicmJudGI1Uk5UWVgzb2ttVVNsRjBuK004WUpsOHNzQ3BwYVU5?=
+ =?utf-8?B?L3EyTzc1aVBzRDJUemFDaVNkVzBjK21GR25ab3dqeUFhVTlOSUttK3ZzTVcr?=
+ =?utf-8?B?anRIc1ZoUHlSdTkxb1NmUTN1WXB2YWxzWitGeE5NRjRyWjY5QXo5ZFNtK3Ry?=
+ =?utf-8?B?RlBuQTdzYjVkYjlJMVp2WEl4L1FCRWQ2MGgzLzh1VWVVc2dBQlNDQVJuMFI2?=
+ =?utf-8?Q?oShLhY7HYXreNhdsiKg+aVFQF?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d19be9f-f665-43dc-ba39-08da746d991d
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6737.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2022 09:58:49.7497
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Hju/VEE5Tz0V1l5wLE7n3jfJd2XIFBOzTgV0QLLEQTkRVa1yFJArCWdWei5Ue14o53gKVvaWyAPzoDVCuY13xw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8341
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Purpose of these patches is to add a new dma-buf heap: linaro,secure-heap
+Linaro OPTEE OS Secure Data Path feature is relying on a reserved memory
+defined at Linux Kernel level and OPTEE OS level.
+From Linux Kernel side, heap management is using dma-buf heaps interface.
 
-This change breaks the Landlock test build when performed on the 
-tools/testing/selftests/landlock directory because the 
-(non-system/up-to-date) kernel headers aren't found. Looking at the use 
-of top_srcdir and HDR_PATH, it seems that multiple subsystems are using 
-this feature. I consider this change a regression.
+John Stultz (2):
+  ANDROID: dma-buf: heaps: Add deferred-free-helper library code
+  ANDROID: dma-buf: heaps: Add a shrinker controlled page pool
 
-It also removes the check on up-to-date kernel headers (thanks to the 
-Makefile's target timestamp).
+Olivier Masse (3):
+  dma-buf: heaps: add Linaro secure dmabuf heap support
+  dt-bindings: reserved-memory: add linaro,secure-heap
+  plat-hikey: Add linaro,secure-heap compatible
 
-I wasn't CCed for this change impacting Landlock [1]. Please keep in 
-mind to add at least maintainers and related mailing-lists for changes 
-on related subsystems.
+ .../reserved-memory/linaro,secure-heap.yaml   |  56 ++
+ .../arm64/boot/dts/hisilicon/hi6220-hikey.dts |  11 +
+ arch/arm64/configs/defconfig                  |   4 +
+ drivers/dma-buf/heaps/Kconfig                 |  19 +
+ drivers/dma-buf/heaps/Makefile                |   3 +
+ drivers/dma-buf/heaps/deferred-free-helper.c  | 136 ++++
+ drivers/dma-buf/heaps/deferred-free-helper.h  |  63 ++
+ drivers/dma-buf/heaps/page_pool.c             | 246 ++++++++
+ drivers/dma-buf/heaps/page_pool.h             |  55 ++
+ drivers/dma-buf/heaps/secure_heap.c           | 588 ++++++++++++++++++
+ 10 files changed, 1181 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/reserved-memory/linaro,secure-heap.yaml
+ create mode 100644 drivers/dma-buf/heaps/deferred-free-helper.c
+ create mode 100644 drivers/dma-buf/heaps/deferred-free-helper.h
+ create mode 100644 drivers/dma-buf/heaps/page_pool.c
+ create mode 100644 drivers/dma-buf/heaps/page_pool.h
+ create mode 100644 drivers/dma-buf/heaps/secure_heap.c
 
-The following patch almost revert commit a917dd94b832 
-("selftests/landlock: drop deprecated headers dependency") and partially 
-fixes commit 49de12ba06ef ("selftests: drop KSFT_KHDR_INSTALL make target"):
+-- 
+2.25.0
 
---- a/tools/testing/selftests/landlock/Makefile
-+++ b/tools/testing/selftests/landlock/Makefile
-@@ -9,10 +9,13 @@ TEST_GEN_PROGS := $(src_test:.c=)
-  TEST_GEN_PROGS_EXTENDED := true
-
-  OVERRIDE_TARGETS := 1
-+top_srcdir = ../../../..
-  include ../lib.mk
-
-+khdr_dir = $(top_srcdir)/usr/include
-+
-  $(OUTPUT)/true: true.c
-  	$(LINK.c) $< $(LDLIBS) -o $@ -static
-
--$(OUTPUT)/%_test: %_test.c ../kselftest_harness.h common.h
--	$(LINK.c) $< $(LDLIBS) -o $@ -lcap
-+$(OUTPUT)/%_test: %_test.c $(khdr_dir)/linux/landlock.h 
-../kselftest_harness.h common.h
-+	$(LINK.c) $< $(LDLIBS) -o $@ -lcap -I$(khdr_dir)
-
-
-This doesn't fix the header timestamp check though.
-
-Regards,
-  Mickaël
-
-[1] 
-https://lore.kernel.org/all/b79c51ed97219b1c10e2e3f2bcd3269305f0f035.1657694067.git.guillaume.tucker@collabora.com/
-
-
-On 02/08/2022 00:03, Shuah Khan wrote:
-> Hi Linus,
-> 
-> Please pull the following Kselftest update for Linux 5.20-rc1.
-> 
-> This Kselftest update for Linux 5.20-rc1 consists of:
-> 
-> - timers test build fixes and cleanups for new tool chains
-> - removing khdr from kselftest framework and main Makefile
-> - changes to test output messages to improve reports
-> 
-> Please not that this update also included main Makefile change
-> to kselftest build logic in it.
-> 
-> diff is attached.
-> 
-> thanks,
-> -- Shuah
-> 
-> ----------------------------------------------------------------
-> The following changes since commit 03c765b0e3b4cb5063276b086c76f7a612856a9a:
-> 
->     Linux 5.19-rc4 (2022-06-26 14:22:10 -0700)
-> 
-> are available in the Git repository at:
-> 
->     git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-next-5.20-rc1
-> 
-> for you to fetch changes up to 4062eba9f3d072e72645860fbc5d160428a75c50:
-> 
->     Makefile: replace headers_install with headers for kselftest (2022-07-26 18:06:33 -0600)
-> 
-> ----------------------------------------------------------------
-> linux-kselftest-next-5.20-rc1
-> 
-> This Kselftest update for Linux 5.20-rc1 consists of:
-> 
-> - timers test build fixes and cleanups for new tool chains
-> - removing khdr from kselftest framework and main Makefile
-> - changes to test output messages to improve reports
-> 
-> ----------------------------------------------------------------
-> Gautam (2):
->         kselftests: Enable the echo command to print newlines in Makefile
->         kselftests/damon: add support for cases where debugfs cannot be read
-> 
-> Gautam Menghani (3):
->         selftests: Make the usage formatting consistent in kselftest_deps.sh
->         selftests/drivers/gpu: Add error messages to drm_mm.sh
->         selftests/kcmp: Make the test output consistent and clear
-> 
-> Guillaume Tucker (6):
->         selftests: drop khdr make target
->         selftests: stop using KSFT_KHDR_INSTALL
->         selftests: drop KSFT_KHDR_INSTALL make target
->         Makefile: add headers_install to kselftest targets
->         selftests/landlock: drop deprecated headers dependency
->         Makefile: replace headers_install with headers for kselftest
-> 
-> Johannes Holland (1):
->         selftests/tpm2: increase timeout for kselftests
-> 
-> Soumya Negi (1):
->         selftests: drivers/dma-buf: Improve message in selftest summary
-> 
-> Wolfram Sang (9):
->         selftests: timers: valid-adjtimex: build fix for newer toolchains
->         selftests: timers: fix declarations of main()
->         selftests: timers: nanosleep: adapt to kselftest framework
->         selftests: timers: inconsistency-check: adapt to kselftest framework
->         selftests: timers: clocksource-switch: fix passing errors from child
->         selftests: timers: clocksource-switch: sort includes
->         selftests: timers: clocksource-switch: add command line switch to skip sanity check
->         selftests: timers: clocksource-switch: add 'runtime' command line parameter
->         selftests: timers: clocksource-switch: adapt to kselftest framework
-> 
-> Xiang wangx (1):
->         userfaultfd/selftests: Fix typo in comment
-> 
-> Zan Aziz (1):
->         selftests:timers: globals don't need initialization to 0
-> 
->    Makefile                                           |  4 +-
->    tools/testing/selftests/Makefile                   | 30 +--------
->    tools/testing/selftests/arm64/mte/Makefile         |  1 -
->    tools/testing/selftests/arm64/signal/Makefile      |  1 -
->    .../testing/selftests/arm64/signal/test_signals.h  |  4 +-
->    tools/testing/selftests/damon/_chk_dependency.sh   | 10 +++
->    tools/testing/selftests/drivers/dma-buf/udmabuf.c  |  3 +-
->    tools/testing/selftests/drivers/gpu/drm_mm.sh      |  4 +-
->    .../selftests/drivers/s390x/uvdevice/Makefile      |  1 -
->    tools/testing/selftests/futex/functional/Makefile  |  1 -
->    tools/testing/selftests/kcmp/kcmp_test.c           |  6 +-
->    tools/testing/selftests/kselftest_deps.sh          |  2 +-
->    tools/testing/selftests/kvm/Makefile               |  1 -
->    tools/testing/selftests/landlock/Makefile          | 10 +--
->    tools/testing/selftests/lib.mk                     | 38 ------------
->    tools/testing/selftests/net/Makefile               |  1 -
->    tools/testing/selftests/net/mptcp/Makefile         |  1 -
->    tools/testing/selftests/tc-testing/Makefile        |  1 -
->    tools/testing/selftests/timers/adjtick.c           |  2 +-
->    .../testing/selftests/timers/alarmtimer-suspend.c  |  2 +-
->    tools/testing/selftests/timers/change_skew.c       |  2 +-
->    .../testing/selftests/timers/clocksource-switch.c  | 71 ++++++++++++++--------
->    .../testing/selftests/timers/inconsistency-check.c | 32 +++++-----
->    tools/testing/selftests/timers/nanosleep.c         | 18 +++---
->    tools/testing/selftests/timers/raw_skew.c          |  2 +-
->    tools/testing/selftests/timers/skew_consistency.c  |  2 +-
->    tools/testing/selftests/timers/valid-adjtimex.c    |  2 +-
->    tools/testing/selftests/tpm2/settings              |  1 +
->    tools/testing/selftests/vm/Makefile                |  1 -
->    tools/testing/selftests/vm/userfaultfd.c           |  2 +-
->    30 files changed, 111 insertions(+), 145 deletions(-)
->    create mode 100644 tools/testing/selftests/tpm2/settings
-> ----------------------------------------------------------------
