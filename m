@@ -2,120 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10406C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:08:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A4CBC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:08:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236398AbiHBIIk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 04:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47700 "EHLO
+        id S235924AbiHBIIn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 04:08:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236389AbiHBIIg (ORCPT
+        with ESMTP id S236388AbiHBIIi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 04:08:36 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023004D80D
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 01:08:35 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oImx1-0003jR-7i; Tue, 02 Aug 2022 10:08:27 +0200
-Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oImwu-0007oM-Cu; Tue, 02 Aug 2022 10:08:20 +0200
-Date:   Tue, 2 Aug 2022 10:08:20 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     Adam Ford <aford173@gmail.com>
-Cc:     Fabio Estevam <festevam@gmail.com>, Marek Vasut <marex@denx.de>,
-        Stefan Agner <stefan@agner.ch>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        arm-soc <linux-arm-kernel@lists.infradead.org>,
-        Jagan Teki <jagan@amarulasolutions.com>, robert.chiras@nxp.com,
-        laurentiu.palcu@nxp.com
-Subject: Re: imx8mm lcdif->dsi->adv7535 no video, no errors
-Message-ID: <20220802080820.jyf3tfpgcj3pvbtp@pengutronix.de>
-References: <CAHCN7xJ=N1vWVTBjArskJ59fyaLzmAGWfc0E=_iGizrDNR_Udw@mail.gmail.com>
- <CAOMZO5BAheG4r1Umnd7bLhOqezsxJgE0x1c-858EcabbpPm6Pg@mail.gmail.com>
- <20220801225538.qtdb5zd66g6ipewz@pengutronix.de>
- <CAOMZO5DUTxQKbpTVOgaVC0V7hPqJG77sgmkW8p=aNpG8th-aLw@mail.gmail.com>
- <CAHCN7xL2w7a=SeXbwcNNxqb3kpRV9Bs0AbK0Nmjbj+dm0NDaVA@mail.gmail.com>
- <CAOMZO5BQWnUj4Ouq3=vhqq55zN8otO_9vPX8ht+muFM_5pg9Fg@mail.gmail.com>
- <CAHCN7xJy6X5733m3zwcFMuWM9oGHJEmKrs2KUNhzMzNVggRx0g@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHCN7xJy6X5733m3zwcFMuWM9oGHJEmKrs2KUNhzMzNVggRx0g@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+        Tue, 2 Aug 2022 04:08:38 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609DD4D827
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 01:08:36 -0700 (PDT)
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220802080832epoutp01273d2551ac6e73716de5ccc66d366074~HeLZ9UoHn2524325243epoutp01M
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 08:08:32 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220802080832epoutp01273d2551ac6e73716de5ccc66d366074~HeLZ9UoHn2524325243epoutp01M
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1659427712;
+        bh=oszOItcMjMeNHkWQ68yMN7/6C0T1+pTNlDcShYoGYbg=;
+        h=Subject:Reply-To:From:To:In-Reply-To:Date:References:From;
+        b=J1vG3ytQMIun0b3JMQZrHmzmUeDCS8F8sRXn0wVc1Qa3Gpf63qpe7+xF93s8uQK+X
+         1ZJ/UfVxgJEdgod8UmsMGCi4QdCggvbs6b3pAQSDTmjX+OQXzBZ908BBE6Fonj8KPO
+         oHTaCm+zVjBHLwRnLL/h2MSo0ay625U/cm8WNWVo=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20220802080832epcas2p293fd0586ea433a8e1e69772c24da0566~HeLZuprL00074300743epcas2p2B;
+        Tue,  2 Aug 2022 08:08:32 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.68]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4LxngN0QZ9z4x9Pw; Tue,  2 Aug
+        2022 08:08:32 +0000 (GMT)
+X-AuditID: b6c32a47-5e1ff700000025aa-ef-62e8db7f677a
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        30.06.09642.F7BD8E26; Tue,  2 Aug 2022 17:08:31 +0900 (KST)
+Mime-Version: 1.0
+Subject: [PATCH v6 4/6] scsi: ufs: wb: Add ufshcd_is_wb_buf_flush_allowed()
+Reply-To: j-young.choi@samsung.com
+Sender: Jinyoung CHOI <j-young.choi@samsung.com>
+From:   Jinyoung CHOI <j-young.choi@samsung.com>
+To:     ALIM AKHTAR <alim.akhtar@samsung.com>,
+        "avri.altman@wdc.com" <avri.altman@wdc.com>,
+        "bvanassche@acm.org" <bvanassche@acm.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "beanhuo@micron.com" <beanhuo@micron.com>,
+        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stanley.chu@mediatek.com" <stanley.chu@mediatek.com>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+In-Reply-To: <20220802080146epcms2p24b86bfce3d3c09c79b91d861cb3b2cce@epcms2p2>
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20220802080831epcms2p2c2b9f94e2f450a6a772a193d9720b650@epcms2p2>
+Date:   Tue, 02 Aug 2022 17:08:31 +0900
+X-CMS-MailID: 20220802080831epcms2p2c2b9f94e2f450a6a772a193d9720b650
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrJJsWRmVeSWpSXmKPExsWy7bCmhW797RdJBgt6zS1OPlnDZvFg3jY2
+        i5c/r7JZHHzYyWIx7cNPZouXhzQtFt3YxmRxedccNovu6zvYLJYf/8dksXTrTUYHbo/LV7w9
+        Fu95yeQxYdEBRo+Wk/tZPL6v72Dz+Pj0FotH35ZVjB6fN8l5tB/oZgrgjMq2yUhNTEktUkjN
+        S85PycxLt1XyDo53jjc1MzDUNbS0MFdSyEvMTbVVcvEJ0HXLzAE6VkmhLDGnFCgUkFhcrKRv
+        Z1OUX1qSqpCRX1xiq5RakJJTYF6gV5yYW1yal66Xl1piZWhgYGQKVJiQndH++xNzwUKRivN/
+        d7I2MO4U7GLk5JAQMJHYs62dpYuRi0NIYAejxJkNbaxdjBwcvAKCEn93CIPUCAt4S3QvPcUK
+        YgsJKEmcWzOLEaREWMBA4lavOUiYTUBP4ueSGWwgY0QE2lgkjnVuZYaYzysxo/0pC4QtLbF9
+        +VZGEJtTwE9i4o0PUDUaEj+W9ULZohI3V79lh7HfH5vPCGGLSLTeOwtVIyjx4OduqLikxKFD
+        X9lA7pEQyJfYcCAQIlwj8Xb5AagSfYlrHRvBTuAV8JWYNeEmWJxFQFVi9+dmJogaF4ltHR/B
+        XmQWkJfY/nYOM8hIZgFNifW79CGmK0scucUC81TDxt/s6GxmAT6JjsN/4eI75j1hgmhVk1jU
+        ZAQRlpH4eng++wRGpVmIUJ6FZO0shLULGJlXMYqlFhTnpqcWGxUYwyM2OT93EyM4zWq572Cc
+        8faD3iFGJg7GQ4wSHMxKIrx3XJ4nCfGmJFZWpRblxxeV5qQWH2I0BXp4IrOUaHI+MNHnlcQb
+        mlgamJiZGZobmRqYK4nzeqVsSBQSSE8sSc1OTS1ILYLpY+LglGpgaly+/qapt5/p/tTvJ7lD
+        NHTPaU9mEJi7cc3Nk1Gydh2H30vlpQpsiOiaZ/vHQlG3XKD/SvMrlbXxJ9+eentc0aEnf71M
+        ZcH+qbMexz6/6VPydOfxxB8+W/eEL5G/cW1jranu/2dKxRdZX07/Kbonm/2QkX7okp8BR5dV
+        L13zXHj9lTsXvFo7F/Grqz+0PXRpn9qhyj+bQ9cfcdG8afLfSzvSdNvsp9M/7DbWtvnf/f1+
+        CKvhh8MaO0X6Dv5Kt7jp0GyZf57X19hMsDh4H8db1v4/i1Zx+Z7gPzL5nfEEqeQXvCtVt147
+        3fs0Pu/Hy8Kgd55v/D0FhUu+cpRsfd+cHa7ctcZificD+9fJ/FMObVFiKc5INNRiLipOBAA6
+        UzIIPAQAAA==
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220802080146epcms2p24b86bfce3d3c09c79b91d861cb3b2cce
+References: <20220802080146epcms2p24b86bfce3d3c09c79b91d861cb3b2cce@epcms2p2>
+        <CGME20220802080146epcms2p24b86bfce3d3c09c79b91d861cb3b2cce@epcms2p2>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Adam, Fabio,
+The explicit flushing should check the following.
+	- UFSHCD_CAP_WB_EN
+	- UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL
 
-On 22-08-01, Adam Ford wrote:
-> On Mon, Aug 1, 2022 at 8:53 PM Fabio Estevam <festevam@gmail.com> wrote:
-> >
-> > On Mon, Aug 1, 2022 at 10:39 PM Adam Ford <aford173@gmail.com> wrote:
-> >
-> > > I managed to get my HDMI output working. I had the lanes set to 2
-> > > instead of 4.  Once I switched to 4-lanes, the monitor came up in
-> > > 1080p.  I haven't yet been able to get other modes to work.
-> >
-> > Ok, good. On another thread, you mentioned that you were also trying
-> > to get LVDS to work via SN65DSI83.
-> >
-> > Does LVDS work for you on this branch?
-> 
-> I haven't tried with Marek's latest suggestion.  In the other thread
-> he mentioned a burst mode and setting the DSI speeds to higher
-> frequencies, but the patch he had didn't look like it would apply
-> cleanly, so I will need to dig into that a bit further. 
+Changed to improve readability.
 
-Can you provide me a link to this thread?
+Acked-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Avri Altman <avri.altman@wdc.com>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Jinyoung Choi <j-young.choi@samsung.com>
+---
+ drivers/ufs/core/ufs-sysfs.c   | 3 +--
+ drivers/ufs/core/ufshcd-priv.h | 6 ++++++
+ drivers/ufs/core/ufshcd.c      | 5 +++--
+ 3 files changed, 10 insertions(+), 4 deletions(-)
 
-> Since my company doesn't really ship the LVDS displays with the kits,
-> the HDMI is the default video, so I've been focusing on it.
-> 
-> To answer Marco's question, I was able to revert "MLK-21958-13:
-> drm/bridge: adv7511: Limit supported clocks" and still get a display
-> at 1080p, but all the other resolutions I tried appear to come up
-> blank. 
-
-Cool so now you have the same state as we are.
-
-I think that the most important one is the blanking calc. Can you try to
-revert "drm/bridge: adv7511: Repair bus_flags and bus_format" and check
-if you can get a output still? Also something to try would be to disable
-the internal timing generator by specifying
-'adi,disable-timing-generator'. Also if you have an oscilloscope for
-such frequencies you can check the hdmi clk-lane. I noticed that this is
-sometimes wrong.
-
-Regards,
-  Marco
-
-> I didn't try every one.  With that revert, more options come
-> available, but 1440x900 and 800x600 were options I tried
-> unsuccessfullyl.
-
-> 
-> adam
-> 
+diff --git a/drivers/ufs/core/ufs-sysfs.c b/drivers/ufs/core/ufs-sysfs.c
+index 69cc9b26c762..2c0b7f45de4b 100644
+--- a/drivers/ufs/core/ufs-sysfs.c
++++ b/drivers/ufs/core/ufs-sysfs.c
+@@ -271,8 +271,7 @@ static ssize_t wb_buf_flush_en_store(struct device *dev,
+ 	unsigned int wb_buf_flush_en;
+ 	ssize_t res;
+ 
+-	if (!ufshcd_is_wb_allowed(hba) ||
+-	    (hba->quirks & UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL)) {
++	if (!ufshcd_is_wb_buf_flush_allowed(hba)) {
+ 		dev_warn(dev, "It is not allowed to configure WB buf flushing!\n");
+ 		return -EOPNOTSUPP;
+ 	}
+diff --git a/drivers/ufs/core/ufshcd-priv.h b/drivers/ufs/core/ufshcd-priv.h
+index 8f67db202d7b..d00dba17297d 100644
+--- a/drivers/ufs/core/ufshcd-priv.h
++++ b/drivers/ufs/core/ufshcd-priv.h
+@@ -26,6 +26,12 @@ static inline u8 ufshcd_wb_get_query_index(struct ufs_hba *hba)
+ 	return 0;
+ }
+ 
++static inline bool ufshcd_is_wb_buf_flush_allowed(struct ufs_hba *hba)
++{
++	return ufshcd_is_wb_allowed(hba) &&
++		!(hba->quirks & UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL);
++}
++
+ #ifdef CONFIG_SCSI_UFS_HWMON
+ void ufs_hwmon_probe(struct ufs_hba *hba, u8 mask);
+ void ufs_hwmon_remove(struct ufs_hba *hba);
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index b7b8efd17659..5099d161f115 100644
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -294,7 +294,8 @@ static void ufshcd_configure_wb(struct ufs_hba *hba)
+ 	ufshcd_wb_toggle(hba, true);
+ 
+ 	ufshcd_wb_toggle_buf_flush_during_h8(hba, true);
+-	if (!(hba->quirks & UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL))
++
++	if (ufshcd_is_wb_buf_flush_allowed(hba))
+ 		ufshcd_wb_toggle_buf_flush(hba, true);
+ }
+ 
+@@ -5815,7 +5816,7 @@ static bool ufshcd_wb_presrv_usrspc_keep_vcc_on(struct ufs_hba *hba,
+ 
+ static void ufshcd_wb_force_disable(struct ufs_hba *hba)
+ {
+-	if (!(hba->quirks & UFSHCI_QUIRK_SKIP_MANUAL_WB_FLUSH_CTRL))
++	if (ufshcd_is_wb_buf_flush_allowed(hba))
+ 		ufshcd_wb_toggle_buf_flush(hba, false);
+ 
+ 	ufshcd_wb_toggle_buf_flush_during_h8(hba, false);
+-- 
+2.25.1
