@@ -2,164 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E909C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 09:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9146C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 09:39:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236145AbiHBJjc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 05:39:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58212 "EHLO
+        id S236292AbiHBJjg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 05:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232727AbiHBJjb (ORCPT
+        with ESMTP id S232727AbiHBJjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 05:39:31 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB0730F55;
-        Tue,  2 Aug 2022 02:39:29 -0700 (PDT)
-Received: from canpemm500008.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lxqf33rRGzmVWX;
-        Tue,  2 Aug 2022 17:37:31 +0800 (CST)
-Received: from localhost.huawei.com (10.175.124.27) by
- canpemm500008.china.huawei.com (7.192.105.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 2 Aug 2022 17:39:26 +0800
-From:   Li Jinlin <lijinlin3@huawei.com>
-To:     <lduncan@suse.com>, <cleech@redhat.com>,
-        <michael.christie@oracle.com>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <mark.mielke@gmail.com>
-CC:     <open-iscsi@googlegroups.com>, <linux-scsi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linfeilong@huawei.com>,
-        <liuzhiqiang26@huawei.com>
-Subject: [PATCH] scsi: iscsi: iscsi_tcp: Fix null-ptr-deref while calling getpeername()
-Date:   Tue, 2 Aug 2022 18:19:39 +0800
-Message-ID: <20220802101939.3972556-1-lijinlin3@huawei.com>
-X-Mailer: git-send-email 2.27.0
+        Tue, 2 Aug 2022 05:39:33 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7194130F55;
+        Tue,  2 Aug 2022 02:39:32 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id w3so1223082edc.2;
+        Tue, 02 Aug 2022 02:39:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cFQwqqqznTGEXjJGP0GCqKukfQLdTRB/jDpu9UVZUWs=;
+        b=JRAJRY44ZuzRpshknUC7cIWE8hqPhZLVESaoKq6M+kYFcJ28mAN5ySLU8hUfVs++E7
+         MEdCyR4eKoXAsg3uNwnKRWw97LrAWAfPxc74r5w/1AfUY6enrn31vlujsfyM+OLolT6e
+         0silr0d2hlVQupQz/Jz2biFW4kKEA4BUsIMQskN96mstkLEnrV8bvdvFmBRJzMvBDwWF
+         DlXxsZzPPSIhtsb2qEIwBAPdC54rjUIeVVzZTHX0P+pndNeDqDB3oJLGDvMQvi2RIFKm
+         zLUUViMY+Q0TVoVjmLlScYOWXV+rC8N+AEzuiljhgaLxR0QeT4ldO68CXJCkKery4HJ0
+         uwVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=cFQwqqqznTGEXjJGP0GCqKukfQLdTRB/jDpu9UVZUWs=;
+        b=dwN9v/cQNbFYWgyfb3mvkgrtfY8CShm6tGYgErKzFF/dcqrfXXxz0jImInKmI+r3+T
+         kUpnVc87HPdo0oKfsGtIWz/nXyqn4ZtNxVTvOi0Pnidv5jSTqLPVu/9y9jNvorWBABNQ
+         xDeBqA8yEG0AQES5r2u3Cwpi9uTWEjOuEUmjPnHdE0oaWfv6fA//h55K8fDfbncno4UK
+         wof4QmR6ZWYvFIWMd9pDDjEb5vJYViBT0AUgQKWw2mtZTaQkex3G0iuBimFZ0bh0FFBp
+         ylRFI2IOM5CaDjk8/k98rinqtPxK2/iNOX3UWzi5NsMF+q17oa0f8wvTajeVaWq1UbOr
+         n6sg==
+X-Gm-Message-State: ACgBeo1YAYFhpqSin2zO/W5LOWJdot+3SEv14O9tg5oFtm/7ZhcYpYQw
+        1tbE84jjfSuhwuWe8QMp6qI=
+X-Google-Smtp-Source: AA6agR4p5uaDWMAjWS724wffcK/PfHf6PF/eO8Rv9jiiBPYTbI5uudmhUbMNrPUqbDeI/D05fl89OA==
+X-Received: by 2002:a05:6402:40c9:b0:43d:cc0d:e9de with SMTP id z9-20020a05640240c900b0043dcc0de9demr6087800edb.319.1659433170946;
+        Tue, 02 Aug 2022 02:39:30 -0700 (PDT)
+Received: from gmail.com (84-236-113-167.pool.digikabel.hu. [84.236.113.167])
+        by smtp.gmail.com with ESMTPSA id r9-20020a1709061ba900b0071cef8bafc3sm6028201ejg.1.2022.08.02.02.39.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Aug 2022 02:39:30 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Tue, 2 Aug 2022 11:39:28 +0200
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     Babu Moger <babu.moger@amd.com>, fenghua.yu@intel.com,
+        reinette.chatre@intel.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, eranian@google.com, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, corbet@lwn.net,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH v2 00/10] x86/resctrl: Support for AMD QoS new features
+ and bug fix
+Message-ID: <Yujw0FOMj3tS0f3k@gmail.com>
+References: <165938717220.724959.10931629283087443782.stgit@bmoger-ubuntu>
+ <13d16a59-0b13-8484-380c-21deb864f0f2@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500008.china.huawei.com (7.192.105.151)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <13d16a59-0b13-8484-380c-21deb864f0f2@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I got a kernel NULL pointer derference report as below:
 
-    BUG: kernel NULL pointer dereference, address: 0000000000000038
-    CPU: 4 PID: 1050 Comm: cat Not tainted 5.19.0 #38
-    RIP: 0010:kernel_getpeername+0xf/0x30
-    Call Trace:
-     <TASK>
-     ? iscsi_sw_tcp_conn_get_param+0x11f/0x17f
-     show_conn_ep_param_ISCSI_PARAM_CONN_ADDRESS+0x90/0xb0
-     dev_attr_show+0x1d/0x50
-     sysfs_kf_seq_show+0xad/0x120
-     kernfs_seq_show+0x2c/0x40
-     seq_read_iter+0x12e/0x4d0
-     ? aa_file_perm+0x177/0x590
-     kernfs_fop_read_iter+0x183/0x210
-     new_sync_read+0xfe/0x180
-     ? 0xffffffff81000000
-     vfs_read+0x14d/0x1a0
-     ksys_read+0x6d/0xf0
-     __x64_sys_read+0x1a/0x20
-     do_syscall_64+0x3b/0x90
-     entry_SYSCALL_64_after_hwframe+0x63/0xcd
+* Bagas Sanjaya <bagasdotme@gmail.com> wrote:
 
-The problem scenario is:
+> On 8/2/22 03:55, Babu Moger wrote:
+> > v2:
+> >   a. Rebased the patches to latest stable tree (v5.18.15). Resolved some conflicts.
+> >   b. Added the patch to fix CBM issue on AMD. This was originally discussed
+> >      https://lore.kernel.org/lkml/20220517001234.3137157-1-eranian@google.com/
+> > 
+> 
+> Shouldn't this series be rebased on tip tree? I think it's odd to base 
+> new feature series on stable tree, since patches on the latter are mostly 
+> bugfixes backported from mainline.
 
-              CPU1                         CPU2
-    -------------------------    ------------------------
-    iscsi_sw_tcp_conn_get_param
-      spin_lock_bh(&frwd_lock)
-      if (!tcp_sw_conn || !tcp_sw_conn->sock)
-         spin_unlock_bh(&frwd_lock)
-         return -ENOTCONN
+Normally that's true, but AFAICS the patchset applies cleanly to latest 
+-tip as well, so 'stable == tip' in this regard.
 
-      sock = tcp_sw_conn->sock;
-      sock_hold(sock->sk)
-      spin_unlock_bh(&frwd_lock)
-                                  iscsi_sw_tcp_release_conn
-                                    spin_lock_bh(&frwd_lock)
-                                    tcp_sw_conn->sock = NULL
-                                    spin_unlock_bh(&frwd_lock)
-                                    sockfd_put(sock)
-                                      task_work
-                                        __fput
-                                          sock_close
-                                            __sock_release
-                                              sock->sk = NULL
-                                              sock->ops = NULL
-                                              sock->file = NULL
-      kernel_getpeername
-        sock->ops->getname
-        ^^^^^^^^^
-        NULL pointer dereference of sock->ops
+Series looks good to me (without having tested it):
 
-sock_hold() and sock_put() can't ensure that sock_close() won't be
-called before calling getpeername() or getsockname(). Using fget()
-and sockfd_put() replace sock_hold() and sock_put(), and put them
-under frwd_lock protection, to ensure that the socket struct is
-preserved until after the getpeernaem() or getsockname() complete.
+  Reviewed-by: Ingo Molnar <mingo@kernel.org>
 
-Fixes: bcf3a2953d36 ("scsi: iscsi: iscsi_tcp: Avoid holding spinlock while calling getpeername()")
-Signed-off-by: Li Jinlin <lijinlin3@huawei.com>
----
- drivers/scsi/iscsi_tcp.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+Thanks,
 
-diff --git a/drivers/scsi/iscsi_tcp.c b/drivers/scsi/iscsi_tcp.c
-index 9fee70d6434a..63532dc3970d 100644
---- a/drivers/scsi/iscsi_tcp.c
-+++ b/drivers/scsi/iscsi_tcp.c
-@@ -612,8 +612,8 @@ static void iscsi_sw_tcp_release_conn(struct iscsi_conn *conn)
- 
- 	spin_lock_bh(&session->frwd_lock);
- 	tcp_sw_conn->sock = NULL;
--	spin_unlock_bh(&session->frwd_lock);
- 	sockfd_put(sock);
-+	spin_unlock_bh(&session->frwd_lock);
- }
- 
- static void iscsi_sw_tcp_conn_destroy(struct iscsi_cls_conn *cls_conn)
-@@ -756,7 +756,7 @@ static int iscsi_sw_tcp_conn_get_param(struct iscsi_cls_conn *cls_conn,
- 			return -ENOTCONN;
- 		}
- 		sock = tcp_sw_conn->sock;
--		sock_hold(sock->sk);
-+		fget(sock->file);
- 		spin_unlock_bh(&conn->session->frwd_lock);
- 
- 		if (param == ISCSI_PARAM_LOCAL_PORT)
-@@ -765,7 +765,9 @@ static int iscsi_sw_tcp_conn_get_param(struct iscsi_cls_conn *cls_conn,
- 		else
- 			rc = kernel_getpeername(sock,
- 						(struct sockaddr *)&addr);
--		sock_put(sock->sk);
-+		spin_lock_bh(&conn->session->frwd_lock);
-+		sockfd_put(sock);
-+		spin_unlock_bh(&conn->session->frwd_lock);
- 		if (rc < 0)
- 			return rc;
- 
-@@ -808,12 +810,14 @@ static int iscsi_sw_tcp_host_get_param(struct Scsi_Host *shost,
- 			spin_unlock_bh(&session->frwd_lock);
- 			return -ENOTCONN;
- 		}
--		sock_hold(sock->sk);
-+		fget(sock->file);
- 		spin_unlock_bh(&session->frwd_lock);
- 
- 		rc = kernel_getsockname(sock,
- 					(struct sockaddr *)&addr);
--		sock_put(sock->sk);
-+		spin_lock_bh(&conn->session->frwd_lock);
-+		sockfd_put(sock);
-+		spin_unlock_bh(&conn->session->frwd_lock);
- 		if (rc < 0)
- 			return rc;
- 
--- 
-2.27.0
-
+	Ingo
