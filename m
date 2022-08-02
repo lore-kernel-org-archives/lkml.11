@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C7BC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 09:10:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64522C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 09:11:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236069AbiHBJKz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 05:10:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38998 "EHLO
+        id S236249AbiHBJK7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 05:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236181AbiHBJKk (ORCPT
+        with ESMTP id S236275AbiHBJKp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 05:10:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D79311814
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 02:10:38 -0700 (PDT)
+        Tue, 2 Aug 2022 05:10:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2822A15A3D
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 02:10:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659431437;
+        s=mimecast20190719; t=1659431444;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TwBb9lEjHn3drMZDMM/zYMhet6xNvu6dn9eorLLxNfM=;
-        b=U6sRuAIE2frv7dC4yJejAIJMIyMBI5YcF3PvW8VCboOgb099OQYO3fEd25MIH4wfubXOoy
-        JNj/fhfYS0pUVl/T79t5w6Qh11x4Titzyn+G/KZvGknJ6ddjFgYpCt2RYrwYjzvA1o9xSw
-        rnB36ObcnKRTxog11NSuFBIZpGf/16Q=
+        bh=8SOINSRv0lSmbOTTZ6/R5mAtck6H0iUHXeANGpWfrm4=;
+        b=Rwa+qECW3zrXydRZm3Y/fVzrMMK3GVaZBkDk1UiaRuQELqfNlFXLgLEEYbWYvT4Xca2sWC
+        tPsEBVW2jXKnzdn0f+DdIyaeJJG7Jc0wO6TEYXDjynBCv4b7a9vlSd9APhMdCR5uPzMXb/
+        nHYdxeTkdkc9wBY/RltIcOG+Zcrcl38=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-625-Glkrt58cPx6Frhho0-hlzA-1; Tue, 02 Aug 2022 05:10:33 -0400
-X-MC-Unique: Glkrt58cPx6Frhho0-hlzA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+ us-mta-394-4WC0f5O5OXeUuFp1yppU3g-1; Tue, 02 Aug 2022 05:10:33 -0400
+X-MC-Unique: 4WC0f5O5OXeUuFp1yppU3g-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C87AA3802B82;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C82AF2801761;
         Tue,  2 Aug 2022 09:10:32 +0000 (UTC)
 Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 86DD990A04;
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 86E6C1121314;
         Tue,  2 Aug 2022 09:10:32 +0000 (UTC)
 Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
-        id 8C4521C0291; Tue,  2 Aug 2022 11:10:31 +0200 (CEST)
+        id 81A8C1C0151; Tue,  2 Aug 2022 11:10:31 +0200 (CEST)
 From:   Artem Savkov <asavkov@redhat.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -50,61 +50,55 @@ Cc:     linux-kernel@vger.kernel.org,
         Daniel Vacek <dvacek@redhat.com>,
         Jiri Olsa <olsajiri@gmail.com>, Song Liu <song@kernel.org>,
         Daniel Xu <dxu@dxuuu.xyz>, Artem Savkov <asavkov@redhat.com>
-Subject: [PATCH bpf-next v2 2/3] bpf: export crash_kexec() as destructive kfunc
-Date:   Tue,  2 Aug 2022 11:10:29 +0200
-Message-Id: <20220802091030.3742334-3-asavkov@redhat.com>
+Subject: [PATCH bpf-next v2 1/3] bpf: add destructive kfunc flag
+Date:   Tue,  2 Aug 2022 11:10:28 +0200
+Message-Id: <20220802091030.3742334-2-asavkov@redhat.com>
 In-Reply-To: <20220802091030.3742334-1-asavkov@redhat.com>
 References: <20220802091030.3742334-1-asavkov@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow properly marked bpf programs to call crash_kexec().
+Add KF_DESTRUCTIVE flag for destructive functions. Functions with this
+flag set will require CAP_SYS_BOOT capabilities.
 
 Signed-off-by: Artem Savkov <asavkov@redhat.com>
 ---
- kernel/kexec_core.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ include/linux/btf.h   | 1 +
+ kernel/bpf/verifier.c | 5 +++++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
-index 4d34c78334ce..9259ea3bd693 100644
---- a/kernel/kexec_core.c
-+++ b/kernel/kexec_core.c
-@@ -39,6 +39,8 @@
- #include <linux/hugetlb.h>
- #include <linux/objtool.h>
- #include <linux/kmsg_dump.h>
-+#include <linux/btf.h>
-+#include <linux/btf_ids.h>
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index cdb376d53238..51a0961c84e3 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -49,6 +49,7 @@
+  * for this case.
+  */
+ #define KF_TRUSTED_ARGS (1 << 4) /* kfunc only takes trusted pointer arguments */
++#define KF_DESTRUCTIVE  (1 << 5) /* kfunc performs destructive actions */
  
- #include <asm/page.h>
- #include <asm/sections.h>
-@@ -1238,3 +1240,22 @@ void __weak arch_kexec_protect_crashkres(void)
+ struct btf;
+ struct btf_member;
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 096fdac70165..e52ca1631d3f 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -7584,6 +7584,11 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+ 			func_name);
+ 		return -EACCES;
+ 	}
++	if (*kfunc_flags & KF_DESTRUCTIVE && !capable(CAP_SYS_BOOT)) {
++		verbose(env, "destructive kfunc calls require CAP_SYS_BOOT capabilities\n");
++		return -EACCES;
++	}
++
+ 	acq = *kfunc_flags & KF_ACQUIRE;
  
- void __weak arch_kexec_unprotect_crashkres(void)
- {}
-+
-+#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
-+BTF_SET8_START(kexec_btf_ids)
-+BTF_ID_FLAGS(func, crash_kexec, KF_DESTRUCTIVE)
-+BTF_SET8_END(kexec_btf_ids)
-+
-+static const struct btf_kfunc_id_set kexec_kfunc_set = {
-+	.owner = THIS_MODULE,
-+	.set   = &kexec_btf_ids,
-+};
-+
-+static int __init crash_kfunc_init(void)
-+{
-+	register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &kexec_kfunc_set);
-+	return 0;
-+}
-+
-+subsys_initcall(crash_kfunc_init);
-+#endif
+ 	/* Check the arguments */
 -- 
 2.35.3
 
