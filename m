@@ -2,106 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 619C0C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:45:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE27C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235034AbiHBRp2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 13:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39138 "EHLO
+        id S235092AbiHBRqb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 13:46:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234168AbiHBRpU (ORCPT
+        with ESMTP id S232716AbiHBRq3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 13:45:20 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AFF812AD6;
-        Tue,  2 Aug 2022 10:45:19 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id j1so10403933wrw.1;
-        Tue, 02 Aug 2022 10:45:19 -0700 (PDT)
+        Tue, 2 Aug 2022 13:46:29 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C33EABF44;
+        Tue,  2 Aug 2022 10:46:28 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id z132so11229406iof.0;
+        Tue, 02 Aug 2022 10:46:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=VX8txl3/+0QeRvpYY1TNyCvH4SHLM0g5nHUtDTMXGvY=;
-        b=qJ5Y252mVpZk6bZEOKd1Vhc2Ct914CsDaJXcYw5Oyj8BzaD/s2hB8rLqbfrZ0AcNE9
-         4BCWJvh19iTX2kncXuHGrquMGgUo8A5eVAvlbf9SeJObzkfyUsNo8H+cLAjiQJY3Re3f
-         BFZnmlDLYI0n6G0gwh5PUBhp5fW6/U8qGH1duHrRH2cDzJke6YxdXYhiFMFCm5iYEIe7
-         2OWRs5YDWsLIkRBEw2U+gMrJ0h+qeQ4cyTslVNai+l5Fv/jM/u6Sk6du4BHWxTqPExJY
-         TGMdqCG7qfrXUVf1NIHOIPizNsQLPQDeZWtnaAql0e0GyDnHzI5mpa7kdlWnfrcZgZu0
-         imFA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KjAZA+RBJyFCRVs3/+3jiKse67/26F8E/TlaG4k7TyI=;
+        b=G1ZC9vkFJ4/eIUWgdyFRStYtBBwbb1Zif38+6Kd6XjFeJpq0EDYF5HEYZANxccxOAb
+         HmDVHGEm41eETriohYDDkKfsfhiS1kgVPFbEY4rtweJ1QJ1w8sFeRIN71ItWO6BPmvwR
+         8ySNPXjJA7WIgGsGRmXgKwdyXVub6MJulx221Nk9d5iPBQyqj6nT41qN3sjBcMtODkzh
+         YVggKsNuk881EIvL8fVF0dABkRzDdp+uzsz7L1RfHwhrgeGxg09GhCRL77vLtcefM4Z1
+         g8BDmDPc0IdBGSMtP/pcTI7F8/Li326UqJekszusX2sd2U1KdEOWLdx+003Nps6DRXrj
+         M3lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=VX8txl3/+0QeRvpYY1TNyCvH4SHLM0g5nHUtDTMXGvY=;
-        b=C1fd/6Tywohu4L2zUWmVktuIBFCcyPb/vyj6fqNDd04lJKYjDE23diZQAj8qUZZAkC
-         QsXUNqVXAI1p4bXCuOiL5docXYctMsde1RrZ3Hwy/0BbdVhrQ5NtT8A3gTgmWZ3fxkkc
-         p77jf7s1jZzAjVHAu/z2GqXob1bqHNACszwr6To3FgEX8afE6+VQbgIlpxLhzHETsU89
-         0hL+9nuP6ncr5lL+86+iX5IuSUjOXg1pSUyDbVvA8NtKgeZVpyOz8D7Q/axcbD0JQFvL
-         OIHyIrWSEue9movOGUydWHs+yN0JsLc6XffjysQW1Uvae/2u8qPaO+uoPd/xS4UMUoGI
-         V23A==
-X-Gm-Message-State: ACgBeo2BjEaqoSw7TrwiYnyb3rzqtBAwogFF91/WEinFp4SUduYHJZa8
-        w37lbcpQzYE8IDvOWJayAhc=
-X-Google-Smtp-Source: AA6agR7Ts2Nwr3SHbgBmaAKKbNiGFJzWfrtWVYze7AQUt1UOeuyj/zVqLRQjXvwHLdSw2gnhAaIHzw==
-X-Received: by 2002:adf:ea0a:0:b0:220:6222:ee48 with SMTP id q10-20020adfea0a000000b002206222ee48mr7124681wrm.243.1659462317490;
-        Tue, 02 Aug 2022 10:45:17 -0700 (PDT)
-Received: from debian ([2405:201:8005:8149:e5c9:c0ac:4d82:e94b])
-        by smtp.gmail.com with ESMTPSA id az13-20020a05600c600d00b003a32490c95dsm24209807wmb.35.2022.08.02.10.45.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 10:45:17 -0700 (PDT)
-Date:   Tue, 2 Aug 2022 18:45:06 +0100
-From:   "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, slade@sladewatkins.com
-Subject: Re: [PATCH 5.15 00/69] 5.15.59-rc1 review
-Message-ID: <YuliolY38GjgA7hm@debian>
-References: <20220801114134.468284027@linuxfoundation.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KjAZA+RBJyFCRVs3/+3jiKse67/26F8E/TlaG4k7TyI=;
+        b=60seINrQDXCdijBLG5HC52XF1E2xB/G9/Z6SBaEfaRC1Q4NsklXq+yxUtyOXXA9GC6
+         Fyod7MiNhgLD5TZiupDhglBhmi48p0+6spTHDVYvnqVSpNrms/wa0MaMdI9B2EBKNU6M
+         N8GmT79dk9084i2Xss+bDNzfzN+12PYq0vHBjUQ5tZ6DPTl5kuxAMrJohjE8uOMsc67q
+         W+JG8vyH1XQWhjd7zfGaXsLejMC/U3bV0RTAl+fhT8DW8G6KcwCwtJLwxq3QBveF8Xs3
+         lB/IYiO8Rh3CMfHBBQnI5COUeTAoSsZ7h6x2IqLe+zG5aqCTWa3iJ1gcBc8LOP/XN8CL
+         tO8Q==
+X-Gm-Message-State: AJIora8nPtNAL0sNkUSWJ/DNhbKBPUg2JcHuaVJLQ1JhFtm19vvrHcYB
+        sj+mHmWNcOWigORMDxd7UgMe4xNdmDfaJDaonko=
+X-Google-Smtp-Source: AGRyM1sTchBu9DJxxSaHL1GJ3B7rxsIGwFJokjusWYxkrpam9ZondCiC/NMBhmRLcxl3wlnfbZ37BaFnTFAFjGKVsvA=
+X-Received: by 2002:a05:6638:25cb:b0:341:6546:1534 with SMTP id
+ u11-20020a05663825cb00b0034165461534mr8585003jat.308.1659462388257; Tue, 02
+ Aug 2022 10:46:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220801114134.468284027@linuxfoundation.org>
+References: <20220802015052.10452-1-ojeda@kernel.org> <YukYByl76DKqa+iD@casper.infradead.org>
+ <CANiq72k7JKqq5-8Nqf3Q2r2t_sAffC8g86A+v8yBc=W-1--_Tg@mail.gmail.com>
+ <YukuUtuXm/xPUuoP@casper.infradead.org> <CANiq72kgwssTSE7F+4xkRrXBGVgHeWxCyjeZ-NHLUXWnFjMyTg@mail.gmail.com>
+In-Reply-To: <CANiq72kgwssTSE7F+4xkRrXBGVgHeWxCyjeZ-NHLUXWnFjMyTg@mail.gmail.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Tue, 2 Aug 2022 19:46:17 +0200
+Message-ID: <CANiq72=551t+CeiuCZz-SSx+uDaz238xjDFMRmkTwRuSFNcqmw@mail.gmail.com>
+Subject: Re: [PATCH v8 00/31] Rust support
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-um@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+On Tue, Aug 2, 2022 at 5:09 PM Miguel Ojeda
+<miguel.ojeda.sandonis@gmail.com> wrote:
+>
+> Yeah, patch 17, exactly (patch 11 is the `alloc` import). I have asked
+> Konstantin privately about them.
 
-On Mon, Aug 01, 2022 at 01:46:24PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.59 release.
-> There are 69 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 03 Aug 2022 11:41:16 +0000.
-> Anything received after that time might be too late.
+The patches are showing up now in lore -- not sure if it was just a
+delay (which would be consistent with the lack of bounce) or somebody
+did something (thank you if so!).
 
-Build test (gcc version 11.3.1 20220724):
-mips: 62 configs -> no failure
-arm: 99 configs -> no failure
-arm64: 3 configs -> no failure
-x86_64: 4 configs -> no failure
-alpha allmodconfig -> no failure
-csky allmodconfig -> no failure
-powerpc allmodconfig -> no failure
-riscv allmodconfig -> no failure
-s390 allmodconfig -> no failure
-xtensa allmodconfig -> no failure
-
-Boot test:
-x86_64: Booted on my test laptop. No regression.
-x86_64: Booted on qemu. No regression. [1]
-arm64: Booted on rpi4b (4GB model). No regression. [2]
-mips: Booted on ci20 board. No regression. [3]
-
-[1]. https://openqa.qa.codethink.co.uk/tests/1604
-[2]. https://openqa.qa.codethink.co.uk/tests/1610
-[3]. https://openqa.qa.codethink.co.uk/tests/1612
-
-Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
-
---
-Regards
-Sudip
+Cheers,
+Miguel
