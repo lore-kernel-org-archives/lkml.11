@@ -2,214 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC4FC19F2B
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE9DC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235835AbiHBH1B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 03:27:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34240 "EHLO
+        id S235905AbiHBH3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 03:29:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231804AbiHBH06 (ORCPT
+        with ESMTP id S232550AbiHBH27 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 03:26:58 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70088101FF
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 00:26:57 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id u1so10467694lfq.4
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 00:26:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=d4HkZdDOv7XNMC5h/HfkGuuWra/wdCBUbN3rR8kUcYw=;
-        b=IVrIhKV6TQ2LB8/agWnpQ42D82tl2sCEUmqpSES2WT3nhnptLgRnpkPPtUsiLmXRfM
-         gT+gL3l8RtiOZd9IwL/KWUMsd67aEritX51QDojFFghkW7gzh//2J5KrMZ8Iu1qhHqe4
-         4a1pcioPuluo5PnBnsOPTnAlVi09nbdP6eNqkkSITGgzdAqYzhhXdqrWpVBcyMOCKvlP
-         5s6LgVu5mhBKl3tD/pikVQJ6HZY9jR/Msqt9E1mb+aoHG5UnIBinhhGjXi9zaKOwmbFm
-         twYYtXscQfoMAUZBxUnedqv/CaIouL2hhOTt7LNPKJxRcQsqiqpUE6mLiL8lSKwxZKjr
-         TJcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=d4HkZdDOv7XNMC5h/HfkGuuWra/wdCBUbN3rR8kUcYw=;
-        b=ySzMKzFlhDJ2nFOSWgOkBAfGex92Ir9oZYRsI0YmTy0A5urjy/XGmvJn9DwyFxlhF3
-         ozUsE28wG5qX8Xt7glG9VZNpiTke803dIB4Y4Wwfac+Y3ePVEUrZ+xhh5z9O/Xg0iLzm
-         TiY8Ss2D0JoObYJxVg+oGRtRWnXlKZcyyXIOkWTLu43zM54s/HKv6nNqgM40uIjdMvWw
-         vDmGIT2oHRnRE0jG9weQlFsseEHj6Il0bbUI1TcPteNN8T2vbicjFz4jA0CXOdW0bFTd
-         opCwJ3Xwa5S07lMyNVHrFzkvom3Dy4JA6+0xdLi/bThE8UYEQgcuhlDQ5EgsAvqM4kfw
-         y2mQ==
-X-Gm-Message-State: ACgBeo2nLnH/lUzeD0U6fIva2DeP5gmbhSer1KFbF/5n4mma3xnZlMPy
-        rQvwVFRaiTcQXeUxJ8X+/AwCMYHFCdxJ3F1T
-X-Google-Smtp-Source: AA6agR4qI7vkwPxXKnLuW4SI41fSrQ+0NIFPJ6qbvRABceYlNlsRqTf7UV8Y8TYIvB6PTniHjU07Pw==
-X-Received: by 2002:a05:6512:3990:b0:48a:e4ca:7ec0 with SMTP id j16-20020a056512399000b0048ae4ca7ec0mr5902895lfu.146.1659425215752;
-        Tue, 02 Aug 2022 00:26:55 -0700 (PDT)
-Received: from [192.168.1.6] ([213.161.169.44])
-        by smtp.gmail.com with ESMTPSA id bf17-20020a056512259100b0048ad4ca88afsm1616699lfb.102.2022.08.02.00.26.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Aug 2022 00:26:55 -0700 (PDT)
-Message-ID: <ba6bc0e8-8b64-aa7f-241e-1e88dd9cfaa5@linaro.org>
-Date:   Tue, 2 Aug 2022 09:26:53 +0200
+        Tue, 2 Aug 2022 03:28:59 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BFBC491C2;
+        Tue,  2 Aug 2022 00:28:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659425338; x=1690961338;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MY1UeVCmTorLiElTkcmSLQfpDa7PBuZ+KvAyO3eFpnw=;
+  b=b2WXikC4CPW209uc0F7t4IsWTHPKOw2su0cQKfAX/fVO8AEzH6H/Z9Gt
+   Cw+M9C1XnqEbmg2zxwbvd/OMgfwyPXxlVRGzkFbChSJRB4vCwc1hPRbRb
+   6h3SvddCPvRhbmTQv01Gpcjp6+Lpcs+6mNYah1X9qEE2YFeo4cMs+uFOK
+   ZRsYr3uEFo1RNm2qFA855/q0SJvsSzNoFHU/DaZDNB5KafaV33eTTSHkA
+   IikcTJyqODnTjaR7NkV1QWaGa5o5Il3RfM2rE8VlfrOAJgihvyDc84qpa
+   XKTfvPnleyLhVEF7i9nhE3qTcHloRuV3sQhnhLKSxtI0zW98fSiznb9Ek
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10426"; a="353348423"
+X-IronPort-AV: E=Sophos;i="5.93,210,1654585200"; 
+   d="scan'208";a="353348423"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 00:28:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,210,1654585200"; 
+   d="scan'208";a="744573684"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 02 Aug 2022 00:28:53 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Tue, 02 Aug 2022 10:28:52 +0300
+Date:   Tue, 2 Aug 2022 10:28:52 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Macpaul Lin <macpaul.lin@mediatek.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Bear Wang <bear.wang@mediatek.com>,
+        Pablo Sun <pablo.sun@mediatek.com>,
+        Mediatek WSD Upstream <wsd_upstream@mediatek.com>,
+        Macpaul Lin <macpaul@gmail.com>, stable@vger.kernel.org
+Subject: Re: [PATCH] usb: typec: altmodes/displayport: correct pin assignment
+ for UFP receptacles
+Message-ID: <YujSNEGm2ikg3j8a@kuha.fi.intel.com>
+References: <20220727110503.5260-1-macpaul.lin@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v3] ASoC: dt-bindings: fsl,sai: Convert format to
- json-schema
-Content-Language: en-US
-To:     Shengjiu Wang <shengjiu.wang@nxp.com>, lgirdwood@gmail.com,
-        broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     shengjiu.wang@gmail.com
-References: <1659060632-4880-1-git-send-email-shengjiu.wang@nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1659060632-4880-1-git-send-email-shengjiu.wang@nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220727110503.5260-1-macpaul.lin@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/07/2022 04:10, Shengjiu Wang wrote:
-> Convert the NXP SAI binding to DT schema format using json-schema.
+Hi guys,
+
+On Wed, Jul 27, 2022 at 07:05:03PM +0800, Macpaul Lin wrote:
+> From: Pablo Sun <pablo.sun@mediatek.com>
 > 
-> The Synchronous Audio Interface (SAI) provides an interface that
-> supports full-duplex serial interfaces with frame synchronization
-> formats such as I2S, AC97, TDM, and codec/DSP interfaces.
+> From: Pablo Sun <pablo.sun@mediatek.com>
+
+Looks like there's something wrong with the formating of the patch
+here?
+
+> Fix incorrect pin assignment values when connecting to a monitor with
+> Type-C receptacle instead of a plug.
 > 
-> Beside conversion, 'fsl,shared-interrupt' and '#sound-dai-cells'
-> are added for they are already used by some dts.
+> According to specification, an UFP_D receptacle's pin assignment
+> should came from the UFP_D pin assignments field (bit 23:16), while
+> an UFP_D plug's assignments are described in the DFP_D pin assignments
+> (bit 15:8) during Mode Discovery.
 > 
-> Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+> For example the LG 27 UL850-W is a monitor with Type-C receptacle.
+> The monitor responds to MODE DISCOVERY command with following
+> DisplayPort Capability flag:
+> 
+>         dp->alt->vdo=0x140045
+> 
+> The existing logic only take cares of UPF_D plug case,
+> and would take the bit 15:8 for this 0x140045 case.
+> 
+> This results in an non-existing pin assignment 0x0 in
+> dp_altmode_configure.
+> 
+> To fix this problem a new set of macros are introduced
+> to take plug/receptacle differences into consideration.
+> 
+> Co-developed-by: Pablo Sun <pablo.sun@mediatek.com>
+> Signed-off-by: Pablo Sun <pablo.sun@mediatek.com>
+> Co-developed-by: Macpaul Lin <macpaul.lin@mediatek.com>
+> Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
+> Reviewed-by: Guillaume Ranquet <granquet@baylibre.com>
+> Cc: stable@vger.kernel.org
+
+If this is a fix, then you need to have the "Fixes" tag that tells
+which commit the patch is fixing.
+
 > ---
-> changes in v3
-> - address comments from Krzysztof
+>  drivers/usb/typec/altmodes/displayport.c | 4 ++--
+>  include/linux/usb/typec_dp.h             | 5 +++++
+>  2 files changed, 7 insertions(+), 2 deletions(-)
 > 
-> changes in v2
-> - fix exclusive property issue
-> - fix order issue of compatible, clock-names, dma-names
-> 
->  .../devicetree/bindings/sound/fsl,sai.yaml    | 221 ++++++++++++++++++
->  .../devicetree/bindings/sound/fsl-sai.txt     |  95 --------
->  2 files changed, 221 insertions(+), 95 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/sound/fsl,sai.yaml
->  delete mode 100644 Documentation/devicetree/bindings/sound/fsl-sai.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/sound/fsl,sai.yaml b/Documentation/devicetree/bindings/sound/fsl,sai.yaml
-> new file mode 100644
-> index 000000000000..86ee46755b0c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/sound/fsl,sai.yaml
-> @@ -0,0 +1,221 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/sound/fsl,sai.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Freescale Synchronous Audio Interface (SAI).
-> +
-> +maintainers:
-> +  - Shengjiu Wang <shengjiu.wang@nxp.com>
-> +
-> +description: |
-> +  The SAI is based on I2S module that used communicating with audio codecs,
-> +  which provides a synchronous audio interface that supports fullduplex
-> +  serial interfaces with frame synchronization such as I2S, AC97, TDM, and
-> +  codec/DSP interfaces.
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - enum:
-> +          - fsl,vf610-sai
-> +          - fsl,imx6sx-sai
-> +          - fsl,imx6ul-sai
-> +          - fsl,imx7ulp-sai
-> +          - fsl,imx8mq-sai
-> +          - fsl,imx8qm-sai
-> +          - fsl,imx8ulp-sai
-> +      - items:
-> +          - enum:
-> +              - fsl,imx8mm-sai
-> +              - fsl,imx8mn-sai
-> +              - fsl,imx8mp-sai
-> +          - const: fsl,imx8mq-sai
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    items:
-> +      - description: receive and transmit interrupt
-> +
-> +  dmas:
-> +    maxItems: 2
-> +
-> +  dma-names:
-> +    maxItems: 2
-> +
-> +  clocks:
-> +    items:
-> +      - description: The ipg clock for register access
-> +      - description: master clock source 0 (obsoleted)
-> +      - description: master clock source 1
-> +      - description: master clock source 2
-> +      - description: master clock source 3
-> +      - description: PLL clock source for 8kHz series
-> +      - description: PLL clock source for 11kHz series
-> +    minItems: 4
-> +
-> +  clock-names:
-> +    oneOf:
-> +      - items:
-> +          - const: bus
-> +          - const: mclk0
-> +          - const: mclk1
-> +          - const: mclk2
-> +          - const: mclk3
-> +          - const: pll8k
-> +          - const: pll11k
-> +        minItems: 4
-> +      - items:
-> +          - const: bus
-> +          - const: mclk1
-> +          - const: mclk2
-> +          - const: mclk3
-> +          - const: pll8k
-> +          - const: pll11k
-> +        minItems: 4
-> +
-> +  lsb-first:
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +    description: |
-> +      Configures whether the LSB or the MSB is transmitted
-> +      first for the fifo data. If this property is absent,
-> +      the MSB is transmitted first as default, or the LSB
-> +      is transmitted first.
-> +    type: boolean
+> diff --git a/drivers/usb/typec/altmodes/displayport.c b/drivers/usb/typec/altmodes/displayport.c
+> index 9360ca177c7d..8dd0e505ef99 100644
+> --- a/drivers/usb/typec/altmodes/displayport.c
+> +++ b/drivers/usb/typec/altmodes/displayport.c
+> @@ -98,8 +98,8 @@ static int dp_altmode_configure(struct dp_altmode *dp, u8 con)
+>  	case DP_STATUS_CON_UFP_D:
+>  	case DP_STATUS_CON_BOTH: /* NOTE: First acting as DP source */
+>  		conf |= DP_CONF_UFP_U_AS_UFP_D;
+> -		pin_assign = DP_CAP_DFP_D_PIN_ASSIGN(dp->alt->vdo) &
+> -			     DP_CAP_UFP_D_PIN_ASSIGN(dp->port->vdo);
+> +		pin_assign = DP_CAP_PIN_ASSIGN_UFP_D(dp->alt->vdo) &
+> +				 DP_CAP_PIN_ASSIGN_DFP_D(dp->port->vdo);
+>  		break;
+>  	default:
+>  		break;
+> diff --git a/include/linux/usb/typec_dp.h b/include/linux/usb/typec_dp.h
+> index cfb916cccd31..8d09c2f0a9b8 100644
+> --- a/include/linux/usb/typec_dp.h
+> +++ b/include/linux/usb/typec_dp.h
+> @@ -73,6 +73,11 @@ enum {
+>  #define DP_CAP_USB			BIT(7)
+>  #define DP_CAP_DFP_D_PIN_ASSIGN(_cap_)	(((_cap_) & GENMASK(15, 8)) >> 8)
+>  #define DP_CAP_UFP_D_PIN_ASSIGN(_cap_)	(((_cap_) & GENMASK(23, 16)) >> 16)
+> +/* Get pin assignment taking plug & receptacle into consideration */
+> +#define DP_CAP_PIN_ASSIGN_UFP_D(_cap_) ((_cap_ & DP_CAP_RECEPTACLE) ? \
+> +			DP_CAP_UFP_D_PIN_ASSIGN(_cap_) : DP_CAP_DFP_D_PIN_ASSIGN(_cap_))
+> +#define DP_CAP_PIN_ASSIGN_DFP_D(_cap_) ((_cap_ & DP_CAP_RECEPTACLE) ? \
+> +			DP_CAP_DFP_D_PIN_ASSIGN(_cap_) : DP_CAP_UFP_D_PIN_ASSIGN(_cap_))
+>  
+>  /* DisplayPort Status Update VDO bits */
+>  #define DP_STATUS_CONNECTION(_status_)	((_status_) & 3)
+> -- 
+> 2.18.0
 
-The type: boolean goes instead of $ref, not additionally to it. Just
-like below...
+thanks,
 
-> +
-> +  big-endian:
-> +    description: |
-> +      required if all the SAI registers are big-endian rather than little-endian.
-> +    type: boolean
-
-... be consistent.
-
-> +
-> +  fsl,sai-synchronous-rx:
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +    description: |
-> +      SAI will work in the synchronous mode (sync Tx with Rx) which means
-> +      both the transmitter and the receiver will send and receive data by
-> +      following receiver's bit clocks and frame sync clocks.
-> +    type: boolean
-> +
-
-Best regards,
-Krzysztof
+-- 
+heikki
