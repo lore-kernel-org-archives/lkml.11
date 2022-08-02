@@ -2,108 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36EC4C19F2B
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:11:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C502C19F2B
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236742AbiHBMK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 08:10:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59082 "EHLO
+        id S236556AbiHBMLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 08:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236104AbiHBMKz (ORCPT
+        with ESMTP id S233232AbiHBMLX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 08:10:55 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F56E2A246;
-        Tue,  2 Aug 2022 05:10:55 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id bh13so12187805pgb.4;
-        Tue, 02 Aug 2022 05:10:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=tZd4njYAUvqcBl8Cg23Z003UTROce5YRjVytjkuVuJQ=;
-        b=ZMlCgPyowTPmfRKTIFirpjCR+BYX+KSTxBJq5E7OFZ0rR7Ju6y/ZRoRFuPEROa3wTT
-         xZX9IqQ4y6D9O/c5G0q4qT+G9ExKuFWGntGwPronsW/1ePmnZCebwKpr0DZSp/yXPz79
-         vLfXAY39Zy+f38K/IjhgmB1WDZ7EN/cioAiHyCLhPREQRU4jGeMnkbsFGG5T9pVk/vYh
-         pmTpQjT/l6OvQPeamSSTvF33DXVMrniShfbp5GVOBNfyPbtriA7OCjWYRXydvCl+MTS9
-         d5iQ0J+I7CPDXqDhDqRxdHERWlgmtzv7OyTb+Gu7MvZp+eIiuDmBo0pSOifvfw28yija
-         g1Uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=tZd4njYAUvqcBl8Cg23Z003UTROce5YRjVytjkuVuJQ=;
-        b=WYhI+nzxOCONWrOVlbiT4yW5Gihxhi+BwYEAujwwpqCEaoz4ks+qrER/iLOkE+Nm8R
-         Ltk2x9lkRtRSAjEuuZzlRxa8XIN5O6WodNghCxm2z4Z0TODu2d8pxo5PGk+EolvBIWG9
-         tXy1DKdf2g3wHk4AD6eLoIlc9+nME2f9ZH9c9tbQOx6559E34pCrXkb9PWXRTd/4IBfO
-         ZLqHCW65FEd9p9k7vTPQkZ/o4zG+M9ze1yg1tn4ii7dq2atsmbY6ueY38raGBN5xUfmS
-         XTLRLFjnLXeBDTRijp/Lcx/UAMjsRydt6i+CFBa4Hy52V3rODbptagxWdCcvzd/jXi6l
-         HTUg==
-X-Gm-Message-State: ACgBeo29CB3mNf+b4vA60aCYMcUI/pSnXoCrKCPsmBTVV596Bu5/LSwD
-        FrRtXOW+U6118xdDbPUk5SgIF/PNYyz6VmLWDs0bBGtOin0=
-X-Google-Smtp-Source: AA6agR6wLj674jkVZLo3n0UXFwPSekdGWVi7lh11ggnjJig/ryQurshV4LdPkF+RM421mlCXy3G9ZU0SPRHRmtOS8wc=
-X-Received: by 2002:aa7:8f13:0:b0:52d:fe17:ce11 with SMTP id
- x19-20020aa78f13000000b0052dfe17ce11mr700675pfr.26.1659442254528; Tue, 02 Aug
- 2022 05:10:54 -0700 (PDT)
+        Tue, 2 Aug 2022 08:11:23 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B77E726125;
+        Tue,  2 Aug 2022 05:11:16 -0700 (PDT)
+X-QQ-mid: bizesmtp69t1659442272t060c3dy
+Received: from kali.lan ( [125.69.43.47])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 02 Aug 2022 20:11:10 +0800 (CST)
+X-QQ-SSF: 01000000002000F0U000B00A0000020
+X-QQ-FEAT: IByDngDI/kEULM8eBcnFiowBUiWip0/lZKCIFif3/zYg65ckDmOrcgAn3WbBn
+        KP02SzBk9FX8RpXfUhmINvZTkqdYGJl5LKF5M8R5jI7eXS8Ev6bCPotG3DxwIh7MbCA0feX
+        wGVR+PHI64ci2x89TRY/7CykQ37uNPH+JEyzJYjHhS2mDaGJW2sKZjylpfKRF6ahfpX/E24
+        VPLAJT0djLHWoI+V0qQEKLyB8x/vjS+h6uE7NgawgZ/O4AptR0+iK9cGMUQPVDtIQL1IGt2
+        /0UvwCwfUywiqiCNFChuNqlsrXjS0veCGqRGV8mA6ehZZgYUvmzpUU/VFXiWCh5RXC5Lrnp
+        u8J5eMoqMhtJWWROpp/zPNDMfeQJhxh0Zom781Uv1fhsw+rNeJAaG/N48AJXDo62Rr9tT4Q
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     linux@roeck-us.net
+Cc:     wim@linux-watchdog.org, linux-watchdog@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] watchdog: w83977f_wdt: Fix comment typo
+Date:   Wed,  3 Aug 2022 04:11:09 +0800
+Message-Id: <20220802201109.6843-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220802070518.855951-1-nagasuresh.relli@microchip.com>
- <20220802070518.855951-2-nagasuresh.relli@microchip.com> <3406e537-cc97-42c5-2342-cee18e8054fc@linaro.org>
-In-Reply-To: <3406e537-cc97-42c5-2342-cee18e8054fc@linaro.org>
-From:   naga sureshkumar <nagasuresh12@gmail.com>
-Date:   Tue, 2 Aug 2022 17:40:43 +0530
-Message-ID: <CAH_iE_3s9=-Lk7bk993==jJz0m8pp+GEzUZvDoH4MR_SSSCr-A@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] spi: dt-binding: add Microchip CoreQSPI compatible
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Naga Sureshkumar Relli <nagasuresh.relli@microchip.com>,
-        broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, conor.dooley@microchip.com,
-        linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+The double `we' is duplicated in the comment, remove one.
 
-Thanks for the review.
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ drivers/watchdog/w83977f_wdt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Tue, Aug 2, 2022 at 3:55 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 02/08/2022 09:05, Naga Sureshkumar Relli wrote:
-> > Add compatible string for Microchip CoreQSPI controller.
-> >
-> > Signed-off-by: Naga Sureshkumar Relli <nagasuresh.relli@microchip.com>
-> > ---
-> >  .../devicetree/bindings/spi/microchip,mpfs-spi.yaml  | 12 +++++++++---
-> >  1 file changed, 9 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/spi/microchip,mpfs-spi.yaml b/Documentation/devicetree/bindings/spi/microchip,mpfs-spi.yaml
-> > index 7326c0a28d16..8d252eb8c460 100644
-> > --- a/Documentation/devicetree/bindings/spi/microchip,mpfs-spi.yaml
-> > +++ b/Documentation/devicetree/bindings/spi/microchip,mpfs-spi.yaml
-> > @@ -14,9 +14,15 @@ allOf:
-> >
-> >  properties:
-> >    compatible:
-> > -    enum:
-> > -      - microchip,mpfs-spi
-> > -      - microchip,mpfs-qspi
-> > +    oneOf:
-> > +      - description: Microchip's Polarfire SoC QSPI controller.
-> > +        items:
-> > +          - const: microchip,mpfs-qspi
-> > +          - const: microchip,coreqspi-rtl-v2
->
-> This is a bit confusing and it is no described in commit msg. You change
->  compatibles for existing binding. This must be a separate commit with
-> its own explanation/reasoning.
-Ok I will split it and add information in the commit msg.
+diff --git a/drivers/watchdog/w83977f_wdt.c b/drivers/watchdog/w83977f_wdt.c
+index fd64ae77780a..31bf21ceaf48 100644
+--- a/drivers/watchdog/w83977f_wdt.c
++++ b/drivers/watchdog/w83977f_wdt.c
+@@ -321,7 +321,7 @@ static int wdt_release(struct inode *inode, struct file *file)
+  *      @ppos: pointer to the position to write. No seeks allowed
+  *
+  *      A write to a watchdog device is defined as a keepalive signal. Any
+- *      write of data will do, as we we don't define content meaning.
++ *      write of data will do, as we don't define content meaning.
+  */
+ 
+ static ssize_t wdt_write(struct file *file, const char __user *buf,
+-- 
+2.35.1
 
-Thanks,
-Naga Sureshkumar Relli.
->
->
-> Best regards,
-> Krzysztof
+
