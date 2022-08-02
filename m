@@ -2,235 +2,392 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD468C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:43:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A973C19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:46:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236244AbiHBMnd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 08:43:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59642 "EHLO
+        id S236259AbiHBMqU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 08:46:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235227AbiHBMna (ORCPT
+        with ESMTP id S235227AbiHBMqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 08:43:30 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A819E37FB9;
-        Tue,  2 Aug 2022 05:43:29 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id q7-20020a17090a7a8700b001f300db8677so15183687pjf.5;
-        Tue, 02 Aug 2022 05:43:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=U9m3FQ39/4mYFptI4g6gXxTyAr9soFCJ8+yoeDOFuYE=;
-        b=i2Q8AEq1KNHeon8oovOfgQZVLe3KS3nqoU7VPppGG0qPugDAUwSenRTDP59HL+JmAc
-         POppR8p9f8SEZP/itNPUPvW1gb/7AyizvM7ycr9ukE6NXZRw3rMQJhd4097jNG8+gqFt
-         VKbG6SlXdmjPVoTA8fTjPk33Bu7/gFAkhZuQ/bKzeiit7n1l5ctyO73Mwex4wjbZ5zOv
-         d/McmwavwIO049aXxV7GBfF+3n0mzGNuKLulvO3JnoMoAeo359wjQhVlJMIv+ca3BdxM
-         hf2/Jk8oqWOzrWRyHunRbSC48OQx3yCFOw0dJROA92vx4u4W8JQMBay5swmGhXRu3geT
-         kaNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=U9m3FQ39/4mYFptI4g6gXxTyAr9soFCJ8+yoeDOFuYE=;
-        b=tK3sr2/gkovMAtaCj7BX55DZbakriam2nBbdCqbDlrMeN5hUYscooAEPO+XOhMa4Jd
-         fSY5+EZhSIpBh5IAXJGsU1o85NNJ30qEDFKg9zFVTMXsCu/pgnjtqpWGW3M+vp6I8zpf
-         xn0Z8se+pVTM9RO4/QpAJguGGXQu1smNHjyg3T4PFxdm5ZqJ4cRAUyufHxgfm2db3UGZ
-         s8if+S+WsD6b8+L60O+wR2jQKE9OW4ccOL8WfcysHYUJOFjvbwvLddQbCl+QFY2Vu3CV
-         TarXB5+fnR06Cw0Ob+RuD0YCzTNB6kNt8aVf77sXwe48siSxg0XoWjTQK+81ssqO9EHz
-         c22Q==
-X-Gm-Message-State: ACgBeo3/kZNt2sl0xwCdLVt31PzI7mHhK3dh4xyztxsPqV5XD2+aIroX
-        YiBr4mOSePK0qh7Cg1MVAtk3c8sX6SMQGq32jQM=
-X-Google-Smtp-Source: AA6agR43XCpLPTV1z8GO6mF5EYSfHI1FBFdyJ9uqiH9/FXtU0W+zqQqUBcZB+xxQvTIjrrBh2aUEIqE7in1fYQiNu9Q=
-X-Received: by 2002:a17:902:d4c2:b0:16d:c317:ee9d with SMTP id
- o2-20020a170902d4c200b0016dc317ee9dmr19985383plg.25.1659444209092; Tue, 02
- Aug 2022 05:43:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220525115554.430971-1-alistair@alistair23.me>
- <20220525115554.430971-5-alistair@alistair23.me> <ea5e1659-5842-6685-52eb-f77ac4247a2d@sholland.org>
-In-Reply-To: <ea5e1659-5842-6685-52eb-f77ac4247a2d@sholland.org>
-From:   Alistair Francis <alistair23@gmail.com>
-Date:   Tue, 2 Aug 2022 22:43:02 +1000
-Message-ID: <CAKmqyKPLanGCWkofWh7rEiAhpTFF865BGQNg1q-8avpObJ+J3A@mail.gmail.com>
-Subject: Re: [PATCH v21 4/4] ARM: dts: imx7d-remarkable2: Enable lcdif
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Alistair Francis <alistair@alistair23.me>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Andreas Kemnade <andreas@kemnade.info>,
-        Amit Kucheria <amitk@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-hwmon@vger.kernel.org, dl-linux-imx <linux-imx@nxp.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Zhang Rui <rui.zhang@intel.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 2 Aug 2022 08:46:17 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE51818E35;
+        Tue,  2 Aug 2022 05:46:15 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id CD9F71A2F61;
+        Tue,  2 Aug 2022 14:46:13 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 74D571A0384;
+        Tue,  2 Aug 2022 14:46:13 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 328A91820F57;
+        Tue,  2 Aug 2022 20:46:12 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     lgirdwood@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     shengjiu.wang@gmail.com
+Subject: [PATCH v4] ASoC: dt-bindings: fsl,sai: Convert format to json-schema
+Date:   Tue,  2 Aug 2022 20:29:54 +0800
+Message-Id: <1659443394-9838-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 29, 2022 at 4:20 AM Samuel Holland <samuel@sholland.org> wrote:
->
-> Hi Alistair,
->
-> On 5/25/22 6:55 AM, Alistair Francis wrote:
-> > Connect the dispaly on the reMarkable2.
-> >
-> > Signed-off-by: Alistair Francis <alistair@alistair23.me>
-> > ---
-> >  arch/arm/boot/dts/imx7d-remarkable2.dts | 74 +++++++++++++++++++++++++
-> >  1 file changed, 74 insertions(+)
-> >
-> > diff --git a/arch/arm/boot/dts/imx7d-remarkable2.dts b/arch/arm/boot/dts/imx7d-remarkable2.dts
-> > index 99ac0d242936..03a4029e1e57 100644
-> > --- a/arch/arm/boot/dts/imx7d-remarkable2.dts
-> > +++ b/arch/arm/boot/dts/imx7d-remarkable2.dts
-> > @@ -68,6 +68,16 @@ reg_digitizer: regulator-digitizer {
-> >               startup-delay-us = <100000>; /* 100 ms */
-> >       };
-> >
-> > +     reg_sdoe: regulator-sdoe {
-> > +             compatible = "regulator-fixed";
-> > +             regulator-name = "SDOE";
-> > +             pinctrl-names = "default", "sleep";
-> > +             pinctrl-0 = <&pinctrl_sdoe_reg>;
-> > +             pinctrl-1 = <&pinctrl_sdoe_reg>;
-> > +             gpio = <&gpio3 27 GPIO_ACTIVE_HIGH>;
-> > +             enable-active-high;
-> > +     };
-> > +
-> >       wifi_pwrseq: wifi_pwrseq {
-> >               compatible = "mmc-pwrseq-simple";
-> >               pinctrl-names = "default";
-> > @@ -76,6 +86,16 @@ wifi_pwrseq: wifi_pwrseq {
-> >               clocks = <&clks IMX7D_CLKO2_ROOT_DIV>;
-> >               clock-names = "ext_clock";
-> >       };
-> > +
-> > +     panel {
-> > +             compatible = "eink,vb3300-kca";
-> > +
-> > +             port {
-> > +                     panel_in: endpoint {
-> > +                             remote-endpoint = <&display_out>;
-> > +                     };
-> > +             };
-> > +     };
->
-> From the discussion at [1], this is not safe to merge. It exposes an
-> electrophoretic display to fbcon/userspace as if it was an LCD, which it very
-> much is not. Trying to write RGB pixel data to the panel could damage it.
+Convert the NXP SAI binding to DT schema format using json-schema.
 
-Hey Samuel,
+The Synchronous Audio Interface (SAI) provides an interface that
+supports full-duplex serial interfaces with frame synchronization
+formats such as I2S, AC97, TDM, and codec/DSP interfaces.
 
-From what I can tell it's difficult to damage the display, but I see your point.
+Beside conversion, 'fsl,shared-interrupt' and '#sound-dai-cells'
+are added for they are already used by some dts.
 
->
-> So at the very least before hooking this up, the LCD controller has to know that
-> the EPD needs special handling and that it cannot accept RGB.
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+changes in v4
+- remove $ref for boolean properties
 
-Looking at [1] it seems like no decision was made about how to handle
-a case like this where the EPC driving is all done in software. We
-currently drive it from userspace via proprietary software. It seems
-unlikely we will be able to support this in the kernel, so it would be
-nice to somehow expose it to userspace.
+changes in v3
+- address comments from Krzysztof
 
->
-> That doesn't necessarily mean there is a problem with the content of this patch
-> -- the special handling may all be taken care of based on the compatible string
+changes in v2
+- fix exclusive property issue
+- fix order issue of compatible, clock-names, dma-names
 
-Ah ok. So it sounds like adding a check to the LCD controller based on
-compatible string to reject RGB values would be a good start here.
-That would at least block bogus values from making it to the screen
+ .../devicetree/bindings/sound/fsl,sai.yaml    | 216 ++++++++++++++++++
+ .../devicetree/bindings/sound/fsl-sai.txt     |  95 --------
+ 2 files changed, 216 insertions(+), 95 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/sound/fsl,sai.yaml
+ delete mode 100644 Documentation/devicetree/bindings/sound/fsl-sai.txt
 
-Alistair
+diff --git a/Documentation/devicetree/bindings/sound/fsl,sai.yaml b/Documentation/devicetree/bindings/sound/fsl,sai.yaml
+new file mode 100644
+index 000000000000..70c4111d59c7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/sound/fsl,sai.yaml
+@@ -0,0 +1,216 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/sound/fsl,sai.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Freescale Synchronous Audio Interface (SAI).
++
++maintainers:
++  - Shengjiu Wang <shengjiu.wang@nxp.com>
++
++description: |
++  The SAI is based on I2S module that used communicating with audio codecs,
++  which provides a synchronous audio interface that supports fullduplex
++  serial interfaces with frame synchronization such as I2S, AC97, TDM, and
++  codec/DSP interfaces.
++
++properties:
++  compatible:
++    oneOf:
++      - enum:
++          - fsl,vf610-sai
++          - fsl,imx6sx-sai
++          - fsl,imx6ul-sai
++          - fsl,imx7ulp-sai
++          - fsl,imx8mq-sai
++          - fsl,imx8qm-sai
++          - fsl,imx8ulp-sai
++      - items:
++          - enum:
++              - fsl,imx8mm-sai
++              - fsl,imx8mn-sai
++              - fsl,imx8mp-sai
++          - const: fsl,imx8mq-sai
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    items:
++      - description: receive and transmit interrupt
++
++  dmas:
++    maxItems: 2
++
++  dma-names:
++    maxItems: 2
++
++  clocks:
++    items:
++      - description: The ipg clock for register access
++      - description: master clock source 0 (obsoleted)
++      - description: master clock source 1
++      - description: master clock source 2
++      - description: master clock source 3
++      - description: PLL clock source for 8kHz series
++      - description: PLL clock source for 11kHz series
++    minItems: 4
++
++  clock-names:
++    oneOf:
++      - items:
++          - const: bus
++          - const: mclk0
++          - const: mclk1
++          - const: mclk2
++          - const: mclk3
++          - const: pll8k
++          - const: pll11k
++        minItems: 4
++      - items:
++          - const: bus
++          - const: mclk1
++          - const: mclk2
++          - const: mclk3
++          - const: pll8k
++          - const: pll11k
++        minItems: 4
++
++  lsb-first:
++    description: |
++      Configures whether the LSB or the MSB is transmitted
++      first for the fifo data. If this property is absent,
++      the MSB is transmitted first as default, or the LSB
++      is transmitted first.
++    type: boolean
++
++  big-endian:
++    description: |
++      required if all the SAI registers are big-endian rather than little-endian.
++    type: boolean
++
++  fsl,sai-synchronous-rx:
++    description: |
++      SAI will work in the synchronous mode (sync Tx with Rx) which means
++      both the transmitter and the receiver will send and receive data by
++      following receiver's bit clocks and frame sync clocks.
++    type: boolean
++
++  fsl,sai-asynchronous:
++    description: |
++      SAI will work in the asynchronous mode, which means both transmitter
++      and receiver will send and receive data by following their own bit clocks
++      and frame sync clocks separately.
++      If both fsl,sai-asynchronous and fsl,sai-synchronous-rx are absent, the
++      default synchronous mode (sync Rx with Tx) will be used, which means both
++      transmitter and receiver will send and receive data by following clocks
++      of transmitter.
++    type: boolean
++
++  fsl,dataline:
++    $ref: /schemas/types.yaml#/definitions/uint32-matrix
++    description: |
++      Configure the dataline. It has 3 value for each configuration
++    maxItems: 16
++    items:
++      items:
++        - description: format Default(0), I2S(1) or PDM(2)
++          enum: [0, 1, 2]
++        - description: dataline mask for 'rx'
++        - description: dataline mask for 'tx'
++
++  fsl,sai-mclk-direction-output:
++    description: SAI will output the SAI MCLK clock.
++    type: boolean
++
++  fsl,shared-interrupt:
++    description: Interrupt is shared with other modules.
++    type: boolean
++
++  "#sound-dai-cells":
++    const: 0
++    description: optional, some dts node didn't add it.
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: fsl,vf610-sai
++    then:
++      properties:
++        dmas:
++          items:
++            - description: DMA controller phandle and request line for TX
++            - description: DMA controller phandle and request line for RX
++        dma-names:
++          items:
++            - const: tx
++            - const: rx
++    else:
++      properties:
++        dmas:
++          items:
++            - description: DMA controller phandle and request line for RX
++            - description: DMA controller phandle and request line for TX
++        dma-names:
++          items:
++            - const: rx
++            - const: tx
++  - if:
++      required:
++        - fsl,sai-asynchronous
++    then:
++      properties:
++        fsl,sai-synchronous-rx: false
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - dmas
++  - dma-names
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/vf610-clock.h>
++    sai2: sai@40031000 {
++        compatible = "fsl,vf610-sai";
++        reg = <0x40031000 0x1000>;
++        interrupts = <86 IRQ_TYPE_LEVEL_HIGH>;
++        pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_sai2_1>;
++        clocks = <&clks VF610_CLK_PLATFORM_BUS>,
++                 <&clks VF610_CLK_SAI2>,
++                 <&clks 0>, <&clks 0>;
++        clock-names = "bus", "mclk1", "mclk2", "mclk3";
++        dma-names = "tx", "rx";
++        dmas = <&edma0 0 21>,
++               <&edma0 0 20>;
++        big-endian;
++        lsb-first;
++    };
++
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/imx8mm-clock.h>
++    sai1: sai@30010000 {
++        compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
++        reg = <0x30010000 0x10000>;
++        interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&clk IMX8MM_CLK_SAI1_IPG>,
++                 <&clk IMX8MM_CLK_DUMMY>,
++                 <&clk IMX8MM_CLK_SAI1_ROOT>,
++                 <&clk IMX8MM_CLK_DUMMY>, <&clk IMX8MM_CLK_DUMMY>;
++        clock-names = "bus", "mclk0", "mclk1", "mclk2", "mclk3";
++        dmas = <&sdma2 0 2 0>, <&sdma2 1 2 0>;
++        dma-names = "rx", "tx";
++        fsl,dataline = <1 0xff 0xff 2 0xff 0x11>;
++        #sound-dai-cells = <0>;
++    };
+diff --git a/Documentation/devicetree/bindings/sound/fsl-sai.txt b/Documentation/devicetree/bindings/sound/fsl-sai.txt
+deleted file mode 100644
+index fbdefc3fade7..000000000000
+--- a/Documentation/devicetree/bindings/sound/fsl-sai.txt
++++ /dev/null
+@@ -1,95 +0,0 @@
+-Freescale Synchronous Audio Interface (SAI).
+-
+-The SAI is based on I2S module that used communicating with audio codecs,
+-which provides a synchronous audio interface that supports fullduplex
+-serial interfaces with frame synchronization such as I2S, AC97, TDM, and
+-codec/DSP interfaces.
+-
+-Required properties:
+-
+-  - compatible		: Compatible list, contains "fsl,vf610-sai",
+-			  "fsl,imx6sx-sai", "fsl,imx6ul-sai",
+-			  "fsl,imx7ulp-sai", "fsl,imx8mq-sai",
+-			  "fsl,imx8qm-sai", "fsl,imx8mm-sai",
+-			  "fsl,imx8mn-sai", "fsl,imx8mp-sai", or
+-			  "fsl,imx8ulp-sai".
+-
+-  - reg			: Offset and length of the register set for the device.
+-
+-  - clocks		: Must contain an entry for each entry in clock-names.
+-
+-  - clock-names		: Must include the "bus" for register access and
+-			  "mclk1", "mclk2", "mclk3" for bit clock and frame
+-			  clock providing.
+-                          "pll8k", "pll11k" are optional, they are the clock
+-                          source for root clock, one is for 8kHz series rates
+-                          another one is for 11kHz series rates.
+-  - dmas		: Generic dma devicetree binding as described in
+-			  Documentation/devicetree/bindings/dma/dma.txt.
+-
+-  - dma-names		: Two dmas have to be defined, "tx" and "rx".
+-
+-  - pinctrl-names	: Must contain a "default" entry.
+-
+-  - pinctrl-NNN		: One property must exist for each entry in
+-			  pinctrl-names. See ../pinctrl/pinctrl-bindings.txt
+-			  for details of the property values.
+-
+-  - lsb-first		: Configures whether the LSB or the MSB is transmitted
+-			  first for the fifo data. If this property is absent,
+-			  the MSB is transmitted first as default, or the LSB
+-			  is transmitted first.
+-
+-  - fsl,sai-synchronous-rx: This is a boolean property. If present, indicating
+-			  that SAI will work in the synchronous mode (sync Tx
+-			  with Rx) which means both the transmitter and the
+-			  receiver will send and receive data by following
+-			  receiver's bit clocks and frame sync clocks.
+-
+-  - fsl,sai-asynchronous: This is a boolean property. If present, indicating
+-			  that SAI will work in the asynchronous mode, which
+-			  means both transmitter and receiver will send and
+-			  receive data by following their own bit clocks and
+-			  frame sync clocks separately.
+-
+-  - fsl,dataline        : configure the dataline. it has 3 value for each configuration
+-                          first one means the type: I2S(1) or PDM(2)
+-                          second one is dataline mask for 'rx'
+-                          third one is dataline mask for 'tx'.
+-                          for example: fsl,dataline = <1 0xff 0xff 2 0xff 0x11>;
+-                          it means I2S type rx mask is 0xff, tx mask is 0xff, PDM type
+-                          rx mask is 0xff, tx mask is 0x11 (dataline 1 and 4 enabled).
+-
+-Optional properties:
+-
+-  - big-endian		: Boolean property, required if all the SAI
+-			  registers are big-endian rather than little-endian.
+-
+-Optional properties (for mx6ul):
+-
+-  - fsl,sai-mclk-direction-output: This is a boolean property. If present,
+-			 indicates that SAI will output the SAI MCLK clock.
+-
+-Note:
+-- If both fsl,sai-asynchronous and fsl,sai-synchronous-rx are absent, the
+-  default synchronous mode (sync Rx with Tx) will be used, which means both
+-  transmitter and receiver will send and receive data by following clocks
+-  of transmitter.
+-- fsl,sai-asynchronous and fsl,sai-synchronous-rx are exclusive.
+-
+-Example:
+-sai2: sai@40031000 {
+-	      compatible = "fsl,vf610-sai";
+-	      reg = <0x40031000 0x1000>;
+-	      pinctrl-names = "default";
+-	      pinctrl-0 = <&pinctrl_sai2_1>;
+-	      clocks = <&clks VF610_CLK_PLATFORM_BUS>,
+-		     <&clks VF610_CLK_SAI2>,
+-		     <&clks 0>, <&clks 0>;
+-	      clock-names = "bus", "mclk1", "mclk2", "mclk3";
+-	      dma-names = "tx", "rx";
+-	      dmas = <&edma0 0 VF610_EDMA_MUXID0_SAI2_TX>,
+-		   <&edma0 0 VF610_EDMA_MUXID0_SAI2_RX>;
+-	      big-endian;
+-	      lsb-first;
+-};
+-- 
+2.34.1
 
-> -- but I think it's a really bad idea to merge this with how "eink,vb3300-kca"
-> is currently represented in panel-simple.
->
-> Regards,
-> Samuel
->
-> [1]: https://lore.kernel.org/lkml/Yo5kz%2F9cSd6ewC5f@phenom.ffwll.local/
->
-> >  };
-> >
-> >  &clks {
-> > @@ -132,6 +152,20 @@ reg_epdpmic: vcom {
-> >       };
-> >  };
-> >
-> > +&lcdif {
-> > +     pinctrl-names = "default";
-> > +     pinctrl-0 = <&pinctrl_lcdif>;
-> > +     lcd-supply = <&reg_epdpmic>;
-> > +     lcd2-supply = <&reg_sdoe>;
-> > +     status = "okay";
-> > +
-> > +     port {
-> > +             display_out: endpoint {
-> > +                     remote-endpoint = <&panel_in>;
-> > +             };
-> > +     };
-> > +};
-> > +
-> >  &snvs_pwrkey {
-> >       status = "okay";
-> >  };
-> > @@ -246,6 +280,46 @@ MX7D_PAD_I2C4_SCL__I2C4_SCL              0x4000007f
-> >               >;
-> >       };
-> >
-> > +     pinctrl_lcdif: lcdifgrp {
-> > +             fsl,pins = <
-> > +                     MX7D_PAD_LCD_DATA00__LCD_DATA0          0x79
-> > +                     MX7D_PAD_LCD_DATA01__LCD_DATA1          0x79
-> > +                     MX7D_PAD_LCD_DATA02__LCD_DATA2          0x79
-> > +                     MX7D_PAD_LCD_DATA03__LCD_DATA3          0x79
-> > +                     MX7D_PAD_LCD_DATA04__LCD_DATA4          0x79
-> > +                     MX7D_PAD_LCD_DATA05__LCD_DATA5          0x79
-> > +                     MX7D_PAD_LCD_DATA06__LCD_DATA6          0x79
-> > +                     MX7D_PAD_LCD_DATA07__LCD_DATA7          0x79
-> > +                     MX7D_PAD_LCD_DATA08__LCD_DATA8          0x79
-> > +                     MX7D_PAD_LCD_DATA09__LCD_DATA9          0x79
-> > +                     MX7D_PAD_LCD_DATA10__LCD_DATA10         0x79
-> > +                     MX7D_PAD_LCD_DATA11__LCD_DATA11         0x79
-> > +                     MX7D_PAD_LCD_DATA12__LCD_DATA12         0x79
-> > +                     MX7D_PAD_LCD_DATA13__LCD_DATA13         0x79
-> > +                     MX7D_PAD_LCD_DATA14__LCD_DATA14         0x79
-> > +                     MX7D_PAD_LCD_DATA15__LCD_DATA15         0x79
-> > +
-> > +                     MX7D_PAD_LCD_DATA17__LCD_DATA17         0x79
-> > +                     MX7D_PAD_LCD_DATA18__LCD_DATA18         0x79
-> > +                     MX7D_PAD_LCD_DATA19__LCD_DATA19         0x79
-> > +                     MX7D_PAD_LCD_DATA20__LCD_DATA20         0x79
-> > +                     MX7D_PAD_LCD_DATA21__LCD_DATA21         0x79
-> > +
-> > +                     MX7D_PAD_LCD_DATA23__LCD_DATA23         0x79
-> > +                     MX7D_PAD_LCD_CLK__LCD_CLK               0x79
-> > +                     MX7D_PAD_LCD_ENABLE__LCD_ENABLE         0x79
-> > +                     MX7D_PAD_LCD_VSYNC__LCD_VSYNC           0x79
-> > +                     MX7D_PAD_LCD_HSYNC__LCD_HSYNC           0x79
-> > +                     MX7D_PAD_LCD_RESET__LCD_RESET           0x79
-> > +             >;
-> > +     };
-> > +
-> > +     pinctrl_sdoe_reg: sdoereggrp {
-> > +             fsl,pins = <
-> > +                     MX7D_PAD_LCD_DATA22__GPIO3_IO27         0x74
-> > +             >;
-> > +     };
-> > +
-> >       pinctrl_uart1: uart1grp {
-> >               fsl,pins = <
-> >                       MX7D_PAD_UART1_TX_DATA__UART1_DCE_TX    0x79
-> >
->
