@@ -2,155 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE72C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B1B1C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238221AbiHBQjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 12:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44422 "EHLO
+        id S239124AbiHBQjb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 12:39:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238208AbiHBQjD (ORCPT
+        with ESMTP id S239087AbiHBQjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 12:39:03 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B76C01C92F
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:38:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YGAkCorpPt0+ZrrquEDXpKua4sT3cc9wHkF/Q15io37qNp4NV54Ax09EAG4M0bV2YJ6r+1c755AlqQREO9dkmpHvSFd0OnQmV5NEFy2lrsZoXVyqQ7JvQfRCPnhUps1cfK/RtVopRYXKsz682oevePcJ1sErKroBwHfZdJ/icvXZm8ls7lqa2lIDNHIMj9dVrZrto8ni5HfGb1C3AldVY+h9gwCvs28eqd2Of4O5x/RN6k0KDFsWHYC0IDSVuqYnkhFi6xrECWJqzBj5l2ZpKqlJq5BKIeSaFJh245oAhE4l/4l62kCgwxedFzQsSG2dMRxuY0VZ+ioBCpYbGYJXYA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KYwXfJz/4USg5q1a6LdhI++lnYGJx+pbclqPlgypsyI=;
- b=AZ2LxzDEjUoKe0pWP8f2E2KeoMTLQdt/CIpR8mzi7/nwxBim9VZe3m1ilqXqHNV2jZ9kNKlDJNaWJRsmbcceJezf7WjtOwBk5MBRk5w97qyXrlpDjPaojkp2MnMsvRMLQYCSOpy5QKUNrKZfzxknftev94lLCVmjxKnetIEa05WPCXtmOeBKQUWasr26XHnzqCS6765MOma9JVju2+v7AWcHMDv4HfqWISHQpzKz+wDjZvZZqHG37+hZSifuN9jCUuVFcGPnHJM7l3OknYQLI4yO96ETwSwmcCdQ0wQLT7RnmTwUlal7t2cO7UfG25HjjqouRXrOT8H37+yTsN6fiw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KYwXfJz/4USg5q1a6LdhI++lnYGJx+pbclqPlgypsyI=;
- b=ziUd0dL/1TKyAwxyN23PaJuLLsGpNzebbUjOD36hwouwVNbsSEeuSF5OnCA62C8O0F/Hqce1veVqRbbV+16sg2inUesAaMrS3R+iE+7rO4ox7q8t8J/o6XTvJ9I9CRwJ60bjibhE47O6/WKcqFD2SsZhKHMWCBTmT8PwKVoAtNk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from MN2PR12MB2941.namprd12.prod.outlook.com (2603:10b6:208:a9::12)
- by SA1PR12MB6895.namprd12.prod.outlook.com (2603:10b6:806:24e::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.12; Tue, 2 Aug
- 2022 16:38:45 +0000
-Received: from MN2PR12MB2941.namprd12.prod.outlook.com
- ([fe80::d122:1dae:8445:2e43]) by MN2PR12MB2941.namprd12.prod.outlook.com
- ([fe80::d122:1dae:8445:2e43%7]) with mapi id 15.20.5482.016; Tue, 2 Aug 2022
- 16:38:44 +0000
-Message-ID: <98cb62b2-e11b-4675-7017-7feba8f196e5@amd.com>
-Date:   Tue, 2 Aug 2022 12:38:42 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 1/3] drm/amd/display: make variables static
-Content-Language: en-US
-To:     =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@igalia.com>,
-        Magali Lemes <magalilemes00@gmail.com>
-Cc:     siqueirajordao@riseup.net, sunpeng.li@amd.com,
-        alexander.deucher@amd.com, harry.wentland@amd.com,
-        tales.aparecida@gmail.com, linux-kernel@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org, mairacanal@riseup.net,
-        dri-devel@lists.freedesktop.org, isabbasso@riseup.net,
-        andrealmeid@riseup.net, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        alex.hung@amd.com, mwen@igalia.com
-References: <20220730010700.1824647-1-magalilemes00@gmail.com>
- <7069d082-f508-af3a-8098-081e59a4e41f@igalia.com>
-From:   Rodrigo Siqueira Jordao <Rodrigo.Siqueira@amd.com>
-In-Reply-To: <7069d082-f508-af3a-8098-081e59a4e41f@igalia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: CH0PR08CA0016.namprd08.prod.outlook.com
- (2603:10b6:610:33::21) To MN2PR12MB2941.namprd12.prod.outlook.com
- (2603:10b6:208:a9::12)
+        Tue, 2 Aug 2022 12:39:11 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC21DB3
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:39:00 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id y15so13950575plp.10
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 09:39:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=YLolmPC/4W6Ekt5KXSGhTlaQ+SvTrN9uL1784FHTktA=;
+        b=DEczoNtVTMwIsaw8yg11wYkQuI9LeTuQwFeOQ0oJ03m1tMW/YgHdOnTv17v8+A6WTV
+         U7hpMystc0MLLmDXYDMaROWkoGrECN3+IY7Ia+Z09cQyp/+2thONhPGLIYnqECJRrXhr
+         dDHRlXhlBA0o0w24sHNoK99DkncCME85F/XcNTjXnZbY1/vtUg34rxTUMG/OWYQ4HMcI
+         iIFe/Qw/lNcBgMnxPgPuAhy90CFyCy84wOdE8NkRPB91ulC5zTuJcdVgjk8H0EgOjoUm
+         FnlRd5MiMQxVvv/M1kuZRL91q7QvdBIT05QOREIPMw2HWyehKvsTbH9WC464J4D8ov37
+         YsWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=YLolmPC/4W6Ekt5KXSGhTlaQ+SvTrN9uL1784FHTktA=;
+        b=KaSIOB7mNo0SruJ3PmrVXXgINyq9ANMx+CAKYSwJQA7m3rAcTPhCiHEaQzp+SAPj9W
+         IQAM3fBgYSikEC39EJkMahtPPN+jXBUrn5V+7oyEkINyRcF9GPLZ3Kuq+FUrv8KpoVBt
+         o9jx9ElDja9KvFBsqf1mJMTyqVnh0BGtdrD+NUh3oC7nKYYrRwy6ialQAOJBnwpvVXmX
+         rzOl7807GLoDONAgrI4cKSt64WQzGMDCJmRC8R3NET2Vb/2EgrSGrnL9VEQZrPtJIzNU
+         5vrywj7fhvOUFozx7B9iJN+4F/UipTJJGN74oBtBqL0xxOGiYLcvYBCAKMUhbPUp/J3W
+         kwMQ==
+X-Gm-Message-State: ACgBeo2nRzayV1pG8bnj7n7FLs7FJwIoZp9RwZ0gboWS5pR/pBjNeA7q
+        2s2f8natrPLHTkKpUv+n5w/DRQ==
+X-Google-Smtp-Source: AA6agR5iAjFP2q7X1PbZvwrW6P6B4ILkh92ieVBGwE4LPz6Qma2k0ZREMBEhxOJKazpAhnjrSGkWTg==
+X-Received: by 2002:a17:902:dac6:b0:16d:bdf5:7084 with SMTP id q6-20020a170902dac600b0016dbdf57084mr22165713plx.55.1659458340177;
+        Tue, 02 Aug 2022 09:39:00 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id l15-20020a17090aec0f00b001f216407204sm11136513pjy.36.2022.08.02.09.38.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Aug 2022 09:38:59 -0700 (PDT)
+Date:   Tue, 2 Aug 2022 16:38:55 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Chao Peng <chao.p.peng@linux.intel.com>
+Cc:     Wei Wang <wei.w.wang@linux.intel.com>,
+        "Gupta, Pankaj" <pankaj.gupta@amd.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 11/14] KVM: Register/unregister the guest private
+ memory regions
+Message-ID: <YulTH7bL4MwT5v5K@google.com>
+References: <36e671d2-6b95-8e4f-c2ac-fee4b2670c6e@amd.com>
+ <20220720150706.GB124133@chaop.bj.intel.com>
+ <d0fd229d-afa6-c66d-3e55-09ac5877453e@amd.com>
+ <YtgrkXqP/GIi9ujZ@google.com>
+ <45ae9f57-d595-f202-abb5-26a03a2ca131@linux.intel.com>
+ <20220721092906.GA153288@chaop.bj.intel.com>
+ <YtmT2irvgInX1kPp@google.com>
+ <20220725130417.GA304216@chaop.bj.intel.com>
+ <YuQ64RgWqdoAAGdY@google.com>
+ <Yuh0ikhoh+tCK6VW@google.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 98f5e6a3-c635-477d-6aa9-08da74a576f4
-X-MS-TrafficTypeDiagnostic: SA1PR12MB6895:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UY7Qvi/g9BkFkHgL0h+mX5YBpQOG9dsavldd8M6CHYKHf9x4ER8XvkSKcxziXVQm6fnly8k0m/JWja1svH/UdYidSPzW0lUIqRX7SednN5IhXBC7e3jQHP2q8pn7PunXNCNu5aYCaGXjSB6hQMlaJufjtkVpa93iHHUcASZx73mY+o40f7kLDtEQjLKdCmjsKououq9S87Oaj3lOqKSnCqgk7XapSQeqV/A3emuUsSWjeEdYyNQ+AgcSfpiCivPebww9MBwzI50n4gHCA8gHk84dOjOKxyBy4NlWh+XQPQE43ig4/RKdvuAWC851h0IedoFY+goyCslupYx1tFLMbcicJ4Tu89Aieb/tVGcTYqVa1ChC6Gjw7Da3RWl45umtXufKjPfdwaN0VDUuXNz1J03F5Xmt4n+gZFtSfop/LG8BeSxQISvPvdOsEYOI8M9NCsqng9XTCXkxW4p8M9T0FFkRxGLI515OErav9kDpLyAub/MkEEgNlbci4+LLKqSe4H7oyZa8HtUoTK3kNSNeotxKtNfVUaZyQYHd8yn7en3Mu1dCZeVIJ2gkjDTCzvghEZc1yuxwYH9koxNpI7aAxNnc/d5QVamP79jhRgeMW7sNANcGl2851gifpzbOew3KY4iyMlR046/aXWWP6Ku/0+9WgZ9OQJnHVDJcgQOJL5/nfZxs5vr8FOuV5JL/fxI1fh2R/u3bzYjJTzvHlyGJljepl5Lq4O360sQe9/DI7xF3G8WbxxSfo1Pm2Z3/QVE1pWdZmIxLfDZajbPx/vaSPjQIjBbHw7LAcwqa3uxXKya1ZqlZmNPVLgotgRkpuGTHCCA48vyjizvhk1U4WVb0LQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB2941.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(366004)(396003)(136003)(39860400002)(4744005)(6486002)(5660300002)(7416002)(86362001)(316002)(31696002)(66946007)(66556008)(8936002)(8676002)(66476007)(4326008)(110136005)(26005)(6512007)(36756003)(2616005)(53546011)(186003)(38100700002)(478600001)(31686004)(6506007)(41300700001)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?K1ZGcFNmVGJnNTJhcTBRWjB3cFFJQmF6eTVPWGg5ejVnci96MTAxeGc2dCtD?=
- =?utf-8?B?cnlpd3M2SUFBTkorT2M4QmFkYnVkNXBLMVd4NlZmb1RycWUveHMrbzl2RHZI?=
- =?utf-8?B?dVZxVis3UE0zQ2llOTJ3RnNORkpKRGZmMFdYT0U1N2psUXVqNlZEbXZ2QUkx?=
- =?utf-8?B?RnBJUGJxSWRGT0ZPaURFTysvSE9mamY4d2xYZkpyQThTOUFoTnRnaDBZNW9l?=
- =?utf-8?B?SUdNT2RNTkxBSm1pS05QSTFoUExnSHZkRWU0a3ZtSHZ5VGVpSlJ3QktWMGtO?=
- =?utf-8?B?UzhST042VGxqSkxTNTA3SUJtWVZEVE9mOGNDTnlUL1RvUjEzeTRiVzBJTkRn?=
- =?utf-8?B?Q3cxaWRFejZBcFM5cWloaEJpYWJUMlZtUG1WbjNQeHdTTnFWMys0NEpHOGgw?=
- =?utf-8?B?bldEMmVoZ1htYzA5UGdZVnVqY1EyN1p3NEwrRWhaZXN1RVBnekluQUlJN01F?=
- =?utf-8?B?ZFR2czNQQnAyQnBBZlBQbkZ2UzVwV2krV0F0T050b1EwcXlLdVhGczROZzlO?=
- =?utf-8?B?QnVUSVY0WkhwOXNtNXJlZUNzdkkwZUtSa2FtS0FzazdycWRpR1FLOGMrS1dJ?=
- =?utf-8?B?VDRZUWoyMlBuc1J0SDhEZWs4am9QbmRzWFhpbFJqVXhoSUUvUW0yemRJbEZx?=
- =?utf-8?B?V0FLZzVsQkpuaENORXRrT0RyeEJac1dLYlJqNEp3Q2hzUU9kYThOUFlBQjZT?=
- =?utf-8?B?V3NFamV2UXUzdVdRM3JTcWZMQlFKdFlwM0xFbGhvUEcwcUNyWGQxcmxBS3BN?=
- =?utf-8?B?dTZiR1dQRmhTa0ZLM2VnTkpQa0w0OG1IU0xHOTNJeGhvamRBdzVocTBUZDZJ?=
- =?utf-8?B?QTVpc25YY1ZLOTNTVzlsL3FNY2dRVll5NHFPUms1bExvRXV3MWZHUDZ2VDBW?=
- =?utf-8?B?RmZtaDVtd0dJTDB2R25pNi9vOXhQTGlCN0VCSytqYmhocHNldU9ubnJWV3V3?=
- =?utf-8?B?ckpHaDRURVEvanQ2Zmg2dVJKa1M3SXJzUW1HVENET0M3ZkJmcTU1SEJXNXI3?=
- =?utf-8?B?QmpCN2hiUUNaT2tVWWMreFdzSjdVQUVSOGYwcUMrRWd1RkZsNndMeGFnemE5?=
- =?utf-8?B?Y1dzWFp4RG5lT3FEMk5lSUFyWjFlNjJsb2REeDM4MVV3T0dGbkYvaG50TmJz?=
- =?utf-8?B?OXZtOUd2cFpHQXBmNmFGS3orZmJEQTI5d0VkY0pEdjdKMDZidnlHYTByeUp5?=
- =?utf-8?B?b0hBZHpJMHlqNXdGaHFvZ0E5NnJqKy9QV0tXNlR0SS9DNU9jSnhsUW1QZEg2?=
- =?utf-8?B?VmRtVCtkSlhpWnBxS09OYWRSQ2ZZK1RuaENNNGRDS1hRNW9nc1NIbUVoaGFF?=
- =?utf-8?B?dzY3RU5ScmhPRkc3NjZLcWVjWTUxOU4wQzRDRnZVN0VRWFRvTTJFUTJ2SFZX?=
- =?utf-8?B?cWNMT1FMU0NQamhQaUpLTzRqcEtMY1doZWVmR0s2Sy9PMlYzVUZaYVppdHEy?=
- =?utf-8?B?bFNpcVZQdkJ4TE5WVWpJOGdhd0Q3SmZOVThhQnZsUmYrd2x3RjFyekJTTTdE?=
- =?utf-8?B?Yys0KzNGQzd1NFpsdHkzSkYwZzRvUklhUkdra3A0QkpDS0diaTRIMEI5NEIx?=
- =?utf-8?B?Ukl0ZHBGQmExMXlZUkVoS3FucDlwYkZTdXBLVjBOMDJSM2JDTTFpbnE0YWpD?=
- =?utf-8?B?VmI5bGdBU2IvV0V2aDlXUjdVb04xcEdTUVJlVE1OYXpQN0pwZWxvWm5OSWll?=
- =?utf-8?B?OVA5OGo1bEdEZ0t5R0dQWDhqaDNjdUI3QVRQN1RXQ0dzMkYrK3Bjbi9xYnIy?=
- =?utf-8?B?OXlNMXBvTmdQRkNUWmZHS1ZqOHlwYjhlVlVkMzZoWCtienYzbVFwdWNvRzRl?=
- =?utf-8?B?MmEvZWRPQTNodkFuRDQ4V0NJT1B4amR5NUxDcnlwdUlSdDZVdXJtM2xLaGpk?=
- =?utf-8?B?TE5DWnYwSHdxSWlpdUxWYlU2dGRzNURhZXlGTlBpUjZFUGFZMzM1aG9jdWh4?=
- =?utf-8?B?dTNobDZZV3VQc3JHaGx0MmduaS9zN1BkSE5QL2Y5SHduMVZpTnR0S25Zb2w4?=
- =?utf-8?B?aHJxdzZjSVY2QU93d3pLZUhQTU9LVU1IQmh4VjVDY2o1cE5jemFSb0FHR0M1?=
- =?utf-8?B?U3B0T2dXOWtFNGRtRUs2TmliVEhCa2g0TWhvOWdGSFJzKzBLcDRnZDROSlhX?=
- =?utf-8?Q?jslTWjpSAmy1q7xF4a4P+WxCF?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 98f5e6a3-c635-477d-6aa9-08da74a576f4
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB2941.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2022 16:38:44.3314
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OLNuv8x550tUpFBiP+Kr+h+5N4h3gw+olO5zujO4GuvfMSMO/d6PO2fYUnbMjr/vUmhonKk9UTYoMNuyz7YYNQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6895
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yuh0ikhoh+tCK6VW@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022-08-02 09:31, André Almeida wrote:
+On Tue, Aug 02, 2022, Sean Christopherson wrote:
+> I think we should avoid UNMAPPABLE even on the KVM side of things for the core
+> memslots functionality and instead be very literal, e.g.
 > 
+> 	KVM_HAS_FD_BASED_MEMSLOTS
+> 	KVM_MEM_FD_VALID
 > 
-> Às 22:06 de 29/07/22, Magali Lemes escreveu:
->> As "dcn3_1_soc", "dcn3_15_soc", and "dcn3_16_soc" are not used outside
->> of their corresponding "dcn3*_fpu.c", make them static and remove their
->> extern declaration.
->>
->> Fixes: 26f4712aedbd ("drm/amd/display: move FPU related code from dcn31 to dml/dcn31 folder")
->> Fixes: fa896297b31b ("drm/amd/display: move FPU related code from dcn315 to dml/dcn31 folder")
->> Fixes: 3f8951cc123f ("drm/amd/display: move FPU related code from dcn316 to dml/dcn31 folder")
->> Signed-off-by: Magali Lemes <magalilemes00@gmail.com>
->> Reviewed-by: Maíra Canal <mairacanal@riseup.net>
->> Reviewed-by: Melissa Wen <mwen@igalia.com>
->> ---
-> 
-> Series is Reviewed-by: André Almeida <andrealmeid@igalia.com>
+> We'll still need KVM_HAS_USER_UNMAPPABLE_MEMORY, but it won't be tied directly to
+> the memslot.  Decoupling the two thingis will require a bit of extra work, but the
+> code impact should be quite small, e.g. explicitly query and propagate
+> MEMFILE_F_USER_INACCESSIBLE to kvm_memory_slot to track if a memslot can be private.
+> And unless I'm missing something, it won't require an additional memslot flag.
+> The biggest oddity (if we don't also add KVM_MEM_PRIVATE) is that KVM would
+> effectively ignore the hva for fd-based memslots for VM types that don't support
+> private memory, i.e. userspace can't opt out of using the fd-based backing, but that
+> doesn't seem like a deal breaker.
 
-Series also
+Hrm, but basing private memory on top of a generic FD_VALID would effectively require
+shared memory to use hva-based memslots for confidential VMs.  That'd yield a very
+weird API, e.g. non-confidential VMs could be backed entirely by fd-based memslots,
+but confidential VMs would be forced to use hva-based memslots.
 
-Reviewed-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-
-Applied to amd-staging-drm-next.
-
-Thanks
-Siqueira
+Ignore this idea for now.  If there's an actual use case for generic fd-based memory
+then we'll want a separate flag, fd, and offset, i.e. that support could be added
+independent of KVM_MEM_PRIVATE.
