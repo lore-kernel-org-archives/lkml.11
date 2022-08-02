@@ -2,101 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D4D9C19F2B
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:51:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D45C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:53:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236508AbiHBMvZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 08:51:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37024 "EHLO
+        id S236719AbiHBMxE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 08:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232569AbiHBMvX (ORCPT
+        with ESMTP id S232569AbiHBMxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 08:51:23 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10701DFC5;
-        Tue,  2 Aug 2022 05:51:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659444682; x=1690980682;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OmAWyGmKcIghX+hLvGMM11Dgc6+5nsQXlAGINkiy/O0=;
-  b=ja6gFipYJLXY7hm0g/493EYhCipbpSLAY6wJZ6oAS/as6KQKenxt6BHf
-   WBD+rdGGc9+kstWnxu/gsYSA2c+FuSbFohprplVmjEmiBXtzjVQF+SqTU
-   uFqinm7V1Y6hfyMkoV1+lkR5FRlOqrj4w74yAUuyblgYazK/rSQuORzah
-   cnJiyidtctr9AafvAlHlf2Dcu3IFiNJj/+1ZiUBrDVq3TnOusy/MFObWW
-   tj/PlKhOqrqzh+NRUMIxGk71uF0hw9Z5+XSacX62YjKfQo4RG+1VRi+bB
-   6buR7X8TJrATH4rv0yhMS4OD+Glg2bHzYMbn2nFYMz+lPomAypxHEsFW7
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10426"; a="289411276"
-X-IronPort-AV: E=Sophos;i="5.93,210,1654585200"; 
-   d="scan'208";a="289411276"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 05:51:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,210,1654585200"; 
-   d="scan'208";a="691835530"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 02 Aug 2022 05:51:18 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oIrMk-000G3b-11;
-        Tue, 02 Aug 2022 12:51:18 +0000
-Date:   Tue, 2 Aug 2022 20:50:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ajit Khaparde <ajit.khaparde@broadcom.com>,
-        michael.chan@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, jgg@ziepe.ca,
-        selvin.xavier@broadcom.com, leon@kernel.org,
-        linux-rdma@vger.kernel.org, andrew.gospodarek@broadcom.com
-Cc:     kbuild-all@lists.01.org
-Subject: Re: [PATCH 1/2] net/bnxt: Add auxiliary driver support
-Message-ID: <202208022009.CPnSrR8H-lkp@intel.com>
-References: <20220724231458.93830-2-ajit.khaparde@broadcom.com>
+        Tue, 2 Aug 2022 08:53:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD55CDFC5
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 05:53:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659444779;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5ikm4kV/UdS8r7b2LACfyNidZ5DHXkyUZcz44yJZqUQ=;
+        b=MBFC1JyE3HldgwuJ/+T5PlLxgyNMTbAVyP8/XqBkV9AVsdDEcIwMzGbxmlcBav46DFbH0a
+        AmDlEeyIZiTqizfdi3kPgWstRtx3I51Der8ETMCPyxvWkmNsM9JKx2Q3C59mxTB/b+x5v6
+        JlrfAM6dawMUjtOzG4iOL8/HRRrcrlU=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-36-iEzSi1o5NMq4fevjeTPzdA-1; Tue, 02 Aug 2022 08:52:58 -0400
+X-MC-Unique: iEzSi1o5NMq4fevjeTPzdA-1
+Received: by mail-wm1-f72.google.com with SMTP id p2-20020a05600c1d8200b003a3262d9c51so9466080wms.6
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 05:52:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=5ikm4kV/UdS8r7b2LACfyNidZ5DHXkyUZcz44yJZqUQ=;
+        b=M5LqHr3O8alBftWwZcQzxGiuk/1Oi+7RfUn/S0jiVMtqwCMw8K46NoadMX+Rrn04BV
+         pyY7pK+adjXaqIUKREm8KrcZhKZMuGe7QzWCI8c99xQ8ei6ZvxHOGjjsHWlly3pI0Dbp
+         CXH+PnaPIe1U/DznzJGG3TlumC1Iq4HAYmrkgwmkppNKpNSuMU8uc/yDtT4/ELJN2Xrq
+         WkePwJ64f4ydSLg0ET/k2Jsz/YIa7eHxFAt4c8FaA5Fk+qkNZPvrRX4OrIQycaUOJJWF
+         L3lFzUwshxV0pJjHWR41QvnAHky19MGrXHfenG4TDF4msiyCL4j7dr1bjmMixUU+mBHY
+         t8Hw==
+X-Gm-Message-State: ACgBeo0duJI+fSXiPRo0aREjTXUblK6eUKs5OUiYwv5UGboa7zZzp0lm
+        i2vAjl/+2MuJBmQoB+/HDm1nHUJLX05bhJ+tG6epuljA1m2LggPlYImEqj46c74z3Zlb5o6exZy
+        9hAH0EatPpfEJDIXsdHGBktxUf9/qN+FBXnJTq5O7CRfkX49CJ+TqBEnZx/xXuBeH7S3/ImD0FT
+        Tc
+X-Received: by 2002:adf:efc3:0:b0:21f:15aa:1b40 with SMTP id i3-20020adfefc3000000b0021f15aa1b40mr11167765wrp.159.1659444777681;
+        Tue, 02 Aug 2022 05:52:57 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR53vslDjhAhACNp2Z0SdysXb8V4ku9F/Q9BfjcKTCX8Mhagp7O22Wv6hJv6kZKMItFdg5F7vg==
+X-Received: by 2002:adf:efc3:0:b0:21f:15aa:1b40 with SMTP id i3-20020adfefc3000000b0021f15aa1b40mr11167735wrp.159.1659444777341;
+        Tue, 02 Aug 2022 05:52:57 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id ba4-20020a0560001c0400b002205f0890eesm8621527wrb.77.2022.08.02.05.52.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Aug 2022 05:52:56 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 14/25] KVM: VMX: Tweak the special handling of
+ SECONDARY_EXEC_ENCLS_EXITING in setup_vmcs_config()
+In-Reply-To: <YtnPEem7q1i+4VBN@google.com>
+References: <20220714091327.1085353-1-vkuznets@redhat.com>
+ <20220714091327.1085353-15-vkuznets@redhat.com>
+ <YtnPEem7q1i+4VBN@google.com>
+Date:   Tue, 02 Aug 2022 14:52:55 +0200
+Message-ID: <87o7x224ew.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220724231458.93830-2-ajit.khaparde@broadcom.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ajit,
+Sean Christopherson <seanjc@google.com> writes:
 
-I love your patch! Yet something to improve:
+> On Thu, Jul 14, 2022, Vitaly Kuznetsov wrote:
+>> SECONDARY_EXEC_ENCLS_EXITING is conditionally added to the 'optional'
+>> checklist in setup_vmcs_config() but there's little value in doing so.
+>> First, as the control is optional, we can always check for its
+>> presence, no harm done. Second, the only real value cpu_has_sgx() check
+>> gives is that on the CPUs which support SECONDARY_EXEC_ENCLS_EXITING but
+>> don't support SGX, the control is not getting enabled. It's highly unlikely
+>> such CPUs exist but it's possible that some hypervisors expose broken vCPU
+>> models.
+>
+> It's not just broken vCPU models, SGX can be "soft-disabled" on bare metal, e.g. if
+> software writes MCE control MSRs or there's an uncorrectable #MC (may not be the
+> case on all platforms).  This is architectural behavior and needs to be handled in
+> KVM.  Obviously if SGX gets disabled after KVM is loaded then we're out of luck, but
+> having the ENCL-exiting control without SGX being enabled is 100% valid.
+>
+> As for why KVM bothers with the check, it's to work around a suspected hardware
+> or XuCode bug (I'm still a bit shocked that's public now :-) ) where SGX got
+> _hard_ disabled across S3 on some CPUs and made the fields magically disappear.
+> The workaround was to soft-disable SGX in BIOS so that KVM wouldn't attempt to
+> enable the ENCLS-exiting control
 
-[auto build test ERROR on net-next/master]
-[also build test ERROR on net/master horms-ipvs/master linus/master v5.19 next-20220728]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Oh, thanks for this insight, I had no idea! I'll adjust my commit
+message accordingly.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Ajit-Khaparde/Add-Auxiliary-driver-support/20220725-071610
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 502c6f8cedcce7889ccdefeb88ce36b39acd522f
-config: riscv-randconfig-c043-20220801 (https://download.01.org/0day-ci/archive/20220802/202208022009.CPnSrR8H-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/c93534ee352bf1888f05720b89a915f15d49fc51
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Ajit-Khaparde/Add-Auxiliary-driver-support/20220725-071610
-        git checkout c93534ee352bf1888f05720b89a915f15d49fc51
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   riscv32-linux-ld: drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.o: in function `.L0 ':
->> bnxt_ulp.c:(.text+0xed2): undefined reference to `auxiliary_device_init'
-   riscv32-linux-ld: drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.o: in function `.L248':
->> bnxt_ulp.c:(.text+0xf12): undefined reference to `__auxiliary_device_add'
+>
+>> Preserve cpu_has_sgx() check but filter the result of adjust_vmx_controls()
+>> instead of the input.
+>> 
+>> Reviewed-by: Jim Mattson <jmattson@google.com>
+>> Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+>> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+>> ---
+>>  arch/x86/kvm/vmx/vmx.c | 9 ++++++---
+>>  1 file changed, 6 insertions(+), 3 deletions(-)
+>> 
+>> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+>> index ce54f13d8da1..566be73c6509 100644
+>> --- a/arch/x86/kvm/vmx/vmx.c
+>> +++ b/arch/x86/kvm/vmx/vmx.c
+>> @@ -2528,9 +2528,9 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
+>>  			SECONDARY_EXEC_PT_CONCEAL_VMX |
+>>  			SECONDARY_EXEC_ENABLE_VMFUNC |
+>>  			SECONDARY_EXEC_BUS_LOCK_DETECTION |
+>> -			SECONDARY_EXEC_NOTIFY_VM_EXITING;
+>> -		if (cpu_has_sgx())
+>> -			opt2 |= SECONDARY_EXEC_ENCLS_EXITING;
+>> +			SECONDARY_EXEC_NOTIFY_VM_EXITING |
+>> +			SECONDARY_EXEC_ENCLS_EXITING;
+>> +
+>>  		if (adjust_vmx_controls(min2, opt2,
+>>  					MSR_IA32_VMX_PROCBASED_CTLS2,
+>>  					&_cpu_based_2nd_exec_control) < 0)
+>> @@ -2577,6 +2577,9 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
+>>  		vmx_cap->vpid = 0;
+>>  	}
+>>  
+>> +	if (!cpu_has_sgx())
+>> +		_cpu_based_2nd_exec_control &= ~SECONDARY_EXEC_ENCLS_EXITING;
+>> +
+>>  	if (_cpu_based_exec_control & CPU_BASED_ACTIVATE_TERTIARY_CONTROLS) {
+>>  		u64 opt3 = TERTIARY_EXEC_IPI_VIRT;
+>>  
+>> -- 
+>> 2.35.3
+>> 
+>
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Vitaly
+
