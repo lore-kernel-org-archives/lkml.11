@@ -2,67 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31DF1C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CDD9C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:04:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236584AbiHBMDw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 08:03:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52434 "EHLO
+        id S236674AbiHBMEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 08:04:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231208AbiHBMDu (ORCPT
+        with ESMTP id S231208AbiHBMES (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 08:03:50 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46ED4D81B;
-        Tue,  2 Aug 2022 05:03:45 -0700 (PDT)
-X-QQ-mid: bizesmtp69t1659441819tszfgaor
-Received: from kali.lan ( [125.69.43.47])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 02 Aug 2022 20:03:38 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000020
-X-QQ-FEAT: eSZ1CZgv+JB/NPavNiyOS9PrnEIDZJ+gNfOFq1XFzWcVjnkVyoB9uNOb+NuB/
-        rwxzC9FmdsI6xTCxvBjKMhPYaRGa+pYBqkCGvj5MOtJaY5IuQP44WHqsPif67Q5BPeWITTu
-        GBvSQeimG2dp5kmkuDuhaQKyOv2hP2dKHQN/cSY46H7LrRtlyADDWX1bcgHOKi5HAgNnB/X
-        QNJBdxscsZM2MUwgxqVDyn4iciI3TWMUbbYQvuwJ5lJ9pNfqk9TATSkitAoXQl6U6tCB9XP
-        wchpIpmxLmSZtdht98QeN3KAx1g/jy0mggVp3dBiKlY1I9dl7l7v2XOKMqiNtGR6xTfz6jo
-        8rVD/VQba3FFuoKubXc5KhUXlaShhaGq5/Y0s5ZXkJaSbTAvc0qg7uFfdAJB2N4X4EPYRnl
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     sre@kernel.org
-Cc:     linus.walleij@linaro.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] power: supply: ab8500: Fix comment typo
-Date:   Wed,  3 Aug 2022 04:03:36 +0800
-Message-Id: <20220802200336.5467-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 2 Aug 2022 08:04:18 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878624AD7A;
+        Tue,  2 Aug 2022 05:04:16 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 279431F936;
+        Tue,  2 Aug 2022 12:04:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1659441855; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yNCOVJvTvXYjkbinC2wpPiVJJz4uAY9LW/GyhexozMg=;
+        b=Y/f4ThdH9BA3tZ6Mfyjhq2ZRwzYGOqQn6/SVYc6F8K9jwumW860ltxLGH9ZEdggr4RJgG8
+        qz88X9PpFtY85Nurju+9YH5zwoG6AKodu7DB1m8/wPvzc14p5eSmoX1H0n3UipW33jaIgb
+        Rk2hmRcA9zN84E8AM/lNtlb70xzFAWI=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id F2D7E13A8E;
+        Tue,  2 Aug 2022 12:04:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id +04/O74S6WKhNQAAMHmgww
+        (envelope-from <mhocko@suse.com>); Tue, 02 Aug 2022 12:04:14 +0000
+Date:   Tue, 2 Aug 2022 14:04:14 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Zach O'Keefe <zokeefe@google.com>
+Cc:     linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
+        linux-api@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        James Houghton <jthoughton@google.com>,
+        Hugh Dickins <hughd@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        David Hildenbrand <david@redhat.com>,
+        David Rientjes <rientjes@google.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Peter Xu <peterx@redhat.com>,
+        Rongwei Wang <rongwei.wang@linux.alibaba.com>,
+        SeongJae Park <sj@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Vlastimil Babka <vbabka@suse.cz>, Zi Yan <ziy@nvidia.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Chris Kennelly <ckennelly@google.com>,
+        Chris Zankel <chris@zankel.net>, Helge Deller <deller@gmx.de>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matt Turner <mattst88@gmail.com>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Minchan Kim <minchan@kernel.org>,
+        Patrick Xia <patrickx@google.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: Re: [PATCH mm-unstable] mm/madvise: remove CAP_SYS_ADMIN requirement
+ for process_madvise(MADV_COLLAPSE)
+Message-ID: <YukSvpPRuus2bHOu@dhcp22.suse.cz>
+References: <20220801210946.3069083-1-zokeefe@google.com>
+ <YujpzGKImMQsn8SM@dhcp22.suse.cz>
+ <CAAa6QmS=VbsdvHgvFQCceV+pYHwSSj1pjhX3_voz12T4rJ-EBQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAa6QmS=VbsdvHgvFQCceV+pYHwSSj1pjhX3_voz12T4rJ-EBQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in the comment, remove one.
+On Tue 02-08-22 02:48:33, Zach O'Keefe wrote:
+[...]
+> "mm/madvise: add MADV_COLLAPSE to process_madvise()" in the v7 series
+> ended with me mentioning a couple options, but ultimately I didn't
+> present a solution, and no consensus was reached[1]. After taking a
+> closer look, this is my proposal for what I believe to be the best
+> path forward. It should be squashed into the original patch. What do you think?
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/power/supply/ab8500_charger.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+If it is agreed that the CAP_SYS_ADMIN is too strict of a requirement
+then yes, this should be squashed into the original patch. There is no
+real reason to create a potential bisection headache by changing the
+permission model in a later patch.
 
-diff --git a/drivers/power/supply/ab8500_charger.c b/drivers/power/supply/ab8500_charger.c
-index c19c50442761..914ce902b672 100644
---- a/drivers/power/supply/ab8500_charger.c
-+++ b/drivers/power/supply/ab8500_charger.c
-@@ -1941,7 +1941,7 @@ static int ab8500_charger_get_ext_psy_data(struct device *dev, void *data)
-  * Due to a asic bug it is necessary to lower the input current to the vbus
-  * charger when charging with at some specific levels. This issue is only valid
-  * for below a certain battery voltage. This function makes sure that the
-- * the allowed current limit isn't exceeded.
-+ * allowed current limit isn't exceeded.
-  */
- static void ab8500_charger_check_vbat_work(struct work_struct *work)
- {
+From my POV, I would agree that CAP_SYS_ADMIN is just too strict of a
+requirement.
+
+I didn't really have time to follow recent discussions but I would argue
+that the operation is not really destructive or seriously harmful. All
+applications can already have their memory (almost) equally THP
+collapsed by khupaged with the proposed process_madvise semantic.
+
+NOHUGEMEM and prctl opt out from THP are both honored AFAIU and the only
+difference is the global THP killswitch behavior which I do not think
+warrants the strongest CAP_SYS_ADMIN capability (especially because it
+doesn't really control all kinds of THPs).
+
+If there is a userspace agent collapsing memory and causing problems
+then it can be easily fixed in the userspace. And I find that easier
+to do than putting the bar so high that userspace agents would be
+unfeasible because of CAP_SYS_ADMIN (which is nono in many cases as it
+would allow essentially full control of other stuff). So from practical
+POV, risking an extended RSS is really a negligible risk to lose a
+potentially useful feature for all others.
+
+Just my 2c
+
+> Thanks again,
+> Zach
+> 
+> [1] https://lore.kernel.org/linux-mm/Ys4aTRqWIbjNs1mI@google.com/
+
 -- 
-2.35.1
-
+Michal Hocko
+SUSE Labs
