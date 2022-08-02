@@ -2,116 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4E4C00144
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 01:12:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F91DC00144
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 01:12:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234779AbiHBBMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 21:12:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44644 "EHLO
+        id S234867AbiHBBME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 21:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230203AbiHBBL6 (ORCPT
+        with ESMTP id S234746AbiHBBMA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 21:11:58 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D472125EAC;
-        Mon,  1 Aug 2022 18:11:56 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VL8sRT9_1659402713;
-Received: from 30.178.81.22(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VL8sRT9_1659402713)
-          by smtp.aliyun-inc.com;
-          Tue, 02 Aug 2022 09:11:54 +0800
-Message-ID: <4bff1924-ef4b-2c88-e3d3-a60ed5bf6599@linux.alibaba.com>
-Date:   Tue, 2 Aug 2022 09:11:52 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.0.3
-Subject: Re: [PATCH] PCI: eliminate abnormal characters when reads help
- information of "PCI_P2PDMA" under menuconfig
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     bhelgaas@google.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andy Whitcroft <apw@canonical.com>,
-        Joe Perches <joe@perches.com>
-References: <20220801215623.GA676484@bhelgaas>
-From:   Liu Song <liusong@linux.alibaba.com>
-In-Reply-To: <20220801215623.GA676484@bhelgaas>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Mon, 1 Aug 2022 21:12:00 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C16B25EAC
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 18:11:59 -0700 (PDT)
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2720xhxu005342;
+        Tue, 2 Aug 2022 01:11:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id; s=qcppdkim1;
+ bh=+XCm5jSg8FjQE5YqGwyyuso1tjrDjKrNMsCGsTXDJYg=;
+ b=QdWS/6iBAAklD4za1JISNXcob7ukHqpue2gGjpKs8lnatHhIzD/nkUklvAeGTby2b5oV
+ mO9UY1QA1pl2XnZyohS5UQCyWCJgXxvtl1z+Y9+V9Lx+NureLsexK9/hEVVMtD3S8cJR
+ rpw2cbFQ0s3GK8yRlWGgk0RdzAp79/Y2IIt8tvQLyQzYGeB512HYQWRpxrbXP88VvP93
+ 5OljZm50+3iK9AOagj+Feubp8ML4oYAgv5D7u7h6Rb124MCzL8kmVqOBcZEC/N0cJFem
+ 138k20VkXGzEtZVFDuww/hcAQR/gJtDh9uCKg2uyTm4L+TvmdhTG29ir3qtwlFakAfJ3 3A== 
+Received: from aptaippmta01.qualcomm.com (tpe-colo-wan-fw-bordernet.qualcomm.com [103.229.16.4])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hphfbh0wm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 Aug 2022 01:11:46 +0000
+Received: from pps.filterd (APTAIPPMTA01.qualcomm.com [127.0.0.1])
+        by APTAIPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 27216hJ5029661;
+        Tue, 2 Aug 2022 01:06:43 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by APTAIPPMTA01.qualcomm.com (PPS) with ESMTP id 3hmwqnqv6k-1;
+        Tue, 02 Aug 2022 01:06:43 +0000
+Received: from APTAIPPMTA01.qualcomm.com (APTAIPPMTA01.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27216hXT029656;
+        Tue, 2 Aug 2022 01:06:43 GMT
+Received: from maow2-gv.ap.qualcomm.com (maow2-gv.qualcomm.com [10.232.193.133])
+        by APTAIPPMTA01.qualcomm.com (PPS) with ESMTP id 27216gnm029653;
+        Tue, 02 Aug 2022 01:06:43 +0000
+Received: by maow2-gv.ap.qualcomm.com (Postfix, from userid 399080)
+        id 9C66C21029A6; Tue,  2 Aug 2022 09:06:41 +0800 (CST)
+From:   Kassey Li <quic_yingangl@quicinc.com>
+To:     akpm@linux-foundation.org, vbabka@kernel.org
+Cc:     Kassey Li <quic_yingangl@quicinc.com>, minchan@kernel.org,
+        iamjoonsoo.kim@lge.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: [PATCH v3] mm/page_owner.c: add llseek for page_owner
+Date:   Tue,  2 Aug 2022 09:06:40 +0800
+Message-Id: <20220802010640.26937-1-quic_yingangl@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: OQB56bczKuKnXRj0Ch0ep3tLxqx5K73m
+X-Proofpoint-ORIG-GUID: OQB56bczKuKnXRj0Ch0ep3tLxqx5K73m
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-01_12,2022-08-01_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
+ mlxlogscore=769 impostorscore=0 clxscore=1015 mlxscore=0 malwarescore=0
+ priorityscore=1501 bulkscore=0 adultscore=0 spamscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
+ definitions=main-2208020003
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+There is usage to dump a given cma region page_owner
+instead of all page's.
 
-在 2022/8/2 05:56, Bjorn Helgaas 写道:
-> On Wed, Jul 20, 2022 at 12:23:29PM -0500, Bjorn Helgaas wrote:
->> [+cc Andy, Joe, possible checkpatch question]
->>
->> On Wed, Jul 20, 2022 at 03:22:03PM +0800, Liu Song wrote:
->>> From: Liu Song <liusong@linux.alibaba.com>
->>>
->>> Read the help information of PCI_P2PDMA through make menuconfig,
->>> "Enables" is partially displayed as garbled characters, so fix it.
->>>
->>> Signed-off-by: Liu Song <liusong@linux.alibaba.com>
->>> ---
->>>   drivers/pci/Kconfig | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/pci/Kconfig b/drivers/pci/Kconfig
->>> index 133c732..8102b78 100644
->>> --- a/drivers/pci/Kconfig
->>> +++ b/drivers/pci/Kconfig
->>> @@ -166,7 +166,7 @@ config PCI_P2PDMA
->>>   	depends on ZONE_DEVICE
->>>   	select GENERIC_ALLOCATOR
->>>   	help
->>> -	  Enableѕ drivers to do PCI peer-to-peer transactions to and from
->>> +	  Enables drivers to do PCI peer-to-peer transactions to and from
->> I see this problem ("Enables" renders as "Enable ~U" because the "s"
->> is actually UTF-8 D195, CYRILLIC SMALL LETTER DZE).
->>
->> "file" found the following other Kconfig files that also contain
->> UTF-8:
->>
->>    drivers/pci/Kconfig
->>      D195 CYRILLIC SMALL LETTER DZE, which looks like "s"
->>      "Enables" renders as "Enable ~U"
->>    net/netfilter/ipvs/Kconfig
->>      C2A0 NO-BREAK SPACE
->>      renders fine
->>    drivers/mtd/nand/raw/Kconfig
->>      MTD_NAND_CAFE  C389 LATIN CAPITAL LETTER E WITH ACUTE
->>      "CAFÉ" renders as "CAF ~I"
->>    drivers/mtd/spi-nor/Kconfig
->>      MTD_SPI_NOR_USE_4K_SECTORS
->>      "16 × 4 KiB" renders as "16  ~W 4 KiB"
->>    drivers/net/can/usb/Kconfig
->>    drivers/net/can/peak_canfd/Kconfig
->>    drivers/gpu/drm/panel/Kconfig
->>    drivers/platform/mellanox/Kconfig
->>    kernel/time/Kconfig
->>    crypto/Kconfig
->>    arch/Kconfig
->>
->> Some of these are clearly wrong (Cyrillic letter), some are
->> unnecessary (non-breakable space), some are arguable ("CAFÉ" and "16 ×
->> 4 KiB" -- these take advantage of UTF-8 in useful ways).
->>
->> Not being a charset guru, I dunno if the rendering problem means
->> my terminal is set incorrectly or if they all need to be changed.
->>
->> But I think we should address all of them at the same time.  If we do
->> need to avoid UTF-8 in Kconfig help, maybe checkpatch should look for
->> it.
-> Any progress on this problem?  I certainly agree that it should be
-> fixed; I would just like to fix all the problems, not just the PCI
-> one.
->
-> Bjorn
+This change allows to specify a ppos as start_pfn
+by fseek.
 
+Any invalid ppos will be skipped, so it did not
+broken the origin dump feature.
 
-Totally agree, according to your suggestion, I will resubmit with all 
-the revisions.
+Suggested-by: Vlastimil Babka (SUSE) <vbabka@kernel.org>
+Signed-off-by: Kassey Li <quic_yingangl@quicinc.com>
+---
+ mm/page_owner.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
-
-Thanks
-
+diff --git a/mm/page_owner.c b/mm/page_owner.c
+index e4c6f3f1695b..231b1877af99 100644
+--- a/mm/page_owner.c
++++ b/mm/page_owner.c
+@@ -497,8 +497,8 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 		return -EINVAL;
+ 
+ 	page = NULL;
+-	pfn = min_low_pfn + *ppos;
+ 
++	pfn = *ppos;
+ 	/* Find a valid PFN or the start of a MAX_ORDER_NR_PAGES area */
+ 	while (!pfn_valid(pfn) && (pfn & (MAX_ORDER_NR_PAGES - 1)) != 0)
+ 		pfn++;
+@@ -561,7 +561,7 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 			continue;
+ 
+ 		/* Record the next PFN to read in the file offset */
+-		*ppos = (pfn - min_low_pfn) + 1;
++		*ppos = pfn + 1;
+ 
+ 		return print_page_owner(buf, count, pfn, page,
+ 				page_owner, handle);
+@@ -570,6 +570,21 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 	return 0;
+ }
+ 
++static loff_t llseek_page_owner(struct file *file, loff_t offset, int whence)
++{
++	loff_t retval = 0;
++	switch (whence) {
++		case SEEK_CUR:
++		case SEEK_SET:
++			file->f_pos = offset;
++			break;
++		default:
++			retval = -ENXIO;
++	}
++
++	return retval;
++}
++
+ static void init_pages_in_zone(pg_data_t *pgdat, struct zone *zone)
+ {
+ 	unsigned long pfn = zone->zone_start_pfn;
+@@ -660,6 +675,7 @@ static void init_early_allocated_pages(void)
+ 
+ static const struct file_operations proc_page_owner_operations = {
+ 	.read		= read_page_owner,
++	.llseek 	= llseek_page_owner,
+ };
+ 
+ static int __init pageowner_init(void)
+-- 
+2.17.1
 
