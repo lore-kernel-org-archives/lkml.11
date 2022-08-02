@@ -2,214 +2,270 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F180C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:35:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5361C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:36:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236001AbiHBHfn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 03:35:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40608 "EHLO
+        id S235972AbiHBHgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 03:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235963AbiHBHfW (ORCPT
+        with ESMTP id S235980AbiHBHgc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 03:35:22 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A16DA9;
-        Tue,  2 Aug 2022 00:35:17 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id e132so11675823pgc.5;
-        Tue, 02 Aug 2022 00:35:17 -0700 (PDT)
+        Tue, 2 Aug 2022 03:36:32 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0648FD12C
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 00:36:30 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id y23so4391401ljh.12
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 00:36:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:from:to:cc;
-        bh=IBAUG/bpyaU3jSgEVIxzzw7oGbIuCDdRdzuZfuiuEAw=;
-        b=Jp9o7eugy/hHZDd7bXj/4H+3k/axx1aahcm1LXz1kXeJH/cFOPUP+y2Suac9P3wU6u
-         QdmlUnbzjoqSnLMsmz2cqiIXAdUZy35CmDFP+stgkuJxBDSA9Wjmd/hQCdAn5b9QkSgM
-         X229t+rX4VFgc8b4x3xvSPfLk0YEPW3cGsqN6M5gSirsizW+IRkDENgmirZstDMha7rw
-         9m/wOJ+5Dk+6CUska7yR0sOUZI6bT11BgBRbP9JXFJO7xgEfPmrE8okECzfrh70ZfGtb
-         pLDObnWl5vN/fYxvGty/Z345tyCOCi9hAczFG8avJPwLT40sR+WnOz7V6PL5gSE2UI1V
-         NnOg==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=+uxw0k1z3yLPPGIvdY7TbWXYjeq8DTWxtJm8yZgfHjM=;
+        b=lehLhnOxHSYYvDeRIsj9cGKX6iGFd9EJ2KyLjQ5zdw7EOpe1ax+Ck7FKZfJ548h9H0
+         Zt2R10iuct7iBdcxdUCrvsrXObQRCImWlwl0I+TuPuYGTcfZUK6k0RBbN/PU+Z0seItZ
+         yTDMWwLcdRS+Mhh/bUX6F2w7fbdpfP41BrO2FvZK+NZGCtnw3OgH7Qq5dBsyKornMVRD
+         dx7PIhgzHNvZMEEjmv+Inv8ReKtWN8jIw/FgVHidrnOObka+qI1Z/KPdFjg8hfCqH7FF
+         amNvad1KBCWNy3YqRmzqn4vfET8D6hlgdXElhoAia1WeuZW4uqNU2cOil9Fzm7x25xOc
+         nYMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
-         :to:cc;
-        bh=IBAUG/bpyaU3jSgEVIxzzw7oGbIuCDdRdzuZfuiuEAw=;
-        b=v53Quqi8//xELTRJsi1wXfI9xQJQESyCxubBrHNhK5ZoNvgGznQawlclI6Hcp5tG6A
-         qaTkhVrC7i34COE89tnH5aDpsqVuHTSrMkcRxH9FnTr9Bh8ib9Wr7lL/gsBSUr8uNaZ5
-         CWVitRtM0SJIDuY7ylRAdxvcpsn+6DqNPQaucsSyGtrKtQUybF5poTmD9knrcd9k5Umn
-         ntKLSRmeYW+QAdIpzfLOSlPvpSAOaVHX+tmzG8u/KbP25/zI2W2ctTX8ZCvHJJwq7jbh
-         N3dgMfC3l7FRi0boDvCr8pbzGm0+YbeIOzpJwababwxGqmCdejnw2F9OPEkEcESKtSQE
-         wptA==
-X-Gm-Message-State: ACgBeo3O2mkcBuit0LQXHOacQFgyI0uTaIf2B2GuvE4m39rNR4sL+ecV
-        QgT5qEXGJnWwjgRHFREW02g=
-X-Google-Smtp-Source: AA6agR54oRROMzJT8jLOonCUny0A47nV7r5P0gVpqM1pSG8Ju6rTq1/SMHOt3qMD1xUPomB0Nzrgsg==
-X-Received: by 2002:a65:5383:0:b0:41c:1148:5d6b with SMTP id x3-20020a655383000000b0041c11485d6bmr6826856pgq.24.1659425717280;
-        Tue, 02 Aug 2022 00:35:17 -0700 (PDT)
-Received: from balhae.roam.corp.google.com (rrcs-173-196-215-70.west.biz.rr.com. [173.196.215.70])
-        by smtp.gmail.com with ESMTPSA id d12-20020a170902e14c00b0016be368fb30sm10802896pla.212.2022.08.02.00.35.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 00:35:16 -0700 (PDT)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Song Liu <songliubraving@fb.com>,
-        Blake Jones <blakejones@google.com>
-Subject: [PATCH 3/3] perf lock: Print lost entries at the end
-Date:   Tue,  2 Aug 2022 00:35:11 -0700
-Message-Id: <20220802073511.299459-3-namhyung@kernel.org>
-X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
-In-Reply-To: <20220802073511.299459-1-namhyung@kernel.org>
-References: <20220802073511.299459-1-namhyung@kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+uxw0k1z3yLPPGIvdY7TbWXYjeq8DTWxtJm8yZgfHjM=;
+        b=CU7KJsDPGAwZPw8Tt2lqz1V5thebODTZIyy8DGzMJjExVt3GcKK4sMdOJfZY7UFkLV
+         k++EV1xlRVHcTX0pTIh4wGEVvcaTi3ZRA/FvKeuvW+RCBLx9UB+orc/o2YP+0b84MS7D
+         qMoW/DAJimBe0kdgrQCrkFLhKoCCukPSKZQmOAhI2FyAMyHOByK++DgkZe+YjUIVXRSw
+         +x3nlepPaqLEZkRezRQ0/Oo4zweUPLA5sUzoiaeZw4vXzqfkGKfwhfIUM0SB/YuE/cTN
+         84gpFVw3EP/uh98CJ8s32CUczyQIacoOHikF4w9Smw9MuWjFfIrwOeg8dkPCmbOxWabg
+         ZDYg==
+X-Gm-Message-State: AJIora9xfWVTwlV4NnOM1cOdEYUVwIMrekuoAbWaitBI9NwzUUtteJSA
+        0cPMWdILyet3AiTnfCtPNjnOHg==
+X-Google-Smtp-Source: AGRyM1sCfsPc72zuAnJmDLr75MiHUEpZykMoGAAgdiNdr2Jw6rzcump9gBcYkdkMXkdsf9InJgbzyA==
+X-Received: by 2002:a2e:934f:0:b0:24f:ea1:6232 with SMTP id m15-20020a2e934f000000b0024f0ea16232mr6321414ljh.135.1659425788309;
+        Tue, 02 Aug 2022 00:36:28 -0700 (PDT)
+Received: from [192.168.1.6] ([213.161.169.44])
+        by smtp.gmail.com with ESMTPSA id h40-20020a0565123ca800b0048af895ca6bsm718364lfv.107.2022.08.02.00.36.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 00:36:27 -0700 (PDT)
+Message-ID: <4b1d5266-40a9-9897-7caf-d3d41c0aa598@linaro.org>
+Date:   Tue, 2 Aug 2022 09:36:25 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/4] media: dt-bindings: media: Document RZ/G2L CSI-2
+ block
+Content-Language: en-US
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+References: <20220801214718.16943-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220801214718.16943-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220801214718.16943-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Like the normal perf lock report output, it'd print bad stats at the end
-if exists or -v option is passed.  Currently it uses BROKEN_CONTENDED
-stat for the lost count (due to full stack maps).
+On 01/08/2022 23:47, Lad Prabhakar wrote:
+> Document the CSI-2 block which is part of CRU found in Renesas
+> RZ/G2L SoC.
+> 
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+> RFC v2 -> v1
 
-  $ sudo perf lock con -a -b -m 128 sleep 5
-  ...
-  === output for debug===
+Too many "media" in the subject prefixes.
 
-  bad: 43, total: 14903
-  bad rate: 0.29 %
-  histogram of events caused bad sequence
-      acquire: 0
-     acquired: 0
-    contended: 43
-      release: 0
+> * Fixed review comments pointed by Rob and Jacopo.
+> 
+> RFC v1 -> RFC v2
+> * New patch
+> ---
+>  .../bindings/media/renesas,rzg2l-csi2.yaml    | 149 ++++++++++++++++++
+>  1 file changed, 149 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/media/renesas,rzg2l-csi2.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/media/renesas,rzg2l-csi2.yaml b/Documentation/devicetree/bindings/media/renesas,rzg2l-csi2.yaml
+> new file mode 100644
+> index 000000000000..f82f88c096df
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/media/renesas,rzg2l-csi2.yaml
+> @@ -0,0 +1,149 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +# Copyright (C) 2022 Renesas Electronics Corp.
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/media/renesas,rzg2l-csi2.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Renesas RZ/G2L (and alike SoC's) MIPI CSI-2 receiver
+> +
+> +maintainers:
+> +  - Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> +
+> +description:
+> +  The CSI-2 receiver device provides MIPI CSI-2 capabilities for the Renesas RZ/G2L
+> +  (and alike SoCs). MIPI CSI-2 is part of the CRU block which is used in conjunction
+> +  with the Image Processing module, which provides the video capture capabilities.
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - items:
+> +          - enum:
+> +              - renesas,r9a07g044-csi2       # RZ/G2{L,LC}
+> +              - renesas,r9a07g054-csi2       # RZ/V2L
+> +          - const: renesas,rzg2l-csi2
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  interrupt-names:
+> +    const: csi2_link
+> +
+> +  clocks:
+> +    items:
+> +      - description: Internal clock for connecting CRU and MIPI
+> +      - description: CRU Main clock
+> +      - description: CPU Register access clock
+> +
+> +  clock-names:
+> +    items:
+> +      - const: sysclk
+> +      - const: vclk
+> +      - const: pclk
+> +
+> +  power-domains:
+> +    maxItems: 1
+> +
+> +  resets:
+> +    items:
+> +      - description: CRU_CMN_RSTB reset terminal
+> +
+> +  reset-names:
+> +    const: cmn-rstb
+> +
+> +  ports:
+> +    $ref: /schemas/graph.yaml#/properties/ports
+> +
+> +    properties:
+> +      port@0:
+> +        $ref: /schemas/graph.yaml#/$defs/port-base
+> +        unevaluatedProperties: false
+> +        description:
+> +          Input port node, single endpoint describing the CSI-2 transmitter.
+> +
+> +        properties:
+> +          endpoint:
+> +            $ref: video-interfaces.yaml#
+> +            unevaluatedProperties: false
+> +
+> +            properties:
+> +              data-lanes:
+> +                minItems: 1
+> +                maxItems: 4
+> +                items:
+> +                  maximum: 4
+> +
+> +            required:
+> +              - clock-lanes
+> +              - data-lanes
+> +
+> +      port@1:
+> +        $ref: /schemas/graph.yaml#/properties/port
+> +        description:
+> +          Output port node, Image Processing block connected to the CSI-2 receiver.
+> +
+> +    required:
+> +      - port@0
+> +      - port@1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - clock-names
+> +  - power-domains
+> +  - resets
+> +  - reset-names
+> +  - ports
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/r9a07g044-cpg.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +    csi20: csi2@10830400 {
 
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
----
- tools/perf/builtin-lock.c                      | 8 +++++++-
- tools/perf/util/bpf_lock_contention.c          | 6 ++++--
- tools/perf/util/bpf_skel/lock_contention.bpf.c | 9 +++++++--
- tools/perf/util/lock-contention.h              | 1 +
- 4 files changed, 19 insertions(+), 5 deletions(-)
+Node name just "csi"
 
-diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
-index e32fdcd497e0..8065f0268e55 100644
---- a/tools/perf/builtin-lock.c
-+++ b/tools/perf/builtin-lock.c
-@@ -1471,8 +1471,11 @@ static void print_contention_result(void)
- 		pr_info("  %10s   %s\n\n", "type", "caller");
- 
- 	bad = total = 0;
-+	if (use_bpf)
-+		bad = bad_hist[BROKEN_CONTENDED];
-+
- 	while ((st = pop_from_result())) {
--		total++;
-+		total += use_bpf ? st->nr_contended : 1;
- 		if (st->broken)
- 			bad++;
- 
-@@ -1686,6 +1689,9 @@ static int __cmd_contention(int argc, const char **argv)
- 
- 		lock_contention_stop();
- 		lock_contention_read(&con);
-+
-+		/* abuse bad hist stats for lost entries */
-+		bad_hist[BROKEN_CONTENDED] = con.lost;
- 	} else {
- 		err = perf_session__process_events(session);
- 		if (err)
-diff --git a/tools/perf/util/bpf_lock_contention.c b/tools/perf/util/bpf_lock_contention.c
-index 26128e5bb659..65f51cc25236 100644
---- a/tools/perf/util/bpf_lock_contention.c
-+++ b/tools/perf/util/bpf_lock_contention.c
-@@ -16,7 +16,7 @@ static struct lock_contention_bpf *skel;
- 
- /* should be same as bpf_skel/lock_contention.bpf.c */
- struct lock_contention_key {
--	u32 stack_id;
-+	s32 stack_id;
- };
- 
- struct lock_contention_data {
-@@ -110,7 +110,7 @@ int lock_contention_stop(void)
- int lock_contention_read(struct lock_contention *con)
- {
- 	int fd, stack;
--	u32 prev_key, key;
-+	s32 prev_key, key;
- 	struct lock_contention_data data;
- 	struct lock_stat *st;
- 	struct machine *machine = con->machine;
-@@ -119,6 +119,8 @@ int lock_contention_read(struct lock_contention *con)
- 	fd = bpf_map__fd(skel->maps.lock_stat);
- 	stack = bpf_map__fd(skel->maps.stacks);
- 
-+	con->lost = skel->bss->lost;
-+
- 	prev_key = 0;
- 	while (!bpf_map_get_next_key(fd, &prev_key, &key)) {
- 		struct map *kmap;
-diff --git a/tools/perf/util/bpf_skel/lock_contention.bpf.c b/tools/perf/util/bpf_skel/lock_contention.bpf.c
-index 67d46533e518..9e8b94eb6320 100644
---- a/tools/perf/util/bpf_skel/lock_contention.bpf.c
-+++ b/tools/perf/util/bpf_skel/lock_contention.bpf.c
-@@ -12,7 +12,7 @@
- #define MAX_ENTRIES  10240
- 
- struct contention_key {
--	__u32 stack_id;
-+	__s32 stack_id;
- };
- 
- struct contention_data {
-@@ -27,7 +27,7 @@ struct tstamp_data {
- 	__u64 timestamp;
- 	__u64 lock;
- 	__u32 flags;
--	__u32 stack_id;
-+	__s32 stack_id;
- };
- 
- /* callstack storage  */
-@@ -73,6 +73,9 @@ int enabled;
- int has_cpu;
- int has_task;
- 
-+/* error stat */
-+unsigned long lost;
-+
- static inline int can_record(void)
- {
- 	if (has_cpu) {
-@@ -116,6 +119,8 @@ int contention_begin(u64 *ctx)
- 	pelem->flags = (__u32)ctx[1];
- 	pelem->stack_id = bpf_get_stackid(ctx, &stacks, BPF_F_FAST_STACK_CMP);
- 
-+	if (pelem->stack_id < 0)
-+		lost++;
- 	return 0;
- }
- 
-diff --git a/tools/perf/util/lock-contention.h b/tools/perf/util/lock-contention.h
-index b09fd6eb978a..d9fc5f076567 100644
---- a/tools/perf/util/lock-contention.h
-+++ b/tools/perf/util/lock-contention.h
-@@ -113,6 +113,7 @@ struct lock_contention {
- 	struct machine *machine;
- 	struct hlist_head *result;
- 	unsigned long map_len;
-+	unsigned long lost;
- };
- 
- #ifdef HAVE_BPF_SKEL
--- 
-2.37.1.455.g008518b4e5-goog
+https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
 
+
+> +            compatible = "renesas,r9a07g044-csi2", "renesas,rzg2l-csi2";
+> +            reg = <0x10830400 0xfc00>;
+
+Please use 4-space indentation for example DTS.
+
+> +            interrupts = <GIC_SPI 166 IRQ_TYPE_LEVEL_HIGH>;
+> +            clocks = <&cpg CPG_MOD R9A07G044_CRU_SYSCLK>,
+> +                     <&cpg CPG_MOD R9A07G044_CRU_VCLK>,
+> +                     <&cpg CPG_MOD R9A07G044_CRU_PCLK>;
+> +            clock-names = "sysclk", "vclk", "pclk";
+> +            power-domains = <&cpg>;
+> +            resets = <&cpg R9A07G044_CRU_CMN_RSTB>;
+> +            reset-names = "cmn-rstb";
+> +
+> +            ports {
+> +                    #address-cells = <1>;
+> +                    #size-cells = <0>;
+> +
+> +                    port@0 {
+> +                            reg = <0>;
+> +
+> +                            csi2_in: endpoint {
+> +                                    clock-lanes = <0>;
+> +                                    data-lanes = <1 2>;
+> +                                    remote-endpoint = <&ov5645_ep>;
+> +                            };
+> +                    };
+> +
+> +                    port@1 {
+> +                            #address-cells = <1>;
+> +                            #size-cells = <0>;
+> +
+> +                            reg = <1>;
+> +
+> +                            csi2cru: endpoint@0 {
+> +                                    reg = <0>;
+> +                                    remote-endpoint = <&crucsi2>;
+> +                            };
+> +                    };
+> +            };
+> +    };
+
+
+Best regards,
+Krzysztof
