@@ -2,170 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB487C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24979C19F29
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:28:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234340AbiHBI10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 04:27:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
+        id S235790AbiHBI2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 04:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232747AbiHBI1Y (ORCPT
+        with ESMTP id S232404AbiHBI2q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 04:27:24 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C2925C46;
-        Tue,  2 Aug 2022 01:27:22 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 28EF8188589F;
-        Tue,  2 Aug 2022 08:27:20 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id D4ADE25032B8;
-        Tue,  2 Aug 2022 08:27:19 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id C83B0A1E00B7; Tue,  2 Aug 2022 08:27:19 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        Tue, 2 Aug 2022 04:28:46 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B6125C68;
+        Tue,  2 Aug 2022 01:28:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659428925; x=1690964925;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=N2SRWZT7E8XnwkYQjFEign9E0YAfUNFVRFBeRwF+DPA=;
+  b=GT0wXQ4ahtgrP71qRfaHrgGbcXfwmRV0530dVv74EQQwoAESGKb1wdMa
+   VpkiyN0l5TgTsDY7ZdZ6fEiZ8QwzgnMjhpQ4X+BZut2D+XQBdlMlBhe3G
+   snjxWfuMmVu+FJQjXIq2uxbWjtzf1Z8KFwJtp/6DXwCStlp7zFo3FKANz
+   +tzYq6yapCKpAhNdUZyhh5s6XPba9yo6YDZa8pbefSxyH/jqjvVz1hMV0
+   MWwHeFRezgJyL/kBjHvOJ1W8K7rzxvCffsEEHdXO614wKMiGKIfU1YGV5
+   GE4FCMuf+xUjC/TjxHwFN9eNMrsOWio94apF0/JDyE1ZRuqhkaOuAYKoQ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10426"; a="353359200"
+X-IronPort-AV: E=Sophos;i="5.93,210,1654585200"; 
+   d="scan'208";a="353359200"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 01:28:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,210,1654585200"; 
+   d="scan'208";a="744589736"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 02 Aug 2022 01:28:41 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Tue, 02 Aug 2022 11:28:40 +0300
+Date:   Tue, 2 Aug 2022 11:28:40 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Gene Chen <gene.chen.richtek@gmail.com>
+Cc:     linux@roeck-us.net, gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        gene_chen@richtek.com, cy_huang@richtek.com
+Subject: Re: [PATCH v3 5/7] usb: typec: tcpci_rt1711h: Add compatible id with
+ rt1715
+Message-ID: <YujgOC4vGrtodq+u@kuha.fi.intel.com>
+References: <20220801101447.86207-1-gene.chen.richtek@gmail.com>
+ <20220801101447.86207-6-gene.chen.richtek@gmail.com>
 MIME-Version: 1.0
-Date:   Tue, 02 Aug 2022 10:27:19 +0200
-From:   netdev@kapio-technology.com
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 2/6] net: switchdev: add support for
- offloading of fdb locked flag
-In-Reply-To: <20220708085403.sk7znfad3x2mnxeh@skbuf>
-References: <20220707152930.1789437-1-netdev@kapio-technology.com>
- <20220707152930.1789437-3-netdev@kapio-technology.com>
- <20220708085403.sk7znfad3x2mnxeh@skbuf>
-User-Agent: Gigahost Webmail
-Message-ID: <50bb7ce47f993fb9522476bac69c935e@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220801101447.86207-6-gene.chen.richtek@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-08 10:54, Vladimir Oltean wrote:
->>  };
->> 
->>  /* TODO: ideally DSA ports would have a single dp->link_dp member,
->> diff --git a/include/net/switchdev.h b/include/net/switchdev.h
->> index aa0171d5786d..9f83c835ee62 100644
->> --- a/include/net/switchdev.h
->> +++ b/include/net/switchdev.h
->> @@ -245,6 +245,7 @@ struct switchdev_notifier_fdb_info {
->>  	u16 vid;
->>  	u8 added_by_user:1,
->>  	   is_local:1,
->> +	   is_locked:1,
->>  	   offloaded:1;
->>  };
->> 
->> diff --git a/net/bridge/br.c b/net/bridge/br.c
->> index 96e91d69a9a8..fe0a4741fcda 100644
->> --- a/net/bridge/br.c
->> +++ b/net/bridge/br.c
->> @@ -166,7 +166,8 @@ static int br_switchdev_event(struct 
->> notifier_block *unused,
->>  	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
->>  		fdb_info = ptr;
->>  		err = br_fdb_external_learn_add(br, p, fdb_info->addr,
->> -						fdb_info->vid, false);
->> +						fdb_info->vid, false,
->> +						fdb_info->is_locked);
->>  		if (err) {
->>  			err = notifier_from_errno(err);
->>  			break;
->> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
->> index ee9064a536ae..32ebb18050b9 100644
->> --- a/net/bridge/br_fdb.c
->> +++ b/net/bridge/br_fdb.c
->> @@ -1136,7 +1136,7 @@ static int __br_fdb_add(struct ndmsg *ndm, 
->> struct net_bridge *br,
->>  					   "FDB entry towards bridge must be permanent");
->>  			return -EINVAL;
->>  		}
->> -		err = br_fdb_external_learn_add(br, p, addr, vid, true);
->> +		err = br_fdb_external_learn_add(br, p, addr, vid, true, false);
->>  	} else {
->>  		spin_lock_bh(&br->hash_lock);
->>  		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, nfea_tb);
->> @@ -1366,7 +1366,7 @@ void br_fdb_unsync_static(struct net_bridge *br, 
->> struct net_bridge_port *p)
->> 
->>  int br_fdb_external_learn_add(struct net_bridge *br, struct 
->> net_bridge_port *p,
->>  			      const unsigned char *addr, u16 vid,
->> -			      bool swdev_notify)
->> +			      bool swdev_notify, bool locked)
->>  {
->>  	struct net_bridge_fdb_entry *fdb;
->>  	bool modified = false;
->> @@ -1386,6 +1386,9 @@ int br_fdb_external_learn_add(struct net_bridge 
->> *br, struct net_bridge_port *p,
->>  		if (!p)
->>  			flags |= BIT(BR_FDB_LOCAL);
->> 
->> +		if (locked)
->> +			flags |= BIT(BR_FDB_ENTRY_LOCKED);
->> +
->>  		fdb = fdb_create(br, p, addr, vid, flags);
->>  		if (!fdb) {
->>  			err = -ENOMEM;
->> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
->> index 47a3598d25c8..9082451b4d40 100644
->> --- a/net/bridge/br_private.h
->> +++ b/net/bridge/br_private.h
->> @@ -811,7 +811,7 @@ int br_fdb_sync_static(struct net_bridge *br, 
->> struct net_bridge_port *p);
->>  void br_fdb_unsync_static(struct net_bridge *br, struct 
->> net_bridge_port *p);
->>  int br_fdb_external_learn_add(struct net_bridge *br, struct 
->> net_bridge_port *p,
->>  			      const unsigned char *addr, u16 vid,
->> -			      bool swdev_notify);
->> +			      bool swdev_notify, bool locked);
->>  int br_fdb_external_learn_del(struct net_bridge *br, struct 
->> net_bridge_port *p,
->>  			      const unsigned char *addr, u16 vid,
->>  			      bool swdev_notify);
->> diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
->> index 8f3d76c751dd..85e566b856e1 100644
->> --- a/net/bridge/br_switchdev.c
->> +++ b/net/bridge/br_switchdev.c
->> @@ -136,6 +136,7 @@ static void br_switchdev_fdb_populate(struct 
->> net_bridge *br,
->>  	item->added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
->>  	item->offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
->>  	item->is_local = test_bit(BR_FDB_LOCAL, &fdb->flags);
->> +	item->is_locked = test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
->>  	item->info.dev = (!p || item->is_local) ? br->dev : p->dev;
->>  	item->info.ctx = ctx;
->>  }
->> diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
->> index d9722e49864b..42f47a94b0f0 100644
->> --- a/net/dsa/dsa_priv.h
->> +++ b/net/dsa/dsa_priv.h
->> @@ -65,6 +65,7 @@ struct dsa_notifier_fdb_info {
->>  	const struct dsa_port *dp;
->>  	const unsigned char *addr;
->>  	u16 vid;
->> +	bool is_locked;
+On Mon, Aug 01, 2022 at 06:14:45PM +0800, Gene Chen wrote:
+> From: Gene Chen <gene_chen@richtek.com>
 > 
-> drop
+> Add compatible id with rt1715, and add initial setting for
+> specific support PD30 command.
 > 
+> Signed-off-by: Gene Chen <gene_chen@richtek.com>
 
-If this is dropped, the whole scheme will not work as userspace will not 
-get notifications of new locked entries from the driver.
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+
+> ---
+>  drivers/usb/typec/tcpm/tcpci_rt1711h.c | 43 ++++++++++++++++++++------
+>  1 file changed, 34 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/usb/typec/tcpm/tcpci_rt1711h.c b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> index 33d8ea95b7c1..da35dd3e8a59 100644
+> --- a/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> +++ b/drivers/usb/typec/tcpm/tcpci_rt1711h.c
+> @@ -19,6 +19,8 @@
+>  
+>  #define RT1711H_VID		0x29CF
+>  #define RT1711H_PID		0x1711
+> +#define RT1711H_DID		0x2171
+> +#define RT1715_DID		0x2173
+>  
+>  #define RT1711H_PHYCTRL1	0x80
+>  #define RT1711H_PHYCTRL2	0x81
+> @@ -30,6 +32,7 @@
+>  			    (((ck300) << 7) | ((ship_off) << 5) | \
+>  			    ((auto_idle) << 3) | ((tout) & 0x07))
+>  #define RT1711H_AUTOIDLEEN	BIT(3)
+> +#define RT1711H_ENEXTMSG	BIT(4)
+>  
+>  #define RT1711H_RTCTRL11	0x9E
+>  
+> @@ -48,6 +51,7 @@ struct rt1711h_chip {
+>  	struct device *dev;
+>  	struct regulator *vbus;
+>  	bool src_en;
+> +	u16 did;
+>  };
+>  
+>  static int rt1711h_read16(struct rt1711h_chip *chip, unsigned int reg, u16 *val)
+> @@ -84,8 +88,9 @@ static struct rt1711h_chip *tdata_to_rt1711h(struct tcpci_data *tdata)
+>  
+>  static int rt1711h_init(struct tcpci *tcpci, struct tcpci_data *tdata)
+>  {
+> -	int ret;
+>  	struct rt1711h_chip *chip = tdata_to_rt1711h(tdata);
+> +	struct regmap *regmap = chip->data.regmap;
+> +	int ret;
+>  
+>  	/* CK 300K from 320K, shipping off, auto_idle enable, tout = 32ms */
+>  	ret = rt1711h_write8(chip, RT1711H_RTCTRL8,
+> @@ -93,6 +98,14 @@ static int rt1711h_init(struct tcpci *tcpci, struct tcpci_data *tdata)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	/* Enable PD30 extended message for RT1715 */
+> +	if (chip->did == RT1715_DID) {
+> +		ret = regmap_update_bits(regmap, RT1711H_RTCTRL8,
+> +					 RT1711H_ENEXTMSG, RT1711H_ENEXTMSG);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+>  	/* I2C reset : (val + 1) * 12.5ms */
+>  	ret = rt1711h_write8(chip, RT1711H_RTCTRL11,
+>  			     RT1711H_RTCTRL11_SET(1, 0x0F));
+> @@ -230,7 +243,7 @@ static int rt1711h_sw_reset(struct rt1711h_chip *chip)
+>  	return 0;
+>  }
+>  
+> -static int rt1711h_check_revision(struct i2c_client *i2c)
+> +static int rt1711h_check_revision(struct i2c_client *i2c, struct rt1711h_chip *chip)
+>  {
+>  	int ret;
+>  
+> @@ -248,7 +261,15 @@ static int rt1711h_check_revision(struct i2c_client *i2c)
+>  		dev_err(&i2c->dev, "pid is not correct, 0x%04x\n", ret);
+>  		return -ENODEV;
+>  	}
+> -	return 0;
+> +	ret = i2c_smbus_read_word_data(i2c, TCPC_BCD_DEV);
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret != chip->did) {
+> +		dev_err(&i2c->dev, "did is not correct, 0x%04x\n", ret);
+> +		return -ENODEV;
+> +	}
+> +	dev_dbg(&i2c->dev, "did is 0x%04x\n", ret);
+> +	return ret;
+>  }
+>  
+>  static int rt1711h_probe(struct i2c_client *client,
+> @@ -257,16 +278,18 @@ static int rt1711h_probe(struct i2c_client *client,
+>  	int ret;
+>  	struct rt1711h_chip *chip;
+>  
+> -	ret = rt1711h_check_revision(client);
+> +	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
+> +	if (!chip)
+> +		return -ENOMEM;
+> +
+> +	chip->did = (size_t)device_get_match_data(&client->dev);
+> +
+> +	ret = rt1711h_check_revision(client, chip);
+>  	if (ret < 0) {
+>  		dev_err(&client->dev, "check vid/pid fail\n");
+>  		return ret;
+>  	}
+>  
+> -	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
+> -	if (!chip)
+> -		return -ENOMEM;
+> -
+>  	chip->data.regmap = devm_regmap_init_i2c(client,
+>  						 &rt1711h_regmap_config);
+>  	if (IS_ERR(chip->data.regmap))
+> @@ -317,13 +340,15 @@ static int rt1711h_remove(struct i2c_client *client)
+>  
+>  static const struct i2c_device_id rt1711h_id[] = {
+>  	{ "rt1711h", 0 },
+> +	{ "rt1715", 0 },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(i2c, rt1711h_id);
+>  
+>  #ifdef CONFIG_OF
+>  static const struct of_device_id rt1711h_of_match[] = {
+> -	{ .compatible = "richtek,rt1711h", },
+> +	{ .compatible = "richtek,rt1711h", .data = (void *)RT1711H_DID },
+> +	{ .compatible = "richtek,rt1715", .data = (void *)RT1715_DID },
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(of, rt1711h_of_match);
+> -- 
+> 2.25.1
+
+-- 
+heikki
