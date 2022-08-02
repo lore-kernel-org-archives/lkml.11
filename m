@@ -2,105 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 454B7C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:08:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F08C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237429AbiHBSId (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 14:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56240 "EHLO
+        id S235042AbiHBSJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 14:09:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236476AbiHBSIY (ORCPT
+        with ESMTP id S229462AbiHBSJL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 14:08:24 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F0712AAB
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 11:08:18 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id l14so10918598qtv.4
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 11:08:18 -0700 (PDT)
+        Tue, 2 Aug 2022 14:09:11 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1CB1260C;
+        Tue,  2 Aug 2022 11:09:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=t/KnfuDsURg9bubxzAvoQj1egBM9mbKPc7JxqT9dzco=;
-        b=Ds4m4A4fVZdTvo7C0gRYbAaLtRlWpt7c6XNlee/vm3R7aHbEQLpsCYxPUuNeXI0yYQ
-         tgMe3JbtVdcjq7/MK4EaR5SNdfuVVP65dvSYHb945oEcuP3uvZ/GiNA4Q3T91ayPpcj3
-         Lhw2OT2cTfDWLpiB1XBsmROV3HuPIEv51PG1t0TQyeTQklPW7SyHAodoWQc2vLW7+kyp
-         BHQ3X4FkJ9i9eUPPqGq23DtbMcxJ4dEXzx+RK4SymaBw2Es+sbM8ETE+heb0wn0ZPZRG
-         3fd47vQxifFW4EVXSRUn2T3eFnf4hJX74TAyjJpfmlCFDBXwRTkrTJXcBSXuT5+euNsB
-         UXZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=t/KnfuDsURg9bubxzAvoQj1egBM9mbKPc7JxqT9dzco=;
-        b=Yopv1thAgMWITXlux4EbneWLAYRj1G4pylepofxfaN+bJvwswRZT/Etdl+s33UtMw1
-         0+jj6v/L2HqybZAjbGoEJZaMykgtx8In0TJqv7P5xn6eU8IX1YICAMISG9IhafDTXciP
-         FtY8Da1KOOsnYYAsnxQpl8DSkBy2ethYNkvc8RfhDk2HzVodBDhrvix1ArbgAe9Cq4mH
-         q0FsoB3O0iyKaiQAloLIhKZy6bXIsMTqsWYlwbAuylG6rzbBflMgPxzFeAewbPsV8Yxa
-         aqbYfc9M92TopOTT6WnoewxKlsp9qDHq/ZD3E+jwsGMqUVK6pMsflhBYrI9Jco9yp0Ch
-         plVQ==
-X-Gm-Message-State: AJIora9TeZTW5qi6Rzz9sVq0oO5VjXBe5YfeUqix0sTtP0bJIPh2P4Ce
-        oOdfVkhZjaFOqdrF7BG0TigEoA==
-X-Google-Smtp-Source: AGRyM1vBx1AAs7g0q+4H2p9o5hHXB532RaVLKFmPC/yM+sf9e3QblJLCFbA+RKqR+UnL45hHGSbazw==
-X-Received: by 2002:a05:622a:1741:b0:31f:1fa8:2e01 with SMTP id l1-20020a05622a174100b0031f1fa82e01mr20519892qtk.81.1659463697637;
-        Tue, 02 Aug 2022 11:08:17 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id q18-20020a37f712000000b006b5df4d2c81sm10500851qkj.94.2022.08.02.11.08.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 11:08:16 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1oIwJT-000S5E-Vu;
-        Tue, 02 Aug 2022 15:08:15 -0300
-Date:   Tue, 2 Aug 2022 15:08:15 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Long Li <longli@microsoft.com>
-Cc:     Dexuan Cui <decui@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        Ajay Sharma <sharmaajay@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [Patch v4 03/12] net: mana: Handle vport sharing between devices
-Message-ID: <YuloD7WkRMs7ZIXk@ziepe.ca>
-References: <SN6PR2101MB13272044B91D6E37F7F5124FBF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
- <PH7PR21MB3263F08C111C5D06C99CC32ACE869@PH7PR21MB3263.namprd21.prod.outlook.com>
- <20220720234209.GP5049@ziepe.ca>
- <PH7PR21MB3263F5FD2FA4BA6669C21509CE919@PH7PR21MB3263.namprd21.prod.outlook.com>
- <20220721143858.GV5049@ziepe.ca>
- <PH7PR21MB326339501D9CA5ABE69F8AE9CE919@PH7PR21MB3263.namprd21.prod.outlook.com>
- <20220721183219.GA6833@ziepe.ca>
- <PH7PR21MB326304834D36451E7609D102CE999@PH7PR21MB3263.namprd21.prod.outlook.com>
- <YuQxIKxGAvUIwVmj@ziepe.ca>
- <PH7PR21MB3263E741EA5AA017A2AB5602CE999@PH7PR21MB3263.namprd21.prod.outlook.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1659463750; x=1690999750;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HnVKc3XQcKkacCwwPqn1Gcys57vujuhNWLXz1cK3oJE=;
+  b=vmmY0LAKxlMl8ThKNSS1/QniKTsKJik/8buGUX0bBhs2kmb4ajsxalsV
+   v85tYdsMK0YnCM7dcSfHmsnH3FeN/A2CcMPWp91Mx4aJKEYYumTxfti9j
+   KSlqtj8KYNC7Hnk06nhcwmWnQHLyP3K8vTMJsSzUKF7wKeNEDy9oYuGcT
+   o=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 02 Aug 2022 11:09:10 -0700
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 11:09:09 -0700
+Received: from [10.110.16.211] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 2 Aug 2022
+ 11:09:08 -0700
+Message-ID: <710f2b46-f30a-3d69-4a2c-2c67cb62c80b@quicinc.com>
+Date:   Tue, 2 Aug 2022 11:09:08 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH7PR21MB3263E741EA5AA017A2AB5602CE999@PH7PR21MB3263.namprd21.prod.outlook.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v12 0/9] Coresight: Add support for TPDM and TPDA
+Content-Language: en-US
+To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Jinlong Mao <quic_jinlmao@quicinc.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Konrad Dybcio <konradybcio@gmail.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     Leo Yan <leo.yan@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <coresight@lists.linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        Tingwei Zhang <quic_tingweiz@quicinc.com>,
+        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Hao Zhang <quic_hazha@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>
+References: <20220710021032.27455-1-quic_jinlmao@quicinc.com>
+ <3f714c34-277d-ef71-b527-f758172160f9@quicinc.com>
+ <20260db2-8c7e-e2b6-2385-74f433e4b55e@quicinc.com>
+ <23ae507d-1a01-9a33-52fb-73ac9efca8aa@quicinc.com>
+ <7ff0a9c5-b009-7b45-ac85-8ce26619a00a@arm.com>
+From:   Trilok Soni <quic_tsoni@quicinc.com>
+In-Reply-To: <7ff0a9c5-b009-7b45-ac85-8ce26619a00a@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 09:20:05PM +0000, Long Li wrote:
-> > > the Mellanox NICs implement the RAW_QP. IMHO, it's better to have the
-> > > user explicitly decide whether to use Ethernet or RDMA RAW_QP on a
-> > > specific port.
-> > 
-> > It should all be carefully documented someplace.
+Hi Suzuki,
+
+On 8/2/2022 10:43 AM, Suzuki K Poulose wrote:
+> Hi Trilok,
 > 
-> The use case for RAW_QP is from user-mode. Is it acceptable that we
-> document the detailed usage in rdma-core?
+> On 02/08/2022 18:33, Trilok Soni wrote:
+>>
+>>
+>> On 8/2/2022 7:43 AM, Jinlong Mao wrote:
+>>> Hi Reviewers,
+>>>
+>>> Please help to review V12 series of TPDM/TPDA patches.
+>>>
+>>> Thanks
+>>>
+>>
+>> Suzuki and Mathieu, we are almost there it seems in getting the 
+>> acceptance of these patches, so I hope you find the time to review 
+>> these patches. I guess it is almost a year now for these patches and 
+>> had a good amount of reviews and revisions :)
+> 
+> This series has been reviewed for the previous versions (which is why
+> we have it in v12) and this one depends on a series worked on by Mike
+> Leach. We cannot push this without the dynamic Trace ID allocation
+> scheme, which is clearly mentioned in the cover letter for this
+> series.
+> 
+> As such this series is in a good shape, assuming all the comments
+> in the previous version has been addressed. So, we would rather
+> get Mike's work priority and pull that in, so that we can eventually
+> get this upstream.
+> 
+> 
 
-Yes, but add a suitable comment someplace in the kernel too
+I believe we have addressed all the comments in v12. Are you ok, if we 
+post additional features series (around ~2k to ~3k SLOC)? I just want to 
+make sure we are not creating flood of patches w/ features.
 
-Jason
+---Trilok Soni
