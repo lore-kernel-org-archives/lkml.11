@@ -2,68 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE49CC19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:18:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D39C19F2B
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236853AbiHBMSQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 08:18:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38420 "EHLO
+        id S236937AbiHBMSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 08:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233811AbiHBMSP (ORCPT
+        with ESMTP id S236905AbiHBMSc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 08:18:15 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577D140BFC;
-        Tue,  2 Aug 2022 05:18:10 -0700 (PDT)
-X-QQ-mid: bizesmtp76t1659442679t8yn2sjl
-Received: from kali.lan ( [125.69.43.47])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 02 Aug 2022 20:17:58 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000020
-X-QQ-FEAT: XBN7tc9DADI6Ojkp2zarVxqaO1A5I6gQqaQ5zzxYKVTmUGCuljx9aINUNxuez
-        8/K5ajgyHjB3KpPKPJ3BqU7nHGWfaNZtqzMh7LyQZzrLiBAT4KrdwrA07slrXT5zzetlk5x
-        uMGbAbhJtvuO3sZjB6ZTgUcnOWIlzVNCiWSCIKL3qmdxreNEIteF2DU8TvwUKBvZ+NHguu9
-        I7y7+rShwQZA6IrmrsbjjxG5LZxA1NPftibfl0qcDIpyVorwWHkPQ/BA8z5ui8Cd481ruYf
-        cTImVegfdPZJVi8T2OlH+yw6tVYYiw0GsetYw3bJfTza4PwxgsRzLKnkYeVVDwyqtBch9bP
-        zBeO0z4q1iOuyqn6nZ2lzVBwatPdkasE/dVhfwAiSMVhVoZqRz/2oW7QAsLUrSHg4WDXiHW
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     tony@atomide.com
-Cc:     lee@kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] mfd: twl-core: Fix comment typo
-Date:   Wed,  3 Aug 2022 04:17:57 +0800
-Message-Id: <20220802201757.8142-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+        Tue, 2 Aug 2022 08:18:32 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A264F6B8;
+        Tue,  2 Aug 2022 05:18:26 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R281e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=24;SR=0;TI=SMTPD_---0VLBiqD2_1659442701;
+Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VLBiqD2_1659442701)
+          by smtp.aliyun-inc.com;
+          Tue, 02 Aug 2022 20:18:22 +0800
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, anup@brainfault.org, heiko@sntech.de,
+        guoren@kernel.org, mick@ics.forth.gr,
+        alexandre.ghiti@canonical.com, bhe@redhat.com, vgoyal@redhat.com,
+        dyoung@redhat.com, corbet@lwn.net, Conor.Dooley@microchip.com
+Cc:     kexec@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        crash-utility@redhat.com, huanyi.xj@alibaba-inc.com,
+        heinrich.schuchardt@canonical.com, k-hagio-ab@nec.com,
+        hschauhan@nulltrace.org, yixun.lan@gmail.com,
+        Xianting Tian <xianting.tian@linux.alibaba.com>
+Subject: [PATCH V5 0/6] RISC-V fixups to work with crash tool
+Date:   Tue,  2 Aug 2022 20:18:12 +0800
+Message-Id: <20220802121818.2201268-1-xianting.tian@linux.alibaba.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `to' is duplicated in the comment, remove one.
+I ever sent the patch 1 in the link:
+https://patchwork.kernel.org/project/linux-riscv/patch/20220708073150.352830-3-xianting.tian@linux.alibaba.com/
+And patch 2,3 in the link:
+https://patchwork.kernel.org/project/linux-riscv/patch/20220714113300.367854-2-xianting.tian@linux.alibaba.com/
+https://patchwork.kernel.org/project/linux-riscv/patch/20220714113300.367854-3-xianting.tian@linux.alibaba.com/
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/mfd/twl-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch set just put these patches together, and with three new patch 4, 5, 6.
+these six patches are the fixups for machine_kexec, kernel mode PC for vmcore
+and improvements for vmcoreinfo, memory layout dump and fixup chedule out issue
+in machine_crash_shutdown().
 
-diff --git a/drivers/mfd/twl-core.c b/drivers/mfd/twl-core.c
-index 2cb9326f3e61..ca6eca53a79e 100644
---- a/drivers/mfd/twl-core.c
-+++ b/drivers/mfd/twl-core.c
-@@ -883,7 +883,7 @@ twl_probe(struct i2c_client *client, const struct i2c_device_id *id)
- 	 * SR_I2C_SCL_CTRL_PU(bit 4)=0 and SR_I2C_SDA_CTRL_PU(bit 6)=0.
- 	 *
- 	 * Also, always enable SmartReflex bit as that's needed for omaps to
--	 * to do anything over I2C4 for voltage scaling even if SmartReflex
-+	 * do anything over I2C4 for voltage scaling even if SmartReflex
- 	 * is disabled. Without the SmartReflex bit omap sys_clkreq idle
- 	 * signal will never trigger for retention idle.
- 	 */
+The main changes in the six patchs as below,
+Patch 1: use __smp_processor_id() instead of smp_processor_id() to cleanup
+         the console prints.
+Patch 2: Add VM layout, va bits, ram base to vmcoreinfo, which can simplify
+         the development of crash tool as ARM64 already did
+         (arch/arm64/kernel/crash_core.c).
+Patch 3: Add modules to virtual kernel memory layout dump.
+Patch 4: Fixup to get correct kernel mode PC for vmcore.
+Patch 5: Updates vmcoreinfo.rst.
+Patch 6: Fixup schedule out issue in machine_crash_shutdown()
+
+With these six patches(patch 2 is must), crash tool can work well to analyze
+a vmcore. The patches for crash tool for RISCV64 is in the link:
+https://lore.kernel.org/linux-riscv/20220801043040.2003264-1-xianting.tian@linux.alibaba.com/
+
+------
+Changes v1 -> v2:
+ 1, remove the patch "Add a fast call path of crash_kexec()" from this series
+ of patches, as it already applied to riscv git.
+ https://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git/commit/?h=for-next&id=3f1901110a89b0e2e13adb2ac8d1a7102879ea98
+ 2, add 'Reviewed-by' based on the comments of v1.
+Changes v2 -> v3:
+ use "riscv" instead of "riscv64" in patch 5 subject line.
+Changes v3 -> v4:
+ use "riscv" instead of "riscv64" in the summary of patch 5 subject line.
+Changes v4 -> v5:
+ add a new patch "RISC-V: Fixup schedule out issue in machine_crash_shutdown()" 
+
+Xianting Tian (6):
+  RISC-V: use __smp_processor_id() instead of smp_processor_id()
+  RISC-V: Add arch_crash_save_vmcoreinfo support
+  riscv: Add modules to virtual kernel memory layout dump
+  RISC-V: Fixup getting correct current pc
+  riscv: crash_core: Export kernel vm layout, phys_ram_base
+  RISC-V: Fixup schedule out issue in machine_crash_shutdown()
+
+ .../admin-guide/kdump/vmcoreinfo.rst          | 31 +++++++++++++++++++
+ arch/riscv/kernel/Makefile                    |  1 +
+ arch/riscv/kernel/crash_core.c                | 29 +++++++++++++++++
+ arch/riscv/kernel/crash_save_regs.S           |  2 +-
+ arch/riscv/kernel/machine_kexec.c             | 28 ++++++++++++++---
+ arch/riscv/mm/init.c                          |  4 +++
+ 6 files changed, 89 insertions(+), 6 deletions(-)
+ create mode 100644 arch/riscv/kernel/crash_core.c
+
 -- 
-2.35.1
-
+2.17.1
 
