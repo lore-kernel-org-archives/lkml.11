@@ -2,116 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB834C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 19:46:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 584DDC25B07
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 19:47:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232047AbiHBTqb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 15:46:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37404 "EHLO
+        id S232371AbiHBTrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 15:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231317AbiHBTq0 (ORCPT
+        with ESMTP id S230153AbiHBTrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 15:46:26 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8374193E3
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 12:46:25 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id 23so13229797pgc.8
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 12:46:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=X/WDXK9dhhCu2+RqKxktdTeX2bUeOW08JdNOmeWMcTs=;
-        b=NL5o6kvqAp6CZUASniRtCaOagRjx+QG1iSgvPprEwPYurql8OMpuEZmOFx6m2qf6nA
-         g6AMoPP/k+45Ju4Ums6yL1rIn86JnpdNTZzRB3wR92+ODN4ZDUSq9PRH/ku8m/4pc0VM
-         +xxMU2EBVJ+rQ8pvBGQl+hkeiZYhooAeUMAkmmUSyzr3+oCqb+/ahr3m6x3R4vz4sDfo
-         h4MWBl0XsW/uI+K2gflxhy4RJYOgnbdggtvqZpT6LvHVojnLXKm3AxY1gK65VUdw07kJ
-         ewfvJ0dZJGUZybx+ifbQcyonBPrJBF+W8xZt7uYPwDz5wgP2lbjwTpeXbzIlbcZoY9TQ
-         0lwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=X/WDXK9dhhCu2+RqKxktdTeX2bUeOW08JdNOmeWMcTs=;
-        b=qsktZcoitf1ZraDo9F3hTbvudXt0qHebhddutyNPqNQ0fYN4OZLM9dmdMKFIJeyQKh
-         yHdt20VGy+A87rb2rCgXcslY8VvRn73prRyU1QEFNEKjqEuOsCXxXYoUB7oG+Shi94Ni
-         vitLCT5Nas0iai9FEcaqurTsRa4jyMgSGDDaKCqQnBvHstOcA54ZWan/PYxd4wbzDYNR
-         eWP25SFrfwak7mAEBFcUhOHAGPD+KB8xsnZ5xK0hn/IzXQc9KwBgnrXoXkQ2L/JD0dFN
-         Ln7Hjw4MEVRwrj/ACP2UX79B944YtoCa1wXXmRsE6i+0Ozk0qzZWQAd5AB33o8FRmfB9
-         cZTQ==
-X-Gm-Message-State: AJIora/HPkCZ+iNC2cfp9iUnqAzh3D1rg3LHQfeax/3rCfWGRH0X4GvA
-        rhSjGftfg3UetMOfrgpKaDvwXA==
-X-Google-Smtp-Source: AGRyM1tcTnFkPMk+iDatakVZ7haudXkfR3vj1qEX62HpKsQWAyAaZKldn3yOWM0WYYOAHPmmfcQnZA==
-X-Received: by 2002:a05:6a00:1a0e:b0:52a:cef3:b4a1 with SMTP id g14-20020a056a001a0e00b0052acef3b4a1mr22192466pfv.23.1659469585316;
-        Tue, 02 Aug 2022 12:46:25 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id b12-20020a17090a6acc00b001f4fb21c11asm5439377pjm.21.2022.08.02.12.46.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 12:46:24 -0700 (PDT)
-Date:   Tue, 2 Aug 2022 19:46:21 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     isaku.yamahata@intel.com
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
-        Kai Huang <kai.huang@intel.com>, Sagi Shahar <sagis@google.com>
-Subject: Re: [PATCH v7 022/102] KVM: TDX: create/destroy VM structure
-Message-ID: <Yul/DapNdokpeN36@google.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
- <aa3b9b81f257d4d177ab25cb78a222d6297de97f.1656366338.git.isaku.yamahata@intel.com>
+        Tue, 2 Aug 2022 15:47:41 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41DDE4AD63;
+        Tue,  2 Aug 2022 12:47:41 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 272Jk1LZ010234;
+        Tue, 2 Aug 2022 19:47:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : content-transfer-encoding
+ : mime-version; s=pp1; bh=0TU5DLp61xDyAb6KBH+NW4/5l6RU7u/o/UOxwNx8Wek=;
+ b=kGoVyer1Z8fx2kWHIygrZuUsTWNwaGZGHPPHjsZs9MXZ32+0ZuEyXNne5U7KhX5YtAus
+ 7njL0BaT3EASi0/7bwuA1R0WFGhYWFg+ThWP0bwwFM/NB3B7gYH7jqI3Gdc4UDJa/oB2
+ JTXNHr/WV4ZrcK63yQhBt1/V0FpAPaS3+m4rxl9qQCQWHmtffYNMeuDhlVyyAW9TexUW
+ pCuV6ZFauMYWGatmIo9z7O8eiuuGzZlGjlSPCDFuZMoNhvoLMeZ+Dk5YdBWp3FNk+Zkv
+ omp2t6xquGP/quQsD56RFQgPSmEgvVwvcsh/g6I1cBmgi6RIZhFbwG0P8NfHQYmQUWAd ng== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hqac7r0f3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 Aug 2022 19:47:15 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 272JK4Zk030027;
+        Tue, 2 Aug 2022 19:47:14 GMT
+Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
+        by ppma03dal.us.ibm.com with ESMTP id 3hmv99gx8d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 Aug 2022 19:47:14 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 272JlD3157344452
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 2 Aug 2022 19:47:13 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 75F90124054;
+        Tue,  2 Aug 2022 19:47:13 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B6310124052;
+        Tue,  2 Aug 2022 19:47:12 +0000 (GMT)
+Received: from slate16.aus.stglabs.ibm.com (unknown [9.77.144.23])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue,  2 Aug 2022 19:47:12 +0000 (GMT)
+From:   Eddie James <eajames@linux.ibm.com>
+To:     joel@jms.id.au
+Cc:     linux@roeck-us.net, jdelvare@suse.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-fsi@lists.ozlabs.org,
+        devicetree@vger.kernel.org, Eddie James <eajames@linux.ibm.com>
+Subject: [PATCH 1/3] dt-bindings: hwmon: Add IBM OCC bindings
+Date:   Tue,  2 Aug 2022 14:46:54 -0500
+Message-Id: <20220802194656.240564-2-eajames@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220802194656.240564-1-eajames@linux.ibm.com>
+References: <20220802194656.240564-1-eajames@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: qJ9ewh5M9TPRC9a7zPaWUAGNa0BG__BH
+X-Proofpoint-ORIG-GUID: qJ9ewh5M9TPRC9a7zPaWUAGNa0BG__BH
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aa3b9b81f257d4d177ab25cb78a222d6297de97f.1656366338.git.isaku.yamahata@intel.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-02_14,2022-08-02_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ spamscore=0 malwarescore=0 phishscore=0 priorityscore=1501 suspectscore=0
+ mlxlogscore=999 mlxscore=0 impostorscore=0 clxscore=1015 adultscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2208020092
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 27, 2022, isaku.yamahata@intel.com wrote:
-> +int tdx_vm_init(struct kvm *kvm)
-> +{
-> +	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
-> +	cpumask_var_t packages;
-> +	int ret, i;
-> +	u64 err;
-> +
-> +	/* vCPUs can't be created until after KVM_TDX_INIT_VM. */
-> +	kvm->max_vcpus = 0;
-> +
-> +	kvm_tdx->hkid = tdx_keyid_alloc();
-> +	if (kvm_tdx->hkid < 0)
-> +		return -EBUSY;
+These bindings describe the POWER processor On Chip Controller accessed
+from a service processor or baseboard management controller (BMC).
 
-We (Google) have been working through potential flows for intrahost (copyless)
-migration, and one of the things that came up is that allocating the HKID during
-KVM_CREATE_VM will be problematic as HKID are a relatively scarce resource.  E.g.
-if all key IDs are in use, then creating a destination TDX VM will be impossible
-even though intrahost migration can create succeed since the "new" would reuse
-the source's HKID.
+Signed-off-by: Eddie James <eajames@linux.ibm.com>
+---
+ .../bindings/hwmon/ibm,occ-hmwon.yaml         | 40 +++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/hwmon/ibm,occ-hmwon.yaml
 
-Allocating the various pages is also annoying, e.g. they'd have to be freed, but
-not as directly problematic.
+diff --git a/Documentation/devicetree/bindings/hwmon/ibm,occ-hmwon.yaml b/Documentation/devicetree/bindings/hwmon/ibm,occ-hmwon.yaml
+new file mode 100644
+index 000000000000..8f8c3b8d7129
+--- /dev/null
++++ b/Documentation/devicetree/bindings/hwmon/ibm,occ-hmwon.yaml
+@@ -0,0 +1,40 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/hwmon/ibm,occ-hwmon.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: IBM On-Chip Controller (OCC) accessed from a service processor
++
++maintainers:
++  - Eddie James <eajames@linux.ibm.com>
++
++description: |
++  This binding describes a POWER processor On-Chip Controller (OCC)
++  accessed from a service processor or baseboard management controller
++  (BMC).
++
++properties:
++  compatible:
++    enum:
++      - ibm,p9-occ-hwmon
++      - ibm,p10-occ-hwmon
++
++  ibm,inactive-on-init:
++    description: This property describes whether or not the OCC should
++      be marked as active during device initialization. The alternative
++      is for user space to mark the device active based on higher level
++      communications between the BMC and the host processor.
++    type: boolean
++
++required:
++  - compatible
++
++additionalProperties: false
++
++examples:
++  - |
++    occ-hmwon {
++        compatible = "ibm,p9-occ-hwmon";
++        ibm,inactive-on-init;
++    };
+-- 
+2.31.1
 
-SEV (all flavors) has a similar problem with ASIDs.  The solution for SEV was to
-not allocate an ASID during KVM_CREATE_VM and instead "activate" SEV during
-KVM_CAP_VM_MOVE_ENC_CONTEXT_FROM.
-
-I think we should prepare for a similar future for TDX and move the HKID allocation
-and all dependent resource allocation to KVM_TDX_INIT_VM.  AFAICT (and remember),
-this should be a fairly simple code movement, but I'd prefer it be done before
-merging TDX so that if it's not so simple, e.g. requires another sub-ioctl, then
-we don't have to try and tweak KVM's ABI to enable intrahost migration.
-
-> +
-> +	ret = tdx_alloc_td_page(&kvm_tdx->tdr);
-> +	if (ret)
-> +		goto free_hkid;
-> +
-> +	kvm_tdx->tdcs = kcalloc(tdx_caps.tdcs_nr_pages, sizeof(*kvm_tdx->tdcs),
-> +				GFP_KERNEL_ACCOUNT);
-> +	if (!kvm_tdx->tdcs)
-> +		goto free_tdr;
-> +	for (i = 0; i < tdx_caps.tdcs_nr_pages; i++) {
-> +		ret = tdx_alloc_td_page(&kvm_tdx->tdcs[i]);
-> +		if (ret)
-> +			goto free_tdcs;
-> +	}
