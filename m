@@ -2,345 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA8FCC19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 09:49:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F048C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 09:53:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232747AbiHBJtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 05:49:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35710 "EHLO
+        id S235945AbiHBJxU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 05:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235988AbiHBJtV (ORCPT
+        with ESMTP id S232762AbiHBJxS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 05:49:21 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8E74D177;
-        Tue,  2 Aug 2022 02:49:18 -0700 (PDT)
-Date:   Tue, 2 Aug 2022 11:49:15 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1659433756;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=g5pQA3Fay6yZOVdRePFC9/TrGLheTiDU+GTyjdl1GFQ=;
-        b=VbGGAbbhqmnRdydxbDv5IuK1ENDvX2nw54j3wT4xX7gOuK80I99j3QqPoXuQIIQ8puI3CM
-        1xNqVHbsImMN8CtSdWsgPQZ8hCgU7xlsCFflk0Y50JVGF8OdQXDcyWm006uoJAkLyLWXm8
-        64pkpjA4Y2XvrnB1DuAAGYkNDjHcTYo=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Andrew Jones <andrew.jones@linux.dev>
-To:     Peter Gonda <pgonda@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcorr@google.com, seanjc@google.com, michael.roth@amd.com,
-        thomas.lendacky@amd.com, joro@8bytes.org, mizhang@google.com,
-        pbonzini@redhat.com
-Subject: Re: [V2 09/11] KVM: selftests: Make ucall work with encrypted guests
-Message-ID: <20220802094915.lkmoz52gztzjjun4@kamzik>
-References: <20220801201109.825284-1-pgonda@google.com>
- <20220801201109.825284-10-pgonda@google.com>
+        Tue, 2 Aug 2022 05:53:18 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43AE215833;
+        Tue,  2 Aug 2022 02:53:16 -0700 (PDT)
+Received: (Authenticated sender: foss@0leil.net)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6151DFF811;
+        Tue,  2 Aug 2022 09:53:13 +0000 (UTC)
+From:   Quentin Schulz <foss+kernel@0leil.net>
+Cc:     linus.walleij@linaro.org, heiko@sntech.de,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Subject: [RFC PATCH 0/1] Making Rockchip IO domains dependency from other devices explicit
+Date:   Tue,  2 Aug 2022 11:52:51 +0200
+Message-Id: <20220802095252.2486591-1-foss+kernel@0leil.net>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220801201109.825284-10-pgonda@google.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 01, 2022 at 01:11:07PM -0700, Peter Gonda wrote:
-> Add support for encrypted, SEV, guests in the ucall framework. If
-> encryption is enabled set up a pool of ucall structs in the guests'
-> shared memory region. This was suggested in the thread on "[RFC PATCH
-> 00/10] KVM: selftests: Add support for test-selectable ucall
-> implementations". Using a listed as suggested there doesn't work well
-> because the list is setup using HVAs not GVAs so use a bitmap + array
-> solution instead to get the same pool result.
-> 
-> Suggested-by: Sean Christopherson <seanjc@google.com>
-> Signed-off-by: Peter Gonda <pgonda@google.com>
-> ---
->  .../selftests/kvm/include/kvm_util_base.h     |   3 +
->  .../selftests/kvm/include/ucall_common.h      |  14 +--
->  .../testing/selftests/kvm/lib/ucall_common.c  | 112 +++++++++++++++++-
->  3 files changed, 115 insertions(+), 14 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> index 8ce9e5be70a3..ad4abc6be1ab 100644
-> --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-> +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> @@ -102,6 +102,9 @@ struct kvm_vm {
->  	int stats_fd;
->  	struct kvm_stats_header stats_header;
->  	struct kvm_stats_desc *stats_desc;
-> +
-> +	bool use_ucall_list;
+From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 
-use_ucall_pool
+This is a follow-up to the mail sent almost two months ago asking for
+guidance: https://lore.kernel.org/lkml/778790a4-1239-e9d9-0549-6760a8792ceb@theobroma-systems.com/
 
-> +	struct list_head ucall_list;
->  };
->  
->  
-> diff --git a/tools/testing/selftests/kvm/include/ucall_common.h b/tools/testing/selftests/kvm/include/ucall_common.h
-> index c1bc8e33ef3f..a96220ac6024 100644
-> --- a/tools/testing/selftests/kvm/include/ucall_common.h
-> +++ b/tools/testing/selftests/kvm/include/ucall_common.h
-> @@ -22,6 +22,10 @@ enum {
->  struct ucall {
->  	uint64_t cmd;
->  	uint64_t args[UCALL_MAX_ARGS];
-> +
-> +	/* For encrypted guests. */
+This is what I could come up with but I'm not too happy about it so feel
+free to give some ideas or other possible implementations that would
+have less downsides than this one.
 
-Please, no 'encrypted' words in ucall files. ucalls shouldn't care about
-guest types. Indeed, the summary of this patch could even drop the word
-'encrypted'. This patch is adding support for ucall pools, which is
-motivated by the need to support encrypted guests (the motivation should
-go in the commit message, but otherwise the patch should be ucall specific
-and guest type agnostic)
+Some background on IO domains on Rockchip:
 
-> +	uint64_t idx;
+On some Rockchip SoCs, some SoC pins are split in what are called IO
+domains.
 
-We don't need 'idx' because 'hva' will always be at the
-idx * sizeof(struct ucall) offset of ucall_hdr->ucalls, which means
-we can always calculate it,
+An IO domain is supplied power externally, by regulators from a PMIC for
+example. This external power supply is then used by the IO domain as
+"supply" for the IO pins if they are outputs.
 
- static inline size_t uc_pool_idx(struct ucall *uc)
- {
- 	return uc->hva - ucall_hdr->ucalls;
- }
+Each IO domain can configure which voltage the IO pins will be operating
+on (1.8V or 3.3V).
 
-> +	struct ucall *hva;
->  };
->  
->  void ucall_arch_init(struct kvm_vm *vm, void *arg);
-> @@ -32,15 +36,9 @@ uint64_t ucall_arch_get_ucall(struct kvm_vcpu *vcpu);
->  void ucall(uint64_t cmd, int nargs, ...);
->  uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc);
->  
-> -static inline void ucall_init(struct kvm_vm *vm, void *arg)
-> -{
-> -	ucall_arch_init(vm, arg);
-> -}
-> +void ucall_init(struct kvm_vm *vm, void *arg);
->  
-> -static inline void ucall_uninit(struct kvm_vm *vm)
-> -{
-> -	ucall_arch_uninit(vm);
-> -}
-> +void ucall_uninit(struct kvm_vm *vm);
->  
->  #define GUEST_SYNC_ARGS(stage, arg1, arg2, arg3, arg4)	\
->  				ucall(UCALL_SYNC, 6, "hello", stage, arg1, arg2, arg3, arg4)
-> diff --git a/tools/testing/selftests/kvm/lib/ucall_common.c b/tools/testing/selftests/kvm/lib/ucall_common.c
-> index a060252bab40..feb0173179ec 100644
-> --- a/tools/testing/selftests/kvm/lib/ucall_common.c
-> +++ b/tools/testing/selftests/kvm/lib/ucall_common.c
-> @@ -1,22 +1,122 @@
->  // SPDX-License-Identifier: GPL-2.0-only
->  #include "kvm_util.h"
-> +#include "linux/types.h"
-> +#include "linux/bitmap.h"
-> +#include "linux/atomic.h"
-> +
-> +struct ucall_header {
-> +	DECLARE_BITMAP(in_use, KVM_MAX_VCPUS);
-> +	struct ucall ucalls[KVM_MAX_VCPUS];
-> +};
-> +
-> +static bool use_ucall_list;
+There already exists an IO domain driver for Rockchip SoCs[1]. This
+driver allows to explicit the relationship between the external power
+supplies and IO domains[2]. This makes sure the regulators are enabled
+by the Linux kernel so the IO domains are supplied with power and
+correctly configured as per the supplied voltage.
+This driver is a regulator consumer and does not offer any other
+interface for device dependency.
 
-use_ucall_pool
+However, IO pins belonging to an IO domain need to have this IO domain
+correctly configured before they are being used otherwise they do not
+operate correctly (in our case, a pin configured as output clock was
+oscillating between 0 and 150mV instead of the expected 1V8).
 
-> +static struct ucall_header *ucall_hdr;
+In order to make this dependency transparent to the consumer of those
+pins and not add Rockchip-specific code to third party drivers (a camera
+driver in our case), it is hooked into the pinctrl driver which is
+Rockchip-specific obviously.
 
-ucall_pool
+Unfortunately, the dependency is not about the ultimate presence of the
+io-domain devices but more that prior to being able to use pins,
+the io-domain devices need to be probed. However of_find_device_by_node
+does not provide this information, hence the check whether the
+platform_device actually has its drvdata structure set (it defaults to
+NULL until it is filled by the driver during the probe of the device).
 
-> +
-> +void ucall_init(struct kvm_vm *vm, void *arg)
-> +{
-> +	struct ucall *uc;
-> +	struct ucall_header *hdr;
-> +	vm_vaddr_t vaddr;
-> +	int i;
-> +
-> +	use_ucall_list = vm->use_ucall_list;
-> +	sync_global_to_guest(vm, use_ucall_list);
-> +	if (!use_ucall_list)
-> +		goto out;
-> +
-> +	TEST_ASSERT(!ucall_hdr,
-> +		    "Only a single encrypted guest at a time for ucalls.");
+Moreover, this dependency needs to be explicit on a pinmux level
+and postponed after the probe of the pinctrl driver because a circular
+dependency is observed otherwise with the following:
+pinctrl device depends on the io-domain device which depends on
+regulators from a PMIC on i2c which requires the i2c bus pins to be
+muxed from the pinctrl device.
+Instead, the pinmux dependency on IO domain is checked in set_mux
+callback and returns EPROBE_DEFER if the IO domain device hasn't probed
+yet.
 
-single VM at a time
+I wanted to add the appropriate rockchip,io-domains DT property to
+existing pinmux DT node. However, *all* of PX30's belong to an IO
+domain, including the i2c bus on which the PMIC supplying the power to
+the IO domain is on. Since the PMIC can be virtually on any i2c bus, a
+specific pinmux cannot be omitted or ignored, therefore none are added
+and it's up to the board maintainers to add them themselves. This is
+also assumed only necessary for IO domain that are configured
+differently by the bootloader or by register defaults (3V3 for
+RK3399/PX30) than their expected values in Linux and whose supplied
+power is fixed (e.g. not expected to be able to change from 3V3 to 1V8).
 
-And I'd leave that on a single line. checkpatch allows up to 100 chars and
-I'm included to use all 110 chars of it.
+The hope is to not have to handle the io domain configuration in
+the bootloader as it is currently done, c.f.
+https://elixir.bootlin.com/u-boot/latest/source/board/theobroma-systems/puma_rk3399/puma-rk3399.c#L28
+(we'll need an additional IO domain configuration for a camera soon).
 
-> +	vaddr = vm_vaddr_alloc_shared(vm, sizeof(*hdr), vm->page_size);
-> +	hdr = (struct ucall_header *)addr_gva2hva(vm, vaddr);
-> +	memset(hdr, 0, sizeof(*hdr));
-> +
-> +	for (i = 0; i < KVM_MAX_VCPUS; ++i) {
-> +		uc = &hdr->ucalls[i];
-> +		uc->hva = uc;
-> +		uc->idx = i;
-> +	}
-> +
-> +	ucall_hdr = (struct ucall_header *)vaddr;
-> +	sync_global_to_guest(vm, ucall_hdr);
-> +
-> +out:
-> +	ucall_arch_init(vm, arg);
-> +}
-> +
-> +void ucall_uninit(struct kvm_vm *vm)
-> +{
-> +	use_ucall_list = false;
-> +	ucall_hdr = NULL;
+However, this still relies on IO domains defaults or bootloader
+configuration to be able to omit some IO domain<->pinmux relationships
+to avoid circular dependencies.
 
-It's unlikely we'd ever change the ucall setup on a running VM,
-but we should sync these changes to the guest for good measure.
+I don't know how well this RFC implementation would work with
+suspend/resume.
 
-> +
-> +	ucall_arch_uninit(vm);
-> +}
-> +
-> +static struct ucall *ucall_alloc(void)
-> +{
-> +	struct ucall *uc = NULL;
-> +	int i;
-> +
-> +	if (!use_ucall_list)
-> +		goto out;
-> +
-> +	for (i = 0; i < KVM_MAX_VCPUS; ++i) {
-> +		if (atomic_test_and_set_bit(i, ucall_hdr->in_use))
-> +			continue;
-> +
-> +		uc = &ucall_hdr->ucalls[i];
-> +	}
+[1] drivers/soc/rockchip/io-domain.c
+[2] Documentation/devicetree/bindings/power/rockchip-io-domain.yaml
 
-This is not what I suggested in the last revision and it's still wrong.
-Here, you're still looping through all of the pool and returning the last
-one.
+Cheers,
+Quentin
 
-What I suggested was
+Quentin Schulz (1):
+  pinctrl: rockchip: add support for per-pinmux io-domain dependency
 
- 	for (i = 0; i < KVM_MAX_VCPUS; ++i) {
- 		if (!atomic_test_and_set_bit(i, ucall_hdr->in_use)) {
- 			uc = &ucall_hdr->ucalls[i];
- 			break;
- 		}
- 	}
+ drivers/pinctrl/pinctrl-rockchip.c | 19 +++++++++++++++++++
+ drivers/pinctrl/pinctrl-rockchip.h |  1 +
+ 2 files changed, 20 insertions(+)
 
-Notice how we leave the loop early when we find a free uc.
+-- 
+2.37.1
 
-We should also zero the contents of the uc buffer before returning.
-
-> +
-> +out:
-> +	return uc;
-> +}
-> +
-> +static void ucall_free(struct ucall *uc)
-> +{
-> +	if (!use_ucall_list)
-> +		return;
-> +
-> +	clear_bit(uc->idx, ucall_hdr->in_use);
-
-This seems to be the one and only use of idx which is another argument for
-dropping the variable and just calculating it instead.
-
-> +}
-> +
-> +static vm_vaddr_t get_ucall_addr(struct ucall *uc)
-> +{
-> +	if (use_ucall_list)
-> +		return (vm_vaddr_t)uc->hva;
-
-A comment explaining that this hva has already been synchronized
-with the guest would be good. Or maybe a different name for the
-pointer than hva, one which conveys that it's a pointer that works
-as both an hva and gva would be better.
-
-
-> +
-> +	return (vm_vaddr_t)uc;
-> +}
->  
->  void ucall(uint64_t cmd, int nargs, ...)
->  {
-> -	struct ucall uc = {
-> -		.cmd = cmd,
-> -	};
-
-This zeros all members except cmd.
-
-> +	struct ucall *uc;
-> +	struct ucall tmp;
-
-And this makes tmp full of stack garbage, so in the non uc-pool case we
-no longer have an equivalent uc. Please initialize tmp the same way uc
-was initialized.
-
->  	va_list va;
->  	int i;
->  
-> +	uc = ucall_alloc();
-> +	if (!uc)
-> +		uc = &tmp;
-> +
-> +	uc->cmd = cmd;
-> +
->  	nargs = min(nargs, UCALL_MAX_ARGS);
->  
->  	va_start(va, nargs);
->  	for (i = 0; i < nargs; ++i)
-> -		uc.args[i] = va_arg(va, uint64_t);
-> +		uc->args[i] = va_arg(va, uint64_t);
->  	va_end(va);
->  
-> -	ucall_arch_do_ucall((vm_vaddr_t)&uc);
-> +	ucall_arch_do_ucall(get_ucall_addr(uc));
-
-We don't need get_ucall_addr(). Just do the if-else right here
-
-   if (use_ucall_list)
-       ucall_arch_do_ucall((vm_vaddr_t)uc->hva);
-   else
-      ucall_arch_do_ucall((vm_vaddr_t)uc);
-
-> +
-> +	ucall_free(uc);
-> +}
-> +
-> +static void *get_ucall_hva(struct kvm_vm *vm, uint64_t uc)
-> +{
-> +	if (vm->use_ucall_list)
-> +		return (void *)uc;
-> +
-> +	return addr_gva2hva(vm, uc);
->  }
->  
->  uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
-> @@ -27,7 +127,7 @@ uint64_t get_ucall(struct kvm_vcpu *vcpu, struct ucall *uc)
->  	if (!uc)
->  		uc = &ucall;
->  
-> -	addr = addr_gva2hva(vcpu->vm, ucall_arch_get_ucall(vcpu));
-> +	addr = get_ucall_hva(vcpu->vm, ucall_arch_get_ucall(vcpu));
-
-Wait, I thought we wanted ucall_arch_get_ucall() to return hvas?
-It would make more sense if it did, since it's called from the
-host.
-
->  	if (addr) {
->  		memcpy(uc, addr, sizeof(*uc));
->  		vcpu_run_complete_io(vcpu);
-> -- 
-> 2.37.1.455.g008518b4e5-goog
->
-
-Thanks,
-drew
