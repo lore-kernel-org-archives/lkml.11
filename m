@@ -2,137 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 283AFC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 19:36:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7759C19F2B
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 19:36:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232339AbiHBTgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 15:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57720 "EHLO
+        id S232697AbiHBTg3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 15:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232746AbiHBTgI (ORCPT
+        with ESMTP id S232210AbiHBTg0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 15:36:08 -0400
-Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CCE218351
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 12:36:02 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id IxgNoBmAN9qatIxgNogHcQ; Tue, 02 Aug 2022 21:36:00 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Tue, 02 Aug 2022 21:36:00 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Ping Cheng <ping.cheng@wacom.com>,
-        Jason Gerecke <jason.gerecke@wacom.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-input@vger.kernel.org
-Subject: [PATCH v2] HID: wacom: Simplify comments
-Date:   Tue,  2 Aug 2022 21:35:57 +0200
-Message-Id: <7eec2e24a231510577647853a32bddb89a762128.1659468931.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Tue, 2 Aug 2022 15:36:26 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C2E1903B;
+        Tue,  2 Aug 2022 12:36:25 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id D192A3874B;
+        Tue,  2 Aug 2022 19:36:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1659468983; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wKwulhIx515tBs9KarM3vkMSrD1Pc01HY8nx9DrB6Ko=;
+        b=lIxgGmgiJjHkY4CpdyLYOyrlEZr6WXWjSxUXwr7T3l6G3upE9bl6mkc06qVICbyJV25D5j
+        NN6IMBnVJ2ikFzF6e3VxiEeAurK54PYq8864I4xh6dLh4NxwezB7QvuJh7TqP2aaMbzwUo
+        7jVXeZ1t2Lcu0SuoH5FUysm4N4xDEv4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1659468983;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wKwulhIx515tBs9KarM3vkMSrD1Pc01HY8nx9DrB6Ko=;
+        b=NQfgJ+ZFnqEBYm9kVtWA/ahzEUqSBoH97VXJ/OSSWF6JgIYf9eKq87vwjCYHFcq5dZwe0B
+        VtNvgOR948PO1lAw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4438713A8E;
+        Tue,  2 Aug 2022 19:36:23 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id qliOAbd86WItbAAAMHmgww
+        (envelope-from <ematsumiya@suse.de>); Tue, 02 Aug 2022 19:36:23 +0000
+Date:   Tue, 2 Aug 2022 16:36:20 -0300
+From:   Enzo Matsumiya <ematsumiya@suse.de>
+To:     Jeff Layton <jlayton@kernel.org>
+Cc:     linux-cifs@vger.kernel.org, smfrench@gmail.com, pc@cjr.nz,
+        ronniesahlberg@gmail.com, nspmangalore@gmail.com,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        tom@talpey.com, samba-technical@lists.samba.org,
+        pshilovsky@samba.org
+Subject: Re: [RFC PATCH 0/3] Rename "cifs" module to "smbfs"
+Message-ID: <20220802193620.dyvt5qiszm2pobsr@cyberdelia>
+References: <20220801190933.27197-1-ematsumiya@suse.de>
+ <c05f4fc668fa97e737758ab03030d7170c0edbd9.camel@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <c05f4fc668fa97e737758ab03030d7170c0edbd9.camel@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove a left-over from commit 2874c5fd2842 ("treewide: Replace GPLv2
-boilerplate/reference with SPDX - rule 152").
-An empty comment block can be removed.
+On 08/02, Jeff Layton wrote:
+>On Mon, 2022-08-01 at 16:09 -0300, Enzo Matsumiya wrote:
+>> Hi,
+>>
+>> As part of the ongoing effort to remove the "cifs" nomenclature from the
+>> Linux SMB client, I'm proposing the rename of the module to "smbfs".
+>>
+>> As it's widely known, CIFS is associated to SMB1.0, which, in turn, is
+>> associated with the security issues it presented in the past. Using
+>> "SMBFS" makes clear what's the protocol in use for outsiders, but also
+>> unties it from any particular protocol version. It also fits in the
+>> already existing "fs/smbfs_common" and "fs/ksmbd" naming scheme.
+>>
+>> This short patch series only changes directory names and includes/ifdefs=
+ in
+>> headers and source code, and updates docs to reflect the rename. Other
+>> than that, no source code/functionality is modified (WIP though).
+>>
+>> Patch 1/3: effectively changes the module name to "smbfs" and create a
+>> 	   "cifs" module alias to maintain compatibility (a warning
+>> 	   should be added to indicate the complete removal/isolation of
+>> 	   CIFS/SMB1.0 code).
+>> Patch 2/3: rename the source-code directory to align with the new module
+>> 	   name
+>> Patch 3/3: update documentation references to "fs/cifs" or "cifs.ko" or
+>> 	   "cifs module" to use the new name
+>>
+>> Enzo Matsumiya (3):
+>>   cifs: change module name to "smbfs.ko"
+>>   smbfs: rename directory "fs/cifs" -> "fs/smbfs"
+>>   smbfs: update doc references
+>> ...
+>
+>Why do this? My inclination is to say NAK here.
+>
+>This seems like a lot of change for not a lot of benefit. Renaming the
+>directory like this pretty much guarantees that backporting patches
+>after this change to kernels that existed before it will be very
+>difficult.
 
-While at it remove, also remove what is supposed to be the path/filename of
-the file.
-This is really low value... and wrong since commit 471d17148c8b
-("Input: wacom - move the USB (now hid) Wacom driver in drivers/hid")
+Hi Jeff, yes that's a big concern that I've discussed internally with my
+team as well, since we'll also suffer from those future backports.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-v1 -> v2
-  - add wacom.h, wacom_wac.c, wacom_wac.h
----
- drivers/hid/wacom.h     | 5 +----
- drivers/hid/wacom_sys.c | 5 -----
- drivers/hid/wacom_wac.c | 5 -----
- drivers/hid/wacom_wac.h | 4 +---
- 4 files changed, 2 insertions(+), 17 deletions(-)
+But, as stated in the commit message, and from what I gathered from
+Steve, it has been an ongoing wish to have the "cifs" name no longer
+associated with a module handling SMB2.0 and SMB3.0, as the name brings
+back old bad memories for several users.
 
-diff --git a/drivers/hid/wacom.h b/drivers/hid/wacom.h
-index 3f8b24a57014..4da50e19808e 100644
---- a/drivers/hid/wacom.h
-+++ b/drivers/hid/wacom.h
-@@ -1,7 +1,5 @@
- /* SPDX-License-Identifier: GPL-2.0-or-later */
- /*
-- * drivers/input/tablet/wacom.h
-- *
-  *  USB Wacom tablet support
-  *
-  *  Copyright (c) 2000-2004 Vojtech Pavlik	<vojtech@ucw.cz>
-@@ -78,10 +76,9 @@
-  *                 - integration of the Bluetooth devices
-  */
- 
--/*
-- */
- #ifndef WACOM_H
- #define WACOM_H
-+
- #include <linux/kernel.h>
- #include <linux/slab.h>
- #include <linux/module.h>
-diff --git a/drivers/hid/wacom_sys.c b/drivers/hid/wacom_sys.c
-index 194a2e327591..21612fdae9c3 100644
---- a/drivers/hid/wacom_sys.c
-+++ b/drivers/hid/wacom_sys.c
-@@ -1,13 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- /*
-- * drivers/input/tablet/wacom_sys.c
-- *
-  *  USB Wacom tablet support - system specific code
-  */
- 
--/*
-- */
--
- #include "wacom_wac.h"
- #include "wacom.h"
- #include <linux/input/mt.h>
-diff --git a/drivers/hid/wacom_wac.c b/drivers/hid/wacom_wac.c
-index d049239256a2..1bbd24ebacad 100644
---- a/drivers/hid/wacom_wac.c
-+++ b/drivers/hid/wacom_wac.c
-@@ -1,13 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- /*
-- * drivers/input/tablet/wacom_wac.c
-- *
-  *  USB Wacom tablet support - Wacom specific code
-  */
- 
--/*
-- */
--
- #include "wacom_wac.h"
- #include "wacom.h"
- #include <linux/input/mt.h>
-diff --git a/drivers/hid/wacom_wac.h b/drivers/hid/wacom_wac.h
-index fef1538005b5..5ca6c06d143b 100644
---- a/drivers/hid/wacom_wac.h
-+++ b/drivers/hid/wacom_wac.h
-@@ -1,7 +1,5 @@
- /* SPDX-License-Identifier: GPL-2.0-or-later */
--/*
-- * drivers/input/tablet/wacom_wac.h
-- */
-+
- #ifndef WACOM_WAC_H
- #define WACOM_WAC_H
- 
--- 
-2.34.1
+There really is no functional benefit for this change, and I have no
+argument against that.
 
+>Also, bear in mind that there used to be an smbfs in the kernel that
+>predated cifs.ko. That was removed ~2010 though, which is long enough
+>ago that it shouldn't produce conflicts in currently shipping releases.=A0
+
+Yes, I was aware of this before sending v1, and it got raised again in
+https://lore.kernel.org/all/20220802135201.4vm36drd5mp57nvv@cyberdelia/
+
+I have no experience on what kind of issues/problems could arise of
+that, aside from the git commit history being weird. If you ever seen
+any problems with that happening, please do share.
+
+>Jeff Layton <jlayton@kernel.org>
+
+I sent a v2 with a new "fs/smb" directory name, but kept "smbfs" as the
+module name.
+
+Sorry I didn't reply to you before that, I got confused as the thread
+replies all went to different folders in my mailbox.
+
+
+Cheers,
+
+Enzo
