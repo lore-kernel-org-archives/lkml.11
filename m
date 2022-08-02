@@ -2,137 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8B1C00144
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 02:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D78FC00144
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 02:54:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235780AbiHBCrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 22:47:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46882 "EHLO
+        id S235799AbiHBCyX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 22:54:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231535AbiHBCrq (ORCPT
+        with ESMTP id S232446AbiHBCyV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 22:47:46 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C111CFFD;
-        Mon,  1 Aug 2022 19:47:35 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LxfTY0zVPz1M8MB;
-        Tue,  2 Aug 2022 10:44:33 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 2 Aug 2022 10:47:33 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 2 Aug 2022 10:47:32 +0800
-Subject: Re: [PATCH v3 0/2] arm64: kdump: Function supplement and performance
- optimization
-To:     Baoquan He <bhe@redhat.com>
-CC:     Dave Young <dyoung@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        <kexec@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Jonathan Corbet <corbet@lwn.net>, <linux-doc@vger.kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        John Donnelly <John.p.donnelly@oracle.com>,
-        "Dave Kleikamp" <dave.kleikamp@oracle.com>
-References: <20220711090319.1604-1-thunder.leizhen@huawei.com>
- <YueMyUqannVg7l9v@MiWiFi-R3L-srv>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <a80c2b7e-a510-8e45-1f3c-7e2ddf79bc37@huawei.com>
-Date:   Tue, 2 Aug 2022 10:47:21 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        Mon, 1 Aug 2022 22:54:21 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70AEF17E36
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 19:54:20 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id y141so12314552pfb.7
+        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 19:54:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VepS0pf6a4atZd971NuWbFl/YxaIYnEeNRklOESYwoQ=;
+        b=aIMgFg5Mcp5VAH1+yGXzr6Wiq2zIyP2mAIKIpFmhkSFnrJWTYN0+u/YWcyFdKxpg2N
+         P0Grm14hQzdZNpaNQ2NfJroY050rOKORL0QwOljWu5+FIkLI7cvTSmkKg9GAuDnHQ0L7
+         9JRAAkbbipcStDA3nG9C42x072PHKd9zo01XVX5ZVuUJDP5al22lsXkhuU2c6OqsD8Ik
+         eD0xBQ4xM4Prx98nIriLb+8NaoHolPZShxdz4p39gAvZHvRnfl3nle2h5D1LMUGcAAT6
+         R1wkp5gKCphmr+9C8QaVYvJALbLi92drgtGo9fwIWJLWhgzWZxBDpCWwQ3WCxp5jwEAm
+         //3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VepS0pf6a4atZd971NuWbFl/YxaIYnEeNRklOESYwoQ=;
+        b=L7eGbcmeSWWhlXJYLbHEVM5F1rUeNOBGHkf9uWN9w4KPYZC6CeoCOGZdod4XAW0Pzb
+         Io4wHcSBzFUpnj2OrxNE/7Dr6VxZVz0Lwgs1LPMfTaFJ4gniFpSkOsDBjhfS9rOB9rCT
+         SxAgEvG2SxPYxJbQElh/uBOMp+AXE5JOhbkalbR/mb0CaDaIDH9AGT+lyLIKdP2zpak+
+         49DR4U7fe8rIpWqp6qdQ8+LFktkzePZt1RJdIB+rO61RxJUqSoXuCY1uJHXW4To3FmkQ
+         bic0rcZuQdXJE3Zua/JuKpdFQNSXrgrInD4gtEo+uOaMJLhY5bTQH0cHezcG2YrbQMoV
+         AtfQ==
+X-Gm-Message-State: AJIora9RvcW0FaAd8upuzOIeKhsoTkcq5+iLng4FxTV27UtQMrpZ9E+8
+        h+wr9PYClsoB7BIU9HpyflA=
+X-Google-Smtp-Source: AGRyM1v71zSrDIYf2Hqz2GlUg2dfTbZQDOwslUWYS1u1LGpDxUyHOairM1PxsNobGHx20I9U413IyA==
+X-Received: by 2002:a05:6a00:815:b0:52b:8895:a0bd with SMTP id m21-20020a056a00081500b0052b8895a0bdmr18917138pfk.57.1659408859816;
+        Mon, 01 Aug 2022 19:54:19 -0700 (PDT)
+Received: from hyeyoo ([114.29.91.56])
+        by smtp.gmail.com with ESMTPSA id d25-20020a656219000000b0041c3ab14ca1sm1836514pgv.0.2022.08.01.19.54.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 19:54:19 -0700 (PDT)
+Date:   Tue, 2 Aug 2022 11:54:10 +0900
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Joe Perches <joe@perches.com>,
+        Vasily Averin <vasily.averin@linux.dev>,
+        Matthew WilCox <willy@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v3 06/15] mm/slab_common: fold kmalloc_order_trace() into
+ kmalloc_large()
+Message-ID: <YuiR0tWqMY+UDU/W@hyeyoo>
+References: <20220712133946.307181-1-42.hyeyoo@gmail.com>
+ <20220712133946.307181-7-42.hyeyoo@gmail.com>
+ <2e252179-0ffe-0d9c-9340-77e46f6ffdfd@suse.cz>
+ <YufUgFX2shlG5FoR@hyeyoo>
+ <0ca2f22a-8247-8419-3f99-4456a4c7344a@suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <YueMyUqannVg7l9v@MiWiFi-R3L-srv>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0ca2f22a-8247-8419-3f99-4456a4c7344a@suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/8/1 16:20, Baoquan He wrote:
-> Hi Catalin,
+On Mon, Aug 01, 2022 at 03:36:48PM +0200, Vlastimil Babka wrote:
+> On 8/1/22 15:26, Hyeonggon Yoo wrote:
+> > On Thu, Jul 28, 2022 at 05:23:29PM +0200, Vlastimil Babka wrote:
+> >> On 7/12/22 15:39, Hyeonggon Yoo wrote:
+> >> > There is no caller of kmalloc_order_trace() except kmalloc_large().
+> >> > Fold it into kmalloc_large() and remove kmalloc_order{,_trace}().
+> >> > 
+> >> > Also add tracepoint in kmalloc_large() that was previously
+> >> > in kmalloc_order_trace().
+> >> > 
+> >> > Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+> >> > Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+> >> 
+> > 
+> > Thank you for review.
+> > 
+> >> Hmm noticed a small change in how we call trace_kmalloc() which will now
+> >> include the __GFP_COMP.
+> > 
+> > Good catch.
+> > 
+> >> I think we could just call alloc_pages() from
+> >> kmalloc_large() with flags | __GFP_COMP instead of doing flags |=
+> >> __GFP_COMP; first.
+> > 
+> > I'll consider that in next version.
+> > 
+> >> AFAICS both kasan_kmalloc_large() and kmemleak_alloc()
+> >> will filter it out anyway.
+> > 
+> > AFAIK not passing __GFP_COMP to both kasan_kmalloc_large()
+> > and kmemleak_alloc() will affect their behavior.
 > 
-> On 07/11/22 at 05:03pm, Zhen Lei wrote:
->> v2 --> v3:
->> 1. Discard patch 3 in v2, a cleanup patch.
->>
->> v1 --> v2:
->> 1. Update the commit message of Patch 1, explicitly indicates that "crashkernel=X,high"
->>    is specified but "crashkernel=Y,low" is not specified.
->> 2. Drop Patch 4-5. Currently, focus on function integrity, performance optimization
->>    will be considered in later versions.
->> 3. Patch 3 is not mandatory, it's just a cleanup now, although it is a must for patch 4-5.
->>    But to avoid subsequent duplication of effort, I'm glad it was accepted.
->>
->>
->> v1:
->> After the basic functions of "support reserving crashkernel above 4G on arm64
->> kdump"(see https://lkml.org/lkml/2022/5/6/428) are implemented, we still have
->> three features to be improved.
->> 1. When crashkernel=X,high is specified but crashkernel=Y,low is not specified,
->>    the default crash low memory size is provided.
->> 2. For crashkernel=X without '@offset', if the low memory fails to be allocated,
->>    fall back to reserve region from high memory(above DMA zones).
->> 3. If crashkernel=X,high is used, page mapping is performed only for the crash
->>    high memory, and block mapping is still used for other linear address spaces.
->>    Compared to the previous version:
->>    (1) For crashkernel=X[@offset], the memory above 4G is not changed to block
->>        mapping, leave it to the next time.
->>    (2) The implementation method is modified. Now the implementation is simpler
->>        and clearer.
-> 
-> Do you have plan to pick this series so that it can be taken into 5.20
-> rc-1~3?
+> You mean "will NOT affect...", right?
 
-Hi, Catalin:
-  Only function reserve_crashkernel() is modified in these two patches. The core
-process of the arm64 architecture is not affected. I remember you suggested that
-arm64 and x86 share the same kdump code, so these two subfeatures are needed.
-Maybe we can lay the foundation first for the people who build the road. Unifying
-the external interfaces of kdump on arm64 and x86 does not seem to hurt.
-
+Ah, yes. mistake.
 
 > 
-> We have back ported the basic crashkernel=high, low, support into our
-> distros and have taken wide testing on arm64 servers, need this patchset
-> to back port for more testing. 
+> > - kasan_kmalloc_large() only checks if flag has __GFP_DIRECT_RECLAIM,
+> > - kmemleak_alloc() only use it to allocate kmemleak_object from
+> >   slab/pool, which does not require __GFP_COMP.
+> > 
+> > simply calling
+> > 	alloc_pages() with flags | GFP_COMP
+> > 	kasan_kmalloc_large() with flags
+> > 	kmemleak_alloc() with flags
+> > 	trace_kmalloc() with flags
+> > will be okay.
+> > 
+> > BTW this is fixed after patch 9.
 > 
-> Thanks
-> Baoquan
-> 
->>
->> Zhen Lei (2):
->>   arm64: kdump: Provide default size when crashkernel=Y,low is not
->>     specified
->>   arm64: kdump: Support crashkernel=X fall back to reserve region above
->>     DMA zones
->>
->>  .../admin-guide/kernel-parameters.txt         | 10 ++-----
->>  arch/arm64/mm/init.c                          | 28 +++++++++++++++++--
->>  2 files changed, 28 insertions(+), 10 deletions(-)
->>
->> -- 
->> 2.25.1
->>
-> 
-> .
-> 
+> Ah, right. __kmalloc_large_node_notrace() does the same  flags |=
+> __GFP_COMP; but the tracepoint is outside and unaffected.
+
+I'll reflect your suggestion anyway.
 
 -- 
-Regards,
-  Zhen Lei
+Thanks,
+Hyeonggon
