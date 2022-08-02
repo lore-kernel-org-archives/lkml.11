@@ -2,154 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA63C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 22:13:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37FE0C19F2B
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 22:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235450AbiHBWNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 18:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43230 "EHLO
+        id S237099AbiHBWNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 18:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235369AbiHBWMJ (ORCPT
+        with ESMTP id S236092AbiHBWMA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 18:12:09 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B1D54C90;
-        Tue,  2 Aug 2022 15:11:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659478320; x=1691014320;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dhv6+T0m4BozChdUSL5UsmZ7sbExT/0ShfHnoMLEeRA=;
-  b=igfjoPJcCkSNj2jgbjFWTNjv3yqAqfBqkL4gwHcjHYXvuHIq28LNziSx
-   pBCNz+BNYVSsaR7tRS+NjJ9pdEyPZdG+VeSqp6zvCkoEtdkoCgwE39Chz
-   B/apC7IKoT9clRSRKTv8ijAWRvAuRvdPTzJLnpWgSyOKrb1vv0hnE9HsQ
-   dj9ZRRCfpyiy9WBw4H9b57/NpmFPkY5fjgl+kXyy8FKTGydcP/SAYzLgy
-   5qOFWEHRAsYUY3ZMmPIawWWtXPttyKoCKyXrOn1/ZYSYHjbOo8M1nzpvy
-   opEHYYgceZQqsd09krsmAqH1/kL3Qoj5pyPvZlFKTSIV/RCeUlx+CjidK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="269909724"
-X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
-   d="scan'208";a="269909724"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 15:11:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
-   d="scan'208";a="728989347"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 02 Aug 2022 15:11:36 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJ06y-000GVS-0r;
-        Tue, 02 Aug 2022 22:11:36 +0000
-Date:   Wed, 3 Aug 2022 06:11:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Li Jinlin <lijinlin3@huawei.com>, lduncan@suse.com,
-        cleech@redhat.com, michael.christie@oracle.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, mark.mielke@gmail.com
-Cc:     kbuild-all@lists.01.org, open-iscsi@googlegroups.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linfeilong@huawei.com, liuzhiqiang26@huawei.com
-Subject: Re: [PATCH] scsi: iscsi: iscsi_tcp: Fix null-ptr-deref while calling
- getpeername()
-Message-ID: <202208030633.x2jgVRIa-lkp@intel.com>
-References: <20220802101939.3972556-1-lijinlin3@huawei.com>
+        Tue, 2 Aug 2022 18:12:00 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F03C40BCD;
+        Tue,  2 Aug 2022 15:11:49 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id ss3so28249663ejc.11;
+        Tue, 02 Aug 2022 15:11:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=C0jW64/KiFwvjDsl6sIOegZf+KbryaIBgl5ahVhWno4=;
+        b=WPM5AcMIIul1+jqYaxYLV7iy1y12BnmTX4t6FIkKJzIaNMKTvHbPm2rYWAgjzKTHlQ
+         PMTv4ly+uyfDB0kcgsiT+S02Uf4FYwhcIWijhlVDmllJpxh5GSvVxqAw53pE8TKUa5Ux
+         KljRUyqemJuqtTgn2UaWrvP7vQb76xUdLPQViCnMHkZvjQtaHyZtGs38ymnVLyK+EiCM
+         zCIjcPfdzBs3Xd7OxmF/J7G9iABQ/Oxv2x5Zka/P4ePQjuMjzuwFv25XPsPGFEUrNU+p
+         U8nIMd1czx6mp1SlbNH2AIkYgWAIwKeFOcNNEA78OmQHTt197dj4a0mk61tvuGFdow7R
+         qy/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=C0jW64/KiFwvjDsl6sIOegZf+KbryaIBgl5ahVhWno4=;
+        b=1hk0ZXou54PRl0xv1Tq8/CY9Njn2pDM8IVEG9tw2viOr65+6OiI01HTQVal7YqI208
+         0ze/XsInoWSeVFncMTKidYMIXrocVFWCVHXBlYYYEelKKXgG2PjRppnfTyn4Bg8ZXy9n
+         RXJ4hbsFUGPjvApEgh4NGhA5Rf21w883u+2RxBUY+cULEcWiC6eTs9HHhA8Sukvq0tih
+         xPbnwieyPvRZHHtCYxcJBo+3HxVorROTJDtV4hj4qzHd8yKp/Qti7Qf+xt9Xqv/6guy/
+         R1yydBPY9jHDvwv3sh1vbzmbfL9R3ffsCekdL659NeFLv5QXL/x6Hw4oTIE27h+Zz4LA
+         Jiqg==
+X-Gm-Message-State: AJIora/C4tLP+SD+qNKY1g9oTfhwFJc8L5tUdbKu7qPuZ7MX4THh1uYi
+        F8SE+Yxr9ABg6iHGmX4/ZrQ=
+X-Google-Smtp-Source: AGRyM1vsnzF3FuCRRfhnVQ0KrN+qmJuxmVYslbsk3N0pNBnEA+G51JnKGGxwiKPQ1tVcljwljkAx2w==
+X-Received: by 2002:a17:907:7601:b0:730:3da4:217c with SMTP id jx1-20020a170907760100b007303da4217cmr14148973ejc.563.1659478307870;
+        Tue, 02 Aug 2022 15:11:47 -0700 (PDT)
+Received: from localhost ([77.78.38.236])
+        by smtp.gmail.com with ESMTPSA id p7-20020a1709061b4700b0072aac7446easm6612254ejg.47.2022.08.02.15.11.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 15:11:47 -0700 (PDT)
+From:   Iskren Chernev <iskren.chernev@gmail.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robert Marko <robimarko@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Iskren Chernev <iskren.chernev@gmail.com>
+Subject: [PATCH v4 08/13] regulator: qcom_spmi: Sort pmics alphabetically (part 2)
+Date:   Wed,  3 Aug 2022 01:11:07 +0300
+Message-Id: <20220802221112.2280686-9-iskren.chernev@gmail.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220802221112.2280686-1-iskren.chernev@gmail.com>
+References: <20220802221112.2280686-1-iskren.chernev@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220802101939.3972556-1-lijinlin3@huawei.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Li,
+The sorting is split in multiple commits for easier reviewing.
 
-Thank you for the patch! Perhaps something to improve:
+Signed-off-by: Iskren Chernev <iskren.chernev@gmail.com>
+---
+ drivers/regulator/qcom_spmi-regulator.c | 129 ++++++++++++------------
+ 1 file changed, 64 insertions(+), 65 deletions(-)
 
-[auto build test WARNING on mkp-scsi/for-next]
-[also build test WARNING on jejb-scsi/for-next linus/master v5.19 next-20220728]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Li-Jinlin/scsi-iscsi-iscsi_tcp-Fix-null-ptr-deref-while-calling-getpeername/20220802-173945
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mkp/scsi.git for-next
-config: loongarch-randconfig-s041-20220801 (https://download.01.org/0day-ci/archive/20220803/202208030633.x2jgVRIa-lkp@intel.com/config)
-compiler: loongarch64-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/ccc367df3fdba07b24eeda721ca928cce50f40d2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Li-Jinlin/scsi-iscsi-iscsi_tcp-Fix-null-ptr-deref-while-calling-getpeername/20220802-173945
-        git checkout ccc367df3fdba07b24eeda721ca928cce50f40d2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=loongarch SHELL=/bin/bash drivers/scsi/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-sparse warnings: (new ones prefixed by >>)
-   drivers/scsi/iscsi_tcp.c:798:26: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int fd @@     got struct file *file @@
-   drivers/scsi/iscsi_tcp.c:798:26: sparse:     expected unsigned int fd
-   drivers/scsi/iscsi_tcp.c:798:26: sparse:     got struct file *file
-   drivers/scsi/iscsi_tcp.c:852:26: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int fd @@     got struct file *file @@
-   drivers/scsi/iscsi_tcp.c:852:26: sparse:     expected unsigned int fd
-   drivers/scsi/iscsi_tcp.c:852:26: sparse:     got struct file *file
->> drivers/scsi/iscsi_tcp.c:798:22: sparse: sparse: non size-preserving pointer to integer cast
-   drivers/scsi/iscsi_tcp.c:852:22: sparse: sparse: non size-preserving pointer to integer cast
-
-vim +798 drivers/scsi/iscsi_tcp.c
-
-   777	
-   778	static int iscsi_sw_tcp_conn_get_param(struct iscsi_cls_conn *cls_conn,
-   779					       enum iscsi_param param, char *buf)
-   780	{
-   781		struct iscsi_conn *conn = cls_conn->dd_data;
-   782		struct iscsi_tcp_conn *tcp_conn = conn->dd_data;
-   783		struct iscsi_sw_tcp_conn *tcp_sw_conn = tcp_conn->dd_data;
-   784		struct sockaddr_in6 addr;
-   785		struct socket *sock;
-   786		int rc;
-   787	
-   788		switch(param) {
-   789		case ISCSI_PARAM_CONN_PORT:
-   790		case ISCSI_PARAM_CONN_ADDRESS:
-   791		case ISCSI_PARAM_LOCAL_PORT:
-   792			spin_lock_bh(&conn->session->frwd_lock);
-   793			if (!tcp_sw_conn || !tcp_sw_conn->sock) {
-   794				spin_unlock_bh(&conn->session->frwd_lock);
-   795				return -ENOTCONN;
-   796			}
-   797			sock = tcp_sw_conn->sock;
- > 798			fget(sock->file);
-   799			spin_unlock_bh(&conn->session->frwd_lock);
-   800	
-   801			if (param == ISCSI_PARAM_LOCAL_PORT)
-   802				rc = kernel_getsockname(sock,
-   803							(struct sockaddr *)&addr);
-   804			else
-   805				rc = kernel_getpeername(sock,
-   806							(struct sockaddr *)&addr);
-   807			spin_lock_bh(&conn->session->frwd_lock);
-   808			sockfd_put(sock);
-   809			spin_unlock_bh(&conn->session->frwd_lock);
-   810			if (rc < 0)
-   811				return rc;
-   812	
-   813			return iscsi_conn_get_addr_param((struct sockaddr_storage *)
-   814							 &addr, param, buf);
-   815		default:
-   816			return iscsi_conn_get_param(cls_conn, param, buf);
-   817		}
-   818	
-   819		return 0;
-   820	}
-   821	
-
+diff --git a/drivers/regulator/qcom_spmi-regulator.c b/drivers/regulator/qcom_spmi-regulator.c
+index 4c6494e3bbf6..aed818c7a4d4 100644
+--- a/drivers/regulator/qcom_spmi-regulator.c
++++ b/drivers/regulator/qcom_spmi-regulator.c
+@@ -2021,6 +2021,68 @@ static int spmi_regulator_of_parse(struct device_node *node,
+ 	return 0;
+ }
+ 
++static const struct spmi_regulator_data pm660_regulators[] = {
++	{ "s1", 0x1400, "vdd_s1", },
++	{ "s2", 0x1700, "vdd_s2", },
++	{ "s3", 0x1a00, "vdd_s3", },
++	{ "s4", 0x1d00, "vdd_s3", },
++	{ "s5", 0x2000, "vdd_s5", },
++	{ "s6", 0x2300, "vdd_s6", },
++	{ "l1", 0x4000, "vdd_l1_l6_l7", },
++	{ "l2", 0x4100, "vdd_l2_l3", },
++	{ "l3", 0x4200, "vdd_l2_l3", },
++	/* l4 is unaccessible on PM660 */
++	{ "l5", 0x4400, "vdd_l5", },
++	{ "l6", 0x4500, "vdd_l1_l6_l7", },
++	{ "l7", 0x4600, "vdd_l1_l6_l7", },
++	{ "l8", 0x4700, "vdd_l8_l9_l10_l11_l12_l13_l14", },
++	{ "l9", 0x4800, "vdd_l8_l9_l10_l11_l12_l13_l14", },
++	{ "l10", 0x4900, "vdd_l8_l9_l10_l11_l12_l13_l14", },
++	{ "l11", 0x4a00, "vdd_l8_l9_l10_l11_l12_l13_l14", },
++	{ "l12", 0x4b00, "vdd_l8_l9_l10_l11_l12_l13_l14", },
++	{ "l13", 0x4c00, "vdd_l8_l9_l10_l11_l12_l13_l14", },
++	{ "l14", 0x4d00, "vdd_l8_l9_l10_l11_l12_l13_l14", },
++	{ "l15", 0x4e00, "vdd_l15_l16_l17_l18_l19", },
++	{ "l16", 0x4f00, "vdd_l15_l16_l17_l18_l19", },
++	{ "l17", 0x5000, "vdd_l15_l16_l17_l18_l19", },
++	{ "l18", 0x5100, "vdd_l15_l16_l17_l18_l19", },
++	{ "l19", 0x5200, "vdd_l15_l16_l17_l18_l19", },
++	{ }
++};
++
++static const struct spmi_regulator_data pm660l_regulators[] = {
++	{ "s1", 0x1400, "vdd_s1", },
++	{ "s2", 0x1700, "vdd_s2", },
++	{ "s3", 0x1a00, "vdd_s3", },
++	{ "s4", 0x1d00, "vdd_s4", },
++	{ "s5", 0x2000, "vdd_s5", },
++	{ "l1", 0x4000, "vdd_l1_l9_l10", },
++	{ "l2", 0x4100, "vdd_l2", },
++	{ "l3", 0x4200, "vdd_l3_l5_l7_l8", },
++	{ "l4", 0x4300, "vdd_l4_l6", },
++	{ "l5", 0x4400, "vdd_l3_l5_l7_l8", },
++	{ "l6", 0x4500, "vdd_l4_l6", },
++	{ "l7", 0x4600, "vdd_l3_l5_l7_l8", },
++	{ "l8", 0x4700, "vdd_l3_l5_l7_l8", },
++	{ "l9", 0x4800, "vdd_l1_l9_l10", },
++	{ "l10", 0x4900, "vdd_l1_l9_l10", },
++	{ }
++};
++
++static const struct spmi_regulator_data pm8004_regulators[] = {
++	{ "s2", 0x1700, "vdd_s2", },
++	{ "s5", 0x2000, "vdd_s5", },
++	{ }
++};
++
++static const struct spmi_regulator_data pm8005_regulators[] = {
++	{ "s1", 0x1400, "vdd_s1", },
++	{ "s2", 0x1700, "vdd_s2", },
++	{ "s3", 0x1a00, "vdd_s3", },
++	{ "s4", 0x1d00, "vdd_s4", },
++	{ }
++};
++
+ static const struct spmi_regulator_data pm8226_regulators[] = {
+ 	{ "s1", 0x1400, "vdd_s1", },
+ 	{ "s2", 0x1700, "vdd_s2", },
+@@ -2225,69 +2287,6 @@ static const struct spmi_regulator_data pmi8994_regulators[] = {
+ 	{ }
+ };
+ 
+-static const struct spmi_regulator_data pm660_regulators[] = {
+-	{ "s1", 0x1400, "vdd_s1", },
+-	{ "s2", 0x1700, "vdd_s2", },
+-	{ "s3", 0x1a00, "vdd_s3", },
+-	{ "s4", 0x1d00, "vdd_s3", },
+-	{ "s5", 0x2000, "vdd_s5", },
+-	{ "s6", 0x2300, "vdd_s6", },
+-	{ "l1", 0x4000, "vdd_l1_l6_l7", },
+-	{ "l2", 0x4100, "vdd_l2_l3", },
+-	{ "l3", 0x4200, "vdd_l2_l3", },
+-	/* l4 is unaccessible on PM660 */
+-	{ "l5", 0x4400, "vdd_l5", },
+-	{ "l6", 0x4500, "vdd_l1_l6_l7", },
+-	{ "l7", 0x4600, "vdd_l1_l6_l7", },
+-	{ "l8", 0x4700, "vdd_l8_l9_l10_l11_l12_l13_l14", },
+-	{ "l9", 0x4800, "vdd_l8_l9_l10_l11_l12_l13_l14", },
+-	{ "l10", 0x4900, "vdd_l8_l9_l10_l11_l12_l13_l14", },
+-	{ "l11", 0x4a00, "vdd_l8_l9_l10_l11_l12_l13_l14", },
+-	{ "l12", 0x4b00, "vdd_l8_l9_l10_l11_l12_l13_l14", },
+-	{ "l13", 0x4c00, "vdd_l8_l9_l10_l11_l12_l13_l14", },
+-	{ "l14", 0x4d00, "vdd_l8_l9_l10_l11_l12_l13_l14", },
+-	{ "l15", 0x4e00, "vdd_l15_l16_l17_l18_l19", },
+-	{ "l16", 0x4f00, "vdd_l15_l16_l17_l18_l19", },
+-	{ "l17", 0x5000, "vdd_l15_l16_l17_l18_l19", },
+-	{ "l18", 0x5100, "vdd_l15_l16_l17_l18_l19", },
+-	{ "l19", 0x5200, "vdd_l15_l16_l17_l18_l19", },
+-	{ }
+-};
+-
+-static const struct spmi_regulator_data pm660l_regulators[] = {
+-	{ "s1", 0x1400, "vdd_s1", },
+-	{ "s2", 0x1700, "vdd_s2", },
+-	{ "s3", 0x1a00, "vdd_s3", },
+-	{ "s4", 0x1d00, "vdd_s4", },
+-	{ "s5", 0x2000, "vdd_s5", },
+-	{ "l1", 0x4000, "vdd_l1_l9_l10", },
+-	{ "l2", 0x4100, "vdd_l2", },
+-	{ "l3", 0x4200, "vdd_l3_l5_l7_l8", },
+-	{ "l4", 0x4300, "vdd_l4_l6", },
+-	{ "l5", 0x4400, "vdd_l3_l5_l7_l8", },
+-	{ "l6", 0x4500, "vdd_l4_l6", },
+-	{ "l7", 0x4600, "vdd_l3_l5_l7_l8", },
+-	{ "l8", 0x4700, "vdd_l3_l5_l7_l8", },
+-	{ "l9", 0x4800, "vdd_l1_l9_l10", },
+-	{ "l10", 0x4900, "vdd_l1_l9_l10", },
+-	{ }
+-};
+-
+-
+-static const struct spmi_regulator_data pm8004_regulators[] = {
+-	{ "s2", 0x1700, "vdd_s2", },
+-	{ "s5", 0x2000, "vdd_s5", },
+-	{ }
+-};
+-
+-static const struct spmi_regulator_data pm8005_regulators[] = {
+-	{ "s1", 0x1400, "vdd_s1", },
+-	{ "s2", 0x1700, "vdd_s2", },
+-	{ "s3", 0x1a00, "vdd_s3", },
+-	{ "s4", 0x1d00, "vdd_s4", },
+-	{ }
+-};
+-
+ static const struct spmi_regulator_data pmp8074_regulators[] = {
+ 	{ "s1", 0x1400, "vdd_s1"},
+ 	{ "s2", 0x1700, "vdd_s2"},
+@@ -2316,6 +2315,8 @@ static const struct spmi_regulator_data pms405_regulators[] = {
+ };
+ 
+ static const struct of_device_id qcom_spmi_regulator_match[] = {
++	{ .compatible = "qcom,pm660-regulators", .data = &pm660_regulators },
++	{ .compatible = "qcom,pm660l-regulators", .data = &pm660l_regulators },
+ 	{ .compatible = "qcom,pm8004-regulators", .data = &pm8004_regulators },
+ 	{ .compatible = "qcom,pm8005-regulators", .data = &pm8005_regulators },
+ 	{ .compatible = "qcom,pm8226-regulators", .data = &pm8226_regulators },
+@@ -2325,8 +2326,6 @@ static const struct of_device_id qcom_spmi_regulator_match[] = {
+ 	{ .compatible = "qcom,pm8950-regulators", .data = &pm8950_regulators },
+ 	{ .compatible = "qcom,pm8994-regulators", .data = &pm8994_regulators },
+ 	{ .compatible = "qcom,pmi8994-regulators", .data = &pmi8994_regulators },
+-	{ .compatible = "qcom,pm660-regulators", .data = &pm660_regulators },
+-	{ .compatible = "qcom,pm660l-regulators", .data = &pm660l_regulators },
+ 	{ .compatible = "qcom,pmp8074-regulators", .data = &pmp8074_regulators },
+ 	{ .compatible = "qcom,pms405-regulators", .data = &pms405_regulators },
+ 	{ }
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.1
+
