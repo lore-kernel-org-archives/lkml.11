@@ -2,110 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A565EC19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 13:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 741A7C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 13:05:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236179AbiHBNDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 09:03:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47006 "EHLO
+        id S232909AbiHBNFb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 09:05:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232569AbiHBNDo (ORCPT
+        with ESMTP id S232569AbiHBNF0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 09:03:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A36CB21A
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 06:03:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659445422;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=q9G2G8Gu5RKJUdwRd8+XrMp7icbYEK8BR98QSXem+dE=;
-        b=EFTQrM9SX/fsG24jiGUleFYYVYx3wjXU7VUUiDK4JrWOFP6ppd6CJg909kYLRX0lcdR2SI
-        cv2vF8FdOMZig5t8qaAgM2J2u6cmtoRTLFTmtcW1sPnKTbXYaod7kiNz5VsrXHqjXwAhWA
-        FjI+kcoq2NQ1axXOOBDd1DioVW5DaeU=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-502-kPG58sSYNuGi68l28jHg1A-1; Tue, 02 Aug 2022 09:03:41 -0400
-X-MC-Unique: kPG58sSYNuGi68l28jHg1A-1
-Received: by mail-wm1-f70.google.com with SMTP id i131-20020a1c3b89000000b003a4f0932ec3so12980wma.0
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 06:03:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=q9G2G8Gu5RKJUdwRd8+XrMp7icbYEK8BR98QSXem+dE=;
-        b=ue5FVNTTrMcey5RzEQeAgQ04l8mC+CUt0IC1UjN5nlUHm5112DnxEy21ZQktQDeroD
-         DWYujI71wjKA+ibuYwXoqgZnGkf0Awct6W3eMu5XEhclWxc+XxoDBNq15KJeF6vrXFFy
-         /II3IQ2PvXB0zc6SbtkKPL0cg0eah82kfiorZ2x9gA9WTqKlJsY7GsySJ4cO9/XgaARo
-         mWn48R0M5xdtue8bRAgqp28j5cNIgO1GkKTjyrZT0An9G6BYKUmiNdxUnYRxtJmulT2i
-         9pHDyJJtGPA4b4ueT5Jjh4TdaDmmfc7zz4mHirjegJptb95LRox9wh1hYJQ48Gydjsfk
-         ndfg==
-X-Gm-Message-State: ACgBeo2ZtUz+2jTWeSYGcSuwpQ4Iye/5/r3IYduR2AqHHy1uWKwkFro9
-        j3V61cJ7EWlpdBaEB3EIFOtB4fZnOl2J8ESqS3kiVYIRYZ9M2fSIFzpvPUd3J4eHt4xuylQe/k2
-        C5drAGNeDuWkE845komBBfqOrObwx9cl6Nq3yfiLg0a26D+2xlWe6MoCRSsA60UsD6sIuWmNk40
-        EO
-X-Received: by 2002:a5d:64e2:0:b0:21d:38e8:2497 with SMTP id g2-20020a5d64e2000000b0021d38e82497mr12253769wri.142.1659445420302;
-        Tue, 02 Aug 2022 06:03:40 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6DOS3SQRla4MpJdwzB2g2Z3+URqWp8A6RPEqmiNSoJz93I9qLSiQKDBTUSjxU0zCoo/8ZISQ==
-X-Received: by 2002:a5d:64e2:0:b0:21d:38e8:2497 with SMTP id g2-20020a5d64e2000000b0021d38e82497mr12253733wri.142.1659445419933;
-        Tue, 02 Aug 2022 06:03:39 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id f11-20020a05600c4e8b00b003a31673515bsm26399540wmq.7.2022.08.02.06.03.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 06:03:37 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org,
-        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 09/25] KVM: VMX: nVMX: Support TSC scaling and
- PERF_GLOBAL_CTRL with enlightened VMCS
-In-Reply-To: <62ac29cb-3270-a810-bad1-3692da448016@redhat.com>
-References: <20220714091327.1085353-1-vkuznets@redhat.com>
- <20220714091327.1085353-10-vkuznets@redhat.com>
- <YtnMIkFI469Ub9vB@google.com>
- <48de7ea7-fc1a-6a83-3d6f-e04d26ea2f05@redhat.com>
- <Yt7ehL0HfR3b97FQ@google.com>
- <870d507d-a516-5601-4d21-2bfd571cf008@redhat.com>
- <YuMKBzeB2cE/NZ2K@google.com>
- <62ac29cb-3270-a810-bad1-3692da448016@redhat.com>
-Date:   Tue, 02 Aug 2022 15:03:35 +0200
-Message-ID: <87les623x4.fsf@redhat.com>
-MIME-Version: 1.0
+        Tue, 2 Aug 2022 09:05:26 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2064.outbound.protection.outlook.com [40.107.220.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1470260CA
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 06:05:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Bj1qIjefy66wLpNgo/mSyYjCLIDlkyftjcV5zzQoESJ8rLG9VRFtJQve99jnE7Ok1T4DOWhf1Txc4WLIL9VvDwdHBqhJdBBCWRbqXUYhddbKUQhihGqSQ5YxNwzxd7+KRMPwxlbI2/eZB1ZCd+OibQXrqF3pRXw3SRYBunr92FU5CNC+t79qFvEzIeROIGMA3dG8pQa6xY/AkjAfkLtNh9jZnoMW8UsXR8jcBGNStAal+AdxXMnYnK93cv8u1JGUhM2O3FORzxYgPbiwh4LJuBiiw8MbB9jkgGxGocYOAg3YD0ili57XXt+grjPCUBG4eNn1pKtffSnAYwVQJ8yqQQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XHmS7WMyA34Bn0aC7lJhjPVjeWJAniM2yJjpOFEBwgI=;
+ b=WizJ0Hu7+ngCLz7H32cXAvaWeMe6fFS9Q/Lb8F48k2WmRXdxzZhOqeFRyNn8HWhLrje+40iCnP/6OHrIwrvXJYRXvjCG4vB7xZq7PBYOSbmq9xK+2e/L6uLvgweNJdfuU+VWa9/Raj4vUjly9S61BMRqN0x5JP5+FELo325C1IRdt40MLSHW0r56sd1XHvnlOVRnXOQqHy3rSy0tqOnm+eM1dVeAAmqWUWFsN+vM1jyEW0MDA1Hg2JYMWR4BWMsMSit8dN/fWJulvm8+2Ta9RZyJqB7QYArA7ifiRbDIi7XfiIvQ+tcuCR423FFEf6vq1wBDASqYPm9KSLqX5zXzWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XHmS7WMyA34Bn0aC7lJhjPVjeWJAniM2yJjpOFEBwgI=;
+ b=PHcavlQ1vTCuXo7Egm4WQPn08AvQqtcLs99zrs6gxj7vICMGGXzYEK6aFQyErI6nI09QREKddpWGl6nYiGGQX5tsmq8GRWutn/jh45GaCXkw+y3GfgTBOjQnqO6QOEbY1h5Gay62s5jxDIEskjZnLxS2uzKcp3NH4qQslOGKS5h0wffxEgqU5uhSXxTs6G5eUjs8rBSTf+G9uvmZlIRj4leIaDtwmIfFnf06x14AfttKAaePE8MH+Z4V3ULs7pPfxuM2yyFUzo/o6R0qDnPBuTolo6VZdn5uPW3NH8gDfgHrYLV+TAw/JAXhOMnarlepVDlQw7UgnlN8PysK6MvMMg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
+ by MWHPR12MB1678.namprd12.prod.outlook.com (2603:10b6:301:b::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.11; Tue, 2 Aug
+ 2022 13:05:22 +0000
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::eca6:a4a7:e2b2:27e7]) by BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::eca6:a4a7:e2b2:27e7%5]) with mapi id 15.20.5482.016; Tue, 2 Aug 2022
+ 13:05:22 +0000
+References: <20220729024645.764366-1-apopple@nvidia.com>
+ <YuQ4mJqjIUncf7iF@nvidia.com> <87wnbsd6yp.fsf@nvdebian.thelocal>
+ <YukWtNwRvOPh6jmM@nvidia.com>
+User-agent: mu4e 1.6.9; emacs 27.1
+From:   Alistair Popple <apopple@nvidia.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     akpm@linux-foundation.org, minchan@kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, jhubbard@nvidia.com,
+        pasha.tatashin@soleen.com
+Subject: Re: [PATCH] mm/gup.c: Simplify and fix
+ check_and_migrate_movable_pages() return codes
+Date:   Tue, 02 Aug 2022 22:52:29 +1000
+In-reply-to: <YukWtNwRvOPh6jmM@nvidia.com>
+Message-ID: <877d3qdcds.fsf@nvdebian.thelocal>
 Content-Type: text/plain
+X-ClientProxiedBy: BYAPR07CA0043.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::20) To BYAPR12MB3176.namprd12.prod.outlook.com
+ (2603:10b6:a03:134::26)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 71062cbf-82b3-4e2e-6d26-08da7487a897
+X-MS-TrafficTypeDiagnostic: MWHPR12MB1678:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3eMVqJDSoBkIg1woskIiXpKUGtBC7VTags/rOVZGzzbJhQzixSVQTZdSDSQr2ONm3ZxNikE8utmKaoe7hfnXk9H+aS9960AXoVgUpTj8P+57ulKOIH/+NUuqJhYPJq5VWhaeqsaCxCEFlLVSVcKYK3XZuR5b5+WjRFcix5juAHTSoeMRijGv+Ahdk/MtvRj3gvQzXkR8w6WrVTxWgvAiRkKGLNY/cnQ3/C8ryGQfnOVXLW6wrbs5GAVVkqhdY44wqxC+qDp5zuS2YPD8pWA5S2QWhabAD72sp5BMVIvecXairyPu6OC9T9w8UtfGcas9tmnQ8o5g9izByxEzgxPOgXpHa5sKsbO3ayOIjxTA9TdOhfzwIhUsZblJw/byPP/YcBbImOcpVVi5/UCI1FSKGjtYA/4Ep7U5ulTXCWcGuheSo/rNk8l/2pE3NBJNKHyFMMFvyQKrhFJLos9ImzC8D+NNb0wYH0ev/FoqjNGKyWfd6Pj9e/WLgD/welzdzwETPceFVpHltKiBsAlFurX6RFxrzlSF83ueNtAqsnLIa6i2nFSeY2KITkUL1QNdqmqeHfR7gKsHiWkvUHEhpAFu5Jfi1luhBVXWVVVCrqqM+CU3i4NwIOBZvOVzY2Nv9HEhpbZGWttxlpaodAaEQY7jdaYUYlwJKwWytOeFp7JRkc6QosNjPDU1yUPWy2lRcELbmSAeUtsAyPkFjT4tmYWmPpVvhXCGZfiWsFNU6kVGDkxMQY5e8BfP15pXQXpARaER
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(366004)(376002)(346002)(39860400002)(136003)(41300700001)(6506007)(9686003)(6512007)(26005)(6636002)(316002)(86362001)(478600001)(6486002)(38100700002)(83380400001)(4326008)(186003)(2906002)(66946007)(66556008)(8676002)(66476007)(8936002)(5660300002)(6862004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XZfbfgysEkCSfZ7ymaRtvJZ+LOqmAEL5TI06y58DpKxs3gt1xC7DgvlcXohy?=
+ =?us-ascii?Q?RfslAy17MOSG+YHqAh/uSH2T48NGdXw9KZe5tbwi9sw+lVbY5C51Jf2bfvD6?=
+ =?us-ascii?Q?vZGQv2aAan90EajHwPFxa/F6tZQFSICEOWl8aMm5gValch66axKFptekaxFi?=
+ =?us-ascii?Q?ys+eKwbZnxSv3tQwOnR/1hr5RO+Wgtk0aP2tWkmW8H2qw7MWY2yrey3MIWTL?=
+ =?us-ascii?Q?KbtT9QJiCL38a9i593+LJ9DhDPTOrrTcXadsvxKR/3IVp3TJnDbAc7ehESm8?=
+ =?us-ascii?Q?bauEDY8V7gC3RXcrVIEujwMoigB0KhQSN0/1sNmFNlhndLS1h+F2NTBqq7l+?=
+ =?us-ascii?Q?BdVKzwolzpfVl5YZhyi3395Hn50NGIERutTrskdti7yyQKXAtvANTjmT1ocI?=
+ =?us-ascii?Q?NNd4OcJKSMTm+6w9z0bBS/gClGfD0DqsXTywW1Z35TaCUFDYGn9CqhCq+mYr?=
+ =?us-ascii?Q?pATpMTO0d9puFU7Z1xGtGXbnTxToW2VB9SH/nY39PljQDNmkzahlQ3MUJMyQ?=
+ =?us-ascii?Q?uSZsstiOVxT9RNAlO/0dBaI2mXJlK/EWVCOUdIoNOLhsKUgZHG0V5z7PKjJd?=
+ =?us-ascii?Q?4oDPu4x0tKoEuw+Y6cHzBHaEBCnKgJksT0rh+7Vp18D/XteGQzYQKbky1o+T?=
+ =?us-ascii?Q?3ouxW7WB677Xc7MAp1NeOmtls1eCL742kKfVBEyZdasvtLzIAQSQnAtUZ1YL?=
+ =?us-ascii?Q?aX6zCKp5cfM+fcZuaCiaIwRFn7ZZC3Nt7QicDCMPegE3vN28ahFi2UlFR3LF?=
+ =?us-ascii?Q?I07fg7wJl0EYBx9Oprg5YLOPL+PnU0W0iAjBBcdS3rMxL0HWToGGZGdXFkxH?=
+ =?us-ascii?Q?75rQNcEnsXXpaJiUOsXk/y5x242H5pwhKNHyNqqqX2/RMwtbsvVrt7Wld4kT?=
+ =?us-ascii?Q?+vfQvP+0z9ntPupaCxd7PzD3RZjT23S6WguRbDTSysOYsBn6MpbeRP/LQQY5?=
+ =?us-ascii?Q?WoznV7Mvd7FJB0KLqhguYsy/d8vEjALo176kzOAHwMA0tsMC51+IHViCduoX?=
+ =?us-ascii?Q?P5mJnMJ1tOLd5EuiVSfTE5+acHij/R4h/fRpBrHt3wJKzh6svbIVsNFPzHyx?=
+ =?us-ascii?Q?kBDWP2WOWS1EqHFPNl1OBa8YEdfZ94bK8M8Yhg9pTCZiGczGhFNt/0vJWpO4?=
+ =?us-ascii?Q?olYVr9V9oI1yuCYP9vDLL6et0OhDBPZ5MaPB2pA4RZ+UjYOkM0x06valhXrw?=
+ =?us-ascii?Q?4CDLAhS2Z0OwTgeKoMK0rDCpviCdyEaxap1l+7vqK5n72WYARyLU9RyPi2r2?=
+ =?us-ascii?Q?VUEtah2Uce0IkvfutoIHxFsEy/gRYkXhv7wX50dlrQsraUKFxyn1eNee7gAk?=
+ =?us-ascii?Q?jfH2qfzQ4dr/VAdNBxX53V7LOyJPz9o66QhCbmjcALg3URv4TwsS+b2DMeC8?=
+ =?us-ascii?Q?fnp8Uw6TXNdJ9s+Cfdcje91RfeWctV8srnJPv86yba/VOwpaDxKZGesTf+b1?=
+ =?us-ascii?Q?IRGGDP8rSmbu3ZKbaWo48FYqNhpYUBUJDfaiOblTp9Ct51x+PPrsbpD9y/s5?=
+ =?us-ascii?Q?X7+qEmylzWpoPUFnyP8Zfg9dvcvuOGcuRy6iO84F0WWiyNtzJ8EtzMS/Ahk5?=
+ =?us-ascii?Q?7qdqnhBpRLEDLJ7/8lxMykH/MVoyoi/aZi4t0797?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 71062cbf-82b3-4e2e-6d26-08da7487a897
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2022 13:05:22.5968
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HSGZj3DRt7nLtF7C2Pn4fqIhxUVRSDGH536cW+NHJQy5CyXghzh5vgJM9e1D6Z69gE+PKD5s6mT168JSilHngg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1678
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Paolo Bonzini <pbonzini@redhat.com> writes:
 
-> On 7/29/22 00:13, Sean Christopherson wrote:
->> The only flaw in this is if KVM gets handed a CPUID model that enumerates support
->> for 2025 (or whenever the next update comes) but not 2022.  Hmm, though if Microsoft
->> defines each new "version" as a full superset, then even that theoretical bug goes
->> away.  I'm happy to be optimistic for once and give this a shot.  I definitely like
->> that it makes it easier to see the deltas between versions.
+Jason Gunthorpe <jgg@nvidia.com> writes:
+
+> On Mon, Aug 01, 2022 at 12:18:53PM +1000, Alistair Popple wrote:
 >
-> Okay, I have queued the series but I still haven't gone through all the 
-> comments.
+>> > AFAICT there is no reason to 'continue' in most of these paths since
+>> > we intend to return to userspace with an error anyhow? Why try to
+>> > isolate more pages?
+>>
+>> The main reason would be if callers want to retry the operation. AFAIK
+>> isolate_folio_lru() can have transient failures, so if callers want to
+>> retry it makes sense to isolate and migrate as many pages as possible
+>> rather than one page at a time as subsequent retries may find different
+>> pages that can't be isolated.
+>
+> Except we don't try to do the migrate, we just isolate and then
+> unisolate and return failure.
 
-The biggest problem with this version is the EFER.LMA problem on i386
-discovered (and, thankfully, fixed in the suggested patch) by
-Sean. To address this and all other comment I'm going to put together a
-v5 on top of the current kvm/queue (as I don't yet see any of this stuff
-there).
+Unless I'm missing something any pages successfully isolated are still
+added to movable_page_list then migrated if we 'continue' (at least in
+the original code and this patch version, but not v2). Obviously pages
+that couldn't be isolated can't be migrated, but subsequent retries
+should only need to deal with those pages as the rest should already be
+in the correct zone.
 
->  So this will _not_ be in the 5.21 pull request.
+>> Actually I should have called this out more clearly - the previous
+>> behaviour on isolation failure was to retry indefinitely which is what
+>> lead to looping in the kernel. This patch turns isolation failure into
+>> an error and doesn't retry. I wonder though if we need to maintain a
+>> retry count similar to what migrate_pages() does if there are unexpected
+>> page refs?
+>
+> This makes more sense, exporting this mess to the caller and hoping
+> they retry (they won't) doesn't make sense..
 
-At first I thought you meant 5.20 but then I got the pun: 5.20 will
-likely become 6.0 and so 5.21 pull request will just never happen :-)
+Ok, sounds reasonable. Will post a v3 that does this instead.
 
--- 
-Vitaly
-
+> Jason
