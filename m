@@ -2,103 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36717C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:04:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31FB6C19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236700AbiHBMEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 08:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52934 "EHLO
+        id S236718AbiHBMFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 08:05:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236302AbiHBMEY (ORCPT
+        with ESMTP id S233831AbiHBMFC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 08:04:24 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC3D4D4F1
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 05:04:21 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-10ee900cce0so4972605fac.5
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 05:04:21 -0700 (PDT)
+        Tue, 2 Aug 2022 08:05:02 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537C54D831;
+        Tue,  2 Aug 2022 05:05:01 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id b4so3224756pji.4;
+        Tue, 02 Aug 2022 05:05:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=szYfKRIZN4aoaPi+n+sh0rtODD9V4WUQ86iOcou1vWc=;
-        b=oK2qLNS+/lw0sDZfBE5EQTadYWmFV/JngipxsStwS6KTzNB4WUJSIMNGKytqFhaA/d
-         M/zcuLITulXEKXcMePbof/mlSkYJ3bTUVD6hFy496E9wwbFjv/Fl5McX5cX9GCs0yzf6
-         qZZDiTi/dFHwb+btKQhDthZRDb+HiewJyWrNM8TLN/7I+Xm8G36Oobtzgze3ly1g2c1A
-         V78qryB2Qi39uBY74mCKJ4Hkd1vPG20wjLy8udYCS2w0CUq78muKipVBYBD9Oqblp/hY
-         /2/ISp8sxNy4ae7WuVTjumldtMdTwU9HK/VepctP5fdVMRgy9OtdCBm3FfHg8qfxlwhI
-         6Amg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qyEwXxMaOKekMZmxVgrwx2owp7s+c/QpxgELmUBwdds=;
+        b=WXmyltDcRe/cYXCKLMAxw9Kc74xm9XPFJtETTDp9hDecuDxSqW6A14BhpFRCMFvdU+
+         KQMJOEOJBywydxaHrWmXSVDdaR5s6N48/UpiBzLFolwLBo3deLSeXlO3GGM/h7Qpz63/
+         30aCEdz9jGmIQ1lsqt2PXlsLwlxS3J5/p04yciTtHhoODr+Lwt9plgsFkrV2xCRxwTjl
+         JQemr9a0IWW7QJ1F+SK8A8Fg242f+3NSsGG+yRdk+2gChFtrTbDRsKc0QTEQyMvb9Iri
+         ucd7AR9ng4G2pl5LOEvw3gza6YKEwwHlPmnaYBOGuODVx0KsLjnhFQLFYkiVURNNC272
+         eJoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=szYfKRIZN4aoaPi+n+sh0rtODD9V4WUQ86iOcou1vWc=;
-        b=eRoiRwMQe6RZiW7LLICk+paG1Trqx6q49NjieUUrhE/KZpbS6E7lD/ehscvR8gYB2b
-         6pp6e9yZCUNkWBdqzeQSbRV/dl5Ni/T4oNOmOA3SQy2BQFgi6AOohgp9qAwqgBsDMZmk
-         s5StMfSSEejS+oG+3x1inT7EDYi5Km1BRZysggGC1QGtJb+RcOKfPF/4e2JFcenUzYcO
-         S8ahJiYK+xaaQ2Z9THWnvP8r9xOKJMlMmaOLkrSMnGb3MM9K/nseJByTEOkxVNvyZUgZ
-         Q/ATTgg4U1spKBRZ2DSokt7A6osXMGVxY8J+H0LIxwyu/pugMcEEA5RnpnLPIHYt33xm
-         pj5Q==
-X-Gm-Message-State: AJIora9g+JelbFA84QH7EOL37A+UcuqNWD3aj2FB5D+fok3nI9deBQm/
-        PZLD5jjmnRUcvzsKFLfzCGs=
-X-Google-Smtp-Source: AGRyM1svY/0B68XGxStthRsoaBRtKTt1WYTXp9V8T35AelYJoa3etN88MMK3a7AZi8f8kIXMJPe0Fg==
-X-Received: by 2002:a05:6870:c58b:b0:10b:d21d:ad5e with SMTP id ba11-20020a056870c58b00b0010bd21dad5emr8912499oab.287.1659441860757;
-        Tue, 02 Aug 2022 05:04:20 -0700 (PDT)
-Received: from fedora.. ([2804:14c:bbe3:4370:95da:f07f:e927:6958])
-        by smtp.gmail.com with ESMTPSA id eo18-20020a056870ec9200b0010f07647598sm78318oab.7.2022.08.02.05.04.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 05:04:19 -0700 (PDT)
-From:   Magali Lemes <magalilemes00@gmail.com>
-To:     harry.wentland@amd.com, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     mwen@igalia.com, mairacanal@riseup.net, isabbasso@riseup.net,
-        siqueirajordao@riseup.net, andrealmeid@riseup.net,
-        tales.aparecida@gmail.com, Magali Lemes <magalilemes00@gmail.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/amd/display: remove DML Makefile duplicate lines
-Date:   Tue,  2 Aug 2022 09:04:06 -0300
-Message-Id: <20220802120406.88845-1-magalilemes00@gmail.com>
-X-Mailer: git-send-email 2.37.1
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qyEwXxMaOKekMZmxVgrwx2owp7s+c/QpxgELmUBwdds=;
+        b=wIn9lqDkF9SPy3YkCUhknrUI/wQNYo9c6Jghm5T65D7cFxALu55+ir6nhce51jdCAN
+         U85k3rNdGDkr30rnhqTvHoQkEqXL/dU+INDn9UUBQFtQ1rg1YR7F0TFramu/Vjg/qfTZ
+         V76+yZlBiyCS/kFEK7Jh5ZVB4fg/TfSFMBaVsICve8THYEBGVYGlcw0wDTJwYQxvypHr
+         mzI/dso0fH3VFyxst612zMekaEsaAu7of59jvuQTGl1jD1c9cgTCQp+3ggQ287rrJS3K
+         jgjRNk4Til6ked6heBISKT1s6Z6BHrrR8c3t/ggPNaQy9Mca2MaSENYZOk5xkZuCIZ2d
+         hT/Q==
+X-Gm-Message-State: ACgBeo2kjpTUkj3+k3lYPhfgAf7Sn914nAeoyeoggKoM7a8gmYmSWpy9
+        +pN7ByfvomnBHKa/Qs+OPGZdCclbSJL0yw==
+X-Google-Smtp-Source: AA6agR45SpU5HyP7zRUCcdKj+jlnWQLqb7qBakdoycthdG/nzyxFU3TGuq+6RFsNqu4AFgXb2sTutA==
+X-Received: by 2002:a17:903:32c4:b0:16f:e2e:5cd6 with SMTP id i4-20020a17090332c400b0016f0e2e5cd6mr337094plr.62.1659441900780;
+        Tue, 02 Aug 2022 05:05:00 -0700 (PDT)
+Received: from [192.168.255.10] ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id v186-20020a622fc3000000b0052cc561f320sm8799990pfv.54.2022.08.02.05.04.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 05:05:00 -0700 (PDT)
+Message-ID: <dcc187d2-f55b-a5cd-0664-a6fc78b7966f@gmail.com>
+Date:   Tue, 2 Aug 2022 20:04:53 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH 3/3] KVM: VMX: Adjust number of LBR records for
+ PERF_CAPABILITIES at refresh
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+References: <20220727233424.2968356-1-seanjc@google.com>
+ <20220727233424.2968356-4-seanjc@google.com>
+From:   Like Xu <like.xu.linux@gmail.com>
+In-Reply-To: <20220727233424.2968356-4-seanjc@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are two identical CFLAGS entries for "display_mode_vba_20.o", so
-remove one of them. Also, as there's already an entry for
-"display_mode_lib.o" CFLAGS, regardless of CONFIG_DRM_AMD_DC_DCN being
-defined or not, remove the one entry between CONFIG_DRM_AMD_DC_DCN ifdef
-guards.
+On 28/7/2022 7:34 am, Sean Christopherson wrote:
+> -bool intel_pmu_lbr_is_enabled(struct kvm_vcpu *vcpu)
+> -{
+> -	struct x86_pmu_lbr *lbr = vcpu_to_lbr_records(vcpu);
+> -
+> -	return lbr->nr && (vcpu_get_perf_capabilities(vcpu) & PMU_CAP_LBR_FMT);
+> -}
+> -
+>   static bool intel_pmu_is_valid_lbr_msr(struct kvm_vcpu *vcpu, u32 index)
+>   {
+>   	struct x86_pmu_lbr *records = vcpu_to_lbr_records(vcpu);
+> @@ -590,7 +583,9 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
+>   	bitmap_set(pmu->all_valid_pmc_idx,
+>   		INTEL_PMC_MAX_GENERIC, pmu->nr_arch_fixed_counters);
+>   
+> -	if (cpuid_model_is_consistent(vcpu))
+> +	perf_capabilities = vcpu_get_perf_capabilities(vcpu);
+> +	if (cpuid_model_is_consistent(vcpu) &&
+> +	    (perf_capabilities & PMU_CAP_LBR_FMT))
+>   		x86_perf_get_lbr(&lbr_desc->records);
 
-Signed-off-by: Magali Lemes <magalilemes00@gmail.com>
----
- drivers/gpu/drm/amd/display/dc/dml/Makefile | 2 --
- 1 file changed, 2 deletions(-)
+As one of evil source to add CPUID walk in the critical path:
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/Makefile b/drivers/gpu/drm/amd/display/dc/dml/Makefile
-index 359f6e9a1da0..41bb6c3cc2d8 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dml/Makefile
-@@ -61,7 +61,6 @@ CFLAGS_$(AMDDALPATH)/dc/dml/display_mode_vba.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/dcn10/dcn10_fpu.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/dcn20/dcn20_fpu.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/dcn20/display_mode_vba_20.o := $(dml_ccflags)
--CFLAGS_$(AMDDALPATH)/dc/dml/dcn20/display_mode_vba_20.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/dcn20/display_rq_dlg_calc_20.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/dcn20/display_mode_vba_20v2.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/dcn20/display_rq_dlg_calc_20v2.o := $(dml_ccflags)
-@@ -82,7 +81,6 @@ CFLAGS_$(AMDDALPATH)/dc/dml/dcn301/dcn301_fpu.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/dcn302/dcn302_fpu.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/dcn303/dcn303_fpu.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/dsc/rc_calc_fpu.o := $(dml_ccflags)
--CFLAGS_$(AMDDALPATH)/dc/dml/display_mode_lib.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/calcs/dcn_calcs.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/calcs/dcn_calc_auto.o := $(dml_ccflags)
- CFLAGS_$(AMDDALPATH)/dc/dml/calcs/dcn_calc_math.o := $(dml_ccflags) -Wno-tautological-compare
--- 
-2.37.1
+The x86_perf_get_lbr() is one of the perf interfaces, KVM cannot always trust
+that the number of returned lbr_desc->records.nr is always > 0,  and if not,
+we have to tweak perf_capabilities inside KVM which violates user input again.
 
+Do you have more inputs to address this issue ?
+
+>   	else
+>   		lbr_desc->records.nr = 0;
