@@ -2,169 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BBDFC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB5FC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:59:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236203AbiHBH6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 03:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36656 "EHLO
+        id S236217AbiHBH7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 03:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236123AbiHBH6B (ORCPT
+        with ESMTP id S236123AbiHBH7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 03:58:01 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E64E5F92;
-        Tue,  2 Aug 2022 00:57:56 -0700 (PDT)
-X-UUID: a169ae0a84e34b859d7434690ecdbb59-20220802
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:3c2ccd96-f64d-4764-b20b-09b95d6661ac,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:161b0ed0-a6cf-4fb6-be1b-c60094821ca2,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: a169ae0a84e34b859d7434690ecdbb59-20220802
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1596637531; Tue, 02 Aug 2022 15:57:50 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 2 Aug 2022 15:57:49 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 2 Aug 2022 15:57:49 +0800
-Message-ID: <e51eb3017495fc77c52e7fde507acd33a2893f6f.camel@mediatek.com>
-Subject: Re: [PATCH v15 05/11] drm/mediatek: Add MT8195 Embedded DisplayPort
- driver
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        <liangxu.xu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-fbdev@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 2 Aug 2022 15:57:49 +0800
-In-Reply-To: <20220727045035.32225-6-rex-bc.chen@mediatek.com>
-References: <20220727045035.32225-1-rex-bc.chen@mediatek.com>
-         <20220727045035.32225-6-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 2 Aug 2022 03:59:16 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CCB330F5E
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 00:59:14 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id x39so11235433lfu.7
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 00:59:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=8MAHi8SKNFAO7ew3d8bZkDJYG24nzfwsdp/alQmmw3o=;
+        b=TLafKFi1j6ZG5abx+POI4UU6hvMztSn/a+xozHm8riAtwenoS3L3B8TyEVomx2OnRV
+         V60soV+nP4oSzV8Pndt7ujTkQgC9lpM/kBnq12lPXVBvMdSA5rXphd72pWYpf7XlQuNQ
+         SW0N2c/sS9mxIeCpJP17Z8Yl9ZMJrUpzk0L+hOc8W+cgXQY3UFqdZDwX7nqTFWk9u4Fl
+         lRd1p0S1iNtCMsY8sx9MLevRvCBhSbJdMdPSekygk1BqSkXQoT8+fpNeotnQ4qoMl0LY
+         f3P3tvugIE2HDDthiFDRQYOO3HUjJu3JwUS/4WZfUfSen3nWrJAyOSwfYtDykBtuTCax
+         JVQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=8MAHi8SKNFAO7ew3d8bZkDJYG24nzfwsdp/alQmmw3o=;
+        b=QEVcJwwZQ3l43OjwijRt4nAPpo/LRZ9fIW3KZdnXhlr2dQNENxuaMqU0IKWQ8j2Ptx
+         To9RVT+xUuDpS0CSG9KGscNLrJoEdde/l+BYzRc6FFAFiU1TrkUXfXGr5QfrGu9eOkFP
+         lLZxRt1zqlXNg21wfh2SoGyscicJXhtu4t47K4P2qxDIGBrB7QT6n/7p9h2S8Z5gBJP4
+         h9Acj8EcXFpU998Gg6mNKOlJlbKzUnx0YS/azNlv/y6Xx+MpQS0LIxuXQA4W1/zEX6kR
+         K1XDmz3Puy11RUYTzd45JwM9qNcP5YBLXVmmMwo94YI9r+nrp/fdBiopOWjkpvTojdne
+         BNWw==
+X-Gm-Message-State: AJIora+5htRw7VARlmC7XLyQWfASnIW1ZqGI/+nqn0ENrkCC9mDy25R3
+        Knm+Zw7HO5LpomBystobpa2J/LqTZ/hI2prj9f9i1w==
+X-Google-Smtp-Source: AGRyM1u+VI9qRU/DeBhoYuEDm2nN5f2HcRBCLO8lLc3v8j2+ER+Y/OKxkiJIqSFzydlTBN3Tk5nYnlh5RzRwuohL+zE=
+X-Received: by 2002:a19:710b:0:b0:48a:cf83:7551 with SMTP id
+ m11-20020a19710b000000b0048acf837551mr7412233lfc.137.1659427152271; Tue, 02
+ Aug 2022 00:59:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+References: <20220727071042.8796-4-feng.tang@intel.com> <YuYm3dWwpZwH58Hu@xsang-OptiPlex-9020>
+ <YuY6Wc39DbL3YmGi@feng-skl> <Yudw5ge/lJ26Hksk@feng-skl> <0e545088-d140-4c84-bbb2-a3be669740b2@suse.cz>
+ <YujKCxu2lJJFm73P@feng-skl> <CACT4Y+Zwg8BP=6WJpQ5cCbJxLu4HcnCjx8e53aDEbTZ5uzpUyg@mail.gmail.com>
+ <YujWZzctbp1Bq25N@feng-skl>
+In-Reply-To: <YujWZzctbp1Bq25N@feng-skl>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Tue, 2 Aug 2022 09:59:00 +0200
+Message-ID: <CACT4Y+YEtmvR2KOW5P0VtbHatxdY7MT22hp9FrUOyjZiKR+BJw@mail.gmail.com>
+Subject: Re: [mm/slub] 3616799128: BUG_kmalloc-#(Not_tainted):kmalloc_Redzone_overwritten
+To:     Feng Tang <feng.tang@intel.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        "Sang, Oliver" <oliver.sang@intel.com>, lkp <lkp@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "lkp@lists.01.org" <lkp@lists.01.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        "Hansen, Dave" <dave.hansen@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Bo-Chen:
+On Tue, 2 Aug 2022 at 09:47, Feng Tang <feng.tang@intel.com> wrote:
+> > > On Mon, Aug 01, 2022 at 10:23:23PM +0800, Vlastimil Babka wrote:
+> > > > On 8/1/22 08:21, Feng Tang wrote:
+> > > [snip]
+> > > > > Cc kansan  mail list.
+> > > > >
+> > > > > This is really related with KASAN debug, that in free path, some
+> > > > > kmalloc redzone ([orig_size+1, object_size]) area is written by
+> > > > > kasan to save free meta info.
+> > > > >
+> > > > > The callstack is:
+> > > > >
+> > > > >   kfree
+> > > > >     slab_free
+> > > > >       slab_free_freelist_hook
+> > > > >           slab_free_hook
+> > > > >             __kasan_slab_free
+> > > > >               ____kasan_slab_free
+> > > > >                 kasan_set_free_info
+> > > > >                   kasan_set_track
+> > > > >
+> > > > > And this issue only happens with "kmalloc-16" slab. Kasan has 2
+> > > > > tracks: alloc_track and free_track, for x86_64 test platform, most
+> > > > > of the slabs will reserve space for alloc_track, and reuse the
+> > > > > 'object' area for free_track.  The kasan free_track is 16 bytes
+> > > > > large, that it will occupy the whole 'kmalloc-16's object area,
+> > > > > so when kmalloc-redzone is enabled by this patch, the 'overwritten'
+> > > > > error is triggered.
+> > > > >
+> > > > > But it won't hurt other kmalloc slabs, as kasan's free meta won't
+> > > > > conflict with kmalloc-redzone which stay in the latter part of
+> > > > > kmalloc area.
+> > > > >
+> > > > > So the solution I can think of is:
+> > > > > * skip the kmalloc-redzone for kmalloc-16 only, or
+> > > > > * skip kmalloc-redzone if kasan is enabled, or
+> > > > > * let kasan reserve the free meta (16 bytes) outside of object
+> > > > >   just like for alloc meta
+> > > >
+> > > > Maybe we could add some hack that if both kasan and SLAB_STORE_USER is
+> > > > enabled, we bump the stored orig_size from <16 to 16? Similar to what
+> > > > __ksize() does.
+> > >
+> > > How about the following patch:
+> > >
+> > > ---
+> > > diff --git a/mm/slub.c b/mm/slub.c
+> > > index added2653bb0..33bbac2afaef 100644
+> > > --- a/mm/slub.c
+> > > +++ b/mm/slub.c
+> > > @@ -830,6 +830,16 @@ static inline void set_orig_size(struct kmem_cache *s,
+> > >         if (!slub_debug_orig_size(s))
+> > >                 return;
+> > >
+> > > +#ifdef CONFIG_KASAN
+> > > +       /*
+> > > +        * When kasan is enabled, it could save its free meta data in the
+> > > +        * start part of object area, so skip the kmalloc redzone check
+> > > +        * for small kmalloc slabs to avoid the data conflict.
+> > > +        */
+> > > +       if (s->object_size <= 32)
+> > > +               orig_size = s->object_size;
+> > > +#endif
 
-On Wed, 2022-07-27 at 12:50 +0800, Bo-Chen Chen wrote:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
-> 
-> This patch adds a embedded displayport driver for the MediaTek mt8195
-> SoC.
-> 
-> It supports the MT8195, the embedded DisplayPort units. It offers
-> DisplayPort 1.4 with up to 4 lanes.
-> 
-> The driver creates a child device for the phy. The child device will
-> never exist without the parent being active. As they are sharing a
-> register range, the parent passes a regmap pointer to the child so
-> that
-> both can work with the same register range. The phy driver sets
-> device
-> data that is read by the parent to get the phy device that can be
-> used
-> to control the phy properties.
-> 
-> This driver is based on an initial version by
-> Jitao shi <jitao.shi@mediatek.com>
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> ---
+I think this can be done only when CONFIG_KASAN_GENERIC.
+Only CONFIG_KASAN_GENERIC stores free meta info in objects:
+https://elixir.bootlin.com/linux/latest/source/mm/kasan/common.c#L176
 
-[snip]
-
-> +
-> +static int mtk_dp_train_tps_2_3(struct mtk_dp *mtk_dp, u8
-> target_linkrate,
-> +				u8 target_lane_count, u8 *lane_adjust,
-> +				int *status_control, u8
-> *prev_lane_adjust)
-> +{
-> +	u8 val;
-> +	u8 link_status[DP_LINK_STATUS_SIZE] = {};
-> +
-> +	if (*status_control == 1) {
-> +		if (mtk_dp->train_info.tps4) {
-> +			mtk_dp_train_set_pattern(mtk_dp, 4);
-> +			val = DP_TRAINING_PATTERN_4;
-> +		} else if (mtk_dp->train_info.tps3) {
-> +			mtk_dp_train_set_pattern(mtk_dp, 3);
-> +			val = DP_LINK_SCRAMBLING_DISABLE |
-> +				DP_TRAINING_PATTERN_3;
-> +		} else {
-> +			mtk_dp_train_set_pattern(mtk_dp, 2);
-> +			val = DP_LINK_SCRAMBLING_DISABLE |
-> +				DP_TRAINING_PATTERN_2;
-> +		}
-
-Only one of tps2, tps3, tps4 would be process, and the priority is tps4
-> tps3 > tps2, so I would like use one variable for this.
-
-if support tps4, train_info.tps = 4.
-else if support tps3, train_info.tps = 3.
-else train_info.tps = 2.
-
-And this part would be almost the same as the part in
-mtk_dp_train_tps_1(), so separate this part to a function.
-
-Regards,
-CK
+And KASAN_HW_TAGS has chances of being enabled with DEBUG_SLUB in
+real-world uses (with Arm MTE).
 
 
-> +		drm_dp_dpcd_writeb(&mtk_dp->aux,
-> +				   DP_TRAINING_PATTERN_SET, val);
-> +		drm_dp_dpcd_read(&mtk_dp->aux,
-> +				 DP_ADJUST_REQUEST_LANE0_1,
-> lane_adjust,
-> +				 sizeof(*lane_adjust) * 2);
-> +
-> +		mtk_dp_train_update_swing_pre(mtk_dp,
-> +					      target_lane_count,
-> lane_adjust);
-> +		*status_control = 2;
-> +	}
-> +
-> +	drm_dp_link_train_channel_eq_delay(&mtk_dp->aux, mtk_dp-
-> >rx_cap);
-> +
-> +	drm_dp_dpcd_read_link_status(&mtk_dp->aux, link_status);
-> +
-> +	if (drm_dp_channel_eq_ok(link_status, target_lane_count)) {
-> +		mtk_dp->train_info.eq_done = true;
-> +		dev_dbg(mtk_dp->dev, "Link train EQ pass\n");
-> +		return 0;
-> +	}
-> +
-> +	dev_dbg(mtk_dp->dev, "Link train EQ fail\n");
-> +
-> +	if (*prev_lane_adjust != link_status[4])
-> +		*prev_lane_adjust = link_status[4];
-> +
-> +	return -EAGAIN;
-> +}
-> +
+> > > +
+> > >         p += get_info_end(s);
+> > >         p += sizeof(struct track) * 2;
+> > >
+> > > I extend the size to 32 for potential's kasan meta data size increase.
+> > > This is tested locally, if people are OK with it, I can ask for 0Day's
+> > > help to verify this.
+> >
+> > Where is set_orig_size() function defined? Don't see it upstream nor
+> > in linux-next.
+> > This looks fine but my only concern is that this should not increase
+> > memory consumption when slub debug tracking is not enabled, which
+> > should be the main operation mode when KASAN is enabled. But I can't
+> > figure this out w/o context.
+>
+> Yes, the patchset was only posted on LKML, and not in any tree now.
+> The link to the original patches is:
+>
+> https://lore.kernel.org/lkml/20220727071042.8796-1-feng.tang@intel.com/t/
 
+Lots of code...
+
+This SLAB_STORE_USER seems to be set on all kmalloc slabs by default
+when CONFIG_SLUB_DEBUG is enabled, right?
+And KASAN enables CONFIG_SLUB_DEBUG, this means that this is stored
+always when KASAN is enabled? Looks wrong.
