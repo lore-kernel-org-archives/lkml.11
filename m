@@ -2,98 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68087C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 14:01:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFE5C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 14:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237147AbiHBOBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 10:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60366 "EHLO
+        id S236716AbiHBOCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 10:02:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237055AbiHBOBq (ORCPT
+        with ESMTP id S237172AbiHBOCF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 10:01:46 -0400
-Received: from mail-il1-f173.google.com (mail-il1-f173.google.com [209.85.166.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0021F63F;
-        Tue,  2 Aug 2022 07:01:45 -0700 (PDT)
-Received: by mail-il1-f173.google.com with SMTP id h16so7020880ilc.10;
-        Tue, 02 Aug 2022 07:01:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:references:in-reply-to:cc:to:from
-         :x-gm-message-state:from:to:cc;
-        bh=9HP6RV14iyBefsrq7UF+VvvWbuNYrykxC6shEJNRhLs=;
-        b=hi0/xOhNNlk4J6q80W7+ZkwaENZUk+bSMIlOnw1aeaCvDRbOEtTgwq6vRs5nOxAKwd
-         B3e5aXjPdmCUD9PkEedUeMb53ZpJlFXA3CmSvmr5WJl4anEegbe4SsF9yM469rouKPQy
-         3pMEx2LZLC4b0/DJxkM+Gjliv2Dtlrg7Npoz2E3flQ8jEpD6An0aPtoOnNgqVqiHNYcW
-         b+0P51brZoY1NpWxHDYbEFU2BSf+Wc7KO3kMj62BtbeaUOrti529WcLm7vzCBfEzJJ8G
-         wIG19cHiChwoD/+KbiWOJzc9fx4NQey2O/wLj2y/xjwQLeXoOqzl6hIPvueYx0Nh7RQa
-         YAbQ==
-X-Gm-Message-State: AJIora9jpe43rEgcbj6d0/tIjrr1NRygKV4JvFGCHEJy1/IClW0T67eU
-        VK4wFEIBSBbul52z6ZY5Ww==
-X-Google-Smtp-Source: AGRyM1ub8jaiVWjVciNr9MeONH5WR1JVir2IcYCFMPoECG21PeM+dvGSFRA95dWXDvCDiilDY4VB2Q==
-X-Received: by 2002:a92:ce50:0:b0:2dd:dc8e:1f36 with SMTP id a16-20020a92ce50000000b002dddc8e1f36mr8814976ilr.34.1659448905241;
-        Tue, 02 Aug 2022 07:01:45 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id n5-20020a056638110500b0033f0589eb52sm1897615jal.2.2022.08.02.07.01.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 07:01:44 -0700 (PDT)
-Received: (nullmailer pid 8420 invoked by uid 1000);
-        Tue, 02 Aug 2022 14:01:41 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Alistair Francis <alistair@alistair23.me>
-Cc:     robh+dt@kernel.org, andreas@kemnade.info,
-        dmitry.torokhov@gmail.com, rydberg@bitmath.org,
-        s.hauer@pengutronix.de, krzysztof.kozlowski+dt@linaro.org,
-        alistair23@gmail.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linus.walleij@linaro.org,
-        shawnguo@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-input@vger.kernel.org
-In-Reply-To: <20220802125827.34509-3-alistair@alistair23.me>
-References: <20220802125827.34509-1-alistair@alistair23.me> <20220802125827.34509-3-alistair@alistair23.me>
-Subject: Re: [PATCH v8 2/4] dt-bindings: input: Add Cypress TT2100 touchscreen controller
-Date:   Tue, 02 Aug 2022 08:01:41 -0600
-Message-Id: <1659448901.672444.8419.nullmailer@robh.at.kernel.org>
+        Tue, 2 Aug 2022 10:02:05 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BB81EC4B;
+        Tue,  2 Aug 2022 07:02:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=V0bxhMuFGVpCNNCF4xZRTUKyf/IayXy8Ya6lnRp3eRM=; b=c+eAFf5yhUXd9GX0Xjgrlhci7w
+        u2nOpt7L7zHbqejW/W8vk/nWgJn+ectptRURVYjT9GuMuXoEVJIaCYb4G5Ck4ZpHR4CLsKuu3OqN/
+        UOuPSi+rY3emlnof227LYCgd9DmHLebeowaDY2JGOUaE4Fm34ooWGqBKlCBs/xEoS0YNkRIqLWa/v
+        I8vAY7O/oQOUU4gQL9rUsv8JBoGFsCmC+/8CJhQ7W26arJc4Cjd48pz0Kcqam8A8TcpciOihHNlee
+        PzeqvSu311ay0SXY7CEZwHekoJZFc2qRIlA9vp82SOEaYgiZxu950tHs7KZpBGWstkWLgZ8CyQzyu
+        S3Zudeiw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oIsT4-008PBV-Tf; Tue, 02 Aug 2022 14:01:54 +0000
+Date:   Tue, 2 Aug 2022 15:01:54 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-um@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v8 00/31] Rust support
+Message-ID: <YukuUtuXm/xPUuoP@casper.infradead.org>
+References: <20220802015052.10452-1-ojeda@kernel.org>
+ <YukYByl76DKqa+iD@casper.infradead.org>
+ <CANiq72k7JKqq5-8Nqf3Q2r2t_sAffC8g86A+v8yBc=W-1--_Tg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANiq72k7JKqq5-8Nqf3Q2r2t_sAffC8g86A+v8yBc=W-1--_Tg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 02 Aug 2022 22:58:25 +1000, Alistair Francis wrote:
-> Add the Cypress TrueTouch Generation 5 touchscreen device tree bindings
-> documentation. It can use I2C or SPI bus.
-> This touchscreen can handle some defined zone that are designed and
-> sent as button. To be able to customize the keycode sent, the
-> "linux,code" property in a "button" sub-node can be used.
+On Tue, Aug 02, 2022 at 03:45:50PM +0200, Miguel Ojeda wrote:
+> Hi Willy,
 > 
-> Signed-off-by: Alistair Francis <alistair@alistair23.me>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> ---
->  .../input/touchscreen/cypress,tt21000.yaml    | 101 ++++++++++++++++++
->  1 file changed, 101 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.yaml
+> On Tue, Aug 2, 2022 at 2:26 PM Matthew Wilcox <willy@infradead.org> wrote:
+> >
+> > None of this (afaict) has been discussed on linux-fsdevel.  And I may
+> > have missed somethiing, but I don't see the fs module in this series
+> > of patches.  Could linux-fsdevel be cc'd on the development of Rust
+> > support for filesystems in the future?
 > 
+> In order to provide example drivers and kernel modules, we need to
+> have some safe abstractions for them, thus we are adding some as we
+> need them.
+> 
+> More importantly, the abstractions also serve as a showcase of how
+> they may be written in the future if Rust support is merged.
+> 
+> This does not mean these abstractions are a final design or that we
+> plan to develop them independently of subsystem maintainers. In fact,
+> we would prefer the opposite: in the future, when the support is
+> merged and more people start having more experience with Rust, we hope
+> that the respective kernel maintainers start developing and
+> maintaining the abstractions themselves.
+> 
+> But we have to start somewhere, and at least provide enough examples
+> to serve as guidance and to show that it is actually possible to write
+> abstractions that restrict the amount of unsafe code.
+> 
+> And, of course, if you are already interested in developing them, that
+> would be actually great and we would love your input and/or that you
+> join us.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+No objections to any of this.  I love the idea of being able to write
+filesystems in Rust.  I just think it would go more smoothly if
+linux-fsdevel were involved more closely so people at least have the
+option of being able to follow design decisions, and hopefully influence
+them.  That goes both ways, of course; I hardly think our current
+operations structures are the optimum way to implement a filesystem,
+and having fresh eyes say things like "But that shouldn't be part of the
+address_space_operations" can impel better abstractions.
 
-yamllint warnings/errors:
+> As for the `fs` module, I see in lore 2 patches didn't make it
+> through, but I didn't get a bounce (I do get bounces for the
+> rust-for-linux ML, but I was told that was fine as long as LKML got
+> them). Sorry about that... I will ask what to do.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dtb: touchscreen@24: Unevaluated properties are not allowed ('#address-cells', '#size-cells' were unexpected)
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.yaml
+The obvious answer is to split out the 'fs module' into its own patch
+;-)  I presume it was part of the kernel crate which would have been
+either patch 17 or 11 in that series?
 
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+> Meanwhile, you can see the patches in this branch:
+> 
+>     https://github.com/Rust-for-Linux/linux.git rust-next
+> 
+> Cheers,
+> Miguel
