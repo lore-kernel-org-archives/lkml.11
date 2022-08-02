@@ -2,92 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C1FC19F28
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:17:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F8BFC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232498AbiHBSRN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 14:17:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
+        id S233626AbiHBSRm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 14:17:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229748AbiHBSRK (ORCPT
+        with ESMTP id S229748AbiHBSRj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 14:17:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B81332EE1;
-        Tue,  2 Aug 2022 11:17:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB92561333;
-        Tue,  2 Aug 2022 18:17:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D6D5C433D6;
-        Tue,  2 Aug 2022 18:17:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659464228;
-        bh=MAPAKOMDnapoFWQI4pbiRIHdLfwu4SmgOSEVB+CmYFE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uqCiNcvOxvcQF54d52JcBnBqklZPQOkv3iae9KzBU5KxMbhEAXyCWxwVT8+BjGV4E
-         F4VvDFJM2YMMc+tcVGfhijodaIQdQqHqOAkhtOhCdM1FBav7kBvvVwLbnpzKUFa0dw
-         +s/J42aE585ahlwTzU/GYJDkCI5S3iQO6fTAlp0khV+zpcZhYjoytvFIoWGU1EYc6R
-         sYHcnkE3QWfZHkZehoZEwH8DM+R45lDrfhhdPWxUMz9Raq57mootGS7D1GR4nxO3Uc
-         RVQqpeyAlXvk+YAhpPs7sZ9vRTEEQPwIgWSuSbMsn47dR6VpoUcoOAdTYe61YZndO/
-         Icl18/KHyZkrw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id F186B40736; Tue,  2 Aug 2022 15:17:05 -0300 (-03)
-Date:   Tue, 2 Aug 2022 15:17:05 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ian Rogers <irogers@google.com>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Song Liu <songliubraving@fb.com>,
-        Blake Jones <blakejones@google.com>
-Subject: Re: [PATCH 2/3] perf lock: Add -m/--map-length option
-Message-ID: <YulqIWpDMisldmHH@kernel.org>
-References: <20220802073511.299459-1-namhyung@kernel.org>
- <20220802073511.299459-2-namhyung@kernel.org>
- <YuliN2UDbls5uW3u@kernel.org>
- <CAM9d7chZT-mociK=+iF_6SO=1JuD2xaL1HpE4eeo=myngq9vTw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        Tue, 2 Aug 2022 14:17:39 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A247E32EFE;
+        Tue,  2 Aug 2022 11:17:38 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 272IDHUg002582;
+        Tue, 2 Aug 2022 13:13:17 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 272IDFmt002581;
+        Tue, 2 Aug 2022 13:13:15 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Tue, 2 Aug 2022 13:13:15 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        stable@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/3] powerpc: Fix eh field when calling lwarx on PPC32
+Message-ID: <20220802181315.GI25951@gate.crashing.org>
+References: <a1176e19e627dd6a1b8d24c6c457a8ab874b7d12.1659430931.git.christophe.leroy@csgroup.eu>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <CAM9d7chZT-mociK=+iF_6SO=1JuD2xaL1HpE4eeo=myngq9vTw@mail.gmail.com>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a1176e19e627dd6a1b8d24c6c457a8ab874b7d12.1659430931.git.christophe.leroy@csgroup.eu>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Tue, Aug 02, 2022 at 11:05:09AM -0700, Namhyung Kim escreveu:
-> On Tue, Aug 2, 2022 at 10:43 AM Arnaldo Carvalho de Melo <acme@kernel.org> wrote:
-> > Em Tue, Aug 02, 2022 at 12:35:10AM -0700, Namhyung Kim escreveu:
-> > > +-m::
-> > > +--map-length::
-> > > +     Maximum number of BPF map entries (default: 10240).
-> >
-> > --map-nr-entries?
-> >
-> > I think we use this jargon "nr-entries" for arrays, lists, etc, better
-> > try to stick to it.
- 
-> Makes sense, will change.
+Hi!
 
-Great.
- 
-> > Also what do you think about not using single letter options for things
-> > that are not that used?
-> >
-> > The map size has a default, one that seems generous, so changing it
-> > should be something uncommon, and then, if it becomes common that more
-> > entries are needed by default, we can change the default in the tool.
+On Tue, Aug 02, 2022 at 11:02:36AM +0200, Christophe Leroy wrote:
+> Commit 9401f4e46cf6 ("powerpc: Use lwarx/ldarx directly instead of
+> PPC_LWARX/LDARX macros") properly handled the eh field of lwarx
+> in asm/bitops.h but failed to clear it for PPC32 in
+> asm/simple_spinlock.h
 > 
-> Fair enough, I'll remove the single letter option.
+> So, do as in arch_atomic_try_cmpxchg_lock(), set it to 1 if PPC64
+> but set it to 0 if PPC32. For that use IS_ENABLED(CONFIG_PPC64) which
+> returns 1 when CONFIG_PPC64 is set and 0 otherwise.
+> 
+> Reported-by: Pali Rohár <pali@kernel.org>
+
+Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
+
+> +	unsigned int eh = IS_ENABLED(CONFIG_PPC64);
+>  
+>  	token = LOCK_TOKEN;
+>  	__asm__ __volatile__(
+> -"1:	lwarx		%0,0,%2,1\n\
+> +"1:	lwarx		%0,0,%2,%3\n\
+>  	cmpwi		0,%0,0\n\
+>  	bne-		2f\n\
+>  	stwcx.		%1,0,%2\n\
+> @@ -59,7 +60,7 @@ static inline unsigned long __arch_spin_trylock(arch_spinlock_t *lock)
+>  	PPC_ACQUIRE_BARRIER
+>  "2:"
+>  	: "=&r" (tmp)
+> -	: "r" (token), "r" (&lock->slock)
+> +	: "r" (token), "r" (&lock->slock), "i" (eh)
+>  	: "cr0", "memory");
+
+That should work yes.  But please note that "n" is prefered if a number
+is required (like here), not some other constant, as allowed by "i".
 
 Thanks!
 
-- Arnaldo
+
+Segher
