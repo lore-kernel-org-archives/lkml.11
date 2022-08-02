@@ -2,161 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC14C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 05:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FF7C19F2B
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 05:52:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235863AbiHBFvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 01:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60584 "EHLO
+        id S233049AbiHBFwq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 01:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232951AbiHBFvl (ORCPT
+        with ESMTP id S231859AbiHBFwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 01:51:41 -0400
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6188246DBD
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 22:51:38 -0700 (PDT)
-Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220802055133epoutp04eb6aadfb34ae32f8ca25b51585ba866b~HcTyoNKmd3164431644epoutp04i
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 05:51:33 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220802055133epoutp04eb6aadfb34ae32f8ca25b51585ba866b~HcTyoNKmd3164431644epoutp04i
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1659419493;
-        bh=H7CRy6JDMDRuNGpJQxwZ2Kh8KSu5JTGg+Qhah4kZcCU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=F/74IQlNX/P07yzDjIWdvjLG8jo87p0w0j4Zz1lPB7SO9wmOl6BXBVTFymi3B4UHl
-         /6TNUZoCMJL/YZVd0aiA41QDAhhaJVxsoYMEDBBPDhSQ3wwXNNPEdu2EcY9iE2+/Xu
-         vR9I1J2s3C/MHq8fkKqoyLT7cIs5WcvZWe59NmwU=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
-        20220802055132epcas2p2ab5e197626e79450bc585a0acad3b70e~HcTyEqjuQ1328313283epcas2p2R;
-        Tue,  2 Aug 2022 05:51:32 +0000 (GMT)
-Received: from epsmges2p3.samsung.com (unknown [182.195.36.90]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4LxkdH60Cbz4x9Py; Tue,  2 Aug
-        2022 05:51:31 +0000 (GMT)
-Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
-        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
-        B5.5B.09642.36BB8E26; Tue,  2 Aug 2022 14:51:31 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
-        20220802055130epcas2p376afd9af794e864b91500c8081538694~HcTwpPTjh0318603186epcas2p3R;
-        Tue,  2 Aug 2022 05:51:30 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220802055130epsmtrp149af1dd88df581b584f2422cc126129e~HcTwnbjAu1503315033epsmtrp1X;
-        Tue,  2 Aug 2022 05:51:30 +0000 (GMT)
-X-AuditID: b6c32a47-5e1ff700000025aa-8c-62e8bb63881e
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        75.64.08802.26BB8E26; Tue,  2 Aug 2022 14:51:30 +0900 (KST)
-Received: from perf (unknown [10.229.95.91]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220802055130epsmtip2ac8d744c5c3bd285746a444659d60a97~HcTwX4JC91544015440epsmtip2s;
-        Tue,  2 Aug 2022 05:51:30 +0000 (GMT)
-Date:   Tue, 2 Aug 2022 15:19:42 +0900
-From:   Youngmin Nam <youngmin.nam@samsung.com>
-To:     John Stultz <jstultz@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Stephen Boyd <sboyd@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Chanho Park <chanho61.park@samsung.com>,
-        hajun.sung@samsung.com, hosung0.kim@samsung.com,
-        d7271.choe@samsung.com, youngmin.nam@samsung.com
-Subject: Re: [PATCH] time: correct the prototype of ns_to_kernel_old_timeval
- and ns_to_timespec64
-Message-ID: <YujB/of1WSWsoHkw@perf>
+        Tue, 2 Aug 2022 01:52:44 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B5E47BA6
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 22:52:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659419561; x=1690955561;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=y8R9OD5YaXqNfiMllxG+s9LDEo1cHmJGkx24z7/0+Ow=;
+  b=cvssQXovrLtt9vb7xkUTCfDMF/FTvAhtLQM+6DElUdBRvGbdcuSP4aYw
+   ZaOPnLltrF4joNHzT2dUrvWKWy8l6kTZ6sFYO8kKDUBtrQosDvqoe8GHz
+   CwdhkgaqpWAMEgKObC06k5EoyeJjQU0Ig0fSCoGw1ilpEOiaZwNszH8js
+   4TQGkGeAnyhlY+netDFMOVaRfjxoYORgw7CPBelnFIXUP/4XAu92mPcTM
+   kfEEJxeoA5fcW2g7Hv6cnb21twpiFXlqnjIoWg1VoFvapoi2rZNWjS921
+   ySqaOQF96SVX+9hJLAONPKjFyz3rkvbuDdJ2A+cZLrqqPF8nd1WAFIzZw
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10426"; a="269708357"
+X-IronPort-AV: E=Sophos;i="5.93,210,1654585200"; 
+   d="scan'208";a="269708357"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Aug 2022 22:52:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,210,1654585200"; 
+   d="scan'208";a="599185372"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by orsmga007.jf.intel.com with ESMTP; 01 Aug 2022 22:52:41 -0700
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Mon, 1 Aug 2022 22:52:41 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28 via Frontend Transport; Mon, 1 Aug 2022 22:52:41 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.169)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.28; Mon, 1 Aug 2022 22:52:40 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hIb/bQGcOCK1uapUadC/SoE94qBohwH5T5IHer7JuOvfppxg2S5ebRtSB3zSEfNCZiubWI/DqVeS17h/xlIN/Nskfgf23fzk3/VT5CPIjvJbx1y2JJroKsWQZTHQGuuJEuoD0FU2HZV363HhOSef5eD7wX96eAWwaHpXsoy7xMGYOB9KbWlMsWxjRluIVv0UTIb0TtYNrvySOPHds6dtRqQJqBPt1Se7ZJaKqAeAk+b+UIpsaaR06FhwZZRW1hsa15+8ZmoSP64bRQo/OLm8XoJF9kntHZNTlM7yiNPTekXcPsAfgzZRGsNEZariuaBSRUxFAYESA2Qe3YEi/xUDKw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CxMByLRjhtVGfpdfVRf0ZF8f+UQmJvmnqWRIpIexszk=;
+ b=mplqGloLdhQ4O4AfqiqJSsSvCMHCk0FPr+38ugu7gwRVT0hsDzgCjzvgK9o1lLFaPPC4XyuEhxNuf3CRAzPNKdNk4huecCiBqdFzha5WCTKU0Hrbyzi6HStO/UNXMcBcLLK3R0EApwUHKgc6DXZ9PkZ6A9T+6MT0IHm399rRV/1MPbKS1xKo6gLMzq6T7ohm5Xi8sbrtT5xOeO18Dmn3LhVSogapEsPgwEZ9pLIStpLpd2SI39ZNxFXUJnbw5wSkTkoYXCtIYu/HhFtWDG1FoPWISFXCOgm9P76v+kfqD05V4udohOTVp3NJfdT8pAvVmJTWw7AvDkVmB4xi+mJU+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MN0PR11MB6304.namprd11.prod.outlook.com (2603:10b6:208:3c0::7)
+ by BY5PR11MB4385.namprd11.prod.outlook.com (2603:10b6:a03:1c0::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.14; Tue, 2 Aug
+ 2022 05:52:37 +0000
+Received: from MN0PR11MB6304.namprd11.prod.outlook.com
+ ([fe80::8525:4565:6b49:dc55]) by MN0PR11MB6304.namprd11.prod.outlook.com
+ ([fe80::8525:4565:6b49:dc55%6]) with mapi id 15.20.5458.024; Tue, 2 Aug 2022
+ 05:52:36 +0000
+Date:   Tue, 2 Aug 2022 13:52:05 +0800
+From:   Feng Tang <feng.tang@intel.com>
+To:     Muchun Song <songmuchun@bytedance.com>
+CC:     "Hocko, Michal" <mhocko@suse.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "bwidawsk@kernel.org" <bwidawsk@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] mm: mempolicy: fix policy_nodemask() for
+ MPOL_PREFERRED_MANY case
+Message-ID: <Yui7hWZYMX31ktOr@feng-skl>
+References: <20220801084207.39086-1-songmuchun@bytedance.com>
+ <YueXhmiFcI8iw3OI@dhcp22.suse.cz>
+ <YuecP/RKXWz7QAs0@feng-skl>
+ <YuidPA9knCOoaT0c@FVFYT0MHHV2J>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <YuidPA9knCOoaT0c@FVFYT0MHHV2J>
+X-ClientProxiedBy: SG2PR04CA0161.apcprd04.prod.outlook.com (2603:1096:4::23)
+ To MN0PR11MB6304.namprd11.prod.outlook.com (2603:10b6:208:3c0::7)
 MIME-Version: 1.0
-In-Reply-To: <CAK8P3a17d1J7gu0W-0ojxjz8W6C+Pg+xQW8ai=Qw_q94SJAOdQ@mail.gmail.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprHJsWRmVeSWpSXmKPExsWy7bCmhW7y7hdJBvsX61v8nXSM3eLyfm2L
-        a3snsls07b/EbPH1+iN2iz8nNrJZXN41h83i37WNLBabN01ltlh84BO7A5fH71+TGD0WbCr1
-        2LSqk83j3blz7B59W1YxenzeJBfAFpVtk5GamJJapJCal5yfkpmXbqvkHRzvHG9qZmCoa2hp
-        Ya6kkJeYm2qr5OIToOuWmQN0mJJCWWJOKVAoILG4WEnfzqYov7QkVSEjv7jEVim1ICWnwLxA
-        rzgxt7g0L10vL7XEytDAwMgUqDAhO6N7/z3Ggm7+ijWH9jA2MH7m6WLk5JAQMJF42XuJsYuR
-        i0NIYAejRO/hF2wQzidGiZ2Hr7BCOJ8ZJbb/a2OEadmy7jULRGIXo8TWFeugnIeMEvP+zWQC
-        qWIRUJF4uOYMO4jNJqArse3EP7BuEQEviT2vJ7GDNDAL9DFJbJ3VB9YgLJAs8WfaRTCbV0BZ
-        4tGDTywQtqDEyZlPgGwODk6BQInJ22xAeiUEejkk9p5pAYtLCLhIXPipB3GdsMSr41vYIWwp
-        iZf9bVB2scSTs0sZIXobGCV2L37NApEwlpj1rB3sOGaBDIlJE2+yQsxUljhyiwUizCfRcfgv
-        O0SYV6KjTQiiU03i15QN0ECRAZq4ghnC9pC4efIAMyRMbjFKNN/oYp/AKDcLyTezkGyDsHUk
-        Fuz+xDYLaAWzgLTE8n8cEKamxPpd+gsYWVcxiqUWFOempxYbFRjDYzg5P3cTIziharnvYJzx
-        9oPeIUYmDsZDjBIczEoivHdcnicJ8aYkVlalFuXHF5XmpBYfYjQFxs1EZinR5HxgSs8riTc0
-        sTQwMTMzNDcyNTBXEuf1StmQKCSQnliSmp2aWpBaBNPHxMEp1cAUsfHyTs6nsfvUzYob0/ee
-        ko7qmRZix7fDsrTn5L/d89nYvO1zVr7YeP2w9L3udS9Cz57XdXPcGGzbcOakUmPRm5tXjv5a
-        wmCtxd4qe4bh39G8XvHAqz6iItllvOf1xRM+ypyZvMnicOkWlrItdxLkFs2/pDJHWr+s00On
-        q1iXtyeHK6T2kdvSfS+t5DiyywLeH6h+uHv5BD3Gv5dD8//bpt4/v9qvRH3hahfBP9+v7Vq3
-        8pxnwn4mic9pr2/p5/z7+m7Z9+rYFcZHK7IX1sb8+fOh69y0R7V7NQ9d1nnfe+jOrm1ax9WM
-        HBeaGhQfav7fOuNYRumuwxOmvZ0azNW/sf9jo8BvzS7doCcnPcP2KLEUZyQaajEXFScCAHIR
-        ySYxBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrCLMWRmVeSWpSXmKPExsWy7bCSvG7S7hdJBvd36Vj8nXSM3eLyfm2L
-        a3snsls07b/EbPH1+iN2iz8nNrJZXN41h83i37WNLBabN01ltlh84BO7A5fH71+TGD0WbCr1
-        2LSqk83j3blz7B59W1YxenzeJBfAFsVlk5Kak1mWWqRvl8CVceb3VraC0zwVezcvZ29gPMPV
-        xcjJISFgIrFl3WuWLkYuDiGBHYwSlx58YoRIyEjcXnmZFcIWlrjfcoQVoug+o8SOdY1gCRYB
-        FYmHa86wg9hsAroS2078A2sWEfCS2PN6EjtIA7PABCaJ34tPMYEkhAWSJf5Muwhm8wooSzx6
-        8Alq9S1GiQ0vr7JCJAQlTs58wgJiMwtoSdz49xKogQPIlpZY/o8DxOQUCJSYvM1mAqPALCQN
-        s5A0zEJoWMDIvIpRMrWgODc9t9iwwCgvtVyvODG3uDQvXS85P3cTIzgitLR2MO5Z9UHvECMT
-        B+MhRgkOZiUR3jsuz5OEeFMSK6tSi/Lji0pzUosPMUpzsCiJ817oOhkvJJCeWJKanZpakFoE
-        k2Xi4JRqYHJpvvGqbvXdvmAj5VtfjA9NufT51+zFuvGql++wvxXS63hhduHP7eb2iXyFW8w+
-        Tnsn57Bcq2PS/taNQtmGYY+l31TPLNrleDiu5Sa7rOz9qMPrPL6wveTZvK7h/41/q7999A2f
-        YKlqUhU6+4Tef7nT71VNlwu4TphyeppC4/ok1n/r/DKjXXwKljSaG036MEO6vba6NPsk05IM
-        Fp5N+ravtqlFnP/HWyktJOfFNMtKfEL43m+KurLrpqlY38xuYRMJ69GK+VC3z+yKq8Wh/2u5
-        D+m0Xfgzpcj80eUXp9onRjQ+e1TMtPHY35M6+2R0VOW5OJSnLCpySQmdfaGJY5oDy/rflxnE
-        32pcffZ31TIlluKMREMt5qLiRABi356l9wIAAA==
-X-CMS-MailID: 20220802055130epcas2p376afd9af794e864b91500c8081538694
-X-Msg-Generator: CA
-Content-Type: multipart/mixed;
-        boundary="----mcIzWul-aJjzbW66W2I1I_HLrMa1How3AbEvH_uUKQqXJy0E=_79a72_"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220712091922epcas2p34d7c89f02780afa58950b103a62eb59a
-References: <CGME20220712091922epcas2p34d7c89f02780afa58950b103a62eb59a@epcas2p3.samsung.com>
-        <20220712094715.2918823-1-youngmin.nam@samsung.com>
-        <CAK8P3a17d1J7gu0W-0ojxjz8W6C+Pg+xQW8ai=Qw_q94SJAOdQ@mail.gmail.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 97b1473e-fa1e-4af2-d804-08da744b33bb
+X-MS-TrafficTypeDiagnostic: BY5PR11MB4385:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kGDsHyBKgkZaOK7Qbf/0AsfC4u7rOkXgVNdOwIyL2fvsdTIhhdpzj7BUNftm1p51VSDvdYFEh2XkGq13ciuEWQjSiMu/mm46raLC1dLYf5HsqDbph4QYM9j5fnz55x/Y2syQjwi0FhyIPT/XpnpS35VgATfVWsGpbzTwpxjHjiGDGoupITJDIDNkFmpIpC2SMYA0v0tPwa8bvbflEac2IC/N7SKidtZGS/BHW6bBVx166kdKzJkV+kc5z01olOqMc1/jBRffuzVxfoIHgKsmixn7QyUEo5zCBFaToJ4eNhRPHr2BBpxSW/P1RzeksNBLhCp1MnmjaVLpSPUsskM5RBSYmwZm50BV/D89vTUwe3oaHvAfbA5NXYhva/BMdHzLLqgbZwSmNmDSfqYk94J0q/Kd58E7dgDZkMZMioiDyGD2CNpGBp0cgQRCOPyyWbQlC/O10k6R6esonlw/r58Ws4R12jEckAqUHGfPO4iJBjy/sHGBRRoX7Txlbv2anpm50LTlw+fQK6Hi5pqKvr+qIREVhV4/xr8Qr/sUHHQabsDpBEkRCCgkhoCgAds1RKrcP16wLZ8gKiBk84wq/uk1v2yQ1UBcmZ4q8PqA++MuuZckQCJHVr2NVauxeNlLNISNpGdlgn44wGvDIs75ZiEcsG06KRqh0hx2ppGsxmXZCuAT2f4wL+4OqCEEJhWz6EO6mVnOdhnZXRaGrYma3Mwwa9yT2f76jpjyR6b5qeoatslJdyAicqSc8GWEe55WAzsV
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6304.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(366004)(376002)(396003)(346002)(136003)(39860400002)(6916009)(33716001)(54906003)(6506007)(44832011)(38100700002)(8936002)(26005)(9686003)(66946007)(6512007)(86362001)(186003)(8676002)(66556008)(66476007)(316002)(4326008)(82960400001)(83380400001)(6666004)(41300700001)(5660300002)(2906002)(6486002)(478600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?td0JosObEyhgQmq2CVqT2smVGRE0WxgHlFS88+Qz5a+ar7J4JoD3J+BE4Lb5?=
+ =?us-ascii?Q?5qQMCEd7wozU7Da5hRN0xJ2Dej2h+QPiSISomsnPWBKsXVgxwcNvrYTkoTq+?=
+ =?us-ascii?Q?ok0ONEJqODh7Y63BKYdAbgMkZjnjA74UHrAap+Fy8Uis7Xz3X8oi1X2w6IZk?=
+ =?us-ascii?Q?gVU//D6wgxiw2oEI1rmWj0GslxuKUJ5hk/perYaLUqKwPm/zldnD4rpl0KqP?=
+ =?us-ascii?Q?AxKO3hYsGTMd2tlnpKQpC9+edqn+V7s2VpcQUDS7O8XX59D6AmMNm54UOLYW?=
+ =?us-ascii?Q?cbvRVSVQmuSYNXO110AWFwc4Sa9ZwJJXLVo32RFZrEfeCul4ePYaB12tAMl0?=
+ =?us-ascii?Q?fpBLTbMlP9CcS7Mh2TCduvl60RCQeb0IXidppalWJxYTptDPzaUD3bwopcg3?=
+ =?us-ascii?Q?h/9nhDHQwdTVMu+NImDGYGXDlNOhdlxvHDDj+gazkhUnmts7FpoMMRfxzJa6?=
+ =?us-ascii?Q?rTmQKa1Hy3Js2dWzlNPgfO5xidw+bM144gHP67mquqmIWHjWwZHO1Vg4keTO?=
+ =?us-ascii?Q?Kbxqc3MJqZdhhlvtGBvgxLA8sR8jqcme5Jn/T5S1RvHYfW5J3eNZX2W3qfr/?=
+ =?us-ascii?Q?bg0BRrPTThHSNLoVdxnPDW9MQr5rOMN6PJJJJWbLn13daEy5UExVeXTkeDEW?=
+ =?us-ascii?Q?pM5M9OXAUY/MGAjvYyMoZOShKjtAIHIwTQFsY6jqDNIYoW/lD7fZ7zLmk4cV?=
+ =?us-ascii?Q?1h+kD0jCrKWawkOfs4rYfnV4ZdJHyN05rdWlmIy0LhgQ5Af4dPmTJE5lqYZo?=
+ =?us-ascii?Q?GwQKY8feea8lJh3v4/oVntn0Vh1N5tdbTb5A73617LkJUfQBwvAhkAscK1eN?=
+ =?us-ascii?Q?7GIwUOIbYAhkNbDMCtfw2b2u0/fdWowuqEjomW74Ths4SszO338x8AL5ouHe?=
+ =?us-ascii?Q?fSw3RYh9QVsmauTy0gJ+3sY2togz8La/IvRuuWVj66iLfxTardt3DjgLPl2v?=
+ =?us-ascii?Q?5+NGAvQfgyPSxLTSm+L0rJktHAaCGPixCvdsPfMtkSdHBPhoVuRya1QUYXSE?=
+ =?us-ascii?Q?QR/U2xgerFpF4/Nu8RsSY20PEnzLtXoT5AVklBhTBjmvauEQAIVVj1etcVwG?=
+ =?us-ascii?Q?CBYxJ2R6Lo857b+D5TC3GnuTsUgQh8/si0abQtRQFGf9UdCzgWz/UdaZt+Gb?=
+ =?us-ascii?Q?o9nEnbZIjLGRq0jOvolmBYXtsZY8wLpr2fratYn2W+ZaVToN6QvlIb5UrYQ6?=
+ =?us-ascii?Q?wymLuFLRJutFhjd+GuGl0jHtTTz2xlqczPwM1u1Cae5cKPJuBRMYza9X7P8Y?=
+ =?us-ascii?Q?/GHfj6taLxs862SUHEWJJCf0qmsNTo6dznWXKpyFsFJmX2+C6HHXIIAmDnyN?=
+ =?us-ascii?Q?mZpO4ceDmn/EaSrIL67sfpI1A2ega8u/oP2ziBcUdpsbSCqDCoaqKIonI6fU?=
+ =?us-ascii?Q?pnzlvTjmKpYjL4bCNFb3T3yLdGOdza2j8INIWMqjMoqUZCu6FMkabcjSZHRR?=
+ =?us-ascii?Q?P4IYsHT/Gf+ocxPHcFCbBpnhZVHylLg0biNnQ7axOM09A+UJE0aHMwI6gxXv?=
+ =?us-ascii?Q?0Eu46g0W7b0jiJWQ8huNTDKnbsyVxZ4Y9WQRY+r0gEyXNRAI+aBS5TnE7n1k?=
+ =?us-ascii?Q?QTHpkOen2c7e0/LyhXuaoEO+HxtZBVSebUdfLymZ?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 97b1473e-fa1e-4af2-d804-08da744b33bb
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6304.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2022 05:52:36.7850
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /skIWV6rIdIQB1zMIcCPFYcuCEDNkbCuU0aVCW3qDNY89k3vcyyHlErbiltIuzWSrLtnZB8S1HplXCkOQQZgeQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB4385
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------mcIzWul-aJjzbW66W2I1I_HLrMa1How3AbEvH_uUKQqXJy0E=_79a72_
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-
-Hi Jone, Thomas.
-
-Could you consider applying this patch ?
-
-Thanks
-
-On Tue, Jul 12, 2022 at 11:25:22AM +0200, Arnd Bergmann wrote:
-> On Tue, Jul 12, 2022 at 11:47 AM Youngmin Nam <youngmin.nam@samsung.com> wrote:
+On Tue, Aug 02, 2022 at 11:42:52AM +0800, Muchun Song wrote:
+> On Mon, Aug 01, 2022 at 05:26:23PM +0800, Feng Tang wrote:
+> > On Mon, Aug 01, 2022 at 05:06:14PM +0800, Michal Hocko wrote:
+> > > On Mon 01-08-22 16:42:07, Muchun Song wrote:
+> > > > policy_nodemask() is supposed to be returned a nodemask representing a mempolicy
+> > > > for filtering nodes for page allocation, which is a hard restriction (see the user
+> > > > of allowed_mems_nr() in hugetlb.c).  However, MPOL_PREFERRED_MANY is a preferred
+> > > > mode not a hard restriction.  Now it breaks the user of HugeTLB.  Remove it from
+> > > > policy_nodemask() to fix it, which will not affect current users of policy_nodemask()
+> > > > since all of the users already have handled the case of MPOL_PREFERRED_MANY before
+> > > > calling it.  BTW, it is found by code inspection.
+> > > 
+> > > I am not sure this is the right fix. It is quite true that
+> > > policy_nodemask is a tricky function to use. It pretends to have a
+> > > higher level logic but all existing users are expected to be policy
+> > > aware and they special case allocation for each policy. That would mean
+> > > that hugetlb should do the same.
+> > 
+> > Yes, when I worked on the MPOL_PREFERRED_MANY patches, I was also
+> > confused about policy_nodemask(), as it is never a 'strict' one as
+> > the old code is:
+> > 
+> > 	if (unlikely(mode == MPOL_BIND) &&
+> > 		apply_policy_zone(policy, gfp_zone(gfp)) &&
+> > 		cpuset_nodemask_valid_mems_allowed(&policy->nodes))
+> > 		return &policy->nodes;
+> > 
+> > 	return NULL
+> > 
+> > Even when the MPOL_BIND's nodes is not allowed by cpuset, it will 
+> > still return NULL (equals all nodes).
 > >
-> > In ns_to_kernel_old_timeval() definition,
-> > the function argument is defined with const identifier in kernel/time/time.c,
-> > but the prototype in include/linux/time32.h looks different.
-> >
-> > - The function is defined in kernel/time/time.c as below:
-> > struct __kernel_old_timeval ns_to_kernel_old_timeval(const s64 nsec)
-> >
-> > - The function is decalared in include/linux/time32.h as below:
-> > extern struct __kernel_old_timeval ns_to_kernel_old_timeval(s64 nsec);
-> >
-> > Because the variable of arithmethic types isn't modified in the calling scope,
-> > there's no need to mark arguments as const.
-> > And there is a review in Link[1] why it was omitted during review stage,
-> > so they should be matched.
-> >
-> > Likewise, we can remove the "const" keyword in both definition and declaration
-> > of ns_to_timespec64() as it was metentined below Link[2] and Link[3].
-> >
-> > Link[1]: https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1637458.html
-> > Link[2]: https://lore.kernel.org/all/20220531064346.51677-1-chanho61.park@samsung.com/T/
-> > Link[3]: https://lore.kernel.org/lkml/CAK8P3a3nknJgEDESGdJH91jMj6R_xydFqWASd8r5BbesdvMBgA@mail.gmail.com
-> > Fixes: a84d1169164b ("y2038: Introduce struct __kernel_old_timeval")
-> > Signed-off-by: Youngmin Nam <youngmin.nam@samsung.com>
 > 
-> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+> Well, I agree policy_nodemask() is really confusing because of the
+> shortage of comments and the weird logic.
 > 
+> > From the semantics of allowed_mems_nr(), I think it does get changed
+> > a little by b27abaccf8e8. And to enforce the 'strict' semantic for
+> > 'allowed', we may need a more strict nodemask API for it.
+> >
+> 
+> Maybe this is a good idea to fix this, e.g. introducing a new helper
+> to return the strict allowed nodemask.
 
-------mcIzWul-aJjzbW66W2I1I_HLrMa1How3AbEvH_uUKQqXJy0E=_79a72_
-Content-Type: text/plain; charset="utf-8"
+Yep. 
 
+I had another thought to add one global all-zero nodemask, for API like
+policy_nodemask(), it has 2 types of return value:
+* a nodemask with some bits set
+* NULL (means all nodes)
 
-------mcIzWul-aJjzbW66W2I1I_HLrMa1How3AbEvH_uUKQqXJy0E=_79a72_--
+Here a new type of zero nodemask (a gloabl variable)can be created to
+indicate no qualified node.
+
+> > > I haven't checked the actual behavior implications for hugetlb here. Is
+> > > MPOL_PREFERRED_MANY even supported for hugetlb? Does this change make it
+> > > work? From a quick look this just ignores MPOL_PREFERRED_MANY
+> > > completely.
+> > 
+> > IIRC, the hugetlb will hornor MPOL_PREFERRED_MANY. And I can double
+> > check and report back if otherwise.
+> >
+> > > > Fixes: b27abaccf8e8 ("mm/mempolicy: add MPOL_PREFERRED_MANY for multiple preferred nodes")
+> > > > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> > > > ---
+> > > >  mm/mempolicy.c | 3 ---
+> > > >  1 file changed, 3 deletions(-)
+> > > > 
+> > > > diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+> > > > index 6c27acb6cd63..4deec7e598c6 100644
+> > > > --- a/mm/mempolicy.c
+> > > > +++ b/mm/mempolicy.c
+> > > > @@ -1845,9 +1845,6 @@ nodemask_t *policy_nodemask(gfp_t gfp, struct mempolicy *policy)
+> > > >  		cpuset_nodemask_valid_mems_allowed(&policy->nodes))
+> > > >  		return &policy->nodes;
+> > > >  
+> > > > -	if (mode == MPOL_PREFERRED_MANY)
+> > > > -		return &policy->nodes;
+> > 
+> > I think it will make MPOL_PREFERRED_MANY not usable.
+> >
+> 
+> Sorry, I didn't got what you mean here. Could you explain more details
+> about why it is not usable?
+ 
+I thought alloc_pages() will rely on policy_nodemask(), which was wrong
+as I forgot the MPOL_PREFERRED_MANY has a dedicated function
+alloc_pages_preferred_many() to handle it. Sorry for the confusion.
+
+Thanks,
+Feng
+
+> Thanks.
+> 
+> > Thanks,
+> > Feng
+> > 
+> > > > -
+> > > >  	return NULL;
+> > > >  }
+> > > >  
+> > > > -- 
+> > > > 2.11.0
+> > > 
+> > > -- 
+> > > Michal Hocko
+> > > SUSE Labs
+> > 
+> 
