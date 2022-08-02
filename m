@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29710C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:11:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D629C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237748AbiHBQLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 12:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42818 "EHLO
+        id S237859AbiHBQLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 12:11:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237827AbiHBQLP (ORCPT
+        with ESMTP id S237735AbiHBQK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 12:11:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD86B501B2
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:10:02 -0700 (PDT)
+        Tue, 2 Aug 2022 12:10:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 495AE4D178
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:09:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659456552;
+        s=mimecast20190719; t=1659456548;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2kXHvQ3PCkhHZj4Z5IK30a73EGXow1lQIQ2BqP5dMiU=;
-        b=OlPoUKX7MZ2XuaTbHFRQlgpx49K9qcx0AqAPMG3oVmksILNZ88KR1I+II9NWdDdL0VW5KL
-        q2pkElIPzFNdUKK48csCdh8+g2TcnmKJdrgcgnqyjhGUfiQ1cejO8rntvbSzfWmbtTPQDa
-        /YXf3nUcsxr5rBZODAE6sU9h705i+i8=
+        bh=/AoBIf3PtY9ar1JL5PSL8EGM8yaCXJywCs/izlnKlio=;
+        b=EhDFGKr1UJ1ZRZon1h3rXiLU8x4NLwlQvVP7RDdGEtbR2EhXeRvcvN4oEQ8/leVSDrMeRa
+        f/TeEci3ELzyANZWOYNu+hNEHGz5EiguUMbuKbds1CseoiysyNIILV/zOMxkLblNwsLU8Z
+        UyNOlcOBPyJGhaE+Dm5fT/+glAda5k0=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-617-jHQYNgLxMbOnKBUGURHB-g-1; Tue, 02 Aug 2022 12:09:11 -0400
-X-MC-Unique: jHQYNgLxMbOnKBUGURHB-g-1
+ us-mta-208-Hi1MZv8rNEKlsGvoXzH1lw-1; Tue, 02 Aug 2022 12:09:05 -0400
+X-MC-Unique: Hi1MZv8rNEKlsGvoXzH1lw-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7FD521029F75;
-        Tue,  2 Aug 2022 16:09:10 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AB0AC1019C97;
+        Tue,  2 Aug 2022 16:09:04 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.108])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 06B9A2166B26;
-        Tue,  2 Aug 2022 16:09:07 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 481E42166B2A;
+        Tue,  2 Aug 2022 16:09:02 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
         Sean Christopherson <seanjc@google.com>
@@ -48,9 +48,9 @@ Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
         Nathan Chancellor <nathan@kernel.org>,
         Michael Kelley <mikelley@microsoft.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 25/26] KVM: VMX: Cache MSR_IA32_VMX_MISC in vmcs_config
-Date:   Tue,  2 Aug 2022 18:07:55 +0200
-Message-Id: <20220802160756.339464-26-vkuznets@redhat.com>
+Subject: [PATCH v5 23/26] KVM: nVMX: Always set required-1 bits of pinbased_ctls to PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR
+Date:   Tue,  2 Aug 2022 18:07:53 +0200
+Message-Id: <20220802160756.339464-24-vkuznets@redhat.com>
 In-Reply-To: <20220802160756.339464-1-vkuznets@redhat.com>
 References: <20220802160756.339464-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -61,99 +61,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Like other host VMX control MSRs, MSR_IA32_VMX_MISC can be cached in
-vmcs_config to avoid the need to re-read it later, e.g. from
-cpu_has_vmx_intel_pt() or cpu_has_vmx_shadow_vmcs().
+Similar to exit_ctls_low, entry_ctls_low, procbased_ctls_low,
+pinbased_ctls_low should be set to PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR
+and not host's MSR_IA32_VMX_PINBASED_CTLS value |=
+PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR.
 
-No (real) functional change intended.
+The commit eabeaaccfca0 ("KVM: nVMX: Clean up and fix pin-based
+execution controls") which introduced '|=' doesn't mention anything
+about why this is needed, the change seems rather accidental.
 
-Reviewed-by: Jim Mattson <jmattson@google.com>
+Note: normally, required-1 portion of MSR_IA32_VMX_PINBASED_CTLS should
+be equal to PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR so no behavioral change
+is expected, however, it is (in theory) possible to observe something
+different there when e.g. KVM is running as a nested hypervisor. Hope
+this doesn't happen in practice.
+
+Reported-by: Jim Mattson <jmattson@google.com>
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/vmx/capabilities.h | 11 +++--------
- arch/x86/kvm/vmx/vmx.c          |  8 +++++---
- 2 files changed, 8 insertions(+), 11 deletions(-)
+ arch/x86/kvm/vmx/nested.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/capabilities.h b/arch/x86/kvm/vmx/capabilities.h
-index faee1db8b0e0..87c4e46daf37 100644
---- a/arch/x86/kvm/vmx/capabilities.h
-+++ b/arch/x86/kvm/vmx/capabilities.h
-@@ -65,6 +65,7 @@ struct vmcs_config {
- 	u64 cpu_based_3rd_exec_ctrl;
- 	u32 vmexit_ctrl;
- 	u32 vmentry_ctrl;
-+	u64 misc;
- 	struct nested_vmx_msrs nested;
- };
- extern struct vmcs_config vmcs_config;
-@@ -225,11 +226,8 @@ static inline bool cpu_has_vmx_vmfunc(void)
- 
- static inline bool cpu_has_vmx_shadow_vmcs(void)
- {
--	u64 vmx_msr;
--
- 	/* check if the cpu supports writing r/o exit information fields */
--	rdmsrl(MSR_IA32_VMX_MISC, vmx_msr);
--	if (!(vmx_msr & MSR_IA32_VMX_MISC_VMWRITE_SHADOW_RO_FIELDS))
-+	if (!(vmcs_config.misc & MSR_IA32_VMX_MISC_VMWRITE_SHADOW_RO_FIELDS))
- 		return false;
- 
- 	return vmcs_config.cpu_based_2nd_exec_ctrl &
-@@ -371,10 +369,7 @@ static inline bool cpu_has_vmx_invvpid_global(void)
- 
- static inline bool cpu_has_vmx_intel_pt(void)
- {
--	u64 vmx_msr;
--
--	rdmsrl(MSR_IA32_VMX_MISC, vmx_msr);
--	return (vmx_msr & MSR_IA32_VMX_MISC_INTEL_PT) &&
-+	return (vmcs_config.misc & MSR_IA32_VMX_MISC_INTEL_PT) &&
- 		(vmcs_config.cpu_based_2nd_exec_ctrl & SECONDARY_EXEC_PT_USE_GPA) &&
- 		(vmcs_config.vmentry_ctrl & VM_ENTRY_LOAD_IA32_RTIT_CTL);
- }
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 6461b03bad68..73bc6e18c2bf 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -2557,6 +2557,7 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
- 	u64 _cpu_based_3rd_exec_control = 0;
- 	u32 _vmexit_control = 0;
- 	u32 _vmentry_control = 0;
-+	u64 misc_msr;
- 	int i;
- 
- 	/*
-@@ -2690,6 +2691,8 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
- 	if (((vmx_msr_high >> 18) & 15) != 6)
- 		return -EIO;
- 
-+	rdmsrl(MSR_IA32_VMX_MISC, misc_msr);
-+
- 	vmcs_conf->size = vmx_msr_high & 0x1fff;
- 	vmcs_conf->basic_cap = vmx_msr_high & ~0x1fff;
- 
-@@ -2701,6 +2704,7 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
- 	vmcs_conf->cpu_based_3rd_exec_ctrl = _cpu_based_3rd_exec_control;
- 	vmcs_conf->vmexit_ctrl         = _vmexit_control;
- 	vmcs_conf->vmentry_ctrl        = _vmentry_control;
-+	vmcs_conf->misc	= misc_msr;
- 
- 	return 0;
- }
-@@ -8317,11 +8321,9 @@ static __init int hardware_setup(void)
- 
- 	if (enable_preemption_timer) {
- 		u64 use_timer_freq = 5000ULL * 1000 * 1000;
--		u64 vmx_msr;
- 
--		rdmsrl(MSR_IA32_VMX_MISC, vmx_msr);
- 		cpu_preemption_timer_multi =
--			vmx_msr & VMX_MISC_PREEMPTION_TIMER_RATE_MASK;
-+			vmcs_config.misc & VMX_MISC_PREEMPTION_TIMER_RATE_MASK;
- 
- 		if (tsc_khz)
- 			use_timer_freq = (u64)tsc_khz * 1000;
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index edb2f9c74d71..c86a0f8bb0f4 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -6574,7 +6574,7 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
+ 	rdmsr(MSR_IA32_VMX_PINBASED_CTLS,
+ 		msrs->pinbased_ctls_low,
+ 		msrs->pinbased_ctls_high);
+-	msrs->pinbased_ctls_low |=
++	msrs->pinbased_ctls_low =
+ 		PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR;
+ 	msrs->pinbased_ctls_high &=
+ 		PIN_BASED_EXT_INTR_MASK |
 -- 
 2.35.3
 
