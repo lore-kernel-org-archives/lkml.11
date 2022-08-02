@@ -2,273 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93363C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 13:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D33C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 13:55:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237159AbiHBNxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 09:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
+        id S236598AbiHBNzQ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 09:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236864AbiHBNwe (ORCPT
+        with ESMTP id S236871AbiHBNzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 09:52:34 -0400
-Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4200027FCB;
-        Tue,  2 Aug 2022 06:52:25 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.153])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4LxxGs6NRRzlDhg;
-        Tue,  2 Aug 2022 21:51:17 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.127.227])
-        by APP3 (Coremail) with SMTP id _Ch0CgDXLsMQLOlivtl0AA--.20757S8;
-        Tue, 02 Aug 2022 21:52:23 +0800 (CST)
-From:   Yu Kuai <yukuai1@huaweicloud.com>
-To:     tj@kernel.org, mkoutny@suse.com, axboe@kernel.dk,
-        ming.lei@redhat.com
-Cc:     cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yukuai3@huawei.com,
-        yukuai1@huaweicloud.com, yi.zhang@huawei.com
-Subject: [PATCH v7 4/9] blk-throttle: fix io hung due to configuration updates
-Date:   Tue,  2 Aug 2022 22:04:10 +0800
-Message-Id: <20220802140415.2960284-5-yukuai1@huaweicloud.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220802140415.2960284-1-yukuai1@huaweicloud.com>
-References: <20220802140415.2960284-1-yukuai1@huaweicloud.com>
+        Tue, 2 Aug 2022 09:55:02 -0400
+Received: from smtp237.sjtu.edu.cn (smtp237.sjtu.edu.cn [202.120.2.237])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6143727144;
+        Tue,  2 Aug 2022 06:54:59 -0700 (PDT)
+Received: from mta91.sjtu.edu.cn (unknown [10.118.0.91])
+        by smtp237.sjtu.edu.cn (Postfix) with ESMTPS id BC7F510087D60;
+        Tue,  2 Aug 2022 21:54:55 +0800 (CST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by mta91.sjtu.edu.cn (Postfix) with ESMTP id 5ECE837C83F;
+        Tue,  2 Aug 2022 21:54:55 +0800 (CST)
+X-Virus-Scanned: amavisd-new at 
+Received: from mta91.sjtu.edu.cn ([127.0.0.1])
+        by localhost (mta91.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id ZPDhxsbjdrJk; Tue,  2 Aug 2022 21:54:55 +0800 (CST)
+Received: from mstore105.sjtu.edu.cn (mstore101.sjtu.edu.cn [10.118.0.105])
+        by mta91.sjtu.edu.cn (Postfix) with ESMTP id 1FAC837C83E;
+        Tue,  2 Aug 2022 21:54:55 +0800 (CST)
+Date:   Tue, 2 Aug 2022 21:54:55 +0800 (CST)
+From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
+To:     jasowang <jasowang@redhat.com>
+Cc:     eperezma <eperezma@redhat.com>, sgarzare <sgarzare@redhat.com>,
+        Michael Tsirkin <mst@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>
+Message-ID: <401747890.4486725.1659448495048.JavaMail.zimbra@sjtu.edu.cn>
+In-Reply-To: <16a232ad-e0a1-fd4c-ae3e-27db168daacb@redhat.com>
+References: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn> <20220721084341.24183-2-qtxuning1999@sjtu.edu.cn> <16a232ad-e0a1-fd4c-ae3e-27db168daacb@redhat.com>
+Subject: Re: [RFC 1/5] vhost: reorder used descriptors in a batch
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _Ch0CgDXLsMQLOlivtl0AA--.20757S8
-X-Coremail-Antispam: 1UD129KBjvJXoW3GFyDGr47tryxCr4UAryrJFb_yoW3GF15pr
-        WSka1Yqa1UX3Z3KFZxXwnakFWFqws3AFy3J3y3G3WFy3W5Gr1vqFn8ZrWrtay8CF97ua1x
-        ZwnFqF9IkF4jvrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPY14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_JF0E3s1l82xGYI
-        kIc2x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2
-        z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F
-        4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq
-        3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7
-        IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4U
-        M4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2
-        kIc2xKxwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E
-        14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIx
-        kGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAF
-        wI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r
-        4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUQSdkU
-        UUUU=
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=GB2312
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [202.120.40.82]
+X-Mailer: Zimbra 8.8.15_GA_4308 (ZimbraWebClient - GC103 (Mac)/8.8.15_GA_3928)
+Thread-Topic: vhost: reorder used descriptors in a batch
+Thread-Index: 1IG5Y+pztzcgqiaurw7RI47Es3FIgQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+----- Original Message -----
+> From: "jasowang" <jasowang@redhat.com>
+> To: "Guo Zhi" <qtxuning1999@sjtu.edu.cn>, "eperezma" <eperezma@redhat.com>, "sgarzare" <sgarzare@redhat.com>, "Michael
+> Tsirkin" <mst@redhat.com>
+> Cc: "netdev" <netdev@vger.kernel.org>, "linux-kernel" <linux-kernel@vger.kernel.org>, "kvm list" <kvm@vger.kernel.org>,
+> "virtualization" <virtualization@lists.linux-foundation.org>
+> Sent: Tuesday, July 26, 2022 3:36:01 PM
+> Subject: Re: [RFC 1/5] vhost: reorder used descriptors in a batch
 
-If new configuration is submitted while a bio is throttled, then new
-waiting time is recalculated regardless that the bio might already wait
-for some time:
+> ‘⁄ 2022/7/21 16:43, Guo Zhi –¥µ¿:
+>> Device may not use descriptors in order, for example, NIC and SCSI may
+>> not call __vhost_add_used_n with buffers in order.  It's the task of
+>> __vhost_add_used_n to order them.
+> 
+> 
+> I'm not sure this is ture. Having ooo descriptors is probably by design
+> to have better performance.
+> 
+> This might be obvious for device that may have elevator or QOS stuffs.
+> 
+> I suspect the right thing to do here is, for the device that can't
+> perform better in the case of IN_ORDER, let's simply not offer IN_ORDER
+> (zerocopy or scsi). And for the device we know it can perform better,
+> non-zercopy ethernet device we can do that.
+> 
 
-tg_conf_updated
- throtl_start_new_slice
-  tg_update_disptime
-  throtl_schedule_next_dispatch
+Hi, it seems that you don't like define in order feature as a transparent feature.
 
-Then io hung can be triggered by always submmiting new configuration
-before the throttled bio is dispatched.
+If we move the in_order treatment to the device specific code (net.c, scsi.c, ...):
 
-Fix the problem by respecting the time that throttled bio already waited.
-In order to do that, add new fields to record how many bytes/io are
-waited, and use it to calculate wait time for throttled bio under new
-configuration.
+The in_order feature bit would be declared in net.c, and not in vhost.c, Only specific device(eg, net, vsock) support in order feature and expose used descriptors in order. 
+The code of vhost.c would be untouched or almost untouched, and only the code in net.c,scsi.c needs to be modified, the device will do batching job by itself.
+This can achieve the best performance for that device which use desceriptors in order.
 
-Some simple test:
-1)
-cd /sys/fs/cgroup/blkio/
-echo $$ > cgroup.procs
-echo "8:0 2048" > blkio.throttle.write_bps_device
-{
-        sleep 2
-        echo "8:0 1024" > blkio.throttle.write_bps_device
-} &
-dd if=/dev/zero of=/dev/sda bs=8k count=1 oflag=direct
+If this is better, I will send a new version patches for this RFC.
 
-2)
-cd /sys/fs/cgroup/blkio/
-echo $$ > cgroup.procs
-echo "8:0 1024" > blkio.throttle.write_bps_device
-{
-        sleep 4
-        echo "8:0 2048" > blkio.throttle.write_bps_device
-} &
-dd if=/dev/zero of=/dev/sda bs=8k count=1 oflag=direct
-
-test results: io finish time
-	before this patch	with this patch
-1)	10s			6s
-2)	8s			6s
-
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Michal Koutn√Ω <mkoutny@suse.com>
----
- block/blk-throttle.c | 63 +++++++++++++++++++++++++++++++++++++++-----
- block/blk-throttle.h | 11 ++++++++
- 2 files changed, 68 insertions(+), 6 deletions(-)
-
-diff --git a/block/blk-throttle.c b/block/blk-throttle.c
-index 0d9719c41fe2..621402cf2576 100644
---- a/block/blk-throttle.c
-+++ b/block/blk-throttle.c
-@@ -639,6 +639,8 @@ static inline void throtl_start_new_slice_with_credit(struct throtl_grp *tg,
- {
- 	tg->bytes_disp[rw] = 0;
- 	tg->io_disp[rw] = 0;
-+	tg->bytes_skipped[rw] = 0;
-+	tg->io_skipped[rw] = 0;
- 
- 	/*
- 	 * Previous slice has expired. We must have trimmed it after last
-@@ -656,12 +658,17 @@ static inline void throtl_start_new_slice_with_credit(struct throtl_grp *tg,
- 		   tg->slice_end[rw], jiffies);
- }
- 
--static inline void throtl_start_new_slice(struct throtl_grp *tg, bool rw)
-+static inline void throtl_start_new_slice(struct throtl_grp *tg, bool rw,
-+					  bool clear_skipped)
- {
- 	tg->bytes_disp[rw] = 0;
- 	tg->io_disp[rw] = 0;
- 	tg->slice_start[rw] = jiffies;
- 	tg->slice_end[rw] = jiffies + tg->td->throtl_slice;
-+	if (clear_skipped) {
-+		tg->bytes_skipped[rw] = 0;
-+		tg->io_skipped[rw] = 0;
-+	}
- 
- 	throtl_log(&tg->service_queue,
- 		   "[%c] new slice start=%lu end=%lu jiffies=%lu",
-@@ -783,6 +790,46 @@ static u64 calculate_bytes_allowed(u64 bps_limit, unsigned long jiffy_elapsed)
- 	return mul_u64_u64_div_u64(bps_limit, (u64)jiffy_elapsed, (u64)HZ);
- }
- 
-+static void __tg_update_skipped(struct throtl_grp *tg, bool rw)
-+{
-+	unsigned long jiffy_elapsed = jiffies - tg->slice_start[rw];
-+	u64 bps_limit = tg_bps_limit(tg, rw);
-+	u32 iops_limit = tg_iops_limit(tg, rw);
-+
-+	/*
-+	 * If config is updated while bios are still throttled, calculate and
-+	 * accumulate how many bytes/io are waited across changes. And
-+	 * bytes/io_skipped will be used to calculate new wait time under new
-+	 * configuration.
-+	 *
-+	 * Following calculation won't overflow as long as bios that are
-+	 * dispatched later won't preempt already throttled bios. Even if such
-+	 * overflow do happen, there should be no problem because unsigned is
-+	 * used here, and bytes_skipped/io_skipped will be updated correctly.
-+	 */
-+	if (bps_limit != U64_MAX)
-+		tg->bytes_skipped[rw] +=
-+			calculate_bytes_allowed(bps_limit, jiffy_elapsed) -
-+			tg->bytes_disp[rw];
-+	if (iops_limit != UINT_MAX)
-+		tg->io_skipped[rw] +=
-+			calculate_io_allowed(iops_limit, jiffy_elapsed) -
-+			tg->io_disp[rw];
-+}
-+
-+static void tg_update_skipped(struct throtl_grp *tg)
-+{
-+	if (tg->service_queue.nr_queued[READ])
-+		__tg_update_skipped(tg, READ);
-+	if (tg->service_queue.nr_queued[WRITE])
-+		__tg_update_skipped(tg, WRITE);
-+
-+	/* see comments in struct throtl_grp for meaning of these fields. */
-+	throtl_log(&tg->service_queue, "%s: %llu %llu %u %u\n", __func__,
-+		   tg->bytes_skipped[READ], tg->bytes_skipped[WRITE],
-+		   tg->io_skipped[READ], tg->io_skipped[WRITE]);
-+}
-+
- static bool tg_with_in_iops_limit(struct throtl_grp *tg, struct bio *bio,
- 				  u32 iops_limit, unsigned long *wait)
- {
-@@ -800,7 +847,8 @@ static bool tg_with_in_iops_limit(struct throtl_grp *tg, struct bio *bio,
- 
- 	/* Round up to the next throttle slice, wait time must be nonzero */
- 	jiffy_elapsed_rnd = roundup(jiffy_elapsed + 1, tg->td->throtl_slice);
--	io_allowed = calculate_io_allowed(iops_limit, jiffy_elapsed_rnd);
-+	io_allowed = calculate_io_allowed(iops_limit, jiffy_elapsed_rnd) +
-+		     tg->io_skipped[rw];
- 	if (tg->io_disp[rw] + 1 <= io_allowed) {
- 		if (wait)
- 			*wait = 0;
-@@ -837,7 +885,8 @@ static bool tg_with_in_bps_limit(struct throtl_grp *tg, struct bio *bio,
- 		jiffy_elapsed_rnd = tg->td->throtl_slice;
- 
- 	jiffy_elapsed_rnd = roundup(jiffy_elapsed_rnd, tg->td->throtl_slice);
--	bytes_allowed = calculate_bytes_allowed(bps_limit, jiffy_elapsed_rnd);
-+	bytes_allowed = calculate_bytes_allowed(bps_limit, jiffy_elapsed_rnd) +
-+			tg->bytes_skipped[rw];
- 	if (tg->bytes_disp[rw] + bio_size <= bytes_allowed) {
- 		if (wait)
- 			*wait = 0;
-@@ -898,7 +947,7 @@ static bool tg_may_dispatch(struct throtl_grp *tg, struct bio *bio,
- 	 * slice and it should be extended instead.
- 	 */
- 	if (throtl_slice_used(tg, rw) && !(tg->service_queue.nr_queued[rw]))
--		throtl_start_new_slice(tg, rw);
-+		throtl_start_new_slice(tg, rw, true);
- 	else {
- 		if (time_before(tg->slice_end[rw],
- 		    jiffies + tg->td->throtl_slice))
-@@ -1327,8 +1376,8 @@ static void tg_conf_updated(struct throtl_grp *tg, bool global)
- 	 * that a group's limit are dropped suddenly and we don't want to
- 	 * account recently dispatched IO with new low rate.
- 	 */
--	throtl_start_new_slice(tg, READ);
--	throtl_start_new_slice(tg, WRITE);
-+	throtl_start_new_slice(tg, READ, false);
-+	throtl_start_new_slice(tg, WRITE, false);
- 
- 	if (tg->flags & THROTL_TG_PENDING) {
- 		tg_update_disptime(tg);
-@@ -1356,6 +1405,7 @@ static ssize_t tg_set_conf(struct kernfs_open_file *of,
- 		v = U64_MAX;
- 
- 	tg = blkg_to_tg(ctx.blkg);
-+	tg_update_skipped(tg);
- 
- 	if (is_u64)
- 		*(u64 *)((void *)tg + of_cft(of)->private) = v;
-@@ -1542,6 +1592,7 @@ static ssize_t tg_set_limit(struct kernfs_open_file *of,
- 		return ret;
- 
- 	tg = blkg_to_tg(ctx.blkg);
-+	tg_update_skipped(tg);
- 
- 	v[0] = tg->bps_conf[READ][index];
- 	v[1] = tg->bps_conf[WRITE][index];
-diff --git a/block/blk-throttle.h b/block/blk-throttle.h
-index c1b602996127..0163aa9104c3 100644
---- a/block/blk-throttle.h
-+++ b/block/blk-throttle.h
-@@ -115,6 +115,17 @@ struct throtl_grp {
- 	uint64_t bytes_disp[2];
- 	/* Number of bio's dispatched in current slice */
- 	unsigned int io_disp[2];
-+	/*
-+	 * The following two fields are updated when new configuration is
-+	 * submitted while some bios are still throttled, they record how many
-+	 * bytes/io are waited already in previous configuration, and they will
-+	 * be used to calculate wait time under new configuration.
-+	 *
-+	 * Number of bytes will be skipped in current slice
-+	 */
-+	uint64_t bytes_skipped[2];
-+	/* Number of bio will be skipped in current slice */
-+	unsigned int io_skipped[2];
- 
- 	unsigned long last_low_overflow_time[2];
- 
--- 
-2.31.1
-
+> 
+>>   This commit reorder the buffers using
+>> vq->heads, only the batch is begin from the expected start point and is
+>> continuous can the batch be exposed to driver.  And only writing out a
+>> single used ring for a batch of descriptors, according to VIRTIO 1.1
+>> spec.
+> 
+> 
+> So this sounds more like a "workaround" of the device that can't consume
+> buffer in order, I suspect it can help in performance.
+> 
+> More below.
+> 
+> 
+>>
+>> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+>> ---
+>>   drivers/vhost/vhost.c | 44 +++++++++++++++++++++++++++++++++++++++++--
+>>   drivers/vhost/vhost.h |  3 +++
+>>   2 files changed, 45 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+>> index 40097826c..e2e77e29f 100644
+>> --- a/drivers/vhost/vhost.c
+>> +++ b/drivers/vhost/vhost.c
+>> @@ -317,6 +317,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
+>>   	vq->used_flags = 0;
+>>   	vq->log_used = false;
+>>   	vq->log_addr = -1ull;
+>> +	vq->next_used_head_idx = 0;
+>>   	vq->private_data = NULL;
+>>   	vq->acked_features = 0;
+>>   	vq->acked_backend_features = 0;
+>> @@ -398,6 +399,8 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
+>>   					  GFP_KERNEL);
+>>   		if (!vq->indirect || !vq->log || !vq->heads)
+>>   			goto err_nomem;
+>> +
+>> +		memset(vq->heads, 0, sizeof(*vq->heads) * dev->iov_limit);
+>>   	}
+>>   	return 0;
+>>   
+>> @@ -2374,12 +2377,49 @@ static int __vhost_add_used_n(struct vhost_virtqueue
+>> *vq,
+>>   			    unsigned count)
+>>   {
+>>   	vring_used_elem_t __user *used;
+>> +	struct vring_desc desc;
+>>   	u16 old, new;
+>>   	int start;
+>> +	int begin, end, i;
+>> +	int copy_n = count;
+>> +
+>> +	if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
+> 
+> 
+> How do you guarantee that ids of heads are contiguous?
+> 
+> 
+>> +		/* calculate descriptor chain length for each used buffer */
+> 
+> 
+> I'm a little bit confused about this comment, we have heads[i].len for this?
+> 
+> 
+>> +		for (i = 0; i < count; i++) {
+>> +			begin = heads[i].id;
+>> +			end = begin;
+>> +			vq->heads[begin].len = 0;
+> 
+> 
+> Does this work for e.g RX virtqueue?
+> 
+> 
+>> +			do {
+>> +				vq->heads[begin].len += 1;
+>> +				if (unlikely(vhost_get_desc(vq, &desc, end))) {
+> 
+> 
+> Let's try hard to avoid more userspace copy here, it's the source of
+> performance regression.
+> 
+> Thanks
+> 
+> 
+>> +					vq_err(vq, "Failed to get descriptor: idx %d addr %p\n",
+>> +					       end, vq->desc + end);
+>> +					return -EFAULT;
+>> +				}
+>> +			} while ((end = next_desc(vq, &desc)) != -1);
+>> +		}
+>> +
+>> +		count = 0;
+>> +		/* sort and batch continuous used ring entry */
+>> +		while (vq->heads[vq->next_used_head_idx].len != 0) {
+>> +			count++;
+>> +			i = vq->next_used_head_idx;
+>> +			vq->next_used_head_idx = (vq->next_used_head_idx +
+>> +						  vq->heads[vq->next_used_head_idx].len)
+>> +						  % vq->num;
+>> +			vq->heads[i].len = 0;
+>> +		}
+>> +		/* only write out a single used ring entry with the id corresponding
+>> +		 * to the head entry of the descriptor chain describing the last buffer
+>> +		 * in the batch.
+>> +		 */
+>> +		heads[0].id = i;
+>> +		copy_n = 1;
+>> +	}
+>>   
+>>   	start = vq->last_used_idx & (vq->num - 1);
+>>   	used = vq->used->ring + start;
+>> -	if (vhost_put_used(vq, heads, start, count)) {
+>> +	if (vhost_put_used(vq, heads, start, copy_n)) {
+>>   		vq_err(vq, "Failed to write used");
+>>   		return -EFAULT;
+>>   	}
+>> @@ -2410,7 +2450,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct
+>> vring_used_elem *heads,
+>>   
+>>   	start = vq->last_used_idx & (vq->num - 1);
+>>   	n = vq->num - start;
+>> -	if (n < count) {
+>> +	if (n < count && !vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
+>>   		r = __vhost_add_used_n(vq, heads, n);
+>>   		if (r < 0)
+>>   			return r;
+>> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+>> index d9109107a..7b2c0fbb5 100644
+>> --- a/drivers/vhost/vhost.h
+>> +++ b/drivers/vhost/vhost.h
+>> @@ -107,6 +107,9 @@ struct vhost_virtqueue {
+>>   	bool log_used;
+>>   	u64 log_addr;
+>>   
+>> +	/* Sort heads in order */
+>> +	u16 next_used_head_idx;
+>> +
+>>   	struct iovec iov[UIO_MAXIOV];
+>>   	struct iovec iotlb_iov[64];
+>>   	struct iovec *indirect;
