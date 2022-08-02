@@ -2,166 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB7AC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 10:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BDF2C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 10:31:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236366AbiHBKaf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 06:30:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39676 "EHLO
+        id S236441AbiHBKbM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 06:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236570AbiHBKac (ORCPT
+        with ESMTP id S236618AbiHBKbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 06:30:32 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DD065D3
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 03:30:29 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id z2so6630527edc.1
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 03:30:29 -0700 (PDT)
+        Tue, 2 Aug 2022 06:31:02 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 277E7AE65
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 03:30:58 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id bq11so16201092lfb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 03:30:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=melexis.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+0qVYGdGmkDnAqj07TMHGbTEwacGQLQsY1ouzYx3iFU=;
-        b=IVkRC6sayTaFbFWfFibA1j9ARFdJdDw30xobaUQQ2+aYumlAk1SHC6HBwJ4f4235Yu
-         dpQ/90g9Y7hMnCnEOfviYiyZZFFlQMICVLy5mga4rHAl80htC6snRsh0WmVIHpNhanNK
-         NIZq7HQtaj6W2Ffrv/UgUwK7UBXKT7M04HaFICS/veUYrfUbG5/3KaSKXD7qVyFUAPvf
-         7LqyAlarN1o1gjLUyaUk6Qug1bvEg8W+WqUG128CcFjfzLaC/7w/zuw/psPj14lK1eez
-         3g8Ivy6EJZBY4JrenA29ypPSISEH/V/FZP9eqzNvOpAshSKTjnjpqM2tLgMHZpAXahXv
-         +kwA==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=VJWkHF0viqAGmvAeKO165ehfCthiYYzBnEziZnfhmHU=;
+        b=TVjyaQFkcN9o8fogkLgE6rdw7hX7vunbmBDANGWzN8g3RM86mb2LNG4eKbiTTUgiwU
+         YPrPL3I0qOb5vzn45T+NTa9zwmGXB4V6qA4gU65goLvNGUnF2d6GTd2/vuzUJGFxOYMJ
+         No/PdANmugFEa6PVCt+2HT3TDO0mJX1dZQwMpLNifXWanMrac6wgUWCB+f/ccpKdaPmT
+         coZ+wfRKpvDMBpa2PL75q+7zgiGHnfqk2dViTU9vy3GVazHYsHqXDIRZLe1Pc0b13X+r
+         GfLvQRhA2NrEw3Ak144VM2yS3jGehxVYPQMH9YSMhtXOahy8JHemaGXy8P0dn8dVXUYH
+         QJbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+0qVYGdGmkDnAqj07TMHGbTEwacGQLQsY1ouzYx3iFU=;
-        b=L4uRgCet+m4/4jV5yMYY16C0YklO+b+hN0RJo0f88RQSNEOR3HnCLOe0LpyydyAo16
-         SjiSZRXlZAMTuIO2mIA62O/Srtdq1xWOVzfwT0IiNkLWP4xhJjOYYNN27EXrLehifEBV
-         667rvaHErcF6EoBCjETdv2qeAWHr//7fte2jsfA3pMpHFJNKUJ9mjwGys8LXNmogSWup
-         joCNN/iv2xk72Hnw0v+F7FQhFCPLo2om/sO3HQbtRo4zP5A+lRju8kv/kI1jsPeC7q1k
-         CulKQEv1UylETONTkxHBqvpPmPKhdNsiFlVSfBrzruCup2au43JMYIhAEbju1Sb8ReSr
-         jbWQ==
-X-Gm-Message-State: ACgBeo2Qc8qy2yevXrEtrFQuBjkO9Vb7WKiEBbOX+11x8GMgN0Gbyc9a
-        WCb0crW+MgRYbGfSr4saj4JBTQ==
-X-Google-Smtp-Source: AA6agR5DkAlJcNs4SM72SBs4RkRsSrmU0mqmkOmHi1/W/2RJyhEPCUCk6WY5HbfQttNpAT61Coms/Q==
-X-Received: by 2002:aa7:d513:0:b0:43d:5c81:4f71 with SMTP id y19-20020aa7d513000000b0043d5c814f71mr13932376edq.308.1659436228236;
-        Tue, 02 Aug 2022 03:30:28 -0700 (PDT)
-Received: from localhost.localdomain (ptr-4xh0y3uhn87zojrdbwi.18120a2.ip6.access.telenet.be. [2a02:1810:a44c:8f00:733c:5cdf:8a1a:e482])
-        by smtp.gmail.com with ESMTPSA id q21-20020a170906941500b00715a02874acsm1509750ejx.35.2022.08.02.03.30.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 03:30:27 -0700 (PDT)
-From:   Crt Mori <cmo@melexis.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Crt Mori <cmo@melexis.com>
-Subject: [PATCH 1/2] iio: temperature: mlx90632 Add supply regulator to sensor
-Date:   Tue,  2 Aug 2022 12:30:22 +0200
-Message-Id: <20220802103022.423328-1-cmo@melexis.com>
-X-Mailer: git-send-email 2.34.1
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=VJWkHF0viqAGmvAeKO165ehfCthiYYzBnEziZnfhmHU=;
+        b=XoN1HzfWhwhWeL46uwiXp3Oi0kAOgrjwA6zLv4txacMXhvCJDOSqRxFb4h3MzZKrXz
+         tUgKoc5bo65uIsskOMxMdL/VNbw5kHiZ4QeQiyYxJ+/zfigO/+iVFZhsFu/4k/GauMtd
+         VtOq7mVecHAW1tRrkI85+kRhT38cDGIpiw6J67bW0xwMROv5xFwmomFXXMs4u3wnHvOI
+         0bpCsLFD/n9+KRsy5gnrPxhR+1AmaW/Pj6+HbogbPhBv6eryvjTOgyDDSW6FgBEer4Re
+         nEH52Npb1Mk2iTp7ZYu7QSXzywcgH0TmAZe1zfj+4c/4ojopJ1HK6KwOvKca+SpVGekY
+         R/1w==
+X-Gm-Message-State: ACgBeo2rjQ9eH9nHH2G/OplDR/TVvIBh8UV4HdN47kbEmwbR6qq1YFol
+        4nu2FBmOts1xA8q2cVpN/BdY88yW+x8uyp/K9VetpA==
+X-Google-Smtp-Source: AA6agR7ODqtSUYvuKaQj45LbVVBPP0mYn+fPduaZ5Yhq09wKIYjojeNH5TxfDXJ6abn4tdh8zrvJ3XBWR2taKds5bJc=
+X-Received: by 2002:a05:6512:250b:b0:48b:2c5:fe1e with SMTP id
+ be11-20020a056512250b00b0048b02c5fe1emr2470061lfb.598.1659436256267; Tue, 02
+ Aug 2022 03:30:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220727071042.8796-4-feng.tang@intel.com> <YuYm3dWwpZwH58Hu@xsang-OptiPlex-9020>
+ <YuY6Wc39DbL3YmGi@feng-skl> <Yudw5ge/lJ26Hksk@feng-skl> <0e545088-d140-4c84-bbb2-a3be669740b2@suse.cz>
+ <YujKCxu2lJJFm73P@feng-skl> <CACT4Y+Zwg8BP=6WJpQ5cCbJxLu4HcnCjx8e53aDEbTZ5uzpUyg@mail.gmail.com>
+ <85ec4ea8-ae4c-3592-5491-3db6d0ad8c59@suse.cz>
+In-Reply-To: <85ec4ea8-ae4c-3592-5491-3db6d0ad8c59@suse.cz>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Tue, 2 Aug 2022 12:30:44 +0200
+Message-ID: <CACT4Y+asjzrBu8ogRDt9hYYaAB3tZ2pK5HBkzkuMp106vQwKWQ@mail.gmail.com>
+Subject: Re: [mm/slub] 3616799128: BUG_kmalloc-#(Not_tainted):kmalloc_Redzone_overwritten
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Feng Tang <feng.tang@intel.com>,
+        "Sang, Oliver" <oliver.sang@intel.com>, lkp <lkp@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "lkp@lists.01.org" <lkp@lists.01.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        "Hansen, Dave" <dave.hansen@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Provide possibility to toggle power supply to the sensor so that user
-can optimize their setup and not have the sensor constantly powered.
+.On Tue, 2 Aug 2022 at 11:43, Vlastimil Babka <vbabka@suse.cz> wrote:
+>
+> On 8/2/22 09:06, Dmitry Vyukov wrote:
+> > On Tue, 2 Aug 2022 at 08:55, Feng Tang <feng.tang@intel.com> wrote:
+> >>
+> >> On Mon, Aug 01, 2022 at 10:23:23PM +0800, Vlastimil Babka wrote:
+> >> > On 8/1/22 08:21, Feng Tang wrote:
+> >> [snip]
+> >> > > Cc kansan  mail list.
+> >> > >
+> >> > > This is really related with KASAN debug, that in free path, some
+> >> > > kmalloc redzone ([orig_size+1, object_size]) area is written by
+> >> > > kasan to save free meta info.
+> >> > >
+> >> > > The callstack is:
+> >> > >
+> >> > >   kfree
+> >> > >     slab_free
+> >> > >       slab_free_freelist_hook
+> >> > >           slab_free_hook
+> >> > >             __kasan_slab_free
+> >> > >               ____kasan_slab_free
+> >> > >                 kasan_set_free_info
+> >> > >                   kasan_set_track
+> >> > >
+> >> > > And this issue only happens with "kmalloc-16" slab. Kasan has 2
+> >> > > tracks: alloc_track and free_track, for x86_64 test platform, most
+> >> > > of the slabs will reserve space for alloc_track, and reuse the
+> >> > > 'object' area for free_track.  The kasan free_track is 16 bytes
+> >> > > large, that it will occupy the whole 'kmalloc-16's object area,
+> >> > > so when kmalloc-redzone is enabled by this patch, the 'overwritten'
+> >> > > error is triggered.
+> >> > >
+> >> > > But it won't hurt other kmalloc slabs, as kasan's free meta won't
+> >> > > conflict with kmalloc-redzone which stay in the latter part of
+> >> > > kmalloc area.
+> >> > >
+> >> > > So the solution I can think of is:
+> >> > > * skip the kmalloc-redzone for kmalloc-16 only, or
+> >> > > * skip kmalloc-redzone if kasan is enabled, or
+> >> > > * let kasan reserve the free meta (16 bytes) outside of object
+> >> > >   just like for alloc meta
+> >> >
+> >> > Maybe we could add some hack that if both kasan and SLAB_STORE_USER is
+> >> > enabled, we bump the stored orig_size from <16 to 16? Similar to what
+> >> > __ksize() does.
+> >>
+> >> How about the following patch:
+> >>
+> >> ---
+> >> diff --git a/mm/slub.c b/mm/slub.c
+> >> index added2653bb0..33bbac2afaef 100644
+> >> --- a/mm/slub.c
+> >> +++ b/mm/slub.c
+> >> @@ -830,6 +830,16 @@ static inline void set_orig_size(struct kmem_cache *s,
+> >>         if (!slub_debug_orig_size(s))
+> >>                 return;
+> >>
+> >> +#ifdef CONFIG_KASAN
+> >> +       /*
+> >> +        * When kasan is enabled, it could save its free meta data in the
+> >> +        * start part of object area, so skip the kmalloc redzone check
+> >> +        * for small kmalloc slabs to avoid the data conflict.
+> >> +        */
+> >> +       if (s->object_size <= 32)
+> >> +               orig_size = s->object_size;
+> >> +#endif
+> >> +
+> >>         p += get_info_end(s);
+> >>         p += sizeof(struct track) * 2;
+> >>
+> >> I extend the size to 32 for potential's kasan meta data size increase.
+> >> This is tested locally, if people are OK with it, I can ask for 0Day's
+> >> help to verify this.
+>
+> Is there maybe some KASAN macro we can use instead of hardcoding 32?
 
-Signed-off-by: Crt Mori <cmo@melexis.com>
----
- drivers/iio/temperature/mlx90632.c | 52 ++++++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+kasan_free_meta is placed in the object data after freeing, so it can
+be sizeof(kasan_free_meta)
 
-diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
-index 7ee7ff8047a4..e6e5e649a9f9 100644
---- a/drivers/iio/temperature/mlx90632.c
-+++ b/drivers/iio/temperature/mlx90632.c
-@@ -18,6 +18,7 @@
- #include <linux/math64.h>
- #include <linux/pm_runtime.h>
- #include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -128,6 +129,7 @@
-  *        calculations
-  * @object_ambient_temperature: Ambient temperature at object (might differ of
-  *                              the ambient temperature of sensor.
-+ * @regulator: Regulator of the device
-  */
- struct mlx90632_data {
- 	struct i2c_client *client;
-@@ -136,6 +138,7 @@ struct mlx90632_data {
- 	u16 emissivity;
- 	u8 mtyp;
- 	u32 object_ambient_temperature;
-+	struct regulator *regulator;
- };
- 
- static const struct regmap_range mlx90632_volatile_reg_range[] = {
-@@ -841,6 +844,37 @@ static int mlx90632_wakeup(struct mlx90632_data *data)
- 	return mlx90632_pwr_continuous(data->regmap);
- }
- 
-+static void mlx90632_disable_regulator(void *_data)
-+{
-+	struct mlx90632_data *data = _data;
-+	int ret;
-+
-+	ret = regulator_disable(data->regulator);
-+	if (ret < 0)
-+		dev_err(regmap_get_device(data->regmap),
-+			"Failed to disable power regulator: %d\n", ret);
-+}
-+
-+static int mlx90632_enable_regulator(struct mlx90632_data *data)
-+{
-+	int ret;
-+
-+	ret = regulator_set_voltage(data->regulator, 3200000, 3600000);
-+	if (ret < 0) {
-+		dev_err(regmap_get_device(data->regmap), "Failed to set voltage on regulator!\n");
-+		return ret;
-+	}
-+
-+	ret = regulator_enable(data->regulator);
-+	if (ret < 0) {
-+		dev_err(regmap_get_device(data->regmap), "Failed to enable power regulator!\n");
-+	} else {
-+		/* Give the device a little bit of time to start up. */
-+		msleep(MLX90632_SLEEP_DELAY_MS);
-+	}
-+	return ret;
-+}
-+
- static int mlx90632_probe(struct i2c_client *client,
- 			  const struct i2c_device_id *id)
- {
-@@ -876,6 +910,24 @@ static int mlx90632_probe(struct i2c_client *client,
- 	indio_dev->channels = mlx90632_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(mlx90632_channels);
- 
-+	mlx90632->regulator = devm_regulator_get(&client->dev, "vdd");
-+	if (!IS_ERR(mlx90632->regulator)) {
-+		ret = mlx90632_enable_regulator(mlx90632);
-+		if (ret < 0) {
-+			dev_err(&client->dev, "Failed to enable regulator!\n");
-+			return ret;
-+		}
-+
-+		ret = devm_add_action_or_reset(&client->dev,
-+					       mlx90632_disable_regulator,
-+					       mlx90632);
-+		if (ret < 0) {
-+			dev_err(&client->dev, "Failed to setup regulator cleanup action %d\n",
-+				ret);
-+			return ret;
-+		}
-+	}
-+
- 	ret = mlx90632_wakeup(mlx90632);
- 	if (ret < 0) {
- 		dev_err(&client->dev, "Wakeup failed: %d\n", ret);
--- 
-2.34.1
 
+> > Where is set_orig_size() function defined? Don't see it upstream nor
+> > in linux-next.
+> > This looks fine but my only concern is that this should not increase
+> > memory consumption when slub debug tracking is not enabled, which
+> > should be the main operation mode when KASAN is enabled. But I can't
+> > figure this out w/o context.
+>
+> It won't increase memory consumption even if slub_debug tracking is enabled.
+> It just fakes a bit the size that was passed to kmalloc() and which we newly
+> store (thanks to Feng's patches) for statistics and debugging purposes.
+>
+> >> Thanks,
+> >> Feng
+> >>
+> >> >
+> >> > > I don't have way to test kasan's SW/HW tag configuration, which
+> >> > > is only enabled on arm64 now. And I don't know if there will
+> >> > > also be some conflict.
+> >> > >
+> >> > > Thanks,
+> >> > > Feng
+> >> > >
+> >> >
+> >>
+> >> --
+> >> You received this message because you are subscribed to the Google Groups "kasan-dev" group.
+> >> To unsubscribe from this group and stop receiving emails from it, send an email to kasan-dev+unsubscribe@googlegroups.com.
+> >> To view this discussion on the web visit https://groups.google.com/d/msgid/kasan-dev/YujKCxu2lJJFm73P%40feng-skl.
+>
