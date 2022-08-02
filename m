@@ -2,176 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45DD8C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A44C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 19:00:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230214AbiHBS4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 14:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58472 "EHLO
+        id S230235AbiHBTAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 15:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230283AbiHBSzv (ORCPT
+        with ESMTP id S230182AbiHBTAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 14:55:51 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF29140F3
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 11:55:50 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id o12-20020a170902d4cc00b0016e81c62cc8so6590078plg.13
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 11:55:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=30XQYa5vrUU1iEUJfeVFtkHZOATBPFqy9Zstl/P+5z8=;
-        b=U/mM+hN/C9aAjBSxsdYTboDvUHBaLxpmZHMEt1gXXrEYG5YnjVUHfwWO9nmAq85hJz
-         UTR5zjqMgwVwaTR19xC5TJQgFnhfameFuoB+lfYBuuUy4D1niJ6wZ62eikVApZlFeFMR
-         aMkbolcOb6t6yrchlJNNedj2XApSOt6SyAvuW59QBWSHdtP+wZxcMH4hDFPeDtnsQqDp
-         26zMYgyhgUITcYf/alnF6RyWJUb+YfMkL6RplnfXRVix8/5Fc+C7qHKzmdKo5Y4gDOJ+
-         3coU4Y3V1OG2KybEjG/wLaR38gtHzJZU02zNzPgC4yTKLtWnyWb0lhzKO3Yty3Mfcvv0
-         lyYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=30XQYa5vrUU1iEUJfeVFtkHZOATBPFqy9Zstl/P+5z8=;
-        b=4147/9pIA/ZSbmaddkjXTd9ZgQOEcTOZf/9MS4tW0cm5YzhcoSNQKSlr2hqN+lvTJM
-         OuNY7KJpLowkzSQKGlmxcbghjiezhjU2L2u8bLgpWizcf4gFtmLyqkOZ2AuS2AtN2UOn
-         0OEvQOMOPUO0HR8laNWbf90fjjoXfdUPM4Si/MqU8P9+y1OOA8dvMfg5ZPsPH9o1biGA
-         qE8cHCxgrdwH5VFP4nxSQdNvcFS7N7R3FTbfKHVEwwZ08Eqj1sAvAVQA06dOF+crUgzF
-         DqXrZ3J2uFvtNawJPXbXxh0SgeIdhyMHgigJJIboegUhV8XLx6FKEgN1y5907hmkVeBN
-         Hybg==
-X-Gm-Message-State: ACgBeo2Gxsr2s7XqDbRTvsGVq99Kkx95puT+GXBu64kfs+Yu3RY/hTcl
-        zNgsB34EfHQzk13fOGL/lEzyMu87eXc=
-X-Google-Smtp-Source: AA6agR6yQ+fa8aAJU91nirXEpLdJfvOKRCf8sGouwqrIk3ZQl0y+7CwvEhHK1EqDROOKe3AB5MwuoE4CU6hr
-X-Received: from jackyli.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3b51])
- (user=jackyli job=sendgmr) by 2002:a17:90b:4b91:b0:1f4:e116:8f1 with SMTP id
- lr17-20020a17090b4b9100b001f4e11608f1mr870049pjb.121.1659466549678; Tue, 02
- Aug 2022 11:55:49 -0700 (PDT)
-Date:   Tue,  2 Aug 2022 18:55:33 +0000
-In-Reply-To: <20220802185534.735338-1-jackyli@google.com>
-Message-Id: <20220802185534.735338-2-jackyli@google.com>
-Mime-Version: 1.0
-References: <20220802185534.735338-1-jackyli@google.com>
-X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
-Subject: [PATCH 1/2] crypto: ccp - Initialize PSP when reading psp data file failed
-From:   Jacky Li <jackyli@google.com>
-To:     Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        John Allen <john.allen@amd.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Marc Orr <marcorr@google.com>, Alper Gun <alpergun@google.com>,
-        Peter Gonda <pgonda@google.com>, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jacky Li <jackyli@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 2 Aug 2022 15:00:42 -0400
+Received: from mx0.riseup.net (mx0.riseup.net [198.252.153.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4201B86F;
+        Tue,  2 Aug 2022 12:00:40 -0700 (PDT)
+Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx0.riseup.net (Postfix) with ESMTPS id 4Ly47q66Skz9st8;
+        Tue,  2 Aug 2022 19:00:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1659466840; bh=9AZD5MOtizRmS14SHAAMXYCLFtA2G/ghxYdJyTwagIs=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=oYDUF2WZ5q0a9vadga+60PpvW3OTED/ORzX+ncB7sVwGW3121JnpI52tRVS8PHcnt
+         bV9bYRaE2u1kK6HGADSTBogBJDwwXVcDe8BWd8cHH0jc2SVBqDEY6r2MK6OsUqodLW
+         q/BUSfabGQKl+56N4nFUAtlKdUhs6OMQ283fdyk8=
+X-Riseup-User-ID: 6122C8D5C36CB6982A481A9B1FEEAFF2292E57F392BEB836C4FD120D74BA3C82
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews1.riseup.net (Postfix) with ESMTPSA id 4Ly47j4SMbz5vfs;
+        Tue,  2 Aug 2022 19:00:33 +0000 (UTC)
+Message-ID: <5931f10d-09ac-84f3-f5d1-65039478ae97@riseup.net>
+Date:   Tue, 2 Aug 2022 16:00:31 -0300
+MIME-Version: 1.0
+Subject: Re: [PATCH 2/3] kunit: add KUnit array assertions to the
+ example_all_expect_macros_test
+Content-Language: en-US
+To:     Daniel Latypov <dlatypov@google.com>,
+        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@riseup.net>
+Cc:     =?UTF-8?Q?Ma=c3=adra_Canal?= <mairacanal@riseup.net>,
+        melissa.srw@gmail.com, daniel@ffwll.ch, javierm@redhat.com,
+        siqueirajordao@riseup.net, Isabella Basso <isabbasso@riseup.net>,
+        jose.exposito89@gmail.com, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, davidgow@google.com,
+        davem@davemloft.net, Brendan Higgins <brendanhiggins@google.com>,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org, airlied@linux.ie, kuba@kernel.org
+References: <20220802161206.228707-1-mairacanal@riseup.net>
+ <20220802161206.228707-3-mairacanal@riseup.net>
+ <5c9038fd-a247-d0d3-841c-ba1e606bc309@riseup.net>
+ <CAGS_qxodPndQZ_ypy-QP=ViNUvwZk1z1u8EAv9k5XzDEC4WSGQ@mail.gmail.com>
+From:   =?UTF-8?Q?Ma=c3=adra_Canal?= <mairacanal@riseup.net>
+In-Reply-To: <CAGS_qxodPndQZ_ypy-QP=ViNUvwZk1z1u8EAv9k5XzDEC4WSGQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the OS fails the PSP initialization when the file specified at
-'init_ex_path' does not exist or has invalid content. However the SEV
-spec just requires users to allocate 32KB of 0xFF in the file, which can
-be taken care of by the OS easily.
+On 8/2/22 15:15, 'Daniel Latypov' via KUnit Development wrote:
+> On Tue, Aug 2, 2022 at 9:19 AM André Almeida <andrealmeid@riseup.net> wrote:
+>> Às 13:12 de 02/08/22, Maíra Canal escreveu:
+>>> Increament the example_all_expect_macros_test with the
+>>> KUNIT_EXPECT_ARREQ and KUNIT_EXPECT_ARRNEQ macros by creating a test
+>>> with array assertions.
+>>>
+>>> Signed-off-by: Maíra Canal <mairacanal@riseup.net>
+>>> ---
+>>>  lib/kunit/kunit-example-test.c | 7 +++++++
+>>>  1 file changed, 7 insertions(+)
+>>>
+>>> diff --git a/lib/kunit/kunit-example-test.c b/lib/kunit/kunit-example-test.c
+>>> index f8fe582c9e36..fc81a45d9cbc 100644
+>>> --- a/lib/kunit/kunit-example-test.c
+>>> +++ b/lib/kunit/kunit-example-test.c
+>>> @@ -86,6 +86,9 @@ static void example_mark_skipped_test(struct kunit *test)
+>>>   */
+>>>  static void example_all_expect_macros_test(struct kunit *test)
+>>>  {
+>>> +     const u32 array[] = { 0x0F, 0xFF };
+>>> +     const u32 expected[] = { 0x1F, 0xFF };
+> 
+> Given the distance between the definition and their use, perhaps we
+> can give them clearer names.
+> E.g. array + diff_array, or array1 + array2, etc.
+> 
+> I think something to indicate they're arrays and that they're different.
+> The current name `expected` is a bit unclear.
 
-To improve the robustness during the PSP init, leverage the retry
-mechanism and continue the init process:
+Thank you for the note, I'll address it at v2.
 
-During the first INIT_EX call, if the content is invalid or missing,
-continue the process by feeding those contents into PSP instead of
-aborting. PSP will then override it with 32KB 0xFF and return
-SEV_RET_SECURE_DATA_INVALID status code. In the second INIT_EX call,
-this 32KB 0xFF content will then be fed and PSP will write the valid
-data to the file.
+> 
+>>> +
+>>>       /* Boolean assertions */
+>>>       KUNIT_EXPECT_TRUE(test, true);
+>>>       KUNIT_EXPECT_FALSE(test, false);
+>>> @@ -109,6 +112,10 @@ static void example_all_expect_macros_test(struct kunit *test)
+>>>       KUNIT_EXPECT_STREQ(test, "hi", "hi");
+>>>       KUNIT_EXPECT_STRNEQ(test, "hi", "bye");
+>>>
+>>> +     /* Array assertions */
+>>> +     KUNIT_EXPECT_ARREQ(test, expected, expected, 2);
+>>> +     KUNIT_EXPECT_ARRNEQ(test, array, expected, 2);
+>>
+>> ARRAY_SIZE() is usually better than constants is this case.
+> 
+> Note: that's actually incorrect!
+> 
 
-In order to do this, it's also needed to skip the sev_read_init_ex_file
-in the second INIT_EX call to prevent the file content from being
-overwritten by the 32KB 0xFF data provided by PSP in the first INIT_EX
-call.
+Yep, that's my bad!
 
-Co-developed-by: Peter Gonda <pgonda@google.com>
-Signed-off-by: Peter Gonda <pgonda@google.com>
-Signed-off-by: Jacky Li <jackyli@google.com>
-Reported-by: Alper Gun <alpergun@google.com>
----
- .../virt/kvm/x86/amd-memory-encryption.rst    |  5 ++--
- drivers/crypto/ccp/sev-dev.c                  | 29 +++++++++++++------
- 2 files changed, 22 insertions(+), 12 deletions(-)
+> Ah right, this was the other blocker I had in mind.
+> I wasn't sure how we'd handle the size parameter.
+> 
+> Users might think ARRAY_SIZE() is fine and copy-paste it.
+> But the size parameter is in units of bytes, not array elements!
+> If the element types are not 1 byte, it'll silently not compare the full array.
+> 
+> We'd want people to use
+> KUNIT_EXPECT_ARREQ(test, expected, expected, sizeof(expected));
+> 
+> But this doesn't work for `u32 *array`, since it'll silently just
+> compare 1 byte if people get them mixed up.
+> 
+> I don't know how we make a maximally fool-proof version of this macro :\
 
-diff --git a/Documentation/virt/kvm/x86/amd-memory-encryption.rst b/Documentation/virt/kvm/x86/amd-memory-encryption.rst
-index 2d307811978c..935aaeb97fe6 100644
---- a/Documentation/virt/kvm/x86/amd-memory-encryption.rst
-+++ b/Documentation/virt/kvm/x86/amd-memory-encryption.rst
-@@ -89,9 +89,8 @@ context. In a typical workflow, this command should be the first command issued.
- 
- The firmware can be initialized either by using its own non-volatile storage or
- the OS can manage the NV storage for the firmware using the module parameter
--``init_ex_path``. The file specified by ``init_ex_path`` must exist. To create
--a new NV storage file allocate the file with 32KB bytes of 0xFF as required by
--the SEV spec.
-+``init_ex_path``. If the file specified by ``init_ex_path`` does not exist or
-+is invalid, the OS will create or override the file with output from PSP.
- 
- Returns: 0 on success, -negative on error
- 
-diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
-index 799b476fc3e8..5bb2ae250d38 100644
---- a/drivers/crypto/ccp/sev-dev.c
-+++ b/drivers/crypto/ccp/sev-dev.c
-@@ -75,6 +75,7 @@ static void *sev_es_tmr;
-  */
- #define NV_LENGTH (32 * 1024)
- static void *sev_init_ex_buffer;
-+static bool nv_file_loaded;
- 
- static inline bool sev_version_greater_or_equal(u8 maj, u8 min)
- {
-@@ -211,18 +212,19 @@ static int sev_read_init_ex_file(void)
- 	if (IS_ERR(fp)) {
- 		int ret = PTR_ERR(fp);
- 
--		dev_err(sev->dev,
--			"SEV: could not open %s for read, error %d\n",
--			init_ex_path, ret);
-+		if (ret != -ENOENT) {
-+			dev_err(sev->dev,
-+				"SEV: could not open %s for read, error %d\n",
-+				init_ex_path, ret);
-+		}
- 		return ret;
- 	}
- 
- 	nread = kernel_read(fp, sev_init_ex_buffer, NV_LENGTH, NULL);
- 	if (nread != NV_LENGTH) {
--		dev_err(sev->dev,
--			"SEV: failed to read %u bytes to non volatile memory area, ret %ld\n",
-+		dev_info(sev->dev,
-+			"SEV: could not read %u bytes to non volatile memory area, ret %ld\n",
- 			NV_LENGTH, nread);
--		return -EIO;
- 	}
- 
- 	dev_dbg(sev->dev, "SEV: read %ld bytes from NV file\n", nread);
-@@ -417,9 +419,18 @@ static int __sev_init_ex_locked(int *error)
- 	data.nv_address = __psp_pa(sev_init_ex_buffer);
- 	data.nv_len = NV_LENGTH;
- 
--	ret = sev_read_init_ex_file();
--	if (ret)
--		return ret;
-+	/*
-+	 * The caller of INIT_EX will retry if it fails. Furthermore, if the
-+	 * failure is due to sev_init_ex_buffer being invalid, the PSP will have
-+	 * properly initialized the buffer already. Therefore, do not initialize
-+	 * it a second time.
-+	 */
-+	if (!nv_file_loaded) {
-+		ret = sev_read_init_ex_file();
-+		if (ret && ret != -ENOENT)
-+			return ret;
-+		nv_file_loaded = true;
-+	}
- 
- 	if (sev_es_tmr) {
- 		/*
--- 
-2.37.1.455.g008518b4e5-goog
+This is a hard one also. I believe that use KUNIT_EXPECT_ARREQ(test,
+expected, expected, sizeof(expected)); is more compliant to the
+memcpy/memset/memcmp signature. Moreover, this problem also occur for
+the KUNIT_EXPECT_EQ(test, memcmp(expected, expected, sizeof(expected)), 0);
 
+I believe that the number of array elements will make it easier for
+users to avoid mistakes.
+
+I'll change it internally for size_bytes = (size) * sizeof((left)[0]) on v2.
+
+Best Regards,
+- Maíra Canal
+
+> 
