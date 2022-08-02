@@ -2,130 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF85C19F29
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 21:25:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F8CC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 21:25:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbiHBVZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 17:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36300 "EHLO
+        id S232454AbiHBVZt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 17:25:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232311AbiHBVZO (ORCPT
+        with ESMTP id S233263AbiHBVZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 17:25:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3FB11143
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 14:25:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2610260C09
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 21:25:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C5BEC433D7
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 21:25:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659475511;
-        bh=DRcXHF+hL2akkSQuSU/bab25l1HxDgWat6fbp5QgZhU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=bR/qioeYhsfMIBAQnO7sev2rDjT1MncB540KMDTiwIY8EWui0lhJiryo3qvJymfVQ
-         QPi87451GYeehG76IdrqbkcLNmwZncDuTuUEzX2yHOeT8Bf0APt53GFq9fnJMlbqbZ
-         idTn74DAL5U7R+Dm/LdrqhpTu9YHw2IpjWpIuDAm0iYmH5e5pwxUJz5aLjr97VjdaG
-         cLQYFNVR7DKcZ4yQ0kPm+0XGu5k+IO2fJf/fIPT2iVWV+MlKAa6OJC/Ryx3M0tjjA3
-         p4Du0uWZFljxAtPqvm1kNW9JmNDR02g06XLzR4RshU7hWKqZNyQstkWqCN0Lmrvzqb
-         MjlO36f9s1E+A==
-Received: by mail-ua1-f45.google.com with SMTP id z14so6279266uaq.13
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 14:25:11 -0700 (PDT)
-X-Gm-Message-State: ACgBeo21ao9kVW0dW2IPmpSTSq80dn4Q+FX53L1u3xRjwX6a74oHP1Fr
-        M10UiTFYu2WiAPIQyyg+bAoswxj2CVa0nTgFjuHr/A==
-X-Google-Smtp-Source: AA6agR76IZreUuGci5NqrZubzetTIA/QdScJIvyrhjNqtyLp6A9JrFMy5bTInLzADq8lje7PLu8L4AMmL5D5TBPUlpI=
-X-Received: by 2002:a0d:f0c7:0:b0:31e:e814:e7d6 with SMTP id
- z190-20020a0df0c7000000b0031ee814e7d6mr20401368ywe.340.1659475500117; Tue, 02
- Aug 2022 14:25:00 -0700 (PDT)
+        Tue, 2 Aug 2022 17:25:33 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB7438B3;
+        Tue,  2 Aug 2022 14:25:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659475521; x=1691011521;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Ymbw60lTuQcXpEjOvBsfA2/pFFWl5YB68Q0fbwk5LVE=;
+  b=QBC+E8ukZm2UWI+QXZMRju+uZBa0Dn4s5LxJzbZwN+yp9QjZ4qffwl4g
+   2ubFm1bhCUz1VDaAZf5ZZpPdXIsqtfFjkrv0SIiSRqkYO8eMkWTD1wJZg
+   QZODMm0DapeNmYL/z7vGmRAnDmGTfOky5uWemqa9Be+Dmw23RSmjzmUjc
+   +29dlCutV2xI40PEEQfxumD1vS9Avhm3O+fzc4rYa1DUC1w2Zcyii+5HU
+   7mSq/AlzzLckCssDJWP9F8gjaIu6KRtoTr0w+/1UfSU4DRj2dmdv5+X/C
+   DgpjnK5XqnJJPXOkkBjX/h6rtx0+mi0N4uekdP9qUYl3l5L/QL5eKwXH/
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="351235853"
+X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
+   d="scan'208";a="351235853"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 14:25:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
+   d="scan'208";a="602585802"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga002.jf.intel.com with ESMTP; 02 Aug 2022 14:25:10 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id CE22CF7; Wed,  3 Aug 2022 00:25:21 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Pavel Machek <pavel@ucw.cz>, Eddie James <eajames@linux.ibm.com>,
+        linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] leds: pca955x: Get rid of custom led_init_default_state_get()
+Date:   Wed,  3 Aug 2022 00:25:18 +0300
+Message-Id: <20220802212518.7060-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220721172808.585539-1-fred@cloudflare.com> <20220722061137.jahbjeucrljn2y45@kafai-mbp.dhcp.thefacebook.com>
- <18225d94bf0.28e3.85c95baa4474aabc7814e68940a78392@paul-moore.com>
- <a4db1154-94bc-9833-1665-a88a5eee48de@cloudflare.com> <CAHC9VhQw8LR9yJ9UkA-9aPNETQavt25G-GGSs-_ztg6ZpxNzxA@mail.gmail.com>
-In-Reply-To: <CAHC9VhQw8LR9yJ9UkA-9aPNETQavt25G-GGSs-_ztg6ZpxNzxA@mail.gmail.com>
-From:   KP Singh <kpsingh@kernel.org>
-Date:   Tue, 2 Aug 2022 23:24:49 +0200
-X-Gmail-Original-Message-ID: <CACYkzJ7=Cvo9qncMX_5_Wp1zNNWDyh3DxdOLq_ysWxDCs8VC8g@mail.gmail.com>
-Message-ID: <CACYkzJ7=Cvo9qncMX_5_Wp1zNNWDyh3DxdOLq_ysWxDCs8VC8g@mail.gmail.com>
-Subject: Re: [PATCH v3 0/4] Introduce security_create_user_ns()
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Frederick Lawler <fred@cloudflare.com>,
-        Martin KaFai Lau <kafai@fb.com>, revest@chromium.org,
-        jackmanb@chromium.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
-        ebiederm@xmission.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        cgzones@googlemail.com, karl@bigbadwolfsecurity.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 5:19 PM Paul Moore <paul@paul-moore.com> wrote:
->
-> On Mon, Aug 1, 2022 at 9:13 AM Frederick Lawler <fred@cloudflare.com> wrote:
-> > On 7/22/22 7:20 AM, Paul Moore wrote:
-> > > On July 22, 2022 2:12:03 AM Martin KaFai Lau <kafai@fb.com> wrote:
-> > >
-> > >> On Thu, Jul 21, 2022 at 12:28:04PM -0500, Frederick Lawler wrote:
-> > >>> While creating a LSM BPF MAC policy to block user namespace creation, we
-> > >>> used the LSM cred_prepare hook because that is the closest hook to prevent
-> > >>> a call to create_user_ns().
-> > >>>
-> > >>> The calls look something like this:
-> > >>>
-> > >>> cred = prepare_creds()
-> > >>> security_prepare_creds()
-> > >>> call_int_hook(cred_prepare, ...
-> > >>> if (cred)
-> > >>> create_user_ns(cred)
-> > >>>
-> > >>> We noticed that error codes were not propagated from this hook and
-> > >>> introduced a patch [1] to propagate those errors.
-> > >>>
-> > >>> The discussion notes that security_prepare_creds()
-> > >>> is not appropriate for MAC policies, and instead the hook is
-> > >>> meant for LSM authors to prepare credentials for mutation. [2]
-> > >>>
-> > >>> Ultimately, we concluded that a better course of action is to introduce
-> > >>> a new security hook for LSM authors. [3]
-> > >>>
-> > >>> This patch set first introduces a new security_create_user_ns() function
-> > >>> and userns_create LSM hook, then marks the hook as sleepable in BPF.
-> > >> Patch 1 and 4 still need review from the lsm/security side.
-> > >
-> > > This patchset is in my review queue and assuming everything checks out, I expect to merge it after the upcoming merge window closes.
-> > >
-> > > I would also need an ACK from the BPF LSM folks, but they're CC'd on this patchset.
-> >
-> > Based on last weeks comments, should I go ahead and put up v4 for
-> > 5.20-rc1 when that drops, or do I need to wait for more feedback?
->
-> In general it rarely hurts to make another revision, and I think
-> you've gotten some decent feedback on this draft, especially around
-> the BPF LSM tests; I think rebasing on Linus tree after the upcoming
-> io_uring changes are merged would be a good idea.  Although as a
-> reminder to the BPF LSM folks - I'm looking at you KP Singh :) - I
-> need an ACK from you guys before I merge the BPF related patches
+LED core provides a helper to parse default state from firmware node.
+Use it instead of custom implementation.
 
-Apologies, I was on vacation. I am looking at the patches now.
-Reviews and acks coming soon :)
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/leds/leds-pca955x.c | 25 ++++++-------------------
+ 1 file changed, 6 insertions(+), 19 deletions(-)
 
-- KP
+diff --git a/drivers/leds/leds-pca955x.c b/drivers/leds/leds-pca955x.c
+index 81aaf21212d7..b240a3f6db3d 100644
+--- a/drivers/leds/leds-pca955x.c
++++ b/drivers/leds/leds-pca955x.c
+@@ -130,7 +130,7 @@ struct pca955x_led {
+ 	struct led_classdev	led_cdev;
+ 	int			led_num;	/* 0 .. 15 potentially */
+ 	u32			type;
+-	int			default_state;
++	enum led_default_state	default_state;
+ 	struct fwnode_handle	*fwnode;
+ };
+ 
+@@ -454,19 +454,9 @@ pca955x_get_pdata(struct i2c_client *client, struct pca955x_chipdef *chip)
+ 		led = &pdata->leds[reg];
+ 		led->type = PCA955X_TYPE_LED;
+ 		led->fwnode = child;
+-		fwnode_property_read_u32(child, "type", &led->type);
++		led->default_state = led_init_default_state_get(child);
+ 
+-		if (!fwnode_property_read_string(child, "default-state",
+-						 &state)) {
+-			if (!strcmp(state, "keep"))
+-				led->default_state = LEDS_GPIO_DEFSTATE_KEEP;
+-			else if (!strcmp(state, "on"))
+-				led->default_state = LEDS_GPIO_DEFSTATE_ON;
+-			else
+-				led->default_state = LEDS_GPIO_DEFSTATE_OFF;
+-		} else {
+-			led->default_state = LEDS_GPIO_DEFSTATE_OFF;
+-		}
++		fwnode_property_read_u32(child, "type", &led->type);
+ 	}
+ 
+ 	pdata->num_leds = chip->bits;
+@@ -578,13 +568,11 @@ static int pca955x_probe(struct i2c_client *client)
+ 			led->brightness_set_blocking = pca955x_led_set;
+ 			led->brightness_get = pca955x_led_get;
+ 
+-			if (pdata->leds[i].default_state ==
+-			    LEDS_GPIO_DEFSTATE_OFF) {
++			if (pdata->leds[i].default_state == LEDS_DEFSTATE_OFF) {
+ 				err = pca955x_led_set(led, LED_OFF);
+ 				if (err)
+ 					return err;
+-			} else if (pdata->leds[i].default_state ==
+-				   LEDS_GPIO_DEFSTATE_ON) {
++			} else if (pdata->leds[i].default_state == LEDS_DEFSTATE_ON) {
+ 				err = pca955x_led_set(led, LED_FULL);
+ 				if (err)
+ 					return err;
+@@ -623,8 +611,7 @@ static int pca955x_probe(struct i2c_client *client)
+ 			 * brightness to see if it's using PWM1. If so, PWM1
+ 			 * should not be written below.
+ 			 */
+-			if (pdata->leds[i].default_state ==
+-			    LEDS_GPIO_DEFSTATE_KEEP) {
++			if (pdata->leds[i].default_state == LEDS_DEFSTATE_KEEP) {
+ 				if (led->brightness != LED_FULL &&
+ 				    led->brightness != LED_OFF &&
+ 				    led->brightness != LED_HALF)
+-- 
+2.35.1
 
-> (patches {2,3}/4).  For the record, I think the SELinux portion of
-> this patchset (path 4/4) is fine.
->
-
-[...]
-
->
-> --
-> paul-moore.com
