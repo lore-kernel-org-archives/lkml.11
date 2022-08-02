@@ -2,107 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE72C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C259DC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:09:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236570AbiHBPJW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 11:09:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50296 "EHLO
+        id S236360AbiHBPJi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 11:09:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236468AbiHBPJT (ORCPT
+        with ESMTP id S237018AbiHBPJd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 11:09:19 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF4A27FEE;
-        Tue,  2 Aug 2022 08:09:18 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id j20so5678186ila.6;
-        Tue, 02 Aug 2022 08:09:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TnTubc6T2moNEJDYoN4cgfDzPxoHQtes0c+6H3Y5Dww=;
-        b=pkkYVaCXoDjN3BxJA9fdnVundUXhEs1ZNjfqqqRGarF5AV++es8DHqocJO+FlDtBo2
-         K9VLQBHIKirR+kBAZXEW9X3tax+LPb3OLjnPtBLoJhQvOpYVhyum0CDwjRQmi8N3QLG9
-         qVZKGbs47r3RtFLMkEjxsxA5QRB0Pkop+q4m7mjlwSgMKR5zZqDQjBomHGV1Us1vun9a
-         vz+DnLQ27XHfdmEC6MvRGoByNQNFIbb1wMouC5XlTA9YXSvZ12GajCS96japFxJgfg9b
-         tHVgeXFpFd/wEAlJhB2ZChsOmOVxsmNul/LP5dMDpuISoJLCiJvTU58sqjiz4XsvWNCB
-         Ou/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TnTubc6T2moNEJDYoN4cgfDzPxoHQtes0c+6H3Y5Dww=;
-        b=ezLDAmC6BHmFs42TUEiMJrWk68fzsM8u6A+ZX1eNNXAZNZaksw1+J4auCXRX6ue0aZ
-         Gk0xJHAb081hhcUxIiD2QgfqY2XxDCY6NWevAtWSXh+IzUruc1+hJ7hW7xFV/TaiAK2k
-         Z7ktxvRTP+6edKyT/49XTEq3hz+8YN8PJ4IYUr3SUQ72wuAT2+3RX8yiS3RsZZFnS7DD
-         CyTfGBv1u5tbwmrHbncBMpQnReoysvoI32CSithMhAHYS4dh3wnhOYyOPQPilNDYYMqK
-         P/9P1QqNSIqeZcti+AeggwmvXK/nUnI7UlUJXW1s6fRdzn5vhpuYn19qQHeNa7WGHUYI
-         PkSQ==
-X-Gm-Message-State: AJIora/6NvwLb4B9ZdIwlPvsEYEk4XVuYwzs9uS636pBZmPxEuZpHwX8
-        NntW69t02RHSEUEX0rXe4KtG6IcV86IW8j5et0A=
-X-Google-Smtp-Source: AGRyM1s/X7XdR0/a8lkQRbVcBP+dwZOZipEH93h8R/VlEWYf/KISRMdds5FIhduFNaDE0FsZQymaRLP6g1Da/s6WJVw=
-X-Received: by 2002:a05:6e02:17c6:b0:2dd:d9dc:6387 with SMTP id
- z6-20020a056e0217c600b002ddd9dc6387mr8296085ilu.321.1659452957891; Tue, 02
- Aug 2022 08:09:17 -0700 (PDT)
+        Tue, 2 Aug 2022 11:09:33 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822E52E6B1
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 08:09:31 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lxyxw12MNzlVp6;
+        Tue,  2 Aug 2022 23:06:44 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 2 Aug 2022 23:09:26 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 2 Aug 2022 23:09:25 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Abhishek Shah <abhishek.shah@columbia.edu>,
+        Gabriel Ryan <gabe@cs.columbia.edu>
+Subject: [PATCH] mm: ksm: fix data-race in __ksm_enter / run_store
+Date:   Tue, 2 Aug 2022 23:15:50 +0800
+Message-ID: <20220802151550.159076-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-References: <20220802015052.10452-1-ojeda@kernel.org> <YukYByl76DKqa+iD@casper.infradead.org>
- <CANiq72k7JKqq5-8Nqf3Q2r2t_sAffC8g86A+v8yBc=W-1--_Tg@mail.gmail.com> <YukuUtuXm/xPUuoP@casper.infradead.org>
-In-Reply-To: <YukuUtuXm/xPUuoP@casper.infradead.org>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Tue, 2 Aug 2022 17:09:05 +0200
-Message-ID: <CANiq72kgwssTSE7F+4xkRrXBGVgHeWxCyjeZ-NHLUXWnFjMyTg@mail.gmail.com>
-Subject: Re: [PATCH v8 00/31] Rust support
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-um@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 2, 2022 at 4:01 PM Matthew Wilcox <willy@infradead.org> wrote:
->
-> No objections to any of this.  I love the idea of being able to write
-> filesystems in Rust.  I just think it would go more smoothly if
-> linux-fsdevel were involved more closely so people at least have the
-> option of being able to follow design decisions, and hopefully influence
-> them.  That goes both ways, of course; I hardly think our current
-> operations structures are the optimum way to implement a filesystem,
-> and having fresh eyes say things like "But that shouldn't be part of the
-> address_space_operations" can impel better abstractions.
+Abhishek reported a data-race issue,
 
-I will send the patches to fsdevel then!
+BUG: KCSAN: data-race in __ksm_enter / run_store
+write to 0xffffffff881edae0 of 8 bytes by task 6542 on cpu 0:
+ run_store+0x19a/0x2d0 mm/ksm.c:2897
+ kobj_attr_store+0x44/0x60 lib/kobject.c:824
+ sysfs_kf_write+0x16f/0x1a0 fs/sysfs/file.c:136
+ kernfs_fop_write_iter+0x2ae/0x370 fs/kernfs/file.c:291
+ call_write_iter include/linux/fs.h:2050 [inline]
+ new_sync_write fs/read_write.c:504 [inline]
+ vfs_write+0x779/0x900 fs/read_write.c:591
+ ksys_write+0xde/0x190 fs/read_write.c:644
+ __do_sys_write fs/read_write.c:656 [inline]
+ __se_sys_write fs/read_write.c:653 [inline]
+ __x64_sys_write+0x43/0x50 fs/read_write.c:653
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3d/0x90 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-As for following development closely and design decisions, we have
-been doing it in GitHub so far pre-merge, so the easiest until the
-merge (for us) would be to ping you there. We can also send you copies
-of the `fs` related patches too if you would like that. I would highly
-recommend joining the monthly informal calls too.
+read to 0xffffffff881edae0 of 8 bytes by task 6541 on cpu 1:
+ __ksm_enter+0x114/0x260 mm/ksm.c:2501
+ ksm_madvise+0x291/0x350 mm/ksm.c:2451
+ madvise_vma_behavior mm/madvise.c:1039 [inline]
+ madvise_walk_vmas mm/madvise.c:1221 [inline]
+ do_madvise+0x656/0xeb0 mm/madvise.c:1399
+ __do_sys_madvise mm/madvise.c:1412 [inline]
+ __se_sys_madvise mm/madvise.c:1410 [inline]
+ __x64_sys_madvise+0x64/0x70 mm/madvise.c:1410
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3d/0x90 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-(I appreciate the kind answer, by the way!)
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 6541 Comm: syz-executor2-n Not tainted 5.18.0-rc5+ #107
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
 
-> The obvious answer is to split out the 'fs module' into its own patch
-> ;-)  I presume it was part of the kernel crate which would have been
-> either patch 17 or 11 in that series?
+The ksm_run is alread protected by ksm_thread_mutex in run_store, we
+could add this lock in __ksm_enter() to avoid the above issue.
 
-Yeah, patch 17, exactly (patch 11 is the `alloc` import). I have asked
-Konstantin privately about them.
+Reported-and-tested-by: Abhishek Shah <abhishek.shah@columbia.edu>
+Cc: Gabriel Ryan <gabe@cs.columbia.edu>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+ mm/ksm.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-In any case, I will split the patches further for v9 which should help.
+diff --git a/mm/ksm.c b/mm/ksm.c
+index 2f315c69fa2c..3f1908946a6f 100644
+--- a/mm/ksm.c
++++ b/mm/ksm.c
+@@ -2507,6 +2507,7 @@ int __ksm_enter(struct mm_struct *mm)
+ {
+ 	struct mm_slot *mm_slot;
+ 	int needs_wakeup;
++	bool ksm_run_unmerge;
+ 
+ 	mm_slot = alloc_mm_slot();
+ 	if (!mm_slot)
+@@ -2515,6 +2516,10 @@ int __ksm_enter(struct mm_struct *mm)
+ 	/* Check ksm_run too?  Would need tighter locking */
+ 	needs_wakeup = list_empty(&ksm_mm_head.mm_list);
+ 
++	mutex_lock(&ksm_thread_mutex);
++	ksm_run_unmerge = !!(ksm_run & KSM_RUN_UNMERGE);
++	mutex_unlock(&ksm_thread_mutex);
++
+ 	spin_lock(&ksm_mmlist_lock);
+ 	insert_to_mm_slots_hash(mm, mm_slot);
+ 	/*
+@@ -2527,7 +2532,7 @@ int __ksm_enter(struct mm_struct *mm)
+ 	 * scanning cursor, otherwise KSM pages in newly forked mms will be
+ 	 * missed: then we might as well insert at the end of the list.
+ 	 */
+-	if (ksm_run & KSM_RUN_UNMERGE)
++	if (ksm_run_unmerge)
+ 		list_add_tail(&mm_slot->mm_list, &ksm_mm_head.mm_list);
+ 	else
+ 		list_add_tail(&mm_slot->mm_list, &ksm_scan.mm_slot->mm_list);
+-- 
+2.35.3
 
-Meanwhile, you can also see the `fs` module here, if you are curious:
-
-    https://github.com/Rust-for-Linux/linux/blob/rust-next/rust/kernel/fs.rs
-    https://github.com/Rust-for-Linux/linux/blob/rust-next/rust/kernel/fs/param.rs
-
-Cheers,
-Miguel
