@@ -2,173 +2,294 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95F6EC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 21:27:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F3FC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 21:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234035AbiHBV1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 17:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37364 "EHLO
+        id S234361AbiHBV1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 17:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232429AbiHBV0r (ORCPT
+        with ESMTP id S232750AbiHBV0s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 17:26:47 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11olkn2010.outbound.protection.outlook.com [40.92.20.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61402638A;
-        Tue,  2 Aug 2022 14:26:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bUSHqyz2ShfMRo3Oej7+uYr1W1PWPowOiPcmWiO5n2MpDV0NhdqnlWt4agq7wLACP7iwA1+IhBZnetbf7DrCF5xw53sTDBuBB+kLQXRrVtxgo29OWlBR0GYnFgUzy6SNN7wxtOBkGu9MvOmPWd6JtzDQnjUY58shFQztg6QIs+spV0Ngr/bIGr1jAYvDTnW7qoZDyEFOSHO8W6xLh7GZeZePGv6y4T9o06dWOCy2WZLCPusNh0MLOSGQZ9XpIdGIQWYSOwfpHmG7FylO+Z6ZRx5xtS04SKOWoEy0CNkwF+sxr/zLeMSMKn8qtuRI6PB/Q6lTdgwl9cX9vZw0sTsnZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fWMVzIa3MsonwoTA4zmKlX8CudrOmMoCK7RcdG87xM4=;
- b=HdWBaWyVwlEDi8qSBlDQ7Qgbjy+XCs6kq8uvkRodjvocjM2Zab6SNXUv6me+8CEVT+TZMtw2n1mnZdT9pKmyi/5wHcYUHYweMVx+RZM95uiwNs8taFmkVa3vMkpEgIl5rJ+t+/8aTru7cwAdH8OVvYbCnmRQimfuWxmwE6DS4UMVON0jEIgs4ap2rFKBT6NLfVpw4wLzc2sbHaTI/LIkCkpuO74JFCamjTRjwIA0kXBjsGAl5gIf1KktC5ekeZ7c2UH88kDMUtpnrNxpMK64rIowRqE44epAWgvTSYVlm0sKzdrywh5moyCq6TYlOsSXNCHigOtBjpw/Ubicpb/bbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fWMVzIa3MsonwoTA4zmKlX8CudrOmMoCK7RcdG87xM4=;
- b=tBa7oY9wwYbll/5ikfSdpbsARzuUewl3u670PBXFPnYgU6Nb68Ow1gPn1017S1QOfx1ckIIw2FJsf2xWJxnP4bZUADzBMgWng8IiMJhn8WeRoswdtQJjxHuAe7ueF2OdE/ClsBPcymbcAOnv3TQyJ0mzc10uGb4JMD99dNbq9nhVPx15xzxHIxyjvZ+XD27OkYzbbDav7J6FLPISZUd5Ia5QyrT/aYxuZn3fPApBdByoAsK72FYlpfCISlCeRmBR+70nCXCs3IC5WEcqSiG00Pra8nEztKZvOMHMZBtFkmzAWw+ZWDtITHc6dO0yq9yusKWPnZqps39QnSKxMy177A==
-Received: from BY5PR02MB7009.namprd02.prod.outlook.com (2603:10b6:a03:236::13)
- by MWHPR02MB2414.namprd02.prod.outlook.com (2603:10b6:300:5c::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.15; Tue, 2 Aug
- 2022 21:26:36 +0000
-Received: from BY5PR02MB7009.namprd02.prod.outlook.com
- ([fe80::e080:d670:29c7:9180]) by BY5PR02MB7009.namprd02.prod.outlook.com
- ([fe80::e080:d670:29c7:9180%8]) with mapi id 15.20.5504.014; Tue, 2 Aug 2022
- 21:26:36 +0000
-Message-ID: <BY5PR02MB700935025EB9A40B9E43CA48EA9D9@BY5PR02MB7009.namprd02.prod.outlook.com>
-Date:   Wed, 3 Aug 2022 02:56:25 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.3
-Subject: Re: [PATCH v2 2/3] arm64: dts: qcom: sdm845-xiaomi-beryllium-common:
- move common nodes to a common dtsi
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Tue, 2 Aug 2022 17:26:48 -0400
+Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7898223C;
+        Tue,  2 Aug 2022 14:26:47 -0700 (PDT)
+Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx1.riseup.net (Postfix) with ESMTPS id 4Ly7NQ6ZBXzDr93;
+        Tue,  2 Aug 2022 21:26:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1659475607; bh=3pI66NtBwOwYrCxl0NLhAyP63+qNYT6RLZYNcwv86VY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rls7f+g6sHyNpHKOt0D4CaRHHiRAdluy9Z+hxpBbuHpv0uRwvAZkFfdW/lEj9nKGC
+         Q/6KMZahlmNcKbss3idjB5pflCaPi6sDfm0cqbgTG2LV+qncJg+cFD8YKN12FNaXlP
+         nAHWym+bWMjgems2u+eqXV7BdRcjcknE2FClKF20=
+X-Riseup-User-ID: 43A67F22B5E32071F10A23F2B2DA87FBC4053FEEA2A5FEB6A98EBC6E3CF95F0C
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews1.riseup.net (Postfix) with ESMTPSA id 4Ly7NJ2LXNz5vw2;
+        Tue,  2 Aug 2022 21:26:40 +0000 (UTC)
+From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+To:     Brendan Higgins <brendanhiggins@google.com>, davidgow@google.com,
+        Daniel Latypov <dlatypov@google.com>, airlied@linux.ie,
+        daniel@ffwll.ch, davem@davemloft.net, kuba@kernel.org,
+        jose.exposito89@gmail.com, javierm@redhat.com
+Cc:     andrealmeid@riseup.net, melissa.srw@gmail.com,
+        siqueirajordao@riseup.net, Isabella Basso <isabbasso@riseup.net>,
+        magalilemes00@gmail.com, tales.aparecida@gmail.com,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
         linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
-References: <BY5PR02MB70099020AC1D181D15909F64EA9A9@BY5PR02MB7009.namprd02.prod.outlook.com>
- <BY5PR02MB70091276EDE0CE4FCB6CFBD5EA9A9@BY5PR02MB7009.namprd02.prod.outlook.com>
- <20220801185304.ozoydbmbgqe6fqdy@SoMainline.org>
- <822b24fb-add3-b49f-d64e-15b577929edf@linaro.org>
-Content-Language: en-US
-From:   Joel Selvaraj <joel.selvaraj@outlook.com>
-In-Reply-To: <822b24fb-add3-b49f-d64e-15b577929edf@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TMN:  [6QBWqs77HXsvBMLNOVfciWEYlmash8XqXl6eBPQwlnZkXwxab9Va1K1h5KkQDe1u]
-X-ClientProxiedBy: BM1PR01CA0161.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:b00:68::31) To BY5PR02MB7009.namprd02.prod.outlook.com
- (2603:10b6:a03:236::13)
-X-Microsoft-Original-Message-ID: <b736fca7-3efa-faee-02fd-8203fa0f87f0@outlook.com>
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+Subject: [PATCH v2 1/3] kunit: Introduce KUNIT_EXPECT_MEMEQ and KUNIT_EXPECT_MEMNEQ macros
+Date:   Tue,  2 Aug 2022 18:26:19 -0300
+Message-Id: <20220802212621.420840-2-mairacanal@riseup.net>
+In-Reply-To: <20220802212621.420840-1-mairacanal@riseup.net>
+References: <20220802212621.420840-1-mairacanal@riseup.net>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a0e223b6-431e-44f9-03e2-08da74cdadc2
-X-MS-TrafficTypeDiagnostic: MWHPR02MB2414:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qMWkQUKqqB3K5V6Jugwzkn6vrbCcRdphpyQV2fKtnnN6OquU6hB2z4zSRA3Q23I/zNeRiFQpkIOpjiqr7+08x1eiiFSiBqBp1AEu5Y7MxYcOSwSuRrF2TdlIWNt6fvHTt89uYXkZxCIlG13hSehbtw6z9mNhlf0OrslsBGmTzSL4Y5yNGVDQGj/Yk5nPr+w3rDXdriUyqMdCCYDYotg2M5dbGZD/bHpyPLvE158Sz+nPQ0QXtCLEV5FObaIwfc7KOMg3JJtqhJzUIL2J2yTlDK7EE1qeG+hbKpGpCLnZo6RUV8Ni+lsygTfiWmtm/ZHmZfDJhsmboklXWsdlaLYwaL17DUjohHjbXX1Zwf0QQVoaRGrMyxA6YO2kJVeOWA5vYTIOyceCtAMcs+e9upSHnKEOCD13zAoy6vyWCNJ5BV0PNEIXIVbqTPAO78+QCrvhC/A4Lc0dx7InKtxVDTdgknK7Ulr29XLU/0xFQy3zynh/48nRIJg1KLhmu3mgolJCDnhKw3NWiE8y7a6djDixFX9jZPA5GZoklsTdqkVMgAXH93/x1rWfbEbSOw91V3zLHdGXK144NK7CyABJAQ8KKC1LFFmYTCtk7pmMgGGhe0AzNcw0s6AQuS3fYo/lAiSUtJCxBYH2T6MDzlGCTtOE12ykZn56ozziRfH9ifg5iD6Oa5Myi4Hb7NOyApGP8oJA
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YUM2clRoSUFrOHVseFNQa0JHcjJLeHprdThOaWZyV1Z6LzI4eHJwTXFLemMw?=
- =?utf-8?B?Q2diK2xUemFhRFhOVUJPSWYyQ3VHbUI1RmxPVkp3Wi9TZzMyYi9rNS9JbUFq?=
- =?utf-8?B?cDV5eUdGM1pWS3RTNjN4Z2xYWllGSEFtZ1dmMmR0RldVTUtLVVVvek5WSkd5?=
- =?utf-8?B?VmhLK282czNpVmFHcnlscXlqSWprQUN2cUJQckIzV0VJa3J6S1VxQ3ozYnQ2?=
- =?utf-8?B?UjVkZElxWEVpR0lNSEtqTXhWSTByekJ6eFNDVVpRY01KVVNZVDhVUTFkNURp?=
- =?utf-8?B?YlBldXJZR3ZKeS90MWg0QnlSU1JQQmpnZmYyamVGQmxjb0hLRTBqbStnWEJS?=
- =?utf-8?B?VWdnTXlleFBUYWtkQ2cyL0dzQzFldTg4UEcvZnBBd3VrTEdFWURlRTgvdkZh?=
- =?utf-8?B?QnNlZGFzWEpDWFlObWlrSTY2UEw1Y2hsTDRMY1g5aGZJeEVJNnE5MXVBWVQ0?=
- =?utf-8?B?WWdFYXRhWDJWUVVpUXBZeGtYVjJNRmQ0enFjVmFJK1hvYmtnQ2tyQWFTUUd6?=
- =?utf-8?B?d2xTbjJxUUtJQlAza24wKzVBczBidXlEN3dYTFNyQWhrcy9idisySy9tNWM4?=
- =?utf-8?B?c0s1NkUwYklsdHlZVUY4dmpIWU5VUlZPQjhXMmJjNkxPTkp6YUIxWDRpWWR6?=
- =?utf-8?B?alFyMDdOb0EvL0h2bndlaUF5VnZYanB1NzM3VzhRSGFYTUxQbXdHcGV0WWEz?=
- =?utf-8?B?d25MRzh5WGp6aFZjejVxdlFOV1RsbzAydjRXM3IvQkhEZUx0bnBPbnlRY0hB?=
- =?utf-8?B?cDcvK2tDQ0xRbnRGNlNqbFBMY2QzM21DSHZIbmlCemQ1L1UzN3BsdHRkemVz?=
- =?utf-8?B?ZzJ2R0R0ZTBtbXVRZG9kdE51MjE5ekp3S3Y3ODJUcUV4dWtUNUowdjRXMktF?=
- =?utf-8?B?UC9YODc5RWRveEY1VC8zUS9TMTFUaVNlVllzbFBaRVlGYmh0RkxiYStKZVBu?=
- =?utf-8?B?YVl3amxkVkc2c2tpbkxNYXJPZXFLcUx2dEJIcDZWVVo3YjVKRXV3cVZnek55?=
- =?utf-8?B?T3Z2RXg0dUtwdFU4S25qcmRMWG1hQUp6WmUreUt1eHdnMkdjeGpEOVErRTln?=
- =?utf-8?B?Y3JVV2hmNEg3MENlQzhuZ2JQY2JpWGE1aHJ4R0lyTlBFbUx5eWJBZVpmckZX?=
- =?utf-8?B?THhBTzIrTVQwdXliZW4wQldCNU1YNHQ4ZmdaTnpJUUptL3czcm5BSW92NmhX?=
- =?utf-8?B?b1JvTC8rNTg3M1YzRUJsUlQ3eVVOOUthOXF5eTFNVkFIUmJiUGlEdGVLVVM3?=
- =?utf-8?B?QkcxVFJ6RjBIV1BaQlUxMi9EWUhPeHNsd0lGOG9ZUlBqT2E2WlpOenkyV29m?=
- =?utf-8?B?QjRYSXhCSHdkL1NUU0pCU2xNbGRvaXptWnhCN2ZXYXZmbWR0cExhSDlubGtl?=
- =?utf-8?B?SmV4a0NONFJiOWl5TmY4M3NFRG1lUUhXbDdhcm9rK1VEdUl3dlE4Mm1ZdjBB?=
- =?utf-8?B?QndzTi93cGxobVkrTEdxaVZYKzhpVzRwS0RKak1DdGRZSWg5V2x6Q1E1UE1K?=
- =?utf-8?B?c2JGNXNUTkxDQnFpa05iclpHNTg5eUdoRDRSWnBIb0FBZ3pMTElYcDJ0Q0E3?=
- =?utf-8?B?dVZxTzYxdVVHUGhXdVdTMFF5THlBbVo2ZkNmYnFKYllMSVZIN0tqajFSUGM3?=
- =?utf-8?B?SzlEakxVVzROTkdYYi9tZ3YxcXZiUmtUOEpxVnpHR0JIMTdTYmNPdnFFcm0x?=
- =?utf-8?B?RVdjOEY2bnJ1YWJzNW1KdXdZa2pHa25rNm94dTVYMTlSdXJMUS9MdTR6SUNW?=
- =?utf-8?B?S2FieXA0bGF3cml2MmlseVdTQWlrWU1NYll2T3hWeGJlUkVQRW1XajJ4aEhC?=
- =?utf-8?B?RGV1bTBtU2MybDhBSzIrdz09?=
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a0e223b6-431e-44f9-03e2-08da74cdadc2
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR02MB7009.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2022 21:26:36.3963
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR02MB2414
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof Kozlowski and Marijn Suijten
+Currently, in order to compare memory blocks in KUnit, the KUNIT_EXPECT_EQ
+or KUNIT_EXPECT_FALSE macros are used in conjunction with the memcmp
+function, such as:
+    KUNIT_EXPECT_EQ(test, memcmp(foo, bar, size), 0);
 
-On 02/08/22 13:16, Krzysztof Kozlowski wrote:
-> On 01/08/2022 20:53, Marijn Suijten wrote:
->> On 2022-08-01 16:55:11, Joel Selvaraj wrote:
->> Any summary what changed since v1?
-> 
-> +1 (although I already reviewed it)
+Although this usage produces correct results for the test cases, when
+the expectation fails, the error message is not very helpful,
+indicating only the return of the memcmp function.
 
-Will add them in v3.
+Therefore, create a new set of macros KUNIT_EXPECT_MEMEQ and
+KUNIT_EXPECT_MEMNEQ that compare memory blocks until a specified size.
+In case of expectation failure, those macros print the hex dump of the
+memory blocks, making it easier to debug test failures for memory blocks.
 
->> I haven't re-read what was discussed in v1, but doing it this way causes
->> git to _not_ record this as a rename but instead state that everything
->> has been removed from sdm845-xiaomi-beryllium-tianma.dts, and a new file
->> sdm845-xiaomi-beryllium-common.dtsi was introduced with inconveniently
->> almost identical contents (see the unnecessary size of the patch that
->> follows).
-> 
-> The patch should be formatted a bit different. I agree that if combined
-> with first patch and proper settings (-M10% -C10%, optionally also
-> experiment with -B although here it looks not needed).
-> 
-> I reviewed the diff side-by-sie and there were differences (labels)
-> tricky to spot. If you generate the patch correctly, not much of review
-> is needed...
+That said, the expectation
 
->> Instead, I'd keep the original patch with a rename from
->> sdm845-xiaomi-beryllium.dts to sdm845-xiaomi-beryllium-common.dtsi, and
->> _also_ update the existing:
->>
->> 	dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-xiaomi-beryllium.dtb
->>
->> in Makefile to match this rename so that it keeps compiling, even if
->> that means we treat a .dtsi as a .dts which may (likely) not be treated
->> correctly by existing build rules.
->>
->> If it doesn't - and this approach is probably frowned upon anyway - it
->> is perhaps easiest to generalize sdm845-xiaomi-beryllium.dtb (as
->> suggested above) _and_ introduce sdm845-xiaomi-beryllium-tianma.dtb
->> _and_ update Makefile in a _single_ patch, such that everyting keeps
->> compiling and stays consistent wrt how git treats renames.  Later
->> patches update the compatible and add the ebbg variant.
->>
->> - Marijn
->
-> Best regards,
-> Krzysztof
+    KUNIT_EXPECT_EQ(test, memcmp(foo, bar, size), 0);
 
-I will work on v3 based on both of your comments.
+would translate to the expectation
 
-Regards,
-Joel Selvaraj
+    KUNIT_EXPECT_MEMEQ(test, foo, bar, size);
+
+Signed-off-by: Maíra Canal <mairacanal@riseup.net>
+---
+v1 -> v2:
+- Change "determinated" to "specified" (Daniel Latypov).
+- Change the macro KUNIT_EXPECT_ARREQ to KUNIT_EXPECT_MEMEQ, in order to make
+it easier for users to infer the right size unit (Daniel Latypov).
+- Mark the different bytes on the failure message with a <> (Daniel Latypov).
+---
+ include/kunit/assert.h | 35 +++++++++++++++++++
+ include/kunit/test.h   | 76 ++++++++++++++++++++++++++++++++++++++++++
+ lib/kunit/assert.c     | 54 ++++++++++++++++++++++++++++++
+ 3 files changed, 165 insertions(+)
+
+diff --git a/include/kunit/assert.h b/include/kunit/assert.h
+index 4b52e12c2ae8..a54f5253b997 100644
+--- a/include/kunit/assert.h
++++ b/include/kunit/assert.h
+@@ -256,4 +256,39 @@ void kunit_binary_str_assert_format(const struct kunit_assert *assert,
+ 				    const struct va_format *message,
+ 				    struct string_stream *stream);
+ 
++
++#define KUNIT_INIT_MEM_ASSERT_STRUCT(text_, left_val, right_val, size_) \
++	{                                                                 \
++		.assert = { .format = kunit_mem_assert_format },   \
++		.text = text_,                                            \
++		.left_value = left_val,                                   \
++		.right_value = right_val, .size = size_,                  \
++	}
++
++/**
++ * struct kunit_mem_assert - An expectation/assertion that compares two
++ *	memory blocks.
++ * @assert: The parent of this type.
++ * @text: Holds the textual representations of the operands and comparator.
++ * @left_value: The actual evaluated value of the expression in the left slot.
++ * @right_value: The actual evaluated value of the expression in the right slot.
++ * @size: Size of the memory block analysed in bytes.
++ *
++ * Represents an expectation/assertion that compares two memory blocks. For
++ * example, to expect that the first three bytes of foo is equal to the
++ * first three bytes of bar, you can use the expectation
++ * KUNIT_EXPECT_MEMEQ(test, foo, bar, 3);
++ */
++struct kunit_mem_assert {
++	struct kunit_assert assert;
++	const struct kunit_binary_assert_text *text;
++	const void *left_value;
++	const void *right_value;
++	const size_t size;
++};
++
++void kunit_mem_assert_format(const struct kunit_assert *assert,
++				    const struct va_format *message,
++				    struct string_stream *stream);
++
+ #endif /*  _KUNIT_ASSERT_H */
+diff --git a/include/kunit/test.h b/include/kunit/test.h
+index 8ffcd7de9607..1925d648eec8 100644
+--- a/include/kunit/test.h
++++ b/include/kunit/test.h
+@@ -684,6 +684,36 @@ do {									       \
+ 			##__VA_ARGS__);					       \
+ } while (0)
+ 
++#define KUNIT_MEM_ASSERTION(test,				       \
++				   assert_type,				       \
++				   left,				       \
++				   op,					       \
++				   right,				       \
++				   size,                       \
++				   fmt,					       \
++				   ...)					       \
++do {									       \
++	const void *__left = (left);				       \
++	const void *__right = (right);				       \
++	const size_t __size = (size);                      \
++	static const struct kunit_binary_assert_text __text = {		       \
++		.operation = #op,					       \
++		.left_text = #left,					       \
++		.right_text = #right,					       \
++	};								       \
++									       \
++	KUNIT_ASSERTION(test,						       \
++			assert_type,					       \
++			memcmp(__left, __right, __size) op 0,			       \
++			kunit_mem_assert,			       \
++			KUNIT_INIT_MEM_ASSERT_STRUCT(&__text,	    \
++							__left,		       \
++							__right,           \
++							__size),	       \
++			fmt,						       \
++			##__VA_ARGS__);					       \
++} while (0)
++
+ #define KUNIT_PTR_NOT_ERR_OR_NULL_MSG_ASSERTION(test,			       \
+ 						assert_type,		       \
+ 						ptr,			       \
+@@ -952,6 +982,52 @@ do {									       \
+ 				   fmt,					       \
+ 				   ##__VA_ARGS__)
+ 
++/**
++ * KUNIT_EXPECT_MEMEQ() - Expects that the first @size bytes of @left and @right are equal.
++ * @test: The test context object.
++ * @left: An arbitrary expression that evaluates to the specified size.
++ * @right: An arbitrary expression that evaluates to the specified size.
++ * @size: Number of bytes compared.
++ *
++ * Sets an expectation that the values that @left and @right evaluate to are
++ * equal. This is semantically equivalent to
++ * KUNIT_EXPECT_TRUE(@test, !memcmp((@left), (@right), (@size))). See
++ * KUNIT_EXPECT_TRUE() for more information.
++ */
++#define KUNIT_EXPECT_MEMEQ(test, left, right, size) \
++	KUNIT_EXPECT_MEMEQ_MSG(test, left, right, size, NULL)
++
++#define KUNIT_EXPECT_MEMEQ_MSG(test, left, right, size, fmt, ...)		       \
++	KUNIT_MEM_ASSERTION(test,				       \
++				   KUNIT_EXPECTATION,			       \
++				   left, ==, right,			       \
++				   size,                       \
++				   fmt,					   \
++				   ##__VA_ARGS__)
++
++/**
++ * KUNIT_EXPECT_MEMNEQ() - Expects that the first @size bytes of @left and @right are not equal.
++ * @test: The test context object.
++ * @left: An arbitrary expression that evaluates to the specified size.
++ * @right: An arbitrary expression that evaluates to the specified size.
++ * @size: Number of bytes compared.
++ *
++ * Sets an expectation that the values that @left and @right evaluate to are
++ * not equal. This is semantically equivalent to
++ * KUNIT_EXPECT_TRUE(@test, memcmp((@left), (@right), (@size))). See
++ * KUNIT_EXPECT_TRUE() for more information.
++ */
++#define KUNIT_EXPECT_MEMNEQ(test, left, right, size) \
++	KUNIT_EXPECT_MEMNEQ_MSG(test, left, right, size, NULL)
++
++#define KUNIT_EXPECT_MEMNEQ_MSG(test, left, right, size, fmt, ...)		       \
++	KUNIT_MEM_ASSERTION(test,				       \
++				   KUNIT_EXPECTATION,			       \
++				   left, !=, right,			       \
++				   size,                       \
++				   fmt,					   \
++				   ##__VA_ARGS__)
++
+ /**
+  * KUNIT_EXPECT_NULL() - Expects that @ptr is null.
+  * @test: The test context object.
+diff --git a/lib/kunit/assert.c b/lib/kunit/assert.c
+index d00d6d181ee8..abd434bc7ec6 100644
+--- a/lib/kunit/assert.c
++++ b/lib/kunit/assert.c
+@@ -204,3 +204,57 @@ void kunit_binary_str_assert_format(const struct kunit_assert *assert,
+ 	kunit_assert_print_msg(message, stream);
+ }
+ EXPORT_SYMBOL_GPL(kunit_binary_str_assert_format);
++
++/* Adds a hexdump of a buffer to a string_stream comparing it with
++ * a second buffer. The different bytes are marked with <>.
++ */
++static void kunit_assert_hexdump(struct string_stream *stream,
++		const void *buf, const void *compared_buf, const size_t len)
++{
++	size_t i;
++	const u8 *buf1 = buf;
++	const u8 *buf2 = compared_buf;
++
++	for (i = 0; i < len; ++i) {
++		if (i % 16)
++			string_stream_add(stream, " ");
++		else if (i)
++			string_stream_add(stream, "\n ");
++
++		if (buf1[i] != buf2[i])
++			string_stream_add(stream, "<%02x>", buf1[i]);
++		else
++			string_stream_add(stream, "%02x", buf1[i]);
++	}
++}
++
++void kunit_mem_assert_format(const struct kunit_assert *assert,
++				    const struct va_format *message,
++				    struct string_stream *stream)
++{
++	struct kunit_mem_assert *mem_assert;
++
++	mem_assert = container_of(assert, struct kunit_mem_assert,
++				     assert);
++
++	string_stream_add(stream,
++			  KUNIT_SUBTEST_INDENT "Expected %s %s %s, but\n",
++			  mem_assert->text->left_text,
++			  mem_assert->text->operation,
++			  mem_assert->text->right_text);
++
++	string_stream_add(stream, KUNIT_SUBSUBTEST_INDENT "%s == \n",
++			mem_assert->text->left_text);
++	kunit_assert_hexdump(stream, mem_assert->left_value,
++			mem_assert->right_value, mem_assert->size);
++
++	string_stream_add(stream, "\n");
++
++	string_stream_add(stream, KUNIT_SUBSUBTEST_INDENT "%s == \n",
++			mem_assert->text->right_text);
++	kunit_assert_hexdump(stream, mem_assert->right_value,
++			mem_assert->left_value, mem_assert->size);
++
++	kunit_assert_print_msg(message, stream);
++}
++EXPORT_SYMBOL_GPL(kunit_mem_assert_format);
+-- 
+2.37.1
+
