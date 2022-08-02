@@ -2,131 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B05EEC19F28
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79ACDC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:33:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233521AbiHBQcG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 12:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40878 "EHLO
+        id S233355AbiHBQd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 12:33:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233218AbiHBQcC (ORCPT
+        with ESMTP id S229517AbiHBQdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 12:32:02 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80211837F
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:32:00 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id g5so63122ybg.11
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 09:32:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=jBLRsOY6b2BWFCEwUDOOLDtlfS4iNN5NSPXBB7OTTdA=;
-        b=C4yceeMrnfpv45TrBL5GxEv4ZUizC3/Vr/jdh5+Zbi+KLMTBmkoAfxkD1EYYg12lXR
-         pVh9AeV8yvh5TuY9NmlD5eP0jKvFj7RP4G22OnxoGm/N4AdkMtswGPXRhOT2BAXTVf+g
-         FxUqNI0/HgsAV4zTTqe6XuZcWKi6X5wZ9M7NjSvOyx1jz7FGR6CrHM8rbpH9l0DxzWoe
-         hf6GZ3KmxjshcXvib72rR5MKZV0MM1F8H1CRVx3BPyeg9Gw1DE8RZTD5fXM+LhoZ5DnJ
-         bgOGwc3ofHcCsX0ffHzVQHWF/qTn8A1ekfgQvNGt/WK7yTeGQxrDPRF9ro3QNUjzbtCk
-         zTkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=jBLRsOY6b2BWFCEwUDOOLDtlfS4iNN5NSPXBB7OTTdA=;
-        b=eL72lTmxlnUAspSP0dFyjKs+UpErDz0pccb4fxJ59/fY98Jsv8XypzFkn8e0mc9WVb
-         G4+5DQGfvOVo/EbIz6J8ER+5g7LYQzUbUcy/n4qDc6YOE53rS/qV3nyLGVtR7iOyewpB
-         P1coAs7BwtBu78g5XSnSScbOWrItnxsoSSI4iFRfmUNXfl2YQw41uhNvwRUHOS9TWP8X
-         NuOc5ZpaQKRLIEmb3c+G4Fu1vATmaepzl8FGMA9kvStViznjB9CmR/EmoEs85Hel6VhE
-         iS4pQxMWW//qvIY2UxvY01TGJgEMC4baBQcFicqyLj+5PYJeY2259rZmdmV6wYyvVfhS
-         aDCg==
-X-Gm-Message-State: ACgBeo0AgWM8tGBbyZ1fs1pkBsk5TZQIFNulhsqCZ7AZbSAatxxcMCNM
-        9s5IGB7EEzGkP+wGF8jZGwlmHnQZC4/G6Xdjw8qT/g==
-X-Google-Smtp-Source: AA6agR4IP/yDKQLvxlaLVuFqguT0B75J5VxgY1hE7G7tnFEWCGuvYJ1oLYRqlboQgCEcZi6lhGNXNp7TZO+7bdc8488=
-X-Received: by 2002:a25:b9d1:0:b0:671:49f9:4e01 with SMTP id
- y17-20020a25b9d1000000b0067149f94e01mr16899347ybj.398.1659457919894; Tue, 02
- Aug 2022 09:31:59 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-16-glider@google.com>
- <CANpmjNOJ-2xim3KM=9O=sfSgQXZi81R6PQj=antfHnejaOOogg@mail.gmail.com>
-In-Reply-To: <CANpmjNOJ-2xim3KM=9O=sfSgQXZi81R6PQj=antfHnejaOOogg@mail.gmail.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Tue, 2 Aug 2022 18:31:23 +0200
-Message-ID: <CAG_fn=UBVs+QgdWDa_UB_zs0OUO=-zjcoH+8NY7obUm20rkBOQ@mail.gmail.com>
-Subject: Re: [PATCH v4 15/45] mm: kmsan: call KMSAN hooks from SLUB code
-To:     Marco Elver <elver@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
+        Tue, 2 Aug 2022 12:33:24 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1BD817E16;
+        Tue,  2 Aug 2022 09:33:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0D411CE2017;
+        Tue,  2 Aug 2022 16:33:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E63BCC433D6;
+        Tue,  2 Aug 2022 16:33:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659458000;
+        bh=wvCuCNOjRSMOixoJFZ19V50Uqrz6WXVshhwx5kuDuAQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Rhx22xzDRr5SQtI8UcUj+PkAqia5W0S+aT0Muk+9TNLMSlppNcAsqxFQZoF9mtyCu
+         PUOe5GGmGgwl5clH5K+V9dBko2+MbHK9F6tyC/w6rVNSIsqR+cbRMG9HDecruvhX8z
+         gNNPKtvoU7S1hGzSY75g4QaDtio0M0am3W8UZzPqkemR266Y2fHc08GvD/JypyHSc1
+         6p0sA+X3cKgKCsbs3Rmifv0o/SC+4ZzKHnmtivKWBZKI66uFzh8cWUZb3HS5hNrcyS
+         4BKb0jUszU167LsvXnuZbFCrY9A3wZz+e8ssZ7IuzwxkIhQx2xdo4QViroRPa/OvVX
+         rwPQgq1ApTuGw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oIupr-0002Vn-Cf; Tue, 02 Aug 2022 18:33:36 +0200
+Date:   Tue, 2 Aug 2022 18:33:35 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Krishna Kurapati <quic_kriskura@quicinc.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Felipe Balbi <balbi@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] usb: dwc3: qcom: Provide stubs for
+ dwc3_qcom_read_usb2_speed function
+Message-ID: <YulR31pEq9wjCBg8@hovoldconsulting.com>
+References: <1659337215-20421-1-git-send-email-quic_kriskura@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1659337215-20421-1-git-send-email-quic_kriskura@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 3:14 PM Marco Elver <elver@google.com> wrote:
->
-> On Fri, 1 Jul 2022 at 16:23, 'Alexander Potapenko' via kasan-dev
-> <kasan-dev@googlegroups.com> wrote:
-> >
-> > In order to report uninitialized memory coming from heap allocations
-> > KMSAN has to poison them unless they're created with __GFP_ZERO.
-> >
-> > It's handy that we need KMSAN hooks in the places where
-> > init_on_alloc/init_on_free initialization is performed.
-> >
-> > In addition, we apply __no_kmsan_checks to get_freepointer_safe() to
-> > suppress reports when accessing freelist pointers that reside in freed
-> > objects.
-> >
-> > Signed-off-by: Alexander Potapenko <glider@google.com>
->
-> Reviewed-by: Marco Elver <elver@google.com>
->
-> But see comment below.
->
+On Mon, Aug 01, 2022 at 12:30:15PM +0530, Krishna Kurapati wrote:
+> Dwc3 Qcom driver makes use of usb_hub_find_child API in its efforts
+> to get speed of connected devices (HS/LS/FS) and enable interrupts
+> accordingly.
 
->
-> Remove unnecessary whitespace change.
-Will do, thanks for catching!
+> usb_hub_find_child API is a part of usb core compiled
+> either into the kernel or as a module (CONFIG_USB= Y or M). In some
+> builds (make randconfig for i386) CONFIG_USB is not enabled and the
+> usb core is not compiled resulting in linking errors.
 
+Please replace the above with something more succinct. Whether USB core
+is built as a module or not is completely irrelevant. The problem is
+that the qcom dwc3 driver can be built and used without host support. 
 
---=20
-Alexander Potapenko
-Software Engineer
+> Provide stubs for dwc3_qcom_read_usb2_speed function to use
+> usb_hub_find_child API only if CONFIG_USB is enabled. Else return
+> USB_SPEED_UNKNOWN.
 
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
+The fact that you need to do this is an indication that something is
+wrong with the current implementation. The glue driver shouldn't be
+touching the host driver internal state directly like this.
 
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
+As pointed out here:
+
+	https://lore.kernel.org/all/20220802151404.1797-4-johan+linaro@kernel.org/
+
+dwc3_qcom_read_usb2_speed() is indeed broken and currently triggers a
+NULL-pointer dereference when the controller is used in peripheral mode.
+
+But for now I guess something like this is needed even if we try to
+avoid stubs in implementation files.
+
+Johan
