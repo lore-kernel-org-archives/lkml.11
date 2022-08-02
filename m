@@ -2,112 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 729E2C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:00:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39014C19F28
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:00:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231782AbiHBSA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 14:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47236 "EHLO
+        id S236184AbiHBSAd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 14:00:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236809AbiHBR7t (ORCPT
+        with ESMTP id S235477AbiHBSAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 13:59:49 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD48501BA
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 10:59:35 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id l19so829273wms.1
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 10:59:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dksoanYJoZO8G01KR5WlaEaO1JRamu4a/M2lotcY4Us=;
-        b=cJzyb6w6buAT4Si/LRbYnFJOIEuXMT96PIUp3Cza/fREQOsThox0SJ6o43dJ8Pk7Jn
-         LfbiSVkviFwvZJBQYr+raawJje3EleuA5fdAPHnphp2Gh1S+bSPoAjazyFNpL/0wjZQW
-         mOTBUX6qkVmcZV7JM1FeRCSGNHWmpzJO/bCYb3K7vNQzTFwsx7cf9jAMIsz3SpL6mAE5
-         Z8hr56URVZjl1JOV3bZ0qHtEl1yYfNR/kIMtfv42fk1H7agRsFbQ1duZeLMGWewzeqeB
-         qiezCxTu4w6G496EFPEw+GTc0UbnK0C1sRsu5WZjzMToAq1sWQQGA/LPMsWMW06ELxj3
-         zuKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dksoanYJoZO8G01KR5WlaEaO1JRamu4a/M2lotcY4Us=;
-        b=l8UXoIBMB6boLP4aQgXtrn+HOG1cjGE8zZl9gNn+eRKPgLyfgRAEfUwddQB08q+Gi0
-         HcZ/vd0nl8Fpte8KqO4p0+MKibtzCKCSsLcGB1cX7upqwW4UJORvfJAj+9ZBSzk/Ic3B
-         QsQ4oDT+B0rBQlAmmatnNoO0eyxQqtFLFB9RIAEzgtHppT10CGq2NrkC+gxemGjYzHoB
-         naNEDF2JLM3BfbM1tWE8kGE48AeDuqntsn8J3wi0bj3vAFVPAJ1aufCU9eKArGlYyhNu
-         a0r7Iqmp7WOKa+F+PViKGVCip/UYzv7qYL+TKnbNJysNCUA9gFLtXiTyCI5dLQfXiN0v
-         83fA==
-X-Gm-Message-State: ACgBeo2in27NqQbllplC+OdJTcoeGSxCrzWiO417p1KJOvop8N6YO86v
-        4RXXQCsU5HbuAhCc4vTk6w6HZw==
-X-Google-Smtp-Source: AA6agR557a68A28uaXoSIeKdmvNzbTM0Ny3U/oteTSHz5ZHwIapC+B9nEc6H0RjuhnZ2aK0AhXbE5g==
-X-Received: by 2002:a1c:2783:0:b0:3a2:fd82:bf46 with SMTP id n125-20020a1c2783000000b003a2fd82bf46mr382235wmn.29.1659463174307;
-        Tue, 02 Aug 2022 10:59:34 -0700 (PDT)
-Received: from debian.office.codethink.co.uk ([2405:201:8005:8149:e5c9:c0ac:4d82:e94b])
-        by smtp.gmail.com with ESMTPSA id 9-20020a05600c020900b003a3187a2d4csm23318222wmi.22.2022.08.02.10.59.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 10:59:33 -0700 (PDT)
-From:   Sudip Mukherjee <sudip.mukherjee@sifive.com>
-To:     Serge Semin <fancer.lancer@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     greentime.hu@sifive.com, jude.onyenegecha@sifive.com,
-        william.salmon@sifive.com, adnan.chowdhury@sifive.com,
-        ben.dooks@sifive.com, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jeegar.lakhani@sifive.com,
-        Sudip Mukherjee <sudip.mukherjee@sifive.com>
-Subject: [PATCH 11/11] spi: dw: initialize dwc-ssi-1.03a controller
-Date:   Tue,  2 Aug 2022 18:57:55 +0100
-Message-Id: <20220802175755.6530-12-sudip.mukherjee@sifive.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220802175755.6530-1-sudip.mukherjee@sifive.com>
-References: <20220802175755.6530-1-sudip.mukherjee@sifive.com>
+        Tue, 2 Aug 2022 14:00:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176BC51A20;
+        Tue,  2 Aug 2022 10:59:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55D99B82011;
+        Tue,  2 Aug 2022 17:59:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76B6BC433B5;
+        Tue,  2 Aug 2022 17:59:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659463183;
+        bh=xpWA7Jpv8r6INPM8eC9dRH0bjB0EBSQdgOjBy0N4/rw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=V15liBSsJpZKesOb/8eDlMArbGuucPgpmrtWaDszI2rKEzxMbDCo0O95EcymiP/Gp
+         hgvNMmLbm1E/ShJPRVRXIXi9EaBllYBTW3GEAjm718erwAGJskfqJORShJdSvPuNbQ
+         iwAUvD2pCUmKfk3TcIc0HVHOG2CT8xYrYzkhhrOlRbyepLiKpGC5bezksL0I3N+KzC
+         Jv4qtfYKy9y1e9icY9Kkg9JLXewDMZ4CEcfa1K++dF9fJD6y37IAJgFl4+f0I149YC
+         edPUIBhg/MRDSCtYNChFU0UpEPNcFAl7jQ87XMhYIPr1NXSx95oRx15uf1S6GtFrhp
+         5GKo0/IDk4IgQ==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        torvalds@linux-foundation.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Nathan Chancellor <nathan@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH] MIPS: tlbex: Explicitly compare _PAGE_NO_EXEC against 0
+Date:   Tue,  2 Aug 2022 10:59:36 -0700
+Message-Id: <20220802175936.2278362-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <YulSY1pDms0ZyNs9@debian>
+References: <YulSY1pDms0ZyNs9@debian>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Define the initialization of dwc-ssi-1.03a controller and mark it with
-the capability of enhanced SPI supporting dual/quad/octal modes of
-transfer.
+When CONFIG_XPA is enabled, Clang warns:
 
-Signed-off-by: Sudip Mukherjee <sudip.mukherjee@sifive.com>
+  arch/mips/mm/tlbex.c:629:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
+          if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
+                              ^
+  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
+  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
+                                     ^
+  arch/mips/mm/tlbex.c:2568:24: error: converting the result of '<<' to a boolean; did you mean '(1 << _PAGE_NO_EXEC_SHIFT) != 0'? [-Werror,-Wint-in-bool-context]
+          if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
+                                ^
+  arch/mips/include/asm/pgtable-bits.h:174:28: note: expanded from macro '_PAGE_NO_EXEC'
+  # define _PAGE_NO_EXEC          (1 << _PAGE_NO_EXEC_SHIFT)
+                                     ^
+  2 errors generated.
+
+_PAGE_NO_EXEC can be '0' or '1 << _PAGE_NO_EXEC_SHIFT' depending on the
+build and runtime configuration, which is what the negation operators
+are trying to convey. To silence the warning, explicitly compare against
+0 so the result of the '<<' operator is not implicitly converted to a
+boolean.
+
+According to its documentation, GCC enables -Wint-in-bool-context with
+-Wall but this warning is not visible when building the same
+configuration with GCC. It appears GCC only warns when compiling C++,
+not C, although the documentation makes no note of this:
+https://godbolt.org/z/x39q3brxf
+
+Reported-by: Sudip Mukherjee (Codethink) <sudipm.mukherjee@gmail.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 ---
- drivers/spi/spi-dw-mmio.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/mips/mm/tlbex.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-dw-mmio.c b/drivers/spi/spi-dw-mmio.c
-index 26c40ea6dd12..db80e0645172 100644
---- a/drivers/spi/spi-dw-mmio.c
-+++ b/drivers/spi/spi-dw-mmio.c
-@@ -237,6 +237,15 @@ static int dw_spi_canaan_k210_init(struct platform_device *pdev,
- 	return 0;
- }
+diff --git a/arch/mips/mm/tlbex.c b/arch/mips/mm/tlbex.c
+index 8dbbd99fc7e8..be4d4670d649 100644
+--- a/arch/mips/mm/tlbex.c
++++ b/arch/mips/mm/tlbex.c
+@@ -626,7 +626,7 @@ static __maybe_unused void build_convert_pte_to_entrylo(u32 **p,
+ 		return;
+ 	}
  
-+static int dw_spi_hssi_ext_init(struct platform_device *pdev,
-+				struct dw_spi_mmio *dwsmmio)
-+{
-+	dwsmmio->dws.ip = DW_HSSI_ID;
-+	dwsmmio->dws.caps = DW_SPI_CAP_EXT_SPI;
-+
-+	return 0;
-+}
-+
- static int dw_spi_mmio_probe(struct platform_device *pdev)
- {
- 	int (*init_func)(struct platform_device *pdev,
-@@ -352,6 +361,7 @@ static const struct of_device_id dw_spi_mmio_of_match[] = {
- 	{ .compatible = "intel,thunderbay-ssi", .data = dw_spi_intel_init},
- 	{ .compatible = "microchip,sparx5-spi", dw_spi_mscc_sparx5_init},
- 	{ .compatible = "canaan,k210-spi", dw_spi_canaan_k210_init},
-+	{ .compatible = "snps,dwc-ssi-1.03a", dw_spi_hssi_ext_init},
- 	{ /* end of table */}
- };
- MODULE_DEVICE_TABLE(of, dw_spi_mmio_of_match);
+-	if (cpu_has_rixi && !!_PAGE_NO_EXEC) {
++	if (cpu_has_rixi && _PAGE_NO_EXEC != 0) {
+ 		if (fill_includes_sw_bits) {
+ 			UASM_i_ROTR(p, reg, reg, ilog2(_PAGE_GLOBAL));
+ 		} else {
+@@ -2565,7 +2565,7 @@ static void check_pabits(void)
+ 	unsigned long entry;
+ 	unsigned pabits, fillbits;
+ 
+-	if (!cpu_has_rixi || !_PAGE_NO_EXEC) {
++	if (!cpu_has_rixi || _PAGE_NO_EXEC == 0) {
+ 		/*
+ 		 * We'll only be making use of the fact that we can rotate bits
+ 		 * into the fill if the CPU supports RIXI, so don't bother
+
+base-commit: 7d0d3fa7339ed5a06d6608b7cde9f079eba62bb1
 -- 
-2.30.2
+2.37.1
 
