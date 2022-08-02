@@ -2,286 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74DDCC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 09:02:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5B83C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 09:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234806AbiHBJCo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 05:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59884 "EHLO
+        id S232482AbiHBJDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 05:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232482AbiHBJCm (ORCPT
+        with ESMTP id S235348AbiHBJDH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 05:02:42 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03DE5DEF7
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 02:02:39 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 93E56204E8;
-        Tue,  2 Aug 2022 09:02:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1659430958; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=enN4apayAjkrT927v9mhEiCtXb5ss0zIUG7iWK9c2gU=;
-        b=asZA5PDgAsGUJYGV6Omk87zDwIzkRzzl16s2v8QIHdwl9kr0Sd3TUzzRtxdS8XQSO5KpyY
-        uS4xioxnwli5I02SAklNUDcrD7PzDi8wRGoJpG0j4oJDheAA13pN9UBqWL1RKMY/cqJl1V
-        comIo8HkWakwsZacZ++6XqmeyVa9fMQ=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 70CAE1345B;
-        Tue,  2 Aug 2022 09:02:38 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id nxNKGS7o6GKfXAAAMHmgww
-        (envelope-from <mhocko@suse.com>); Tue, 02 Aug 2022 09:02:38 +0000
-Date:   Tue, 2 Aug 2022 11:02:37 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Feng Tang <feng.tang@intel.com>
-Cc:     Muchun Song <songmuchun@bytedance.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "bwidawsk@kernel.org" <bwidawsk@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>
-Subject: Re: [PATCH] mm: mempolicy: fix policy_nodemask() for
- MPOL_PREFERRED_MANY case
-Message-ID: <YujoLQt09Js/sSQL@dhcp22.suse.cz>
-References: <20220801084207.39086-1-songmuchun@bytedance.com>
- <YueXhmiFcI8iw3OI@dhcp22.suse.cz>
- <YuecP/RKXWz7QAs0@feng-skl>
- <YuidPA9knCOoaT0c@FVFYT0MHHV2J>
- <Yui7hWZYMX31ktOr@feng-skl>
- <YujGy8EIeZc1Avc7@FVFYT0MHHV2J>
- <YujUyCIBjFj+FzX5@feng-skl>
+        Tue, 2 Aug 2022 05:03:07 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3585F4D80C
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 02:03:05 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id m9so14912220ljp.9
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 02:03:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zhuL9i9TDotSF+bYGEKALdF6iapdw0N+X68W860otKY=;
+        b=OtFEcrvRm+vgI4ZkufiqiWnFlo6Oxs8kf1KZKPok63gKbrJrpSxzI+OzL5Hwb5louN
+         FfW8ajOxcSSBVrxw3mF7Ihsi/8YK0HavLwyZ20zRyhpjtBCpwe8eqCQVenrQoajJqnjG
+         6eVF+rMJunBzJDdihBe/uIQ8PhRaYPVAmFpbw/XU+sS8/vyI4Fg9+7dqZFlXj4WBJULI
+         gur7x4m9gecmh4tFCEKyHKHj56s5wSCwYVxVQfXvzIkSU9FmnU7raRRE7sbgSjqh4JZv
+         8ENKXuverbEFp6l4A0zsPhEkGb8OzRt9FhRmE4sblsY4ONPEUwL1z1g74TG52fJQy/77
+         /2Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zhuL9i9TDotSF+bYGEKALdF6iapdw0N+X68W860otKY=;
+        b=bKoflp7W/hK5p4yOd6YkkSGqTM/c6Of1+d2CC63DcBOVOXv/QBUNO0Q3Hw23v6dSFy
+         kicY7uwmcwQ6n+2MTBOtUhzZL71/ABQzskyRyiQGMJ8IVJR2iVnXBMjSCUswbvjs8SG2
+         oP0Dz1ptOdNQe3u+ijkLF+vmgxJuEMBZRu4CJmpqWV3aA7EsFHWDH+WWt00prcJKuu+8
+         zdWxLvk5L8V078kaqAhXokGKIM4KPaFFDiWlCOKAqVI81gEv+udnOytmNSYkvB8ASSl6
+         qRJOD/KnWi3PLkzuy8Hg6hnu+VcAVujQaoO6LqM9uO4BlIoucJvRB7urjB6lcbnUjpep
+         kwwg==
+X-Gm-Message-State: AJIora8ztRpoMj4szOPD/39VeMjNXXutC1N93RVVJNga7m9MAWP/CoEC
+        p13q5BXAEgItWTy2oJYl/KAjnA==
+X-Google-Smtp-Source: AGRyM1siLBI+/dKc8L+pZh7GSlKLEDSw9zaPcBpli8DOQcLzlQt+ViI/atXXJs5olL7tsXdZHr56qQ==
+X-Received: by 2002:a05:651c:1542:b0:249:5d86:3164 with SMTP id y2-20020a05651c154200b002495d863164mr6169530ljp.500.1659430983581;
+        Tue, 02 Aug 2022 02:03:03 -0700 (PDT)
+Received: from [192.168.1.6] ([213.161.169.44])
+        by smtp.gmail.com with ESMTPSA id u13-20020ac248ad000000b0048af7e1b268sm778067lfg.210.2022.08.02.02.03.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 02:03:03 -0700 (PDT)
+Message-ID: <ec49a891-a333-85a9-ec2e-e3d7e1599282@linaro.org>
+Date:   Tue, 2 Aug 2022 11:03:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YujUyCIBjFj+FzX5@feng-skl>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/9] dt-bindings: sram: sunxi-sram: Add D1 compatible
+ string
+Content-Language: en-US
+To:     Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Hans de Goede <hdegoede@redhat.com>,
+        Icenowy Zheng <icenowy@aosc.io>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+References: <20220801030509.21966-1-samuel@sholland.org>
+ <20220801030509.21966-2-samuel@sholland.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220801030509.21966-2-samuel@sholland.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Please make sure to CC Mike on hugetlb related changes.
-
-I didn't really get to grasp your proposed solution but it feels goind
-sideways. The real issue is that hugetlb uses a dedicated allocation
-scheme which is not fully MPOL_PREFERRED_MANY aware AFAICS. I do not
-think we should be tricking that by providing some fake nodemasks and
-what not.
-
-The good news is that allocation from the pool is MPOL_PREFERRED_MANY
-aware because it first tries to allocation from the preffered node mask
-and then fall back to the full nodemask (dequeue_huge_page_vma).
-If the existing pools cannot really satisfy that allocation then it
-tries to allocate a new hugetlb page (alloc_fresh_huge_page) which also
-performs 2 stage allocation with the node mask and no node masks. But
-both of them might fail.
-
-The bad news is that other allocation functions - including those that
-allocate to the pool are not fully MPOL_PREFERRED_MANY aware. E.g.
-__nr_hugepages_store_common paths which use the allocating process
-policy to fill up the pool so the pool could be under provisioned if
-that context is using MPOL_PREFERRED_MANY.
-
-Wrt. allowed_mems_nr (i.e. hugetlb_acct_memory) this is a reservation
-code and I have to admit I do not really remember details there. This is
-a subtle code and my best guess would be that policy_nodemask_current
-should be hugetlb specific and only care about MPOL_BIND.
-
-On Tue 02-08-22 15:39:52, Feng Tang wrote:
-> On Tue, Aug 02, 2022 at 02:40:11PM +0800, Muchun Song wrote:
-> > On Tue, Aug 02, 2022 at 01:52:05PM +0800, Feng Tang wrote:
-> > > On Tue, Aug 02, 2022 at 11:42:52AM +0800, Muchun Song wrote:
-> > > > On Mon, Aug 01, 2022 at 05:26:23PM +0800, Feng Tang wrote:
-> > > > > On Mon, Aug 01, 2022 at 05:06:14PM +0800, Michal Hocko wrote:
-> > > > > > On Mon 01-08-22 16:42:07, Muchun Song wrote:
-> > > > > > > policy_nodemask() is supposed to be returned a nodemask representing a mempolicy
-> > > > > > > for filtering nodes for page allocation, which is a hard restriction (see the user
-> > > > > > > of allowed_mems_nr() in hugetlb.c).  However, MPOL_PREFERRED_MANY is a preferred
-> > > > > > > mode not a hard restriction.  Now it breaks the user of HugeTLB.  Remove it from
-> > > > > > > policy_nodemask() to fix it, which will not affect current users of policy_nodemask()
-> > > > > > > since all of the users already have handled the case of MPOL_PREFERRED_MANY before
-> > > > > > > calling it.  BTW, it is found by code inspection.
-> > > > > > 
-> > > > > > I am not sure this is the right fix. It is quite true that
-> > > > > > policy_nodemask is a tricky function to use. It pretends to have a
-> > > > > > higher level logic but all existing users are expected to be policy
-> > > > > > aware and they special case allocation for each policy. That would mean
-> > > > > > that hugetlb should do the same.
-> > > > > 
-> > > > > Yes, when I worked on the MPOL_PREFERRED_MANY patches, I was also
-> > > > > confused about policy_nodemask(), as it is never a 'strict' one as
-> > > > > the old code is:
-> > > > > 
-> > > > > 	if (unlikely(mode == MPOL_BIND) &&
-> > > > > 		apply_policy_zone(policy, gfp_zone(gfp)) &&
-> > > > > 		cpuset_nodemask_valid_mems_allowed(&policy->nodes))
-> > > > > 		return &policy->nodes;
-> > > > > 
-> > > > > 	return NULL
-> > > > > 
-> > > > > Even when the MPOL_BIND's nodes is not allowed by cpuset, it will 
-> > > > > still return NULL (equals all nodes).
-> > > > >
-> > > > 
-> > > > Well, I agree policy_nodemask() is really confusing because of the
-> > > > shortage of comments and the weird logic.
-> > > > 
-> > > > > From the semantics of allowed_mems_nr(), I think it does get changed
-> > > > > a little by b27abaccf8e8. And to enforce the 'strict' semantic for
-> > > > > 'allowed', we may need a more strict nodemask API for it.
-> > > > >
-> > > > 
-> > > > Maybe this is a good idea to fix this, e.g. introducing a new helper
-> > > > to return the strict allowed nodemask.
-> > > 
-> > > Yep. 
-> > > 
-> > > I had another thought to add one global all-zero nodemask, for API like
-> > > policy_nodemask(), it has 2 types of return value:
-> > > * a nodemask with some bits set
-> > > * NULL (means all nodes)
-> > > 
-> > > Here a new type of zero nodemask (a gloabl variable)can be created to
-> > > indicate no qualified node.
-> > >
-> > 
-> > I know why you want to introduce a gloable zero nidemask. Since we already
-> > have a glable nodemask array, namely node_states, instead of returning NULL
-> > for the case of all nodes, how about returing node_states[N_ONLINE] for it?
-> > And make it return NULL for the case where no nodes are allowed. Any thought?
+On 01/08/2022 05:05, Samuel Holland wrote:
+> D1 needs to export a register for managing some LDO regulators, so it
+> needs a unique compatible.
 > 
-> I think return node_states[N_ONLINE] can simplify the code in allowed_mems_nr(),
-> the empty zero nodes can simplify further.
-> 
-> Here is some draft patch (not tested) to show the idea
-> 
-> Thanks,
-> Feng
-> 
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
 > ---
->  include/linux/mempolicy.h |  8 ++++++++
->  include/linux/nodemask.h  |  7 +++++++
->  mm/hugetlb.c              |  7 ++++---
->  mm/mempolicy.c            | 17 +++++++++++++++++
->  mm/page_alloc.c           |  3 +++
->  5 files changed, 39 insertions(+), 3 deletions(-)
 > 
-> diff --git a/include/linux/mempolicy.h b/include/linux/mempolicy.h
-> index 668389b4b53d..b5451fef1620 100644
-> --- a/include/linux/mempolicy.h
-> +++ b/include/linux/mempolicy.h
-> @@ -150,6 +150,7 @@ extern bool init_nodemask_of_mempolicy(nodemask_t *mask);
->  extern bool mempolicy_in_oom_domain(struct task_struct *tsk,
->  				const nodemask_t *mask);
->  extern nodemask_t *policy_nodemask(gfp_t gfp, struct mempolicy *policy);
-> +extern nodemask_t *allowed_policy_nodemask(gfp_t gfp, struct mempolicy *policy);
->  
->  static inline nodemask_t *policy_nodemask_current(gfp_t gfp)
->  {
-> @@ -158,6 +159,13 @@ static inline nodemask_t *policy_nodemask_current(gfp_t gfp)
->  	return policy_nodemask(gfp, mpol);
->  }
->  
-> +static inline nodemask_t *allowed_policy_nodemask_current(gfp_t gfp)
-> +{
-> +	struct mempolicy *mpol = get_task_policy(current);
-> +
-> +	return allowed_policy_nodemask(gfp, mpol);
-> +}
-> +
->  extern unsigned int mempolicy_slab_node(void);
->  
->  extern enum zone_type policy_zone;
-> diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
-> index 0f233b76c9ce..dc5fab38e810 100644
-> --- a/include/linux/nodemask.h
-> +++ b/include/linux/nodemask.h
-> @@ -409,6 +409,13 @@ enum node_states {
->  
->  extern nodemask_t node_states[NR_NODE_STATES];
->  
-> +extern nodemask_t zero_nodes;
-> +
-> +static inline bool is_empty_nodes(nodemask_t *pnodes)
-> +{
-> +	 return (pnodes == &zero_nodes || __nodes_empty(pnodes, MAX_NUMNODES));
-> +}
-> +
->  #if MAX_NUMNODES > 1
->  static inline int node_state(int node, enum node_states state)
->  {
-> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> index a57e1be41401..dc9f4ed32909 100644
-> --- a/mm/hugetlb.c
-> +++ b/mm/hugetlb.c
-> @@ -4340,10 +4340,11 @@ static unsigned int allowed_mems_nr(struct hstate *h)
->  
->  	mpol_allowed = policy_nodemask_current(gfp_mask);
->  
-> -	for_each_node_mask(node, cpuset_current_mems_allowed) {
-> -		if (!mpol_allowed || node_isset(node, *mpol_allowed))
-> +	if (is_empty_nodes(mpol_allowed))
-> +		return 0;
-> +
-> +	for_each_node_mask(node, mpol_allowed)
->  			nr += array[node];
-> -	}
->  
->  	return nr;
->  }
-> diff --git a/mm/mempolicy.c b/mm/mempolicy.c
-> index d39b01fd52fe..3e936b8ca9ea 100644
-> --- a/mm/mempolicy.c
-> +++ b/mm/mempolicy.c
-> @@ -1845,6 +1845,23 @@ nodemask_t *policy_nodemask(gfp_t gfp, struct mempolicy *policy)
->  	return NULL;
->  }
->  
-> +/*
-> + * Return the allowed nodes mask for a mempolicy and page allocation,
-> + * which is a 'stricter' semantic than policy_nodemsk()
-> + */
-> +nodemask_t *allowed_policy_nodemask(gfp_t gfp, struct mempolicy *policy)
-> +{
-> +	if (unlikely(policy->mode == MPOL_BIND)) {
-> +		if (apply_policy_zone(policy, gfp_zone(gfp)) &&
-> +			cpuset_nodemask_valid_mems_allowed(&policy->nodes))
-> +			return &policy->nodes;
-> +		else
-> +			return &zero_nodes;
-> +	}
-> +
-> +	return NULL;
-> +}
-> +
->  /*
->   * Return the  preferred node id for 'prefer' mempolicy, and return
->   * the given id for all other policies.
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index e008a3df0485..3549ea037588 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -181,6 +181,9 @@ nodemask_t node_states[NR_NODE_STATES] __read_mostly = {
->  };
->  EXPORT_SYMBOL(node_states);
->  
-> +nodemask_t zero_nodes = NODE_MASK_NONE;
-> +EXPORT_SYMBOL(zero_nodes);
-> +
->  atomic_long_t _totalram_pages __read_mostly;
->  EXPORT_SYMBOL(_totalram_pages);
->  unsigned long totalreserve_pages __read_mostly;
-> -- 
-> 2.27.0
+>  .../bindings/sram/allwinner,sun4i-a10-system-control.yaml        | 1 +
+>  1 file changed, 1 insertion(+)
 > 
+> diff --git a/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml b/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml
+> index 1c426c211e36..ab6e95a97c9f 100644
+> --- a/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml
+> +++ b/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml
+> @@ -39,6 +39,7 @@ properties:
+>        - items:
+>            - const: allwinner,sun8i-r40-system-control
+>            - const: allwinner,sun4i-a10-system-control
+> +      - const: allwinner,sun20i-d1-system-control
+>        - const: allwinner,sun50i-a64-sram-controller
+>          deprecated: true
+>        - const: allwinner,sun50i-a64-system-control
 
--- 
-Michal Hocko
-SUSE Labs
+Please first clean up the compatible list. All these should be one enum.
+You have duplicated entries for two-compatible cases. Also enum. Don't
+grow this pattern...
+
+
+Best regards,
+Krzysztof
