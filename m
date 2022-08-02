@@ -2,455 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB5F9C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:40:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B05EC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:41:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231663AbiHBPkk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 11:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42250 "EHLO
+        id S232014AbiHBPlu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 11:41:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232014AbiHBPkS (ORCPT
+        with ESMTP id S229670AbiHBPln (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 11:40:18 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45C12E2
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 08:40:10 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id z4so1381357ljn.8
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 08:40:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mRLanuME96wPjp8H7M+PfpQzPAMElhMOqOMIo9y5QKw=;
-        b=NpaOMVR0Mtb24/vJYjIGZnxs3n5/ZQgj1hh1O2AOPWgK7xaa8iGF5cIkZtWT+LDJ05
-         fVuAl84J3xlPMuaWsTZ6XWIGV9ey025dc9DoKRGas+X3EvE4tGzjDyDH4NLN1XS6YAvB
-         aun6nn4B+1N1xrUvAaWmYQ6FUsp1z2nHej+pgdX7MBrhDGHcrn2+EDP8hwrFch5SokZ8
-         DAsOYctlnUa9aEb4tx1b3ivuKI6Em5i0mFtrKMCQxFGGUs5n58ur2JDSKdsVx0KAP5OY
-         4ERDUXaczSbzfGnl9HQB2kZui/5U7kJUvZ62nefS7P8GpRj9ewOmT80sDVLn+QL2MHA0
-         EGlQ==
+        Tue, 2 Aug 2022 11:41:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DD9F281
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 08:41:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659454901;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Vpq/mpo2WNFVjK/1SFKm7AqhW/wtXa+ryiiWx9FIdwo=;
+        b=AvuR4RB2q7M0mvsgL3nvTsNVJdn1sLmAncd6+X6dYflerdsJSryiVC8urCB4UC3lVvIPeE
+        AgnLfgzaLQO6TE2xF6sU9ErTw79aJtcjWqE5voRaR2DxAB66JI0OExurxCD0qRib4yZVlT
+        by3r63sRy1pAxGKTKIwp2qLgHfjJf9w=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-267-9h4UgmIEMUK82oksiwH1sg-1; Tue, 02 Aug 2022 11:41:31 -0400
+X-MC-Unique: 9h4UgmIEMUK82oksiwH1sg-1
+Received: by mail-il1-f199.google.com with SMTP id d6-20020a056e020c0600b002deca741bc2so2608844ile.18
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 08:41:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mRLanuME96wPjp8H7M+PfpQzPAMElhMOqOMIo9y5QKw=;
-        b=7IYjk1PzhsD1OAN3JU8GTwm/RPR227m7rnNnUehYr7JIv6h01Gk9aMnNHZ+OcQl1Q3
-         NxhgWpbGBJolrMVP/T/ve+TA+h9kcfIaJmX66XOr3Uu0QvbC/leSjvf7QxLhsAFBTs7e
-         hCm9lFoyM8XN8Zri2IfmlBZZFutDBc9EX6WduYA27yAzaBqshNO5X45arxuGyOxz1u7i
-         D0vkom0GMappn/v+SBSVyLLhh6heRO300OLUE9v85vGJjE/CyehyIUjzN3WXi0oDSHiJ
-         8lvXfHA11JIiH/NGvomYZYS13RnQwV7AFsBKwS7XyUYOl8WMk6ZU3vy9js6GFJ7/kIkA
-         S93g==
-X-Gm-Message-State: AJIora9QWTfq6FR5lz03ROBcAbKVCkqkwo7KFETw7EcLBdEcy2hMPIpR
-        ro6rjFEo4SMYh6pbjiQIWliW1w==
-X-Google-Smtp-Source: AGRyM1t2eyl9aw+FQ8cyJR10lGcIFIWZkg6kQRzUt7UwdDIhyJKiUwg6lJCgRz0bsEbLCdANbABLUg==
-X-Received: by 2002:a05:651c:50f:b0:25d:9c69:a4e6 with SMTP id o15-20020a05651c050f00b0025d9c69a4e6mr7321814ljp.391.1659454808873;
-        Tue, 02 Aug 2022 08:40:08 -0700 (PDT)
-Received: from krzk-bin.. ([213.161.169.44])
-        by smtp.gmail.com with ESMTPSA id c2-20020a056512074200b0048b06f34566sm407669lfs.76.2022.08.02.08.40.07
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=Vpq/mpo2WNFVjK/1SFKm7AqhW/wtXa+ryiiWx9FIdwo=;
+        b=DtP69S35D09OvNKX8tgMMJw0TFG2Q+4NA1ogz10ejTcXR+Jv8C1eoN9F9lgLVdL+gg
+         sC6BwiFz5RjgVe84Cv8wmnS2fbtLuyic//nxC3I+lv6rmbOTzPNnKYEAfeHT8apB/ibY
+         Od+H7sPanLUtwE7OlyIJIUW3rQ38e3veJyuMRK8qzSAklnDk5aGXpe9NZUyckx6ttOeG
+         TnBMZj0vJAO79eDdwx/CSVROKMsYp0Klp+52R0gCH5tCG+zayGKfzvuSI7Vzua5ckNrY
+         2uyPst7Gy1wcydSjutr8qeBAuLOS9n20EAT8vaxHksy3jpAcdfsy8f+m8Rvybq8csOdW
+         RG8w==
+X-Gm-Message-State: ACgBeo3QSI0NqbPyaf/OXRK5Wxy0J9fw31Y+WjjBrxIDxEzvYCDa5fZ3
+        UVkbLh738zgs+BpUmmFb4aZ35h+of5oyIzLv6HA1nUXpbOOqHLtRIJtfkof2HB9BAru2rSgsJI2
+        sfvqBIyurQpO0YNmTGyUittSW
+X-Received: by 2002:a05:6e02:e14:b0:2de:60af:e408 with SMTP id a20-20020a056e020e1400b002de60afe408mr6063700ilk.170.1659454890372;
+        Tue, 02 Aug 2022 08:41:30 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7b9a7RjKkWMNOiP3M5XstmTpCDl0M45uztCly2mRb5G/+mIzsYnvwcX6X02nRrNDdeg1moeA==
+X-Received: by 2002:a05:6e02:e14:b0:2de:60af:e408 with SMTP id a20-20020a056e020e1400b002de60afe408mr6063688ilk.170.1659454890099;
+        Tue, 02 Aug 2022 08:41:30 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id y10-20020a02730a000000b003427170b558sm2309947jab.57.2022.08.02.08.41.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 08:40:08 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Cc:     corbet@lwn.net,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 5/5] dt-bindings: i2c: qcom,i2c-cci: convert to dtschema
-Date:   Tue,  2 Aug 2022 17:39:47 +0200
-Message-Id: <20220802153947.44457-6-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220802153947.44457-1-krzysztof.kozlowski@linaro.org>
-References: <20220802153947.44457-1-krzysztof.kozlowski@linaro.org>
+        Tue, 02 Aug 2022 08:41:29 -0700 (PDT)
+Date:   Tue, 2 Aug 2022 09:41:28 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Abhishek Sahu <abhsahu@nvidia.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-pci@vger.kernel.org
+Subject: Re: [PATCH v5 1/5] vfio: Add the device features for the low power
+ entry and exit
+Message-ID: <20220802094128.38fba103.alex.williamson@redhat.com>
+In-Reply-To: <YukvBBClrbCbIitm@nvidia.com>
+References: <20220719121523.21396-1-abhsahu@nvidia.com>
+        <20220719121523.21396-2-abhsahu@nvidia.com>
+        <20220721163445.49d15daf.alex.williamson@redhat.com>
+        <aaef2e78-1ed2-fe8b-d167-8ea2dcbe45b6@nvidia.com>
+        <20220725160928.43a17560.alex.williamson@redhat.com>
+        <bd7bca18-ae07-c04a-23d3-bf71245da0cc@nvidia.com>
+        <20220726172356.GH4438@nvidia.com>
+        <f903e2b9-f85b-a4c8-4706-f463919723a3@nvidia.com>
+        <20220801124253.11c24d91.alex.williamson@redhat.com>
+        <YukvBBClrbCbIitm@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the Qualcomm Camera Control Interface (CCI) I2C controller to DT
-schema.  The original bindings were not complete, so this includes
-changes:
-1. Add address/size-cells.
-2. Describe the clocks per variant.
-3. Use more descriptive example based on sdm845.
+On Tue, 2 Aug 2022 11:04:52 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../devicetree/bindings/i2c/i2c-qcom-cci.txt  |  96 -------
- .../devicetree/bindings/i2c/qcom,i2c-cci.yaml | 242 ++++++++++++++++++
- MAINTAINERS                                   |   2 +-
- 3 files changed, 243 insertions(+), 97 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/i2c/i2c-qcom-cci.txt
- create mode 100644 Documentation/devicetree/bindings/i2c/qcom,i2c-cci.yaml
+> On Mon, Aug 01, 2022 at 12:42:53PM -0600, Alex Williamson wrote:
+> > On Wed, 27 Jul 2022 11:37:02 +0530
+> > Abhishek Sahu <abhsahu@nvidia.com> wrote:
+> >   
+> > > On 7/26/2022 10:53 PM, Jason Gunthorpe wrote:  
+> > > > On Tue, Jul 26, 2022 at 06:17:18PM +0530, Abhishek Sahu wrote:    
+> > > >>  Thanks Alex for your thorough review of uAPI.
+> > > >>  I have incorporated all the suggestions.
+> > > >>  Following is the updated uAPI.
+> > > >>  
+> > > >>  /*
+> > > >>   * Upon VFIO_DEVICE_FEATURE_SET, allow the device to be moved into a low power
+> > > >>   * state with the platform-based power management.  Device use of lower power
+> > > >>   * states depends on factors managed by the runtime power management core,
+> > > >>   * including system level support and coordinating support among dependent
+> > > >>   * devices.  Enabling device low power entry does not guarantee lower power
+> > > >>   * usage by the device, nor is a mechanism provided through this feature to
+> > > >>   * know the current power state of the device.  If any device access happens
+> > > >>   * (either from the host or through the vfio uAPI) when the device is in the
+> > > >>   * low power state, then the host will move the device out of the low power
+> > > >>   * state as necessary prior to the access.  Once the access is completed, the
+> > > >>   * device may re-enter the low power state.  For single shot low power support
+> > > >>   * with wake-up notification, see
+> > > >>   * VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP below.  Access to mmap'd
+> > > >>   * device regions is disabled on LOW_POWER_ENTRY and may only be resumed after
+> > > >>   * calling LOW_POWER_EXIT.
+> > > >>   */
+> > > >>  #define VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY 3
+> > > >>  
+> > > >>  /*
+> > > >>   * This device feature has the same behavior as
+> > > >>   * VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY with the exception that the user
+> > > >>   * provides an eventfd for wake-up notification.    
+> > > > 
+> > > > It feels like this should be one entry point instead of two.
+> > > > 
+> > > > A flag "automatic re-sleep" and an optional eventfd (-1 means not
+> > > > provided) seems to capture both of these behaviors in a bit clearer
+> > > > and extendable way.  
+> > 
+> > I think the mutual exclusion between re-entrant mode and one-shot is
+> > quite a bit more subtle in the version below, so I don't particularly
+> > find this cleaner.  Potentially we could have variant drivers support
+> > one w/o the other in the previously proposed model as well.  It's
+> > interesting to see this suggestion since since we seem to have a theme
+> > of making features single purpose elsewhere.  Thanks,  
+> 
+> It is still quite single purpose, just
+> VFIO_DEVICE_LOW_POWER_REENTERY_DISABLE is some minor customization of
+> that single purpose.
+> 
+> Either the flag is set or not, it isn't subtle..
 
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-qcom-cci.txt b/Documentation/devicetree/bindings/i2c/i2c-qcom-cci.txt
-deleted file mode 100644
-index 166865e48849..000000000000
---- a/Documentation/devicetree/bindings/i2c/i2c-qcom-cci.txt
-+++ /dev/null
-@@ -1,96 +0,0 @@
--Qualcomm Camera Control Interface (CCI) I2C controller
--
--PROPERTIES:
--
--- compatible:
--	Usage: required
--	Value type: <string>
--	Definition: must be one of:
--		"qcom,msm8916-cci"
--		"qcom,msm8974-cci"
--		"qcom,msm8996-cci"
--		"qcom,sdm845-cci"
--		"qcom,sm8250-cci"
--		"qcom,sm8450-cci"
--
--- reg
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: base address CCI I2C controller and length of memory
--		    mapped region.
--
--- interrupts:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: specifies the CCI I2C interrupt. The format of the
--		    specifier is defined by the binding document describing
--		    the node's interrupt parent.
--
--- clocks:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: a list of phandle, should contain an entry for each
--		    entries in clock-names.
--
--- clock-names
--	Usage: required
--	Value type: <string>
--	Definition: a list of clock names, must include "cci" clock.
--
--- power-domains
--	Usage: required for "qcom,msm8996-cci"
--	Value type: <prop-encoded-array>
--	Definition:
--
--SUBNODES:
--
--The CCI provides I2C masters for one (msm8916) or two i2c busses (msm8974,
--msm8996, sdm845, sm8250 and sm8450), described as subdevices named "i2c-bus@0"
--and "i2c-bus@1".
--
--PROPERTIES:
--
--- reg:
--	Usage: required
--	Value type: <u32>
--	Definition: Index of the CCI bus/master
--
--- clock-frequency:
--	Usage: optional
--	Value type: <u32>
--	Definition: Desired I2C bus clock frequency in Hz, defaults to 100
--		    kHz if omitted.
--
--Example:
--
--	cci@a0c000 {
--		compatible = "qcom,msm8996-cci";
--		#address-cells = <1>;
--		#size-cells = <0>;
--		reg = <0xa0c000 0x1000>;
--		interrupts = <GIC_SPI 295 IRQ_TYPE_EDGE_RISING>;
--		clocks = <&mmcc MMSS_MMAGIC_AHB_CLK>,
--			 <&mmcc CAMSS_TOP_AHB_CLK>,
--			 <&mmcc CAMSS_CCI_AHB_CLK>,
--			 <&mmcc CAMSS_CCI_CLK>,
--			 <&mmcc CAMSS_AHB_CLK>;
--		clock-names = "mmss_mmagic_ahb",
--			      "camss_top_ahb",
--			      "cci_ahb",
--			      "cci",
--			      "camss_ahb";
--
--		i2c-bus@0 {
--			reg = <0>;
--			clock-frequency = <400000>;
--			#address-cells = <1>;
--			#size-cells = <0>;
--		};
--
--		i2c-bus@1 {
--			reg = <1>;
--			clock-frequency = <400000>;
--			#address-cells = <1>;
--			#size-cells = <0>;
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-cci.yaml b/Documentation/devicetree/bindings/i2c/qcom,i2c-cci.yaml
-new file mode 100644
-index 000000000000..90c9e401229e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/i2c/qcom,i2c-cci.yaml
-@@ -0,0 +1,242 @@
-+# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/i2c/qcom,i2c-cci.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm Camera Control Interface (CCI) I2C controller
-+
-+maintainers:
-+  - Loic Poulain <loic.poulain@linaro.org>
-+  - Robert Foss <robert.foss@linaro.org>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - qcom,msm8916-cci
-+      - qcom,msm8974-cci
-+      - qcom,msm8996-cci
-+      - qcom,sdm845-cci
-+      - qcom,sm8250-cci
-+      - qcom,sm8450-cci
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  clocks:
-+    minItems: 4
-+    maxItems: 6
-+
-+  clock-names:
-+    minItems: 4
-+    maxItems: 6
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  reg:
-+    maxItems: 1
-+
-+patternProperties:
-+  "^i2c-bus@[01]$":
-+    $ref: /schemas/i2c/i2c-controller.yaml#
-+    unevaluatedProperties: false
-+
-+    properties:
-+      reg:
-+        maxItems: 1
-+
-+      clock-frequency:
-+        default: 100000
-+
-+required:
-+  - compatible
-+  - clock-names
-+  - clocks
-+  - interrupts
-+  - reg
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - qcom,msm8996-cci
-+    then:
-+      required:
-+        - power-domains
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - qcom,msm8916-cci
-+    then:
-+      properties:
-+        i2c-bus@1: false
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - qcom,msm8916-cci
-+              - qcom,msm8996-cci
-+    then:
-+      properties:
-+        clocks:
-+          maxItems: 4
-+        clock-names:
-+          items:
-+            - const: camss_top_ahb
-+            - const: cci_ahb
-+            - const: cci
-+            - const: camss_ahb
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - qcom,sdm845-cci
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 6
-+        clock-names:
-+          items:
-+            - const: camnoc_axi
-+            - const: soc_ahb
-+            - const: slow_ahb_src
-+            - const: cpas_ahb
-+            - const: cci
-+            - const: cci_src
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - qcom,sm8250-cci
-+    then:
-+      properties:
-+        clocks:
-+          minItems: 5
-+          maxItems: 5
-+        clock-names:
-+          items:
-+            - const: camnoc_axi
-+            - const: slow_ahb_src
-+            - const: cpas_ahb
-+            - const: cci
-+            - const: cci_src
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,camcc-sdm845.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    cci@ac4a000 {
-+        reg = <0x0ac4a000 0x4000>;
-+        compatible = "qcom,sdm845-cci";
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        interrupts = <GIC_SPI 460 IRQ_TYPE_EDGE_RISING>;
-+        power-domains = <&clock_camcc TITAN_TOP_GDSC>;
-+
-+        clocks = <&clock_camcc CAM_CC_CAMNOC_AXI_CLK>,
-+                 <&clock_camcc CAM_CC_SOC_AHB_CLK>,
-+                 <&clock_camcc CAM_CC_SLOW_AHB_CLK_SRC>,
-+                 <&clock_camcc CAM_CC_CPAS_AHB_CLK>,
-+                 <&clock_camcc CAM_CC_CCI_CLK>,
-+                 <&clock_camcc CAM_CC_CCI_CLK_SRC>;
-+        clock-names = "camnoc_axi",
-+                      "soc_ahb",
-+                      "slow_ahb_src",
-+                      "cpas_ahb",
-+                      "cci",
-+                      "cci_src";
-+
-+        assigned-clocks = <&clock_camcc CAM_CC_CAMNOC_AXI_CLK>,
-+                          <&clock_camcc CAM_CC_CCI_CLK>;
-+        assigned-clock-rates = <80000000>,
-+                               <37500000>;
-+
-+        pinctrl-names = "default", "sleep";
-+        pinctrl-0 = <&cci0_default &cci1_default>;
-+        pinctrl-1 = <&cci0_sleep &cci1_sleep>;
-+
-+        i2c-bus@0 {
-+            reg = <0>;
-+            clock-frequency = <1000000>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            camera@10 {
-+                compatible = "ovti,ov8856";
-+                reg = <0x10>;
-+
-+                reset-gpios = <&tlmm 9 GPIO_ACTIVE_LOW>;
-+                pinctrl-names = "default";
-+                pinctrl-0 = <&cam0_default>;
-+
-+                clocks = <&clock_camcc CAM_CC_MCLK0_CLK>;
-+                clock-names = "xvclk";
-+                clock-frequency = <19200000>;
-+
-+                dovdd-supply = <&vreg_lvs1a_1p8>;
-+                avdd-supply = <&cam0_avdd_2v8>;
-+                dvdd-supply = <&cam0_dvdd_1v2>;
-+
-+                port {
-+                    ov8856_ep: endpoint {
-+                        link-frequencies = /bits/ 64 <360000000 180000000>;
-+                        data-lanes = <1 2 3 4>;
-+                        remote-endpoint = <&csiphy0_ep>;
-+                    };
-+                };
-+            };
-+        };
-+
-+        cci_i2c1: i2c-bus@1 {
-+            reg = <1>;
-+            clock-frequency = <1000000>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            camera@60 {
-+                compatible = "ovti,ov7251";
-+                reg = <0x60>;
-+
-+                enable-gpios = <&tlmm 21 GPIO_ACTIVE_HIGH>;
-+                pinctrl-names = "default";
-+                pinctrl-0 = <&cam3_default>;
-+
-+                clocks = <&clock_camcc CAM_CC_MCLK3_CLK>;
-+                clock-names = "xclk";
-+                clock-frequency = <24000000>;
-+
-+                vdddo-supply = <&vreg_lvs1a_1p8>;
-+                vdda-supply = <&cam3_avdd_2v8>;
-+
-+                port {
-+                    ov7251_ep: endpoint {
-+                        data-lanes = <0 1>;
-+                        remote-endpoint = <&csiphy3_ep>;
-+                    };
-+                };
-+            };
-+        };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 56af0182a93b..ea0aaf754eaf 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16882,7 +16882,7 @@ M:	Robert Foss <robert.foss@linaro.org>
- L:	linux-i2c@vger.kernel.org
- L:	linux-arm-msm@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/i2c/i2c-qcom-cci.txt
-+F:	Documentation/devicetree/bindings/i2c/qcom,i2c-cci.yaml
- F:	drivers/i2c/busses/i2c-qcom-cci.c
- 
- QUALCOMM INTERCONNECT BWMON DRIVER
--- 
-2.34.1
+The subtlety is that there's a flag and a field and the flag can only
+be set if the field is set, the flag can only be clear if the field is
+clear, so we return -EINVAL for the other cases?  Why do we have both a
+flag and a field?  This isn't like we're adding a feature later and the
+flag needs to indicate that the field is present and valid.  It's just
+not a very clean interface, imo.  Thanks,
+
+Alex
 
