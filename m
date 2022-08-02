@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A71C00144
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 03:04:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F08C00144
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 03:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235590AbiHBDED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 23:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55136 "EHLO
+        id S235022AbiHBDEM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 23:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234448AbiHBDDv (ORCPT
+        with ESMTP id S235233AbiHBDDw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 23:03:51 -0400
-Received: from out199-6.us.a.mail.aliyun.com (out199-6.us.a.mail.aliyun.com [47.90.199.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8731DA4F
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 20:03:47 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VL9XT-F_1659409423;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VL9XT-F_1659409423)
+        Mon, 1 Aug 2022 23:03:52 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB30201AD
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 20:03:50 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VL9XT1b_1659409427;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VL9XT1b_1659409427)
           by smtp.aliyun-inc.com;
-          Tue, 02 Aug 2022 11:03:43 +0800
+          Tue, 02 Aug 2022 11:03:48 +0800
 From:   Jingbo Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com
 Cc:     linux-kernel@vger.kernel.org, xiang@kernel.org
-Subject: [PATCH RFC 1/9] cachefiles: improve FSCACHE_COOKIE_NO_DATA_TO_READ optimization
-Date:   Tue,  2 Aug 2022 11:03:34 +0800
-Message-Id: <20220802030342.46302-2-jefflexu@linux.alibaba.com>
+Subject: [PATCH RFC 6/9] cachefiles: check content map on read/write
+Date:   Tue,  2 Aug 2022 11:03:39 +0800
+Message-Id: <20220802030342.46302-7-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220802030342.46302-1-jefflexu@linux.alibaba.com>
 References: <20220802030342.46302-1-jefflexu@linux.alibaba.com>
@@ -34,145 +34,153 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the following introduced content map feature,
-cachefiles_prepare_[read|write] can query if the requested range is
-cached through either SEEK_[DATA|HOLE] llseek or a self maintained
-bitmap according to object->content_info.
-
-For already existing backing files, content_info can be derived from the
-xattr of the backing file. While for newly created tmpfile, content_info
-is initialized when the backing file is written for the first time. This
-time sequence requires FSCACHE_COOKIE_NO_DATA_TO_READ optimization, so
-that llseek will only be called after the first write, i.e. after
-content_info has been initializaed.
-
-This patch includes following changes:
-
-1. Enable NO_DATA optimization in cachefiles_prepare_[read|write].
-
-2. Clear FSCACHE_COOKIE_NO_DATA_TO_READ on first write to the backing
-   file.
-
-When working in non-on-demand mode, FSCACHE_COOKIE_NO_DATA_TO_READ is
-cleared when a_ops->release_folio() called. While for on-demand mode,
-there's a retry logic in cachefiles_prepare_read(), i.e. the requested
-range will be checked for the second time after the on-demand read, thus
-FSCACHE_COOKIE_NO_DATA_TO_READ needs to be cleared for on-demand mode
-once write completes.
-
-3. Improve the setting/clearing of FSCACHE_COOKIE_NO_DATA_TO_READ in
-on-demand mode.
-
-Since now we rely on NO_DATA optimization when the backing file is
-actually tmpfile, the setting of FSCACHE_COOKIE_NO_DATA_TO_READ flag in
-on-demand mode is delayed until the size of the backing file is acquired
-when copen completes, so that FSCACHE_COOKIE_NO_DATA_TO_READ flag of
-tmpfile can be retained.
+cachefiles_find_next_granule()/cachefiles_find_next_hole() are used to
+check if the requested range has been cached or not. The return value of
+these two functions imitates that of SEEK_[DATA|HOLE], so that the
+existing codes can be resued as much as possible.
 
 Signed-off-by: Jingbo Xu <jefflexu@linux.alibaba.com>
 ---
- fs/cachefiles/io.c       | 20 +++++++++++++-------
- fs/cachefiles/ondemand.c |  5 +----
- fs/fscache/cookie.c      |  2 +-
- 3 files changed, 15 insertions(+), 12 deletions(-)
+ fs/cachefiles/content-map.c | 30 ++++++++++++++++++++++++++++++
+ fs/cachefiles/internal.h    |  4 ++++
+ fs/cachefiles/io.c          | 36 +++++++++++++++++++++++++++++++-----
+ 3 files changed, 65 insertions(+), 5 deletions(-)
 
+diff --git a/fs/cachefiles/content-map.c b/fs/cachefiles/content-map.c
+index 877ff79e181b..949ec5d9e4c9 100644
+--- a/fs/cachefiles/content-map.c
++++ b/fs/cachefiles/content-map.c
+@@ -220,3 +220,33 @@ void cachefiles_mark_content_map(struct cachefiles_object *object,
+ 	read_unlock_bh(&object->content_map_lock);
+ }
+ 
++loff_t cachefiles_find_next_granule(struct cachefiles_object *object,
++				    loff_t start)
++{
++	unsigned long size, granule = start / CACHEFILES_GRAN_SIZE;
++	loff_t result;
++
++	read_lock_bh(&object->content_map_lock);
++	size = object->content_map_size * BITS_PER_BYTE;
++	result = find_next_bit(object->content_map, size, granule);
++	read_unlock_bh(&object->content_map_lock);
++
++	if (result == size)
++		return -ENXIO;
++	return result * CACHEFILES_GRAN_SIZE;
++}
++
++loff_t cachefiles_find_next_hole(struct cachefiles_object *object,
++				 loff_t start)
++{
++	unsigned long size, granule = start / CACHEFILES_GRAN_SIZE;
++	loff_t result;
++
++	read_lock_bh(&object->content_map_lock);
++	size = object->content_map_size * BITS_PER_BYTE;
++	result = find_next_zero_bit(object->content_map, size, granule);
++	read_unlock_bh(&object->content_map_lock);
++
++	return min_t(loff_t, result * CACHEFILES_GRAN_SIZE,
++			     object->cookie->object_size);
++}
+diff --git a/fs/cachefiles/internal.h b/fs/cachefiles/internal.h
+index c252746c8f9b..506700809a6d 100644
+--- a/fs/cachefiles/internal.h
++++ b/fs/cachefiles/internal.h
+@@ -183,6 +183,10 @@ extern int cachefiles_load_content_map(struct cachefiles_object *object);
+ extern void cachefiles_save_content_map(struct cachefiles_object *object);
+ extern void cachefiles_mark_content_map(struct cachefiles_object *object,
+ 					loff_t start, loff_t len);
++extern loff_t cachefiles_find_next_granule(struct cachefiles_object *object,
++					   loff_t start);
++extern loff_t cachefiles_find_next_hole(struct cachefiles_object *object,
++					loff_t start);
+ 
+ /*
+  * daemon.c
 diff --git a/fs/cachefiles/io.c b/fs/cachefiles/io.c
-index 000a28f46e59..b513d9bf81f1 100644
+index 27171fac649e..5c7c84cdafea 100644
 --- a/fs/cachefiles/io.c
 +++ b/fs/cachefiles/io.c
-@@ -255,6 +255,7 @@ static void cachefiles_write_complete(struct kiocb *iocb, long ret)
- {
- 	struct cachefiles_kiocb *ki = container_of(iocb, struct cachefiles_kiocb, iocb);
- 	struct cachefiles_object *object = ki->object;
-+	struct fscache_cookie *cookie = object->cookie;
- 	struct inode *inode = file_inode(ki->iocb.ki_filp);
+@@ -30,6 +30,32 @@ struct cachefiles_kiocb {
+ 	u64			b_writing;
+ };
  
- 	_enter("%ld", ret);
-@@ -269,6 +270,9 @@ static void cachefiles_write_complete(struct kiocb *iocb, long ret)
- 
- 	atomic_long_sub(ki->b_writing, &object->volume->cache->b_writing);
- 	set_bit(FSCACHE_COOKIE_HAVE_DATA, &object->cookie->flags);
-+	if (cookie->advice & FSCACHE_ADV_WANT_CACHE_SIZE &&
-+	    test_bit(FSCACHE_COOKIE_NO_DATA_TO_READ, &cookie->flags))
-+		clear_bit(FSCACHE_COOKIE_NO_DATA_TO_READ, &cookie->flags);
- 	if (ki->term_func)
- 		ki->term_func(ki->term_func_priv, ret, ki->was_async);
- 	cachefiles_put_kiocb(ki);
-@@ -413,13 +417,6 @@ static enum netfs_io_source cachefiles_prepare_read(struct netfs_io_subrequest *
- 		goto out_no_object;
- 	}
- 
--	if (test_bit(FSCACHE_COOKIE_NO_DATA_TO_READ, &cookie->flags)) {
--		__set_bit(NETFS_SREQ_COPY_TO_CACHE, &subreq->flags);
--		why = cachefiles_trace_read_no_data;
--		if (!test_bit(NETFS_SREQ_ONDEMAND, &subreq->flags))
--			goto out_no_object;
--	}
--
- 	/* The object and the file may be being created in the background. */
- 	if (!file) {
- 		why = cachefiles_trace_read_no_file;
-@@ -434,6 +431,11 @@ static enum netfs_io_source cachefiles_prepare_read(struct netfs_io_subrequest *
- 	object = cachefiles_cres_object(cres);
- 	cache = object->volume->cache;
- 	cachefiles_begin_secure(cache, &saved_cred);
-+
-+	if (test_bit(FSCACHE_COOKIE_NO_DATA_TO_READ, &cookie->flags)) {
-+		why = cachefiles_trace_read_no_data;
-+		goto download_and_store;
++static loff_t cachefiles_seek_data(struct cachefiles_object *object,
++		struct file *file, loff_t start)
++{
++	switch (object->content_info) {
++	case CACHEFILES_CONTENT_MAP:
++		return cachefiles_find_next_granule(object, start);
++	case CACHEFILES_CONTENT_BACKFS_MAP:
++		return vfs_llseek(file, start, SEEK_DATA);
++	default:
++		return -EINVAL;
 +	}
++}
++
++static loff_t cachefiles_seek_hole(struct cachefiles_object *object,
++		struct file *file, loff_t start)
++{
++	switch (object->content_info) {
++	case CACHEFILES_CONTENT_MAP:
++		return cachefiles_find_next_hole(object, start);
++	case CACHEFILES_CONTENT_BACKFS_MAP:
++		return vfs_llseek(file, start, SEEK_HOLE);
++	default:
++		return -EINVAL;
++	}
++}
++
+ static inline void cachefiles_put_kiocb(struct cachefiles_kiocb *ki)
+ {
+ 	if (refcount_dec_and_test(&ki->ki_refcnt)) {
+@@ -103,7 +129,7 @@ static int cachefiles_read(struct netfs_cache_resources *cres,
+ 
+ 		off2 = cachefiles_inject_read_error();
+ 		if (off2 == 0)
+-			off2 = vfs_llseek(file, off, SEEK_DATA);
++			off2 = cachefiles_seek_data(object, file, off);
+ 		if (off2 < 0 && off2 >= (loff_t)-MAX_ERRNO && off2 != -ENXIO) {
+ 			skipped = 0;
+ 			ret = off2;
+@@ -442,7 +468,7 @@ static enum netfs_io_source cachefiles_prepare_read(struct netfs_io_subrequest *
  retry:
  	off = cachefiles_inject_read_error();
  	if (off == 0)
-@@ -510,6 +512,7 @@ int __cachefiles_prepare_write(struct cachefiles_object *object,
- 			       bool no_space_allocated_yet)
- {
- 	struct cachefiles_cache *cache = object->volume->cache;
-+	struct fscache_cookie *cookie = object->cookie;
- 	loff_t start = *_start, pos;
- 	size_t len = *_len, down;
- 	int ret;
-@@ -526,6 +529,9 @@ int __cachefiles_prepare_write(struct cachefiles_object *object,
- 	if (no_space_allocated_yet)
- 		goto check_space;
+-		off = vfs_llseek(file, subreq->start, SEEK_DATA);
++		off = cachefiles_seek_data(object, file, subreq->start);
+ 	if (off < 0 && off >= (loff_t)-MAX_ERRNO) {
+ 		if (off == (loff_t)-ENXIO) {
+ 			why = cachefiles_trace_read_seek_nxio;
+@@ -468,7 +494,7 @@ static enum netfs_io_source cachefiles_prepare_read(struct netfs_io_subrequest *
  
-+	if (test_bit(FSCACHE_COOKIE_NO_DATA_TO_READ, &cookie->flags))
-+		goto check_space;
-+
+ 	to = cachefiles_inject_read_error();
+ 	if (to == 0)
+-		to = vfs_llseek(file, subreq->start, SEEK_HOLE);
++		to = cachefiles_seek_hole(object, file, subreq->start);
+ 	if (to < 0 && to >= (loff_t)-MAX_ERRNO) {
+ 		trace_cachefiles_io_error(object, file_inode(file), to,
+ 					  cachefiles_trace_seek_error);
+@@ -537,7 +563,7 @@ int __cachefiles_prepare_write(struct cachefiles_object *object,
+ 
  	pos = cachefiles_inject_read_error();
  	if (pos == 0)
- 		pos = vfs_llseek(file, *_start, SEEK_DATA);
-diff --git a/fs/cachefiles/ondemand.c b/fs/cachefiles/ondemand.c
-index 1fee702d5529..a317857e2dfd 100644
---- a/fs/cachefiles/ondemand.c
-+++ b/fs/cachefiles/ondemand.c
-@@ -166,12 +166,9 @@ int cachefiles_ondemand_copen(struct cachefiles_cache *cache, char *args)
+-		pos = vfs_llseek(file, *_start, SEEK_DATA);
++		pos = cachefiles_seek_data(object, file, *_start);
+ 	if (pos < 0 && pos >= (loff_t)-MAX_ERRNO) {
+ 		if (pos == -ENXIO)
+ 			goto check_space; /* Unallocated tail */
+@@ -558,7 +584,7 @@ int __cachefiles_prepare_write(struct cachefiles_object *object,
  
- 	cookie = req->object->cookie;
- 	cookie->object_size = size;
--	if (size)
--		clear_bit(FSCACHE_COOKIE_NO_DATA_TO_READ, &cookie->flags);
--	else
-+	if (size == 0)
- 		set_bit(FSCACHE_COOKIE_NO_DATA_TO_READ, &cookie->flags);
- 	trace_cachefiles_ondemand_copen(req->object, id, size);
--
- out:
- 	complete(&req->done);
- 	return ret;
-diff --git a/fs/fscache/cookie.c b/fs/fscache/cookie.c
-index 74920826d8f6..49c269c078eb 100644
---- a/fs/fscache/cookie.c
-+++ b/fs/fscache/cookie.c
-@@ -340,7 +340,7 @@ static struct fscache_cookie *fscache_alloc_cookie(
- 	cookie->key_len		= index_key_len;
- 	cookie->aux_len		= aux_data_len;
- 	cookie->object_size	= object_size;
--	if (object_size == 0)
-+	if (object_size == 0 && !(advice & FSCACHE_ADV_WANT_CACHE_SIZE))
- 		__set_bit(FSCACHE_COOKIE_NO_DATA_TO_READ, &cookie->flags);
- 
- 	if (fscache_set_key(cookie, index_key, index_key_len) < 0)
+ 	pos = cachefiles_inject_read_error();
+ 	if (pos == 0)
+-		pos = vfs_llseek(file, *_start, SEEK_HOLE);
++		pos = cachefiles_seek_hole(object, file, *_start);
+ 	if (pos < 0 && pos >= (loff_t)-MAX_ERRNO) {
+ 		trace_cachefiles_io_error(object, file_inode(file), pos,
+ 					  cachefiles_trace_seek_error);
 -- 
 2.27.0
 
