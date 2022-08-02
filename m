@@ -2,67 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D2A5C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 11:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0940AC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 11:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236278AbiHBL5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 07:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48116 "EHLO
+        id S236581AbiHBL5p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 07:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231208AbiHBL5h (ORCPT
+        with ESMTP id S231208AbiHBL5k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 07:57:37 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB964505F;
-        Tue,  2 Aug 2022 04:57:31 -0700 (PDT)
-X-QQ-mid: bizesmtp78t1659441447ts60284y
-Received: from kali.lan ( [125.69.43.47])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 02 Aug 2022 19:57:25 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000020
-X-QQ-FEAT: UMQM+3VOEYv6RDgJkmFUjN17c0U9/EK4D0r5xboTRYTlJWMTxCFW/bhL5ztfh
-        KN732jL5tRiga2aMxYF8BcMwrkMrS5DVX52P78HCD5fZeGC3njHNCkGKQ7At5ZN2mTMUGqC
-        QNM7Fi2FX10qdFu/2Uw8ShsohRPtrCdLWeuSDtzALYbTpyyRsZd0+q3YRy1QlzW75U/9ybp
-        VhnMoZpIym+kpq8D7gdhwxkaDY74TrxwgI5uMR04LkyK9jA9YgByi8E87fnjPSxYVsB52Z8
-        sKWW3IuhvWq2FICcxuTF93NZTh3T3qKjyB62EV6daO+wvWPHqXd3H8hBAzw/bX5yZH2vb0S
-        x7UgxR3TwJDnGOkF0TZaJOTewGp1xy68HnZNlplqY36XH3qIqw=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     sre@kernel.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] power: supply: tps65217: Fix comment typo
-Date:   Wed,  3 Aug 2022 03:56:38 +0800
-Message-Id: <20220802195638.4324-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 2 Aug 2022 07:57:40 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3388A4505F;
+        Tue,  2 Aug 2022 04:57:39 -0700 (PDT)
+Date:   Tue, 02 Aug 2022 11:57:36 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1659441457;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sCu9c6Oi0J6bIMX6Dxg5upP4pi0J0EeFZvvwPRwJEdE=;
+        b=juW5jCk6V0hHxIT8LfaS2RTUioa3N8Ohbp/xhGMdkGb9hUqTcjcfNwbotEYs67pVfduY2u
+        a7a4A2ul4QlYzvCbN6EH9vBgvB6RJHDEdqE0QhubZR/Vmi7C0X+3vhWqtfEDdRCEkygcWc
+        oidl6Ns7I15PMHQx1QoxKpZeV+SYEPI1JV1LahHnaI2IDXVMJhwR0jS2MfmuApgZ5yk2JR
+        XES/sMXUbiObK2JuPisc3niDDRmNQQWYw2pp3tm8Ij9ftaqC9Eqkz6OawFdrO98CIhOJ9P
+        Rjl/wN9h1nMcSIlYWxlGeAfMCaRJ3oTsDXZh+BZnJ1d8yCAm1VF1MinCD2G2ZQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1659441457;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sCu9c6Oi0J6bIMX6Dxg5upP4pi0J0EeFZvvwPRwJEdE=;
+        b=IycYctxPUhmpgfBoSUKrQSIPuRSv+lfkXv09niZCFQV56lnKGEWQoYfJt/nZ0k/bX+m0lp
+        H8tvMMO9iUvOxsAQ==
+From:   "tip-bot2 for Chenyi Qiang" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/bus_lock: Don't assume the init value of
+ DEBUGCTLMSR.BUS_LOCK_DETECT to be zero
+Cc:     Chenyi Qiang <chenyi.qiang@intel.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Tony Luck <tony.luck@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220802033206.21333-1-chenyi.qiang@intel.com>
+References: <20220802033206.21333-1-chenyi.qiang@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Message-ID: <165944145642.15455.3291714201522580365.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in the comment, remove one.
+The following commit has been merged into the x86/urgent branch of tip:
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+Commit-ID:     ffa6482e461ff550325356ae705b79e256702ea9
+Gitweb:        https://git.kernel.org/tip/ffa6482e461ff550325356ae705b79e256702ea9
+Author:        Chenyi Qiang <chenyi.qiang@intel.com>
+AuthorDate:    Tue, 02 Aug 2022 11:32:06 +08:00
+Committer:     Ingo Molnar <mingo@kernel.org>
+CommitterDate: Tue, 02 Aug 2022 13:42:00 +02:00
+
+x86/bus_lock: Don't assume the init value of DEBUGCTLMSR.BUS_LOCK_DETECT to be zero
+
+It's possible that this kernel has been kexec'd from a kernel that
+enabled bus lock detection, or (hypothetically) BIOS/firmware has set
+DEBUGCTLMSR_BUS_LOCK_DETECT.
+
+Disable bus lock detection explicitly if not wanted.
+
+Fixes: ebb1064e7c2e ("x86/traps: Handle #DB for bus lock")
+Signed-off-by: Chenyi Qiang <chenyi.qiang@intel.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Link: https://lore.kernel.org/r/20220802033206.21333-1-chenyi.qiang@intel.com
 ---
- drivers/power/supply/tps65217_charger.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kernel/cpu/intel.c | 27 ++++++++++++++-------------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/power/supply/tps65217_charger.c b/drivers/power/supply/tps65217_charger.c
-index ba33d1617e0b..a4bc9f2a10bc 100644
---- a/drivers/power/supply/tps65217_charger.c
-+++ b/drivers/power/supply/tps65217_charger.c
-@@ -50,7 +50,7 @@ static int tps65217_config_charger(struct tps65217_charger *charger)
- 	 * tps65217 rev. G, p. 31 (see p. 32 for NTC schematic)
- 	 *
- 	 * The device can be configured to support a 100k NTC (B = 3960) by
--	 * setting the the NTC_TYPE bit in register CHGCONFIG1 to 1. However it
-+	 * setting the NTC_TYPE bit in register CHGCONFIG1 to 1. However it
- 	 * is not recommended to do so. In sleep mode, the charger continues
- 	 * charging the battery, but all register values are reset to default
- 	 * values. Therefore, the charger would get the wrong temperature
--- 
-2.35.1
-
+diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
+index 663f6e6..2d7ea54 100644
+--- a/arch/x86/kernel/cpu/intel.c
++++ b/arch/x86/kernel/cpu/intel.c
+@@ -1216,22 +1216,23 @@ static void bus_lock_init(void)
+ {
+ 	u64 val;
+ 
+-	/*
+-	 * Warn and fatal are handled by #AC for split lock if #AC for
+-	 * split lock is supported.
+-	 */
+-	if (!boot_cpu_has(X86_FEATURE_BUS_LOCK_DETECT) ||
+-	    (boot_cpu_has(X86_FEATURE_SPLIT_LOCK_DETECT) &&
+-	    (sld_state == sld_warn || sld_state == sld_fatal)) ||
+-	    sld_state == sld_off)
++	if (!boot_cpu_has(X86_FEATURE_BUS_LOCK_DETECT))
+ 		return;
+ 
+-	/*
+-	 * Enable #DB for bus lock. All bus locks are handled in #DB except
+-	 * split locks are handled in #AC in the fatal case.
+-	 */
+ 	rdmsrl(MSR_IA32_DEBUGCTLMSR, val);
+-	val |= DEBUGCTLMSR_BUS_LOCK_DETECT;
++
++	if ((boot_cpu_has(X86_FEATURE_SPLIT_LOCK_DETECT) &&
++	    (sld_state == sld_warn || sld_state == sld_fatal)) ||
++	    sld_state == sld_off) {
++		/*
++		 * Warn and fatal are handled by #AC for split lock if #AC for
++		 * split lock is supported.
++		 */
++		val &= ~DEBUGCTLMSR_BUS_LOCK_DETECT;
++	} else {
++		val |= DEBUGCTLMSR_BUS_LOCK_DETECT;
++	}
++
+ 	wrmsrl(MSR_IA32_DEBUGCTLMSR, val);
+ }
+ 
