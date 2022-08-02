@@ -2,82 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70113C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:19:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 970FDC19F28
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233960AbiHBRTE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 13:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48300 "EHLO
+        id S234059AbiHBRV1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 13:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233840AbiHBRTC (ORCPT
+        with ESMTP id S231132AbiHBRVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 13:19:02 -0400
-Received: from mx01.ayax.eu (mx01.ayax.eu [188.137.98.110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FC239BBB
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 10:18:59 -0700 (PDT)
-Received: from [192.168.192.146] (port=52064 helo=nx64de-df6d00)
-        by mx01.ayax.eu with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <gszymaszek@short.pl>)
-        id 1oIvXZ-0003VR-Qw; Tue, 02 Aug 2022 19:18:46 +0200
-Date:   Tue, 2 Aug 2022 19:18:44 +0200
-From:   Grzegorz Szymaszek <gszymaszek@short.pl>
-To:     Larry Finger <Larry.Finger@lwfinger.net>
-Cc:     Greg KH <greg@kroah.com>, Phillip Potter <phil@philpotter.co.uk>,
-        Grzegorz Szymaszek <gszymaszek@short.pl>,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-Subject: [PATCH] staging: r8188eu: add firmware dependency
-Message-ID: <YulcdKfhA8dPQ78s@nx64de-df6d00>
-Mail-Followup-To: Grzegorz Szymaszek <gszymaszek@short.pl>,
-        Larry Finger <Larry.Finger@lwfinger.net>, Greg KH <greg@kroah.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-References: <YukkBu3TNODO3or9@nx64de-df6d00>
- <YukvnVWuhUeOgRyZ@kroah.com>
- <Yukx8KEEOhKTJ7HQ@nx64de-df6d00>
- <c82114b6-1003-bfb5-0550-98dcbf1a3761@lwfinger.net>
+        Tue, 2 Aug 2022 13:21:25 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4636A45F54
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 10:21:24 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id y11so11192195qvn.3
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 10:21:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=tA46KDTeJHR4Zln1p5daEgLhZevj2TS3FGOjau7kOXQ=;
+        b=XO1khEbSy72ep3NUPi7b7KYWEG2Ary43Fb6MZB6eDmX7JaW1PB6XwfIfkDLLzGO6qa
+         C9nJY/kU1yzbitC3lb/EtVNxB7KDY9zVzU4zR+0dka61jJI7bZm+JK/iAkCtRSHrQWwK
+         m2XSzIMac2vkdNU8ebzLTVJA0vXXP5BWZwo7E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=tA46KDTeJHR4Zln1p5daEgLhZevj2TS3FGOjau7kOXQ=;
+        b=mn09fXCbrFMNU08lrgBX/SM8KQa79Klq5lNHS2xqL4HCzrBEDg6nTCsuztZ7loiizx
+         v2maADSZvKsaDyM2r+56GicArYnmzHb+4Tv4r9MaX6YG1JbEwugeYB193NNAfopAu1jU
+         ljsolt6nwUJ2eYlm0qAIou6l+LEv4pi9UAbHhwJOOR0hJV4cp40xFnlsWsKtnn6UbdcP
+         Vmh4a9Xnqo2vVcoFtgpeenvVx5KasaLja6iA5XIoyqdIJgnlr63Nl8iwGusb7uO2GBKr
+         tDqkLmw/TwWzET2KYgV39PLgeykiR/hdOtWp7VtRWKAxmfwx8X9W3JLYUZOjnDoOVwvM
+         5wuA==
+X-Gm-Message-State: ACgBeo10hzLK3sOdn9P9Utl5+M4B/F056BXqBdId4DL2XhILNClKWQIm
+        FEtOMPiHSLAUO6Z83P/VSsdMqg==
+X-Google-Smtp-Source: AA6agR4xpe82RYO0CXsU08vFsjQwecf+xOW1tCbyXfCw9F6tZWRxPawBYDmxaqoxBmhIR6zRb6DQGg==
+X-Received: by 2002:a05:6214:5196:b0:476:6b95:8dd1 with SMTP id kl22-20020a056214519600b004766b958dd1mr11732529qvb.41.1659460883415;
+        Tue, 02 Aug 2022 10:21:23 -0700 (PDT)
+Received: from nitro.local (host-142-67-156-76.public.eastlink.ca. [142.67.156.76])
+        by smtp.gmail.com with ESMTPSA id t18-20020a05620a451200b006b5e533e954sm11470123qkp.5.2022.08.02.10.21.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Aug 2022 10:21:23 -0700 (PDT)
+Date:   Tue, 2 Aug 2022 13:21:21 -0400
+From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH v1 2/5] maintainer-pgp-guide: remove keyserver
+ instructions
+Message-ID: <20220802172121.n47vnrtbxsyj4b6d@nitro.local>
+References: <20220727-docs-pgp-guide-v1-0-c48fb06cb9af@linuxfoundation.org>
+ <20220727-docs-pgp-guide-v1-2-c48fb06cb9af@linuxfoundation.org>
+ <78f782da-1af9-a068-3aa5-1d6102f5e8c1@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+In-Reply-To: <78f782da-1af9-a068-3aa5-1d6102f5e8c1@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The old rtl8188eu module, removed in commit 55dfa29b43d2 ("staging:
-rtl8188eu: remove rtl8188eu driver from staging dir") (Linux kernel
-v5.15-rc1), required (through a MODULE_FIRMWARE call()) the
-rtlwifi/rtl8188eufw.bin firmware file, which the new r8188eu driver no
-longer requires.
+On Fri, Jul 29, 2022 at 08:47:02AM +0700, Bagas Sanjaya wrote:
+> On 7/29/22 03:57, Konstantin Ryabitsev wrote:
+> > Keyservers are largely a thing of the past with the replacement systems
+> > like keys.openpgp.net specifically designed to offer no support for the
+> > web of trust. Remove all sections that talk about keyservers and add a
+> > small section with the link to kernel.org documentation that talks about
+> > using the kernel.org public key repository.
+> > 
+> 
+> AFAIK, keyservers are synchronized (federated).
 
-I have tested a few RTL8188EUS-based Wi-Fi cards and, while supported by
-both drivers, they do not work when using the new one and the firmware
-wasn't manually loaded. According to Larry Finger, the module
-maintainer, all such cards need the firmware and the driver should
-depend on it (see the linked mails).
+This is only the case for the keyserver network that has to the large degree
+gone dark. The few remaining keyservers are either configured to be
+non-federating (pgp.mit.edu, afaik), or written without that feature in the
+first place (keys.openpgp.org).
 
-Add a proper MODULE_FIRMWARE() call, like it was done in the old driver.
+> For example, when I submit
+> my key to keys.openpgp.net, other keyservers (like keyserver.ubuntu.com
+> that I use) also gets a copy of my key.
 
-Thanks to Greg Kroah-Hartman and Larry Finger for quick responses to my
-questions.
+I would be very much susprised if that's the case (unless the ubuntu keyserver
+pulls updates from keys.openpgp.org). Last I looked, hagrid-keyserver did not
+support replication/federation.
 
-Link: https://answers.launchpad.net/ubuntu/+source/linux-meta-hwe-5.15/+question/702611
-Link: https://lore.kernel.org/lkml/YukkBu3TNODO3or9@nx64de-df6d00/
-Signed-off-by: Grzegorz Szymaszek <gszymaszek@short.pl>
----
- drivers/staging/r8188eu/os_dep/os_intfs.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/staging/r8188eu/os_dep/os_intfs.c b/drivers/staging/r8188eu/os_dep/os_intfs.c
-index 891c85b088ca..5bd3022e4b40 100644
---- a/drivers/staging/r8188eu/os_dep/os_intfs.c
-+++ b/drivers/staging/r8188eu/os_dep/os_intfs.c
-@@ -18,6 +18,7 @@ MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Realtek Wireless Lan Driver");
- MODULE_AUTHOR("Realtek Semiconductor Corp.");
- MODULE_VERSION(DRIVERVERSION);
-+MODULE_FIRMWARE("rtlwifi/rtl8188eufw.bin");
- 
- #define CONFIG_BR_EXT_BRNAME "br0"
- #define RTW_NOTCH_FILTER 0 /* 0:Disable, 1:Enable, */
--- 
-2.35.1
+-K
