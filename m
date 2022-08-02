@@ -2,83 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E182EC00144
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 02:41:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBD7C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 02:47:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235767AbiHBClo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 22:41:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44630 "EHLO
+        id S235740AbiHBCrt convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 22:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234368AbiHBCll (ORCPT
+        with ESMTP id S231213AbiHBCrm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 22:41:41 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7541A385;
-        Mon,  1 Aug 2022 19:41:40 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id z25so20076005lfr.2;
-        Mon, 01 Aug 2022 19:41:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=RVfAHvJmZZxroMpdSEie4EQQNZ/UFzH3/yFbd38Icu4=;
-        b=ZXwelcGKwyoUObgIU4lZABQ8/1Vwpwlbt5cDHwcZx5PMKRbepuYXiGsb8u+lK7IFna
-         U+tYLkPTFV08dbmA+VPkTGpRRBawhikVkgiXCEy3WIH5xtcUrAtylMLWwcvUB+Zaz2w0
-         u+jFyT4RpHrw/VEZ3dEJDV2/CW7qW44IN1EL5MBm+Z6y1grXPH7KqXTm9KH99+tRxreP
-         ReM2EKe8tiX97vfM22C7+bQu+LpsTmlnld844aH+r0+8OeCIRvWIr7AWUVzA6CmYQ1Qs
-         F4k8QUjYsuhPI+lia0qSJeZyQrNFgrwPIvLnIAvGS/0js21aecAAB8jQUEMU8r3aCiNo
-         WQhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=RVfAHvJmZZxroMpdSEie4EQQNZ/UFzH3/yFbd38Icu4=;
-        b=4ZjIq4Nl0muskIsf79jXj/DQ31Q+ubGSXwpjLFLm7pi+rHoH/MhD+M2+oESct0fBk9
-         2tW7UG1DHgugtZhGCOSYEGvQv9aJ0djbI9XbIhuiJERyYPLd9Vn6Rx4Zrgbl377LNkji
-         byot1KVy7kpuXjEif+PaCrBSz2ykOkbys4RoZiKMEocPFLvvGf81aiec/SS1d+u9AWDe
-         G3mpTBO5gEaIKOeyqmIuvejP5YFpB2UTCSY0IKoBnjt7juVQxjhwN9vORtNLrCy8Z32n
-         Nj7h07byvaP+4QS36xywIWjAH2c8vz7uQLViK6s/g4KO7Ntg1f0CRvX/mNaM0Sos6j84
-         OkoA==
-X-Gm-Message-State: ACgBeo1L3rvbWm2aoD9rOSnDFVCARE3nlwH0l31gWsMPwUlSvyiP5eQu
-        e23IcaS7MKtz6t6CyNA9LhYisx1TP9EcDk/zhA==
-X-Google-Smtp-Source: AA6agR7jKTCbap/c8xnR4bmmgRogo8a+0GpwQTpFundzIS8X2Xawj2Z3G8d4qMRgGEpeCImxH2a5Rzhx8j9xtyjQs9c=
-X-Received: by 2002:a05:6512:3096:b0:48b:4f7:9019 with SMTP id
- z22-20020a056512309600b0048b04f79019mr1317541lfd.208.1659408098275; Mon, 01
- Aug 2022 19:41:38 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220802103230.v3.1.I699244ea7efbd326a34a6dfd9b5a31e78400cf68@changeid>
-In-Reply-To: <20220802103230.v3.1.I699244ea7efbd326a34a6dfd9b5a31e78400cf68@changeid>
-From:   Stanley Chu <chu.stanley@gmail.com>
-Date:   Tue, 2 Aug 2022 10:41:25 +0800
-Message-ID: <CAGaU9a8BYcymZBKp9YzyAODqEmGt88woEoEMKY+ShCg=X1eAgA@mail.gmail.com>
-Subject: Re: [PATCH v3] ufs: core: ufshcd: use local_clock() for debugging timestamps
-To:     Daniil Lunev <dlunev@chromium.org>
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Daejun Park <daejun7.park@samsung.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 1 Aug 2022 22:47:42 -0400
+Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF691AF28;
+        Mon,  1 Aug 2022 19:47:34 -0700 (PDT)
+Received: from proxy01.sjtu.edu.cn (unknown [202.112.26.54])
+        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id D39291008B391;
+        Tue,  2 Aug 2022 10:47:32 +0800 (CST)
+Received: from localhost (localhost [127.0.0.1])
+        by proxy01.sjtu.edu.cn (Postfix) with ESMTP id AC7D6203D801B;
+        Tue,  2 Aug 2022 10:47:32 +0800 (CST)
+X-Virus-Scanned: amavisd-new at proxy01.sjtu.edu.cn
+Received: from proxy01.sjtu.edu.cn ([127.0.0.1])
+        by localhost (proxy01.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id z8dqFZ4H9EgJ; Tue,  2 Aug 2022 10:47:32 +0800 (CST)
+Received: from smtpclient.apple (unknown [58.45.124.125])
+        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
+        by proxy01.sjtu.edu.cn (Postfix) with ESMTPSA id D593B203D8011;
+        Tue,  2 Aug 2022 10:47:05 +0800 (CST)
+From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
+Content-Type: text/plain;
+        charset=us-ascii
+Content-Transfer-Encoding: 8BIT
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.20.0.1.32\))
+Subject: Re: [RFC 3/5] vhost_test: batch used buffer
+Date:   Tue, 2 Aug 2022 10:47:01 +0800
+In-Reply-To: <CAJaqyWfgUqdP6mkOUdouvQSst=qc7MOTaigC-EiTg9-gojHqzg@mail.gmail.com>
+Cc:     jasowang <jasowang@redhat.com>, sgarzare <sgarzare@redhat.com>,
+        Michael Tsirkin <mst@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>
+To:     eperezma <eperezma@redhat.com>
+Message-Id: <5E347090-9EB2-4961-B435-D6783CB46CAF@sjtu.edu.cn>
+X-Mailer: Apple Mail (2.3693.20.0.1.32)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 2, 2022 at 8:32 AM Daniil Lunev <dlunev@chromium.org> wrote:
->
-> CLOCK_MONOTONIC is not advanced when the system is in suspend. This
-> becomes problematic when debugging issues related to suspend-resume:
-> the timestamps printed by ufshcd_print_trs can not be correlated with
-> dmesg entries, which are timestamped with local_clock().
->
-> This CL changes the used clock to local_clock() for the informational
-> timestamp variables and adds mirroring *_local_clock instances for
-> variables used in subsequent derevations (to not change the semantics of
-> those derevations).
->
-> Signed-off-by: Daniil Lunev <dlunev@chromium.org>
 
-Acked-by: Stanley Chu <stanley.chu@mediatek.com>
+
+----- Original Message -----
+From: "eperezma" <eperezma@redhat.com>
+To: "Guo Zhi" <qtxuning1999@sjtu.edu.cn>
+Cc: "jasowang" <jasowang@redhat.com>, "sgarzare" <sgarzare@redhat.com>, "Michael Tsirkin" <mst@redhat.com>, "netdev" <netdev@vger.kernel.org>, "linux-kernel" <linux-kernel@vger.kernel.org>, "kvm list" <kvm@vger.kernel.org>, "virtualization" <virtualization@lists.linux-foundation.org>
+Sent: Friday, July 22, 2022 3:12:47 PM
+Subject: Re: [RFC 3/5] vhost_test: batch used buffer
+
+On Thu, Jul 21, 2022 at 10:44 AM Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
+> 
+> Only add to used ring when a batch a buffer have all been used.  And if
+> in order feature negotiated, add randomness to the used buffer's order,
+> test the ability of vhost to reorder batched buffer.
+> 
+> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+> ---
+> drivers/vhost/test.c | 15 ++++++++++++++-
+> 1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+> index bc8e7fb1e..1c9c40c11 100644
+> --- a/drivers/vhost/test.c
+> +++ b/drivers/vhost/test.c
+> @@ -43,6 +43,9 @@ struct vhost_test {
+> static void handle_vq(struct vhost_test *n)
+> {
+>        struct vhost_virtqueue *vq = &n->vqs[VHOST_TEST_VQ];
+> +       struct vring_used_elem *heads = kmalloc(sizeof(*heads)
+> +                       * vq->num, GFP_KERNEL);
+> +       int batch_idx = 0;
+>        unsigned out, in;
+>        int head;
+>        size_t len, total_len = 0;
+> @@ -84,11 +87,21 @@ static void handle_vq(struct vhost_test *n)
+>                        vq_err(vq, "Unexpected 0 len for TX\n");
+>                        break;
+>                }
+> -               vhost_add_used_and_signal(&n->dev, vq, head, 0);
+> +               heads[batch_idx].id = cpu_to_vhost32(vq, head);
+> +               heads[batch_idx++].len = cpu_to_vhost32(vq, len);
+>                total_len += len;
+>                if (unlikely(vhost_exceeds_weight(vq, 0, total_len)))
+>                        break;
+>        }
+> +       if (batch_idx) {
+> +               if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER) && batch_idx >= 2) {
+
+Maybe to add a module parameter to test this? Instead of trusting in
+feature negotiation, "unorder_used=1" or something like that.
+
+vhost.c:vhost_add_used_and_signal_n should support receiving buffers
+in order or out of order whether F_IN_ORDER is negotiated or not.
+
+Thanks!
+
+
+
+> +                       vhost_add_used_and_signal_n(&n->dev, vq, &heads[batch_idx / 2],
+> +                                                   batch_idx - batch_idx / 2);
+> +                       vhost_add_used_and_signal_n(&n->dev, vq, heads, batch_idx / 2);
+> +               } else {
+> +                       vhost_add_used_and_signal_n(&n->dev, vq, heads, batch_idx);
+> +               }
+> +       }
+> 
+>        mutex_unlock(&vq->mutex);
+> }
+> --
+> 2.17.1
