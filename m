@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E75DDC19F28
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BBAEC19F2C
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:40:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231752AbiHBPkZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 11:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41568 "EHLO
+        id S232500AbiHBPke (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 11:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230364AbiHBPkH (ORCPT
+        with ESMTP id S231539AbiHBPkS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 11:40:07 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4AA21839
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 08:40:05 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id u1so12264674lfq.4
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 08:40:05 -0700 (PDT)
+        Tue, 2 Aug 2022 11:40:18 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F362422BFD
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 08:40:08 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id bq11so17413048lfb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 08:40:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dwlezbvhXuRvV5TPdrQiV7stHxCGcT+SmzyEBBd3qdo=;
-        b=N0cpFWI/ylXfaxwVjxPbWzBvKvt2QFKUdosx2mmu90xftITQDuB0ZYnRy7mwtY9V4S
-         fKV4N4a0JXLzQGnTEkQ0zKxN4fPSw9cy1PHUakHUNQDMT+OPvI5WdBz6isCELWkd8yMd
-         HnSEtmi+U9i7LIPXMJ3duagQEsLMFapZZM9faQ/RZqzwltCwg6mER+DOUhNQpPuKePte
-         ayhHMD3GmAdEZQTX8syhL0/vfofvEbJBPqRP6v+jNDICrFtFQaU2hY6Uu/TUMZNHk4X6
-         ua3w22EcHqHW6WSNXICyCSPN47Mo9agZPv6RmLvHMkjrh+/JZ2STYwpZ2PzV30Qy/3u2
-         rrIQ==
+        bh=54qGZ5ZtcQLmbPgrY9r61txc+HSHHzp+1aVpwosOhFg=;
+        b=KbkrfsFx1CLARK2mO6QEEYEilbFtrSH16CB1lUAEp6DPy3veI1uxqdWYWeso30e2Vk
+         vFzPpoZFZFdY+4jXENjHpikimOalS7QAsEtYXmJg6vduKi5F5Z5K9v3NHfGA0bg0H3ZB
+         gMTRlXQboZHgI8XRWRwKDx0Dj1bwjRss00diD9ZsrzwXUps5Kbq/wu8cKBg1nzAK558z
+         NvtzMNTS7W+I9u5eGKCD2F7O4Ck7SoyeByf0KvZi7at74JrB0MOnulKq0TUQf/LQDso7
+         xfLx/1whPIHwSD5BbgPM4e9/xe52yVOvARwyH15C3ppOBE3Tvk729JApianqBYy0ayaq
+         3IFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dwlezbvhXuRvV5TPdrQiV7stHxCGcT+SmzyEBBd3qdo=;
-        b=alslC9LlsaHqmxkKptR1u4pJClmFlD6c0j966OLnzaa/rDHyIFF+6rfpG5lOTmjZk6
-         2fg3pjoazlnwt38NMagZGWZc/ggsb06lA0CkX4RpHRdIBtjWOd/Ru+Vjvo05VRaCBZxR
-         7xXJ/JDFbCEJZ89nabQVeRjAiw4kwSws8QTT0yS9qmHs+XMFmrXP/5ZQHLr7yeUKzBZj
-         L+s6rpcwcFsgZl/cgqbjt9OzdRUyZMhFUA7ykx6Luas7U/fSQKFOVOWeY62Ah9UT+XX5
-         u7RR6GGIglf81VKy9kxE8jZNs1WkGUFtRjeNptO9nNHTjeyQtqssxoYrNf0MyuzltRda
-         rtyg==
-X-Gm-Message-State: ACgBeo0W3Qkwlv6BZjS0dYdsJUGkm0Z9YkAovUss2Mc5wscjxrqFen9Y
-        jeOhbzO38sE7TMGOu93t1GbMyQ==
-X-Google-Smtp-Source: AA6agR5oggDH/S0CVwXycN1Z+nIz4U3RvOhhs5EFFUPMEIJLcH2s8mt3kCdoQKDVs+D3+6ECHMGMlQ==
-X-Received: by 2002:a05:6512:12c9:b0:48b:138d:c84f with SMTP id p9-20020a05651212c900b0048b138dc84fmr950215lfg.391.1659454803659;
-        Tue, 02 Aug 2022 08:40:03 -0700 (PDT)
+        bh=54qGZ5ZtcQLmbPgrY9r61txc+HSHHzp+1aVpwosOhFg=;
+        b=z9VqQYixl0Ea5f0/0ud7DsEcAvGydVinJwvrw2pp32FxoRo3Dc1XB1rEImB41uHdsn
+         ZsJq44nf76veeaQjSf8srE2jFLgxHnUUmBQrJIhXUQQHH0t3TE18+oH5yZ7rAuQFiuGv
+         7TReaiEffWpgQnJSvPCSm4zp4S/UAUjskaw6bQBDxEUocRUCHT8QtOJyeKaG/GjL7+kf
+         +klBtOUlbmCzBiItC6FVO1ErQl5zi6EAtYyolPA5u5u1OepWH0hubr1XUEodLPOGLW2j
+         Rwa3Et+YTzG1Zd8vgoMNA1ggJiXChttXH5+E3OvGaaM9CB/lLhjJXKW8CZmqjsedsgEW
+         3ZXQ==
+X-Gm-Message-State: AJIora/N9euG+bhJGCwEvBuSF8Kzww24zdXhEfJS3gEysAwMWjsS52KK
+        tjV/4PsDf7oaReAYZnIDqg6vMA==
+X-Google-Smtp-Source: AGRyM1sUEAZ8IGSI0gRQ0uUJbPt0qOg4rWpgcB8wkEnVLcLiyAeS0M9vgT7ebXPt9ip/HEVoYEqk+Q==
+X-Received: by 2002:a05:6512:3b82:b0:48a:a3f4:abae with SMTP id g2-20020a0565123b8200b0048aa3f4abaemr8120077lfv.155.1659454807145;
+        Tue, 02 Aug 2022 08:40:07 -0700 (PDT)
 Received: from krzk-bin.. ([213.161.169.44])
-        by smtp.gmail.com with ESMTPSA id c2-20020a056512074200b0048b06f34566sm407669lfs.76.2022.08.02.08.40.02
+        by smtp.gmail.com with ESMTPSA id c2-20020a056512074200b0048b06f34566sm407669lfs.76.2022.08.02.08.40.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 08:40:03 -0700 (PDT)
+        Tue, 02 Aug 2022 08:40:06 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -60,9 +60,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
 Cc:     corbet@lwn.net,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/5] arm64: dts: qcom: sdm845-db845c: drop gpios from CCI I2C sensors
-Date:   Tue,  2 Aug 2022 17:39:44 +0200
-Message-Id: <20220802153947.44457-3-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 4/5] ARM: dts: qcom: use GPIO flags for tlmm
+Date:   Tue,  2 Aug 2022 17:39:46 +0200
+Message-Id: <20220802153947.44457-5-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220802153947.44457-1-krzysztof.kozlowski@linaro.org>
 References: <20220802153947.44457-1-krzysztof.kozlowski@linaro.org>
@@ -72,40 +72,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The OV7251 and OV8856 camera sensor bindings do not allow
-property "gpios" and Linux driver does not parse it.
+Use respective GPIO_ACTIVE_LOW/HIGH flags for tlmm GPIOs.  Include
+gpio.h header if this is first usage of that flag.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
 ---
+ arch/arm/boot/dts/qcom-apq8074-dragonboard.dts           | 3 ++-
+ arch/arm/boot/dts/qcom-ipq4019-ap.dk01.1.dtsi            | 3 ++-
+ arch/arm/boot/dts/qcom-ipq4019-ap.dk04.1.dtsi            | 4 ++--
+ arch/arm/boot/dts/qcom-ipq4019-ap.dk07.1-c1.dts          | 5 +++--
+ arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts | 2 +-
+ 5 files changed, 10 insertions(+), 7 deletions(-)
 
-Not tested on hardware.
----
- arch/arm64/boot/dts/qcom/sdm845-db845c.dts | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-index b9304f81290a..f313f6964810 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-@@ -1214,8 +1214,6 @@ camera@10 {
- 		reset-gpios = <&tlmm 9 GPIO_ACTIVE_LOW>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&cam0_default>;
--		gpios = <&tlmm 13 0>,
--			<&tlmm 9 GPIO_ACTIVE_LOW>;
+diff --git a/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts b/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
+index 3051a861ff0c..91716298ec5e 100644
+--- a/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
++++ b/arch/arm/boot/dts/qcom-apq8074-dragonboard.dts
+@@ -1,4 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
++#include <dt-bindings/gpio/gpio.h>
+ #include "qcom-msm8974.dtsi"
+ #include "qcom-pm8841.dtsi"
+ #include "qcom-pm8941.dtsi"
+@@ -261,7 +262,7 @@ &sdhc_1 {
+ &sdhc_2 {
+ 	status = "okay";
  
- 		clocks = <&clock_camcc CAM_CC_MCLK0_CLK>;
- 		clock-names = "xvclk";
-@@ -1256,8 +1254,6 @@ camera@60 {
- 		enable-gpios = <&tlmm 21 0>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&cam3_default>;
--		gpios = <&tlmm 16 0>,
--			<&tlmm 21 0>;
+-	cd-gpios = <&tlmm 62 0x1>;
++	cd-gpios = <&tlmm 62 GPIO_ACTIVE_LOW>;
+ 	vmmc-supply = <&pm8941_l21>;
+ 	vqmmc-supply = <&pm8941_l13>;
  
- 		clocks = <&clock_camcc CAM_CC_MCLK3_CLK>;
- 		clock-names = "xclk";
+diff --git a/arch/arm/boot/dts/qcom-ipq4019-ap.dk01.1.dtsi b/arch/arm/boot/dts/qcom-ipq4019-ap.dk01.1.dtsi
+index 03bb9e1768c4..0505270cf508 100644
+--- a/arch/arm/boot/dts/qcom-ipq4019-ap.dk01.1.dtsi
++++ b/arch/arm/boot/dts/qcom-ipq4019-ap.dk01.1.dtsi
+@@ -14,6 +14,7 @@
+  *
+  */
+ 
++#include <dt-bindings/gpio/gpio.h>
+ #include "qcom-ipq4019.dtsi"
+ 
+ / {
+@@ -72,7 +73,7 @@ spi@78b5000 {
+ 			pinctrl-0 = <&spi_0_pins>;
+ 			pinctrl-names = "default";
+ 			status = "okay";
+-			cs-gpios = <&tlmm 54 0>;
++			cs-gpios = <&tlmm 54 GPIO_ACTIVE_HIGH>;
+ 
+ 			mx25l25635e@0 {
+ 				#address-cells = <1>;
+diff --git a/arch/arm/boot/dts/qcom-ipq4019-ap.dk04.1.dtsi b/arch/arm/boot/dts/qcom-ipq4019-ap.dk04.1.dtsi
+index 44a9597d8bfd..c2f5222e72de 100644
+--- a/arch/arm/boot/dts/qcom-ipq4019-ap.dk04.1.dtsi
++++ b/arch/arm/boot/dts/qcom-ipq4019-ap.dk04.1.dtsi
+@@ -87,7 +87,7 @@ spi@78b5000 { /* BLSP1 QUP1 */
+ 			pinctrl-0 = <&spi_0_pins>;
+ 			pinctrl-names = "default";
+ 			status = "okay";
+-			cs-gpios = <&tlmm 12 0>;
++			cs-gpios = <&tlmm 12 GPIO_ACTIVE_HIGH>;
+ 
+ 			flash@0 {
+ 				#address-cells = <1>;
+@@ -100,7 +100,7 @@ flash@0 {
+ 
+ 		pci@40000000 {
+ 			status = "okay";
+-			perst-gpio = <&tlmm 38 0x1>;
++			perst-gpio = <&tlmm 38 GPIO_ACTIVE_LOW>;
+ 		};
+ 
+ 		qpic-nand@79b0000 {
+diff --git a/arch/arm/boot/dts/qcom-ipq4019-ap.dk07.1-c1.dts b/arch/arm/boot/dts/qcom-ipq4019-ap.dk07.1-c1.dts
+index c7a6e77da272..7fc33149060c 100644
+--- a/arch/arm/boot/dts/qcom-ipq4019-ap.dk07.1-c1.dts
++++ b/arch/arm/boot/dts/qcom-ipq4019-ap.dk07.1-c1.dts
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ // Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ 
++#include <dt-bindings/gpio/gpio.h>
+ #include "qcom-ipq4019-ap.dk07.1.dtsi"
+ 
+ / {
+@@ -10,7 +11,7 @@ / {
+ 	soc {
+ 		pci@40000000 {
+ 			status = "okay";
+-			perst-gpio = <&tlmm 38 0x1>;
++			perst-gpio = <&tlmm 38 GPIO_ACTIVE_LOW>;
+ 		};
+ 
+ 		spi@78b6000 {
+@@ -50,7 +51,7 @@ spi@78b5000 {
+ 			pinctrl-0 = <&spi_0_pins>;
+ 			pinctrl-names = "default";
+ 			status = "okay";
+-			cs-gpios = <&tlmm 12 0>;
++			cs-gpios = <&tlmm 12 GPIO_ACTIVE_HIGH>;
+ 
+ 			flash@0 {
+ 				#address-cells = <1>;
+diff --git a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
+index ec5d340562b6..6daceaa87802 100644
+--- a/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
++++ b/arch/arm/boot/dts/qcom-msm8974-lge-nexus5-hammerhead.dts
+@@ -175,7 +175,7 @@ i2c-gate {
+ 			ak8963@f {
+ 				compatible = "asahi-kasei,ak8963";
+ 				reg = <0x0f>;
+-				gpios = <&tlmm 67 0>;
++				gpios = <&tlmm 67 GPIO_ACTIVE_HIGH>;
+ 				vid-supply = <&pm8941_lvs1>;
+ 				vdd-supply = <&pm8941_l17>;
+ 			};
 -- 
 2.34.1
 
