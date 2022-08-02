@@ -2,120 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AACF6C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:11:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AEA3C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 18:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230038AbiHBSLc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 14:11:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59016 "EHLO
+        id S231796AbiHBSLo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 14:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237846AbiHBSLJ (ORCPT
+        with ESMTP id S237793AbiHBSLE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 14:11:09 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD0517E1C;
-        Tue,  2 Aug 2022 11:11:05 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id A8F3F381C5;
-        Tue,  2 Aug 2022 18:11:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1659463864;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Pz4nohXMnV6DoQDiLTQldnM+q/whU1JUDeaFPyIhZ1g=;
-        b=qbwOAxE67O43QdxlU3BgVNMFcqw+bIAks9zkzBZrdIt+p9QtP3Fv7xMPLaENAdVp7Aedx9
-        XzoRSqRbgRcLUXbFDFMud/GksDdqcgMn+9twIIJ4cRQFVh+siuSiTKL0Shqw/NSsGMSWNj
-        Sj0WJF2iodrQNqR8K7qbSku3yKszI1E=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1659463864;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Pz4nohXMnV6DoQDiLTQldnM+q/whU1JUDeaFPyIhZ1g=;
-        b=B3fB4DC8HPOsEVk5KmGSn/lYbNT4tRMJqrUYo2XAEFOxE+jYElYC0WLOUq4qB59SfGVsCj
-        5wjm/c5z7w+cjuBg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6C8841345B;
-        Tue,  2 Aug 2022 18:11:04 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id LWGzGbho6WJzTgAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Tue, 02 Aug 2022 18:11:04 +0000
-Date:   Tue, 2 Aug 2022 20:06:02 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     alexlzhu@fb.com
-Cc:     kernel-team@fb.com, linux-mm@kvack.org, clm@fb.com,
-        josef@toxicpanda.com, dsterba@suse.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] mm: fix alginment of VMA for memory mapped files on
- THP
-Message-ID: <20220802180602.GX13489@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, alexlzhu@fb.com, kernel-team@fb.com,
-        linux-mm@kvack.org, clm@fb.com, josef@toxicpanda.com,
-        dsterba@suse.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220801184740.2134364-1-alexlzhu@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220801184740.2134364-1-alexlzhu@fb.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+        Tue, 2 Aug 2022 14:11:04 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B98117E13;
+        Tue,  2 Aug 2022 11:11:00 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 23so13012873pgc.8;
+        Tue, 02 Aug 2022 11:11:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=VSuThS25A1SmF3lUm9zKQZW1zZmHE3Wa8nzE8cQc3xY=;
+        b=MOST/R+9Pu82byZZKWzHAXHowM9RJkX/xUI4J81mR9yItGRirdWszF98BMKIxPBMMc
+         eFq/ID+KIn3x/BMcVPOq7Bi6XBg5OQUaHTKQSeADQsTn6iOtLRyvId6U1uDfwomtA5VZ
+         LTZH4P6s2gF4tLv4cWTa4PIDcuBkZngU3nUhgPvEwijLrDJnvgODE4I+eXddkoYr+NDr
+         YWjGTVn9AQV62O92oy4+KJLOmMYiUAVXVWkeBdR9jJyDgbNfe9Kj6ycgRhXB1t2+YFE8
+         FXXZi/GbneyhW1+4dplOoTGje3/dxMHcX5zm37yB1aLLe6C9uhdij9B4Ym+FUGaGfSEO
+         sjvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=VSuThS25A1SmF3lUm9zKQZW1zZmHE3Wa8nzE8cQc3xY=;
+        b=SYRQrTzij38LJm5CQ5gcoMeOPqMh4pr8QNimQUjx/Je/dxDPBuV7UgueaKaYuJ/RzD
+         ExqSXsL/h3ZJSgXliGHSISwl/o875NkVQDaCXUEOzQce5ItX+haChgjPpzVa4CKk1Cqz
+         YUEYyCoFsneXgpehZwmfI3LfQgFT4ljBKKjb8/m49oJv6CqHobFSSfibALiXO8TWimAK
+         fBuHEzkI9NS/LxpikLyzL5UlnTwBmjFZlwhRiy7LUGVprTRYwvFYysWnumD5nLlbSOmb
+         JmfsJZShQVYoVq8XWpIkAye5KDgMFkHZIdWRVewk3yuFyId/LeQt+5oDW3lnrWnH3Zxr
+         C8SA==
+X-Gm-Message-State: AJIora/m6mP3uUCBR4OiP2LyQy+JPaIzuV9v326Zmcj9ZbT8g9yGNetW
+        BqG4oapVFewCI2Rv8BMQGdWj9ql4EuE=
+X-Google-Smtp-Source: AGRyM1vyvI1vzvid8Bo8G+oWfNYRN17arAZ2ebp+U+Q4l6i2IbT8kUgZTGt/txgwEVoiTexo6aTxmA==
+X-Received: by 2002:a05:6a00:1a44:b0:52a:ecd5:bbef with SMTP id h4-20020a056a001a4400b0052aecd5bbefmr21566896pfv.28.1659463859515;
+        Tue, 02 Aug 2022 11:10:59 -0700 (PDT)
+Received: from localhost.localdomain ([2401:4900:1cc5:2406:5d81:6fe8:af08:c752])
+        by smtp.googlemail.com with ESMTPSA id z22-20020aa79496000000b0052d8d7269d7sm4420525pfk.53.2022.08.02.11.10.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 02 Aug 2022 11:10:59 -0700 (PDT)
+From:   Vishal Badole <badolevishal1116@gmail.com>
+To:     sboyd@kernel.org
+Cc:     mturquette@baylibre.com, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, chinmoyghosh2001@gmail.com,
+        vimal.kumar32@gmail.com,
+        Vishal Badole <badolevishal1116@gmail.com>,
+        Mintu Patel <mintupatel89@gmail.com>
+Subject: [PATCH v3] Common clock: To list active consumers of clocks
+Date:   Tue,  2 Aug 2022 23:39:47 +0530
+Message-Id: <1659463787-25976-1-git-send-email-badolevishal1116@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <20220624010550.582BBC341C7@smtp.kernel.org>
+References: <20220624010550.582BBC341C7@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 01, 2022 at 11:47:40AM -0700, alexlzhu@fb.com wrote:
-> From: alexlzhu <alexlzhu@fb.com>
-> 
-> With CONFIG_READ_ONLY_THP_FOR_FS, the Linux kernel supports using THPs for
-> read-only mmapped files, such as shared libraries. However, the
-> kernel makes no attempt to actually align those mappings on 2MB boundaries,
-> which makes it impossible to use those THPs most of the time. This issue
-> applies to general file mapping THP as well as existing setups using
-> CONFIG_READ_ONLY_THP_FOR_FS. This is easily fixed by using
-> thp_get_unmapped_area for the unmapped_area function in btrfs, which is
-> what ext2, ext4, fuse, and xfs all use.
+This feature lists the clock consumer's name and per-user enable count
+in clock summary. Using this feature user can easily check which device
+has acquired a perticular clock and it is enabled by respective device
+or not.
+for example:
+$ cat /sys/kernel/debug/clk/clk_summary
+                      enable  prepare  protect                           duty  hardware                            per-user
+   clock               count    count    count    rate   accuracy phase cycle    enable   consumer                    count
+----------------------------------------------------------------------------------------------------------------------------
+ clk_mcasp0_fixed         0        0        0    24576000      0     0  50000     Y      deviceless                      0
+                                                                                         deviceless                      0
+    clk_mcasp0            0        0        0    24576000      0     0  50000     N          simple-audio-card,cpu           0
+                                                                                             deviceless                      0
 
-Commit dbe6ec815641 ("ext2/4, xfs: call thp_get_unmapped_area() for pmd
-mappings") adds the callback for DAX, that btrfs does not support so it
-was left out.
+Co-developed-by: Chinmoy Ghosh <chinmoyghosh2001@gmail.com>
+Signed-off-by: Chinmoy Ghosh <chinmoyghosh2001@gmail.com>
+Co-developed-by: Mintu Patel <mintupatel89@gmail.com>
+Signed-off-by: Mintu Patel <mintupatel89@gmail.com>
+Co-developed-by: Vimal Kumar <vimal.kumar32@gmail.com>
+Signed-off-by: Vimal Kumar <vimal.kumar32@gmail.com>
+Signed-off-by: Vishal Badole <badolevishal1116@gmail.com>
+---
+ drivers/clk/clk.c | 46 +++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 35 insertions(+), 11 deletions(-)
 
-> The problem can be seen in
-> /proc/PID/smaps where THPeligible is set to 0 on mappings to eligible
-> shared object files as shown below.
-> 
-> Before this patch:
-> 
-> 7fc6a7e18000-7fc6a80cc000 r-xp 00000000 00:1e 199856
-> /usr/lib64/libcrypto.so.1.1.1k
-> Size:               2768 kB
-> THPeligible:    0
-> VmFlags: rd ex mr mw me
-> 
-> With this patch the library is mapped at a 2MB aligned address:
-> 
-> fbdfe200000-7fbdfe4b4000 r-xp 00000000 00:1e 199856
-> /usr/lib64/libcrypto.so.1.1.1k
-> Size:               2768 kB
-> THPeligible:    1
-> VmFlags: rd ex mr mw me
-> 
-> This fixes the alignment of VMAs for any mmap of a file that has the
-> rd and ex permissions and size >= 2MB. The VMA alignment and
-> THPeligible field for anonymous memory is handled separately and
-> is thus not effected by this change.
-> 
-> Signed-off-by: alexlzhu <alexlzhu@fb.com>
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index f00d4c1..c96079f 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -102,6 +102,7 @@ struct clk {
+ 	unsigned long min_rate;
+ 	unsigned long max_rate;
+ 	unsigned int exclusive_count;
++	unsigned int enable_count;
+ 	struct hlist_node clks_node;
+ };
+ 
+@@ -1008,6 +1009,10 @@ void clk_disable(struct clk *clk)
+ 		return;
+ 
+ 	clk_core_disable_lock(clk->core);
++
++	if (clk->enable_count > 0)
++		clk->enable_count--;
++
+ }
+ EXPORT_SYMBOL_GPL(clk_disable);
+ 
+@@ -1169,10 +1174,16 @@ EXPORT_SYMBOL_GPL(clk_restore_context);
+  */
+ int clk_enable(struct clk *clk)
+ {
++	int ret;
++
+ 	if (!clk)
+ 		return 0;
+ 
+-	return clk_core_enable_lock(clk->core);
++	ret = clk_core_enable_lock(clk->core);
++	if (!ret)
++		clk->enable_count++;
++
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(clk_enable);
+ 
+@@ -2953,28 +2964,41 @@ static void clk_summary_show_one(struct seq_file *s, struct clk_core *c,
+ 				 int level)
+ {
+ 	int phase;
++	struct clk *clk_user;
++	int multi_node = 0;
+ 
+-	seq_printf(s, "%*s%-*s %7d %8d %8d %11lu %10lu ",
++	seq_printf(s, "%*s%-*s %-7d %-8d %-8d %-11lu %-10lu ",
+ 		   level * 3 + 1, "",
+-		   30 - level * 3, c->name,
++		   35 - level * 3, c->name,
+ 		   c->enable_count, c->prepare_count, c->protect_count,
+ 		   clk_core_get_rate_recalc(c),
+ 		   clk_core_get_accuracy_recalc(c));
+ 
+ 	phase = clk_core_get_phase(c);
+ 	if (phase >= 0)
+-		seq_printf(s, "%5d", phase);
++		seq_printf(s, "%-5d", phase);
+ 	else
+ 		seq_puts(s, "-----");
+ 
+-	seq_printf(s, " %6d", clk_core_get_scaled_duty_cycle(c, 100000));
++	seq_printf(s, " %-6d", clk_core_get_scaled_duty_cycle(c, 100000));
+ 
+ 	if (c->ops->is_enabled)
+-		seq_printf(s, " %9c\n", clk_core_is_enabled(c) ? 'Y' : 'N');
++		seq_printf(s, " %5c ", clk_core_is_enabled(c) ? 'Y' : 'N');
+ 	else if (!c->ops->enable)
+-		seq_printf(s, " %9c\n", 'Y');
++		seq_printf(s, " %5c ", 'Y');
+ 	else
+-		seq_printf(s, " %9c\n", '?');
++		seq_printf(s, " %5c ", '?');
++
++	hlist_for_each_entry(clk_user, &c->clks, clks_node) {
++		seq_printf(s, "%*s%-*s  %-4d\n",
++			   level * 3 + 2 + 105 * multi_node, "",
++			   30,
++			   clk_user->dev_id ? clk_user->dev_id : "deviceless",
++			   clk_user->enable_count);
++
++		multi_node = 1;
++	}
++
+ }
+ 
+ static void clk_summary_show_subtree(struct seq_file *s, struct clk_core *c,
+@@ -2995,9 +3019,9 @@ static int clk_summary_show(struct seq_file *s, void *data)
+ 	struct clk_core *c;
+ 	struct hlist_head **lists = (struct hlist_head **)s->private;
+ 
+-	seq_puts(s, "                                 enable  prepare  protect                                duty  hardware\n");
+-	seq_puts(s, "   clock                          count    count    count        rate   accuracy phase  cycle    enable\n");
+-	seq_puts(s, "-------------------------------------------------------------------------------------------------------\n");
++	seq_puts(s, "                                 enable  prepare  protect                                duty  hardware                            per-user\n");
++	seq_puts(s, "   clock                          count    count    count        rate   accuracy phase  cycle    enable   consumer                    count\n");
++	seq_puts(s, "-------------------------------------------------------------------------------------------------------------------------------------------\n");
+ 
+ 	clk_prepare_lock();
+ 
+-- 
+2.7.4
 
-Please use full name for signed-off.
-
-Also the subject should start with "btrfs:", this is not a memory
-management patch. Thanks.
