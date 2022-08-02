@@ -2,66 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8AD6C00144
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 01:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98764C00144
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 01:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232216AbiHBBPX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 21:15:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46480 "EHLO
+        id S232389AbiHBBUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 21:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233923AbiHBBPN (ORCPT
+        with ESMTP id S230227AbiHBBUD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 21:15:13 -0400
-Received: from xry111.site (xry111.site [89.208.246.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77523C14
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 18:15:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1659402909;
-        bh=tAumF/NJz2IyfqS8SnDKwWnb2pe+/WlR4W2uaAgaVoM=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=ftaANTyCW4q9eeL5t4IM8eoFmqnxFlewYdX4Atv/2jUkaSkT0Iwx9fgaSZULTh2YI
-         91GbXgkHnMtgxZWD74zTU/um+T8XQiaj9HJDnKMCmnDfLdH0a9Obv4SMZq8Ras6Xoq
-         OM+xjHY6gXN9jwiK9DBnIssXMOacMgyzFFZe9Sd0=
-Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id C6205668F0;
-        Mon,  1 Aug 2022 21:15:07 -0400 (EDT)
-Message-ID: <4236c3ec4bc02653965a637da5e75d399de8a9bc.camel@xry111.site>
-Subject: Re: [PATCH 0/4] LoongArch: Add unwinder support
-From:   Xi Ruoyao <xry111@xry111.site>
-To:     Huacai Chen <chenhuacai@kernel.org>,
-        Qing Zhang <zhangqing@loongson.cn>
-Cc:     WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Jinyang He <hejinyang@loongson.cn>
-Date:   Tue, 02 Aug 2022 09:15:05 +0800
-In-Reply-To: <CAAhV-H61DOGHXeVmZif7e04jpYBZNja-wPyLFhAtECZkZSQScA@mail.gmail.com>
-References: <20220801121726.9681-1-zhangqing@loongson.cn>
-         <CAAhV-H61DOGHXeVmZif7e04jpYBZNja-wPyLFhAtECZkZSQScA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 
+        Mon, 1 Aug 2022 21:20:03 -0400
+Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738B9AE47
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 18:20:01 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.169])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4LxcZW2wSvzKJyG;
+        Tue,  2 Aug 2022 09:18:43 +0800 (CST)
+Received: from [10.174.176.103] (unknown [10.174.176.103])
+        by APP1 (Coremail) with SMTP id cCh0CgCX7PC+e+hiFqFeAA--.37387S2;
+        Tue, 02 Aug 2022 09:19:59 +0800 (CST)
+Message-ID: <2520574c-ea6c-7c0a-2288-9035b5e0cbab@huaweicloud.com>
+Date:   Tue, 2 Aug 2022 09:19:58 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH -next] [RFC] scsi: ses: fix slab-out-of-bounds in
+ ses_enclosure_data_process
+To:     "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Yu Kuai <yukuai1@huaweicloud.com>
+Cc:     jejb@linux.ibm.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yukuai3@huawei.com,
+        yi.zhang@huawei.com
+References: <20220713094548.3958915-1-yukuai1@huaweicloud.com>
+ <yq1edxz349n.fsf@ca-mkp.ca.oracle.com>
+From:   "zhangwensheng (E)" <zhangwensheng@huaweicloud.com>
+Reply-To: zhangwensheng@huaweicloud.com
+In-Reply-To: <yq1edxz349n.fsf@ca-mkp.ca.oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: cCh0CgCX7PC+e+hiFqFeAA--.37387S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Ww4rtryDAF4fAw1rXr1UJrb_yoW5JrW7pr
+        18Jr1UJryUJr1rJr1UJr1UJryUJF1UJ34UJr1UJFyUJr1UJr1jqr1UXr1jgr1UJr4rJr1U
+        Jr1UJw1UZr1UJrUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyEb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
+        0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
+        6I80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
+        Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JMxk0xIA0c2IEe2xFo4CEbIxvr21l42xK82IYc2Ij
+        64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x
+        8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE
+        2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42
+        xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIE
+        c7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IUbPEf5UUUUU==
+X-CM-SenderInfo: x2kd0wpzhq2xhhqjqx5xdzvxpfor3voofrz/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-08-01 at 23:34 +0800, Huacai Chen wrote:
-> Hi, Qing,
->=20
-> I think we don't need to CC linux-kernel; on the other hand, CC
-> linux-arch and Arnd is worthy.
-> BTW, it seems you are missing V2 in the title.
+Hi
 
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html#sele=
-ct-the-recipients-for-your-patch:
-"linux-kernel@vger.kernel.org should be used by default for all
-patches".
+ From my description, there is still loophole in the previous changes.
+can you make a test with the following changes?
 
---=20
-Xi Ruoyao <xry111@xry111.site>
-School of Aerospace Science and Technology, Xidian University
+diff --git a/drivers/scsi/ses.c b/drivers/scsi/ses.c
+index 0a1734f34587..06b991e27c84 100644
+--- a/drivers/scsi/ses.c
++++ b/drivers/scsi/ses.c
+@@ -559,11 +559,11 @@ static void ses_enclosure_data_process(struct 
+enclosure_device *edev,
+                         struct enclosure_component *ecomp;
+
+                         if (desc_ptr) {
+-                               if (desc_ptr >= buf + page7_len) {
++                               len = (desc_ptr[2] << 8) + desc_ptr[3];
++                               desc_ptr += 4;
++                               if (desc_ptr + len > buf + page7_len) {
+                                         desc_ptr = NULL;
+                                 } else {
+-                                       len = (desc_ptr[2] << 8) + 
+desc_ptr[3];
+-                                       desc_ptr += 4;
+                                         /* Add trailing zero - pushes into
+                                          * reserved space */
+                                         desc_ptr[len] = '\0';
+
+thanks！
+
+Wensheng
+
+在 2022/8/2 8:01, Martin K. Petersen 写道:
+>> After analysis on vmcore, it was found that the line "desc_ptr[len] =
+>> '\0';" has slab-out-of-bounds problem in ses_enclosure_data_process.
+>> In ses_enclosure_data_process, "desc_ptr" point to "buf", so it have
+>> to be limited in the memory of "buf", however. although there is
+>> "desc_ptr >= buf + page7_len" judgment, it does not work because
+>> "desc_ptr + 4 + len" may bigger than "buf + page7_len", which will
+>> lead to slab-out-of-bounds problem.
+>>
+>> Fix it by using judging desc_ptr cross the border or not after
+>> "desc_ptr += 4".
+> FWIW, I tested this change and I am still getting KASAN errors from ses.
+>
+
