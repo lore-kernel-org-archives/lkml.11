@@ -2,68 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2CAC19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:09:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 194A8C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236256AbiHBMJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 08:09:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57570 "EHLO
+        id S236531AbiHBMKv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 08:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232045AbiHBMJd (ORCPT
+        with ESMTP id S236476AbiHBMKm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 08:09:33 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FE04F1A7;
-        Tue,  2 Aug 2022 05:09:28 -0700 (PDT)
-X-QQ-mid: bizesmtp76t1659442158tl4ifvqu
-Received: from kali.lan ( [125.69.43.47])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 02 Aug 2022 20:09:17 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000020
-X-QQ-FEAT: ILHsT53NKPjzRmTit0GU3fJ5fD9yXL9AWZcz39KDuhH6s8obukrOWdzd3TQVs
-        HOXAPrMJ/kaYifa88oGVNsNifXuBMKM6/x6eu9GvRMYgkzSPtQhglQgEMcoXxbvi91luWtA
-        ahjQGAdVX4FTMWukuq0G7xkdNZATPQbsYzU0/1tOyRFwHfF8x66G6RdXQmdH05R6NsD1SLi
-        fUY2nD77lg+G7p5qEHuXrAP1xYPwhiTQ7fjPGDm9h8mC80WBdurxqBLc7/Xdtd/UP9iSZSl
-        5ky9N1MhHpKHJOzrH8irTHDPgi+ggIjMwy/X4ibv5lBAUbPYZKCzHmUkvylTtCDZWV4ZeDp
-        +IlPulr2oe7CLHr4he3HXkh+AULUvOvNmqHUVCS/VWBopLVX2n7/DhJGlDjkg==
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     stern@rowland.harvard.edu
-Cc:     gregkh@linuxfoundation.org, rafael.j.wysocki@intel.com,
-        heikki.krogerus@linux.intel.com, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] USB: core: Fix comment typo
-Date:   Wed,  3 Aug 2022 04:09:15 +0800
-Message-Id: <20220802200915.6390-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 2 Aug 2022 08:10:42 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6C326108;
+        Tue,  2 Aug 2022 05:10:41 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id iw1so13254649plb.6;
+        Tue, 02 Aug 2022 05:10:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=cmB25PFL10++aK91jk9vUd2FanNg0aRKpDcRtxq0uPI=;
+        b=CXH+jr1j1fttnvwdJf4loNtAFS0U6qK7Bi7aCni5NbdI7wJaoiouB5lw1U0K5/krOD
+         lXmKA6WRsVEHWO9iN3fKEpADOORNMRWzFSKXSVtnIxHE9eGf3v840N827Waj4KrHKgwf
+         DnEoNsuhQiiCG1w28nSnmMA1YOy0IPkFyLrtMBP74sKUL6sm5p80jBQ+OnNLtQfyTFt5
+         ocoRiGO27hc0cLhwNCL6bEyzk4LwfahXEuTHHzHVZshi28tereJutpJYKEaWDOpEQLxs
+         bAFYRXEgOapwJ3OBX4MzD94w05I76X2qPHou8FpgsJl2UNKGUQBNgYrZ9noB02hQMw7i
+         Q+fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=cmB25PFL10++aK91jk9vUd2FanNg0aRKpDcRtxq0uPI=;
+        b=ryWTk+KD4lartxTnPCdwQK59oZZCx6Kf9Fir3Z69R0ja+X4aC62FIb5qfrQdJKYEfA
+         iYoeAeViFjqKVJIuOmxcUQxbWKoliB6XgzfN26B7+d2FlK01HMiJ0ulSoRJPCD2hXZRm
+         NLBd6RHL17Cz4Xu2IqNTF/7ONNH5+h4EwQRlmP3AKqONFbS3uM0GYHnzBEIpk9HOue3b
+         4pEd3OAON0Z6OxsEZti3kGq4aHSgfsiByYEd7jC5z/yozzwneWbzvOLow8rhm+85VzQB
+         rC/MIKTVSDncXj73jCXC0m70kPJmDOP4RCKaDoxVdD5VqX6lmvFgzBHafCYXWGHeYtpT
+         gYvg==
+X-Gm-Message-State: ACgBeo1rMqm0a4d9JEQs9MbqzaJRLgultVHDWKoZW1b1E9ai+L53DRWa
+        lrcFctX6Y1NMsauspmxq3dU=
+X-Google-Smtp-Source: AA6agR6Hw1+Xna3gyOLt+ETO6ZLjDbMmPWbyEClThJRRY2w5XbSNNv4B3bav544l+pxpFl6TyWWbWg==
+X-Received: by 2002:a17:902:7448:b0:16e:e3f8:7683 with SMTP id e8-20020a170902744800b0016ee3f87683mr10943112plt.74.1659442240813;
+        Tue, 02 Aug 2022 05:10:40 -0700 (PDT)
+Received: from debian.me (subs02-180-214-232-30.three.co.id. [180.214.232.30])
+        by smtp.gmail.com with ESMTPSA id u4-20020a17090341c400b0016d93be285asm11882630ple.173.2022.08.02.05.10.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Aug 2022 05:10:40 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 7860E103A10; Tue,  2 Aug 2022 19:10:36 +0700 (WIB)
+Date:   Tue, 2 Aug 2022 19:10:35 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.18 00/88] 5.18.16-rc1 review
+Message-ID: <YukUOzNwe83HWwwU@debian.me>
+References: <20220801114138.041018499@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220801114138.041018499@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in the comment, remove one.
+On Mon, Aug 01, 2022 at 01:46:14PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.16 release.
+> There are 88 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/usb/core/usb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Successfully cross-compiled for arm64 (bcm2711_defconfig, GCC 10.2.0)
+and powerpc (ps3_defconfig, GCC 12.1.0).
 
-diff --git a/drivers/usb/core/usb.c b/drivers/usb/core/usb.c
-index 2f71636af6e1..11b15d7b357a 100644
---- a/drivers/usb/core/usb.c
-+++ b/drivers/usb/core/usb.c
-@@ -801,7 +801,7 @@ EXPORT_SYMBOL_GPL(usb_intf_get_dma_device);
-  * is simple:
-  *
-  *	When locking both a device and its parent, always lock the
-- *	the parent first.
-+ *	parent first.
-  */
- 
- /**
+Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+
 -- 
-2.35.1
-
+An old man doll... just what I always wanted! - Clara
