@@ -2,209 +2,289 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B3FC19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 14:12:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED6BAC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 14:12:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237219AbiHBOM3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 10:12:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40400 "EHLO
+        id S237254AbiHBOMl convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 10:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236926AbiHBOMZ (ORCPT
+        with ESMTP id S237239AbiHBOMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 10:12:25 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517F72A72F;
-        Tue,  2 Aug 2022 07:12:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659449544; x=1690985544;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=dtqbIWIshtMdWZaXawlb0KolgEJHLzd9qo0q7OSwsjo=;
-  b=kEFOYKshTfvcn+b5OjGtaXeG0LkGd7qtaZMJ8vC1+RYM/S0oqh42p/9J
-   XanOas96e0d7OBpfCO6Wdg+s95MpK+QaCZKJzwzFn0U7Ryk1m+UpHKXHZ
-   bBjoKZENxuF31t/buLrrXkGtrOpEfrodgbl+77xzZlAp3pHxVpH3c4OXb
-   KHGkLY7hb5txK0PUt7coOMJXjEwTMjN8wXh2Mu4pxc3Qj+npx6ErEyNGE
-   7AU/eosQCVjxMDkrDCOFEdpvft1NiYZ+p0/xOZm+yk/uxmWb9D1CaYmTx
-   2ArGQRm+8VgiQltVeukNPhHyeBNmILYaTjLEypKl9xcg1DorFAbzw2x2y
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="286976451"
-X-IronPort-AV: E=Sophos;i="5.93,211,1654585200"; 
-   d="scan'208";a="286976451"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 07:12:04 -0700
-X-IronPort-AV: E=Sophos;i="5.93,211,1654585200"; 
-   d="scan'208";a="661637859"
-Received: from llaviniu-mobl1.ger.corp.intel.com (HELO localhost) ([10.252.60.134])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 07:11:58 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
-        p.zabel@pengutronix.de, daniel@ffwll.ch, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, mripard@kernel.org,
-        tzimmermann@suse.de, matthias.bgg@gmail.com, deller@gmx.de,
-        airlied@linux.ie
-Cc:     devicetree@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        granquet@baylibre.com, jitao.shi@mediatek.com,
-        liangxu.xu@mediatek.com, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, msp@baylibre.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Bo-Chen Chen <rex-bc.chen@mediatek.com>,
-        linux-mediatek@lists.infradead.org, wenst@chromium.org,
-        linux-arm-kernel@lists.infradead.org,
-        angelogioacchino.delregno@collabora.com
-Subject: Re: [PATCH v15 03/11] drm/edid: Add cea_sad helpers for freq/length
-In-Reply-To: <20220727045035.32225-4-rex-bc.chen@mediatek.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220727045035.32225-1-rex-bc.chen@mediatek.com>
- <20220727045035.32225-4-rex-bc.chen@mediatek.com>
-Date:   Tue, 02 Aug 2022 17:11:55 +0300
-Message-ID: <87zggmenv8.fsf@intel.com>
+        Tue, 2 Aug 2022 10:12:36 -0400
+Received: from smtp237.sjtu.edu.cn (smtp237.sjtu.edu.cn [202.120.2.237])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC9DA2CC83;
+        Tue,  2 Aug 2022 07:12:31 -0700 (PDT)
+Received: from mta91.sjtu.edu.cn (unknown [10.118.0.91])
+        by smtp237.sjtu.edu.cn (Postfix) with ESMTPS id 4341010087D61;
+        Tue,  2 Aug 2022 22:12:29 +0800 (CST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by mta91.sjtu.edu.cn (Postfix) with ESMTP id F1A5737C840;
+        Tue,  2 Aug 2022 22:12:28 +0800 (CST)
+X-Virus-Scanned: amavisd-new at 
+Received: from mta91.sjtu.edu.cn ([127.0.0.1])
+        by localhost (mta91.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id smPo4zYW0rFd; Tue,  2 Aug 2022 22:12:28 +0800 (CST)
+Received: from mstore105.sjtu.edu.cn (mstore101.sjtu.edu.cn [10.118.0.105])
+        by mta91.sjtu.edu.cn (Postfix) with ESMTP id C559637C83E;
+        Tue,  2 Aug 2022 22:12:28 +0800 (CST)
+Date:   Tue, 2 Aug 2022 22:12:28 +0800 (CST)
+From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
+To:     jasowang <jasowang@redhat.com>
+Cc:     eperezma <eperezma@redhat.com>, sgarzare <sgarzare@redhat.com>,
+        Michael Tsirkin <mst@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>
+Message-ID: <682271447.4491372.1659449548731.JavaMail.zimbra@sjtu.edu.cn>
+In-Reply-To: <CACGkMEuwgZRt=J_2i-XugMZtcG-xZ7ZF1RpTjmErT5+RCcZ1OQ@mail.gmail.com>
+References: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn> <20220721084341.24183-2-qtxuning1999@sjtu.edu.cn> <16a232ad-e0a1-fd4c-ae3e-27db168daacb@redhat.com> <2a8838c4-2e6f-6de7-dcdc-572699ff3dc9@sjtu.edu.cn> <CACGkMEuwgZRt=J_2i-XugMZtcG-xZ7ZF1RpTjmErT5+RCcZ1OQ@mail.gmail.com>
+Subject: Re: [RFC 1/5] vhost: reorder used descriptors in a batch
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=GB2312
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [202.120.40.82]
+X-Mailer: Zimbra 8.8.15_GA_4308 (ZimbraWebClient - GC103 (Mac)/8.8.15_GA_3928)
+Thread-Topic: vhost: reorder used descriptors in a batch
+Thread-Index: gYSHAypU71dHjeHu3qHrKll86luNWw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Jul 2022, Bo-Chen Chen <rex-bc.chen@mediatek.com> wrote:
-> From: Guillaume Ranquet <granquet@baylibre.com>
->
-> This patch adds two helper functions that extract the frequency and word
-> length from a struct cea_sad.
->
-> For these helper functions new defines are added that help translate the
-> 'freq' and 'byte2' fields into real numbers.
-
-I think we should stop adding a plethora of functions that deal with
-sads like this.
-
-There should probably be *one* struct that contains all the details you
-and everyone need extracted. There should be *one* function that fills
-in all the details. The struct should be placed in
-connector->display_info, and the function should be called *once* from
-update_display_info().
-
-Ideally, the function shouldn't even be exposed from drm_edid.c, but if
-you still need to deal with situations where you don't call connector
-update, maybe it needs to be exposed.
-
-BR,
-Jani.
 
 
->
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> ---
->  drivers/gpu/drm/drm_edid.c | 63 ++++++++++++++++++++++++++++++++++++++
->  include/drm/drm_edid.h     | 14 +++++++++
->  2 files changed, 77 insertions(+)
->
-> diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-> index bc43e1b32092..2a6f92da5ff3 100644
-> --- a/drivers/gpu/drm/drm_edid.c
-> +++ b/drivers/gpu/drm/drm_edid.c
-> @@ -4916,6 +4916,69 @@ int drm_edid_to_speaker_allocation(const struct edid *edid, u8 **sadb)
->  }
->  EXPORT_SYMBOL(drm_edid_to_speaker_allocation);
->  
-> +/**
-> + * drm_cea_sad_get_sample_rate - Extract the sample rate from cea_sad
-> + * @sad: Pointer to the cea_sad struct
-> + *
-> + * Extracts the cea_sad frequency field and returns the sample rate in Hz.
-> + *
-> + * Return: Sample rate in Hz or a negative errno if parsing failed.
-> + */
-> +int drm_cea_sad_get_sample_rate(const struct cea_sad *sad)
-> +{
-> +	switch (sad->freq) {
-> +	case DRM_CEA_SAD_FREQ_32KHZ:
-> +		return 32000;
-> +	case DRM_CEA_SAD_FREQ_44KHZ:
-> +		return 44100;
-> +	case DRM_CEA_SAD_FREQ_48KHZ:
-> +		return 48000;
-> +	case DRM_CEA_SAD_FREQ_88KHZ:
-> +		return 88200;
-> +	case DRM_CEA_SAD_FREQ_96KHZ:
-> +		return 96000;
-> +	case DRM_CEA_SAD_FREQ_176KHZ:
-> +		return 176400;
-> +	case DRM_CEA_SAD_FREQ_192KHZ:
-> +		return 192000;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +EXPORT_SYMBOL(drm_cea_sad_get_sample_rate);
-> +
-> +/**
-> + * drm_cea_sad_get_uncompressed_word_length - Extract word length
-> + * @sad: Pointer to the cea_sad struct
-> + *
-> + * Extracts the cea_sad byte2 field and returns the word length for an
-> + * uncompressed stream.
-> + *
-> + * Note: This function may only be called for uncompressed audio.
-> + *
-> + * Return: Word length in bits or a negative errno if parsing failed.
-> + */
-> +int drm_cea_sad_get_uncompressed_word_length(const struct cea_sad *sad)
-> +{
-> +	if (sad->format != HDMI_AUDIO_CODING_TYPE_PCM) {
-> +		DRM_WARN("Unable to get the uncompressed word length for format: %u\n",
-> +			 sad->format);
-> +		return -EINVAL;
-> +	}
-> +
-> +	switch (sad->byte2) {
-> +	case DRM_CEA_SAD_UNCOMPRESSED_WORD_16BIT:
-> +		return 16;
-> +	case DRM_CEA_SAD_UNCOMPRESSED_WORD_20BIT:
-> +		return 20;
-> +	case DRM_CEA_SAD_UNCOMPRESSED_WORD_24BIT:
-> +		return 24;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +EXPORT_SYMBOL(drm_cea_sad_get_uncompressed_word_length);
-> +
->  /**
->   * drm_av_sync_delay - compute the HDMI/DP sink audio-video sync delay
->   * @connector: connector associated with the HDMI/DP sink
-> diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
-> index c2c43a4af681..779b710aed40 100644
-> --- a/include/drm/drm_edid.h
-> +++ b/include/drm/drm_edid.h
-> @@ -373,6 +373,18 @@ struct cea_sad {
->  	u8 byte2;
->  };
->  
-> +#define DRM_CEA_SAD_FREQ_32KHZ  BIT(0)
-> +#define DRM_CEA_SAD_FREQ_44KHZ  BIT(1)
-> +#define DRM_CEA_SAD_FREQ_48KHZ  BIT(2)
-> +#define DRM_CEA_SAD_FREQ_88KHZ  BIT(3)
-> +#define DRM_CEA_SAD_FREQ_96KHZ  BIT(4)
-> +#define DRM_CEA_SAD_FREQ_176KHZ BIT(5)
-> +#define DRM_CEA_SAD_FREQ_192KHZ BIT(6)
-> +
-> +#define DRM_CEA_SAD_UNCOMPRESSED_WORD_16BIT BIT(0)
-> +#define DRM_CEA_SAD_UNCOMPRESSED_WORD_20BIT BIT(1)
-> +#define DRM_CEA_SAD_UNCOMPRESSED_WORD_24BIT BIT(2)
-> +
->  struct drm_encoder;
->  struct drm_connector;
->  struct drm_connector_state;
-> @@ -380,6 +392,8 @@ struct drm_display_mode;
->  
->  int drm_edid_to_sad(const struct edid *edid, struct cea_sad **sads);
->  int drm_edid_to_speaker_allocation(const struct edid *edid, u8 **sadb);
-> +int drm_cea_sad_get_sample_rate(const struct cea_sad *sad);
-> +int drm_cea_sad_get_uncompressed_word_length(const struct cea_sad *sad);
->  int drm_av_sync_delay(struct drm_connector *connector,
->  		      const struct drm_display_mode *mode);
+----- Original Message -----
+> From: "jasowang" <jasowang@redhat.com>
+> To: "Guo Zhi" <qtxuning1999@sjtu.edu.cn>
+> Cc: "eperezma" <eperezma@redhat.com>, "sgarzare" <sgarzare@redhat.com>, "Michael Tsirkin" <mst@redhat.com>, "netdev"
+> <netdev@vger.kernel.org>, "linux-kernel" <linux-kernel@vger.kernel.org>, "kvm list" <kvm@vger.kernel.org>,
+> "virtualization" <virtualization@lists.linux-foundation.org>
+> Sent: Friday, July 29, 2022 3:32:02 PM
+> Subject: Re: [RFC 1/5] vhost: reorder used descriptors in a batch
 
--- 
-Jani Nikula, Intel Open Source Graphics Center
+> On Thu, Jul 28, 2022 at 4:26 PM Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
+>>
+>> On 2022/7/26 15:36, Jason Wang wrote:
+>>
+>>
+>> ÔÚ 2022/7/21 16:43, Guo Zhi Ð´µÀ:
+>>
+>> Device may not use descriptors in order, for example, NIC and SCSI may
+>> not call __vhost_add_used_n with buffers in order.  It's the task of
+>> __vhost_add_used_n to order them.
+>>
+>>
+>>
+>> I'm not sure this is ture. Having ooo descriptors is probably by design to have
+>> better performance.
+>>
+>> This might be obvious for device that may have elevator or QOS stuffs.
+>>
+>> I suspect the right thing to do here is, for the device that can't perform
+>> better in the case of IN_ORDER, let's simply not offer IN_ORDER (zerocopy or
+>> scsi). And for the device we know it can perform better, non-zercopy ethernet
+>> device we can do that.
+>>
+>>
+>>   This commit reorder the buffers using
+>> vq->heads, only the batch is begin from the expected start point and is
+>> continuous can the batch be exposed to driver.  And only writing out a
+>> single used ring for a batch of descriptors, according to VIRTIO 1.1
+>> spec.
+>>
+>>
+>>
+>> So this sounds more like a "workaround" of the device that can't consume buffer
+>> in order, I suspect it can help in performance.
+>>
+>> More below.
+>>
+>>
+>>
+>> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+>> ---
+>>   drivers/vhost/vhost.c | 44 +++++++++++++++++++++++++++++++++++++++++--
+>>   drivers/vhost/vhost.h |  3 +++
+>>   2 files changed, 45 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+>> index 40097826c..e2e77e29f 100644
+>> --- a/drivers/vhost/vhost.c
+>> +++ b/drivers/vhost/vhost.c
+>> @@ -317,6 +317,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
+>>       vq->used_flags = 0;
+>>       vq->log_used = false;
+>>       vq->log_addr = -1ull;
+>> +    vq->next_used_head_idx = 0;
+>>       vq->private_data = NULL;
+>>       vq->acked_features = 0;
+>>       vq->acked_backend_features = 0;
+>> @@ -398,6 +399,8 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
+>>                         GFP_KERNEL);
+>>           if (!vq->indirect || !vq->log || !vq->heads)
+>>               goto err_nomem;
+>> +
+>> +        memset(vq->heads, 0, sizeof(*vq->heads) * dev->iov_limit);
+>>       }
+>>       return 0;
+>>   @@ -2374,12 +2377,49 @@ static int __vhost_add_used_n(struct vhost_virtqueue
+>>   *vq,
+>>                   unsigned count)
+>>   {
+>>       vring_used_elem_t __user *used;
+>> +    struct vring_desc desc;
+>>       u16 old, new;
+>>       int start;
+>> +    int begin, end, i;
+>> +    int copy_n = count;
+>> +
+>> +    if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
+>>
+>>
+>>
+>> How do you guarantee that ids of heads are contiguous?
+>>
+>> There is no need to be contiguous for ids of heads.
+>>
+>> For example, I have three buffer { .id = 0, 15}, {.id = 20, 30} {.id = 15, 20}
+>> for vhost_add_used_n. Then I will let the vq->heads[0].len=15.
+>> vq->heads[15].len=5, vq->heads[20].len=10 as reorder. Once I found there is no
+>> hold in the batched descriptors. I will expose them to driver.
+> 
+> So spec said:
+> 
+> "If VIRTIO_F_IN_ORDER has been negotiated, driver uses descriptors in
+> ring order: starting from offset 0 in the table, and wrapping around
+> at the end of the table."
+> 
+> And
+> 
+> "VIRTIO_F_IN_ORDER(35)This feature indicates that all buffers are used
+> by the device in the same order in which they have been made
+> available."
+> 
+> This means your example is not an IN_ORDER device.
+> 
+> The driver should submit buffers (assuming each buffer have one
+> descriptor) in order {id = 0, 15}, {id = 1, 30} and {id = 2, 20}.
+> 
+> And even if it is submitted in order, we can not use a batch because:
+> 
+> "The skipped buffers (for which no used ring entry was written) are
+> assumed to have been used (read or written) by the device completely."
+> 
+> This means for TX we are probably ok, but for rx, unless we know the
+> buffers were written completely, we can't write them in a batch.
+> 
+> I'd suggest to do cross testing for this series:
+> 
+> 1) testing vhost IN_ORDER support with DPDK virtio PMD
+> 2) testing virtio IN_ORDER with DPDK vhost-user via testpmd
+> 
+> Thanks
+> 
+You are correct, for rx we can't do a batch because we have to let the driver know the length of buffers.
+
+I think these circumstances can offer batch:
+1. tx
+2. rx with RX_MRGBUF feature, which introduce a header for each received buffer
+
+Consider batch is not a mandatory requirement for in order feature according to spec.
+I'd like to let current RFC patch focus on in order implementation, and send another 
+patch series to improve performance by batching on above circumstances.
+
+What's your opinon.
+
+Thanks
+> 
+>>
+>>
+>> +        /* calculate descriptor chain length for each used buffer */
+>>
+>>
+>>
+>> I'm a little bit confused about this comment, we have heads[i].len for this?
+>>
+>> Maybe I should not use vq->heads, some misleading.
+>>
+>>
+>> +        for (i = 0; i < count; i++) {
+>> +            begin = heads[i].id;
+>> +            end = begin;
+>> +            vq->heads[begin].len = 0;
+>>
+>>
+>>
+>> Does this work for e.g RX virtqueue?
+>>
+>>
+>> +            do {
+>> +                vq->heads[begin].len += 1;
+>> +                if (unlikely(vhost_get_desc(vq, &desc, end))) {
+>>
+>>
+>>
+>> Let's try hard to avoid more userspace copy here, it's the source of performance
+>> regression.
+>>
+>> Thanks
+>>
+>>
+>> +                    vq_err(vq, "Failed to get descriptor: idx %d addr %p\n",
+>> +                           end, vq->desc + end);
+>> +                    return -EFAULT;
+>> +                }
+>> +            } while ((end = next_desc(vq, &desc)) != -1);
+>> +        }
+>> +
+>> +        count = 0;
+>> +        /* sort and batch continuous used ring entry */
+>> +        while (vq->heads[vq->next_used_head_idx].len != 0) {
+>> +            count++;
+>> +            i = vq->next_used_head_idx;
+>> +            vq->next_used_head_idx = (vq->next_used_head_idx +
+>> +                          vq->heads[vq->next_used_head_idx].len)
+>> +                          % vq->num;
+>> +            vq->heads[i].len = 0;
+>> +        }
+>> +        /* only write out a single used ring entry with the id corresponding
+>> +         * to the head entry of the descriptor chain describing the last buffer
+>> +         * in the batch.
+>> +         */
+>> +        heads[0].id = i;
+>> +        copy_n = 1;
+>> +    }
+>>         start = vq->last_used_idx & (vq->num - 1);
+>>       used = vq->used->ring + start;
+>> -    if (vhost_put_used(vq, heads, start, count)) {
+>> +    if (vhost_put_used(vq, heads, start, copy_n)) {
+>>           vq_err(vq, "Failed to write used");
+>>           return -EFAULT;
+>>       }
+>> @@ -2410,7 +2450,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct
+>> vring_used_elem *heads,
+>>         start = vq->last_used_idx & (vq->num - 1);
+>>       n = vq->num - start;
+>> -    if (n < count) {
+>> +    if (n < count && !vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
+>>           r = __vhost_add_used_n(vq, heads, n);
+>>           if (r < 0)
+>>               return r;
+>> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+>> index d9109107a..7b2c0fbb5 100644
+>> --- a/drivers/vhost/vhost.h
+>> +++ b/drivers/vhost/vhost.h
+>> @@ -107,6 +107,9 @@ struct vhost_virtqueue {
+>>       bool log_used;
+>>       u64 log_addr;
+>>   +    /* Sort heads in order */
+>> +    u16 next_used_head_idx;
+>> +
+>>       struct iovec iov[UIO_MAXIOV];
+>>       struct iovec iotlb_iov[64];
+>>       struct iovec *indirect;
+>>
+>>
+>>
