@@ -2,95 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42068C19F29
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:03:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11DD2C19F29
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:07:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229538AbiHBRDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 13:03:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37280 "EHLO
+        id S229727AbiHBRHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 13:07:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiHBRDE (ORCPT
+        with ESMTP id S229526AbiHBRHB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 13:03:04 -0400
-Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19DF1255BA;
-        Tue,  2 Aug 2022 10:03:04 -0700 (PDT)
-Received: by mail-io1-f50.google.com with SMTP id l24so11073043ion.13;
-        Tue, 02 Aug 2022 10:03:04 -0700 (PDT)
+        Tue, 2 Aug 2022 13:07:01 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 948633340E
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 10:06:59 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id t1so22841869lft.8
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 10:06:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=ZXWj8bAr14o0Agc06qVEnrp82B9KIUIFNSkdgF3Gohc=;
+        b=cBO7meugLJqyR+4TK+L2GvQ1jwGL7IEu5mBgrr0z7hLEJmgMGEus+W0LqYvkdEaxU7
+         gWEFucqgGrc6ngDSOxBhjuO8b1xGU12K1m+wdKSbUky1Y6ACeFyS+G+q4VSo34iVs0p/
+         ZLf8euyc/cxp8VDona9sw7igkjVYASpFKYzhJlkcdeuXBMq0tVNrdLnPOqfXB2LnJxz2
+         lXYzIZXbEqjE5EJEQ4ESz767wYzWFLAWiqRR/E8OQ45TwsYNtH0+Jget0BeZPcB339Mn
+         IKwOVtQ7Vk443URjhpJgugm6ZdwpYs8Slz59bjQF3mJ3RYMECgSo/DFnzEHVj7jPszFM
+         y/OQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=2FklMCvsf+IFL6IdQs89s38JLwJsvCdwCA9uElrwbhs=;
-        b=b1VaronuxnKO/TQ9sTHzoNKDc6/PCEYqFlMvqbHIVAn09H/TxvV9KemyHSFoQbFjM3
-         Cua1EXE/pmqySy66SOFTzPKBpGJyikmP/EzgUxLomn5stWFFZ08j0sWIqPcRLK4NhgcF
-         OfryW3UxFeEnq+ydS3MrYncXirQvL/ORM+VmpX37MK+YAx+gtReRnEKPmlBZgSE42qc+
-         Ldxzy7iazBWbHLbBM4Sj+5wNMM35XnKgcX0OsViRg5LZorybcJ1XVC4FPnK8Ee70v3sb
-         ppnwlRdU7QTqkFA1FfPpQj9Lcm0orkrwhPHQbi8ziBu+DWRDddrudSLQf/99rt+B4o5r
-         pGPA==
-X-Gm-Message-State: AJIora8DhLkjUWTsXtYvnutPtynWhZlkSdbtylzkMfIpjC54O3+1Sx6w
-        +7v5ARox0hHEPwKRdLUZYA==
-X-Google-Smtp-Source: AGRyM1tbaN1sLhdrNh2TVrQLtic1f6Uc7wVbQREu84ol+jGbAI7KqCctkaE8hw2JA3Air2u+MzttgA==
-X-Received: by 2002:a05:6638:d54:b0:33f:8e41:a3b3 with SMTP id d20-20020a0566380d5400b0033f8e41a3b3mr8841580jak.251.1659459783371;
-        Tue, 02 Aug 2022 10:03:03 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id z7-20020a926507000000b002de08fef8c5sm5721525ilb.43.2022.08.02.10.03.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 10:03:02 -0700 (PDT)
-Received: (nullmailer pid 297736 invoked by uid 1000);
-        Tue, 02 Aug 2022 17:03:01 -0000
-Date:   Tue, 2 Aug 2022 11:03:01 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Heiko Schocher <hs@denx.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: mtd: microchip,mchp48l640: use
- spi-peripheral-props.yaml
-Message-ID: <20220802170301.GA297672-robh@kernel.org>
-References: <20220727164148.385476-1-krzysztof.kozlowski@linaro.org>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=ZXWj8bAr14o0Agc06qVEnrp82B9KIUIFNSkdgF3Gohc=;
+        b=HTDl246Ol1cLYj/YgCMvEyf/GwVHBXrMM9Qz2nbMDup+lEeNhabFxZJaB2ATwWCzue
+         ejV5jsFIRtMSV1GJsgXnkSwquUPzorBYffl4MmZj2KWHHPUWynab/vUIf7IF0+g79CI9
+         arerdhqx6+KqlqLwWOvMOtp8kyL/fIgQD6TbOqFzODW2o6N6JP49QEJ5UXB9KvfYmbb3
+         1LK8gJvlM+jqN4KuAkBG9HMiiDaOOBOsGfH+1twq4HEi//1uH/B+cV/hVZPCoKR7FzbW
+         8sm12C66EZtoKqZp6W3ikoefD25S6nqzjh6YLmFKL23kXYfXhnTHDT2D6pFvbP4A3Ihs
+         E5fA==
+X-Gm-Message-State: AJIora+YslT69hK7Jn+n9STrcKlDBUNzvQ3uYwJ1Z81z3QwJkJRUz3v5
+        OM65s/rDfxfzuFIXjVMPvwItUxuU7upWmjSsvb45xKZgz+sFAg==
+X-Google-Smtp-Source: AGRyM1sPNLZq14qYNmP60AzGtHJUw6471TvUJfcxP5adnc8e8cgleoWQVR5+TC6UWESg14FbmxpVeNGf67+b9zKlVuM=
+X-Received: by 2002:a05:6512:10ce:b0:489:cc6b:fad with SMTP id
+ k14-20020a05651210ce00b00489cc6b0fadmr8328207lfg.299.1659460017708; Tue, 02
+ Aug 2022 10:06:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220727164148.385476-1-krzysztof.kozlowski@linaro.org>
+References: <20220729190225.12726-1-mathieu.desnoyers@efficios.com>
+ <CAFTs51UAyc4Z5WUFdMXCTYR6zji6NwLeBxYsp9GQZvFdEtUm1w@mail.gmail.com> <500891137.95782.1659452479846.JavaMail.zimbra@efficios.com>
+In-Reply-To: <500891137.95782.1659452479846.JavaMail.zimbra@efficios.com>
+From:   Peter Oskolkov <posk@google.com>
+Date:   Tue, 2 Aug 2022 10:06:45 -0700
+Message-ID: <CAPNVh5dviLMLS5APS8M+n9cHups2zvoJvcguqnO0aPO8bi4DDQ@mail.gmail.com>
+Subject: Re: [PATCH v3 00/23] RSEQ node id and virtual cpu id extensions
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     Peter Oskolkov <posk@posk.io>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
+        linux-api <linux-api@vger.kernel.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Florian Weimer <fw@deneb.enyo.de>,
+        David Laight <David.Laight@aculab.com>,
+        carlos <carlos@redhat.com>, Chris Kennelly <ckennelly@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Jul 2022 18:41:48 +0200, Krzysztof Kozlowski wrote:
-> Instead of listing directly properties typical for SPI peripherals,
-> reference the spi-peripheral-props.yaml schema.  This allows using all
-> properties typical for SPI-connected devices, even these which device
-> bindings author did not tried yet.
-> 
-> Remove the spi-* properties which now come via spi-peripheral-props.yaml
-> schema, except for the cases when device schema adds some constraints
-> like maximum frequency.
-> 
-> While changing additionalProperties->unevaluatedProperties, put it in
-> typical place, just before example DTS.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> Technically, this depends on [1] merged to SPI tree, if we want to
-> preserve existing behavior of not allowing SPI CPHA and CPOL in each of
-> schemas in this patch.
-> 
-> If this patch comes independently via different tree, the SPI CPHA and
-> CPOL will be allowed for brief period of time, before [1] is merged.
-> This will not have negative impact, just DT schema checks will be
-> loosened for that period.
-> 
-> [1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
-> ---
->  .../devicetree/bindings/mtd/microchip,mchp48l640.yaml      | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
+On Tue, Aug 2, 2022 at 8:01 AM Mathieu Desnoyers
+<mathieu.desnoyers@efficios.com> wrote:
+>
 
-Applied, thanks!
+[...]
+
+> >
+> > We have experimented with several approaches here. The one that we are
+> > currently using is the "flat" model: we allocate vcpu IDs ignoring numa nodes.
+> >
+> > We did try per-numa-node vcpus, but it did not show any material improvement
+> > over the "flat" model, perhaps because on our most "wide" servers the CPU
+> > topology is multi-level. Chris Kennelly may provide more details here.
+>
+> I would really like to know more about Google's per-numa-node vcpus implementation.
+> I suspect you guys may have taken a different turn somewhere in the design which
+> led to these results. But having not seen that implementation, I can only guess.
+>
+> I notice the following Google-specific prototype extension in tcmalloc:
+>
+>   // This is a prototype extension to the rseq() syscall.  Since a process may
+>   // run on only a few cores at a time, we can use a dense set of "v(irtual)
+>   // cpus."  This can reduce cache requirements, as we only need N caches for
+>   // the cores we actually run on simultaneously, rather than a cache for every
+>   // physical core.
+>   union {
+>     struct {
+>       short numa_node_id;
+>       short vcpu_id;
+>     };
+>     int vcpu_flat;
+>   };
+>
+> Can you tell me more about the way the numa_node_id and vcpu_id are allocated
+> internally, and how they are expected to be used by userspace ?
+
+Based on a "VCPU policy" flag passed by the userspace during rseq registration
+request, our kernel would:
+- do nothing re: vcpus, i.e. behave like it currently does upstream;
+- allocate VCPUs in a "flat" manner, ignoring NUMA;
+- populate numa_node_id with the value from the function with the same name in
+  https://elixir.bootlin.com/linux/latest/source/include/linux/topology.h
+  and allocate vcpu_id within the numa node in a tight manner.
+
+Basically, if there are M threads running on node 0 and N threads
+running on node 1 at time T, there will be [0,M-1] vcpu IDs associated with
+node 0 and [0,N-1] vcpu IDs associated with node 1 at this moment
+in time. If a thread migrates across nodes, the balance would change
+accordingly.
+
+I'm not sure how exactly tcmalloc tried to use VCPUs under this policy, and
+what were the benefits expected. The simplest way would be to keep
+a freelist per node_id/vcpu_id pair (basically, per vcpu_flat in the union),
+but this would tend to increase the number of freelists due to thread
+migrations,
+so benefits should be related to memory locality, and so somewhat difficult to
+measure precisely.
+
+Chris Kennelly may offer more details here.
+
+Thanks,
+Peter
