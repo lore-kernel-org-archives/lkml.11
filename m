@@ -2,166 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC7FC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 05:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC14C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 05:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235692AbiHBFsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 01:48:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58942 "EHLO
+        id S235863AbiHBFvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 01:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232951AbiHBFst (ORCPT
+        with ESMTP id S232951AbiHBFvl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 01:48:49 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582B41A3A8;
-        Mon,  1 Aug 2022 22:48:47 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2725mb6Q009641;
-        Tue, 2 Aug 2022 00:48:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1659419317;
-        bh=8qM0HaK1XtUl0gg6PEXng5wHvX129CzzCPUs4eaT/jw=;
-        h=From:To:CC:Subject:Date;
-        b=mI94A7TEM3lg1NBqeHQoLngtkqSkV0EVdqOBxx2Bf+RyxLRCO90EMrdUhs+mMSAyZ
-         VXSlko1mxJkEuY4T80ExIofjgbYlBZagHIewT5Cb6m7it/gSo2TfjyWHo2Mm/OQ+Wt
-         OCURb0fEjrrWZxcflQsy09TVc0JyNK5/8Gz8diPk=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2725mbTl025204
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 2 Aug 2022 00:48:37 -0500
-Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 2
- Aug 2022 00:48:37 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 2 Aug 2022 00:48:37 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2725mZnR018555;
-        Tue, 2 Aug 2022 00:48:36 -0500
-From:   Vaishnav Achath <vaishnav.a@ti.com>
-To:     <peter.ujfalusi@gmail.com>, <vkoul@kernel.org>,
-        <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <nm@ti.com>, <vigneshr@ti.com>, <vaishnav.a@ti.com>,
-        <j-keerthy@ti.com>, <m-khayami@ti.com>, <stanley_liu@ti.com>
-Subject: [PATCH v3] dmaengine: ti: k3-udma: Reset UDMA_CHAN_RT byte counters to prevent overflow
-Date:   Tue, 2 Aug 2022 11:18:35 +0530
-Message-ID: <20220802054835.19482-1-vaishnav.a@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 2 Aug 2022 01:51:41 -0400
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6188246DBD
+        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 22:51:38 -0700 (PDT)
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220802055133epoutp04eb6aadfb34ae32f8ca25b51585ba866b~HcTyoNKmd3164431644epoutp04i
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 05:51:33 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220802055133epoutp04eb6aadfb34ae32f8ca25b51585ba866b~HcTyoNKmd3164431644epoutp04i
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1659419493;
+        bh=H7CRy6JDMDRuNGpJQxwZ2Kh8KSu5JTGg+Qhah4kZcCU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=F/74IQlNX/P07yzDjIWdvjLG8jo87p0w0j4Zz1lPB7SO9wmOl6BXBVTFymi3B4UHl
+         /6TNUZoCMJL/YZVd0aiA41QDAhhaJVxsoYMEDBBPDhSQ3wwXNNPEdu2EcY9iE2+/Xu
+         vR9I1J2s3C/MHq8fkKqoyLT7cIs5WcvZWe59NmwU=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20220802055132epcas2p2ab5e197626e79450bc585a0acad3b70e~HcTyEqjuQ1328313283epcas2p2R;
+        Tue,  2 Aug 2022 05:51:32 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.90]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4LxkdH60Cbz4x9Py; Tue,  2 Aug
+        2022 05:51:31 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        B5.5B.09642.36BB8E26; Tue,  2 Aug 2022 14:51:31 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220802055130epcas2p376afd9af794e864b91500c8081538694~HcTwpPTjh0318603186epcas2p3R;
+        Tue,  2 Aug 2022 05:51:30 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220802055130epsmtrp149af1dd88df581b584f2422cc126129e~HcTwnbjAu1503315033epsmtrp1X;
+        Tue,  2 Aug 2022 05:51:30 +0000 (GMT)
+X-AuditID: b6c32a47-5e1ff700000025aa-8c-62e8bb63881e
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        75.64.08802.26BB8E26; Tue,  2 Aug 2022 14:51:30 +0900 (KST)
+Received: from perf (unknown [10.229.95.91]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220802055130epsmtip2ac8d744c5c3bd285746a444659d60a97~HcTwX4JC91544015440epsmtip2s;
+        Tue,  2 Aug 2022 05:51:30 +0000 (GMT)
+Date:   Tue, 2 Aug 2022 15:19:42 +0900
+From:   Youngmin Nam <youngmin.nam@samsung.com>
+To:     John Stultz <jstultz@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Stephen Boyd <sboyd@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Chanho Park <chanho61.park@samsung.com>,
+        hajun.sung@samsung.com, hosung0.kim@samsung.com,
+        d7271.choe@samsung.com, youngmin.nam@samsung.com
+Subject: Re: [PATCH] time: correct the prototype of ns_to_kernel_old_timeval
+ and ns_to_timespec64
+Message-ID: <YujB/of1WSWsoHkw@perf>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <CAK8P3a17d1J7gu0W-0ojxjz8W6C+Pg+xQW8ai=Qw_q94SJAOdQ@mail.gmail.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprHJsWRmVeSWpSXmKPExsWy7bCmhW7y7hdJBvsX61v8nXSM3eLyfm2L
+        a3snsls07b/EbPH1+iN2iz8nNrJZXN41h83i37WNLBabN01ltlh84BO7A5fH71+TGD0WbCr1
+        2LSqk83j3blz7B59W1YxenzeJBfAFpVtk5GamJJapJCal5yfkpmXbqvkHRzvHG9qZmCoa2hp
+        Ya6kkJeYm2qr5OIToOuWmQN0mJJCWWJOKVAoILG4WEnfzqYov7QkVSEjv7jEVim1ICWnwLxA
+        rzgxt7g0L10vL7XEytDAwMgUqDAhO6N7/z3Ggm7+ijWH9jA2MH7m6WLk5JAQMJF42XuJsYuR
+        i0NIYAejRO/hF2wQzidGiZ2Hr7BCOJ8ZJbb/a2OEadmy7jULRGIXo8TWFeugnIeMEvP+zWQC
+        qWIRUJF4uOYMO4jNJqArse3EP7BuEQEviT2vJ7GDNDAL9DFJbJ3VB9YgLJAs8WfaRTCbV0BZ
+        4tGDTywQtqDEyZlPgGwODk6BQInJ22xAeiUEejkk9p5pAYtLCLhIXPipB3GdsMSr41vYIWwp
+        iZf9bVB2scSTs0sZIXobGCV2L37NApEwlpj1rB3sOGaBDIlJE2+yQsxUljhyiwUizCfRcfgv
+        O0SYV6KjTQiiU03i15QN0ECRAZq4ghnC9pC4efIAMyRMbjFKNN/oYp/AKDcLyTezkGyDsHUk
+        Fuz+xDYLaAWzgLTE8n8cEKamxPpd+gsYWVcxiqUWFOempxYbFRjDYzg5P3cTIziharnvYJzx
+        9oPeIUYmDsZDjBIczEoivHdcnicJ8aYkVlalFuXHF5XmpBYfYjQFxs1EZinR5HxgSs8riTc0
+        sTQwMTMzNDcyNTBXEuf1StmQKCSQnliSmp2aWpBaBNPHxMEp1cAUsfHyTs6nsfvUzYob0/ee
+        ko7qmRZix7fDsrTn5L/d89nYvO1zVr7YeP2w9L3udS9Cz57XdXPcGGzbcOakUmPRm5tXjv5a
+        wmCtxd4qe4bh39G8XvHAqz6iItllvOf1xRM+ypyZvMnicOkWlrItdxLkFs2/pDJHWr+s00On
+        q1iXtyeHK6T2kdvSfS+t5DiyywLeH6h+uHv5BD3Gv5dD8//bpt4/v9qvRH3hahfBP9+v7Vq3
+        8pxnwn4mic9pr2/p5/z7+m7Z9+rYFcZHK7IX1sb8+fOh69y0R7V7NQ9d1nnfe+jOrm1ax9WM
+        HBeaGhQfav7fOuNYRumuwxOmvZ0azNW/sf9jo8BvzS7doCcnPcP2KLEUZyQaajEXFScCAHIR
+        ySYxBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrCLMWRmVeSWpSXmKPExsWy7bCSvG7S7hdJBvd36Vj8nXSM3eLyfm2L
+        a3snsls07b/EbPH1+iN2iz8nNrJZXN41h83i37WNLBabN01ltlh84BO7A5fH71+TGD0WbCr1
+        2LSqk83j3blz7B59W1YxenzeJBfAFsVlk5Kak1mWWqRvl8CVceb3VraC0zwVezcvZ29gPMPV
+        xcjJISFgIrFl3WuWLkYuDiGBHYwSlx58YoRIyEjcXnmZFcIWlrjfcoQVoug+o8SOdY1gCRYB
+        FYmHa86wg9hsAroS2078A2sWEfCS2PN6EjtIA7PABCaJ34tPMYEkhAWSJf5Muwhm8wooSzx6
+        8Alq9S1GiQ0vr7JCJAQlTs58wgJiMwtoSdz49xKogQPIlpZY/o8DxOQUCJSYvM1mAqPALCQN
+        s5A0zEJoWMDIvIpRMrWgODc9t9iwwCgvtVyvODG3uDQvXS85P3cTIzgitLR2MO5Z9UHvECMT
+        B+MhRgkOZiUR3jsuz5OEeFMSK6tSi/Lji0pzUosPMUpzsCiJ817oOhkvJJCeWJKanZpakFoE
+        k2Xi4JRqYHJpvvGqbvXdvmAj5VtfjA9NufT51+zFuvGql++wvxXS63hhduHP7eb2iXyFW8w+
+        Tnsn57Bcq2PS/taNQtmGYY+l31TPLNrleDiu5Sa7rOz9qMPrPL6wveTZvK7h/41/q7999A2f
+        YKlqUhU6+4Tef7nT71VNlwu4TphyeppC4/ok1n/r/DKjXXwKljSaG036MEO6vba6NPsk05IM
+        Fp5N+ravtqlFnP/HWyktJOfFNMtKfEL43m+KurLrpqlY38xuYRMJ69GK+VC3z+yKq8Wh/2u5
+        D+m0Xfgzpcj80eUXp9onRjQ+e1TMtPHY35M6+2R0VOW5OJSnLCpySQmdfaGJY5oDy/rflxnE
+        32pcffZ31TIlluKMREMt5qLiRABi356l9wIAAA==
+X-CMS-MailID: 20220802055130epcas2p376afd9af794e864b91500c8081538694
+X-Msg-Generator: CA
+Content-Type: multipart/mixed;
+        boundary="----mcIzWul-aJjzbW66W2I1I_HLrMa1How3AbEvH_uUKQqXJy0E=_79a72_"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220712091922epcas2p34d7c89f02780afa58950b103a62eb59a
+References: <CGME20220712091922epcas2p34d7c89f02780afa58950b103a62eb59a@epcas2p3.samsung.com>
+        <20220712094715.2918823-1-youngmin.nam@samsung.com>
+        <CAK8P3a17d1J7gu0W-0ojxjz8W6C+Pg+xQW8ai=Qw_q94SJAOdQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UDMA_CHAN_RT_*BCNT_REG stores the real-time channel bytecount statistics.
-These registers are 32-bit hardware counters and the driver uses these
-counters to monitor the operational progress status for a channel, when
-transferring more than 4GB of data it was observed that these counters
-overflow and completion calculation of a operation gets affected and the
-transfer hangs indefinitely.
+------mcIzWul-aJjzbW66W2I1I_HLrMa1How3AbEvH_uUKQqXJy0E=_79a72_
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
 
-This commit adds changes to decrease the byte count for every complete
-transaction so that these registers never overflow and the proper byte
-count statistics is maintained for ongoing transaction by the RT counters.
+Hi Jone, Thomas.
 
-Earlier uc->bcnt used to maintain a count of the completed bytes at driver
-side, since the RT counters maintain the statistics of current transaction
-now, the maintenance of uc->bcnt is not necessary.
+Could you consider applying this patch ?
 
-Signed-off-by: Vaishnav Achath <vaishnav.a@ti.com>
----
-V2->V3 :
-		* Remove unnecessary checks for uc->tchan and uc->rchan in 
-		udma_decrement_byte_counters()
-V1->V2 :
-		* Update bcnt reset based on uc->desc->dir
-		* change order of udma_decrement_byte_counters() to before udma_start()
-		* update subsystem tag
+Thanks
 
- drivers/dma/ti/k3-udma.c | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
+On Tue, Jul 12, 2022 at 11:25:22AM +0200, Arnd Bergmann wrote:
+> On Tue, Jul 12, 2022 at 11:47 AM Youngmin Nam <youngmin.nam@samsung.com> wrote:
+> >
+> > In ns_to_kernel_old_timeval() definition,
+> > the function argument is defined with const identifier in kernel/time/time.c,
+> > but the prototype in include/linux/time32.h looks different.
+> >
+> > - The function is defined in kernel/time/time.c as below:
+> > struct __kernel_old_timeval ns_to_kernel_old_timeval(const s64 nsec)
+> >
+> > - The function is decalared in include/linux/time32.h as below:
+> > extern struct __kernel_old_timeval ns_to_kernel_old_timeval(s64 nsec);
+> >
+> > Because the variable of arithmethic types isn't modified in the calling scope,
+> > there's no need to mark arguments as const.
+> > And there is a review in Link[1] why it was omitted during review stage,
+> > so they should be matched.
+> >
+> > Likewise, we can remove the "const" keyword in both definition and declaration
+> > of ns_to_timespec64() as it was metentined below Link[2] and Link[3].
+> >
+> > Link[1]: https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1637458.html
+> > Link[2]: https://lore.kernel.org/all/20220531064346.51677-1-chanho61.park@samsung.com/T/
+> > Link[3]: https://lore.kernel.org/lkml/CAK8P3a3nknJgEDESGdJH91jMj6R_xydFqWASd8r5BbesdvMBgA@mail.gmail.com
+> > Fixes: a84d1169164b ("y2038: Introduce struct __kernel_old_timeval")
+> > Signed-off-by: Youngmin Nam <youngmin.nam@samsung.com>
+> 
+> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+> 
 
-diff --git a/drivers/dma/ti/k3-udma.c b/drivers/dma/ti/k3-udma.c
-index 2f0d2c68c93c..fcfcde947b30 100644
---- a/drivers/dma/ti/k3-udma.c
-+++ b/drivers/dma/ti/k3-udma.c
-@@ -300,8 +300,6 @@ struct udma_chan {
- 
- 	struct udma_tx_drain tx_drain;
- 
--	u32 bcnt; /* number of bytes completed since the start of the channel */
--
- 	/* Channel configuration parameters */
- 	struct udma_chan_config config;
- 
-@@ -757,6 +755,20 @@ static void udma_reset_rings(struct udma_chan *uc)
- 	}
- }
- 
-+static void udma_decrement_byte_counters(struct udma_chan *uc, u32 val)
-+{
-+	if (uc->desc->dir == DMA_DEV_TO_MEM) {
-+		udma_rchanrt_write(uc, UDMA_CHAN_RT_BCNT_REG, val);
-+		udma_rchanrt_write(uc, UDMA_CHAN_RT_SBCNT_REG, val);
-+		udma_rchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
-+	} else {
-+		udma_tchanrt_write(uc, UDMA_CHAN_RT_BCNT_REG, val);
-+		udma_tchanrt_write(uc, UDMA_CHAN_RT_SBCNT_REG, val);
-+		if (!uc->bchan)
-+			udma_tchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
-+	}
-+}
-+
- static void udma_reset_counters(struct udma_chan *uc)
- {
- 	u32 val;
-@@ -790,8 +802,6 @@ static void udma_reset_counters(struct udma_chan *uc)
- 		val = udma_rchanrt_read(uc, UDMA_CHAN_RT_PEER_BCNT_REG);
- 		udma_rchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
- 	}
--
--	uc->bcnt = 0;
- }
- 
- static int udma_reset_chan(struct udma_chan *uc, bool hard)
-@@ -1115,7 +1125,7 @@ static void udma_check_tx_completion(struct work_struct *work)
- 		if (uc->desc) {
- 			struct udma_desc *d = uc->desc;
- 
--			uc->bcnt += d->residue;
-+			udma_decrement_byte_counters(uc, d->residue);
- 			udma_start(uc);
- 			vchan_cookie_complete(&d->vd);
- 			break;
-@@ -1168,7 +1178,7 @@ static irqreturn_t udma_ring_irq_handler(int irq, void *data)
- 				vchan_cyclic_callback(&d->vd);
- 			} else {
- 				if (udma_is_desc_really_done(uc, d)) {
--					uc->bcnt += d->residue;
-+					udma_decrement_byte_counters(uc, d->residue);
- 					udma_start(uc);
- 					vchan_cookie_complete(&d->vd);
- 				} else {
-@@ -1204,7 +1214,7 @@ static irqreturn_t udma_udma_irq_handler(int irq, void *data)
- 			vchan_cyclic_callback(&d->vd);
- 		} else {
- 			/* TODO: figure out the real amount of data */
--			uc->bcnt += d->residue;
-+			udma_decrement_byte_counters(uc, d->residue);
- 			udma_start(uc);
- 			vchan_cookie_complete(&d->vd);
- 		}
-@@ -3809,7 +3819,6 @@ static enum dma_status udma_tx_status(struct dma_chan *chan,
- 			bcnt = udma_tchanrt_read(uc, UDMA_CHAN_RT_BCNT_REG);
- 		}
- 
--		bcnt -= uc->bcnt;
- 		if (bcnt && !(bcnt % uc->desc->residue))
- 			residue = 0;
- 		else
--- 
-2.17.1
+------mcIzWul-aJjzbW66W2I1I_HLrMa1How3AbEvH_uUKQqXJy0E=_79a72_
+Content-Type: text/plain; charset="utf-8"
 
+
+------mcIzWul-aJjzbW66W2I1I_HLrMa1How3AbEvH_uUKQqXJy0E=_79a72_--
