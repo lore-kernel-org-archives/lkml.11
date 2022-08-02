@@ -2,161 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78325C19F29
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:14:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A288C19F2B
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:19:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235885AbiHBIOf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 04:14:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52302 "EHLO
+        id S236411AbiHBITK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 04:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233206AbiHBIOc (ORCPT
+        with ESMTP id S236356AbiHBITJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 04:14:32 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB0E540BDE;
-        Tue,  2 Aug 2022 01:14:31 -0700 (PDT)
-Received: from [192.168.1.87] (unknown [122.171.18.126])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 0FF1120FEB3D;
-        Tue,  2 Aug 2022 01:14:28 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0FF1120FEB3D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1659428071;
-        bh=e9jMP+l1EBs7edkrR5yZ/P6HawFIJg7Wsf/tP8c1hH0=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=sXcg7ueT90KrfILlIRM1HvHe29gKYoqSsyMQQeLTWwjG/2yXmE0aR2uVg0MLLbabt
-         bFLzzVExKfHih7h+hz22WEJriYgk9tSIr380HorDd/SRNsmSyQsKfrYRToXiqRvEob
-         v/XBrdiMYQPyzKMTC6bhLKTBeUWwNFvx6GIrQrRE=
-Message-ID: <33983fa2-c9a8-1ac1-2f75-8360a077cfc2@linux.microsoft.com>
-Date:   Tue, 2 Aug 2022 13:44:23 +0530
+        Tue, 2 Aug 2022 04:19:09 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D520133E11
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 01:19:07 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id m13so12935526wrq.6
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 01:19:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k1v0I/t5P/hSD33gJqjfBsIbcLoYYmNPd4gYpkQXBYs=;
+        b=Qw1VF5pDquL5NlPKG4G/WCWoaU4CVtu1B/yse4mN7O6RMrAgNHmQMDOZIjD5ZUEb5W
+         hPl6xuHO2OPRKv1gQNajRTwEqkRN8Us5taih5PZYQPO69HeGVj/0NyG6+6Vf2J4wk6mD
+         npWHnw2KHP1NUdjQnjaG9foIs+aQJOZ6usaBo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k1v0I/t5P/hSD33gJqjfBsIbcLoYYmNPd4gYpkQXBYs=;
+        b=EoQOm52xDzX+lSnEl6I9ZIyh0CptOYyytgWObR+ohK0gZtAdDFDpA3wPnd92hm8eyK
+         /xpiCQ/Z1eCWzsxtqnJM0mpf5rPjsoDLxQ3yQwL/dVHxX2PLNDvBEyCIqUgcH1pH3MUA
+         CIb5YGmeaMT1HJiHQzvciOLQ7OTNZJ62ssItJTSCmyNWFZdB2CdnjX8K3RdKqxzoJtrX
+         5wsVh7l8lg87FZn1mcaImrh5P1SydFnBp9Ey6UYbuMcpJbFcr32yiLGTzC7Lt1GpU/yK
+         9UYwutxLV1bZ0c2A4mU0/39Kg6KquiB2YToQWAz5PYNNRea6giJbm7ysdMBmADa8lf3z
+         UpFQ==
+X-Gm-Message-State: ACgBeo0wLIqIr5SEmBAS1vRKCG8ZEUFK/bbPHh7tMzzKTmcyJ9Y9I3NY
+        XNo+ZBmLbgqEVF6W6BxGuF6HPzCOshm3LzsC
+X-Google-Smtp-Source: AA6agR7LCGgO6HcG0Phj0Cm6xPzKMTi0/QvFDoDkzot6Ch+RwHjRRuoOCHt3Tn7Mm6Mai5Uup6Xjrg==
+X-Received: by 2002:a5d:42c7:0:b0:21f:916e:a6bf with SMTP id t7-20020a5d42c7000000b0021f916ea6bfmr9097347wrr.443.1659428346182;
+        Tue, 02 Aug 2022 01:19:06 -0700 (PDT)
+Received: from panicking.amarulasolutions.com ([2.196.208.4])
+        by smtp.gmail.com with ESMTPSA id t13-20020adfe44d000000b0021e2fccea97sm14358023wrm.64.2022.08.02.01.19.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Aug 2022 01:19:05 -0700 (PDT)
+From:   Michael Trimarchi <michael@amarulasolutions.com>
+To:     Minas Harutyunyan <hminas@synopsys.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org (open list:DESIGNWARE USB2 DRD IP DRIVER),
+        linux-kernel@vger.kernel.org (open list)
+Cc:     linux-usb@vger.kernel.org (open list:DESIGNWARE USB2 DRD IP DRIVER),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RFC PATCH] usb: dwc2: Call core_init after disconnect
+Date:   Tue,  2 Aug 2022 10:19:02 +0200
+Message-Id: <20220802081903.384867-1-michael@amarulasolutions.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] Drivers: hv: vmbus: Optimize vmbus_on_event
-Content-Language: en-US
-To:     Saurabh Sengar <ssengar@linux.microsoft.com>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-References: <1658741848-4210-1-git-send-email-ssengar@linux.microsoft.com>
-From:   Praveen Kumar <kumarpraveen@linux.microsoft.com>
-In-Reply-To: <1658741848-4210-1-git-send-email-ssengar@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25-07-2022 15:07, Saurabh Sengar wrote:
-> In the vmbus_on_event loop, 2 jiffies timer will not serve the purpose if
-> callback_fn takes longer. For effective use move this check inside of
-> callback functions where needed. Out of all the VMbus drivers using
-> vmbus_on_event, only storvsc has a high packet volume, thus add this limit
-> only in storvsc callback for now.
-> There is no apparent benefit of loop itself because this tasklet will be
-> scheduled anyway again if there are packets left in ring buffer. This
-> patch removes this unnecessary loop as well.
-> 
+Call dwc2_hsotg_core_init_disconnected in order to restart
+the gadget device session, otherwise the device will remain
+in unconsistent state. I have tested on 4.4 kernel but I did
+not find any reason how should work now. Basically what happen
+is the ep0 has a startup request enqueue but the connected state
+is not still get. The session End Detected does not kill any pending
+urb so, the complete for the urb was not delivered, the core is not
+able to complete the setup because urb is on the queue, and the
+core is unable to restart.
 
-In my understanding the loop was for optimizing the host to guest signaling for batched channels.
-And the loop ensures that we process all the posted messages from the host before returning from the respective callbacks.
+Testing was done on PX30 cpu with g_multi gadget (enable ethernet, usb
+storage)
 
-Am I missing something here.
+[46250.026071] dwc2 ff300000.usb: gintsts=0400802c  gintmsk=d0bc3cc4
+[46250.026114] dwc2 ff300000.usb: ++OTG Interrupt gotgint=4 [b_peripheral]
+[46250.026142] dwc2 ff300000.usb:  ++OTG Interrupt: Session End Detected++ (b_peripheral)
+[46250.026159] call disconnect
+[46250.026197] dwc2 ff300000.usb: dwc2_hsotg_irq: 04008028 00000000 (d0bc3cc4) retry 8
+[46253.391509] dwc2 ff300000.usb: gintsts=44008028  gintmsk=d0bc3cc4
+[46253.391551] dwc2 ff300000.usb: Session request interrupt - lx_state=0
+[46253.391595] dwc2 ff300000.usb: dwc2_hsotg_irq: 04008028 00000000 (d0bc3cc4) retry 8
+[46253.406548] dwc2 ff300000.usb: dwc2_hsotg_irq: 04809028 00801000 (d0bc3cc4) retry 8
+[46253.406587] dwc2 ff300000.usb: dwc2_hsotg_irq: USBRstDet
+[46253.406616] dwc2 ff300000.usb: dwc2_hsotg_irq: USBRst
+[46253.406642] dwc2 ff300000.usb: GNPTXSTS=00080010
+[46253.409549] dwc2 ff300000.usb: dwc2_hsotg_irq: 04008428 00000400 (d0bc3cc4) retry 8
+[46253.409585] dwc2 ff300000.usb: GINTSTS_ErlySusp
+[46253.412604] dwc2 ff300000.usb: gintsts=04008828  gintmsk=d0bc3cc4
+[46253.412641] dwc2 ff300000.usb: USB SUSPEND
+[46253.412668] dwc2 ff300000.usb: DSTS=0x31103
+[46253.412696] dwc2 ff300000.usb: DSTS.Suspend Status=1 HWCFG4.Power Optimize=1
+[46253.412722] dwc2 ff300000.usb: ignore suspend request before enumeration
+[46253.412757] dwc2 ff300000.usb: dwc2_hsotg_irq: 04008028 00000000 (d0bc3cc4) retry 8
+[46253.612215] phy phy-ff2c0000.syscon:usb2-phy@100.0: charger = USB_SDP_CHARGER
+[46253.615388] dwc2 ff300000.usb: dwc2_hsotg_irq: 0400a028 00002000 (d0bc3cc4) retry 8
+[46253.615428] dwc2 ff300000.usb: EnumDone (DSTS=0x00431102)
+[46253.615456] dwc2 ff300000.usb: new device is full-speed
+[46253.615492] dwc2 ff300000.usb: dwc2_hsotg_enqueue_setup: queueing setup request
+[46253.615518] dwc2 ff300000.usb: dwc2_hsotg_enqueue_setup already queued???
+[46253.615547] dwc2 ff300000.usb: EP0: DIEPCTL0=0x00028000, DOEPCTL0=0x80028000
+[46253.617420] dwc2 ff300000.usb: dwc2_hsotg_irq: 04008428 00000400 (d0bc3cc4) retry 8
+[46253.617456] dwc2 ff300000.usb: GINTSTS_ErlySusp
+[46253.620472] dwc2 ff300000.usb: gintsts=04008828  gintmsk=d0bc3cc4
+[46253.620508] dwc2 ff300000.usb: USB SUSPEND
+[46253.620535] dwc2 ff300000.usb: DSTS=0x431103
+[46253.620563] dwc2 ff300000.usb: DSTS.Suspend Status=1 HWCFG4.Power Optimize=1
+[46253.620589] dwc2 ff300000.usb: ignore suspend request before enumeration
+[46253.620624] dwc2 ff300000.usb: dwc2_hsotg_irq: 04008028 00000000 (d0bc3cc4) retry 8
+[46253.757245] dwc2 ff300000.usb: dwc2_hsotg_irq: 04809028 00801000 (d0bc3cc4) retry 8
+[46253.757285] dwc2 ff300000.usb: dwc2_hsotg_irq: USBRstDet
+[46253.757312] dwc2 ff300000.usb: dwc2_hsotg_irq: USBRst
+[46253.757338] dwc2 ff300000.usb: GNPTXSTS=00080010
+[46253.814352] dwc2 ff300000.usb: dwc2_hsotg_irq: 0400a028 00002000 (d0bc3cc4) retry 8
+[46253.814395] dwc2 ff300000.usb: EnumDone (DSTS=0x00188800)
+[46253.814421] dwc2 ff300000.usb: new device is high-speed
+[46253.814456] dwc2 ff300000.usb: dwc2_hsotg_enqueue_setup: queueing setup request
+[46253.814483] dwc2 ff300000.usb: dwc2_hsotg_enqueue_setup already queued???
+[46253.814512] dwc2 ff300000.usb: EP0: DIEPCTL0=0x00028000, DOEPCTL0=0x80028000
+[46253.885421] dwc2 ff300000.usb: dwc2_hsotg_irq: 04088028 00080000 (d0bc3cc4) retry 8
+[46253.885463] dwc2 ff300000.usb: dwc2_hsotg_irq: daint=00010000
+[46253.885496] dwc2 ff300000.usb: dwc2_hsotg_epint: ep0(out) DxEPINT=0x00008001
+[46259.108181] dwc2 ff300000.usb: dwc2_hsotg_irq: 04008428 00000400 (d0bc3cc4) retry 8
+[46259.108221] dwc2 ff300000.usb: GINTSTS_ErlySusp
+[46259.108600] dwc2 ff300000.usb: dwc2_hsotg_irq: 04009028 00001000 (d0bc3cc4) retry 8
+[46259.108632] dwc2 ff300000.usb: dwc2_hsotg_irq: USBRst
+[46259.108659] dwc2 ff300000.usb: GNPTXSTS=00080010
+[46259.162264] dwc2 ff300000.usb: dwc2_hsotg_irq: 0400a028 00002000 (d0bc3cc4) retry 8
+[46259.162304] dwc2 ff300000.usb: EnumDone (DSTS=0x000b1800)
+[46259.162332] dwc2 ff300000.usb: new device is high-speed
+[46259.162367] dwc2 ff300000.usb: dwc2_hsotg_enqueue_setup: queueing setup request
+[46259.162393] dwc2 ff300000.usb: dwc2_hsotg_enqueue_setup already queued???
+[46259.162423] dwc2 ff300000.usb: EP0: DIEPCTL0=0x00028000, DOEPCTL0=0x80028000
+[46259.344960] dwc2 ff300000.usb: dwc2_hsotg_irq: 04088028 00080000 (d0bc3cc4) retry 8
+[46259.345002] dwc2 ff300000.usb: dwc2_hsotg_irq: daint=00010000
+[46259.345036] dwc2 ff300000.usb: dwc2_hsotg_epint: ep0(out) DxEPINT=0x00008001
+[46264.481549] dwc2 ff300000.usb: dwc2_hsotg_irq: 04088028 00080000 (d0bc3cc4) retry 8
+[46264.481592] dwc2 ff300000.usb: dwc2_hsotg_irq: daint=00010000
+[46264.481625] dwc2 ff300000.usb: dwc2_hsotg_epint: ep0(out) DxEPINT=0x00008001
+[46269.605279] dwc2 ff300000.usb: dwc2_hsotg_irq: 04088028 00080000 (d0bc3cc4) retry 8
+[46269.605322] dwc2 ff300000.usb: dwc2_hsotg_irq: daint=00010000
+[46269.605356] dwc2 ff300000.usb: dwc2_hsotg_epint: ep0(out) DxEPINT=0x00008001
+[46274.724165] dwc2 ff300000.usb: dwc2_hsotg_irq: 04008428 00000400 (d0bc3cc4) retry 8
+[46274.724205] dwc2 ff300000.usb: GINTSTS_ErlySusp
+[46274.724574] dwc2 ff300000.usb: dwc2_hsotg_irq: 04009028 00001000 (d0bc3cc4) retry 8
+[46274.724606] dwc2 ff300000.usb: dwc2_hsotg_irq: USBRst
+[46274.724632] dwc2 ff300000.usb: GNPTXSTS=00080010
+[46274.778137] dwc2 ff300000.usb: dwc2_hsotg_irq: 0400a028 00002000 (d0bc3cc4) retry 8
+[46274.778179] dwc2 ff300000.usb: EnumDone (DSTS=0x00331800)
+[46274.778207] dwc2 ff300000.usb: new device is high-speed
+[46274.778242] dwc2 ff300000.usb: dwc2_hsotg_enqueue_setup: queueing setup request
+[46274.778268] dwc2 ff300000.usb: dwc2_hsotg_enqueue_setup already queued???
+[46274.778297] dwc2 ff300000.usb: EP0: DIEPCTL0=0x00028000, DOEPCTL0=0x80028000
 
-> Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
-> ---
->  drivers/hv/connection.c    | 33 ++++++++++++++-------------------
->  drivers/scsi/storvsc_drv.c |  9 +++++++++
->  2 files changed, 23 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/hv/connection.c b/drivers/hv/connection.c
-> index eca7afd..9dc27e5 100644
-> --- a/drivers/hv/connection.c
-> +++ b/drivers/hv/connection.c
-> @@ -431,34 +431,29 @@ struct vmbus_channel *relid2channel(u32 relid)
->  void vmbus_on_event(unsigned long data)
->  {
->  	struct vmbus_channel *channel = (void *) data;
-> -	unsigned long time_limit = jiffies + 2;
-> +	void (*callback_fn)(void *context);
->  
->  	trace_vmbus_on_event(channel);
->  
->  	hv_debug_delay_test(channel, INTERRUPT_DELAY);
-> -	do {
-> -		void (*callback_fn)(void *);
->  
-> -		/* A channel once created is persistent even when
-> -		 * there is no driver handling the device. An
-> -		 * unloading driver sets the onchannel_callback to NULL.
-> -		 */
-> -		callback_fn = READ_ONCE(channel->onchannel_callback);
-> -		if (unlikely(callback_fn == NULL))
-> -			return;
-> -
-> -		(*callback_fn)(channel->channel_callback_context);
-> +	/* A channel once created is persistent even when
-> +	 * there is no driver handling the device. An
-> +	 * unloading driver sets the onchannel_callback to NULL.
-> +	 */
-> +	callback_fn = READ_ONCE(channel->onchannel_callback);
-> +	if (unlikely(!callback_fn))
-> +		return;
->  
-> -		if (channel->callback_mode != HV_CALL_BATCHED)
-> -			return;
-> +	(*callback_fn)(channel->channel_callback_context);
->  
-> -		if (likely(hv_end_read(&channel->inbound) == 0))
-> -			return;
-> +	if (channel->callback_mode != HV_CALL_BATCHED)
-> +		return;
->  
-> -		hv_begin_read(&channel->inbound);
-> -	} while (likely(time_before(jiffies, time_limit)));
-> +	if (likely(hv_end_read(&channel->inbound) == 0))
-> +		return;
->  
-> -	/* The time limit (2 jiffies) has been reached */
-> +	hv_begin_read(&channel->inbound);
->  	tasklet_schedule(&channel->callback_event);
->  }
->  
-> diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-> index fe000da..c457e6b 100644
-> --- a/drivers/scsi/storvsc_drv.c
-> +++ b/drivers/scsi/storvsc_drv.c
-> @@ -60,6 +60,9 @@
->  #define VMSTOR_PROTO_VERSION_WIN8_1	VMSTOR_PROTO_VERSION(6, 0)
->  #define VMSTOR_PROTO_VERSION_WIN10	VMSTOR_PROTO_VERSION(6, 2)
->  
-> +/* channel callback timeout in ms */
-> +#define CALLBACK_TIMEOUT               2
-> +
->  /*  Packet structure describing virtual storage requests. */
->  enum vstor_packet_operation {
->  	VSTOR_OPERATION_COMPLETE_IO		= 1,
-> @@ -1204,6 +1207,7 @@ static void storvsc_on_channel_callback(void *context)
->  	struct hv_device *device;
->  	struct storvsc_device *stor_device;
->  	struct Scsi_Host *shost;
-> +	unsigned long time_limit = jiffies + msecs_to_jiffies(CALLBACK_TIMEOUT);
->  
->  	if (channel->primary_channel != NULL)
->  		device = channel->primary_channel->device_obj;
-> @@ -1224,6 +1228,11 @@ static void storvsc_on_channel_callback(void *context)
->  		u32 minlen = rqst_id ? sizeof(struct vstor_packet) :
->  			sizeof(enum vstor_packet_operation);
->  
-> +		if (unlikely(time_after(jiffies, time_limit))) {
-> +			hv_pkt_iter_close(channel);
-> +			return;
-> +		}
-> +
->  		if (pktlen < minlen) {
->  			dev_err(&device->device,
->  				"Invalid pkt: id=%llu, len=%u, minlen=%u\n",
+Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+---
+ drivers/usb/dwc2/gadget.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Regards,
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index fe2a58c75861..4c1e10a62bde 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -3732,7 +3732,6 @@ static irqreturn_t dwc2_hsotg_irq(int irq, void *pw)
+ 
+ 	if (gintsts & (GINTSTS_USBRST | GINTSTS_RESETDET)) {
+ 		u32 usb_status = dwc2_readl(hsotg, GOTGCTL);
+-		u32 connected = hsotg->connected;
+ 
+ 		dev_dbg(hsotg->dev, "%s: USBRst\n", __func__);
+ 		dev_dbg(hsotg->dev, "GNPTXSTS=%08x\n",
+@@ -3746,7 +3745,7 @@ static irqreturn_t dwc2_hsotg_irq(int irq, void *pw)
+ 		/* Reset device address to zero */
+ 		dwc2_clear_bit(hsotg, DCFG, DCFG_DEVADDR_MASK);
+ 
+-		if (usb_status & GOTGCTL_BSESVLD && connected)
++		if (usb_status & GOTGCTL_BSESVLD)
+ 			dwc2_hsotg_core_init_disconnected(hsotg, true);
+ 	}
+ 
+-- 
+2.34.1
 
-~Praveen.
