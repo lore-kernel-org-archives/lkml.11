@@ -2,137 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D78FC00144
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 02:54:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D39FC00144
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 02:56:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235799AbiHBCyX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 1 Aug 2022 22:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50224 "EHLO
+        id S235593AbiHBC4p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 1 Aug 2022 22:56:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232446AbiHBCyV (ORCPT
+        with ESMTP id S232446AbiHBC4n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 1 Aug 2022 22:54:21 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70AEF17E36
-        for <linux-kernel@vger.kernel.org>; Mon,  1 Aug 2022 19:54:20 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id y141so12314552pfb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 01 Aug 2022 19:54:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VepS0pf6a4atZd971NuWbFl/YxaIYnEeNRklOESYwoQ=;
-        b=aIMgFg5Mcp5VAH1+yGXzr6Wiq2zIyP2mAIKIpFmhkSFnrJWTYN0+u/YWcyFdKxpg2N
-         P0Grm14hQzdZNpaNQ2NfJroY050rOKORL0QwOljWu5+FIkLI7cvTSmkKg9GAuDnHQ0L7
-         9JRAAkbbipcStDA3nG9C42x072PHKd9zo01XVX5ZVuUJDP5al22lsXkhuU2c6OqsD8Ik
-         eD0xBQ4xM4Prx98nIriLb+8NaoHolPZShxdz4p39gAvZHvRnfl3nle2h5D1LMUGcAAT6
-         R1wkp5gKCphmr+9C8QaVYvJALbLi92drgtGo9fwIWJLWhgzWZxBDpCWwQ3WCxp5jwEAm
-         //3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VepS0pf6a4atZd971NuWbFl/YxaIYnEeNRklOESYwoQ=;
-        b=L7eGbcmeSWWhlXJYLbHEVM5F1rUeNOBGHkf9uWN9w4KPYZC6CeoCOGZdod4XAW0Pzb
-         Io4wHcSBzFUpnj2OrxNE/7Dr6VxZVz0Lwgs1LPMfTaFJ4gniFpSkOsDBjhfS9rOB9rCT
-         SxAgEvG2SxPYxJbQElh/uBOMp+AXE5JOhbkalbR/mb0CaDaIDH9AGT+lyLIKdP2zpak+
-         49DR4U7fe8rIpWqp6qdQ8+LFktkzePZt1RJdIB+rO61RxJUqSoXuCY1uJHXW4To3FmkQ
-         bic0rcZuQdXJE3Zua/JuKpdFQNSXrgrInD4gtEo+uOaMJLhY5bTQH0cHezcG2YrbQMoV
-         AtfQ==
-X-Gm-Message-State: AJIora9RvcW0FaAd8upuzOIeKhsoTkcq5+iLng4FxTV27UtQMrpZ9E+8
-        h+wr9PYClsoB7BIU9HpyflA=
-X-Google-Smtp-Source: AGRyM1v71zSrDIYf2Hqz2GlUg2dfTbZQDOwslUWYS1u1LGpDxUyHOairM1PxsNobGHx20I9U413IyA==
-X-Received: by 2002:a05:6a00:815:b0:52b:8895:a0bd with SMTP id m21-20020a056a00081500b0052b8895a0bdmr18917138pfk.57.1659408859816;
-        Mon, 01 Aug 2022 19:54:19 -0700 (PDT)
-Received: from hyeyoo ([114.29.91.56])
-        by smtp.gmail.com with ESMTPSA id d25-20020a656219000000b0041c3ab14ca1sm1836514pgv.0.2022.08.01.19.54.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Aug 2022 19:54:19 -0700 (PDT)
-Date:   Tue, 2 Aug 2022 11:54:10 +0900
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Joe Perches <joe@perches.com>,
-        Vasily Averin <vasily.averin@linux.dev>,
-        Matthew WilCox <willy@infradead.org>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH v3 06/15] mm/slab_common: fold kmalloc_order_trace() into
- kmalloc_large()
-Message-ID: <YuiR0tWqMY+UDU/W@hyeyoo>
-References: <20220712133946.307181-1-42.hyeyoo@gmail.com>
- <20220712133946.307181-7-42.hyeyoo@gmail.com>
- <2e252179-0ffe-0d9c-9340-77e46f6ffdfd@suse.cz>
- <YufUgFX2shlG5FoR@hyeyoo>
- <0ca2f22a-8247-8419-3f99-4456a4c7344a@suse.cz>
+        Mon, 1 Aug 2022 22:56:43 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EAD81D0C0;
+        Mon,  1 Aug 2022 19:56:41 -0700 (PDT)
+X-UUID: 0f016471410a40bd970b5f5ee99a0f83-20220802
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:d2f20303-42dd-4a9c-bd21-a3eb2abb00cb,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.8,REQID:d2f20303-42dd-4a9c-bd21-a3eb2abb00cb,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:0f94e32,CLOUDID:0f96f5d0-841b-4e95-ad42-8f86e18f54fc,C
+        OID:423ab5852118,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 0f016471410a40bd970b5f5ee99a0f83-20220802
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1129900911; Tue, 02 Aug 2022 10:56:32 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 2 Aug 2022 10:56:31 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Tue, 2 Aug 2022 10:56:31 +0800
+Message-ID: <f38757a55a5a5f90099a2b166363b32da44ff3a7.camel@mediatek.com>
+Subject: Re: [PATCH v15 05/11] drm/mediatek: Add MT8195 Embedded DisplayPort
+ driver
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <liangxu.xu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-fbdev@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 2 Aug 2022 10:56:30 +0800
+In-Reply-To: <20220727045035.32225-6-rex-bc.chen@mediatek.com>
+References: <20220727045035.32225-1-rex-bc.chen@mediatek.com>
+         <20220727045035.32225-6-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0ca2f22a-8247-8419-3f99-4456a4c7344a@suse.cz>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 01, 2022 at 03:36:48PM +0200, Vlastimil Babka wrote:
-> On 8/1/22 15:26, Hyeonggon Yoo wrote:
-> > On Thu, Jul 28, 2022 at 05:23:29PM +0200, Vlastimil Babka wrote:
-> >> On 7/12/22 15:39, Hyeonggon Yoo wrote:
-> >> > There is no caller of kmalloc_order_trace() except kmalloc_large().
-> >> > Fold it into kmalloc_large() and remove kmalloc_order{,_trace}().
-> >> > 
-> >> > Also add tracepoint in kmalloc_large() that was previously
-> >> > in kmalloc_order_trace().
-> >> > 
-> >> > Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> >> > Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
-> >> 
-> > 
-> > Thank you for review.
-> > 
-> >> Hmm noticed a small change in how we call trace_kmalloc() which will now
-> >> include the __GFP_COMP.
-> > 
-> > Good catch.
-> > 
-> >> I think we could just call alloc_pages() from
-> >> kmalloc_large() with flags | __GFP_COMP instead of doing flags |=
-> >> __GFP_COMP; first.
-> > 
-> > I'll consider that in next version.
-> > 
-> >> AFAICS both kasan_kmalloc_large() and kmemleak_alloc()
-> >> will filter it out anyway.
-> > 
-> > AFAIK not passing __GFP_COMP to both kasan_kmalloc_large()
-> > and kmemleak_alloc() will affect their behavior.
+Hi, Bo-Chen:
+
+On Wed, 2022-07-27 at 12:50 +0800, Bo-Chen Chen wrote:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
 > 
-> You mean "will NOT affect...", right?
-
-Ah, yes. mistake.
-
+> This patch adds a embedded displayport driver for the MediaTek mt8195
+> SoC.
 > 
-> > - kasan_kmalloc_large() only checks if flag has __GFP_DIRECT_RECLAIM,
-> > - kmemleak_alloc() only use it to allocate kmemleak_object from
-> >   slab/pool, which does not require __GFP_COMP.
-> > 
-> > simply calling
-> > 	alloc_pages() with flags | GFP_COMP
-> > 	kasan_kmalloc_large() with flags
-> > 	kmemleak_alloc() with flags
-> > 	trace_kmalloc() with flags
-> > will be okay.
-> > 
-> > BTW this is fixed after patch 9.
+> It supports the MT8195, the embedded DisplayPort units. It offers
+> DisplayPort 1.4 with up to 4 lanes.
 > 
-> Ah, right. __kmalloc_large_node_notrace() does the same  flags |=
-> __GFP_COMP; but the tracepoint is outside and unaffected.
+> The driver creates a child device for the phy. The child device will
+> never exist without the parent being active. As they are sharing a
+> register range, the parent passes a regmap pointer to the child so
+> that
+> both can work with the same register range. The phy driver sets
+> device
+> data that is read by the parent to get the phy device that can be
+> used
+> to control the phy properties.
+> 
+> This driver is based on an initial version by
+> Jitao shi <jitao.shi@mediatek.com>
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> ---
 
-I'll reflect your suggestion anyway.
+[snip]
 
--- 
-Thanks,
-Hyeonggon
+> +
+> +#define MTK_DP_ENC0_P0_31D0			(ENC0_OFFSET + 0x1D0)
+
+MTK_DP_ENC0_P0_31D0 is uselese, so remove it.
+
+> +#define VSC_EXT_CEA_HB0_DP_ENC0_P0_MASK		GENMASK(7, 0)
+> +#define VSC_EXT_CEA_HB1_DP_ENC0_P0_MASK		GENMASK(15, 8)
+> +#define VSC_EXT_CEA_HB1_DP_ENC0_P0_SHIFT	BIT(3)
+> +
+> +#define MTK_DP_ENC0_P0_31D4			(ENC0_OFFSET + 0x1D4)
+
+Ditto.
+
+> +#define VSC_EXT_CEA_HB2_DP_ENC0_P0_MASK		GENMASK(7, 0)
+> +#define VSC_EXT_CEA_HB2_DP_ENC0_P0_SHIFT	0
+> +#define VSC_EXT_CEA_HB3_DP_ENC0_P0_MASK		GENMASK(15, 8)
+> +
+> +#define MTK_DP_ENC0_P0_31D8			(ENC0_OFFSET + 0x1D8)
+
+Ditto.
+
+> +#define VSC_EXT_VESA_NUM_DP_ENC0_P0_MASK	GENMASK(5, 0)
+> +#define VSC_EXT_VESA_NUM_DP_ENC0_P0_SHIFT	0
+> +#define VSC_EXT_CEA_NUM_DP_ENC0_P0_MASK		GENMASK(13, 8)
+> +#define VSC_EXT_CEA_NUM_DP_ENC0_P0_SHIFT	BIT(3)
+> +
+> +#define MTK_DP_ENC0_P0_31DC			(ENC0_OFFSET + 0x1DC)
+
+Ditto.
+
+Regards,
+CK
+
+> +#define HDR0_CFG_DP_ENC0_P0_MASK		GENMASK(7, 0)
+> +#define HDR0_CFG_DP_ENC0_P0_SHIFT		0
+> +#define MTK_DP_ENC0_P0_31E8			(ENC0_OFFSET + 0x1E8)
+> +#define MTK_DP_ENC0_P0_31EC			(ENC0_OFFSET + 0x1EC)
+> +#define AUDIO_CH_SRC_SEL_DP_ENC0_P0_MASK	BIT(4)
+> +#define AUDIO_CH_SRC_SEL_DP_ENC0_P0_SHIFT	BIT(2)
+> +#define ISRC1_HB3_DP_ENC0_P0_MASK		GENMASK(15, 8)
+> +#define ISRC1_HB3_DP_ENC0_P0_SHIFT		BIT(3)
+> +
+
