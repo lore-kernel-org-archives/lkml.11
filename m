@@ -2,392 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A973C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1292C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236259AbiHBMqU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 08:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33454 "EHLO
+        id S236282AbiHBMrZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 08:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235227AbiHBMqR (ORCPT
+        with ESMTP id S233808AbiHBMrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 08:46:17 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE51818E35;
-        Tue,  2 Aug 2022 05:46:15 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id CD9F71A2F61;
-        Tue,  2 Aug 2022 14:46:13 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 74D571A0384;
-        Tue,  2 Aug 2022 14:46:13 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 328A91820F57;
-        Tue,  2 Aug 2022 20:46:12 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     lgirdwood@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     shengjiu.wang@gmail.com
-Subject: [PATCH v4] ASoC: dt-bindings: fsl,sai: Convert format to json-schema
-Date:   Tue,  2 Aug 2022 20:29:54 +0800
-Message-Id: <1659443394-9838-1-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Tue, 2 Aug 2022 08:47:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1B1E963BE
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 05:47:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659444441;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wbbGtoG/Vl+wjUfmVqEW8AmNwItFx5zbhZBvkq/eXg8=;
+        b=jOlcADEDb1moVHpYwf12WqgRTx91Ig5Qxhwynoa3uffaSSkLCJVnQqgBQxNIF1aYtKdMcP
+        eSbjrL0wc4zYsMKvhQomxgjaa6dS6uW6U0fw5CHryorWLUhl0D6pJEN7llk8SZHh/BEy8Y
+        Onb3hwmhQMOgxK7bs3lniJGu4pTL/EA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-553-dOMSq3THNai4QTNWY5116w-1; Tue, 02 Aug 2022 08:47:20 -0400
+X-MC-Unique: dOMSq3THNai4QTNWY5116w-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 48B82858F00;
+        Tue,  2 Aug 2022 12:47:19 +0000 (UTC)
+Received: from localhost (ovpn-13-104.pek2.redhat.com [10.72.13.104])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 307DF90A04;
+        Tue,  2 Aug 2022 12:47:16 +0000 (UTC)
+Date:   Tue, 2 Aug 2022 20:46:57 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Will Deacon <will@kernel.org>,
+        "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Cc:     Dave Young <dyoung@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        John Donnelly <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>, ardb@kernel.org
+Subject: Re: [PATCH v3 1/2] arm64: kdump: Provide default size when
+ crashkernel=Y,low is not specified
+Message-ID: <YukcwUyEvOLjV00C@MiWiFi-R3L-srv>
+References: <20220711090319.1604-1-thunder.leizhen@huawei.com>
+ <20220711090319.1604-2-thunder.leizhen@huawei.com>
+ <20220802083703.GA26962@willie-the-truck>
+ <bc2830f7-7c3c-30ea-0178-ad86922f8f5c@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bc2830f7-7c3c-30ea-0178-ad86922f8f5c@huawei.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the NXP SAI binding to DT schema format using json-schema.
+On 08/02/22 at 06:12pm, Leizhen (ThunderTown) wrote:
+......snip...  
+> >> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> >> index 339ee84e5a61a0b..5390f361208ccf7 100644
+> >> --- a/arch/arm64/mm/init.c
+> >> +++ b/arch/arm64/mm/init.c
+> >> @@ -96,6 +96,14 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
+> >>  #define CRASH_ADDR_LOW_MAX		arm64_dma_phys_limit
+> >>  #define CRASH_ADDR_HIGH_MAX		(PHYS_MASK + 1)
+> >>  
+> >> +/*
+> >> + * This is an empirical value in x86_64 and taken here directly. Please
+> >> + * refer to the code comment in reserve_crashkernel_low() of x86_64 for more
+> >> + * details.
+> > 
+> > Honestly, I read that comment and I'm none the wiser. What does "due to
+> > mapping restrictions" mean? The remainder of the comment appears to be
+> 
+> Because the comments you read is addressed to CRASH_ADDR_LOW_MAX, not
+> for DEFAULT_CRASH_KERNEL_LOW_SIZE. Please see the following patch:
+> 
+> 94fb9334182284 x86/crash: Allocate enough low memory when crashkernel=high
+> 
+> > specific to x86 and refers to jump ranges with 5-level page-tables.
+> > 
+> >> +#define DEFAULT_CRASH_KERNEL_LOW_SIZE	\
+> >> +	max(swiotlb_size_or_default() + (8UL << 20), 256UL << 20)
+> > 
+> > So why does this value make sense for arm64? We have considerable platform
+> > fragmentation^Wdiversity compared to x86 and picking a one-size-fits-all
+> > default is more likely to cause weird problems when it doesn't work imo. I'd
+> > actually prefer that the default is something that fails obviously (e.g. 0)
+> > and we force an appropriate size to be specified.
 
-The Synchronous Audio Interface (SAI) provides an interface that
-supports full-duplex serial interfaces with frame synchronization
-formats such as I2S, AC97, TDM, and codec/DSP interfaces.
+The default value mainly serves the crashkernel=xM case, not just for
+crashkernel=,high specified while no crahskernel=,low. The simplest
+usage of crashkernel reservation is user only need set crashkernel=xM in
+cmdline, we will try to get available memory from low memory region
+firstly, if failed, go above 4G to find again. If we finally get memory
+from above 4G, then the default low memory is needed. E.g if
+crashkernel=512M is set, and no sufficient memory under 4G. With it,
+user don't need to know about crashkernel=,high or ,low, and even memory
+has type of high, low, or dma stuff.
 
-Beside conversion, 'fsl,shared-interrupt' and '#sound-dai-cells'
-are added for they are already used by some dts.
+> > 
+> > On the other hand, if you can convince me that having a global constant is
+> > the right way forward, then please move this out of the arch code.
+> 
+> Yes, the default value may not be the same as that of x86. For example,
+> 128 MB may be sufficient.
+> 
+> So we need to discuss first, do we need a default value? Personally, I
+> don't think it hurts.
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
-changes in v4
-- remove $ref for boolean properties
+Yes, we can discuss. Welcome anyone to help provide information how we
+should take care to make a small but enough value. In fact, on x86_64,
+we didn't set the value at one time. It was set as 72M at the beginning,
+later Joerg found it's not enough, we finally decided to make it as
+256M. People who mind the wasting of 256M can use crashkernel=,high and
+crashkernel=,low pair to specify the value exactly.
 
-changes in v3
-- address comments from Krzysztof
+commit c729de8fcea3 ("x86, kdump: Set crashkernel_low automatically")
+commit 94fb93341822 ("x86/crash: Allocate enough low memory when crashkernel=high")
 
-changes in v2
-- fix exclusive property issue
-- fix order issue of compatible, clock-names, dma-names
-
- .../devicetree/bindings/sound/fsl,sai.yaml    | 216 ++++++++++++++++++
- .../devicetree/bindings/sound/fsl-sai.txt     |  95 --------
- 2 files changed, 216 insertions(+), 95 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/sound/fsl,sai.yaml
- delete mode 100644 Documentation/devicetree/bindings/sound/fsl-sai.txt
-
-diff --git a/Documentation/devicetree/bindings/sound/fsl,sai.yaml b/Documentation/devicetree/bindings/sound/fsl,sai.yaml
-new file mode 100644
-index 000000000000..70c4111d59c7
---- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/fsl,sai.yaml
-@@ -0,0 +1,216 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/fsl,sai.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Freescale Synchronous Audio Interface (SAI).
-+
-+maintainers:
-+  - Shengjiu Wang <shengjiu.wang@nxp.com>
-+
-+description: |
-+  The SAI is based on I2S module that used communicating with audio codecs,
-+  which provides a synchronous audio interface that supports fullduplex
-+  serial interfaces with frame synchronization such as I2S, AC97, TDM, and
-+  codec/DSP interfaces.
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - enum:
-+          - fsl,vf610-sai
-+          - fsl,imx6sx-sai
-+          - fsl,imx6ul-sai
-+          - fsl,imx7ulp-sai
-+          - fsl,imx8mq-sai
-+          - fsl,imx8qm-sai
-+          - fsl,imx8ulp-sai
-+      - items:
-+          - enum:
-+              - fsl,imx8mm-sai
-+              - fsl,imx8mn-sai
-+              - fsl,imx8mp-sai
-+          - const: fsl,imx8mq-sai
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    items:
-+      - description: receive and transmit interrupt
-+
-+  dmas:
-+    maxItems: 2
-+
-+  dma-names:
-+    maxItems: 2
-+
-+  clocks:
-+    items:
-+      - description: The ipg clock for register access
-+      - description: master clock source 0 (obsoleted)
-+      - description: master clock source 1
-+      - description: master clock source 2
-+      - description: master clock source 3
-+      - description: PLL clock source for 8kHz series
-+      - description: PLL clock source for 11kHz series
-+    minItems: 4
-+
-+  clock-names:
-+    oneOf:
-+      - items:
-+          - const: bus
-+          - const: mclk0
-+          - const: mclk1
-+          - const: mclk2
-+          - const: mclk3
-+          - const: pll8k
-+          - const: pll11k
-+        minItems: 4
-+      - items:
-+          - const: bus
-+          - const: mclk1
-+          - const: mclk2
-+          - const: mclk3
-+          - const: pll8k
-+          - const: pll11k
-+        minItems: 4
-+
-+  lsb-first:
-+    description: |
-+      Configures whether the LSB or the MSB is transmitted
-+      first for the fifo data. If this property is absent,
-+      the MSB is transmitted first as default, or the LSB
-+      is transmitted first.
-+    type: boolean
-+
-+  big-endian:
-+    description: |
-+      required if all the SAI registers are big-endian rather than little-endian.
-+    type: boolean
-+
-+  fsl,sai-synchronous-rx:
-+    description: |
-+      SAI will work in the synchronous mode (sync Tx with Rx) which means
-+      both the transmitter and the receiver will send and receive data by
-+      following receiver's bit clocks and frame sync clocks.
-+    type: boolean
-+
-+  fsl,sai-asynchronous:
-+    description: |
-+      SAI will work in the asynchronous mode, which means both transmitter
-+      and receiver will send and receive data by following their own bit clocks
-+      and frame sync clocks separately.
-+      If both fsl,sai-asynchronous and fsl,sai-synchronous-rx are absent, the
-+      default synchronous mode (sync Rx with Tx) will be used, which means both
-+      transmitter and receiver will send and receive data by following clocks
-+      of transmitter.
-+    type: boolean
-+
-+  fsl,dataline:
-+    $ref: /schemas/types.yaml#/definitions/uint32-matrix
-+    description: |
-+      Configure the dataline. It has 3 value for each configuration
-+    maxItems: 16
-+    items:
-+      items:
-+        - description: format Default(0), I2S(1) or PDM(2)
-+          enum: [0, 1, 2]
-+        - description: dataline mask for 'rx'
-+        - description: dataline mask for 'tx'
-+
-+  fsl,sai-mclk-direction-output:
-+    description: SAI will output the SAI MCLK clock.
-+    type: boolean
-+
-+  fsl,shared-interrupt:
-+    description: Interrupt is shared with other modules.
-+    type: boolean
-+
-+  "#sound-dai-cells":
-+    const: 0
-+    description: optional, some dts node didn't add it.
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: fsl,vf610-sai
-+    then:
-+      properties:
-+        dmas:
-+          items:
-+            - description: DMA controller phandle and request line for TX
-+            - description: DMA controller phandle and request line for RX
-+        dma-names:
-+          items:
-+            - const: tx
-+            - const: rx
-+    else:
-+      properties:
-+        dmas:
-+          items:
-+            - description: DMA controller phandle and request line for RX
-+            - description: DMA controller phandle and request line for TX
-+        dma-names:
-+          items:
-+            - const: rx
-+            - const: tx
-+  - if:
-+      required:
-+        - fsl,sai-asynchronous
-+    then:
-+      properties:
-+        fsl,sai-synchronous-rx: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - dmas
-+  - dma-names
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/vf610-clock.h>
-+    sai2: sai@40031000 {
-+        compatible = "fsl,vf610-sai";
-+        reg = <0x40031000 0x1000>;
-+        interrupts = <86 IRQ_TYPE_LEVEL_HIGH>;
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pinctrl_sai2_1>;
-+        clocks = <&clks VF610_CLK_PLATFORM_BUS>,
-+                 <&clks VF610_CLK_SAI2>,
-+                 <&clks 0>, <&clks 0>;
-+        clock-names = "bus", "mclk1", "mclk2", "mclk3";
-+        dma-names = "tx", "rx";
-+        dmas = <&edma0 0 21>,
-+               <&edma0 0 20>;
-+        big-endian;
-+        lsb-first;
-+    };
-+
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/imx8mm-clock.h>
-+    sai1: sai@30010000 {
-+        compatible = "fsl,imx8mm-sai", "fsl,imx8mq-sai";
-+        reg = <0x30010000 0x10000>;
-+        interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&clk IMX8MM_CLK_SAI1_IPG>,
-+                 <&clk IMX8MM_CLK_DUMMY>,
-+                 <&clk IMX8MM_CLK_SAI1_ROOT>,
-+                 <&clk IMX8MM_CLK_DUMMY>, <&clk IMX8MM_CLK_DUMMY>;
-+        clock-names = "bus", "mclk0", "mclk1", "mclk2", "mclk3";
-+        dmas = <&sdma2 0 2 0>, <&sdma2 1 2 0>;
-+        dma-names = "rx", "tx";
-+        fsl,dataline = <1 0xff 0xff 2 0xff 0x11>;
-+        #sound-dai-cells = <0>;
-+    };
-diff --git a/Documentation/devicetree/bindings/sound/fsl-sai.txt b/Documentation/devicetree/bindings/sound/fsl-sai.txt
-deleted file mode 100644
-index fbdefc3fade7..000000000000
---- a/Documentation/devicetree/bindings/sound/fsl-sai.txt
-+++ /dev/null
-@@ -1,95 +0,0 @@
--Freescale Synchronous Audio Interface (SAI).
--
--The SAI is based on I2S module that used communicating with audio codecs,
--which provides a synchronous audio interface that supports fullduplex
--serial interfaces with frame synchronization such as I2S, AC97, TDM, and
--codec/DSP interfaces.
--
--Required properties:
--
--  - compatible		: Compatible list, contains "fsl,vf610-sai",
--			  "fsl,imx6sx-sai", "fsl,imx6ul-sai",
--			  "fsl,imx7ulp-sai", "fsl,imx8mq-sai",
--			  "fsl,imx8qm-sai", "fsl,imx8mm-sai",
--			  "fsl,imx8mn-sai", "fsl,imx8mp-sai", or
--			  "fsl,imx8ulp-sai".
--
--  - reg			: Offset and length of the register set for the device.
--
--  - clocks		: Must contain an entry for each entry in clock-names.
--
--  - clock-names		: Must include the "bus" for register access and
--			  "mclk1", "mclk2", "mclk3" for bit clock and frame
--			  clock providing.
--                          "pll8k", "pll11k" are optional, they are the clock
--                          source for root clock, one is for 8kHz series rates
--                          another one is for 11kHz series rates.
--  - dmas		: Generic dma devicetree binding as described in
--			  Documentation/devicetree/bindings/dma/dma.txt.
--
--  - dma-names		: Two dmas have to be defined, "tx" and "rx".
--
--  - pinctrl-names	: Must contain a "default" entry.
--
--  - pinctrl-NNN		: One property must exist for each entry in
--			  pinctrl-names. See ../pinctrl/pinctrl-bindings.txt
--			  for details of the property values.
--
--  - lsb-first		: Configures whether the LSB or the MSB is transmitted
--			  first for the fifo data. If this property is absent,
--			  the MSB is transmitted first as default, or the LSB
--			  is transmitted first.
--
--  - fsl,sai-synchronous-rx: This is a boolean property. If present, indicating
--			  that SAI will work in the synchronous mode (sync Tx
--			  with Rx) which means both the transmitter and the
--			  receiver will send and receive data by following
--			  receiver's bit clocks and frame sync clocks.
--
--  - fsl,sai-asynchronous: This is a boolean property. If present, indicating
--			  that SAI will work in the asynchronous mode, which
--			  means both transmitter and receiver will send and
--			  receive data by following their own bit clocks and
--			  frame sync clocks separately.
--
--  - fsl,dataline        : configure the dataline. it has 3 value for each configuration
--                          first one means the type: I2S(1) or PDM(2)
--                          second one is dataline mask for 'rx'
--                          third one is dataline mask for 'tx'.
--                          for example: fsl,dataline = <1 0xff 0xff 2 0xff 0x11>;
--                          it means I2S type rx mask is 0xff, tx mask is 0xff, PDM type
--                          rx mask is 0xff, tx mask is 0x11 (dataline 1 and 4 enabled).
--
--Optional properties:
--
--  - big-endian		: Boolean property, required if all the SAI
--			  registers are big-endian rather than little-endian.
--
--Optional properties (for mx6ul):
--
--  - fsl,sai-mclk-direction-output: This is a boolean property. If present,
--			 indicates that SAI will output the SAI MCLK clock.
--
--Note:
--- If both fsl,sai-asynchronous and fsl,sai-synchronous-rx are absent, the
--  default synchronous mode (sync Rx with Tx) will be used, which means both
--  transmitter and receiver will send and receive data by following clocks
--  of transmitter.
--- fsl,sai-asynchronous and fsl,sai-synchronous-rx are exclusive.
--
--Example:
--sai2: sai@40031000 {
--	      compatible = "fsl,vf610-sai";
--	      reg = <0x40031000 0x1000>;
--	      pinctrl-names = "default";
--	      pinctrl-0 = <&pinctrl_sai2_1>;
--	      clocks = <&clks VF610_CLK_PLATFORM_BUS>,
--		     <&clks VF610_CLK_SAI2>,
--		     <&clks 0>, <&clks 0>;
--	      clock-names = "bus", "mclk1", "mclk2", "mclk3";
--	      dma-names = "tx", "rx";
--	      dmas = <&edma0 0 VF610_EDMA_MUXID0_SAI2_TX>,
--		   <&edma0 0 VF610_EDMA_MUXID0_SAI2_RX>;
--	      big-endian;
--	      lsb-first;
--};
--- 
-2.34.1
+Thanks
+Baoquan
 
