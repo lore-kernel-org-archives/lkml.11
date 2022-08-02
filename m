@@ -2,142 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E9F9C19F29
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:29:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 997D4C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235080AbiHBR3w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 13:29:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55410 "EHLO
+        id S230498AbiHBRca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 13:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234911AbiHBR3l (ORCPT
+        with ESMTP id S229461AbiHBRc0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 13:29:41 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25554AD4F
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 10:29:39 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id 204so23480172yba.1
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 10:29:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=MvRBkFzdQaYaXfpQTRaszNRJA99lxIjSlE2BIJqxf/w=;
-        b=QRi9qghYw00C8ncMgz03GPp5X4XZwYBjLhTst+txxvrrxIKQSUmvN0iydfY7XxTRPZ
-         FljvcSTp2ADimYd7Symv/nntq6KpZiWp6d//C2GypYu/OlpHeLOtYJAAvDcymW7JC3z0
-         vFmHS4EctNa1FeEfaDLNxOsvpogUFSLuXoQkFy1gkjcrY42Fcsk3slvwkX0sSHWa2PA+
-         tx4YnR0p+wucGibEbwhrHFYXYZI38NDi3qKYYQnitOrDk170nf3Jt8K81Ues6I017fas
-         rtIy9n7wsldT5qtbZc3Up54mQyY1/O/xbkmoCTmJ7Qwc73uY29KBeFOWyQvihRzUNGNx
-         LxaA==
+        Tue, 2 Aug 2022 13:32:26 -0400
+Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC7613D46;
+        Tue,  2 Aug 2022 10:32:25 -0700 (PDT)
+Received: by mail-pj1-f50.google.com with SMTP id f11-20020a17090a4a8b00b001f2f7e32d03so1998446pjh.0;
+        Tue, 02 Aug 2022 10:32:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=MvRBkFzdQaYaXfpQTRaszNRJA99lxIjSlE2BIJqxf/w=;
-        b=gdAx2O6AQ2a11WrZ5PebFsrmX0mfjS2IUB+jq9sNfLip3s9VK5DPXgdegNxRD/f0U/
-         pOqCnAKsfeKRwBXW5IujZwFnXQ6yxqGFW7CHCa5YWyurWckCO3YaPepMZY6YpCRe14bp
-         DOceau0cohPzAKxrwkCygTPRxLghCYKrLLODtemKD5g0AwZ3/5OXhoEA6vIAXuOmvTsQ
-         UypajjrTPm+Qlg4pG+zJCIfK+P15JzEk8aMdQlQf9VoKagPE2cgWk0k0sXiDVKtp7Y/0
-         +1ERfFVRnN+RLbV2e24EVmjoLD1/WxpNDQzYLYqvf2MVyvmmKPy9JnpbSuN5bRoD29WR
-         QJig==
-X-Gm-Message-State: ACgBeo1qfF5dH3rzUnycCBQ+PYePu/6Vu3efi7wjCWg7cc92Aj7iVxh6
-        CGqIDG9e9ztT8axNP7wlwCCaYORJKL64RQnKHkBGqA==
-X-Google-Smtp-Source: AA6agR7VtR+Gv6MIRMZVXbACWuJKrFK4u921sU30CJ51jY/b/Dg4+iYwU/syVU8A9VvADNQ3PrTrNZmZWMU0fOSHqlA=
-X-Received: by 2002:a25:bc3:0:b0:673:bc78:c095 with SMTP id
- 186-20020a250bc3000000b00673bc78c095mr15729538ybl.376.1659461379014; Tue, 02
- Aug 2022 10:29:39 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=hQdFNNSZIS0UXH5mX4zMb5LlYpQDpBhKMVn8uxRhbMo=;
+        b=6kjGl/TBSODgQj+Rd64zpVtC2CCXPfHM2Hy82MbnIcjjzUQL7Zh+xb9jdVJdP8QEnx
+         p7fVqG+BIqKLGPSAb7LS+kq6phlAWOqf5JYfn85bz/5Ybx85QeTjoJGbpvbBmJGQK9S1
+         nueE/NQjfLZmi7ecbV2MzjoD+9ymvkqYOl+MTMlIsHtZNOT4R4dwP/bGfZJ/oAsnAa2D
+         ocqPr5NCFYxBhB4jzFoB4E6kMmAXW9WE0PqHd8l25V4zgxpxekMZJJc3dJWb/n3KG5hP
+         ogh9HXfq+E1bvUK5t0q8SxZpOD1CrC/xxrVwJ58lA/W1UBCZC1IzxBgHVn4/863d6Tey
+         j/MQ==
+X-Gm-Message-State: ACgBeo1ThqwifQj0o0ene+kz/eYnBbf3FDIagNZyowYcWyHPpk0jxQAW
+        L4ZJLCz7xiD1VesrJeds4Cw=
+X-Google-Smtp-Source: AA6agR6cj4zMaUIGkgIgEbmD7+/rnsnZp6/rUNcmSKtSZG4r5I2Vtli545RhBV3QP349G6CDTl6bVg==
+X-Received: by 2002:a17:90b:4f8d:b0:1f5:835:1b19 with SMTP id qe13-20020a17090b4f8d00b001f508351b19mr538171pjb.63.1659461544415;
+        Tue, 02 Aug 2022 10:32:24 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:5297:9162:3271:e5df? ([2620:15c:211:201:5297:9162:3271:e5df])
+        by smtp.gmail.com with ESMTPSA id j11-20020a170902da8b00b0016bfafffa0esm12099648plx.227.2022.08.02.10.32.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 10:32:23 -0700 (PDT)
+Message-ID: <438a9c4c-e601-ec22-0d05-5cec697d06a1@acm.org>
+Date:   Tue, 2 Aug 2022 10:32:20 -0700
 MIME-Version: 1.0
-References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-26-glider@google.com>
- <CANpmjNPeW=pQ_rU5ACTpBX8W4TH4vdcDn=hqPhHGtYU96iHF0A@mail.gmail.com>
-In-Reply-To: <CANpmjNPeW=pQ_rU5ACTpBX8W4TH4vdcDn=hqPhHGtYU96iHF0A@mail.gmail.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Tue, 2 Aug 2022 19:29:02 +0200
-Message-ID: <CAG_fn=V343yojjvuU6zxHKm+SgFJ2jAb7G_aKEwaqLqtqSeiYQ@mail.gmail.com>
-Subject: Re: [PATCH v4 25/45] kmsan: add tests for KMSAN
-To:     Marco Elver <elver@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v5] ufs: core: print UFSHCD capabilities in controller's
+ sysfs node
+Content-Language: en-US
+To:     Daniil Lunev <dlunev@chromium.org>
+Cc:     Adrian Hunter <adrian.hunter@intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Bean Huo <beanhuo@micron.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Keoseong Park <keosung.park@samsung.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sohaib Mohamed <sohaib.amhmd@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
+References: <20220802103643.v5.1.Ibf9efc9be50783eeee55befa2270b7d38552354c@changeid>
+ <c4acb34f-7bba-336f-ddfc-a9c098f2c95f@acm.org>
+ <CAONX=-cAW5UX__xu5y7NdtHkZq-YWmh_k=iFa5witdxw3xXkYA@mail.gmail.com>
+ <d06d9625-8ef9-f385-a9c9-75c306a959ed@acm.org>
+ <CAONX=-fpMBSgMzdY9AnV3iJftv2+0UTiruMiR+Dt_dfwKEd6gA@mail.gmail.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <CAONX=-fpMBSgMzdY9AnV3iJftv2+0UTiruMiR+Dt_dfwKEd6gA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 4:17 PM Marco Elver <elver@google.com> wrote:
->
+On 8/1/22 21:12, Daniil Lunev wrote:
+>> Calling this the effective capabilities of the controller-device pair
+>> sounds good to me. But please do not refer to hba->caps. I'd like to
+>> rework hba->caps such that it only includes controller capabilities and
+>> no information related to the WriteBooster. Additionally, several UFS
+>> device capabilities that may be exported in the future are not
+>> represented in hba->caps.
+ >
+> So can you clarify where specifically do you want me to mention that?
+> Should I name the directory "effective_capabilities" or the commit
+> message?
 
-> > +static void test_params(struct kunit *test)
-> > +{
-> > +#ifdef CONFIG_KMSAN_CHECK_PARAM_RETVAL
->
-> if (IS_ENABLED(...))
->
-Not sure this is valid C, given that EXPECTATION_UNINIT_VALUE_FN
-introduces a variable declaration.
+I'm fine with the name "capabilities" since "effective_capabilities" is 
+a bit long.
 
-> > +       if (vbuf)
-> > +               vunmap(vbuf);
-> > +       for (i = 0; i < npages; i++)
->
-> add { }
->
-Done.
+How about adding the above explanation in the source code close to the 
+definition of the capabilities group since it is more likely that it 
+will be noticed there by software developers compared to Documentation/ABI/?
 
+Thanks,
 
-> if (IS_ENABLED(CONFIG_KMSAN_CHECK_PARAM_RETVAL))
->
-Same as above.
-
-> > +static void unregister_tracepoints(struct tracepoint *tp, void *ignore)
-> > +{
-> > +       if (!strcmp(tp->name, "console"))
-> > +               tracepoint_probe_unregister(tp, probe_console, NULL);
-> > +}
-> > +
-> > +/*
-> > + * We only want to do tracepoints setup and teardown once, therefore we have to
-> > + * customize the init and exit functions and cannot rely on kunit_test_suite().
-> > + */
->
-> This is no longer true. See a recent version of
-> mm/kfence/kfence_test.c which uses the new suite_init/exit.
-
-Done.
-
-> > +late_initcall_sync(kmsan_test_init);
-> > +module_exit(kmsan_test_exit);
-> > +
-> > +MODULE_LICENSE("GPL v2");
->
-> A recent version of checkpatch should complain about this, wanting
-> only "GPL" instead of "GPL v2".
->
-Fixed.
+Bart.
