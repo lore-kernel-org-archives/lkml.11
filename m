@@ -2,115 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B7BC19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA0CAC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:31:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237045AbiHBM2r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 08:28:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48540 "EHLO
+        id S237132AbiHBMbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 08:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236442AbiHBM2q (ORCPT
+        with ESMTP id S232691AbiHBMbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 08:28:46 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8204751408;
-        Tue,  2 Aug 2022 05:28:44 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LxvNS5gwYzlVnH;
-        Tue,  2 Aug 2022 20:26:00 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 2 Aug 2022 20:28:42 +0800
-Received: from [127.0.0.1] (10.67.108.67) by dggpemm500013.china.huawei.com
- (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 2 Aug
- 2022 20:28:42 +0800
-Message-ID: <e3993e00-9346-9e0d-7490-76ffb713f343@huawei.com>
-Date:   Tue, 2 Aug 2022 20:28:39 +0800
+        Tue, 2 Aug 2022 08:31:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A5A930577
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 05:31:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659443469;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tMC4yG0I6LetQCzZhId20/r4mCiedZBP2tXBz39Ikrk=;
+        b=bGVQzkdxCsmQsddcYRC31rff+4FlP7ErzoDyHhyNmGmGXsDvLM2V74rhMovE2OEO3H1J5U
+        b+sA2RstuAB/zEpenvxfy7KZdkMygDIymwbnSTqfa/8YEOBH5C/ujCLBBFZAAF8uvHqmsU
+        f65w7/Y42P9I33AF8pEQzae5eLP4NI8=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-385-ZHRxaErSNCul5qbm__btKQ-1; Tue, 02 Aug 2022 08:31:08 -0400
+X-MC-Unique: ZHRxaErSNCul5qbm__btKQ-1
+Received: by mail-qk1-f197.google.com with SMTP id m8-20020a05620a24c800b006b5d8eb23efso11480942qkn.10
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 05:31:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=tMC4yG0I6LetQCzZhId20/r4mCiedZBP2tXBz39Ikrk=;
+        b=GfAu1VXlKtczWJQWKI05KJsrg/Bovzewz1nOtaz6ArF8qSHnHg6bH2y7rfxxdCs9W+
+         Wh5LJ0A8TG3iZGc+co2Zk0efIPinrCd3uoFrOGo3TLme8pjITyMqptR9nBbPn0XHaFGD
+         DsFel1Rn9oSBitgktgnm9gUqra+V2059xDzCzdcKeOBkY+9BMBwPMcD25DJBTMaDJrU3
+         zt/5qoxnkpPPg5TzBMg68ESIxa9z4JZLOVbWnGMyQun9fuQfezJGc6IMT5QKP/YDz+oy
+         70s8SjK1JExRWNXTCCUJ7IdPEpHKfjLHUrEt/XTYp9m809dYvPuymZMmN2MUP3HZgNvI
+         qADQ==
+X-Gm-Message-State: ACgBeo0cR9I3SxTIplqNNfNjPAKFVHBlGYPtuh/v4jmJJyE/IwtpJ1CG
+        yx0gv+tTFmeqUnemguZO9FDLhenq5U6Sfr2V+UDB/BhJNhXJWd02aOLEPmZnwE2zCrfjqcFm9Y6
+        pe3SF+R2AQTOYNZnP1UTZOnbE
+X-Received: by 2002:a05:6214:d62:b0:476:576c:cae2 with SMTP id 2-20020a0562140d6200b00476576ccae2mr11926222qvs.19.1659443467097;
+        Tue, 02 Aug 2022 05:31:07 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7DteEg96Qf3Kjl5X9cbYEyKHUqHunfyp1YdsqSVMyh17IKW8CrUMtVkJbhxub7/xHogwTItA==
+X-Received: by 2002:a05:6214:d62:b0:476:576c:cae2 with SMTP id 2-20020a0562140d6200b00476576ccae2mr11926185qvs.19.1659443466705;
+        Tue, 02 Aug 2022 05:31:06 -0700 (PDT)
+Received: from [10.211.55.14] (pool-68-163-101-245.bstnma.fios.verizon.net. [68.163.101.245])
+        by smtp.gmail.com with ESMTPSA id e9-20020ac81309000000b0031d283f4c4dsm8545525qtj.60.2022.08.02.05.31.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Aug 2022 05:31:06 -0700 (PDT)
+Message-ID: <d216c822-aa79-7ad8-2f6c-d74406ee8632@redhat.com>
+Date:   Tue, 2 Aug 2022 08:31:04 -0400
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0
-Subject: Re: [PATCH v3] kprobes: Forbid probing on trampoline and bpf prog
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
 Content-Language: en-US
-To:     Jiri Olsa <olsajiri@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-CC:     <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <naveen.n.rao@linux.ibm.com>, <anil.s.keshavamurthy@intel.com>,
-        <davem@davemloft.net>, <mhiramat@kernel.org>,
-        <peterz@infradead.org>, <mingo@kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>
-References: <20220801033719.228248-1-chenzhongjin@huawei.com>
- <Yug6bx7T4GzqUf2a@krava> <20220801165146.26fdeca2@gandalf.local.home>
- <YujpFUB8KlkOgzyb@krava>
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-In-Reply-To: <YujpFUB8KlkOgzyb@krava>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Song Liu <song@kernel.org>, Petr Mladek <pmladek@suse.com>
+Cc:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        live-patching@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>, X86 ML <x86@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+References: <20220721175147.214642-1-song@kernel.org>
+ <20220726233302.zwloxsammnu7clu4@treble>
+ <CAPhsuW7tmRt=yx1+i62HPRJJ4Gp8xB_3XvpVxUC=SyGv6iCBEQ@mail.gmail.com>
+ <CAPhsuW4F8f9GLHF9C54oWyFiyJ0eT5HOwfhmoxSJ3HeRr8zCSw@mail.gmail.com>
+ <CAPhsuW4VFjyoYta6fEGXg4S1dbg8ynkdKZzuwYSp3FMEGPP0aA@mail.gmail.com>
+ <Yuep+uKnDc0L2ICi@alley>
+ <CAPhsuW7FLVQ4CeBp0crTh5TQk30E113=ZMz_iHh5xK-QGNcT+g@mail.gmail.com>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Subject: Re: [PATCH v3] livepatch: Clear relocation targets on a module
+ removal
+In-Reply-To: <CAPhsuW7FLVQ4CeBp0crTh5TQk30E113=ZMz_iHh5xK-QGNcT+g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.108.67]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 2022/8/2 17:06, Jiri Olsa wrote:
-> On Mon, Aug 01, 2022 at 04:51:46PM -0400, Steven Rostedt wrote:
->> On Mon, 1 Aug 2022 22:41:19 +0200
->> Jiri Olsa <olsajiri@gmail.com> wrote:
+On 8/1/22 17:19, Song Liu wrote:
+> On Mon, Aug 1, 2022 at 3:25 AM Petr Mladek <pmladek@suse.com> wrote:
 >>
->>> LGTM cc-ing Steven because it affects ftrace as well
->> Thanks for the Cc, but I don't quite see how it affects ftrace.
->>
->> Unless you are just saying how it can affect kprobe_events?
-> nope, I just saw the 'ftrace' in changelog ;-)
->
-> anyway the patch makes check_kprobe_address_safe to fail
-> on ftrace trampoline address.. but not sure you could make
-> kprobe on ftrace trampoline before, probably not
->
-> jirka
-
-In fact with CONFIG_KPROBE_EVENTS_ON_NOTRACE=y it can happen.
-
-But I think ftrace has no responsibility to promise the address safety 
-when this option open.
-
-
-Best,
-
-Chen
-
->> -- Steve
->>
->>
->>> jirka
->>>
->>>> v1 -> v2:
->>>> Check core_kernel_text and is_module_text_address rather than
->>>> only kprobe_insn.
->>>> Also fix title and commit message for this. See old patch at [1].
->>>> ---
->>>>   kernel/kprobes.c | 3 ++-
->>>>   1 file changed, 2 insertions(+), 1 deletion(-)
+>> On Sat 2022-07-30 20:20:22, Song Liu wrote:
+>>> On Sat, Jul 30, 2022 at 3:32 PM Song Liu <song@kernel.org> wrote:
 >>>>
->>>> diff --git a/kernel/kprobes.c b/kernel/kprobes.c
->>>> index f214f8c088ed..80697e5e03e4 100644
->>>> --- a/kernel/kprobes.c
->>>> +++ b/kernel/kprobes.c
->>>> @@ -1560,7 +1560,8 @@ static int check_kprobe_address_safe(struct kprobe *p,
->>>>   	preempt_disable();
->>>>   
->>>>   	/* Ensure it is not in reserved area nor out of text */
->>>> -	if (!kernel_text_address((unsigned long) p->addr) ||
->>>> +	if (!(core_kernel_text((unsigned long) p->addr) ||
->>>> +	    is_module_text_address((unsigned long) p->addr)) ||
->>>>   	    within_kprobe_blacklist((unsigned long) p->addr) ||
->>>>   	    jump_label_text_reserved(p->addr, p->addr) ||
->>>>   	    static_call_text_reserved(p->addr, p->addr) ||
->>>> -- 
->>>> 2.17.1
->>>>    
+>>>> On Tue, Jul 26, 2022 at 8:54 PM Song Liu <song@kernel.org> wrote:
+>>>>>
+>>>>> On Tue, Jul 26, 2022 at 4:33 PM Josh Poimboeuf <jpoimboe@kernel.org> wrote:
+>>>>>>
+>>>>>> On Thu, Jul 21, 2022 at 10:51:47AM -0700, Song Liu wrote:
+>>>>>>> From: Miroslav Benes <mbenes@suse.cz>
+>>>>>>>
+>>>>>>> Josh reported a bug:
+>>>>>>>
+>>>>>>>   When the object to be patched is a module, and that module is
+>>>>>>>   rmmod'ed and reloaded, it fails to load with:
+>>>>>>>
+>>>>>>>   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+>>>>>>>   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+>>>>>>>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+>>>>>>>
+>>>>>>>   The livepatch module has a relocation which references a symbol
+>>>>>>>   in the _previous_ loading of nfsd. When apply_relocate_add()
+>>>>>>>   tries to replace the old relocation with a new one, it sees that
+>>>>>>>   the previous one is nonzero and it errors out.
+>>>>>>>
+>>>>>>>   On ppc64le, we have a similar issue:
+>>>>>>>
+>>>>>>>   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
+>>>>>>>   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+>>>>>>>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+>>>>>>>
+>>>>>> 3) A selftest would be a good idea.
+>>>>>
+>>>>
+>>>> I found it is pretty tricky to run the selftests inside a qemu VM. How about
+>>>> we test it with modules in samples/livepatch? Specifically, we can add a
+>>>> script try to reload livepatch-shadow-mod.ko.
+>>>
+>>> Actually, livepatch-shadow-mod.ko doesn't have the reload problem before
+>>> the fix. Is this expected?
+>>
+>> Good question. I am afraid that there is no easy way to prepare
+>> the selftest at the moment.
+>>
+>> There are two situations when a symbol from the livepatched module is
+>> relocated:
+>>
+>>
+>> 1. The livepatch might access a symbol exported by the module via
+>>    EXPORT_SYMBOL(). In this case, it is "normal" external symbol
+>>    and it gets relocated by the module loader.
+>>
+>>    But EXPORT_SYMBOL() will create an explicit dependency between the
+>>    livepatch and livepatched module. As a result, the livepatch
+>>    module could be loaded only when the livepatched module is loaded.
+>>    And the livepatched module could not be removed when the livepatch
+>>    module is loaded.
+>>
+>>    In this case, the problem will not exist. Well, the developers
+>>    of the livepatch module will probably want to avoid this
+>>    dependency.
+>>
+>>
+>> 2. The livepatch module might access a non-exported symbol from another
+>>    module using the special elf section for klp relocation, see
+>>    section, see Documentation/livepatch/module-elf-format.rst
+>>
+>>    These symbols are relocated in klp_apply_section_relocs().
+>>
+>>    The problem is that upstream does not have a support to
+>>    create this elf section. There is a patchset for this, see
+>>    https://lore.kernel.org/all/20220216163940.228309-1-joe.lawrence@redhat.com/
+>>    It requires some more review.
+>>
+>>
+>> Resume: I think that we could not prepare the selftest without
+>>         upstreaming klp-convert tool.
+> 
+> Thanks for the explanation! I suspected the same issue, but couldn't
+> connect all the logic.
+> 
+> I guess the selftests can wait until the klp-convert tool.
+> 
+
+Hi Song,
+
+Petr is correct about selftests and these relocations.  Let me know if
+rebasing the klp-convert patchset would be helpful in your testing.
+Otherwise kpatch-build is the only (easy?) way to create klp-relocations
+as far as I know.  (For limited arches anyway.)
+
+Thanks,
+
+-- 
+Joe
 
