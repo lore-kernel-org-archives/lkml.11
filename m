@@ -2,78 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A88C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:00:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E654C19F29
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 08:01:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236312AbiHBIAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 04:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
+        id S236284AbiHBIA6 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 04:00:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236294AbiHBIAQ (ORCPT
+        with ESMTP id S231804AbiHBIAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 04:00:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C37FE4;
-        Tue,  2 Aug 2022 01:00:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C341561468;
-        Tue,  2 Aug 2022 08:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 27BC2C433B5;
-        Tue,  2 Aug 2022 08:00:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659427214;
-        bh=vi8rmU/UnEIHRCSFSG7YgXVQCZZeFIzq638X8Qjzbjs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fCHTyiNJS5ME2SnuU5l7CdB5X/5h1EHhjMt6qljvynDMszyw5cE47NCkHAgfLa3lp
-         enIZyKLjjYqfWrk1SWeQo1u9JgFQAbJBb2zC3ZLy7cj1rMpH5v4MCDEca7R2I4DiaG
-         lwb5ke2SU2zD2GNt3jNSnu770nTzPBmKBoVD85WfBQuR3QhqMLEVQcXr8539Aftq7o
-         PYj3mf38vW46KyPB/+eF0Q0yJeIXFt0GDrM+8TTUOWLvdC6oWR2OOWVeGZQHT3T6nX
-         Pml6kvCyhMA4fqcFmU+jA8OcXzfxfvMpopcEoojHc11yny+snC7WSdkrj+ivJee2sJ
-         LjK+ntEfYHahg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0DD13C43143;
-        Tue,  2 Aug 2022 08:00:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 2 Aug 2022 04:00:54 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2EDB62BFB
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 01:00:53 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-308-TQG7PYX_M7ubdYwPcl-8wA-1; Tue, 02 Aug 2022 09:00:50 +0100
+X-MC-Unique: TQG7PYX_M7ubdYwPcl-8wA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Tue, 2 Aug 2022 09:00:48 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Tue, 2 Aug 2022 09:00:48 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Boqun Feng' <boqun.feng@gmail.com>,
+        Mikulas Patocka <mpatocka@redhat.com>
+CC:     Will Deacon <will@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Ard Biesheuvel" <ardb@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        "Alan Stern" <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        "Luc Maranget" <luc.maranget@inria.fr>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        "Daniel Lustig" <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>
+Subject: RE: [PATCH v4 1/2] introduce test_bit_acquire and use it in
+ wait_on_bit
+Thread-Topic: [PATCH v4 1/2] introduce test_bit_acquire and use it in
+ wait_on_bit
+Thread-Index: AQHYpdMdL3R9dRhMTUG852+RirbLDa2bPhCA
+Date:   Tue, 2 Aug 2022 08:00:48 +0000
+Message-ID: <31eb3681cfcf4b238a12a82c175457bc@AcuMS.aculab.com>
+References: <CAMj1kXFYRNrP2k8yppgfdKg+CxWeYfHTbzLBuyBqJ9UVAR_vaQ@mail.gmail.com>
+ <alpine.LRH.2.02.2207310920390.6506@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2207311104020.16444@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wiC_oidYZeMD7p0E-=TAuLgrNQ86-sB99=hRqFM8fVLDQ@mail.gmail.com>
+ <alpine.LRH.2.02.2207311542280.21273@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2207311639360.21350@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wjA8HBrVqAqAetUvwNr=hcvhfnO7oMrOAd4V8bbSqokNA@mail.gmail.com>
+ <alpine.LRH.2.02.2208010640260.22006@file01.intranet.prod.int.rdu2.redhat.com>
+ <20220801155421.GB26280@willie-the-truck>
+ <alpine.LRH.2.02.2208011206430.31960@file01.intranet.prod.int.rdu2.redhat.com>
+ <YugYuBzIkr+gN5Vi@boqun-archlinux>
+In-Reply-To: <YugYuBzIkr+gN5Vi@boqun-archlinux>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [RESEND PATCH] selftests: net: fix IOAM test skip return code
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165942721405.6972.11037268506015977032.git-patchwork-notify@kernel.org>
-Date:   Tue, 02 Aug 2022 08:00:14 +0000
-References: <20220801124615.256416-1-kleber.souza@canonical.com>
-In-Reply-To: <20220801124615.256416-1-kleber.souza@canonical.com>
-To:     Kleber Sacilotto de Souza <kleber.souza@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, justin.iurman@uliege.be, kuba@kernel.org,
-        davem@davemloft.net, shuah@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Mon,  1 Aug 2022 14:46:15 +0200 you wrote:
-> The ioam6.sh test script exits with an error code (1) when tests are
-> skipped due to lack of support from userspace/kernel or not enough
-> permissions. It should return the kselftests SKIP code instead.
+From: Boqun Feng
+> Sent: 01 August 2022 19:17
 > 
-> Reviewed-by: Justin Iurman <justin.iurman@uliege.be>
-> Signed-off-by: Kleber Sacilotto de Souza <kleber.souza@canonical.com>
+> On Mon, Aug 01, 2022 at 12:12:47PM -0400, Mikulas Patocka wrote:
+> >
+> >
+> > On Mon, 1 Aug 2022, Will Deacon wrote:
+> >
+> > > On Mon, Aug 01, 2022 at 06:42:15AM -0400, Mikulas Patocka wrote:
+> > >
+> > > > Index: linux-2.6/arch/x86/include/asm/bitops.h
+> > > > ===================================================================
+> > > > --- linux-2.6.orig/arch/x86/include/asm/bitops.h	2022-08-01 12:27:43.000000000 +0200
+> > > > +++ linux-2.6/arch/x86/include/asm/bitops.h	2022-08-01 12:27:43.000000000 +0200
+> > > > @@ -203,8 +203,10 @@ arch_test_and_change_bit(long nr, volati
+> > > >
+> > > >  static __always_inline bool constant_test_bit(long nr, const volatile unsigned long *addr)
+> > > >  {
+> > > > -	return ((1UL << (nr & (BITS_PER_LONG-1))) &
+> > > > +	bool r = ((1UL << (nr & (BITS_PER_LONG-1))) &
+> > > >  		(addr[nr >> _BITOPS_LONG_SHIFT])) != 0;
+> > > > +	barrier();
+> > > > +	return r;
+> > >
+> > > Hmm, I find it a bit weird to have a barrier() here given that 'addr' is
+> > > volatile and we don't need a barrier() like this in the definition of
+> > > READ_ONCE(), for example.
+> >
+> > gcc doesn't reorder two volatile accesses, but it can reorder non-volatile
+> > accesses around volatile accesses.
+> >
+> > The purpose of the compiler barrier is to make sure that the non-volatile
+> > accesses that follow test_bit are not reordered by the compiler before the
+> > volatile access to addr.
+> >
 > 
-> [...]
+> Better to have a constant_test_bit_acquire()? I don't think all
+> test_bit() call sites need the ordering?
 
-Here is the summary with links:
-  - [RESEND] selftests: net: fix IOAM test skip return code
-    https://git.kernel.org/netdev/net-next/c/1995943c3f2a
+It is also unlikely that the compiler will 'usefully' move a read
+across the test_bit() call - which is likely to be in a conditional.
+So barrier() is unlikely to significantly affect the generated code.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Indeed, perhaps test_bit() should always enforce read ordering
+even one weakly ordered cpu?
+It is used with set_bit() and clear_bit() which are expensive
+locked operations - so a slightly more expensive test_bit()
+probably doesn't matter.
 
+Remember these aren't functions to replace &= and |=.
+(In spite of some code paths.)
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
