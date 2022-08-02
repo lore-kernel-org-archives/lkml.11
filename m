@@ -2,200 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4332DC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB32C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 07:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235921AbiHBHc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 03:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
+        id S235930AbiHBHeD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 03:34:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232918AbiHBHc4 (ORCPT
+        with ESMTP id S231442AbiHBHeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 03:32:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B68F6556
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 00:32:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659425574;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rvz5t+oZNlSf7bcC71XjFFahU1M2khcyplx7wbP8UW0=;
-        b=YYxyb6SfLIukGNUIlV77i9S8QqjV5rCLoZ68AhKAYPUEDiltqG3W/I8p03OuazMvPXqnmA
-        fzIwNcoDVqSc1G2eNg/grFlvW43DDJTmb0TaoQBgdHgKpiQAZnHU4rDwIBbiaAwuY1/5oB
-        veuu2naH3AEtZHgVc8713KvdiM1TJnk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-428-8CSRVKvEMFanEt-e__OItg-1; Tue, 02 Aug 2022 03:32:51 -0400
-X-MC-Unique: 8CSRVKvEMFanEt-e__OItg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B3228811766;
-        Tue,  2 Aug 2022 07:32:50 +0000 (UTC)
-Received: from localhost (ovpn-13-104.pek2.redhat.com [10.72.13.104])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C7E0FC04482;
-        Tue,  2 Aug 2022 07:32:49 +0000 (UTC)
-Date:   Tue, 2 Aug 2022 15:32:46 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Eric Biederman <ebiederm@xmission.com>, kexec@lists.infradead.org,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        Ira Weiny <ira.weiny@intel.com>
-Subject: Re: [PATCH v2] kexec: Replace kmap() with kmap_local_page()
-Message-ID: <YujTHv0xVG8DirkW@MiWiFi-R3L-srv>
-References: <20220707231550.1484-1-fmdefrancesco@gmail.com>
- <YuiUzodsyv3hZAgs@MiWiFi-R3L-srv>
- <1923146.PYKUYFuaPT@opensuse>
+        Tue, 2 Aug 2022 03:34:01 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7287C6579;
+        Tue,  2 Aug 2022 00:33:59 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lxmps5xfgzWfNV;
+        Tue,  2 Aug 2022 15:29:57 +0800 (CST)
+Received: from kwepemm600006.china.huawei.com (7.193.23.105) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 2 Aug 2022 15:33:51 +0800
+Received: from huawei.com (10.175.127.234) by kwepemm600006.china.huawei.com
+ (7.193.23.105) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 2 Aug
+ 2022 15:33:50 +0800
+From:   Wenyu Liu <liuwenyu7@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <rickyman7@gmail.com>, <namhyung@gmail.com>, <nicolas@fjasle.eu>,
+        <acme@redhat.com>, <alexey.v.bayduraev@linux.intel.com>,
+        <masahiroy@kernel.org>, <linux-perf-users@vger.kernel.org>
+CC:     <hewenliang4@huawei.com>, <yeyunfeng@huawei.com>,
+        <linfeilong@huawei.com>, <liuwenyu7@huawei.com>
+Subject: [PATCH] tools api fs: fix the concurrency problem for xxx__mountpoint()
+Date:   Tue, 2 Aug 2022 03:37:16 -0400
+Message-ID: <20220802073716.1875289-1-liuwenyu7@huawei.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1923146.PYKUYFuaPT@opensuse>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.234]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600006.china.huawei.com (7.193.23.105)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/02/22 at 08:20am, Fabio M. De Francesco wrote:
-> On martedì 2 agosto 2022 05:06:54 CEST Baoquan He wrote:
-> > On 07/08/22 at 01:15am, Fabio M. De Francesco wrote:
-> > > The use of kmap() and kmap_atomic() are being deprecated in favor of
-> > > kmap_local_page().
-> > > 
-> > > With kmap_local_page(), the mappings are per thread, CPU local and not
-> > > globally visible. Furthermore, the mappings can be acquired from any
-> > > context (including interrupts).
-> > > 
-> > > Therefore, use kmap_local_page() in kexec_core.c because these mappings 
-> are
-> > > per thread, CPU local, and not globally visible.
-> > > 
-> > > Tested on a QEMU + KVM 32-bits VM booting a kernel with HIGHMEM64GB
-> > > enabled.
-> > 
-> > Wondering what arch you tested with.
-> 
-> I'm sorry, I forgot to say that I use x86_32 with 4GB to 6GB RAM.
-> This is usually an information that I add in the commit messages of all the 
-> recent conversions I'm working on across the entire kernel.
-> 
-> Another important information (overlooked again this time) is that (1) 
-> kmap() comes with an overhead as mapping space is restricted and protected 
-> by a global lock for synchronization and (2) it also requires global TLB 
-> invalidation when the kmap’s pool wraps and it might block when the mapping 
-> space is fully utilized until a slot becomes available.
+The hugeltbfs__mountpoint() interface seems have a problem
+in perf top,sometimes it will get a wrong path in
+perf_event__synthesize_mmap_events().
 
-Thanks a lot for update with more details, Fabio. Maybe these can be
-added into log with v3 if you think they are worth adding, and with my
-Ack since no code change related. You decide.
+There is a very small probability when using perf top
+and I got entries like this:
+	3.26% 	perf-1.map		[.]0x0000ffffb2993d00
+	3.22%	perf-1.map		[.]0x0000ffffb28a2984
+	3.26%	perf-1.map		[.]0x0000ffffb2993d00
+	...	...			...
+I have already installed the perf-debuginfo package.
 
-Thanks again for the effort.
+I find out it's in perf_event__synthesize_mmap_events():
+when these following code execute:
 
-> 
-> More information about why these kmap() to kmap_local_page() conversions 
-> are needed / preferred can be found in the recent changes I made to 
-> highmem.rst. They are already in mainline since about two months.
-> 
-> A second round of additional changes has been taken by Andrew M. just few 
-> days ago.
-> 
-> My goal is to convert the most of the kmap() call sites that are still left 
-> across the whole kernel. I'm not yet sure that these kinds of conversions 
-> can be done everywhere, especially if the kernel virtual address of the 
-> mapping is handed to other contexts, because this would invalidate the 
-> pointer returned by kmap_local_page().  
-> 
-> > This looks good, but may not benefit much. Say so because I doubt
-> > how many 32bit systems are using kexec/kdump mechanism.
-> 
-> I really cannot say nothing about how many 32 bits systems are using kexec/
-> kdump mechanism, however I still think that the conversions are worth 
-> everywhere. 
+    const char *hugetlbfs_mnt = hugetlbfs__mountpoint();
+    int hugetlbfs_mnt_len = hugetlbfs_mnt ? strlen(hugetlbfs_mnt) : 0;
+    ...	...
+    if (hugetlbfs_mnt_len &&
+        !strncmp(event->mmap2.filename, hugetlbfs_mnt,
+                 hugetlbfs_mnt_len)) {
+    		strcpy(event->mmap2.filename, anonstr);
+            event->mmap2.flags |= MAP_HUGETLB;
+     }
 
-Yes, agree.
+when came to the if condition:
+*event->mmap2.filename = "/usr/lib64/libgpg-error.so.0.29.0"
+*hugetlbfs_mnt = "/dev/hugepages"
+hugetlbfs_mnt_len = 1
 
-> 
-> > Anyway, 
-> > 
-> > Acked-by: Baoquan He <bhe@redhat.com>
-> > 
-> 
-> Thank you so much!
-> 
-> Fabio
-> 
-> > > 
-> > > Suggested-by: Ira Weiny <ira.weiny@intel.com>
-> > > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> > > ---
-> > > 
-> > > v1->v2: A sentence of the commit message contained an error due to a
-> > > mistake in copy-pasting from a previous patch. Replace "aio.c" with
-> > > "kexec_core.c".
-> > > 
-> > >  kernel/kexec_core.c | 8 ++++----
-> > >  1 file changed, 4 insertions(+), 4 deletions(-)
-> > > 
-> > > diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
-> > > index 4d34c78334ce..6f98274765d4 100644
-> > > --- a/kernel/kexec_core.c
-> > > +++ b/kernel/kexec_core.c
-> > > @@ -814,7 +814,7 @@ static int kimage_load_normal_segment(struct kimage 
-> *image,
-> > >  		if (result < 0)
-> > >  			goto out;
-> > >  
-> > > -		ptr = kmap(page);
-> > > +		ptr = kmap_local_page(page);
-> > >  		/* Start with a clear page */
-> > >  		clear_page(ptr);
-> > >  		ptr += maddr & ~PAGE_MASK;
-> > > @@ -827,7 +827,7 @@ static int kimage_load_normal_segment(struct kimage 
-> *image,
-> > >  			memcpy(ptr, kbuf, uchunk);
-> > >  		else
-> > >  			result = copy_from_user(ptr, buf, uchunk);
-> > > -		kunmap(page);
-> > > +		kunmap_local(ptr);
-> > >  		if (result) {
-> > >  			result = -EFAULT;
-> > >  			goto out;
-> > > @@ -878,7 +878,7 @@ static int kimage_load_crash_segment(struct kimage 
-> *image,
-> > >  			goto out;
-> > >  		}
-> > >  		arch_kexec_post_alloc_pages(page_address(page), 1, 0);
-> > > -		ptr = kmap(page);
-> > > +		ptr = kmap_local_page(page);
-> > >  		ptr += maddr & ~PAGE_MASK;
-> > >  		mchunk = min_t(size_t, mbytes,
-> > >  				PAGE_SIZE - (maddr & ~PAGE_MASK));
-> > > @@ -894,7 +894,7 @@ static int kimage_load_crash_segment(struct kimage 
-> *image,
-> > >  		else
-> > >  			result = copy_from_user(ptr, buf, uchunk);
-> > >  		kexec_flush_icache_page(page);
-> > > -		kunmap(page);
-> > > +		kunmap_local(ptr);
-> > >  		arch_kexec_pre_free_pages(page_address(page), 1);
-> > >  		if (result) {
-> > >  			result = -EFAULT;
-> > > -- 
-> > > 2.36.1
-> > > 
-> > > 
-> > > _______________________________________________
-> > > kexec mailing list
-> > > kexec@lists.infradead.org
-> > > http://lists.infradead.org/mailman/listinfo/kexec
-> > > 
-> > 
-> > 
-> 
-> 
-> 
-> 
+So it's the strlen(hugetlbfs_mnt) get a wrong result,
+make it only compared the first character and resulting
+the mistake.
+And that make the filename in map__new() came
+to "/tmp/perf-<pid>.map".
+
+It seems xxx_mountpoint() have a concurrency problem when
+it scan /proc/mounts and fill path into fs->path in
+fs__read_mounts().
+
+The hugeltbfs__mountpoint() is called for each process found
+in perf_event__synthesize_mmap_events().
+And the working threads is synthesize_threads_worker(),which
+is created by perf_event__synthesize_threads(),threads number
+equals to the cpus number.
+These threads share the fs__entries and fill path into
+fs->path concurrently in perf_event__synthesize_mmap_events()
+but without any synchronizing measures,cause the problem.
+
+This patch add a mutex in struct fs,and a interface
+fs_fill_path() for copying the path into fs->path.
+When the target fs name be found in fs__read_mounts(),
+using fs_fill_path() to copy the path into fs->path,
+the mutex is needed during the coping procedure.
+
+And add memory barrier to ensure the path is completely
+filled before the fs->found is set.
+
+Signed-off-by: Wenyu Liu <liuwenyu7@huawei.com>
+---
+ tools/lib/api/Makefile |  1 +
+ tools/lib/api/fs/fs.c  | 50 ++++++++++++++++++++++++++++++++++--------
+ 2 files changed, 42 insertions(+), 9 deletions(-)
+
+diff --git a/tools/lib/api/Makefile b/tools/lib/api/Makefile
+index e21e1b40b525..9f2332c07294 100644
+--- a/tools/lib/api/Makefile
++++ b/tools/lib/api/Makefile
+@@ -19,6 +19,7 @@ LIBFILE = $(OUTPUT)libapi.a
+ 
+ CFLAGS := $(EXTRA_WARNINGS) $(EXTRA_CFLAGS)
+ CFLAGS += -ggdb3 -Wall -Wextra -std=gnu99 -U_FORTIFY_SOURCE -fPIC
++CFLAGS += -lpthread
+ 
+ ifeq ($(DEBUG),0)
+ ifeq ($(CC_NO_CLANG), 0)
+diff --git a/tools/lib/api/fs/fs.c b/tools/lib/api/fs/fs.c
+index 82f53d81a7a7..5de7ba1fdbc9 100644
+--- a/tools/lib/api/fs/fs.c
++++ b/tools/lib/api/fs/fs.c
+@@ -12,6 +12,9 @@
+ #include <fcntl.h>
+ #include <unistd.h>
+ #include <sys/mount.h>
++#include <pthread.h>
++#include <asm/barrier.h>
++#include <linux/compiler.h>
+ 
+ #include "fs.h"
+ #include "debug-internal.h"
+@@ -92,6 +95,7 @@ struct fs {
+ 	bool			 found;
+ 	bool			 checked;
+ 	long			 magic;
++	pthread_mutex_t		 lock;
+ };
+ 
+ enum {
+@@ -113,43 +117,69 @@ static struct fs fs__entries[] = {
+ 		.mounts	= sysfs__fs_known_mountpoints,
+ 		.magic	= SYSFS_MAGIC,
+ 		.checked = false,
++		.lock = PTHREAD_MUTEX_INITIALIZER,
+ 	},
+ 	[FS__PROCFS] = {
+ 		.name	= "proc",
+ 		.mounts	= procfs__known_mountpoints,
+ 		.magic	= PROC_SUPER_MAGIC,
+ 		.checked = false,
++		.lock = PTHREAD_MUTEX_INITIALIZER,
+ 	},
+ 	[FS__DEBUGFS] = {
+ 		.name	= "debugfs",
+ 		.mounts	= debugfs__known_mountpoints,
+ 		.magic	= DEBUGFS_MAGIC,
+ 		.checked = false,
++		.lock = PTHREAD_MUTEX_INITIALIZER,
+ 	},
+ 	[FS__TRACEFS] = {
+ 		.name	= "tracefs",
+ 		.mounts	= tracefs__known_mountpoints,
+ 		.magic	= TRACEFS_MAGIC,
+ 		.checked = false,
++		.lock = PTHREAD_MUTEX_INITIALIZER,
+ 	},
+ 	[FS__HUGETLBFS] = {
+ 		.name	= "hugetlbfs",
+ 		.mounts = hugetlbfs__known_mountpoints,
+ 		.magic	= HUGETLBFS_MAGIC,
+ 		.checked = false,
++		.lock = PTHREAD_MUTEX_INITIALIZER,
+ 	},
+ 	[FS__BPF_FS] = {
+ 		.name	= "bpf",
+ 		.mounts = bpf_fs__known_mountpoints,
+ 		.magic	= BPF_FS_MAGIC,
+ 		.checked = false,
++		.lock = PTHREAD_MUTEX_INITIALIZER,
+ 	},
+ };
+ 
++static void fs_fill_path(struct fs *fs, const char *path, size_t len)
++{
++	if (len >= sizeof(fs->path))
++		len = sizeof(fs->path) - 1;
++
++	pthread_mutex_lock(&fs->lock);
++	if (fs->found) {
++		pthread_mutex_unlock(&fs->lock);
++		return;
++	}
++	strncpy(fs->path, path, len);
++	fs->path[len] = '\0';
++	/* Make sure the path is filled before fs->found is set */
++	smp_wmb();
++	fs->found = true;
++	pthread_mutex_unlock(&fs->lock);
++}
++
++
+ static bool fs__read_mounts(struct fs *fs)
+ {
+ 	bool found = false;
+ 	char type[100];
++	char path[PATH_MAX];
+ 	FILE *fp;
+ 
+ 	fp = fopen("/proc/mounts", "r");
+@@ -158,15 +188,17 @@ static bool fs__read_mounts(struct fs *fs)
+ 
+ 	while (!found &&
+ 	       fscanf(fp, "%*s %" STR(PATH_MAX) "s %99s %*s %*d %*d\n",
+-		      fs->path, type) == 2) {
++		      path, type) == 2) {
+ 
+-		if (strcmp(type, fs->name) == 0)
++		if (strcmp(type, fs->name) == 0) {
++			fs_fill_path(fs, path, sizeof(path) - 1);
+ 			found = true;
++		}
+ 	}
+ 
+ 	fclose(fp);
+ 	fs->checked = true;
+-	return fs->found = found;
++	return found;
+ }
+ 
+ static int fs__valid_mount(const char *fs, long magic)
+@@ -188,8 +220,7 @@ static bool fs__check_mounts(struct fs *fs)
+ 	ptr = fs->mounts;
+ 	while (*ptr) {
+ 		if (fs__valid_mount(*ptr, fs->magic) == 0) {
+-			fs->found = true;
+-			strcpy(fs->path, *ptr);
++			fs_fill_path(fs, *ptr, strlen(*ptr));
+ 			return true;
+ 		}
+ 		ptr++;
+@@ -227,10 +258,8 @@ static bool fs__env_override(struct fs *fs)
+ 	if (!override_path)
+ 		return false;
+ 
+-	fs->found = true;
++	fs_fill_path(fs, override_path, sizeof(fs->path) - 1);
+ 	fs->checked = true;
+-	strncpy(fs->path, override_path, sizeof(fs->path) - 1);
+-	fs->path[sizeof(fs->path) - 1] = '\0';
+ 	return true;
+ }
+ 
+@@ -252,8 +281,11 @@ static const char *fs__mountpoint(int idx)
+ {
+ 	struct fs *fs = &fs__entries[idx];
+ 
+-	if (fs->found)
++	if (READ_ONCE(fs->found)) {
++		/* Make sure the path is filled completely */
++		smp_rmb();
+ 		return (const char *)fs->path;
++	}
+ 
+ 	/* the mount point was already checked for the mount point
+ 	 * but and did not exist, so return NULL to avoid scanning again.
+-- 
+2.36.1
 
