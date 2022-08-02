@@ -2,126 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B19CEC00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 262DCC25B06
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230375AbiHBRgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 13:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60252 "EHLO
+        id S231965AbiHBRgq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 13:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiHBRf7 (ORCPT
+        with ESMTP id S229530AbiHBRgm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 13:35:59 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5426BB1FD
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 10:35:57 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id m22so11150994lfl.9
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 10:35:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KMSbpoPgZo1nXG06BELKlRTAIPdpj4wofQosM2wSXKI=;
-        b=r3PRTJMvCLPoJ7ojXKsINdDqMe3s1XbeycrpPF6SPPTi308tOITiHq4rgU+dsSHoqE
-         Y6oiG1cSBCWCQTeFKT385yv56/VzNeK2w4JMLu0FO+4WYt2w6T+fRZV7WfuAcgJiMceP
-         gpIHJny2a9YmJJ3xud4kx75xOKezDrfDjsWXSJzxfa+PSUyYWfFpIe2n40hrW/FitCGM
-         1fcEkrLlf2GibxJvp90oY3KJFe9ZkDDaMfGDhJh/CFU6Q+P36NMthgr5vWvGnYDHxezO
-         UKGFLmfvnbohg3S14jjl1pa3vfTep/gsPjDCsQdIy3A0LLbHlQkkjUowxqVA6olX+jAe
-         kMng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KMSbpoPgZo1nXG06BELKlRTAIPdpj4wofQosM2wSXKI=;
-        b=VTzx0NVt2/CsKbZJaqp6vRYUWUQc5YBDHfSsNpZwH+3YUYd5PM6JsEX31xsHWwmTnN
-         odDScn1/oZtoI7hmmy7gR1OmysGMIdsOetFLJh64Gp1ZFk2V0mkcsqRaG4HMFUMEYfyU
-         GoZPC2nWhP1WpZ30i6cKh0JPgVJqouh0w/9qfIdp4/5jhFuuco9XS4lew2MBFTrt+rhG
-         jpOUKIil55YUOtQiMu3WPI3Bn04BN85+cJMjO02M06kklf1wPPSI003CXkizfL2PQoUG
-         3bzkOB8vdRebhoNReDq5mzseKGaqZyJJZOzq/Hq7rxKbxEHG6X4EoHBwh6wS8rZYuISv
-         nddg==
-X-Gm-Message-State: ACgBeo2EMnhbX3brHZwxBy1cbvyru4PrdRgR+EADg2WZ/yiU8/aamaPz
-        JPZZFOuTfG85tdSjgOUMtBtloA0ojGgcZTgbLpmukg==
-X-Google-Smtp-Source: AGRyM1s5fn8r1OS8bSQ7BGQMtJRW4mpj0vVcOawjZ0SJoS3KoP9R1J3iBmnRwCT7BaVVLrI2T9kdeYqYZTy29ZZLFKU=
-X-Received: by 2002:ac2:4f03:0:b0:48a:6061:bd8e with SMTP id
- k3-20020ac24f03000000b0048a6061bd8emr8481056lfr.647.1659461755489; Tue, 02
- Aug 2022 10:35:55 -0700 (PDT)
+        Tue, 2 Aug 2022 13:36:42 -0400
+Received: from mailserv1.kapsi.fi (mailserv1.kapsi.fi [IPv6:2001:67c:1be8::25:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE5F33E06;
+        Tue,  2 Aug 2022 10:36:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=ext.kapsi.fi; s=20161220; h=Subject:Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=fvM/g7yEmol5LB1hRTfh0dP3z5l+1DidjnEGxSNhVDA=; b=Udv7QKnmiAS3H9k5XfcUw89ka8
+        6GvIX2sUR1RGU8wqdC+UaMMxTLcVcVkQtBso1YnE9zAOYcuDQmHRcNsp9yehY11VzgvT6Hjvmvpg8
+        yHDSlM/g45n3GcV2Q31cv78fiILx2Dgv5itMZOZVDF1U32SgIXxpbfJ1ozxsjoqSbvhLPUrIZVYN5
+        vXxEK1WM6YKHACA5j+jzkVU5dZ8I4nmTsNGGvz0bAHI0IEXP+ky7XoLa8iM2wNuwUDNyaZGTGnyAa
+        hIlTLeIsQY/ILk7VtXPoTKeymCavyeckp9Oawa4E+4+8Xqg+biopdLXeOlkSYxT4TQ7m0CxEwL25o
+        KYpc7mkQ==;
+Received: from a82-197-11-249.mpynet.fi ([82.197.11.249]:55983 helo=localhost)
+        by mailserv1.kapsi.fi with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maukka@ext.kapsi.fi>)
+        id 1oIvop-008Ymy-4O; Tue, 02 Aug 2022 20:36:36 +0300
+Received: by localhost (sSMTP sendmail emulation); Tue, 02 Aug 2022 20:36:33 +0300
+From:   Mauri Sandberg <maukka@ext.kapsi.fi>
+To:     linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     bhelgaas@google.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, andrew@lunn.ch,
+        sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
+        linux@armlinux.org.uk, lpieralisi@kernel.org, kw@linux.com,
+        thomas.petazzoni@bootlin.com, pali@kernel.org,
+        Mauri Sandberg <maukka@ext.kapsi.fi>,
+        Rob Herring <robh@kernel.org>
+Date:   Tue,  2 Aug 2022 20:34:22 +0300
+Message-Id: <20220802173423.47230-2-maukka@ext.kapsi.fi>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220802173423.47230-1-maukka@ext.kapsi.fi>
+References: <20220718202843.6766-1-maukka@ext.kapsi.fi>
+ <20220802173423.47230-1-maukka@ext.kapsi.fi>
 MIME-Version: 1.0
-References: <20220726165204.3363120-1-masahiroy@kernel.org>
-In-Reply-To: <20220726165204.3363120-1-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 2 Aug 2022 10:35:44 -0700
-Message-ID: <CAKwvOdkjcaxK7N0T-PUbfjvMqpftEXG2QQJ7NsqxgidwuPko1g@mail.gmail.com>
-Subject: Re: [PATCH] modpost: remove unused Elf_Sword macro
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 82.197.11.249
+X-SA-Exim-Mail-From: maukka@ext.kapsi.fi
+Subject: [PATCH v2 1/2] dt-bindings: PCI: mvebu: Add orion5x compatible
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on mailserv1.kapsi.fi)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 9:53 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Commit 9ad21c3f3ecf ("kbuild: try harder to find symbol names in
-> modpost") added Elf_Sword (in a wrong way), but did not use it at all.
->
-> BTW, the current code looks weird.
->
-> The fix for the 32-bit part would be:
->
->     Elf64_Sword    -->    Elf32_Sword
->
-> (weirdness in the prefix, Elf32_ vs Elf64_)
->
-> The fix for the 64-bit part would be:
->
->     Elf64_Sxword   -->    Elf64_Sword
->
-> (the size is different between Sword and Sxword)
->
-> Note:
->
->     Elf32_Sword   ==  Elf64_Sword   ==  int32_t
->     Elf32_Sxword  ==  Elf64_Sxword  ==  int64_t
->
-> Anyway, let's drop unused code instead of fixing it.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Add a compatible string to bindings to indicate that orion5x PCIe is
+supported too.
 
-Thanks for the patch!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Mauri Sandberg <maukka@ext.kapsi.fi>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+v1->v2:
+ - added ack by Rob
+---
+ Documentation/devicetree/bindings/pci/mvebu-pci.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-> ---
->
->  scripts/mod/modpost.h | 2 --
->  1 file changed, 2 deletions(-)
->
-> diff --git a/scripts/mod/modpost.h b/scripts/mod/modpost.h
-> index 68cd4aeeae3d..620f2fd08e05 100644
-> --- a/scripts/mod/modpost.h
-> +++ b/scripts/mod/modpost.h
-> @@ -26,7 +26,6 @@
->  #define Elf_Shdr    Elf32_Shdr
->  #define Elf_Sym     Elf32_Sym
->  #define Elf_Addr    Elf32_Addr
-> -#define Elf_Sword   Elf64_Sword
->  #define Elf_Section Elf32_Half
->  #define ELF_ST_BIND ELF32_ST_BIND
->  #define ELF_ST_TYPE ELF32_ST_TYPE
-> @@ -41,7 +40,6 @@
->  #define Elf_Shdr    Elf64_Shdr
->  #define Elf_Sym     Elf64_Sym
->  #define Elf_Addr    Elf64_Addr
-> -#define Elf_Sword   Elf64_Sxword
->  #define Elf_Section Elf64_Half
->  #define ELF_ST_BIND ELF64_ST_BIND
->  #define ELF_ST_TYPE ELF64_ST_TYPE
-> --
-> 2.34.1
->
-
-
+diff --git a/Documentation/devicetree/bindings/pci/mvebu-pci.txt b/Documentation/devicetree/bindings/pci/mvebu-pci.txt
+index 6d022a9d36ee..ced5d030fe55 100644
+--- a/Documentation/devicetree/bindings/pci/mvebu-pci.txt
++++ b/Documentation/devicetree/bindings/pci/mvebu-pci.txt
+@@ -7,6 +7,7 @@ Mandatory properties:
+     marvell,armada-xp-pcie
+     marvell,dove-pcie
+     marvell,kirkwood-pcie
++    marvell,orion5x-pcie
+ - #address-cells, set to <3>
+ - #size-cells, set to <2>
+ - #interrupt-cells, set to <1>
 -- 
-Thanks,
-~Nick Desaulniers
+2.25.1
+
