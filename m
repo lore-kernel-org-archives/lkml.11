@@ -2,99 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E282BC19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:17:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D56D5C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 17:18:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233676AbiHBRRk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 13:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47398 "EHLO
+        id S233771AbiHBRSv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 13:18:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbiHBRRh (ORCPT
+        with ESMTP id S229755AbiHBRSt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 13:17:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C254D1D0E1;
-        Tue,  2 Aug 2022 10:17:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69CEE611CB;
-        Tue,  2 Aug 2022 17:17:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFE03C433C1;
-        Tue,  2 Aug 2022 17:17:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659460655;
-        bh=ezo/DMFL/JZvUXZGmbP9Yp6XteEVnCTIPlNYh1llQVE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=a/0QMhAwa99UhhzkA/GaZ6skt+cIxlFs8m4phu2lVbgEKs8dAuQajL3z/PhmuCPaM
-         FDVa81594txuJ6Xr9STpLGFG7y+g07ES9nX30wKOpuL+gQ7zgDrUjDvJHTpe1A4m2m
-         RDbcrd/tssUPIkaaWNEG4vIhBbaUyU6WWUeJwnQcg+SiDGhhWTaM1GLet9g376AV7n
-         4Ek//phbCj5VOJKH/lMwneV582MPbDyHRh3KM/4EWS5Yt7fv03eq2eb4UMhxmcCJ4U
-         +re1YFXDh1Ux02PHKxrlABplvVUqmFrmPRUWOJbRf+VA/RMft1hLs35Nl3qPvsy013
-         W/CYZ7tl1w0Nw==
-Received: by mail-ua1-f43.google.com with SMTP id c19so6049621uat.6;
-        Tue, 02 Aug 2022 10:17:35 -0700 (PDT)
-X-Gm-Message-State: ACgBeo19klTm7nkg3xVLYWntjoXIVqqGPELxu+K8cEGZFwzwGFViHj2a
-        58pkbCOPEbRRsjmvua1xw1TnJbKGySIefMhZmw==
-X-Google-Smtp-Source: AA6agR7y4buQNvya5WmrFhrh5GEnJcFBluchloSidybizQJCjyZ9Adx3yyIrlsqlhrS3nobQjHpb5sanNqcqWcHzULM=
-X-Received: by 2002:ab0:2b06:0:b0:384:c4af:107c with SMTP id
- e6-20020ab02b06000000b00384c4af107cmr8357117uar.77.1659460654762; Tue, 02 Aug
- 2022 10:17:34 -0700 (PDT)
+        Tue, 2 Aug 2022 13:18:49 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D42F1D0E1;
+        Tue,  2 Aug 2022 10:18:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=wNPiTR833IoMnVSV13bQs8xeVL8RU6xSyseaM29Ymns=; b=YMmm05uCEKeGcQXcliHQ+kJNbk
+        eeF5aJje9i7rgKugQgvx7uZn9gPiQVtTCGpJYxcfb78yKYQheB+jwti+9hxIaFYXyU7SFKR65n0xh
+        7hPKVh5WiUgrw0Ky2SmVr+K8pNqq+15mBWvYhTVhYbz+mnRk2DTyCjGyQC3BoKN0Ip+4dr4C4ybhb
+        Vjhrw5TUW4wCFwRKTJ6+ALWzPC7ntQndLS/3y8ZQ3cL3PNtVbB/HHQs6a1xBWr9+DKom+u+heoY0U
+        1U35c5jcAoo+UkdTbEo7gGNjt/s+WzRK8RbUY2Y8RzxmyA3kAOwswRCvh/D54vUD7WqcQRvaQ70pq
+        geZq4k6A==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oIvXZ-008XJW-UC; Tue, 02 Aug 2022 17:18:45 +0000
+Date:   Tue, 2 Aug 2022 18:18:45 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] XArray changes for 6.0-rc1
+Message-ID: <YulcdRuGoA4CpKGm@casper.infradead.org>
 MIME-Version: 1.0
-References: <20220802151404.1797-1-johan+linaro@kernel.org> <20220802151404.1797-6-johan+linaro@kernel.org>
-In-Reply-To: <20220802151404.1797-6-johan+linaro@kernel.org>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Tue, 2 Aug 2022 11:17:22 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqL5ZCzfd06rxOdQodFjk4G3QpDCsxA5heM71x0q5d-hCw@mail.gmail.com>
-Message-ID: <CAL_JsqL5ZCzfd06rxOdQodFjk4G3QpDCsxA5heM71x0q5d-hCw@mail.gmail.com>
-Subject: Re: [PATCH 5/8] Revert "dt-bindings: usb: dwc3: Add wakeup-source
- property support"
-To:     Johan Hovold <johan+linaro@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krishna Kurapati <quic_kriskura@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Linux USB List <linux-usb@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 2, 2022 at 9:14 AM Johan Hovold <johan+linaro@kernel.org> wrote:
->
-> This reverts commit 098c4d43b91a269e89f60331a26a3f3b914677ed.
->
-> A devicetree binding should describe hardware capabilities and not be
-> used to configure power-management policies (even if things are a bit
-> blurry when it comes to "wakeup-source").
+The following changes since commit 32346491ddf24599decca06190ebca03ff9de7f8:
 
-Whether a device's interrupt can cause a wakeup is a h/w feature.
-That's not policy. If Linux also uses this to decide whether or not to
-enable wakeup, then that's its policy.
+  Linux 5.19-rc6 (2022-07-10 14:40:51 -0700)
 
-> It should also not be used to
-> work around Linux driver implementation issues such as how to coordinate
-> the glue and core dwc3 drivers.
->
-> For the Qualcomm dwc3 controllers, it is the glue device that manages
-> the wakeup interrupts, which may or may not be able to wake the system
-> up from system suspend.
+are available in the Git repository at:
 
-While the reasoning to add this may have been for QCom, having this
-property for other users makes sense. On some platforms, 'snps,dwc3'
-is the only node (i.e. there's no wrapper node). So I don't think this
-should be reverted.
+  git://git.infradead.org/users/willy/xarray.git tags/xarray-6.0
 
-Rob
+for you to fetch changes up to 85656ec193e9ca9c11f7c75dc733c071755b189e:
+
+  IDR: Note that the IDR API is deprecated (2022-07-10 21:17:30 -0400)
+
+----------------------------------------------------------------
+XArray/IDR update for 6.0
+
+ - Add appropriate might_alloc() annotations to the XArray APIs
+
+ - Document that the IDR is deprecated
+
+----------------------------------------------------------------
+Matthew Wilcox (Oracle) (2):
+      XArray: Add calls to might_alloc()
+      IDR: Note that the IDR API is deprecated
+
+ Documentation/core-api/idr.rst |  3 +++
+ include/linux/xarray.h         | 15 +++++++++++++++
+ tools/include/linux/sched/mm.h |  2 ++
+ 3 files changed, 20 insertions(+)
+
