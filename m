@@ -2,162 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A60C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2FCAC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 12:16:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237029AbiHBMPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 08:15:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33082 "EHLO
+        id S236660AbiHBMQb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 08:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236976AbiHBMOj (ORCPT
+        with ESMTP id S233511AbiHBMQ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 08:14:39 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77DAD4F6A1
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 05:14:08 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id i14so6845538ejg.6
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 05:14:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=kHhoRx/ka0EpIFy/pWjymvtNViMFXpw0odHJay66ZOg=;
-        b=GJ8JCx8PY/wZG4ScSuHIpNRuNQ7+kailZr5JV6d8dX/R+9ZS6bnt+zOZMq8NH5s4Hf
-         VaVooVH6fHbWCuuOnq9FkUffehnCj2j8n5Jb5CpV6IDa5AB6oQLmTgR0Vz6+bRPBDOR7
-         jEIKJAoS1vmyL5kd+XSdtQXaW/Fb2E1HRoLTuU77+8QOUORY4LI+9eO5lNGS+0HDtnZG
-         RuRZq/mID4yDKGuHEx0K8tqfG2IqWaTTgg+LnD9QiSGcSB+/MlMSZ+zAD62hK0o7KoPr
-         wZJzUGU02MlRX6pqn31w5Frew+XMoctXAd9QS5ER+55PEeWBuDOzHsP3o3R/9/yPAar7
-         Dn8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=kHhoRx/ka0EpIFy/pWjymvtNViMFXpw0odHJay66ZOg=;
-        b=owk+hM5RuIaC3LeU/T8rC0JPaDIe47P+xJUCPFzDuhkRH54Qqm4oKYTkXmoHg5i/Ya
-         HUtMgZXCCi/v7ZMJAoCB6WumUrpPgQr7IrDk7jkcxxjmlc6Agm1mG2tJPzEpt30C137V
-         2m6JKvHRWdJO+T0+5IcxmkE8OS04B32YR81vtsxo0HPxhWCRhah+ZkJ/IKWM45vUfU6L
-         JuMjt9dTZEGg91bsHZxXTygb5DPbYMiEX/9jo4SXti/n7JVW7B2LI1zD7JnQXC8CGihk
-         W45HtXtF7/tRJUa/e7hsfoez9eyryMefowpINPXNBEoBXTc3H8J9hEGl7Vk7/2t7f4vc
-         Rylw==
-X-Gm-Message-State: AJIora+A+3bPmxgD4/LnlQlFsrowY9vFQ4/LYd+3n1Gwfc5khJZcZCDo
-        LK/HhyzEpyt5pAhMCkPnSMgc2UxEMkbDdQYVy6U=
-X-Google-Smtp-Source: AGRyM1vKkOzYSW6yOGHLgZ1aOUI4fb6KwfcFbkingnFNMdQCStDY9kzKwIwM2piTY0aQ3dL2oJmsiq7aj/DcsuruQpM=
-X-Received: by 2002:a17:907:7241:b0:72b:347b:17a1 with SMTP id
- ds1-20020a170907724100b0072b347b17a1mr16607892ejc.32.1659442446751; Tue, 02
- Aug 2022 05:14:06 -0700 (PDT)
+        Tue, 2 Aug 2022 08:16:29 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02914262C;
+        Tue,  2 Aug 2022 05:16:23 -0700 (PDT)
+X-QQ-mid: bizesmtp91t1659442572tox89pbw
+Received: from kali.lan ( [125.69.43.47])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 02 Aug 2022 20:16:10 +0800 (CST)
+X-QQ-SSF: 01000000002000F0U000B00A0000020
+X-QQ-FEAT: zT6n3Y95oi0+GF2rz41IpklRcaOGRreCB/vyXaTX2YbnxIVMbcZECTfR9yO/3
+        8npwl5Hj4lgtsMU4s/TMXiG0u2PUaRHZ8fHYtPbo2E/EelUGWi+5+4MV+jHV/ArGO1Dod8E
+        Sz6nKxkDksp+W0UJod80LdUSoUxw9VXV9pAkYKjQJaSmPuqVh3TQYyOQpAzdhX/+JvWsg8q
+        vQa+5hYtmzxp+ORs8hOwx43XouR9wfkvQfcdcjGyx3hE2JCmdbn1a1N00BbQn1x1Iwpgaih
+        QaiptHfzunkKEeqmhPO8AvJVWeurP/C+I28AzPye4kXEF8MeUMQK3ru3PCPNycWYoZ4nFGY
+        Kt0DjypTV/CNrBOMKf0VDbM6ZR/ALj51n8sSo1CzYptwRqo3d7+yAVh2/gFEg==
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     martin.petersen@oracle.com
+Cc:     james.smart@broadcom.com, dick.kennedy@broadcom.com,
+        jejb@linux.ibm.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] scsi: lpfc: Fix comment typo
+Date:   Wed,  3 Aug 2022 04:16:09 +0800
+Message-Id: <20220802201609.7788-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <CAHCN7xJ=N1vWVTBjArskJ59fyaLzmAGWfc0E=_iGizrDNR_Udw@mail.gmail.com>
- <CAOMZO5BAheG4r1Umnd7bLhOqezsxJgE0x1c-858EcabbpPm6Pg@mail.gmail.com>
- <20220801225538.qtdb5zd66g6ipewz@pengutronix.de> <CAOMZO5DUTxQKbpTVOgaVC0V7hPqJG77sgmkW8p=aNpG8th-aLw@mail.gmail.com>
- <CAHCN7xL2w7a=SeXbwcNNxqb3kpRV9Bs0AbK0Nmjbj+dm0NDaVA@mail.gmail.com>
- <CAOMZO5BQWnUj4Ouq3=vhqq55zN8otO_9vPX8ht+muFM_5pg9Fg@mail.gmail.com>
- <CAHCN7xJy6X5733m3zwcFMuWM9oGHJEmKrs2KUNhzMzNVggRx0g@mail.gmail.com> <20220802080820.jyf3tfpgcj3pvbtp@pengutronix.de>
-In-Reply-To: <20220802080820.jyf3tfpgcj3pvbtp@pengutronix.de>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Tue, 2 Aug 2022 07:13:55 -0500
-Message-ID: <CAHCN7xL-7wGnEhY9+zDXYjigZfnfsnY_NsRf+enYt_BPsFxgnQ@mail.gmail.com>
-Subject: Re: imx8mm lcdif->dsi->adv7535 no video, no errors
-To:     Marco Felsch <m.felsch@pengutronix.de>
-Cc:     Fabio Estevam <festevam@gmail.com>, Marek Vasut <marex@denx.de>,
-        Stefan Agner <stefan@agner.ch>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        arm-soc <linux-arm-kernel@lists.infradead.org>,
-        Jagan Teki <jagan@amarulasolutions.com>, robert.chiras@nxp.com,
-        laurentiu.palcu@nxp.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 2, 2022 at 3:08 AM Marco Felsch <m.felsch@pengutronix.de> wrote:
->
-> Hi Adam, Fabio,
->
-> On 22-08-01, Adam Ford wrote:
-> > On Mon, Aug 1, 2022 at 8:53 PM Fabio Estevam <festevam@gmail.com> wrote:
-> > >
-> > > On Mon, Aug 1, 2022 at 10:39 PM Adam Ford <aford173@gmail.com> wrote:
-> > >
-> > > > I managed to get my HDMI output working. I had the lanes set to 2
-> > > > instead of 4.  Once I switched to 4-lanes, the monitor came up in
-> > > > 1080p.  I haven't yet been able to get other modes to work.
-> > >
-> > > Ok, good. On another thread, you mentioned that you were also trying
-> > > to get LVDS to work via SN65DSI83.
-> > >
-> > > Does LVDS work for you on this branch?
-> >
-> > I haven't tried with Marek's latest suggestion.  In the other thread
-> > he mentioned a burst mode and setting the DSI speeds to higher
-> > frequencies, but the patch he had didn't look like it would apply
-> > cleanly, so I will need to dig into that a bit further.
->
-> Can you provide me a link to this thread?
+The double `from' is duplicated in the comment, remove one.
 
-Sure,
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ drivers/scsi/lpfc/lpfc_debugfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-https://www.spinics.net/lists/dri-devel/msg358301.html
+diff --git a/drivers/scsi/lpfc/lpfc_debugfs.c b/drivers/scsi/lpfc/lpfc_debugfs.c
+index 5037ea09a810..89c59d9fd040 100644
+--- a/drivers/scsi/lpfc/lpfc_debugfs.c
++++ b/drivers/scsi/lpfc/lpfc_debugfs.c
+@@ -2538,7 +2538,7 @@ lpfc_debugfs_lseek(struct file *file, loff_t off, int whence)
+  * @ppos: The position in the file to start reading from.
+  *
+  * Description:
+- * This routine reads data from from the buffer indicated in the private_data
++ * This routine reads data from the buffer indicated in the private_data
+  * field of @file. It will start reading at @ppos and copy up to @nbytes of
+  * data to @buf.
+  *
+-- 
+2.35.1
 
->
-> > Since my company doesn't really ship the LVDS displays with the kits,
-> > the HDMI is the default video, so I've been focusing on it.
-> >
-> > To answer Marco's question, I was able to revert "MLK-21958-13:
-> > drm/bridge: adv7511: Limit supported clocks" and still get a display
-> > at 1080p, but all the other resolutions I tried appear to come up
-> > blank.
->
-> Cool so now you have the same state as we are.
-
-I have a couple patches applied to mine which mimic some of the stuff
-that NXP did.  Since I have access to a programmer manual, i was able
-to confirm some of the 7535 specific stuff and the low-refresh rate
-changes in their kernel appear appropriate and I also created a second
-table of default settings for the 7535 and if the type is set
-properly, i'll use the newer table instead of the older one. If anyone
-wants any of these patches, I can certainly share them, but I am not
-certain they make any difference.
-
-There are a few other items in the programmer manual that I want to
-attempt to implement once I have a chance to further review the
-document.
-
->
-> I think that the most important one is the blanking calc. Can you try to
-> revert "drm/bridge: adv7511: Repair bus_flags and bus_format" and check
-> if you can get a output still? Also something to try would be to disable
-> the internal timing generator by specifying
-> 'adi,disable-timing-generator'. Also if you have an oscilloscope for
-> such frequencies you can check the hdmi clk-lane. I noticed that this is
-> sometimes wrong.
-
-I am doing this from my home office as a side project, so I don't have
-a scope, but I can try to revert the other patch and try to disable
-the internal timing generator when I get home tonight.  I'll report my
-findings.
-
->
-> Regards,
->   Marco
->
-> > I didn't try every one.  With that revert, more options come
-> > available, but 1440x900 and 800x600 were options I tried
-> > unsuccessfullyl.
->
-> >
-> > adam
-> >
