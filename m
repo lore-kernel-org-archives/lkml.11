@@ -2,103 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B4EFC19F28
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:14:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4C85C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 16:14:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237895AbiHBQON (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 12:14:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53802 "EHLO
+        id S237738AbiHBQOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 12:14:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237813AbiHBQNt (ORCPT
+        with ESMTP id S237608AbiHBQOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 12:13:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35B2A52FC0
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:11:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659456665;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=F1BN/Juwioxn78sXhSX6LDo1G2nc1seQzhjMfYqlHN4=;
-        b=KxnUhOhFbpkr4t8I7uY0schWeZIuYEG8VBj0vmyX/FBm5TOdgKiRcAXxJQ0Um9uETWglDT
-        rsvMqdiXH/zy5g/C7aTIoKfz75RnyAEmgmNULcaGoKWKCK3+gjIM92Dr5T9o7jxRWdDbHJ
-        nCs4X40W/OaeGx8T0VWkPIyN2/svMM8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-12-lAdpah4aOiiEW9AbussiuQ-1; Tue, 02 Aug 2022 12:11:04 -0400
-X-MC-Unique: lAdpah4aOiiEW9AbussiuQ-1
-Received: by mail-wm1-f72.google.com with SMTP id p2-20020a05600c1d8200b003a3262d9c51so9671090wms.6
-        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 09:11:04 -0700 (PDT)
+        Tue, 2 Aug 2022 12:14:23 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D6D454AD8
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 09:12:13 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id z7-20020a25ba47000000b00677405b2d2dso4124859ybj.13
+        for <linux-kernel@vger.kernel.org>; Tue, 02 Aug 2022 09:12:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=jUv4DHIW/jf9S8WLW0PtEsjOkKBjlj0vSuriaB+Qt8E=;
+        b=hM+Y0P/b1I1LdGmErr2y+Pi82Lk6RWNHLQyjLYuQWRue2rjjvVuIYhBbnUjvMQulhG
+         aQtvHB6uHfIobK93i0FmJI8mpx7/MxrFYIdIbUvHr/pOvNUIzGZfqtA9eZmHvPrJ+lw8
+         sWXW+KQ6/4oPPWtJw2Nw6Q+QygmSGCg+1FAREphdmPPvbY6t2C//R1aUMo1tfdto3j8W
+         eWSVQtZJr5uhI6GufTWlbC01S3C6QmvhtgxoHsZy/QJJUqlQt1sdRRqz8a2y3mcei563
+         WSJmqXpYWFf2IbEVjOeKYGj3ulDLq7j9cEx9sJ3WmD8mDZafbXFR5Wkl+rmpCHySy/FX
+         hb5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=F1BN/Juwioxn78sXhSX6LDo1G2nc1seQzhjMfYqlHN4=;
-        b=N6X3HI5/RgiCq49Sf7Q+HJ9PzuOirgtGNgcZr5KS1Q19qwW6Ue+3wwdw3FlOC/vPLC
-         T3QJr0iDXrjAyiB9qA3UQi2k5DEzpI/ZuNY5dz/iPmsUXRYy0otg+CAOBoECPd96/2f6
-         tWgABsGAbbKpGXt0kct3Gq9PJdRdPIWCBXhJfX6Y9KVHrWNDM0wdMqGCkfK3CWbWwTbU
-         YL4Ej7Y2IKU6jRTIysR/tGC2I8gb0GrXq66b6Y1TTPPSTOemmzcdrDd2yvV03VkKWzLO
-         BmaQNXU3WP1nCXQlHpAPvLOgYpjIq8zgicYG8woL+R7za3gQvc9Km3M/7F3Yoczy1Zzk
-         4Pjw==
-X-Gm-Message-State: ACgBeo2Zn6mSbMd9Wlc97BnyN02sIdrcpcdT79UzU9z9rGFlOBo96CSu
-        5DKvc2mkJzJlxVuuvlD8FM4+8Ii6jFRJFJJfbBS6VzwTAT4guoAmPIPKhiRFp51wYl74NruvhFT
-        mmB9QbXtWM31uFFjFXgrf139Ml7+NGWXuEGwLwEZnOHeKttdFLHUGP/uPbXRoCxqs4zHUEZ7kcN
-        RO
-X-Received: by 2002:a05:600c:502b:b0:3a3:1f5c:57f5 with SMTP id n43-20020a05600c502b00b003a31f5c57f5mr126025wmr.5.1659456663533;
-        Tue, 02 Aug 2022 09:11:03 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4z2D1nMb0fc3xUyccQZzyhRJhby4+XRhjb1IvU3RAlBh2PniSqCm1AcHu/nTp/gdJktDH9Ng==
-X-Received: by 2002:a05:600c:502b:b0:3a3:1f5c:57f5 with SMTP id n43-20020a05600c502b00b003a31f5c57f5mr125997wmr.5.1659456663291;
-        Tue, 02 Aug 2022 09:11:03 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id n5-20020a05600c3b8500b003a03185231bsm14130710wms.31.2022.08.02.09.11.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 09:11:02 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 24/25] KVM: VMX: Cache MSR_IA32_VMX_MISC in vmcs_config
-In-Reply-To: <Ytnb2Zc0ANQM+twN@google.com>
-References: <20220714091327.1085353-1-vkuznets@redhat.com>
- <20220714091327.1085353-25-vkuznets@redhat.com>
- <Ytnb2Zc0ANQM+twN@google.com>
-Date:   Tue, 02 Aug 2022 18:11:01 +0200
-Message-ID: <87fsie1v8q.fsf@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=jUv4DHIW/jf9S8WLW0PtEsjOkKBjlj0vSuriaB+Qt8E=;
+        b=yneYopgWenm5mhkl8cv5SNBhpia2I/WDw4ZADg4g6gV+eGyGZBM7fewOz0hQ61nJKZ
+         0uqHhQGWMRWjquJThXQOKwznPJsjzlB+pjGp0965jQbQ6+e2ONOszAxoEvF24t6x1xcw
+         EIYA/RFWOPCEFvh3M1SWqb4yHgAfKizKn3D5RHGfGxqxx4U099OFb0nx06zm2KM85+rO
+         9Nv79f3vko5U/JNQoH3HYp4q4Zq1+hvanX90rg0EhVYLWyhhOWxfx5cTT1mZ3PS3QPfH
+         gnkkhRItNtiBqShNoYSMwp3hUWwzeSqyPDt5ZJ5MKd3/vyG07Os8pkqJS7y0JszPygbR
+         c8ng==
+X-Gm-Message-State: ACgBeo3e7QaXU68zKLQTiCRZjCAveuwYZRJwT9McWw1in4/d588Z1F7B
+        5qJ1J6+To+MJeXAWX66JTuAKbYVGqIl097NwE1k=
+X-Google-Smtp-Source: AA6agR60KPhLaUDDpE75SmK32fLcyUdmmWauNKhKvmIUnp3GPJYseoEjLta6QhF5LXEWhDck591iA/+DgKy5DObhXTE=
+X-Received: from ndesaulniers1.mtv.corp.google.com ([2620:15c:211:202:1:6143:4baa:89b9])
+ (user=ndesaulniers job=sendgmr) by 2002:a5b:3ca:0:b0:676:e468:2879 with SMTP
+ id t10-20020a5b03ca000000b00676e4682879mr11554363ybp.239.1659456731748; Tue,
+ 02 Aug 2022 09:12:11 -0700 (PDT)
+Date:   Tue,  2 Aug 2022 09:12:03 -0700
+Message-Id: <20220802161203.622293-1-ndesaulniers@google.com>
+Mime-Version: 1.0
+X-Developer-Key: i=ndesaulniers@google.com; a=ed25519; pk=lvO/pmg+aaCb6dPhyGC1GyOCvPueDrrc8Zeso5CaGKE=
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1659456689; l=3416;
+ i=ndesaulniers@google.com; s=20211004; h=from:subject; bh=oyWYempWhhw0KWZY55bZsDNwZFMaSWFofRJis1N1L/M=;
+ b=42HGiJT3UIZyJGqLJXCvnn6Urd53yKrlQYq3xpzUzMPprOAanxKmz6+K6VfxxIR5QM3d1FzY4BGY
+ m9/lY7ckDkA7WV9dzrS3p23C+Hs1HUrk4KbyKhniYaf3eg8PZ5nJ
+X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
+Subject: [PATCH] net: seg6: initialize induction variable to first valid array index
+From:   Nick Desaulniers <ndesaulniers@google.com>
+To:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sean Christopherson <seanjc@google.com> writes:
+Fixes the following warnings observed when building
+CONFIG_IPV6_SEG6_LWTUNNEL=y with clang:
 
-> On Thu, Jul 14, 2022, Vitaly Kuznetsov wrote:
->> @@ -2613,6 +2614,8 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
->>  	if (((vmx_msr_high >> 18) & 15) != 6)
->>  		return -EIO;
->>  
->> +	rdmsrl(MSR_IA32_VMX_MISC, misc_msr);
->
-> Might make sense to sanitize fields that KVM doesn't use and that are not exposed
-> to L1.  Not sure it's worthwhile though as many of the bits fall into a grey area,
-> e.g. all the SMM stuff isn't technically used by KVM, but that's largely because
-> much of it just isn't relevant to virtualization.
->
-> I'm totally ok leaving it as-is, though maybe name it "unsanitized_misc" or so
-> to make that obvious?
+  net/ipv6/seg6_local.o: warning: objtool: seg6_local_fill_encap() falls
+  through to next function seg6_local_get_encap_size()
+  net/ipv6/seg6_local.o: warning: objtool: seg6_local_cmp_encap() falls
+  through to next function input_action_end()
 
-I couldn't convince myself to add 'unsanitized_' prefix as I don't think
-it significantly reduces possible confusion (the quiestion would be
-'sanitized for what and in which way?') so a need for 'git grep' seems
-imminent anyway. Hope I've addressed the rest of your comments in v5
-though, thanks for your review!
+LLVM can fully unroll loops in seg6_local_get_encap_size() and
+seg6_local_cmp_encap(). One issue in those loops is that the induction
+variable is initialized to 0. The loop iterates over members of
+seg6_action_params, a global array of struct seg6_action_param calling
+their put() function pointer members.  seg6_action_param uses an array
+initializer to initialize SEG6_LOCAL_SRH and later elements, which is
+the third enumeration of an anonymous union.
 
+The guard `if (attrs & SEG6_F_ATTR(i))` may prevent this from being
+called at runtime, but it would still be UB for
+`seg6_action_params[0]->put` to be called; the unrolled loop will make
+the initial iterations unreachable, which LLVM will later rotate to
+fallthrough to the next function.
+
+Make this more obvious that this cannot happen to the compiler by
+initializing the loop induction variable to the minimum valid index that
+seg6_action_params is initialized to.
+
+Reported-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+---
+ net/ipv6/seg6_local.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+index 2cd4a8d3b30a..b7de5e46fdd8 100644
+--- a/net/ipv6/seg6_local.c
++++ b/net/ipv6/seg6_local.c
+@@ -1614,7 +1614,7 @@ static void __destroy_attrs(unsigned long parsed_attrs, int max_parsed,
+ 	 * callback. If the callback is not available, then we skip to the next
+ 	 * attribute; otherwise, we call the destroy() callback.
+ 	 */
+-	for (i = 0; i < max_parsed; ++i) {
++	for (i = SEG6_LOCAL_SRH; i < max_parsed; ++i) {
+ 		if (!(parsed_attrs & SEG6_F_ATTR(i)))
+ 			continue;
+ 
+@@ -1643,7 +1643,7 @@ static int parse_nla_optional_attrs(struct nlattr **attrs,
+ 	struct seg6_action_param *param;
+ 	int err, i;
+ 
+-	for (i = 0; i < SEG6_LOCAL_MAX + 1; ++i) {
++	for (i = SEG6_LOCAL_SRH; i < SEG6_LOCAL_MAX + 1; ++i) {
+ 		if (!(desc->optattrs & SEG6_F_ATTR(i)) || !attrs[i])
+ 			continue;
+ 
+@@ -1742,7 +1742,7 @@ static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+ 	}
+ 
+ 	/* parse the required attributes */
+-	for (i = 0; i < SEG6_LOCAL_MAX + 1; i++) {
++	for (i = SEG6_LOCAL_SRH; i < SEG6_LOCAL_MAX + 1; i++) {
+ 		if (desc->attrs & SEG6_F_ATTR(i)) {
+ 			if (!attrs[i])
+ 				return -EINVAL;
+@@ -1847,7 +1847,7 @@ static int seg6_local_fill_encap(struct sk_buff *skb,
+ 
+ 	attrs = slwt->desc->attrs | slwt->parsed_optattrs;
+ 
+-	for (i = 0; i < SEG6_LOCAL_MAX + 1; i++) {
++	for (i = SEG6_LOCAL_SRH; i < SEG6_LOCAL_MAX + 1; i++) {
+ 		if (attrs & SEG6_F_ATTR(i)) {
+ 			param = &seg6_action_params[i];
+ 			err = param->put(skb, slwt);
+@@ -1927,7 +1927,7 @@ static int seg6_local_cmp_encap(struct lwtunnel_state *a,
+ 	if (attrs_a != attrs_b)
+ 		return 1;
+ 
+-	for (i = 0; i < SEG6_LOCAL_MAX + 1; i++) {
++	for (i = SEG6_LOCAL_SRH; i < SEG6_LOCAL_MAX + 1; i++) {
+ 		if (attrs_a & SEG6_F_ATTR(i)) {
+ 			param = &seg6_action_params[i];
+ 			if (param->cmp(slwt_a, slwt_b))
 -- 
-Vitaly
+2.37.1.455.g008518b4e5-goog
 
