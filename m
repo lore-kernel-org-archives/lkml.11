@@ -2,105 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1022EC19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:15:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB039C00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  2 Aug 2022 15:19:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237451AbiHBPPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 11:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54048 "EHLO
+        id S234770AbiHBPTn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 11:19:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237534AbiHBPPW (ORCPT
+        with ESMTP id S229460AbiHBPTk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 11:15:22 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD7FF1A82F;
-        Tue,  2 Aug 2022 08:15:00 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1659453298;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fS08hswxcKCvH2MW48Lg06ZhM4anuBSKvkfXm133UYc=;
-        b=sfQdP4Tr5Ewrm9HBIgTeQ12Y/PhHlnjP1VJvn+ecexrguaK6TdjHh2u6ci6eCOeffHeOlY
-        NNImo5tXkYFZoBJgTRMDNmd/Cf9UCwfmI7bzo4oEntcC5CelDq0Ej2hri3BZ0CJzn5XNII
-        sf90vo7Wu/TlHiOuGYN0h/zvUVrvMILPc1Nt/S6VkAePgviLp2KWWIE7XdNpAs7/oflan6
-        Co2Lm8Pefr3Vcao7j+J5ptsLeuWCw+0CKfSK7LRP2WczUY2TFviFJ3heRI2rVjHZDI163I
-        7t1Rl8vQdix59NtocgBNjKqiVK5T0QR7EeYlCHjdSb/kYfy5vP4gDM+XrTM5eg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1659453298;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fS08hswxcKCvH2MW48Lg06ZhM4anuBSKvkfXm133UYc=;
-        b=edQRKstJDks0wpeZ/5DFs7BY8Lq6Cq4fjT/7SUqBOey3xJuZPvRfq8iiK0SOt8UCS9W3fc
-        W6fYQkrA0Ixz1wCA==
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        x86@kernel.org, Nadia Heninger <nadiah@cs.ucsd.edu>,
-        Thomas Ristenpart <ristenpart@cornell.edu>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Adhemerval Zanella Netto <adhemerval.zanella@linaro.org>,
-        Florian Weimer <fweimer@redhat.com>
-Subject: Re: [PATCH RFC v1] random: implement getrandom() in vDSO
-In-Reply-To: <YuktqQS7Rb0IbJNh@zx2c4.com>
-References: <20220729145525.1729066-1-Jason@zx2c4.com>
- <CAHk-=wiLwz=9h9LD1-_yb1+T+u59a2EjTmMvCiGj4A-ZsPN1wA@mail.gmail.com>
- <YuXCpyULk6jFgGV5@zx2c4.com> <87zggnsqwj.ffs@tglx>
- <Yuhe6IIFXqNMZs5b@zx2c4.com> <87bkt2sqq4.ffs@tglx>
- <YuktqQS7Rb0IbJNh@zx2c4.com>
-Date:   Tue, 02 Aug 2022 17:14:57 +0200
-Message-ID: <878ro6smmm.ffs@tglx>
+        Tue, 2 Aug 2022 11:19:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7609A107;
+        Tue,  2 Aug 2022 08:19:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6FA060AC3;
+        Tue,  2 Aug 2022 15:19:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABED2C433D7;
+        Tue,  2 Aug 2022 15:19:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659453578;
+        bh=uIFHKVSnF63qKOrJUUCg7Hh718c66h+z7U+n3VkILOM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AThHoG2+PQtHaYN+tDY1EeVpqjl0XE6wDIbyWq6gpC5cvOJ/BsomTeBrbF2OOZeIg
+         dYEJInlN9fMR4jjXbQ/BxE97M4cKRZmZSriMJ/575LoH+OGWVD2RdFeKU5VTLLr4Gc
+         Jz3Ws8pyyRhHEorO3lFPayYSPPoSgOdEvTiNygu1I7muGHcwk5hV6Gxkp5WuZ9VCN/
+         IATomtJHoDnkdeLwjqsLvh+NvNbhczoZHqv2Lg5/2bO55tzCJHtXqBSRJve9RxRh3D
+         TQsjD/45mPX7gX1a46kgOB4nKhj2SNMKTtT8uq+q3n9W0zNYRan2PoP16zm7hd/lzJ
+         syGLo+RJZF0rQ==
+From:   broonie@kernel.org
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Date:   Tue,  2 Aug 2022 16:19:32 +0100
+Message-Id: <20220802151932.2830110-1-broonie@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 02 2022 at 15:59, Jason A. Donenfeld wrote:
-> On Tue, Aug 02, 2022 at 03:46:27PM +0200, Thomas Gleixner wrote:
->> Right now the Linux VDSO functions are 1:1 replacements for system calls
->> and not adding a magic pile of functionality which is otherwise not
->> available.
->> 
->> What you are proposing is to have an implementation which is not
->> available via a regular syscall. Which means you are creating a VDSO
->> only syscall which still has the same problem as any other syscall in
->> terms of API design and functionality which needs to be supported
->> forever.
->
-> Wait, what? That's not correct. The WHOLE point is that vdso getrandom()
-> will generate bytes in the same way as the ordinary syscall, without
-> differences. Same function name, same algorithm. But just faster,
-> because vDSO. I explicitly don't want to dip into introducing something
-> different. That's the big selling point: that vDSO getrandom() and
-> syscall getrandom() are the same thing. If you trust one, you can trust
-> the other. If you expect properties of one, you get that from the other.
-> If you know the API of one, you can use the other.
+Hi all,
 
-Seriously no. All existing VDSO functions have exactly the same function
-signature and semantics as their syscall counterparts. So they are drop
-in equivalent.
+Today's linux-next merge of the net-next tree got a conflict in:
 
-But:
+  net/ax25/af_ax25.c
 
-  ssize_t getrandom(void *, void *, size_t, unsigned int);
+between commit:
 
-is very much different than
+  d7c4c9e075f8c ("ax25: fix incorrect dev_tracker usage")
 
-  ssize_t getrandom(void *, size_t, unsigned int);
+from the net tree and commit:
 
-Different signature and different semantics.
+  d62607c3fe459 ("net: rename reference+tracking helpers")
 
-So you have to go through the whole process of a new ABI whether you
-like it or not.
+from the net-next tree.
 
-It does not matter whether they both produce random numbers. If your
-argument would hold true, then you can also claim that openat(2) and
-openat2(2) are the same thing because they both open a file.
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
 
-Thanks,
-
-        tglx
+diff --cc net/ax25/af_ax25.c
+index 5b5363c99ed50,bbac3cb4dc99d..0000000000000
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@@ -102,7 -102,8 +102,8 @@@ again
+  			ax25_disconnect(s, ENETUNREACH);
+  			s->ax25_dev = NULL;
+  			if (sk->sk_socket) {
+- 				dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
++ 				netdev_put(ax25_dev->dev,
+ -					   &ax25_dev->dev_tracker);
+++					   &ax25->dev_tracker);
+  				ax25_dev_put(ax25_dev);
+  			}
+  			ax25_cb_del(s);
+@@@ -1065,7 -1066,7 +1066,7 @@@ static int ax25_release(struct socket *
+  			del_timer_sync(&ax25->t3timer);
+  			del_timer_sync(&ax25->idletimer);
+  		}
+- 		dev_put_track(ax25_dev->dev, &ax25->dev_tracker);
+ -		netdev_put(ax25_dev->dev, &ax25_dev->dev_tracker);
+++		netdev_put(ax25_dev->dev, &ax25->dev_tracker);
+  		ax25_dev_put(ax25_dev);
+  	}
+  
+@@@ -1146,7 -1147,7 +1147,7 @@@ static int ax25_bind(struct socket *soc
+  
+  	if (ax25_dev) {
+  		ax25_fillin_cb(ax25, ax25_dev);
+- 		dev_hold_track(ax25_dev->dev, &ax25->dev_tracker, GFP_ATOMIC);
+ -		netdev_hold(ax25_dev->dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
+++		netdev_hold(ax25_dev->dev, &ax25->dev_tracker, GFP_ATOMIC);
+  	}
+  
+  done:
