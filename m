@@ -2,111 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A05CC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 07:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66485C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 07:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235608AbiHCHdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 03:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56958 "EHLO
+        id S235396AbiHCHgr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 03:36:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiHCHdn (ORCPT
+        with ESMTP id S230071AbiHCHgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 03:33:43 -0400
-Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D05C1D31F
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 00:33:42 -0700 (PDT)
-Received: by mail-vs1-xe2d.google.com with SMTP id m67so9431366vsc.12
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 00:33:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=iqxOdJFtC2If/ZXLHcmbp/RBxXGq4jUfEjDF0nOoWWg=;
-        b=bARutheAW5JDEHlANZFIG34YL7KjyliUs3ADYEj8NB0FBVD3ex0/HAA7MWdNtbZkXS
-         LMcMjXCQPsY0UVRpP118fn6cqycMatWEty3RpS/yCcj+wJplP5XU07iKaNlI1SHnyvHT
-         H1h+KkDFZGj4s6uGEyJ2gv6TceB5pXYjQ073fGbsX39ujUH+MK7q4nZCknLlFtJgzkVi
-         DCI4zLL9YhuJCTG4JOldcXfcIKrZIt9an9YTkv316kPSc8gHq381PYFWtQGG31nTWM7y
-         4GV44xWRP3k0LuEvFomZhzmjme9QpXXjXfpa+m3kSx2TZkhTzsngaxCY2fY2fxocWryh
-         21Ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=iqxOdJFtC2If/ZXLHcmbp/RBxXGq4jUfEjDF0nOoWWg=;
-        b=zal9sOqFVaRowFNsk4K7TIbjIc7CstmWr+lcUU5QbX/bD7Fj6DdFhG7+Z3ELjzTlKY
-         NNGW92CZJ+tWVw72PKrkWJ/IS1pBelnknSaVHSlT/bs4P2LlH/0jgya2LV8CoFeIGCa3
-         rJlp6t2iMSJrHTQD2GdfXiZpG+At6Tvm8i2pq7Gj0a9Qgn1VtQd/LuiUljPCqsEFl8KK
-         Wl4eoX7Ffj8yg/JnSObjGBBOFBbXiEO/BBj934DK54X0/5tEE8HXy79/cP3vex27cev1
-         mCQX/JdEC+s0o6pJ4bCynwB603bAFKPKF1LuLc3V+UUfxEXPaRwUb29/XD2U4o/aYp4h
-         yZpw==
-X-Gm-Message-State: ACgBeo3ppAINR9HUmhmNG9/sjFIVcQuGHIyu+MpgUWPYHdvHB3sdFXuK
-        jz28c4wNdhPcqIuFMcbXpClHaYHE0Dq56nxZoZg=
-X-Google-Smtp-Source: AA6agR72RkQdLVyS56GeQwkfOTjaNRQbprGOjzdpCGwhwGtMPqjz9TpqxYtexhsHPMiRst9DAFCqqMgC8reVJ6qeOIQ=
-X-Received: by 2002:a05:6102:390d:b0:387:78b9:bf9c with SMTP id
- e13-20020a056102390d00b0038778b9bf9cmr3833027vsu.43.1659512021347; Wed, 03
- Aug 2022 00:33:41 -0700 (PDT)
+        Wed, 3 Aug 2022 03:36:45 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9EBA2BC9
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 00:36:43 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 60EF24007C;
+        Wed,  3 Aug 2022 07:36:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1659512202; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Blhmz/bey4/9JiT5I8zzJO8Hj3s1hGffUTuW4GklLyY=;
+        b=UW2+X6zsjhiz0t2S7DSu40G0eLakYa0UwLxql1l3jzK1ZZVvlThQ1evwDpKJWD2XF2yUWQ
+        WLJo/StRFly5ftRc2uzbbU2ReksSQ7N4QeUp8+iD/T3n2NapG+ZX6XsTWvgNZt/GGbEd3D
+        3sl5vuxIgOU1pMCpcotKGunse7hkN9E=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3F30E13AF2;
+        Wed,  3 Aug 2022 07:36:42 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id bHqUDIol6mJiUgAAMHmgww
+        (envelope-from <mhocko@suse.com>); Wed, 03 Aug 2022 07:36:42 +0000
+Date:   Wed, 3 Aug 2022 09:36:41 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Feng Tang <feng.tang@intel.com>
+Cc:     Muchun Song <songmuchun@bytedance.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "bwidawsk@kernel.org" <bwidawsk@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Subject: Re: [PATCH] mm: mempolicy: fix policy_nodemask() for
+ MPOL_PREFERRED_MANY case
+Message-ID: <YuolieBmdaIzoS3t@dhcp22.suse.cz>
+References: <20220801084207.39086-1-songmuchun@bytedance.com>
+ <YueXhmiFcI8iw3OI@dhcp22.suse.cz>
+ <YuecP/RKXWz7QAs0@feng-skl>
+ <YuidPA9knCOoaT0c@FVFYT0MHHV2J>
+ <Yui7hWZYMX31ktOr@feng-skl>
+ <YujGy8EIeZc1Avc7@FVFYT0MHHV2J>
+ <YujUyCIBjFj+FzX5@feng-skl>
+ <YujoLQt09Js/sSQL@dhcp22.suse.cz>
+ <YuoYkPk+YzdPNvmN@feng-snb>
 MIME-Version: 1.0
-References: <20220803042728.3230346-1-chenhuacai@loongson.cn> <87r11xbxox.wl-maz@kernel.org>
-In-Reply-To: <87r11xbxox.wl-maz@kernel.org>
-From:   Huacai Chen <chenhuacai@gmail.com>
-Date:   Wed, 3 Aug 2022 15:33:27 +0800
-Message-ID: <CAAhV-H5d20zj+vnrEYRYW1h7FwRJpGYtJDc1q4hRdPh3KbXruw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] irqchip/loongson-eiointc: Check hwirq overflow
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuoYkPk+YzdPNvmN@feng-snb>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Jianmin,
+On Wed 03-08-22 14:41:20, Feng Tang wrote:
+> On Tue, Aug 02, 2022 at 05:02:37PM +0800, Michal Hocko wrote:
+> > Please make sure to CC Mike on hugetlb related changes.
+> 
+> OK.
+> 
+> > I didn't really get to grasp your proposed solution but it feels goind
+> > sideways. The real issue is that hugetlb uses a dedicated allocation
+> > scheme which is not fully MPOL_PREFERRED_MANY aware AFAICS. I do not
+> > think we should be tricking that by providing some fake nodemasks and
+> > what not.
+> > 
+> > The good news is that allocation from the pool is MPOL_PREFERRED_MANY
+> > aware because it first tries to allocation from the preffered node mask
+> > and then fall back to the full nodemask (dequeue_huge_page_vma).
+> > If the existing pools cannot really satisfy that allocation then it
+> > tries to allocate a new hugetlb page (alloc_fresh_huge_page) which also
+> > performs 2 stage allocation with the node mask and no node masks. But
+> > both of them might fail.
+> > 
+> > The bad news is that other allocation functions - including those that
+> > allocate to the pool are not fully MPOL_PREFERRED_MANY aware. E.g.
+> > __nr_hugepages_store_common paths which use the allocating process
+> > policy to fill up the pool so the pool could be under provisioned if
+> > that context is using MPOL_PREFERRED_MANY.
+> 
+> Thanks for the check!
+> 
+> So you mean if the prferred nodes don't have enough pages, we should
+> also fallback to all like dequeue_huge_page_vma() does?
+> 
+> Or we can user a policy API which return nodemask for MPOL_BIND and 
+> NULL for all other policies, like allowed_mems_nr() needs.
+> 
+> --- a/include/linux/mempolicy.h
+> +++ b/include/linux/mempolicy.h
+> @@ -158,6 +158,18 @@ static inline nodemask_t *policy_nodemask_current(gfp_t gfp)
+>  	return policy_nodemask(gfp, mpol);
+>  }
+>  
+> +#ifdef CONFIG_HUGETLB_FS
+> +static inline nodemask_t *strict_policy_nodemask_current(void)
+> +{
+> +	struct mempolicy *mpol = get_task_policy(current);
+> +
+> +	if (mpol->mode == MPOL_BIND)
+> +		return &mpol->nodes;
+> +
+> +	return NULL;
+> +}
+> +#endif
 
-On Wed, Aug 3, 2022 at 3:20 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> On Wed, 03 Aug 2022 05:27:27 +0100,
-> Huacai Chen <chenhuacai@loongson.cn> wrote:
-> >
-> > Check hwirq overflow when allocate irq in eiointc domain.
-> >
-> > Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-> > ---
-> >  drivers/irqchip/irq-loongson-eiointc.c | 7 +++++--
-> >  1 file changed, 5 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/irqchip/irq-loongson-eiointc.c b/drivers/irqchip/irq-loongson-eiointc.c
-> > index 80d8ca6f2d46..f8060e58ee06 100644
-> > --- a/drivers/irqchip/irq-loongson-eiointc.c
-> > +++ b/drivers/irqchip/irq-loongson-eiointc.c
-> > @@ -241,8 +241,11 @@ static int eiointc_domain_alloc(struct irq_domain *domain, unsigned int virq,
-> >       struct eiointc *priv = domain->host_data;
-> >
-> >       ret = irq_domain_translate_onecell(domain, arg, &hwirq, &type);
-> > -     if (ret)
-> > -             return ret;
-> > +     if (ret < 0)
-> > +             return -EINVAL;
-> > +
-> > +     if (hwirq >= IOCSR_EXTIOI_VECTOR_NUM)
-> > +             return -EINVAL;
->
-> How can this happen? Also, you're allocating a *range*. Surely the
-> upper boundary should matter too?
-Do you know the exact reason? Please give some information, thanks.
+Yes something like this, except that I would also move this into hugetlb
+proper because this doesn't seem generally useful.
+ 
+> > Wrt. allowed_mems_nr (i.e. hugetlb_acct_memory) this is a reservation
+> > code and I have to admit I do not really remember details there. This is
+> > a subtle code and my best guess would be that policy_nodemask_current
+> > should be hugetlb specific and only care about MPOL_BIND.
+> 
+> The API needed by allowed_mem_nr() is a little different as it has gfp
+> flag and cpuset config to consider.
 
->
-> And for the umpteenth time, please add a cover letter when sending
-> multiple patches. This is a hard requirement for me.
-OK, I will add a cover letter, even for simple fix patches. Sorry.
-
-Huacai
->
-> Thanks,
->
->         M.
->
-> --
-> Without deviation from the norm, progress is not possible.
+Why would gfp mask matter? 
+-- 
+Michal Hocko
+SUSE Labs
