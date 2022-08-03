@@ -2,154 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D17C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 12:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C805C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 12:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238049AbiHCMer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 08:34:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
+        id S238075AbiHCMfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 08:35:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235025AbiHCMeh (ORCPT
+        with ESMTP id S236217AbiHCMex (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 08:34:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3911CB0A;
-        Wed,  3 Aug 2022 05:34:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D030B8225D;
-        Wed,  3 Aug 2022 12:34:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C210DC433B5;
-        Wed,  3 Aug 2022 12:34:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659530073;
-        bh=cjlE0FBFyWe53Ldcvjg0DL1JexEytGR7NT8J4Bje9cc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=feZngJJTY0tNOTzjj8N2qtbNbFIcfLhpfgYzUNvQg9zG7X6Gdh/uGsNNJDrOJBWeG
-         n/q09Y68ifunJQPBxdHbde3WIipPnVO9KEpe88ey8vP5mdyYCKShJVR4GXMq6FqRy+
-         lC4MfMGTp1aTykXmSruXunqgQyasGkyTbtQqKFkWLSmFsMww4HGFkqmgaGslAVC/nv
-         wPa90AlEHY1l2vQ62S1jzXLUAzNcXoSbpzxVqjhuyvHSr1SrrkFDfqw8zvMyYUFt1a
-         FVPz9pNYjrLx/xA3+J89yvL0cYSUFN63oGciekd0y5Wi2QcFggFsfTOUFVvo7XmDbD
-         QNGfE78M+IxxA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1oJDaO-00028B-My; Wed, 03 Aug 2022 14:34:52 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 1/2] phy: qcom-qmp-combo: drop regulator loads
-Date:   Wed,  3 Aug 2022 14:33:31 +0200
-Message-Id: <20220803123332.8138-2-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220803123332.8138-1-johan+linaro@kernel.org>
-References: <20220803123332.8138-1-johan+linaro@kernel.org>
+        Wed, 3 Aug 2022 08:34:53 -0400
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6984E58B40
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 05:34:51 -0700 (PDT)
+Received: by mail-oi1-x22f.google.com with SMTP id n133so19824307oib.0
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 05:34:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=UWrNvVp7YUZj8MmbTig9VeiLZuSQe+hksBAGZfvUdBo=;
+        b=cm2gRhjRwXYwxYHmFwee7XBW4CLtFAV/S07uj1an18jQtRIxgH/xE/vLtH0QFUaHqD
+         w+SaMfXgygW/4faReaidGDU+znpMrNPAzjPDCJI5zoc0kftW1rGC5Rk4mwgMbJMYpxKB
+         7jX3JfvDSiO1jDWqqe7meCNyLRjmwUgbgkZTAMKStQCPhNjSvZjYccXZoEyTK9wGuS0+
+         9qRkhF618vXA6RYKQAp2obZ2F/Dc8aConacM9fnbPHfuTGPa4Ev4xXakycVCqZgWDJ3m
+         b/gprF5+J10t/8N4pW9HlsYpABaqF4xSDmbmn4Z4xPj41ypvQoLDHnZap1wCHwbrPr9l
+         /k5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=UWrNvVp7YUZj8MmbTig9VeiLZuSQe+hksBAGZfvUdBo=;
+        b=5qBdh3A+UGEhyZiElQn5GdioM9SdQQgLXlnz1WyODcX6wmAhyjPSwpKpycCq8AvuBG
+         ex2mV4UdEWvsdPv3JMCEk6cZA281KVm7rC8O/fZnQluKdUGpnILvKBf5t1fpvuhe40+v
+         D5SKtQ9lDxZ2O1vn6xUaPMSCqr+3aB6CEinDvXdC8ov20uJ/E34HIB92o4npheR8ldLW
+         Pz9YuURZ1HL1i4qT/wkdacp82ZaWkvoYTGcJROchnPjqtxGCOc6+DJTd8Mpl72SpCmlS
+         b7IvgUD1rYi0XLoQmOYK8lVblw5MG3oTsSJzWUVcLfJ5cIFhXss8BLw6b7hhDdnIDeLb
+         cWBg==
+X-Gm-Message-State: ACgBeo1ZhYV12eMtUujawaK1IKM3wbi32kHtYhxxk6+ST10f7Mzuku5h
+        TSkqyyMKKN0Cr+DwlZsjPI1Dgg==
+X-Google-Smtp-Source: AA6agR6kSpPZVxObp4lEc841dhz2wr+j2UZYAn4pNEJahO/BdOfBHzbHBe425OJvWYB2/g5z0QlgZA==
+X-Received: by 2002:a05:6808:2013:b0:33a:921b:33e6 with SMTP id q19-20020a056808201300b0033a921b33e6mr1532318oiw.1.1659530090701;
+        Wed, 03 Aug 2022 05:34:50 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id a24-20020a05683012d800b006339b36127dsm1420706otq.3.2022.08.03.05.34.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Aug 2022 05:34:50 -0700 (PDT)
+Message-ID: <a42bb5d5-4783-b755-5479-48c5bcdbbedd@linaro.org>
+Date:   Wed, 3 Aug 2022 07:34:49 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [greybus-dev] Re: [PATCH linux-next] staging: greybus:using the
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     cgel.zte@gmail.com, linux-kernel@vger.kernel.org,
+        greybus-dev@lists.linaro.org, ye xingchen <ye.xingchen@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220803062258.1650792-1-ye.xingchen@zte.com.cn>
+ <YuoWCSQCnNU3DrUL@kroah.com>
+ <81d363ba-82ef-d556-2d77-083e3b2d9d02@linaro.org>
+ <YupqXVa+RYm4Ul+m@kroah.com>
+From:   Alex Elder <elder@linaro.org>
+In-Reply-To: <YupqXVa+RYm4Ul+m@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drivers should not be specifying active-mode regulator loads unless
-supporting an idle mode where the load is reduced during runtime.
+On 8/3/22 7:30 AM, Greg KH wrote:
+>>
+>> Ye Xingchen had nothing to do with your receiving the message twice.
+> Ah, ok.  But they did send a number of patches like this while after I
+> had sent my first request to not do patches in this format anymore,
+> which is what caused my response here.
 
-This effectively reverts commit 85936d4f3815 ("phy: qcom-qmp: add
-regulator_set_load to dp phy").
+I didn't realize that.  That explains why your response was
+"Please follow researcher-guidelines.rst."  I didn't initially
+understand why it was that instead of something more directed
+at the content of the patch.
 
-Link: https://lore.kernel.org/r/YuPps+cvVAMugWmy@sirena.org.uk
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/phy/qualcomm/phy-qcom-qmp-combo.c | 40 +++++------------------
- 1 file changed, 9 insertions(+), 31 deletions(-)
+I *thought* it might be because "Zeal Robot" might be something
+new, and so considered experimental?
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
-index 4b1828976104..3663252622be 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
-@@ -607,17 +607,6 @@ static const struct qmp_phy_init_tbl qmp_v4_dp_tx_tbl[] = {
- };
- 
- 
--/* list of regulators */
--struct qmp_regulator_data {
--	const char *name;
--	unsigned int enable_load;
--};
--
--static struct qmp_regulator_data qmp_phy_vreg_l[] = {
--	{ .name = "vdda-phy", .enable_load = 21800 },
--	{ .name = "vdda-pll", .enable_load = 36000 },
--};
--
- struct qmp_phy;
- 
- /* struct qmp_phy_cfg - per-PHY initialization config */
-@@ -662,7 +651,7 @@ struct qmp_phy_cfg {
- 	const char * const *reset_list;
- 	int num_resets;
- 	/* regulators to be requested */
--	const struct qmp_regulator_data *vreg_list;
-+	const char * const *vreg_list;
- 	int num_vregs;
- 
- 	/* array of registers with different offsets */
-@@ -831,6 +820,11 @@ static const char * const sc7180_usb3phy_reset_l[] = {
- 	"phy",
- };
- 
-+/* list of regulators */
-+static const char * const qmp_phy_vreg_l[] = {
-+	"vdda-phy", "vdda-pll",
-+};
-+
- static const struct qmp_phy_cfg sc7180_usb3phy_cfg = {
- 	.type			= PHY_TYPE_USB3,
- 	.nlanes			= 1,
-@@ -1992,32 +1986,16 @@ static int qcom_qmp_phy_combo_vreg_init(struct device *dev, const struct qmp_phy
- {
- 	struct qcom_qmp *qmp = dev_get_drvdata(dev);
- 	int num = cfg->num_vregs;
--	int ret, i;
-+	int i;
- 
- 	qmp->vregs = devm_kcalloc(dev, num, sizeof(*qmp->vregs), GFP_KERNEL);
- 	if (!qmp->vregs)
- 		return -ENOMEM;
- 
- 	for (i = 0; i < num; i++)
--		qmp->vregs[i].supply = cfg->vreg_list[i].name;
-+		qmp->vregs[i].supply = cfg->vreg_list[i];
- 
--	ret = devm_regulator_bulk_get(dev, num, qmp->vregs);
--	if (ret) {
--		dev_err(dev, "failed at devm_regulator_bulk_get\n");
--		return ret;
--	}
--
--	for (i = 0; i < num; i++) {
--		ret = regulator_set_load(qmp->vregs[i].consumer,
--					cfg->vreg_list[i].enable_load);
--		if (ret) {
--			dev_err(dev, "failed to set load at %s\n",
--				qmp->vregs[i].supply);
--			return ret;
--		}
--	}
--
--	return 0;
-+	return devm_regulator_bulk_get(dev, num, qmp->vregs);
- }
- 
- static int qcom_qmp_phy_combo_reset_init(struct device *dev, const struct qmp_phy_cfg *cfg)
--- 
-2.35.1
+Anyway, I think we're clear now.  Thanks.
 
+					-Alex
