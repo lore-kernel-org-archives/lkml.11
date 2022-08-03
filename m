@@ -2,512 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 755FBC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:07:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F81FC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:10:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237634AbiHCNHs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 09:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33684 "EHLO
+        id S237655AbiHCNKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 09:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233605AbiHCNHq (ORCPT
+        with ESMTP id S233926AbiHCNKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 09:07:46 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEDFDDEA9
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 06:07:42 -0700 (PDT)
+        Wed, 3 Aug 2022 09:10:44 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D6F638D
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 06:10:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659532062; x=1691068062;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=sInqaiCAPb9MV1x88tn2JQMyYANVNkkXOIJIYp+SHE8=;
-  b=MAYsvTz8Wd8/S/S+ynG5O/4ypiSEazZNKlbJ4Nggg+p9x6e61HTCtWwO
-   8/0Cy854ukV6ODk45b/fNvY6PX6gP6NjNpkElSCZIdP4IBsDlfTmvwMwR
-   FiYrxrT/00lkC7iuuxCvE04XJD4smH4O8HPN63uFD4rG1Feo4nHfg3IDq
-   DL14zd7u1FceViDehzYeZNgedC66SKJSFBBDYrkn8p5KvBIbrKbx45wNC
-   TAvJy5ofGiCKg7+0IBgyX5yuj8S/ZAFO9JUWVtMHCvlauXObGYdbWs9SA
-   b8Wf50lsKdt1rgOHoV08CqJ6CdFwSfh7XvqiVy/msWIUUoLxBpO0o/ToS
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="375964956"
+  t=1659532244; x=1691068244;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=gvdfXIpDR9U0X3BkONhDfNxBY0dzFfmMfpLsESnTgKg=;
+  b=Oyy7mX5JHWaTgCYYt32qDe5QOn+uPJ/f+Cg68V3ee0Nm4mHrE5MwIc+4
+   dapTpZhtrvnTkJjDFU6kVMh2NvTFfJTha8sVdB83qwXajcRFcD4CqUd3Q
+   InnKK3jiPRn8CpoKmkL1Y25aJDd1BxOxpxD/ruoKfKVvja+n2+1ROJqRR
+   jRfGroSwIjdJ6+oZFUwOQBLp8p8tcn+buO7unoCE527c8u0cHZ2peoYRQ
+   RU+T3AihwhjbitHiT8o3eNr8PexFdt7RiW8pT0qJOhezpkmKQzVw8Epq6
+   /PPAjXJZDKBmjhOF+WG4gwStss+hkkHjvIXwy7NoBGt+IUliGeqFxRIcE
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="315527828"
 X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="375964956"
+   d="scan'208";a="315527828"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 06:07:42 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 06:10:43 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="631141805"
-Received: from smyang-mobl3.ccr.corp.intel.com (HELO [10.254.215.243]) ([10.254.215.243])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 06:07:37 -0700
-Message-ID: <3eb62531-fa1c-4c78-c1d2-526a3758a033@linux.intel.com>
-Date:   Wed, 3 Aug 2022 21:07:35 +0800
+   d="scan'208";a="631142976"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by orsmga008.jf.intel.com with ESMTP; 03 Aug 2022 06:10:43 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Wed, 3 Aug 2022 06:10:43 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28 via Frontend Transport; Wed, 3 Aug 2022 06:10:43 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.174)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.28; Wed, 3 Aug 2022 06:10:43 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jKs2sUDQC9g6nBWrTZCtzbESI/SvwboLNiuSsml+xZH5KywwB5OxXt+eDd8Kl7RaSWgVME4zWi/QR4PNjgl0ndEWdXVoX1I22oFxvf5VZ+APiFiHEHCTD9NJSFgK+zU5p29rJDe5OGe0ADWoAdLfbVkGJzhNWHRTbjsm7dXRg6LRI8q3Crv724nCuPlR3O7mNfD/BZ56XwfHZMN8RHVB0WvRSSkdbEnySOfUO0Sw4AQxRXjxhIu+Y4uaTPb5y2BVxFbdubbKSfMkRSAju9yEbo+CNFmI9ERDo0gMKEmgTgZA/MchR7dLXKCcKuWyLdT8IGZr+7RisPww+m+63slLEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rWa1jZj8UqnnARY85bdW3AgiUN1E0ILfUb3R2Bl6IrU=;
+ b=m4l7gCJjrmn0v814IN2xdn6nomZ/ATYe2LnvU4fZG3LPS54htvsFlDJihZpMeO4WXfRs+NDbqM+JG9CCK36Q+4n29NAldYasngB+MoOxecPnolk3Gx/8dcoKRNXZFSJXnRoDrXbrQxV4xm9phO6vMcD1dxxEsMS6HChGcU26AYwVBlxz7RsG7uDmBBn47Y1aEPOCR8k+sCJhtwnWkMmK7OWbz4ydVNOBVaJalSBh3R6d4HHgZo7eCDRivwPNtY8nk86KjlvyE8/8iHgR+zXW41tKZBAJCv+xgRJOn7TSvYj5pr7IcpFKIl71SF8yiJfhnJm/Y4ljQHXiBpqmKtIijg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MN0PR11MB6304.namprd11.prod.outlook.com (2603:10b6:208:3c0::7)
+ by PH0PR11MB5830.namprd11.prod.outlook.com (2603:10b6:510:129::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.11; Wed, 3 Aug
+ 2022 13:10:40 +0000
+Received: from MN0PR11MB6304.namprd11.prod.outlook.com
+ ([fe80::8525:4565:6b49:dc55]) by MN0PR11MB6304.namprd11.prod.outlook.com
+ ([fe80::8525:4565:6b49:dc55%6]) with mapi id 15.20.5458.024; Wed, 3 Aug 2022
+ 13:10:40 +0000
+Date:   Thu, 4 Aug 2022 05:08:34 +0800
+From:   Feng Tang <feng.tang@intel.com>
+To:     Michal Hocko <mhocko@suse.com>
+CC:     Muchun Song <songmuchun@bytedance.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "bwidawsk@kernel.org" <bwidawsk@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Subject: Re: [PATCH] mm: mempolicy: fix policy_nodemask() for
+ MPOL_PREFERRED_MANY case
+Message-ID: <Yurj0sOXgGf40AJE@feng-clx>
+References: <Yui7hWZYMX31ktOr@feng-skl>
+ <YujGy8EIeZc1Avc7@FVFYT0MHHV2J>
+ <YujUyCIBjFj+FzX5@feng-skl>
+ <YujoLQt09Js/sSQL@dhcp22.suse.cz>
+ <YuoYkPk+YzdPNvmN@feng-snb>
+ <YuolieBmdaIzoS3t@dhcp22.suse.cz>
+ <Yuqs+BTpfh9/PjtP@feng-clx>
+ <Yupb+1mmn9sQ/G8K@dhcp22.suse.cz>
+ <Yurd2iYp4XMIYM7T@feng-clx>
+ <YupwjN6K6e6V3y+Q@dhcp22.suse.cz>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <YupwjN6K6e6V3y+Q@dhcp22.suse.cz>
+X-ClientProxiedBy: SG2PR04CA0151.apcprd04.prod.outlook.com (2603:1096:4::13)
+ To MN0PR11MB6304.namprd11.prod.outlook.com (2603:10b6:208:3c0::7)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
- interface
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
- <20220705050710.2887204-5-baolu.lu@linux.intel.com>
- <20220723141118.GD79279@nvidia.com>
- <686b137f-232a-2a78-beb0-e4373bd20959@linux.intel.com>
- <20220725144005.GE3747@nvidia.com>
- <6da27a6b-b580-4ba4-24c8-ebdfb2d9345d@linux.intel.com>
- <20220726135722.GC4438@nvidia.com>
- <806b1437-441b-253b-7f52-ee7a7a9053e9@linux.intel.com>
- <Yukac8X81CP7gDsM@nvidia.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Yukac8X81CP7gDsM@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b96cafcb-75b2-4a88-062c-08da75519019
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5830:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fgnRpJq2YeeTSj1le2z6fsgzPvytS/2Dy0bZZ3TjRnw+CpM5ig8aMj19MH2zfCgnEJmCdzh0j8AaGHh6O534LUDCDeBiFzN66iiZci5IyUAfBOgq/jq4fKqi8pfAKNY0zuPjyQCmdBGsA//9XK5qtzyGHzF5x6x3Mn7cij6586Xv+KvqM0Ublvc3TKCTbRk98l0/ybx6nmwrcSlYTsrK/iJZJXm4WSZ2DiDmnvQDrn3wpb9KjUyhiKUPzLXSw0P1irdEnzNU1jy6rn9+tYrwA11++ulVmC3axVskfS0+G8OMSar9rGIJ44J+RzaWya8odwCjTRj5I6BG2HCLtfuNOF5ywPbSbph9RaVcxabBxdX94yl8M9AeRWMZ3OyEOP3ESGO6m4o4lZSo3JNv9f9htBvWd4yBh7dn7xIJOX717IoL/DklA8Bj/6yDmtbV5U1Ud7sPJNeY4JpggZX7l6nYRRjINuSsxBcS7W8xe/rWHJqIloBfdvfukCbHp++0r4oGP5o7xtwSDJSEIUi0KJgFLM4W5JhpRjSga+YMYVd7dzeLxXsCXncb4FvleKdxW2CeBJ1OzQzX0kAuMxAv0e1RQpvz2ouIAnreXyESHE0fCMW9Dd//MmvKMd2nIPKCL86XZyTfCmlkUA9wHYoqMn+fosZMWe3SGw0NeiJxNCN5X7WFYA7DLDyioJaq7qabA2DW1OqKTbyDij63xiedXod14XYoy02Qw0Tb03F4WMda4LVvgIgFTtTXRQRPHsGr48aq
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6304.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(396003)(376002)(346002)(136003)(366004)(39860400002)(6666004)(41300700001)(6506007)(26005)(9686003)(6512007)(33716001)(478600001)(316002)(6916009)(86362001)(82960400001)(54906003)(6486002)(38100700002)(4326008)(186003)(44832011)(2906002)(5660300002)(8676002)(8936002)(66476007)(66946007)(66556008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3Ys3Tb8R/GfgNyWjoa+i5qrTbMqu0q5/2DyU3oH+29aScY4uDvCjj9JpLE0b?=
+ =?us-ascii?Q?+SyhAkgrdzDZ85+K3fln1posxeH01Z+ombHuXoIXyLmCGS8S21pQGK0HVDAB?=
+ =?us-ascii?Q?ti4GDDDMdaiIh7GdXf3VZ8olMfCXgHkTNSMVwRt3n8Z9LylqHbH6boqD2v2f?=
+ =?us-ascii?Q?M+qZzC5PIWVierR00TvrAHwcQI4FZJhKeBfHn0pCWjuU6T23UKLPs0IQCrSY?=
+ =?us-ascii?Q?NMZ63OsKMEwhYHVQHh4DI/FHXcQEuUzwMSX1WOoM8/Ad+gvDNmWOfrxyO/RB?=
+ =?us-ascii?Q?f0zqhXUGTpE8y262wV0x2bYmuTbjhlJOTNtNu4DE/4EsEZNSFWIIv+Uz1A0V?=
+ =?us-ascii?Q?t6dlMo1J5YaaSlZmyyCnOaTBzCkNIm6sInaMCZdSYg7WZfFk5Lt0jbaGi7U2?=
+ =?us-ascii?Q?ANYJFH7VxWf/YTzJGMtPlcPMbSvU2IDZr1dAhtOXAx8MHXIOWbEKXCzVgWU+?=
+ =?us-ascii?Q?JwJKM/AazdIkNgwRNPwhDQLB4SMDCMF3HXxKlSpRKTdmakAkeMu2QjQ3+Nix?=
+ =?us-ascii?Q?hzYjxWkkYUPAY4t3zS2Yb5BrC+LDfmcDOqufJL4rSGsWjwC+Z4yfu94+wxA/?=
+ =?us-ascii?Q?MJDuz2c12wBydFNVcZsa6t0TlBSZSPGl7yh5V1IHEkuNas8AtQxTrhqqdKJF?=
+ =?us-ascii?Q?deDmoWz/6PuWsjzyuJgL7PFG956kszN0ky+7ZF+z+H+FpaQoI3MYnrPCM39U?=
+ =?us-ascii?Q?4vkEjehO9n9PVojDXFjcsKG7EXc8XXjIHxlvtfzk4bTIWachUIGg20MxEVC6?=
+ =?us-ascii?Q?zipNs0E4FEH+Mg/ZCO5n4GOT6xXVGavmQkzF+hmfygre7guahrR95cliCMy2?=
+ =?us-ascii?Q?roq70FBZYIRDTkf+Lisl/N3gPnr1vrPFqndXvuHtBp2bummrObrsVZl4XARY?=
+ =?us-ascii?Q?xeJpo7UD/AaY17Nndw9iZMssblqUe9J6NF4QaYXY+a3bIJEAvXYPPV463NYh?=
+ =?us-ascii?Q?8pn2yp5tnR2E1EY3o/09DMXb+nDjuguBeTtDZmvbgBVVOwEHFiV3wEnP3Afa?=
+ =?us-ascii?Q?jjY8APqb64dygTCFr9qxN/4aOIV+Bajb5iAi1xr7UQdh3rxTgmNbfCEpsnZh?=
+ =?us-ascii?Q?Ez3cn40ux7HRMmoZehnalqfnJTVUyxT1vGjs0mb9jdjbkeMliSCnTIfZBCk+?=
+ =?us-ascii?Q?qX7mYWvfzTv/KZPjX4T1mk6ovmulqiCkYsAxhsi8V3cRs63BchADtFd4iPFA?=
+ =?us-ascii?Q?SYYc54Pn9uQmAHLWl9UT8VK5sqdUPKaA8Jv26E6akb1UNdIyNmVttJ7CIgGf?=
+ =?us-ascii?Q?bweIXQY+GS6ZtIM7Jtes5Zpek6MOje64L+hZoGiD9vSOHrUUW+QQovBTBnBK?=
+ =?us-ascii?Q?f/MrZAmAFK9WyK3SIcvWKdJlOVzS/kARBWzMwXTZFN9ADiOAdunE5XNuNSt4?=
+ =?us-ascii?Q?bUtWhPZIn4EqWHtnEEAfeVKLIdrCMr+vh+rBmFbLCcEew5LvJmsXebHBPwSd?=
+ =?us-ascii?Q?n1bjj/wLlNoZwBHtJheQ0jAIJMbGmSv3/NlqZkHxfD9zeXofVhvAeKdDEIb7?=
+ =?us-ascii?Q?OvP8gfmmwCEkrt7QddYQ8tvqLAy/c6QLAMRwbmuAoJ6zpwuqFMOqayVb3OKQ?=
+ =?us-ascii?Q?edFYqWF3FqxDD5dxkmA7bHSN+qqUXUF16pcpKKCj?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: b96cafcb-75b2-4a88-062c-08da75519019
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6304.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2022 13:10:39.8893
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ROmWV9yCbCmC8jMQJm2IgjC2V37Pgs83VStUgy1xmHBPrVLeTumTG2HXQY5U+hgEpk6YIHCsUgc/vgBbHED+/A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5830
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/2 20:37, Jason Gunthorpe wrote:
-> On Tue, Aug 02, 2022 at 10:19:08AM +0800, Baolu Lu wrote:
->> Hi Jason,
->>
->> On 7/26/22 9:57 PM, Jason Gunthorpe wrote:
->>>> +	/*
->>>> +	 * Block PASID attachment in all cases where the PCI fabric is
->>>> +	 * routing based on address. ACS disables it.
->>>> +	 */
->>>> +	if (dev_is_pci(dev) &&
->>>> +	    !pci_acs_path_enabled(to_pci_dev(dev), NULL, REQ_ACS_FLAGS))
->>>> +		return -ENODEV;
->>> I would probably still put this in a function just to be clear, and
->>> probably even a PCI layer funcion 'pci_is_pasid_supported' that
->>> clearly indicates that the fabric path can route a PASID packet
->>> without mis-routing it.
->>
->> I am fine with putting above in a function to make it clear. But I am
->> hesitant to move this part of logic into the PCI layer.
->>
->>  From the perspective of IOMMU, TLPs with PASID prefix form distinct
->> address spaces, so it's reasonable to require ACS protection on the
->> upstream path.
->>
->> But PCI spec doesn't require this. The interfaces defined in drivers/pci
->> /ats.c should work as well even the IOMMU is disabled.
+On Wed, Aug 03, 2022 at 08:56:44PM +0800, Michal Hocko wrote:
+> On Thu 04-08-22 04:43:06, Feng Tang wrote:
+> > On Wed, Aug 03, 2022 at 07:28:59PM +0800, Michal Hocko wrote:
+> [...]
+> > > +struct mempolicy *policy_mbind_nodemask(gfp_t gfp)
+> > > +{
+> > > +#ifdef CONFIG_MEMPOLICY
+> > > +	struct mempolicy *mpol = get_task_policy(current);
+> > > +
+> > > +	/*
+> > > +	 * only enforce MBIND which overlaps with cpuset policy (from policy_nodemask)
+> > > +	 * specifically for hugetlb case
+> > > +	 */
+> > > +	if (mpol->mode == MPOL_BIND &&
+> > > +		(apply_policy_zone(mpol, gfp_zone(gfp)) &&
+> > > +		 cpuset_nodemask_valid_mems_allowed(&policy->nodes))
+> > > +		return &mpol->nodes;
+> > > +#endif
+> > > +	return NULL;
+> > 
+> > I saw the logic is not changed, and it confused me that if there is
+> > no qualified node, it will still return NULL which effectively equals
+> > node_states[N_MEMORY], while I think it should return a all zero
+> > nodemasks.
 > 
-> No, I don't think so, that is useless.
+> This is a separate thing and I have to admit that the existing code is
+> rather non-intuitive or even broken. I guess we do not care all that
+> much because MBIND with completely non-overlapping cpusets is just a
+> broken configuration. I am not sure this case is interesting or even
+> supported.
+
+Fair enough, and moving the policy_mbind_nodemask() into hugetlb.c for
+one single caller make it much less severe.
+
+Do we still need the other nodemask API I proposed earlier which has
+no parameter of gfp_flag, and used for __nr_hugepages_store_common?
+
+Thanks,
+Feng
+
+
+> -- 
+> Michal Hocko
+> SUSE Labs
 > 
-> PCI SIG has given a bunch of tools, and it is up to the system
-> software to figure out how to use them.
-> 
-> There is no reasonable case where Linux would want PASID and broken
-> fabric routing - so just block it at the PCI layer.
-
-Okay. I will follow. Thank you for the confirmation.
-
-> 
->> Yes, agreed. The iommu groups are not an issue any more. But just like
->> iommu_attach_device(), if multiple devices share a group, there must be
->> some mechanism to make sure that device drivers are aware of this fact
->> and only attach a shared domain to any PASID of those devices.'
->> Otherwise, the iommu_attach/detach_dev_pasid() might be misused.
-> 
-> I think it is the same as the existing attach logic for groups, with
-> the sharing, owern and everything else did. No change for pasid.
-
-Agreed. This is a complete scheme. I updated this patch accordingly. Can
-you please help to give it a quick review?
-
-[PATCH 04/12] iommu: Add attach/detach_dev_pasid iommu interfaces
-
-Attaching an IOMMU domain to a PASID of a device is a generic operation
-for modern IOMMU drivers which support PASID-granular DMA address
-translation. Currently visible usage scenarios include (but not limited):
-
-  - SVA (Shared Virtual Address)
-  - kernel DMA with PASID
-  - hardware-assist mediated device
-
-This adds set_dev_pasid domain ops for this purpose and also adds some
-interfaces for device drivers to attach/detach a domain to/from a PASID
-of a device.
-
-The device drivers should use below interfaces to claim the ownership of
-a device before attaching domain to it, and release the ownership after
-detaching the domain.
-
-int iommu_device_claim_pasid_owner(struct device *dev,
-			ioasid_t pasid, void *owner)
-void iommu_device_release_pasid_owner(struct device *dev,
-			ioasid_t pasid)
-
-After the ownership claimed successfully, the device drivers could use
-below interfaces for domain attaching and detaching. The owner token
-passed to iommu_attach_device_pasid() must match the one used to claim
-the ownership.
-
-int iommu_attach_device_pasid(struct iommu_domain *domain,
-			struct device *dev, ioasid_t pasid,
-                         void *owner)
-void iommu_detach_device_pasid(struct iommu_domain *domain,
-			struct device *dev, ioasid_t pasid)
-
-This also adds below interface to retrieve the domain that has been
-attached to a PASID of the device. This is only for uses in the IOMMU
-subsystem. For example, the I/O page fault handling framework could use
-it to get the domain from a {device, PASID} pair reported by hardware,
-and the IOMMU device drivers could use it to get the existing domain
-when a blocking domain is about to set.
-
-struct iommu_domain *ommu_get_domain_for_dev_pasid(struct device *dev,
-			ioasid_t pasid);
-
-[--tags skipped--]
----
-  drivers/iommu/iommu.c | 227 ++++++++++++++++++++++++++++++++++++++++++
-  include/linux/iommu.h |  36 +++++++
-  2 files changed, 263 insertions(+)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 63fc4317cb47..fd105441ca4d 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -39,6 +39,7 @@ struct iommu_group {
-  	struct kobject kobj;
-  	struct kobject *devices_kobj;
-  	struct list_head devices;
-+	struct xarray pasid_array;
-  	struct mutex mutex;
-  	void *iommu_data;
-  	void (*iommu_data_release)(void *iommu_data);
-@@ -58,6 +59,13 @@ struct group_device {
-  	char *name;
-  };
-
-+struct group_pasid {
-+	struct iommu_domain *domain;
-+	unsigned int attach_cnt;
-+	unsigned int owner_cnt;
-+	void *owner;
-+};
-+
-  struct iommu_group_attribute {
-  	struct attribute attr;
-  	ssize_t (*show)(struct iommu_group *group, char *buf);
-@@ -663,6 +671,7 @@ struct iommu_group *iommu_group_alloc(void)
-  	mutex_init(&group->mutex);
-  	INIT_LIST_HEAD(&group->devices);
-  	INIT_LIST_HEAD(&group->entry);
-+	xa_init(&group->pasid_array);
-
-  	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
-  	if (ret < 0) {
-@@ -3254,3 +3263,221 @@ bool iommu_group_dma_owner_claimed(struct 
-iommu_group *group)
-  	return user;
-  }
-  EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
-+
-+static int __iommu_attach_group_pasid(struct iommu_domain *domain,
-+				      struct iommu_group *group,
-+				      ioasid_t pasid)
-+{
-+	struct group_device *device;
-+	int ret = 0;
-+
-+	if (!domain->ops->set_dev_pasid)
-+		return -EOPNOTSUPP;
-+
-+	list_for_each_entry(device, &group->devices, list) {
-+		ret = domain->ops->set_dev_pasid(domain, device->dev, pasid);
-+		if (ret)
-+			break;
-+	}
-+
-+	return ret;
-+}
-+
-+/**
-+ * iommu_device_claim_pasid_owner() - Set ownership of a pasid on device
-+ * @dev: the device.
-+ * @pasid: the pasid of the device.
-+ * @owner: caller specified pointer. Used for exclusive ownership.
-+ *
-+ * Return 0 if it is allowed, otherwise an error.
-+ */
-+int iommu_device_claim_pasid_owner(struct device *dev, ioasid_t pasid, 
-void *owner)
-+{
-+	struct iommu_group *group = iommu_group_get(dev);
-+	struct group_pasid *group_pasid;
-+	void *curr;
-+	int ret;
-+
-+	if (!group)
-+		return -ENODEV;
-+
-+	mutex_lock(&group->mutex);
-+	group_pasid = xa_load(&group->pasid_array, pasid);
-+	if (group_pasid) {
-+		if (group_pasid->owner != owner) {
-+			ret = -EBUSY;
-+			goto err_unlock;
-+		}
-+		group_pasid->owner_cnt++;
-+		goto out;
-+	}
-+
-+	group_pasid = kzalloc(sizeof(*group_pasid), GFP_KERNEL);
-+	if (!group_pasid) {
-+		ret = -ENOMEM;
-+		goto err_unlock;
-+	}
-+
-+	group_pasid->owner = owner;
-+	group_pasid->owner_cnt = 1;
-+	curr = xa_store(&group->pasid_array, pasid, group_pasid, GFP_KERNEL);
-+	if (curr) {
-+		ret = xa_err(curr) ? : -EBUSY;
-+		goto err_free;
-+	}
-+out:
-+	mutex_unlock(&group->mutex);
-+	iommu_group_put(group);
-+
-+	return 0;
-+
-+err_free:
-+	kfree(group_pasid);
-+err_unlock:
-+	mutex_unlock(&group->mutex);
-+	iommu_group_put(group);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_device_claim_pasid_owner);
-+
-+/**
-+ * iommu_device_release_pasid_owner() - Release ownership of a pasid on 
-device
-+ * @group: The group.
-+ *
-+ * Release the pasid ownership claimed by iommu_device_claim_pasid_owner().
-+ */
-+void iommu_device_release_pasid_owner(struct device *dev, ioasid_t pasid)
-+{
-+	struct iommu_group *group = iommu_group_get(dev);
-+	struct group_pasid *group_pasid;
-+
-+	mutex_lock(&group->mutex);
-+	group_pasid = xa_load(&group->pasid_array, pasid);
-+	if (WARN_ON(!group_pasid))
-+		goto unlock_out;
-+
-+	if (--group_pasid->owner_cnt == 0) {
-+		if (WARN_ON(group_pasid->attach_cnt))
-+			goto unlock_out;
-+		xa_erase(&group->pasid_array, pasid);
-+		kfree(group_pasid);
-+	}
-+
-+unlock_out:
-+	mutex_unlock(&group->mutex);
-+	iommu_group_put(group);
-+}
-+EXPORT_SYMBOL_GPL(iommu_device_release_pasid_owner);
-+
-+/**
-+ * iommu_attach_device_pasid() - Attach a domain to pasid of device
-+ * @domain: the iommu domain.
-+ * @dev: the attached device.
-+ * @pasid: the pasid of the device.
-+ * @owner: the ownership token.
-+ *
-+ * Return: 0 on success, or an error.
-+ */
-+int iommu_attach_device_pasid(struct iommu_domain *domain,
-+			      struct device *dev, ioasid_t pasid,
-+			      void *owner)
-+{
-+	struct iommu_group *group = iommu_group_get(dev);
-+	struct group_pasid *group_pasid;
-+	int ret = 0;
-+
-+	if (!group)
-+		return -ENODEV;
-+
-+	mutex_lock(&group->mutex);
-+	group_pasid = xa_load(&group->pasid_array, pasid);
-+	if (!group_pasid || group_pasid->owner != owner) {
-+		ret = -EPERM;
-+		goto unlock_out;
-+	}
-+
-+	if (group_pasid->domain && group_pasid->domain != domain) {
-+		ret = -EBUSY;
-+		goto unlock_out;
-+	}
-+
-+	if (!group_pasid->attach_cnt) {
-+		ret = __iommu_attach_group_pasid(domain, group, pasid);
-+		if (ret)
-+			__iommu_attach_group_pasid(group->blocking_domain,
-+						   group, pasid);
-+	}
-+
-+	if (!ret)
-+		group_pasid->attach_cnt++;
-+
-+unlock_out:
-+	mutex_unlock(&group->mutex);
-+	iommu_group_put(group);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
-+
-+/**
-+ * iommu_detach_device_pasid() - Detach the domain from pasid of device
-+ * @domain: the iommu domain.
-+ * @dev: the attached device.
-+ * @pasid: the pasid of the device.
-+ *
-+ * The @domain must have been attached to @pasid of the @dev with
-+ * iommu_detach_device_pasid().
-+ */
-+void iommu_detach_device_pasid(struct iommu_domain *domain, struct 
-device *dev,
-+			       ioasid_t pasid)
-+{
-+	struct iommu_group *group = iommu_group_get(dev);
-+	struct group_pasid *group_pasid;
-+
-+	mutex_lock(&group->mutex);
-+	group_pasid = xa_load(&group->pasid_array, pasid);
-+	if (!WARN_ON(!group_pasid || group_pasid->domain != domain) &&
-+	    --group_pasid->attach_cnt == 0) {
-+		__iommu_attach_group_pasid(group->blocking_domain, group, pasid);
-+		group_pasid->domain = NULL;
-+	}
-+	mutex_unlock(&group->mutex);
-+
-+	iommu_group_put(group);
-+}
-+EXPORT_SYMBOL_GPL(iommu_detach_device_pasid);
-+
-+/**
-+ * iommu_get_domain_for_dev_pasid() - Retrieve domain for @pasid of @dev
-+ * @dev: the queried device
-+ * @pasid: the pasid of the device
-+ *
-+ * This is a variant of iommu_get_domain_for_dev(). It returns the existing
-+ * domain attached to pasid of a device. It's only for internal use of the
-+ * IOMMU subsystem. The caller must take care to avoid any possible
-+ * use-after-free case.
-+ *
-+ * Return: attached domain on success, NULL otherwise.
-+ */
-+struct iommu_domain *
-+iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
-+{
-+	struct group_pasid *group_pasid;
-+	struct iommu_group *group;
-+
-+	if (!pasid_valid(pasid))
-+		return NULL;
-+
-+	group = iommu_group_get(dev);
-+	if (!group)
-+		return NULL;
-+	/*
-+	 * The xarray protects its internal state with RCU. Hence the domain
-+	 * obtained is either NULL or fully formed.
-+	 */
-+	group_pasid = xa_load(&group->pasid_array, pasid);
-+	iommu_group_put(group);
-+
-+	return group_pasid ? group_pasid->domain : NULL;
-+}
-+EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev_pasid);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 2f237c3cd680..437980c54bb6 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -266,6 +266,7 @@ struct iommu_ops {
-   * struct iommu_domain_ops - domain specific operations
-   * @attach_dev: attach an iommu domain to a device
-   * @detach_dev: detach an iommu domain from a device
-+ * @set_dev_pasid: set an iommu domain to a pasid of device
-   * @map: map a physically contiguous memory region to an iommu domain
-   * @map_pages: map a physically contiguous set of pages of the same 
-size to
-   *             an iommu domain.
-@@ -286,6 +287,8 @@ struct iommu_ops {
-  struct iommu_domain_ops {
-  	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
-  	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
-+	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
-+			     ioasid_t pasid);
-
-  	int (*map)(struct iommu_domain *domain, unsigned long iova,
-  		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
-@@ -680,6 +683,16 @@ int iommu_group_claim_dma_owner(struct iommu_group 
-*group, void *owner);
-  void iommu_group_release_dma_owner(struct iommu_group *group);
-  bool iommu_group_dma_owner_claimed(struct iommu_group *group);
-
-+int iommu_device_claim_pasid_owner(struct device *dev,
-+				   ioasid_t pasid, void *owner);
-+void iommu_device_release_pasid_owner(struct device *dev, ioasid_t pasid);
-+int iommu_attach_device_pasid(struct iommu_domain *domain,
-+			      struct device *dev, ioasid_t pasid,
-+			      void *owner);
-+void iommu_detach_device_pasid(struct iommu_domain *domain,
-+			       struct device *dev, ioasid_t pasid);
-+struct iommu_domain *
-+iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid);
-  #else /* CONFIG_IOMMU_API */
-
-  struct iommu_ops {};
-@@ -1047,6 +1060,29 @@ static inline bool 
-iommu_group_dma_owner_claimed(struct iommu_group *group)
-  {
-  	return false;
-  }
-+
-+static inline int
-+iommu_device_claim_pasid_owner(struct device *dev, ioasid_t pasid, void 
-*owner)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline void
-+iommu_device_release_pasid_owner(struct device *dev, ioasid_t pasid)
-+{
-+}
-+
-+static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
-+					    struct device *dev, ioasid_t pasid,
-+					    void *owner)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline void iommu_detach_device_pasid(struct iommu_domain *domain,
-+					     struct device *dev, ioasid_t pasid)
-+{
-+}
-  #endif /* CONFIG_IOMMU_API */
-
-Best regards,
-baolu
