@@ -2,195 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70974C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 04:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF2C6C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 04:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235306AbiHCEM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 00:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45660 "EHLO
+        id S235490AbiHCENG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 00:13:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235340AbiHCEMv (ORCPT
+        with ESMTP id S235372AbiHCENC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 00:12:51 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE0327169
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 21:12:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659499970; x=1691035970;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=9oX+onP7ht9HH5c0vbwg203y/Tb7RxzqJrlpcQeSffE=;
-  b=hvNjgwFWQ4t8bQzF8srAIQTDyqNot1pGhRoOh7vMNCPGGBd3t1P4uzqr
-   Hd8LHrgUy2cqlOdGCXEQoqGAJvtVsX2PdpgGLZZWim4Xqv9li73MZwzWM
-   nYuZHwa0zZGeUqf/h1ocwZp3wz3Jbf25el2iGiCFmGncvUsd/xZKuuJ5b
-   uCLpwjGpsgRAYjF8yCWT7nbcH0iEW8iljCzeizQp9HyiewLYs6PSh9GRW
-   QhlHszFrTlvE5CYWlrR8rDVmVZzxuHs4dGNd5eMNpoNUjURT5pXUNDpsR
-   6lZUnonRGXQuppSgkFVLNpsMOYxqqHRYNhiSqSo9uU363dYxdMIETGmyA
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="288333949"
-X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
-   d="scan'208";a="288333949"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 21:12:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
-   d="scan'208";a="930230395"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 02 Aug 2022 21:12:48 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJ5kV-000Go9-2h;
-        Wed, 03 Aug 2022 04:12:47 +0000
-Date:   Wed, 3 Aug 2022 12:11:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dongjin Kim <tobetter@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [tobetter:odroid-5.19.y 51/99] drivers/gpu/drm/drm_mipi_dbi.c:77:17:
- warning: unused variable 'mipi_dbi_dcs_read_commands'
-Message-ID: <202208031219.1wtTDs54-lkp@intel.com>
+        Wed, 3 Aug 2022 00:13:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7905447BBA
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 21:13:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8F54612E4
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 04:13:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19AF5C43146;
+        Wed,  3 Aug 2022 04:12:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659499980;
+        bh=SvGVzKWmN4GNKfHbAT3CERRiu9R0YWc3B8gflnIPfHU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=f9d7KlCnmhT7qVAJeF11oTWRdQ64p9A1jSsyrBK45/leTqLucMqUGv76VEtl0omy4
+         Rt6kPrNz7IAnU1pCnfJjR0f6aAMu5lscHu/qPTYpCbtE4MUBnWE/7BurFEqRzb/xi8
+         xJimgQSUTM7n3hPzFOuQccNrLWrXaWMu8ygEkMgNxcLKJzRUpcI+f/6yoP8DRzF1Wc
+         alTgIWr1WMEQ7Mwju1x6Y8pdLJ79DHiB6v2itTatCvk19r2XloTB3yUP4aMO7aE1O5
+         cpDVzMfCzsz4Pz8vrLw7y0tKZY4b8IuF56mzztz62QaZYgoHvFp1HQr0aOEII1sIfK
+         RnNHZmAL8gu7w==
+Date:   Wed, 3 Aug 2022 04:12:56 +0000
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     torvalds@linux-foundation.org
+Cc:     pmalani@chromium.org, bleung@chromium.org, groeck@chromium.org,
+        tzungbi@kernel.org, linux-kernel@vger.kernel.org,
+        chrome-platform@lists.linux.dev
+Subject: [GIT PULL] chrome-platform changes for v5.20
+Message-ID: <Yun1yFEsqpF59Tdy@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="uoQWHsGDqpU1z+Ga"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dongjin,
 
-First bad commit (maybe != root cause):
+--uoQWHsGDqpU1z+Ga
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-tree:   https://github.com/tobetter/linux odroid-5.19.y
-head:   7df5baf82efb498c71096e60e58d2bba6f4fb0e1
-commit: 909850898b8e826a9df13be97cf03b0d01cf4b1b [51/99] ODROID-COMMON: gpu/drm: Add new Tiny DRM driver with Ili9488
-config: s390-randconfig-c005-20220802 (https://download.01.org/0day-ci/archive/20220803/202208031219.1wtTDs54-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://github.com/tobetter/linux/commit/909850898b8e826a9df13be97cf03b0d01cf4b1b
-        git remote add tobetter https://github.com/tobetter/linux
-        git fetch --no-tags tobetter odroid-5.19.y
-        git checkout 909850898b8e826a9df13be97cf03b0d01cf4b1b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/gpu/drm/
+Linus,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Please pull chrome-platform updates for v5.20.
 
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/gpu/drm/drm_mipi_dbi.c:13:
-   In file included from include/linux/spi/spi.h:15:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
-                                                             ^
-   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
-   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
-                                                        ^
-   In file included from drivers/gpu/drm/drm_mipi_dbi.c:13:
-   In file included from include/linux/spi/spi.h:15:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
-   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
-                                                        ^
-   In file included from drivers/gpu/drm/drm_mipi_dbi.c:13:
-   In file included from include/linux/spi/spi.h:15:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsb(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsw(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsl(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesb(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesw(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesl(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
->> drivers/gpu/drm/drm_mipi_dbi.c:77:17: warning: unused variable 'mipi_dbi_dcs_read_commands' [-Wunused-const-variable]
-   static const u8 mipi_dbi_dcs_read_commands[] = {
-                   ^
-   13 warnings generated.
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for DRM_DP_AUX_BUS
-   Depends on [n]: HAS_IOMEM [=y] && DRM [=y] && OF [=n]
-   Selected by [y]:
-   - DRM_MSM [=y] && HAS_IOMEM [=y] && DRM [=y] && (ARCH_QCOM || SOC_IMX5 || COMPILE_TEST [=y]) && COMMON_CLK [=y] && IOMMU_SUPPORT [=y] && (QCOM_OCMEM [=n] || QCOM_OCMEM [=n]=n) && (QCOM_LLCC [=y] || QCOM_LLCC [=y]=n) && (QCOM_COMMAND_DB [=n] || QCOM_COMMAND_DB [=n]=n)
+Thanks,
+TzungBi
 
 
-vim +/mipi_dbi_dcs_read_commands +77 drivers/gpu/drm/drm_mipi_dbi.c
+The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
 
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   76  
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22  @77  static const u8 mipi_dbi_dcs_read_commands[] = {
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   78  	MIPI_DCS_GET_DISPLAY_ID,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   79  	MIPI_DCS_GET_RED_CHANNEL,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   80  	MIPI_DCS_GET_GREEN_CHANNEL,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   81  	MIPI_DCS_GET_BLUE_CHANNEL,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   82  	MIPI_DCS_GET_DISPLAY_STATUS,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   83  	MIPI_DCS_GET_POWER_MODE,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   84  	MIPI_DCS_GET_ADDRESS_MODE,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   85  	MIPI_DCS_GET_PIXEL_FORMAT,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   86  	MIPI_DCS_GET_DISPLAY_MODE,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   87  	MIPI_DCS_GET_SIGNAL_MODE,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   88  	MIPI_DCS_GET_DIAGNOSTIC_RESULT,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   89  	MIPI_DCS_READ_MEMORY_START,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   90  	MIPI_DCS_READ_MEMORY_CONTINUE,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   91  	MIPI_DCS_GET_SCANLINE,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   92  	MIPI_DCS_GET_DISPLAY_BRIGHTNESS,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   93  	MIPI_DCS_GET_CONTROL_DISPLAY,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   94  	MIPI_DCS_GET_POWER_SAVE,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   95  	MIPI_DCS_GET_CABC_MIN_BRIGHTNESS,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   96  	MIPI_DCS_READ_DDB_START,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   97  	MIPI_DCS_READ_DDB_CONTINUE,
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   98  	0, /* sentinel */
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22   99  };
-02dd95fe3169362 drivers/gpu/drm/tinydrm/mipi-dbi.c Noralf Trønnes 2017-01-22  100  
+  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
 
-:::::: The code at line 77 was first introduced by commit
-:::::: 02dd95fe316936269a52d6ccb971bb956412b40a drm/tinydrm: Add MIPI DBI support
+are available in the Git repository at:
 
-:::::: TO: Noralf Trønnes <noralf@tronnes.org>
-:::::: CC: Noralf Trønnes <noralf@tronnes.org>
+  git://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git/ =
+tags/tag-chrome-platform-for-v5.20
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+for you to fetch changes up to afef1e1a0223623d063a6df51dbc342c9517b948:
+
+  platform/chrome: cros_kunit_util: add default value for `msg->result` (20=
+22-07-21 08:49:28 +0000)
+
+----------------------------------------------------------------
+chrome platform changes for 5.20
+
+cros_ec_proto:
+* Leverage Kunit and add Kunit test cases.
+* Clean-ups.
+* Fix typo.
+
+cros_ec_commands:
+* Fix typo.
+* Fix compile errors.
+
+cros_kbd_led_backlight:
+* Support OF match.
+* Support EC PWM backend.
+
+cros_ec:
+* Always expose the last resume result to fix sleep hang detection on
+  ARM-based chromebooks.
+
+wilco_ec:
+* Fix typo.
+
+cros_ec_typec:
+* Clean-ups.
+* Use Type-C framework utilities to manage altmode structs.
+
+----------------------------------------------------------------
+Colin Ian King (1):
+      platform/chrome: cros_ec_proto: Fix spelling mistake "unknwon" -> "un=
+known"
+
+Jiang Jian (1):
+      platform/chrome: wilco_ec: event: Fix typo in comment
+
+N=EDcolas F. R. A. Prado (1):
+      platform/chrome: cros_ec_typec: Use dev_err_probe on port register fa=
+il
+
+Prashant Malani (5):
+      regulator: cros-ec: Use common cros_ec_command()
+      platform/chrome: cros_ec_proto: Rename cros_ec_command function
+      platform/chrome: cros_ec_proto: Update size arg types
+      platform/chrome: cros_ec_typec: Rename port altmode array
+      platform/chrome: cros_ec_typec: Register port altmodes
+
+Stephen Boyd (1):
+      platform/chrome: cros_ec: Always expose last resume result
+
+Tzung-Bi Shih (49):
+      platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_prepare_t=
+x()
+      platform/chrome: cros_ec_proto: factor legacy out from cros_ec_prepar=
+e_tx()
+      platform/chrome: cros_ec_proto: update cros_ec_check_result() comment
+      platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_check_res=
+ult()
+      platform/chrome: cros_kbd_led_backlight: sort headers alphabetically
+      platform/chrome: cros_kbd_led_backlight: separate ACPI backend
+      dt-bindings: add google,cros-kbd-led-backlight
+      platform/chrome: cros_kbd_led_backlight: support OF match
+      platform/chrome: cros_kbd_led_backlight: support EC PWM backend
+      platform/chrome: cros_ec_commands: fix compile errors
+      platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_query_all=
+()
+      platform/chrome: use macros for passthru indexes
+      platform/chrome: cros_ec_proto: assign buffer size from protocol info
+      platform/chrome: cros_ec_proto: remove redundant NULL check
+      platform/chrome: cros_ec_proto: use cros_ec_map_error()
+      platform/chrome: cros_ec_proto: separate cros_ec_get_proto_info()
+      platform/chrome: cros_ec_proto: add Kunit tests for getting proto info
+      platform/chrome: cros_ec_proto: handle empty payload in getting proto=
+ info
+      platform/chrome: cros_ec_proto: separate cros_ec_get_proto_info_legac=
+y()
+      platform/chrome: cros_ec_proto: add Kunit test for getting legacy info
+      platform/chrome: cros_ec_proto: handle empty payload in getting info =
+legacy
+      platform/chrome: cros_ec_proto: don't show MKBP version if unsupported
+      platform/chrome: cros_ec_proto: return 0 on getting cmd mask success
+      platform/chrome: cros_ec_proto: add Kunit test for getting cmd mask e=
+rror
+      platform/chrome: cros_ec_proto: check `msg->result` in getting cmd ma=
+sk
+      platform/chrome: cros_ec_proto: add Kunit tests for getting cmd mask
+      platform/chrome: cros_ec_proto: handle empty payload in getting cmd m=
+ask
+      platform/chrome: cros_ec_proto: return 0 on getting wake mask success
+      platform/chrome: cros_ec_proto: add Kunit test for getting wake mask
+      platform/chrome: cros_ec_proto: handle empty payload in getting wake =
+mask
+      platform/chrome: cros_ec_proto: add "cros_ec_" prefix to send_command=
+()
+      platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_cmd_xfer()
+      platform/chrome: cros_ec_proto: add Kunit tests for cros_ec_send_comm=
+and()
+      platform/chrome: cros_ec_proto: separate cros_ec_xfer_command()
+      platform/chrome: cros_ec_proto: separate cros_ec_wait_until_complete()
+      platform/chrome: cros_ec_proto: change Kunit expectation when timed o=
+ut
+      platform/chrome: cros_ec_proto: return -EAGAIN when retries timed out
+      platform/chrome: cros_ec_proto: add Kunit test for empty payload
+      platform/chrome: cros_ec_proto: return -EPROTO if empty payload
+      platform/chrome: cros_ec_proto: add Kunit tests for cmd_xfer_status
+      platform/chrome: cros_ec_proto: add Kunit test for cros_ec_map_error()
+      platform/chrome: cros_ec_proto: add Kunit tests for get_next_event
+      platform/chrome: cros_ec_proto: add Kunit tests for get_host_event
+      platform/chrome: cros_ec_proto: add Kunit tests for check_features
+      platform/chrome: cros_ec_proto: add Kunit tests for get_sensor_count
+      platform/chrome: cros_ec_proto: add Kunit test for cros_ec_cmd()
+      platform/chrome: cros_kbd_led_backlight: fix build warning
+      platform/chrome: merge Kunit utils and test cases
+      platform/chrome: cros_kunit_util: add default value for `msg->result`
+
+Xiang wangx (1):
+      platform/chrome: cros_ec_commands: Fix syntax errors in comments
+
+ .../chrome/google,cros-kbd-led-backlight.yaml      |   35 +
+ .../devicetree/bindings/mfd/google,cros-ec.yaml    |    3 +
+ drivers/mfd/cros_ec_dev.c                          |    4 +-
+ drivers/platform/chrome/Kconfig                    |   11 +-
+ drivers/platform/chrome/Makefile                   |    5 +
+ drivers/platform/chrome/cros_ec.c                  |   11 +-
+ drivers/platform/chrome/cros_ec_proto.c            |  473 ++--
+ drivers/platform/chrome/cros_ec_proto_test.c       | 2753 ++++++++++++++++=
+++++
+ drivers/platform/chrome/cros_ec_trace.h            |    8 +-
+ drivers/platform/chrome/cros_ec_typec.c            |   93 +-
+ drivers/platform/chrome/cros_kbd_led_backlight.c   |  196 +-
+ drivers/platform/chrome/cros_kunit_util.c          |  130 +
+ drivers/platform/chrome/cros_kunit_util.h          |   48 +
+ drivers/platform/chrome/cros_usbpd_notify.c        |    4 +-
+ drivers/platform/chrome/wilco_ec/event.c           |    2 +-
+ drivers/regulator/cros-ec-regulator.c              |   36 +-
+ include/linux/platform_data/cros_ec_commands.h     |    6 +-
+ include/linux/platform_data/cros_ec_proto.h        |    7 +-
+ 18 files changed, 3490 insertions(+), 335 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/chrome/google,cros-kb=
+d-led-backlight.yaml
+ create mode 100644 drivers/platform/chrome/cros_ec_proto_test.c
+ create mode 100644 drivers/platform/chrome/cros_kunit_util.c
+ create mode 100644 drivers/platform/chrome/cros_kunit_util.h
+
+--uoQWHsGDqpU1z+Ga
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQS0yQeDP3cjLyifNRUrxTEGBto89AUCYun1xQAKCRArxTEGBto8
+9HxeAP4rAbwrEjg4ZzNyPLHRqMygr08vOw25SrkwfI0kqDMcuQEAmy+WVD1oHb+a
+ob3Q6ZDs4gBTGu6PVFc/errsBN8M6Qk=
+=xFyU
+-----END PGP SIGNATURE-----
+
+--uoQWHsGDqpU1z+Ga--
