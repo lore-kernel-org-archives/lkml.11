@@ -2,171 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC0AEC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 04:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58908C19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 04:44:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235786AbiHCEhO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 00:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60038 "EHLO
+        id S234210AbiHCEoL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 00:44:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiHCEhL (ORCPT
+        with ESMTP id S229457AbiHCEoJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 00:37:11 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 53A395467B;
-        Tue,  2 Aug 2022 21:37:10 -0700 (PDT)
-Received: by linux.microsoft.com (Postfix, from userid 1127)
-        id 0565520FFC0C; Tue,  2 Aug 2022 21:37:10 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0565520FFC0C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1659501430;
-        bh=aGFADYTmhfG3G/nJc1EU3o6+heuDU6xMfrYwIst6ego=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gOeW3fl49V+aGkpBFee5/bhUVVHJSX4+034spdXmC4DqX6J1l6qFfEdd1f2q98zvR
-         Yr76dKo8cooAPN6qlCidReDpiQcmoqPLBXuJzZU+84ePQb9tGYdZnUoIyaE5Pn/tQy
-         he/DTnIOzmApIFQwgJFeqAwmS3AJPlF15f5ZpAnk=
-Date:   Tue, 2 Aug 2022 21:37:09 -0700
-From:   Saurabh Singh Sengar <ssengar@linux.microsoft.com>
-To:     Praveen Kumar <kumarpraveen@linux.microsoft.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: Re: [PATCH] Drivers: hv: vmbus: Optimize vmbus_on_event
-Message-ID: <20220803043709.GA26795@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
-References: <1658741848-4210-1-git-send-email-ssengar@linux.microsoft.com>
- <33983fa2-c9a8-1ac1-2f75-8360a077cfc2@linux.microsoft.com>
+        Wed, 3 Aug 2022 00:44:09 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDB231377;
+        Tue,  2 Aug 2022 21:44:07 -0700 (PDT)
+Received: from [192.168.43.224] (92.40.178.41.threembb.co.uk [92.40.178.41])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: gtucker)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 544F76601B45;
+        Wed,  3 Aug 2022 05:44:05 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1659501845;
+        bh=7yGjpM0HgyH1Sv1LbDc+Kr8ogiOCMctPl1YxkMRebl0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=TPf1Y9FH1Nbix3eA+tAq+62JUvC/jvDXV+65YgYFVJZp+vEJVhAEsmGbU2BLxOtut
+         mW2sJjAot/PTOW3P2mZI8bZ9gFN/JuP5mLuAusw2RAPty7pNHtU/k8siKIZQYOlNb/
+         0XgL5c5VADYtEYNYIfo24/NmnZmyFzYPXuCe+TOAuR+Kf5iZ5rRURghlfth9r4iDF3
+         MbTWTGNhj27cmg83jfkdTTR/mm/mAoz4gWichyBFDIM9p6wXjkEE8CuX4i5CiFmH3p
+         JWwQn4XySe3inmwSaMjsk3YvcNBtlCAjbsTSVolzCUD6qjNewl16Rxu1lMxNTibA52
+         j5ShCAFIAH47g==
+Message-ID: <fa7fb9b3-169a-199f-22da-006777a14e03@collabora.com>
+Date:   Wed, 3 Aug 2022 06:44:06 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <33983fa2-c9a8-1ac1-2f75-8360a077cfc2@linux.microsoft.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [GIT PULL] Kselftest update for Linux 5.20-rc1
+Content-Language: en-US
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        =?UTF-8?B?TWlja2HDq2wgU2FsYcO8?= =?UTF-8?Q?n?= <mic@digikod.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-security-module <linux-security-module@vger.kernel.org>
+References: <430ef132-2ac7-e1be-68ed-3d9c27382143@linuxfoundation.org>
+ <2838c247-0648-3828-efb3-e11d7a0616b2@digikod.net>
+ <84560b65-12ed-da24-3698-45484f80802a@linuxfoundation.org>
+From:   Guillaume Tucker <guillaume.tucker@collabora.com>
+In-Reply-To: <84560b65-12ed-da24-3698-45484f80802a@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for your review, please find my comment inline.
+On 02/08/2022 15:29, Shuah Khan wrote:
+> On 8/2/22 3:51 AM, Mickaël Salaün wrote:
+>> Hi,
+>>
+>> This change breaks the Landlock test build when performed on the tools/testing/selftests/landlock directory because the (non-system/up-to-date) kernel headers aren't found. Looking at the use of top_srcdir and HDR_PATH, it seems that multiple subsystems are using this feature. I consider this change a regression.
+>>
+> 
+> I did a build test from the top level before sending the pull request
+> and didn't catch this breakage as a result. This breaks when build is
+> run from the test directory.
+> 
+> We have had several problems related to khdr_dir and target and decided
+> to move away from it with this change.
+> 
+>> It also removes the check on up-to-date kernel headers (thanks to the Makefile's target timestamp).
+>>
+>> I wasn't CCed for this change impacting Landlock [1]. Please keep in mind to add at least maintainers and related mailing-lists for changes on related subsystems.
+>>
+> 
+> That is the usual practice and if I notice missing maintainers, I add
+> them. We missed this one.
+> 
+>> The following patch almost revert commit a917dd94b832 ("selftests/landlock: drop deprecated headers dependency") and partially fixes commit 49de12ba06ef ("selftests: drop KSFT_KHDR_INSTALL make target"):
+>>
+> 
+> Guillaume,
+> 
+> Will you be able to look at this and send a patch on top? I will
+> send another pull request before merge window closes?
 
-On Tue, Aug 02, 2022 at 01:44:23PM +0530, Praveen Kumar wrote:
-> On 25-07-2022 15:07, Saurabh Sengar wrote:
-> > In the vmbus_on_event loop, 2 jiffies timer will not serve the purpose if
-> > callback_fn takes longer. For effective use move this check inside of
-> > callback functions where needed. Out of all the VMbus drivers using
-> > vmbus_on_event, only storvsc has a high packet volume, thus add this limit
-> > only in storvsc callback for now.
-> > There is no apparent benefit of loop itself because this tasklet will be
-> > scheduled anyway again if there are packets left in ring buffer. This
-> > patch removes this unnecessary loop as well.
-> > 
-> 
-> In my understanding the loop was for optimizing the host to guest signaling for batched channels.
-> And the loop ensures that we process all the posted messages from the host before returning from the respective callbacks.
-> 
-> Am I missing something here.
+Sure, I'll take a look today.
 
-Out of all the drivers using vmbus_on_event, only storvsc have high packet volume.
-The callback for storvsc is storvsc_on_channel_callback function which anyway has
-loop to check if there are any completion packets left. After this change when we
-move timeout inside storvsc callback, there is a possibility it comes back from
-callback leaving packets in ring buffer, for such cases the tasklet will be rescheduled.
-This function handles single ring buffer per call there is no batching.
+Also I'll see if we can add some extra build tests in KernelCI
+for the kselftest tree to catch issues like these automatically.
 
-- Saurabh
+Best wishes,
+Guillaume
+
+>> --- a/tools/testing/selftests/landlock/Makefile
+>> +++ b/tools/testing/selftests/landlock/Makefile
+>> @@ -9,10 +9,13 @@ TEST_GEN_PROGS := $(src_test:.c=)
+>>   TEST_GEN_PROGS_EXTENDED := true
+>>
+>>   OVERRIDE_TARGETS := 1
+>> +top_srcdir = ../../../..
+>>   include ../lib.mk
+>>
+>> +khdr_dir = $(top_srcdir)/usr/include
+>> +
+>>   $(OUTPUT)/true: true.c
+>>       $(LINK.c) $< $(LDLIBS) -o $@ -static
+>>
+>> -$(OUTPUT)/%_test: %_test.c ../kselftest_harness.h common.h
+>> -    $(LINK.c) $< $(LDLIBS) -o $@ -lcap
+>> +$(OUTPUT)/%_test: %_test.c $(khdr_dir)/linux/landlock.h ../kselftest_harness.h common.h
+>> +    $(LINK.c) $< $(LDLIBS) -o $@ -lcap -I$(khdr_dir)
+>>
+>>
+>> This doesn't fix the header timestamp check though.
+>>
 > 
-> > Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
-> > ---
-> >  drivers/hv/connection.c    | 33 ++++++++++++++-------------------
-> >  drivers/scsi/storvsc_drv.c |  9 +++++++++
-> >  2 files changed, 23 insertions(+), 19 deletions(-)
-> > 
-> > diff --git a/drivers/hv/connection.c b/drivers/hv/connection.c
-> > index eca7afd..9dc27e5 100644
-> > --- a/drivers/hv/connection.c
-> > +++ b/drivers/hv/connection.c
-> > @@ -431,34 +431,29 @@ struct vmbus_channel *relid2channel(u32 relid)
-> >  void vmbus_on_event(unsigned long data)
-> >  {
-> >  	struct vmbus_channel *channel = (void *) data;
-> > -	unsigned long time_limit = jiffies + 2;
-> > +	void (*callback_fn)(void *context);
-> >  
-> >  	trace_vmbus_on_event(channel);
-> >  
-> >  	hv_debug_delay_test(channel, INTERRUPT_DELAY);
-> > -	do {
-> > -		void (*callback_fn)(void *);
-> >  
-> > -		/* A channel once created is persistent even when
-> > -		 * there is no driver handling the device. An
-> > -		 * unloading driver sets the onchannel_callback to NULL.
-> > -		 */
-> > -		callback_fn = READ_ONCE(channel->onchannel_callback);
-> > -		if (unlikely(callback_fn == NULL))
-> > -			return;
-> > -
-> > -		(*callback_fn)(channel->channel_callback_context);
-> > +	/* A channel once created is persistent even when
-> > +	 * there is no driver handling the device. An
-> > +	 * unloading driver sets the onchannel_callback to NULL.
-> > +	 */
-> > +	callback_fn = READ_ONCE(channel->onchannel_callback);
-> > +	if (unlikely(!callback_fn))
-> > +		return;
-> >  
-> > -		if (channel->callback_mode != HV_CALL_BATCHED)
-> > -			return;
-> > +	(*callback_fn)(channel->channel_callback_context);
-> >  
-> > -		if (likely(hv_end_read(&channel->inbound) == 0))
-> > -			return;
-> > +	if (channel->callback_mode != HV_CALL_BATCHED)
-> > +		return;
-> >  
-> > -		hv_begin_read(&channel->inbound);
-> > -	} while (likely(time_before(jiffies, time_limit)));
-> > +	if (likely(hv_end_read(&channel->inbound) == 0))
-> > +		return;
-> >  
-> > -	/* The time limit (2 jiffies) has been reached */
-> > +	hv_begin_read(&channel->inbound);
-> >  	tasklet_schedule(&channel->callback_event);
-> >  }
-> >  
-> > diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-> > index fe000da..c457e6b 100644
-> > --- a/drivers/scsi/storvsc_drv.c
-> > +++ b/drivers/scsi/storvsc_drv.c
-> > @@ -60,6 +60,9 @@
-> >  #define VMSTOR_PROTO_VERSION_WIN8_1	VMSTOR_PROTO_VERSION(6, 0)
-> >  #define VMSTOR_PROTO_VERSION_WIN10	VMSTOR_PROTO_VERSION(6, 2)
-> >  
-> > +/* channel callback timeout in ms */
-> > +#define CALLBACK_TIMEOUT               2
-> > +
-> >  /*  Packet structure describing virtual storage requests. */
-> >  enum vstor_packet_operation {
-> >  	VSTOR_OPERATION_COMPLETE_IO		= 1,
-> > @@ -1204,6 +1207,7 @@ static void storvsc_on_channel_callback(void *context)
-> >  	struct hv_device *device;
-> >  	struct storvsc_device *stor_device;
-> >  	struct Scsi_Host *shost;
-> > +	unsigned long time_limit = jiffies + msecs_to_jiffies(CALLBACK_TIMEOUT);
-> >  
-> >  	if (channel->primary_channel != NULL)
-> >  		device = channel->primary_channel->device_obj;
-> > @@ -1224,6 +1228,11 @@ static void storvsc_on_channel_callback(void *context)
-> >  		u32 minlen = rqst_id ? sizeof(struct vstor_packet) :
-> >  			sizeof(enum vstor_packet_operation);
-> >  
-> > +		if (unlikely(time_after(jiffies, time_limit))) {
-> > +			hv_pkt_iter_close(channel);
-> > +			return;
-> > +		}
-> > +
-> >  		if (pktlen < minlen) {
-> >  			dev_err(&device->device,
-> >  				"Invalid pkt: id=%llu, len=%u, minlen=%u\n",
-> 
-> Regards,
-> 
-> ~Praveen.
+> thanks,
+> -- Shuah
+
