@@ -2,185 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C82C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A36C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236796AbiHCPE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42256 "EHLO
+        id S237067AbiHCPFX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230055AbiHCPEy (ORCPT
+        with ESMTP id S235941AbiHCPFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:04:54 -0400
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9818033A16;
-        Wed,  3 Aug 2022 08:04:53 -0700 (PDT)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-3238de26fb1so155867907b3.8;
-        Wed, 03 Aug 2022 08:04:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=ouan4Svxron6vwUQD0UpAc3rvidEPjwBels5eMrK9DQ=;
-        b=Ln2W2AUEhLjy/MER6Gns0nuuMT7+dG7z33AxpT0p8Bchf2UZcmxCLD4zBTiGY6Cphx
-         KdnfjHdaXZy5Y2S1LJPBIbZM1zDUPAfhALCJGQmrJwg0XoGL1zfoDsjXs2p8J0ppBQ3o
-         17ReNgLPqXRJe5m95s90HjdtMZjhQOx0+rUrAhd6o3fuAErvw+lKzjBtX8ucIITd+rm3
-         py7fjsiQYcZDFVPJL13gfIbB4qRq/LutTfT3dA2FasDFXO+kmo4ukv2qD/qbS/JQdTu5
-         1tP2AaeP/u8HWzvDmHi4a9QsaqE9Gdt2DhQ15vTPgCCn0qAg+ztMbTUlE6tBFpZoNeWD
-         cj+w==
-X-Gm-Message-State: ACgBeo3ZteScBRL1Zw5eBCgmQJs0IsRc25SVCLliC+VJ0O+ZpyNxLq4l
-        loumjDkBughbU3n4XCRH87Mqy2qV1cMlCtCJh50=
-X-Google-Smtp-Source: AA6agR42p5rkbE8sCWpMYfdup41Al1EYl3FCyQRWucakWGKFoLkxTabC0VIDOG3BRuaGnSFEoT8sO0fgCIdyYebzfIk=
-X-Received: by 2002:a0d:d694:0:b0:325:1881:6a52 with SMTP id
- y142-20020a0dd694000000b0032518816a52mr12643988ywd.149.1659539092812; Wed, 03
- Aug 2022 08:04:52 -0700 (PDT)
+        Wed, 3 Aug 2022 11:05:20 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A071165
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:05:18 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 86E26200DA;
+        Wed,  3 Aug 2022 15:05:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1659539117; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q2uW+G4syRD8dM4BcZV6bxX9JWzQkhNoZFr1bZzGVlE=;
+        b=aW8NMVWo6KBt/UGogAR6L0vTRk01yBc1nh6XdOsUBFph2Iggyqty41YaUeFw4m3qx3DTfa
+        euQYTTpIgBKUW2e+f+7mYVbZYoJQjagOH5Y437pQqwZROxmrqab9xQ8Z3/WHtJUxPm+sSm
+        iNCQ0HgvwoH9t3ayH8Du1JPXjkGJp/w=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 66DA913AD8;
+        Wed,  3 Aug 2022 15:05:17 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 3hlPFq2O6mLbKwAAMHmgww
+        (envelope-from <mhocko@suse.com>); Wed, 03 Aug 2022 15:05:17 +0000
+Date:   Wed, 3 Aug 2022 17:05:16 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        John Donnelly <john.p.donnelly@oracle.com>,
+        David Hildenbrand <david@redhat.com>, linux-mm@kvack.org,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] dma/pool: do not complain if DMA pool is not allocated
+Message-ID: <YuqOrJKcgfamdXkk@dhcp22.suse.cz>
+References: <20220325122559.14251-1-mhocko@kernel.org>
+ <Yj28gjonUa9+0yae@dhcp22.suse.cz>
+ <20220325164856.GA16800@lst.de>
+ <Yj3zyLs4f+ba6UqF@dhcp22.suse.cz>
+ <YupFSpXOrcfXJNya@dhcp22.suse.cz>
+ <YuqNToCACD8kKBG+@MiWiFi-R3L-srv>
 MIME-Version: 1.0
-References: <20220518175002.GA1148748@bhelgaas> <20220802213511.GA738995@bhelgaas>
-In-Reply-To: <20220802213511.GA738995@bhelgaas>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 3 Aug 2022 17:04:40 +0200
-Message-ID: <CAJZ5v0hrrHvBwXThEjiWAxUcM3=NgsfYw+nTyXjdiTmNug_PbQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] driver core: Support asynchronous driver shutdown
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Tanjore Suresh <tansuresh@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-nvme <linux-nvme@lists.infradead.org>,
-        Linux PCI <linux-pci@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuqNToCACD8kKBG+@MiWiFi-R3L-srv>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 2, 2022 at 11:35 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> [Beginning of thread: https://lore.kernel.org/r/20220517220816.1635044-2-tansuresh@google.com]
-> On Wed, May 18, 2022 at 12:50:02PM -0500, Bjorn Helgaas wrote:
->
-> > Devices have this async_suspend bit:
-> >
-> >   struct device {
-> >     struct dev_pm_info {
-> >       unsigned int async_suspend:1;
-> >
-> > Drivers call device_enable_async_suspend() to set async_suspend if
-> > they want it.  The system suspend path is something like this:
-> >
-> >   suspend_enter
-> >     dpm_suspend_noirq(PMSG_SUSPEND)
-> >       dpm_noirq_suspend_devices(PMSG_SUSPEND)
-> >         pm_transition = PMSG_SUSPEND
-> >         while (!list_empty(&dpm_late_early_list))
-> >           device_suspend_noirq(dev)
-> >             dpm_async_fn(dev, async_suspend_noirq)
-> >               if (is_async(dev))
-> >                 async_schedule_dev(async_suspend_noirq)       # async path
-> >
-> >                   async_suspend_noirq               # called asynchronously
-> >                   __device_suspend_noirq(dev, PMSG_SUSPEND, true)
-> >                     callback = pm_noirq_op(PMSG_SUSPEND) # .suspend_noirq()
-> >                     dpm_run_callback(callback)      # async call
-> >
-> >             __device_suspend_noirq(dev, pm_transition, false) # sync path
-> >               callback = pm_noirq_op(PMSG_SUSPEND)  # .suspend_noirq()
-> >               dpm_run_callback(callback)            # sync call
-> >
-> >         async_synchronize_full                                # wait
-> >
-> > If a driver has called device_enable_async_suspend(), we'll use the
-> > async_schedule_dev() path to schedule the appropriate .suspend_noirq()
-> > method.  After scheduling it via the async path or directly calling it
-> > via the sync path, the async_synchronize_full() waits for completion
-> > of all the async methods.
->
-> Correct me if I'm wrong: in the suspend scenario, there are several
-> phases, and async_synchronize_full() ensures that one phase finishes
-> before the next phase starts.  For example:
->
->   dpm_suspend_end
->     dpm_suspend_late                             # phase 1
->       while (!list_empty(&dpm_suspended_list))
->         device_suspend_late
->       async_synchronize_full                     # finish phase 1
->     dpm_suspend_noirq                            # phase 2
->       dpm_noirq_suspend_devices
->         while (!list_empty(&dpm_late_early_list))
->           device_suspend_noirq
->       async_synchronize_full
->
-> The device .suspend_late() and .suspend_noirq() methods may all be
-> started asynchronously.  So far there's nothing to order them within
-> the phase, but async_synchronize_full() ensures that all the
-> .suspend_late() methods finish before the .suspend_noirq() methods
-> start.
->
-> Obviously we do want a child's method to complete before we run the
-> parent's method.  If I understand correctly, that parent/child
-> synchronization is done by a different method: __device_suspend_late()
-> and __device_suspend_noirq() call dpm_wait_for_subordinate(), which
-> waits for &dev->power.completion for all children:
->
->   __device_suspend_late
->     dpm_wait_for_subordinate
->       dpm_wait_for_children   # wait for children .suspend_late()
->         device_for_each_child(dev, &async, dpm_wait_fn)
->           dpm_wait_fn
->             dpm_wait
->               wait_for_completion(&dev->power.completion)
->     dpm_run_callback          # run parent method, e.g., ops->suspend_late
->     complete_all(&dev->power.completion)  # note completion of parent
->
-> > I assume your suggestion is to do something like this:
-> >
-> >   struct device {
-> >     struct dev_pm_info {
-> >       unsigned int async_suspend:1;
-> >  +    unsigned int async_shutdown:1;
-> >
-> >  + void device_enable_async_shutdown(struct device *dev)
-> >  +   dev->power.async_shutdown = true;
-> >
-> >     device_shutdown
-> >       while (!list_empty(&devices_kset->list))
-> >  -      dev->...->shutdown()
-> >  +      if (is_async_shutdown(dev))
-> >  +        async_schedule_dev(async_shutdown)   # async path
-> >  +
-> >  +         async_shutdown               # called asynchronously
-> >  +           dev->...->shutdown()
-> >  +
-> >  +      else
-> >  +        dev->...->shutdown()                 # sync path
-> >  +
-> >  +    async_synchronize_full                   # wait
->
-> In the shutdown case, I think we still probably need the
-> async_synchronize_full() to ensure that all the .shutdown() methods
-> complete before we turn the power off, reboot, or kexec.
->
-> But I think we also need a mechanism like dev->power.completion to
-> make sure all the child .shutdown() methods complete before we run a
-> parent's .shutdown().
->
-> There's not much overlap between the suspend path and the shutdown
-> path (probably none at all), so it's tempting to use the existing
-> dev->power.completion for shutdown as well.
->
-> But I don't think that's feasible because dev->power.completion is
-> tied up with dev->power.async_suspend, which is set by
-> device_enable_async_suspend().  That's a different concept than async
-> shutdown, and drivers will want one without the other.
->
-> Does this make sense?
+On Wed 03-08-22 22:59:26, Baoquan He wrote:
+> On 08/03/22 at 11:52am, Michal Hocko wrote:
+> > On Fri 25-03-22 17:54:33, Michal Hocko wrote:
+> > > On Fri 25-03-22 17:48:56, Christoph Hellwig wrote:
+> > > > On Fri, Mar 25, 2022 at 01:58:42PM +0100, Michal Hocko wrote:
+> > > > > Dang, I have just realized that I have misread the boot log and it has
+> > > > > turned out that a674e48c5443 is covering my situation because the
+> > > > > allocation failure message says:
+> > > > >
+> > > > > Node 0 DMA free:0kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:636kB managed:0kB mlocked:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+> > > > 
+> > > > As in your report is from a kernel that does not have a674e48c5443
+> > > > yet?
+> > > 
+> > > yes. I just mixed up the early boot messages and thought that DMA zone
+> > > ended up with a single page. That message was saying something else
+> > > though.
+> > 
+> > OK, so I have another machine spewing this warning. Still on an older
+> > kernel but I do not think the current upstream would be any different in
+> > that regards. This time the DMA zone is populated and consumed from
+> > large part and the pool size request is just too large for it:
+> > 
+> > [   14.017417][    T1] swapper/0: page allocation failure: order:10, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0-7
+> > [   14.017429][    T1] CPU: 4 PID: 1 Comm: swapper/0 Not tainted 5.14.21-150400.22-default #1 SLE15-SP4 0b6a6578ade2de5c4a0b916095dff44f76ef1704
+> > [   14.017434][    T1] Hardware name: XXXX
+> > [   14.017437][    T1] Call Trace:
+> > [   14.017444][    T1]  <TASK>
+> > [   14.017449][    T1]  dump_stack_lvl+0x45/0x57
+> > [   14.017469][    T1]  warn_alloc+0xfe/0x160
+> > [   14.017490][    T1]  __alloc_pages_slowpath.constprop.112+0xc27/0xc60
+> > [   14.017497][    T1]  ? rdinit_setup+0x2b/0x2b
+> > [   14.017509][    T1]  ? rdinit_setup+0x2b/0x2b
+> > [   14.017512][    T1]  __alloc_pages+0x2d5/0x320
+> > [   14.017517][    T1]  alloc_page_interleave+0xf/0x70
+> > [   14.017531][    T1]  atomic_pool_expand+0x4a/0x200
+> > [   14.017541][    T1]  ? rdinit_setup+0x2b/0x2b
+> > [   14.017544][    T1]  __dma_atomic_pool_init+0x44/0x90
+> > [   14.017556][    T1]  dma_atomic_pool_init+0xad/0x13f
+> > [   14.017560][    T1]  ? __dma_atomic_pool_init+0x90/0x90
+> > [   14.017562][    T1]  do_one_initcall+0x41/0x200
+> > [   14.017581][    T1]  kernel_init_freeable+0x236/0x298
+> > [   14.017589][    T1]  ? rest_init+0xd0/0xd0
+> > [   14.017596][    T1]  kernel_init+0x16/0x120
+> > [   14.017599][    T1]  ret_from_fork+0x22/0x30
+> > [   14.017604][    T1]  </TASK>
+> > [...]
+> > [   14.018026][    T1] Node 0 DMA free:160kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:15996kB managed:15360kB mlocked:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+> > [   14.018035][    T1] lowmem_reserve[]: 0 0 0 0 0
+> > [   14.018339][    T1] Node 0 DMA: 0*4kB 0*8kB 0*16kB 1*32kB (U) 0*64kB 1*128kB (U) 0*256kB 0*512kB 0*1024kB 0*2048kB 0*4096kB = 160kB
+> > 
+> > So the DMA zone has only 160kB free while the pool would like to use 4MB
+> > of it which obviously fails. I haven't tried to check who is consuming
+> > the DMA zone memory and why but this shouldn't be all that important
+> > because the pool clearly cannot allocate and there is not much the
+> > user/admin can do about that. Well, the pool could be explicitly
+> > requested smaller but is that really what we expect them to do?
+> >   
+> > > > > I thought there are only few pages in the managed by the DMA zone. This
+> > > > > is still theoretically possible so I think __GFP_NOWARN makes sense here
+> > > > > but it would require to change the patch description.
+> > > > > 
+> > > > > Is this really worth it?
+> > > > 
+> > > > In general I think for kernels where we need the pool and can't allocate
+> > > > it, a warning is very useful.  We just shouldn't spew it when there is
+> > > > no need for the pool to start with.
+> > > 
+> > > Well, do we have any way to find that out during early boot?
+> > 
+> > Thinking about it. We should get a warning when the actual allocation
+> > from the pool fails no? That would be more useful information than the
+> > pre-allocation failure when it is not really clear whether anybody is
+> > ever going to consume it.
+> 
+> Hi Michal,
+> 
+> You haven't told on which ARCH you met this issue, is it x86_64?
 
-Well, why don't we change the code so that dev->power.completion is
-not tied to dev->power.async_suspend, but can be also used
-(analogously) if something like dev->async_shutdown is set?
+yes x86_64, so a small 16MB DMA zone.
 
-My point is that we know how to suspend devices asynchronously (the
-fact that there are multiple phases is not that important IMV), so why
-don't we design the async shutdown analogously?
+> If yes, I have one patch queued to fix it in another way which I have
+> been trying to take in mind.
+
+Any reference?
+
+-- 
+Michal Hocko
+SUSE Labs
