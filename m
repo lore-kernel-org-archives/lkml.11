@@ -2,104 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10908C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 22:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2B0C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 22:29:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238916AbiHCW3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 18:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51804 "EHLO
+        id S238918AbiHCW31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 18:29:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238884AbiHCW3N (ORCPT
+        with ESMTP id S238883AbiHCW3T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 18:29:13 -0400
-Received: from mx01.ayax.eu (mx01.ayax.eu [188.137.98.110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540E15C94D
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 15:29:11 -0700 (PDT)
-Received: from [192.168.192.146] (port=40528 helo=nx64de-df6d00)
-        by mx01.ayax.eu with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <gszymaszek@short.pl>)
-        id 1oJMrB-0008T8-Ia; Thu, 04 Aug 2022 00:28:52 +0200
-Date:   Thu, 4 Aug 2022 00:28:48 +0200
-From:   Grzegorz Szymaszek <gszymaszek@short.pl>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Phillip Potter <phil@philpotter.co.uk>
-Cc:     Grzegorz Szymaszek <gszymaszek@short.pl>,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-Subject: [PATCH 1/3] staging: r8188eu: set firmware path in a macro
-Message-ID: <6c83e05e5dbccff5630ccfed9e40bf84c889b647.1659565180.git.gszymaszek@short.pl>
-Mail-Followup-To: Grzegorz Szymaszek <gszymaszek@short.pl>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-References: <YuoQ37PIKzWO1zIY@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Wed, 3 Aug 2022 18:29:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087F75C94B;
+        Wed,  3 Aug 2022 15:29:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AECE9B82404;
+        Wed,  3 Aug 2022 22:29:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 54D71C433C1;
+        Wed,  3 Aug 2022 22:29:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659565756;
+        bh=40j6OGIpymzlKOOTWxGEug6m13iD/+9fDMv61JhHBho=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=UP2xEKMe9dOFdW1+5+tWUYiu8Z1UDEz/rWLgWkh/PfvBaVHXhkA4DfBuOz6OAtDOG
+         Y4ApZcnWQXg0For7gVlRFh1MLxFIddK9sDdK4CeP90ZglhyhrNQHqyKXSFNWBTsyxM
+         zOBWqnNzetsaV9f1D31cPcKKZa0dDYuFegGuQgv1Q9fZTYsMSu71h9yCc4kVK9RAAL
+         xP3cy8z2rrLsoxNQ501a4CneSy/GnwKrZ+/i6qbv1nF1LzjzrqUXK2c9Y1SvzkexmK
+         FbIJZv3N931KfPOuhfSkc/R+kYoXRDOBtlydggBmhqrmfYh0R3AO0+/8b+S/2l+Xvl
+         yGEvX7dDe86Lw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4503CC43142;
+        Wed,  3 Aug 2022 22:29:16 +0000 (UTC)
+Subject: Re: [GIT PULL] iomap: new code for 5.20, part 1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YuqV6qB/p69HL3yR@magnolia>
+References: <YuqV6qB/p69HL3yR@magnolia>
+X-PR-Tracked-List-Id: <linux-xfs.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YuqV6qB/p69HL3yR@magnolia>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git tags/iomap-5.20-merge-1
+X-PR-Tracked-Commit-Id: f8189d5d5fbf082786fb91c549f5127f23daec09
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: f18d73096c0eca1275f586cb984e6e28330447a0
+Message-Id: <165956575627.24057.3467366999233352672.pr-tracker-bot@kernel.org>
+Date:   Wed, 03 Aug 2022 22:29:16 +0000
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-fsdevel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        david@fromorbit.com, linux-kernel@vger.kernel.org,
+        sandeen@sandeen.net, hch@lst.de
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The r8188eu driver requires a firmware file, the path of which was
-hardcoded as constant strings in two places:
-(1) in core/rtw_fw.c, in function load_firmware(),
-(2) in os_dep/os_intfs.c, in the MODULE_FIRMWARE() call.
+The pull request you sent on Wed, 3 Aug 2022 08:36:10 -0700:
 
-Declare the path using a macro, FW_RTL8188EU, and replace the above
-constant strings with the macro. That's the way it is done in many other
-drivers. The new macro is defined in include/drv_types.h, because that
-file is already included by both of the above files (or at least their
-headers) and because it already contains other driver constants, like
-its name and version.
+> git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git tags/iomap-5.20-merge-1
 
-Link: https://lore.kernel.org/lkml/YuoQ37PIKzWO1zIY@kroah.com/
-Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Grzegorz Szymaszek <gszymaszek@short.pl>
----
- drivers/staging/r8188eu/core/rtw_fw.c       | 2 +-
- drivers/staging/r8188eu/include/drv_types.h | 1 +
- drivers/staging/r8188eu/os_dep/os_intfs.c   | 2 +-
- 3 files changed, 3 insertions(+), 2 deletions(-)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/f18d73096c0eca1275f586cb984e6e28330447a0
 
-diff --git a/drivers/staging/r8188eu/core/rtw_fw.c b/drivers/staging/r8188eu/core/rtw_fw.c
-index 0451e5177644..0fe6d4944694 100644
---- a/drivers/staging/r8188eu/core/rtw_fw.c
-+++ b/drivers/staging/r8188eu/core/rtw_fw.c
-@@ -209,7 +209,7 @@ static int load_firmware(struct rt_firmware *rtfw, struct device *device)
- {
- 	int ret = _SUCCESS;
- 	const struct firmware *fw;
--	const char *fw_name = "rtlwifi/rtl8188eufw.bin";
-+	const char *fw_name = FW_RTL8188EU;
- 	int err = request_firmware(&fw, fw_name, device);
- 
- 	if (err) {
-diff --git a/drivers/staging/r8188eu/include/drv_types.h b/drivers/staging/r8188eu/include/drv_types.h
-index bba88a0ede61..f51b83515953 100644
---- a/drivers/staging/r8188eu/include/drv_types.h
-+++ b/drivers/staging/r8188eu/include/drv_types.h
-@@ -37,6 +37,7 @@
- #include "rtw_fw.h"
- 
- #define DRIVERVERSION	"v4.1.4_6773.20130222"
-+#define FW_RTL8188EU	"rtlwifi/rtl8188eufw.bin"
- 
- struct registry_priv {
- 	u8	chip_version;
-diff --git a/drivers/staging/r8188eu/os_dep/os_intfs.c b/drivers/staging/r8188eu/os_dep/os_intfs.c
-index 5bd3022e4b40..5985054da935 100644
---- a/drivers/staging/r8188eu/os_dep/os_intfs.c
-+++ b/drivers/staging/r8188eu/os_dep/os_intfs.c
-@@ -18,7 +18,7 @@ MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Realtek Wireless Lan Driver");
- MODULE_AUTHOR("Realtek Semiconductor Corp.");
- MODULE_VERSION(DRIVERVERSION);
--MODULE_FIRMWARE("rtlwifi/rtl8188eufw.bin");
-+MODULE_FIRMWARE(FW_RTL8188EU);
- 
- #define CONFIG_BR_EXT_BRNAME "br0"
- #define RTW_NOTCH_FILTER 0 /* 0:Disable, 1:Enable, */
+Thank you!
+
 -- 
-2.35.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
