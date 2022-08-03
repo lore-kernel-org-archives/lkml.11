@@ -2,120 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42781C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F8DAC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238265AbiHCP5Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:57:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58606 "EHLO
+        id S238264AbiHCP5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236560AbiHCP5R (ORCPT
+        with ESMTP id S238094AbiHCP5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:57:17 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071CE63BA;
-        Wed,  3 Aug 2022 08:57:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1659542236; x=1691078236;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Qy45FE7dmAaRWyuLIVGMQubcRE/KMHL+erBcXt/YXdQ=;
-  b=IpVL2oOhIcyUpxil5AluU9Zt3EciuPJaE9mnFFd5GCjrV7gTmHfkUtVh
-   j4PNEzLG1EBfNnuSA4iQCErQojNxsZoftDNWDpLs8WhyzUCt0U0ZOJ0zi
-   PLRDjLjf3MIz0S2xC/XwshD/YlcsaE8jnwgETefjB0yN3ecfRngIJuKTU
-   o=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 03 Aug 2022 08:57:15 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 08:57:14 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 3 Aug 2022 08:57:01 -0700
-Received: from [10.216.16.162] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 3 Aug 2022
- 08:56:58 -0700
-Message-ID: <d0f1c9ae-91aa-2c52-b86a-f111908d6b22@quicinc.com>
-Date:   Wed, 3 Aug 2022 21:26:55 +0530
+        Wed, 3 Aug 2022 11:57:49 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2465FBB;
+        Wed,  3 Aug 2022 08:57:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659542268; x=1691078268;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=mOIJWP9CHMh9BXUsNu+7KhdpzZU4fbVzJUvkLwDE/es=;
+  b=QbLDW4YmZiS65dZx1CEWrJvy79Ep5fHw6NRbMfoKG2x7kGTK7/BY9h6x
+   4wOzSyXCu4Yttk7YXpHABiHcQeP1ccKivAF9ajUtM2IAtaDeFTXQqgZH9
+   3G6wg+5dsLfVYjJk1XM6SgU1owwjSHYty/DBhKZWt1AZSAkz5zpq3cfPY
+   PVSoQEhX5Kq6cih3ZnGk99CaHgS9i/QXq2WdNN/zyAW1JpakaRN4jV7uf
+   aFGnNS31xAV0B5CN4q1WsBUKqH1PnqzwXMc3z6uCwp9Rlg7YZ1X1RDt/B
+   aie24LNOk7vE8wdI3IBU83h0SnFW7qr2Etc8hZPH6p0CNzWYWcVsaoWvM
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="287270048"
+X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
+   d="scan'208";a="287270048"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 08:57:48 -0700
+X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
+   d="scan'208";a="729250577"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 08:57:44 -0700
+Received: by lahna (sSMTP sendmail emulation); Wed, 03 Aug 2022 18:57:42 +0300
+Date:   Wed, 3 Aug 2022 18:57:42 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Benson Leung <bleung@google.com>
+Cc:     Rajat Khandelwal <rajat.khandelwal@intel.com>,
+        andreas.noever@gmail.com, michael.jamet@intel.com,
+        YehezkelShB@gmail.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pmalani@google.com
+Subject: Re: [PATCH] Supporting wake on DP hot events behind TBT/USB4 routers
+Message-ID: <Yuqa9vjEBjWAMyf9@lahna>
+References: <20220803010139.GA32634@rajth-NUC10i7FNH>
+ <YuoJceCfuJ4RKon5@lahna>
+ <CANLzEkucqXP6fU1OZ0+B4p10SXiR7-BJa+dn5xjp20UhE8UsEg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [GIT PULL] USB / Thunderbolt driver changes for 6.0-rc1
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Nathan Chancellor <nathan@kernel.org>
-CC:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        Andrey Strachuk <strochuk@ispras.ru>
-References: <YuqB0tl2hjT3x7a4@kroah.com>
- <YuqXtcaUPflINBd6@dev-arch.thelio-3990X> <YuqZU/JJyMQJxva0@kroah.com>
-From:   Krishna Kurapati PSSNV <quic_kriskura@quicinc.com>
-In-Reply-To: <YuqZU/JJyMQJxva0@kroah.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANLzEkucqXP6fU1OZ0+B4p10SXiR7-BJa+dn5xjp20UhE8UsEg@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Benson,
 
-On 8/3/2022 9:20 PM, Greg KH wrote:
-> On Wed, Aug 03, 2022 at 08:43:49AM -0700, Nathan Chancellor wrote:
->> On Wed, Aug 03, 2022 at 04:10:26PM +0200, Greg KH wrote:
->>> Andrey Strachuk (1):
->>>        usb: cdns3: change place of 'priv_ep' assignment in cdns3_gadget_ep_dequeue(), cdns3_gadget_ep_enable()
->> For the record, this breaks allmodconfig with clang (I haven't seen a
->> formal report on it anywhere and this missed -next coverage because
->> Stephen is on vacation):
->>
->>      drivers/usb/cdns3/cdns3-gadget.c:2290:11: error: variable 'priv_dev' is uninitialized when used here [-Werror,-Wuninitialized]
->>                      dev_dbg(priv_dev->dev, "usbss: invalid parameters\n");
->>                              ^~~~~~~~
->>      include/linux/dev_printk.h:155:18: note: expanded from macro 'dev_dbg'
->>              dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
->>                              ^~~
->>      include/linux/dynamic_debug.h:167:7: note: expanded from macro 'dynamic_dev_dbg'
->>                              dev, fmt, ##__VA_ARGS__)
->>                              ^~~
->>      include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
->>              __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
->>                                                                  ^~~~~~~~~~~
->>      include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
->>                      func(&id, ##__VA_ARGS__);               \
->>                                  ^~~~~~~~~~~
->>      drivers/usb/cdns3/cdns3-gadget.c:2278:31: note: initialize the variable 'priv_dev' to silence this warning
->>              struct cdns3_device *priv_dev;
->>                                          ^
->>                                          = NULL
->>      1 error generated.
->>
->> I know you don't take patches during the merge window, so I guess we'll
->> just have to have x86_64 allmodconfig be broken with clang for -rc1? :/
-> I can send fix-up patches that break the build before -rc1 if you have
-> it.  Also you can send it and Linus can pick it up directly if it breaks
-> his workflow.
->
-> Odd that this was never reported, 0-day didn't even say anything?
->
-> thanks,
->
-> greg k-h
-Hi Greg,
-   On a similar note. There was another issue reported in which 
-randconfig for i386 build breaks as usb_hub_find_child API is not 
-present as usbcore isn't compiled in that config (CONFIG_USB isn't set).
-Patch to fix has been pushed recently and is in review:
-https://lore.kernel.org/linux-usb/1659337215-20421-1-git-send-email-quic_kriskura@quicinc.com/
+On Wed, Aug 03, 2022 at 08:15:49AM -0700, Benson Leung wrote:
+> Hi Mika,
+> 
+> On Tue, Aug 2, 2022 at 10:37 PM Mika Westerberg
+> <mika.westerberg@linux.intel.com> wrote:
+> >
+> > Hi,
+> >
+> > On Wed, Aug 03, 2022 at 06:31:39AM +0530, Rajat Khandelwal wrote:
+> > > Current implementation doesn't allow user to go into system suspend
+> > > and simultaneously project the screen on an external display connected
+> > > to a TBT/USB4 device. This patch enables this feature.
+> > >
+> > > Let me know what you think about this.
+> >
+> > Please prefix patches to follow the sybsystem style. For Thunderbolt it
+> > should be "thunderbolt: ....".
+> >
+> > This will cause any monitor plug to wake up the system and I'm not sure
+> > we want that, at least to be default behaviour. If you have a regular
+> > Type-C (non-USB4/TBT) dock and you plug in a monitor to that, does it
+> > wake up?
+> 
+> Speaking for Google and our ChromeOS USB-C policy, yes, if the host is
+> in S0iX or S3, an already attached USB-C docking station in DP Alt
+> Mode will respond to a display attach via HPD via an Alert message in
+> USB PD. We called this feature wake-on-dock.
+> 
+> We implemented wake-on-dock for DP Alt Mode in the EC, since our EC
+> handles USB PD anyway, and is handling the PD Alert message which
+> contains the HPD status.
+> 
+> However, when the dock supports USB4 or Thunderbolt, those modes don't
+> involve USB PD for device attach, so our EC doesn't have the role of
+> waking the system, so something else on the system must, which is this
+> feature being discussed.
 
-Would it be possible to pick it up in rc1 to make sure nothing breaks 
-further because of it.
-I can respin patch if something is off in it.
-
-Regards,
-Krishna,
+Okay understood. Thanks for explaining!
