@@ -2,78 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8997BC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 18:45:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E07CEC19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 18:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238362AbiHCSpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 14:45:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35660 "EHLO
+        id S238280AbiHCSry (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 14:47:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236256AbiHCSo6 (ORCPT
+        with ESMTP id S229881AbiHCSrw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 14:44:58 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0948C5A2F5;
-        Wed,  3 Aug 2022 11:44:56 -0700 (PDT)
-Date:   Wed, 3 Aug 2022 18:44:51 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1659552295;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=g7bMaMFszZ1MPKgJtTZ+sgj6npq+ZvD/i5D5SsBGMIY=;
-        b=XQ5jnXfVQrAfNHlxUqUVo/nmzws8N4oK9IQKiB2ND+dvvJL1kkbvd5xe5/MeCuH287gFGB
-        CHOGgmH2Jkgk71FjoRfPReNmxS2zLK/AYkcfR721XdKO5sWXF8hmWvK6jLWkz0F3iEKlpm
-        XuuBgIjgZ2asBfla5nd0aCDmYwlFkm4=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Oliver Upton <oliver.upton@linux.dev>
-To:     Mingwei Zhang <mizhang@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/5] selftests: KVM/x86: Fix vcpu_{save,load}_state() by
- adding APIC state into kvm_x86_state
-Message-ID: <YurCI5PQu44UJ0a7@google.com>
-References: <20220802230718.1891356-1-mizhang@google.com>
- <20220802230718.1891356-3-mizhang@google.com>
+        Wed, 3 Aug 2022 14:47:52 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C69C24F21
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 11:47:51 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id v16-20020a17090abb9000b001f25244c65dso2915021pjr.2
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 11:47:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=CT7f21cKTWFIPTe+6Ar+VcZqs1JgfCRps1fjd6TFaLU=;
+        b=tRtjWh0ynt3zbeiVioUuNIrV2XpLSpkkaWz4e+9NMPuAy6CBoOflcn+bzYFv0vTOM2
+         zkiO00kPrewrc09aqJhxsMXfoTbQSzJ/P8/By5cQaZKO1VJxbH6iGPZf1plWTkdBkawW
+         GsgBrcBfQPsroh0V3ImJU6kah5hDOLIUMPUlfx0x4qydcPUfdkMrLQ4mwCkBfCwiyLXC
+         MVt0CwN8Juwh3s8jR/wrVgT1CzxsXtfciy8ryCKBex89rMJV6anyb1XMRRcDJpFrUR0b
+         XrnY9iNycA/l50pImp32z8/NFV2JiY3Qd5vyGVpqgXXgPubpaLFyL5FfiA6SxLG+bZIM
+         htBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=CT7f21cKTWFIPTe+6Ar+VcZqs1JgfCRps1fjd6TFaLU=;
+        b=aq6i9IU0reMbMy/P405EVxDYV298gxpiY+P0vFMM943iKsM3tye8gRqAIqzc3ophW2
+         qdnYxS2ynoEaw3JXZj79Z1UBA+E+CYxp1VTTTn7bu9ojF9CPJra25mfsDuiFLFovHWsO
+         M2hv9wsD9NBoDIhfybjRr1mxCB0Kl84ScOTzJuVvx6nGzYAGtTBak3YUPZ9wycMa3SX5
+         9/Cr6Jd60dGAQQpM7C8zUsyl0aFyHFZC3sWbVJpDBl5G+UydxiRXaTXlVEwhL7eWv5Z0
+         5sjnob3ENkX7SfvTvPoxUYa2X5ZZzzFM2pb8fprk4XOSYrrXcRo+nDKI7oZvXsDZfR8a
+         jXOw==
+X-Gm-Message-State: ACgBeo0XzvHSejT0WySZdijO8jgeoovaOy3ePJmgp/rD25YM3ZRxp+r8
+        fM2PxSfYhb7ATBNw+qnX4Zu6CQ==
+X-Google-Smtp-Source: AA6agR74OHzDirFEVtK2IRlGkXbcnccpyj6uV1b1jZ/7bjTk4Jq8uvWXFIUdNHXdoe9QIE2M/4akTA==
+X-Received: by 2002:a17:90a:b010:b0:1f3:161c:30a0 with SMTP id x16-20020a17090ab01000b001f3161c30a0mr6049597pjq.243.1659552470736;
+        Wed, 03 Aug 2022 11:47:50 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id j4-20020a17090a94c400b001ef87123615sm1956475pjw.37.2022.08.03.11.47.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Aug 2022 11:47:50 -0700 (PDT)
+Date:   Wed, 3 Aug 2022 18:47:46 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH 1/3] KVM: x86: Refresh PMU after writes to
+ MSR_IA32_PERF_CAPABILITIES
+Message-ID: <YurC0sHdmm+cxj5e@google.com>
+References: <20220727233424.2968356-1-seanjc@google.com>
+ <20220727233424.2968356-2-seanjc@google.com>
+ <cb631fe5-103d-30f5-d800-4748f4ea41fa@gmail.com>
+ <YuqIFjlk5iDtVnRm@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220802230718.1891356-3-mizhang@google.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <YuqIFjlk5iDtVnRm@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mingwei,
-
-On Tue, Aug 02, 2022 at 11:07:15PM +0000, Mingwei Zhang wrote:
-> Fix vcpu_{save,load}_state() by adding APIC state into kvm_x86_state and
-> properly save/restore it in vcpu_{save,load}_state(). When vcpu resets,
-> APIC state become software disabled in kernel and thus the corresponding
-> vCPU is not able to receive posted interrupts [1].  So, add APIC
-> save/restore in userspace in selftest library code.
-
-Of course, there are no hard rules around it but IMO a changelog is
-easier to grok if it first describes the what/why of the problem, then
-afterwards how it is fixed by the commit.
-
-> [1] commit 97222cc83163 ("KVM: Emulate local APIC in kernel").
-
-What is the reason for the citation here?
-
-> Cc: Jim Mattson <jmattson@google.com>
+On Wed, Aug 03, 2022, Sean Christopherson wrote:
+> On Wed, Aug 03, 2022, Like Xu wrote:
+> > Now, all the dots have been connected. As punishment, I'd like to cook this
+> > patch set more with trackable tests so that you have more time for other
+> > things that are not housekeeping.
 > 
+> Let me post v2, I've already done all the work and testing.  If there's more to
+> be done, we can figure out next steps from there.
 
-nit: no newline between footers.
+I partially take that back, I forgot about the "disallow writes to feature MSRs
+after KVM_RUN".  I haven't addressed that and don't have bandwidth to work on it
+for the foreseeable future.  If you can address the issue, that'd be awesome.
 
-> Signed-off-by: Mingwei Zhang <mizhang@google.com>
-
---
-Thanks,
-Oliver
+I'm still going to post v2, all of the PMU fixes/cleanups are valid regardless of
+the KVM_RUN issue, i.e. they can go in sooner to fix slightly less theoretical
+problems (I doubt there's a userspace that actually changes PERF_CAPABILITIES
+after KVM_RUN).  I'll note in the changelog that KVM should disallow changing
+feature MSRs after KVM_RUN.
