@@ -2,139 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC71AC19F29
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8FEFC19F29
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238007AbiHCPO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48938 "EHLO
+        id S236221AbiHCPQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:16:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237930AbiHCPOU (ORCPT
+        with ESMTP id S232272AbiHCPQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:14:20 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4215B2A948;
-        Wed,  3 Aug 2022 08:14:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 71773CE23A4;
-        Wed,  3 Aug 2022 15:14:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B21E2C433D7;
-        Wed,  3 Aug 2022 15:14:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659539655;
-        bh=pK3P6YKF/O7YvZ9WTM4gxZVhDGtihziln7chla4iH5k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WHLmK99NPoh2XDLKBc8f63WccKUVyqXftm9dlFIwJgKXDyOUW1xGLVr9REBVvDIcW
-         9IJMTMHr2rBRYhKlVGx0CW5FpSF2CmdFut3hllMCWnRjoUhIw2kQZzEjQAjg8l7P3j
-         ij54+7b2Uys4a2OeIIVOVXCvsO3bJ8vkm7A+mgPv09SiQPeQ603p9ZtYoeFMEI6m+q
-         +jjkJrqu6d9L4ql4apSGZfm8RQ3lRp9ITsfSt4uM3//ruNlYo4YrQFScbzVegcimyg
-         1pAchX4QHKemLcAlanRzbUaIwmAdqVjp69dhaNOB7ymHUs7LCW5dXIadiaUXzcR7IJ
-         WHCl3NPza6BXQ==
-Date:   Wed, 3 Aug 2022 08:14:13 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hawkins Jiawei <yin31149@gmail.com>, kafai@fb.com
-Cc:     syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com,
-        18801353760@163.com, andrii@kernel.org, ast@kernel.org,
-        borisp@nvidia.com, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, edumazet@google.com, jakub@cloudflare.com,
-        john.fastabend@gmail.com, kgraul@linux.ibm.com, kpsingh@kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, paskripkin@gmail.com, skhan@linuxfoundation.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com,
-        Wen Gu <guwen@linux.alibaba.com>
-Subject: Re: [PATCH v4] net: fix refcount bug in sk_psock_get (2)
-Message-ID: <20220803081413.3cc27002@kernel.org>
-In-Reply-To: <20220803124121.173303-1-yin31149@gmail.com>
-References: <00000000000026328205e08cdbeb@google.com>
-        <20220803124121.173303-1-yin31149@gmail.com>
+        Wed, 3 Aug 2022 11:16:06 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE265F46
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:16:02 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id f22so10883287edc.7
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 08:16:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=3YBGLkEwVoW2LvMmulWhsVedej5Z16WRTdg7cXlL6ZM=;
+        b=FAmdOiYinoDcAA+TehBhqXwLHOb5zIazpi+mrI1vLtK/rnldnfEHhN5ZH30Fdx9a4m
+         Y0255Pf9D10Wbh9iRwbIRfvKgsQliOtPODqyA4i/tIBke1EZl7wEkOy4GmCqQs3cL9Cj
+         NuVHiYQCFX0pAAw/b+vVjNC3cHK2mBmsAv4u0dXyTy4HPDChtjYyZQ23UWJp9SnA4Rki
+         3BJRG5OGqgZLde8JlaKhROSyDJyzRI8x8af8/JzTomoTuKXes2zitp478Yqan9WiOrrA
+         BN4AoIYT4Kjjqh56tAkMFbcEap9vnaKqkArGWSwQPfFEZdNgVratpkOnkk5GwMJPJChI
+         MmDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=3YBGLkEwVoW2LvMmulWhsVedej5Z16WRTdg7cXlL6ZM=;
+        b=T1sUyYed699N91ZdxCiJy076DGeqe2yRb/NFLKpEzXPQZ8sg34fKmnl+MC7jNZQFGt
+         zrLnQayJY2d2UE9t/34AgEvsAG/EpavUBFh7s2wSpprWczD5ndD//2jmOr1EGoBqWMOR
+         cuNetOaPjGvOFuuAoI7teLAa8d7f8CEn24Z9ukam/sP+Jq4dQDeC2Dlh0CmceB1dYq0C
+         8ucoINtg5NsgJxjco2CFjSNG9x9kjpuThrZeoESQGrraxgiiqiS/vNc2R4oirBv2LQ8u
+         PuFWViDqmqBEgcUu6WydrJNpTzcnGRJp9wv4/dRun7QTekz9O5x5IxbtTO/a+J3PwbO1
+         OIiA==
+X-Gm-Message-State: ACgBeo3zxyVEv0Hus4tpTOk9+KuJjkd1U058kfy83/d2/5oX5U6GZshK
+        5gprgxN7IkNbRdLwArFlHyi/PF0VsS85w9Tr0vPBQA==
+X-Google-Smtp-Source: AA6agR4x6DtXirRxnhTcls5sJ1R5pcmz41UUXPIYNZ/mJKy08n/wCbqtZlcFh9LoYFeOtjo6MIlDSO9MH73iYHQ787g=
+X-Received: by 2002:a05:6402:2790:b0:43e:5a76:4d20 with SMTP id
+ b16-20020a056402279000b0043e5a764d20mr1877144ede.175.1659539761132; Wed, 03
+ Aug 2022 08:16:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220803010139.GA32634@rajth-NUC10i7FNH> <YuoJceCfuJ4RKon5@lahna>
+In-Reply-To: <YuoJceCfuJ4RKon5@lahna>
+From:   Benson Leung <bleung@google.com>
+Date:   Wed, 3 Aug 2022 08:15:49 -0700
+Message-ID: <CANLzEkucqXP6fU1OZ0+B4p10SXiR7-BJa+dn5xjp20UhE8UsEg@mail.gmail.com>
+Subject: Re: [PATCH] Supporting wake on DP hot events behind TBT/USB4 routers
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     Rajat Khandelwal <rajat.khandelwal@intel.com>,
+        andreas.noever@gmail.com, michael.jamet@intel.com,
+        YehezkelShB@gmail.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pmalani@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  3 Aug 2022 20:41:22 +0800 Hawkins Jiawei wrote:
-> -/* Pointer stored in sk_user_data might not be suitable for copying
-> - * when cloning the socket. For instance, it can point to a reference
-> - * counted object. sk_user_data bottom bit is set if pointer must not
-> - * be copied.
-> +/* flag bits in sk_user_data
-> + *
-> + * SK_USER_DATA_NOCOPY - Pointer stored in sk_user_data might
-> + * not be suitable for copying when cloning the socket.
-> + * For instance, it can point to a reference counted object.
-> + * sk_user_data bottom bit is set if pointer must not be copied.
-> + *
-> + * SK_USER_DATA_BPF    - Managed by BPF
+Hi Mika,
 
-I'd use this opportunity to add more info here, BPF is too general.
-Maybe "Pointer is used by a BPF reuseport array"? Martin, WDYT?
+On Tue, Aug 2, 2022 at 10:37 PM Mika Westerberg
+<mika.westerberg@linux.intel.com> wrote:
+>
+> Hi,
+>
+> On Wed, Aug 03, 2022 at 06:31:39AM +0530, Rajat Khandelwal wrote:
+> > Current implementation doesn't allow user to go into system suspend
+> > and simultaneously project the screen on an external display connected
+> > to a TBT/USB4 device. This patch enables this feature.
+> >
+> > Let me know what you think about this.
+>
+> Please prefix patches to follow the sybsystem style. For Thunderbolt it
+> should be "thunderbolt: ....".
+>
+> This will cause any monitor plug to wake up the system and I'm not sure
+> we want that, at least to be default behaviour. If you have a regular
+> Type-C (non-USB4/TBT) dock and you plug in a monitor to that, does it
+> wake up?
 
-> + * SK_USER_DATA_PSOCK  - Mark whether pointer stored in sk_user_data points
-> + * to psock type. This bit should be set when sk_user_data is
-> + * assigned to a psock object.
+Speaking for Google and our ChromeOS USB-C policy, yes, if the host is
+in S0iX or S3, an already attached USB-C docking station in DP Alt
+Mode will respond to a display attach via HPD via an Alert message in
+USB PD. We called this feature wake-on-dock.
 
-> +/**
-> + * rcu_dereference_sk_user_data_psock - return psock if sk_user_data
-> + * points to the psock type(SK_USER_DATA_PSOCK flag is set), otherwise
-> + * return NULL
-> + *
-> + * @sk: socket
-> + */
-> +static inline
-> +struct sk_psock *rcu_dereference_sk_user_data_psock(const struct sock *sk)
+We implemented wake-on-dock for DP Alt Mode in the EC, since our EC
+handles USB PD anyway, and is handling the PD Alert message which
+contains the HPD status.
 
-nit: the return type more commonly goes on the same line as "static
-inline"
+However, when the dock supports USB4 or Thunderbolt, those modes don't
+involve USB PD for device attach, so our EC doesn't have the role of
+waking the system, so something else on the system must, which is this
+feature being discussed.
 
-> +{
-> +	uintptr_t __tmp = (uintptr_t)rcu_dereference(__sk_user_data((sk)));
-> +
-> +	if (__tmp & SK_USER_DATA_PSOCK)
-> +		return (struct sk_psock *)(__tmp & SK_USER_DATA_PTRMASK);
-> +
-> +	return NULL;
-> +}
+>
+> IIRC I already suggested you to do this for the USB4 ports themselves
+> (struct usb4_port) so that userspace can make them wake up the system on
+> any event by writing "enabled > .../wakeup" which is the normal way.
 
-As a follow up we can probably generalize this into
- __rcu_dereference_sk_user_data_cond(sk, bit)
+Yes, I would support making this toggle-able like other wakeup sources.
 
-and make the psock just call that:
-
-static inline struct sk_psock *
-rcu_dereference_sk_user_data_psock(const struct sock *sk)
-{
-	return __rcu_dereference_sk_user_data_cond(sk, SK_USER_DATA_PSOCK);
-}
-
-then reuseport can also benefit, maybe:
-
-diff --git a/kernel/bpf/reuseport_array.c b/kernel/bpf/reuseport_array.c
-index e2618fb5870e..ad5c447a690c 100644
---- a/kernel/bpf/reuseport_array.c
-+++ b/kernel/bpf/reuseport_array.c
-@@ -21,14 +21,11 @@ static struct reuseport_array *reuseport_array(struct bpf_map *map)
- /* The caller must hold the reuseport_lock */
- void bpf_sk_reuseport_detach(struct sock *sk)
- {
--	uintptr_t sk_user_data;
-+	struct sock __rcu **socks;
- 
- 	write_lock_bh(&sk->sk_callback_lock);
--	sk_user_data = (uintptr_t)sk->sk_user_data;
--	if (sk_user_data & SK_USER_DATA_BPF) {
--		struct sock __rcu **socks;
--
--		socks = (void *)(sk_user_data & SK_USER_DATA_PTRMASK);
-+	socks = __rcu_dereference_sk_user_data_cond(sk, SK_USER_DATA_BPF);
-+	if (socks) {
- 		WRITE_ONCE(sk->sk_user_data, NULL);
- 		/*
- 		 * Do not move this NULL assignment outside of
-
-
-But that must be a separate patch, not part of this fix.
+-- 
+Benson Leung
+Staff Software Engineer
+Chrome OS Kernel
+Google Inc.
+bleung@google.com
+Chromium OS Project
+bleung@chromium.org
