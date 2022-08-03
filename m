@@ -2,182 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D180C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CBE4C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:54:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235466AbiHCKxi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 06:53:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55242 "EHLO
+        id S235698AbiHCKyT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 06:54:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232663AbiHCKxf (ORCPT
+        with ESMTP id S234856AbiHCKyF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 06:53:35 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FE91B79C;
-        Wed,  3 Aug 2022 03:53:35 -0700 (PDT)
+        Wed, 3 Aug 2022 06:54:05 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B052250E
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 03:54:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659524015; x=1691060015;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=ZtUDkmwirNLQ46D5tuQfA6pBKwbfXQX66S6JLq+xUBs=;
-  b=HsPiI0IWXJXKHYrYqOzzZw9dTJo4vtSEawYlwgrMlMKeKXZQhqTNxLfb
-   j1RUjy3q2ALBX7nhGh9A9ypslomEO9u2ziR8J/kPUcc39Agl+KH/dqC3S
-   PV0WBlBEn+ix3VukiZDs64W/VVcZ27D6iaxjV6f6QtE3EGGe9MApmrr2g
-   9AxZEOknCIjT4aG5JCprTEoxggr+whuA+Kk8Kuq0WsXVOPAzm0EI+Z93H
-   bmjvM/jhW5rbj/EhnXklGGH4a/HEh1ZLuHkH+ejxcWGh1wZN1TnIcNm+a
-   YjsQwZHgvHOzpVx6ad5Q2G4NxDIWBYUCkyJzRK+tbfsaK+dwElGTViefW
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="269412971"
+  t=1659524044; x=1691060044;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=wlGNCVpkBSCnKiDrut29sdbbBmedJczMaQ1oKcgPFM0=;
+  b=KCzS1i04NUL5VCor2+DPn/VxTQmVNK5tplJTRpn7n5Xs56JVeqiRKyAX
+   i8+Y6cIGhwi1ZBTHU1qCNj27Lq0lTtZjGe9OZeF4hIdJurr9XKjntX1Oo
+   XSR90w1k/UOlBap9/gl6vzogrRQT5uXH3h7gg+uNEltO4NCzhzv4W80g7
+   /nqkEbieoT1+ORTgjPDvIVVd547f3+qzfrESFz4UqvFFJ0c+BLs+2UqRi
+   CoZPgHz0eTKiE+wU4q/+y6HASY7HXa3UXvRZOV3rMRo4/VvlToSEwbSuM
+   OZhSg/hl7VvUIWN/P/lYDZqqzgCMry4PrAMKJhOVTYcvoiNPHdKAho1K8
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="276556074"
 X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="269412971"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 03:53:34 -0700
+   d="scan'208";a="276556074"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 03:54:03 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="631104752"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by orsmga008.jf.intel.com with ESMTP; 03 Aug 2022 03:53:32 -0700
-Date:   Wed, 3 Aug 2022 18:48:45 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     "Nikunj A. Dadhania" <nikunj@amd.com>
-Cc:     Sean Christopherson <seanjc@google.com>, isaku.yamahata@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH v7 000/102] KVM TDX basic feature support
-Message-ID: <20220803104845.GF607465@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
- <Ys9rcnyIZlUc76iG@google.com>
- <20220720145927.GA124133@chaop.bj.intel.com>
- <d0e82407-91fa-cfa4-ff86-262075d23761@amd.com>
- <20220726143259.GA323308@chaop.bj.intel.com>
- <e234d307-0b05-6548-5882-c24fc32c8e77@amd.com>
+   d="scan'208";a="635641790"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 03 Aug 2022 03:54:02 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oJC0n-000HAV-1v;
+        Wed, 03 Aug 2022 10:54:01 +0000
+Date:   Wed, 3 Aug 2022 18:53:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: arch/arm/mach-spear/spear6xx.c:365:13: warning: no previous
+ prototype for function 'spear6xx_map_io'
+Message-ID: <202208031821.79T1lZAO-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e234d307-0b05-6548-5882-c24fc32c8e77@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 02:56:40PM +0530, Nikunj A. Dadhania wrote:
-> On 7/26/2022 8:02 PM, Chao Peng wrote:
-> > On Mon, Jul 25, 2022 at 07:16:24PM +0530, Nikunj A. Dadhania wrote:
-> >> On 7/20/2022 8:29 PM, Chao Peng wrote:
-> >>> On Thu, Jul 14, 2022 at 01:03:46AM +0000, Sean Christopherson wrote:
-> >>> ...
-> >>>>
-> >>>> Option D). track shared regions in an Xarray, update kvm_arch_memory_slot.lpage_info
-> >>>> on insertion/removal to (dis)allow hugepages as needed.
-> >>>>
-> >>>>   + efficient on KVM page fault (no new lookups)
-> >>>>   + zero memory overhead (assuming KVM has to eat the cost of the Xarray anyways)
-> >>>>   + straightforward to implement
-> >>>>   + can (and should) be merged as part of the UPM series
-> >>>>
-> >>>> I believe xa_for_each_range() can be used to see if a given 2mb/1gb range is
-> >>>> completely covered (fully shared) or not covered at all (fully private), but I'm
-> >>>> not 100% certain that xa_for_each_range() works the way I think it does.
-> >>>
-> >>> Hi Sean,
-> >>>
-> >>> Below is the implementation to support 2M as you mentioned as option D.
-> >>> It's based on UPM v7 xarray code: https://lkml.org/lkml/2022/7/6/259
-> >>>
-> >>> Everything sounds good, the only trick bit is inc/dec disallow_lpage. If
-> >>> we still treat it as a count, it will be a challenge to make the inc/dec
-> >>> balanced. So in this patch I stole a bit for the purpose, looks ugly.
-> >>>
-> >>> Any feedback is welcome.
-> >>>
-> >>> Thanks,
-> >>> Chao
-> >>>
-> >>> -----------------------------------------------------------------------
-> >>> From: Chao Peng <chao.p.peng@linux.intel.com>
-> >>> Date: Wed, 20 Jul 2022 11:37:18 +0800
-> >>> Subject: [PATCH] KVM: Add large page support for private memory
-> >>>
-> >>> Update lpage_info when handling KVM_MEMORY_ENCRYPT_{UN,}REG_REGION.
-> >>>
-> >>> Reserve a bit in disallow_lpage to indicate a large page has
-> >>> private/share pages mixed.
-> >>>
-> >>> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> >>> ---
-> >>
-> >>
-> >>> +static void update_mem_lpage_info(struct kvm *kvm,
-> >>> +				  struct kvm_memory_slot *slot,
-> >>> +				  unsigned int attr,
-> >>> +				  gfn_t start, gfn_t end)
-> >>> +{
-> >>> +	unsigned long lpage_start, lpage_end;
-> >>> +	unsigned long gfn, pages, mask;
-> >>> +	int level;
-> >>> +
-> >>> +	for (level = PG_LEVEL_2M; level <= KVM_MAX_HUGEPAGE_LEVEL; level++) {
-> >>> +		pages = KVM_PAGES_PER_HPAGE(level);
-> >>> +		mask = ~(pages - 1);
-> >>> +		lpage_start = start & mask;
-> >>> +		lpage_end = end & mask;
-> >>> +
-> >>> +		/*
-> >>> +		 * We only need to scan the head and tail page, for middle pages
-> >>> +		 * we know they are not mixed.
-> >>> +		 */
-> >>> +		update_mixed(lpage_info_slot(lpage_start, slot, level),
-> >>> +			     mem_attr_is_mixed(kvm, attr, lpage_start,
-> >>> +							  lpage_start + pages));
-> >>> +
-> >>> +		if (lpage_start == lpage_end)
-> >>> +			return;
-> >>> +
-> >>> +		for (gfn = lpage_start + pages; gfn < lpage_end; gfn += pages) {
-> >>> +			update_mixed(lpage_info_slot(gfn, slot, level), false);
-> >>> +		}
-> >>
-> >> Boundary check missing here for the case when gfn reaches lpage_end.
-> >>
-> >> 		if (gfn == lpage_end)
-> >> 			return;
-> > 
-> > In this case, it's actually the tail page that I want to scan for with
-> > below code.
-> 
-> What if you do not have the tail lpage?
-> 
-> For example: memslot base_gfn = 0x1000 and npages is 0x800, so memslot range
-> is 0x1000 to 0x17ff.
-> 
-> Assume a case when this function is called with start = 1000 and end = 1800.
-> For 2M, page mask is 0x1ff. start and end both are 2M aligned.
-> 
-> First update_mixed takes care of 0x1000-0x1200
-> Loop update_mixed: goes over from 0x1200 - 0x1800, there are no pages left
-> for last update_mixed to process.
+Hi Arnd,
 
-Oops, good catch. I would fix it differently by playing with lpage_end:
-	lpage_end = (end - 1) & mask;
+First bad commit (maybe != root cause):
 
-Thanks,
-Chao
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   e2b542100719a93f8cdf6d90185410d38a57a4c1
+commit: a3102fafdce6f150e5a46e1725bb1732f8953a01 ARM: iop32x: enable multiplatform support
+date:   4 months ago
+config: arm-randconfig-r014-20220803 (https://download.01.org/0day-ci/archive/20220803/202208031821.79T1lZAO-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a3102fafdce6f150e5a46e1725bb1732f8953a01
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout a3102fafdce6f150e5a46e1725bb1732f8953a01
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/mach-spear/ drivers/clk/spear/
 
-> 
-> > 
-> > It's also possible I misunderstand something here.
-> > 
-> > Chao
-> >>
-> >>> +
-> >>> +		update_mixed(lpage_info_slot(lpage_end, slot, level),
-> >>> +			     mem_attr_is_mixed(kvm, attr, lpage_end,
-> >>> +							  lpage_end + pages));
-> 
-> lpage_info_slot some times causes a crash, as I noticed that
-> lpage_info_slot() returns out-of-bound index.
-> 
-> Regards
-> Nikunj
-> 
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> arch/arm/mach-spear/spear6xx.c:365:13: warning: no previous prototype for function 'spear6xx_map_io' [-Wmissing-prototypes]
+   void __init spear6xx_map_io(void)
+               ^
+   arch/arm/mach-spear/spear6xx.c:365:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init spear6xx_map_io(void)
+   ^
+   static 
+>> arch/arm/mach-spear/spear6xx.c:370:13: warning: no previous prototype for function 'spear6xx_timer_init' [-Wmissing-prototypes]
+   void __init spear6xx_timer_init(void)
+               ^
+   arch/arm/mach-spear/spear6xx.c:370:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init spear6xx_timer_init(void)
+   ^
+   static 
+   2 warnings generated.
+--
+>> drivers/clk/spear/spear6xx_clock.c:116:13: warning: no previous prototype for function 'spear6xx_clk_init' [-Wmissing-prototypes]
+   void __init spear6xx_clk_init(void __iomem *misc_base)
+               ^
+   drivers/clk/spear/spear6xx_clock.c:116:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init spear6xx_clk_init(void __iomem *misc_base)
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/spear6xx_map_io +365 arch/arm/mach-spear/spear6xx.c
+
+8f590d4541fb67 arch/arm/mach-spear6xx/spear6xx.c Viresh Kumar      2010-04-01  363  
+8f590d4541fb67 arch/arm/mach-spear6xx/spear6xx.c Viresh Kumar      2010-04-01  364  /* This will create static memory mapping for selected devices */
+8f590d4541fb67 arch/arm/mach-spear6xx/spear6xx.c Viresh Kumar      2010-04-01 @365  void __init spear6xx_map_io(void)
+8f590d4541fb67 arch/arm/mach-spear6xx/spear6xx.c Viresh Kumar      2010-04-01  366  {
+8f590d4541fb67 arch/arm/mach-spear6xx/spear6xx.c Viresh Kumar      2010-04-01  367  	iotable_init(spear6xx_io_desc, ARRAY_SIZE(spear6xx_io_desc));
+8f590d4541fb67 arch/arm/mach-spear6xx/spear6xx.c Viresh Kumar      2010-04-01  368  }
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  369  
+6bb27d7349db51 arch/arm/mach-spear6xx/spear6xx.c Stephen Warren    2012-11-08 @370  void __init spear6xx_timer_init(void)
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  371  {
+a8f4bf0eb4ca7a arch/arm/mach-spear6xx/spear6xx.c Vipul Kumar Samar 2012-07-10  372  	char pclk_name[] = "pll3_clk";
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  373  	struct clk *gpt_clk, *pclk;
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  374  
+d9909ebe650f02 arch/arm/mach-spear/spear6xx.c    Arnd Bergmann     2012-12-02  375  	spear6xx_clk_init(MISC_BASE);
+5df33a62c4a028 arch/arm/mach-spear6xx/spear6xx.c Viresh Kumar      2012-04-10  376  
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  377  	/* get the system timer clock */
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  378  	gpt_clk = clk_get_sys("gpt0", NULL);
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  379  	if (IS_ERR(gpt_clk)) {
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  380  		pr_err("%s:couldn't get clk for gpt\n", __func__);
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  381  		BUG();
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  382  	}
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  383  
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  384  	/* get the suitable parent clock for timer*/
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  385  	pclk = clk_get(NULL, pclk_name);
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  386  	if (IS_ERR(pclk)) {
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  387  		pr_err("%s:couldn't get %s as parent for gpt\n",
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  388  				__func__, pclk_name);
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  389  		BUG();
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  390  	}
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  391  
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  392  	clk_set_parent(gpt_clk, pclk);
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  393  	clk_put(gpt_clk);
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  394  	clk_put(pclk);
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  395  
+30551c0108e0d2 arch/arm/mach-spear6xx/spear6xx.c Viresh Kumar      2012-04-21  396  	spear_setup_of_timer();
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  397  }
+5c881d9ae94801 arch/arm/mach-spear6xx/spear6xx.c Shiraz Hashim     2011-02-16  398  
+
+:::::: The code at line 365 was first introduced by commit
+:::::: 8f590d4541fb678a638777ab987709217cb71365 ARM: 6015/1: ST SPEAr: Added source files for SPEAr6xx machine family
+
+:::::: TO: viresh kumar <viresh.kumar@st.com>
+:::::: CC: Russell King <rmk+kernel@arm.linux.org.uk>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
