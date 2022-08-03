@@ -2,155 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC4E3C19F2D
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C7E1C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:02:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236071AbiHCNBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 09:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57658 "EHLO
+        id S236449AbiHCNCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 09:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231533AbiHCNBr (ORCPT
+        with ESMTP id S233926AbiHCNCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 09:01:47 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C524DB8C;
-        Wed,  3 Aug 2022 06:01:44 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id 13so597084pgc.8;
-        Wed, 03 Aug 2022 06:01:44 -0700 (PDT)
+        Wed, 3 Aug 2022 09:02:37 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F76113E35
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 06:02:36 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id q7-20020a17090a7a8700b001f300db8677so1967319pjf.5
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 06:02:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=U/sZgVfzX4POYhlxOsTuA0LPr+8HMxvmYXlH0o3YoUE=;
-        b=qoiK89xyuHlqVm3orh4O+7OWn58FOg5dYSTTkfwcLZX1E0ik3uNbTg1oJ7KLgFtE8B
-         DojwHscPtbW3J0uc7fkoWXDwQSEziQbwvNrLlg8LMvx/UAcQz9QRofqmmgsW6+Ch/3KQ
-         IEmdLiD7AzGQVs4sIWb9XZJJhjsnQsOZIE+REcjJyU+IgY+zUFsRKUq7d0T9UlD8PMgB
-         wM+VM2lobiC/XzucCmPTFfTUn0jjPOzdQZuNc5uAGmFHNtwQK4kLFSY2t3iZzDnNtyRl
-         QF/a1K5ItJvzZVrHKMvGM8vi0Ahb9uu93YOefUqiZPqlc6PN0vMjxz+hkOmFe+NVaK6b
-         WI1g==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=/Ry3zzDkv6XblXGEI6RBqshIKSFKVZmsLhV6TX/Fy9g=;
+        b=GW+ly3iz+GWMy2FTnmCGJIGHfhDH3ahknX2uZ6/Mjd61PGwJ249V9oOBjQtuK6oqQG
+         C4wyHN51PIw0gKu1ZRCz2NXBrqYJXHex39uGxW88BR/ubvcepRE9iTJ9626Lq30TNZSF
+         pkgCc6NhLegVECcWldgscZFOpDW+82nXM45YDZBV4czQYzAx0gaVZpwUiwTERLMhXjJo
+         O+yd8DJXKW2k7HjnqUL2SZXfD+8+VX7CS80zJ9I0Tf1JamUAeGbucsH9KxRBbwdM9MJH
+         3/SpdkLV1OCcC7Ek8qS/Fc65zm2a5vCYiHqtiyUxKILWjaleG/02U7S+8s6lfZoyP6UA
+         uRKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=U/sZgVfzX4POYhlxOsTuA0LPr+8HMxvmYXlH0o3YoUE=;
-        b=k12Ucp3xiPK1WoXOWU3U+BlPZxHfyKadTheYHBkAGPetHJqAOCd9HMSKlKmDBvN67j
-         P/U6IXFRYcbLFENr06081sCR/giTJRP2Bi3hESKgKTgrAnwtgB2JAoPfxnMhAFXmPhxT
-         naUH6FugG/CEht/vfbZhJpJmF3EXzRJTQzhd0TItc3L+AKkewpl3Kq3DlIAi4lBmedfi
-         mIuNU4yJHmgiz7Pq44f43m9hRPShKgo7jPRWXOeVlVfu+bIX7dbtOXK2rnGrzk1mdvD6
-         bJhKG+TtzWgRCp7V6Y6dfENP1dX3nWguW6OJQXvB3ux4+zkLYQKhtM4ghVkyG4mcmhmd
-         3f2A==
-X-Gm-Message-State: ACgBeo0uua5hiekIBCq7gX3KZeVvmoyQ7B0Bw7M617BCuezKje3KBqfL
-        sxYzl0HbwA44cCMxxKSKGUFVphJm9psT4Q==
-X-Google-Smtp-Source: AA6agR5MQ3+8xknkh8zg6JGjb63NY1F/qZugc3HDmF6I6Ty3Vi0LykC3EUz44gyanOD/URjEUaneXQ==
-X-Received: by 2002:a63:214:0:b0:41c:b4fc:f3a6 with SMTP id 20-20020a630214000000b0041cb4fcf3a6mr845669pgc.132.1659531703921;
-        Wed, 03 Aug 2022 06:01:43 -0700 (PDT)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id k3-20020a170902c40300b0016f1ef2cd44sm198058plk.154.2022.08.03.06.01.41
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=/Ry3zzDkv6XblXGEI6RBqshIKSFKVZmsLhV6TX/Fy9g=;
+        b=6CdoDdy3KBLJ0nh+ZQvdxgSUYl94GRyfKG/FHISwA2q3h9ReLVSBbRp+aN3REFu4mP
+         odcRvN+c3jEnjjuVFFXeKwVE8rWWRw/+yxQ5OSd0uszLEcEP/dsx7u0g38Op1EWYlGz9
+         bG5zYebVZw2tj5QRWbdfoBEOkUmrkoUpVCNdvt8u43IDcJ6PjgUECyR8nqk8KnTFYmRy
+         t2vbXTUcXFG3fkNk+HfAQEHzQhBU39RFnm0RIg50PaupE/VLfzMmWtuPNUXN+DeSlvxD
+         T9wJxuDKEhIlKC7U78KvICEUtoIv4cknk0SZ/Qsq1ZwSBjzQUUT19KLD15EczCD3O2jS
+         wtaw==
+X-Gm-Message-State: ACgBeo2U7+WiEyzDMxIOU8AmyxJFvlG+ZEXNQnbzE18waxNYuHnv9rAJ
+        nY6IsoKiC128jk++rob/vKkSOA==
+X-Google-Smtp-Source: AA6agR7F7CtHGW/mosj8VeMFYeR+Ew9PGPNdUTeRqY12r4rTkXbJjch3JLbnhAlv7SBnqMZ2wX4cSQ==
+X-Received: by 2002:a17:90b:3a90:b0:1f2:edfe:db4 with SMTP id om16-20020a17090b3a9000b001f2edfe0db4mr4750561pjb.105.1659531755942;
+        Wed, 03 Aug 2022 06:02:35 -0700 (PDT)
+Received: from C02G87K0MD6R.bytedance.net ([139.177.225.244])
+        by smtp.gmail.com with ESMTPSA id w126-20020a623084000000b0052d417039c2sm7870775pfw.133.2022.08.03.06.02.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 06:01:43 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/2] KVM: x86/svm/pmu: Direct access pmu->gp_counter[] to implement amd_*_to_pmc()
-Date:   Wed,  3 Aug 2022 21:01:23 +0800
-Message-Id: <20220803130124.72340-1-likexu@tencent.com>
-X-Mailer: git-send-email 2.37.1
+        Wed, 03 Aug 2022 06:02:35 -0700 (PDT)
+From:   Hao Jia <jiahao.os@bytedance.com>
+To:     mingo@redhat.com, peterz@infradead.org, mingo@kernel.org,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, bristot@redhat.com, vschneid@redhat.com
+Cc:     linux-kernel@vger.kernel.org, Hao Jia <jiahao.os@bytedance.com>
+Subject: [PATCH RESEND v2] sched/fair: Remove unused parameter idle of _nohz_idle_balance()
+Date:   Wed,  3 Aug 2022 21:02:23 +0800
+Message-Id: <20220803130223.70419-1-jiahao.os@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+Commit 7a82e5f52a35 ("sched/fair: Merge for each idle cpu loop of ILB")
+has been merged. The parameter idle of _nohz_idle_balance()
+is not used anymore so we can remove it.
 
-AMD only has gp counters, whose corresponding vPMCs are initialised
-and stored in pmu->gp_counter[] in order of idx, so we can access this
-array directly based on any valid pmc->idx, without any help from other
-interfaces at all. The amd_rdpmc_ecx_to_pmc() can now reuse this part
-of the code quite naturally.
+Signed-off-by: Hao Jia <jiahao.os@bytedance.com>
+Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
 
-Opportunistically apply array_index_nospec() to reduce the attack
-surface for speculative execution and remove the dead code.
-
-Signed-off-by: Like Xu <likexu@tencent.com>
 ---
-v1: https://lore.kernel.org/kvm/20220510115718.93335-2-likexu@tencent.com/
-v1 -> v2 Changelog:
-- Remove unused helper get_msr_base();
+ v2:
+ - Modify the commit format, suggested by Vincent Guittot.
+---
+---
+ kernel/sched/fair.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
- arch/x86/kvm/svm/pmu.c | 41 +++++------------------------------------
- 1 file changed, 5 insertions(+), 36 deletions(-)
-
-diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
-index f24613a108c5..d1c3b766841e 100644
---- a/arch/x86/kvm/svm/pmu.c
-+++ b/arch/x86/kvm/svm/pmu.c
-@@ -33,23 +33,6 @@ enum index {
- 	INDEX_ERROR,
- };
- 
--static unsigned int get_msr_base(struct kvm_pmu *pmu, enum pmu_type type)
--{
--	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
--
--	if (guest_cpuid_has(vcpu, X86_FEATURE_PERFCTR_CORE)) {
--		if (type == PMU_TYPE_COUNTER)
--			return MSR_F15H_PERF_CTR;
--		else
--			return MSR_F15H_PERF_CTL;
--	} else {
--		if (type == PMU_TYPE_COUNTER)
--			return MSR_K7_PERFCTR0;
--		else
--			return MSR_K7_EVNTSEL0;
--	}
--}
--
- static enum index msr_to_index(u32 msr)
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 914096c5b1ae..42f5b078d839 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -10916,8 +10916,7 @@ static bool update_nohz_stats(struct rq *rq)
+  * can be a simple update of blocked load or a complete load balance with
+  * tasks movement depending of flags.
+  */
+-static void _nohz_idle_balance(struct rq *this_rq, unsigned int flags,
+-			       enum cpu_idle_type idle)
++static void _nohz_idle_balance(struct rq *this_rq, unsigned int flags)
  {
- 	switch (msr) {
-@@ -141,18 +124,12 @@ static bool amd_pmc_is_enabled(struct kvm_pmc *pmc)
+ 	/* Earliest time when we have to do rebalance again */
+ 	unsigned long now = jiffies;
+@@ -11032,7 +11031,7 @@ static bool nohz_idle_balance(struct rq *this_rq, enum cpu_idle_type idle)
+ 	if (idle != CPU_IDLE)
+ 		return false;
  
- static struct kvm_pmc *amd_pmc_idx_to_pmc(struct kvm_pmu *pmu, int pmc_idx)
- {
--	unsigned int base = get_msr_base(pmu, PMU_TYPE_COUNTER);
--	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
-+	unsigned int num_counters = pmu->nr_arch_gp_counters;
+-	_nohz_idle_balance(this_rq, flags, idle);
++	_nohz_idle_balance(this_rq, flags);
  
--	if (guest_cpuid_has(vcpu, X86_FEATURE_PERFCTR_CORE)) {
--		/*
--		 * The idx is contiguous. The MSRs are not. The counter MSRs
--		 * are interleaved with the event select MSRs.
--		 */
--		pmc_idx *= 2;
--	}
-+	if (pmc_idx >= num_counters)
-+		return NULL;
- 
--	return get_gp_pmc_amd(pmu, base + pmc_idx, PMU_TYPE_COUNTER);
-+	return &pmu->gp_counters[array_index_nospec(pmc_idx, num_counters)];
+ 	return true;
+ }
+@@ -11052,7 +11051,7 @@ void nohz_run_idle_balance(int cpu)
+ 	 * (ie NOHZ_STATS_KICK set) and will do the same.
+ 	 */
+ 	if ((flags == NOHZ_NEWILB_KICK) && !need_resched())
+-		_nohz_idle_balance(cpu_rq(cpu), NOHZ_STATS_KICK, CPU_IDLE);
++		_nohz_idle_balance(cpu_rq(cpu), NOHZ_STATS_KICK);
  }
  
- static bool amd_is_valid_rdpmc_ecx(struct kvm_vcpu *vcpu, unsigned int idx)
-@@ -168,15 +145,7 @@ static bool amd_is_valid_rdpmc_ecx(struct kvm_vcpu *vcpu, unsigned int idx)
- static struct kvm_pmc *amd_rdpmc_ecx_to_pmc(struct kvm_vcpu *vcpu,
- 	unsigned int idx, u64 *mask)
- {
--	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
--	struct kvm_pmc *counters;
--
--	idx &= ~(3u << 30);
--	if (idx >= pmu->nr_arch_gp_counters)
--		return NULL;
--	counters = pmu->gp_counters;
--
--	return &counters[idx];
-+	return amd_pmc_idx_to_pmc(vcpu_to_pmu(vcpu), idx & ~(3u << 30));
- }
- 
- static bool amd_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr)
+ static void nohz_newidle_balance(struct rq *this_rq)
 -- 
-2.37.1
+2.32.0
 
