@@ -2,163 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C9DC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 11:18:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F00C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 11:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235933AbiHCLSh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 07:18:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41002 "EHLO
+        id S235839AbiHCLSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 07:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235839AbiHCLSd (ORCPT
+        with ESMTP id S236019AbiHCLSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 07:18:33 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2BB1C90A
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 04:18:32 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id y127so27832246yby.8
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 04:18:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=PSBSqSCCzFolep6UPGhOMMv5cemuy3j+hc8VPw5MalM=;
-        b=bMHRKq5scJSaAAH/R+bIAKiVW2q76rsyS5fqChaK2vvP0e6X8lMOJ9fvJpVbuVUJf9
-         IChi94VhhfBbdTI2M0D6R0ol52pbvpIWTX5RokondoQu4TASVcmEbumPPXkQwXm+8vUR
-         loGd4D/ublp4BotEl4FDKW/8SbxfxgSBIcvBxNCqYCDJTWv1q9v//8OX1NtoVTjBQugp
-         FRidMBKH+pYAfWV2DljliF14OLvHW8MohTIvNFWjXrqkVqpwGM8wo1GWYVY+fqTe2ZAK
-         XtV8W+6uyL7Ih8Wr0y2ekD6szJA6VlkiENUbAtY64eghDk0gKJXZmOPEvPk/VMtM+HPV
-         cqFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=PSBSqSCCzFolep6UPGhOMMv5cemuy3j+hc8VPw5MalM=;
-        b=JR3Xs67CXjXATwfObY/1QS3lcy6B+ymLNf3UaLHGW0NHC7UKFkESSq7OtoRqq4tuxR
-         LpgUtpLqZFsbF7Z1d3uDImDkc5WEixoEiw2k7kzJ0riSLJdkIXYSCY47JvIq0XlPast5
-         oEV5NWXNhR0Wb60KZSUUnu7Z6NuHiH0gJk1RJZAA6EF7z7dP9izFB3zUkL+xLiFWU6qz
-         EFjZAyeCGyAwOeyFD2Lr9pgjwIrI/q6aQBr7jyumuHlJmbEAx8p3UDGdZmrH3VgC2vo4
-         Ccxp6s6udoOZRDqKHyECFQk1lngw/EspB4avWJHDsf0YawwIyfkwMCy3xFrUmMX54p39
-         7szA==
-X-Gm-Message-State: ACgBeo395jI9spiuWWP3LkMe5Y/+tPPE05ZqE7BplRuMxr/5LJQ3FecS
-        Ij1LAQ1CclF58v+RDp7ZVggsr1Bcd1Eicv9ECrPI5w==
-X-Google-Smtp-Source: AA6agR7nzADdbpq41G4xAhK/5KipIY2zuod2SPum8O77h1V58WRcrWLdk3ucV/uv9E8f8txAcMtuwxqzwLK38mf09ss=
-X-Received: by 2002:a25:1687:0:b0:671:8241:610d with SMTP id
- 129-20020a251687000000b006718241610dmr19350594ybw.250.1659525511896; Wed, 03
- Aug 2022 04:18:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-19-glider@google.com>
- <CANpmjNOPJL7WAUh5CUZOYO8hY-dHTHMUMJzd9OGbmWES+smtrQ@mail.gmail.com>
-In-Reply-To: <CANpmjNOPJL7WAUh5CUZOYO8hY-dHTHMUMJzd9OGbmWES+smtrQ@mail.gmail.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Wed, 3 Aug 2022 13:17:55 +0200
-Message-ID: <CAG_fn=W0bfUZBc-tDMFgeEzgZgezse+mOjQnoO3vBALm9+1Q3w@mail.gmail.com>
-Subject: Re: [PATCH v4 18/45] instrumented.h: add KMSAN support
-To:     Marco Elver <elver@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        Wed, 3 Aug 2022 07:18:45 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D91D1DA79
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 04:18:38 -0700 (PDT)
+X-UUID: e05811de7bca46208585186a31832815-20220803
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=OZYlzLgyWu40ADizHKmCXW+EjVh2C0M+Azc1lhdIggI=;
+        b=To4NqyX8U9MQPANUtu6vtc+lKS/P9Umqbh0I37UHeyeZPMfJ7MPXbqKo3xc7c62ZuWJRRPHf4hl1KOiAcsRrtaSNQ2jYLszMuE/n+omI7b/EfgUVNUY098/a3W98J1s13T2SwEfrhTgo7f3GcKq6/BWgrpDn9RD03a9i29GyCWU=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:865561e0-6715-4395-8c3c-daf0637f60ea,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:0f94e32,CLOUDID:a9352925-a982-4824-82d2-9da3b6056c2a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: e05811de7bca46208585186a31832815-20220803
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <kuan-ying.lee@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1155117335; Wed, 03 Aug 2022 19:18:31 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 3 Aug 2022 19:18:30 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 3 Aug 2022 19:18:30 +0800
+Message-ID: <e64af337f5bc32ee90e4154642446126040432f9.camel@mediatek.com>
+Subject: Re: [PATCH] scripts: Fix no space expression between sp and offset
+From:   Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>, <masahiroy@kernel.org>,
+        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <aou@eecs.berkeley.edu>, <wafgo01@gmail.com>
+CC:     Chinwen Chang =?UTF-8?Q?=28=E5=BC=B5=E9=8C=A6=E6=96=87=29?= 
+        <chinwen.chang@mediatek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>
+Date:   Wed, 3 Aug 2022 19:18:30 +0800
+In-Reply-To: <20220722063529.7166-1-Kuan-Ying.Lee@mediatek.com>
+References: <20220722063529.7166-1-Kuan-Ying.Lee@mediatek.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 3:52 PM Marco Elver <elver@google.com> wrote:
->
-> On Fri, 1 Jul 2022 at 16:24, Alexander Potapenko <glider@google.com> wrot=
-e:
-> >
-> > To avoid false positives, KMSAN needs to unpoison the data copied from
-> > the userspace. To detect infoleaks - check the memory buffer passed to
-> > copy_to_user().
-> >
-> > Signed-off-by: Alexander Potapenko <glider@google.com>
->
-> Reviewed-by: Marco Elver <elver@google.com>
->
-> With the code simplification below.
->
-> [...]
-> > --- a/mm/kmsan/hooks.c
-> > +++ b/mm/kmsan/hooks.c
-> > @@ -212,6 +212,44 @@ void kmsan_iounmap_page_range(unsigned long start,=
- unsigned long end)
-> >  }
-> >  EXPORT_SYMBOL(kmsan_iounmap_page_range);
-> >
-> > +void kmsan_copy_to_user(void __user *to, const void *from, size_t to_c=
-opy,
-> > +                       size_t left)
-> > +{
-> > +       unsigned long ua_flags;
-> > +
-> > +       if (!kmsan_enabled || kmsan_in_runtime())
-> > +               return;
-> > +       /*
-> > +        * At this point we've copied the memory already. It's hard to =
-check it
-> > +        * before copying, as the size of actually copied buffer is unk=
-nown.
-> > +        */
-> > +
-> > +       /* copy_to_user() may copy zero bytes. No need to check. */
-> > +       if (!to_copy)
-> > +               return;
-> > +       /* Or maybe copy_to_user() failed to copy anything. */
-> > +       if (to_copy <=3D left)
-> > +               return;
-> > +
-> > +       ua_flags =3D user_access_save();
-> > +       if ((u64)to < TASK_SIZE) {
-> > +               /* This is a user memory access, check it. */
-> > +               kmsan_internal_check_memory((void *)from, to_copy - lef=
-t, to,
-> > +                                           REASON_COPY_TO_USER);
->
-> This could just do "} else {" and the stuff below, and would result in
-> simpler code with no explicit "return" and no duplicated
-> user_access_restore().
+On Fri, 2022-07-22 at 14:35 +0800, Kuan-Ying Lee wrote:
 
-Sounds good, will do.
+Cc maintainers.
 
+> When I use older version aarch64 objdump (2.24) to disassemble
+> aarch64 vmlinux, I get the result like below.
+> There is no space between sp and offset.
+> 
+> ffff800008010000 <dw_apb_ictl_handle_irq>:
+> ffff800008010000:       d503233f        hint    #0x19
+> ffff800008010004:       a9bc7bfd        stp     x29, x30, [sp,#-64]!
+> ffff800008010008:       90011e60        adrp    x0, ffff80000a3dc000
+> <num_ictlrs>
+> ffff80000801000c:       910003fd        mov     x29, sp
+> ffff800008010010:       a9025bf5        stp     x21, x22, [sp,#32]
+> 
+> When I use newer version aarch64 objdump (2.35), I get
+> the result like below.
+> 
+> ffff800008010000 <dw_apb_ictl_handle_irq>:
+> ffff800008010000:       d503233f        paciasp
+> ffff800008010004:       a9bc7bfd        stp     x29, x30, [sp, #-64]!
+> ffff800008010008:       90011e60        adrp    x0, ffff80000a3dc000
+> <num_ictlrs>
+> ffff80000801000c:       910003fd        mov     x29, sp
+> ffff800008010010:       a9025bf5        stp     x21, x22, [sp, #32]
+> 
+> Add no space support of regular expression for old version objdump.
+> 
+> Signed-off-by: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
+> ---
+>  scripts/checkstack.pl | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/scripts/checkstack.pl b/scripts/checkstack.pl
+> index d2c38584ece6..e404b6b11295 100755
+> --- a/scripts/checkstack.pl
+> +++ b/scripts/checkstack.pl
+> @@ -56,7 +56,7 @@ my (@stack, $re, $dre, $sub, $x, $xs, $funcre,
+> $min_stack);
+>  	if ($arch =~ '^(aarch|arm)64$') {
+>  		#ffffffc0006325cc:       a9bb7bfd        stp     x29,
+> x30, [sp, #-80]!
+>  		#a110:       d11643ff        sub     sp, sp, #0x590
+> -		$re = qr/^.*stp.*sp, \#-([0-9]{1,8})\]\!/o;
+> +		$re = qr/^.*stp.*sp, ?\#-([0-9]{1,8})\]\!/o;
+>  		$dre = qr/^.*sub.*sp, sp, #(0x$x{1,8})/o;
+>  	} elsif ($arch eq 'arm') {
+>  		#c0008ffc:	e24dd064	sub	sp, sp, #100	
+> ; 0x64
+> -- 
+> 2.18.0
+> 
 
---=20
-Alexander Potapenko
-Software Engineer
-
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
