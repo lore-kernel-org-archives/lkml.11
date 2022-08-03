@@ -2,119 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21CD8C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:56:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D25C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:57:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238173AbiHCN45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 09:56:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43596 "EHLO
+        id S238351AbiHCN5B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 09:57:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238764AbiHCNzw (ORCPT
+        with ESMTP id S238779AbiHCNzx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 09:55:52 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446002F4
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 06:55:41 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id l14so12618382qtv.4
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 06:55:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=lQmTwuH19noXU8KpeeAnN5wF6xxdpiMxXJOzXODGwqU=;
-        b=0k7nUrbpXLcaPeWPf60nz1yNFjZ/YkPDFzWTlv1KmmrFzIm2f1cMvivgKSu1u7TEZj
-         2/sbX9+byvfdjE8wK0tdzxTYiK9YqK0GqsDv3ZaJyUgmRpW/TDs25YzEqrKcMRorAeg5
-         LiokXNEF0dr/rKiTJ4Zfg6MK37m6TDHh54mrkeWee6VD1B+Rqi11t/5jN7REjUJ7xY4s
-         qk5npgwTzDiP0tc6ngdQKBYVXNW4nTWseViEXG/GTiHT2/jR9tEz9XjLjRoAFqIEZBi+
-         w6PIhKBI8RBsl0tVVG8jKY6bRweyNTxw+0N3M/4feZe2Bg8zPMnKsg+6n3cJTZtAJS2d
-         zAdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=lQmTwuH19noXU8KpeeAnN5wF6xxdpiMxXJOzXODGwqU=;
-        b=q47UoaJkqdxE8lp1u9Qr5p2qjMwsYv08Cy6Ij24aXpNZ1I9oVfIn4jJniowGNIHoXM
-         65B0bI94CuSOz+wgYXINttxDcn3XqZFuhEQt4pcj3yMk6pyakYHYHs1xgajaNcv8oMo1
-         3cik2afZKWtkEAQHPBj12IftXUG3nHBY33pNY7mj19CytSMhRNlWwzrhjgiSgsydbKZq
-         GigBI8GZ8GlR+o1jPYn8iC/avUng9bF0Ugxo78miZZYbwU1lBRDwahsdVgHPhBL85w7Z
-         cCisb9bXac7GW8hw/R9OfW8s5ScMvcD/UbRxg94mPbQTEdZJwh6tLZipUgYmJJ+voXTc
-         7/XQ==
-X-Gm-Message-State: ACgBeo2++op3Tzb5imAX+X4Dg56qdzb+YHtc55ZQYbVXBKP6NYnZc7Al
-        S1Fmif7SAPDY/z5cuuwVtloNhA==
-X-Google-Smtp-Source: AA6agR55ZUMakwR8gOPEEriFgNS65we8TZqR5lyXHTta3pfmlHq7HU0LVG3E/Eq2e/cr6AkfR2Y4IQ==
-X-Received: by 2002:ac8:7396:0:b0:33f:4f21:59d6 with SMTP id t22-20020ac87396000000b0033f4f2159d6mr1194652qtp.453.1659534940438;
-        Wed, 03 Aug 2022 06:55:40 -0700 (PDT)
-Received: from localhost (2603-7000-0c01-2716-00ea-7f88-5fd9-01cd.res6.spectrum.com. [2603:7000:c01:2716:ea:7f88:5fd9:1cd])
-        by smtp.gmail.com with ESMTPSA id do54-20020a05620a2b3600b006b5e1aeb777sm3106801qkb.43.2022.08.03.06.55.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 06:55:40 -0700 (PDT)
-Date:   Wed, 3 Aug 2022 09:55:39 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     cgel.zte@gmail.com
-Cc:     akpm@linux-foundation.org, tj@kernel.org, axboe@kernel.dk,
-        vdavydov.dev@gmail.com, ran.xiaokai@zte.com.cn, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, cgel <cgel@zte.com.cn>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [RFC PATCH 1/2] psi: introduce memory.pressure.stat
-Message-ID: <Yup+W/EFzkfSqRnW@cmpxchg.org>
-References: <20220801004205.1593100-1-ran.xiaokai@zte.com.cn>
+        Wed, 3 Aug 2022 09:55:53 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB441055C
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 06:55:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id F2836CE23A0
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 13:55:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45390C43143;
+        Wed,  3 Aug 2022 13:55:39 +0000 (UTC)
+Received: from rostedt by gandalf.local.home with local (Exim 4.96)
+        (envelope-from <rostedt@goodmis.org>)
+        id 1oJEqY-007kRj-0w;
+        Wed, 03 Aug 2022 09:55:38 -0400
+Message-ID: <20220803135538.130965846@goodmis.org>
+User-Agent: quilt/0.66
+Date:   Wed, 03 Aug 2022 09:55:12 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
+Subject: [for-next][PATCH 4/5] tracing/eprobe: Show syntax error logs in error_log file
+References: <20220803135508.240797292@goodmis.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220801004205.1593100-1-ran.xiaokai@zte.com.cn>
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 01, 2022 at 12:42:04AM +0000, cgel.zte@gmail.com wrote:
-> From: cgel <cgel@zte.com.cn>
-> 
-> For now psi memory pressure account for all the mem stall in the
-> system, And didnot provide a detailed information why the stall
-> happens. This patch introduce a cgroupu knob memory.pressure.stat,
-> it tells the detailed stall information of all memory events and it
-> format and the corresponding proc interface.
-> 
-> for the cgroup, add memory.pressure.stat and it shows:
-> kswapd: avg10=0.00 avg60=0.00 avg300=0.00 total=0
-> direct reclaim: avg10=0.00 avg60=0.00 avg300=0.12 total=42356
-> kcompacted: avg10=0.00 avg60=0.00 avg300=0.00 total=0
-> direct compact: avg10=0.00 avg60=0.00 avg300=0.00 total=0
-> cgroup reclaim: avg10=0.00 avg60=0.00 avg300=0.00 total=0
-> workingset thrashing:   avg10=0.00 avg60=0.00 avg300=0.00 total=0
-> 
-> for the system wide, a proc file introduced as pressure/memory_stat
-> and the format is the same as the cgroup interface.
-> 
-> With this detaled information, for example, if the system is stalled
-> because of kcompacted, compaction_proactiveness can be promoted so
-> pro-compaction can be involved earlier.
-> 
-> Signed-off-by: cgel <cgel@zte.com.cn>
+From: "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
 
-> @@ -64,9 +91,11 @@ struct psi_group_cpu {
->  
->  	/* Aggregate pressure state derived from the tasks */
->  	u32 state_mask;
-> +	u32 state_memstall;
->  
->  	/* Period time sampling buckets for each state of interest (ns) */
->  	u32 times[NR_PSI_STATES];
-> +	u32 times_mem[PSI_MEM_STATES];
+Show the syntax errors for event probes in error_log file as same as
+other dynamic events, so that user can understand what is the problem.
 
-This doubles the psi cache footprint on every context switch, wakeup,
-sleep, etc. in the scheduler. You're also adding more branches to
-those same paths. It'll measurably affect everybody who is using psi.
+Link: https://lkml.kernel.org/r/165932113556.2850673.3483079297896607612.stgit@devnote2
 
-Yet, in the years of using psi in production myself, I've never felt
-the need for what this patch provides. There are event counters for
-everything that contributes to pressure, and it's never been hard to
-rootcause spikes. There are also things like bpftrace that let you
-identify who is stalling for how long in order to do one-off tuning
-and systems introspection.
+Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ kernel/trace/trace_eprobe.c | 11 +++++++++--
+ kernel/trace/trace_probe.h  |  5 ++++-
+ 2 files changed, 13 insertions(+), 3 deletions(-)
 
-For this to get merged, it needs a better explanation of the usecase
-that requires this information to be broadly available all the time.
-And it needs to bring down the impact on everybody else who doesn't
-want this - either by reducing the footprint or by making the feature
-optional.
+diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
+index a30f21499e81..4a0e9d927443 100644
+--- a/kernel/trace/trace_eprobe.c
++++ b/kernel/trace/trace_eprobe.c
+@@ -839,8 +839,11 @@ static int trace_eprobe_tp_update_arg(struct trace_eprobe *ep, const char *argv[
+ 	if (ret)
+ 		return ret;
+ 
+-	if (ep->tp.args[i].code->op == FETCH_OP_TP_ARG)
++	if (ep->tp.args[i].code->op == FETCH_OP_TP_ARG) {
+ 		ret = trace_eprobe_tp_arg_update(ep, i);
++		if (ret)
++			trace_probe_log_err(0, BAD_ATTACH_ARG);
++	}
+ 
+ 	return ret;
+ }
+@@ -880,8 +883,10 @@ static int __trace_eprobe_create(int argc, const char *argv[])
+ 	trace_probe_log_set_index(1);
+ 	sys_event = argv[1];
+ 	ret = traceprobe_parse_event_name(&sys_event, &sys_name, buf2, 0);
+-	if (!sys_event || !sys_name)
++	if (!sys_event || !sys_name) {
++		trace_probe_log_err(0, NO_EVENT_INFO);
+ 		goto parse_error;
++	}
+ 
+ 	if (!event) {
+ 		strscpy(buf1, argv[1], MAX_EVENT_NAME_LEN);
+@@ -896,6 +901,8 @@ static int __trace_eprobe_create(int argc, const char *argv[])
+ 
+ 	if (IS_ERR(ep)) {
+ 		ret = PTR_ERR(ep);
++		if (ret == -ENODEV)
++			trace_probe_log_err(0, BAD_ATTACH_EVENT);
+ 		/* This must return -ENOMEM or missing event, else there is a bug */
+ 		WARN_ON_ONCE(ret != -ENOMEM && ret != -ENODEV);
+ 		ep = NULL;
+diff --git a/kernel/trace/trace_probe.h b/kernel/trace/trace_probe.h
+index 92cc149af0fd..3b3869ae8cfd 100644
+--- a/kernel/trace/trace_probe.h
++++ b/kernel/trace/trace_probe.h
+@@ -442,7 +442,10 @@ extern int traceprobe_define_arg_fields(struct trace_event_call *event_call,
+ 	C(FAIL_REG_PROBE,	"Failed to register probe event"),\
+ 	C(DIFF_PROBE_TYPE,	"Probe type is different from existing probe"),\
+ 	C(DIFF_ARG_TYPE,	"Argument type or name is different from existing probe"),\
+-	C(SAME_PROBE,		"There is already the exact same probe event"),
++	C(SAME_PROBE,		"There is already the exact same probe event"),\
++	C(NO_EVENT_INFO,	"This requires both group and event name to attach"),\
++	C(BAD_ATTACH_EVENT,	"Attached event does not exist"),\
++	C(BAD_ATTACH_ARG,	"Attached event does not have this field"),
+ 
+ #undef C
+ #define C(a, b)		TP_ERR_##a
+-- 
+2.35.1
