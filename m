@@ -2,179 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B842C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:45:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0CBFC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237495AbiHCJpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 05:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56466 "EHLO
+        id S236001AbiHCJri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 05:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237460AbiHCJo4 (ORCPT
+        with ESMTP id S232303AbiHCJrf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 05:44:56 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E8023DF04
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 02:44:55 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-3246910dac3so113768437b3.12
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 02:44:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=Y5TvyICc8d9t41nnsu7puTvMuWTSp2+6bN2hR6XdoD8=;
-        b=FPrKKTFmIIrhXCK1a8bx0Gn0ZQdsswBQaJ6AcU4bdHhAv3FjPdWHeD6gFyulCFqoQf
-         8Ev6qu/iHol/CbvKBcjHgoIJRJzq3MUTFoZsXmwDMcsi+Qzb+ioohmiHkQMiO584Xqcm
-         3ufSvymy+GTp+Z/M7xxzl41Pr+8hzIqnNyWpVZwIQQnS8NGGru1KNkQquKQ9DH8ODztz
-         nLkMaxwXBlaAiLiX+04wqiuxR8hikX1dzbdwP4lQQX314JMeqfcI9MDPPXug+QfyppfG
-         a6grl/lOUGAxn6LNav8AW61Kc4S7JUpJqkDasX1rVL7l1cRykE+XrDWarl+uwQVvWPrv
-         xvlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=Y5TvyICc8d9t41nnsu7puTvMuWTSp2+6bN2hR6XdoD8=;
-        b=YWbNRkqjB2eV11LNX8QDr6orsjdeQsIVJdFzbYxCFKh5JXGaPF+AVVNbyH4324L1sT
-         miY+K0y/RHWaqWFApW8lQBu6rh4xBCic3+65S9cz/01hNyFY8ZJWhrJbhaCe4Vo5PqzB
-         czyhYN7y+Be4mb5Ez8H/XzBFxdgzZwwzYfmnmV+8GjplpRyOJGbt4oQ/ZVYxVYz++0Ov
-         JxkY1f+DCFN+NRQT1sKSo5LM9tum949B260c/LYZBlfATtb1sjOdpqm7odVGqKUeTnVV
-         eRKidzPc4R21Me7mDwGssQN7HY5w3hGdMBQL/eUFhcp2zaWFJ8Ww4SW1R5z1SojI0aAw
-         9SWw==
-X-Gm-Message-State: ACgBeo0CUjlEdj8rGfo9m12rIcfH/1yoAc67aMHRQpbpDn4N8cvnbsoP
-        hpaoBFmr8OrMk/h9dz2AAsOtsxfUIp7ENyHyO9+1Gg==
-X-Google-Smtp-Source: AA6agR5d01Pm6wu3vbijZCaWwzO5G1sfm5AIHiHcJvlQ6r93IvYqNVc/zAhJ9di6/dSYm6ZI88xapY6TE2XXsAWQ/Ms=
-X-Received: by 2002:a0d:d40d:0:b0:322:d4c0:c6f6 with SMTP id
- w13-20020a0dd40d000000b00322d4c0c6f6mr23100302ywd.428.1659519894650; Wed, 03
- Aug 2022 02:44:54 -0700 (PDT)
+        Wed, 3 Aug 2022 05:47:35 -0400
+Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C331CB12
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 02:47:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1659519997; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=XvWsWjE8t5zW4M60jT2kOoKrtmPXvGOMsKVwKyiC2PnFszBqjdRoLPEB5p0Gm4snpFnbYZXTpo2f16yAE99b5YKURvkAqOpSpV5x+fcKGA+qHTZ9eoviJpaSLmXBMEjSoOQdwCbL6hIrRDBCVDyg36UZvsrFYIrC069hNuHmhpY=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1659519997; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=tCHNfkvLKa0BySi4rSrFMkX48wCJeADFiMbfJkU5ves=; 
+        b=HOyH+TgaaaO2ChMWCD3C9KPP3EGmrp0QUke4MOKwGprGZFQbFRQp2xY9Tyyz1Plz5al4841MlxDMKySAaxJH9rog+bQClxfO6KmUcnb5DaNhRAWlZbs+p/c19AN2GoqAjkTfstZP4KCTqfHkN47VuysSTIieON8M5FOw4lISLis=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659519997;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=tCHNfkvLKa0BySi4rSrFMkX48wCJeADFiMbfJkU5ves=;
+        b=LjjQilODd69kMHJImKMUgwONAibLg0YAN8FOsMPeE36IMjtDxzLrJj9TY/02IOqe
+        rezK8hZNAgPX0BkAmfPwP/s8bqbqgOW/MpEIK7ECFtoMn1CH3yZ9MJfBduOnZBv2L/h
+        Ky8fP0E8dFzeKVY9obsL3O2nyFW+hyIdjbg/9I3M=
+Received: from mail.zoho.in by mx.zoho.in
+        with SMTP id 1659519981497938.089830690879; Wed, 3 Aug 2022 15:16:21 +0530 (IST)
+Date:   Wed, 03 Aug 2022 15:16:21 +0530
+From:   Siddh Raman Pant <code@siddh.me>
+To:     "Ingo Molnar" <mingo@kernel.org>
+Cc:     "x86" <x86@kernel.org>,
+        "Dave Hansen" <dave.hansen@linux.intel.com>,
+        "Andy Lutomirski" <luto@kernel.org>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        "linux-kernel-mentees" 
+        <linux-kernel-mentees@lists.linuxfoundation.org>
+Message-ID: <182631957a7.c72ff42439506.3030495024426988155@siddh.me>
+In-Reply-To: <YupC88xuQ4rcyLVR@gmail.com>
+References: <20220731160913.632092-1-code@siddh.me>
+ <YukFgFTaq4Aw+uht@gmail.com>
+ <1825f63b142.8968bde3116633.1242410031840350968@siddh.me>
+ <Yuo2UkkyaYtZ3rMZ@gmail.com>
+ <18262ed2459.44b0d74d434377.3690496800292832933@siddh.me>
+ <Yuo7A0KYoNnbgwWT@gmail.com>
+ <18263030220.8a990e82436929.3216192040531777412@siddh.me> <YupC88xuQ4rcyLVR@gmail.com>
+Subject: Re: [PATCH] x86/numa: Use cpumask_available instead of hardcoded
+ NULL check
 MIME-Version: 1.0
-References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-11-glider@google.com>
- <CANpmjNOYqXSw5+Sxt0+=oOUQ1iQKVtEYHv20=sh_9nywxXUyWw@mail.gmail.com>
-In-Reply-To: <CANpmjNOYqXSw5+Sxt0+=oOUQ1iQKVtEYHv20=sh_9nywxXUyWw@mail.gmail.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Wed, 3 Aug 2022 11:44:18 +0200
-Message-ID: <CAG_fn=W2EUjS8AX1Odunq1==dV178s_-w3hQpyrFBr=Auo-Q-A@mail.gmail.com>
-Subject: Re: [PATCH v4 10/45] libnvdimm/pfn_dev: increase MAX_STRUCT_PAGE_SIZE
-To:     Marco Elver <elver@google.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(+ Dan Williams)
-(resending with patch context included)
+On Wed, 03 Aug 2022 15:12:11 +0530  Ingo Molnar <mingo@kernel.org> wrote:
+> Oh. So I was daft, as suspected. ;-)
+>=20
+> And I can confirm that while gcc-11 doesn't trigger the warning, gcc-12=
+=20
+> does:
+>=20
+>   $ make ARCH=3Dx86_64 CC=3Dgcc-11 arch/x86/mm/numa.o
+>     CC      arch/x86/mm/numa.o
+>   $
+>=20
+>   $ rm -f arch/x86/mm/numa.o
+>   $
+>   $ make ARCH=3Dx86_64 CC=3Dgcc-12 arch/x86/mm/numa.o
+>=20
+>     CC      arch/x86/mm/numa.o
+>   arch/x86/mm/numa.c: In function =E2=80=98cpumask_of_node=E2=80=99:
+>   arch/x86/mm/numa.c:916:39: error: the comparison will always evaluate a=
+s =E2=80=98false=E2=80=99 for the address of =E2=80=98node_to_cpumask_map=
+=E2=80=99 will never be NULL [-Werror=3Daddress]
+>     916 |         if (node_to_cpumask_map[node] =3D=3D NULL) {
+>=20
+>=20
+> > [...]
+>=20
+> Yeah - and I agree with your fix - will apply it.
+>=20
+> Thanks for your patience :-)
+>=20
+>     Ingo
+>=20
 
-On Mon, Jul 11, 2022 at 6:27 PM Marco Elver <elver@google.com> wrote:
->
-> On Fri, 1 Jul 2022 at 16:23, Alexander Potapenko <glider@google.com> wrot=
-e:
-> >
-> > KMSAN adds extra metadata fields to struct page, so it does not fit int=
-o
-> > 64 bytes anymore.
->
-> Does this somehow cause extra space being used in all kernel configs?
-> If not, it would be good to note this in the commit message.
->
-I actually couldn't verify this on QEMU, because the driver never got loade=
-d.
-Looks like this increases the amount of memory used by the nvdimm
-driver in all kernel configs that enable it (including those that
-don't use KMSAN), but I am not sure how much is that.
-
-Dan, do you know how bad increasing MAX_STRUCT_PAGE_SIZE can be?
-
->
-> > Signed-off-by: Alexander Potapenko <glider@google.com>
->
-> Reviewed-by: Marco Elver <elver@google.com>
->
-> > ---
-> > Link: https://linux-review.googlesource.com/id/I353796acc6a850bfd7bb342=
-aa1b63e616fc614f1
-> > ---
-> >  drivers/nvdimm/nd.h       | 2 +-
-> >  drivers/nvdimm/pfn_devs.c | 2 +-
-> >  2 files changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/nvdimm/nd.h b/drivers/nvdimm/nd.h
-> > index ec5219680092d..85ca5b4da3cf3 100644
-> > --- a/drivers/nvdimm/nd.h
-> > +++ b/drivers/nvdimm/nd.h
-> > @@ -652,7 +652,7 @@ void devm_namespace_disable(struct device *dev,
-> >                 struct nd_namespace_common *ndns);
-> >  #if IS_ENABLED(CONFIG_ND_CLAIM)
-> >  /* max struct page size independent of kernel config */
-> > -#define MAX_STRUCT_PAGE_SIZE 64
-> > +#define MAX_STRUCT_PAGE_SIZE 128
-> >  int nvdimm_setup_pfn(struct nd_pfn *nd_pfn, struct dev_pagemap *pgmap)=
-;
-> >  #else
-> >  static inline int nvdimm_setup_pfn(struct nd_pfn *nd_pfn,
-> > diff --git a/drivers/nvdimm/pfn_devs.c b/drivers/nvdimm/pfn_devs.c
-> > index 0e92ab4b32833..61af072ac98f9 100644
-> > --- a/drivers/nvdimm/pfn_devs.c
-> > +++ b/drivers/nvdimm/pfn_devs.c
-> > @@ -787,7 +787,7 @@ static int nd_pfn_init(struct nd_pfn *nd_pfn)
-> >                  * when populating the vmemmap. This *should* be equal =
-to
-> >                  * PMD_SIZE for most architectures.
-> >                  *
-> > -                * Also make sure size of struct page is less than 64. =
-We
-> > +                * Also make sure size of struct page is less than 128.=
- We
-> >                  * want to make sure we use large enough size here so t=
-hat
-> >                  * we don't have a dynamic reserve space depending on
-> >                  * struct page size. But we also want to make sure we n=
-otice
-> > --
-> > 2.37.0.rc0.161.g10f37bed90-goog
-> >
-
-
-
---=20
-Alexander Potapenko
-Software Engineer
-
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
+No worries, and thanks! :)
+Siddh
