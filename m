@@ -2,110 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99447C19F2A
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 17:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F3BFC19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 17:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237726AbiHCRTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 13:19:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56970 "EHLO
+        id S236513AbiHCRWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 13:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237672AbiHCRTH (ORCPT
+        with ESMTP id S237881AbiHCRWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 13:19:07 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFDCF5465B
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 10:19:05 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id bv3so8432099wrb.5
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 10:19:05 -0700 (PDT)
+        Wed, 3 Aug 2022 13:22:31 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14BEC51421;
+        Wed,  3 Aug 2022 10:22:30 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id gj1so2206099pjb.0;
+        Wed, 03 Aug 2022 10:22:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=4UY8py3X0/BN1P3gwjm+tuZ8tcpmzyPC+aOTBqJeSt8=;
-        b=isXyHaMQW8qF2UKO6Lo9HB8KAV6BgkxuW6EUeqWLRPODlINo6vsuJneytGBi0CyXCF
-         umBnZMHsxaM3bNv50RmrF3o69tHPjJYzxYTxhNm4uM8X4h7TGgzpvKbe39+zGv+Oz6np
-         J82oD55Hycu2/T8xrB5VLcLU4a5GbYQ/HGs9t2kqoEDIYsPjWYaSSRbWJTGj/cTiIAHd
-         HR+o7bPHEylf+y640X7UbsK61JM4ZvUEZUyWovtcvWh3GJwmkkWGD0UlCn7D3STtKvzm
-         dZCFd8O+Hzrazi20lK3GNC2R82qQLaGFmvRHR3gIsdC35XvvUqavW64VFPr0cVjMO4dJ
-         S77g==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=rm9GxJHf4bMp41yMMJ7kHX0LNzG+Q8tVx0zjX0fL5Eg=;
+        b=Q+y4N05F6bbrA0KTd1dyGcJCIJqVn7sRmV5SaPGauTQkvOrW8lcA1nzpq/Cnxtyten
+         B+WTtQBhfxWMiIY9oD+v+Hv3yz+BgMc41r3ruHOBd4emBH1YkkVHLhkyNZ27Io6wmG1b
+         kvqztKsDuYNfSI2qsQiYSV1OmEMziJqAql3pq7UMLCMKePIqDag6k1WgqX3lSf9BcACr
+         54OyYAsmrzS92zZWS90j1oEKOd61FN3KxENQXcnnAVjORamMdsjKB7bFXJOczf1idzbY
+         9Tut5EM5VdPAmX1rKNperE0sVDqZfCx/FSUo9jAMMd8AheD5tLphb43lbsDCDtHLbJUE
+         cinQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=4UY8py3X0/BN1P3gwjm+tuZ8tcpmzyPC+aOTBqJeSt8=;
-        b=KyPBrDlnR9zktmLKBOmdP1sJFIOSsYuAIztb12FMnf3PV2wBowcPhMu5vDrgVYV8x/
-         95IBUsAgY7af3NmlHHL5tAWH5PlnWZwRLbODU76uYVOgk9T2FAK3cL2EtRJtBniKfwNs
-         d8+Q2KKuIo2H4k54SEShGTzJXxmD2Y6a+hhAUrjlg1mtmGLKYZbA+yPVpaHwC9s1hgrC
-         bSc7mQ5qgfZ4v6IUoRJg+1qri3MzO81sLUBD2rG0v8dEOnjkZ4RoR//dVooyZcFYZliU
-         eKI5bxibyb9FJhO0aPGEOuBi1UoVvuDU9Ww2H47BtkP52kCpEChRZonEJv7FZBXkRj2W
-         DdPw==
-X-Gm-Message-State: ACgBeo3QE80S+s7VN84kqBZOGz3QLDcXKp1x81p/tr8HghqC/hmBg4DT
-        9g3b3cbKlXGtqrr90EhY8SW4KQ==
-X-Google-Smtp-Source: AA6agR5Wv0gfa95g78ZnToqxbtcFp8H7zlGXCEu06c6mWg6qxteAX/Wj7uKUwhKAuRvMlmz+D4auQA==
-X-Received: by 2002:a5d:6687:0:b0:21e:d501:1b03 with SMTP id l7-20020a5d6687000000b0021ed5011b03mr16643286wru.387.1659547144183;
-        Wed, 03 Aug 2022 10:19:04 -0700 (PDT)
-Received: from ?IPV6:2a05:6e02:1041:c10:6e48:fbdd:280d:6dac? ([2a05:6e02:1041:c10:6e48:fbdd:280d:6dac])
-        by smtp.googlemail.com with ESMTPSA id g2-20020a5d64e2000000b0021b970a68f9sm2224839wri.26.2022.08.03.10.19.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Aug 2022 10:19:03 -0700 (PDT)
-Message-ID: <1c129750-4ac0-e4aa-f3b1-80ca1d35e23c@linaro.org>
-Date:   Wed, 3 Aug 2022 19:19:02 +0200
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=rm9GxJHf4bMp41yMMJ7kHX0LNzG+Q8tVx0zjX0fL5Eg=;
+        b=oJvRynix1/KshLwkmXO//wlMZmZGWT4i3qB+JvnMhT3blii9FsOyOvW1gDApHCEMY1
+         iGPrh7WZUBrWXFMnqIpITltQtx6pfvwV06Uf0AlfXess+9pPd8l5CKgl5GvqDq9B9BvL
+         EZUV00JEA0eofRo3DV6sN9MMozhLXviSiNE+5PCC+Uc2aSFc483I9LLcEBQfiRARExsT
+         XHJz/fSDf6dzOIuG217jXDTByyIQiWtj/xzu4AD65rXIHF2aiuZB4vuqtfgg1+aujonV
+         cvYsoYelwTWB19OucaOuREMzhLkW5WTG4wtL7TjyIfvyC+dDE74ZI0QQ0bZpDtrPf7Mh
+         mbgA==
+X-Gm-Message-State: ACgBeo1H70umpA6aXNAfANfd/DVmhcsGOYhtgqH+jGRakmgHk0x0fR9Y
+        alMWPbgnLquuocf3S207j+c=
+X-Google-Smtp-Source: AA6agR6pXPAuirMDUgBbJXkQS1bmQjv10jiSXKUS29WnbnLBrvkAXU7IYSzphYn8d1V5pdrLO2khRQ==
+X-Received: by 2002:a17:902:ccc4:b0:156:5d37:b42f with SMTP id z4-20020a170902ccc400b001565d37b42fmr27186057ple.157.1659547349427;
+        Wed, 03 Aug 2022 10:22:29 -0700 (PDT)
+Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
+        by smtp.gmail.com with ESMTPSA id u5-20020a17090a4bc500b001f239783e3dsm1857657pjl.34.2022.08.03.10.22.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Aug 2022 10:22:28 -0700 (PDT)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+        Rob Clark <robdclark@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 1/2] drm/msm: Move hangcheck timer restart
+Date:   Wed,  3 Aug 2022 10:23:01 -0700
+Message-Id: <20220803172302.1976981-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] tools/thermal: Fix possible path truncations
-Content-Language: en-US
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Markus Mayer <mmayer@broadcom.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>
-References: <20220725173755.2993805-1-f.fainelli@gmail.com>
- <CAJZ5v0hL46vdr=f8YiAPnRmmehZs51n+tkgoY7PMTVyJD0cpEA@mail.gmail.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <CAJZ5v0hL46vdr=f8YiAPnRmmehZs51n+tkgoY7PMTVyJD0cpEA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/08/2022 19:07, Rafael J. Wysocki wrote:
-> On Mon, Jul 25, 2022 at 7:38 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
->>
->> A build with -D_FORTIFY_SOURCE=2 enabled will produce the following warnings:
->>
->> sysfs.c:63:30: warning: '%s' directive output may be truncated writing up to 255 bytes into a region of size between 0 and 255 [-Wformat-truncation=]
->>    snprintf(filepath, 256, "%s/%s", path, filename);
->>                                ^~
->> Bump up the buffer to PATH_MAX which is the limit and account for all of
->> the possible NUL and separators that could lead to exceeding the
->> allocated buffer sizes.
->>
->> Fixes: 94f69966faf8 ("tools/thermal: Introduce tmon, a tool for thermal subsystem")
->> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> 
-> Daniel, are you going to pick up this one or should I?
+From: Rob Clark <robdclark@chromium.org>
 
-Yes, you can pick it
+Don't directly restart the hangcheck timer from the timer handler, but
+instead start it after the recover_worker replays remaining jobs.
 
-> There is also a tmon patch from Florian that seems to be pending.
-> Should I take care of it?
+If the kthread is blocked for other reasons, there is no point to
+immediately restart the timer.  Fixes a random symptom of the problem
+fixed in the next patch.
 
-I'm not sure which patch you are referring but if it is the pthread 
-compilation issue, it should be already applied for v5.20-rc1 from the 
-thermal pull request
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+ drivers/gpu/drm/msm/msm_gpu.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/diff/tools/thermal/tmon/tmon.h?id=c1dbe9a1c86da098a29dcdca1a67b65e2de7ec3a
-
+diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+index fba85f894314..8f9c48eabf7d 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.c
++++ b/drivers/gpu/drm/msm/msm_gpu.c
+@@ -328,6 +328,7 @@ find_submit(struct msm_ringbuffer *ring, uint32_t fence)
+ }
+ 
+ static void retire_submits(struct msm_gpu *gpu);
++static void hangcheck_timer_reset(struct msm_gpu *gpu);
+ 
+ static void get_comm_cmdline(struct msm_gem_submit *submit, char **comm, char **cmd)
+ {
+@@ -420,6 +421,8 @@ static void recover_worker(struct kthread_work *work)
+ 	}
+ 
+ 	if (msm_gpu_active(gpu)) {
++		bool restart_hangcheck = false;
++
+ 		/* retire completed submits, plus the one that hung: */
+ 		retire_submits(gpu);
+ 
+@@ -436,10 +439,15 @@ static void recover_worker(struct kthread_work *work)
+ 			unsigned long flags;
+ 
+ 			spin_lock_irqsave(&ring->submit_lock, flags);
+-			list_for_each_entry(submit, &ring->submits, node)
++			list_for_each_entry(submit, &ring->submits, node) {
+ 				gpu->funcs->submit(gpu, submit);
++				restart_hangcheck = true;
++			}
+ 			spin_unlock_irqrestore(&ring->submit_lock, flags);
+ 		}
++
++		if (restart_hangcheck)
++			hangcheck_timer_reset(gpu);
+ 	}
+ 
+ 	mutex_unlock(&gpu->lock);
+@@ -515,10 +523,6 @@ static void hangcheck_handler(struct timer_list *t)
+ 		kthread_queue_work(gpu->worker, &gpu->recover_work);
+ 	}
+ 
+-	/* if still more pending work, reset the hangcheck timer: */
+-	if (fence_after(ring->fctx->last_fence, ring->hangcheck_fence))
+-		hangcheck_timer_reset(gpu);
+-
+ 	/* workaround for missing irq: */
+ 	msm_gpu_retire(gpu);
+ }
 -- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+2.36.1
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
