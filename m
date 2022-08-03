@@ -2,128 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9FB5C19F2A
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:23:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C80C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235548AbiHCJXW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 05:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
+        id S235609AbiHCJXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 05:23:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiHCJXU (ORCPT
+        with ESMTP id S229445AbiHCJXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 05:23:20 -0400
-Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9664719C09
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 02:23:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1659518528; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=SzxExxF41r8xJbjYBAxHqwNZWS/Ssh/9WBvq+2Gtd00hAo198E4JT31rAYkmDw86v78xUmcR0tU5SeGrAQ4sAiKk8xE46IM52zwuM16uwooNb6YSAHZ2gUph69jtFU9afOlIVgG9pwsM9msi9tcowhygGUUS1zQCtsF42RiVa6M=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1659518528; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=q93C79sxRnF4sFFm2T+KqOAm96p2y3qDReUpm9q0LJ0=; 
-        b=cNC7Z7LQKOI1+CahMUn2YzdJnnyEz8ElHhuk9YAcIV32Lh1WENQINuuBp1Z55+zFrOeg1qZwP9wzsiVzzT+rIuPAE7sovxnRaqXoLcVivx5ZcCqymk11neHxfda/2t4qAFoIuUQAb9rrKSWit9PNTU6eYkTAk4b28KwsjE0LRts=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659518528;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=q93C79sxRnF4sFFm2T+KqOAm96p2y3qDReUpm9q0LJ0=;
-        b=c2CT/HK4lMxHAskVAhHR2ECPKlso2vtKy8o2kk0F81AFTb/TqGY9jEvdTcNW5KUv
-        kOhFXFNGY/6Moo7L5NTdPvmj6b9oZEtCTKKI1D1uU9KaTodb7Nm40sa/izK2uBBdje9
-        duUjDI8a2HmIwOiVPljDKYx0095Uwoyb7nyYVNnE=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 1659518517817516.3995624024521; Wed, 3 Aug 2022 14:51:57 +0530 (IST)
-Date:   Wed, 03 Aug 2022 14:51:57 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "Ingo Molnar" <mingo@kernel.org>
-Cc:     "x86" <x86@kernel.org>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "Andy Lutomirski" <luto@kernel.org>,
-        "Peter Zijlstra" <peterz@infradead.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "linux-kernel-mentees" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>
-Message-ID: <18263030220.8a990e82436929.3216192040531777412@siddh.me>
-In-Reply-To: <Yuo7A0KYoNnbgwWT@gmail.com>
-References: <20220731160913.632092-1-code@siddh.me>
- <YukFgFTaq4Aw+uht@gmail.com>
- <1825f63b142.8968bde3116633.1242410031840350968@siddh.me>
- <Yuo2UkkyaYtZ3rMZ@gmail.com>
- <18262ed2459.44b0d74d434377.3690496800292832933@siddh.me> <Yuo7A0KYoNnbgwWT@gmail.com>
-Subject: Re: [PATCH] x86/numa: Use cpumask_available instead of hardcoded
- NULL check
+        Wed, 3 Aug 2022 05:23:45 -0400
+Received: from mta-01.yadro.com (mta-02.yadro.com [89.207.88.252])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB7919C09;
+        Wed,  3 Aug 2022 02:23:44 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mta-01.yadro.com (Postfix) with ESMTP id A9E2141242;
+        Wed,  3 Aug 2022 09:23:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
+        in-reply-to:content-disposition:content-type:content-type
+        :mime-version:message-id:subject:subject:from:from:date:date
+        :received:received:received:received; s=mta-01; t=1659518621; x=
+        1661333022; bh=dmK9vb916vEJit/OWSlYMYSc9OyvaPfGlvzUpn8CPy0=; b=H
+        +mZPSiOYVV8T9u0b8koKSuwRNCM1G0WnnH5fwmEM82Ht4Lx2v0utndBFK4N4bdJc
+        7gttPR5Xo30OtmpxNxw2oGAQTtZG1xCuSpitfvKONLsop0/0I77qkyvg2A6A/0kG
+        YSFDGtLguXzM7M9HKHJapXIP5+WE9ad+slDstYliAc=
+X-Virus-Scanned: amavisd-new at yadro.com
+Received: from mta-01.yadro.com ([127.0.0.1])
+        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id WeuR4BRE3RPB; Wed,  3 Aug 2022 12:23:41 +0300 (MSK)
+Received: from T-EXCH-01.corp.yadro.com (t-exch-01.corp.yadro.com [172.17.10.101])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mta-01.yadro.com (Postfix) with ESMTPS id 9A12E4014D;
+        Wed,  3 Aug 2022 12:23:39 +0300 (MSK)
+Received: from T-EXCH-09.corp.yadro.com (172.17.11.59) by
+ T-EXCH-01.corp.yadro.com (172.17.10.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.669.32; Wed, 3 Aug 2022 12:23:39 +0300
+Received: from yadro.com (10.178.118.226) by T-EXCH-09.corp.yadro.com
+ (172.17.11.59) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.1118.9; Wed, 3 Aug 2022
+ 12:23:38 +0300
+Date:   Wed, 3 Aug 2022 12:23:37 +0300
+From:   Konstantin Shelekhin <k.shelekhin@yadro.com>
+To:     <wei.liu@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <ojeda@kernel.org>,
+        <rust-for-linux@vger.kernel.org>
+Subject: Re: [PATCH v8 28/31] samples: add Rust examples
+Message-ID: <Yuo+mWyF8hgOdfCs@yadro.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220802200430.qiyy2utts4lai3ac@liuwe-devbox-debian-v2>
+X-Originating-IP: [10.178.118.226]
+X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
+ T-EXCH-09.corp.yadro.com (172.17.11.59)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 03 Aug 2022 14:38:19 +0530  Ingo Molnar <mingo@kernel.org> wrote:
-> 
-> * Siddh Raman Pant <code@siddh.me> wrote:
-> > There is no reason why allmodconfig would trigger the warning, [...]
-> 
-> Well, unless I'm misreading your changelog, all the warning needs to 
-> trigger is CONFIG_CPUMASK_OFFSTACK=y.
-> 
-> > as it has CONFIG_CPUMASK_OFFSTACK=y, but the warning is because of the 
-> > other case.
-> 
-> What 'other case'? I've re-read the discussion and don't see it, but maybe 
-> I'm a bit daft this morning ...
- 
-No, the warning is happening because CONFIG_CPUMASK_OFFSTACK is not set. This
-is because in that case cpumask_var_t type is not a pointer, and thus the var
-can never be NULL, which leads gcc to warn us when comparing with NULL.
+> Their types are different. One is for u8. The other is for UTF-8.
 
-The chain of events are like:
+Yes, but:
 
-        #ifdef CONFIG_CPUMASK_OFFSTACK
-                typedef struct cpumask *cpumask_var_t;
-        #else
-                typedef struct cpumask cpumask_var_t[1];
-        endif
+  +#[derive(Debug, Default)]
+  +struct ModuleInfo {
+  +    type_: String,
+  +    license: String,
+  +    name: String,
+  +    author: Option<String>,
+  +    description: Option<String>,
+  +    alias: Option<String>,
+  +    params: Option<Group>,
+  +}
 
-        cpumask_var_t node_to_cpumask_map[MAX_NUMNODES];
-        ...
-        if (node_to_cpumask_map[node] == NULL) {
+  [...]
 
+  +impl ModuleInfo {
+  +    fn parse(it: &mut token_stream::IntoIter) -> Self {
+  +            match key.as_str() {
+  +                "type" => info.type_ = expect_ident(it),
+  +                "name" => info.name = expect_byte_string(it),
+  +                "author" => info.author = Some(expect_byte_string(it)),
+  +                "description" => info.description = Some(expect_byte_string(it)),
+  +                "license" => info.license = expect_byte_string(it),
+  +                "alias" => info.alias = Some(expect_byte_string(it)),
+  +                "alias_rtnl_link" => {
+  +                    info.alias = Some(format!("rtnl-link-{}", expect_byte_string(it)))
+  +                }
+  +                "params" => info.params = Some(expect_group(it)),
+  +                _ => panic!(
+  +                    "Unknown key \"{}\". Valid keys are: {:?}.",
+  +                    key, EXPECTED_KEYS
+  +                ),
+  +            }
 
-The fix works because:
-
-        #ifdef CONFIG_CPUMASK_OFFSTACK
-                static inline bool cpumask_available(cpumask_var_t mask)
-                {
-                        return mask != NULL;
-                }
-        #else
-                static inline bool cpumask_available(cpumask_var_t mask)
-                {
-                        return true;
-                }
-        endif
-
-
-The conditional definitions, as pointed out earlier, can be seen from line 700
-of include/linux/cpumask.h file.
-
-> > Did you try the config file I had linked to earlier?
-> 
-> Yes, and it didn't trigger the warning.
-> 
-> Thanks,
-> 
->     Ingo
-> 
-
- Thanks,
- Siddh
+In the the end all module parameters are String, so why not use &str in
+the API?
