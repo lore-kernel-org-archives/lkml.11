@@ -2,66 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41027C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 03:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F16BC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 03:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235472AbiHCDXl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 23:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48916 "EHLO
+        id S237554AbiHCDXv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 23:23:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235824AbiHCDXY (ORCPT
+        with ESMTP id S237484AbiHCDX0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 23:23:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1A34F65E
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 20:23:23 -0700 (PDT)
+        Tue, 2 Aug 2022 23:23:26 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB174F64B;
+        Tue,  2 Aug 2022 20:23:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8103AB8217D
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 03:23:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 192F1C433D6;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6C328CE224D;
+        Wed,  3 Aug 2022 03:23:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B5154C43140;
         Wed,  3 Aug 2022 03:23:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1659497001;
-        bh=aBxz+mPwEvkI5IYUK5AkYJAlEP2h3X0pWxjugwUQFUM=;
+        bh=/8SWf9ElFN1K2ndDbbvMcoeSLuQ1di2F4bgMwhzVFFc=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=NQULG0c/HxSPcRhXdWTM41f25JUcaZ3Za5xY26KrsTFPcOoPER4lNrDS23yO9zHha
-         5LL466m/Gz/AVk0uhb+Sb2WUCWUuL+DNBrP8EqHFYpO3yBRpfxudA/xgzRwJq87jEn
-         3AM3SnsT9CCxOatGjXxI1Y1ntemEZeYwdIFf8z2/NolLWF8s+Z0Xt/svxwLH9buvSA
-         N3jjrdwPjK9rlesGPqaj9FZquXIgRKACo3v3YQBPDAD+yVUQEINtR5VHb+oa5U/ZK5
-         YSVXcFp6E6vDuU8lQAWszi5lmG0ZsTJ8TIohWimtKuDtFMsBujh42iEQWJDlRctUQ+
-         WmZfstMQUBfkg==
+        b=JKh+dojAW10nYAlFNa/1+FmzdUT6GG3wKILXkfDl91iRQU+/k8d72DSo+7xjB9n9B
+         PCeuLCoMgR8jNWCmvp2LMr0l6yliQTFpJqR6N7qiXkpg70CT2CNbKYG1ADxqz+c8CB
+         AsVCKXQebDy/yeRTaeB/pEyTxLvnRpd+ZgcrrCwS5Lj7rhT3w1GVm1d10Wl2E4/wnr
+         xRBMGpa/tUW6O/FVZVoxtpWIpVGPCB2JyzjHi2ISvBYkzYw7aXCtlyWsz7ZtSsQm8m
+         3rD8CEVbQ4y2jtCO4WLk/8BBsnl93KQEXujf8NNwjUEV7ojH2x5SB2ySTs700ODq8w
+         q4tFb7CmVpJIw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 07B30C43142;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A42FEC43140;
         Wed,  3 Aug 2022 03:23:21 +0000 (UTC)
-Subject: Re: [GIT PULL] nolibc changes for v5.20 (or whatever)
+Subject: Re: [GIT PULL] KUnit update for Linux 5.20-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220731165756.GA3034113@paulmck-ThinkPad-P17-Gen-1>
-References: <20220731165756.GA3034113@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <e0b61c0e-3b02-2681-3175-ad17501f3c2a@linuxfoundation.org>
+References: <e0b61c0e-3b02-2681-3175-ad17501f3c2a@linuxfoundation.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220731165756.GA3034113@paulmck-ThinkPad-P17-Gen-1>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/nolibc.2022.07.27a
-X-PR-Tracked-Commit-Id: 4f8126f3a665456b68ae923cd7a7e9b9eb98547d
+X-PR-Tracked-Message-Id: <e0b61c0e-3b02-2681-3175-ad17501f3c2a@linuxfoundation.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-kunit-5.20-rc1
+X-PR-Tracked-Commit-Id: 4c392516accfe51a1aaf80ed163517646f8f0476
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: b069122256e45216b5c49d9441f9713991a4c645
-Message-Id: <165949700101.31205.5698342320316700317.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 665fe72a7d4f0ad17923e0a5ff2e6cc64d57c970
+Message-Id: <165949700166.31205.13905119651001568791.pr-tracker-bot@kernel.org>
 Date:   Wed, 03 Aug 2022 03:23:21 +0000
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com, w@1wt.eu, alviro.iskandar@gnuweeb.org,
-        ammarfaizi2@gnuweeb.org
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Gow <davidgow@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 31 Jul 2022 09:57:56 -0700:
+The pull request you sent on Mon, 1 Aug 2022 15:26:02 -0600:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/nolibc.2022.07.27a
+> git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-kunit-5.20-rc1
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/b069122256e45216b5c49d9441f9713991a4c645
+https://git.kernel.org/torvalds/c/665fe72a7d4f0ad17923e0a5ff2e6cc64d57c970
 
 Thank you!
 
