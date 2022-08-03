@@ -2,89 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5842C19F29
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7EF9C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:37:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237788AbiHCPg4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:36:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39032 "EHLO
+        id S238035AbiHCPh5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236797AbiHCPgw (ORCPT
+        with ESMTP id S236797AbiHCPh4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:36:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0792F17060;
-        Wed,  3 Aug 2022 08:36:52 -0700 (PDT)
+        Wed, 3 Aug 2022 11:37:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5501E17E26;
+        Wed,  3 Aug 2022 08:37:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B0D361719;
-        Wed,  3 Aug 2022 15:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579EBC433D6;
-        Wed,  3 Aug 2022 15:36:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14CB4B822F6;
+        Wed,  3 Aug 2022 15:37:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D397C433D6;
+        Wed,  3 Aug 2022 15:37:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659541011;
-        bh=i38drUEUdPfEjjptdNAH2klVJmj1WMiJnFB99eG6ALI=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=DmnEVZbtOdB2RIRN4oTLg/UKo6LTRn+/97mP9xU+YFs04uU0nnpZ7uzzdhNrf12DK
-         5cTT11ipOxIggWeNV1MTOpktzQe2sgAN9QdBtUZkebaYgoFFziqo/XB0Ek+2RZh7WK
-         UD4FDLL/MNWS5I4eTgMoiKkJ7zIYMvIzJBtVXMU4NAXKOTZ3ris9RZx+GwKZmqxEWo
-         wRnlTVlWbZzpYpECZlWMY5Rl063PF+Jlw0osHfBGgPl5zUt20UHhv2pjTFMeFC51az
-         I/dEXsxKGODCvPIkhWBFxbEttTm0/kCGh42ylKv3GEPTPu5bgDLRGE/u1FdEqYoWZj
-         uBAM6GX3leziQ==
-Message-ID: <a7107bad-cb41-f612-2ff1-a67ab5830865@kernel.org>
-Date:   Wed, 3 Aug 2022 09:36:49 -0600
+        s=k20201202; t=1659541072;
+        bh=GHmzcEzls5klyKLwUyWObZhTtEcXbiA85OnD3ToG7BU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=a7J/j/Gp8n9WPXKinkJws/kSgedaN+9ZBGYF622x25hXe/9zNDVWJSMHHB0i2Hve4
+         mhgsa7jfBVEqUEFx8nRLnxwAoi81NZRgjHTRTqgf6UGEWwmTC1Iblwu/gK99Zs2xWP
+         V5MCVntkDA25m6mMSAlqpSGqh+fETN/zP9YGsiLRhXhvSlhJmevlWs2ULZm2gmVE2q
+         XlInTZAmWwZHshWXYBirz5V/rxz1ugSp8zYFMqom/ylWkM31rL5Rjh5N2dsHOSeRYO
+         GUhBhBtv5E9YsBQ0HeXH5izYLyxAtr94sD4gWZWlG3gekdFX4L22/OtbFUL2yEohKq
+         h4fV+hBtjHmug==
+Date:   Wed, 3 Aug 2022 08:37:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Bruno Goncalves <bgoncalv@redhat.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        CKI Project <cki-project@redhat.com>
+Subject: Re: RIP: 0010:qede_load+0x128d/0x13b0 [qede] - 5.19.0
+Message-ID: <20220803083751.40b6ee93@kernel.org>
+In-Reply-To: <CA+QYu4ob4cbh3Vnh9DWgaPpyw8nTLFG__TbBpBsYg1tWJPxygg@mail.gmail.com>
+References: <CA+QYu4qxW1BUcbC9MwG1BxXjPO96sa9BOUXOHCj1SLY7ObJnQw@mail.gmail.com>
+        <20220802122356.6f163a79@kernel.org>
+        <CA+QYu4ob4cbh3Vnh9DWgaPpyw8nTLFG__TbBpBsYg1tWJPxygg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH v3 net] geneve: fix TOS inheriting for ipv4
-Content-Language: en-US
-To:     Matthias May <matthias.may@westermo.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, nicolas.dichtel@6wind.com,
-        eyal.birger@gmail.com, linux-kernel@vger.kernel.org,
-        jesse@nicira.com, pshelar@nicira.com, tgraf@suug.ch
-References: <20220802122025.1364123-1-matthias.may@westermo.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220802122025.1364123-1-matthias.may@westermo.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/2/22 6:20 AM, Matthias May wrote:
-> @@ -822,6 +823,7 @@ static struct rtable *geneve_get_v4_rt(struct sk_buff *skb,
->  		use_cache = false;
->  	}
->  	fl4->flowi4_tos = RT_TOS(tos);
+On Wed, 3 Aug 2022 14:13:00 +0200 Bruno Goncalves wrote:
+> Got this from the most recent failure (kernel built using commit 0805c6fb39f6):
+> 
+> the tarball is https://s3.amazonaws.com/arr-cki-prod-trusted-artifacts/trusted-artifacts/603714145/build%20x86_64%20debug/2807738987/artifacts/kernel-mainline.kernel.org-redhat_603714145_x86_64_debug.tar.gz
+> and the call trace from
+> https://s3.us-east-1.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2022/08/02/redhat:603123526/build_x86_64_redhat:603123526_x86_64_debug/tests/1/results_0001/console.log/console.log
+> 
+> [   69.876513] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+> [   69.888521] Hardware name: HPE ProLiant DL325 Gen10 Plus/ProLiant
+> DL325 Gen10 Plus, BIOS A43 08/09/2021
+> [   69.897971] RIP: 0010:qede_load.cold
+> (/builds/2807738987/workdir/./include/linux/spinlock.h:389
+> /builds/2807738987/workdir/./include/linux/netdevice.h:4294
+> /builds/2807738987/workdir/./include/linux/netdevice.h:4385
+> /builds/2807738987/workdir/drivers/net/ethernet/qlogic/qede/qede_main.c:2594
+> /builds/2807738987/workdir/drivers/net/ethernet/qlogic/qede/qede_main.c:2575)
 
-Could make this optional with
-	if (full_tos)
-> +		*full_tos = tos;
->  
->  	dst_cache = (struct dst_cache *)&info->dst_cache;
->  	if (use_cache) {
+Thanks a lot! That seems to point the finger at commit 3aa6bce9af0e
+("net: watchdog: hold device global xmit lock during tx disable") but
+frankly IDK why... The driver must be fully initialized to get to
+ndo_open() so how is the tx_global_lock busted?!
 
-...
-
-> @@ -1137,6 +1140,7 @@ static int geneve_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb)
->  {
->  	struct ip_tunnel_info *info = skb_tunnel_info(skb);
->  	struct geneve_dev *geneve = netdev_priv(dev);
-> +	__u8 full_tos;
->  	__be16 sport;
->  
->  	if (ip_tunnel_info_af(info) == AF_INET) {
-> @@ -1148,7 +1152,8 @@ static int geneve_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb)
->  					  1, USHRT_MAX, true);
->  
->  		rt = geneve_get_v4_rt(skb, dev, gs4, &fl4, info,
-> -				      geneve->cfg.info.key.tp_dst, sport);
-> +				      geneve->cfg.info.key.tp_dst, sport,
-> +				      &full_tos);
->  		if (IS_ERR(rt))
->  			return PTR_ERR(rt);
->  
-
-since this one is not used
+Would you be able to re-run with CONFIG_KASAN=y ?
+Perhaps KASAN can tell us what's messing up the lock.
