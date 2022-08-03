@@ -2,324 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C87EC19F2A
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:52:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 436BBC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237631AbiHCJwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 05:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33258 "EHLO
+        id S237887AbiHCJwL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 05:52:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237449AbiHCJvn (ORCPT
+        with ESMTP id S237595AbiHCJvo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 05:51:43 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADA846D8D;
-        Wed,  3 Aug 2022 02:50:46 -0700 (PDT)
-X-UUID: 8329f5513c2d491db1e3de5bbaaee610-20220803
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=a6ri2Ytl22TV/ZfK3yMgIV7P9vbWLL3AJT+Y3T1wV2E=;
-        b=A01kveViJzzQaqyKtLiL7sQO9QUjwXIcLN+5vQPspRqJcDQFpe50/svxpKC5HC4z2t+N7yrJXe2WqNog6Yk1gK8KD/G3KHx79PAXDv2np+PITwh0aPt2xi/b+BewW/pxqxRxutOfdRI2EB2sW9GozpQxKuXYgGSafiTx8ZOwess=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:19a684b6-e19e-451d-a1a9-f30c235c28ea,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:b62b1ed1-841b-4e95-ad42-8f86e18f54fc,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 8329f5513c2d491db1e3de5bbaaee610-20220803
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 251189372; Wed, 03 Aug 2022 17:50:42 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 3 Aug 2022 17:50:40 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Wed, 3 Aug 2022 17:50:40 +0800
-Message-ID: <3d97d4c46467909739b8b69662412fe162dbe613.camel@mediatek.com>
-Subject: Re: [PATCH v2] pmic: add mt6366 regulator document
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Zhiyong Tao =?UTF-8?Q?=28=E9=99=B6=E5=BF=97=E5=8B=87=29?= 
-        <Zhiyong.Tao@mediatek.com>,
-        "lee.jones@linaro.org" <lee.jones@linaro.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        Eddie Huang =?UTF-8?Q?=28=E9=BB=83=E6=99=BA=E5=82=91=29?= 
-        <eddie.huang@mediatek.com>,
-        "a.zummo@towertech.it" <a.zummo@towertech.it>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "fshao@chromium.org" <fshao@chromium.org>
-CC:     Sen Chu =?UTF-8?Q?=28=E5=82=A8=E6=A3=AE=29?= 
-        <Sen.Chu@mediatek.com>,
-        Hui Liu =?UTF-8?Q?=28=E5=88=98=E8=BE=89=29?= 
-        <Hui.Liu@mediatek.com>,
-        Allen-KH Cheng =?UTF-8?Q?=28=E7=A8=8B=E5=86=A0=E5=8B=B3=29?= 
-        <Allen-KH.Cheng@mediatek.com>,
-        Hsin-Hsiung Wang =?UTF-8?Q?=28=E7=8E=8B=E4=BF=A1=E9=9B=84=29?= 
-        <Hsin-Hsiung.Wang@mediatek.com>,
-        Sean Wang <Sean.Wang@mediatek.com>,
-        Macpaul Lin =?UTF-8?Q?=28=E6=9E=97=E6=99=BA=E6=96=8C=29?= 
-        <Macpaul.Lin@mediatek.com>,
-        Wen Su =?UTF-8?Q?=28=E8=98=87=E5=86=A0=E6=96=87=29?= 
-        <Wen.Su@mediatek.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Wed, 3 Aug 2022 05:51:44 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80044.outbound.protection.outlook.com [40.107.8.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD4A42AF5;
+        Wed,  3 Aug 2022 02:51:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=D69NXH7KHQy/H9iYXswLofSfMFaFkH2TV/xZGFNnkqm743LMAWkSp9o8LRuOAYwMTiNWj9WXCQXndWPpmX+yRZXM/E0jOA6TVgpcVm1Nlh9rnrOmjmupDw30ii+U1V+/cm67iajpN4tvFUxbfHhQUtPqNsg6ixnaD5PfwCBKGni6DdYIJeD0YrMVMmLJRcut7VfagYExOcJJ34KZF8fIEeOi6hrKzyBU8zdotLhOY6sTsHI98RtPh+WdbbQznQJr0c5u1KKNHaergfQ2y6RMI1/rfmQtPYjqtO8zYke9F4uxrnre9noIBANtWSH6MLWmFi8z4XVsDKgv8aC3xuuwfg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zSRg+V5XZcRZIfJxulo6Sfb0a5hKAdniQiZ4cZzNNOA=;
+ b=YNp7dtMwi7ZbRGZpIucykqdtRnNw/MqFk1Q+IQNYsi+RZdXyQimvKOtRNhfW35xzSpef8yu8nA8fTDekQvZB7gA+kakbUxoaLEO8+suTi6powZi0Hj9gd0EAkh+DYD6HNM76KkMVIz/AhpYZiH+iRpme71uImYP3A0uPQB5/QGzdbkDytyW7X9FtGe/Lu7EA1CLKK/02i6lmfM1pD+L25ZLvDc8POSy9xNxJQiIzLQE5G7cjGu2gVjoMcEAQQjvYDIbKexzl5lo5dUWxVnykToZTGY+Ch5Mb8aWNWEqcOAnTPwVXNEQM+0X269VaD6N62wsIQXg3GVO5ZgLRLuclPA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zSRg+V5XZcRZIfJxulo6Sfb0a5hKAdniQiZ4cZzNNOA=;
+ b=LThPnxZFebyB8N+3uOgJinRvpRFmWMIjUr/UYlOZ0ZUQsWrvtnSHgxEPLUN8n6LHQjHBASXPJuyx3Xxcrrnqtf72+kYxeUbX0qcySBj46hWNRTJopK9qr2SEosCn0jhXn3qlg1J8UMh410JTivjb/1aLof9DjlBKrtneqnU5NUA=
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by DB7PR04MB5513.eurprd04.prod.outlook.com (2603:10a6:10:88::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.16; Wed, 3 Aug
+ 2022 09:51:00 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::d547:3040:284e:580c]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::d547:3040:284e:580c%8]) with mapi id 15.20.5504.014; Wed, 3 Aug 2022
+ 09:51:00 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+CC:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
-        Project_Global_Chrome_Upstream_Group 
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        zhiyong tao <zhiyong.tao@mediatk.com>
-Date:   Wed, 3 Aug 2022 17:50:40 +0800
-In-Reply-To: <03a13ed4-e7cd-6f7d-f8f7-9b1e6193e202@linaro.org>
-References: <20220728062749.18701-1-zhiyong.tao@mediatek.com>
-         <20220728062749.18701-2-zhiyong.tao@mediatek.com>
-         <03a13ed4-e7cd-6f7d-f8f7-9b1e6193e202@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: RE: [PATCH] tty: serial: imx: initialize
+ peripheral_config/peripheral_size for sdma config
+Thread-Topic: [PATCH] tty: serial: imx: initialize
+ peripheral_config/peripheral_size for sdma config
+Thread-Index: AQHYpwbfzk8jOQKslUeCbcTMT1rdmq2c1H2AgAANtbCAAAnwgIAAAatA
+Date:   Wed, 3 Aug 2022 09:51:00 +0000
+Message-ID: <AS8PR04MB8404DA3B296728BD75D8D6BF929C9@AS8PR04MB8404.eurprd04.prod.outlook.com>
+References: <20220803065737.14752-1-sherry.sun@nxp.com>
+ <d4838245-030c-39b4-df4b-17b3b4c73a5b@pengutronix.de>
+ <AS8PR04MB8404990740869737F326D302929C9@AS8PR04MB8404.eurprd04.prod.outlook.com>
+ <20220803094041.cmjublrg3nu4odlt@pengutronix.de>
+In-Reply-To: <20220803094041.cmjublrg3nu4odlt@pengutronix.de>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fa185540-d96f-446b-5416-08da7535abdb
+x-ms-traffictypediagnostic: DB7PR04MB5513:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: c+XUqHj0EtT2bOQaYcrMQ7GV2X08oemNYe3Sj+xNGNPKjaxbeMNTvMMIsEKWBbXin+QpclnLbivobDm7Mc//kZylNyDAcj+CS/eNZu4oAS7GocceJ8crZ8iWF+SgATB1S5LSqi8GA2q6PB72o0e6PZY+HJerRDiQYHSbRZEk4qbtnYPCLAY+8eE6db72UvVcE0E16jEKHNoME55KeHsh0ZbQFIy+6dgZCuxgZgXHfdKaoa6OFhNBYr/zoi+dFkzFHmS1U2ye3NvYrs3lKHaXHVK7qzrw4GXuX7UZWcsyl1d5SH25OTQpnj6tTk8UdRwByS5JhtZ6X3DPE9Je7NOetqAZuSJCJq1iiodmMqW5Ly5QGMeJRR9seufr+biasqAgia63a4nr8h/NtvtXRJY84S4kHvcL9gUddUoftlSC5a597DwxCOoF9YxLvENGryLqZBxv4U3T1hjF6kTb8z5PQJdcSl2AZXz3WKd4d4sQIQw6WB/rp7qivZguPWeRom5OGADT5Jid9cx7I8LrmZZNiwvlA2DCjyQiXbhbIc3sk9Jhe/TWtinAf7mDk92l9lP9K1TFfp27pwvtZp1UFINVFi9bJ9mV0dr0CVV5SVZLcL2FRz9nI4Hc9K6gleD5bCsBFFckWyvnpL0V+50AjN9wsEitEGyemZXfjYxQ5gOLqikkEwpFjLHttpoT+BsVhgwQrhAsyf2ChvYBqKEdYFyximLORpxZs8JQW69viVMTvgW/6pHEj7QqibPQTuKVBH16Ytz2sPlcSKebUzhoDW/1L9K1M6dodpk/xNRtyivXDgEg9NaTzxFKANn2J83YVbLX
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(39860400002)(376002)(366004)(396003)(83380400001)(38070700005)(86362001)(122000001)(38100700002)(64756008)(66946007)(4326008)(8676002)(66446008)(66476007)(66556008)(6916009)(76116006)(316002)(2906002)(8936002)(5660300002)(44832011)(54906003)(52536014)(7416002)(9686003)(26005)(186003)(7696005)(53546011)(6506007)(55016003)(41300700001)(478600001)(71200400001)(33656002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?wiPzHu0I/NHWUwoFhGgNhvFONepaXORcgIlJdKQ8BCQnhhPNiBgezh0bqj?=
+ =?iso-8859-1?Q?AeGgLsjrByw7Ix3no/M2vjlzaiP8vebQa2FjEgfOLzjXssDQlm1tbSKXIM?=
+ =?iso-8859-1?Q?HrMua7pHsy6lZY5tsgXBsz6A4oYkNUF4l5YrzO2Wo2As3y+drrn97R5hJk?=
+ =?iso-8859-1?Q?11vD/dFd+Omi52p51mQ42GL7ru2dCoI68qYxhk58cOKxsArFQ48PA8PEOC?=
+ =?iso-8859-1?Q?StGn6uQqDtiQqY9c8i2xH94lWoIIeNgJVKL19aJ5dTZXZecn6OMnNBJKAO?=
+ =?iso-8859-1?Q?PLeuutKJH3jHJAwKM+cGn+vpS2ZAmKk7PqtHvvyOCMCUelAIEuXG4udYoP?=
+ =?iso-8859-1?Q?dLFM9elwt+jDEzIDz0MfpbWbLwMlZprDeY/DVqpC0GpWLjGVFPry5jRe9W?=
+ =?iso-8859-1?Q?lzrUv0ET8lVIyokSJlIqTGwzzqEQH1tzVoJexVk2N7SxbtgxAgPADl8AD7?=
+ =?iso-8859-1?Q?9//IaTOOFZ8IoZqyOIauOHou/5bv9QlzQr0FpXj54Wi/8KtFuYPp8E7uDV?=
+ =?iso-8859-1?Q?KMDVQtpBe8jhhm2QW0Xamhk5CSH21R45r8DansVmI3Z6fiUVki8ddx9xmV?=
+ =?iso-8859-1?Q?Tq2kUizVz4B49A3S7fhig5TeUfxp+nfzkCKmdHPC6PIbb0wEid4tKKKH1Z?=
+ =?iso-8859-1?Q?oL4mXslsDXSybfedv8meu5cIcmV/tqU7XaOEVHMau8/EmGJ67mXE69k/wz?=
+ =?iso-8859-1?Q?KuMHu7a8NRPAQqImcn1xZOtA/SvC/BUjpu5ZDzGH+yJ6r1WA5uln+bGr/J?=
+ =?iso-8859-1?Q?ugCkxj1Y3HHAFF8l8X9M+qKnN/BNKFi7sWv3jDeEVGw7IuFHYFhv3GAp+8?=
+ =?iso-8859-1?Q?2eSYtHO2qO+tURhl2rZFNor1LMzcnccDQyhNpS+zgziyES9SAxpQXbLTpq?=
+ =?iso-8859-1?Q?IG+XmTbCK/GazsjlY3JL9m5f1TSmHOoh93JUmPxIN93isNrO2og0lfWVYe?=
+ =?iso-8859-1?Q?TzO/6O27LHvkvnMTsTFQNfCFX2D+F0JNVDY/c8Ux3gOoZ3VcN6pHLoDnJM?=
+ =?iso-8859-1?Q?h6usWn7wIvneIzwekLsVecAEA9AkhwxjoUa5L94h2Q2hY6gH1p+Z91k3Ha?=
+ =?iso-8859-1?Q?98C5VlERyvBbgC8P54bUGX9PIHccwJ3nYH5ZN2o/yAxzcO8ig6D+4EpCE0?=
+ =?iso-8859-1?Q?ReEyvTe3lCSJvVZB8MjObYYA8//OPv7wqWrcM6V+WiyzZ1eHq5nCp6Os4L?=
+ =?iso-8859-1?Q?h1mxqAUbdSOJm8WAjVdFqx89PB7ANcRLOINeo6UzeRehs3SjW0WyrY9Qy/?=
+ =?iso-8859-1?Q?NufpJo2C9X7qBMDLC6vQg/f5xcb0mU5Iw8IIXTOMPaeD7WUtvYKSDWYxq0?=
+ =?iso-8859-1?Q?xztgxxCMzWfiorK7EUePYFjLSb46uxaCsVAaR0dWP5YL9EsECLfGtn+zh4?=
+ =?iso-8859-1?Q?m5NYqCHagoYwprtQpG512Hn9zcQh1RUMKMuI5OLPOXjK6niTkBuCCYzzjt?=
+ =?iso-8859-1?Q?oTuDTZH96B58sHV/J05z64p+cG93mCs+6WZREGc7+ih+RXxLnt1sCGmqJk?=
+ =?iso-8859-1?Q?GqmvN5ToT8+KRTcD1tZ/lSyC4uEfceDVk3EN/LXLXQIHBatDLmMs7fUZ2f?=
+ =?iso-8859-1?Q?1x7gADbfWVvdewrktgknTRnSKrJagXOnFan6IBCtmxOZ73ri4vuVv1CGi0?=
+ =?iso-8859-1?Q?OtfhXiPFbrampVc68prH/XfpuvCUASN+Cq?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fa185540-d96f-446b-5416-08da7535abdb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Aug 2022 09:51:00.3184
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 05dogl+fq2W+pUHKFj8aLGC4gtosAm/XplOkF/l1fPCnFViv5j1wU6ddDUSQDR6xQlkhhDalPSrd4yhz2ijmoA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5513
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-07-28 at 18:46 +0800, Krzysztof Kozlowski wrote:
-> On 28/07/2022 08:27, Zhiyong Tao wrote:
-> > From: zhiyong tao <zhiyong.tao@mediatek.com>
-> > 
-> > Add mt6366 regulator document
-> 
-> As usual with Mediatek your emails fail to properly pass modern SMTP
-> checks and you end up in spam.
-> 
-> I reported it months ago to folks in Mediatek. No improvements since
-> that time.
-> 
-> I stopped checking my spam folder for Mediatek stuff and all will be
-> ignored. I will also stop complaining about it - just ignore
-> Mediatek.
-> 
-> Fix your systems, instead of putting additional effort on community
-> and
-> on reviewers.
-> 
 
-Hello Krzysztof,
-
-I am Rex from MediaTek chrome project team.
-We noticed your complain of our upstream mail.
-
-First of all, sorry for the inconvenience.
-We really want to fix this SPAM issue.
-
-From our side, we can make sure mails for kernel upstream from MediaTek
-is clear and these mails pass the verification of DMARC/DKIM/SPF.
-Therefore, to identify the root cause, could you please provide us some
-mails that seen as SPAM from MediaTek?
-It's more useful if you can use the form of attachment. In that case,
-we can analyze whole mails including mail headers.
-
-We really appreciate your big support, and we hope we can fix this
-issue to reduce the inconvenience for reviewing series from MediaTek.
-If you can spare some time to help us for this, it would very helpful!!
-
-Our IT also adjust the DKIM setting today. If the situation of this
-issue it much better, please also let us know.
-
-Many thanks!!
-
-BRs,
-Rex
-> 
-> > 
-> > Signed-off-by: zhiyong tao <zhiyong.tao@mediatk.com>
-> > ---
-> >  .../regulator/mediatek,mt6366-regulator.yaml  | 375
-> > ++++++++++++++++++
-> >  1 file changed, 375 insertions(+)
-> 
-> Subject does not match subsystem.
-> 
-> 
-> >  create mode 100755
-> > Documentation/devicetree/bindings/regulator/mediatek,mt6366-
-> > regulator.yaml
-> > 
-> > diff --git
-> > a/Documentation/devicetree/bindings/regulator/mediatek,mt6366-
-> > regulator.yaml
-> > b/Documentation/devicetree/bindings/regulator/mediatek,mt6366-
-> > regulator.yaml
-> > new file mode 100755
-> > index 000000000000..eb72c64757cf
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/regulator/mediatek,mt6366-
-> > regulator.yaml
-> > @@ -0,0 +1,375 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: 
+> Subject: Re: [PATCH] tty: serial: imx: initialize
+> peripheral_config/peripheral_size for sdma config
+>=20
+> On Wed, Aug 03, 2022 at 09:15:58AM +0000, Sherry Sun wrote:
+> > > On 03.08.22 08:57, Sherry Sun wrote:
+> > > > Since commit 824a0a02cd74 ("dmaengine: imx-sdma: Add multi fifo
+> > > > support") adds the use of
+> > > > dma_slave_config->peripheral_config/peripheral_size to sdma
+> > > > driver, the client drivers like uart need to initialize the
+> > > > peripheral_config/peripheral_size for sdma, otherwise, the random
+> > > > value of local variable slave_config may cause unexpected
+> > > peripheral_config and make sdma mess up.
+> > > >
+> > >
+> > > If this a fix, please add a Fixes: tag. I am not sure it is though, s=
+ee below.
 > >
- https://urldefense.com/v3/__http://devicetree.org/schemas/regulator/mediatek,mt6366-regulator.yaml*__;Iw!!CTRNKA9wMg0ARbw!3B-3NHQAsJc6ov022NnUIctYLEyx-BfxG5s85TBBvEfGjc4DdYDIqG_Ka_5D7scVo8CRtzLqokEX_thhM7XK_S90wg$
-> > +$schema: 
+> > Hi Ahmad, thanks for the comments.
+> > I don't think this patch is a fix for a specific commit, so we don't ne=
+ed the
+> Fixes tag.
 > >
- https://urldefense.com/v3/__http://devicetree.org/meta-schemas/core.yaml*__;Iw!!CTRNKA9wMg0ARbw!3B-3NHQAsJc6ov022NnUIctYLEyx-BfxG5s85TBBvEfGjc4DdYDIqG_Ka_5D7scVo8CRtzLqokEX_thhM7Un6TPZdw$
-> > +
-> > +title: MT6366 Regulator from MediaTek Integrated
-> > +
-> > +maintainers:
-> > +  - Zhiyong Tao <zhiyong.tao@mediatek.com>
-> > +
-> > +description: |
-> > +  List of regulators provided by this controller. It is named
-> > +  according to its regulator type, buck_<name> and ldo_<name>.
-> > +  MT6366 regulators node should be sub node of the MT6397 MFD
-> > node.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: mediatek,mt6366-regulator
-> > +
-> > +  regulators:
-> > +    type: object
-> > +    description: List of regulators and its properties
-> > +
-> > +    patternProperties:
-> > +      "^buck-
-> > v(dram1|core|coresshub|proc11|proc12|gpu|s2|modem|s1)$":
-> > +        type: object
-> > +        $ref: "regulator.yaml#"
-> 
-> No need for quotes.
-> 
-> > +        unevaluatedProperties: false
-> > +
-> > +        properties:
-> > +          regulator-name:
-> > +            pattern:
-> > "^v(dram1|core|coresshub|proc11|proc12|gpu|s2|modem|s1)$"
-> 
-> Why do you enforce specific regulator-name? Remove.
-> 
-> > +
-> > +      "^ldo-v(dram2|sim1|ibr|rf12|usb|camio|camd|cn18|fe28)$":
-> > +        type: object
-> > +        $ref: "regulator.yaml#"
-> > +
-> > +        properties:
-> > +          regulator-name:
-> > +            pattern:
-> > "^v(dram2|sim1|ibr|rf12|usb|camio|camd|cn18|fe28)$"
-> > +
-> > +      "^ldo-v(xo22|efuse|mch|vcama1|emc|a12|vcama2|mc)$":
-> > +        type: object
-> > +        $ref: "regulator.yaml#"
-> > +
-> > +        properties:
-> > +          regulator-name:
-> > +            pattern:
-> > "^v(xo22|efuse|mch|vcama1|emc|a12|vcama2|mc)$"
-> > +
-> > +      "^buck-(vcore)-sshub$":
-> > +        type: object
-> > +        $ref: "regulator.yaml#"
-> > +        unevaluatedProperties: false
-> > +
-> > +        properties:
-> > +          regulator-name:
-> > +            pattern: "^vcore-sshub$"
-> > +
-> > +      "^ldo-vcn(28|33)-bt$":
-> > +        type: object
-> > +        $ref: "regulator.yaml#"
-> > +        unevaluatedProperties: false
-> > +
-> > +        properties:
-> > +          regulator-name:
-> > +            pattern: "^vcn(28|33)-bt$"
-> > +
-> > +      "^ldo-vcn(33)-wifi$":
-> > +        type: object
-> > +        $ref: "regulator.yaml#"
-> > +        unevaluatedProperties: false
-> > +
-> > +        properties:
-> > +          regulator-name:
-> > +            pattern: "^vcn33-wifi$"
-> > +
-> > +      "^ldo-vsram-(others)-sshub$":
-> > +        type: object
-> > +        $ref: "regulator.yaml#"
-> > +        unevaluatedProperties: false
-> > +
-> > +        properties:
-> > +          regulator-name:
-> > +            pattern: "^vsram-others-sshub$"
-> > +
-> > +      "^ldo-vsram-(proc11|others|gpu|proc12)$":
-> > +        type: object
-> > +        $ref: "regulator.yaml#"
-> > +        unevaluatedProperties: false
-> > +
-> > +        properties:
-> > +          regulator-name:
-> > +            pattern: "^vsram-(proc11|others|gpu|proc12)$"
-> > +
-> > +      "^ldo-v(aud|bif|io|ldo)28$":
-> > +        type: object
-> > +        $ref: "regulator.yaml#"
-> > +
-> > +        properties:
-> > +          regulator-name:
-> > +            pattern: "^v(aud|bif|io|ldo)28$"
-> > +
-> > +      "^ldo-v(io|aux|rf)18$":
-> > +        type: object
-> > +        $ref: "regulator.yaml#"
-> > +
-> > +        properties:
-> > +          regulator-name:
-> > +            pattern: "^v(io|aux|rf)18$"
-> > +
-> > +      "^ldo-vsim[2]$":
-> > +        type: object
-> > +        $ref: "regulator.yaml#"
-> > +
-> > +        properties:
-> > +          regulator-name:
-> > +            pattern: "^vsim2$"
-> > +
-> > +        required:
-> > +          - regulator-name
-> > +
-> > +required:
-> > +  - compatible
-> > +  - regulators
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    pmic {
-> > +      compatible = "mediatek,mt6366-regulator";
-> > +
-> > +      regulators {
-> > +        mt6366_vdram1_reg: buck-vdram1 {
-> > +            regulator-name = "vdram1";
-> 
-> Messed up indentation. Use only one, so 4 space for DTS example.
-> 
-> 
-> 
-> Best regards,
-> Krzysztof
+> > >
+> > > > Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> > > > ---
+> > > >  drivers/tty/serial/imx.c | 4 ++++
+> > > >  1 file changed, 4 insertions(+)
+> > > >
+> > > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> > > > index
+> > > > 522445a8f666..bb8c2a712e94 100644
+> > > > --- a/drivers/tty/serial/imx.c
+> > > > +++ b/drivers/tty/serial/imx.c
+> > > > @@ -1320,6 +1320,8 @@ static int imx_uart_dma_init(struct imx_port
+> > > > *sport)
+> > >
+> > > This function starts with
+> > >
+> > > struct dma_slave_config slave_config =3D {};
+> > >
+> > > >  	slave_config.src_addr_width =3D DMA_SLAVE_BUSWIDTH_1_BYTE;
+> > > >  	/* one byte less than the watermark level to enable the aging
+> > > > timer
+> > > */
+> > > >  	slave_config.src_maxburst =3D RXTL_DMA - 1;
+> > > > +	slave_config.peripheral_config =3D NULL;
+> > > > +	slave_config.peripheral_size =3D 0;
+> > >
+> > > So these are already zero-initialized.
+> >
+> > I am not sure actually, I think initialize a struct with {} cannot
+> > guarantee that all members are initialized to 0, it may depend on the
+> > compiler.
+>=20
+> I'm sure and even reverified in my C book[1].
+>=20
+> 	struct mystruct variable =3D {};
+>=20
+> results in all components being initialized to their default initial valu=
+e (which
+> is 0 for numbers and NULL for pointers). This works for automatic variabl=
+es
+> since "Standard C" which should cover everthing that is capable to compil=
+e
+> today's kernel.
+>=20
+> Best regards
+> Uwe
+>=20
+> [1] C - A Reference Manual, 978-0130895929
+>=20
 
+Hi Uwe, wow, this really resolved my confusion, thanks a lot for your confi=
+rmation! ^_^
+
+Best regards
+Sherry
