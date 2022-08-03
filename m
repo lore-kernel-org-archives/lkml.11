@@ -2,94 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97CF9C00140
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 01:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE95C00140
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 02:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235810AbiHCB5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 21:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34406 "EHLO
+        id S233368AbiHCCHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 22:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235352AbiHCB5b (ORCPT
+        with ESMTP id S232169AbiHCCHq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 21:57:31 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C882D564CC;
-        Tue,  2 Aug 2022 18:57:30 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id d7so10824617pgc.13;
-        Tue, 02 Aug 2022 18:57:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JvSizfg9rJurRHFe1HvtMoLl3ryLwF2DPEDaLcO0/zg=;
-        b=ivdtrHns+qdUJaUgXx3t2P7lZGTBdEX1hlhws6XHpUGBCfVMrXX7huC8Lv/xUAxtRp
-         AD1igNZ/8vDhAPBHlOUHD+QnVHiolcFmcHc3ICtLufr7q8IflijouagXnSv8dSvjjSQG
-         8UNCIOPvGJEAGq2t//QIkucSL1XTmuwyE8HZUFhvAVnDCpquuJZhl9Re47vGCY0pr1Ql
-         2J9kr5flMjtWdOAqng4egtK455H590P/Phb0vRyJ73dfEJX3QSS3M3X9OTg0uHxv4GtX
-         m6wypXfUKagVzdPCxt4V2zL4kQGOz/JS/RJJsCggRWWquHEFna6pi3qqpjgc0AOVsjWG
-         0ltA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JvSizfg9rJurRHFe1HvtMoLl3ryLwF2DPEDaLcO0/zg=;
-        b=VHLoj9VqFTfTY00gD6veEP5pUOUJCA1JYMBUa2QTVI9/k1N5tfGmq/q8LQObFeAImQ
-         EOMZ4HN/ila5v8Q5j3B+v4pXWkxG+SrLuHbfpn1LUHzD49VecMozTOTEjdA2v6CNU9fg
-         WIzJPZR5OCzW/CpFUGO1RBGLrsxwp2HjSxhO6pNR1JkBIMNApVbu3S23OJ+ph/z/jqYJ
-         9dsHdRB1K1oAlWb5Vk6cKkUC9hS9QZUg9l5XDpfiZWNS684FbsRT7qjOkSnOsf43rgP3
-         t1HF4r1w4IcRXEQ4Y1TIuaDO5AJ3nbzaai5eZUjjXKJR1bqeHT1B8NaWlnD36Ftmkq46
-         NU2g==
-X-Gm-Message-State: AJIora9jIFdrTNMpU/UHGYso+aMkwiqL33t3Arx0WR5mxbdqb3ma5Iy9
-        LanbxMm3nSZJMtNvKRdbOSs9CykjEpX6KWSwiGs=
-X-Google-Smtp-Source: AGRyM1sY77TjWlF1i2ByBC3xgp/87vLfOLXiuHQrp4k9tseD3xnMSO4Z83+L/NTDtMIkfSyHppRzZg==
-X-Received: by 2002:a63:4d65:0:b0:419:d6ae:27df with SMTP id n37-20020a634d65000000b00419d6ae27dfmr19545911pgl.179.1659491850275;
-        Tue, 02 Aug 2022 18:57:30 -0700 (PDT)
-Received: from localhost.localdomain ([170.178.188.167])
-        by smtp.gmail.com with ESMTPSA id b10-20020a170902650a00b0016a33177d3csm378157plk.160.2022.08.02.18.57.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Aug 2022 18:57:29 -0700 (PDT)
-From:   Jianhua Lu <lujianhua000@gmail.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jianhua Lu <lujianhua000@gmail.com>
-Subject: [PATCH v1] pinctrl: qcom: sm8250: Fix PDC map
-Date:   Wed,  3 Aug 2022 09:56:45 +0800
-Message-Id: <20220803015645.22388-1-lujianhua000@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 2 Aug 2022 22:07:46 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6014BD30;
+        Tue,  2 Aug 2022 19:07:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659492464; x=1691028464;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=YZfGmUHR5aUXlAjVqfokEhDKFm6cPmen+LgUV/4Nxy8=;
+  b=F9oqbP+g3CpdLPbtINX+x8tT+C3IcuVrF8sNYzDVihjwUlYqSaDrAMs4
+   Lb+oBjSpyNT9XoR8TN4hc68VWdYcsUqWVzHp/YIOx+q+LcExo4wCpsspD
+   hAkhI7DGcLXeUmmkQn4r4SZdzSYk/vHx7fdSA+VzzlOoWam7v/5/nL0Vz
+   c6czTyUkagz6Fs+VQuYKbBi4VEKfvkqINR993H9EafAk/y8vj1aS/q/Sx
+   nUq9VKWsff+cUbeDhw7hFrCBQ57rwbcFV9lfSafMesxEkrg0xM5Qhllsm
+   zN6fdssnwaHykka4SmVifXqsTAE1sebApaHMpm9LgiMq0OR8dUVGLQRmg
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="269942019"
+X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
+   d="scan'208";a="269942019"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 19:07:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
+   d="scan'208";a="670676547"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 02 Aug 2022 19:07:43 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oJ3nS-000GgV-1M;
+        Wed, 03 Aug 2022 02:07:42 +0000
+Date:   Wed, 3 Aug 2022 10:07:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH v1 1/1] leds: an30259a: Get rid of custom
+ led_init_default_state_get()
+Message-ID: <202208030937.hTPCqZ9v-lkp@intel.com>
+References: <20220802212554.7216-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220802212554.7216-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the PDC mapping for SM8250, gpio39 is mapped to irq73(not irq37).
+Hi Andy,
 
-Fixes: b41efeed507a("pinctrl: qcom: sm8250: Specify PDC map.")
-Signed-off-by: Jianhua Lu <lujianhua000@gmail.com>
----
+I love your patch! Perhaps something to improve:
 
-Changes in v1:
-- fixes typo error(mapped target is irq, not gpio).
+[auto build test WARNING on pavel-leds/for-next]
+[also build test WARNING on linus/master v5.19 next-20220728]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
- drivers/pinctrl/qcom/pinctrl-sm8250.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/leds-an30259a-Get-rid-of-custom-led_init_default_state_get/20220803-053038
+base:   git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git for-next
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220803/202208030937.hTPCqZ9v-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/757448b8fc5bcbc4303ce9570d5dd555f1e2b22e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Andy-Shevchenko/leds-an30259a-Get-rid-of-custom-led_init_default_state_get/20220803-053038
+        git checkout 757448b8fc5bcbc4303ce9570d5dd555f1e2b22e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/leds/
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-sm8250.c b/drivers/pinctrl/qcom/pinctrl-sm8250.c
-index af144e724bd9..3bd7f9fedcc3 100644
---- a/drivers/pinctrl/qcom/pinctrl-sm8250.c
-+++ b/drivers/pinctrl/qcom/pinctrl-sm8250.c
-@@ -1316,7 +1316,7 @@ static const struct msm_pingroup sm8250_groups[] = {
- static const struct msm_gpio_wakeirq_map sm8250_pdc_map[] = {
- 	{ 0, 79 }, { 1, 84 }, { 2, 80 }, { 3, 82 }, { 4, 107 }, { 7, 43 },
- 	{ 11, 42 }, { 14, 44 }, { 15, 52 }, { 19, 67 }, { 23, 68 }, { 24, 105 },
--	{ 27, 92 }, { 28, 106 }, { 31, 69 }, { 35, 70 }, { 39, 37 },
-+	{ 27, 92 }, { 28, 106 }, { 31, 69 }, { 35, 70 }, { 39, 73 },
- 	{ 40, 108 }, { 43, 71 }, { 45, 72 }, { 47, 83 }, { 51, 74 }, { 55, 77 },
- 	{ 59, 78 }, { 63, 75 }, { 64, 81 }, { 65, 87 }, { 66, 88 }, { 67, 89 },
- 	{ 68, 54 }, { 70, 85 }, { 77, 46 }, { 80, 90 }, { 81, 91 }, { 83, 97 },
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   drivers/leds/leds-an30259a.c: In function 'an30259a_dt_init':
+   drivers/leds/leds-an30259a.c:227:38: error: implicit declaration of function 'led_init_default_state_get'; did you mean 'led_get_default_pattern'? [-Werror=implicit-function-declaration]
+     227 |                 led->default_state = led_init_default_state_get(led->fwnode);
+         |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                                      led_get_default_pattern
+>> drivers/leds/leds-an30259a.c:204:21: warning: unused variable 'str' [-Wunused-variable]
+     204 |         const char *str;
+         |                     ^~~
+   cc1: some warnings being treated as errors
+
+
+vim +/str +204 drivers/leds/leds-an30259a.c
+
+2d00f35c55e74f Simon Shields    2018-09-09  197  
+2d00f35c55e74f Simon Shields    2018-09-09  198  static int an30259a_dt_init(struct i2c_client *client,
+2d00f35c55e74f Simon Shields    2018-09-09  199  			    struct an30259a *chip)
+2d00f35c55e74f Simon Shields    2018-09-09  200  {
+8853c95e997e0a Marek Behún      2020-09-18  201  	struct device_node *np = dev_of_node(&client->dev), *child;
+2d00f35c55e74f Simon Shields    2018-09-09  202  	int count, ret;
+2d00f35c55e74f Simon Shields    2018-09-09  203  	int i = 0;
+2d00f35c55e74f Simon Shields    2018-09-09 @204  	const char *str;
+2d00f35c55e74f Simon Shields    2018-09-09  205  	struct an30259a_led *led;
+2d00f35c55e74f Simon Shields    2018-09-09  206  
+99a013c840a050 Marek Behún      2020-09-18  207  	count = of_get_available_child_count(np);
+2d00f35c55e74f Simon Shields    2018-09-09  208  	if (!count || count > AN30259A_MAX_LEDS)
+2d00f35c55e74f Simon Shields    2018-09-09  209  		return -EINVAL;
+2d00f35c55e74f Simon Shields    2018-09-09  210  
+2d00f35c55e74f Simon Shields    2018-09-09  211  	for_each_available_child_of_node(np, child) {
+2d00f35c55e74f Simon Shields    2018-09-09  212  		u32 source;
+2d00f35c55e74f Simon Shields    2018-09-09  213  
+2d00f35c55e74f Simon Shields    2018-09-09  214  		ret = of_property_read_u32(child, "reg", &source);
+2d00f35c55e74f Simon Shields    2018-09-09  215  		if (ret != 0 || !source || source > AN30259A_MAX_LEDS) {
+2d00f35c55e74f Simon Shields    2018-09-09  216  			dev_err(&client->dev, "Couldn't read LED address: %d\n",
+2d00f35c55e74f Simon Shields    2018-09-09  217  				ret);
+2d00f35c55e74f Simon Shields    2018-09-09  218  			count--;
+2d00f35c55e74f Simon Shields    2018-09-09  219  			continue;
+2d00f35c55e74f Simon Shields    2018-09-09  220  		}
+2d00f35c55e74f Simon Shields    2018-09-09  221  
+2d00f35c55e74f Simon Shields    2018-09-09  222  		led = &chip->leds[i];
+2d00f35c55e74f Simon Shields    2018-09-09  223  
+2d00f35c55e74f Simon Shields    2018-09-09  224  		led->num = source;
+2d00f35c55e74f Simon Shields    2018-09-09  225  		led->chip = chip;
+1817208e14c6f7 Jacek Anaszewski 2019-06-09  226  		led->fwnode = of_fwnode_handle(child);
+757448b8fc5bcb Andy Shevchenko  2022-08-03  227  		led->default_state = led_init_default_state_get(led->fwnode);
+2d00f35c55e74f Simon Shields    2018-09-09  228  
+2d00f35c55e74f Simon Shields    2018-09-09  229  		i++;
+2d00f35c55e74f Simon Shields    2018-09-09  230  	}
+2d00f35c55e74f Simon Shields    2018-09-09  231  
+2d00f35c55e74f Simon Shields    2018-09-09  232  	if (!count)
+2d00f35c55e74f Simon Shields    2018-09-09  233  		return -EINVAL;
+2d00f35c55e74f Simon Shields    2018-09-09  234  
+2d00f35c55e74f Simon Shields    2018-09-09  235  	chip->num_leds = i;
+2d00f35c55e74f Simon Shields    2018-09-09  236  
+2d00f35c55e74f Simon Shields    2018-09-09  237  	return 0;
+2d00f35c55e74f Simon Shields    2018-09-09  238  }
+2d00f35c55e74f Simon Shields    2018-09-09  239  
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
