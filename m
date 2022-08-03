@@ -2,111 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB3B4C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:18:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 528CEC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:20:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237392AbiHCKSK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 06:18:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56630 "EHLO
+        id S237414AbiHCKUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 06:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233057AbiHCKSD (ORCPT
+        with ESMTP id S237431AbiHCKUk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 06:18:03 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8E0B3C;
-        Wed,  3 Aug 2022 03:18:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659521882; x=1691057882;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=wFam+LDcRbKILr0ubXYReeOGRVLmWUy4n8feDpXT4KY=;
-  b=jixmJUcG97PKX5ZUa28+bVmJitLlvDDyE5XCz7Ngn6Sxs2fCCk346OQh
-   /e7FPrzxv/OdN4siefyhkCmDrmkJFuKi1quptgBEu6/s5XmygcajKBJyS
-   ZrsivssBk6Q7Shs30NldTHjA62ZsniOd/HXGIDXlrTKGtCc5gAS4ZwvNo
-   qo42XvQaBejZVxpSQUtCDI1QrL1sCc3Xo8xti8W/but3T4lGXOid1a2+Z
-   es7fB9RoKojXChzirRk7Rdgt+2K7OkYwaS65MVYx5fSlXPS65iNPv2qhQ
-   +W/GCziMYhi4xBvRcr6NoRpWxw/cDdJjsMT1swi02fnY9YKHgpQp6glME
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="351350449"
-X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
-   d="scan'208";a="351350449"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 03:18:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
-   d="scan'208";a="631095811"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by orsmga008.jf.intel.com with ESMTP; 03 Aug 2022 03:17:51 -0700
-Date:   Wed, 3 Aug 2022 18:13:04 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 08/14] KVM: Rename mmu_notifier_*
-Message-ID: <20220803101304.GE607465@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-9-chao.p.peng@linux.intel.com>
- <YuQutJAhKWcsrrYl@google.com>
+        Wed, 3 Aug 2022 06:20:40 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6EB0C10;
+        Wed,  3 Aug 2022 03:20:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1659522039; x=1691058039;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=r2r9v+zdOXg+pjOV8cZBvnLP+wof+DIDY7ngC/evlew=;
+  b=qqlItbeE/Q4dNm3hXXH+UO3t29BevJJqEwc2hrYU0nhmvtGyS+rSau0r
+   55H38xvRu1bEuSjtjLRHxibce+aUsBsGrEdocciO0J0v6WKF3YGxZuPrZ
+   MJDjEXN/mXaLjf7CK1vAUx7cxDmEYguXDZNEZPpek6+YJeRkdgH8Gwso4
+   s=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 03 Aug 2022 03:20:39 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 03:20:39 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 3 Aug 2022 03:20:39 -0700
+Received: from [10.216.24.92] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 3 Aug 2022
+ 03:20:34 -0700
+Message-ID: <624aaad9-8937-49d1-9e66-38713b5a1f0c@quicinc.com>
+Date:   Wed, 3 Aug 2022 15:50:30 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YuQutJAhKWcsrrYl@google.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH 3/5] clk: qcom: gpucc-sc7280: Add cx collapse reset
+ support
+Content-Language: en-US
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>
+CC:     Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1659172664-10345-1-git-send-email-quic_akhilpo@quicinc.com>
+ <20220730144713.3.I5e64ff4b77bb9079eb2edeea8a02585c9e76778f@changeid>
+ <9098554e-5327-0b7f-f4d0-a81880556136@linaro.org>
+From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
+In-Reply-To: <9098554e-5327-0b7f-f4d0-a81880556136@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 07:02:12PM +0000, Sean Christopherson wrote:
-> On Wed, Jul 06, 2022, Chao Peng wrote:
-> > The sync mechanism between mmu_notifier and page fault handler employs
-> > fields mmu_notifier_seq/count and mmu_notifier_range_start/end. For the
-> > to be added private memory, there is the same mechanism needed but not
-> > rely on mmu_notifier (It uses new introduced memfile_notifier). This
-> > patch renames the existing fields and related helper functions to a
-> > neutral name mmu_updating_* so private memory can reuse.
-> 
-> mmu_updating_* is too broad of a term, e.g. page faults and many other operations
-> also update the mmu.  Although the name most definitely came from the mmu_notifier,
-> it's not completely inaccurate for other sources, e.g. KVM's MMU is still being
-> notified of something, even if the source is not the actual mmu_notifier.
-> 
-> If we really want a different name, I'd vote for nomenclature that captures the
-> invalidation aspect, which is really what the variables are all trackng, e.g.
-> 
->   mmu_invalidate_seq
->   mmu_invalidate_in_progress
->   mmu_invalidate_range_start
->   mmu_invalidate_range_end
+On 8/2/2022 12:45 PM, Dmitry Baryshkov wrote:
+> On 30/07/2022 12:17, Akhil P Oommen wrote:
+>> Allow a consumer driver to poll for cx gdsc collapse through Reset
+>> framework.
+>>
+>> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
+>> ---
+>>
+>>   drivers/clk/qcom/gpucc-sc7280.c | 6 ++++++
+>>   1 file changed, 6 insertions(+)
+>>
+>> diff --git a/drivers/clk/qcom/gpucc-sc7280.c 
+>> b/drivers/clk/qcom/gpucc-sc7280.c
+>> index 9a832f2..f5df51d 100644
+>> --- a/drivers/clk/qcom/gpucc-sc7280.c
+>> +++ b/drivers/clk/qcom/gpucc-sc7280.c
+>> @@ -433,12 +433,18 @@ static const struct regmap_config 
+>> gpu_cc_sc7280_regmap_config = {
+>>       .fast_io = true,
+>>   };
+>>   +static const struct qcom_reset_map gpucc_sc7280_resets[] = {
+>> +    [GPU_CX_COLLAPSE] = { .op = gdsc_wait_for_collapse, .priv = 
+>> &cx_gdsc },
+>> +};
+>> +
+>>   static const struct qcom_cc_desc gpu_cc_sc7280_desc = {
+>>       .config = &gpu_cc_sc7280_regmap_config,
+>>       .clks = gpu_cc_sc7280_clocks,
+>>       .num_clks = ARRAY_SIZE(gpu_cc_sc7280_clocks),
+>>       .gdscs = gpu_cc_sc7180_gdscs,
+>>       .num_gdscs = ARRAY_SIZE(gpu_cc_sc7180_gdscs),
+>> +    .resets = gpucc_sc7280_resets,
+>> +    .num_resets = ARRAY_SIZE(gpucc_sc7280_resets),
+>
+> An implementation question. Do we have to poll for the GDSC on 
+> platforms like sm8150/sm8250 which have the plain BCR resets?
+Yes.
 
-Looks good to me. Thanks.
+Thanks for all the feedback, Dmitry. I will post another version of this 
+series.
 
-Chao
+-Akhil.
+>
+>>   };
+>>     static const struct of_device_id gpu_cc_sc7280_match_table[] = {
+>
+>
+
