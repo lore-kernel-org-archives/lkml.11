@@ -2,169 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25CC8C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:16:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB3B4C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:18:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235622AbiHCKQg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 06:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
+        id S237392AbiHCKSK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 06:18:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237852AbiHCKQC (ORCPT
+        with ESMTP id S233057AbiHCKSD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 06:16:02 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D5AF06;
-        Wed,  3 Aug 2022 03:15:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1659521750; x=1691057750;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=gKBgXLRR0hWOgoc86Un+U/06R5IbHRPejFWIKcL61Zo=;
-  b=LyhjQloktr2LJzoP71iu10gGRBZkSY4ob9/V22izbfkd0IzYEYVycDvW
-   JA3+zW9fWs4Tj7G+8Iefex3xDV0bV43aFem1rG66wMLkBOYbFCVd6aHfw
-   hGXSLOl/+EJlsmu1A4STf2qXmgb2WcOdHKFbpMF89O/GCphpdAjjItmNc
-   k=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 03 Aug 2022 03:15:50 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 03:15:50 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 3 Aug 2022 03:15:49 -0700
-Received: from [10.216.24.92] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 3 Aug 2022
- 03:15:44 -0700
-Message-ID: <0a81938b-f30e-fa78-fd73-c753af4e324b@quicinc.com>
-Date:   Wed, 3 Aug 2022 15:45:40 +0530
+        Wed, 3 Aug 2022 06:18:03 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8E0B3C;
+        Wed,  3 Aug 2022 03:18:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659521882; x=1691057882;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=wFam+LDcRbKILr0ubXYReeOGRVLmWUy4n8feDpXT4KY=;
+  b=jixmJUcG97PKX5ZUa28+bVmJitLlvDDyE5XCz7Ngn6Sxs2fCCk346OQh
+   /e7FPrzxv/OdN4siefyhkCmDrmkJFuKi1quptgBEu6/s5XmygcajKBJyS
+   ZrsivssBk6Q7Shs30NldTHjA62ZsniOd/HXGIDXlrTKGtCc5gAS4ZwvNo
+   qo42XvQaBejZVxpSQUtCDI1QrL1sCc3Xo8xti8W/but3T4lGXOid1a2+Z
+   es7fB9RoKojXChzirRk7Rdgt+2K7OkYwaS65MVYx5fSlXPS65iNPv2qhQ
+   +W/GCziMYhi4xBvRcr6NoRpWxw/cDdJjsMT1swi02fnY9YKHgpQp6glME
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="351350449"
+X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
+   d="scan'208";a="351350449"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 03:18:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
+   d="scan'208";a="631095811"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by orsmga008.jf.intel.com with ESMTP; 03 Aug 2022 03:17:51 -0700
+Date:   Wed, 3 Aug 2022 18:13:04 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 08/14] KVM: Rename mmu_notifier_*
+Message-ID: <20220803101304.GE607465@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-9-chao.p.peng@linux.intel.com>
+ <YuQutJAhKWcsrrYl@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH v3 5/8] drm/msm/a6xx: Ensure CX collapse during gpu
- recovery
-Content-Language: en-US
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        "Bjorn Andersson" <bjorn.andersson@linaro.org>
-CC:     Jordan Crouse <jordan@cosmicpenguin.net>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Douglas Anderson <dianders@chromium.org>,
-        "Matthias Kaehlcke" <mka@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sean Paul <sean@poorly.run>,
-        Stephen Boyd <swboyd@chromium.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1659174051-27816-1-git-send-email-quic_akhilpo@quicinc.com>
- <20220730150952.v3.5.I176567525af2b9439a7e485d0ca130528666a55c@changeid>
- <8715e07f-9d58-1ae3-9a3a-25828b545905@linaro.org>
-From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
-In-Reply-To: <8715e07f-9d58-1ae3-9a3a-25828b545905@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuQutJAhKWcsrrYl@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/2/2022 12:44 PM, Dmitry Baryshkov wrote:
-> On 30/07/2022 12:40, Akhil P Oommen wrote:
->> Because there could be transient votes from other drivers/tz/hyp which
->> may keep the cx gdsc enabled, we should poll until cx gdsc collapses.
->> We can use the reset framework to poll for cx gdsc collapse from gpucc
->> clk driver.
->>
->> This feature requires support from the platform's gpucc driver.
->>
->> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
->> ---
->>
->> Changes in v3:
->> - Use reset interface from gpucc driver to poll for cx gdsc collapse
->>    https://patchwork.freedesktop.org/series/106860/
->>
->>   drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 4 ++++
->>   drivers/gpu/drm/msm/msm_gpu.c         | 4 ++++
->>   drivers/gpu/drm/msm/msm_gpu.h         | 4 ++++
->>   3 files changed, 12 insertions(+)
->>
->> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c 
->> b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
->> index 1b049c5..721d5e6 100644
->> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
->> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
->> @@ -10,6 +10,7 @@
->>     #include <linux/bitfield.h>
->>   #include <linux/devfreq.h>
->> +#include <linux/reset.h>
->>   #include <linux/soc/qcom/llcc-qcom.h>
->>     #define GPU_PAS_ID 13
->> @@ -1224,6 +1225,9 @@ static void a6xx_recover(struct msm_gpu *gpu)
->>       /* And the final one from recover worker */
->>       pm_runtime_put_sync(&gpu->pdev->dev);
->>   +    /* Call into gpucc driver to poll for cx gdsc collapse */
->> +    reset_control_reset(gpu->cx_collapse);
->
-> Do we have a race between the last pm_runtime_put_sync(), this polling 
-> and other voters removing their votes beforehand?
-I can't see any issue with a race here. reset_control_reset() will 
-return immediately in that case.
+On Fri, Jul 29, 2022 at 07:02:12PM +0000, Sean Christopherson wrote:
+> On Wed, Jul 06, 2022, Chao Peng wrote:
+> > The sync mechanism between mmu_notifier and page fault handler employs
+> > fields mmu_notifier_seq/count and mmu_notifier_range_start/end. For the
+> > to be added private memory, there is the same mechanism needed but not
+> > rely on mmu_notifier (It uses new introduced memfile_notifier). This
+> > patch renames the existing fields and related helper functions to a
+> > neutral name mmu_updating_* so private memory can reuse.
+> 
+> mmu_updating_* is too broad of a term, e.g. page faults and many other operations
+> also update the mmu.  Although the name most definitely came from the mmu_notifier,
+> it's not completely inaccurate for other sources, e.g. KVM's MMU is still being
+> notified of something, even if the source is not the actual mmu_notifier.
+> 
+> If we really want a different name, I'd vote for nomenclature that captures the
+> invalidation aspect, which is really what the variables are all trackng, e.g.
+> 
+>   mmu_invalidate_seq
+>   mmu_invalidate_in_progress
+>   mmu_invalidate_range_start
+>   mmu_invalidate_range_end
 
--Akhil.
->
->> +
->>       pm_runtime_use_autosuspend(&gpu->pdev->dev);
->>         if (active_submits)
->> diff --git a/drivers/gpu/drm/msm/msm_gpu.c 
->> b/drivers/gpu/drm/msm/msm_gpu.c
->> index 07e55a6..4a57627 100644
->> --- a/drivers/gpu/drm/msm/msm_gpu.c
->> +++ b/drivers/gpu/drm/msm/msm_gpu.c
->> @@ -14,6 +14,7 @@
->>   #include <generated/utsrelease.h>
->>   #include <linux/string_helpers.h>
->>   #include <linux/devcoredump.h>
->> +#include <linux/reset.h>
->>   #include <linux/sched/task.h>
->>     /*
->> @@ -903,6 +904,9 @@ int msm_gpu_init(struct drm_device *drm, struct 
->> platform_device *pdev,
->>       if (IS_ERR(gpu->gpu_cx))
->>           gpu->gpu_cx = NULL;
->>   +    gpu->cx_collapse = devm_reset_control_get_optional(&pdev->dev,
->> +            "cx_collapse");
->> +
->>       gpu->pdev = pdev;
->>       platform_set_drvdata(pdev, &gpu->adreno_smmu);
->>   diff --git a/drivers/gpu/drm/msm/msm_gpu.h 
->> b/drivers/gpu/drm/msm/msm_gpu.h
->> index 6def008..ab59fd2 100644
->> --- a/drivers/gpu/drm/msm/msm_gpu.h
->> +++ b/drivers/gpu/drm/msm/msm_gpu.h
->> @@ -13,6 +13,7 @@
->>   #include <linux/interconnect.h>
->>   #include <linux/pm_opp.h>
->>   #include <linux/regulator/consumer.h>
->> +#include <linux/reset.h>
->>     #include "msm_drv.h"
->>   #include "msm_fence.h"
->> @@ -268,6 +269,9 @@ struct msm_gpu {
->>       bool hw_apriv;
->>         struct thermal_cooling_device *cooling;
->> +
->> +    /* To poll for cx gdsc collapse during gpu recovery */
->> +    struct reset_control *cx_collapse;
->>   };
->>     static inline struct msm_gpu *dev_to_gpu(struct device *dev)
->
->
+Looks good to me. Thanks.
 
+Chao
