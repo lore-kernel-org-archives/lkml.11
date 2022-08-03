@@ -2,161 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC525C00140
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 02:19:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4203C00140
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 02:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234385AbiHCCTx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 22:19:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44612 "EHLO
+        id S234441AbiHCC2l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 22:28:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230348AbiHCCTr (ORCPT
+        with ESMTP id S229940AbiHCC2i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 22:19:47 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC23A54AC7;
-        Tue,  2 Aug 2022 19:19:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659493186; x=1691029186;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DPHASRO1Q4mcyIgeegJjXVGGp5M+MrqmwUvQvwVQFrU=;
-  b=HS4bQLnDBc0v7DAZ56YFIAj1zmLDUYZQiKyg1kbCFFoODlXJigg/WUEy
-   tHqYGqvbeJjIe7jFza5lbt0jcjci5LyNkPpfDnfKnBKYMilRsH8NIfkSh
-   bpPhdt1/d3oZVYh64IDLUH/jnCcaJoR6SsjnM0PNf+8yF6D+THUFPoUK4
-   VrtIhMMnzE8hwgcKa1Cj/et7nAI21C+My8NTQJS5IHgSvrkF3T2NWIUdf
-   18XK2twPxa+vTLXsvOm83TUL54oMd+86iLVG1xvAsA1CYUzuLTRuf2FZS
-   BZTIWp5bLrMd4ZRpaK/C7xYpPNeYD2hHZ1Gghq4nMzK8CkXtO8tPOGlD1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="272611473"
-X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
-   d="scan'208";a="272611473"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 19:19:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
-   d="scan'208";a="630959183"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 02 Aug 2022 19:19:43 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJ3z4-000Ggt-27;
-        Wed, 03 Aug 2022 02:19:42 +0000
-Date:   Wed, 3 Aug 2022 10:19:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jacky Li <jackyli@google.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        John Allen <john.allen@amd.com>
-Cc:     kbuild-all@lists.01.org, Herbert Xu <herbert@gondor.apana.org.au>,
-        Marc Orr <marcorr@google.com>, Alper Gun <alpergun@google.com>,
-        Peter Gonda <pgonda@google.com>, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jacky Li <jackyli@google.com>
-Subject: Re: [PATCH 2/2] crypto: ccp - Fail the PSP initialization when
- writing psp data file failed
-Message-ID: <202208031012.z1rYKkYA-lkp@intel.com>
-References: <20220802185534.735338-3-jackyli@google.com>
+        Tue, 2 Aug 2022 22:28:38 -0400
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130054.outbound.protection.outlook.com [40.107.13.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB98A19C1B;
+        Tue,  2 Aug 2022 19:28:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l9TVOfoRWaax3/3i/so/2nqfwIUNA4t9w4cXzg7bv/WxfCp12LNT4AiJZLoYu8N67mRoeS0k2y8TctHbAoldpWzDPiEnJpxS8yzscNG9SNPPvgbid42AZo2QjMfxN41/CP4lHC/oNkBf34CBNd67YadxIdX9sGE6VJkwwa/kTInn/xvCNmqIdyNEglQ5g9VlV0baaXt5X8hKUgE+wVr3D94WJ2SjzJlE4uDA1ioFvKyBAJPzVA/7GmtxfCUUSCOHfpNpRJqQ1mn3jVLHuZq7GKcgRY0beFMkvRwh9qcn6KeVtKIWOYPcTbH4lBBYeTpCGaR/S5VgPbB7b9KJtlo9/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MK/6a5WbebICGhod1fHATwPFNLfxUxyQZrh5Sq6b1+Q=;
+ b=gidMs52uD3KjD4eqih48UAJ7zlOjgGJAbc79RMp8VkwYIyqxbyJny6tt4xOAx8aDF65USnKcAtY7lUYLYPVE/y4DFuY3QCZuavmQGrfGVxdMdZrxdSoy+Rxeqg0g4+JUr7aI2u4AcXx7/9fhcbzMLltW7Opmhr0BvgWtvwUS2XmLbTPkuQzDXcYW/tKo0YqGLmQLF/UzzuB7e1ZxSvgOty1OVrE//o+80nRnSnlOOOtzi9qaOlX1XxRy/hfQ+H1mam219IXjcMZ+m174z3H0WhwWuUrwQD3bFKTO+V9ccbNXH7CDxE6Lu1kvoOoj3yDYyB5cxZUsRLiEsTJQOnZX/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MK/6a5WbebICGhod1fHATwPFNLfxUxyQZrh5Sq6b1+Q=;
+ b=cUSGpOKi0FTkmaZHGIaG4Uobw80uu3/cPonMlFhzF4ks9rBQMcGNHL6znUY+mwOr8iO1uqQO/WIIpNIzpdiZbzFJxQX9ZaCSo/qROq+YFmUq6+AtoufK55SNh+3hy0/YC06immfQJ8kev62/f9jB0KMzhQZqRDQ81KOhW+Uejjk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
+ by DB6PR04MB3077.eurprd04.prod.outlook.com (2603:10a6:6:8::16) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5482.13; Wed, 3 Aug 2022 02:28:34 +0000
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::5db6:3f08:2e04:33c]) by AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::5db6:3f08:2e04:33c%4]) with mapi id 15.20.5504.014; Wed, 3 Aug 2022
+ 02:28:34 +0000
+From:   Ming Qian <ming.qian@nxp.com>
+To:     mchehab@kernel.org, hverkuil-cisco@xs4all.nl
+Cc:     shawnguo@kernel.org, robh+dt@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        xiahong.bao@nxp.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v3 0/4] media: amphion: add support for contiguous format
+Date:   Wed,  3 Aug 2022 10:27:18 +0800
+Message-Id: <cover.1659493105.git.ming.qian@nxp.com>
+X-Mailer: git-send-email 2.37.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2P153CA0022.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::9)
+ To AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220802185534.735338-3-jackyli@google.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a21c795a-6bbc-42b8-fecd-08da74f7dce2
+X-MS-TrafficTypeDiagnostic: DB6PR04MB3077:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GsXvkaH0K5xJeS4IpQgAF707AZFmsuAR25yZhdb63GQKAoBDGjWV6wxEVbrHzbhbq+VRlLT3/qZ9sE1ucZq5/6MsoMpMnH38bBBmQceausmCNOiFh08QVvYF7ou1ra73aahptahZXW/sl6QRpXarNcmx3vCrZpMpQbrZmRkFpx0v/+fv2Oc/nvA+dR1YT2aXs9A9/kAsJ+4zcRMfpAYIUvW+rpPPOMcE0Ptuygmn3Q57Xdf4P4GguMtJgc2PH9UPLf+dM71kmtvvcy9BqLST4li1KwZrqD5RVu0GrT+jSXa63U3I7DqypAHR21C2t9EpJzdKrD6HAdVrEy35WZR6WMBW72/YE2nifF/B54qNsu04pKLMfYR3o6AUcYk2YsL44sVb06RUHOy2K8g7AJ8jmpyN5dc9PLNHYMM98vdF4ANMOb3o8NIKEpJVbIhpaM7u4a11K1cubjxELa1cmqVPMCCxk4lKiTBiAUnf1UT9bWzEP9irwOTOZy5PE0m9XR+DBtrVhCSs1AaOP3GAOK7uv9QiDCns8H2vMk9ZF4HT0oGorVU7YqlJJOameqXVEMl5//t/QBbaCACBQuVmVnALpBUu1SqkDvyTcVuSTGwylcnralNas0wu0oY08UxfZ3AnP/HOWU+dVfckWaDpk3KOcBBF1+14MaNasI/obWlp+FopQsPeKn3zGSQXbULD30NDBY5DZT0zcBO5EHrKRInFXRfvTVQG5oyimqgE6bCC5RpxMenzCOHrMUx7kZmXeNgR/3owf8pz+/uT/ixCk6yKkQ/6ium2XBgoxoYh0BGzJPg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(136003)(39860400002)(396003)(346002)(44832011)(5660300002)(8676002)(4326008)(66476007)(66556008)(66946007)(8936002)(7416002)(2906002)(83380400001)(36756003)(86362001)(38100700002)(6486002)(478600001)(41300700001)(38350700002)(316002)(186003)(2616005)(26005)(6666004)(6506007)(6512007)(52116002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TDkyt8+7aVa2nols8lTmI2nZ2kavSW/NW9tl2YJfdoFjg09aFPiUcB8Gpxsu?=
+ =?us-ascii?Q?WjDvjagcW1lkMmZhLW6x6tPcjhDFIwgTpH6QC7J0NKeWfkh++GIf2OR96tU1?=
+ =?us-ascii?Q?gxG86ON7Qb0s0UPfAnxc0Or771isenGzVX9Cx2WuzNrHpc5mRBGAgoqI6QuW?=
+ =?us-ascii?Q?R2j3zBw4RiT/T/83/G8rJCj27JRmbRTiDso5YpOqF2xafnbzDcO37ROlabdC?=
+ =?us-ascii?Q?J0VI8XUwFx8HxGeXPWnnoSxBoqKpH5XkLIEK1GpZb+9ZEh2JYO0LpJeJStsP?=
+ =?us-ascii?Q?i7Smk6R+sW7QU8H36mZntR7WsXQMn9wfeQ9wJmo6BbVWW+lTfo+BdGuhGvfc?=
+ =?us-ascii?Q?8+lWhJgcpO+saaR8ifo7Dl23VMUJtzXEotxBQEbQ0tKsouT/9QhpQZH5Dqv6?=
+ =?us-ascii?Q?oYBIr92u6j2Hcb/DYh6GadBl/x1LZWNyY6GD/Hc5denIfIf/5HEIisV1uzS7?=
+ =?us-ascii?Q?9lNd44GXXSp+g51mZdaH1iku3xyW21nSmIq1S1l+9ZX1Xv/Bj8DIsDWVRIoL?=
+ =?us-ascii?Q?So8mSkn6XsketkTR17+01KxbHXnTSPhgR0lXAsn5xwuNOIJiOKI6z5JC1HH5?=
+ =?us-ascii?Q?IWzYKjk5Zh+SL7alRNdvUJI3BLKtiQBKCLkf+sVmFsXOcn/frKcvuJW8RkrE?=
+ =?us-ascii?Q?//A7RsjHdu2BLf8TR5MBI55K1zAt9X9j9ZMoUsfJ2k20SZlHjnIoVWPOwi4R?=
+ =?us-ascii?Q?J2xlYg1Y/JvjYCP30LVgxTR/iS5J6+NbSBz9841VWvnEoTWnSmOiI+zulbyD?=
+ =?us-ascii?Q?bQ4D4pqpl5DoEHMwaxo5MAzVdvH93N3atNVVcUS+/wR+iOJohG4OsRAFqlxJ?=
+ =?us-ascii?Q?CoHoaTH2rtYPQaYqyDKBXhL2dW6lhG76o7gY/K8A90VpjRF8C3SsfvlL0hOj?=
+ =?us-ascii?Q?nA1hayf9gWjHcyzkVTy8HOtyZJSLgDK8YostjIM6TpyVdKw92EMnLup2yyVU?=
+ =?us-ascii?Q?eO4ntGSaGA5dB0S95jwRHH3Tod2X9Uf5OEuUqKorcNtZsy7GTTJfZ6Y6fmWU?=
+ =?us-ascii?Q?uSmCZ3nIUu729dOMCyStGwn9dFfeffq/qUCh/5yyw7GKMSp2RwnBWpT/DE5Q?=
+ =?us-ascii?Q?jxQn18yNFsfmdtiUnJEK+rVeMSpDSGS5QTpm98V01PLFTa2Krp0sY9HywmYj?=
+ =?us-ascii?Q?uY7KZ06sNYJZ5iIyYS+CA4E0q7hhFig78wQN46upE/x+GyN+ryEuHO/0d2uk?=
+ =?us-ascii?Q?/yK5ae2zJqdaHR4YFbixihPfWitcWJlCZhnu2wqAnyL50tc9R6AHRAl5ONVc?=
+ =?us-ascii?Q?xTJY6Cyo4czXO0zPjzkgZHfiYBMSjB5pK05FvX9gnTG1feKeVY+fTfjQWpdU?=
+ =?us-ascii?Q?xW8ORXyyy/WZy90fS2IVVO6qJ9sjOs74kZfjK98YrygNRzSTQsIpA4A8M3eh?=
+ =?us-ascii?Q?XiMWjm6rBzUAXC9VsTn8Xqy/qkBFqh5/ah8PhyFoI4oIOiWW9mQie1KJyord?=
+ =?us-ascii?Q?SBkUH9Nt77mnubfQuxlZKPdI+PbUOVBermSGrQ6zXO6fKx037tCYPg7C/dw+?=
+ =?us-ascii?Q?W6pzyuVge9qtwbRNIXcPZLZb8kdTy1M9tEHPjnVq4N9l6hroGcaUzDWh5d78?=
+ =?us-ascii?Q?dfO14Sp4gDyHMsuq/Y2kslCfwWVBvBkTp84cs2ua?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a21c795a-6bbc-42b8-fecd-08da74f7dce2
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2022 02:28:33.9829
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Z53E7BBI0tAeEY7fhOdTwj4PnuE3UrRoOiLQYGvI8KcdmWUsy0Yrl7/ZGRednwnSc/LcCFUMSXKBBz1tqRPuDQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR04MB3077
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jacky,
+amphion vpu support non contiguous planes yuv format,
+but when we make pipeline with other device,
+the device may only support contiguous format,
+for example, amphion encoder support NV12M,
+but the capture device may only support NV12.
+we can't connect them directly.
 
-Thank you for the patch! Perhaps something to improve:
+So to improve compatibility, driver can add support for contiguous
+format in the same time.
 
-[auto build test WARNING on herbert-cryptodev-2.6/master]
-[also build test WARNING on herbert-crypto-2.6/master kvm/queue linus/master v5.19 next-20220802]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Then encoder can support NV12 and NV12M,
+decoder can support NV12_8L128 and NV12M_8L128.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jacky-Li/Improve-error-handling-during-INIT_EX-file-initialization/20220803-025617
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git master
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220803/202208031012.z1rYKkYA-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/3c3fe5b1821e961cbfe1f3724a5256e6e04bbe92
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jacky-Li/Improve-error-handling-during-INIT_EX-file-initialization/20220803-025617
-        git checkout 3c3fe5b1821e961cbfe1f3724a5256e6e04bbe92
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/crypto/ccp/
+v3
+- negotiate bytesperline with user
+- zero the reserved of v4l2_format
+v2
+-- fix an uninitialized array index read error
+-- remove an used variable
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Ming Qian (4):
+  media: add nv12_8l128 and nv12_10be_8l128 video format.
+  media: amphion: tell and handle contiguous and non contiguous format
+  media: amphion: decoder add support for contiguous planes
+  media: amphion: encoder add support for contiguous planes
 
-All warnings (new ones prefixed by >>):
-
-   In file included from include/linux/device.h:15,
-                    from drivers/crypto/ccp/psp-dev.h:13,
-                    from drivers/crypto/ccp/sev-dev.c:30:
-   drivers/crypto/ccp/sev-dev.c: In function 'sev_write_init_ex_file':
->> drivers/crypto/ccp/sev-dev.c:252:25: warning: format '%ld' expects argument of type 'long int', but argument 3 has type 'int' [-Wformat=]
-     252 |                         "SEV: could not open file for write, error %ld\n",
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ^~~
-   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
-     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                        ^~~~~~~
-   drivers/crypto/ccp/sev-dev.c:251:17: note: in expansion of macro 'dev_err'
-     251 |                 dev_err(sev->dev,
-         |                 ^~~~~~~
-   drivers/crypto/ccp/sev-dev.c:252:70: note: format string is defined here
-     252 |                         "SEV: could not open file for write, error %ld\n",
-         |                                                                    ~~^
-         |                                                                      |
-         |                                                                      long int
-         |                                                                    %d
-
-
-vim +252 drivers/crypto/ccp/sev-dev.c
-
-3d725965f836a7a David Rientjes 2021-12-07  235  
-3c3fe5b1821e961 Jacky Li       2022-08-02  236  static int sev_write_init_ex_file(void)
-3d725965f836a7a David Rientjes 2021-12-07  237  {
-3d725965f836a7a David Rientjes 2021-12-07  238  	struct sev_device *sev = psp_master->sev_data;
-3d725965f836a7a David Rientjes 2021-12-07  239  	struct file *fp;
-3d725965f836a7a David Rientjes 2021-12-07  240  	loff_t offset = 0;
-3d725965f836a7a David Rientjes 2021-12-07  241  	ssize_t nwrite;
-3d725965f836a7a David Rientjes 2021-12-07  242  
-3d725965f836a7a David Rientjes 2021-12-07  243  	lockdep_assert_held(&sev_cmd_mutex);
-3d725965f836a7a David Rientjes 2021-12-07  244  
-3d725965f836a7a David Rientjes 2021-12-07  245  	if (!sev_init_ex_buffer)
-3c3fe5b1821e961 Jacky Li       2022-08-02  246  		return 0;
-3d725965f836a7a David Rientjes 2021-12-07  247  
-05def5cacfa0bd5 Jacky Li       2022-04-14  248  	fp = open_file_as_root(init_ex_path, O_CREAT | O_WRONLY, 0600);
-3d725965f836a7a David Rientjes 2021-12-07  249  	if (IS_ERR(fp)) {
-3c3fe5b1821e961 Jacky Li       2022-08-02  250  		int ret = PTR_ERR(fp);
-3d725965f836a7a David Rientjes 2021-12-07  251  		dev_err(sev->dev,
-3d725965f836a7a David Rientjes 2021-12-07 @252  			"SEV: could not open file for write, error %ld\n",
-3c3fe5b1821e961 Jacky Li       2022-08-02  253  			ret);
-3c3fe5b1821e961 Jacky Li       2022-08-02  254  		return ret;
-3d725965f836a7a David Rientjes 2021-12-07  255  	}
-3d725965f836a7a David Rientjes 2021-12-07  256  
-3d725965f836a7a David Rientjes 2021-12-07  257  	nwrite = kernel_write(fp, sev_init_ex_buffer, NV_LENGTH, &offset);
-3d725965f836a7a David Rientjes 2021-12-07  258  	vfs_fsync(fp, 0);
-3d725965f836a7a David Rientjes 2021-12-07  259  	filp_close(fp, NULL);
-3d725965f836a7a David Rientjes 2021-12-07  260  
-3d725965f836a7a David Rientjes 2021-12-07  261  	if (nwrite != NV_LENGTH) {
-3d725965f836a7a David Rientjes 2021-12-07  262  		dev_err(sev->dev,
-3d725965f836a7a David Rientjes 2021-12-07  263  			"SEV: failed to write %u bytes to non volatile memory area, ret %ld\n",
-3d725965f836a7a David Rientjes 2021-12-07  264  			NV_LENGTH, nwrite);
-3c3fe5b1821e961 Jacky Li       2022-08-02  265  		return -EIO;
-3d725965f836a7a David Rientjes 2021-12-07  266  	}
-3d725965f836a7a David Rientjes 2021-12-07  267  
-3d725965f836a7a David Rientjes 2021-12-07  268  	dev_dbg(sev->dev, "SEV: write successful to NV file\n");
-3c3fe5b1821e961 Jacky Li       2022-08-02  269  
-3c3fe5b1821e961 Jacky Li       2022-08-02  270  	return 0;
-3d725965f836a7a David Rientjes 2021-12-07  271  }
-3d725965f836a7a David Rientjes 2021-12-07  272  
+ .../media/v4l/pixfmt-yuv-planar.rst           |   8 +
+ drivers/media/platform/amphion/vdec.c         | 203 ++++++++++--------
+ drivers/media/platform/amphion/venc.c         |  41 ++--
+ drivers/media/platform/amphion/vpu.h          |   4 +-
+ drivers/media/platform/amphion/vpu_dbg.c      |   8 +-
+ drivers/media/platform/amphion/vpu_helpers.c  |  48 ++++-
+ drivers/media/platform/amphion/vpu_helpers.h  |   2 +
+ drivers/media/platform/amphion/vpu_malone.c   |   3 +-
+ drivers/media/platform/amphion/vpu_v4l2.c     | 157 ++++++++++----
+ drivers/media/platform/amphion/vpu_v4l2.h     |   3 +-
+ drivers/media/platform/amphion/vpu_windsor.c  |   8 +-
+ drivers/media/v4l2-core/v4l2-ioctl.c          |   2 +
+ include/uapi/linux/videodev2.h                |   2 +
+ 13 files changed, 326 insertions(+), 163 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.1
+
