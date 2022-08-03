@@ -2,101 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A30C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:53:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF5C1C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236547AbiHCPxk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:53:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50418 "EHLO
+        id S237446AbiHCPzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238326AbiHCPvu (ORCPT
+        with ESMTP id S238154AbiHCPzS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:51:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 07B42101EE
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:51:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659541871;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TwY8q9NKTMuKDlfD+95rBy75sDQtNoFH7OKEETfKcv8=;
-        b=CfLsJ61ZtRxfzl6W9KSZ6ykiBhQB7F1kApBQTKwC/N+5MNbUioLxUW2yxFu7MVxI8woJK7
-        do7v4AnwkOZbr9ohYFEQNeFefAtycZnpOt5q7+HE51JhX330pGs7SmfT4kqtuEUtC0D0gg
-        DLjJJJjt1MsI3MrQMeTIgpcCyU9x7rk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-503-Tev-prOKPAWzMgdrsCQ_cA-1; Wed, 03 Aug 2022 11:51:07 -0400
-X-MC-Unique: Tev-prOKPAWzMgdrsCQ_cA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Wed, 3 Aug 2022 11:55:18 -0400
+Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [IPv6:2001:4b7a:2000:18::168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B843481EE
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:53:30 -0700 (PDT)
+Received: from [192.168.1.101] (abxi232.neoplus.adsl.tpnet.pl [83.9.2.232])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7DE901019C9A;
-        Wed,  3 Aug 2022 15:51:06 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.194.242])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DA4F81121314;
-        Wed,  3 Aug 2022 15:51:02 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        linux-kernel@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Sean Christopherson <seanjc@google.com>, x86@kernel.org,
-        Jim Mattson <jmattson@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v3 12/13] KVM: x86: SVM: don't save SVM state to SMRAM when VM is not long mode capable
-Date:   Wed,  3 Aug 2022 18:50:10 +0300
-Message-Id: <20220803155011.43721-13-mlevitsk@redhat.com>
-In-Reply-To: <20220803155011.43721-1-mlevitsk@redhat.com>
-References: <20220803155011.43721-1-mlevitsk@redhat.com>
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 8BCDC3F759;
+        Wed,  3 Aug 2022 17:53:28 +0200 (CEST)
+Message-ID: <38d82563-12dd-3d74-efb7-7066c114f016@somainline.org>
+Date:   Wed, 3 Aug 2022 17:53:27 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1] pinctrl: qcom: sm8250: Fix PDC map
+Content-Language: en-US
+To:     Jianhua Lu <lujianhua000@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220803015645.22388-1-lujianhua000@gmail.com>
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <20220803015645.22388-1-lujianhua000@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the guest CPUID doesn't have support for long mode, 32 bit SMRAM
-layout is used and it has no support for preserving EFER and/or SVM
-state.
 
-Note that this isn't relevant to running 32 bit guests on VM which is
-long mode capable - such VM can still run 32 bit guests in compatibility
-mode.
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/kvm/svm/svm.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+On 3.08.2022 03:56, Jianhua Lu wrote:
+> Fix the PDC mapping for SM8250, gpio39 is mapped to irq73(not irq37).
+> 
+> Fixes: b41efeed507a("pinctrl: qcom: sm8250: Specify PDC map.")
+> Signed-off-by: Jianhua Lu <lujianhua000@gmail.com>
+> ---
+> 
+> Changes in v1:
+Acutally, it should be v2 as the first send is assumed to be a v1.
+> - fixes typo error(mapped target is irq, not gpio).
+> 
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 7ca5e06878e19a..64cfd26bc5e7a6 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4442,6 +4442,15 @@ static int svm_enter_smm(struct kvm_vcpu *vcpu, union kvm_smram *smram)
- 	if (!is_guest_mode(vcpu))
- 		return 0;
- 
-+	/*
-+	 * 32 bit SMRAM format doesn't preserve EFER and SVM state.
-+	 * SVM should not be enabled by the userspace without marking
-+	 * the CPU as at least long mode capable.
-+	 */
-+
-+	if (!guest_cpuid_has(vcpu, X86_FEATURE_LM))
-+		return 1;
-+
- 	smram->smram64.svm_guest_flag = 1;
- 	smram->smram64.svm_guest_vmcb_gpa = svm->nested.vmcb12_gpa;
- 
--- 
-2.26.3
+The change looks in line with msm-4.19 though.
 
+Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+
+Konrad
+>  drivers/pinctrl/qcom/pinctrl-sm8250.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pinctrl/qcom/pinctrl-sm8250.c b/drivers/pinctrl/qcom/pinctrl-sm8250.c
+> index af144e724bd9..3bd7f9fedcc3 100644
+> --- a/drivers/pinctrl/qcom/pinctrl-sm8250.c
+> +++ b/drivers/pinctrl/qcom/pinctrl-sm8250.c
+> @@ -1316,7 +1316,7 @@ static const struct msm_pingroup sm8250_groups[] = {
+>  static const struct msm_gpio_wakeirq_map sm8250_pdc_map[] = {
+>  	{ 0, 79 }, { 1, 84 }, { 2, 80 }, { 3, 82 }, { 4, 107 }, { 7, 43 },
+>  	{ 11, 42 }, { 14, 44 }, { 15, 52 }, { 19, 67 }, { 23, 68 }, { 24, 105 },
+> -	{ 27, 92 }, { 28, 106 }, { 31, 69 }, { 35, 70 }, { 39, 37 },
+> +	{ 27, 92 }, { 28, 106 }, { 31, 69 }, { 35, 70 }, { 39, 73 },
+>  	{ 40, 108 }, { 43, 71 }, { 45, 72 }, { 47, 83 }, { 51, 74 }, { 55, 77 },
+>  	{ 59, 78 }, { 63, 75 }, { 64, 81 }, { 65, 87 }, { 66, 88 }, { 67, 89 },
+>  	{ 68, 54 }, { 70, 85 }, { 77, 46 }, { 80, 90 }, { 81, 91 }, { 83, 97 },
