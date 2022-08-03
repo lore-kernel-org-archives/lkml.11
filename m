@@ -2,203 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 436BBC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF522C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237887AbiHCJwL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 05:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59444 "EHLO
+        id S237898AbiHCJwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 05:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237595AbiHCJvo (ORCPT
+        with ESMTP id S237619AbiHCJvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 05:51:44 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80044.outbound.protection.outlook.com [40.107.8.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD4A42AF5;
-        Wed,  3 Aug 2022 02:51:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D69NXH7KHQy/H9iYXswLofSfMFaFkH2TV/xZGFNnkqm743LMAWkSp9o8LRuOAYwMTiNWj9WXCQXndWPpmX+yRZXM/E0jOA6TVgpcVm1Nlh9rnrOmjmupDw30ii+U1V+/cm67iajpN4tvFUxbfHhQUtPqNsg6ixnaD5PfwCBKGni6DdYIJeD0YrMVMmLJRcut7VfagYExOcJJ34KZF8fIEeOi6hrKzyBU8zdotLhOY6sTsHI98RtPh+WdbbQznQJr0c5u1KKNHaergfQ2y6RMI1/rfmQtPYjqtO8zYke9F4uxrnre9noIBANtWSH6MLWmFi8z4XVsDKgv8aC3xuuwfg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zSRg+V5XZcRZIfJxulo6Sfb0a5hKAdniQiZ4cZzNNOA=;
- b=YNp7dtMwi7ZbRGZpIucykqdtRnNw/MqFk1Q+IQNYsi+RZdXyQimvKOtRNhfW35xzSpef8yu8nA8fTDekQvZB7gA+kakbUxoaLEO8+suTi6powZi0Hj9gd0EAkh+DYD6HNM76KkMVIz/AhpYZiH+iRpme71uImYP3A0uPQB5/QGzdbkDytyW7X9FtGe/Lu7EA1CLKK/02i6lmfM1pD+L25ZLvDc8POSy9xNxJQiIzLQE5G7cjGu2gVjoMcEAQQjvYDIbKexzl5lo5dUWxVnykToZTGY+Ch5Mb8aWNWEqcOAnTPwVXNEQM+0X269VaD6N62wsIQXg3GVO5ZgLRLuclPA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zSRg+V5XZcRZIfJxulo6Sfb0a5hKAdniQiZ4cZzNNOA=;
- b=LThPnxZFebyB8N+3uOgJinRvpRFmWMIjUr/UYlOZ0ZUQsWrvtnSHgxEPLUN8n6LHQjHBASXPJuyx3Xxcrrnqtf72+kYxeUbX0qcySBj46hWNRTJopK9qr2SEosCn0jhXn3qlg1J8UMh410JTivjb/1aLof9DjlBKrtneqnU5NUA=
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by DB7PR04MB5513.eurprd04.prod.outlook.com (2603:10a6:10:88::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.16; Wed, 3 Aug
- 2022 09:51:00 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::d547:3040:284e:580c]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::d547:3040:284e:580c%8]) with mapi id 15.20.5504.014; Wed, 3 Aug 2022
- 09:51:00 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-CC:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: [PATCH] tty: serial: imx: initialize
- peripheral_config/peripheral_size for sdma config
-Thread-Topic: [PATCH] tty: serial: imx: initialize
- peripheral_config/peripheral_size for sdma config
-Thread-Index: AQHYpwbfzk8jOQKslUeCbcTMT1rdmq2c1H2AgAANtbCAAAnwgIAAAatA
-Date:   Wed, 3 Aug 2022 09:51:00 +0000
-Message-ID: <AS8PR04MB8404DA3B296728BD75D8D6BF929C9@AS8PR04MB8404.eurprd04.prod.outlook.com>
-References: <20220803065737.14752-1-sherry.sun@nxp.com>
- <d4838245-030c-39b4-df4b-17b3b4c73a5b@pengutronix.de>
- <AS8PR04MB8404990740869737F326D302929C9@AS8PR04MB8404.eurprd04.prod.outlook.com>
- <20220803094041.cmjublrg3nu4odlt@pengutronix.de>
-In-Reply-To: <20220803094041.cmjublrg3nu4odlt@pengutronix.de>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fa185540-d96f-446b-5416-08da7535abdb
-x-ms-traffictypediagnostic: DB7PR04MB5513:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: c+XUqHj0EtT2bOQaYcrMQ7GV2X08oemNYe3Sj+xNGNPKjaxbeMNTvMMIsEKWBbXin+QpclnLbivobDm7Mc//kZylNyDAcj+CS/eNZu4oAS7GocceJ8crZ8iWF+SgATB1S5LSqi8GA2q6PB72o0e6PZY+HJerRDiQYHSbRZEk4qbtnYPCLAY+8eE6db72UvVcE0E16jEKHNoME55KeHsh0ZbQFIy+6dgZCuxgZgXHfdKaoa6OFhNBYr/zoi+dFkzFHmS1U2ye3NvYrs3lKHaXHVK7qzrw4GXuX7UZWcsyl1d5SH25OTQpnj6tTk8UdRwByS5JhtZ6X3DPE9Je7NOetqAZuSJCJq1iiodmMqW5Ly5QGMeJRR9seufr+biasqAgia63a4nr8h/NtvtXRJY84S4kHvcL9gUddUoftlSC5a597DwxCOoF9YxLvENGryLqZBxv4U3T1hjF6kTb8z5PQJdcSl2AZXz3WKd4d4sQIQw6WB/rp7qivZguPWeRom5OGADT5Jid9cx7I8LrmZZNiwvlA2DCjyQiXbhbIc3sk9Jhe/TWtinAf7mDk92l9lP9K1TFfp27pwvtZp1UFINVFi9bJ9mV0dr0CVV5SVZLcL2FRz9nI4Hc9K6gleD5bCsBFFckWyvnpL0V+50AjN9wsEitEGyemZXfjYxQ5gOLqikkEwpFjLHttpoT+BsVhgwQrhAsyf2ChvYBqKEdYFyximLORpxZs8JQW69viVMTvgW/6pHEj7QqibPQTuKVBH16Ytz2sPlcSKebUzhoDW/1L9K1M6dodpk/xNRtyivXDgEg9NaTzxFKANn2J83YVbLX
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(39860400002)(376002)(366004)(396003)(83380400001)(38070700005)(86362001)(122000001)(38100700002)(64756008)(66946007)(4326008)(8676002)(66446008)(66476007)(66556008)(6916009)(76116006)(316002)(2906002)(8936002)(5660300002)(44832011)(54906003)(52536014)(7416002)(9686003)(26005)(186003)(7696005)(53546011)(6506007)(55016003)(41300700001)(478600001)(71200400001)(33656002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?wiPzHu0I/NHWUwoFhGgNhvFONepaXORcgIlJdKQ8BCQnhhPNiBgezh0bqj?=
- =?iso-8859-1?Q?AeGgLsjrByw7Ix3no/M2vjlzaiP8vebQa2FjEgfOLzjXssDQlm1tbSKXIM?=
- =?iso-8859-1?Q?HrMua7pHsy6lZY5tsgXBsz6A4oYkNUF4l5YrzO2Wo2As3y+drrn97R5hJk?=
- =?iso-8859-1?Q?11vD/dFd+Omi52p51mQ42GL7ru2dCoI68qYxhk58cOKxsArFQ48PA8PEOC?=
- =?iso-8859-1?Q?StGn6uQqDtiQqY9c8i2xH94lWoIIeNgJVKL19aJ5dTZXZecn6OMnNBJKAO?=
- =?iso-8859-1?Q?PLeuutKJH3jHJAwKM+cGn+vpS2ZAmKk7PqtHvvyOCMCUelAIEuXG4udYoP?=
- =?iso-8859-1?Q?dLFM9elwt+jDEzIDz0MfpbWbLwMlZprDeY/DVqpC0GpWLjGVFPry5jRe9W?=
- =?iso-8859-1?Q?lzrUv0ET8lVIyokSJlIqTGwzzqEQH1tzVoJexVk2N7SxbtgxAgPADl8AD7?=
- =?iso-8859-1?Q?9//IaTOOFZ8IoZqyOIauOHou/5bv9QlzQr0FpXj54Wi/8KtFuYPp8E7uDV?=
- =?iso-8859-1?Q?KMDVQtpBe8jhhm2QW0Xamhk5CSH21R45r8DansVmI3Z6fiUVki8ddx9xmV?=
- =?iso-8859-1?Q?Tq2kUizVz4B49A3S7fhig5TeUfxp+nfzkCKmdHPC6PIbb0wEid4tKKKH1Z?=
- =?iso-8859-1?Q?oL4mXslsDXSybfedv8meu5cIcmV/tqU7XaOEVHMau8/EmGJ67mXE69k/wz?=
- =?iso-8859-1?Q?KuMHu7a8NRPAQqImcn1xZOtA/SvC/BUjpu5ZDzGH+yJ6r1WA5uln+bGr/J?=
- =?iso-8859-1?Q?ugCkxj1Y3HHAFF8l8X9M+qKnN/BNKFi7sWv3jDeEVGw7IuFHYFhv3GAp+8?=
- =?iso-8859-1?Q?2eSYtHO2qO+tURhl2rZFNor1LMzcnccDQyhNpS+zgziyES9SAxpQXbLTpq?=
- =?iso-8859-1?Q?IG+XmTbCK/GazsjlY3JL9m5f1TSmHOoh93JUmPxIN93isNrO2og0lfWVYe?=
- =?iso-8859-1?Q?TzO/6O27LHvkvnMTsTFQNfCFX2D+F0JNVDY/c8Ux3gOoZ3VcN6pHLoDnJM?=
- =?iso-8859-1?Q?h6usWn7wIvneIzwekLsVecAEA9AkhwxjoUa5L94h2Q2hY6gH1p+Z91k3Ha?=
- =?iso-8859-1?Q?98C5VlERyvBbgC8P54bUGX9PIHccwJ3nYH5ZN2o/yAxzcO8ig6D+4EpCE0?=
- =?iso-8859-1?Q?ReEyvTe3lCSJvVZB8MjObYYA8//OPv7wqWrcM6V+WiyzZ1eHq5nCp6Os4L?=
- =?iso-8859-1?Q?h1mxqAUbdSOJm8WAjVdFqx89PB7ANcRLOINeo6UzeRehs3SjW0WyrY9Qy/?=
- =?iso-8859-1?Q?NufpJo2C9X7qBMDLC6vQg/f5xcb0mU5Iw8IIXTOMPaeD7WUtvYKSDWYxq0?=
- =?iso-8859-1?Q?xztgxxCMzWfiorK7EUePYFjLSb46uxaCsVAaR0dWP5YL9EsECLfGtn+zh4?=
- =?iso-8859-1?Q?m5NYqCHagoYwprtQpG512Hn9zcQh1RUMKMuI5OLPOXjK6niTkBuCCYzzjt?=
- =?iso-8859-1?Q?oTuDTZH96B58sHV/J05z64p+cG93mCs+6WZREGc7+ih+RXxLnt1sCGmqJk?=
- =?iso-8859-1?Q?GqmvN5ToT8+KRTcD1tZ/lSyC4uEfceDVk3EN/LXLXQIHBatDLmMs7fUZ2f?=
- =?iso-8859-1?Q?1x7gADbfWVvdewrktgknTRnSKrJagXOnFan6IBCtmxOZ73ri4vuVv1CGi0?=
- =?iso-8859-1?Q?OtfhXiPFbrampVc68prH/XfpuvCUASN+Cq?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 3 Aug 2022 05:51:45 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8974528703;
+        Wed,  3 Aug 2022 02:51:18 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id z16so20826558wrh.12;
+        Wed, 03 Aug 2022 02:51:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OsTucAz3U2NvqKccpgYeXLddbVzfXi3zTHHQDqTnHd8=;
+        b=MZNgR4E+mQQWms7zLvTBVlgulKGD9neWeW4xIY4nszWcPHES988BnKNzgM8tQw4Z3z
+         8NssehEEpEw6D4LUiwwpGm+k2B0/BM9sCPU6bz0tZlMfab9DViXvTSkv11iP+7QEKXeQ
+         t1IJHebvNXg9rJslokkuRLcyrcGPs913Y/tOv5NUxtn7X7lSmhU2S75ZsqMKY/Qa3t5F
+         yllFyZPIqnBBBaeDaxldq5dIiKC9OlUFx6gdQbp7Y32sC8tZ4M/HRfxE3RwI6FQwFGSy
+         qQECJvxSNBsaNy7A1Xdvx8iv/LczMMeIwKSBdp2EFXeV5TUF1z8VOkFCxnbnqdWpkIrd
+         nZTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=OsTucAz3U2NvqKccpgYeXLddbVzfXi3zTHHQDqTnHd8=;
+        b=OXA+pV9DR+3BSLnXkVAOl2MEvbKwnR+tEXDaXUionzAnOWr6O8iHlIwfkq4bTB5IIe
+         tVv2YmOD61y2Fd/8OqmTrtZKgCEe6/p56w3zBTCfbCENXKMnVUFPMV4N6dClLKpT30c8
+         8lH2pdWrntI1/LufeoBWvHR67ZxVPWRtUQNrw00bJzxJS97/rUCrLhGQk94Pddrw+ndK
+         mg0LrODsyeR/evgg8uOLfx0N319u90OBXGyaZc94nuAFhdK+sJrAD0wbdeACvU9Bt4J4
+         iQCa6IHUOwtxKTPDQtOB/cMU2Hyk5tzgEQCvOMfEsSbN73WoJkPvk3abpk6+Gn0UfRec
+         eCJQ==
+X-Gm-Message-State: ACgBeo12TlCuGfMQyz4e0fBsR+A52RShtwdKx+rEgDZN1uiQRTufpKXI
+        L6eexZNdH8aD7NYARAV65cfIzUi59DI=
+X-Google-Smtp-Source: AA6agR7nRoc9deiV7oVvXs/bFBj5HKVUwDBvg4NqDlkkD/o4gxkgzoH7DaDcGw+gFtlvsTZQOVv/yQ==
+X-Received: by 2002:a05:6000:1869:b0:220:639b:8337 with SMTP id d9-20020a056000186900b00220639b8337mr8331794wri.572.1659520277173;
+        Wed, 03 Aug 2022 02:51:17 -0700 (PDT)
+Received: from gmail.com (84-236-113-167.pool.digikabel.hu. [84.236.113.167])
+        by smtp.gmail.com with ESMTPSA id u11-20020a05600c19cb00b003a302fb9df7sm2022042wmq.21.2022.08.03.02.51.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Aug 2022 02:51:16 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Wed, 3 Aug 2022 11:51:14 +0200
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Subject: Re: [PATCHSET 0/6] perf lock: Add contention subcommand (v1)
+Message-ID: <YupFEkzCDxpFUyeD@gmail.com>
+References: <20220721043644.153718-1-namhyung@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa185540-d96f-446b-5416-08da7535abdb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Aug 2022 09:51:00.3184
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 05dogl+fq2W+pUHKFj8aLGC4gtosAm/XplOkF/l1fPCnFViv5j1wU6ddDUSQDR6xQlkhhDalPSrd4yhz2ijmoA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5513
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721043644.153718-1-namhyung@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-> Subject: Re: [PATCH] tty: serial: imx: initialize
-> peripheral_config/peripheral_size for sdma config
->=20
-> On Wed, Aug 03, 2022 at 09:15:58AM +0000, Sherry Sun wrote:
-> > > On 03.08.22 08:57, Sherry Sun wrote:
-> > > > Since commit 824a0a02cd74 ("dmaengine: imx-sdma: Add multi fifo
-> > > > support") adds the use of
-> > > > dma_slave_config->peripheral_config/peripheral_size to sdma
-> > > > driver, the client drivers like uart need to initialize the
-> > > > peripheral_config/peripheral_size for sdma, otherwise, the random
-> > > > value of local variable slave_config may cause unexpected
-> > > peripheral_config and make sdma mess up.
-> > > >
-> > >
-> > > If this a fix, please add a Fixes: tag. I am not sure it is though, s=
-ee below.
-> >
-> > Hi Ahmad, thanks for the comments.
-> > I don't think this patch is a fix for a specific commit, so we don't ne=
-ed the
-> Fixes tag.
-> >
-> > >
-> > > > Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> > > > ---
-> > > >  drivers/tty/serial/imx.c | 4 ++++
-> > > >  1 file changed, 4 insertions(+)
-> > > >
-> > > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> > > > index
-> > > > 522445a8f666..bb8c2a712e94 100644
-> > > > --- a/drivers/tty/serial/imx.c
-> > > > +++ b/drivers/tty/serial/imx.c
-> > > > @@ -1320,6 +1320,8 @@ static int imx_uart_dma_init(struct imx_port
-> > > > *sport)
-> > >
-> > > This function starts with
-> > >
-> > > struct dma_slave_config slave_config =3D {};
-> > >
-> > > >  	slave_config.src_addr_width =3D DMA_SLAVE_BUSWIDTH_1_BYTE;
-> > > >  	/* one byte less than the watermark level to enable the aging
-> > > > timer
-> > > */
-> > > >  	slave_config.src_maxburst =3D RXTL_DMA - 1;
-> > > > +	slave_config.peripheral_config =3D NULL;
-> > > > +	slave_config.peripheral_size =3D 0;
-> > >
-> > > So these are already zero-initialized.
-> >
-> > I am not sure actually, I think initialize a struct with {} cannot
-> > guarantee that all members are initialized to 0, it may depend on the
-> > compiler.
->=20
-> I'm sure and even reverified in my C book[1].
->=20
-> 	struct mystruct variable =3D {};
->=20
-> results in all components being initialized to their default initial valu=
-e (which
-> is 0 for numbers and NULL for pointers). This works for automatic variabl=
-es
-> since "Standard C" which should cover everthing that is capable to compil=
-e
-> today's kernel.
->=20
-> Best regards
-> Uwe
->=20
-> [1] C - A Reference Manual, 978-0130895929
->=20
+* Namhyung Kim <namhyung@kernel.org> wrote:
 
-Hi Uwe, wow, this really resolved my confusion, thanks a lot for your confi=
-rmation! ^_^
+> Hello,
+> 
+> It's to add a new subcommand 'contention' (shortly 'con') to perf lock.
+> 
+> The new subcommand is to handle the new lock:contention_{begin,end}
+> tracepoints and shows lock type and caller address like below:
+> 
+>   $ perf lock contention
+>    contended   total wait     max wait     avg wait         type   caller
+> 
+>          238      1.41 ms     29.20 us      5.94 us     spinlock   update_blocked_averages+0x4c
+>            1    902.08 us    902.08 us    902.08 us      rwsem:R   do_user_addr_fault+0x1dd
+>           81    330.30 us     17.24 us      4.08 us     spinlock   _nohz_idle_balance+0x172
+>            2     89.54 us     61.26 us     44.77 us     spinlock   do_anonymous_page+0x16d
+>           24     78.36 us     12.27 us      3.27 us        mutex   pipe_read+0x56
+>            2     71.58 us     59.56 us     35.79 us     spinlock   __handle_mm_fault+0x6aa
+>            6     25.68 us      6.89 us      4.28 us     spinlock   do_idle+0x28d
+>            1     18.46 us     18.46 us     18.46 us      rtmutex   exec_fw_cmd+0x21b
+>            3     15.25 us      6.26 us      5.08 us     spinlock   tick_do_update_jiffies64+0x2c
+>    ...
 
-Best regards
-Sherry
+Wouldn't it also be useful to display a lock contention percentage value, 
+the ratio of fastpath vs. contended/wait events?
+
+That's usually the first-approximation metric to see how contended 
+different locks are, and the average wait time quantifies it.
+
+Thanks,
+
+	Ingo
