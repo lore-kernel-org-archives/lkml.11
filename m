@@ -2,194 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4E7AC19F2A
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:06:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 502CDC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237410AbiHCIG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 04:06:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51034 "EHLO
+        id S237419AbiHCIHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 04:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235199AbiHCIGY (ORCPT
+        with ESMTP id S235199AbiHCIHF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 04:06:24 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C978220E6;
-        Wed,  3 Aug 2022 01:06:21 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id m22so13481456lfl.9;
-        Wed, 03 Aug 2022 01:06:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc;
-        bh=TSlAb8QUNSWyAXVGnp8zPCHMrFa9cMCzn91LI53nZo8=;
-        b=F+Ir1CBQi581OpNqvOJ9SHUtV8QZSI2B+x1iNa8Z6Nd/CgF+xd2WlCeFVF7JxRu8zG
-         F+KPZisK6zCLTgA8pPctB8f4QaQqgKqvXvMT4JAbsJ2nZQO4tf7pYE5UZgOM3TDPju/q
-         Q4PNb6krIwj0i0F9jrqDMxrOkJNo4dWmbK0ZJ6A1t8JdUqzy2qD7rGRusBFMMSoBkXG6
-         irVoWmM2lVrLujVRr7UAtH6Biq/d2qPNeZolKjkb9FXwwkpnSODPDvxYUeGuZHGhYzKI
-         LOOQL/BID6iPDuMuGVblRg+GjzvHlKMdcmOHz6mxy9los9KbZRLCl6IApaPz91aUANpK
-         6/LQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=TSlAb8QUNSWyAXVGnp8zPCHMrFa9cMCzn91LI53nZo8=;
-        b=elMQlGC4kfdXvgCrpvMMDzXlfmCCfcL3vgFPmsRp+KCY0fsnh1071syQ0oeFKWtT8J
-         kKiONuRKdtOEkTZWWTWPfCJBmmVTzeXYHJGsz55yR9YEdv8TffViWWeBTM86Pr0cFatD
-         5NGAddKvVL0lRfFepo33KEgOvIfOaDRxSAaNEW6kPy5oMrQIUzouL+XnDF61UkkDc9h1
-         +5I63BiROjdmf9nP3oQn7xuz5v5EKIxPQGFgvafO8ihucac8QwEQSDXLOYqgBC7NnVFV
-         cyI9drPkH2X/dplChw005AYmO61kcgbwKDm0YQwPmxnWP6PGQ+EF097AfJkF+ajHjTjV
-         JAGA==
-X-Gm-Message-State: AJIora94nHO1nLvkLX9geD4y3AMtg3INKQBeu0PAbuakiPMFgefK8mjm
-        Eu83Ng/V86k0jgDrK4NPwBxE4nMKmee1tA==
-X-Google-Smtp-Source: AGRyM1tvVtEhDOQtk8IqozLo5JNRTUFSzsv1FwStjTEl+Nv54p5O3Pd3FhzdrOcI8ZSZgHIq+2l+Ig==
-X-Received: by 2002:a05:6512:13a1:b0:47f:787b:4e6a with SMTP id p33-20020a05651213a100b0047f787b4e6amr8213312lfa.64.1659513979143;
-        Wed, 03 Aug 2022 01:06:19 -0700 (PDT)
-Received: from [10.0.0.127] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
-        by smtp.gmail.com with ESMTPSA id o3-20020a2e9b43000000b0025e2cb58c6esm2223420ljj.37.2022.08.03.01.06.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Aug 2022 01:06:18 -0700 (PDT)
-Message-ID: <0fa5fdeb-b633-c543-3e98-1f5e1f064c34@gmail.com>
-Date:   Wed, 3 Aug 2022 11:08:29 +0300
+        Wed, 3 Aug 2022 04:07:05 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE7B2181C
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 01:07:04 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2737CGgG005901;
+        Wed, 3 Aug 2022 08:06:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
+ to : cc : references : in-reply-to : mime-version : message-id :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=cD/HLOT1RCr5FLze4xYHuh82tvZmGK0k7ghWRsfmnMs=;
+ b=s7VdRk7u/VPgZX+3zRnI5WEBcaEr49EVC9har418PaXIytMUYVl3Z3KmOfxJIUmzvpnn
+ IZICnARoFMQEKx0JoHxtdFJMrWwRIYUrCUBwz/WICyuI+vdpRzGrV3ZZ6w9/oNpibLlJ
+ ubGoesRJ5TnWxAFJ1NucRrDjTfpbWQqvqgQQ5RLjd/vUyJoy+w2Egg0w2OetFbXcTSto
+ vLviHrZ1/Fs92jzv20jzTqK80h6LufA0ilQ7if22I32sGtQIdGJsulcRTz6qiGJCFUPn
+ S313xNuwe/0TzqQ6SxdZh9Ohihl/ERzr0/y/NRGcQE2UrUvlDG0CU2Ke6sWQVMgvcSDI EA== 
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hqmdu1bx1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 03 Aug 2022 08:06:41 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27386GEr017991;
+        Wed, 3 Aug 2022 08:06:39 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma02fra.de.ibm.com with ESMTP id 3hmv98vgnq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 03 Aug 2022 08:06:39 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27386qMM31326540
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 3 Aug 2022 08:06:52 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6E7DF42041;
+        Wed,  3 Aug 2022 08:06:36 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D93E84203F;
+        Wed,  3 Aug 2022 08:06:35 +0000 (GMT)
+Received: from localhost (unknown [9.43.94.156])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  3 Aug 2022 08:06:35 +0000 (GMT)
+Date:   Wed, 03 Aug 2022 13:36:34 +0530
+From:   "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>
+Subject: Re: [PATCH 2/3] powerpc/ppc-opcode: Define and use PPC_RAW_TRAP() and
+ PPC_RAW_TW()
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+References: <b2d762191b095530789ac8b71b167c6740bb6aed.1657205708.git.christophe.leroy@csgroup.eu>
+        <52c7e522e56a38e3ff0363906919445920005a8f.1657205708.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <52c7e522e56a38e3ff0363906919445920005a8f.1657205708.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Vaishnav Achath <vaishnav.a@ti.com>, vkoul@kernel.org,
-        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     nm@ti.com, vigneshr@ti.com, j-keerthy@ti.com, m-khayami@ti.com,
-        stanley_liu@ti.com
-References: <20220802054835.19482-1-vaishnav.a@ti.com>
-From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
-Subject: Re: [PATCH v3] dmaengine: ti: k3-udma: Reset UDMA_CHAN_RT byte
- counters to prevent overflow
-In-Reply-To: <20220802054835.19482-1-vaishnav.a@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
+Message-Id: <1659513939.dxqqwb8mat.naveen@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 91osUYcya-v8DiiS0T0UMNk2AIlwaNzq
+X-Proofpoint-GUID: 91osUYcya-v8DiiS0T0UMNk2AIlwaNzq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-03_03,2022-08-02_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 malwarescore=0
+ adultscore=0 suspectscore=0 phishscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=898 lowpriorityscore=0 spamscore=0 bulkscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2208030037
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 02/08/2022 08:48, Vaishnav Achath wrote:
-> UDMA_CHAN_RT_*BCNT_REG stores the real-time channel bytecount statistics.
-> These registers are 32-bit hardware counters and the driver uses these
-> counters to monitor the operational progress status for a channel, when
-> transferring more than 4GB of data it was observed that these counters
-> overflow and completion calculation of a operation gets affected and the
-> transfer hangs indefinitely.
-> 
-> This commit adds changes to decrease the byte count for every complete
-> transaction so that these registers never overflow and the proper byte
-> count statistics is maintained for ongoing transaction by the RT counters.
-> 
-> Earlier uc->bcnt used to maintain a count of the completed bytes at driver
-> side, since the RT counters maintain the statistics of current transaction
-> now, the maintenance of uc->bcnt is not necessary.
-
-Thanks for the updates:
-
-Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
-
-btw: did you encountered issues with cyclic (audio, ADC) regarding to
-wrapping of the counters? S16_LE, stereo, 48KHz should wrap around
-22.369 hours.
-It is a bit trickier as we might be running without interrupts, so we
-can not rely on the same trick.
-
-> 
-> Signed-off-by: Vaishnav Achath <vaishnav.a@ti.com>
+Christophe Leroy wrote:
+> Add and use PPC_RAW_TRAP() instead of opencoding.
+>=20
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 > ---
-> V2->V3 :
-> 		* Remove unnecessary checks for uc->tchan and uc->rchan in 
-> 		udma_decrement_byte_counters()
-> V1->V2 :
-> 		* Update bcnt reset based on uc->desc->dir
-> 		* change order of udma_decrement_byte_counters() to before udma_start()
-> 		* update subsystem tag
-> 
->  drivers/dma/ti/k3-udma.c | 25 +++++++++++++++++--------
->  1 file changed, 17 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/dma/ti/k3-udma.c b/drivers/dma/ti/k3-udma.c
-> index 2f0d2c68c93c..fcfcde947b30 100644
-> --- a/drivers/dma/ti/k3-udma.c
-> +++ b/drivers/dma/ti/k3-udma.c
-> @@ -300,8 +300,6 @@ struct udma_chan {
->  
->  	struct udma_tx_drain tx_drain;
->  
-> -	u32 bcnt; /* number of bytes completed since the start of the channel */
-> -
->  	/* Channel configuration parameters */
->  	struct udma_chan_config config;
->  
-> @@ -757,6 +755,20 @@ static void udma_reset_rings(struct udma_chan *uc)
->  	}
->  }
->  
-> +static void udma_decrement_byte_counters(struct udma_chan *uc, u32 val)
-> +{
-> +	if (uc->desc->dir == DMA_DEV_TO_MEM) {
-> +		udma_rchanrt_write(uc, UDMA_CHAN_RT_BCNT_REG, val);
-> +		udma_rchanrt_write(uc, UDMA_CHAN_RT_SBCNT_REG, val);
-> +		udma_rchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
-> +	} else {
-> +		udma_tchanrt_write(uc, UDMA_CHAN_RT_BCNT_REG, val);
-> +		udma_tchanrt_write(uc, UDMA_CHAN_RT_SBCNT_REG, val);
-> +		if (!uc->bchan)
-> +			udma_tchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
-> +	}
-> +}
-> +
->  static void udma_reset_counters(struct udma_chan *uc)
->  {
->  	u32 val;
-> @@ -790,8 +802,6 @@ static void udma_reset_counters(struct udma_chan *uc)
->  		val = udma_rchanrt_read(uc, UDMA_CHAN_RT_PEER_BCNT_REG);
->  		udma_rchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
->  	}
-> -
-> -	uc->bcnt = 0;
->  }
->  
->  static int udma_reset_chan(struct udma_chan *uc, bool hard)
-> @@ -1115,7 +1125,7 @@ static void udma_check_tx_completion(struct work_struct *work)
->  		if (uc->desc) {
->  			struct udma_desc *d = uc->desc;
->  
-> -			uc->bcnt += d->residue;
-> +			udma_decrement_byte_counters(uc, d->residue);
->  			udma_start(uc);
->  			vchan_cookie_complete(&d->vd);
->  			break;
-> @@ -1168,7 +1178,7 @@ static irqreturn_t udma_ring_irq_handler(int irq, void *data)
->  				vchan_cyclic_callback(&d->vd);
->  			} else {
->  				if (udma_is_desc_really_done(uc, d)) {
-> -					uc->bcnt += d->residue;
-> +					udma_decrement_byte_counters(uc, d->residue);
->  					udma_start(uc);
->  					vchan_cookie_complete(&d->vd);
->  				} else {
-> @@ -1204,7 +1214,7 @@ static irqreturn_t udma_udma_irq_handler(int irq, void *data)
->  			vchan_cyclic_callback(&d->vd);
->  		} else {
->  			/* TODO: figure out the real amount of data */
-> -			uc->bcnt += d->residue;
-> +			udma_decrement_byte_counters(uc, d->residue);
->  			udma_start(uc);
->  			vchan_cookie_complete(&d->vd);
->  		}
-> @@ -3809,7 +3819,6 @@ static enum dma_status udma_tx_status(struct dma_chan *chan,
->  			bcnt = udma_tchanrt_read(uc, UDMA_CHAN_RT_BCNT_REG);
->  		}
->  
-> -		bcnt -= uc->bcnt;
->  		if (bcnt && !(bcnt % uc->desc->residue))
->  			residue = 0;
->  		else
+>  arch/powerpc/include/asm/ppc-opcode.h | 2 ++
+>  arch/powerpc/include/asm/probes.h     | 3 ++-
+>  arch/powerpc/xmon/xmon.c              | 2 +-
+>  3 files changed, 5 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/arch/powerpc/include/asm/ppc-opcode.h b/arch/powerpc/include=
+/asm/ppc-opcode.h
+> index 89beabf5325c..5527a955fb4a 100644
+> --- a/arch/powerpc/include/asm/ppc-opcode.h
+> +++ b/arch/powerpc/include/asm/ppc-opcode.h
+> @@ -581,6 +581,8 @@
+> =20
+>  #define PPC_RAW_BRANCH(offset)		(0x48000000 | PPC_LI(offset))
+>  #define PPC_RAW_BL(offset)		(0x48000001 | PPC_LI(offset))
+> +#define PPC_RAW_TW(t0, a, b)		(0x7f000008 | ___PPC_RS(t0) | ___PPC_RA(a)=
+ | ___PPC_RB(b))
 
--- 
-Péter
+Shouldn't that be 0x7c000008 ?
+
+- Naveen
+
+
+> +#define PPC_RAW_TRAP()			PPC_RAW_TW(31, 0, 0)
+> =20
+>  /* Deal with instructions that older assemblers aren't aware of */
+>  #define	PPC_BCCTR_FLUSH		stringify_in_c(.long PPC_INST_BCCTR_FLUSH)
+> diff --git a/arch/powerpc/include/asm/probes.h b/arch/powerpc/include/asm=
+/probes.h
+> index 00634e3145e7..e77a2ed7d938 100644
+> --- a/arch/powerpc/include/asm/probes.h
+> +++ b/arch/powerpc/include/asm/probes.h
+> @@ -9,8 +9,9 @@
+>   */
+>  #include <linux/types.h>
+>  #include <asm/disassemble.h>
+> +#include <asm/ppc-opcode.h>
+> =20
+> -#define BREAKPOINT_INSTRUCTION	0x7fe00008	/* trap */
+> +#define BREAKPOINT_INSTRUCTION	PPC_RAW_TRAP()	/* trap */
+> =20
+>  /* Trap definitions per ISA */
+>  #define IS_TW(instr)		(((instr) & 0xfc0007fe) =3D=3D 0x7c000008)
+> diff --git a/arch/powerpc/xmon/xmon.c b/arch/powerpc/xmon/xmon.c
+> index f80c714f1d49..26ef3388c24c 100644
+> --- a/arch/powerpc/xmon/xmon.c
+> +++ b/arch/powerpc/xmon/xmon.c
+> @@ -116,7 +116,7 @@ struct bpt {
+>  static struct bpt bpts[NBPTS];
+>  static struct bpt dabr[HBP_NUM_MAX];
+>  static struct bpt *iabr;
+> -static unsigned bpinstr =3D 0x7fe00008;	/* trap */
+> +static unsigned int bpinstr =3D PPC_RAW_TRAP();
+> =20
+>  #define BP_NUM(bp)	((bp) - bpts + 1)
+> =20
+> --=20
+> 2.36.1
+>=20
+>=20
+>=20
