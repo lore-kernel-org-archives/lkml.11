@@ -2,114 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00994C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:51:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A9E3C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:53:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238112AbiHCNvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 09:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33958 "EHLO
+        id S238584AbiHCNxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 09:53:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238721AbiHCNvW (ORCPT
+        with ESMTP id S238349AbiHCNxH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 09:51:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 639B9459B8;
-        Wed,  3 Aug 2022 06:48:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6B20B822AF;
-        Wed,  3 Aug 2022 13:48:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF834C433D7;
-        Wed,  3 Aug 2022 13:48:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659534519;
-        bh=QofVbPFWlQ6HFFbhEFcRVeQJ036YZ+JLjvZNFuTDFtg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ETuvR63hPfNyjnl8aA1zTfgeCrhaMDHj/D46IrW4izDOlIEB7pd84ceNLjR9ThUW9
-         Sa/qTouElugysbtT5O1rw5NfPBpYmvl5C/NJVkDeuJp8xAkTn0MPPqNktJBYviyC+v
-         nIoVV65WE6PWw/RqdA0YLqX/s5TLT6gV3cD9wp652TK/Tdp0mkEJ0qDIXpWB1XusSI
-         xfgjkFWY25hPpVKMfi+U7VTtn9bHZHRM7VwbjEzW8Xx6S9xiZ7hRF8SyygttIApiCN
-         7QjVd1/EmkwzeNFyooyt2ZcYWo8D6dtLr4zkv+oh1MTt6x+P0a4gObrs0DERzGUleJ
-         OwAQSHDnMlxcw==
-From:   Lee Jones <lee@kernel.org>
-To:     lee@kernel.org
-Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        bpf@vger.kernel.org
-Subject: [PATCH v2 1/1] bpf: Drop unprotected find_vpid() in favour of find_get_pid()
-Date:   Wed,  3 Aug 2022 14:48:21 +0100
-Message-Id: <20220803134821.425334-1-lee@kernel.org>
-X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
+        Wed, 3 Aug 2022 09:53:07 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547B05247B
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 06:50:55 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id z2so11153909edc.1
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 06:50:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=JobmQomHLtYAJ+DDomxdN8Lk7HYy1OLd4rHEITgLQdA=;
+        b=OPbC8bWfgzWIie1MfD0jyh6gObqMl3sUtChiIWlKH1yMV8iPxv4ElTDcA/PzHNegar
+         6Q0saDylV3e1iDeJ1byjBXOSyeKWMBGjWYRa5oQbwaeiE8Z2F7rmGUHCGcWI70WcGI+X
+         +jYxrmH6tmuZkcUvlnKf2JFiqxRcT748c8QQQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=JobmQomHLtYAJ+DDomxdN8Lk7HYy1OLd4rHEITgLQdA=;
+        b=GS6KKXsRgOa85TIpC8hd29eCbaFv48bWFzBnmne/u0ngIxCPnepLeQ1XJQs28U4frw
+         2F7Pb7K/pmgOyjQx2F+mNm2BEtglG4GHIl10CLrsfTIQEoroxWIgV/tcinmNz0ZqIamj
+         Pzry7a3rEPjlDkMYKq27NmCjti/wh1CnrzMuX6xkPF8zIqaCEWjXwPpO5fGR9+xW8X7T
+         do6AG+0vy7p0I8vzcbZxNJxxaq21NJpSIIfXE/MqiveYJloDMUWZGnkhj1BVn73XFixR
+         JD2tIGwX9g/0lvAs19sNflQ4KIT1CZi83KcZVZ1OasbaTiIjjK5TbyzM45o+4QSikmkG
+         eIEw==
+X-Gm-Message-State: ACgBeo1vhaehatlK1xTu5FZe4fjz1JanFfG7vAqFq673lrxlxc94ldRg
+        w6ZhMzW+qRVrWbKgcaKZpIceTxDcOqgf3Fwq
+X-Google-Smtp-Source: AA6agR4tbsiuV+55k3uLthG1xa62JOInULLm5dADGQ0Tnvgqc6nrbLmo9+ADu6B6cwzXIqlsGlR2cQ==
+X-Received: by 2002:a05:6402:34ce:b0:43d:c2ce:6e8a with SMTP id w14-20020a05640234ce00b0043dc2ce6e8amr12533685edc.160.1659534651253;
+        Wed, 03 Aug 2022 06:50:51 -0700 (PDT)
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
+        by smtp.gmail.com with ESMTPSA id la20-20020a170907781400b0072b7d76211dsm7279150ejc.107.2022.08.03.06.50.48
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Aug 2022 06:50:49 -0700 (PDT)
+Received: by mail-wr1-f41.google.com with SMTP id z17so16966991wrq.4
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 06:50:48 -0700 (PDT)
+X-Received: by 2002:adf:f90d:0:b0:20c:de32:4d35 with SMTP id
+ b13-20020adff90d000000b0020cde324d35mr16303940wrr.583.1659534647816; Wed, 03
+ Aug 2022 06:50:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220802223738.898592-1-dianders@chromium.org>
+ <20220802153434.v3.4.I7b3c72949883846badb073cfeae985c55239da1d@changeid> <232f875a-4986-300a-f1e8-18f2da3a8fc6@linaro.org>
+In-Reply-To: <232f875a-4986-300a-f1e8-18f2da3a8fc6@linaro.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Wed, 3 Aug 2022 06:50:35 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XWxMis61zouPeAoTUC6xYz7rSUC33wdvyLii0Cd2j4Ww@mail.gmail.com>
+Message-ID: <CAD=FV=XWxMis61zouPeAoTUC6xYz7rSUC33wdvyLii0Cd2j4Ww@mail.gmail.com>
+Subject: Re: [PATCH v3 4/6] drm/msm/dsi: Use the new regulator bulk feature to
+ specify the load
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Mark Brown <broonie@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Rajeev Nandan <quic_rajeevny@quicinc.com>,
+        Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The documentation for find_pid() clearly states:
+Hi,
 
-  "Must be called with the tasklist_lock or rcu_read_lock() held."
+On Wed, Aug 3, 2022 at 12:12 AM Dmitry Baryshkov
+<dmitry.baryshkov@linaro.org> wrote:
+>
+> On 03/08/2022 01:37, Douglas Anderson wrote:
+> > As of commit 6eabfc018e8d ("regulator: core: Allow specifying an
+> > initial load w/ the bulk API") we can now specify the initial load in
+> > the bulk data rather than having to manually call regulator_set_load()
+> > on each regulator. Let's use it.
+> >
+> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+>
+> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+>
+> It might have been better, if the previous patch had only removed the
+> load_setting on disable and inlined the dsi_host_regulator_disable().
+> Then this patch would drop the regulator_set_load() from
+> dsi_host_regulator_enable() path and inline it. Then it would have been
+> more obvious that after these two changes the time when we set loads is
+> not changed.
 
-Presently we do neither.
+Seems like I should post a v4 to update the commit message of the
+final patch in the series, but I'm going to leave this the way it is
+since the end result is the same. Originally when I wrote the series I
+didn't know if the new regulator API changes would be accepted, so the
+previous patch did the most cleanup it could do with the old API. ;-)
 
-Let's use find_get_pid() which searches for the vpid, then takes a
-reference to it preventing early free, all within the safety of
-rcu_read_lock().  Once we have our reference we can safely make use of
-it up until the point it is put.
-
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Martin KaFai Lau <martin.lau@linux.dev>
-Cc: Song Liu <song@kernel.org>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: Stanislav Fomichev <sdf@google.com>
-Cc: Hao Luo <haoluo@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: bpf@vger.kernel.org
-Fixes: 41bdc4b40ed6f ("bpf: introduce bpf subcommand BPF_TASK_FD_QUERY")
-Signed-off-by: Lee Jones <lee@kernel.org>
----
-
-v1 => v2:
-  * Commit log update - no code differences
-
- kernel/bpf/syscall.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 83c7136c5788d..c20cff30581c4 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -4385,6 +4385,7 @@ static int bpf_task_fd_query(const union bpf_attr *attr,
- 	const struct perf_event *event;
- 	struct task_struct *task;
- 	struct file *file;
-+	struct pid *ppid;
- 	int err;
- 
- 	if (CHECK_ATTR(BPF_TASK_FD_QUERY))
-@@ -4396,7 +4397,9 @@ static int bpf_task_fd_query(const union bpf_attr *attr,
- 	if (attr->task_fd_query.flags != 0)
- 		return -EINVAL;
- 
--	task = get_pid_task(find_vpid(pid), PIDTYPE_PID);
-+	ppid = find_get_pid(pid);
-+	task = get_pid_task(ppid, PIDTYPE_PID);
-+	put_pid(ppid);
- 	if (!task)
- 		return -ENOENT;
- 
--- 
-2.37.1.455.g008518b4e5-goog
-
+-Doug
