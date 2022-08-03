@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D71C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A5DAC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:19:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237062AbiHCISG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 04:18:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58064 "EHLO
+        id S235835AbiHCITE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 04:19:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234027AbiHCISA (ORCPT
+        with ESMTP id S234430AbiHCITA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 04:18:00 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60736162
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 01:17:58 -0700 (PDT)
+        Wed, 3 Aug 2022 04:19:00 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0445E60D0
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 01:19:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659514678; x=1691050678;
+  t=1659514740; x=1691050740;
   h=date:from:to:cc:subject:message-id:mime-version:
    content-transfer-encoding;
-  bh=3K3b321UPGFc06pTNH6+VZ1/KdoV4hSzLaFNFRLMr/k=;
-  b=QsNMl73oFeVeOd7tjE+XCdUDEJMgUeDIJifOiOze6/fHeX03TrWqDEiH
-   QeeOnS1/fmdRQDHI/23WghVBC0O5EXs8cJHYH/j6MQANl/NJU7T3hQ3ot
-   gbtXf9w24CrMF3PFMsZyRBCSAJI/racHaSF+hpnaPHnFCo0SEhNqUdcM3
-   lftvchv+HVhRc6CrA7ec37ov6U6Ck8Y8mfT0a752MC3UCm+kgvr4aolh8
-   K08KQuUYo3sls5ystntJrmSEqnK/t/v7ROgTWCZe50AgyJ8u7wOuwZ+cN
-   IEGFZ2YZStSWcszwOnW4+dhBPTCDV1rBCwO9Vi1cTgPBn46v2jw3QHrLp
+  bh=AxTT9CLPbIJFu1VLIYTyPklDwuwKIe3EdKtfLuw7R1E=;
+  b=CnkHCQJyKCBW1g4Hxx414Y+5efNrwxdzsNmbQjpWq+N+e2gGIm9kQwPz
+   O06nK2Uhp0pHrag4bmPEouXnobr82O4oUQ/rBZ9M11F8WVhLZKaRE7vYo
+   1xA5r5BV51GKJEDgg/NHSqx6NxH54tk3A/7dT5HVfoLJ9NpxlZcsqjIv3
+   qOtw5E7Nc6Ed3p8G9EoQIZsmgdRpq5o9TAJbHpZtWUvF5tNfOSZoIRXUs
+   IZbdPTYTdqBQO4IBscpENhMuBqMOqbn1PosCw48vxPVaVhxRrX1dqQqWd
+   Txo3t1qvA0QwysWmP+mNRgZRAEIt2CdmpXlJm44uXfUeMZi2beUdAovjf
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="351329811"
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="287177104"
 X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
-   d="scan'208";a="351329811"
+   d="scan'208";a="287177104"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 01:17:58 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 01:18:58 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
-   d="scan'208";a="578555713"
+   d="scan'208";a="578555883"
 Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 03 Aug 2022 01:17:57 -0700
+  by orsmga006.jf.intel.com with ESMTP; 03 Aug 2022 01:18:57 -0700
 Received: from kbuild by e0eace57cfef with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oJ9Zk-000H2R-1m;
-        Wed, 03 Aug 2022 08:17:56 +0000
-Date:   Wed, 03 Aug 2022 16:17:07 +0800
+        id 1oJ9ai-000H2Z-1v;
+        Wed, 03 Aug 2022 08:18:56 +0000
+Date:   Wed, 03 Aug 2022 16:18:36 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "x86-ml" <x86@kernel.org>
 Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:sched/core] BUILD SUCCESS
- 0f03d6805bfc454279169a1460abb3f6b3db317f
-Message-ID: <62ea2f03.JhD03AzH4xs9MeCP%lkp@intel.com>
+Subject: [tip:master] BUILD SUCCESS
+ 41101f1279fc264ae055400f752016bbca367012
+Message-ID: <62ea2f5c.ZmVipJOPJeplKZ5V%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -57,10 +57,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
-branch HEAD: 0f03d6805bfc454279169a1460abb3f6b3db317f  sched/debug: Print each field value left-aligned in sched_show_task()
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
+branch HEAD: 41101f1279fc264ae055400f752016bbca367012  Merge branch into tip/master: 'perf/urgent'
 
-elapsed time: 721m
+elapsed time: 720m
 
 configs tested: 53
 configs skipped: 2
@@ -71,43 +71,43 @@ More configs may be tested in the coming days.
 gcc tested configs:
 um                             i386_defconfig
 um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-i386                                defconfig
-x86_64                           allyesconfig
 powerpc                           allnoconfig
-i386                             allyesconfig
-x86_64               randconfig-a014-20220801
 powerpc                          allmodconfig
-m68k                             allmodconfig
-x86_64               randconfig-a011-20220801
-arc                              allyesconfig
-x86_64               randconfig-a012-20220801
-alpha                            allyesconfig
-m68k                             allyesconfig
-i386                 randconfig-a012-20220801
 mips                             allyesconfig
-i386                 randconfig-a013-20220801
-x86_64               randconfig-a013-20220801
+sh                               allmodconfig
+x86_64                              defconfig
+i386                                defconfig
+x86_64                               rhel-8.3
+i386                             allyesconfig
+x86_64                           allyesconfig
 arm                                 defconfig
+x86_64                          rhel-8.3-func
+x86_64               randconfig-a011-20220801
+x86_64                         rhel-8.3-kunit
+m68k                             allmodconfig
+i386                 randconfig-a012-20220801
+x86_64                           rhel-8.3-kvm
+riscv                randconfig-r042-20220801
+arc                  randconfig-r043-20220801
+x86_64               randconfig-a012-20220801
+x86_64                    rhel-8.3-kselftests
+arm64                            allyesconfig
+x86_64                           rhel-8.3-syz
+arm                              allyesconfig
+x86_64               randconfig-a013-20220801
+arc                              allyesconfig
 x86_64               randconfig-a016-20220801
+s390                 randconfig-r044-20220801
+x86_64               randconfig-a014-20220801
+i386                 randconfig-a013-20220801
+alpha                            allyesconfig
+i386                 randconfig-a014-20220801
+m68k                             allyesconfig
 x86_64               randconfig-a015-20220801
 i386                 randconfig-a011-20220801
-arc                  randconfig-r043-20220801
 i386                 randconfig-a016-20220801
 i386                 randconfig-a015-20220801
-i386                 randconfig-a014-20220801
-sh                               allmodconfig
 ia64                             allmodconfig
-s390                 randconfig-r044-20220801
-riscv                randconfig-r042-20220801
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                           rhel-8.3-kvm
-x86_64                    rhel-8.3-kselftests
-arm                              allyesconfig
-x86_64                           rhel-8.3-syz
-arm64                            allyesconfig
 
 clang tested configs:
 x86_64               randconfig-a002-20220801
@@ -116,13 +116,13 @@ x86_64               randconfig-a003-20220801
 x86_64               randconfig-a004-20220801
 x86_64               randconfig-a005-20220801
 x86_64               randconfig-a006-20220801
+hexagon              randconfig-r045-20220801
+hexagon              randconfig-r041-20220801
 i386                 randconfig-a001-20220801
 i386                 randconfig-a002-20220801
 i386                 randconfig-a003-20220801
-i386                 randconfig-a005-20220801
 i386                 randconfig-a004-20220801
-hexagon              randconfig-r045-20220801
-hexagon              randconfig-r041-20220801
+i386                 randconfig-a005-20220801
 i386                 randconfig-a006-20220801
 
 -- 
