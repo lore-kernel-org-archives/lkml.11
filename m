@@ -2,30 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1046C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:08:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC5BCC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237761AbiHCKIh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 06:08:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50034 "EHLO
+        id S235554AbiHCKMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 06:12:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237063AbiHCKIb (ORCPT
+        with ESMTP id S233859AbiHCKMD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 06:08:31 -0400
-X-Greylist: delayed 2430 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 03 Aug 2022 03:08:29 PDT
-Received: from cassarossa.samfundet.no (cassarossa.samfundet.no [IPv6:2001:67c:29f4::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B77E12AFF
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 03:08:29 -0700 (PDT)
-Received: from egtvedt by cassarossa.samfundet.no with local (Exim 4.94.2)
-        (envelope-from <egtvedt@samfundet.no>)
-        id 1oJAfS-00DURx-CF; Wed, 03 Aug 2022 11:27:54 +0200
-Date:   Wed, 3 Aug 2022 11:27:54 +0200
-From:   Hans-Christian Noren Egtvedt <egtvedt@samfundet.no>
-To:     torvalds@linux-foundation.org
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>, hskinnemoen@gmail.com,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] AVR32 change for 6.0 - outstanding cleanups
-Message-ID: <Yuo/mq0VrqTH9BS+@samfundet.no>
+        Wed, 3 Aug 2022 06:12:03 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E661E3E5
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 03:12:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659521522; x=1691057522;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=h0Tq3B5/VFQNqg+DY8Yg9rv2Cd7sJ3O/e1qvCe0iaRo=;
+  b=bn+lT6NQPEib3YY9HyqRuZgumMuLYQ1eSsLOrWrs3sg94ai+pUwl7qMw
+   xwWdW1bcKxJRELNQPwfVDn9sJmVtb3nCDKRris06ztWlWGDXm27I+icTW
+   ybBeuv4sx+j1uPTsz9fLjvGUkzjmwqCrp61eiH8iHkdCqWyjfbVAxHNss
+   5jXRQuIqtIqICrYmZPEA1RiTFYmX+GIaGQ4y8ZNPdnBoES7q3H2WxB4rE
+   Cp5ptqoR/jtw0H3MQhNvej7zcGQkw5+RT45c1EVqse6bM+tYOkrTX/VEl
+   vpYhztsDn/SSsd58UNcKYk9Adau0/dTx5Q/AkUY4MoARtJNFLd4Y4EzSC
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="270015964"
+X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
+   d="scan'208";a="270015964"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 03:12:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
+   d="scan'208";a="692192957"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 03 Aug 2022 03:12:01 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oJBM8-000H8j-1T;
+        Wed, 03 Aug 2022 10:12:00 +0000
+Date:   Wed, 3 Aug 2022 18:11:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
+Subject: [ammarfaizi2-block:tglx/devel/depthtracking 57/59]
+ kernel/trace/trace_selftest.c:790:13: error: expected string literal before
+ 'CALL_DEPTH_ACCOUNT'
+Message-ID: <202208031836.BJr6Jjxd-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -33,37 +58,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Linus,
+tree:   https://github.com/ammarfaizi2/linux-block tglx/devel/depthtracking
+head:   b518e558c49324fa002255761d2a7324ba31f7b5
+commit: cb5c190267562764025e25c3e726ae511003b0a0 [57/59] x86/ftrace: Make it call depth tracking aware
+config: s390-allmodconfig (https://download.01.org/0day-ci/archive/20220803/202208031836.BJr6Jjxd-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/cb5c190267562764025e25c3e726ae511003b0a0
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block tglx/devel/depthtracking
+        git checkout cb5c190267562764025e25c3e726ae511003b0a0
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
 
-please pull
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-git://git.kernel.org/pub/scm/linux/kernel/git/egtvedt/linux-avr32.git for-linus
+All errors (new ones prefixed by >>):
 
-to receive the following AVR32 related changes for 6.0 (no-op's)
+   kernel/trace/trace.c: In function 'trace_check_vprintf':
+   kernel/trace/trace.c:3846:17: warning: function 'trace_check_vprintf' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+    3846 |                 trace_seq_vprintf(&iter->seq, iter->fmt, ap);
+         |                 ^~~~~~~~~~~~~~~~~
+   kernel/trace/trace.c:3913:17: warning: function 'trace_check_vprintf' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+    3913 |                 trace_seq_vprintf(&iter->seq, p, ap);
+         |                 ^~~~~~~~~~~~~~~~~
+   In file included from kernel/trace/trace.c:8672:
+   kernel/trace/trace_selftest.c: In function 'trace_direct_tramp':
+>> kernel/trace/trace_selftest.c:790:13: error: expected string literal before 'CALL_DEPTH_ACCOUNT'
+     790 |         asm(CALL_DEPTH_ACCOUNT);
+         |             ^~~~~~~~~~~~~~~~~~
 
-Hans-Christian Noren Egtvedt (8):
-      dma:dw: remove reference to AVR32 architecture in core.c
-      mfd: remove reference to AVR32 architecture in atmel-smc.c
-      misc: update maintainer email address and description for atmel-ssc
-      net: remove cdns,at32ap7000-macb device tree entry
-      sound:spi: remove reference to AVR32 in Atmel AT73C213 DAC driver
-      usb:udc: remove reference to AVR32 architecture in Atmel USBA Kconfig
-      video: remove support for non-existing atmel,at32ap-lcdc in atmel_lcdfb
-      video:backlight: remove reference to AVR32 architecture in ltv350qv
 
-Mostly changes to documentation and comments.
+vim +/CALL_DEPTH_ACCOUNT +790 kernel/trace/trace_selftest.c
 
- Documentation/devicetree/bindings/display/atmel,lcdc.txt | 1 -
- Documentation/devicetree/bindings/net/cdns,macb.yaml     | 3 +--
- drivers/dma/dw/core.c                                    | 3 ---
- drivers/mfd/atmel-smc.c                                  | 4 ++--
- drivers/misc/atmel-ssc.c                                 | 4 ++--
- drivers/net/ethernet/cadence/macb_main.c                 | 1 -
- drivers/usb/gadget/udc/Kconfig                           | 4 ++--
- drivers/video/backlight/ltv350qv.c                       | 3 +--
- sound/spi/Kconfig                                        | 2 +-
- 9 files changed, 9 insertions(+), 16 deletions(-)
+   786	
+   787	#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
+   788	noinline __noclone static void trace_direct_tramp(void)
+   789	{
+ > 790		asm(CALL_DEPTH_ACCOUNT);
+   791	}
+   792	#endif
+   793	
 
 -- 
-Best regards,
-Hans-Christian Noren Egtvedt
+0-DAY CI Kernel Test Service
+https://01.org/lkp
