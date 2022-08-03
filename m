@@ -2,146 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FF8C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:04:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B39CCC19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237917AbiHCQEO convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 12:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36372 "EHLO
+        id S237903AbiHCQGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 12:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233632AbiHCQEM (ORCPT
+        with ESMTP id S233632AbiHCQGe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 12:04:12 -0400
-Received: from relay.hostedemail.com (smtprelay0014.hostedemail.com [216.40.44.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB3C13D59;
-        Wed,  3 Aug 2022 09:04:10 -0700 (PDT)
-Received: from omf04.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay05.hostedemail.com (Postfix) with ESMTP id 9A685415AB;
-        Wed,  3 Aug 2022 16:04:09 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf04.hostedemail.com (Postfix) with ESMTPA id 85DAF20027;
-        Wed,  3 Aug 2022 16:04:07 +0000 (UTC)
-Message-ID: <04c967669e4ed8845323f1487fff86949f07a81d.camel@perches.com>
-Subject: Re: [RFC 1/1] net: introduce OpenVPN Data Channel Offload (ovpn-dco)
-From:   Joe Perches <joe@perches.com>
-To:     Antonio Quartulli <antonio@openvpn.net>, netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Date:   Wed, 03 Aug 2022 09:04:06 -0700
-In-Reply-To: <20220719014704.21346-2-antonio@openvpn.net>
-References: <20220719014704.21346-1-antonio@openvpn.net>
-         <20220719014704.21346-2-antonio@openvpn.net>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Wed, 3 Aug 2022 12:06:34 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 068891A83F
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:06:34 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id w3so6409243edc.2
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 09:06:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5szB0Yt8wfbiTaP8/uH11/lZ59NOlpGeFsdpgoLNvJ8=;
+        b=ic+vNPABuREX+PIjwaM+VOGEJw6oF2ebKuLtvGvb4/Hb7YaZRdZFas4fPAdzbAg7jx
+         aesjy+76DTWh4E6VOx93inA8iC/941RMQo8fsSmtWm07+lOlWWxdSUMOghm1jrWvVoR4
+         U/LivSCQiuMwcebAF9+j1uTdx7DTBfUBhs5nQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5szB0Yt8wfbiTaP8/uH11/lZ59NOlpGeFsdpgoLNvJ8=;
+        b=pexTTRVzRaMO7v8lZ7aq1/o/OsZKFkH0JUSzfvaPch+KJcY5rXXMZDCnlCXOq30j8F
+         I2PFpNtytYAgG3FCb0Ym2nCoPUhDuKzqUmaPBUZP4/5UwAWobhtCLMeyPOqMnYAr5ux4
+         tm2+T3E7DY45gjljdjkguVYdYI89RweFAl6VsScffvpWKxNpSDBjNIXQTwqwehRMj1BI
+         FC8A/DS+ATn2SS9t9L5bQ2NXGQHc013+2A5B7Dk545zazAXzwS0SYXEa9D/q3XXx0XmT
+         v9C5Mt/D0HNblgPGleaNMavh3Esif0u4qDsGfrh6ayk1MMipmXld+FgJiUSvWetjO7oU
+         WOGw==
+X-Gm-Message-State: AJIora/7sgaaLm9MsfKA7EmxhNOwZpqn1PLPVAgBSfvV4q034mYl+8oi
+        uiBLdxTegocI8KmRsoQ7suDjb5DKknms+BlR2wcfRQ==
+X-Google-Smtp-Source: AGRyM1tY9355tF5SR98IYTJw6jtydsojrQZtfOZY+tbbLicCH00rJyvlJeK55pfPj3vsy9eOthOXBZnjsNPgYb7wPm8=
+X-Received: by 2002:aa7:d813:0:b0:43c:dedd:b4e8 with SMTP id
+ v19-20020aa7d813000000b0043cdeddb4e8mr26254900edq.231.1659542792573; Wed, 03
+ Aug 2022 09:06:32 -0700 (PDT)
 MIME-Version: 1.0
-X-Rspamd-Server: rspamout01
-X-Rspamd-Queue-Id: 85DAF20027
-X-Stat-Signature: ztcdnm9ndary5wdcrw8jjpb7yjr6ewt6
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+NxlwGsrjEsOp3yX577wwnzhNPxY7WYmg=
-X-HE-Tag: 1659542647-117471
+References: <CAJ-EccPH46FGKQj8gYEg5HGpmmRiqzrZouTZauwpvX-+2j4GNA@mail.gmail.com>
+ <CAHk-=wim4B671BOPfxoXDSz0xfOruqoKCMQrjAX0R95PH5Wy4g@mail.gmail.com>
+In-Reply-To: <CAHk-=wim4B671BOPfxoXDSz0xfOruqoKCMQrjAX0R95PH5Wy4g@mail.gmail.com>
+From:   Micah Morton <mortonm@chromium.org>
+Date:   Wed, 3 Aug 2022 09:08:22 -0700
+Message-ID: <CAJ-EccOP4Yq4RSBSkA_71kagqvA=a+tUV63UbHWZVM2uqJMDFQ@mail.gmail.com>
+Subject: Re: [GIT PULL] SafeSetID changes for v6.0
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-security-module <linux-security-module@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-07-19 at 03:47 +0200, Antonio Quartulli wrote:
-> OpenVPN is a userspace software existing since around 2005 that allows
-> users to create secure tunnels.
-> 
-> So far OpenVPN has implemented all operations in userspace, which
-> implies several back and forth between kernel and user land in order to
-> process packets (encapsulate/decapsulate, encrypt/decrypt, rerouting..).
-> 
-> With ovpn-dco, we intend to move the fast path (data channel) entirely
-> in kernel space and thus improve user measured throughput over the
-> tunnel.
+On Tue, Aug 2, 2022 at 3:20 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Mon, Aug 1, 2022 at 7:40 PM Micah Morton <mortonm@chromium.org> wrote:
+> >
+> > This pull request contains one commit that touches common kernel code,
+> >
+> > one that adds functionality internal to the SafeSetID LSM code, and a
+> >
+> > few other commits that only modify the SafeSetID LSM selftest.
+> [...]
+>
+> What odd MUA do you use that causes this double-spaced text email?
+>
+> I can read it, but it really is a bit strange. It was all plain text,
+> and marked as utf-8, and otherwise looked normal except for that
+> double spacing.
+>
+> I get flashbacks to my "writing papers at university" days.
 
-Logging trivia:
+I know, it was ugly. I just switched laptops to a Mac and thought for
+sure the mail message preview I was seeing in gmail after copy+paste
+from a terminal window was just some weird scaling issue on my
+external monitor or something. Sure enough the message was sent off
+looking like a double spaced book report from 8th grade :)
 
-> diff --git a/drivers/net/ovpn-dco/crypto.c b/drivers/net/ovpn-dco/crypto.c
-> new file mode 100644
-> index 000000000000..fcc3a351ba9d
-> --- /dev/null
-> +++ b/drivers/net/ovpn-dco/crypto.c
-> @@ -0,0 +1,154 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*  OpenVPN data channel accelerator
-> + *
-> + *  Copyright (C) 2020-2022 OpenVPN, Inc.
-> + *
-> + *  Author:	James Yonan <james@openvpn.net>
-> + *		Antonio Quartulli <antonio@openvpn.net>
-> + */
+I'll have to find what's going wrong with the copy+paste to gmail on
+this particular device.
 
-Please add
-
-#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-
-before any #include when a logging message is output
-
-[]
-> +void ovpn_crypto_key_slot_delete(struct ovpn_crypto_state *cs,
-> +				 enum ovpn_key_slot slot)
-> +{
-> +	struct ovpn_crypto_key_slot *ks = NULL;
-> +
-> +	mutex_lock(&cs->mutex);
-> +	switch (slot) {
-> +	case OVPN_KEY_SLOT_PRIMARY:
-> +		ks = rcu_replace_pointer(cs->primary, NULL,
-> +					 lockdep_is_held(&cs->mutex));
-> +		break;
-> +	case OVPN_KEY_SLOT_SECONDARY:
-> +		ks = rcu_replace_pointer(cs->secondary, NULL,
-> +					 lockdep_is_held(&cs->mutex));
-> +		break;
-> +	default:
-> +		pr_warn("Invalid slot to release: %u\n", slot);
-
-So messages like these are prefixed appropriately.
-
-> +		break;
-> +	}
-> +	mutex_unlock(&cs->mutex);
-> +
-> +	if (!ks) {
-> +		pr_debug("Key slot already released: %u\n", slot);
-> +		return;
-> +	}
-> +	pr_debug("deleting key slot %u, key_id=%u\n", slot, ks->key_id);
-> +
-> +	ovpn_crypto_key_slot_put(ks);
-> +}
-
-> diff --git a/drivers/net/ovpn-dco/crypto_aead.c b/drivers/net/ovpn-dco/crypto_aead.c
-[]
-> +/* Initialize a struct crypto_aead object */
-> +struct crypto_aead *ovpn_aead_init(const char *title, const char *alg_name,
-> +				   const unsigned char *key, unsigned int keylen)
-> +{
-> +	struct crypto_aead *aead;
-> +	int ret;
-> +
-> +	aead = crypto_alloc_aead(alg_name, 0, 0);
-> +	if (IS_ERR(aead)) {
-> +		ret = PTR_ERR(aead);
-> +		pr_err("%s crypto_alloc_aead failed, err=%d\n", title, ret);
-> +		aead = NULL;
-> +		goto error;
-> +	}
-> +
-> +	ret = crypto_aead_setkey(aead, key, keylen);
-> +	if (ret) {
-> +		pr_err("%s crypto_aead_setkey size=%u failed, err=%d\n", title,
-> +		       keylen, ret);
-> +		goto error;
-> +	}
-> +
-> +	ret = crypto_aead_setauthsize(aead, AUTH_TAG_SIZE);
-> +	if (ret) {
-> +		pr_err("%s crypto_aead_setauthsize failed, err=%d\n", title,
-> +		       ret);
-
-Could use another #define pr_fmt(fmt) etc...
-
+>
+>              Linus
