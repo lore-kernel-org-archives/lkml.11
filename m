@@ -2,100 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25EF7C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 18:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D570EC19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 18:17:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236808AbiHCSPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 14:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44348 "EHLO
+        id S236354AbiHCSRk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 14:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233008AbiHCSPK (ORCPT
+        with ESMTP id S237847AbiHCSPh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 14:15:10 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E211C501A3
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 11:15:09 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id 204so28424025yba.1
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 11:15:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=y92UH4xk+JPW8aVK6dnuw9Im2HL19mMdvEh4kg2bK0g=;
-        b=sRaUcFSt01Ks/YKwz49XSN4/OQvEBUtHn7sYd8Oa0W+RPqKMQsv/ah+4XJrjoNKK3V
-         4j2I7Tajo+oVO9Q5WTtI1QuoXeODixWCLa23b1InrLOJyPU02L4/Yr/tENmLzArPe26j
-         DK/m40vsysHm36fjz9hf0ijAdwjkgSVHSYPSPrwNgUOUiUdSCi/oAaZBdDTnc3g9xuGq
-         839WQoZ4HI7Kmwe7vY647SSHzsYhD5fTboEBRfpWYIj7aavapmuws2kEMYFnX6Lr5mN0
-         kUnF3AqZajcHFLMKTBSEskpbdf3rLx6io9gRFy6nwuHCHATyl7jADUHe9UMBgC+VpADx
-         mzHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=y92UH4xk+JPW8aVK6dnuw9Im2HL19mMdvEh4kg2bK0g=;
-        b=lW3MApbVfo27+Q+JjyaI91jGcUwIAv+waP6ngW+H14XuICaZ4B0XyUWsrqCIHvemu4
-         LU4jHSDs3yawyxbq+AlbskN7hp14D5dcwEq6CxGKkX0hTltkXTovLylZGq6z0wk9nmUD
-         60Y9trQOvREAKEtz9Yc8I+ooLrJEoLhj9AvU30j3CaUEGwPf6p64SuN4lWx/nBdlwI13
-         eMCpTOslsdtHlzHxf1auMX6zr7rVwiEubTVKhBDvnqZr8pAx8TrXRXBHEAXA4J7fylSv
-         A5XhAJje6/vvPbObjIKbX1pqmdUlkXWLQ4uE699FNF9Bxy7ibFhDO4CTvqTotrFUw8ma
-         m85Q==
-X-Gm-Message-State: ACgBeo0kgCYTnIedf196t/ey1lfLTVNCBgNxdA8drFkEvtdPzzHxKKHr
-        7NNKVEnoQBNsh4dOnhn9peaJf03V7E1oVPP+dd3Gzw==
-X-Google-Smtp-Source: AA6agR7w1Awhe+owXzXOZf/Iib4idl+Q2nTlhXV4EvXq+vsWRav1PlQBwpamgAi8i+PhP+JOsEl+kLahLKT5WDsOYvk=
-X-Received: by 2002:a5b:982:0:b0:63e:7d7e:e2f2 with SMTP id
- c2-20020a5b0982000000b0063e7d7ee2f2mr20837859ybq.549.1659550508989; Wed, 03
- Aug 2022 11:15:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-12-glider@google.com>
- <CANpmjNMrEdNdsz6rxkrpiJNREB+GSkx4B=LwPLWYmwVhdjVA4g@mail.gmail.com>
-In-Reply-To: <CANpmjNMrEdNdsz6rxkrpiJNREB+GSkx4B=LwPLWYmwVhdjVA4g@mail.gmail.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Wed, 3 Aug 2022 20:14:31 +0200
-Message-ID: <CAG_fn=UZ9MLLu9zos2Daba+DB__HidgYRT-27CxB2PwV_t=KnQ@mail.gmail.com>
-Subject: Re: [PATCH v4 11/45] kmsan: add KMSAN runtime core
-To:     Marco Elver <elver@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
+        Wed, 3 Aug 2022 14:15:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA9460CA;
+        Wed,  3 Aug 2022 11:15:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E1DE61262;
+        Wed,  3 Aug 2022 18:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9600FC433C1;
+        Wed,  3 Aug 2022 18:15:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659550534;
+        bh=7O/on+19Nue3/Vk4JQ7+/4AVjwXWMn+5GbqToJguIEI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cmRFsOWkOufQEawUoZve7qnELukP37q45otVfWWsf//TiVfLXIZvmJ/mffOL/oSo5
+         aAIRdmlpqFbaBrkf4CQ4JFM0DA7O/cYLQKmaLhPa2ih01chciOJGzcyDGy6UEhmUJN
+         gFwTcgSd6oBeMORJDMeNtCVmvzL6g4eYlDQib900LSBDgEDFIOy1ZkojGNbrB4sk6J
+         KOmeag/W0n5DuctpmmJkN0JAGcgz7iiZB9w4K35HagHmUVfwWT8XczimkKRekQKpII
+         f2rlvhhtOYTicCRD0zL+vXh9re35hsZvHR6OnC0Olbl50+HDm7P4K2CC30zt7Cujgq
+         XJ1Z0nVaWDuDA==
+Date:   Wed, 3 Aug 2022 18:15:31 +0000
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Siddh Raman Pant <code@siddh.me>
+Cc:     David Howells <dhowells@redhat.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        linux-security-modules <linux-security-module@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees 
+        <linux-kernel-mentees@lists.linuxfoundation.org>,
+        syzbot+c70d87ac1d001f29a058 
+        <syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com>
+Subject: Re: [PATCH v3] kernel/watch_queue: Make pipe NULL while clearing
+ watch_queue
+Message-ID: <Yuq7Q//SH/HjLsxH@gmail.com>
+References: <20220728155121.12145-1-code@siddh.me>
+ <YunKlJCDlmyn2hJ4@sol.localdomain>
+ <18261d8a63a.33799d2a402802.7512018232560408914@siddh.me>
+ <Yun1rC59USrgd0fu@sol.localdomain>
+ <182621f8dca.1e0e6161130907.1470656861897824669@siddh.me>
+ <YuoKi0GigXm/Hcb+@sol.localdomain>
+ <18262dcb20e.4bf31faa421018.1228982721921458740@siddh.me>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <18262dcb20e.4bf31faa421018.1228982721921458740@siddh.me>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"
-> > +struct page;
->
-> Either I'm not looking hard enough, but I can't see where this is used
-> in this file.
+On Wed, Aug 03, 2022 at 02:10:06PM +0530, Siddh Raman Pant wrote:
+> On Wed, 03 Aug 2022 11:11:31 +0530  Eric Biggers <ebiggers@kernel.org> wrote:
+> > I tested the syzbot reproducer
+> > https://syzkaller.appspot.com/text?tag=ReproC&x=174ea97e080000, and it does
+> > *not* trigger the bug on the latest upstream.  But, it does trigger the bug if I
+> > recent Linus's recent watch_queue fixes.
+> > 
+> > So I don't currently see any evidence of an unfixed bug.  If, nevertheless, you
+> > believe that a bug is still unfixed, then please provide a reproducer and a fix
+> > patch that clearly explains what it is fixing. 
+> > 
+> > > There is a null check in post_one_notification for the pipe, most probably
+> > > because it *expects* the pointer to be NULL'd. Also, there is no reason to have
+> > > a dangling pointer stay, it's just a recipe for further bugs.
+> > 
+> > If you want to send a patch or patches to clean up the code, that is fine, but
+> > please make it super clear what is a cleanup and what is a fix.
+> > 
+> > - Eric
+> > 
+> 
+> I honestly feel like I am repeating myself yet again, but okay.
 
-You are right, this declaration should belong to "init: kmsan: call
-KMSAN initialization routines". I'll move it accordingly.
+Well, you should try listening instead.  Because you are not listening.
+
+> Of course, the race condition has been solved by a patch upstream, which I had
+> myself mentioned earlier.
+> 
+> But what I am saying is that it did *not* address *what* that race condition
+> had triggered, i.e. the visible cause of the UAF crash, which, among other
+> things, is *because* there is a dangling pointer to the freed pipe, which
+> *caused* the crash in post_one_notification() when it tried to access
+> &pipe->rd.wait_lock as an argument to spin_lock_irq(), a path it reached
+> after checking if wqueue->pipe is NULL and proceeded when it was not the case.
+>
+> And the upstream commit was made *after* I had posted this patch, hence this
+> was a fix for the syzkaller issue. While I am *not* saying to accept it just
+> because this was posted earlier, I am saying this patch addresses a parallel
+> issue, i.e. the *actual use-after-free crash* which was reproduced by those
+> reproducers, i.e., what was attempted to be used after getting freed and
+> detected by KASAN.
+
+Even if wqueue->pipe was set to NULL during free_pipe_info(), there would still
+have been a use-after-free, as the real bug was the lack of synchronization
+between post_one_notification() and free_pipe_info().  That is fixed now.
+
+> 
+> We don't need to wait for another similar syzbot report to pop up before doing
+> this change, and say let's not fix a dangling pointer reference because now
+> another commit apparately fixes the specific syzkaller issue, causing the given
+> specific reproducer with its specific way of reproducing to fail, when we in
+> fact now know it *can* be a valid problem in practice and doing this change
+> too causes the specific reproducer under consideration to fail reproducing, as
+> was reported by the reproducer itself.
+
+To re-iterate, I encourage you to send a cleanup patch if you see an
+opportunity.  It looks like the state wqueue->defunct==true could be replaced
+with wqueue->pipe==NULL, which would be simpler, so how about doing that?  Just
+don't claim that it is "fixing" something, unless it is, as that makes things
+very confusing and difficult for everyone.
+
+> 
+> I really don't know how to create stress tests / reproducers like how syzkaller
+> makes, so if a similar new reproducer is really required for showing this
+> patch's validity disregarding any earlier reproducers, I unfortunately cannot
+> make it due to skill issue as I just started in kernel dev, and I am deeply
+> sorry for wasting the time of everyone, and I am thankful for your criticism of
+> my patch.
+
+A reproducer can just be written as a normal program, in C or another language.
+The syzkaller reproducers are really hard to read as they are auto-generated, so
+don't read too much into them -- they're certainly not examples of good code.
+
+- Eric
