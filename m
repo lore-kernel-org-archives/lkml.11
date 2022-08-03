@@ -2,108 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 743ECC19F29
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5CA9C19F29
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:55:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238489AbiHCNys (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 09:54:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42832 "EHLO
+        id S238553AbiHCNzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 09:55:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238326AbiHCNy0 (ORCPT
+        with ESMTP id S238213AbiHCNym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 09:54:26 -0400
-Received: from conuserg-07.nifty.com (conuserg-07.nifty.com [210.131.2.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8158343E6B;
-        Wed,  3 Aug 2022 06:52:02 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-07.nifty.com with ESMTP id 273DokZX018578;
-        Wed, 3 Aug 2022 22:50:46 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-07.nifty.com 273DokZX018578
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1659534646;
-        bh=4lNUVwZLKGFu7RDUkST96BO8Yb9Fnq+wtWdIdDRUbnQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=D67NGJDpiuW4RkHT362dOxIXziItoAApb9cP0KVmchF3oKAjGnCacLheNCXO42Lmw
-         OQNEcFXt21Bb/t6m1mnjLbDX4yrWMA9vGq0UdtIQGT9HCJ+jolTHz1396+sfS8Qgfw
-         +lUDpqYuAT+pX77MpDUtNfiaftRPYZlgD6cxeBdixkbowtEruIJ4PVt1M035Tq3uTo
-         KgNDtLF+Qpz2r37AOXQBZKia64LZzBDez9eDURgl+ZXmUr/D16bvfF2ZdN8LVE5lqb
-         +8I38UlK28pNCwvQifXOlLLYLGnbXHKAwa1iX+ZPtAGyyqiPxKo/Jj54YVJuNAGwuL
-         MFed38GPKUW6w==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] modpost: refactor get_secindex()
-Date:   Wed,  3 Aug 2022 22:50:13 +0900
-Message-Id: <20220803135013.1818199-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 3 Aug 2022 09:54:42 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E37DE1BE89;
+        Wed,  3 Aug 2022 06:53:38 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 01A875FD2E;
+        Wed,  3 Aug 2022 16:53:37 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1659534817;
+        bh=nnYK5AF7IXASVKt2x9D81EypjgxYuAncKx57rnzfkjs=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=DDe8UalE1UXpmPiUrNKvyr3q8U+qtNqvqs+HkU5lnSzpA7lc0PYd5H5CwJK3ctC+6
+         NoinId9Bqz9BZ+zxJQdxtjlpC/ZUS16VFbTEt/fXg+JaIbkJqeJi1ydifvqO6XKyt5
+         s1irYSREyhy8roLIJwX2gGJuscoKVmb5rjW7Q2FstrDA5ysAEaZbPnsRcKL3Te+kcd
+         yopACSBSqE8gvCN1vm+BmM5Y/WPbClgje5UnF65MLECyLmdOUzPXLDdMkLb5Xqw9p1
+         1WX0glQGYGhcQqr141PhcynxN/XT/vchXk1a0mBq6t3iZuoDgYUVFrntsB87qB2dMN
+         Cc2dqVOPIZmTw==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Wed,  3 Aug 2022 16:53:36 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Bryan Tan <bryantan@vmware.com>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "Arseniy Krasnov" <AVKrasnov@sberdevices.ru>
+CC:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: [RFC PATCH v3 2/9] hv_sock: disable SO_RCVLOWAT support
+Thread-Topic: [RFC PATCH v3 2/9] hv_sock: disable SO_RCVLOWAT support
+Thread-Index: AQHYp0Bljfm95oVfx0uveIUuJk0cZQ==
+Date:   Wed, 3 Aug 2022 13:53:23 +0000
+Message-ID: <58f53bef-62f4-fd63-472c-dcd158439b09@sberdevices.ru>
+In-Reply-To: <2ac35e2c-26a8-6f6d-2236-c4692600db9e@sberdevices.ru>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <54AD54030CEE524CB16E568E60E1402B@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/03 07:41:00 #20041172
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SPECIAL() is only used in get_secindex(). Squash it.
-
-Make the code more readable with more comments.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
-Changes in v2:
-  - Revive 'index <= SHN_HIRESERVE)' check
-
- scripts/mod/modpost.h | 30 ++++++++++++++++++------------
- 1 file changed, 18 insertions(+), 12 deletions(-)
-
-diff --git a/scripts/mod/modpost.h b/scripts/mod/modpost.h
-index bd874f906781..1178f40a73f3 100644
---- a/scripts/mod/modpost.h
-+++ b/scripts/mod/modpost.h
-@@ -156,22 +156,28 @@ static inline int is_shndx_special(unsigned int i)
- 	return i != SHN_XINDEX && i >= SHN_LORESERVE && i <= SHN_HIRESERVE;
- }
- 
--/*
-- * Move reserved section indices SHN_LORESERVE..SHN_HIRESERVE out of
-- * the way to -256..-1, to avoid conflicting with real section
-- * indices.
-- */
--#define SPECIAL(i) ((i) - (SHN_HIRESERVE + 1))
--
- /* Accessor for sym->st_shndx, hides ugliness of "64k sections" */
- static inline unsigned int get_secindex(const struct elf_info *info,
- 					const Elf_Sym *sym)
- {
--	if (is_shndx_special(sym->st_shndx))
--		return SPECIAL(sym->st_shndx);
--	if (sym->st_shndx != SHN_XINDEX)
--		return sym->st_shndx;
--	return info->symtab_shndx_start[sym - info->symtab_start];
-+	unsigned int index = sym->st_shndx;
-+
-+	/*
-+	 * Elf{32,64}_Sym::st_shndx is 2 byte. Big section numbers are available
-+	 * in the .symtab_shndx section.
-+	 */
-+	if (index == SHN_XINDEX)
-+		return info->symtab_shndx_start[sym - info->symtab_start];
-+
-+	/*
-+	 * Move reserved section indices SHN_LORESERVE..SHN_HIRESERVE out of
-+	 * the way to UINT_MAX-255..UINT_MAX, to avoid conflicting with real
-+	 * section indices.
-+	 */
-+	if (index >= SHN_LORESERVE && index <= SHN_HIRESERVE)
-+		return index - SHN_HIRESERVE - 1;
-+
-+	return index;
- }
- 
- /* file2alias.c */
--- 
-2.34.1
-
+Rm9yIEh5cGVyLVYgaXQgaXMgcXVpZXQgZGlmZmljdWx0IHRvIHN1cHBvcnQgdGhpcyBzb2NrZXQg
+b3B0aW9uLGR1ZSB0bw0KdHJhbnNwb3J0IGludGVybmFscywgc28gZGlzYWJsZSBpdC4NCg0KU2ln
+bmVkLW9mZi1ieTogQXJzZW5peSBLcmFzbm92IDxBVktyYXNub3ZAc2JlcmRldmljZXMucnU+DQpS
+ZXZpZXdlZC1ieTogRGV4dWFuIEN1aSA8ZGVjdWlAbWljcm9zb2Z0LmNvbT4NCi0tLQ0KIG5ldC92
+bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jIHwgNyArKysrKysrDQogMSBmaWxlIGNoYW5nZWQs
+IDcgaW5zZXJ0aW9ucygrKQ0KDQpkaWZmIC0tZ2l0IGEvbmV0L3Ztd192c29jay9oeXBlcnZfdHJh
+bnNwb3J0LmMgYi9uZXQvdm13X3Zzb2NrL2h5cGVydl90cmFuc3BvcnQuYw0KaW5kZXggZTExMWUx
+M2I2NjYwLi41ZmFiOGYzNTZhODYgMTAwNjQ0DQotLS0gYS9uZXQvdm13X3Zzb2NrL2h5cGVydl90
+cmFuc3BvcnQuYw0KKysrIGIvbmV0L3Ztd192c29jay9oeXBlcnZfdHJhbnNwb3J0LmMNCkBAIC04
+MDIsNiArODAyLDEyIEBAIGludCBodnNfbm90aWZ5X3NlbmRfcG9zdF9lbnF1ZXVlKHN0cnVjdCB2
+c29ja19zb2NrICp2c2ssIHNzaXplX3Qgd3JpdHRlbiwNCiAJcmV0dXJuIDA7DQogfQ0KIA0KK3N0
+YXRpYw0KK2ludCBodnNfc2V0X3Jjdmxvd2F0KHN0cnVjdCB2c29ja19zb2NrICp2c2ssIGludCB2
+YWwpDQorew0KKwlyZXR1cm4gLUVPUE5PVFNVUFA7DQorfQ0KKw0KIHN0YXRpYyBzdHJ1Y3QgdnNv
+Y2tfdHJhbnNwb3J0IGh2c190cmFuc3BvcnQgPSB7DQogCS5tb2R1bGUgICAgICAgICAgICAgICAg
+ICAgPSBUSElTX01PRFVMRSwNCiANCkBAIC04MzcsNiArODQzLDcgQEAgc3RhdGljIHN0cnVjdCB2
+c29ja190cmFuc3BvcnQgaHZzX3RyYW5zcG9ydCA9IHsNCiAJLm5vdGlmeV9zZW5kX3ByZV9lbnF1
+ZXVlICA9IGh2c19ub3RpZnlfc2VuZF9wcmVfZW5xdWV1ZSwNCiAJLm5vdGlmeV9zZW5kX3Bvc3Rf
+ZW5xdWV1ZSA9IGh2c19ub3RpZnlfc2VuZF9wb3N0X2VucXVldWUsDQogDQorCS5zZXRfcmN2bG93
+YXQgICAgICAgICAgICAgPSBodnNfc2V0X3Jjdmxvd2F0DQogfTsNCiANCiBzdGF0aWMgYm9vbCBo
+dnNfY2hlY2tfdHJhbnNwb3J0KHN0cnVjdCB2c29ja19zb2NrICp2c2spDQotLSANCjIuMjUuMQ0K
