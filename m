@@ -2,79 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FE4AC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B35C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:31:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238177AbiHCPbX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
+        id S238235AbiHCPa4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238121AbiHCPbM (ORCPT
+        with ESMTP id S238196AbiHCPav (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:31:12 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DE4B5FDC;
-        Wed,  3 Aug 2022 08:31:09 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CA0D411FB;
-        Wed,  3 Aug 2022 08:31:09 -0700 (PDT)
-Received: from [10.57.41.156] (unknown [10.57.41.156])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 763093F70D;
-        Wed,  3 Aug 2022 08:31:07 -0700 (PDT)
-Message-ID: <0d34eb6b-fae9-d0c6-16b2-13be592db3ea@arm.com>
-Date:   Wed, 3 Aug 2022 16:31:05 +0100
+        Wed, 3 Aug 2022 11:30:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0033C5FC5;
+        Wed,  3 Aug 2022 08:30:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9ED75B822D8;
+        Wed,  3 Aug 2022 15:30:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9B7DC433C1;
+        Wed,  3 Aug 2022 15:30:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659540648;
+        bh=qveOF7M+/THb5XqsBFIqmR62rxGDFMrgJivac9Qqmr4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Q354d5utkUKbbRk2IUMsye67BTsDOiNjH/AXCIWe3mPbNwUW67vsEJBG4GPnI5al5
+         QjhrsvPeGesev1kTAsnmw4vW/zaJegFugXy7yVL4m1fo4x8/oZ3YLTsgDn8JY40kJS
+         NAAVXdjs4gQHNIEgADnt6Hifvt3uHbfjuAgrqXJOMfl2zFhVZDv6V4NIsBwz5iBsMh
+         6Y1MoHih29xbm9kHKAGzz0NMUE2sB/vO+5KmNcMUQiLsjgOc6siYcbgf1PsBlbwdsY
+         viA0kvhPQbWCD6PNMpB0Myc1TjyxFkYn/+8PebgbFPmUwp+uFUmr896lHXELEmJ3+W
+         UzorkMOgoWqPw==
+Message-ID: <e5fa55d1-b690-a672-0a9b-b6e31930f08c@kernel.org>
+Date:   Wed, 3 Aug 2022 09:30:45 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] coresight: docs: Fix a broken reference
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH v2 net 1/4] geneve: do not use RT_TOS for IPv6 flowlabel
 Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc:     linux-kernel@vger.kernel.org, coresight@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>, Jonathan Corbet <corbet@lwn.net>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-References: <c7f864854e9e03916017712017ff59132c51c338.1659251193.git.christophe.jaillet@wanadoo.fr>
-From:   James Clark <james.clark@arm.com>
-In-Reply-To: <c7f864854e9e03916017712017ff59132c51c338.1659251193.git.christophe.jaillet@wanadoo.fr>
+To:     Matthias May <matthias.may@westermo.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, roopa@nvidia.com,
+        eng.alaamohamedsoliman.am@gmail.com, bigeasy@linutronix.de,
+        saeedm@nvidia.com, leon@kernel.org, roid@nvidia.com,
+        maord@nvidia.com, lariel@nvidia.com, vladbu@nvidia.com,
+        cmi@nvidia.com, gnault@redhat.com, yoshfuji@linux-ipv6.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nicolas.dichtel@6wind.com,
+        eyal.birger@gmail.com, jesse@nicira.com, linville@tuxdriver.com,
+        daniel@iogearbox.net, hadarh@mellanox.com, ogerlitz@mellanox.com,
+        willemb@google.com, martin.varghese@nokia.com
+References: <20220802120935.1363001-1-matthias.may@westermo.com>
+ <20220802120935.1363001-2-matthias.may@westermo.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220802120935.1363001-2-matthias.may@westermo.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 31/07/2022 08:06, Christophe JAILLET wrote:
-> Since the commit in Fixes: tag, "coresight-cpu-debug.txt" has been turned
-> into "arm,coresight-cpu-debug.yaml".
+On 8/2/22 6:09 AM, Matthias May wrote:
+> According to Guillaume Nault RT_TOS should never be used for IPv6.
 > 
-> Update the doc accordingly to avoid a 'make htmldocs' warning
-> 
-> Fixes: 66d052047ca8 ("dt-bindings: arm: Convert CoreSight CPU debug to DT schema")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Fixes: 3a56f86f1be6a ("geneve: handle ipv6 priority like ipv4 tos")
+> Signed-off-by: Matthias May <matthias.may@westermo.com>
 > ---
->  Documentation/trace/coresight/coresight-cpu-debug.rst | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> v1 -> v2:
+>  - Fix spacing of "Fixes" tag.
+>  - Add missing CCs
+> ---
+>  drivers/net/geneve.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
-> diff --git a/Documentation/trace/coresight/coresight-cpu-debug.rst b/Documentation/trace/coresight/coresight-cpu-debug.rst
-> index 993dd294b81b..836b35532667 100644
-> --- a/Documentation/trace/coresight/coresight-cpu-debug.rst
-> +++ b/Documentation/trace/coresight/coresight-cpu-debug.rst
-> @@ -117,7 +117,8 @@ divide into below cases:
->  Device Tree Bindings
->  --------------------
->  
-> -See Documentation/devicetree/bindings/arm/coresight-cpu-debug.txt for details.
-> +See Documentation/devicetree/bindings/arm/arm,coresight-cpu-debug.yaml for
-> +details.
 
-LGTM, thanks
-
-Reviewed-by: James Clark <james.clark@arm.com>
->  
->  
->  How to use the module
+Reviewed-by: David Ahern <dsahern@kernel.org>
