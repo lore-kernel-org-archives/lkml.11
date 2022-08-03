@@ -2,68 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB02C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95349C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:19:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238020AbiHCQNf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 12:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42056 "EHLO
+        id S238159AbiHCQTt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 12:19:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236061AbiHCQNe (ORCPT
+        with ESMTP id S237423AbiHCQTq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 12:13:34 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41B0532DAA
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:13:33 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 9FBE93FB30;
-        Wed,  3 Aug 2022 16:13:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1659543209; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=JfQwF4E7OboR29C8Isxq3UTgiJebTWsqig0GU3KaiGI=;
-        b=Cw3HYPSYQIc1yFmx/vH7yzfG4Gr0wYT49nrb4jw0ehEcXHUsyO1TTElIdinWunD0Hn0a4W
-        X/K4JxdvBunhZ7LyyCP4Kh/7Pu50MpF0M/XjHimpQ9DvAdnj6fJO/TSvAkFfofvY87wXtS
-        uSI87KkF/6aV85kU5yEGm5JoDyGXYjY=
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 928CC2C141;
-        Wed,  3 Aug 2022 16:13:29 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 5E50EDA85A; Wed,  3 Aug 2022 18:08:28 +0200 (CEST)
-From:   David Sterba <dsterba@suse.com>
-To:     torvalds@linux-foundation.org
-Cc:     David Sterba <dsterba@suse.com>, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] AFFS fix for 5.20
-Date:   Wed,  3 Aug 2022 18:08:26 +0200
-Message-Id: <cover.1659542557.git.dsterba@suse.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 3 Aug 2022 12:19:46 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13E6222A3
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:19:45 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id m2so10075589pls.4
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 09:19:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=oXQ440FXmy/Gwq99YnhUThvtft4aYMka/KTTaLZzEJU=;
+        b=gYEm7uqP6VfidT4Ff6FDlw+msDMhCDyyWzDZjOer/EccIG13TtMSEas+UfRK5qmlM8
+         KdZiXk49NFGi68uLGAvP3/PqNIpr5ckPOEoxbskwoc2KhQtQ9Sf93/mNd4UMHkh2yr42
+         c3ww1yvmedqkwfeyrZeEBSyMSuyT+0T41LIKj2xVHPLu1GqCaEIaOFV9D3PsL0ELYV6q
+         MuijGg5L3LS8Gx6anTd0MTj9/eJLvKeJi7SoxPb9lye/kuPGLjBq8v00vntwn0i7b9SZ
+         uid4vBCn21+lPN1ElLG28StqBdZ9XlzXeyiUGCyoSnuqSc/Fg5s4sYQyeeZ4SOUf8wtQ
+         DxOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=oXQ440FXmy/Gwq99YnhUThvtft4aYMka/KTTaLZzEJU=;
+        b=W2MVVFd+fvm593p4gzcHdSgOc2R+5E8/f+xCcCxOTZoqAztBdujdpV5zKFUbu1fiPJ
+         TsRmWdHqRhPXcuU12I5UA6WYOVKoxPI4xAQ4Gx1+O+KmPsSGk1xvapyOwK/jlLMzAyHA
+         suuXwsyrrYVZS1W82ICHAyj9L1pvqeeSB6WG/GscLx5lRGKluz5i1lIPTpeJ5uJrmBx7
+         t2In+lWaqJeswFWyPCq9Og65kWeInPxZblLjM1R6jCcFV/bpJs6AMzuLMLhG2XldyEYO
+         bKKu2yuetcSjuMUdvJhJmo7VB4DPB7tQyFOEEvWfNRrGmC2EjOA6sX8CYw5LR7Yd4RVY
+         +6Mw==
+X-Gm-Message-State: ACgBeo0yaRGlnmrqRbHh0Sv9r23XjETCSrWhH9ZPHonbFA6lB9PnNKgc
+        Q7BsDPyGHVP4aKAyG6V1GCr6vA==
+X-Google-Smtp-Source: AA6agR61wRzXNNGPJs88tcIdguv5lAyEORcdwzQOyySCwMrI9SsSwQMeusPW0am6tQRMy7v+lHCF0w==
+X-Received: by 2002:a17:902:dac5:b0:16f:63c:3e91 with SMTP id q5-20020a170902dac500b0016f063c3e91mr8088641plx.169.1659543585422;
+        Wed, 03 Aug 2022 09:19:45 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id b1-20020a170903228100b0016dbb878f8asm2166097plh.82.2022.08.03.09.19.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Aug 2022 09:19:44 -0700 (PDT)
+Date:   Wed, 3 Aug 2022 09:19:42 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Antonio Quartulli <antonio@openvpn.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [RFC 1/1] net: introduce OpenVPN Data Channel Offload
+ (ovpn-dco)
+Message-ID: <20220803091942.0e388f5b@hermes.local>
+In-Reply-To: <1219c53f-362e-cd55-73e0-87dfe281ec34@openvpn.net>
+References: <20220719014704.21346-1-antonio@openvpn.net>
+        <20220719014704.21346-2-antonio@openvpn.net>
+        <YtbNBUZ0Kz7pgmWK@lunn.ch>
+        <c490b87c-085b-baca-b7e4-c67a3ee2c25e@openvpn.net>
+        <YuKKJxSFOgOL836y@lunn.ch>
+        <52b9d7c9-9f7c-788e-2327-33af63b9c748@openvpn.net>
+        <20220803084202.4e249bdb@hermes.local>
+        <1219c53f-362e-cd55-73e0-87dfe281ec34@openvpn.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed, 3 Aug 2022 17:48:45 +0200
+Antonio Quartulli <antonio@openvpn.net> wrote:
 
-one update to AFFS, switching the kmap/kmap_atomic API. Please pull,
-thanks.
+> There must have been some confusion - sorry about that.
+> 
+> The repository I linked in my previous email is this very same driver 
+> packaged as "out-of-tree" module (i.e. for people running a kernel that 
+> does not yet ship ovpn-dco) and contains some compat wrapper.
+> 
+> 
+> The driver I have submitted to the list is 100% standalone and does not 
+> contain any compat code.
+> 
+> 
+> The only extra component required to do something useful with this 
+> driver is the OpenVPN software in userspace.
 
-----------------------------------------------------------------
-The following changes since commit 32346491ddf24599decca06190ebca03ff9de7f8:
 
-  Linux 5.19-rc6 (2022-07-10 14:40:51 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git affs-5.20-tag
-
-for you to fetch changes up to 5abbb7b92820cf6ba9154a35cff6d64b62d7f273:
-
-  affs: use memcpy_to_page and remove replace kmap_atomic() (2022-08-01 19:53:31 +0200)
-
-----------------------------------------------------------------
-David Sterba (1):
-      affs: use memcpy_to_page and remove replace kmap_atomic()
-
- fs/affs/file.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+Good to here thanks.
+I wonder if there is any chance of having multiple VPN projects
+using same infrastructure. There seems to be some parallel effort
+in L2TP, OpenVPN, etc.
