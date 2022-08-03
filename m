@@ -2,120 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E560C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:59:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B58C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235207AbiHCI72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 04:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52984 "EHLO
+        id S235168AbiHCJBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 05:01:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231495AbiHCI70 (ORCPT
+        with ESMTP id S229602AbiHCJBI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 04:59:26 -0400
-Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D1B32251E
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 01:59:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1659517103; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=Z0C1RFtHhWVL38VXioPhEM9PPXQDeSm2BDZOVRVGojx6UymDi/ZUoEg/9UlUSIi8g46xDsAVg3Wogu/iGCelF+aWVZgdR30N2JlZVoWe0d7g9IZEbw8HknkaCjZS/WUf9xENkOYap7Kid2PxtROalZuz9xImGkscEjCgzYGXK/w=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1659517103; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=UWM3Q8d65CxhgoPYwJTl/FGjavrP+S1bO4WDYI0LZmM=; 
-        b=W1ZXKcqpJWvXzse0uYPyMk5Wbt9n5kgRL/CVobzc02368p5EC0Ah11Wp88I6dQluMagaIz4YapLyoKV4I92lJKghTxunvVTR7ciVfMNZTYGJTZrhddT9YrFsVYVxEqNoANNhdj+Cq8NcBSExPI+hLofdFE4yO4jASvWPZLYwIZc=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659517103;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=UWM3Q8d65CxhgoPYwJTl/FGjavrP+S1bO4WDYI0LZmM=;
-        b=aCGxjGguCX3vmghCE0g7WVP1LHmEMjvjiTKUyp/oqsYrIKb3ZJNjNRLgT+oM4CoJ
-        rWMDVAwlOrhZwXBzDi0MRaLxBoGofBlWCY+U+51CCIwe+hrxMUUzFVdUFsrOuwCpAcw
-        54wHQHb2HtbY4dhL/2oz06j/DHLsiwL0BnUp6/mc=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 1659517084780174.63182416015275; Wed, 3 Aug 2022 14:28:04 +0530 (IST)
-Date:   Wed, 03 Aug 2022 14:28:04 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "Ingo Molnar" <mingo@kernel.org>
-Cc:     "x86" <x86@kernel.org>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "Andy Lutomirski" <luto@kernel.org>,
-        "Peter Zijlstra" <peterz@infradead.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "linux-kernel-mentees" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>
-Message-ID: <18262ed2459.44b0d74d434377.3690496800292832933@siddh.me>
-In-Reply-To: <Yuo2UkkyaYtZ3rMZ@gmail.com>
-References: <20220731160913.632092-1-code@siddh.me>
- <YukFgFTaq4Aw+uht@gmail.com>
- <1825f63b142.8968bde3116633.1242410031840350968@siddh.me> <Yuo2UkkyaYtZ3rMZ@gmail.com>
-Subject: Re: [PATCH] x86/numa: Use cpumask_available instead of hardcoded
- NULL check
+        Wed, 3 Aug 2022 05:01:08 -0400
+Received: from smtp237.sjtu.edu.cn (smtp237.sjtu.edu.cn [202.120.2.237])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651B4286D3
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 02:01:04 -0700 (PDT)
+Received: from mta91.sjtu.edu.cn (unknown [10.118.0.91])
+        by smtp237.sjtu.edu.cn (Postfix) with ESMTPS id 3890B10087D61;
+        Wed,  3 Aug 2022 17:01:00 +0800 (CST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by mta91.sjtu.edu.cn (Postfix) with ESMTP id EE83E37C93E;
+        Wed,  3 Aug 2022 17:00:59 +0800 (CST)
+X-Virus-Scanned: amavisd-new at 
+Received: from mta91.sjtu.edu.cn ([127.0.0.1])
+        by localhost (mta91.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id ST7DrKPqboO2; Wed,  3 Aug 2022 17:00:59 +0800 (CST)
+Received: from mstore105.sjtu.edu.cn (mstore101.sjtu.edu.cn [10.118.0.105])
+        by mta91.sjtu.edu.cn (Postfix) with ESMTP id C4AC737C93D;
+        Wed,  3 Aug 2022 17:00:59 +0800 (CST)
+Date:   Wed, 3 Aug 2022 17:00:59 +0800 (CST)
+From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
+To:     jasowang <jasowang@redhat.com>, Michael Tsirkin <mst@redhat.com>
+Cc:     eperezma <eperezma@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        sgarzare <sgarzare@redhat.com>
+Message-ID: <2082515061.4772968.1659517259455.JavaMail.zimbra@sjtu.edu.cn>
+In-Reply-To: <4185ee25-52af-8271-c4de-3824490fba6a@sjtu.edu.cn>
+References: <20220709022745.21020-1-qtxuning1999@sjtu.edu.cn> <4185ee25-52af-8271-c4de-3824490fba6a@sjtu.edu.cn>
+Subject: Re: [PATCH v3 0/4] virtio/virtio_test
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=GB2312
 Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+X-Originating-IP: [36.148.64.77]
+X-Mailer: Zimbra 8.8.15_GA_4308 (ZimbraWebClient - GC103 (Mac)/8.8.15_GA_3928)
+Thread-Topic: virtio/virtio_test
+Thread-Index: sTk/JzG5xzfYKxwClrIRzy7E2UoPqA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 03 Aug 2022 14:18:18 +0530  Ingo Molnar <mingo@kernel.org> wrote:
-> 
-> * Siddh Raman Pant <code@siddh.me> wrote:
-> 
-> > On Tue, 02 Aug 2022 16:37:44 +0530  Ingo Molnar <mingo@kernel.org> wrote:
-> > > Your fix makes sense I suppose, but I'm wondering how testing didn't 
-> > > trigger this warning.
-> > > 
-> > > Off-stack isn't a rare config option:
-> > > 
-> > >   kepler:~/tip> make allmodconfig
-> > >   #
-> > >   # No change to .config
-> > >   #
-> > >   kepler:~/tip> grep CPUMASK_OFFSTACK .config
-> > >   CONFIG_CPUMASK_OFFSTACK=y
-> > >   kepler:~/tip> 
-> > > 
-> > > What am I missing?
-> > 
-> > Maybe this triggers on certain config options set, or maybe due to new
-> > gcc version? (I'm using gcc-12, I also likely saw while on gcc-11.)
-> > It nevertheless is a helpful warning.
-> > 
-> > I just now tried `make defconfig` (default configuration based on
-> > 'x86_64_defconfig') and compiling with `make -j13 all`, and gcc doesn't
-> > give any warning. (CONFIG_CPUMASK_OFFSTACK isn't even listed in the
-> > .config file produced, grep fails.)
-> 
-> Does 'allmodconfig' reproduce the warning for you:
-> 
->   $ make allmodconfig
->   $ make arch/x86/mm/numa.o
-> 
-> ?
-> 
-> If yes, then this could be due to gcc-12, as it doesn't reproduce with 
-> gcc-11 for me:
-> 
->    gcc version 11.2.0 (Ubuntu 11.2.0-19ubuntu1) 
-> 
-> Thanks,
-> 
->     Ingo
-> 
 
-There is no reason why allmodconfig would trigger the warning, as it has
-CONFIG_CPUMASK_OFFSTACK=y, but the warning is because of the other case.
-Still, I tried that, and as expected there was no warning.
 
-Did you try the config file I had linked to earlier?
+----- Original Message -----
+> From: "Guo Zhi" <qtxuning1999@sjtu.edu.cn>
+> To: "jasowang" <jasowang@redhat.com>, "Michael Tsirkin" <mst@redhat.com>
+> Cc: "eperezma" <eperezma@redhat.com>, "virtualization" <virtualization@lists.linux-foundation.org>, "linux-kernel"
+> <linux-kernel@vger.kernel.org>, "sgarzare" <sgarzare@redhat.com>
+> Sent: Thursday, July 21, 2022 7:55:31 PM
+> Subject: Re: [PATCH v3 0/4] virtio/virtio_test
 
-Thanks,
-Siddh
+> On 2022/7/9 10:27, Guo Zhi wrote:
+>> Original virtio_test only use add one descriptor for each io event, thus code of
+>> descriptor chain and indirection have not been tested(one descriptor will not
+>> use indirect feature even indirect feature has been specified). In fact it
+>> would have not been possible for vhost_test to access to the indirect
+>> descriptor table, because it's impossible for virtio_ring.c to allocate it.
+>>
+>> This series using descriptor chain and enable indirection feature. And through
+>> gcov we find the code coverage has been improved(not high for virtio_ring.c
+>> because virtio_test only test split virtqueue):
+>>
+>> +------------+-------------+-------------+
+>> |            |virtio_test.c|virtio_ring.c|
+>> +------------+-------------+-------------+
+>> | original   |   72.32%    |   24.71%    |
+>> +------------+-------------+-------------+
+>> | current    |    75%      |   28.05%    |
+>> +------------+-------------+-------------+
+>>
+>> Guo Zhi (4):
+>>    virtio_test: kick vhost for a batch of descriptors
+>>    virtio_test: use random length scatterlists to test descriptor chain
+>>    virtio_test: enable indirection feature
+>>    virtio_test: pregenerate random numbers
+>>
+>>   tools/virtio/virtio_test.c | 85 ++++++++++++++++++++++++++++++--------
+>>   1 file changed, 68 insertions(+), 17 deletions(-)
+>>
+> Hi, the new version patch of virtio_test is waiting for review:)
+> 
+> Thanks.
+
+Friendly ping for the patches:)
+Thanks
