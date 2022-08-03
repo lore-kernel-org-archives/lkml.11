@@ -2,110 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C5EC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E39C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:17:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235245AbiHCIQe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 04:16:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
+        id S235930AbiHCIRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 04:17:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237388AbiHCIQX (ORCPT
+        with ESMTP id S233624AbiHCIRA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 04:16:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF3A65C1
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 01:16:21 -0700 (PDT)
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1oJ9Xy-0000MF-BC; Wed, 03 Aug 2022 10:16:06 +0200
-Message-ID: <d4838245-030c-39b4-df4b-17b3b4c73a5b@pengutronix.de>
-Date:   Wed, 3 Aug 2022 10:16:03 +0200
+        Wed, 3 Aug 2022 04:17:00 -0400
+Received: from mail.coredeal.pl (mail.coredeal.pl [51.75.73.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4673460D0
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 01:16:59 -0700 (PDT)
+Received: by mail.coredeal.pl (Postfix, from userid 1002)
+        id 7C67BA2A95; Wed,  3 Aug 2022 08:16:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=coredeal.pl; s=mail;
+        t=1659514617; bh=9KGuIG62LgzC9aYmjKxzocuYLRCVghXg6v9Q1q2LHec=;
+        h=Date:From:To:Subject:From;
+        b=FxqytcVXFJnaIsdJrWtHKOFkJMg7YO97qfqi9Su6U50YRRUAkblVmJAQ3UG/G8X1o
+         4f3fGUhzT7G+SX1yrYkM93ur79bqAuTvan+dkECkK3lOmvVBsvYRLbKS3QMUOQ8tOw
+         r82yB2OHTTF4oA2YUTSMWt9b0XqHdgE4+Gzwut2xgurB5bLXgQi36uPxPRadE2gaRK
+         iRZdYIiqKqR/8O//ctdGucLXdnPtoXot04hQz0BKgXmc0FPzM4QH7Ui5cc3b0pZaKc
+         352OJzW92to6Ap1f434eduU/JaLv2APKxYNe+iqGtEqbFEAhqPfcq/UpoIYkJEHeZs
+         hE5MHbuaN/nGQ==
+Received: by mail.coredeal.pl for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:15:47 GMT
+Message-ID: <20220803064500-0.1.4o.19968.0.m2ll2ne6ai@coredeal.pl>
+Date:   Wed,  3 Aug 2022 08:15:47 GMT
+From:   "Krzysztof Maj" <krzysztof.maj@coredeal.pl>
+To:     <linux-kernel@vger.kernel.org>
+Subject: Biznesowy angielski
+X-Mailer: mail.coredeal.pl
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [PATCH] tty: serial: imx: initialize
- peripheral_config/peripheral_size for sdma config
-To:     Sherry Sun <sherry.sun@nxp.com>, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com
-Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-imx@nxp.com
-References: <20220803065737.14752-1-sherry.sun@nxp.com>
-Content-Language: en-US
-In-Reply-To: <20220803065737.14752-1-sherry.sun@nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Sherry,
+Dzie=C5=84 dobry,=20
 
-On 03.08.22 08:57, Sherry Sun wrote:
-> Since commit 824a0a02cd74 ("dmaengine: imx-sdma: Add multi fifo support")
-> adds the use of dma_slave_config->peripheral_config/peripheral_size to
-> sdma driver, the client drivers like uart need to initialize the
-> peripheral_config/peripheral_size for sdma, otherwise, the random value
-> of local variable slave_config may cause unexpected peripheral_config
-> and make sdma mess up.
-> 
+czy rozwa=C5=BCali Pa=C5=84stwo rozw=C3=B3j kwalifikacji j=C4=99zykowych =
+swoich pracownik=C3=B3w?
 
-If this a fix, please add a Fixes: tag. I am not sure it is though,
-see below.
+Opracowali=C5=9Bmy kursy j=C4=99zykowe dla r=C3=B3=C5=BCnych bran=C5=BC, =
+w kt=C3=B3rych koncentrujemy si=C4=99 na podniesieniu poziomu s=C5=82owni=
+ctwa i jako=C5=9Bci komunikacji wykorzystuj=C4=85c autorsk=C4=85 metod=C4=
+=99, stworzon=C4=85 specjalnie dla wymagaj=C4=85cego biznesu.=20
 
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> ---
->  drivers/tty/serial/imx.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 522445a8f666..bb8c2a712e94 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -1320,6 +1320,8 @@ static int imx_uart_dma_init(struct imx_port *sport)
+Niestandardowy kurs on-line, dopasowany do profilu firmy i obszar=C3=B3w =
+=C5=9Bwiadczonych us=C5=82ug, w szybkim czasie przyniesie efekty, kt=C3=B3=
+re zwi=C4=99ksz=C4=85 komfort i jako=C5=9B=C4=87 pracy, rozwijaj=C4=85c m=
+o=C5=BCliwo=C5=9Bci biznesowe.=20
 
-This function starts with 
+Zdalne szkolenie j=C4=99zykowe to m.in. zaj=C4=99cia z native speakerami,=
+ kt=C3=B3re w szybkim czasie naucz=C4=85 pracownik=C3=B3w rozmawia=C4=87 =
+za pomoc=C4=85 jasnego i zwi=C4=99z=C5=82ego j=C4=99zyka Business English=
+=2E
 
-struct dma_slave_config slave_config = {};
-
->  	slave_config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
->  	/* one byte less than the watermark level to enable the aging timer */
->  	slave_config.src_maxburst = RXTL_DMA - 1;
-> +	slave_config.peripheral_config = NULL;
-> +	slave_config.peripheral_size = 0;
-
-So these are already zero-initialized.
-
->  	ret = dmaengine_slave_config(sport->dma_chan_rx, &slave_config);
->  	if (ret) {
->  		dev_err(dev, "error in RX dma configuration.\n");
-> @@ -1346,6 +1348,8 @@ static int imx_uart_dma_init(struct imx_port *sport)
->  	slave_config.dst_addr = sport->port.mapbase + URTX0;
->  	slave_config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
->  	slave_config.dst_maxburst = TXTL_DMA;
-> +	slave_config.peripheral_config = NULL;
-> +	slave_config.peripheral_size = 0;
-
-Not sure if this is required. If preceding dmaengine_slave_config()
-indeed makes clearing necessary, you should note that in the commit
-message.
-
-Cheers,
-Ahmad
-
->  	ret = dmaengine_slave_config(sport->dma_chan_tx, &slave_config);
->  	if (ret) {
->  		dev_err(dev, "error in TX dma configuration.");
+Czy m=C3=B3g=C5=82bym przedstawi=C4=87 wi=C4=99cej szczeg=C3=B3=C5=82=C3=B3=
+w i opowiedzie=C4=87 jak dzia=C5=82amy?=20
 
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Pozdrawiam
+Krzysztof Maj
