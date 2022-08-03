@@ -2,135 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75152C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:06:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8DDC19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:08:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237714AbiHCKGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 06:06:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49276 "EHLO
+        id S234811AbiHCKId (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 06:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbiHCKGt (ORCPT
+        with ESMTP id S234866AbiHCKIa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 06:06:49 -0400
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A4D664C6;
-        Wed,  3 Aug 2022 03:06:47 -0700 (PDT)
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 273A6Sxb016646;
-        Wed, 3 Aug 2022 19:06:29 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 273A6Sxb016646
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1659521189;
-        bh=wmOcErEdU+TDtdRRUU4DWlVjpGfT3KCiEB6lg4A7q+8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=nzVEfTvVC4k0SeABNbuU4Xy0ENX70LuhMNqIoWlX2awwFzgEdhNzGsI33Ulmtp31w
-         orl2KKEzeKkuZusLBa0lBlkxqpGnO32u5af5Dpdf6Q8FSntELV1EWNlIUfSGt7AAam
-         2eRE+7DicEYeq2IpYDPCrtK+Pin5fXmfplLOleU8HarlDEuzOg3lB6gaw+oa/xRlKt
-         /+MbQabuR9+CZceZF7IEHEP+wCwDmDUB0Fe7FMnrtN298BRTpXM9v1YU5csD06zhKp
-         wvNUvKhmwcX7JPXD1K/Zn2SPtFfJu4Pxpx7eqPi8p7PkeJRIzhT/h6xGRkRSd3/yx7
-         71X9NspaeuVLw==
-X-Nifty-SrcIP: [209.85.128.49]
-Received: by mail-wm1-f49.google.com with SMTP id c22so8449362wmr.2;
-        Wed, 03 Aug 2022 03:06:29 -0700 (PDT)
-X-Gm-Message-State: ACgBeo0xnwJpauz3INEd8slSbUJfVRIkrlDe+wA4BqpSfwg1nEeueTjr
-        PfZZuOCKfo4XqRY6KUHbemeioWxOyFBn1vGpTt4=
-X-Google-Smtp-Source: AA6agR5YxxFZ2fNQSoyxT6/q86ZBjZAZ6ZGShjeXN79KJ+JSWZkpKY0XMUBWZfHoRVj7/xkf66qN7E4gJg3Ypb6yGQc=
-X-Received: by 2002:a05:600c:a18e:b0:3a3:10ef:672a with SMTP id
- id14-20020a05600ca18e00b003a310ef672amr2234630wmb.14.1659521188077; Wed, 03
- Aug 2022 03:06:28 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220730173636.1303357-1-masahiroy@kernel.org> <CAKwvOd=gZc6TKaV1yh4pfbtj26xoQasVw=i+Vq+jOu2dgzFsFA@mail.gmail.com>
-In-Reply-To: <CAKwvOd=gZc6TKaV1yh4pfbtj26xoQasVw=i+Vq+jOu2dgzFsFA@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 3 Aug 2022 19:05:23 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAT7ni-nOmhyjPByn=a40a-_D2sgkhvNFpqgHQsPDMm7Tg@mail.gmail.com>
-Message-ID: <CAK7LNAT7ni-nOmhyjPByn=a40a-_D2sgkhvNFpqgHQsPDMm7Tg@mail.gmail.com>
-Subject: Re: [PATCH 1/3] modpost: add array range check to sec_name()
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Wed, 3 Aug 2022 06:08:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E07C12608
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 03:08:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659521307;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ombNgzXxVb25gnDLaXkVZE1drvU8iJaz17u9QxcdADc=;
+        b=SLLJCuDTZMXbUd9gEFddNsbr7COrV36ZWGST+xdHMXM6JzXzzTZmkR92GlxwSIntU0juIB
+        /dAbLKCc86iDXdEWLDponISQtnqqDzdccQoQL2lCelGVpf1DofGObITI399yYFvjwH3GcA
+        FRklK0AluSqIpIeED970NxtWF2QrRCs=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-562-sch-Y4pfO6mYs5fag_yzmA-1; Wed, 03 Aug 2022 06:08:24 -0400
+X-MC-Unique: sch-Y4pfO6mYs5fag_yzmA-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4DBB680A0BF;
+        Wed,  3 Aug 2022 10:08:24 +0000 (UTC)
+Received: from starship (unknown [10.40.194.242])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DD3F8492C3B;
+        Wed,  3 Aug 2022 10:08:21 +0000 (UTC)
+Message-ID: <060419e118445978549f0c7d800f96a9728c157c.camel@redhat.com>
+Subject: Re: [PATCH 1/5] KVM: x86: Get vmcs12 pages before checking pending
+ interrupts
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Mingwei Zhang <mizhang@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>
+Date:   Wed, 03 Aug 2022 13:08:20 +0300
+In-Reply-To: <20220802230718.1891356-2-mizhang@google.com>
+References: <20220802230718.1891356-1-mizhang@google.com>
+         <20220802230718.1891356-2-mizhang@google.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 3, 2022 at 2:55 AM Nick Desaulniers <ndesaulniers@google.com> wrote:
->
-> On Sat, Jul 30, 2022 at 10:37 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >
-> > The section index is always positive, so the argunent, secindex, should
-> > be unsigned.
-> >
-> > Also, inserted the array range check.
-> >
-> > If sym->st_shndx is a special section index (between SHN_LORESERVE and
-> > SHN_HIRESERVE), there is no corresponding section header.
-> >
-> > For example, if a symbol specifies an absolute value, sym->st_shndx is
-> > SHN_ABS (=0xfff1).
-> >
-> > The current users do not cause the out-of-range access of
-> > info->sechddrs[], but it is better to avoid such a pitfall.
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
->
-> I don't mind adding this check; though if it's anomalous I think we
-> could also just print to stderr and abort.
+On Tue, 2022-08-02 at 23:07 +0000, Mingwei Zhang wrote:
+> From: Oliver Upton <oupton@google.com>
+> 
+> vmx_guest_apic_has_interrupts implicitly depends on the virtual APIC
+> page being present + mapped into the kernel address space. However, with
+> demand paging we break this dependency, as the KVM_REQ_GET_VMCS12_PAGES
+> event isn't assessed before entering vcpu_block.
+> 
+> Fix this by getting vmcs12 pages before inspecting the guest's APIC
+> page. Note that upstream does not have this issue, as they will directly
+> get the vmcs12 pages on vmlaunch/vmresume instead of relying on the
+> event request mechanism. However, the upstream approach is problematic,
+> as the vmcs12 pages will not be present if a live migration occurred
+> before checking the virtual APIC page.
+
+Since this patch is intended for upstream, I don't fully understand
+the meaning of the above paragraph.
 
 
-If  sec_name() has a failure path,
-I need to add another check before calling sec_name().
+> 
+> Signed-off-by: Oliver Upton <oupton@google.com>
+> Signed-off-by: Mingwei Zhang <mizhang@google.com>
+> ---
+>  arch/x86/kvm/x86.c | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+> 
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 5366f884e9a7..1d3d8127aaea 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -10599,6 +10599,23 @@ static inline int vcpu_block(struct kvm_vcpu *vcpu)
+>  {
+>  	bool hv_timer;
+>  
+> +	/*
+> +	 * We must first get the vmcs12 pages before checking for interrupts
+> +	 * that might unblock the guest if L1 is using virtual-interrupt
+> +	 * delivery.
+> +	 */
+> +	if (kvm_check_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu)) {
+> +		/*
+> +		 * If we have to ask user-space to post-copy a page,
+> +		 * then we have to keep trying to get all of the
+> +		 * VMCS12 pages until we succeed.
+> +		 */
+> +		if (unlikely(!kvm_x86_ops.nested_ops->get_nested_state_pages(vcpu))) {
+> +			kvm_make_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
+> +			return 0;
+> +		}
+> +	}
+> +
+>  	if (!kvm_arch_vcpu_runnable(vcpu)) {
+>  		/*
+>  		 * Switch to the software timer before halt-polling/blocking as
 
 
-I want to get a return value that can be safely passed
-to strcmp(), etc.
+If I understand correctly, you are saying that if apic backing page is migrated in post copy
+then 'get_nested_state_pages' will return false and thus fail?
 
+AFAIK both SVM and VMX versions of 'get_nested_state_pages' assume that this is not the case
+for many things like MSR bitmaps and such - they always uses non atomic versions
+of guest memory access like 'kvm_vcpu_read_guest' and 'kvm_vcpu_map' which
+supposed to block if they attempt to access HVA which is not present, and then
+userfaultd should take over and wake them up.
 
-For example,
+If that still fails, nested VM entry is usually failed, and/or the whole VM
+is crashed with 'KVM_EXIT_INTERNAL_ERROR'.
 
-   strcmp(!sec_name(elf, secindex),  "some_pattern");
+Anything I missed? 
 
+Best regards,
+	Maxim Levitsky
 
-Returning "" for special sections
-will work nicely without additional check code.
-
-
-
-I am changing the code with a bigger picture in my mind,
-although that may not be so clear if you look at this patch only.
-
-
-
-> I would prefer Elf_Sym over unsigned int though.  WDYT?
->
-
-In /usr/include/elf.h, Elf{32,64}_Sym are structures.
-How to use it instead of unsigned int?
-
-
-typedef struct
-{
-  Elf32_Word    st_name;                /* Symbol name (string tbl index) */
-  Elf32_Addr    st_value;               /* Symbol value */
-  Elf32_Word    st_size;                /* Symbol size */
-  unsigned char st_info;                /* Symbol type and binding */
-  unsigned char st_other;               /* Symbol visibility */
-  Elf32_Section st_shndx;               /* Section index */
-} Elf32_Sym;
-
-typedef struct
-{
-  Elf64_Word    st_name;                /* Symbol name (string tbl index) */
-  unsigned char st_info;                /* Symbol type and binding */
-  unsigned char st_other;               /* Symbol visibility */
-  Elf64_Section st_shndx;               /* Section index */
-  Elf64_Addr    st_value;               /* Symbol value */
-  Elf64_Xword   st_size;                /* Symbol size */
-} Elf64_Sym;
-
-
-
-
-Best Regards
-Masahiro Yamada
