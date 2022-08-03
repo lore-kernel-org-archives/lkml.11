@@ -2,70 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FF30C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 17:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A9ECC19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 17:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238043AbiHCRYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 13:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
+        id S238093AbiHCRZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 13:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238033AbiHCRYp (ORCPT
+        with ESMTP id S236279AbiHCRZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 13:24:45 -0400
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8581154657;
-        Wed,  3 Aug 2022 10:24:44 -0700 (PDT)
-Received: by mail-pj1-f48.google.com with SMTP id f11-20020a17090a4a8b00b001f2f7e32d03so4096225pjh.0;
-        Wed, 03 Aug 2022 10:24:44 -0700 (PDT)
+        Wed, 3 Aug 2022 13:25:45 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B2A17AA1;
+        Wed,  3 Aug 2022 10:25:42 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id 8-20020a05600c024800b003a2fe343db1so1179884wmj.1;
+        Wed, 03 Aug 2022 10:25:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GXZ4xXNRwdNX246uTCDjp/6UfuNozlv9ogOaTndHxOo=;
+        b=BqcDSD4qn8OphNeXpd4d1tICbsWAbV05Cvz+aFGaHqgRoneYmfEIQI10k2dCySJ0oG
+         uD2WrHSD66whZkjrFUTtw0Cl9ZNMwWzlBvEPk/5HwAhrvRgfpvgWgst01K/6+4r6ckV8
+         3pDECBqxeMSC2SgqdcphAHHqEw0WbFd00j4k0yJebkVBonPd44SLNvBtqSxZQVF4tYii
+         cmnypkd1Tb990NlTdqggfgVNlTBH1xAlHz+xCO71uEyKLvwSV8DuYF+wapx/FCxeJ4ku
+         AgpkIaJpMEj2n9xtMl+b0i4bk1dewK6pXeZpClNTRJ+Am3qGIGHi5RzV7biuwysveun+
+         5KjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=PLueRrdRrDSAZCsSnEuO7ryjbF4cDa5AGSQHDpCb7Jo=;
-        b=cnNUQOAfgHOxq55giri+w07WCRA5RjedrBU0T9+zvtAEjQOfNLx08oJWRT8RMiVhnK
-         VQAb2SoPT+QptujtB72Zgd1mrDrrzfeyPw1PpSc1eLFieuJwSnFtP5MHo2QVYNix/oVV
-         QhV53uoso0ybRES4++IxoRmnkaxyn8OcWsRU8D8CQbPmGkKUtZmjgf3vRTp0uqn3rsbA
-         41q6yZG8L0CdJE0YG35RvEaWNyN9shKkwvvxv6FICBxPdC8TpNi3j0hKIA3v3Y80ze8q
-         rltH2It7bJzel8UvPp8rSGz5GVXN+CKtG/j3fIZkIxdS/qP+gO+YICEaK5VD/x50/Erk
-         r5jA==
-X-Gm-Message-State: ACgBeo27UTtImrnkmqhsSt8zWKspPb7CTX/T5tCCw56d7JHeLUqCx6oF
-        vkgJu9GVwHSaPPfHvTMusXkU6CFNX1bXLw==
-X-Google-Smtp-Source: AA6agR4+errzcNzMPWB0CtPUqoFfU+/HvKqxJd9O453x9LrGJfJ/jGLweL2ivP559rQbToAj4CcR+Q==
-X-Received: by 2002:a17:90a:d58e:b0:1f4:f9a5:22a8 with SMTP id v14-20020a17090ad58e00b001f4f9a522a8mr5883087pju.58.1659547483870;
-        Wed, 03 Aug 2022 10:24:43 -0700 (PDT)
-Received: from ?IPV6:2620:15c:211:201:db71:edb7:462a:44af? ([2620:15c:211:201:db71:edb7:462a:44af])
-        by smtp.gmail.com with ESMTPSA id i18-20020a170902c95200b0016c2cdea409sm2217726pla.280.2022.08.03.10.24.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Aug 2022 10:24:43 -0700 (PDT)
-Message-ID: <9de2428b-96b8-883c-bd96-01a7763758e8@acm.org>
-Date:   Wed, 3 Aug 2022 10:24:40 -0700
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=GXZ4xXNRwdNX246uTCDjp/6UfuNozlv9ogOaTndHxOo=;
+        b=rvP3lRA4s2rGq7xFZHGYIJ3mWjP3b+aDfEKAbLxgMvJaeiV2H7SlnyqmHsOKWVzlRm
+         fVZmfMRysrCbVohNjsNYJQ9aQLsQZ55V5Ixsjq48UFkc/tpVwiqsTKbPxcU5EWH/VKc5
+         ustAHOvj36iWt5FYLWPLdC6HipoiT4RK/f7XdhWlz8OC9G0cgOrXjZwWNvxo/hCBRa5E
+         79LwskcF+kdJ+HeHqf9ereOCzeopkkpUred3fOmvc9dXackUsAS9OX1gEWuA+uwTr008
+         GZhaUl9p+R2B0AkBB/AuLuIdHHpFrPfiPMkJfnVmfWU+EAENuBGMJZm3eBlD9+6yk42k
+         mOLA==
+X-Gm-Message-State: ACgBeo2oDqITane6Kux9IEqm7vF3kjIv4bTXaEFRwul3TMgiFfX10eOg
+        Az7hd/hGmambK9Qky24CDi0=
+X-Google-Smtp-Source: AA6agR7uecIPoAy4JexF43f01e/Ul4jeTMonddQbm0RbqwtLyfKDXjbJXnVTFT8AB1q0vYGU0QVTTg==
+X-Received: by 2002:a05:600c:2854:b0:3a3:1551:d7d with SMTP id r20-20020a05600c285400b003a315510d7dmr3400140wmb.174.1659547541214;
+        Wed, 03 Aug 2022 10:25:41 -0700 (PDT)
+Received: from gmail.com (84-236-113-167.pool.digikabel.hu. [84.236.113.167])
+        by smtp.gmail.com with ESMTPSA id s14-20020a5d424e000000b0021d7fa77710sm18608588wrr.92.2022.08.03.10.25.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Aug 2022 10:25:40 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Wed, 3 Aug 2022 19:25:38 +0200
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Kyle Huey <me@kylehuey.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org,
+        Robert O'Callahan <robert@ocallahan.org>,
+        David Manouchehri <david.manouchehri@riseup.net>,
+        kvm@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] x86/fpu: Allow PKRU to be (once again) written by ptrace.
+Message-ID: <Yuqvkufu7Hu4drL6@gmail.com>
+References: <20220731050342.56513-1-khuey@kylehuey.com>
+ <Yuo59tV071/i6yhf@gmail.com>
+ <CAP045ArF0SX84tDr=iZoK=EnXK2LsXYut3-KMkCxQO2OOhn=0A@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [dm-devel] [PATCH v9 10/13] dm-table: allow zoned devices with
- non power-of-2 zone sizes
-Content-Language: en-US
-To:     Pankaj Raghav <p.raghav@samsung.com>, Johannes.Thumshirn@wdc.com,
-        snitzer@kernel.org, axboe@kernel.dk,
-        damien.lemoal@opensource.wdc.com, agk@redhat.com, hch@lst.de
-Cc:     pankydev8@gmail.com, gost.dev@samsung.com,
-        linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-block@vger.kernel.org, dm-devel@redhat.com,
-        jaegeuk@kernel.org, matias.bjorling@wdc.com
-References: <20220803094801.177490-1-p.raghav@samsung.com>
- <CGME20220803094813eucas1p2eab78901e97417ad52be1f8023db3d82@eucas1p2.samsung.com>
- <20220803094801.177490-11-p.raghav@samsung.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <20220803094801.177490-11-p.raghav@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAP045ArF0SX84tDr=iZoK=EnXK2LsXYut3-KMkCxQO2OOhn=0A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/3/22 02:47, Pankaj Raghav wrote:
-> Allow dm to support zoned devices with non power-of-2(po2) zone sizes as
-> the block layer now supports it.
 
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+* Kyle Huey <me@kylehuey.com> wrote:
+
+> > Also, what's the security model for this register, do we trust all 
+> > input values user-space provides for the PKRU field in the XSTATE? I 
+> > realize that WRPKRU already gives user-space write access to the 
+> > register - but does the CPU write it all into the XSTATE, with no 
+> > restrictions on content whatsoever?
+> 
+> There is no security model for this register. The CPU does write whatever 
+> is given to WRPKRU (or XRSTOR) into the PKRU register. The pkeys(7) man 
+> page notes:
+> 
+> Protection keys have the potential to add a layer of security and 
+> reliability to applications. But they have not been primarily designed as 
+> a security feature. For instance, WRPKRU is a completely unprivileged 
+> instruction, so pkeys are useless in any case that an attacker controls 
+> the PKRU register or can execute arbitrary instructions.
+
+Ok - allowing ptrace to set the full 32 bits of the PKRU register seems OK 
+then, and is 100% equivalent to using WRPKRU, right? So there's no implicit 
+masking/clearing of bits depending on how many keys are available, or other 
+details where WRPKRU might differ from a pure 32-bit per thread write, 
+correct?
+
+Thanks,
+
+	Ingo
