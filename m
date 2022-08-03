@@ -2,171 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6991C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8806BC19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:56:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238305AbiHCPz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50570 "EHLO
+        id S238259AbiHCP4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238393AbiHCPzh (ORCPT
+        with ESMTP id S238380AbiHCP4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:55:37 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179E7B4A2
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:54:10 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id z3so1791839qtv.5
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 08:54:10 -0700 (PDT)
+        Wed, 3 Aug 2022 11:56:11 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8014BB7F2
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:56:02 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id i128-20020a1c3b86000000b003a3a22178beso1142203wma.3
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 08:56:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cs-stonybrook-edu.20210112.gappssmtp.com; s=20210112;
+        d=conchuod.ie; s=google;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc;
-        bh=PZWPUpVvF9cKIsgpwg6daHjxAiTOoYVGBnAYticzGhY=;
-        b=OVc1n5/b/fmZ0C2vLRPLIuj9H9JCeO6s4H5Czk9eJYvj4bZqh3Q3MGft/isGv95E9w
-         Zh7pNz9I2erpIO7d6us6AqnTRJhV618K3PJhm2AV97UrbEW/7LoOk+GscNm6HrwmGYca
-         qEcz5f4h1D5PDbZTHO7lJ2kMXPyc5aCGy/CUACuW0EMuN4xmqSqAcPvU4v/UOhnJcqIw
-         YvcaLOL2Zfm1e6YlDSwcLX4h/VlrEr38JG2OgZDmr6JpONPnvs/GeVWtcwS1vF9aePqC
-         dncyS2P2GZ+fKAVFDHwrmyFD63bW3ya0su90k9uHVjtidXDlMRnhv7QIw+JxFbrznEPD
-         gXng==
+        bh=mxMtG/Q251T7R62iX9Xk/wpEgTp311fOpnJ0ShthtKM=;
+        b=B4+uBSxdHMiSA/FZHsjqRDTozx+JSIc1seFJm34ExPeztEVDD07wRjHK6FzULPj52N
+         0EMMYg3C77CqUFN29Loe0BUvz9T7wymLNRWvAVD/cIeIv0TUhupDo7MN1Pz5qwUDAn+7
+         BN5c/JV8oa3KMpsf5W+JM2rqd/VNTOpME5Zc9FtJVWEJYzaIQktD0/XCDYoLzNhYvn5f
+         7ftKrnOMC/S5QQvtkDaDyjY63dAnPxsBSjdnN9I0z+Meib5U4r1inilkPVme/npe8a6u
+         JMfE2ZYEVFLITL4oLRmvF3dRRMEYgoAiwOlWNDjQDUXb8Q2Xk+rL21TfON4HgoYl27YA
+         0MOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc;
-        bh=PZWPUpVvF9cKIsgpwg6daHjxAiTOoYVGBnAYticzGhY=;
-        b=JCft2TACmVY2pPjJZjNCuqIE3DblpK+Kmk5zyA6suubYsgIfQ4Pwbl1ASbdEWovHL0
-         g5HncXjMEADRKVsA61j1Wd/rRGIzUAZw/0DC1bKvHND94AJlefqoTTuSevQcdwEOMnDK
-         KG3xjlnXlb+AAQ0JIPSXZrL+w88xbtN+oy1diktXxAS4GWfb+yefUcdQu9tskX5UuBDu
-         vyhosiHTQzy3j77iwWoPx0MxZUxE82Dl+g9wNeAIAmsXe350A0IzJcvFZvwCUOJ0uj4a
-         w2T8EGUev2heQKxoyzzcIjY+fZKlJioeR07AREWgO1RoNhBxp78XSf3rT7hKXajYFg+k
-         Kb3g==
-X-Gm-Message-State: AJIora/CnWuOXcPwKkDEBIC9lyCJw4JAOL/RJKIPzvhss2ihGLUQ3GnM
-        nZEeJj9vdpzKOUgMX715ZEDqNg==
-X-Google-Smtp-Source: AGRyM1sWWba8NY7xWkmAVGphiUFqgi6FgQq65hLjbWLLtcK7DMOzBoMwpkOfIDf9+X1bRbU+Q2ApLg==
-X-Received: by 2002:ac8:5e47:0:b0:31e:ed53:ba5a with SMTP id i7-20020ac85e47000000b0031eed53ba5amr22551176qtx.530.1659542049150;
-        Wed, 03 Aug 2022 08:54:09 -0700 (PDT)
-Received: from sgdp06.fsl.cs.sunysb.edu (sgdp6.fsl.cs.sunysb.edu. [130.245.126.123])
-        by smtp.googlemail.com with ESMTPSA id x13-20020a05620a258d00b006b60e1cf2c2sm12589223qko.0.2022.08.03.08.54.08
+        bh=mxMtG/Q251T7R62iX9Xk/wpEgTp311fOpnJ0ShthtKM=;
+        b=RFqs54MJjehkLhiJbGEmyBOo1H4EbJhop35ZotHjJLMWqKwDKnluK50K9QfzbkTf8T
+         CWVZeWrtTy5lulWAfziGQRNt9+VsxvXNFRRJRJcVz5jDfrPUNOjxweLvsn5u2PoZHgIi
+         SMckaLN3GSDA6psI/yFiQWFH6dbESDcoMLH2DYEZQqh9ZDp5mp8K0f3uHYbLoIanjp+p
+         q9UYoLQHsqSTDSHC5ZV0fMVsx1t7Zt2bRvsG5Lv6dZP0Da2EdKGEYxFQsTnOmIOkwGi0
+         H4PGG7xjLaD0mP/J+5XEqHBd+cDBbhhMrb0o1UaTBfYStnBvFHDQmXYxEmuUewVSqJSo
+         /ueQ==
+X-Gm-Message-State: ACgBeo3Enp7qnTRU3Ps3pyvvFoWCeQ/Mzaw5uj2RiSULXOnTyPVc5DbT
+        tMJTEqJ7yKmIUAXrah35RfgRig==
+X-Google-Smtp-Source: AA6agR5BfqTfNvlJd1g6OG5xcTlUNOnmja0gCtgMu3jkzJTU+0HROXQ6ioslOvzyFPUGUa6hAhSIyA==
+X-Received: by 2002:a05:600c:19d2:b0:3a3:2cdb:cc02 with SMTP id u18-20020a05600c19d200b003a32cdbcc02mr3313498wmq.182.1659542160960;
+        Wed, 03 Aug 2022 08:56:00 -0700 (PDT)
+Received: from henark71.. ([93.107.66.220])
+        by smtp.gmail.com with ESMTPSA id w13-20020adfee4d000000b0021f0af83142sm18107277wro.91.2022.08.03.08.55.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 08:54:08 -0700 (PDT)
-From:   Yifei Liu <yifeliu@cs.stonybrook.edu>
-Cc:     yifeliu@cs.stonybrook.edu, ezk@cs.stonybrook.edu,
-        madkar@cs.stonybrook.edu, David Woodhouse <dwmw2@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] jffs2: correct logic when creating a hole in jffs2_write_begin
-Date:   Wed,  3 Aug 2022 15:53:12 +0000
-Message-Id: <20220803155315.2073584-1-yifeliu@cs.stonybrook.edu>
-X-Mailer: git-send-email 2.25.1
+        Wed, 03 Aug 2022 08:56:00 -0700 (PDT)
+From:   Conor Dooley <mail@conchuod.ie>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Atul Khare <atulkhare@rivosinc.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>
+Cc:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v4] dt-bindings: gpio: sifive: add gpio-line-names
+Date:   Wed,  3 Aug 2022 16:55:40 +0100
+Message-Id: <20220803155539.800766-1-mail@conchuod.ie>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bug description and fix:
+From: Atul Khare <atulkhare@rivosinc.com>
 
-1. Write data to a file, say all 1s from offset 0 to 16.
+Fix device tree schema validation messages like 'gpio-line-names'
+does not match any of the regexes: 'pinctrl-[0-9]+' From schema: ...
+sifive,gpio.yaml'.
 
-2. Truncate the file to a smaller size, say 8 bytes.
+The bindings were missing the gpio-line-names element, which was
+causing the dt-schema checker to trip-up.
 
-3. Write new bytes (say 2s) from an offset past the original size of the
-file, say at offset 20, for 4 bytes.  This is supposed to create a "hole"
-in the file, meaning that the bytes from offset 8 (where it was truncated
-above) up to the new write at offset 20, should all be 0s (zeros).
-
-4. Flush all caches using "echo 3 > /proc/sys/vm/drop_caches" (or unmount
-and remount) the f/s.
-
-5. Check the content of the file.  It is wrong.  The 1s that used to be
-between bytes 9 and 16, before the truncation, have REAPPEARED (they should
-be 0s).
-
-We wrote a script and helper C program to reproduce the bug
-(reproduce_jffs2_write_begin_issue.sh, write_file.c, and Makefile).  We can
-make them available to anyone.
-
-The above example is shown when writing a small file within the same first
-page.  But the bug happens for larger files, as long as steps 1, 2, and 3
-above all happen within the same page.
-
-The problem was traced to the jffs2_write_begin code, where it goes into an
-'if' statement intended to handle writes past the current EOF (i.e., writes
-that may create a hole).  The code computes a 'pageofs' that is the floor
-of the write position (pos), aligned to the page size boundary.  In other
-words, 'pageofs' will never be larger than 'pos'.  The code then sets the
-internal jffs2_raw_inode->isize to the size of max(current inode size,
-pageofs) but that is wrong: the new file size should be the 'pos', which is
-larger than both the current inode size and pageofs.
-
-Similarly, the code incorrectly sets the internal jffs2_raw_inode->dsize to
-the difference between the pageofs minus current inode size; instead it
-should be the current pos minus the current inode size.  Finally,
-inode->i_size was also set incorrectly.
-
-The patch below fixes this bug.  The bug was discovered using a new tool
-for finding f/s bugs using model checking, called MCFS (Model Checking File
-Systems).
-
-Signed-off-by: Yifei Liu <yifeliu@cs.stonybrook.edu>
-Signed-off-by: Erez Zadok <ezk@cs.stonybrook.edu>
-Signed-off-by: Manish Adkar <madkar@cs.stonybrook.edu>
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Atul Khare <atulkhare@rivosinc.com>
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- fs/jffs2/file.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+Changes since v3[0]:
+- Dropped patch 1 & the now unneeded cover letter
+- Added Rob's Ack
+- Changed the patch title to include the subsystem
 
-diff --git a/fs/jffs2/file.c b/fs/jffs2/file.c
-index ba86acbe12d3..0479096b96e4 100644
---- a/fs/jffs2/file.c
-+++ b/fs/jffs2/file.c
-@@ -137,19 +137,18 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
- 	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
- 	pgoff_t index = pos >> PAGE_SHIFT;
--	uint32_t pageofs = index << PAGE_SHIFT;
- 	int ret = 0;
+0 - https://lore.kernel.org/all/20220726170725.3245278-3-mail@conchuod.ie/
+---
+ Documentation/devicetree/bindings/gpio/sifive,gpio.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/gpio/sifive,gpio.yaml b/Documentation/devicetree/bindings/gpio/sifive,gpio.yaml
+index 939e31c48081..fc095646adea 100644
+--- a/Documentation/devicetree/bindings/gpio/sifive,gpio.yaml
++++ b/Documentation/devicetree/bindings/gpio/sifive,gpio.yaml
+@@ -46,6 +46,10 @@ properties:
+     maximum: 32
+     default: 16
  
- 	jffs2_dbg(1, "%s()\n", __func__);
++  gpio-line-names:
++    minItems: 1
++    maxItems: 32
++
+   gpio-controller: true
  
--	if (pageofs > inode->i_size) {
--		/* Make new hole frag from old EOF to new page */
-+	if (pos > inode->i_size) {
-+		/* Make new hole frag from old EOF to new position */
- 		struct jffs2_raw_inode ri;
- 		struct jffs2_full_dnode *fn;
- 		uint32_t alloc_len;
- 
--		jffs2_dbg(1, "Writing new hole frag 0x%x-0x%x between current EOF and new page\n",
--			  (unsigned int)inode->i_size, pageofs);
-+		jffs2_dbg(1, "Writing new hole frag 0x%x-0x%x between current EOF and new position\n",
-+			  (unsigned int)inode->i_size, (uint32_t)pos);
- 
- 		ret = jffs2_reserve_space(c, sizeof(ri), &alloc_len,
- 					  ALLOC_NORMAL, JFFS2_SUMMARY_INODE_SIZE);
-@@ -169,10 +168,10 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 		ri.mode = cpu_to_jemode(inode->i_mode);
- 		ri.uid = cpu_to_je16(i_uid_read(inode));
- 		ri.gid = cpu_to_je16(i_gid_read(inode));
--		ri.isize = cpu_to_je32(max((uint32_t)inode->i_size, pageofs));
-+		ri.isize = cpu_to_je32((uint32_t)pos);
- 		ri.atime = ri.ctime = ri.mtime = cpu_to_je32(JFFS2_NOW());
- 		ri.offset = cpu_to_je32(inode->i_size);
--		ri.dsize = cpu_to_je32(pageofs - inode->i_size);
-+		ri.dsize = cpu_to_je32((uint32_t)pos - inode->i_size);
- 		ri.csize = cpu_to_je32(0);
- 		ri.compr = JFFS2_COMPR_ZERO;
- 		ri.node_crc = cpu_to_je32(crc32(0, &ri, sizeof(ri)-8));
-@@ -202,7 +201,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 			goto out_err;
- 		}
- 		jffs2_complete_reservation(c);
--		inode->i_size = pageofs;
-+		inode->i_size = pos;
- 		mutex_unlock(&f->sem);
- 	}
- 
+ required:
 -- 
-2.25.1
+2.37.1
 
