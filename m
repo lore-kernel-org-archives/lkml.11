@@ -2,324 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF37C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:16:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C86C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:17:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237947AbiHCPQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50986 "EHLO
+        id S236670AbiHCPRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237665AbiHCPQP (ORCPT
+        with ESMTP id S236201AbiHCPR3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:16:15 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8570A764F
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:16:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659539773; x=1691075773;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=JbM6gtoZd0wVDd/bZ5BX+MtZt9gxEWcYp1joUz6m2tk=;
-  b=NlrUY2bH5IyzuV9k0/yEXU4HGrMLAU5IqUJuWjjiF4InpBHb604HJZtr
-   vd2+H++di8odGXvWbtKc2gfuGPQ6FjoF1n82MlrhFQF7kGCb57RYRrpBJ
-   /0i84Ua91V8DLTJCBd72ywk9wYYFCxcpcQh/kkzV9TjYsXpKNTkBLAHxO
-   3JuWrB7DthhQekAqjObcDz8gHDohLANFqAKN4Z3QF+l9vcWsJPTnZAhdk
-   0/pqMQriR69OHTE1+Z4X1wlJR3nwUH44U8iAUf3j3AVAqxW+ETwJproiT
-   5OP3JQUYPRQzIrWi2YWoHlmAlzexr+eh7RHh4UQTPyNoZfSiHK2kVSYxC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="270077179"
-X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="270077179"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 08:16:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="578685980"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 03 Aug 2022 08:16:11 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJG6U-000HOv-30;
-        Wed, 03 Aug 2022 15:16:10 +0000
-Date:   Wed, 3 Aug 2022 23:15:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vadim Fedorenko <vadfed@fb.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [kuba:dpll-changes 2062/2068] drivers/ptp/ptp_ocp.c:3743:21:
- warning: assignment discards 'const' qualifier from pointer target type
-Message-ID: <202208032332.nb8chyJc-lkp@intel.com>
+        Wed, 3 Aug 2022 11:17:29 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 427265F52;
+        Wed,  3 Aug 2022 08:17:28 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id d20so9314654pfq.5;
+        Wed, 03 Aug 2022 08:17:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=oNr9cYrhYYJ71xIwjeGTHZcy87EslxiZzIalDyvPVWc=;
+        b=CwYeSEKCKvrVEdtvKHnBCKsNkdIOx9HcWLN6NVQXi85JWEkFg/5BAaVI8bQnVpAR9f
+         DfnukQoWDW738z5+6eeKeN9/ZI77LCtLtq77MwfL9Cj2a5JGN/50Ie27Wr7XTmu1gqN2
+         p2PB7DdQ/Mc5haRlWmeCS2yWS+c9roPuFKfUL1NI6SDCMu0Ur9RZ0S1oPb9+9TnBFoZs
+         vPiehKD6dvc+HOl5aYw+mxrbxR466Rc9WFzL7w2KOlfUhistrUnM0IwppggXlTdFrIYG
+         IHP/I9mtcFNUfAjGde1f3nSAl/UYbtEBhMHFCU8KNvdu3XtwMLutyrj2rYrmEtWqMdGR
+         4chA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=oNr9cYrhYYJ71xIwjeGTHZcy87EslxiZzIalDyvPVWc=;
+        b=Ye6fBG+N4NWIwPJmOvwVBg0vKUX/JsLsN+RDyH4rm+0mHoreIuPi+VmKPPNKpK/E9J
+         gPJv/pU4L+ARZaIvMRDy6yX1Po1K9zQ1umk2judSOeQ7M3ypK3xYMmmVReI9Nse5yKSL
+         sNRl7tNtONkhHlq3cWRWuTOHTOlf4mQ1ZQ67tfdR4mA16j3KX0a5F6veF3WFPJEHI4KU
+         +WTYFKw2n2hZ/NGTrlR9iDuaLjPsOLXJ/A21lB8bGZWBjT3wdnR1dWUEtnj2X9RKmDzq
+         tnLQQBq4nBNY42ozFwFYqmo0rV1kPIHT4QH3L1rj0eDlI/qAWHCBv6w04TAKpvMHVbRt
+         sAcg==
+X-Gm-Message-State: AJIora/xOH4rRPomAS2aBe+WWk0zOPkDVO2lO2lmRdj0j8x4dCwjcVb5
+        SPQrkQ45VwSdq5BJ93/HLGKwvPMcSEjB+JHply8=
+X-Google-Smtp-Source: AGRyM1sDxF9LFw5yhJVEcTicuVVo87n4bzo3w7dEvTUf3KF6IhSgAcbtG0vVoZ9p148276XCHYdfpTsnuXqq2hRjnFc=
+X-Received: by 2002:a05:6a00:2282:b0:52a:e79b:16e4 with SMTP id
+ f2-20020a056a00228200b0052ae79b16e4mr26012746pfe.79.1659539847508; Wed, 03
+ Aug 2022 08:17:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220802232741.481145-1-james.hilliard1@gmail.com> <Yuovl3ycDfflqV9h@krava>
+In-Reply-To: <Yuovl3ycDfflqV9h@krava>
+From:   James Hilliard <james.hilliard1@gmail.com>
+Date:   Wed, 3 Aug 2022 09:17:14 -0600
+Message-ID: <CADvTj4omSZvx1EBAaMCBCqw=wYjEjX6aK57hhfvDA2Nc9P_yVA@mail.gmail.com>
+Subject: Re: [PATCH] libbpf: ensure functions with always_inline attribute are inline
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git dpll-changes
-head:   9fe25d755c104116a844f268fb6bae41569e28fb
-commit: 48c4cd1d7a94aeb6ab460989f1561117291092a5 [2062/2068] ptp_ocp: implement DPLL ops
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220803/202208032332.nb8chyJc-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git/commit/?id=48c4cd1d7a94aeb6ab460989f1561117291092a5
-        git remote add kuba https://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git
-        git fetch --no-tags kuba dpll-changes
-        git checkout 48c4cd1d7a94aeb6ab460989f1561117291092a5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/dpll/ drivers/ptp/
+On Wed, Aug 3, 2022 at 2:19 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+>
+> On Tue, Aug 02, 2022 at 05:27:41PM -0600, James Hilliard wrote:
+> > GCC expects the always_inline attribute to only be set on inline
+> > functions, as such we should make all functions with this attribute
+> > inline.
+> >
+> > Fixes errors like:
+> > /home/buildroot/bpf-next/tools/testing/selftests/bpf/tools/include/bpf/=
+bpf_tracing.h:439:1: error: =E2=80=98always_inline=E2=80=99 function might =
+not be inlinable [-Werror=3Dattributes]
+> >   439 | ____##name(unsigned long long *ctx, ##args)
+> >       | ^~~~
+> >
+> > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> > ---
+> >  tools/lib/bpf/bpf_tracing.h | 14 +++++++-------
+> >  tools/lib/bpf/usdt.bpf.h    |  4 ++--
+> >  2 files changed, 9 insertions(+), 9 deletions(-)
+> >
+> > diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
+> > index 43ca3aff2292..ae67fcee912c 100644
+> > --- a/tools/lib/bpf/bpf_tracing.h
+> > +++ b/tools/lib/bpf/bpf_tracing.h
+> > @@ -426,7 +426,7 @@ struct pt_regs;
+> >   */
+> >  #define BPF_PROG(name, args...)                                       =
+           \
+> >  name(unsigned long long *ctx);                                        =
+           \
+> > -static __attribute__((always_inline)) typeof(name(0))                 =
+           \
+> > +static inline __attribute__((always_inline)) typeof(name(0))          =
+   \
+>
+> could you use __always_inline that does exactly that?
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Sure, changed to use the __always_inline macro in v2:
+https://lore.kernel.org/bpf/20220803151403.793024-1-james.hilliard1@gmail.c=
+om/
 
-All warnings (new ones prefixed by >>):
-
-   drivers/dpll/dpll_netlink.c: In function 'dpll_genl_cmd_set_source':
-   drivers/dpll/dpll_netlink.c:227:39: error: initialization of 'const struct nlattr **' from incompatible pointer type 'struct nlattr **' [-Werror=incompatible-pointer-types]
-     227 |         const struct nlattr **attrs = p->attrs;
-         |                                       ^
-   drivers/dpll/dpll_netlink.c: In function 'dpll_genl_cmd_set_output':
-   drivers/dpll/dpll_netlink.c:252:39: error: initialization of 'const struct nlattr **' from incompatible pointer type 'struct nlattr **' [-Werror=incompatible-pointer-types]
-     252 |         const struct nlattr **attrs = p->attrs;
-         |                                       ^
-   drivers/dpll/dpll_netlink.c: At top level:
->> drivers/dpll/dpll_netlink.c:600:13: warning: no previous prototype for 'dpll_netlink_fini' [-Wmissing-prototypes]
-     600 | void __exit dpll_netlink_fini(void)
-         |             ^~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
---
-   drivers/ptp/ptp_ocp.c: In function 'ptp_ocp_dpll_get_status':
-   drivers/ptp/ptp_ocp.c:3721:48: error: implicit declaration of function 'dpll_priv' [-Werror=implicit-function-declaration]
-    3721 |         struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
-         |                                                ^~~~~~~~~
-   drivers/ptp/ptp_ocp.c: In function 'ptp_ocp_sma_get_dpll_type':
->> drivers/ptp/ptp_ocp.c:3743:21: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-    3743 |                 tbl = bp->sma_op->tbl[0];
-         |                     ^
-   drivers/ptp/ptp_ocp.c:3745:21: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-    3745 |                 tbl = bp->sma_op->tbl[1];
-         |                     ^
-   drivers/ptp/ptp_ocp.c: In function 'ptp_ocp_dpll_type_supported':
->> drivers/ptp/ptp_ocp.c:3754:36: warning: initialization discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-    3754 |         struct ocp_selector *tbl = bp->sma_op->tbl[dir];
-         |                                    ^~
-   drivers/ptp/ptp_ocp.c: At top level:
-   drivers/ptp/ptp_ocp.c:3794:15: error: variable 'dpll_ops' has initializer but incomplete type
-    3794 | static struct dpll_device_ops dpll_ops = {
-         |               ^~~~~~~~~~~~~~~
-   drivers/ptp/ptp_ocp.c:3795:10: error: 'struct dpll_device_ops' has no member named 'get_status'
-    3795 |         .get_status             = ptp_ocp_dpll_get_status,
-         |          ^~~~~~~~~~
->> drivers/ptp/ptp_ocp.c:3795:35: warning: excess elements in struct initializer
-    3795 |         .get_status             = ptp_ocp_dpll_get_status,
-         |                                   ^~~~~~~~~~~~~~~~~~~~~~~
-   drivers/ptp/ptp_ocp.c:3795:35: note: (near initialization for 'dpll_ops')
-   drivers/ptp/ptp_ocp.c:3796:10: error: 'struct dpll_device_ops' has no member named 'get_lock_status'
-    3796 |         .get_lock_status        = ptp_ocp_dpll_get_lock_status,
-         |          ^~~~~~~~~~~~~~~
-   drivers/ptp/ptp_ocp.c:3796:35: warning: excess elements in struct initializer
-    3796 |         .get_lock_status        = ptp_ocp_dpll_get_lock_status,
-         |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/ptp/ptp_ocp.c:3796:35: note: (near initialization for 'dpll_ops')
-   drivers/ptp/ptp_ocp.c:3797:10: error: 'struct dpll_device_ops' has no member named 'get_source_type'
-    3797 |         .get_source_type        = ptp_ocp_dpll_get_source_type,
-         |          ^~~~~~~~~~~~~~~
-   drivers/ptp/ptp_ocp.c:3797:35: warning: excess elements in struct initializer
-    3797 |         .get_source_type        = ptp_ocp_dpll_get_source_type,
-         |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/ptp/ptp_ocp.c:3797:35: note: (near initialization for 'dpll_ops')
-   drivers/ptp/ptp_ocp.c:3798:10: error: 'struct dpll_device_ops' has no member named 'get_source_supported'
-    3798 |         .get_source_supported   = ptp_ocp_dpll_get_source_supported,
-         |          ^~~~~~~~~~~~~~~~~~~~
-   drivers/ptp/ptp_ocp.c:3798:35: warning: excess elements in struct initializer
-    3798 |         .get_source_supported   = ptp_ocp_dpll_get_source_supported,
-         |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/ptp/ptp_ocp.c:3798:35: note: (near initialization for 'dpll_ops')
-   drivers/ptp/ptp_ocp.c:3799:10: error: 'struct dpll_device_ops' has no member named 'get_output_type'
-    3799 |         .get_output_type        = ptp_ocp_dpll_get_output_type,
-         |          ^~~~~~~~~~~~~~~
-   drivers/ptp/ptp_ocp.c:3799:35: warning: excess elements in struct initializer
-    3799 |         .get_output_type        = ptp_ocp_dpll_get_output_type,
-         |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/ptp/ptp_ocp.c:3799:35: note: (near initialization for 'dpll_ops')
-   drivers/ptp/ptp_ocp.c:3800:10: error: 'struct dpll_device_ops' has no member named 'get_output_supported'
-    3800 |         .get_output_supported   = ptp_ocp_dpll_get_output_supported,
-         |          ^~~~~~~~~~~~~~~~~~~~
-   drivers/ptp/ptp_ocp.c:3800:35: warning: excess elements in struct initializer
-    3800 |         .get_output_supported   = ptp_ocp_dpll_get_output_supported,
-         |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/ptp/ptp_ocp.c:3800:35: note: (near initialization for 'dpll_ops')
-   drivers/ptp/ptp_ocp.c: In function 'ptp_ocp_probe':
-   drivers/ptp/ptp_ocp.c:3859:20: error: implicit declaration of function 'dpll_device_alloc'; did you mean 'acpi_spi_device_alloc'? [-Werror=implicit-function-declaration]
-    3859 |         bp->dpll = dpll_device_alloc(&dpll_ops, ARRAY_SIZE(bp->sma), ARRAY_SIZE(bp->sma), bp);
-         |                    ^~~~~~~~~~~~~~~~~
-         |                    acpi_spi_device_alloc
->> drivers/ptp/ptp_ocp.c:3859:18: warning: assignment to 'struct dpll_device *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-    3859 |         bp->dpll = dpll_device_alloc(&dpll_ops, ARRAY_SIZE(bp->sma), ARRAY_SIZE(bp->sma), bp);
-         |                  ^
-   drivers/ptp/ptp_ocp.c:3864:9: error: implicit declaration of function 'dpll_device_register'; did you mean 'mtd_device_register'? [-Werror=implicit-function-declaration]
-    3864 |         dpll_device_register(bp->dpll);
-         |         ^~~~~~~~~~~~~~~~~~~~
-         |         mtd_device_register
-   drivers/ptp/ptp_ocp.c: In function 'ptp_ocp_remove':
-   drivers/ptp/ptp_ocp.c:3883:9: error: implicit declaration of function 'dpll_device_unregister'; did you mean 'mtd_device_unregister'? [-Werror=implicit-function-declaration]
-    3883 |         dpll_device_unregister(bp->dpll);
-         |         ^~~~~~~~~~~~~~~~~~~~~~
-         |         mtd_device_unregister
-   drivers/ptp/ptp_ocp.c:3884:9: error: implicit declaration of function 'dpll_device_free' [-Werror=implicit-function-declaration]
-    3884 |         dpll_device_free(bp->dpll);
-         |         ^~~~~~~~~~~~~~~~
-   drivers/ptp/ptp_ocp.c: At top level:
-   drivers/ptp/ptp_ocp.c:3794:31: error: storage size of 'dpll_ops' isn't known
-    3794 | static struct dpll_device_ops dpll_ops = {
-         |                               ^~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/const +3743 drivers/ptp/ptp_ocp.c
-
-  3736	
-  3737	static int ptp_ocp_sma_get_dpll_type(struct ptp_ocp *bp, int sma_nr)
-  3738	{
-  3739		struct ocp_selector *tbl;
-  3740		u32 val;
-  3741	
-  3742		if (bp->sma[sma_nr].mode == SMA_MODE_IN)
-> 3743			tbl = bp->sma_op->tbl[0];
-  3744		else
-  3745			tbl = bp->sma_op->tbl[1];
-  3746	
-  3747		val = ptp_ocp_sma_get(bp, sma_nr);
-  3748		return tbl[val].dpll_type;
-  3749	}
-  3750	
-  3751	static int ptp_ocp_dpll_type_supported(struct dpll_device *dpll, int sma, int type, int dir)
-  3752	{
-  3753		struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
-> 3754		struct ocp_selector *tbl = bp->sma_op->tbl[dir];
-  3755		int i;
-  3756	
-  3757		for (i = 0; i < sizeof(*tbl); i++) {
-  3758			if (tbl[i].dpll_type == type)
-  3759				return 1;
-  3760		}
-  3761		return 0;
-  3762	}
-  3763	
-  3764	static int ptp_ocp_dpll_get_source_type(struct dpll_device *dpll, int sma)
-  3765	{
-  3766		struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
-  3767	
-  3768		if (bp->sma[sma].mode != SMA_MODE_IN)
-  3769			return -1;
-  3770	
-  3771		return ptp_ocp_sma_get_dpll_type(bp, sma);
-  3772	}
-  3773	
-  3774	static int ptp_ocp_dpll_get_source_supported(struct dpll_device *dpll, int sma, int type)
-  3775	{
-  3776		return ptp_ocp_dpll_type_supported(dpll, sma, type, 0);
-  3777	}
-  3778	
-  3779	static int ptp_ocp_dpll_get_output_type(struct dpll_device *dpll, int sma)
-  3780	{
-  3781		struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
-  3782	
-  3783		if (bp->sma[sma].mode != SMA_MODE_OUT)
-  3784			return -1;
-  3785	
-  3786		return ptp_ocp_sma_get_dpll_type(bp, sma);
-  3787	}
-  3788	
-  3789	static int ptp_ocp_dpll_get_output_supported(struct dpll_device *dpll, int sma, int type)
-  3790	{
-  3791		return ptp_ocp_dpll_type_supported(dpll, sma, type, 1);
-  3792	}
-  3793	
-  3794	static struct dpll_device_ops dpll_ops = {
-> 3795		.get_status		= ptp_ocp_dpll_get_status,
-  3796		.get_lock_status	= ptp_ocp_dpll_get_lock_status,
-  3797		.get_source_type	= ptp_ocp_dpll_get_source_type,
-  3798		.get_source_supported	= ptp_ocp_dpll_get_source_supported,
-  3799		.get_output_type	= ptp_ocp_dpll_get_output_type,
-  3800		.get_output_supported	= ptp_ocp_dpll_get_output_supported,
-  3801	};
-  3802	
-  3803	static int
-  3804	ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-  3805	{
-  3806		struct devlink *devlink;
-  3807		struct ptp_ocp *bp;
-  3808		int err;
-  3809	
-  3810		devlink = devlink_alloc(&ptp_ocp_devlink_ops, sizeof(*bp), &pdev->dev);
-  3811		if (!devlink) {
-  3812			dev_err(&pdev->dev, "devlink_alloc failed\n");
-  3813			return -ENOMEM;
-  3814		}
-  3815	
-  3816		err = pci_enable_device(pdev);
-  3817		if (err) {
-  3818			dev_err(&pdev->dev, "pci_enable_device\n");
-  3819			goto out_free;
-  3820		}
-  3821	
-  3822		bp = devlink_priv(devlink);
-  3823		err = ptp_ocp_device_init(bp, pdev);
-  3824		if (err)
-  3825			goto out_disable;
-  3826	
-  3827		/* compat mode.
-  3828		 * Older FPGA firmware only returns 2 irq's.
-  3829		 * allow this - if not all of the IRQ's are returned, skip the
-  3830		 * extra devices and just register the clock.
-  3831		 */
-  3832		err = pci_alloc_irq_vectors(pdev, 1, 17, PCI_IRQ_MSI | PCI_IRQ_MSIX);
-  3833		if (err < 0) {
-  3834			dev_err(&pdev->dev, "alloc_irq_vectors err: %d\n", err);
-  3835			goto out;
-  3836		}
-  3837		bp->n_irqs = err;
-  3838		pci_set_master(pdev);
-  3839	
-  3840		err = ptp_ocp_register_resources(bp, id->driver_data);
-  3841		if (err)
-  3842			goto out;
-  3843	
-  3844		bp->ptp = ptp_clock_register(&bp->ptp_info, &pdev->dev);
-  3845		if (IS_ERR(bp->ptp)) {
-  3846			err = PTR_ERR(bp->ptp);
-  3847			dev_err(&pdev->dev, "ptp_clock_register: %d\n", err);
-  3848			bp->ptp = NULL;
-  3849			goto out;
-  3850		}
-  3851	
-  3852		err = ptp_ocp_complete(bp);
-  3853		if (err)
-  3854			goto out;
-  3855	
-  3856		ptp_ocp_info(bp);
-  3857		devlink_register(devlink);
-  3858	
-> 3859		bp->dpll = dpll_device_alloc(&dpll_ops, ARRAY_SIZE(bp->sma), ARRAY_SIZE(bp->sma), bp);
-  3860		if (!bp->dpll) {
-  3861			dev_err(&pdev->dev, "dpll_device_alloc failed\n");
-  3862			return 0;
-  3863		}
-  3864		dpll_device_register(bp->dpll);
-  3865	
-  3866		return 0;
-  3867	
-  3868	out:
-  3869		ptp_ocp_detach(bp);
-  3870	out_disable:
-  3871		pci_disable_device(pdev);
-  3872	out_free:
-  3873		devlink_free(devlink);
-  3874		return err;
-  3875	}
-  3876	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>
+> jirka
+>
+> >  ____##name(unsigned long long *ctx, ##args);                          =
+   \
+> >  typeof(name(0)) name(unsigned long long *ctx)                         =
+           \
+> >  {                                                                     =
+   \
+> > @@ -435,7 +435,7 @@ typeof(name(0)) name(unsigned long long *ctx)      =
+                           \
+> >       return ____##name(___bpf_ctx_cast(args));                        =
+   \
+> >       _Pragma("GCC diagnostic pop")                                    =
+   \
+> >  }                                                                     =
+   \
+> > -static __attribute__((always_inline)) typeof(name(0))                 =
+           \
+> > +static inline __attribute__((always_inline)) typeof(name(0))          =
+   \
+> >  ____##name(unsigned long long *ctx, ##args)
+> >
+> >  struct pt_regs;
+> > @@ -460,7 +460,7 @@ struct pt_regs;
+> >   */
+> >  #define BPF_KPROBE(name, args...)                                     =
+   \
+> >  name(struct pt_regs *ctx);                                            =
+   \
+> > -static __attribute__((always_inline)) typeof(name(0))                 =
+           \
+> > +static inline __attribute__((always_inline)) typeof(name(0))          =
+   \
+> >  ____##name(struct pt_regs *ctx, ##args);                              =
+   \
+> >  typeof(name(0)) name(struct pt_regs *ctx)                             =
+   \
+> >  {                                                                     =
+   \
+> > @@ -469,7 +469,7 @@ typeof(name(0)) name(struct pt_regs *ctx)          =
+                   \
+> >       return ____##name(___bpf_kprobe_args(args));                     =
+   \
+> >       _Pragma("GCC diagnostic pop")                                    =
+   \
+> >  }                                                                     =
+   \
+> > -static __attribute__((always_inline)) typeof(name(0))                 =
+           \
+> > +static inline __attribute__((always_inline)) typeof(name(0))          =
+   \
+> >  ____##name(struct pt_regs *ctx, ##args)
+> >
+> >  #define ___bpf_kretprobe_args0()       ctx
+> > @@ -484,7 +484,7 @@ ____##name(struct pt_regs *ctx, ##args)
+> >   */
+> >  #define BPF_KRETPROBE(name, args...)                                  =
+   \
+> >  name(struct pt_regs *ctx);                                            =
+   \
+> > -static __attribute__((always_inline)) typeof(name(0))                 =
+           \
+> > +static inline __attribute__((always_inline)) typeof(name(0))          =
+   \
+> >  ____##name(struct pt_regs *ctx, ##args);                              =
+   \
+> >  typeof(name(0)) name(struct pt_regs *ctx)                             =
+   \
+> >  {                                                                     =
+   \
+> > @@ -540,7 +540,7 @@ static __always_inline typeof(name(0)) ____##name(s=
+truct pt_regs *ctx, ##args)
+> >  #define BPF_KSYSCALL(name, args...)                                   =
+   \
+> >  name(struct pt_regs *ctx);                                            =
+   \
+> >  extern _Bool LINUX_HAS_SYSCALL_WRAPPER __kconfig;                     =
+   \
+> > -static __attribute__((always_inline)) typeof(name(0))                 =
+           \
+> > +static inline __attribute__((always_inline)) typeof(name(0))          =
+   \
+> >  ____##name(struct pt_regs *ctx, ##args);                              =
+   \
+> >  typeof(name(0)) name(struct pt_regs *ctx)                             =
+   \
+> >  {                                                                     =
+   \
+> > @@ -555,7 +555,7 @@ typeof(name(0)) name(struct pt_regs *ctx)          =
+                   \
+> >               return ____##name(___bpf_syscall_args(args));            =
+   \
+> >       _Pragma("GCC diagnostic pop")                                    =
+   \
+> >  }                                                                     =
+   \
+> > -static __attribute__((always_inline)) typeof(name(0))                 =
+           \
+> > +static inline __attribute__((always_inline)) typeof(name(0))          =
+   \
+> >  ____##name(struct pt_regs *ctx, ##args)
+> >
+> >  #define BPF_KPROBE_SYSCALL BPF_KSYSCALL
+> > diff --git a/tools/lib/bpf/usdt.bpf.h b/tools/lib/bpf/usdt.bpf.h
+> > index 4f2adc0bd6ca..2bd2d80b3751 100644
+> > --- a/tools/lib/bpf/usdt.bpf.h
+> > +++ b/tools/lib/bpf/usdt.bpf.h
+> > @@ -232,7 +232,7 @@ long bpf_usdt_cookie(struct pt_regs *ctx)
+> >   */
+> >  #define BPF_USDT(name, args...)                                       =
+           \
+> >  name(struct pt_regs *ctx);                                            =
+   \
+> > -static __attribute__((always_inline)) typeof(name(0))                 =
+           \
+> > +static inline __attribute__((always_inline)) typeof(name(0))          =
+   \
+> >  ____##name(struct pt_regs *ctx, ##args);                              =
+   \
+> >  typeof(name(0)) name(struct pt_regs *ctx)                             =
+   \
+> >  {                                                                     =
+   \
+> > @@ -241,7 +241,7 @@ typeof(name(0)) name(struct pt_regs *ctx)          =
+                   \
+> >          return ____##name(___bpf_usdt_args(args));                    =
+   \
+> >          _Pragma("GCC diagnostic pop")                                 =
+           \
+> >  }                                                                     =
+   \
+> > -static __attribute__((always_inline)) typeof(name(0))                 =
+           \
+> > +static inline __attribute__((always_inline)) typeof(name(0))          =
+   \
+> >  ____##name(struct pt_regs *ctx, ##args)
+> >
+> >  #endif /* __USDT_BPF_H__ */
+> > --
+> > 2.34.1
+> >
