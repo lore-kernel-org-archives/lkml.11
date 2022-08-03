@@ -2,154 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC354C00140
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 03:01:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB6F4C00140
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 03:05:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233264AbiHCDBx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 23:01:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38380 "EHLO
+        id S235446AbiHCDFb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 23:05:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiHCDBs (ORCPT
+        with ESMTP id S234867AbiHCDF0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 23:01:48 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39BD9275FF;
-        Tue,  2 Aug 2022 20:01:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659495707; x=1691031707;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=vzrNQj92FL+1MtBy1f0VxABmKltiKHuH7QjYX2vhEVQ=;
-  b=ApQeEqDC6J9MmvyPXgIFc6iKGs9uzaLBWCpd1qn8sf0Pw7XMQyoO9kq/
-   JyGCxwm6K6TfHKwJsbRlMKpDY9lKTLsSBORXwMA/gKx3Aa500h803urAJ
-   Ve/Q7yVdBPhLKutVAaYQIM5jCZp9If/dLhYCjB8EAdmp3UD6fHosaRWGe
-   LQHpSPwsUhz7fxxdDF8/I+lT4xEY/TV/otTdNPVVHEfuKCOF0viEuB7HU
-   11p4hEy8yip3ny8wu1v7ZaoS8OYgi/EbjMvqELT7/VYnRXX9lZEZ38d7f
-   ZkQSm5NhrN2YdHww0vH2i1F6jwlrkl25mo6AU+YqeLt1mAc+iib8FhXQm
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="351282435"
-X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
-   d="scan'208";a="351282435"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 20:01:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
-   d="scan'208";a="553157952"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 02 Aug 2022 20:01:44 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJ4dj-000Git-39;
-        Wed, 03 Aug 2022 03:01:43 +0000
-Date:   Wed, 3 Aug 2022 11:00:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Eddie James <eajames@linux.ibm.com>,
-        linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v1 1/1] leds: pca955x: Get rid of custom
- led_init_default_state_get()
-Message-ID: <202208031021.KATz865M-lkp@intel.com>
-References: <20220802212518.7060-1-andriy.shevchenko@linux.intel.com>
+        Tue, 2 Aug 2022 23:05:26 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E476BEE2E;
+        Tue,  2 Aug 2022 20:05:24 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id d7so10931754pgc.13;
+        Tue, 02 Aug 2022 20:05:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=dKrbTswEBKps4LIBfZnVxO0RT3I4OW4FVzxRQv/5Wxg=;
+        b=AGr+IwSBcS/eiBTqOW/VDhJljU/KBlPe4jGdwarBPm0x2lwhoi9BOKR9B5HsLkzELy
+         +zdEOXmNOqXeIMAqKWnWigkLwgESDIAkDCvvU3c7FIxMev29nIcVoo02fx5huTkFt+12
+         CAGfo6BqOSbYlf92DhsatL3mCmqe83HlxTyuptitgiXAnacKroosYsOKIJ+wvBULWqBr
+         xUdFo4IyziBH7KbC4xHzGtWDxNwkOznc7tLFKyLAnw0rrNlSqY+beHiv6xYegfzdfdGA
+         cCdOIOs72+UsMAS9Md7OpIbFv9pi4OII8zq/j4QgcyMp5wGQgX2sqyW+bFgE1ORI39kw
+         AH0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=dKrbTswEBKps4LIBfZnVxO0RT3I4OW4FVzxRQv/5Wxg=;
+        b=dIpO/I9b6drPuXTwhP3U+AImUiMJYmDF5kmMd25Mg0EkmCIupF8G6FSeLZisAnzyLC
+         PCqLwYSt6bn884CsQFmCL5Ce9LVWz6C7xCnklg8AnFVCxmz2Kavey6LFbGZaWGIqHEfV
+         Bsm4bcGDDsO0so/GDVRxEBsJFcEj5zDh7Ed3NgDD268LvGqPJZA05KfycsVTJWnAphbL
+         DkyrtDtF52N6RoTGxI3xV7xUFxT2e6Z9GQ92hDuornkEONfsIP8eB2IWJxgKWt5majK1
+         KqTyG5bumR20cSLlN5gLXeKnFzn5tbNZJKvvjuGWMJNgn3cU/LylOag0nPj9Tq4neaN7
+         FR0A==
+X-Gm-Message-State: ACgBeo39J68OAzNFu5GJ7OIek/pg9DwvPcjBZU6LM1pODthhL1XKpaL4
+        x0lrF9mZrTx7uOqZ9tGiRn3RnoHVejA=
+X-Google-Smtp-Source: AA6agR7zh+sV6/bWM+G4hEa3KLn7GkRm0SuI1ytXV+WYDsgEhV5SbeKEVIuxsU6MH095hnKOSvQz0A==
+X-Received: by 2002:aa7:8f13:0:b0:52d:fe17:ce11 with SMTP id x19-20020aa78f13000000b0052dfe17ce11mr3870779pfr.26.1659495924333;
+        Tue, 02 Aug 2022 20:05:24 -0700 (PDT)
+Received: from debian.me (subs28-116-206-12-59.three.co.id. [116.206.12.59])
+        by smtp.gmail.com with ESMTPSA id z6-20020a1709027e8600b0016bf2a4598asm442528pla.229.2022.08.02.20.05.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Aug 2022 20:05:23 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 4AFCC103924; Wed,  3 Aug 2022 10:05:19 +0700 (WIB)
+Date:   Wed, 3 Aug 2022 10:05:19 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Utkarsh Verma <utkarshverma294@gmail.com>
+Cc:     Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Joe Perches <joe@perches.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] docs: checkpatch: add some new checkpatch documentation
+ messages
+Message-ID: <Yunl74ozKOzV+n2A@debian.me>
+References: <20220802055528.13726-1-utkarshverma294@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220802212518.7060-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220802055528.13726-1-utkarshverma294@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+Hi Utkarsh,
 
-I love your patch! Perhaps something to improve:
+On Tue, Aug 02, 2022 at 11:25:28AM +0530, Utkarsh Verma wrote:
+> Added and documented the following new message types:
+> - JIFFIES_COMPARISON
+> - LONG_UDELAY
+> - MSLEEP
+> - INDENTED_LABEL
+> - IF_0
+> - IF_1
+> - MISORDERED_TYPE
+> - UNNECESSARY_BREAK
+> - UNNECESSARY_ELSE
+> - UNNECESSARY_INT
+> - UNSPECIFIED_INT
+> 
 
-[auto build test WARNING on pavel-leds/for-next]
-[also build test WARNING on linus/master v5.19 next-20220728]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Use imperative mood for patch description instead.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/leds-pca955x-Get-rid-of-custom-led_init_default_state_get/20220803-052712
-base:   git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git for-next
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220803/202208031021.KATz865M-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/46936c7c7d9d52d3029e319fc78b727a9e0fc046
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Andy-Shevchenko/leds-pca955x-Get-rid-of-custom-led_init_default_state_get/20220803-052712
-        git checkout 46936c7c7d9d52d3029e319fc78b727a9e0fc046
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/leds/
+> +  **MISORDERED_TYPE**
+> +    According to section â€œ6.7.2 Type Specifiersâ€ in C90 standard, â€œtype
+> +    specifiers may occur in any order.â€ This means that "signed long long
+> +    int" is same as "long long int signed". But to avoid confusion and make
+> +    the code easier to read, the declaration type should use the following
+> +    format::
+> +
+> +      [[un]signed] [short|int|long|long long]
+> +
+> +    Below is the list of standard integer types. Each row lists all the
+> +    different ways of specifying a particular type delimited by commas.
+> +    Note: Also include all the permutations of a particular type
+> +    on the left column delimited by comma. For example, the permutations
+> +    for "signed long int" are "signed int long", "long signed int",
+> +    "long int signed", "int signed long", and "int long signed".
+> +
+> +    +--------------------------------------------------+--------------------+
+> +    |                       Types                      |   Recommended Way  |
+> +    +=======================================================================+
+> +    | char                                             | char               |
+> +    +-----------------------------------------------------------------------+
+> +    | signed char                                      | signed char        |
+> +    +-----------------------------------------------------------------------+
+> +    | unsigned char                                    | unsigned char      |
+> +    +-----------------------------------------------------------------------+
+> +    | signed, int, signed int                          | int                |
+> +    +-----------------------------------------------------------------------+
+> +    | unsigned, unsigned int                           | unsigned int       |
+> +    +-----------------------------------------------------------------------+
+> +    | short, signed short, short int, signed short int | short              |
+> +    +-----------------------------------------------------------------------+
+> +    | unsigned short, unsigned short int               | unsigned short     |
+> +    +-----------------------------------------------------------------------+
+> +    | long, signed long, long int, signed long int     | long               |
+> +    +-----------------------------------------------------------------------+
+> +    | unsigned long, unsigned long int                 | unsigned long      |
+> +    +-----------------------------------------------------------------------|
+> +    | long long, signed long long, long long int,      | long long          |
+> +    | signed long long int                             |                    |
+> +    +-----------------------------------------------------------------------+
+> +    | unsigned long long, unsigned long long int       | unsigned long long |
+> +    +-----------------------------------------------------------------------+
+> +
 
-If you fix the issue, kindly add following tag where applicable
+The table above triggers htmldocs error, so I have to apply the fixup:
+
+---- >8 ----
+
+From 4fcc0df4ffcf1190330c12db5352cae03f8620fb Mon Sep 17 00:00:00 2001
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+Date: Wed, 3 Aug 2022 09:48:43 +0700
+Subject: [PATCH] Documentation: checkpatch: MISORDERED_TYPE table intersection
+ fixup
+
+Sphinx reported error and warnings pointed at MISORDERED_TYPE table:
+
+Documentation/dev-tools/checkpatch.rst:1393: (SEVERE/4) Unexpected section title or transition.
+Documentation/dev-tools/checkpatch.rst:1393: WARNING: Block quote ends without a blank line; unexpected unindent.
+Documentation/dev-tools/checkpatch.rst:1393: WARNING: Unexpected section title or transition.
+
+Fix these above by marking cell intersections with plus (+) sign.
+
+Link: https://lore.kernel.org/linux-doc/202208030829.xj2bvI7P-lkp@intel.com/
 Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+---
+ Documentation/dev-tools/checkpatch.rst | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-All warnings (new ones prefixed by >>):
+diff --git a/Documentation/dev-tools/checkpatch.rst b/Documentation/dev-tools/checkpatch.rst
+index 78abcadb522824..a9d27913e6c46f 100644
+--- a/Documentation/dev-tools/checkpatch.rst
++++ b/Documentation/dev-tools/checkpatch.rst
+@@ -1371,30 +1371,30 @@ Others
+ 
+     +--------------------------------------------------+--------------------+
+     |                       Types                      |   Recommended Way  |
+-    +=======================================================================+
++    +==================================================+====================+
+     | char                                             | char               |
+-    +-----------------------------------------------------------------------+
++    +--------------------------------------------------+--------------------+
+     | signed char                                      | signed char        |
+-    +-----------------------------------------------------------------------+
++    +--------------------------------------------------+--------------------+
+     | unsigned char                                    | unsigned char      |
+-    +-----------------------------------------------------------------------+
++    +--------------------------------------------------+--------------------+
+     | signed, int, signed int                          | int                |
+-    +-----------------------------------------------------------------------+
++    +--------------------------------------------------+--------------------+
+     | unsigned, unsigned int                           | unsigned int       |
+-    +-----------------------------------------------------------------------+
++    +--------------------------------------------------+--------------------+
+     | short, signed short, short int, signed short int | short              |
+-    +-----------------------------------------------------------------------+
++    +--------------------------------------------------+--------------------+
+     | unsigned short, unsigned short int               | unsigned short     |
+-    +-----------------------------------------------------------------------+
++    +--------------------------------------------------+--------------------+
+     | long, signed long, long int, signed long int     | long               |
+-    +-----------------------------------------------------------------------+
++    +--------------------------------------------------+--------------------+
+     | unsigned long, unsigned long int                 | unsigned long      |
+-    +-----------------------------------------------------------------------|
++    +--------------------------------------------------+--------------------+
+     | long long, signed long long, long long int,      | long long          |
+     | signed long long int                             |                    |
+-    +-----------------------------------------------------------------------+
++    +--------------------------------------------------+--------------------+
+     | unsigned long long, unsigned long long int       | unsigned long long |
+-    +-----------------------------------------------------------------------+
++    +--------------------------------------------------+--------------------+
+ 
+   **NOT_UNIFIED_DIFF**
+     The patch file does not appear to be in unified-diff format.  Please
+---- >8 ----
 
-   drivers/leds/leds-pca955x.c: In function 'pca955x_get_pdata':
-   drivers/leds/leds-pca955x.c:457:38: error: implicit declaration of function 'led_init_default_state_get'; did you mean 'led_get_default_pattern'? [-Werror=implicit-function-declaration]
-     457 |                 led->default_state = led_init_default_state_get(child);
-         |                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~
-         |                                      led_get_default_pattern
->> drivers/leds/leds-pca955x.c:446:29: warning: unused variable 'state' [-Wunused-variable]
-     446 |                 const char *state;
-         |                             ^~~~~
-   cc1: some warnings being treated as errors
+> +    Also, do not change the code if there is only a single return statement
+> +    inside if-else block, like::
+> +
+> +      if (a > b)
+> +              return a;
+> +      else
+> +              return b;
+> +
+> +    now if the else statement is removed::
+> +
+> +      if (a > b)
+> +              return a;
+> +      return b;
+> +
+> +    there is no considerable increase in the readability and one can argue
+> +    that the first form is more readable because of the indentation. So
+> +    do not remove the else statement in case of a single return statement
+> +    inside the if-else block.
+> +
 
+So the first indentation above is more readable for it's clear that
+b is returned if the condition is false (in this case, a < b), right?
 
-vim +/state +446 drivers/leds/leds-pca955x.c
+> +    See: https://lore.kernel.org/lkml/20140925032215.GK7996@ZenIV.linux.org.uk/
+> +
+> +  **UNNECESSARY_INT**
+> +    On Sun, 2018-08-05 at 08:52 -0700, Linus Torvalds wrote:
+> +    > "long unsigned int" isn't _technically_ wrong. But we normally
+> +    > call that type "unsigned long".
+> +
 
-561099a1a2e992 Cédric Le Goater 2017-08-08  422  
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  423  static struct pca955x_platform_data *
-967f69de81478c Andy Shevchenko  2019-03-25  424  pca955x_get_pdata(struct i2c_client *client, struct pca955x_chipdef *chip)
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  425  {
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  426  	struct pca955x_platform_data *pdata;
-2420ae02ce0a92 Eddie James      2021-07-16  427  	struct pca955x_led *led;
-967f69de81478c Andy Shevchenko  2019-03-25  428  	struct fwnode_handle *child;
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  429  	int count;
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  430  
-967f69de81478c Andy Shevchenko  2019-03-25  431  	count = device_get_child_node_count(&client->dev);
-e26557a0aa68ac Andrew Jeffery   2021-09-21  432  	if (count > chip->bits)
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  433  		return ERR_PTR(-ENODEV);
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  434  
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  435  	pdata = devm_kzalloc(&client->dev, sizeof(*pdata), GFP_KERNEL);
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  436  	if (!pdata)
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  437  		return ERR_PTR(-ENOMEM);
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  438  
-a86854d0c599b3 Kees Cook        2018-06-12  439  	pdata->leds = devm_kcalloc(&client->dev,
-a86854d0c599b3 Kees Cook        2018-06-12  440  				   chip->bits, sizeof(struct pca955x_led),
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  441  				   GFP_KERNEL);
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  442  	if (!pdata->leds)
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  443  		return ERR_PTR(-ENOMEM);
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  444  
-967f69de81478c Andy Shevchenko  2019-03-25  445  	device_for_each_child_node(&client->dev, child) {
-e46cb6d0c760a5 Eddie James      2021-07-16 @446  		const char *state;
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  447  		u32 reg;
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  448  		int res;
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  449  
-967f69de81478c Andy Shevchenko  2019-03-25  450  		res = fwnode_property_read_u32(child, "reg", &reg);
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  451  		if ((res != 0) || (reg >= chip->bits))
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  452  			continue;
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  453  
-2420ae02ce0a92 Eddie James      2021-07-16  454  		led = &pdata->leds[reg];
-2420ae02ce0a92 Eddie James      2021-07-16  455  		led->type = PCA955X_TYPE_LED;
-7c4815929276b2 Eddie James      2021-07-16  456  		led->fwnode = child;
-46936c7c7d9d52 Andy Shevchenko  2022-08-03  457  		led->default_state = led_init_default_state_get(child);
-e46cb6d0c760a5 Eddie James      2021-07-16  458  
-46936c7c7d9d52 Andy Shevchenko  2022-08-03  459  		fwnode_property_read_u32(child, "type", &led->type);
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  460  	}
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  461  
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  462  	pdata->num_leds = chip->bits;
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  463  
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  464  	return pdata;
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  465  }
-ed1f4b9676a8eb Cédric Le Goater 2017-08-08  466  
+IMO, the mail quote above can be deleted.
+
+Thanks.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+An old man doll... just what I always wanted! - Clara
