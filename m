@@ -2,67 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E39C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:17:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EFC6C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235930AbiHCIRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 04:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57528 "EHLO
+        id S235498AbiHCISC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 04:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233624AbiHCIRA (ORCPT
+        with ESMTP id S233624AbiHCIR7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 04:17:00 -0400
-Received: from mail.coredeal.pl (mail.coredeal.pl [51.75.73.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4673460D0
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 01:16:59 -0700 (PDT)
-Received: by mail.coredeal.pl (Postfix, from userid 1002)
-        id 7C67BA2A95; Wed,  3 Aug 2022 08:16:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=coredeal.pl; s=mail;
-        t=1659514617; bh=9KGuIG62LgzC9aYmjKxzocuYLRCVghXg6v9Q1q2LHec=;
-        h=Date:From:To:Subject:From;
-        b=FxqytcVXFJnaIsdJrWtHKOFkJMg7YO97qfqi9Su6U50YRRUAkblVmJAQ3UG/G8X1o
-         4f3fGUhzT7G+SX1yrYkM93ur79bqAuTvan+dkECkK3lOmvVBsvYRLbKS3QMUOQ8tOw
-         r82yB2OHTTF4oA2YUTSMWt9b0XqHdgE4+Gzwut2xgurB5bLXgQi36uPxPRadE2gaRK
-         iRZdYIiqKqR/8O//ctdGucLXdnPtoXot04hQz0BKgXmc0FPzM4QH7Ui5cc3b0pZaKc
-         352OJzW92to6Ap1f434eduU/JaLv2APKxYNe+iqGtEqbFEAhqPfcq/UpoIYkJEHeZs
-         hE5MHbuaN/nGQ==
-Received: by mail.coredeal.pl for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:15:47 GMT
-Message-ID: <20220803064500-0.1.4o.19968.0.m2ll2ne6ai@coredeal.pl>
-Date:   Wed,  3 Aug 2022 08:15:47 GMT
-From:   "Krzysztof Maj" <krzysztof.maj@coredeal.pl>
-To:     <linux-kernel@vger.kernel.org>
-Subject: Biznesowy angielski
-X-Mailer: mail.coredeal.pl
+        Wed, 3 Aug 2022 04:17:59 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A597960D0
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 01:17:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659514678; x=1691050678;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=EaVg96O0YM9hi6X5WO+yC871BCEp8S+50Soi1s7DljQ=;
+  b=WLZ2mtN2Sqc/8MVCKJ/LsWZDnqXSv6CG2a6Cx8sibE4zR5plfN1Dma27
+   QCt1zPShJCR+znQUzDsEx6Vt4NSCgCMAdDp+bz33/+L6dRfvo4xROFfII
+   zES4R4l+oshbjRu8IBcP9HKrB1jvAXREdQNj/xmwjisiabEH9AZoTXYGy
+   KokHp3+l3u+6mlEvAAkEt1+xum83SS+YtYPdYP6DEh0g+4KYzU0PJyQI0
+   h8JZFlI2HET2mAMmCorpG5zcTwV+O+bzEb5eWj0tCRIUjTIqFgGz43fDU
+   BVVSPbo6xi+eorN4snvkhgYNnGDBjkRJkb+P/W03pel5lfvET+cVOC4FG
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="315473829"
+X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
+   d="scan'208";a="315473829"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 01:17:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
+   d="scan'208";a="553236914"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 03 Aug 2022 01:17:57 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oJ9Zk-000H2T-1q;
+        Wed, 03 Aug 2022 08:17:56 +0000
+Date:   Wed, 03 Aug 2022 16:17:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:perf/urgent] BUILD SUCCESS
+ a41a2e2e34a907bd8979a53c58f44287630616e8
+Message-ID: <62ea2f2f.UAhAmZtQ7vyNLiPC%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dzie=C5=84 dobry,=20
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git perf/urgent
+branch HEAD: a41a2e2e34a907bd8979a53c58f44287630616e8  scripts/faddr2line: Add CONFIG_DEBUG_INFO check
 
-czy rozwa=C5=BCali Pa=C5=84stwo rozw=C3=B3j kwalifikacji j=C4=99zykowych =
-swoich pracownik=C3=B3w?
+elapsed time: 720m
 
-Opracowali=C5=9Bmy kursy j=C4=99zykowe dla r=C3=B3=C5=BCnych bran=C5=BC, =
-w kt=C3=B3rych koncentrujemy si=C4=99 na podniesieniu poziomu s=C5=82owni=
-ctwa i jako=C5=9Bci komunikacji wykorzystuj=C4=85c autorsk=C4=85 metod=C4=
-=99, stworzon=C4=85 specjalnie dla wymagaj=C4=85cego biznesu.=20
+configs tested: 53
+configs skipped: 2
 
-Niestandardowy kurs on-line, dopasowany do profilu firmy i obszar=C3=B3w =
-=C5=9Bwiadczonych us=C5=82ug, w szybkim czasie przyniesie efekty, kt=C3=B3=
-re zwi=C4=99ksz=C4=85 komfort i jako=C5=9B=C4=87 pracy, rozwijaj=C4=85c m=
-o=C5=BCliwo=C5=9Bci biznesowe.=20
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Zdalne szkolenie j=C4=99zykowe to m.in. zaj=C4=99cia z native speakerami,=
- kt=C3=B3re w szybkim czasie naucz=C4=85 pracownik=C3=B3w rozmawia=C4=87 =
-za pomoc=C4=85 jasnego i zwi=C4=99z=C5=82ego j=C4=99zyka Business English=
-=2E
+gcc tested configs:
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+arm                                 defconfig
+i386                                defconfig
+powerpc                           allnoconfig
+x86_64                           allyesconfig
+mips                             allyesconfig
+ia64                             allmodconfig
+powerpc                          allmodconfig
+s390                 randconfig-r044-20220801
+riscv                randconfig-r042-20220801
+arm64                            allyesconfig
+arc                  randconfig-r043-20220801
+x86_64               randconfig-a011-20220801
+i386                             allyesconfig
+arm                              allyesconfig
+sh                               allmodconfig
+x86_64               randconfig-a012-20220801
+x86_64               randconfig-a013-20220801
+x86_64               randconfig-a014-20220801
+x86_64               randconfig-a015-20220801
+m68k                             allmodconfig
+i386                 randconfig-a012-20220801
+alpha                            allyesconfig
+i386                 randconfig-a013-20220801
+arc                              allyesconfig
+x86_64               randconfig-a016-20220801
+i386                 randconfig-a014-20220801
+x86_64                          rhel-8.3-func
+i386                 randconfig-a011-20220801
+x86_64                         rhel-8.3-kunit
+i386                 randconfig-a016-20220801
+i386                 randconfig-a015-20220801
+x86_64                           rhel-8.3-kvm
+x86_64                    rhel-8.3-kselftests
+x86_64                           rhel-8.3-syz
+m68k                             allyesconfig
 
-Czy m=C3=B3g=C5=82bym przedstawi=C4=87 wi=C4=99cej szczeg=C3=B3=C5=82=C3=B3=
-w i opowiedzie=C4=87 jak dzia=C5=82amy?=20
+clang tested configs:
+x86_64               randconfig-a002-20220801
+x86_64               randconfig-a001-20220801
+x86_64               randconfig-a003-20220801
+x86_64               randconfig-a004-20220801
+x86_64               randconfig-a005-20220801
+i386                 randconfig-a001-20220801
+x86_64               randconfig-a006-20220801
+i386                 randconfig-a002-20220801
+hexagon              randconfig-r045-20220801
+i386                 randconfig-a003-20220801
+i386                 randconfig-a005-20220801
+hexagon              randconfig-r041-20220801
+i386                 randconfig-a004-20220801
+i386                 randconfig-a006-20220801
 
-
-Pozdrawiam
-Krzysztof Maj
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
