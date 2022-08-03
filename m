@@ -2,198 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F81FC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:10:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE9B3C25B06
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237655AbiHCNKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 09:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35384 "EHLO
+        id S237760AbiHCNLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 09:11:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233926AbiHCNKo (ORCPT
+        with ESMTP id S236097AbiHCNLp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 09:10:44 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D6F638D
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 06:10:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659532244; x=1691068244;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=gvdfXIpDR9U0X3BkONhDfNxBY0dzFfmMfpLsESnTgKg=;
-  b=Oyy7mX5JHWaTgCYYt32qDe5QOn+uPJ/f+Cg68V3ee0Nm4mHrE5MwIc+4
-   dapTpZhtrvnTkJjDFU6kVMh2NvTFfJTha8sVdB83qwXajcRFcD4CqUd3Q
-   InnKK3jiPRn8CpoKmkL1Y25aJDd1BxOxpxD/ruoKfKVvja+n2+1ROJqRR
-   jRfGroSwIjdJ6+oZFUwOQBLp8p8tcn+buO7unoCE527c8u0cHZ2peoYRQ
-   RU+T3AihwhjbitHiT8o3eNr8PexFdt7RiW8pT0qJOhezpkmKQzVw8Epq6
-   /PPAjXJZDKBmjhOF+WG4gwStss+hkkHjvIXwy7NoBGt+IUliGeqFxRIcE
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="315527828"
-X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="315527828"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 06:10:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="631142976"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
-  by orsmga008.jf.intel.com with ESMTP; 03 Aug 2022 06:10:43 -0700
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Wed, 3 Aug 2022 06:10:43 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28 via Frontend Transport; Wed, 3 Aug 2022 06:10:43 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.174)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.28; Wed, 3 Aug 2022 06:10:43 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jKs2sUDQC9g6nBWrTZCtzbESI/SvwboLNiuSsml+xZH5KywwB5OxXt+eDd8Kl7RaSWgVME4zWi/QR4PNjgl0ndEWdXVoX1I22oFxvf5VZ+APiFiHEHCTD9NJSFgK+zU5p29rJDe5OGe0ADWoAdLfbVkGJzhNWHRTbjsm7dXRg6LRI8q3Crv724nCuPlR3O7mNfD/BZ56XwfHZMN8RHVB0WvRSSkdbEnySOfUO0Sw4AQxRXjxhIu+Y4uaTPb5y2BVxFbdubbKSfMkRSAju9yEbo+CNFmI9ERDo0gMKEmgTgZA/MchR7dLXKCcKuWyLdT8IGZr+7RisPww+m+63slLEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rWa1jZj8UqnnARY85bdW3AgiUN1E0ILfUb3R2Bl6IrU=;
- b=m4l7gCJjrmn0v814IN2xdn6nomZ/ATYe2LnvU4fZG3LPS54htvsFlDJihZpMeO4WXfRs+NDbqM+JG9CCK36Q+4n29NAldYasngB+MoOxecPnolk3Gx/8dcoKRNXZFSJXnRoDrXbrQxV4xm9phO6vMcD1dxxEsMS6HChGcU26AYwVBlxz7RsG7uDmBBn47Y1aEPOCR8k+sCJhtwnWkMmK7OWbz4ydVNOBVaJalSBh3R6d4HHgZo7eCDRivwPNtY8nk86KjlvyE8/8iHgR+zXW41tKZBAJCv+xgRJOn7TSvYj5pr7IcpFKIl71SF8yiJfhnJm/Y4ljQHXiBpqmKtIijg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MN0PR11MB6304.namprd11.prod.outlook.com (2603:10b6:208:3c0::7)
- by PH0PR11MB5830.namprd11.prod.outlook.com (2603:10b6:510:129::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.11; Wed, 3 Aug
- 2022 13:10:40 +0000
-Received: from MN0PR11MB6304.namprd11.prod.outlook.com
- ([fe80::8525:4565:6b49:dc55]) by MN0PR11MB6304.namprd11.prod.outlook.com
- ([fe80::8525:4565:6b49:dc55%6]) with mapi id 15.20.5458.024; Wed, 3 Aug 2022
- 13:10:40 +0000
-Date:   Thu, 4 Aug 2022 05:08:34 +0800
-From:   Feng Tang <feng.tang@intel.com>
-To:     Michal Hocko <mhocko@suse.com>
-CC:     Muchun Song <songmuchun@bytedance.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "bwidawsk@kernel.org" <bwidawsk@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        Wed, 3 Aug 2022 09:11:45 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570A9165BC;
+        Wed,  3 Aug 2022 06:11:40 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 999EB5FD2E;
+        Wed,  3 Aug 2022 16:11:36 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1659532296;
+        bh=GpXJNbDqo4hDY2G81bdd4YblDAjCnpIDkbKB2cRPdU0=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=pNiNTiT5Tu/MlCvtRa5SRm1InWVCJC5zNzM5XgrqcGMhzg9opI6JP5ygLTALRyAFL
+         mEkRwXdLEGl17DDOdkW3Sdu3vm4CSUfTVzary85jfX6tkoiJsaCvlM+S6jHXiMpVvt
+         Eta3TnrpzXGtaWRUGzumT+Ma3i7iJa+KEz8H9gVm+otiJ0+OOYcWhIIXapTLROh3IN
+         5TLwd1eETJksFoDPsAWmmpvP2WfwRjxFzcELFRLVKs9dmI32P1XkwrQgCVyZqbTYcL
+         ufyQz7md3qMlS03YGf13HVZ9RYNCGqYCkjvCQKXP8vK5boSAxvXcm3pOJd6olcGwmY
+         jcTi28TQDqLwA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Wed,  3 Aug 2022 16:11:35 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>
+CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>
-Subject: Re: [PATCH] mm: mempolicy: fix policy_nodemask() for
- MPOL_PREFERRED_MANY case
-Message-ID: <Yurj0sOXgGf40AJE@feng-clx>
-References: <Yui7hWZYMX31ktOr@feng-skl>
- <YujGy8EIeZc1Avc7@FVFYT0MHHV2J>
- <YujUyCIBjFj+FzX5@feng-skl>
- <YujoLQt09Js/sSQL@dhcp22.suse.cz>
- <YuoYkPk+YzdPNvmN@feng-snb>
- <YuolieBmdaIzoS3t@dhcp22.suse.cz>
- <Yuqs+BTpfh9/PjtP@feng-clx>
- <Yupb+1mmn9sQ/G8K@dhcp22.suse.cz>
- <Yurd2iYp4XMIYM7T@feng-clx>
- <YupwjN6K6e6V3y+Q@dhcp22.suse.cz>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <YupwjN6K6e6V3y+Q@dhcp22.suse.cz>
-X-ClientProxiedBy: SG2PR04CA0151.apcprd04.prod.outlook.com (2603:1096:4::13)
- To MN0PR11MB6304.namprd11.prod.outlook.com (2603:10b6:208:3c0::7)
+        Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Subject: [PATCH v4 0/3] iio: accel: add MSA311 accelerometer driver
+Thread-Topic: [PATCH v4 0/3] iio: accel: add MSA311 accelerometer driver
+Thread-Index: AQHYpzqHqQ8KpZL1W02r0aQwa+GPjA==
+Date:   Wed, 3 Aug 2022 13:11:22 +0000
+Message-ID: <20220803131132.19630-1-ddrokosov@sberdevices.ru>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b96cafcb-75b2-4a88-062c-08da75519019
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5830:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fgnRpJq2YeeTSj1le2z6fsgzPvytS/2Dy0bZZ3TjRnw+CpM5ig8aMj19MH2zfCgnEJmCdzh0j8AaGHh6O534LUDCDeBiFzN66iiZci5IyUAfBOgq/jq4fKqi8pfAKNY0zuPjyQCmdBGsA//9XK5qtzyGHzF5x6x3Mn7cij6586Xv+KvqM0Ublvc3TKCTbRk98l0/ybx6nmwrcSlYTsrK/iJZJXm4WSZ2DiDmnvQDrn3wpb9KjUyhiKUPzLXSw0P1irdEnzNU1jy6rn9+tYrwA11++ulVmC3axVskfS0+G8OMSar9rGIJ44J+RzaWya8odwCjTRj5I6BG2HCLtfuNOF5ywPbSbph9RaVcxabBxdX94yl8M9AeRWMZ3OyEOP3ESGO6m4o4lZSo3JNv9f9htBvWd4yBh7dn7xIJOX717IoL/DklA8Bj/6yDmtbV5U1Ud7sPJNeY4JpggZX7l6nYRRjINuSsxBcS7W8xe/rWHJqIloBfdvfukCbHp++0r4oGP5o7xtwSDJSEIUi0KJgFLM4W5JhpRjSga+YMYVd7dzeLxXsCXncb4FvleKdxW2CeBJ1OzQzX0kAuMxAv0e1RQpvz2ouIAnreXyESHE0fCMW9Dd//MmvKMd2nIPKCL86XZyTfCmlkUA9wHYoqMn+fosZMWe3SGw0NeiJxNCN5X7WFYA7DLDyioJaq7qabA2DW1OqKTbyDij63xiedXod14XYoy02Qw0Tb03F4WMda4LVvgIgFTtTXRQRPHsGr48aq
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6304.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(396003)(376002)(346002)(136003)(366004)(39860400002)(6666004)(41300700001)(6506007)(26005)(9686003)(6512007)(33716001)(478600001)(316002)(6916009)(86362001)(82960400001)(54906003)(6486002)(38100700002)(4326008)(186003)(44832011)(2906002)(5660300002)(8676002)(8936002)(66476007)(66946007)(66556008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3Ys3Tb8R/GfgNyWjoa+i5qrTbMqu0q5/2DyU3oH+29aScY4uDvCjj9JpLE0b?=
- =?us-ascii?Q?+SyhAkgrdzDZ85+K3fln1posxeH01Z+ombHuXoIXyLmCGS8S21pQGK0HVDAB?=
- =?us-ascii?Q?ti4GDDDMdaiIh7GdXf3VZ8olMfCXgHkTNSMVwRt3n8Z9LylqHbH6boqD2v2f?=
- =?us-ascii?Q?M+qZzC5PIWVierR00TvrAHwcQI4FZJhKeBfHn0pCWjuU6T23UKLPs0IQCrSY?=
- =?us-ascii?Q?NMZ63OsKMEwhYHVQHh4DI/FHXcQEuUzwMSX1WOoM8/Ad+gvDNmWOfrxyO/RB?=
- =?us-ascii?Q?f0zqhXUGTpE8y262wV0x2bYmuTbjhlJOTNtNu4DE/4EsEZNSFWIIv+Uz1A0V?=
- =?us-ascii?Q?t6dlMo1J5YaaSlZmyyCnOaTBzCkNIm6sInaMCZdSYg7WZfFk5Lt0jbaGi7U2?=
- =?us-ascii?Q?ANYJFH7VxWf/YTzJGMtPlcPMbSvU2IDZr1dAhtOXAx8MHXIOWbEKXCzVgWU+?=
- =?us-ascii?Q?JwJKM/AazdIkNgwRNPwhDQLB4SMDCMF3HXxKlSpRKTdmakAkeMu2QjQ3+Nix?=
- =?us-ascii?Q?hzYjxWkkYUPAY4t3zS2Yb5BrC+LDfmcDOqufJL4rSGsWjwC+Z4yfu94+wxA/?=
- =?us-ascii?Q?MJDuz2c12wBydFNVcZsa6t0TlBSZSPGl7yh5V1IHEkuNas8AtQxTrhqqdKJF?=
- =?us-ascii?Q?deDmoWz/6PuWsjzyuJgL7PFG956kszN0ky+7ZF+z+H+FpaQoI3MYnrPCM39U?=
- =?us-ascii?Q?4vkEjehO9n9PVojDXFjcsKG7EXc8XXjIHxlvtfzk4bTIWachUIGg20MxEVC6?=
- =?us-ascii?Q?zipNs0E4FEH+Mg/ZCO5n4GOT6xXVGavmQkzF+hmfygre7guahrR95cliCMy2?=
- =?us-ascii?Q?roq70FBZYIRDTkf+Lisl/N3gPnr1vrPFqndXvuHtBp2bummrObrsVZl4XARY?=
- =?us-ascii?Q?xeJpo7UD/AaY17Nndw9iZMssblqUe9J6NF4QaYXY+a3bIJEAvXYPPV463NYh?=
- =?us-ascii?Q?8pn2yp5tnR2E1EY3o/09DMXb+nDjuguBeTtDZmvbgBVVOwEHFiV3wEnP3Afa?=
- =?us-ascii?Q?jjY8APqb64dygTCFr9qxN/4aOIV+Bajb5iAi1xr7UQdh3rxTgmNbfCEpsnZh?=
- =?us-ascii?Q?Ez3cn40ux7HRMmoZehnalqfnJTVUyxT1vGjs0mb9jdjbkeMliSCnTIfZBCk+?=
- =?us-ascii?Q?qX7mYWvfzTv/KZPjX4T1mk6ovmulqiCkYsAxhsi8V3cRs63BchADtFd4iPFA?=
- =?us-ascii?Q?SYYc54Pn9uQmAHLWl9UT8VK5sqdUPKaA8Jv26E6akb1UNdIyNmVttJ7CIgGf?=
- =?us-ascii?Q?bweIXQY+GS6ZtIM7Jtes5Zpek6MOje64L+hZoGiD9vSOHrUUW+QQovBTBnBK?=
- =?us-ascii?Q?f/MrZAmAFK9WyK3SIcvWKdJlOVzS/kARBWzMwXTZFN9ADiOAdunE5XNuNSt4?=
- =?us-ascii?Q?bUtWhPZIn4EqWHtnEEAfeVKLIdrCMr+vh+rBmFbLCcEew5LvJmsXebHBPwSd?=
- =?us-ascii?Q?n1bjj/wLlNoZwBHtJheQ0jAIJMbGmSv3/NlqZkHxfD9zeXofVhvAeKdDEIb7?=
- =?us-ascii?Q?OvP8gfmmwCEkrt7QddYQ8tvqLAy/c6QLAMRwbmuAoJ6zpwuqFMOqayVb3OKQ?=
- =?us-ascii?Q?edFYqWF3FqxDD5dxkmA7bHSN+qqUXUF16pcpKKCj?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: b96cafcb-75b2-4a88-062c-08da75519019
-X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6304.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2022 13:10:39.8893
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ROmWV9yCbCmC8jMQJm2IgjC2V37Pgs83VStUgy1xmHBPrVLeTumTG2HXQY5U+hgEpk6YIHCsUgc/vgBbHED+/A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5830
-X-OriginatorOrg: intel.com
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/03 07:41:00 #20041172
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 03, 2022 at 08:56:44PM +0800, Michal Hocko wrote:
-> On Thu 04-08-22 04:43:06, Feng Tang wrote:
-> > On Wed, Aug 03, 2022 at 07:28:59PM +0800, Michal Hocko wrote:
-> [...]
-> > > +struct mempolicy *policy_mbind_nodemask(gfp_t gfp)
-> > > +{
-> > > +#ifdef CONFIG_MEMPOLICY
-> > > +	struct mempolicy *mpol = get_task_policy(current);
-> > > +
-> > > +	/*
-> > > +	 * only enforce MBIND which overlaps with cpuset policy (from policy_nodemask)
-> > > +	 * specifically for hugetlb case
-> > > +	 */
-> > > +	if (mpol->mode == MPOL_BIND &&
-> > > +		(apply_policy_zone(mpol, gfp_zone(gfp)) &&
-> > > +		 cpuset_nodemask_valid_mems_allowed(&policy->nodes))
-> > > +		return &mpol->nodes;
-> > > +#endif
-> > > +	return NULL;
-> > 
-> > I saw the logic is not changed, and it confused me that if there is
-> > no qualified node, it will still return NULL which effectively equals
-> > node_states[N_MEMORY], while I think it should return a all zero
-> > nodemasks.
-> 
-> This is a separate thing and I have to admit that the existing code is
-> rather non-intuitive or even broken. I guess we do not care all that
-> much because MBIND with completely non-overlapping cpusets is just a
-> broken configuration. I am not sure this case is interesting or even
-> supported.
+MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
+sensitivity consumer applications. It has dynamic user-selectable full
+scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measurements
+with output data rates from 1Hz to 1000Hz.
 
-Fair enough, and moving the policy_mbind_nodemask() into hugetlb.c for
-one single caller make it much less severe.
+Spec: https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf
 
-Do we still need the other nodemask API I proposed earlier which has
-no parameter of gfp_flag, and used for __nr_hugepages_store_common?
+This driver supports following MSA311 features:
+    - IIO interface
+    - Different power modes: NORMAL and SUSPEND (using pm_runtime)
+    - ODR (Output Data Rate) selection
+    - Scale and samp_freq selection
+    - IIO triggered buffer, IIO reg access
+    - NEW_DATA interrupt + trigger
 
-Thanks,
-Feng
+Below features to be done:
+    - Motion Events: ACTIVE, TAP, ORIENT, FREEFALL
+    - Low Power mode
 
+Also this patchset has new vendor prefix for MEMSensing Microsystems and
+MSA311 dt-binding schema.
 
-> -- 
-> Michal Hocko
-> SUSE Labs
-> 
+You can test msa311 driver using libiio and gnuplot following below
+instructions:
+  $ # Create hrtimer trigger object
+  $ mkdir /sys/kernel/config/iio/triggers/hrtimer/iio_hrtimer_trigger
+  $ # Read 4K samples using msa311-new-data trigger (irq) and
+  $ # buffer with depth equals to 64 samples and rotate device a little bit
+  $ iio_readdev -u "local:" -b 64 -s 4096 -t msa311-new-data -T 0 \
+  $             msa311 > /tmp/msa311.dat
+  $ # Or using hrtimer trigger instead of msa311-new-data trigger
+  $ iio_readdev -u "local:" -b 64 -s 4096 -t iio_hrtimer_trigger -T 0 \
+  $                msa311 > /data/local/tmp/msa311.dat
+  $ cat <<EOF >> msa311_data.gnu
+  set title "MSA311 Accel Data"
+
+  set key below
+
+  set xdata time
+  set format x "%H:%M\n%.4S"
+  set xlabel "timestamp"
+
+  set autoscale y
+
+  plot 'msa311.dat' binary endian=3Dlittle \
+                    format=3D'%int16%int16%int16%uint16%uint64' using \
+                    (\$5/1000000000):(int(\$1)/16) title "acc_x" \
+                    with lines,\\
+       'msa311.dat' binary endian=3Dlittle \
+                    format=3D'%int16%int16%int16%uint16%uint64' using \
+                    (\$5/1000000000):(int(\$2)/16) title "acc_y" \
+                    with lines,\\
+       'msa311.dat' binary endian=3Dlittle \
+                    format=3D'%int16%int16%int16%uint16%uint64' using \
+                    (\$5/1000000000):(int(\$3)/16) title "acc_z" with lines
+  EOF
+  $ gnuplot --persist msa311_data.gnu
+
+Depends-On: https://lore.kernel.org/linux-iio/20220801143811.14817-1-ddroko=
+sov@sberdevices.ru/
+
+Changes:
+* v3->v4:
+    - totally reworked pm_runtime flow based on Jonathan suggestions
+    - replaced temporary field variable with tmp pointer to field in the
+      MSA311_GENMASK macro helper
+    - removed i2c pointer from MSA311 private context, retrieved it from
+      msa311 object, if anything
+    - added struct device *dev reference to MSA311 private context for
+      easier msa311->dev translation
+    - moved regmap pointer to the beginning of MSA311 private context to
+      save some instructions
+    - refactored 'if' conditions to be positive and shorter
+    - moved msa311_check_partid() and msa311_soft_reset() to separate
+      routines and call them before powerup IP logic during probe()
+      execution
+    - used str_enable_disable() string helper as Andy suggested
+    - used msa311_pwr_modes const char * array to translate power modes
+      to strings
+    - reworked hz->ms translation, used MICROHZ_PER_HZ from the
+      following review:
+      https://lore.kernel.org/linux-iio/20220801143811.14817-1-ddrokosov@sb=
+erdevices.ru/
+    - moved dev_dbg() log about MSA311 compatible chip finding under
+      partid check
+    - refactored stack variables definitions based on "longer lines
+      first" thumb
+    - used 0 instead of INDIO_DIRECT_MODE before iio buffer setup
+    - moved i2c->irq check to msa311_setup_interrupts()
+    - removed dev_dbg() prints from ->resume() and ->suspend() callbacks
+    - removed "description" fields from "interrupts" and i2c "reg" YAML
+      schema nodes
+    - implemented simple power supply for MSA311 (vdd-supply)
+    - reworked shared_by_all info mask to shared_by_type for MSA311
+      accel channels
+    - tagged datasheet URL link in the commit message
+    - made mutex-based critical section shorter inside odr and fs loop as
+      Jonathan suggested
+    - fixed wording in the commit messages and comments a little bit,
+      refactored some indentations
+    - replaced blank lines between register offset definitions with
+      short comments
+
+* v2->v3:
+    - removed MSA311_TIMESTAMP_CHANNEL() macro, used IIO_CHAN_SOFT_TIMESTAM=
+P
+      directly
+    - do not call dev_err_probe() inside functions, which is used not only
+      from probe() path
+    - simplified error handling a little bit
+    - used iio_device_claim_direct_mode() and
+      iio_device_release_direct_mode() to lock attributes when buffer mode
+      is enabled
+    - prohibited sampling frequency changing during buffer usage because
+      otherwise sometimes MSA311 returns outliers when frequency values
+      grow up in the read operation moment
+    - allowed scale value changing when buffer mode is enabled
+    - removed IRQF_TRIGGER_RISING irq flag from irg registration because
+      it's provided from device tree directly
+    - do not switch off autosuspend from powerdown() devm callback,
+      because it's already done from pm_runtime_disable() during
+      devm pm_runtime actions
+    - provided more information why we need force suspend state for MSA311
+      in the powerdown flow
+    - reworked comments stuff: removed obvious extra comments, provided
+      more details in the complex driver code places
+
+* v1->v2:
+    - memsensing vendor prefix was moved to right place by
+      alphabetical order
+    - LOW mode mention was deleted, because LOW mode isn't supported
+      in the current driver version
+    - reworked some enums with gaps to defines
+    - reworked register names as Jonathan mentioned in the v1
+    - do not use regmap_field API for entire registers
+    - deleted all extra comments
+    - supported info_mask_*_avail bitmaps instead of explicit IIO attrs
+      definitions, implemented read_avail() callback for samp_freq and
+      scale values
+    - msa311 mutex is still used to protect msa311 power transitions,
+      samp_freq/scale tune and axes data handling; described this lock
+      more informative
+    - ask new_data interruption status from appropriate register,
+      do not hold atomic variable for that
+    - optimized reads of axes data by I2C using regmap_bulk API
+    - use dev_err_probe() instead of dev_err() for all probe() code paths
+    - from now all I2C bus communication failures are interpreted as errors
+    - described wait_from_next() semantic better
+    - deleted all unneeded pm wrappers
+    - interpreter all axes data as __le16 type and adjust them to right
+      format (endianness + sign) for raw() flow only
+    - redesigned msa311_fs_table[] to 2D matrix (it's more comfortable
+      format for read_avail() callback)
+    - align and initialize msa311 buffer before pushing properly
+    - use pm_runtime resume and suspend from buffer preenable/postdisable,
+      deleted them from trigger set_state
+    - supported multiple trigger usage (tested with external hrtimer
+      trigger and internal new_data trigger)
+    - moved all irq related stuff to msa311_setup_interrupts() routine
+    - implemented msa311_powerdown() devm release action
+    - reworked initialization of pm_runtime msa311 flow, use
+      autosuspend logic
+    - purged driver remove() callback, because of devm release logic runs
+      all deinit stuff fully
+    - fixed dts bindings problems
+    - changed irq type in the dt-binding description, because interrupt
+      type for msa311 should have the same type as i2c irq, for example
+      using the gpio_intc it's IRQ_TYPE_EDGE_RISING usually. Otherwise
+      we may lose irq map on the second and further insmod attempts
+
+Dmitry Rokosov (3):
+  dt-bindings: vendor-prefixes: add MEMSensing Microsystems Co., Ltd.
+  iio: add MEMSensing MSA311 3-axis accelerometer driver
+  dt-bindings: iio: accel: add dt-binding schema for msa311 accel driver
+
+ .../bindings/iio/accel/memsensing,msa311.yaml |   52 +
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ MAINTAINERS                                   |    7 +
+ drivers/iio/accel/Kconfig                     |   13 +
+ drivers/iio/accel/Makefile                    |    2 +
+ drivers/iio/accel/msa311.c                    | 1326 +++++++++++++++++
+ 6 files changed, 1402 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/memsensing,=
+msa311.yaml
+ create mode 100644 drivers/iio/accel/msa311.c
+
+--=20
+2.36.0
