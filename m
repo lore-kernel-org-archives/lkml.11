@@ -2,92 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A697BC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:51:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F34C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:51:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231230AbiHCPvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50438 "EHLO
+        id S238065AbiHCPvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238365AbiHCPvA (ORCPT
+        with ESMTP id S238330AbiHCPu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:51:00 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA90463AE
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:50:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.es; i=@amazon.es; q=dns/txt; s=amazon201209;
-  t=1659541851; x=1691077851;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=vbNjvWo9f+/d+tD4NWqVeIvN7ZjhWAIDsLKKATW3nhM=;
-  b=bp79CEhMiMrdAX6Vw2yUTIqQJmLyJsC1PHCtZNG5hKv71ZUYVNl0M7HS
-   zoG6nsglRGlTc9j89cj2adZ2TTnyQnWrRvop1PxaRJWFh9cEwRkB3bUjE
-   Y84lNyNf5tJTs6yEd+b41r8zKbgbiabmSkrQplt76VB8+rAy3LFIYxjqn
-   E=;
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-2520d768.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 15:50:34 +0000
-Received: from EX13D37EUA003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-2520d768.us-west-2.amazon.com (Postfix) with ESMTPS id F405C4326B;
-        Wed,  3 Aug 2022 15:50:32 +0000 (UTC)
-Received: from [192.168.18.61] (10.43.162.227) by EX13D37EUA003.ant.amazon.com
- (10.43.165.7) with Microsoft SMTP Server (TLS) id 15.0.1497.36; Wed, 3 Aug
- 2022 15:50:28 +0000
-Message-ID: <ccc1112e-7ae9-3c81-0b72-41bdd7c058ec@amazon.es>
-Date:   Wed, 3 Aug 2022 17:50:23 +0200
+        Wed, 3 Aug 2022 11:50:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0EAC65582
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:50:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659541847;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VtSzKXeXuo8UPe5oGViC3ZV9LBnnbbE6LXAjjaS3w3c=;
+        b=JA8/p8Bph9p43AkK3xlxW73lqMnVBhOoLtBZCgvyZGiS+78ADDHNfP11mLxQ7GuVVjHJz7
+        u1oczODo1FHMMgaUX/L+PlSE+V+CidyDt7Akr1pte9yPIVVblALjeMcWYUohj5WRFYJQdh
+        vlcywwmueVusZRCMn8amdQe7bQggdIY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-30-dM8-sA2IPP-VlC_VoGipsQ-1; Wed, 03 Aug 2022 11:50:43 -0400
+X-MC-Unique: dM8-sA2IPP-VlC_VoGipsQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6A87E185A794;
+        Wed,  3 Aug 2022 15:50:42 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.40.194.242])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9A3A21121314;
+        Wed,  3 Aug 2022 15:50:38 +0000 (UTC)
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     kvm@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        linux-kernel@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Sean Christopherson <seanjc@google.com>, x86@kernel.org,
+        Jim Mattson <jmattson@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH v3 06/13] KVM: x86: emulator/smm: number of GPRs in the SMRAM image depends on the image format
+Date:   Wed,  3 Aug 2022 18:50:04 +0300
+Message-Id: <20220803155011.43721-7-mlevitsk@redhat.com>
+In-Reply-To: <20220803155011.43721-1-mlevitsk@redhat.com>
+References: <20220803155011.43721-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.1.0
-Subject: Re: [PATCH 0/2] virt: vmgenid: add generation counter
-Content-Language: en-US
-To:     <linux-kernel@vger.kernel.org>
-CC:     <tytso@mit.edu>, <Jason@zx2c4.com>, <dwmw@amazon.co.uk>,
-        <graf@amazon.de>, <xmarcalx@amazon.co.uk>,
-        <gregkh@linuxfoundation.org>,
-        <"mst@redhat.com ani@anisinha.ca imammedo"@redhat.com>
-References: <20220803152127.48281-1-bchalios@amazon.es>
-From:   "Chalios, Babis" <bchalios@amazon.es>
-In-Reply-To: <20220803152127.48281-1-bchalios@amazon.es>
-X-Originating-IP: [10.43.162.227]
-X-ClientProxiedBy: EX13D25UWC004.ant.amazon.com (10.43.162.201) To
- EX13D37EUA003.ant.amazon.com (10.43.165.7)
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Q0MnaW5nIHNvbWUgbW9yZSBwZW9wbGUgdG8gdGhlIGRpc2N1c3Npb24uCgpPbiAzLzgvMjIgMTc6
-MjEsIGJjaGFsaW9zQGFtYXpvbi5lcyB3cm90ZToKPiBGcm9tOiBCYWJpcyBDaGFsaW9zIDxiY2hh
-bGlvc0BhbWF6b24uZXM+Cj4KPiBMaW51eCByZWNlbnRseSBhZGRlZCBzdXBwb3J0IGZvciB0aGUg
-Vk0gR2VuZXJhdGlvbiBJRCBtZWNoYW5pc20gZnJvbQo+IE1pY3Jvc29mdC4gVGhlIHdheSB0aGlz
-IHdvcmtzIGN1cnJlbnRseSBpcyB1c2luZyB0aGUgMTI4LWJpdCBibG9iCj4gcHJvdmlkZWQgYnkg
-dGhlIHZtZ2VuaWQgZGV2aWNlIHRvIHJlLXNlZWQgdGhlIFJORy4gV2hpbGUgdGhpcyB3b3JrcyBp
-dAo+IGhhcyB0d28gbWFpbiBpc3N1ZXMsIChhKSBpdCBpcyBpbmhlcmVudGx5IHJhY3kgZHVlIHRv
-IHRoZSBmYWN0IHRoYXQgaXQKPiByZWxpZXMgb24gYSBBQ1BJIG5vdGlmaWNhdGlvbiBiZWluZyBk
-ZWxpdmVyZWQgYW5kIGhhbmRsZWQgYW5kIChiKSB0aGUgSUQKPiBpcyB1bnN1aXRhYmxlIGZvciBl
-eHBvc2luZyB0byB1c2VyLXNwYWNlLgo+Cj4gVGhpcyBwYXRjaC1zZXQgZXh0ZW5kcyB0aGUgdm1n
-ZW5pZCBkZXZpY2UgdG8gaW50cm9kdWNlIGEgZ2VuZXJhdGlvbgo+IGNvdW50ZXIsIGEgMzItYml0
-IGNvdW50ZXIgd2hpY2ggaXMgZGlmZmVyZW50IGV2ZXJ5IHRpbWUgdGhlIHVuaXF1ZSBJRAo+IGNo
-YW5nZXMuIFRoZSBhZGRpdGlvbiB0byB0aGUgb3JpZ2luYWwgaW1wbGVtZW50YXRpb24gaW4gUUVN
-VSBjYW4gYmUKPiBmb3VuZCBoZXJlOgo+IGh0dHBzOi8vbGlzdHMubm9uZ251Lm9yZy9hcmNoaXZl
-L2h0bWwvcWVtdS1kZXZlbC8yMDIyLTA4L21zZzAwNTI0Lmh0bWwuCj4KPiBUaGUgZmlyc3QgcGF0
-Y2ggcmUtd29ya3Mgc2xpZ2h0bHkgdGhlIGN1cnJlbnQgdm1nZW5pZCBkcml2ZXIgdG8gYWRkIGEK
-PiBmdW5jdGlvbiB0aGF0IHBhcnNlcyBhbiBvYmplY3QgZnJvbSB0aGUgdm1nZW5pZCBkZXZpY2Ug
-YW5kIHJldHVybnMgdGhlCj4gcGh5c2ljYWwgYWRkcmVzcyBvZiB0aGUgdm1nZW5pZCBkYXRhLiBU
-aGUgc2Vjb25kIHBhdGNoIHVzZXMgdGhhdAo+IGZ1bmN0aW9uIHRvIHBhcnNlIGFkZGl0aW9uYWxs
-eSB0aGUgYWRkcmVzcyBvZiB0aGUgZ2VuZXJhdGlvbiBjb3VudGVyCj4gZnJvbSB0aGUgdm1nZW5p
-ZCBuYW1lc3BhY2UuIFRoZSBjb3VudGVyIGlzIHRoZW4gZXhwb3NlZCB0byB0aGUKPiB1c2VyLXNw
-YWNlIHRocm91Z2ggYSBtaXNjLWRldmljZSB3aGljaCBwcm92aWRlcyBgcmVhZGAgYW5kIGBtbWFw
-YAo+IGludGVyZmFjZXMuCj4KPiBCYWJpcyBDaGFsaW9zICgyKToKPiAgICB2aXJ0OiB2bWdlbmlk
-OiBhZGQgaGVscGVyIGZ1bmN0aW9uIHRvIHBhcnNlIEFERFIKPiAgICB2aXJ0OiB2bWdlbmlkOiBh
-ZGQgc3VwcG9ydCBmb3IgZ2VuZXJhdGlvbiBjb3VudGVyCj4KPiAgIERvY3VtZW50YXRpb24vdmly
-dC92bWdlbmlkLnJzdCB8IDEyMCArKysrKysrKysrKysrKysrKysrKysrKysrKwo+ICAgZHJpdmVy
-cy92aXJ0L3ZtZ2VuaWQuYyAgICAgICAgIHwgMTUxICsrKysrKysrKysrKysrKysrKysrKysrKysr
-KystLS0tLQo+ICAgMiBmaWxlcyBjaGFuZ2VkLCAyNTEgaW5zZXJ0aW9ucygrKSwgMjAgZGVsZXRp
-b25zKC0pCj4gICBjcmVhdGUgbW9kZSAxMDA2NDQgRG9jdW1lbnRhdGlvbi92aXJ0L3ZtZ2VuaWQu
-cnN0Cj4KCkFtYXpvbiBTcGFpbiBTZXJ2aWNlcyBzb2NpZWRhZCBsaW1pdGFkYSB1bmlwZXJzb25h
-bCwgQ2FsbGUgUmFtaXJleiBkZSBQcmFkbyA1LCAyODA0NSBNYWRyaWQuIFJlZ2lzdHJvIE1lcmNh
-bnRpbCBkZSBNYWRyaWQgLiBUb21vIDIyNDU4IC4gRm9saW8gMTAyIC4gSG9qYSBNLTQwMTIzNCAu
-IENJRiBCODQ1NzA5MzYK
+On 64 bit host, if the guest doesn't have X86_FEATURE_LM, KVM will
+access 16 gprs to 32-bit smram image, causing out-ouf-bound ram
+access.
+
+On 32 bit host, the rsm_load_state_64/enter_smm_save_state_64
+is compiled out, thus access overflow can't happen.
+
+Fixes: b443183a25ab61 ("KVM: x86: Reduce the number of emulator GPRs to '8' for 32-bit KVM")
+
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/kvm/emulate.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index 765ec65b2861ba..18551611cb13af 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -2473,7 +2473,7 @@ static int rsm_load_state_32(struct x86_emulate_ctxt *ctxt,
+ 	ctxt->eflags =             GET_SMSTATE(u32, smstate, 0x7ff4) | X86_EFLAGS_FIXED;
+ 	ctxt->_eip =               GET_SMSTATE(u32, smstate, 0x7ff0);
+ 
+-	for (i = 0; i < NR_EMULATOR_GPRS; i++)
++	for (i = 0; i < 8; i++)
+ 		*reg_write(ctxt, i) = GET_SMSTATE(u32, smstate, 0x7fd0 + i * 4);
+ 
+ 	val = GET_SMSTATE(u32, smstate, 0x7fcc);
+@@ -2530,7 +2530,7 @@ static int rsm_load_state_64(struct x86_emulate_ctxt *ctxt,
+ 	u16 selector;
+ 	int i, r;
+ 
+-	for (i = 0; i < NR_EMULATOR_GPRS; i++)
++	for (i = 0; i < 16; i++)
+ 		*reg_write(ctxt, i) = GET_SMSTATE(u64, smstate, 0x7ff8 - i * 8);
+ 
+ 	ctxt->_eip   = GET_SMSTATE(u64, smstate, 0x7f78);
+-- 
+2.26.3
 
