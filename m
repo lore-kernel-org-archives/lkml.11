@@ -2,214 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3BD0C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DCAC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:49:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237348AbiHCQp4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 12:45:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34748 "EHLO
+        id S236424AbiHCQtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 12:49:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233822AbiHCQpi (ORCPT
+        with ESMTP id S233102AbiHCQtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 12:45:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D14B720BE4
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:45:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659545134;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ojfn7cuIMbHCcuvRihfgUsrNAOLm8Anqm64eT7HEXNM=;
-        b=AGvozYQwLWhP9/r3F9VHY5IMTmJlSnern+IJECdo+OD/8A8dxNgG9ehu3O5UQR/hgjNaMr
-        WPK8rSEpHvMdQtJIAZUxPOJwNzLukmHyC18y9hYGB8Nudm8sG2yvhNEmT8iwLQ2zxHiQKu
-        r++CRllnC0h7bd6n3b4cltKYYpzE0Cw=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-636-2WiguyjnNxmOrsG8qhbv8w-1; Wed, 03 Aug 2022 12:45:33 -0400
-X-MC-Unique: 2WiguyjnNxmOrsG8qhbv8w-1
-Received: by mail-qv1-f69.google.com with SMTP id e1-20020ad44181000000b00472f8ad6e71so10457256qvp.20
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 09:45:33 -0700 (PDT)
+        Wed, 3 Aug 2022 12:49:36 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 447E324F1C;
+        Wed,  3 Aug 2022 09:49:35 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id e13so3281195edj.12;
+        Wed, 03 Aug 2022 09:49:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=gMmZnysqAMDlPpkxFBQS+E8RqY1hDuJMvV7H1So3zZU=;
+        b=fhEdIhwTAqr5KeMUsYt/g8y6eT/BUynpWSzIPFItnbEjKFFqMBLYTgs5XuAqfq3tyZ
+         EYeZYA/AYwdnRfgqp+fgGhnOz/akfNg8ElRIcGgFLoM6P7Sh9PrfCqrPc4QGi0Ao63NA
+         Ulf0teM0yTHHKi9LehM+or72eui6A1vu3+yPKFdH6EfbEizSdmJgEfyAdLwZBHfHH8Ia
+         ve0/Bzg9LzCcnf+LvHi9mV+5ejPUvbfYgoOxnYUCe5jo2rPewOwJ7JU5vQciDUHqHXRz
+         udkbu4ioZwhsPfGd9K2qJD5PlB2TreLjQ9ZSOmb4EUzeaTPeyTzcTqkpbdN73eGHBXDF
+         xCdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ojfn7cuIMbHCcuvRihfgUsrNAOLm8Anqm64eT7HEXNM=;
-        b=KL2ADjlvD245nbpLamg/ELriy1rrMWtsJpwl6OpWsmgxPyo8lSFz5ZAt4+FdoLiZpz
-         TkUYz7bSxPlvFQZxPwW/b0zui8xeWOpjAZJEP2XOavHyJXyu7Xt2klNNC6dlRRbFuQBV
-         IFpuNSIx+ki03pcZp2xXTS78BBcdd2pzDZqyU2c33wn8cZa4H6CQtmlRNIxjrbByZxe+
-         qWq53/pOBZ8Br8ASRimKNffSH2rNc9UZKc8M5GjzrwOUBj099PG8A4e5s+CunS9QmqZH
-         3vgDZ5O0RAxQN88f7KeOSagSlMPjrmZfR8gWC0byC2Hv812WCKgG52imLtJ582ONu/rH
-         WD2Q==
-X-Gm-Message-State: AJIora/dEWzgEsBvFs3tScjX0+D5B5LNsCxYFME92lqqOVLi1/Ao8uj5
-        crSxeOZGX85KZrr1BJNgv74KGJDsJXGKvLDnZNTGLe/hO5ltPP6/r24I3tENtsMqzA0WYgtkFg8
-        w6TQ02Zzv/UOIVq0by5dcTcPZ
-X-Received: by 2002:ac8:7c48:0:b0:31f:83:85d9 with SMTP id o8-20020ac87c48000000b0031f008385d9mr22976766qtv.105.1659545132272;
-        Wed, 03 Aug 2022 09:45:32 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1t8eQT06Po6PUhbOVkVB5uPwil19CmoUApfs94oFCHAADSF7K2hjPl6HOraQaf1D9DfVt5AZA==
-X-Received: by 2002:ac8:7c48:0:b0:31f:83:85d9 with SMTP id o8-20020ac87c48000000b0031f008385d9mr22976749qtv.105.1659545131985;
-        Wed, 03 Aug 2022 09:45:31 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id i7-20020a05622a08c700b0031ef69c9024sm11080429qte.91.2022.08.03.09.45.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 09:45:31 -0700 (PDT)
-Date:   Wed, 3 Aug 2022 12:45:30 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Nadav Amit <nadav.amit@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andi Kleen <andi.kleen@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Hugh Dickins <hughd@google.com>,
-        Huang Ying <ying.huang@intel.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH 2/2] mm: Remember young bit for page migrations
-Message-ID: <YuqmKmVtVYnkDF7J@xz-m1.local>
-References: <20220803012159.36551-1-peterx@redhat.com>
- <20220803012159.36551-3-peterx@redhat.com>
- <EEBB9DDB-3D67-42BD-BD16-4264F40760CD@gmail.com>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=gMmZnysqAMDlPpkxFBQS+E8RqY1hDuJMvV7H1So3zZU=;
+        b=DKPfQtXcFsM4XkUqaBNVYk6PMcWSOwb4BjKQI4AQH5tZGXwZP/qdwsQhKb85FA2dXA
+         iJuLTWRxfZOZH8+2l1pH3DBum64Eq4t6kkHA2OS4GP1dbh71Ru+T3kbmarFs8FWmeYNy
+         NnOsxSUXTc8kDdM+w0UUZrqruHxQsC62TxjC+mN/17HKoxBWcAFx/H4YcLYY+rxoyHYU
+         V7Wx/YmUyTheT6mbkt0M67tb9LUA0EqtAO71TRRvRv1rzco9TA6RUPZnUfrfya+t/jzn
+         lvudjFPgVqoS1fv9KD/bpxVXFxzoCCsmueOCma/c9xTXTQWuz8MocTNVwLmwsH1vBXyZ
+         ZICA==
+X-Gm-Message-State: AJIora8b4X1stPGQc7dLli1CAvqP1aOF/rGZYr9JfueBbRqdcfl8xXy2
+        BrsIjLEWZ1YlxMYIF9FTGkLUOe5TROrmX6cau3w=
+X-Google-Smtp-Source: AGRyM1v5EszzSbNUHQJzbLHITpO5Y70v2pRK2Y37tgwqpBBiHlh4sib+QbUmmDUY/fQdfuftn7OIIkS70+ixk/gqlhc=
+X-Received: by 2002:a05:6402:4414:b0:434:f58c:ee2e with SMTP id
+ y20-20020a056402441400b00434f58cee2emr26332209eda.362.1659545373846; Wed, 03
+ Aug 2022 09:49:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <EEBB9DDB-3D67-42BD-BD16-4264F40760CD@gmail.com>
+References: <20220803153300.58732-1-sebastian.wuerl@ororatech.com>
+In-Reply-To: <20220803153300.58732-1-sebastian.wuerl@ororatech.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 3 Aug 2022 18:48:57 +0200
+Message-ID: <CAHp75VdCH2tJQq3v_-iNP27oWFGF7EtKc-w299tLhDV85WbroQ@mail.gmail.com>
+Subject: Re: [PATCH] drivers/net/can/spi/mcp251x.c: Fix race condition on
+ receive interrupt
+To:     =?UTF-8?Q?Sebastian_W=C3=BCrl?= <sebastian.wuerl@ororatech.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-can@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 03, 2022 at 12:42:54AM -0700, Nadav Amit wrote:
-> On Aug 2, 2022, at 6:21 PM, Peter Xu <peterx@redhat.com> wrote:
-> 
-> > When page migration happens, we always ignore the young bit settings in the
-> > old pgtable, and marking the page as old in the new page table using either
-> > pte_mkold() or pmd_mkold().
-> > 
-> > That's fine from functional-wise, but that's not friendly to page reclaim
-> > because the moving page can be actively accessed within the procedure.  Not
-> > to mention hardware setting the young bit can bring quite some overhead on
-> > some systems, e.g. x86_64 needs a few hundreds nanoseconds to set the bit.
-> > 
-> > Actually we can easily remember the young bit configuration and recover the
-> > information after the page is migrated.  To achieve it, define a new bit in
-> > the migration swap offset field to show whether the old pte has young bit
-> > set or not.  Then when removing/recovering the migration entry, we can
-> > recover the young bit even if the page changed.
-> > 
-> > One thing to mention is that here we used max_swapfile_size() to detect how
-> > many swp offset bits we have, and we'll only enable this feature if we know
-> > the swp offset can be big enough to store both the PFN value and the young
-> > bit.  Otherwise the young bit is dropped like before.
-> 
-> I gave it some more thought and I am less confident whether this is the best
-> solution. Not sure it is not either, so I am raising an alternative with
-> pros and cons.
-> 
-> An alternative would be to propagate the access bit into the page (i.e.,
-> using folio_set_young()) and then set it back into the PTE later (i.e.,
-> based on folio_test_young()). It might even seem that in general it is
-> better to always set the page access bit if folio_test_young().
+On Wed, Aug 3, 2022 at 5:36 PM Sebastian W=C3=BCrl
+<sebastian.wuerl@ororatech.com> wrote:
+>
+> The mcp251x driver uses both receiving mailboxes of the can controller
 
-That's indeed an option.  It's just that the Young bit (along with Idle
-bit) is only defined with PAGE_IDLE feature enabled, or they're all no-op.
+CAN
 
-Another thing is even though using page flags looks clean, it'll lose the
-granule of virtual address spaces when the page can be mapped in multiple
-mm/vmas.  I don't think there's a major difference here since page reclaim
-will collect either pte young or page young (as long as page idle defined)
-so it'll be the same. But there'll be other side effects as long as related
-to the virtual address space. E.g. extra TLB flush needed as you said even
-if the pages were not accessed by some mapping at all, so they become false
-positive "young" pages after migration entries recovered.
+> chips. For retrieving the CAN frames from the controller via SPI, it chec=
+ks
+> once per interrupt which mailboxes have been filled, an will retrieve the
+> messages accordingly.
+>
+> This introduces a race condition, as another CAN frame can enter mailbox =
+1
+> while mailbox 0 is emptied. If now another CAN frame enters mailbox 0 unt=
+il
+> the interrupt handler is called next, mailbox 0 is emptied before
+> mailbox 1, leading to out-of-order CAN frames in the network device.
+>
+> This is fixed by checking the interrupt flags once again after freeing
+> mailbox 0, to correctly also empty mailbox 1 before leaving the handler.
+>
+> For reproducing the bug I created the following setup:
+>  - Two CAN devices, one Raspberry Pi with MCP2515, the other can be any.
+>  - Setup CAN to 1 MHz
+>  - Spam bursts of 5 CAN-messages with increasing CAN-ids
+>  - Continue sending the bursts while sleeping a second between the bursts
+>  - Check on the RPi whether the received messages have increasing CAN-ids
+>  - Without this patch, every burst of messages will contain a flipped pai=
+r
 
-In short, it'll be slightly less accurate than storing it in pgtables.
+Fixes tag?
 
-> 
-> This can be simpler and more performant. Setting the access-bit would not
-> impact reclaim decisions (as the page is already considered young), would
-> not induce overheads on clearing the access-bit (no TLB flush is needed at
-> least on x86), and would save the time the CPU takes to set the access bit
-> if the page is ever accessed (on x86).
-
-Agreed.  These benefits should be shared between both the pgtable approach
-or the PageYoung approach you mentioned.
-
-> 
-> It may also improve the preciseness of page-idle mechanisms and the
-> interaction with it.
-
-IIUC this may need extra work for page idle.
-
-Currently when doing rmap walks we either only look at migration entries or
-never look at them, according to the PVMW_MIGRATION flag.  We'll need to
-teach the page idle code and rmap walker to be able to walk with both
-present ptes and migration entries at the same time to achieve that
-preciseness.
-
-> IIUC, page-idle does not consider migration entries, so
-> the user would not get indication that pages under migration are not idle.
-> When page-idle is reset, migrated pages might be later reinstated as
-> “accessed”, giving wrong indication that the pages are not-idle, when in
-> fact they are.
-
-Before this patchset, we'll constantly loosing that young bit, hence it'll
-be a false negative after migration entries recovered.
-
-After this patchset, we'll have a possible race iff the page idle was
-triggered during migrating some pages, but it's a race condition only and
-the young bit will be correctly collected after migration completed.
-
-So I agree it's a problem as you mentioned, but probably it's still better
-with current patch than without it.
-
-If ultimately we decided to go with page flags approach as you proposed,
-just to mention that setting PageYoung is not enough - that bit is only
-used to reserve page reclaim logic and not being interrupted by page idle.
-IMO what we really will need is clearing PageIdle instead.
-
-> 
-> On the negative side, I am not sure whether other archs, that might require
-> a TLB flush for resetting the access-bit, and the overhead of doing atomic
-> operation to clear the access-bit, would not induce more overhead than they
-> would save.
-
-I think your proposal makes sense and looks clean, maybe even cleaner than
-the new max_swapfile_size() approach (and definitely nicer than the old one
-of mine). It's just that I still want this to happen even without page idle
-enabled - at least Fedora doesn't have page idle enabled by default.  I'm
-not sure whether it'll be worth it to define Young bit just for this (note:
-iiuc we don't need Idle bit in this case, but only the Young bit).
-
-The other thing is whether there's other side effect of losing pte level
-granularity of young bit, since right after we merge them into the page
-flags, then that granule is lost.  So far I don't worry a lot on the tlb
-flush overhead, but hopefully nothing else we missed.
-
-> 
-> One more unrelated point - note that remove_migration_pte() would always set
-> a clean PTE even when the old one was dirty…
-
-Correct.  Say it in another way, at least initial writes perf will still
-suffer after migration on x86.
-
-Dirty bit is kind of different in this case so I didn't yet try to cover
-it.  E.g., we won't lose it even without this patchset but consolidates it
-into PageDirty already or it'll be a bug.
-
-I think PageDirty could be cleared during migration procedure, if so we
-could be wrongly applying the dirty bit to the recovered pte.  I thought
-about this before posting this series, but I hesitated on adding dirty bit
-altogether with it at least in these initial versions since dirty bit may
-need some more justifications.
-
-Please feel free to share any further thoughts on the dirty bit.
-
-Thanks,
-
--- 
-Peter Xu
-
+--=20
+With Best Regards,
+Andy Shevchenko
