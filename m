@@ -2,94 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 766E3C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC34C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238316AbiHCQAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 12:00:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33662 "EHLO
+        id S237673AbiHCQDS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 12:03:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237785AbiHCQAd (ORCPT
+        with ESMTP id S234006AbiHCQDQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 12:00:33 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A47513D46
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:00:32 -0700 (PDT)
+        Wed, 3 Aug 2022 12:03:16 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B47140D9
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:03:14 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id n138so13230181iod.4
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 09:03:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.es; i=@amazon.es; q=dns/txt; s=amazon201209;
-  t=1659542432; x=1691078432;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=YnukQX1NaPPxnCt9j6BcQMbDXjmoLHezBB1bg8OWWI0=;
-  b=nfLEXhldioOU8/en2DUsJuILl5q6JjQTkMCNy1qmzeBd8x6xEdoAINOc
-   1/9XLk7ah2j4QWdRk9D5ER82duVSO+XDBO4LLfY2Vk1VD6L2WOFjXpWu0
-   0+KwAWsft6Rr90LwWaHyg50hwhAccHWoVFsetkYmIwGjVkDfFFp9kFXnP
-   0=;
-X-IronPort-AV: E=Sophos;i="5.93,214,1654560000"; 
-   d="scan'208";a="115239824"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-1box-2b-3386f33d.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 15:57:19 +0000
-Received: from EX13D37EUA003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-1box-2b-3386f33d.us-west-2.amazon.com (Postfix) with ESMTPS id 141F4A2723;
-        Wed,  3 Aug 2022 15:57:19 +0000 (UTC)
-Received: from [192.168.18.61] (10.43.162.227) by EX13D37EUA003.ant.amazon.com
- (10.43.165.7) with Microsoft SMTP Server (TLS) id 15.0.1497.36; Wed, 3 Aug
- 2022 15:57:14 +0000
-Message-ID: <5d199960-bad7-e2ea-d3fb-d9b92eefbcf8@amazon.es>
-Date:   Wed, 3 Aug 2022 17:57:09 +0200
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=7OygQDDOouiCiPlbWs7isceuYzV4DhEDfDd1Dqaw+Fk=;
+        b=E2jMAjUkqHKj0vnFAxpfKrRcV7XNkEoSEbS/+BpgFbNEaGQdfJogCTXFyTTg3oPdxu
+         W4Tg6IOdDVeix86om4oE8kGNrzh9M7t/I5oop39zGGh9naC7R1e239QiPSlOC6Zl1Vj2
+         6MUgEnkwt1g+02rvhOq4hZbXbGUWqyLcE8Zlbj/oq+sQtpuhmIVJp4gml2ezY48ZumFI
+         oj4C/3DDYbpIWHIxJXicHUZzIeGjqaDLswcDU0kE0SDZoPs85eANnO1uCfAYieNfcWHQ
+         AkY7Vhn5ggpuxKKJA9qcgNsOucsoeyr7RQKxxD1Sj0Qzsm/DV62sJA4dsLACAT97zcda
+         kioA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=7OygQDDOouiCiPlbWs7isceuYzV4DhEDfDd1Dqaw+Fk=;
+        b=443RIMKpyFjIAd/57d4z1yTdar2/z6Wuepj7jzmxHGTL+cJ/ZaEZfNZ5iYB3LaJisf
+         mXJ46XTDpl4HI8WAL3aszzxETTnqMM7VmP/wrJM2D8AxoBptcr0CF8PzUbltNBtiAkqu
+         4Mu7dBg+99cHJoOi5n9WYSvIZ8JZzn+UWTYEUx8ieWj766JTBtyAvTk1JipdmBgpJDHt
+         X+S3pzo7HqiuQrFlMvhAIGbA42AoyxUyfAS0lnTwuZTm/8mubWNmHXoMRD7k4EfNo0fb
+         t69OSX/sJhO1SDOog1sGe9iKGz3HCp1TqTeCF1nojeunEiwJhEBptd6bbvh1/FHbdlh4
+         AZvg==
+X-Gm-Message-State: AJIora+VRqKUbj7H19gD2dfYEDCVMB5wJf9oWHNGkn9TvHMNSkbZlQVe
+        vTq6FYiZzouNfO0qKwAUrvWKfWGIeHukw+0ZduP1YOlRgIw=
+X-Google-Smtp-Source: AGRyM1s4mmvAjontxpiPUsqZ9BL+Z+O7jvL4u8eHKd3PuNbn9A7qwR3L2BfuiAthTAB+fTMfrg1DJ1ld3fzRbyA4n14=
+X-Received: by 2002:a6b:6105:0:b0:67b:e68f:c9ee with SMTP id
+ v5-20020a6b6105000000b0067be68fc9eemr9828309iob.154.1659542593947; Wed, 03
+ Aug 2022 09:03:13 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.1.0
-Subject: Re: [PATCH 0/2] virt: vmgenid: add generation counter
-Content-Language: en-US
-To:     <linux-kernel@vger.kernel.org>
-CC:     <tytso@mit.edu>, <Jason@zx2c4.com>, <dwmw@amazon.co.uk>,
-        <graf@amazon.de>, <xmarcalx@amazon.co.uk>,
-        <gregkh@linuxfoundation.org>, <mst@redhat.com>, <ani@anisinha.ca>,
-        <imammedo@redhat.com>
-References: <20220803152127.48281-1-bchalios@amazon.es>
-From:   "Chalios, Babis" <bchalios@amazon.es>
-In-Reply-To: <20220803152127.48281-1-bchalios@amazon.es>
-X-Originating-IP: [10.43.162.227]
-X-ClientProxiedBy: EX13d09UWA004.ant.amazon.com (10.43.160.158) To
- EX13D37EUA003.ant.amazon.com (10.43.165.7)
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: base64
+References: <20220614021116.1101331-1-sashal@kernel.org> <YrI25yOy7WMqr+x3@sashalap>
+In-Reply-To: <YrI25yOy7WMqr+x3@sashalap>
+From:   Jann Horn <jannh@google.com>
+Date:   Wed, 3 Aug 2022 18:02:37 +0200
+Message-ID: <CAG48ez36K0YzkQRF4UNf6HccackSKXvb4BYm=tqjNw8hjXm1cQ@mail.gmail.com>
+Subject: Re: [PATCH MANUALSEL 5.18 1/6] KVM: x86: do not report a vCPU as
+ preempted outside instruction boundaries
+To:     Sasha Levin <sashal@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KENvcnJlY3RseSkgQ0MnaW5nIG1vcmUgcGVvcGxlIGluIHRoZSBkaXNjdXNzaW9uLiBBcG9sb2dp
-ZXMgZm9yIHRoaXMuCgpPbiAzLzgvMjIgMTc6MjEsIGJjaGFsaW9zQGFtYXpvbi5lcyB3cm90ZToK
-PiBGcm9tOiBCYWJpcyBDaGFsaW9zIDxiY2hhbGlvc0BhbWF6b24uZXM+Cj4KPiBMaW51eCByZWNl
-bnRseSBhZGRlZCBzdXBwb3J0IGZvciB0aGUgVk0gR2VuZXJhdGlvbiBJRCBtZWNoYW5pc20gZnJv
-bQo+IE1pY3Jvc29mdC4gVGhlIHdheSB0aGlzIHdvcmtzIGN1cnJlbnRseSBpcyB1c2luZyB0aGUg
-MTI4LWJpdCBibG9iCj4gcHJvdmlkZWQgYnkgdGhlIHZtZ2VuaWQgZGV2aWNlIHRvIHJlLXNlZWQg
-dGhlIFJORy4gV2hpbGUgdGhpcyB3b3JrcyBpdAo+IGhhcyB0d28gbWFpbiBpc3N1ZXMsIChhKSBp
-dCBpcyBpbmhlcmVudGx5IHJhY3kgZHVlIHRvIHRoZSBmYWN0IHRoYXQgaXQKPiByZWxpZXMgb24g
-YSBBQ1BJIG5vdGlmaWNhdGlvbiBiZWluZyBkZWxpdmVyZWQgYW5kIGhhbmRsZWQgYW5kIChiKSB0
-aGUgSUQKPiBpcyB1bnN1aXRhYmxlIGZvciBleHBvc2luZyB0byB1c2VyLXNwYWNlLgo+Cj4gVGhp
-cyBwYXRjaC1zZXQgZXh0ZW5kcyB0aGUgdm1nZW5pZCBkZXZpY2UgdG8gaW50cm9kdWNlIGEgZ2Vu
-ZXJhdGlvbgo+IGNvdW50ZXIsIGEgMzItYml0IGNvdW50ZXIgd2hpY2ggaXMgZGlmZmVyZW50IGV2
-ZXJ5IHRpbWUgdGhlIHVuaXF1ZSBJRAo+IGNoYW5nZXMuIFRoZSBhZGRpdGlvbiB0byB0aGUgb3Jp
-Z2luYWwgaW1wbGVtZW50YXRpb24gaW4gUUVNVSBjYW4gYmUKPiBmb3VuZCBoZXJlOgo+IGh0dHBz
-Oi8vbGlzdHMubm9uZ251Lm9yZy9hcmNoaXZlL2h0bWwvcWVtdS1kZXZlbC8yMDIyLTA4L21zZzAw
-NTI0Lmh0bWwuCj4KPiBUaGUgZmlyc3QgcGF0Y2ggcmUtd29ya3Mgc2xpZ2h0bHkgdGhlIGN1cnJl
-bnQgdm1nZW5pZCBkcml2ZXIgdG8gYWRkIGEKPiBmdW5jdGlvbiB0aGF0IHBhcnNlcyBhbiBvYmpl
-Y3QgZnJvbSB0aGUgdm1nZW5pZCBkZXZpY2UgYW5kIHJldHVybnMgdGhlCj4gcGh5c2ljYWwgYWRk
-cmVzcyBvZiB0aGUgdm1nZW5pZCBkYXRhLiBUaGUgc2Vjb25kIHBhdGNoIHVzZXMgdGhhdAo+IGZ1
-bmN0aW9uIHRvIHBhcnNlIGFkZGl0aW9uYWxseSB0aGUgYWRkcmVzcyBvZiB0aGUgZ2VuZXJhdGlv
-biBjb3VudGVyCj4gZnJvbSB0aGUgdm1nZW5pZCBuYW1lc3BhY2UuIFRoZSBjb3VudGVyIGlzIHRo
-ZW4gZXhwb3NlZCB0byB0aGUKPiB1c2VyLXNwYWNlIHRocm91Z2ggYSBtaXNjLWRldmljZSB3aGlj
-aCBwcm92aWRlcyBgcmVhZGAgYW5kIGBtbWFwYAo+IGludGVyZmFjZXMuCj4KPiBCYWJpcyBDaGFs
-aW9zICgyKToKPiAgICB2aXJ0OiB2bWdlbmlkOiBhZGQgaGVscGVyIGZ1bmN0aW9uIHRvIHBhcnNl
-IEFERFIKPiAgICB2aXJ0OiB2bWdlbmlkOiBhZGQgc3VwcG9ydCBmb3IgZ2VuZXJhdGlvbiBjb3Vu
-dGVyCj4KPiAgIERvY3VtZW50YXRpb24vdmlydC92bWdlbmlkLnJzdCB8IDEyMCArKysrKysrKysr
-KysrKysrKysrKysrKysrKwo+ICAgZHJpdmVycy92aXJ0L3ZtZ2VuaWQuYyAgICAgICAgIHwgMTUx
-ICsrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tLQo+ICAgMiBmaWxlcyBjaGFuZ2VkLCAy
-NTEgaW5zZXJ0aW9ucygrKSwgMjAgZGVsZXRpb25zKC0pCj4gICBjcmVhdGUgbW9kZSAxMDA2NDQg
-RG9jdW1lbnRhdGlvbi92aXJ0L3ZtZ2VuaWQucnN0Cj4KCkFtYXpvbiBTcGFpbiBTZXJ2aWNlcyBz
-b2NpZWRhZCBsaW1pdGFkYSB1bmlwZXJzb25hbCwgQ2FsbGUgUmFtaXJleiBkZSBQcmFkbyA1LCAy
-ODA0NSBNYWRyaWQuIFJlZ2lzdHJvIE1lcmNhbnRpbCBkZSBNYWRyaWQgLiBUb21vIDIyNDU4IC4g
-Rm9saW8gMTAyIC4gSG9qYSBNLTQwMTIzNCAuIENJRiBCODQ1NzA5MzYK
+On Tue, Jun 21, 2022 at 11:23 PM Sasha Levin <sashal@kernel.org> wrote:
+>
+> Paolo, ping?
 
+What happened here? From what I can tell, even the backports that
+Sasha already wrote didn't get applied?
