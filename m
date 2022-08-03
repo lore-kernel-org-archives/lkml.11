@@ -2,192 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99674C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:33:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B78C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:39:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238021AbiHCKdS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 06:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35282 "EHLO
+        id S234558AbiHCKjE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 06:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238050AbiHCKb2 (ORCPT
+        with ESMTP id S233781AbiHCKi7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 06:31:28 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11EB732DAB
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 03:30:59 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id g5so3324839ybg.11
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 03:30:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=BnCISkt/rTW8As5S0Z1/CmUKmWtp6KufxVc54xAHFLs=;
-        b=bTMMrVHLEXsaZsPJ4ir9RlmOn/kRdosyeadx3rkmGXU4lflYbV46JM5DZksUMtzIVN
-         U/XEZSrcnqjbOBxVyOOXZVWlx0hp9Fu5nKxWv12BNG1XktevXZFB3m/Y6U7AR+1tVcE2
-         moSCPz5d5L9dbdRbJMQnG2/CX8KHw3/wr6ghKVtubKYXwknqG+9T92FwxaKne2npOKfO
-         fDB0cU62aoS1208GpKYOLg5LwYk5buP/sgF+RjfJpmGKtXJeAinS5Jzr3wLXQdoHpwkg
-         lGa+9i5+l/igcHME3dLynxA3WXk5TN5TBIaxPE4oeCTUDNBsXUUsFu1mf5QJV6HhkRE8
-         9BPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=BnCISkt/rTW8As5S0Z1/CmUKmWtp6KufxVc54xAHFLs=;
-        b=VsPMBKkLqnh8OyFa64+A/98rngqoDrHGRcsbr735k5QBtX7UXFiUueBKGnk2Q3Mxz0
-         TEbDq+KTvxobVTWiGZ11VHTzlmBhi3C9P8Bdlw4gtRGvlqlwgECKaHvqzZUmrepr774c
-         D/1nE6C23Ue0/12ZlSQWz+mOCv0ZUIvqECaD+r32GiPJ9I4bc7CJgStEaVeQtjhLU87H
-         7us9ugM8SAvQzyDvOJBCy538Q/icmCVMJ4YT7llyctsFhbAY1lP+0VzCuwuKGCMg9JS4
-         UjaqqEDlr+dLfirVI2qf52cloJII1Zc597ayCvBl2BYBu1ynjsh18elCQsCs2A1CAgru
-         lJdQ==
-X-Gm-Message-State: ACgBeo1U4jDwOtx9wZKIlbcWTkZpTaiFfhXdEWLhi68nsh8qhytUsdm4
-        QMSOAsJfrOT6A88X51OBNxbfeFFi0brLu7uq5A9OYg==
-X-Google-Smtp-Source: AA6agR7fdKTqJ79i3lBMbE47XG4iizoPXTEVMh+XjGTeEPP0Bf+PZ8XOj+9lhkdsDhh+hXPLRsJykxdjz32sjCymNEA=
-X-Received: by 2002:a05:6902:1348:b0:671:78a4:471f with SMTP id
- g8-20020a056902134800b0067178a4471fmr19280596ybu.242.1659522658125; Wed, 03
- Aug 2022 03:30:58 -0700 (PDT)
+        Wed, 3 Aug 2022 06:38:59 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C8DADF81
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 03:38:58 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LySyP0kWzz4x1J;
+        Wed,  3 Aug 2022 20:38:52 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1659523133;
+        bh=cZzR6q2FC68zDJPpV+tjLqwkyB0kdhohIKX2ZW6ahVU=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=KEW9aIfVu20bRph3tSKCXmLslC5VsGcwfUzOYm1MZslcIr9AYIP/4zoqQTWJ0391c
+         1W8yy9NLlPyQvZdSFlwpi13uMHfiIEASKn2U0dHJMaqZUWwBg5dHR0gvFu7tpwn4Sk
+         ZpOALjuJ9BGIN1npA4FJx4a7GKGM0+ECN2EtiP+7BvEg235qcaz2j5FH50/E4avAGd
+         cYlfmJMBBNveyoLDCBR3gV3kmCy4B/ytDh3hxLFgxrsigD3kHein5LaAKokvexOAbO
+         s/D3+NSVHju4MaQMaJXHmIyjbaVfUewfxnFX9joocEIBTn3/wGMrmzxflQG93ONquM
+         ZIIVJLeSAamAQ==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Paul Mackerras <paulus@samba.org>
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH 2/3] powerpc/ppc-opcode: Define and use PPC_RAW_TRAP()
+ and PPC_RAW_TW()
+In-Reply-To: <1659513939.dxqqwb8mat.naveen@linux.ibm.com>
+References: <b2d762191b095530789ac8b71b167c6740bb6aed.1657205708.git.christophe.leroy@csgroup.eu>
+ <52c7e522e56a38e3ff0363906919445920005a8f.1657205708.git.christophe.leroy@csgroup.eu>
+ <1659513939.dxqqwb8mat.naveen@linux.ibm.com>
+Date:   Wed, 03 Aug 2022 20:38:48 +1000
+Message-ID: <87les5a9xj.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-15-glider@google.com>
- <CANpmjNP8kmZYRsdpHCni33W-Yjgy-ajCAuTE94zwUniyYt7WQw@mail.gmail.com>
-In-Reply-To: <CANpmjNP8kmZYRsdpHCni33W-Yjgy-ajCAuTE94zwUniyYt7WQw@mail.gmail.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Wed, 3 Aug 2022 12:30:21 +0200
-Message-ID: <CAG_fn=X8zV2j9aPviz23UH8tsbRTqefGoZOCRgJeVtcivdhKVA@mail.gmail.com>
-Subject: Re: [PATCH v4 14/45] mm: kmsan: maintain KMSAN metadata for page operations
-To:     Marco Elver <elver@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 2:21 PM Marco Elver <elver@google.com> wrote:
+"Naveen N. Rao" <naveen.n.rao@linux.ibm.com> writes:
+> Christophe Leroy wrote:
+>> Add and use PPC_RAW_TRAP() instead of opencoding.
+>> 
+>> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+>> ---
+>>  arch/powerpc/include/asm/ppc-opcode.h | 2 ++
+>>  arch/powerpc/include/asm/probes.h     | 3 ++-
+>>  arch/powerpc/xmon/xmon.c              | 2 +-
+>>  3 files changed, 5 insertions(+), 2 deletions(-)
+>> 
+>> diff --git a/arch/powerpc/include/asm/ppc-opcode.h b/arch/powerpc/include/asm/ppc-opcode.h
+>> index 89beabf5325c..5527a955fb4a 100644
+>> --- a/arch/powerpc/include/asm/ppc-opcode.h
+>> +++ b/arch/powerpc/include/asm/ppc-opcode.h
+>> @@ -581,6 +581,8 @@
+>>  
+>>  #define PPC_RAW_BRANCH(offset)		(0x48000000 | PPC_LI(offset))
+>>  #define PPC_RAW_BL(offset)		(0x48000001 | PPC_LI(offset))
+>> +#define PPC_RAW_TW(t0, a, b)		(0x7f000008 | ___PPC_RS(t0) | ___PPC_RA(a) | ___PPC_RB(b))
 >
-> On Fri, 1 Jul 2022 at 16:23, Alexander Potapenko <glider@google.com> wrot=
-e:
-> >
-> > Insert KMSAN hooks that make the necessary bookkeeping changes:
-> >  - poison page shadow and origins in alloc_pages()/free_page();
-> >  - clear page shadow and origins in clear_page(), copy_user_highpage();
-> >  - copy page metadata in copy_highpage(), wp_page_copy();
-> >  - handle vmap()/vunmap()/iounmap();
-> >
-> > Signed-off-by: Alexander Potapenko <glider@google.com>
-> > ---
-> > v2:
-> >  -- move page metadata hooks implementation here
-> >  -- remove call to kmsan_memblock_free_pages()
-> >
-> > v3:
-> >  -- use PAGE_SHIFT in kmsan_ioremap_page_range()
-> >
-> > v4:
-> >  -- change sizeof(type) to sizeof(*ptr)
-> >  -- replace occurrences of |var| with @var
-> >  -- swap mm: and kmsan: in the subject
-> >  -- drop __no_sanitize_memory from clear_page()
-> >
-> > Link: https://linux-review.googlesource.com/id/I6d4f53a0e7eab46fa29f034=
-8f3095d9f2e326850
-> > ---
-> >  arch/x86/include/asm/page_64.h |  12 ++++
-> >  arch/x86/mm/ioremap.c          |   3 +
-> >  include/linux/highmem.h        |   3 +
-> >  include/linux/kmsan.h          | 123 +++++++++++++++++++++++++++++++++
-> >  mm/internal.h                  |   6 ++
-> >  mm/kmsan/hooks.c               |  87 +++++++++++++++++++++++
-> >  mm/kmsan/shadow.c              | 114 ++++++++++++++++++++++++++++++
-> >  mm/memory.c                    |   2 +
-> >  mm/page_alloc.c                |  11 +++
-> >  mm/vmalloc.c                   |  20 +++++-
-> >  10 files changed, 379 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/arch/x86/include/asm/page_64.h b/arch/x86/include/asm/page=
-_64.h
-> > index baa70451b8df5..227dd33eb4efb 100644
-> > --- a/arch/x86/include/asm/page_64.h
-> > +++ b/arch/x86/include/asm/page_64.h
-> > @@ -45,14 +45,26 @@ void clear_page_orig(void *page);
-> >  void clear_page_rep(void *page);
-> >  void clear_page_erms(void *page);
-> >
-> > +/* This is an assembly header, avoid including too much of kmsan.h */
->
-> All of this code is under an "#ifndef __ASSEMBLY__" guard, does it matter=
-?
-Actually, the comment is a bit outdated. kmsan-checks.h doesn't
-introduce any unnecessary declarations and can be used here.
+> Shouldn't that be 0x7c000008 ?
 
-> > +#ifdef CONFIG_KMSAN
-> > +void kmsan_unpoison_memory(const void *addr, size_t size);
-> > +#endif
-> >  static inline void clear_page(void *page)
-> >  {
-> > +#ifdef CONFIG_KMSAN
-> > +       /* alternative_call_2() changes @page. */
-> > +       void *page_copy =3D page;
-> > +#endif
-> >         alternative_call_2(clear_page_orig,
-> >                            clear_page_rep, X86_FEATURE_REP_GOOD,
-> >                            clear_page_erms, X86_FEATURE_ERMS,
-> >                            "=3DD" (page),
-> >                            "0" (page)
-> >                            : "cc", "memory", "rax", "rcx");
-> > +#ifdef CONFIG_KMSAN
-> > +       /* Clear KMSAN shadow for the pages that have it. */
-> > +       kmsan_unpoison_memory(page_copy, PAGE_SIZE);
->
-> What happens if this is called before the alternative-call? Could this
-> (in the interest of simplicity) be moved above it? And if you used the
-> kmsan-checks.h header, it also doesn't need any "ifdef CONFIG_KMSAN"
-> anymore.
+Yes, my script agrees.
 
-Good idea, that'll work.
+https://github.com/mpe/misc-scripts/blob/master/ppc/ppc-instruction-encode
 
-> > +#endif
-> >  }
+$ ./ppc-instruction-encode 0:31 6:t0 11:ra 16:rb 21:4 31:
+.long 0x7c000008
+t0 << 21
+ra << 16
+rb << 11
 
 
+I guess the only user is PPC_RAW_TRAP() which passes t0 = 31, so that's
+why nothing has broken.
 
---=20
-Alexander Potapenko
-Software Engineer
+Send a fixup? :)
 
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
+cheers
