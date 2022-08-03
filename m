@@ -2,78 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 459DEC19F2A
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F38FCC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236027AbiHCJU4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 05:20:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38994 "EHLO
+        id S236832AbiHCJVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 05:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236468AbiHCJUr (ORCPT
+        with ESMTP id S234652AbiHCJVl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 05:20:47 -0400
-Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AAD14E613
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 02:20:45 -0700 (PDT)
-X-QQ-mid: bizesmtp66t1659518435tcy4ogi5
-Received: from localhost.localdomain ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 03 Aug 2022 17:20:25 +0800 (CST)
-X-QQ-SSF: 01400000002000C0K000B00C0000000
-X-QQ-FEAT: W+onFc5Tw4Oqh24lEr6B3ZCNdcvNCXFqy6OaiwkY2QHg01q4ATXn1a1pNwxZ9
-        Y6Gu1Bpl97AUGZvxhHIP+g7kk06IUPlPHByajYAGo06oAZOf1moP64qya5i8AF+rMvwTu0c
-        fOiF7LF6TFeHqp+KAC/DwjxbHnXlHsfeM5syB9KMliraFdhiGM9Tryw9TMLvT0n1LmM5cWo
-        23KPdWlp/YqFVsqcCp5wGN6eh/syehFN1+ay2w5I6hAcda9xZdaoJatO6SiGOAHTQ8matE2
-        BhF9NJQo+x2dRjc4/lMjyudv3erE6bwhSpvvS1Do4eFwxkwuwWecFGnCk8wOYVoufGLLQve
-        Qf47s0f8g1mOZzxk+lnDamh+3YLdyEmyY1Q9vTDrEeAqUsEiROmPTN0msvW8CRyH39ixVez
-        lVSqgX7xUN15830BtoV87w==
-X-QQ-GoodBg: 2
-From:   Zhen Ni <nizhen@uniontech.com>
-To:     airlied@linux.ie, daniel@ffwll.ch, evan.quan@amd.com,
-        alexander.deucher@amd.com, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Zhen Ni <nizhen@uniontech.com>
-Subject: [PATCH 2/2] drm/amd/pm: Fix a potential gpu_metrics_table memory leak
-Date:   Wed,  3 Aug 2022 17:19:59 +0800
-Message-Id: <20220803091959.10030-2-nizhen@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220803091959.10030-1-nizhen@uniontech.com>
-References: <20220803091959.10030-1-nizhen@uniontech.com>
+        Wed, 3 Aug 2022 05:21:41 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1335119C09;
+        Wed,  3 Aug 2022 02:21:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659518501; x=1691054501;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=d6XBXtM845jMdiFmbaDR0+BJGHsJ6Jy8XevdcIT4puE=;
+  b=GWCqmXghW/DiUC7ZYaUvYMJLpxmClZtNIA7gF614XWduEeWkXtNQYCev
+   uPtcPezLvP3qKxAk57z7a/riGu3SA7SJlUbGCuMvyVGKcVEe6/zIrR0c/
+   RlxSoGEbaH5s9XhAaBAq0VIvm8wDNVcsCdsko/BFQXG2k9D6L6Ge6nJcK
+   xKuoTbyC8ASAlOk4srwedk5uZi25qSjva408RuI4C5sVzw99CKUXEUYSe
+   bgWeDjY5JLkQAxsixBGocURFjaV7yPf1il+Dl6bXEldLKHEB1s0Kbk178
+   VXofSPaFkISc9KFOZc5khh+V1lspdaDIZhaNIBYYOV5yfDWW4wQ2pOChA
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="289638877"
+X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
+   d="scan'208";a="289638877"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 02:21:40 -0700
+X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
+   d="scan'208";a="553255200"
+Received: from gvenka2-desk.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.212.85.17])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 02:21:35 -0700
+Message-ID: <d3ec341c4133714f2b8541830fc9fc815c32a59f.camel@intel.com>
+Subject: Re: [PATCH v5 02/22] cc_platform: Add new attribute to prevent ACPI
+ CPU hotplug
+From:   Kai Huang <kai.huang@intel.com>
+To:     Binbin Wu <binbin.wu@linux.intel.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     linux-acpi@vger.kernel.org, seanjc@google.com, pbonzini@redhat.com,
+        dave.hansen@intel.com, len.brown@intel.com, tony.luck@intel.com,
+        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
+        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com, thomas.lendacky@amd.com,
+        Tianyu.Lan@microsoft.com, rdunlap@infradead.org, Jason@zx2c4.com,
+        juri.lelli@redhat.com, mark.rutland@arm.com, frederic@kernel.org,
+        yuehaibing@huawei.com, dongli.zhang@oracle.com
+Date:   Wed, 03 Aug 2022 21:21:33 +1200
+In-Reply-To: <27de096d-4386-fb46-fd6d-229bea7b7a4a@linux.intel.com>
+References: <cover.1655894131.git.kai.huang@intel.com>
+         <f4bff93d83814ea1f54494f51ce3e5d954cf0f5b.1655894131.git.kai.huang@intel.com>
+         <27de096d-4386-fb46-fd6d-229bea7b7a4a@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign9
-X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Memory is allocated for gpu_metrics_table in
-smu_v13_0_5_init_smc_tables(), but not freed in
-smu_v13_0_5_fini_smc_tables(). This may cause memory leaks, fix it.
+On Wed, 2022-08-03 at 11:55 +0800, Binbin Wu wrote:
+> On 2022/6/22 19:15, Kai Huang wrote:
+> >  =20
+> > @@ -357,6 +358,17 @@ static int acpi_processor_add(struct acpi_device *=
+device,
+> >   	struct device *dev;
+> >   	int result =3D 0;
+> >  =20
+> > +	/*
+> > +	 * If the confidential computing platform doesn't support ACPI
+> > +	 * memory hotplug, the BIOS should never deliver such event to
+> memory or cpu hotplug?
 
-Signed-off-by: Zhen Ni <nizhen@uniontech.com>
----
- drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c | 3 +++
- 1 file changed, 3 insertions(+)
+Sorry typo.  Should be CPU.
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c
-index b81711c4ff33..267c9c43a010 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c
-@@ -167,6 +167,9 @@ static int smu_v13_0_5_fini_smc_tables(struct smu_context *smu)
- 	kfree(smu_table->watermarks_table);
- 	smu_table->watermarks_table = NULL;
- 
-+	kfree(smu_table->gpu_metrics_table);
-+	smu_table->gpu_metrics_table = NULL;
-+
- 	return 0;
- }
- 
--- 
-2.20.1
+Anyway this patch will be dropped in next version.
 
+--=20
+Thanks,
+-Kai
 
 
