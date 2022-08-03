@@ -2,144 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA68EC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 07:01:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A39C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 07:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236933AbiHCHBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 03:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37704 "EHLO
+        id S235243AbiHCHCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 03:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233892AbiHCHBk (ORCPT
+        with ESMTP id S233892AbiHCHCj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 03:01:40 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2069.outbound.protection.outlook.com [40.107.21.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9FC6463;
-        Wed,  3 Aug 2022 00:01:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I+h+Ifa6w39uq1gahUxyZ5LRXNikMxcDZ6XIDlxa8XgS1uTqZV79QIFoR8r1qxeLXl6ke9RXQvTE0eFbNt76WqLyqt9YR68mLbN8AhkWfzAHtbtfM94xl7qS4VSlnGdA6kWV4qhusCugjemB2/XrEPZI5htnh/hZrWwvZr910hgjUgHXbj1MJDJPdV2uDa8G0GtjREAFY2DHbA2IgDHhsha/2dOHIp77XErtNdzJHHgaL4/S+BucfyiTrl3Ew0IvvzChWI2j0veiPkvNrQpVQ9N1sqHzwYiN5V1yZDfUDdrz4Wviq9kVr3v566oXmk+sKGFKC9p9dbclKx+GdYEi8g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BslB4pNoOoBbnd+CFDwyLJTW8eORRZAHBqOsZBH7UOo=;
- b=PV5/VeAJeBSGEpm+DhXk7saW1Krg4FbOWlj1XTPEVy7YLzevdqBJ2EruVsNZrVuSLttp2Tudc3Os5R4/1jyF9jCwJRBnOLc4uajp86gby1GyzyZmHnD98whDETB3VpsF8o0eXz+ya82g4vOMDyo4/2HnjCKrC8nR9V7oMYexNaUtIof9yefGELqAhDzqt0VBHLQtEXvLLuNJhinwVtAlkn8SpOL9KasqXxHMD5EWVqKdwvr1kHJIq/UuZDSMcgKzw+PNRgDAe92gzdJPdfBdi3ARki6GVo4v1PRVl3oaYYiNs+FWpwBKBYQ5kuPU+PYzqSuXAI6/EOCgondBGuGXJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BslB4pNoOoBbnd+CFDwyLJTW8eORRZAHBqOsZBH7UOo=;
- b=GgPztku7UT3xgASI6SeN8peMDBlyY3U+UWRH3dv6TP2A45MTDID9VKjVGawvEVuWcZPkl61cYX2AcFJllH+A/h2mqymOd2SL9QWFen7obTx0Ev50QQWQvIP8iH2V/NnG48oeHRqC8xNygVpGYkqtGq1bmRIzBLcEKd73jsrs2gQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by AS8PR04MB8024.eurprd04.prod.outlook.com (2603:10a6:20b:2a3::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Wed, 3 Aug
- 2022 07:01:36 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::d547:3040:284e:580c]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::d547:3040:284e:580c%8]) with mapi id 15.20.5504.014; Wed, 3 Aug 2022
- 07:01:36 +0000
-From:   Sherry Sun <sherry.sun@nxp.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH] tty: serial: imx: initialize peripheral_config/peripheral_size for sdma config
-Date:   Wed,  3 Aug 2022 14:57:37 +0800
-Message-Id: <20220803065737.14752-1-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0006.apcprd02.prod.outlook.com
- (2603:1096:3:17::18) To AS8PR04MB8404.eurprd04.prod.outlook.com
- (2603:10a6:20b:3f8::7)
+        Wed, 3 Aug 2022 03:02:39 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65D1639B
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 00:02:36 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id z4so3297851ljn.8
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 00:02:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=ERBLD//5Rxus/cD9VPLqlwRlILuoKA5rTudtuRc8t+k=;
+        b=fgmIvjvkdynK95/GPR1fzwSA1Q6P3h4BOHxxY08oHzP0oUcHLOorxwuK6+q/6dPfCq
+         vEqE/vIOU5yX6CaOAQz3pbm8AVR4cwULgb2bqwP4C7aksbdDI27wQ/7dm6Y0RsbPaOR5
+         2MFfhcK2dxkX9STfoHVK+5bzOXlqdqmeuaVGt8iCgW0CwXmcdyMtNjyx0U6dPyAsJi49
+         7UHSM5Ly0iWY/P7uEFQTM3LLKUW2ozvIPCzbUqrzGu3EokqLgroqZ+nzA68Y9RCxsLVQ
+         RHcDjW30zXL5ABQAQduDFgcOqoBxkKG8oaiyPxOp5vnDi6hBAZCd8HaLxq/Rd+ZFRTPv
+         53uQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=ERBLD//5Rxus/cD9VPLqlwRlILuoKA5rTudtuRc8t+k=;
+        b=r/CcQLyog5nrPp9JL8bjX0dq/61XHwFGAV5rNstrsjcblzq8r8qqyquQ6a+n0ME3gQ
+         hutJmNE3ejGVGbu2CBJErYRrl04tySPSyf4sqo27lWuwTx1dUJOT4X5dUPjHNyp8r0A+
+         F6UzXgaxYv7Zd8nS3qvbF1dow0uXFkl89r1XvgSZ6hu88SErZA4zjkpLtGPvPJj0sBbP
+         6qcypdc1sRaIvIkUNe2J0hNIKf/GyrC5gZ7qQTl7zPvt7GPtc923cElZ3L7K0JXNZekX
+         V8qnudk5YQkpFOjM1bd4u+2jgujlD2856FBCOPJQI3cf1hiUrpA7UxCkJLI1cAB/2ycZ
+         tcaw==
+X-Gm-Message-State: ACgBeo27Tex8vxvL7oAHkxroBakAS3q9ngaKibkWfTmhI+gRypasf3Gm
+        BoTA57LxSs9mqN1t8AHCDl5EIg==
+X-Google-Smtp-Source: AA6agR4jON1tKEksi3I4Vq4PlB22Ex/PiBV2zVW/0xnyca+mCjolZrKI4ojvPaOe4SLUdWU9n8Tc2A==
+X-Received: by 2002:a2e:5455:0:b0:25e:4b87:9714 with SMTP id y21-20020a2e5455000000b0025e4b879714mr4560693ljd.463.1659510154998;
+        Wed, 03 Aug 2022 00:02:34 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id o24-20020a056512053800b00489d1896c06sm1436681lfc.125.2022.08.03.00.02.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Aug 2022 00:02:34 -0700 (PDT)
+Message-ID: <b375ac1e-312d-d669-48a8-bef2e7e0e424@linaro.org>
+Date:   Wed, 3 Aug 2022 10:02:33 +0300
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 006e29f4-982d-42bd-856b-08da751e0160
-X-MS-TrafficTypeDiagnostic: AS8PR04MB8024:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /5VF6utvHqAUBO4Aa21fR9eZxzXcoLXDVxzJzHnCUikWhbSoj8wnkAoZRMhOq89U8IjoNXA1JcC6wCkc5RPg/7qOx6V68SkRpfoNlC8q0JP2tEFX6ixJhuiMTixhOTWM3+vaEB6WNoTI0qczV3sgZcreZMPwdf+PnQlGLU2s7ULLP1Qq8ZGlIxJsM7RQnunS5TJDPikxGNEFHwkjszn7Z2rZEwFAanwOdsz81bvZsAf9Qr7xsxWrTy2dvo9v89aCN5V4avtPKlWuZmVOQHRylwzzj3Tjd59IrmjxM88pUTFsmtdYXpeCwMqddECmT4VNemKtH/sbMTFvEckSMc7g9I+/ylk6ZgXrAcoDn1QhvZBuv1PbvsElpFTVfsA9wlpZyOZZPPa0e6jiSbmTpU6J22M1Lh9HRJrPXaCFk2CJKy+Z1X2vUrkx1p4iylzKv9sEaOqvxrNhHHVhRpTPUlwnVfzR1LdsFVOsDZI1befSRvPK65h2KEhNLkgXj+0lqUZfo9fJBOGTVngo9qo0YLmzNSnMzI0UfI/D00vfE530CjvhyK8+KXcU7JCYecQVEvXhbwZ9PKZOa/+fArSHvZi6d8qmY1QCgltHLGvw1N8dtXVOoP5fDWGG3dT/Ut+CP5ZGe9LQtSi64POJ5zjt+6e6f8/6eNZ/s91LldNhNXvQPvC0+nNHYd2n1lAG1tmwhFI8ZXaOTVgEGj/syELynZIFoXKpTTvz2IkOIax2hF99vg1mO8iWOlB8spZUv+up5QLIBIGZNYBwat3R2hGJh+g9a5EMy9357OfZLJH1cf65HonO7rZkwq/eePbLwsfj5omb
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(136003)(396003)(376002)(346002)(38100700002)(316002)(38350700002)(44832011)(186003)(36756003)(4326008)(5660300002)(8676002)(66946007)(2616005)(66556008)(66476007)(6506007)(6486002)(41300700001)(2906002)(8936002)(1076003)(86362001)(6512007)(26005)(52116002)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?D6gJAQYM4/PwUciLdvE2Z8aPWHdiu3pf66XitZQceRFOti4OJIuGQ9Ba7/3L?=
- =?us-ascii?Q?ebJE0kiZdkLc3mBGAab6Un8tCdEFKFU4DAlCRE9JpIS41J7pQB7gkfCRdIZr?=
- =?us-ascii?Q?8Y20WTUlVcAsOXsTm3325mNXrk9C5hfDyHoVjaX9AbRYV5mR56BLaHFFvziX?=
- =?us-ascii?Q?TZocEiTBmr3DLqJxHdtLa+OTKmdgKLL7DaIl4brhehYvXLmOEjnZ5o3cmKyD?=
- =?us-ascii?Q?v2m/r8D4csUa8SAhrokgcq7aJvSBtMujvKoqXY9qQvw1AlgGIs0HNl7vVoze?=
- =?us-ascii?Q?Y0EZkoY1cJl6UmZ6m6TaoxYRGmOairCdU3iuNUrsRstVeKigXFeUS2CazxyB?=
- =?us-ascii?Q?pghudGouB7TF4vigVg+ZcjQANKWJ1Peb76xRls8CA/74T7uURJ1tz3wmRUYV?=
- =?us-ascii?Q?MBM8EgpygxzIdzZWcrTjU5Vh7yfxUyfc707tZUVLX1gJ+rUbkhAskuPmR0vt?=
- =?us-ascii?Q?A38DeqI9EhpAKVYBO2++BHBFSpU9m8SHWm7CHX1Lb1CqC/e5k0a06CdMkTaR?=
- =?us-ascii?Q?tXcH8A87X+deuI/oBQ/AcGsy08f9wx1CVPJDNpavbhQSHcHkjFQiuIl8w1Nw?=
- =?us-ascii?Q?m3p9hsbaSWUygmjOdDpD+qlks8TVwQzbfOZ6ErOQQ6A5RUUTONx8GlflXGAA?=
- =?us-ascii?Q?/71zCDQCmddk5nylXLGvTDKtvfM1WzSmfzNghETIxOr/Fg18m4Uc6c79Pulz?=
- =?us-ascii?Q?AGh0xt5hdn5+kC+kxgLZAhuaDsiBUqb0FrS6YIIXfjJHZzkbg3YNTlMfpHeN?=
- =?us-ascii?Q?lMiDsr0ksdxSimXxapz+ekg+f/co0RfzqzSbzksLuioPY+QupyvBUeWFK94y?=
- =?us-ascii?Q?3NbR/MyA81BIiUQtjTPZA8qYvSSul4OJjHlGqrIe5JZzjD7ppcG1Yp2GZf6q?=
- =?us-ascii?Q?6mRrAUgwf5Jynhc2kqD6Rgg/3gA3/3RRmui3DYkLeIMemw1Aw0Q3oYo4N7rN?=
- =?us-ascii?Q?mTZ7aTJg7Z3DYwgECilbZB8e/MdnnIxkSiGTHoVHO0K/3Mhi3vMVTVoRiEzC?=
- =?us-ascii?Q?Bz4LGkgOTg5dT4AOJFHK7WwpEpodjsyYy+eGbXwBLArNZHn3yxcc5EDfLFQf?=
- =?us-ascii?Q?N8YIFPCqCuHf4D5t4wS0w9UKPcazu3Aq7lRQmi6BcbVNORAz2TpeQmZdghtZ?=
- =?us-ascii?Q?sEoolpOX2HbTR766dKdjPKW1/vqGmigXy7XYyh+zg4COQvVHiOpKuk0zsRiT?=
- =?us-ascii?Q?IqdeU2oiB/2kwqpKP8m+nPF1d3pkBffShfo0fOLgdBR0MAaWAWW2VmKg8cHV?=
- =?us-ascii?Q?V4w1owc8AnZpu8Iq77UPQwKOufKJkz64y9tOJ3JyNAT0hFww8DTHPZvgf+DI?=
- =?us-ascii?Q?WEaLuSQsmEP/Ea1Rt+DFA8ZHn61iBf2kynQb3X8neHt7Eyi0xtCGeJsRR9TP?=
- =?us-ascii?Q?fSVUcTV+OFa6+8JVwvZlXkkFUPy+wOpvQiWzA+n7NiR4peHtXVXX9AG8pckN?=
- =?us-ascii?Q?FhAtP+UngC+nlAJ8QawB5EOula9HXdZJPd81UZ+HtAGOM8V0ssphrQCebuTK?=
- =?us-ascii?Q?COrf5dJePGUVwwtetWgo5adphFih+iY9ridoRPR99+WRgcRlkjoW1RPUKaGO?=
- =?us-ascii?Q?kT1foYKt2yxi8MHgSKl6vjay9Xyljsaf0QTr9xGj?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 006e29f4-982d-42bd-856b-08da751e0160
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2022 07:01:36.2198
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fzXWPZYj4YX0/hyknuZdDoBNlfD8RMLU4bq5uWpVrTfE4ciyx0ieXdHMi0ZJCn92rni+1AvIFVDkvOhUylmyYQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8024
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 2/6] drm/msm/dsi: Fix number of regulators for SDM660
+Content-Language: en-GB
+To:     Douglas Anderson <dianders@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc:     dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>,
+        linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Rajeev Nandan <quic_rajeevny@quicinc.com>,
+        Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        linux-kernel@vger.kernel.org
+References: <20220802223738.898592-1-dianders@chromium.org>
+ <20220802153434.v3.2.I94b3c3e412b7c208061349f05659e126483171b1@changeid>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220802153434.v3.2.I94b3c3e412b7c208061349f05659e126483171b1@changeid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 824a0a02cd74 ("dmaengine: imx-sdma: Add multi fifo support")
-adds the use of dma_slave_config->peripheral_config/peripheral_size to
-sdma driver, the client drivers like uart need to initialize the
-peripheral_config/peripheral_size for sdma, otherwise, the random value
-of local variable slave_config may cause unexpected peripheral_config
-and make sdma mess up.
+On 03/08/2022 01:37, Douglas Anderson wrote:
+> 1 regulators is specified listed but the number 2 is specified. This
+> presumably means we try to get a regulator with no name. Fix it.
+> 
+> Fixes: 033f47f7f121 ("drm/msm/dsi: Add DSI configuration for SDM660")
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
----
- drivers/tty/serial/imx.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 522445a8f666..bb8c2a712e94 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1320,6 +1320,8 @@ static int imx_uart_dma_init(struct imx_port *sport)
- 	slave_config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
- 	/* one byte less than the watermark level to enable the aging timer */
- 	slave_config.src_maxburst = RXTL_DMA - 1;
-+	slave_config.peripheral_config = NULL;
-+	slave_config.peripheral_size = 0;
- 	ret = dmaengine_slave_config(sport->dma_chan_rx, &slave_config);
- 	if (ret) {
- 		dev_err(dev, "error in RX dma configuration.\n");
-@@ -1346,6 +1348,8 @@ static int imx_uart_dma_init(struct imx_port *sport)
- 	slave_config.dst_addr = sport->port.mapbase + URTX0;
- 	slave_config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
- 	slave_config.dst_maxburst = TXTL_DMA;
-+	slave_config.peripheral_config = NULL;
-+	slave_config.peripheral_size = 0;
- 	ret = dmaengine_slave_config(sport->dma_chan_tx, &slave_config);
- 	if (ret) {
- 		dev_err(dev, "error in TX dma configuration.");
+> ---
+> 
+> (no changes since v2)
+> 
+> Changes in v2:
+> - ("Fix number of regulators for SDM660") new for v2.
+> 
+>   drivers/gpu/drm/msm/dsi/dsi_cfg.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/dsi/dsi_cfg.c b/drivers/gpu/drm/msm/dsi/dsi_cfg.c
+> index 02000a7b7a18..72c018e26f47 100644
+> --- a/drivers/gpu/drm/msm/dsi/dsi_cfg.c
+> +++ b/drivers/gpu/drm/msm/dsi/dsi_cfg.c
+> @@ -148,7 +148,7 @@ static const char * const dsi_sdm660_bus_clk_names[] = {
+>   static const struct msm_dsi_config sdm660_dsi_cfg = {
+>   	.io_offset = DSI_6G_REG_SHIFT,
+>   	.reg_cfg = {
+> -		.num = 2,
+> +		.num = 1,
+>   		.regs = {
+>   			{"vdda", 12560, 4 },	/* 1.2 V */
+
+We should find some time and switch the reg_cfg.regs to be the external 
+array, so that we can use ARRAY_SIZE for the amount of regs. However it 
+is definitely not a showstopper for this series.
+
+
+
 -- 
-2.17.1
+With best wishes
+Dmitry
 
