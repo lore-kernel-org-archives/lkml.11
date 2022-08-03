@@ -2,128 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06CB2C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 12:00:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C8F6C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 12:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237681AbiHCMA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 08:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44244 "EHLO
+        id S237697AbiHCMDR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 08:03:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237654AbiHCMAZ (ORCPT
+        with ESMTP id S234806AbiHCMDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 08:00:25 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F433647C
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 05:00:24 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-10e6bdbe218so20476490fac.10
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 05:00:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=k85+BXyXynjZ9LSZSXWsf3MQl+dSKBggc5agia098P8=;
-        b=nzSIftlCZzp3NnHVf+zVO4P2cvt7R0Vb/+9SeBIE7ot8a+Nn1akpwSxc0WDrMCtXJj
-         JI5Wvvp+C4dq0ctrpVggyBfSTZZqK31vKg71HccE6605WiBxHVM90sRcfC70eZ3BX3tx
-         +l0MbhSURmo/uGc5YeluJ0GfF7ZLnENFCj4b5CDk6HGCwFaIbvZchvnH8T2Uie1ofxi2
-         /thywAWJTxoq2RFTyHHmKE64nNI1hQ1qHCsKlxrW7jZMK7SYi/HRKTz3Q0HL7EskMRdD
-         UxGDPfOCsSx6BmDytaLpr2kpbuMHCKO1oxcGBvASzy2Sx/za5WF9eT9zGKEfClt7QINY
-         M7kQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=k85+BXyXynjZ9LSZSXWsf3MQl+dSKBggc5agia098P8=;
-        b=s6MMfaT1qVihDIYIGsSIblRXLTdWqZI5yAlNuo6jm/cMU2hInzBighsnCUnlLsMhOw
-         ciinqI+cPvrjSWyA0RHOjYWQxr5D7qJgRfGCZkz/SrwNCP9qw4SkHbwEDgK7rLl2bIA+
-         lKekiv6/lC3DQUwfguaie4vx513kSGY5jCMkC4eFeTQo//rNBmqecix9sGSNR4rL7TNc
-         p8yHR1chZdKTxE67nb8nl0oXaHnOThsa2kCh/PYsZPaFxAvgj3HD+f5ZjoZMxEGtIl20
-         IiBcn84D8fkvUq31uR0EQsCa+Ueptnpf+7CIqCPXIl6seRAmsfmtJDjK+5RP5114L5hQ
-         s5HQ==
-X-Gm-Message-State: ACgBeo2YfTO0qhA9FtovEzh9F56TRCYzHTQFf9Hla4xHlV/9Z5L4grfs
-        sFl//iSYmbZ5ykERFrBJgnu6dbd7XxeOEg==
-X-Google-Smtp-Source: AA6agR4OJE3JEX4SdirNZxWAXw9IAgX/r+aRoG9wImJGaaaVzzAwEAFHvKjOXWZNXgjW9YZTnbEifA==
-X-Received: by 2002:a05:6870:a1aa:b0:10d:a546:8aa3 with SMTP id a42-20020a056870a1aa00b0010da5468aa3mr1727370oaf.287.1659528023546;
-        Wed, 03 Aug 2022 05:00:23 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id g8-20020a9d6208000000b0061cbd18bd18sm4078207otj.45.2022.08.03.05.00.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Aug 2022 05:00:22 -0700 (PDT)
-Message-ID: <81d363ba-82ef-d556-2d77-083e3b2d9d02@linaro.org>
-Date:   Wed, 3 Aug 2022 07:00:21 -0500
+        Wed, 3 Aug 2022 08:03:13 -0400
+Received: from dggsgout12.his.huawei.com (unknown [45.249.212.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2583B1A072;
+        Wed,  3 Aug 2022 05:03:12 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.153])
+        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4LyVp82HH1z6S2yZ;
+        Wed,  3 Aug 2022 20:01:52 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.127.227])
+        by APP3 (Coremail) with SMTP id _Ch0CgDX38P6Y+piI+qYAA--.61185S4;
+        Wed, 03 Aug 2022 20:03:08 +0800 (CST)
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+To:     jack@suse.cz, axboe@kernel.dk, osandov@fb.com
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yukuai3@huawei.com, yukuai1@huaweicloud.com, yi.zhang@huawei.com
+Subject: [PATCH] sbitmap: fix possible io hung due to lost wakeup
+Date:   Wed,  3 Aug 2022 20:15:04 +0800
+Message-Id: <20220803121504.212071-1-yukuai1@huaweicloud.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [greybus-dev] Re: [PATCH linux-next] staging: greybus:using the
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>, cgel.zte@gmail.com
-Cc:     linux-kernel@vger.kernel.org, greybus-dev@lists.linaro.org,
-        ye xingchen <ye.xingchen@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20220803062258.1650792-1-ye.xingchen@zte.com.cn>
- <YuoWCSQCnNU3DrUL@kroah.com>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <YuoWCSQCnNU3DrUL@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _Ch0CgDX38P6Y+piI+qYAA--.61185S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxWr17AF4ruFWfAr4DCr48WFg_yoWrtrWrpr
+        43GFnYqanYvFWIywsrJw4UZa4Ykw4vg3srGrWfK34rCr12gr4Ykr109r15ury8Ars8Wry5
+        tr4fJFZ3CFWUXaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vI
+        r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
+        xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0
+        cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
+        AvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
+        xVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/3/22 1:30 AM, Greg KH wrote:
-> On Wed, Aug 03, 2022 at 06:22:58AM +0000, cgel.zte@gmail.com wrote:
->> From: ye xingchen <ye.xingchen@zte.com.cn>
->>
->> Using pm_runtime_resume_and_get() to instade of  pm_runtime_get_sync
->> and pm_runtime_put_noidle.
->>
->> Reported-by: Zeal Robot <zealci@zte.com.cn>
->> Signed-off-by:  <ye.xingchen@zte.com.cn>
->> ---
->>   drivers/greybus/core.c | 3 +--
->>   1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> diff --git a/drivers/greybus/core.c b/drivers/greybus/core.c
->> index e546c6431877..b9063e86534b 100644
->> --- a/drivers/greybus/core.c
->> +++ b/drivers/greybus/core.c
->> @@ -174,9 +174,8 @@ static int greybus_probe(struct device *dev)
->>   	if (!id)
->>   		return -ENODEV;
->>   
->> -	retval = pm_runtime_get_sync(&bundle->intf->dev);
->> +	retval = pm_runtime_resume_and_get(&bundle->intf->dev);
->>   	if (retval < 0) {
->> -		pm_runtime_put_noidle(&bundle->intf->dev);
->>   		return retval;
->>   	}
->>   
->> -- 
->> 2.25.1
-> 
-> Now this is just being silly.  Consider all future emails also dropped.
+From: Yu Kuai <yukuai3@huawei.com>
 
+There are two problems can lead to lost wakeup:
 
-No Greg, please don't do this, or please undo this.
+1) invalid wakeup on the wrong waitqueue:
 
-This happened because the original poster was not a subscriber to the
-greybus-dev mailing list.  Such messages get held until someone (me)
-releases them after picking them out from the mostly spam that is
-caught and held.  I have been trying to do that daily lately but
-it's still not enough to avoid this happening.
+For example, 2 * wake_batch tags are put, while only wake_batch threads
+are woken:
 
-You were on the original addressee list.  So you got the message
-immediately.  But the mailing list filter held it and sent it
-again when I released it yesterday.  This is why you saw it the
-second time.
+__sbq_wake_up
+ atomic_cmpxchg -> reset wait_cnt
+			__sbq_wake_up -> decrease wait_cnt
+			...
+			__sbq_wake_up -> wait_cnt is decreased to 0 again
+			 atomic_cmpxchg
+			 sbq_index_atomic_inc -> increase wake_index
+			 wake_up_nr -> wake up and waitqueue might be empty
+ sbq_index_atomic_inc -> increase again, one waitqueue is skipped
+ wake_up_nr -> invalid wake up because old wakequeue might be empty
 
-Ye Xingchen had nothing to do with your receiving the message twice.
+To fix the problem, increasing 'wake_index' before resetting 'wait_cnt'.
 
-					-Alex
+2) 'wait_cnt' can be decreased while waitqueue is empty
 
-> greg k-h
-> _______________________________________________
-> greybus-dev mailing list -- greybus-dev@lists.linaro.org
-> To unsubscribe send an email to greybus-dev-leave@lists.linaro.org
+As pointed out by Jan Kara, following race is possible:
+
+CPU1				CPU2
+__sbq_wake_up			 __sbq_wake_up
+ sbq_wake_ptr()			 sbq_wake_ptr() -> the same
+ wait_cnt = atomic_dec_return()
+ /* decreased to 0 */
+ sbq_index_atomic_inc()
+ /* move to next waitqueue */
+ atomic_set()
+ /* reset wait_cnt */
+ wake_up_nr()
+ /* wake up on the old waitqueue */
+				 wait_cnt = atomic_dec_return()
+				 /*
+				  * decrease wait_cnt in the old
+				  * waitqueue, while it can be
+				  * empty.
+				  */
+
+Fix the problem by waking up before updating 'wake_index' and
+'wait_cnt'.
+
+With this patch, noted that 'wait_cnt' is still decreased in the old
+empty waitqueue, however, the wakeup is redirected to a active waitqueue,
+and the extra decrement on the old empty waitqueue is not handled.
+
+Fixes: 88459642cba4 ("blk-mq: abstract tag allocation out into sbitmap library")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+---
+Changes in official version:
+- fix spelling mistake in comments
+- add review tag
+Changes in rfc v4:
+ - remove patch 1, which improve fairness with overhead
+ - merge patch2 and patch 3
+Changes in rfc v3:
+ - rename patch 2, and add some comments.
+ - add patch 3, which fixes a new issue pointed out by Jan Kara.
+Changes in rfc v2:
+ - split to spearate patches for different problem.
+ - add fix tag
+
+ previous versions:
+rfc v1: https://lore.kernel.org/all/20220617141125.3024491-1-yukuai3@huawei.com/
+rfc v2: https://lore.kernel.org/all/20220619080309.1630027-1-yukuai3@huawei.com/
+rfc v3: https://lore.kernel.org/all/20220710042200.20936-1-yukuai1@huaweicloud.com/
+rfc v4: https://lore.kernel.org/all/20220723024122.2990436-1-yukuai1@huaweicloud.com/
+ lib/sbitmap.c | 55 ++++++++++++++++++++++++++++++---------------------
+ 1 file changed, 33 insertions(+), 22 deletions(-)
+
+diff --git a/lib/sbitmap.c b/lib/sbitmap.c
+index 29eb0484215a..1aa55806f6a5 100644
+--- a/lib/sbitmap.c
++++ b/lib/sbitmap.c
+@@ -611,32 +611,43 @@ static bool __sbq_wake_up(struct sbitmap_queue *sbq)
+ 		return false;
+ 
+ 	wait_cnt = atomic_dec_return(&ws->wait_cnt);
+-	if (wait_cnt <= 0) {
+-		int ret;
++	/*
++	 * For concurrent callers of this, callers should call this function
++	 * again to wakeup a new batch on a different 'ws'.
++	 */
++	if (wait_cnt < 0 || !waitqueue_active(&ws->wait))
++		return true;
+ 
+-		wake_batch = READ_ONCE(sbq->wake_batch);
++	if (wait_cnt > 0)
++		return false;
+ 
+-		/*
+-		 * Pairs with the memory barrier in sbitmap_queue_resize() to
+-		 * ensure that we see the batch size update before the wait
+-		 * count is reset.
+-		 */
+-		smp_mb__before_atomic();
++	wake_batch = READ_ONCE(sbq->wake_batch);
+ 
+-		/*
+-		 * For concurrent callers of this, the one that failed the
+-		 * atomic_cmpxhcg() race should call this function again
+-		 * to wakeup a new batch on a different 'ws'.
+-		 */
+-		ret = atomic_cmpxchg(&ws->wait_cnt, wait_cnt, wake_batch);
+-		if (ret == wait_cnt) {
+-			sbq_index_atomic_inc(&sbq->wake_index);
+-			wake_up_nr(&ws->wait, wake_batch);
+-			return false;
+-		}
++	/*
++	 * Wake up first in case that concurrent callers decrease wait_cnt
++	 * while waitqueue is empty.
++	 */
++	wake_up_nr(&ws->wait, wake_batch);
+ 
+-		return true;
+-	}
++	/*
++	 * Pairs with the memory barrier in sbitmap_queue_resize() to
++	 * ensure that we see the batch size update before the wait
++	 * count is reset.
++	 *
++	 * Also pairs with the implicit barrier between decrementing wait_cnt
++	 * and checking for waitqueue_active() to make sure waitqueue_active()
++	 * sees result of the wakeup if atomic_dec_return() has seen the result
++	 * of atomic_set().
++	 */
++	smp_mb__before_atomic();
++
++	/*
++	 * Increase wake_index before updating wait_cnt, otherwise concurrent
++	 * callers can see valid wait_cnt in old waitqueue, which can cause
++	 * invalid wakeup on the old waitqueue.
++	 */
++	sbq_index_atomic_inc(&sbq->wake_index);
++	atomic_set(&ws->wait_cnt, wake_batch);
+ 
+ 	return false;
+ }
+-- 
+2.31.1
 
