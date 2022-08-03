@@ -2,140 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B7AC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:06:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4E7AC19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:06:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237309AbiHCIGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 04:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50828 "EHLO
+        id S237410AbiHCIG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 04:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232550AbiHCIGN (ORCPT
+        with ESMTP id S235199AbiHCIGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 04:06:13 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5C93220E4
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 01:06:11 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id a9so12488735lfm.12
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 01:06:11 -0700 (PDT)
+        Wed, 3 Aug 2022 04:06:24 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C978220E6;
+        Wed,  3 Aug 2022 01:06:21 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id m22so13481456lfl.9;
+        Wed, 03 Aug 2022 01:06:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=ZWDDdDUD/SeLY4Y1864eieW1iTgOf5yvfzhjZam9Gdo=;
-        b=UNQND0cz6Sg0ZYwWcksx3XWvJ3WA4eaJxJp4yui/nV3EMdbkFSaBpOGwZnon5itiyZ
-         eywb/D5cj+hY1KS92HUbT03Xzas2PMYxD5h5Q0Y0DXf4MLApk1H/im+q2nbWQuI/3srA
-         JbcxOqZhrwiuK+nf5i/uzmxpRWcKaxLW84wVDO6hw8G1VTgEX9mUuFsTcRgXNuqhqmED
-         QejTlDnrX6hYUCBUgZEX4fTFRURYsPw2lSkBZ7uWPUVZXutxAK4LsNlnQ14O34pEI+NI
-         I7UYa7XeYFObT79SeRKCG9CY6UvSMaYOTBdtpWbCHenXA7328Ga6gOZ+RoxN5Xg3UHFk
-         H/KQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:from:to:cc;
+        bh=TSlAb8QUNSWyAXVGnp8zPCHMrFa9cMCzn91LI53nZo8=;
+        b=F+Ir1CBQi581OpNqvOJ9SHUtV8QZSI2B+x1iNa8Z6Nd/CgF+xd2WlCeFVF7JxRu8zG
+         F+KPZisK6zCLTgA8pPctB8f4QaQqgKqvXvMT4JAbsJ2nZQO4tf7pYE5UZgOM3TDPju/q
+         Q4PNb6krIwj0i0F9jrqDMxrOkJNo4dWmbK0ZJ6A1t8JdUqzy2qD7rGRusBFMMSoBkXG6
+         irVoWmM2lVrLujVRr7UAtH6Biq/d2qPNeZolKjkb9FXwwkpnSODPDvxYUeGuZHGhYzKI
+         LOOQL/BID6iPDuMuGVblRg+GjzvHlKMdcmOHz6mxy9los9KbZRLCl6IApaPz91aUANpK
+         6/LQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=ZWDDdDUD/SeLY4Y1864eieW1iTgOf5yvfzhjZam9Gdo=;
-        b=EGU/G4mN5M6697BXeV4OrC5fPPTM+Ukl0yO4HAI9QVyVObv2P0FyThs5f/S67YDIDi
-         9lBmexl1VzrnlXx2rlWsHmzMsPaGecGKlru9SlXlW95W+8gClmigPT3X88z9pCJHA33b
-         YoKg0p+FzjvGJMmqX4DMnUWHOF1cp1FhoGb3Vs/Zg/IQPvS21wt54Aeg2X2R0HLFkZ2U
-         vrNi3sQI/gESXi0PrpnjBZ2gaO6ZjHgYK/1qnydvz1ZL0aJXOOVWvh91O1mURrfoQ6iM
-         czrVtXM06VIhDUaptc6u67ggWZrMoI3k9wxpN+uQm1qvmES0LcEaspHFBjEu7OhJDPLg
-         hnjw==
-X-Gm-Message-State: ACgBeo028BLgSrHPb1BkIDVTnMuQ/qJqvhm3kSZYdM8Zy+WzKXpSqDZ6
-        u2H3aTDODOmtki7ZlQMn/KXlVA==
-X-Google-Smtp-Source: AA6agR6YIKvmWjYaexviQIzgrn1Fy4OPtC8l6gFirTc4+daaC5Q/9KztGMbcs4zaIhmKkO0ln/EelA==
-X-Received: by 2002:ac2:43c8:0:b0:48a:f0e9:fc06 with SMTP id u8-20020ac243c8000000b0048af0e9fc06mr6238061lfl.458.1659513970078;
-        Wed, 03 Aug 2022 01:06:10 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id t9-20020ac24c09000000b0048a8586293asm2368309lfq.48.2022.08.03.01.06.09
+        bh=TSlAb8QUNSWyAXVGnp8zPCHMrFa9cMCzn91LI53nZo8=;
+        b=elMQlGC4kfdXvgCrpvMMDzXlfmCCfcL3vgFPmsRp+KCY0fsnh1071syQ0oeFKWtT8J
+         kKiONuRKdtOEkTZWWTWPfCJBmmVTzeXYHJGsz55yR9YEdv8TffViWWeBTM86Pr0cFatD
+         5NGAddKvVL0lRfFepo33KEgOvIfOaDRxSAaNEW6kPy5oMrQIUzouL+XnDF61UkkDc9h1
+         +5I63BiROjdmf9nP3oQn7xuz5v5EKIxPQGFgvafO8ihucac8QwEQSDXLOYqgBC7NnVFV
+         cyI9drPkH2X/dplChw005AYmO61kcgbwKDm0YQwPmxnWP6PGQ+EF097AfJkF+ajHjTjV
+         JAGA==
+X-Gm-Message-State: AJIora94nHO1nLvkLX9geD4y3AMtg3INKQBeu0PAbuakiPMFgefK8mjm
+        Eu83Ng/V86k0jgDrK4NPwBxE4nMKmee1tA==
+X-Google-Smtp-Source: AGRyM1tvVtEhDOQtk8IqozLo5JNRTUFSzsv1FwStjTEl+Nv54p5O3Pd3FhzdrOcI8ZSZgHIq+2l+Ig==
+X-Received: by 2002:a05:6512:13a1:b0:47f:787b:4e6a with SMTP id p33-20020a05651213a100b0047f787b4e6amr8213312lfa.64.1659513979143;
+        Wed, 03 Aug 2022 01:06:19 -0700 (PDT)
+Received: from [10.0.0.127] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
+        by smtp.gmail.com with ESMTPSA id o3-20020a2e9b43000000b0025e2cb58c6esm2223420ljj.37.2022.08.03.01.06.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Aug 2022 01:06:09 -0700 (PDT)
-Message-ID: <89469b0d-e6aa-4d60-c93c-a99256f65445@linaro.org>
-Date:   Wed, 3 Aug 2022 11:06:08 +0300
+        Wed, 03 Aug 2022 01:06:18 -0700 (PDT)
+Message-ID: <0fa5fdeb-b633-c543-3e98-1f5e1f064c34@gmail.com>
+Date:   Wed, 3 Aug 2022 11:08:29 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 00/13] PM6125 regulator support
-Content-Language: en-GB
-To:     Iskren Chernev <iskren.chernev@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Robert Marko <robimarko@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
-References: <20220731223736.1036286-1-iskren.chernev@gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220731223736.1036286-1-iskren.chernev@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Vaishnav Achath <vaishnav.a@ti.com>, vkoul@kernel.org,
+        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     nm@ti.com, vigneshr@ti.com, j-keerthy@ti.com, m-khayami@ti.com,
+        stanley_liu@ti.com
+References: <20220802054835.19482-1-vaishnav.a@ti.com>
+From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
+Subject: Re: [PATCH v3] dmaengine: ti: k3-udma: Reset UDMA_CHAN_RT byte
+ counters to prevent overflow
+In-Reply-To: <20220802054835.19482-1-vaishnav.a@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/08/2022 01:37, Iskren Chernev wrote:
-> This patch series adds SPMI and SMD regulator support for the PM6125 found on
-> SM4250/SM6115 SoCs from QCom.
-> 
-> This code has been tested on:
-> * OnePlus Nord N100 (oneplus,billie2, SoC sm4250)
-> * Redmi 9T (redmi,lemon, SoC sm6115)
-> 
-> The main source used for this change is qpnp pm6125 support patch from caf [1]:
-> 
-> [1]: https://source.codeaurora.org/quic/la/kernel/msm-5.4/commit/?h=kernel.lnx.5.4.r1-rel&id=d1220daeffaa440ffff0a8c47322eb0033bf54f5
-> 
-> v2: https://lkml.org/lkml/2022/7/26/885
-> v1: https://lkml.org/lkml/2021/8/28/144
-> 
-> Changes from v2:
-> - split spmi new regulator support in 2 patches
-> - FTS and LDOs now have set_load and set_pull_down ops
-> - add better commit messages on spmi patches
-> - fix sob header order
-> - fix tested device info (Redmi 9T, NOT Xiaomi 9T)
-> - improve formatting in spmi binding docs
-> - sort alphabetically in smd binding docs
-> - sort alphabetically spmi pmics
-> - sort alphabetically smd pmics
-> Changes from v1:
-> - add dt-bindings
-> - split SPMI patch into new reg types and the new PMIC
-> - add correct supply mapping
-> 
-> Iskren Chernev (13):
->    dt-bindings: regulator: qcom_spmi: Improve formatting of if-then
->      blocks
->    dt-bindings: regulator: qcom_spmi: Document PM6125 PMIC
->    dt-bindings: regulator: qcom_smd: Sort compatibles alphabetically
->    dt-bindings: regulator: qcom_smd: Document PM6125 PMIC
->    regulator: qcom_spmi: Add support for new regulator types
->    regulator: qcom_spmi: Add support for HFSMPS regulator type
->    regulator: qcom_spmi: Sort pmics alphabetically (part 1)
->    regulator: qcom_spmi: Sort pmics alphabetically (part 2)
->    regulator: qcom_spmi: Add PM6125 PMIC support
->    regulator: qcom_smd: Sort pmics alphabetically (part 1)
->    regulator: qcom_smd: Sort pmics alphabetically (part 2)
->    regulator: qcom_smd: Sort pmics alphabetically (part 3)
 
-What is the reason for these part1/2 and part1/2/3 splits? I think you 
-can collapse them into two respective patches, one sorting of spmi, 
-another one sorting the smd regulators
 
->    regulator: qcom_smd: Add PM6125 regulators support
+On 02/08/2022 08:48, Vaishnav Achath wrote:
+> UDMA_CHAN_RT_*BCNT_REG stores the real-time channel bytecount statistics.
+> These registers are 32-bit hardware counters and the driver uses these
+> counters to monitor the operational progress status for a channel, when
+> transferring more than 4GB of data it was observed that these counters
+> overflow and completion calculation of a operation gets affected and the
+> transfer hangs indefinitely.
 > 
->   .../regulator/qcom,smd-rpm-regulator.yaml     |  26 +-
->   .../regulator/qcom,spmi-regulator.yaml        |  32 ++
->   drivers/regulator/qcom_smd-regulator.c        | 400 ++++++++++--------
->   drivers/regulator/qcom_spmi-regulator.c       | 383 ++++++++++++-----
->   4 files changed, 556 insertions(+), 285 deletions(-)
+> This commit adds changes to decrease the byte count for every complete
+> transaction so that these registers never overflow and the proper byte
+> count statistics is maintained for ongoing transaction by the RT counters.
 > 
+> Earlier uc->bcnt used to maintain a count of the completed bytes at driver
+> side, since the RT counters maintain the statistics of current transaction
+> now, the maintenance of uc->bcnt is not necessary.
 
+Thanks for the updates:
+
+Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+
+btw: did you encountered issues with cyclic (audio, ADC) regarding to
+wrapping of the counters? S16_LE, stereo, 48KHz should wrap around
+22.369 hours.
+It is a bit trickier as we might be running without interrupts, so we
+can not rely on the same trick.
+
+> 
+> Signed-off-by: Vaishnav Achath <vaishnav.a@ti.com>
+> ---
+> V2->V3 :
+> 		* Remove unnecessary checks for uc->tchan and uc->rchan in 
+> 		udma_decrement_byte_counters()
+> V1->V2 :
+> 		* Update bcnt reset based on uc->desc->dir
+> 		* change order of udma_decrement_byte_counters() to before udma_start()
+> 		* update subsystem tag
+> 
+>  drivers/dma/ti/k3-udma.c | 25 +++++++++++++++++--------
+>  1 file changed, 17 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/dma/ti/k3-udma.c b/drivers/dma/ti/k3-udma.c
+> index 2f0d2c68c93c..fcfcde947b30 100644
+> --- a/drivers/dma/ti/k3-udma.c
+> +++ b/drivers/dma/ti/k3-udma.c
+> @@ -300,8 +300,6 @@ struct udma_chan {
+>  
+>  	struct udma_tx_drain tx_drain;
+>  
+> -	u32 bcnt; /* number of bytes completed since the start of the channel */
+> -
+>  	/* Channel configuration parameters */
+>  	struct udma_chan_config config;
+>  
+> @@ -757,6 +755,20 @@ static void udma_reset_rings(struct udma_chan *uc)
+>  	}
+>  }
+>  
+> +static void udma_decrement_byte_counters(struct udma_chan *uc, u32 val)
+> +{
+> +	if (uc->desc->dir == DMA_DEV_TO_MEM) {
+> +		udma_rchanrt_write(uc, UDMA_CHAN_RT_BCNT_REG, val);
+> +		udma_rchanrt_write(uc, UDMA_CHAN_RT_SBCNT_REG, val);
+> +		udma_rchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
+> +	} else {
+> +		udma_tchanrt_write(uc, UDMA_CHAN_RT_BCNT_REG, val);
+> +		udma_tchanrt_write(uc, UDMA_CHAN_RT_SBCNT_REG, val);
+> +		if (!uc->bchan)
+> +			udma_tchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
+> +	}
+> +}
+> +
+>  static void udma_reset_counters(struct udma_chan *uc)
+>  {
+>  	u32 val;
+> @@ -790,8 +802,6 @@ static void udma_reset_counters(struct udma_chan *uc)
+>  		val = udma_rchanrt_read(uc, UDMA_CHAN_RT_PEER_BCNT_REG);
+>  		udma_rchanrt_write(uc, UDMA_CHAN_RT_PEER_BCNT_REG, val);
+>  	}
+> -
+> -	uc->bcnt = 0;
+>  }
+>  
+>  static int udma_reset_chan(struct udma_chan *uc, bool hard)
+> @@ -1115,7 +1125,7 @@ static void udma_check_tx_completion(struct work_struct *work)
+>  		if (uc->desc) {
+>  			struct udma_desc *d = uc->desc;
+>  
+> -			uc->bcnt += d->residue;
+> +			udma_decrement_byte_counters(uc, d->residue);
+>  			udma_start(uc);
+>  			vchan_cookie_complete(&d->vd);
+>  			break;
+> @@ -1168,7 +1178,7 @@ static irqreturn_t udma_ring_irq_handler(int irq, void *data)
+>  				vchan_cyclic_callback(&d->vd);
+>  			} else {
+>  				if (udma_is_desc_really_done(uc, d)) {
+> -					uc->bcnt += d->residue;
+> +					udma_decrement_byte_counters(uc, d->residue);
+>  					udma_start(uc);
+>  					vchan_cookie_complete(&d->vd);
+>  				} else {
+> @@ -1204,7 +1214,7 @@ static irqreturn_t udma_udma_irq_handler(int irq, void *data)
+>  			vchan_cyclic_callback(&d->vd);
+>  		} else {
+>  			/* TODO: figure out the real amount of data */
+> -			uc->bcnt += d->residue;
+> +			udma_decrement_byte_counters(uc, d->residue);
+>  			udma_start(uc);
+>  			vchan_cookie_complete(&d->vd);
+>  		}
+> @@ -3809,7 +3819,6 @@ static enum dma_status udma_tx_status(struct dma_chan *chan,
+>  			bcnt = udma_tchanrt_read(uc, UDMA_CHAN_RT_BCNT_REG);
+>  		}
+>  
+> -		bcnt -= uc->bcnt;
+>  		if (bcnt && !(bcnt % uc->desc->residue))
+>  			residue = 0;
+>  		else
 
 -- 
-With best wishes
-Dmitry
+Péter
