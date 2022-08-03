@@ -2,109 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E0D7C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF59C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238324AbiHCN5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 09:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42866 "EHLO
+        id S238346AbiHCN6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 09:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238752AbiHCNzw (ORCPT
+        with ESMTP id S238326AbiHCN6N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 09:55:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA4D4E030
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 06:55:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E4AA6156D
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 13:55:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C12A1C433D6;
-        Wed,  3 Aug 2022 13:55:38 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.96)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1oJEqX-007kQ4-2Q;
-        Wed, 03 Aug 2022 09:55:37 -0400
-Message-ID: <20220803135537.585734993@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Wed, 03 Aug 2022 09:55:09 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Zhiqiang Liu <liuzhiqiang26@huawei.com>
-Subject: [for-next][PATCH 1/5] tracing: Use free_trace_buffer() in allocate_trace_buffers()
-References: <20220803135508.240797292@goodmis.org>
+        Wed, 3 Aug 2022 09:58:13 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D106DF46;
+        Wed,  3 Aug 2022 06:58:10 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 677FC5FD2E;
+        Wed,  3 Aug 2022 16:58:08 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1659535088;
+        bh=J9ER1HEmraVRx9h4m7Z/Hk7Bb9oPnBAWW3L1QrdyfYY=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=kn/GaERL4M8G6sFAX1LPUGgkXbjOoyQU8UQX5Ai8IreW1Sv3Am839Z1n39MG0xaG5
+         Wd4/t6EICVjXSsadyhFlvpdRfh7gkepaUVSGgbRxOkapjcfb8HrbCEveaW4LQKIXax
+         IrZpbzJC7MIC1h1UfmM0n3BjH8ZaT63g+Z+WZaxbn0ECVrmqaw1KTDnzd9AsG21+R1
+         5QJZq9EYtt0cBrQQD6KwfIG3Fk+fRXGKMBsNpI0tuLg45Txb4UJd5VLUeIVM8VP8L/
+         psxM3bIE1D2Yn5qLg3SM4xs3Sjvk+03ajg9lH4NaG0blyTP12E0SFtUC0jhcVmnsRI
+         an/c2LSRKkTeA==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Wed,  3 Aug 2022 16:58:07 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Bryan Tan <bryantan@vmware.com>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "Arseniy Krasnov" <AVKrasnov@sberdevices.ru>
+CC:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: [RFC PATCH v3 4/9] vmci/vsock: use 'target' in notify_poll_in
+ callback
+Thread-Topic: [RFC PATCH v3 4/9] vmci/vsock: use 'target' in notify_poll_in
+ callback
+Thread-Index: AQHYp0EHffgjd/zij0eqhutm7RAwxw==
+Date:   Wed, 3 Aug 2022 13:57:54 +0000
+Message-ID: <2e420c8e-9550-c8c5-588f-e13b79a057ff@sberdevices.ru>
+In-Reply-To: <2ac35e2c-26a8-6f6d-2236-c4692600db9e@sberdevices.ru>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DBC437AB8ABBA54AB5A398157F78EA17@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/03 07:41:00 #20041172
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhiqiang Liu <liuzhiqiang26@huawei.com>
-
-In allocate_trace_buffers(), if allocating tr->max_buffer
-fails, we can directly call free_trace_buffer to free
-tr->array_buffer.
-
-Link: https://lkml.kernel.org/r/65f0702d-07f6-08de-2a07-4c50af56a67b@huawei.com
-
-Signed-off-by: Zhiqiang Liu <liuzhiqiang26@huawei.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- kernel/trace/trace.c | 25 +++++++++++--------------
- 1 file changed, 11 insertions(+), 14 deletions(-)
-
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 301305ec134b..27febd4ee33e 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -9101,6 +9101,16 @@ allocate_trace_buffer(struct trace_array *tr, struct array_buffer *buf, int size
- 	return 0;
- }
- 
-+static void free_trace_buffer(struct array_buffer *buf)
-+{
-+	if (buf->buffer) {
-+		ring_buffer_free(buf->buffer);
-+		buf->buffer = NULL;
-+		free_percpu(buf->data);
-+		buf->data = NULL;
-+	}
-+}
-+
- static int allocate_trace_buffers(struct trace_array *tr, int size)
- {
- 	int ret;
-@@ -9113,10 +9123,7 @@ static int allocate_trace_buffers(struct trace_array *tr, int size)
- 	ret = allocate_trace_buffer(tr, &tr->max_buffer,
- 				    allocate_snapshot ? size : 1);
- 	if (MEM_FAIL(ret, "Failed to allocate trace buffer\n")) {
--		ring_buffer_free(tr->array_buffer.buffer);
--		tr->array_buffer.buffer = NULL;
--		free_percpu(tr->array_buffer.data);
--		tr->array_buffer.data = NULL;
-+		free_trace_buffer(&tr->array_buffer);
- 		return -ENOMEM;
- 	}
- 	tr->allocated_snapshot = allocate_snapshot;
-@@ -9131,16 +9138,6 @@ static int allocate_trace_buffers(struct trace_array *tr, int size)
- 	return 0;
- }
- 
--static void free_trace_buffer(struct array_buffer *buf)
--{
--	if (buf->buffer) {
--		ring_buffer_free(buf->buffer);
--		buf->buffer = NULL;
--		free_percpu(buf->data);
--		buf->data = NULL;
--	}
--}
--
- static void free_trace_buffers(struct trace_array *tr)
- {
- 	if (!tr)
--- 
-2.35.1
+VGhpcyBjYWxsYmFjayBjb250cm9scyBzZXR0aW5nIG9mIFBPTExJTixQT0xMUkROT1JNIG91dHB1
+dCBiaXRzIG9mIHBvbGwoKQ0Kc3lzY2FsbCxidXQgaW4gc29tZSBjYXNlcyxpdCBpcyBpbmNvcnJl
+Y3RseSB0byBzZXQgaXQsIHdoZW4gc29ja2V0IGhhcw0KYXQgbGVhc3QgMSBieXRlcyBvZiBhdmFp
+bGFibGUgZGF0YS4gVXNlICd0YXJnZXQnIHdoaWNoIGlzIGFscmVhZHkgZXhpc3RzDQphbmQgZXF1
+YWwgdG8gc2tfcmN2bG93YXQgaW4gdGhpcyBjYXNlLg0KDQpTaWduZWQtb2ZmLWJ5OiBBcnNlbml5
+IEtyYXNub3YgPEFWS3Jhc25vdkBzYmVyZGV2aWNlcy5ydT4NCi0tLQ0KIG5ldC92bXdfdnNvY2sv
+dm1jaV90cmFuc3BvcnRfbm90aWZ5LmMgICAgICAgIHwgOCArKysrLS0tLQ0KIG5ldC92bXdfdnNv
+Y2svdm1jaV90cmFuc3BvcnRfbm90aWZ5X3FzdGF0ZS5jIHwgOCArKysrLS0tLQ0KIDIgZmlsZXMg
+Y2hhbmdlZCwgOCBpbnNlcnRpb25zKCspLCA4IGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0IGEv
+bmV0L3Ztd192c29jay92bWNpX3RyYW5zcG9ydF9ub3RpZnkuYyBiL25ldC92bXdfdnNvY2svdm1j
+aV90cmFuc3BvcnRfbm90aWZ5LmMNCmluZGV4IGQ2OWZjNGI1OTVhZC4uODUyMDk3ZTJiOWU2IDEw
+MDY0NA0KLS0tIGEvbmV0L3Ztd192c29jay92bWNpX3RyYW5zcG9ydF9ub3RpZnkuYw0KKysrIGIv
+bmV0L3Ztd192c29jay92bWNpX3RyYW5zcG9ydF9ub3RpZnkuYw0KQEAgLTM0MCwxMiArMzQwLDEy
+IEBAIHZtY2lfdHJhbnNwb3J0X25vdGlmeV9wa3RfcG9sbF9pbihzdHJ1Y3Qgc29jayAqc2ssDQog
+ew0KIAlzdHJ1Y3QgdnNvY2tfc29jayAqdnNrID0gdnNvY2tfc2soc2spOw0KIA0KLQlpZiAodnNv
+Y2tfc3RyZWFtX2hhc19kYXRhKHZzaykpIHsNCisJaWYgKHZzb2NrX3N0cmVhbV9oYXNfZGF0YSh2
+c2spID49IHRhcmdldCkgew0KIAkJKmRhdGFfcmVhZHlfbm93ID0gdHJ1ZTsNCiAJfSBlbHNlIHsN
+Ci0JCS8qIFdlIGNhbid0IHJlYWQgcmlnaHQgbm93IGJlY2F1c2UgdGhlcmUgaXMgbm90aGluZyBp
+biB0aGUNCi0JCSAqIHF1ZXVlLiBBc2sgZm9yIG5vdGlmaWNhdGlvbnMgd2hlbiB0aGVyZSBpcyBz
+b21ldGhpbmcgdG8NCi0JCSAqIHJlYWQuDQorCQkvKiBXZSBjYW4ndCByZWFkIHJpZ2h0IG5vdyBi
+ZWNhdXNlIHRoZXJlIGlzIG5vdCBlbm91Z2ggZGF0YQ0KKwkJICogaW4gdGhlIHF1ZXVlLiBBc2sg
+Zm9yIG5vdGlmaWNhdGlvbnMgd2hlbiB0aGVyZSBpcyBzb21ldGhpbmcNCisJCSAqIHRvIHJlYWQu
+DQogCQkgKi8NCiAJCWlmIChzay0+c2tfc3RhdGUgPT0gVENQX0VTVEFCTElTSEVEKSB7DQogCQkJ
+aWYgKCFzZW5kX3dhaXRpbmdfcmVhZChzaywgMSkpDQpkaWZmIC0tZ2l0IGEvbmV0L3Ztd192c29j
+ay92bWNpX3RyYW5zcG9ydF9ub3RpZnlfcXN0YXRlLmMgYi9uZXQvdm13X3Zzb2NrL3ZtY2lfdHJh
+bnNwb3J0X25vdGlmeV9xc3RhdGUuYw0KaW5kZXggMGYzNmQ3YzQ1ZGIzLi4xMmYwY2I4ZmU5OTgg
+MTAwNjQ0DQotLS0gYS9uZXQvdm13X3Zzb2NrL3ZtY2lfdHJhbnNwb3J0X25vdGlmeV9xc3RhdGUu
+Yw0KKysrIGIvbmV0L3Ztd192c29jay92bWNpX3RyYW5zcG9ydF9ub3RpZnlfcXN0YXRlLmMNCkBA
+IC0xNjEsMTIgKzE2MSwxMiBAQCB2bWNpX3RyYW5zcG9ydF9ub3RpZnlfcGt0X3BvbGxfaW4oc3Ry
+dWN0IHNvY2sgKnNrLA0KIHsNCiAJc3RydWN0IHZzb2NrX3NvY2sgKnZzayA9IHZzb2NrX3NrKHNr
+KTsNCiANCi0JaWYgKHZzb2NrX3N0cmVhbV9oYXNfZGF0YSh2c2spKSB7DQorCWlmICh2c29ja19z
+dHJlYW1faGFzX2RhdGEodnNrKSA+PSB0YXJnZXQpIHsNCiAJCSpkYXRhX3JlYWR5X25vdyA9IHRy
+dWU7DQogCX0gZWxzZSB7DQotCQkvKiBXZSBjYW4ndCByZWFkIHJpZ2h0IG5vdyBiZWNhdXNlIHRo
+ZXJlIGlzIG5vdGhpbmcgaW4gdGhlDQotCQkgKiBxdWV1ZS4gQXNrIGZvciBub3RpZmljYXRpb25z
+IHdoZW4gdGhlcmUgaXMgc29tZXRoaW5nIHRvDQotCQkgKiByZWFkLg0KKwkJLyogV2UgY2FuJ3Qg
+cmVhZCByaWdodCBub3cgYmVjYXVzZSB0aGVyZSBpcyBub3QgZW5vdWdoIGRhdGENCisJCSAqIGlu
+IHRoZSBxdWV1ZS4gQXNrIGZvciBub3RpZmljYXRpb25zIHdoZW4gdGhlcmUgaXMgc29tZXRoaW5n
+DQorCQkgKiB0byByZWFkLg0KIAkJICovDQogCQlpZiAoc2stPnNrX3N0YXRlID09IFRDUF9FU1RB
+QkxJU0hFRCkNCiAJCQl2c29ja19ibG9ja191cGRhdGVfd3JpdGVfd2luZG93KHNrKTsNCi0tIA0K
+Mi4yNS4xDQo=
