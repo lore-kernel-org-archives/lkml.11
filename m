@@ -2,105 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A60C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 01:16:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 144EBC00140
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 01:16:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233421AbiHCBQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 21:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38794 "EHLO
+        id S234696AbiHCBQe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 21:16:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229631AbiHCBQR (ORCPT
+        with ESMTP id S229631AbiHCBQb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 21:16:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F70422532;
-        Tue,  2 Aug 2022 18:16:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 210896110F;
-        Wed,  3 Aug 2022 01:16:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CF4DC433C1;
-        Wed,  3 Aug 2022 01:16:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659489375;
-        bh=4hAj5swXgHDnxb10vMlloiSdI7KbG9hPid+FRMnvni0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GDfEfES8aloL6MhzNoaLmD/6xw+dBsC76ivGrEX2iOS4wC6IWL/XE7TAqZsl+tcPw
-         1J4a/46fyM8PgCNDGrWneKJAxSIEZ5ashF9zae9ubl4hScsscij5RfwDeCjmW5QKku
-         DvCXlAIYn5jfRHa3T71RxkLMQQjsND8JBBhs7mWq5tZBALDzadOP3y26DolIIF2Ynn
-         4H3HYkl9Dn+dgvo9nXhkyl2GCv0wXxcYP8yNoO2FWE7sZqUrDxt6yhzeZq9Jfwutzr
-         YL0niMjFVCm0969OT04TeYC9IgiQRFLBSBO5o7m+3U6ow1JNLrGtN1qNvZgfIeNTlA
-         eDut7lRBbwIDA==
-Date:   Tue, 2 Aug 2022 18:16:13 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Siddh Raman Pant <code@siddh.me>
-Cc:     Dipanjan Das <mail.dipanjan.das@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        syzbot+c70d87ac1d001f29a058 
-        <syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        linux-security-modules <linux-security-module@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Subject: Re: [PATCH v3] kernel/watch_queue: Make pipe NULL while clearing
- watch_queue
-Message-ID: <YunMXRhAM5g3tNnJ@sol.localdomain>
-References: <20220728155121.12145-1-code@siddh.me>
- <18258c1d370.6c4bec7a269297.4170944235031209431@siddh.me>
- <Yuepw21SyLbWt9F+@kroah.com>
- <182597c78f6.70a93066293735.4741894763116073008@siddh.me>
- <182597eccd3.14cac6a4293987.1730526835854998440@siddh.me>
- <20220801161642.GA1932489@berlinger>
- <1825abd83c7.2fc2819e194605.6286442523651645797@siddh.me>
+        Tue, 2 Aug 2022 21:16:31 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C310A5509D
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 18:16:29 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 08D872C0302;
+        Wed,  3 Aug 2022 01:16:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1659489386;
+        bh=RHb6z3FlisRbkOdYvmYzCDevXzAM2e8f7oJpOTfus7s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=MKVJ1eeSOQGM+HPjKp/ksSmTeFKXY17Fz5Ee613XtBLsjL19KJx3Ew7IfFvAztMCu
+         1x+EuOeeVM6fOh7m6rE9Z8xsqm7F04WjCxDpUEvz/tZog+lOT3a4M9qqFbMCvlM6j4
+         UhCsm6qbI+1AQMfF65s1WSTDiJqDRb0vvFtEz4Jb8BpXfrZj7aCSMbSO8SdXgzhnCp
+         GiWwfNUfvuPX2QDIc5S9oJBEkPA+GrWTTAeauGJi/3jsVba0k5lhzRpDyIT0mZu6ji
+         yzdsXb2eRPXt1PbWoOVlinbeFBcK+Y16yAWrzfwmfXc6Y8r9v7rXKolduZxfhfxfjk
+         mbDCdnmxiaQSg==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B62e9cc690000>; Wed, 03 Aug 2022 13:16:25 +1200
+Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
+        by pat.atlnz.lc (Postfix) with ESMTP id D54BA13ED0C;
+        Wed,  3 Aug 2022 13:16:25 +1200 (NZST)
+Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
+        id D1EEB2A0090; Wed,  3 Aug 2022 13:16:25 +1200 (NZST)
+From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        vadym.kochan@plvision.eu, gregory.clement@bootlin.com
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH] arm64: dts: marvell: Add UART1-3 for AC5/AC5X
+Date:   Wed,  3 Aug 2022 13:16:23 +1200
+Message-Id: <20220803011623.3607642-1-chris.packham@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1825abd83c7.2fc2819e194605.6286442523651645797@siddh.me>
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=F5opiZpN c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=biHskzXt2R4A:10 a=ngK7aFzLhKCcFdMQWeYA:9
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 02, 2022 at 12:19:05AM +0530, Siddh Raman Pant wrote:
-> On Mon, 01 Aug 2022 21:46:42 +0530  Dipanjan Das <mail.dipanjan.das@gmail.com> wrote:
-> > Are you referring to the reproducer attached to our original report?
-> > https://lore.kernel.org/all/CANX2M5bHye2ZEEhEV6PUj1kYL2KdWYeJtgXw8KZRzwrNpLYz+A@mail.gmail.com/
->  
-> Yes, I meant the reproducer you gave.
-> 
-> I suspect I must have missed CONFIG_WATCH_QUEUE=y while setting the kernel
-> up, extremely sorry for it.
-> 
-> I now tried 5.10.y with it (using a modification of syzkaller's dashboard
-> config I had been using[1]), and I'm getting a __post_watch_notification()
-> crash (which is a related crash, as the fix[2][3] for that causes the
-> reproducer to not reproduce the post_one_notification crash on mainline),
-> but not the post_one_notification() crash you had reported. It seems if I
-> apply my patch, it doesn't trigger this related crash, so these bugs are
-> seem to be very related maybe due to racing? I haven't looked at that yet.
-> 
-> I then tried on v5.10.131 since that was the exact version you had
-> reproduced on, and it reproduces the post_one_notification() error
-> successfully. Applying 353f7988dd84 causes __post_watch_notification()
-> crash, and then applying this v3 patch does not trigger the issue, but
-> the patch to fix __post_watch_notification() crash is [2], which does
-> not really address the issue of post_one_notification() crash which
-> is due to the dangling reference to a freed pipe.
-> 
-> Can you please try reproducer at your end?
-> 
-> Thanks,
-> Siddh
+The AC5/AC5X SoC has 4 UART blocks. Add the additional UART1-3 blocks to
+the base dtsi file.
 
-There were several watch_queue fixes that got merged in v5.10.134, so there's no
-point in testing v5.10.131.  If you're still seeing a bug in the *latest*
-5.10.y, then please check whether it's also present upstream.  If yes, then send
-out a fix for it.  If no, then tell stable@vger.kernel.org what commit(s) need
-to be backported.  Please provide *full* details in each case, including any
-KASAN reports or other information that would help people understand the bug.
+Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+---
 
-- Eric
+Notes:
+    This applies on top of the series adding the AC5/AC5X SoC which is in
+    Gregory's mvebu/dt64 tree but hasn't made it to Linus's (yet).
+
+ arch/arm64/boot/dts/marvell/ac5-98dx25xx.dtsi | 30 +++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/marvell/ac5-98dx25xx.dtsi b/arch/arm64/b=
+oot/dts/marvell/ac5-98dx25xx.dtsi
+index 80b44c7df56a..914fcf9e2c24 100644
+--- a/arch/arm64/boot/dts/marvell/ac5-98dx25xx.dtsi
++++ b/arch/arm64/boot/dts/marvell/ac5-98dx25xx.dtsi
+@@ -95,6 +95,36 @@ uart0: serial@12000 {
+ 				status =3D "okay";
+ 			};
+=20
++			uart1: serial@12100 {
++				compatible =3D "snps,dw-apb-uart";
++				reg =3D <0x11000 0x100>;
++				reg-shift =3D <2>;
++				interrupts =3D <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>;
++				reg-io-width =3D <1>;
++				clocks =3D <&cnm_clock>;
++				status =3D "disabled";
++			};
++
++			uart2: serial@12200 {
++				compatible =3D "snps,dw-apb-uart";
++				reg =3D <0x12200 0x100>;
++				reg-shift =3D <2>;
++				interrupts =3D <GIC_SPI 85 IRQ_TYPE_LEVEL_HIGH>;
++				reg-io-width =3D <1>;
++				clocks =3D <&cnm_clock>;
++				status =3D "disabled";
++			};
++
++			uart3: serial@12300 {
++				compatible =3D "snps,dw-apb-uart";
++				reg =3D <0x12300 0x100>;
++				reg-shift =3D <2>;
++				interrupts =3D <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
++				reg-io-width =3D <1>;
++				clocks =3D <&cnm_clock>;
++				status =3D "disabled";
++			};
++
+ 			mdio: mdio@22004 {
+ 				#address-cells =3D <1>;
+ 				#size-cells =3D <0>;
+--=20
+2.37.1
+
