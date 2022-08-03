@@ -2,182 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E176C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 18:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFE3AC19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 19:00:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236188AbiHCS7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 14:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43976 "EHLO
+        id S238479AbiHCTAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 15:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229765AbiHCS7q (ORCPT
+        with ESMTP id S238403AbiHCTA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 14:59:46 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542B76561
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 11:59:45 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oJJaO-0003s9-Hq; Wed, 03 Aug 2022 20:59:16 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 2254BC2421;
-        Wed,  3 Aug 2022 18:59:12 +0000 (UTC)
-Date:   Wed, 3 Aug 2022 20:59:10 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Sebastian =?utf-8?B?V8O8cmw=?= <sebastian.wuerl@ororatech.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drivers/net/can/spi/mcp251x.c: Fix race condition on
- receive interrupt
-Message-ID: <20220803185910.5jpufgziqsslnqtf@pengutronix.de>
-References: <20220803153300.58732-1-sebastian.wuerl@ororatech.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="stfxcn4l5cg4r6dp"
-Content-Disposition: inline
-In-Reply-To: <20220803153300.58732-1-sebastian.wuerl@ororatech.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+        Wed, 3 Aug 2022 15:00:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF746B4BE;
+        Wed,  3 Aug 2022 12:00:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0296461320;
+        Wed,  3 Aug 2022 19:00:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CA6B8C4347C;
+        Wed,  3 Aug 2022 19:00:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659553225;
+        bh=PjAduTHwqHkqn7lS1w8O3apDUQRaCEe2ZOdp08jPSGc=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=u/OnGx7SSbpo8zAE8fbr8JTmz/Om35V0XP6Asz7N0M1ref/UgEEMJHIyIwRKVtQpe
+         VH8snQwWVJxpD0rFuUUBxnahb0qhtmmuzep1dlUu8MUOUCOcbIC/1lRkDdiLbpOLXX
+         1btdF62VH88CATOfa8MfIup8rVUH/9sjwaEuTFn/kASrYbkhsO3ukikPNzHDVcJSG/
+         k1+ovyHOQqZzbYZDExUtULgFBlSA/rnKUJn4aWoD6xSw+6FohocL+eyC2fJ6WROLpw
+         3npZJZiNlx8itUXLsptHw76x7ib4XUQ04AFnk0L3+jCoQncJxHhccP0eOhQ2gF0D+f
+         iejoyet13nSQg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B4EFBC43140;
+        Wed,  3 Aug 2022 19:00:25 +0000 (UTC)
+Subject: Re: [git pull] vfs.git pile 3 - dcache
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YurA3aSb4GRr4wlW@ZenIV>
+References: <YurA3aSb4GRr4wlW@ZenIV>
+X-PR-Tracked-List-Id: <linux-fsdevel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YurA3aSb4GRr4wlW@ZenIV>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git tags/pull-work.dcache
+X-PR-Tracked-Commit-Id: 50417d22d0efbb1be76c3cb66b2329f83741c9c7
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 200e340f2196d7fd427a5810d06e893b932f145a
+Message-Id: <165955322573.6947.18371092849558487517.pr-tracker-bot@kernel.org>
+Date:   Wed, 03 Aug 2022 19:00:25 +0000
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The pull request you sent on Wed, 3 Aug 2022 19:39:25 +0100:
 
---stfxcn4l5cg4r6dp
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git tags/pull-work.dcache
 
-On 03.08.2022 17:32:59, Sebastian W=C3=BCrl wrote:
-> The mcp251x driver uses both receiving mailboxes of the can controller
-> chips. For retrieving the CAN frames from the controller via SPI, it chec=
-ks
-> once per interrupt which mailboxes have been filled, an will retrieve the
-> messages accordingly.
->=20
-> This introduces a race condition, as another CAN frame can enter mailbox 1
-> while mailbox 0 is emptied. If now another CAN frame enters mailbox 0 unt=
-il
-> the interrupt handler is called next, mailbox 0 is emptied before
-> mailbox 1, leading to out-of-order CAN frames in the network device.
->=20
-> This is fixed by checking the interrupt flags once again after freeing
-> mailbox 0, to correctly also empty mailbox 1 before leaving the handler.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/200e340f2196d7fd427a5810d06e893b932f145a
 
-Nitpick: On mcp2515 the buffer is freed automatically.
-With this change the interrupt flags are _always_ checked a 2nd time,
-even if buffer 0 is not serviced. See below for a change proposal.
+Thank you!
 
-> For reproducing the bug I created the following setup:
->  - Two CAN devices, one Raspberry Pi with MCP2515, the other can be any.
->  - Setup CAN to 1 MHz
->  - Spam bursts of 5 CAN-messages with increasing CAN-ids
->  - Continue sending the bursts while sleeping a second between the bursts
->  - Check on the RPi whether the received messages have increasing CAN-ids
->  - Without this patch, every burst of messages will contain a flipped pair
->=20
-> Signed-off-by: Sebastian W=C3=BCrl <sebastian.wuerl@ororatech.com>
-> ---
->  drivers/net/can/spi/mcp251x.c | 21 ++++++++++++++-------
->  1 file changed, 14 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
-> index 666a4505a55a..687aafef4717 100644
-> --- a/drivers/net/can/spi/mcp251x.c
-> +++ b/drivers/net/can/spi/mcp251x.c
-> @@ -1063,17 +1063,14 @@ static irqreturn_t mcp251x_can_ist(int irq, void =
-*dev_id)
->  	mutex_lock(&priv->mcp_lock);
->  	while (!priv->force_quit) {
->  		enum can_state new_state;
-> -		u8 intf, eflag;
-> +		u8 intf, intf0, intf1, eflag, eflag0, eflag1;
->  		u8 clear_intf =3D 0;
->  		int can_id =3D 0, data1 =3D 0;
-> =20
-> -		mcp251x_read_2regs(spi, CANINTF, &intf, &eflag);
-> -
-> -		/* mask out flags we don't care about */
-> -		intf &=3D CANINTF_RX | CANINTF_TX | CANINTF_ERR;
-> +		mcp251x_read_2regs(spi, CANINTF, &intf0, &eflag0);
-> =20
->  		/* receive buffer 0 */
-> -		if (intf & CANINTF_RX0IF) {
-> +		if (intf0 & CANINTF_RX0IF) {
->  			mcp251x_hw_rx(spi, 0);
->  			/* Free one buffer ASAP
->  			 * (The MCP2515/25625 does this automatically.)
-> @@ -1083,14 +1080,24 @@ static irqreturn_t mcp251x_can_ist(int irq, void =
-*dev_id)
->  						   CANINTF_RX0IF, 0x00);
->  		}
-> =20
-> +		/* intf needs to be read again to avoid a race condition */
-> +		mcp251x_read_2regs(spi, CANINTF, &intf1, &eflag1);
-
-I think we only have to re-read the interrupt flag if we actually read
-data from buffer 0. So what about moving this into the if () { } above?
-
-> +
->  		/* receive buffer 1 */
-> -		if (intf & CANINTF_RX1IF) {
-> +		if (intf1 & CANINTF_RX1IF) {
->  			mcp251x_hw_rx(spi, 1);
->  			/* The MCP2515/25625 does this automatically. */
->  			if (mcp251x_is_2510(spi))
->  				clear_intf |=3D CANINTF_RX1IF;
->  		}
-> =20
-> +		/* combine flags from both operations for error handling */
-> +		intf =3D intf0 | intf1;
-> +		eflag =3D eflag0 | eflag1;
-> +
-> +		/* mask out flags we don't care about */
-> +		intf &=3D CANINTF_RX | CANINTF_TX | CANINTF_ERR;
-> +
->  		/* any error or tx interrupt we need to clear? */
->  		if (intf & (CANINTF_ERR | CANINTF_TX))
->  			clear_intf |=3D intf & (CANINTF_ERR | CANINTF_TX);
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---stfxcn4l5cg4r6dp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLqxXwACgkQrX5LkNig
-010UsAf/csW6sKyno2ENqU9sWHtlY8D1cUENGHLb9SC+LTOXHEe+1oo1vD+IoWBW
-kVJlZYQmDZh/UO4XS3EyKesE2eJZEmQxty7HluEUQb3sdjPp4Qc4goCpTLStTZRS
-TBKf3kps/BHYpAo5LeoKY96MRRVnytdyecinnfTCKK5FCtlV2SOirinZoqLGb3T0
-HyEFOtgA9gto4e75XetqLPmm7lDkmu8/DWQ/k1BocQLasCy/b7Y2mZVc0q0CEYf6
-qvAXNHzhqUAkEypVRl31I/xOjoAn6ybBibp7Ty88oGG3KcMWgcx+3FWacAHbUg53
-GX8+IkrxGxDDmN64x2SU35gl4I1maQ==
-=sE5h
------END PGP SIGNATURE-----
-
---stfxcn4l5cg4r6dp--
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
