@@ -2,127 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA82BC19F2D
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 20:29:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6966EC19F2D
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 20:30:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238713AbiHCU3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 16:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39978 "EHLO
+        id S238730AbiHCUaH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 16:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238725AbiHCU32 (ORCPT
+        with ESMTP id S238714AbiHCUaE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 16:29:28 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91E25B7B1
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 13:29:26 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id 123so30107733ybv.7
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 13:29:26 -0700 (PDT)
+        Wed, 3 Aug 2022 16:30:04 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522055B79C
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 13:30:03 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id u12so13556824qtk.0
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 13:30:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=C8saFETww7GFwNaVKj2+9mgk73FWbmx4D6GhCwjyv5M=;
-        b=dtquUVtEm7eDqX1KhcLh8OG00MYA9mSMXcpdMJAmFidFvZzAXptIdhxhQ9CDvUoxzd
-         vU2nams+2CWA6TGpDhOXwF9jzfex88IXhKUPhevREfzcXVgK/lSzcKgHaLbTSoRzH98Q
-         rxSLgycwNz21N88HbezJz6PPxhZEH9nLZ54Elmy4gTO19Xo5ues1xh9ivwU288T7Omli
-         SlgkEIqVMn/Qko2uEeTHptGkLznvws+vwtK3WMCI7EATm7GDNYnwT7WIdMP9pXtU/wJ8
-         YX+dOjm5ODwXpGv+Itz40X1uo4tzK5WdLxIS/2ibk9ju+OCNIamGs3uJAhyqHfEK7GdR
-         T9ug==
+        bh=Dsz8IHMohhYZ2cZL5pWvVqmp+AxFsLxkDLJLSy2o2N4=;
+        b=qhvgEU9aNbRaLz1LZz5Di83doxE96N37k+dzlmaEWg5j2FL+um8PmgRkdOPCt9li8w
+         d6I9EofHmCIIm5a5qQKRxvYyHNjc/oSKXVrzBEYTWXJxPsC9SdRj1z3GYLR95V0+NkFw
+         lgyrS8WvaiBPjACPGlGDABCkAa+ybGB/6Uv/er7mt+cMRI1NTghVCOUPKzd2udTCZ6Kc
+         +Ti6RiS7W6hdxcjcgYGDJ/Ujgc9ms5B7xl43PRhb/E298i9nxm26sTuM2DhKkPlQ9DEg
+         Q2NcVHoYtWH31WyzoWtwIiBrvvxg4ctBJQuILoR82lLcUyoK2mZZvbPldxUKnIwE1sE7
+         EVeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=C8saFETww7GFwNaVKj2+9mgk73FWbmx4D6GhCwjyv5M=;
-        b=BhVlIJKh+QxvKj+6q/rWG3oCCJyTl0tdlcYiQW/foxHmZXjmoHsBjYNNY3X4PCsMNA
-         Wor2tIHtYFy65N4mnrA8o5L4HYbXhOzFR8VT+eTp//zx/6a7p7+BdiQCbuGeVQEWePZ+
-         PAlY71IMYyMuve3HF2hxTap7e0oxSERJc2959N8r7a2Ksc9unTRHm/S5qr2xmZFskgsF
-         7aha54rzrEqYHw5B4TFztAglN/Zos4MViPO4UVVNmdOp4q10aKQs5KAr0/BzCIFX1CrD
-         KIgMxAaVxacEMbt7h2SnAG2WMeu7KNL+nCaQsZ+aQlT+hhOSEl32FOikccAnvirwhaN1
-         gVjQ==
-X-Gm-Message-State: ACgBeo2+hDRoDjYH8015U8o3AwBcvgn3ss+z4J6NmOVnUielRpAvr5kS
-        zUKX7RzOkM/fOwObZ+46atmFEJ1g+dugs/eT/hP5Dw==
-X-Google-Smtp-Source: AA6agR41ikKlGdT1pV9DU6nb5ECl25sAkg4s266UVv0+QPmzjPHL/AlUslFveTN5siWHHR/tZQqOJjPCw28C/FfXiBk=
-X-Received: by 2002:a25:2454:0:b0:67a:7426:25d9 with SMTP id
- k81-20020a252454000000b0067a742625d9mr3223631ybk.93.1659558565851; Wed, 03
- Aug 2022 13:29:25 -0700 (PDT)
+        bh=Dsz8IHMohhYZ2cZL5pWvVqmp+AxFsLxkDLJLSy2o2N4=;
+        b=fKJeCMbnEuX4HdW+hPzCjW0L/jFKD0TLPhGpcoa0qg1TvivSNCz2Qp+yNZvAVNj6za
+         lsWfVLJa0LH6pBm7zYLMjfDGwmlZV3SmzvUXm1BGmuo1VDV6FGb1wVDbpruTgIvJXG52
+         dq3hG0bBAs7oMP76de5RZFVABJ5FaiWTlxiESZRko1u+oWuAgI3wvP6ERAYui8/4bYF/
+         RNGfJr5RngOemtdLDMnzvX79YlnTjiGdVRu4W5MtTUzN6y3ZEuRq422mo77uU3ar9Oi0
+         KorvyivHacO7JCYxg+kWTCbqZLpeEacxj5OJZSEXzix6Ul2KwArz68zgp9if1Ymo8oW6
+         2STA==
+X-Gm-Message-State: AJIora9kZMZb1AyKdkn4XHj8rI7DM+TArckWdvxn1bisiepIzKJctjoM
+        HmXyhyB/pSRznuag+DachCKWA09SfSsoXgRZeYVQdTOD4UIYYsyy
+X-Google-Smtp-Source: AGRyM1ti9ieZjz4Bqd1rv5WpcT/IAZQJCQDgsCwKz5/2E/kmqsJiz+J94HVKuJdGxSnCmLHnF8Cz6vGIuC+uc33d2sw=
+X-Received: by 2002:a05:622a:8e:b0:31f:371f:e6a1 with SMTP id
+ o14-20020a05622a008e00b0031f371fe6a1mr24197038qtw.565.1659558602311; Wed, 03
+ Aug 2022 13:30:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1658189199.git.andreyknvl@google.com> <0e910197bfbcf505122f6dae2ee9b90ff8ee31f7.1658189199.git.andreyknvl@google.com>
- <CANpmjNMrwXxU0YCwvHo59RFDkoxA-MtdrRCSPoRW+KYG2ez-NQ@mail.gmail.com>
- <CA+fCnZcT2iXww90CfiByAvr58XHXShiER0x0J2v14hRzNNFe9w@mail.gmail.com> <CA+fCnZfU5AwAbei9NqtN+FstGLJYkRe7cZrYZN1wtcGbPkqVZQ@mail.gmail.com>
-In-Reply-To: <CA+fCnZfU5AwAbei9NqtN+FstGLJYkRe7cZrYZN1wtcGbPkqVZQ@mail.gmail.com>
-From:   Marco Elver <elver@google.com>
-Date:   Wed, 3 Aug 2022 22:28:49 +0200
-Message-ID: <CANpmjNPk13ib57zFzL1rmWiuhZVvS4bmD-yfoMJOYVWT1FdynQ@mail.gmail.com>
-Subject: Re: [PATCH mm v2 30/33] kasan: implement stack ring for tag-based modes
-To:     Andrey Konovalov <andreyknvl@gmail.com>
-Cc:     andrey.konovalov@linux.dev,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrey Konovalov <andreyknvl@google.com>
+References: <20220722174829.3422466-1-yosryahmed@google.com>
+ <20220722174829.3422466-5-yosryahmed@google.com> <CAEf4BzbD38XFVxMy5crO-=+Xg7U3Vc_fB4Ntug4BEbmdLpvuDQ@mail.gmail.com>
+ <CA+khW7jftQikVsc8moM6rNRqBerUHDM6WRDjb33exdbogDc7aQ@mail.gmail.com> <CAEf4BzYDqaTQr-S8TuLkysQ+FhT+6qMS0z=Sp_7+-wk84_4h6Q@mail.gmail.com>
+In-Reply-To: <CAEf4BzYDqaTQr-S8TuLkysQ+FhT+6qMS0z=Sp_7+-wk84_4h6Q@mail.gmail.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Wed, 3 Aug 2022 13:29:51 -0700
+Message-ID: <CA+khW7jDD9p80xnZj0Z3m5oFHjb2u___NAiJkbyRgD5FKopGhg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 4/8] bpf: Introduce cgroup iter
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Yosry Ahmed <yosryahmed@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, cgroups@vger.kernel.org,
+        Kui-Feng Lee <kuifeng@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2 Aug 2022 at 22:45, Andrey Konovalov <andreyknvl@gmail.com> wrote:
+On Tue, Aug 2, 2022 at 3:50 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> On Thu, Jul 21, 2022 at 10:41 PM Andrey Konovalov <andreyknvl@gmail.com> wrote:
+> On Tue, Aug 2, 2022 at 3:27 PM Hao Luo <haoluo@google.com> wrote:
 > >
-> > On Tue, Jul 19, 2022 at 1:41 PM Marco Elver <elver@google.com> wrote:
+> > Hi Andrii,
+> >
+> > On Mon, Aug 1, 2022 at 8:43 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
 > > >
-> > > > +       for (u64 i = pos - 1; i != pos - 1 - KASAN_STACK_RING_SIZE; i--) {
-> > > > +               if (alloc_found && free_found)
-> > > > +                       break;
-> > > > +
-> > > > +               entry = &stack_ring.entries[i % KASAN_STACK_RING_SIZE];
-> > > > +
-> > > > +               /* Paired with smp_store_release() in save_stack_info(). */
-> > > > +               ptr = (void *)smp_load_acquire(&entry->ptr);
-> > > > +
-> > > > +               if (kasan_reset_tag(ptr) != info->object ||
-> > > > +                   get_tag(ptr) != get_tag(info->access_addr))
-> > > > +                       continue;
-> > > > +
-> > > > +               pid = READ_ONCE(entry->pid);
-> > > > +               stack = READ_ONCE(entry->stack);
-> > > > +               is_free = READ_ONCE(entry->is_free);
-> > > > +
-> > > > +               /* Try detecting if the entry was changed while being read. */
-> > > > +               smp_mb();
-> > > > +               if (ptr != (void *)READ_ONCE(entry->ptr))
-> > > > +                       continue;
+> > > On Fri, Jul 22, 2022 at 10:48 AM Yosry Ahmed <yosryahmed@google.com> wrote:
+[...]
+> > > >
+> > > > +enum bpf_iter_cgroup_traversal_order {
+> > > > +       BPF_ITER_CGROUP_PRE = 0,        /* pre-order traversal */
+> > > > +       BPF_ITER_CGROUP_POST,           /* post-order traversal */
+> > > > +       BPF_ITER_CGROUP_PARENT_UP,      /* traversal of ancestors up to the root */
 > > >
-> > > I thought the re-validation is no longer needed because of the rwlock
-> > > protection?
+> > > I've just put up my arguments why it's a good idea to also support a
+> > > "trivial" mode of only traversing specified cgroup and no descendants
+> > > or parents. Please see [0].
 > >
-> > Oh, yes, forgot to remove this. Will either do in v3 if there are more
-> > things to fix, or will just send a small fix-up patch if the rest of
-> > the series looks good.
+> > cc Kui-Feng in this thread.
 > >
-> > > The rest looks fine now.
+> > Yeah, I think it's a good idea. It's useful when we only want to show
+> > a single object, which can be common. Going further, I think we may
+> > want to restructure bpf_iter to optimize for this case.
 > >
-> > Thank you, Marco!
+> > > I think the same applies here, especially
+> > > considering that it seems like a good idea to support
+> > > task/task_vma/task_files iteration within a cgroup.
+> >
+> > I have reservations on these use cases. I don't see immediate use of
+> > iterating vma or files within a cgroup. Tasks within a cgroup? Maybe.
+> > :)
+> >
 >
-> Hi Marco,
->
-> I'm thinking of sending a v3.
->
-> Does your "The rest looks fine now" comment refer only to this patch
-> or to the whole series? If it's the former, could you PTAL at the
-> other patches?
+> iter/task was what I had in mind in the first place. But I can also
+> imagine tools utilizing iter/task_files for each process within a
+> cgroup, so given iter/{task, task_file, task_vma} share the same UAPI
+> and internals, I don't see why we'd restrict this to only iter/task.
 
-I just looked again. Apart from the comments I just sent, overall it
-looks fine (whole series).
+No problem. I was hoping we don't over-design the interface. IMHO keep
+it simple stupid. :)
 
-Does test_kasan exercise the ring wrapping around? One thing that
-might be worth doing is adding a multi-threaded stress test, where you
-have 2+ threads doing lots of allocations, frees, and generating
-reports.
+>
+[...]
+> >
+> > [1] https://lwn.net/Articles/902405/
+> >
+> > >
+> > > Some more naming nits. I find BPF_ITER_CGROUP_PRE and
+> > > BPF_ITER_CGROUP_POST a bit confusing. Even internally in kernel we
+> > > have css_next_descendant_pre/css_next_descendant_post, so why not
+> > > reflect the fact that we are going to iterate descendants:
+> > > BPF_ITER_CGROUP_DESCENDANTS_{PRE,POST}. And now that we use
+> > > "descendants" terminology, PARENT_UP should be ANCESTORS. ANCESTORS_UP
+> > > probably is fine, but seems a bit redundant (unless we consider a
+> > > somewhat weird ANCESTORS_DOWN, where we find the furthest parent and
+> > > then descend through preceding parents until we reach specified
+> > > cgroup; seems a bit exotic).
+> > >
+> >
+> > BPF_ITER_CGROUP_DESCENDANTS_PRE is too verbose. If there is a
+> > possibility of merging rbtree and supporting walk order of rbtree
+> > iter, maybe the name here could be general, like
+> > BPF_ITER_DESCENDANTS_PRE, which seems better.
+>
+> it's not like you'll be typing this hundreds of type, so verboseness
+> doesn't seem to be too problematic, but sure, BPF_ITER_DESCENDANTS_PRE
+> is fine with me
+>
+> >
+> > >   [0] https://lore.kernel.org/bpf/f92e20e9961963e20766e290ee6668edd4bacf06.camel@fb.com/T/#m5ce50632aa550dd87a99241efb168cbcde1ee98f
+> > >
+> > > > +};
+> > > > +
+> > > >  union bpf_iter_link_info {
+> > > >         struct {
+> > > >                 __u32   map_fd;
+> > > >         } map;
+> > > > +
+> > > > +       /* cgroup_iter walks either the live descendants of a cgroup subtree, or the
+> > > > +        * ancestors of a given cgroup.
+> > > > +        */
+> > > > +       struct {
+> > > > +               /* Cgroup file descriptor. This is root of the subtree if walking
+> > > > +                * descendants; it's the starting cgroup if walking the ancestors.
+> > > > +                * If it is left 0, the traversal starts from the default cgroup v2
+> > > > +                * root. For walking v1 hierarchy, one should always explicitly
+> > > > +                * specify the cgroup_fd.
+> > > > +                */
+> > > > +               __u32   cgroup_fd;
+> > >
+> > > Now, similar to what I argued in regard of pidfd vs pid, I think the
+> > > same applied to cgroup_fd vs cgroup_id. Why can't we support both?
+> > > cgroup_fd has some benefits, but cgroup_id is nice due to simplicity
+> > > and not having to open/close/keep extra FDs (which can add up if we
+> > > want to periodically query something about a large set of cgroups).
+> > > Please see my arguments from [0] above.
+> > >
+> > > Thoughts?
+> > >
+> >
+> > We can support both, it's a good idea IMO. But what exactly is the
+> > interface going to look like? Can you be more specific about that?
+> > Below is something I tried based on your description.
+> >
+> > @@ -91,6 +91,18 @@ union bpf_iter_link_info {
+> >         struct {
+> >                 __u32   map_fd;
+> >         } map;
+> > +       struct {
+> > +               /* PRE/POST/UP/SELF */
+> > +               __u32 order;
+> > +               struct {
+> > +                       __u32 cgroup_fd;
+> > +                       __u64 cgroup_id;
+> > +               } cgroup;
+> > +               struct {
+> > +                       __u32 pid_fd;
+> > +                       __u64 pid;
+> > +               } task;
+> > +       };
+> >  };
+> >
+>
+> So I wouldn't combine task and cgroup definition together, let's keep
+> them independent.
+>
+> then for cgroup we can do something like:
+>
+> struct {
+>     __u32 order;
+>     __u32 cgroup_fd; /* cgroup_fd ^ cgroup_id, exactly one can be non-zero */
+>     __u32 cgroup_id;
+> } cgroup
+>
+> Similar idea with task, but it's a bit more complicated because there
+> we have target that can be pid, pidfd, or cgroup (cgroup_fd and
+> cgroup_id). I haven't put much thought into the best representation,
+> though.
+>
+
+The cgroup part sounds good to me. For the full picture, how about
+this? I'm just trying  a prototype, hoping that it can help people to
+get a clear picture.
+
+union bpf_iter_link_info {
+          struct {
+                  __u32   map_fd;
+          } map;
+          struct {
+                  __u32   order; /* PRE/POST/UP/SELF */
+                  __u32   cgroup_fd;
+                  __u64   cgroup_id;
+          } cgroup;
+          struct {
+                  __u32   pid;
+                  __u32   pid_fd;
+                  __u64   cgroup_id;
+                  __u32   cgroup_fd;
+                  __u32   mode; /* SELF or others */
+          } task;
+};
+
+> > > > +               __u32   traversal_order;
+> > > > +       } cgroup;
+> > > >  };
+> > > >
+> > > >  /* BPF syscall commands, see bpf(2) man-page for more details. */
+> > >
+> > > [...]
