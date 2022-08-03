@@ -2,104 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF08C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 14:01:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 569C0C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 14:02:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238279AbiHCOBZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 10:01:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55160 "EHLO
+        id S238506AbiHCOB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 10:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234434AbiHCOBW (ORCPT
+        with ESMTP id S236785AbiHCOB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 10:01:22 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B4EE2A400
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 07:01:21 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id m8so21539609edd.9
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 07:01:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=BX0MHXFB9OMLas/3vw1gWSW/wKlLfG1bTlBU7/A5LJY=;
-        b=NgWFEGgqhpFOMAezMzzFaK7vGV+stSnIqJjbdEM3QqRLao4HHCRJ6LwcqWOcDrMmwd
-         a0gNzN/9aGOGsFxsbpAEiMb/bknSNrVfjlM3GIgVJFuSpLQlFbJO+zEKTxBYLvzDzmfr
-         yJdg+x5hmAYuyctBRyTquSAt7q/6fDMtx20is=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=BX0MHXFB9OMLas/3vw1gWSW/wKlLfG1bTlBU7/A5LJY=;
-        b=alo6mmsBJ1GesIitHywf2D1JbVTXEjMi0qHreqCLtD94jRmlHwHlLudH4vhallGa9F
-         xyLYjJzjTsN0XangWcpwTWvtz8mAreb0k/IOMHkjuvQov/DOaU81DuEMcKf3Vu5KEoL0
-         Oiysu1vbu+/vdl8x7oc2Ab93yPocXk4vcj236jnbRtrsxYVFWzV4NR6cNqIWkhftmPYA
-         s65VJfZ2Tuq1j8pGXK7JajGWLmVBPCfTwP6g6/ImMVdtLTsVVbhEOURHfron6HxZ/v60
-         c0Avl1BCMOCBWCJQIzGyBY+BwJ9gn8E7K46LlnYqSo+YGk4GRS7+StMvavBvcNuA0eu7
-         1NCA==
-X-Gm-Message-State: AJIora8fSh6BczjnTnsB2yg2W4PgAQD5mSAc8sMga4FGV1aBCovPsaI0
-        mRfPsXsnUNuIQqnD96ED0sEdm2P1/L25zVpxJHY=
-X-Google-Smtp-Source: AGRyM1s/0IpiYk5RX5MCaP4VX5c0C4WG/kF0rGvSgYnGccImnxFRQ/QRNJ9uHhC79nDQq8zq4SscbA==
-X-Received: by 2002:a05:6402:3907:b0:431:6776:64e7 with SMTP id fe7-20020a056402390700b00431677664e7mr25748831edb.0.1659535279648;
-        Wed, 03 Aug 2022 07:01:19 -0700 (PDT)
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com. [209.85.208.48])
-        by smtp.gmail.com with ESMTPSA id c12-20020a056402120c00b0043cc2c9f5adsm9550956edw.40.2022.08.03.07.01.18
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Aug 2022 07:01:18 -0700 (PDT)
-Received: by mail-ed1-f48.google.com with SMTP id z22so21586730edd.6
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 07:01:18 -0700 (PDT)
-X-Received: by 2002:a5d:5889:0:b0:21d:bccd:38e3 with SMTP id
- n9-20020a5d5889000000b0021dbccd38e3mr15858645wrf.659.1659534911179; Wed, 03
- Aug 2022 06:55:11 -0700 (PDT)
+        Wed, 3 Aug 2022 10:01:56 -0400
+Received: from aer-iport-6.cisco.com (aer-iport-6.cisco.com [173.38.203.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35EA52B269
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 07:01:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=1217; q=dns/txt; s=iport;
+  t=1659535315; x=1660744915;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=8t9zvnYmA65JIhzd4OZ3iRWK42/wNYyO3z9pUde/lNI=;
+  b=jUfLG+EBOMa4OvAZIvwlV0bn4aTThW5dKTE3QLa7gNKIy40SN5F7k5R4
+   /TfIsdUEAxRq4AnnGiLmSAGAZJiRwQArKjz/OkjDue4EQo+YMAMYfDn/c
+   mO/1d2Jl/RU9NfpkC2IkkJiTHmQocUgWmWNowGIoMXSVJrsp5ERUnnZWp
+   8=;
+X-IronPort-AV: E=Sophos;i="5.93,214,1654560000"; 
+   d="scan'208";a="698913"
+Received: from aer-iport-nat.cisco.com (HELO aer-core-1.cisco.com) ([173.38.203.22])
+  by aer-iport-6.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 03 Aug 2022 14:01:53 +0000
+Received: from hce-anki.rd.cisco.com ([10.47.79.243])
+        by aer-core-1.cisco.com (8.15.2/8.15.2) with ESMTP id 273E1qWF002584;
+        Wed, 3 Aug 2022 14:01:53 GMT
+From:   Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     gregkh@linuxfoundation.org,
+        Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
+Subject: [v4.9 PATCH v3 6/6] random: only call boot_init_stack_canary() once
+Date:   Wed,  3 Aug 2022 16:01:51 +0200
+Message-Id: <20220803140151.687558-1-hegtvedt@cisco.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <Yupk5K1S7flR7yjD@kroah.com>
+References: <Yupk5K1S7flR7yjD@kroah.com>
 MIME-Version: 1.0
-References: <20220802223738.898592-1-dianders@chromium.org>
- <20220802153434.v3.6.I969118a35934a0e5007fe4f80e3e28e9c0b7602a@changeid> <3f79c5b1-9ce8-6aeb-300a-565ba018ae11@linaro.org>
-In-Reply-To: <3f79c5b1-9ce8-6aeb-300a-565ba018ae11@linaro.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 3 Aug 2022 06:54:58 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UVSBvpAs4bBHTh6tGXazU1+OLg4+Opfg8guXQ1ShhnNA@mail.gmail.com>
-Message-ID: <CAD=FV=UVSBvpAs4bBHTh6tGXazU1+OLg4+Opfg8guXQ1ShhnNA@mail.gmail.com>
-Subject: Re: [PATCH v3 6/6] drm/msm/dsi: Improve dsi_phy_driver_probe() probe
- error handling
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Mark Brown <broonie@kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Marek <jonathan@marek.ca>,
-        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
-        Rajeev Nandan <quic_rajeevny@quicinc.com>,
-        Sean Paul <sean@poorly.run>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Outbound-SMTP-Client: 10.47.79.243, [10.47.79.243]
+X-Outbound-Node: aer-core-1.cisco.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+In commit 166a592cad36 ("random: move rand_initialize() earlier") the
+boot_init_stack_canary() call was added after the new random_init()
+call.
 
-On Wed, Aug 3, 2022 at 12:32 AM Dmitry Baryshkov
-<dmitry.baryshkov@linaro.org> wrote:
->
-> > @@ -634,88 +631,71 @@ static int dsi_phy_driver_probe(struct platform_device *pdev)
-> >               phy->cphy_mode = (phy_type == PHY_TYPE_CPHY);
-> >
-> >       phy->base = msm_ioremap_size(pdev, "dsi_phy", &phy->base_size);
-> > -     if (IS_ERR(phy->base)) {
-> > -             DRM_DEV_ERROR(dev, "%s: failed to map phy base\n", __func__);
-> > -             ret = -ENOMEM;
->
-> Here (and in a few cases later) this changes the error code from crafted
-> -ENOMEM to the proper one returned by msm_ioremap_size(). This should be
-> mentioned in the commit message.
+However, the upstream commit d55535232c3d ("random: move
+rand_initialize() earlier") also included removing the earlier call to
+boot_init_stack_canary(), making sure this call is done after
+random_init().
 
-Good point. Unless something comes up I'll plan to spin a v4 with this
-change to the commit message tomorrow.
+Hence fix what I assume is a wrong merge conflict resolution on the
+linux-4.9.y stable branch.
 
--Doug
+Signed-off-by: Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
+---
+ init/main.c | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/init/main.c b/init/main.c
+index 6bc1a3fa152..6537f51a0ba 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -500,13 +500,6 @@ asmlinkage __visible void __init start_kernel(void)
+ 	page_address_init();
+ 	pr_notice("%s", linux_banner);
+ 	setup_arch(&command_line);
+-	/*
+-	 * Set up the the initial canary and entropy after arch
+-	 * and after adding latent and command line entropy.
+-	 */
+-	add_latent_entropy();
+-	add_device_randomness(command_line, strlen(command_line));
+-	boot_init_stack_canary();
+ 	mm_init_cpumask(&init_mm);
+ 	setup_command_line(command_line);
+ 	setup_nr_cpu_ids();
+-- 
+2.34.1
+
