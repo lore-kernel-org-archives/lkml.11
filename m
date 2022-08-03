@@ -2,248 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F5C2C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 12:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3148C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 12:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237839AbiHCMRy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 08:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55004 "EHLO
+        id S237857AbiHCMWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 08:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237846AbiHCMRs (ORCPT
+        with ESMTP id S235994AbiHCMWI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 08:17:48 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463E724F08
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 05:17:47 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id y13so17134647ejp.13
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 05:17:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=raspberrypi.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DeRm4GBpQBL0a62+fNXqe5QiBskwANbllr31ASLh0QE=;
-        b=kJrixqU4I03nwB/9TsWznMKxRZ+eQuI8Kl/SQs/eJNA8eJtOxA1pVS5Kae5PJmYscJ
-         caYwr/sNtrtuFyVRC9vX0UyH02Gpvqc7jrwZm4MqKcFY6+VZK/V/0GrN4GUDvgAEN20R
-         mwwYU4Oseov1MzzlQWGY8JG/LrAjimfF4sgDiIsrDu0sPTIJ2D0Ec7fAIJU5TaAnzHXF
-         NtIA4I0/3ZNN4f3+QWi+pubz0ey5uLfoWLdU7+pN+sC4iEtD9EYFHfVqGcW6qNLjrPBI
-         BeYOxRrSprqNvZHDi+NcSsX//NzOjSuN4H0AQAMboMK4ieD5RT3VwewiWF3RNHTw2O4l
-         SCew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DeRm4GBpQBL0a62+fNXqe5QiBskwANbllr31ASLh0QE=;
-        b=FEyuPslaajZsr8aDHTQw49HoWOe0kNSSLJmvIRxLKAR85W2t7eHJjNj0Q81JtG1yTq
-         YOl2iSHLO3U3t01YkzS8XnRSibiDcSDXAoqjBtlV1Nv01t2QPHty0Xlg9g3sLCQ5AY4C
-         uI77jSR/HEiYVaWJejwoiWw2VgFItEF9njnXJ8CdXN+cECrElIP3GC7GME4IcHEK48xU
-         5pt1Javwxcd1hwZJREaZhLqp30jZUUhqVxYc0UU/U4brBExcL6ANpwoVCkaZyDwuiGzA
-         xx4aWGaPHzLm/l35DLgDXdPU8A+lNLbgxuGM/iJ7oaxZ0R2Tq5jJv1Kb8+1t13wa7vzh
-         4RwA==
-X-Gm-Message-State: AJIora8oIg/FsWYCkeWIfkmANIfC9FivNXuiak+oDmIJMMXhe9fX+DpQ
-        UZKrCLuidTTJbvNU8FSe3sEepGXAIXfZr5oU5FzHxQ==
-X-Google-Smtp-Source: AGRyM1u5CnymwI82toY91tEM/s1qImGsDOZ49mg+F7Kp1emClJXR3piq7cOEFrA6iGWIf+TDI5yXloecnrzv/VQxqtY=
-X-Received: by 2002:a17:907:97c2:b0:72b:9ec4:9a60 with SMTP id
- js2-20020a17090797c200b0072b9ec49a60mr19926103ejc.154.1659529065733; Wed, 03
- Aug 2022 05:17:45 -0700 (PDT)
+        Wed, 3 Aug 2022 08:22:08 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADFF512AA6;
+        Wed,  3 Aug 2022 05:22:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659529327; x=1691065327;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=X8fFu9QSmU9cXPCoF4NzSuBKpuk/b4Qx3+SeEQCPSlY=;
+  b=CYHPWRKey6ScoDu0srGvqAk8hx5IHEHjJmB2RieiPQc7qNOmFHDV0uqj
+   Px4UaNSNhVdDfGSU1iSUjmCQ2mvAHBdfs9E337R2EQwhUA/TlPale///7
+   A2M1m9LrC8NUvibBHNIWeyDs8FgmI84CpWS6IGG6n+ejeQeMHUEjbmFq7
+   C7wjaoU4IwQ9y3Xa5y/jXGFHWMFp7qrwXEjaw1zLhDOLVVJmNpoIy+N7A
+   TKyG+ByeIojeVpU9eEtMd9ifZNlC8Jb/4bdK8VtWXIgijVkZBFlJw40MH
+   XRJRwkjPOAfQmaZ6JR6K3fM38NLS9SWM9uw6iRWBLAoR4YslkgkOgl0x9
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="290431412"
+X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
+   d="scan'208";a="290431412"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 05:22:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
+   d="scan'208";a="635664871"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 03 Aug 2022 05:22:05 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oJDO1-000HFd-0Q;
+        Wed, 03 Aug 2022 12:22:05 +0000
+Date:   Wed, 3 Aug 2022 20:21:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH v1 1/1] leds: bcm6328: Get rid of custom
+ led_init_default_state_get()
+Message-ID: <202208032042.E6WmErcY-lkp@intel.com>
+References: <20220802212549.7184-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-References: <CAOMZO5BAheG4r1Umnd7bLhOqezsxJgE0x1c-858EcabbpPm6Pg@mail.gmail.com>
- <20220801225538.qtdb5zd66g6ipewz@pengutronix.de> <CAOMZO5DUTxQKbpTVOgaVC0V7hPqJG77sgmkW8p=aNpG8th-aLw@mail.gmail.com>
- <CAHCN7xL2w7a=SeXbwcNNxqb3kpRV9Bs0AbK0Nmjbj+dm0NDaVA@mail.gmail.com>
- <CAOMZO5BQWnUj4Ouq3=vhqq55zN8otO_9vPX8ht+muFM_5pg9Fg@mail.gmail.com>
- <CAHCN7xJy6X5733m3zwcFMuWM9oGHJEmKrs2KUNhzMzNVggRx0g@mail.gmail.com>
- <20220802080820.jyf3tfpgcj3pvbtp@pengutronix.de> <CAHCN7xL-7wGnEhY9+zDXYjigZfnfsnY_NsRf+enYt_BPsFxgnQ@mail.gmail.com>
- <CAHCN7xLpCbOY+Ma6gKJievw6aUZ5-Qs4S=zxjTgRu=Be7zvhoQ@mail.gmail.com>
- <CAHCN7xKzYcCPL0ddTENGw6xdCMNdYw-m5u4NSBHb96Vb_tByGg@mail.gmail.com>
- <20220803062024.vn7awasmifkp5xow@pengutronix.de> <CAHCN7xL3maPyX8eUiT6mKYei==6pkEvVTwX3vY+1uLTSNDGQ3Q@mail.gmail.com>
-In-Reply-To: <CAHCN7xL3maPyX8eUiT6mKYei==6pkEvVTwX3vY+1uLTSNDGQ3Q@mail.gmail.com>
-From:   Dave Stevenson <dave.stevenson@raspberrypi.com>
-Date:   Wed, 3 Aug 2022 13:17:29 +0100
-Message-ID: <CAPY8ntBBz56Es=pK+KpqhyYLUET95DT_zE6gorOWx4WkCSxJAg@mail.gmail.com>
-Subject: Re: imx8mm lcdif->dsi->adv7535 no video, no errors
-To:     Adam Ford <aford173@gmail.com>
-Cc:     Marco Felsch <m.felsch@pengutronix.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Marek Vasut <marex@denx.de>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jagan Teki <jagan@amarulasolutions.com>, robert.chiras@nxp.com,
-        laurentiu.palcu@nxp.com, NXP Linux Team <linux-imx@nxp.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        arm-soc <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220802212549.7184-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Adam
+Hi Andy,
 
-On Wed, 3 Aug 2022 at 12:03, Adam Ford <aford173@gmail.com> wrote:
->
-> On Wed, Aug 3, 2022 at 1:20 AM Marco Felsch <m.felsch@pengutronix.de> wrote:
-> >
-> > On 22-08-02, Adam Ford wrote:
-> >
-> > ...
-> >
-> > > > I did some reading about the internal timing generator.  It appears
-> > > > that it's required when video formats use fractional bytes, and it's
-> > > > preconfigured to run at 720p by default, but registers 28h through 37h
-> > > > configure it for other video modes.
-> > >
-> > > I think there may still be some issues with the DSIM since some of the
-> > > clock frequencies are set in the device tree.
-> > >
-> > > From what I can tell, the pixel rate is calculated based on the
-> >
-> > By pixel rate you mean the HDMI pixel rate from the ADV? If so then yes.
-> > The ADV has an divider which is already configured by the driver but
-> > meaningless since the driver is lacking of setting the "manual-divider"
-> > bit within the same register.
->
-> I was thinking about the pixel clock from the DSI to the ADV.  I did
-> see the manual-divider bit was missing.  I tried enabling that bit,
-> but it didn't appear to make much difference.
-> >
-> > > burst-clock-frequency and that generates a byte clock.  For 891000000,
-> > > the byte clock is 111375000.
-> >
-> > The burst-clock-frequency is the hs-clk and DDR. So the MIPI-DSI clock
-> > is burst-clock-frequency/2 which is in your case: 891000000/2 =
-> > 445500000. This clock is than divided by 3 within the ADV and you get
-> > your 148500000 pixel clock. This divide by 3 is detected automatically
-> > by the ADV due to the missing bit (see above).
-> >
-> > > Modetest timings for 1080p show:
-> > >
-> > > index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
-> > >   #0 1920x1080 60.00 1920 2008 2052 2200 1080 1084 1089 1125 148500
-> > > flags: nhsync, nvsync; type: driver
-> > >
-> > >
-> > > When looking at modetest, there is a clock for 1080p which appears to be 148500.
-> > > 111375000/148500 = 750.
-> >
-> > Please see above.
-> >
-> > > The rest of the entries in my table do not divide evenly.  I don;t
-> > > know if that explains the lack of display, but it's something to note.
-> > > It seems to me that instead of fixing the
-> > > samsung,burst-clock-frequency to 891000000, we should make the desired
-> > > PLL related to the desired pixel clock so it divides evenly.
-> >
-> > Please see above.
-> >
-> > > Looking at NXP's kernel, I also noticed that their esc_prescaler is
-> > > based on the byte clock divided by 20MHz.  With some small code
-> > > changes to get the PLL based on the desired pixel clock instead of
-> > > hard-coded,  I was able to set
-> > >
-> > > samsung,burst-clock-frequency = <1500000000>;
-> >
-> > This is not correct since the burst-clock-freq. specifies the hs-clock
-> > for the data lanes (see above).
->
-> But I don't think the clock should be fixed. I think it should vary as
-> the resolution changes.  From what I can tell, NXP's DSI code doesn't
-> hard code this value, but it does appear to cap it at 1.5G.  I did
-> soom looking into the NXP frequency calculation and it is capable of
-> adjusting resolutions to some extent and from what I can see the
-> 891MHz clock is only set when 1080p.  At 720p, thier kernel shows the
-> output frequency at  445.5 MHz.  The way the DSIM is currently
-> configured, it's fixed at 891MHz, so I don't expect the output feeding
-> the adv7535 to be correct for the different resolutions.
->
->
-> >
-> > > samsung,esc-clock-frequency = <20000000>;
-> >
-> > This is correct, we also use a esc-clock of 20MHz.
-> >
-> > > With these settings and the above mentioned code changes, 1080p still
-> > > appears, however when attempting other modes, the display still fails
-> > > to load.  I also noticed that the phy ref clock is set to 27MHz
-> > > instead of NXP's 12MHz.
-> >
-> > That's interesting, I didn't noticed that NXP uses 12 MHz as refclock
-> > but I don't think that this is the problem. Since we have other
-> > converter chips using the bridge driver and they work fine. I still
-> > think that the main problem is within the ADV driver.
->
-> Do the other converter chips work fine at different resolutions?
->
-> >
-> > > I attempted to play with that setting, but I couldn't get 1080p to
-> > > work again, so I backed it out.
-> > >
-> > > Maybe I am headed in the wrong direction, but I'm going to examine the
-> > > P/M/S calculation of the timing on NXP's kernel to see how the DSIM in
-> > > this code compares.
-> >
-> > I think the pms values are fine.
->
-> I compared the P/M/S values between this driver and NXP's and they
-> calculate different values of PMS when running at 1080P.
-> NXP @ 1080p:
-> fout = 891000, fin = 12000, m = 297, p = 2, s = 1, best_delta = 0
->
-> This kernel @ 1080p:
->
-> PLL freq 891000000, (p 3, m 99, s 0)
->
-> at 720P, the NXP Kernel
-> fout = 445500, fin = 12000, m = 297, p = 2, s = 2, best_delta = 0
-> (working)
->
-> at 720P, this kernel:
-> PLL freq 891000000, (p 3, m 99, s 0)
-> hs_clk = 891000000, byte_clk = 111375000, esc_clk = 18562500
-> (not working)
->
->
-> >
-> > > If someone who understands the interactions between these different
-> > > components has suggestions, I'm willing to run some experiments.
-> >
-> > Did managed to get access to the ADV7535 programming guide? This is the
-> > black box here. Let me check if I can provide you a link with our repo
-> > so you can test our current DSIM state if you want.
->
-> I do have access to the programming guide, but it's under NDA, but
-> I'll try to answer questions if I can.
+I love your patch! Yet something to improve:
 
-Not meaning to butt in, but I have datasheets for ADV7533 and 7535
-from previously looking at these chips.
-Mine fairly plainly states:
-"The DSI receiver input supports DSI video mode operation only, and
-specifically, only supports nonburst mode with sync pulses".
-Non-burst mode meaning that the DSI pixel rate MUST be the same as the
-HDMI pixel rate.
-Section 6.1.1 "DSI Input Modes" of adv7533_hardware_user_s_guide is
-even more explicit about the requirement of DSI timing matching
+[auto build test ERROR on pavel-leds/for-next]
+[also build test ERROR on linus/master v5.19 next-20220802]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-The NXP kernel switching down to an hs_clk of 445.5MHz would therefore
-be correct for 720p operation.
+url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/leds-bcm6328-Get-rid-of-custom-led_init_default_state_get/20220803-052959
+base:   git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git for-next
+config: openrisc-randconfig-r035-20220801 (https://download.01.org/0day-ci/archive/20220803/202208032042.E6WmErcY-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/514383e5dd28e25f812c88b0454a02d59e4d205c
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Andy-Shevchenko/leds-bcm6328-Get-rid-of-custom-led_init_default_state_get/20220803-052959
+        git checkout 514383e5dd28e25f812c88b0454a02d59e4d205c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/leds/
 
-If you do program the manual DSI divider register to allow a DSI pixel
-rate of 148.5MHz vs HDMI pixel rate of 74.25MHz, you'd be relying on
-the ADV753x having at least a half-line FIFO between DSI rx and HDMI
-tx to compensate for the differing data rates. I see no reference to
-such, and I'd be surprised if it was more than a half dozen pixels to
-compensate for the jitter in the cases where the internal timing
-generator is mandatory due to fractional bytes.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-  Dave
+All errors (new ones prefixed by >>):
 
-> adam
-> >
-> > Regards,
-> >   Marco
+   drivers/leds/leds-bcm6328.c: In function 'bcm6328_led':
+>> drivers/leds/leds-bcm6328.c:353:17: error: implicit declaration of function 'led_init_default_state_get'; did you mean 'led_get_default_pattern'? [-Werror=implicit-function-declaration]
+     353 |         state = led_init_default_state_get(init_data.fwnode);
+         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                 led_get_default_pattern
+   cc1: some warnings being treated as errors
+
+
+vim +353 drivers/leds/leds-bcm6328.c
+
+   326	
+   327	static int bcm6328_led(struct device *dev, struct device_node *nc, u32 reg,
+   328			       void __iomem *mem, spinlock_t *lock,
+   329			       unsigned long *blink_leds, unsigned long *blink_delay)
+   330	{
+   331		struct led_init_data init_data = {};
+   332		struct bcm6328_led *led;
+   333		enum led_default_state state;
+   334		unsigned long val, shift;
+   335		void __iomem *mode;
+   336		int rc;
+   337	
+   338		led = devm_kzalloc(dev, sizeof(*led), GFP_KERNEL);
+   339		if (!led)
+   340			return -ENOMEM;
+   341	
+   342		led->pin = reg;
+   343		led->mem = mem;
+   344		led->lock = lock;
+   345		led->blink_leds = blink_leds;
+   346		led->blink_delay = blink_delay;
+   347	
+   348		if (of_property_read_bool(nc, "active-low"))
+   349			led->active_low = true;
+   350	
+   351		init_data.fwnode = of_fwnode_handle(nc);
+   352	
+ > 353		state = led_init_default_state_get(init_data.fwnode);
+   354		switch (state) {
+   355		case LEDS_DEFSTATE_ON:
+   356			led->cdev.brightness = LED_FULL;
+   357			break;
+   358		case LEDS_DEFSTATE_KEEP:
+   359			shift = bcm6328_pin2shift(led->pin);
+   360			if (shift / 16)
+   361				mode = mem + BCM6328_REG_MODE_HI;
+   362			else
+   363				mode = mem + BCM6328_REG_MODE_LO;
+   364	
+   365			val = bcm6328_led_read(mode) >> BCM6328_LED_SHIFT(shift % 16);
+   366			val &= BCM6328_LED_MODE_MASK;
+   367			if ((led->active_low && val == BCM6328_LED_MODE_OFF) ||
+   368			    (!led->active_low && val == BCM6328_LED_MODE_ON))
+   369				led->cdev.brightness = LED_FULL;
+   370			else
+   371				led->cdev.brightness = LED_OFF;
+   372			break;
+   373		default:
+   374			led->cdev.brightness = LED_OFF;
+   375		}
+   376	
+   377		bcm6328_led_set(&led->cdev, led->cdev.brightness);
+   378	
+   379		led->cdev.brightness_set = bcm6328_led_set;
+   380		led->cdev.blink_set = bcm6328_blink_set;
+   381	
+   382		rc = devm_led_classdev_register_ext(dev, &led->cdev, &init_data);
+   383		if (rc < 0)
+   384			return rc;
+   385	
+   386		dev_dbg(dev, "registered LED %s\n", led->cdev.name);
+   387	
+   388		return 0;
+   389	}
+   390	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
