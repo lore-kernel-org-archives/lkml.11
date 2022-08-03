@@ -2,119 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F85C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 12:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5037C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 12:22:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237906AbiHCMWW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 08:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57220 "EHLO
+        id S235900AbiHCMW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 08:22:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbiHCMWL (ORCPT
+        with ESMTP id S237851AbiHCMWM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 08:22:11 -0400
+        Wed, 3 Aug 2022 08:22:12 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB3C13E07
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 05:22:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A6513E35;
+        Wed,  3 Aug 2022 05:22:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659529330; x=1691065330;
+  t=1659529331; x=1691065331;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Q5oMqDUOf5jPtkD4LDnaNhTX3jxTVkViK2zCA1vHBOs=;
-  b=lpbKz8VqhN/ADLcbLb0J5OFwmmotenmG8idkvDHWwHjFd5RNb2KmIQIb
-   +2yIOzg5LUNTKreW8Qnl/n+AFzCN/kMqqEq0g2ZDD/0HSIpsstgxAQvIA
-   U/PuFC+4/qyVhLivLqb7PwE5vBjqgr5ued7sf35kIF4gJSWIP6cWGAAdP
-   AfUGMSg0PRY0NymM8Nl/+ec7mZhkHPPIcgiw6ihcSGklSqNPfhJNQtSeb
-   pi42V7PspmMOWE77HH1AYPJbh9KfAPHNtLmvym0o7wuHha/gx2AFkJHyK
-   HI0kskCzIqIzC4R/iUEGPgMgiLQvigtlt5ImVSwHdgtURK2JzVoQuz8kj
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="269427574"
+  bh=8HOQd1wDQcuWohstXq9pTpJMEGYQijbNIPB9ABdU6tw=;
+  b=Wja+KGDF6ED1c/PFQeHRmrG6r5ex49D9qR0bCosND93NnD/0oGUlhxqm
+   DbDk0X7YVb1BXT92IvVGxosw2xj2SlrjQngSutyuI+mKkZwq9AKcifusJ
+   F1PlvUVHP6DHDG9O3kkv4Bp5S6Id9J6gxGXHOAjdk6QFzs9UBHqVTl79D
+   zbENzpk8tKVUgKyc0CpMZ8NWIXT8G94+pDaTiZaBHcXip7BR4hIAuV36p
+   25o5zofNGsJ3VtJ/nQyzIcCjCOejLyjIANZA6JhCmvqIi71PH0Os7W8+m
+   GlRjIUsCJdQVqzjzMLngLRwJXzkn/X0g6gcxgZYJWzv2TK3i8elyVIyxq
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="269427567"
 X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="269427574"
+   d="scan'208";a="269427567"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 05:22:08 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 05:22:07 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="848562356"
+   d="scan'208";a="848562337"
 Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
   by fmsmga006.fm.intel.com with ESMTP; 03 Aug 2022 05:22:05 -0700
 Received: from kbuild by e0eace57cfef with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oJDO1-000HFf-0U;
+        id 1oJDO1-000HFi-0X;
         Wed, 03 Aug 2022 12:22:05 +0000
-Date:   Wed, 3 Aug 2022 20:21:43 +0800
+Date:   Wed, 3 Aug 2022 20:21:40 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Peter Xu <peterx@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Cc:     kbuild-all@lists.01.org, Andrea Arcangeli <aarcange@redhat.com>,
-        Andi Kleen <andi.kleen@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        David Hildenbrand <david@redhat.com>,
-        Hugh Dickins <hughd@google.com>,
-        Huang Ying <ying.huang@intel.com>, peterx@redhat.com,
-        Nadav Amit <nadav.amit@gmail.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH 2/2] mm: Remember young bit for page migrations
-Message-ID: <202208032031.PVcMB0Hr-lkp@intel.com>
-References: <20220803012159.36551-3-peterx@redhat.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH v1 1/1] leds: bcm6328: Get rid of custom
+ led_init_default_state_get()
+Message-ID: <202208032028.jurRnUDS-lkp@intel.com>
+References: <20220802212549.7184-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220803012159.36551-3-peterx@redhat.com>
+In-Reply-To: <20220802212549.7184-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
+Hi Andy,
 
-Thank you for the patch! Yet something to improve:
+I love your patch! Yet something to improve:
 
-[auto build test ERROR on akpm-mm/mm-everything]
+[auto build test ERROR on pavel-leds/for-next]
+[also build test ERROR on linus/master v5.19 next-20220802]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Peter-Xu/mm-Remember-young-bit-for-migration-entries/20220803-092311
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-config: openrisc-randconfig-r016-20220803 (https://download.01.org/0day-ci/archive/20220803/202208032031.PVcMB0Hr-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 12.1.0
+url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/leds-bcm6328-Get-rid-of-custom-led_init_default_state_get/20220803-052959
+base:   git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git for-next
+config: arc-randconfig-r016-20220801 (https://download.01.org/0day-ci/archive/20220803/202208032028.jurRnUDS-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 12.1.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/2fca6cb25745d1404fc34e0ec2ea89b6195a8c27
+        # https://github.com/intel-lab-lkp/linux/commit/514383e5dd28e25f812c88b0454a02d59e4d205c
         git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Peter-Xu/mm-Remember-young-bit-for-migration-entries/20220803-092311
-        git checkout 2fca6cb25745d1404fc34e0ec2ea89b6195a8c27
+        git fetch --no-tags linux-review Andy-Shevchenko/leds-bcm6328-Get-rid-of-custom-led_init_default_state_get/20220803-052959
+        git checkout 514383e5dd28e25f812c88b0454a02d59e4d205c
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/leds/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
-   or1k-linux-ld: mm/rmap.o: in function `migration_entry_supports_young':
->> include/linux/swapops.h:288: undefined reference to `max_swapfile_size'
-   include/linux/swapops.h:288:(.text+0x31a0): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `max_swapfile_size'
-   or1k-linux-ld: mm/migrate.o: in function `migration_entry_supports_young':
->> include/linux/swapops.h:288: undefined reference to `max_swapfile_size'
-   include/linux/swapops.h:288:(.text+0x158): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `max_swapfile_size'
+   drivers/leds/leds-bcm6328.c: In function 'bcm6328_led':
+>> drivers/leds/leds-bcm6328.c:353:17: error: implicit declaration of function 'led_init_default_state_get'; did you mean 'led_get_default_pattern'? [-Werror=implicit-function-declaration]
+     353 |         state = led_init_default_state_get(init_data.fwnode);
+         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                 led_get_default_pattern
+   cc1: some warnings being treated as errors
 
 
-vim +288 include/linux/swapops.h
+vim +353 drivers/leds/leds-bcm6328.c
 
-   279	
-   280	static inline bool migration_entry_supports_young(void)
-   281	{
-   282		/*
-   283		 * max_swapfile_size() returns the max supported swp-offset plus 1.
-   284		 * We can support the migration young bit only if the pfn swap
-   285		 * entry has the offset larger than storing the PFN value, then it
-   286		 * means there's extra bit(s) where we can store the young bit.
-   287		 */
- > 288		return max_swapfile_size() > SWP_MIG_YOUNG_BIT;
-   289	}
-   290	
+   326	
+   327	static int bcm6328_led(struct device *dev, struct device_node *nc, u32 reg,
+   328			       void __iomem *mem, spinlock_t *lock,
+   329			       unsigned long *blink_leds, unsigned long *blink_delay)
+   330	{
+   331		struct led_init_data init_data = {};
+   332		struct bcm6328_led *led;
+   333		enum led_default_state state;
+   334		unsigned long val, shift;
+   335		void __iomem *mode;
+   336		int rc;
+   337	
+   338		led = devm_kzalloc(dev, sizeof(*led), GFP_KERNEL);
+   339		if (!led)
+   340			return -ENOMEM;
+   341	
+   342		led->pin = reg;
+   343		led->mem = mem;
+   344		led->lock = lock;
+   345		led->blink_leds = blink_leds;
+   346		led->blink_delay = blink_delay;
+   347	
+   348		if (of_property_read_bool(nc, "active-low"))
+   349			led->active_low = true;
+   350	
+   351		init_data.fwnode = of_fwnode_handle(nc);
+   352	
+ > 353		state = led_init_default_state_get(init_data.fwnode);
+   354		switch (state) {
+   355		case LEDS_DEFSTATE_ON:
+   356			led->cdev.brightness = LED_FULL;
+   357			break;
+   358		case LEDS_DEFSTATE_KEEP:
+   359			shift = bcm6328_pin2shift(led->pin);
+   360			if (shift / 16)
+   361				mode = mem + BCM6328_REG_MODE_HI;
+   362			else
+   363				mode = mem + BCM6328_REG_MODE_LO;
+   364	
+   365			val = bcm6328_led_read(mode) >> BCM6328_LED_SHIFT(shift % 16);
+   366			val &= BCM6328_LED_MODE_MASK;
+   367			if ((led->active_low && val == BCM6328_LED_MODE_OFF) ||
+   368			    (!led->active_low && val == BCM6328_LED_MODE_ON))
+   369				led->cdev.brightness = LED_FULL;
+   370			else
+   371				led->cdev.brightness = LED_OFF;
+   372			break;
+   373		default:
+   374			led->cdev.brightness = LED_OFF;
+   375		}
+   376	
+   377		bcm6328_led_set(&led->cdev, led->cdev.brightness);
+   378	
+   379		led->cdev.brightness_set = bcm6328_led_set;
+   380		led->cdev.blink_set = bcm6328_blink_set;
+   381	
+   382		rc = devm_led_classdev_register_ext(dev, &led->cdev, &init_data);
+   383		if (rc < 0)
+   384			return rc;
+   385	
+   386		dev_dbg(dev, "registered LED %s\n", led->cdev.name);
+   387	
+   388		return 0;
+   389	}
+   390	
 
 -- 
 0-DAY CI Kernel Test Service
