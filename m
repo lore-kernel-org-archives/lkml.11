@@ -2,203 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C8F6C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 12:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E7BC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 12:03:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237697AbiHCMDR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 08:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45534 "EHLO
+        id S237687AbiHCMDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 08:03:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234806AbiHCMDN (ORCPT
+        with ESMTP id S234698AbiHCMDk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 08:03:13 -0400
-Received: from dggsgout12.his.huawei.com (unknown [45.249.212.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2583B1A072;
-        Wed,  3 Aug 2022 05:03:12 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.153])
-        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4LyVp82HH1z6S2yZ;
-        Wed,  3 Aug 2022 20:01:52 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.127.227])
-        by APP3 (Coremail) with SMTP id _Ch0CgDX38P6Y+piI+qYAA--.61185S4;
-        Wed, 03 Aug 2022 20:03:08 +0800 (CST)
-From:   Yu Kuai <yukuai1@huaweicloud.com>
-To:     jack@suse.cz, axboe@kernel.dk, osandov@fb.com
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yukuai3@huawei.com, yukuai1@huaweicloud.com, yi.zhang@huawei.com
-Subject: [PATCH] sbitmap: fix possible io hung due to lost wakeup
-Date:   Wed,  3 Aug 2022 20:15:04 +0800
-Message-Id: <20220803121504.212071-1-yukuai1@huaweicloud.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 3 Aug 2022 08:03:40 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F335F1A072;
+        Wed,  3 Aug 2022 05:03:39 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 273BgHoB023513;
+        Wed, 3 Aug 2022 12:03:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=GnzalkEgh8cDTb75tWrLwtPfYTUvsZnCQhi2QQqTBzc=;
+ b=eHB1otNZGzEIiY6kitI6Wxukbi55TjmemyWCgVhlK/XPdaHgBxSN8OyGy3bJSqbqV9Kb
+ LSRWvQQSr8x9fCbhcAAUCAc3QqWhF05dBHaCih8DbcT1ZgBf/PgPYlcVGX+fHIi0z4pF
+ WgjuKUYDbEhaqonggiolRp9UXwJywqYimBH2Fg/qCqTDIDI5zwEyaDnQ38UZrnVqmOcN
+ 54bAPb5tR7PYKQTixdjFeKyosU6a+C0USSWzQlswkachvtNTXFrc+VoUlEfcH66pouiz
+ LvaHnzHLLLlLR88hyNFGOg0BOE319bE2ZKVjUcUg+ayBybSH+Y4hdKzdqPR/LQQuNvLP kw== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hqrcbrp1a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 03 Aug 2022 12:03:06 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 273BmEhu029360;
+        Wed, 3 Aug 2022 12:01:37 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06fra.de.ibm.com with ESMTP id 3hmuwhsr07-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 03 Aug 2022 12:01:37 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 273C1nRQ28508616
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 3 Aug 2022 12:01:49 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EC62242049;
+        Wed,  3 Aug 2022 12:01:33 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3E00142042;
+        Wed,  3 Aug 2022 12:01:33 +0000 (GMT)
+Received: from [9.171.89.39] (unknown [9.171.89.39])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  3 Aug 2022 12:01:33 +0000 (GMT)
+Message-ID: <f2c6f744-7139-05b6-6d96-4e207dcd9c1f@linux.ibm.com>
+Date:   Wed, 3 Aug 2022 14:01:31 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] random: handle archrandom in plural words
+Content-Language: en-US
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        x86@kernel.org, Will Deacon <will@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Borislav Petkov <bp@suse.de>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Harald Freudenberger <freude@linux.ibm.com>
+References: <YtP1+MJ1tNdJA60l@zx2c4.com>
+ <20220717200356.75060-1-Jason@zx2c4.com>
+ <46c1a7be-080b-3315-50cc-d3c848fd99e3@linux.ibm.com>
+ <YtqIbrds53EuyqPE@zx2c4.com>
+From:   Holger Dengler <dengler@linux.ibm.com>
+In-Reply-To: <YtqIbrds53EuyqPE@zx2c4.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _Ch0CgDX38P6Y+piI+qYAA--.61185S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxWr17AF4ruFWfAr4DCr48WFg_yoWrtrWrpr
-        43GFnYqanYvFWIywsrJw4UZa4Ykw4vg3srGrWfK34rCr12gr4Ykr109r15ury8Ars8Wry5
-        tr4fJFZ3CFWUXaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vI
-        r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
-        xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0
-        cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
-        AvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
-        xVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: HRjzL3yFJDN9d8vu57sKCKxbeNHkTfQy
+X-Proofpoint-ORIG-GUID: HRjzL3yFJDN9d8vu57sKCKxbeNHkTfQy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-03_03,2022-08-02_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
+ impostorscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=635
+ lowpriorityscore=0 mlxscore=0 adultscore=0 clxscore=1015 spamscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2208030052
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+Hi Jason,
 
-There are two problems can lead to lost wakeup:
+On 22/07/2022 13:22, Jason A. Donenfeld wrote:
+> On Fri, Jul 22, 2022 at 10:08:05AM +0200, Holger Dengler wrote:
+>> Why not changing the API to take bytes instead of words? Sure, at the
+>> moment it looks like all platforms with TRNG support are able to
+>> deliver at least one word, but bytes would be more flexible. 
+> 
+> The idea is to strike a sweet spot between capabilities. S390x is fine
+> with byte-level granularity up to arbitrary lengths, while x86 is best
+> with word-level granularity of length 1. The happy intersection between
+> the two is just word-level granularity of arbitrary length. Yes we
+> _could_ introduce a lot of code complexity by cascading the x86 case
+> down into smaller and smaller registers, ignoring the fact that it's no
+> longer efficient below 32- or 64-bit registers depending on vendor. But
+> then we're relying on the inliner to remove all of that extra code,
+> since all callers actually only ever want 32 or 64 bytes. Why bloat for
+> nothing? The beauty of this approach is that it translates very
+> naturally over all the various quirks of architectures without having to
+> have a lot of coupling code.
 
-1) invalid wakeup on the wrong waitqueue:
+You're absolutely right. Your solution addresses all needs of current architectures. My proposal was just meant as preparation for the case, that new (smaller) architectures may come up in the future with a TRNG support, but with other granularity. But anyhow: we can handle it as soon as it happens, fine with me.
 
-For example, 2 * wake_batch tags are put, while only wake_batch threads
-are woken:
 
-__sbq_wake_up
- atomic_cmpxchg -> reset wait_cnt
-			__sbq_wake_up -> decrease wait_cnt
-			...
-			__sbq_wake_up -> wait_cnt is decreased to 0 again
-			 atomic_cmpxchg
-			 sbq_index_atomic_inc -> increase wake_index
-			 wake_up_nr -> wake up and waitqueue might be empty
- sbq_index_atomic_inc -> increase again, one waitqueue is skipped
- wake_up_nr -> invalid wake up because old wakequeue might be empty
-
-To fix the problem, increasing 'wake_index' before resetting 'wait_cnt'.
-
-2) 'wait_cnt' can be decreased while waitqueue is empty
-
-As pointed out by Jan Kara, following race is possible:
-
-CPU1				CPU2
-__sbq_wake_up			 __sbq_wake_up
- sbq_wake_ptr()			 sbq_wake_ptr() -> the same
- wait_cnt = atomic_dec_return()
- /* decreased to 0 */
- sbq_index_atomic_inc()
- /* move to next waitqueue */
- atomic_set()
- /* reset wait_cnt */
- wake_up_nr()
- /* wake up on the old waitqueue */
-				 wait_cnt = atomic_dec_return()
-				 /*
-				  * decrease wait_cnt in the old
-				  * waitqueue, while it can be
-				  * empty.
-				  */
-
-Fix the problem by waking up before updating 'wake_index' and
-'wait_cnt'.
-
-With this patch, noted that 'wait_cnt' is still decreased in the old
-empty waitqueue, however, the wakeup is redirected to a active waitqueue,
-and the extra decrement on the old empty waitqueue is not handled.
-
-Fixes: 88459642cba4 ("blk-mq: abstract tag allocation out into sbitmap library")
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
----
-Changes in official version:
-- fix spelling mistake in comments
-- add review tag
-Changes in rfc v4:
- - remove patch 1, which improve fairness with overhead
- - merge patch2 and patch 3
-Changes in rfc v3:
- - rename patch 2, and add some comments.
- - add patch 3, which fixes a new issue pointed out by Jan Kara.
-Changes in rfc v2:
- - split to spearate patches for different problem.
- - add fix tag
-
- previous versions:
-rfc v1: https://lore.kernel.org/all/20220617141125.3024491-1-yukuai3@huawei.com/
-rfc v2: https://lore.kernel.org/all/20220619080309.1630027-1-yukuai3@huawei.com/
-rfc v3: https://lore.kernel.org/all/20220710042200.20936-1-yukuai1@huaweicloud.com/
-rfc v4: https://lore.kernel.org/all/20220723024122.2990436-1-yukuai1@huaweicloud.com/
- lib/sbitmap.c | 55 ++++++++++++++++++++++++++++++---------------------
- 1 file changed, 33 insertions(+), 22 deletions(-)
-
-diff --git a/lib/sbitmap.c b/lib/sbitmap.c
-index 29eb0484215a..1aa55806f6a5 100644
---- a/lib/sbitmap.c
-+++ b/lib/sbitmap.c
-@@ -611,32 +611,43 @@ static bool __sbq_wake_up(struct sbitmap_queue *sbq)
- 		return false;
- 
- 	wait_cnt = atomic_dec_return(&ws->wait_cnt);
--	if (wait_cnt <= 0) {
--		int ret;
-+	/*
-+	 * For concurrent callers of this, callers should call this function
-+	 * again to wakeup a new batch on a different 'ws'.
-+	 */
-+	if (wait_cnt < 0 || !waitqueue_active(&ws->wait))
-+		return true;
- 
--		wake_batch = READ_ONCE(sbq->wake_batch);
-+	if (wait_cnt > 0)
-+		return false;
- 
--		/*
--		 * Pairs with the memory barrier in sbitmap_queue_resize() to
--		 * ensure that we see the batch size update before the wait
--		 * count is reset.
--		 */
--		smp_mb__before_atomic();
-+	wake_batch = READ_ONCE(sbq->wake_batch);
- 
--		/*
--		 * For concurrent callers of this, the one that failed the
--		 * atomic_cmpxhcg() race should call this function again
--		 * to wakeup a new batch on a different 'ws'.
--		 */
--		ret = atomic_cmpxchg(&ws->wait_cnt, wait_cnt, wake_batch);
--		if (ret == wait_cnt) {
--			sbq_index_atomic_inc(&sbq->wake_index);
--			wake_up_nr(&ws->wait, wake_batch);
--			return false;
--		}
-+	/*
-+	 * Wake up first in case that concurrent callers decrease wait_cnt
-+	 * while waitqueue is empty.
-+	 */
-+	wake_up_nr(&ws->wait, wake_batch);
- 
--		return true;
--	}
-+	/*
-+	 * Pairs with the memory barrier in sbitmap_queue_resize() to
-+	 * ensure that we see the batch size update before the wait
-+	 * count is reset.
-+	 *
-+	 * Also pairs with the implicit barrier between decrementing wait_cnt
-+	 * and checking for waitqueue_active() to make sure waitqueue_active()
-+	 * sees result of the wakeup if atomic_dec_return() has seen the result
-+	 * of atomic_set().
-+	 */
-+	smp_mb__before_atomic();
-+
-+	/*
-+	 * Increase wake_index before updating wait_cnt, otherwise concurrent
-+	 * callers can see valid wait_cnt in old waitqueue, which can cause
-+	 * invalid wakeup on the old waitqueue.
-+	 */
-+	sbq_index_atomic_inc(&sbq->wake_index);
-+	atomic_set(&ws->wait_cnt, wake_batch);
- 
- 	return false;
- }
 -- 
-2.31.1
-
+Mit freundlichen Grüßen / Kind regards
+Holger Dengler
+--
+IBM Systems, Linux on IBM Z Development
+dengler@linux.ibm.com
