@@ -2,181 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E025BC19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 14:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1FB3C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 14:55:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236273AbiHCOt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 10:49:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34042 "EHLO
+        id S236029AbiHCOzd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 10:55:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236284AbiHCOtw (ORCPT
+        with ESMTP id S233526AbiHCOzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 10:49:52 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0125B32ECC;
-        Wed,  3 Aug 2022 07:49:51 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id uj29so18770777ejc.0;
-        Wed, 03 Aug 2022 07:49:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=T1eaEYCsiztUOu1TAFfBm7LGOQwx8sYwZrazGABjp+A=;
-        b=Yom+/5l7W5v3IQO5nqagXRpVxKMpv4b7nLy15Z6BDRoWDxwlVaalW5CEdekCHWvuPg
-         YZKrPrvu72xBODBU5dl9eDTkzvRQ2y9Mt06mqJOUZtgzugOaVbzSlQZLokrl+KZ10jch
-         skW/DCMDiUoFj2/Kuo+XwRpZxOrjibDrIb8ctmsj9wWmXHGH9jPgpIqIToC8wFJ0/ajq
-         7ll0l4RGsYggKLsbnHQ3Znd0wd+HABJIROt4nCuspGyBmuAQlXkxRPnKUrbooBsn/iFH
-         shZ6LYBNiJiN3MqtFSbqb1DFn1uN6PKeGxrVam7mN9UxqP+rr4Cv2D/AbADFsH+5HjRy
-         NIZA==
+        Wed, 3 Aug 2022 10:55:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 910CB193D7
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 07:55:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659538528;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=btnKjqAfvrYASatlMv3xFFZePE1Rwy613UtGW6tgQSI=;
+        b=N6XRE1Z10sUH+8dMnCC3dRj9WpYbyytVXQUABcVt/GHo0kOMbN5eK34WcKFVBI4hDrcb7q
+        Xuo6x4U3p0sYwLeHYn0aQdYZJxrItSRUblUkxn3NdZTUQ5UPHaW1qUt5RRBK3Zb8BOJfZN
+        Z/5lrXLYIeRjKSHNJXI0mpUU5OjUdHA=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-657-YrP8f1IEM3SCj8NkH9Y3Xg-1; Wed, 03 Aug 2022 10:55:25 -0400
+X-MC-Unique: YrP8f1IEM3SCj8NkH9Y3Xg-1
+Received: by mail-ed1-f69.google.com with SMTP id b13-20020a056402350d00b0043dfc84c533so3215589edd.5
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 07:55:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=T1eaEYCsiztUOu1TAFfBm7LGOQwx8sYwZrazGABjp+A=;
-        b=79naeU5fqhiEB5mKC+y41ItKyNbKE6Y1QoTfXOiC1RhaYp3M59WkLyqoOo6Il6w/mO
-         6nDcrYmirCTxLpvyeYg2MRhsHlB8TtdJmipCRcpNOLvi31xselqx9MAfI1n1qIxdQPyM
-         Oaaz/9AHYmXku4ncnGauSBRRrZxSX4tVYD1c95TNMmVcTD/dV6OsFRzFc3REQRYIoOy1
-         QgSuMVSgEtdq6AUKT5elsxy0aQLT+40H54rhvMiX3RDUAuh2qjIpiAAb1tnlqhe9QRyE
-         EO9nuSODve8mP7P3WJLb/GkCZN0b1bzlPPWJAWzyoPCcfuZc0XPe/nX3QCWjFtT33WXI
-         Ahqg==
-X-Gm-Message-State: AJIora/YckQjUiv1CZFkFzYU+TFkLoAyfYKrDwtsnMgFXDevkp4/T/e+
-        B4Xc7JkXcytJa3j56L1XWEhXYdE2Bs8=
-X-Google-Smtp-Source: AGRyM1vTtK6HW/bbts8o1KO6oBtaME8U2fUjf+wRHKFzlBr/ItS+9WsFxI8n6qGRmfqGsyEQulv1QQ==
-X-Received: by 2002:a17:907:94ca:b0:72b:8f3e:3be0 with SMTP id dn10-20020a17090794ca00b0072b8f3e3be0mr20580195ejc.462.1659538189411;
-        Wed, 03 Aug 2022 07:49:49 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id ck28-20020a0564021c1c00b0043df40e4cfdsm2335053edb.35.2022.08.03.07.49.47
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=btnKjqAfvrYASatlMv3xFFZePE1Rwy613UtGW6tgQSI=;
+        b=HkG+TzOrP+oj1Zdp2D5dFTkoIh4KWAlrjFJQlfDWL1nQZE4La7OC5mYXJ5ak4fHHc3
+         gcQQTP2ANFqyZd12WIUWk7fa3cxYCaqf83Dpi9ANF1LlD/uxl1S8FkPsS9tU+RFPZkxr
+         rFdyOXdnwBL+1yau53tJwp3gpWMZiOeQrf4hI3SL8NF3ZXkC1yixCcuXwqmK8lOoIPW/
+         jJxmBMYBTePeNriSLakACGHLMiN4YuWC/L0/WYwfXcnv0PqfZoLwmfQAoaqgxck7UpEe
+         JPLKH7zpyDcACTlY9qGiVT3bYL0p2quAVBsJg/hNyaAH/q0Jxi1UnigO1Yln7jW4IHe6
+         ZuLw==
+X-Gm-Message-State: ACgBeo01+FW907p2pGV1dNbWl884KhM0K++saD/8QFPDVbSavvrz2SJf
+        Nh0Pk1I+e7V2pWrO34o0U/0wIHSfjMoA7F76VN+QpA9I93veWNe9i5RpN+ar2/PGp1qje02p3pV
+        3AT6zdyaRp1tx39NA+OH3sXpo
+X-Received: by 2002:a05:6402:5190:b0:43d:da02:566a with SMTP id q16-20020a056402519000b0043dda02566amr11104234edd.187.1659538523937;
+        Wed, 03 Aug 2022 07:55:23 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5s4zMhUjmOaivVKJvZlnxd4uVknAmV6FyDAlsR9bf/U30Fy3lBijhaCbHZBP38GENWJOfkYg==
+X-Received: by 2002:a05:6402:5190:b0:43d:da02:566a with SMTP id q16-20020a056402519000b0043dda02566amr11104217edd.187.1659538523722;
+        Wed, 03 Aug 2022 07:55:23 -0700 (PDT)
+Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
+        by smtp.gmail.com with ESMTPSA id ee24-20020a056402291800b0043b7917b1a4sm9698411edb.43.2022.08.03.07.55.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 07:49:48 -0700 (PDT)
-Date:   Wed, 3 Aug 2022 17:49:46 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun.Ramadoss@microchip.com
-Cc:     andrew@lunn.ch, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
-        linux@armlinux.org.uk, f.fainelli@gmail.com, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        Woojung.Huh@microchip.com, davem@davemloft.net
-Subject: Re: [Patch RFC net-next 4/4] net: dsa: microchip: use private pvid
- for bridge_vlan_unwaware
-Message-ID: <20220803144946.utxy2mbppj7lmgig@skbuf>
-References: <20220729151733.6032-1-arun.ramadoss@microchip.com>
- <20220729151733.6032-1-arun.ramadoss@microchip.com>
- <20220729151733.6032-5-arun.ramadoss@microchip.com>
- <20220729151733.6032-5-arun.ramadoss@microchip.com>
- <20220802105935.gjjc3ft6zf35xrhr@skbuf>
- <365b35f48b4a6c2003b67a4ee0c287b8172fa262.camel@microchip.com>
+        Wed, 03 Aug 2022 07:55:23 -0700 (PDT)
+From:   Danilo Krummrich <dakr@redhat.com>
+To:     airlied@linux.ie, daniel@ffwll.ch, kraxel@redhat.com,
+        sam@ravnborg.org
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Danilo Krummrich <dakr@redhat.com>
+Subject: [PATCH] drm/virtio: remove drm_plane_cleanup() destroy hook
+Date:   Wed,  3 Aug 2022 16:55:20 +0200
+Message-Id: <20220803145520.1143208-1-dakr@redhat.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <365b35f48b4a6c2003b67a4ee0c287b8172fa262.camel@microchip.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 02, 2022 at 02:40:09PM +0000, Arun.Ramadoss@microchip.com wrote:
-> On Tue, 2022-08-02 at 13:59 +0300, Vladimir Oltean wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you
-> > know the content is safe
-> > 
-> > On Fri, Jul 29, 2022 at 08:47:33PM +0530, Arun Ramadoss wrote:
-> > > diff --git a/drivers/net/dsa/microchip/ksz_common.c
-> > > b/drivers/net/dsa/microchip/ksz_common.c
-> > > index 516fb9d35c87..8a5583b1f2f4 100644
-> > > --- a/drivers/net/dsa/microchip/ksz_common.c
-> > > +++ b/drivers/net/dsa/microchip/ksz_common.c
-> > > @@ -161,6 +161,7 @@ static const struct ksz_dev_ops ksz8_dev_ops =
-> > > {
-> > >       .vlan_filtering = ksz8_port_vlan_filtering,
-> > >       .vlan_add = ksz8_port_vlan_add,
-> > >       .vlan_del = ksz8_port_vlan_del,
-> > > +     .drop_untagged = ksz8_port_enable_pvid,
-> > 
-> > You'll have to explain this one. What impact does PVID insertion on KSZ8
-> > have upon dropping/not dropping untagged packets? This patch is saying
-> > that when untagged packets should be dropped, PVID insertion should be
-> > enabled, and when untagged packets should be accepted, PVID insertion
-> > should be disabled. How come?
-> 
-> Its my mistake. I referred KSZ87xx datasheet but I couldn't find the
-> register for the dropping the untagged packet. If that is the case,
-> shall I remove the dropping of untagged packet feature from the ksz8
-> switches?
+drmm_universal_plane_alloc() already registers drm_plane_cleanup() as
+managed release action via drmm_add_action_or_reset(). Hence,
+drm_plane_cleanup() should not be set as drm_plane_funcs.destroy hook.
 
-You'll have to see how KSZ8 behaves when the ingress port is configured
-with a PVID (through REG_PORT_CTRL_VID) which isn't present in the VLAN
-table. If untagged packets are dropped, that's your "drop untagged"
-setting. Some other switches will not do this, and accept untagged
-packets even if the VLAN table doesn't contain an entry for the PVID
-(or doesn't have this port as a member of that VLAN), but have a
-separate knob for dropping untagged traffic.
+Fixes: 7847628862a8 ("drm/virtio: plane: use drm managed resources")
+Signed-off-by: Danilo Krummrich <dakr@redhat.com>
+---
+ drivers/gpu/drm/virtio/virtgpu_plane.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-> > This is better in the sense that it resolves the need for the
-> > configure_vlan_while_not_filtering hack. But standalone and VLAN-unaware
-> > bridge ports still share the same PVID. Even more so, standalone ports
-> > have address learning enabled, which will poison the address database of
-> > VLAN-unaware bridge ports (and of other standalone ports):
-> > 
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220802002636.3963025-1-vladimir.oltean@nxp.com/
-> > 
-> > Are you going to do further work in this area?
-> 
-> For now, I thought I can fix the issue for bridge vlan unaware port. I
-> have few other patch series to be submitted like gPTP, tc commands. If
-> standalone port fix also needed for your patch series I can work on it
-> otherwise I can take up later stage.
+diff --git a/drivers/gpu/drm/virtio/virtgpu_plane.c b/drivers/gpu/drm/virtio/virtgpu_plane.c
+index c599c99f228e..4c09e313bebc 100644
+--- a/drivers/gpu/drm/virtio/virtgpu_plane.c
++++ b/drivers/gpu/drm/virtio/virtgpu_plane.c
+@@ -69,7 +69,6 @@ uint32_t virtio_gpu_translate_format(uint32_t drm_fourcc)
+ static const struct drm_plane_funcs virtio_gpu_plane_funcs = {
+ 	.update_plane		= drm_atomic_helper_update_plane,
+ 	.disable_plane		= drm_atomic_helper_disable_plane,
+-	.destroy		= drm_plane_cleanup,
+ 	.reset			= drm_atomic_helper_plane_reset,
+ 	.atomic_duplicate_state = drm_atomic_helper_plane_duplicate_state,
+ 	.atomic_destroy_state	= drm_atomic_helper_plane_destroy_state,
+-- 
+2.37.1
 
-I think the most imperative thing for you to do is to make sure you are
-not introducing regressions with the port default VID change - this can
-be done by running the bridge related selftests (and making them pass).
-
-Something which I forgot to mention is that normally, I'd expect a
-change of VLAN-unaware PVID to also need a change in the way that
-VLAN-unaware FDB entries are added (other drivers need to remap vid=0
-from port_fdb_add() to the PVID that they use for that VLAN-unaware
-bridge, in your case 4095, for those FDB entries to continue matching
-properly).
-
-However, I see that currently, ksz9477_fdb_add() sets the "USE FID" bit
-only for VLAN-aware FDB entries (vid != 0), which leaves me with more
-questions than answers.
-
-It isn't very well explained what it means to not use FID: let's say
-there are 2 entries in the static address table, one has "USE FID"=false,
-and the other has "USE FID"=true and FID=127, and a packet is received
-which is classified to FID 127. On which entry will this packet match?
-
-The bridge driver gives you all FDB entries at once (VLAN-aware and
-VLAN-unaware), so if the USE_FID=false entries that the ksz9477 driver
-uses for VLAN-unaware mode will shadow the VLAN-aware FDB entries, this
-is going to be a problem.
-
-Also, the way in which the ksz9477 driver translates a 12-bit VID into a
-7-bit FID also has me incredibly confused (FID is vlan->vid & VLAN_FID_M,
-or otherwise said, a simple truncation). This means that your
-VLAN-unaware PVID of 4095 uses a FID of 127, which is also the same FID
-as VLANs 127, 255, 383 etc, right? So there is potentially still full
-address database leakage between VLAN-unaware and VLAN-aware bridges.
-
-I think this phrase from the documentation is under-appreciated in
-understanding how the hardware works:
-
-| Table 4-8 details the forwarding and discarding actions that are taken
-| for the various VLAN scenarios. The first entry in the table is
-| explained by the fact that VLAN Table lookup is enabled even when 802.1Q
-| VLAN is not enabled.
-
-The last part ("VLAN Table lookup is enabled even when 802.1Q VLAN is
-not enabled") is what makes it so that the PVID of the port must be
-present in the VLAN table or otherwise you get packet drops. In turn,
-if the VLAN table is being looked up, it means that regardless of
-whether the switch is VLAN-unaware or not, the VID will be transformed
-into a 7-bit FID.
-
-I want that the FID that is being used for standalone ports and
-VLAN-unaware bridges (127) to be a fully conscious decision, with the
-implications understood, and not just something done for me to shut up.
-There is a risk here that you may think things are fine and work on
-other features, but things are not fine at all. And in this area,
-standalone ports/bridge VLANs/ FDB entries/FIDs are very inter-related
-things. When you change one, you may find that the entire scheme needs
-to be re-thought.
