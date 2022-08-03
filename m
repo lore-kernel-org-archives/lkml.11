@@ -2,161 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B4A1C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E426C25B07
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236329AbiHCKMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 06:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52426 "EHLO
+        id S237215AbiHCKNh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 06:13:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234083AbiHCKME (ORCPT
+        with ESMTP id S232706AbiHCKNf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 06:12:04 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7231EAF0
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 03:12:03 -0700 (PDT)
+        Wed, 3 Aug 2022 06:13:35 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9961EC66;
+        Wed,  3 Aug 2022 03:13:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659521523; x=1691057523;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=wNgibCha+Z5OAGb6BtV0t7PS1bvSgNxYnJ8TaDgsLjI=;
-  b=Px9RlY0zd+svV6YZCLCJFZSh/CsoSkM/tsjaE7uNfCy29F7qk06N3eSV
-   shWnmo1dKMiW7OAyeMaIdQ3HwL8OoyaxGX4OcwNGgBobt3ska6Cq4z6Z0
-   t+lU+d7851ceDQ+KzgWyG9SFz4DvOm+etxJJfOkO4aCBLNqMS1SwaMYAR
-   uRZbVpX3eYVlakSEZFKdCn07vmuLV1YUof83HvMchzNMONevdblgK7ugk
-   xMqI6msONKW+7qlccbKyKtRbbTzb1gVNa3U3dPOOOI0GphSRKveeUIIpP
-   YpN2B8Tgl4VmdtAIqoL1q4XGV5mY6SQr9JD6faCH3J39F/orx+ZGVAlk8
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="276548373"
+  t=1659521614; x=1691057614;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=4YeFWA9rCTchi7DdItTLJ0V7fyTXQO9cGL0HxgJNFxA=;
+  b=POv/H+iuNf1VbVPoCP9goCPl7SK97Hl30HYBRdHSmx1goj+dB5N7pnS+
+   nuJ8HDH2mqaMkqSEz1dbKTDXU0PtG4Akso2A5jz846XhjoG1vZwiDPZg0
+   birrRmTlPK4+AXB4WkVlJOR5thXuVZ1SyeNt+bTx6dUPli0xMvjQ3tXGU
+   QbixHAgauHYtoIldJD1rQ03QqaEUti8ZMrsfruHmD3hjnnHYEd3yWCbJP
+   uzM3aBmJjECmVqGZTisLk/DEHQKuf83+EdLAlVZpsz1dHaYUXA7ygxlMU
+   RSD5L5jjdmv96VTyQuYpUP4SkoSyp1uuh0Jmc2ULGk5KmgrYobF6QIJ9j
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="270016189"
 X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
-   d="scan'208";a="276548373"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 03:12:02 -0700
+   d="scan'208";a="270016189"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 03:13:32 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
-   d="scan'208";a="578587935"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 03 Aug 2022 03:12:01 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJBM8-000H8h-1O;
-        Wed, 03 Aug 2022 10:12:00 +0000
-Date:   Wed, 3 Aug 2022 18:11:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: arch/mips/bcm47xx/prom.c:89:8: error: no matching function for call
- to 'memcmp'
-Message-ID: <202208031804.qnRvyXLe-lkp@intel.com>
+   d="scan'208";a="631094289"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by orsmga008.jf.intel.com with ESMTP; 03 Aug 2022 03:13:22 -0700
+Date:   Wed, 3 Aug 2022 18:08:35 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 09/14] KVM: Extend the memslot to support fd-based
+ private memory
+Message-ID: <20220803100835.GD607465@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-10-chao.p.peng@linux.intel.com>
+ <YuQ6QWcdZLdStkWl@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YuQ6QWcdZLdStkWl@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kees,
+On Fri, Jul 29, 2022 at 07:51:29PM +0000, Sean Christopherson wrote:
+> On Wed, Jul 06, 2022, Chao Peng wrote:
+> > @@ -1332,9 +1332,18 @@ yet and must be cleared on entry.
+> >  	__u64 userspace_addr; /* start of the userspace allocated memory */
+> >    };
+> >  
+> > +  struct kvm_userspace_memory_region_ext {
+> > +	struct kvm_userspace_memory_region region;
+> > +	__u64 private_offset;
+> > +	__u32 private_fd;
+> > +	__u32 pad1;
+> > +	__u64 pad2[14];
+> > +};
+> > +
+> >    /* for kvm_memory_region::flags */
+> >    #define KVM_MEM_LOG_DIRTY_PAGES	(1UL << 0)
+> >    #define KVM_MEM_READONLY	(1UL << 1)
+> > +  #define KVM_MEM_PRIVATE		(1UL << 2)
+> 
+> Very belatedly following up on prior feedback...
+> 
+>   | I think a flag is still needed, the problem is private_fd can be safely
+>   | accessed only when this flag is set, e.g. without this flag, we can't
+>   | copy_from_user these new fields since they don't exist for previous
+>   | kvm_userspace_memory_region callers.
+> 
+> I forgot about that aspect of things.  We don't technically need a dedicated
+> PRIVATE flag to handle that, but it does seem to be the least awful soltuion.
+> We could either add a generic KVM_MEM_EXTENDED_REGION or an entirely new
+> ioctl(), e.g. KVM_SET_USER_MEMORY_REGION2, but in both approaches there's a decent
+> chance that we'll end up needed individual "this field is valid" flags anways.
+> 
+> E.g. if KVM requires pad1 and pad2 to be zero to carve out future extensions,
+> then we're right back here if some future extension needs to treat '0' as a legal
+> input.
 
-FYI, the error/warning still remains.
+I had such practice (always rejecting none-zero 'pad' value when
+introducing new user APIs) in other project previously, but I rarely
+see that in KVM.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   e2b542100719a93f8cdf6d90185410d38a57a4c1
-commit: 281d0c962752fb40866dd8d4cade68656f34bd1f fortify: Add Clang support
-date:   6 months ago
-config: mips-randconfig-r023-20220803 (https://download.01.org/0day-ci/archive/20220803/202208031804.qnRvyXLe-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 495519e5f8232d144ed26e9c18dbcbac6a5f25eb)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mipsel-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=281d0c962752fb40866dd8d4cade68656f34bd1f
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 281d0c962752fb40866dd8d4cade68656f34bd1f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/bcm47xx/
+> 
+> TL;DR: adding KVM_MEM_PRIVATE still seems like the best approach.
+> 
+> > @@ -4631,14 +4658,35 @@ static long kvm_vm_ioctl(struct file *filp,
+> >  		break;
+> >  	}
+> >  	case KVM_SET_USER_MEMORY_REGION: {
+> > -		struct kvm_userspace_memory_region kvm_userspace_mem;
+> > +		struct kvm_user_mem_region mem;
+> > +		unsigned long size;
+> > +		u32 flags;
+> > +
+> > +		kvm_sanity_check_user_mem_region_alias();
+> > +
+> > +		memset(&mem, 0, sizeof(mem));
+> >  
+> >  		r = -EFAULT;
+> > -		if (copy_from_user(&kvm_userspace_mem, argp,
+> > -						sizeof(kvm_userspace_mem)))
+> > +
+> > +		if (get_user(flags,
+> > +			(u32 __user *)(argp + offsetof(typeof(mem), flags))))
+> > +			goto out;
+> 
+> 
+> Indentation is funky.  It's hard to massage this into something short and
+> readable  What about capturing the offset separately?  E.g.
+> 
+>                 struct kvm_user_mem_region mem;
+>                 unsigned int flags_offset = offsetof(typeof(mem), flags));
+>                 unsigned long size;
+>                 u32 flags;
+> 
+>                 kvm_sanity_check_user_mem_region_alias();
+> 
+> 		memset(&mem, 0, sizeof(mem));
+> 
+>                 r = -EFAULT;
+>                 if (get_user(flags, (u32 __user *)(argp + flags_offset)))
+>                         goto out;
+> 
+> But this can actually be punted until KVM_MEM_PRIVATE is fully supported.  As of
+> this patch, KVM doesn't read the extended size, so I believe the diff for this
+> patch can simply be:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Looks good to me, Thanks.
 
-All errors (new ones prefixed by >>):
-
->> arch/mips/bcm47xx/prom.c:89:8: error: no matching function for call to 'memcmp'
-                   if (!memcmp(prom_init, prom_init + mem, 32))
-                        ^~~~~~
-   include/linux/string.h:156:12: note: candidate function not viable: no known conversion from 'void (void)' to 'const void *' for 1st argument
-   extern int memcmp(const void *,const void *,__kernel_size_t);
-              ^
-   include/linux/fortify-string.h:391:5: note: candidate function not viable: no known conversion from 'void (void)' to 'const void *const' for 1st argument
-   int memcmp(const void * const POS0 p, const void * const POS0 q, __kernel_size_t size)
-       ^
-   1 error generated.
-
-
-vim +/memcmp +89 arch/mips/bcm47xx/prom.c
-
-6ee1d93455384ce Rafał Miłecki       2014-07-17   55  
-25e5fb97419f73d Aurelien Jarno      2007-09-25   56  static __init void prom_init_mem(void)
-1c0c13eb935c95f Aurelien Jarno      2007-09-25   57  {
-1c0c13eb935c95f Aurelien Jarno      2007-09-25   58  	unsigned long mem;
-aec922255135389 Hauke Mehrtens      2010-07-27   59  	unsigned long max;
-c47cc20ca53e792 Hauke Mehrtens      2012-10-03   60  	unsigned long off;
-d3dce3d676373b1 Hauke Mehrtens      2012-10-03   61  	struct cpuinfo_mips *c = &current_cpu_data;
-1c0c13eb935c95f Aurelien Jarno      2007-09-25   62  
-25e5fb97419f73d Aurelien Jarno      2007-09-25   63  	/* Figure out memory size by finding aliases.
-25e5fb97419f73d Aurelien Jarno      2007-09-25   64  	 *
-25e5fb97419f73d Aurelien Jarno      2007-09-25   65  	 * We should theoretically use the mapping from CFE using cfe_enummem().
-25e5fb97419f73d Aurelien Jarno      2007-09-25   66  	 * However as the BCM47XX is mostly used on low-memory systems, we
-25e5fb97419f73d Aurelien Jarno      2007-09-25   67  	 * want to reuse the memory used by CFE (around 4MB). That means cfe_*
-25e5fb97419f73d Aurelien Jarno      2007-09-25   68  	 * functions stop to work at some point during the boot, we should only
-25e5fb97419f73d Aurelien Jarno      2007-09-25   69  	 * call them at the beginning of the boot.
-aec922255135389 Hauke Mehrtens      2010-07-27   70  	 *
-aec922255135389 Hauke Mehrtens      2010-07-27   71  	 * BCM47XX uses 128MB for addressing the ram, if the system contains
-aec922255135389 Hauke Mehrtens      2010-07-27   72  	 * less that that amount of ram it remaps the ram more often into the
-aec922255135389 Hauke Mehrtens      2010-07-27   73  	 * available space.
-25e5fb97419f73d Aurelien Jarno      2007-09-25   74  	 */
-96a8123e5f96582 Rafał Miłecki       2014-04-19   75  
-96a8123e5f96582 Rafał Miłecki       2014-04-19   76  	/* Physical address, without mapping to any kernel segment */
-96a8123e5f96582 Rafał Miłecki       2014-04-19   77  	off = CPHYSADDR((unsigned long)prom_init);
-96a8123e5f96582 Rafał Miłecki       2014-04-19   78  
-96a8123e5f96582 Rafał Miłecki       2014-04-19   79  	/* Accessing memory after 128 MiB will cause an exception */
-96a8123e5f96582 Rafał Miłecki       2014-04-19   80  	max = 128 << 20;
-96a8123e5f96582 Rafał Miłecki       2014-04-19   81  
-96a8123e5f96582 Rafał Miłecki       2014-04-19   82  	for (mem = 1 << 20; mem < max; mem += 1 << 20) {
-96a8123e5f96582 Rafał Miłecki       2014-04-19   83  		/* Loop condition may be not enough, off may be over 1 MiB */
-96a8123e5f96582 Rafał Miłecki       2014-04-19   84  		if (off + mem >= max) {
-96a8123e5f96582 Rafał Miłecki       2014-04-19   85  			mem = max;
-d548ca6b0784a99 Rafał Miłecki       2014-12-10   86  			pr_debug("Assume 128MB RAM\n");
-aec922255135389 Hauke Mehrtens      2010-07-27   87  			break;
-aec922255135389 Hauke Mehrtens      2010-07-27   88  		}
-c47cc20ca53e792 Hauke Mehrtens      2012-10-03  @89  		if (!memcmp(prom_init, prom_init + mem, 32))
-1c0c13eb935c95f Aurelien Jarno      2007-09-25   90  			break;
-1c0c13eb935c95f Aurelien Jarno      2007-09-25   91  	}
-6ee1d93455384ce Rafał Miłecki       2014-07-17   92  	lowmem = mem;
-1c0c13eb935c95f Aurelien Jarno      2007-09-25   93  
-d3dce3d676373b1 Hauke Mehrtens      2012-10-03   94  	/* Ignoring the last page when ddr size is 128M. Cached
-d3dce3d676373b1 Hauke Mehrtens      2012-10-03   95  	 * accesses to last page is causing the processor to prefetch
-d3dce3d676373b1 Hauke Mehrtens      2012-10-03   96  	 * using address above 128M stepping out of the ddr address
-d3dce3d676373b1 Hauke Mehrtens      2012-10-03   97  	 * space.
-d3dce3d676373b1 Hauke Mehrtens      2012-10-03   98  	 */
-d3dce3d676373b1 Hauke Mehrtens      2012-10-03   99  	if (c->cputype == CPU_74K && (mem == (128  << 20)))
-d3dce3d676373b1 Hauke Mehrtens      2012-10-03  100  		mem -= 0x1000;
-e7ae8d174eec0b3 Thomas Bogendoerfer 2020-10-09  101  	memblock_add(0, mem);
-1c0c13eb935c95f Aurelien Jarno      2007-09-25  102  }
-1c0c13eb935c95f Aurelien Jarno      2007-09-25  103  
-
-:::::: The code at line 89 was first introduced by commit
-:::::: c47cc20ca53e792938556aa29103fa889ce0d858 MIPS: BCM47XX: improve memory size detection
-
-:::::: TO: Hauke Mehrtens <hauke@hauke-m.de>
-:::::: CC: John Crispin <blogic@openwrt.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Chao
+> 
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index da263c370d00..5194beb7b52f 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -4640,6 +4640,10 @@ static long kvm_vm_ioctl(struct file *filp,
+>                                                 sizeof(kvm_userspace_mem)))
+>                         goto out;
+> 
+> +               r = -EINVAL;
+> +               if (mem.flags & KVM_MEM_PRIVATE)
+> +                       goto out;
+> +
+>                 r = kvm_vm_ioctl_set_memory_region(kvm, &kvm_userspace_mem);
+>                 break;
+>         }
