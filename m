@@ -2,118 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3909AC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:45:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60333C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237936AbiHCNpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 09:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60416 "EHLO
+        id S231585AbiHCNpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 09:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231585AbiHCNpi (ORCPT
+        with ESMTP id S238062AbiHCNpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 09:45:38 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E42C5F47;
-        Wed,  3 Aug 2022 06:45:37 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id E43F9400BE;
-        Wed,  3 Aug 2022 13:45:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1659534335;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
+        Wed, 3 Aug 2022 09:45:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3672C5F47
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 06:45:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659534343;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=akp1pNQEiXkOGeo4BViAGmqcuddhmRP3JLmV9s8Jl30=;
-        b=X2G0jJi1PM5voo71dPWDflfqa+/6EF7wfOcwNxDI+kawn2SHTL39NxngM8de4U6PkAhu/y
-        KpbSrgZfB3DLXfNjJlX3sRKlsYB875Jzg71y6CJgp42J6mJh5wCRKEirky86UJVsb5C/3l
-        tFQiVsEBfXBuKvknaPtIQVHQoC2kqO0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1659534335;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=akp1pNQEiXkOGeo4BViAGmqcuddhmRP3JLmV9s8Jl30=;
-        b=/0Ob9r/t/uNjK4UfEGtcaSYFnM351yM09euQxQwh7QlaExjLrFGlFM+suKMA7O2q8T8UQ+
-        wihK1T3bcovbV2Bg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        bh=B7Bnmjr1GYcy9AYoYFcWJ7ZyYTvu6PCIgTkw/CC+mfQ=;
+        b=Ho5KQ/aeu67qcmeIzEBvKT1lK7wDJa8p6m/PbFPfdWC/xHWav9VRJAXzB4Z3N1qERvbXVt
+        sBYhPvgogAmSeelBOU5A2vdwZV56SxYkNIuFXjk/8dbdKmaZdhBQJ65xO4sI5zyVbpZ96n
+        R7RBBcpZNnY6qOXKMHcFP+ksDtj4gW8=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-606-kBTFjs_mMI2X5-iNfCnS1w-1; Wed, 03 Aug 2022 09:45:41 -0400
+X-MC-Unique: kBTFjs_mMI2X5-iNfCnS1w-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A199E13A94;
-        Wed,  3 Aug 2022 13:45:35 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 5ziHJv976mJ1BwAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Wed, 03 Aug 2022 13:45:35 +0000
-Date:   Wed, 3 Aug 2022 15:40:33 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     alexlzhu@fb.com
-Cc:     kernel-team@fb.com, linux-mm@kvack.org, clm@fb.com,
-        josef@toxicpanda.com, dsterba@suse.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] btrfs: fix alginment of VMA for memory mapped files
- on THP
-Message-ID: <20220803134033.GG13489@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, alexlzhu@fb.com, kernel-team@fb.com,
-        linux-mm@kvack.org, clm@fb.com, josef@toxicpanda.com,
-        dsterba@suse.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220802203246.434560-1-alexlzhu@fb.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5B684382C96F;
+        Wed,  3 Aug 2022 13:45:40 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.195.93])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 100BC2166B26;
+        Wed,  3 Aug 2022 13:45:37 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v9 11/40] KVM: x86: hyper-v: Create a separate fifo for L2 TLB flush
+Date:   Wed,  3 Aug 2022 15:45:37 +0200
+Message-Id: <20220803134537.399208-1-vkuznets@redhat.com>
+In-Reply-To: <20220803134110.397885-1-vkuznets@redhat.com>
+References: <20220803134110.397885-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220802203246.434560-1-alexlzhu@fb.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 02, 2022 at 01:32:46PM -0700, alexlzhu@fb.com wrote:
-> From: Alexander Zhu <alexlzhu@fb.com>
-> 
-> With CONFIG_READ_ONLY_THP_FOR_FS, the Linux kernel supports using THPs for
-> read-only mmapped files, such as shared libraries. However, the kernel
-> makes no attempt to actually align those mappings on 2MB boundaries,
-> which makes it impossible to use those THPs most of the time. This issue
-> applies to general file mapping THP as well as existing setups using
-> CONFIG_READ_ONLY_THP_FOR_FS. This is easily fixed by using
-> thp_get_unmapped_area for the unmapped_area function in btrfs, which
-> is what ext2, ext4, fuse, and xfs all use.
-> 
-> Initially btrfs had been left out in Commit 8c07fc452ac0 ("btrfs: fix
-> alginment of VMA for memory mapped files on THP") as btrfs does not support
-> DAX. However, Commit 1854bc6e2420 ("mm/readahead: Align file mappings
-> for non-DAX") removed the DAX requirement. We should now be able to call
-> thp_get_unmapped_area() for btrfs.
-> 
-> The problem can be seen in /proc/PID/smaps where THPeligible is set to 0
-> on mappings to eligible shared object files as shown below.
-> 
-> Before this patch:
-> 
-> 7fc6a7e18000-7fc6a80cc000 r-xp 00000000 00:1e 199856
-> /usr/lib64/libcrypto.so.1.1.1k
-> Size:               2768 kB
-> THPeligible:    0
-> VmFlags: rd ex mr mw me
-> 
-> With this patch the library is mapped at a 2MB aligned address:
-> 
-> fbdfe200000-7fbdfe4b4000 r-xp 00000000 00:1e 199856
-> /usr/lib64/libcrypto.so.1.1.1k
-> Size:               2768 kB
-> THPeligible:    1
-> VmFlags: rd ex mr mw me
-> 
-> This fixes the alignment of VMAs for any mmap of a file that has the
-> rd and ex permissions and size >= 2MB. The VMA alignment and
-> THPeligible field for anonymous memory is handled separately and
-> is thus not effected by this change.
-> 
-> Signed-off-by: Alexander Zhu <alexlzhu@fb.com>
+To handle L2 TLB flush requests, KVM needs to use a separate fifo from
+regular (L1) Hyper-V TLB flush requests: e.g. when a request to flush
+something in L2 is made, the target vCPU can transition from L2 to L1,
+receive a request to flush a GVA for L1 and then try to enter L2 back.
+The first request needs to be processed at this point. Similarly,
+requests to flush GVAs in L1 must wait until L2 exits to L1.
 
-Added to misc-next, thanks.
+No functional change as KVM doesn't handle L2 TLB flush requests from
+L2 yet.
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/include/asm/kvm_host.h |  8 +++++++-
+ arch/x86/kvm/hyperv.c           | 11 +++++++----
+ arch/x86/kvm/hyperv.h           | 18 +++++++++++++++---
+ 3 files changed, 29 insertions(+), 8 deletions(-)
+
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index c16f74beb047..83c2331f7701 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -612,6 +612,12 @@ struct kvm_vcpu_hv_synic {
+  */
+ #define KVM_HV_TLB_FLUSHALL_ENTRY  ((u64)-1)
+ 
++enum hv_tlb_flush_fifos {
++	HV_L1_TLB_FLUSH_FIFO,
++	HV_L2_TLB_FLUSH_FIFO,
++	HV_NR_TLB_FLUSH_FIFOS,
++};
++
+ struct kvm_vcpu_hv_tlb_flush_fifo {
+ 	spinlock_t write_lock;
+ 	DECLARE_KFIFO(entries, u64, KVM_HV_TLB_FLUSH_FIFO_SIZE);
+@@ -637,7 +643,7 @@ struct kvm_vcpu_hv {
+ 		u32 syndbg_cap_eax; /* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
+ 	} cpuid_cache;
+ 
+-	struct kvm_vcpu_hv_tlb_flush_fifo tlb_flush_fifo;
++	struct kvm_vcpu_hv_tlb_flush_fifo tlb_flush_fifo[HV_NR_TLB_FLUSH_FIFOS];
+ };
+ 
+ /* Xen HVM per vcpu emulation context */
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index b903c9de8d39..d27fb4a6d94b 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -956,8 +956,10 @@ static int kvm_hv_vcpu_init(struct kvm_vcpu *vcpu)
+ 
+ 	hv_vcpu->vp_index = vcpu->vcpu_idx;
+ 
+-	INIT_KFIFO(hv_vcpu->tlb_flush_fifo.entries);
+-	spin_lock_init(&hv_vcpu->tlb_flush_fifo.write_lock);
++	for (i = 0; i < HV_NR_TLB_FLUSH_FIFOS; i++) {
++		INIT_KFIFO(hv_vcpu->tlb_flush_fifo[i].entries);
++		spin_lock_init(&hv_vcpu->tlb_flush_fifo[i].write_lock);
++	}
+ 
+ 	return 0;
+ }
+@@ -1843,7 +1845,8 @@ static void hv_tlb_flush_enqueue(struct kvm_vcpu *vcpu, u64 *entries, int count)
+ 	if (!hv_vcpu)
+ 		return;
+ 
+-	tlb_flush_fifo = &hv_vcpu->tlb_flush_fifo;
++	/* kvm_hv_flush_tlb() is not ready to handle requests for L2s yet */
++	tlb_flush_fifo = &hv_vcpu->tlb_flush_fifo[HV_L1_TLB_FLUSH_FIFO];
+ 
+ 	spin_lock_irqsave(&tlb_flush_fifo->write_lock, flags);
+ 
+@@ -1880,7 +1883,7 @@ void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu)
+ 		return;
+ 	}
+ 
+-	tlb_flush_fifo = &hv_vcpu->tlb_flush_fifo;
++	tlb_flush_fifo = kvm_hv_get_tlb_flush_fifo(vcpu, is_guest_mode(vcpu));
+ 
+ 	count = kfifo_out(&tlb_flush_fifo->entries, entries, KVM_HV_TLB_FLUSH_FIFO_SIZE);
+ 
+diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
+index e5b32266ff7d..8a902b59aa46 100644
+--- a/arch/x86/kvm/hyperv.h
++++ b/arch/x86/kvm/hyperv.h
+@@ -22,6 +22,7 @@
+ #define __ARCH_X86_KVM_HYPERV_H__
+ 
+ #include <linux/kvm_host.h>
++#include "x86.h"
+ 
+ /*
+  * The #defines related to the synthetic debugger are required by KDNet, but
+@@ -147,16 +148,27 @@ int kvm_vm_ioctl_hv_eventfd(struct kvm *kvm, struct kvm_hyperv_eventfd *args);
+ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
+ 		     struct kvm_cpuid_entry2 __user *entries);
+ 
++static inline struct kvm_vcpu_hv_tlb_flush_fifo *kvm_hv_get_tlb_flush_fifo(struct kvm_vcpu *vcpu,
++									   bool is_guest_mode)
++{
++	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
++	int i = is_guest_mode ? HV_L2_TLB_FLUSH_FIFO :
++				HV_L1_TLB_FLUSH_FIFO;
++
++	/* KVM does not handle L2 TLB flush requests yet */
++	WARN_ON_ONCE(i != HV_L1_TLB_FLUSH_FIFO);
++
++	return &hv_vcpu->tlb_flush_fifo[i];
++}
+ 
+ static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_vcpu_hv_tlb_flush_fifo *tlb_flush_fifo;
+-	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+ 
+-	if (!hv_vcpu || !kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu))
++	if (!to_hv_vcpu(vcpu) || !kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu))
+ 		return;
+ 
+-	tlb_flush_fifo = &hv_vcpu->tlb_flush_fifo;
++	tlb_flush_fifo = kvm_hv_get_tlb_flush_fifo(vcpu, is_guest_mode(vcpu));
+ 
+ 	kfifo_reset_out(&tlb_flush_fifo->entries);
+ }
+-- 
+2.35.3
+
