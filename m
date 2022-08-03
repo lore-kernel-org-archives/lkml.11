@@ -2,66 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D0AFC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 17:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D35C19F2D
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 17:49:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238663AbiHCRtF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 13:49:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
+        id S238677AbiHCRtJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 13:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238530AbiHCRtB (ORCPT
+        with ESMTP id S238544AbiHCRtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 3 Aug 2022 13:49:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE46459A6;
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205E347B87;
         Wed,  3 Aug 2022 10:48:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BCCABB822FF;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 875F5CE23E6;
         Wed,  3 Aug 2022 17:48:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8607AC433B5;
-        Wed,  3 Aug 2022 17:48:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C7523C433C1;
+        Wed,  3 Aug 2022 17:48:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659548936;
-        bh=iEYxRHh1485E9SNCkC9hw3OJ3TkQYNoe53rtBk6q7XU=;
+        s=k20201202; t=1659548935;
+        bh=u9D3HXwYpkIOSgSomdJlMh6BP7cUaAJf9Ee/peFm6tg=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=MlXYpduaELD/apo1MVbwhNhzgy/JXI9I+8C7QrtDDL7tr6EbwFPrziivB8toeTeT7
-         lX0kBajR3HtRIubAoJ7z6JjGnG8N7b1iAkze/fVMng7tKjfl/V3UocOa7XBf3JY4Su
-         4W23cwPxHC+JfqFgQwiFVoFu8M3B6QYOFumPUDmWDrq9UOKHNrPAzl3/UxbmEcHn9p
-         TlTewrIQAvR4c09QV62m5N9jrdewl8wSI7/NBXQgHjZT+EmMRX8psy4qcFLuHzr9yu
-         np5ZKqxuhqW83cl63+QkaTuinS0NTX28j205NpfBMrp5PfQOzvVqe3eA8JatlSYSz2
-         bkxaNBqI+LD3g==
+        b=oBY5P2UQbY2x3x+P2dsFYRV0Z8BGz80l6S9KuhDH4aIu2DNeIWR6sf3dJ2FdIbQcj
+         D5juWFSvDhTwZiY4Fe12TBbeZETNHLlIUWwQLGzczMPwqCmL8howfoXu9+EeIqjWPv
+         ETNFvg3MarJANJqumHAaUIXyxc+5QqALoDEsfokWCW3fqjezpWxKZ+090+K3FS+O+3
+         G0XzOMz+dMM1Eb6NDlYKqHjfthLtf/PqjOMKitke2GntXqtYkNh5NEcoq//euBaKl+
+         vumX1UvSZgkhMrfv0Iyz1g8wIqaumaT31Tky8XX8HXCn9VeA11c+mF0hyIZVy254ra
+         +lMEVhL4x3GQg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 74FAFC43140;
-        Wed,  3 Aug 2022 17:48:56 +0000 (UTC)
-Subject: Re: [GIT PULL] XArray changes for 6.0-rc1
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B18B2C43140;
+        Wed,  3 Aug 2022 17:48:55 +0000 (UTC)
+Subject: Re: [GIT PULL] cgroup changes for v5.20-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YulcdRuGoA4CpKGm@casper.infradead.org>
-References: <YulcdRuGoA4CpKGm@casper.infradead.org>
+In-Reply-To: <YugH95n04DM6yRta@slm.duckdns.org>
+References: <YugH95n04DM6yRta@slm.duckdns.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YulcdRuGoA4CpKGm@casper.infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/willy/xarray.git tags/xarray-6.0
-X-PR-Tracked-Commit-Id: 85656ec193e9ca9c11f7c75dc733c071755b189e
+X-PR-Tracked-Message-Id: <YugH95n04DM6yRta@slm.duckdns.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git/ tags/cgroup-for-5.20
+X-PR-Tracked-Commit-Id: 265792d0dede9259f0ca56bb3efcc23eceee7d01
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: e087437a6fef3acc11aaa1ade84731fe1571b808
-Message-Id: <165954893647.32324.13141906257901129281.pr-tracker-bot@kernel.org>
-Date:   Wed, 03 Aug 2022 17:48:56 +0000
-To:     Matthew Wilcox <willy@infradead.org>
+X-PR-Merge-Commit-Id: b6bb70f9ab80a11161252bf217993d2c40ea5eb2
+Message-Id: <165954893571.32324.18329134908008598700.pr-tracker-bot@kernel.org>
+Date:   Wed, 03 Aug 2022 17:48:55 +0000
+To:     Tejun Heo <tj@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 2 Aug 2022 18:18:45 +0100:
+The pull request you sent on Mon, 1 Aug 2022 07:05:59 -1000:
 
-> git://git.infradead.org/users/willy/xarray.git tags/xarray-6.0
+> git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git/ tags/cgroup-for-5.20
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/e087437a6fef3acc11aaa1ade84731fe1571b808
+https://git.kernel.org/torvalds/c/b6bb70f9ab80a11161252bf217993d2c40ea5eb2
 
 Thank you!
 
