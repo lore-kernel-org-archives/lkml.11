@@ -2,144 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAABEC19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:02:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7CE3C19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235981AbiHCKCC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 06:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44980 "EHLO
+        id S235095AbiHCKDT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 06:03:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231533AbiHCKB7 (ORCPT
+        with ESMTP id S236405AbiHCKDQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 06:01:59 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D78F91836B;
-        Wed,  3 Aug 2022 03:01:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1659520919; x=1691056919;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=1rVxQ4eqI3N9wCVO+tgYoYxdpipoicSFsvvHXjVF02g=;
-  b=C3Cu6vOsuzPJuzImBkgFrMpA39OFtZBJnzHRhL1gPpYkCXFfM9ufo5Cm
-   f7HrPkGh/Jr7QW1INMGoqqL18jJuppc/P1JvnOESosfsiwojecjjsT1f6
-   iylDLVO+2Ny4jaDZ59bd4338xhctqw/rvWAMKsU2WR9bBE6LgbVmx+Eeu
-   E=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 03 Aug 2022 03:01:59 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 03:01:58 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 3 Aug 2022 03:01:57 -0700
-Received: from [10.216.24.92] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 3 Aug 2022
- 03:01:51 -0700
-Message-ID: <0f90ef4d-4b74-2746-a37c-4a661cc0d5ea@quicinc.com>
-Date:   Wed, 3 Aug 2022 15:31:48 +0530
+        Wed, 3 Aug 2022 06:03:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D38D1838C
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 03:03:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659520994;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SHAatqq7WLX8aAM5p4x5ULy+iYVYaT/OkqKn6lCeb3U=;
+        b=d94ZPjRUde9GSHRt3EQhGfiGWnxSZf5+pVp/2Nezj5+oJsLQldFQTfCcKq/o/mOwxGQFMj
+        WGWX3UyZhAZxE7FrcRcXhztVzYxVkMYJrTv0+/e78O0ylFin2h2HCQb8jj+hiwuaQYXetl
+        ZFwkPreQeYiH7Zf+Pn8SF0PG91U9usw=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-672-wkUo5wziMbWs62sQIZhjZQ-1; Wed, 03 Aug 2022 06:03:13 -0400
+X-MC-Unique: wkUo5wziMbWs62sQIZhjZQ-1
+Received: by mail-qt1-f198.google.com with SMTP id k3-20020ac86043000000b0033cab47c483so1723922qtm.4
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 03:03:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:reply-to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=SHAatqq7WLX8aAM5p4x5ULy+iYVYaT/OkqKn6lCeb3U=;
+        b=r0zOuNbehYmBSMf0LJcu+FyT+3OkDMHJy3/o36/yzW4jl/B1ueID3AyyIxoYkCT6b+
+         UTBysRKA88ZR5jOqmxHItV9h0G1bC2cKgfKavfy3C96IPhz8OX1B9Pq86fkBmlaLVcyo
+         2I7ttoaIwuPw/RwTzekrUboROww5ioW9HwdD0bxKOAKDUYfVa1D6T4C4GjFvV++EvySF
+         JxelFwT3IMhLnGxQ/6gazwJA0Y5sN9PP0dy3bi0qJ9ZGYMTc4Suc8i2xCmXAbgFzfEu4
+         jozlDBTpHXPT7W7eGSJFo1zoGeHwZpAq3/SCEF9pezDAmqeyHmQFbqg+n76d0hBU+dFn
+         Gh4A==
+X-Gm-Message-State: AJIora9/V1kw6KL6goBAquuOilOm32/aWMQhL6Qu+u8+C/i/inAS3yT6
+        jxf/s4Llgo2PdlBLnEfSeOsTYdhlOifnf7JMinObNPsK+zyzakd4iImnSjDNb2eFnSXinCiaA6T
+        lf/630ivDn9jpt9AdZmLzk9mm
+X-Received: by 2002:ac8:5803:0:b0:31e:f49b:ed3a with SMTP id g3-20020ac85803000000b0031ef49bed3amr21430004qtg.46.1659520993059;
+        Wed, 03 Aug 2022 03:03:13 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vPTcMMZKqqwMRVSbno7QUDjIZ2Pu+sY7zLYFAUCeY3W3tdw5redRG5JkrQAtRAnIpbQqJwbg==
+X-Received: by 2002:ac8:5803:0:b0:31e:f49b:ed3a with SMTP id g3-20020ac85803000000b0031ef49bed3amr21429989qtg.46.1659520992829;
+        Wed, 03 Aug 2022 03:03:12 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+        by smtp.gmail.com with ESMTPSA id v2-20020a05620a440200b006b5e50057basm12487432qkp.95.2022.08.03.03.03.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Aug 2022 03:03:11 -0700 (PDT)
+Message-ID: <f2685007-0331-aaea-bfbe-074a3680fc29@redhat.com>
+Date:   Wed, 3 Aug 2022 12:03:08 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH 0/5] clk/qcom: Support gdsc collapse polling using 'reset'
- inteface
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Reply-To: eric.auger@redhat.com
+Subject: Re: [PATCH v1 1/1] ACPI: VIOT: Do not dereference fwnode in struct
+ device
 Content-Language: en-US
-To:     Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-CC:     freedreno <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1659172664-10345-1-git-send-email-quic_akhilpo@quicinc.com>
- <34ae275e-8d4c-3735-c08c-4769caf2909c@linaro.org>
- <CAF6AEGv_cgPtaFpxSPCzWXeBcJvqE2fGucriRvMAJMbQ7ULndQ@mail.gmail.com>
-From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
-In-Reply-To: <CAF6AEGv_cgPtaFpxSPCzWXeBcJvqE2fGucriRvMAJMbQ7ULndQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Cc:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>
+References: <20220802193503.3092-1-andriy.shevchenko@linux.intel.com>
+From:   Eric Auger <eric.auger@redhat.com>
+In-Reply-To: <20220802193503.3092-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/3/2022 12:02 AM, Rob Clark wrote:
-> On Tue, Aug 2, 2022 at 12:02 AM Dmitry Baryshkov
-> <dmitry.baryshkov@linaro.org> wrote:
->> On 30/07/2022 12:17, Akhil P Oommen wrote:
->>> Some clients like adreno gpu driver would like to ensure that its gdsc
->>> is collapsed at hardware during a gpu reset sequence. This is because it
->>> has a votable gdsc which could be ON due to a vote from another subsystem
->>> like tz, hyp etc or due to an internal hardware signal.
->> If this is votable, do we have any guarantee that the gdsc will collapse
->> at all? How can we proceed if it did not collapse?
-> Other potential votes should be transient.  But I guess we eventually
-> need to timeout and give up.  At which point we are no worse off than
-> before.
+Hi Andy,
+
+On 8/2/22 21:35, Andy Shevchenko wrote:
+> In order to make the underneath API easier to change in the future,
+> prevent users from dereferencing fwnode from struct device.
+> Instead, use the specific dev_fwnode() and device_match_fwnode()
+> APIs for that.
 >
-> But hmm, we aren't using RBBM_SW_RESET_CMD for sw reset like we have
-> on previous generations?  That does seem a bit odd.  Looks like kgsl
-> does use it.
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
+
+Thanks
+
+Eric
+> ---
+>  drivers/acpi/viot.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 >
-> BR,
-> -R
-Like Rob mentioned there could be transient votes from other 
-clients/subsystem. It could be even stuck ON when hardware is in bad 
-shape in some very rare cases. For the worst case scenario, I have added 
-a timeout (500msec) in the gdsc reset op.
-
-I have added the Soft reset in [1]. But this resets only the core gpu 
-blocks, not everything. For eg. GMU.
-
-[1] [PATCH v3 7/8] drm/msm/a6xx: Improve gpu recovery sequence
-
->
->>> To allow
->>> this, gpucc driver can expose an interface to the client driver using
->>> reset framework. Using this the client driver can trigger a polling within
->>> the gdsc driver.
->> Trigger the polling made me think initially that we will actually
->> trigger something in the HW. Instead the client uses reset framework to
->> poll for the gdsc to be reset.
-Yes. I should replace 'trigger' with 'start' here.
-
--Akhil.
->>
->>> This series is rebased on top of linus's master branch.
->>>
->>> Related discussion: https://patchwork.freedesktop.org/patch/493144/
->>>
->>>
->>> Akhil P Oommen (5):
->>>     dt-bindings: clk: qcom: Support gpu cx gdsc reset
->>>     clk: qcom: Allow custom reset ops
->>>     clk: qcom: gpucc-sc7280: Add cx collapse reset support
->>>     clk: qcom: gdsc: Add a reset op to poll gdsc collapse
->>>     arm64: dts: qcom: sc7280: Add Reset support for gpu
->>>
->>>    arch/arm64/boot/dts/qcom/sc7280.dtsi          |  3 +++
->>>    drivers/clk/qcom/gdsc.c                       | 23 +++++++++++++++++++----
->>>    drivers/clk/qcom/gdsc.h                       |  7 +++++++
->>>    drivers/clk/qcom/gpucc-sc7280.c               |  6 ++++++
->>>    drivers/clk/qcom/reset.c                      |  6 ++++++
->>>    drivers/clk/qcom/reset.h                      |  2 ++
->>>    include/dt-bindings/clock/qcom,gpucc-sc7280.h |  3 +++
->>>    7 files changed, 46 insertions(+), 4 deletions(-)
->>>
->>
->> --
->> With best wishes
->> Dmitry
+> diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
+> index 647f11cf165d..6132092dab2a 100644
+> --- a/drivers/acpi/viot.c
+> +++ b/drivers/acpi/viot.c
+> @@ -88,7 +88,7 @@ static int __init viot_get_pci_iommu_fwnode(struct viot_iommu *viommu,
+>  		return -ENODEV;
+>  	}
+>  
+> -	fwnode = pdev->dev.fwnode;
+> +	fwnode = dev_fwnode(&pdev->dev);
+>  	if (!fwnode) {
+>  		/*
+>  		 * PCI devices aren't necessarily described by ACPI. Create a
+> @@ -101,7 +101,7 @@ static int __init viot_get_pci_iommu_fwnode(struct viot_iommu *viommu,
+>  		}
+>  		set_primary_fwnode(&pdev->dev, fwnode);
+>  	}
+> -	viommu->fwnode = pdev->dev.fwnode;
+> +	viommu->fwnode = dev_fwnode(&pdev->dev);
+>  	pci_dev_put(pdev);
+>  	return 0;
+>  }
+> @@ -314,7 +314,7 @@ static int viot_dev_iommu_init(struct device *dev, struct viot_iommu *viommu,
+>  		return -ENODEV;
+>  
+>  	/* We're not translating ourself */
+> -	if (viommu->fwnode == dev->fwnode)
+> +	if (device_match_fwnode(dev, viommu->fwnode))
+>  		return -EINVAL;
+>  
+>  	ops = iommu_ops_from_fwnode(viommu->fwnode);
 
