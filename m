@@ -2,104 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F8F6C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:55:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A468DC19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238389AbiHCNzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 09:55:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43902 "EHLO
+        id S231845AbiHCN4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 09:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236130AbiHCNy7 (ORCPT
+        with ESMTP id S238751AbiHCNzw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 09:54:59 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759D63244B
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 06:54:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659534852; x=1691070852;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MLrIfpI5RraAgqV61fjWw/Y1o9kcXkLebaVGggDYQVw=;
-  b=SJdcGGOSSdzShs8cuFximTYE4DXwGLCsk8NZRgXM9wOuI0y3aAyR/hJX
-   TsKuK4lNioFL/YdVLDQe/GOCBLUxl1GokrxvaMf5yyxbYPBsG0hDayHqQ
-   IlwOkqS86X04Y2DktBcVTzpRkpHVQiDD8BfbV3d57g4JPr5vGFePQB2iz
-   +E+VugxwNwoasfFJTvu7cmoHBPQOgMVqCzIBEQAPdXZGnmiwuqlELJpSw
-   tIGWiQJQD0LEakVb0atKP/djYJ7cd31c5a+dNp2KRaE7Am6gCS8/AZO/k
-   /YNk2wISet5LvWhfVi7rpSJy3hcBPM35lFr77eO4e8oCBsxjfLc1kYOek
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="375975396"
-X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="375975396"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 06:54:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="848585936"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 03 Aug 2022 06:54:09 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJEp6-000HL1-2N;
-        Wed, 03 Aug 2022 13:54:08 +0000
-Date:   Wed, 3 Aug 2022 21:53:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Xu <peterx@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Cc:     kbuild-all@lists.01.org, Andrea Arcangeli <aarcange@redhat.com>,
-        Andi Kleen <andi.kleen@intel.com>,
+        Wed, 3 Aug 2022 09:55:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057432A2
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 06:55:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 715756141B
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 13:55:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC836C433B5;
+        Wed,  3 Aug 2022 13:55:38 +0000 (UTC)
+Received: from rostedt by gandalf.local.home with local (Exim 4.96)
+        (envelope-from <rostedt@goodmis.org>)
+        id 1oJEqX-007kQd-30;
+        Wed, 03 Aug 2022 09:55:37 -0400
+Message-ID: <20220803135537.769811554@goodmis.org>
+User-Agent: quilt/0.66
+Date:   Wed, 03 Aug 2022 09:55:10 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        David Hildenbrand <david@redhat.com>,
-        Hugh Dickins <hughd@google.com>,
-        Huang Ying <ying.huang@intel.com>, peterx@redhat.com,
-        Nadav Amit <nadav.amit@gmail.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH 2/2] mm: Remember young bit for page migrations
-Message-ID: <202208032100.RedT7779-lkp@intel.com>
-References: <20220803012159.36551-3-peterx@redhat.com>
+        Li zeming <zeming@nfschina.com>
+Subject: [for-next][PATCH 2/5] tracepoints: It is CONFIG_TRACEPOINTS not CONFIG_TRACEPOINT
+References: <20220803135508.240797292@goodmis.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220803012159.36551-3-peterx@redhat.com>
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
+From: Li zeming <zeming@nfschina.com>
 
-Thank you for the patch! Yet something to improve:
+When reading this note, CONFIG_TRACEPOINT searches my configuration
+file, and the result is CONFIG_TRACEPOINTS, the search results are
+consistent with the following macro definitions. I think it should be
+repaired.
 
-[auto build test ERROR on akpm-mm/mm-everything]
+Link: https://lkml.kernel.org/r/20220721081904.3798-1-zeming@nfschina.com
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Peter-Xu/mm-Remember-young-bit-for-migration-entries/20220803-092311
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-config: arc-randconfig-r043-20220803 (https://download.01.org/0day-ci/archive/20220803/202208032100.RedT7779-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/2fca6cb25745d1404fc34e0ec2ea89b6195a8c27
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Peter-Xu/mm-Remember-young-bit-for-migration-entries/20220803-092311
-        git checkout 2fca6cb25745d1404fc34e0ec2ea89b6195a8c27
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+Signed-off-by: Li zeming <zeming@nfschina.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ include/linux/tracepoint.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arc-elf-ld: mm/rmap.o: in function `migration_entry_supports_young':
-   include/linux/swapops.h:288: undefined reference to `max_swapfile_size'
->> arc-elf-ld: include/linux/swapops.h:288: undefined reference to `max_swapfile_size'
-   arc-elf-ld: mm/migrate.o: in function `migration_entry_supports_young':
-   include/linux/swapops.h:288: undefined reference to `max_swapfile_size'
->> arc-elf-ld: include/linux/swapops.h:288: undefined reference to `max_swapfile_size'
-
+diff --git a/include/linux/tracepoint.h b/include/linux/tracepoint.h
+index 28031b15f878..2908cc5ed70e 100644
+--- a/include/linux/tracepoint.h
++++ b/include/linux/tracepoint.h
+@@ -151,7 +151,7 @@ static inline struct tracepoint *tracepoint_ptr_deref(tracepoint_ptr_t *p)
+ /*
+  * Individual subsystem my have a separate configuration to
+  * enable their tracepoints. By default, this file will create
+- * the tracepoints if CONFIG_TRACEPOINT is defined. If a subsystem
++ * the tracepoints if CONFIG_TRACEPOINTS is defined. If a subsystem
+  * wants to be able to disable its tracepoints from being created
+  * it can define NOTRACE before including the tracepoint headers.
+  */
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
