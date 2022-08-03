@@ -2,148 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9524C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 07:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 641B6C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 07:37:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234623AbiHCHhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 03:37:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59194 "EHLO
+        id S235729AbiHCHh3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 03:37:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234261AbiHCHhB (ORCPT
+        with ESMTP id S234261AbiHCHh0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 03:37:01 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 948A61EED4;
-        Wed,  3 Aug 2022 00:37:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659512220; x=1691048220;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uDol4quIHyCkUUQN0yS9RT26ovaTXTi4u51IGycUZO4=;
-  b=XR+/IVPs5DUHmwh+btacUt+0sBjZdqlUDnZ1N+PoMY0DQPgz/LEB3t6x
-   cO8xRqQTjsIF0zcvOpQ3KrFCP6J31EWvQc5AR57P2u7DdcBYfHJWHSwYd
-   JuN1A07pNc564UQMwQb58+9qabEGnsGHrvPtOFZABFbKHni61c/2Saqz3
-   O978sL3+h2GlMGHr6JYtPoiKfhx/iiWYH8Y2KFu788l1IJ/Cgf7Seo42x
-   Ai2Eu3gs0B4gdI+5oZvNnDkegVOo2bh87gtz+ioPVMA+2mh/tA05HH4Id
-   oL4UT9k8zcBnx5tOHQX3mL27ZUavKpBZ4qNOYbDAfn7S4dGraBP7kyMu8
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="290826652"
-X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
-   d="scan'208";a="290826652"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 00:36:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
-   d="scan'208";a="553225929"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 03 Aug 2022 00:36:54 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJ8w1-000GzL-2r;
-        Wed, 03 Aug 2022 07:36:53 +0000
-Date:   Wed, 3 Aug 2022 15:36:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alistair Francis <alistair@alistair23.me>,
-        linux-input@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, shawnguo@kernel.org, alistair23@gmail.com,
-        robh+dt@kernel.org, linus.walleij@linaro.org,
-        s.hauer@pengutronix.de, andreas@kemnade.info,
-        krzysztof.kozlowski+dt@linaro.org, rydberg@bitmath.org,
-        dmitry.torokhov@gmail.com,
-        Alistair Francis <alistair@alistair23.me>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        =?iso-8859-1?Q?Myl=E8ne?= Josserand 
-        <mylene.josserand@bootlin.com>, Peter Geis <pgwipeout@gmail.com>
-Subject: Re: [PATCH v8 1/4] Input: Add driver for Cypress Generation 5
- touchscreen
-Message-ID: <202208031503.3PE5bw9a-lkp@intel.com>
-References: <20220802125827.34509-2-alistair@alistair23.me>
+        Wed, 3 Aug 2022 03:37:26 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6077C1EEFD
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 00:37:25 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id t1so25191514lft.8
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 00:37:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=ZFL1rpNY6wsrWyWGElxKgonarXbu9XUulVlTCMlwgB8=;
+        b=Le0GMSUGuNXx+DN948ov64Ao1jAZwv3kaV4yFwbqE5JSOZv9bCE4+/3ZSAy4eNXvy2
+         GVzdyrzDcvEKPn3V6hjk6Ah9wwBzbLF5W30zMnjoOw0oEKhaSdnHLrNGngyDfkApaaQ6
+         n6hzafHDmdkraBiVziOE/q0LfblRzzL26eOH/BS8SJ2e8HEoby/q6TY2+6uqbRZn0Xzj
+         2MDd7XGl49TpxybUemiYLCAd8nmjzo9nw/QNKZ1ykvGRnJw18BtVdAjrsrM1kyQY377J
+         LKjMj1bPjon2t3fbDC3m/vNX3dLWevmTDyUc4bPdChSMLz4bTHrim4NXP+iQ9HofyJrX
+         EOOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=ZFL1rpNY6wsrWyWGElxKgonarXbu9XUulVlTCMlwgB8=;
+        b=MzSNBv7E5ms2BVTQlPV28/1ghXf1KC/yx3ni+hw++tUDqfBkLKvqqXQPwSE97TRU0p
+         fUP56zFZzq7nPCsv1JzC6+kdg5ZVWpna/tk+IA2IT/MK1CcQByOiBiBlMWKDF7vjzGWd
+         EliRZpuyvNqlMUoWl5qMWMKQbGwQ49jsFp5+QTwXQb/PQl5EoiIqAWDB3i5fcqHrHXtI
+         JJSVtJAMijR4c6ATruOJNV3JIpDM9QLw4nGmb/MMgS5cMx6Hunkyvk43ppiHiuKNhlHV
+         /W3RvuSYAeRnUIvaycs9mwKMIbHPQVbLc+JRarary5LPRMSnnOQv9SZCoVg1wqoHbXzd
+         GFcg==
+X-Gm-Message-State: AJIora8t73LXS27QVVvKM/gwUSbUxVMkrCkQkwQYdTCVuOUqlitdhpwk
+        CyfqfRH2TfhtNfPTdnRnsO6KoQ==
+X-Google-Smtp-Source: AGRyM1uVZPcFKVrcPg3zLx0Sinm/50QHNCT/fy+51eTa2lNlbroLZyAtLonhS6dhSihB/nl0XSStUg==
+X-Received: by 2002:a05:6512:3f23:b0:48a:90ed:10a5 with SMTP id y35-20020a0565123f2300b0048a90ed10a5mr8325616lfa.93.1659512243670;
+        Wed, 03 Aug 2022 00:37:23 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id p13-20020a2eb98d000000b0025e4ca99066sm1120098ljp.139.2022.08.03.00.37.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Aug 2022 00:37:23 -0700 (PDT)
+Message-ID: <7de9cd34-dc37-053e-63dc-54b6879ce181@linaro.org>
+Date:   Wed, 3 Aug 2022 10:37:22 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220802125827.34509-2-alistair@alistair23.me>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 0/6] drm/msm/dsi regulator improvements
+Content-Language: en-GB
+To:     Douglas Anderson <dianders@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc:     dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>,
+        linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Archit Taneja <architt@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Marek <jonathan@marek.ca>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Rajeev Nandan <quic_rajeevny@quicinc.com>,
+        Sean Paul <sean@poorly.run>,
+        Sireesh Kodali <sireeshkodali1@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Vladimir Lypak <vladimir.lypak@gmail.com>,
+        linux-kernel@vger.kernel.org
+References: <20220802223738.898592-1-dianders@chromium.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220802223738.898592-1-dianders@chromium.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alistair,
+On 03/08/2022 01:37, Douglas Anderson wrote:
+> The main goal of this series is to make a small dent in cleaning up
+> the way we deal with regulator loads for DSI drivers.
+> 
+> As of v3 of this series, the regulator API improvements needed for the
+> later patches in the series are merged into mainline. Thus this series
+> only contains the DSI changes now.
+> 
+> I'd expect:
+> * The first two patches are bugfixes found while converting the DSI
+>    driver over. Those could land any time.
+> * The third patch ("drm/msm/dsi: Don't set a load before disabling a
+>    regulator") is a patch a sent the other day verbatim, included in
+>    this series because it's highly related. It could land any
+>    time.
+> * The next two patches use the new APIs. Since those APIs are now in
+>    mainline those could also land any time.
+> * The last patch is just cleanup I noticed as I was touching the
+>    function. It's not really related to regulators but it applies atop
+>    these. In theory it could be rebased to land separately.
+> 
+> Changes in v3:
+> - ("Improve dsi_phy_driver_probe() probe error handling") new for v3.
+> - Do all the PHYs too.
+> - Fix typo in commit message.
+> - Get rid of error print after devm_regulator_bulk_get_const().
+> - Just directly call the bulk commands; get rid of the wrapper.
+> - Update commit message to point at the git hash of the regulator change.
+> 
+> Changes in v2:
+> - ("Fix number of regulators for SDM660") new for v2.
+> - ("Fix number of regulators for msm8996_dsi_cfg") new for v2.
+> - ("Take advantage of devm_regulator_bulk_get_const") new for v2.
+> - ("Use the new regulator bulk feature to specify the load") new for v2.
+> 
+> Douglas Anderson (6):
+>    drm/msm/dsi: Fix number of regulators for msm8996_dsi_cfg
+>    drm/msm/dsi: Fix number of regulators for SDM660
 
-Thank you for the patch! Perhaps something to improve:
+These two can be picked into the -fixes branch. The reset looks like 
+5.21/6.1 material
 
-[auto build test WARNING on dtor-input/next]
-[also build test WARNING on hid/for-next shawnguo/for-next linus/master v5.19 next-20220802]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+>    drm/msm/dsi: Don't set a load before disabling a regulator
+>    drm/msm/dsi: Use the new regulator bulk feature to specify the load
+>    drm/msm/dsi: Take advantage of devm_regulator_bulk_get_const()
+>    drm/msm/dsi: Improve dsi_phy_driver_probe() probe error handling
+> 
+>   drivers/gpu/drm/msm/dsi/dsi.h                 |  13 --
+>   drivers/gpu/drm/msm/dsi/dsi_cfg.c             | 172 +++++++++---------
+>   drivers/gpu/drm/msm/dsi/dsi_cfg.h             |   3 +-
+>   drivers/gpu/drm/msm/dsi/dsi_host.c            |  96 ++--------
+>   drivers/gpu/drm/msm/dsi/phy/dsi_phy.c         | 160 ++++------------
+>   drivers/gpu/drm/msm/dsi/phy/dsi_phy.h         |   5 +-
+>   drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c    |  20 +-
+>   drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c    |  32 ++--
+>   drivers/gpu/drm/msm/dsi/phy/dsi_phy_20nm.c    |  14 +-
+>   drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm.c    |  28 +--
+>   .../gpu/drm/msm/dsi/phy/dsi_phy_28nm_8960.c   |  12 +-
+>   drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c     |  32 ++--
+>   12 files changed, 197 insertions(+), 390 deletions(-)
+> 
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Alistair-Francis/Add-support-for-the-Cypress-cyttsp5/20220802-210032
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git next
-config: nios2-randconfig-s031-20220803 (https://download.01.org/0day-ci/archive/20220803/202208031503.3PE5bw9a-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/9c372983ef0b8eb7ad48c025a156f80943269af7
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Alistair-Francis/Add-support-for-the-Cypress-cyttsp5/20220802-210032
-        git checkout 9c372983ef0b8eb7ad48c025a156f80943269af7
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=nios2 SHELL=/bin/bash drivers/input/touchscreen/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/input/touchscreen/cyttsp5.c:602:36: sparse: sparse: incorrect type in initializer (different base types) @@     expected restricted __le16 [usertype] hid_desc_register @@     got int @@
-   drivers/input/touchscreen/cyttsp5.c:602:36: sparse:     expected restricted __le16 [usertype] hid_desc_register
-   drivers/input/touchscreen/cyttsp5.c:602:36: sparse:     got int
-
-vim +602 drivers/input/touchscreen/cyttsp5.c
-
-   597	
-   598	static int cyttsp5_get_hid_descriptor(struct cyttsp5 *ts,
-   599					      struct cyttsp5_hid_desc *desc)
-   600	{
-   601		struct device *dev = ts->dev;
- > 602		__le16 hid_desc_register = HID_DESC_REG;
-   603		int rc;
-   604		u8 cmd[2];
-   605	
-   606		/* Set HID descriptor register */
-   607		memcpy(cmd, &hid_desc_register, sizeof(hid_desc_register));
-   608	
-   609		rc = cyttsp5_write(ts, HID_DESC_REG, NULL, 0);
-   610		if (rc) {
-   611			dev_err(dev, "Failed to get HID descriptor, rc=%d\n", rc);
-   612			return rc;
-   613		}
-   614	
-   615		rc = wait_for_completion_interruptible_timeout(&ts->cmd_done,
-   616							msecs_to_jiffies(CY_HID_GET_HID_DESCRIPTOR_TIMEOUT_MS));
-   617		if (rc <= 0) {
-   618			dev_err(ts->dev, "HID get descriptor timed out\n");
-   619			rc = -ETIMEDOUT;
-   620			return rc;
-   621		}
-   622	
-   623		memcpy(desc, ts->response_buf, sizeof(*desc));
-   624	
-   625		/* Check HID descriptor length and version */
-   626		if (le16_to_cpu(desc->hid_desc_len) != sizeof(*desc) ||
-   627		    le16_to_cpu(desc->bcd_version) != HID_VERSION) {
-   628			dev_err(dev, "Unsupported HID version\n");
-   629			return -ENODEV;
-   630		}
-   631	
-   632		return 0;
-   633	}
-   634	
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+With best wishes
+Dmitry
