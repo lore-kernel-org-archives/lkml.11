@@ -2,129 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED85C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:16:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C5EC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:16:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235123AbiHCIQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 04:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56498 "EHLO
+        id S235245AbiHCIQe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 04:16:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237435AbiHCIP7 (ORCPT
+        with ESMTP id S237388AbiHCIQX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 04:15:59 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D6AB60E2
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 01:15:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659514558; x=1691050558;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=FXwmgyslZZE5b28VYrKrk9yKDHO6M7WRyutjjaxjhcA=;
-  b=kVza93VKGnQJLxo/wJU8iK0cGSfQnGIJP8+nG2zI+SZUoPGIl99EanIA
-   4SJPKm4valSjbxNGIc6O91D3UMRnAgl2ROkjYIrT6R3jKzKRMCA8WLoV5
-   KTze/mJKfBreVn+HiXksByHpxDUcpyvKQqulE9QQAlJTOvgwBJ9gF8xn9
-   /cZjtSLVAdpW9XfzMBTVFRUBgLnl0cL9AOQrhKikulXcWCiL5pxxZbjcq
-   q2sHy4ZkqJqOx5DIh91mBCMGlFydzZ6gyB/5u8oXPukO2fYvOEvnub1I5
-   LrErMNbxWqGnIAF2Y3HhOJcQuiuo9tmfp9iEQJZcBMr+PCNv1UX++ADly
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="353619615"
-X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
-   d="scan'208";a="353619615"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 01:15:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,213,1654585200"; 
-   d="scan'208";a="848500924"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 03 Aug 2022 01:15:57 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJ9Xo-000H2F-1Y;
-        Wed, 03 Aug 2022 08:15:56 +0000
-Date:   Wed, 03 Aug 2022 16:15:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:locking/core] BUILD SUCCESS
- d171011e6adad135eaced630dce26cac9a174037
-Message-ID: <62ea2eaa.l7o3D6IbdFLnGN3r%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 3 Aug 2022 04:16:23 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF3A65C1
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 01:16:21 -0700 (PDT)
+Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1oJ9Xy-0000MF-BC; Wed, 03 Aug 2022 10:16:06 +0200
+Message-ID: <d4838245-030c-39b4-df4b-17b3b4c73a5b@pengutronix.de>
+Date:   Wed, 3 Aug 2022 10:16:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+Subject: Re: [PATCH] tty: serial: imx: initialize
+ peripheral_config/peripheral_size for sdma config
+To:     Sherry Sun <sherry.sun@nxp.com>, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com
+Cc:     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-imx@nxp.com
+References: <20220803065737.14752-1-sherry.sun@nxp.com>
+Content-Language: en-US
+In-Reply-To: <20220803065737.14752-1-sherry.sun@nxp.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking/core
-branch HEAD: d171011e6adad135eaced630dce26cac9a174037  selftests: futex: Fix 'the the' typo in comment
+Hello Sherry,
 
-elapsed time: 717m
+On 03.08.22 08:57, Sherry Sun wrote:
+> Since commit 824a0a02cd74 ("dmaengine: imx-sdma: Add multi fifo support")
+> adds the use of dma_slave_config->peripheral_config/peripheral_size to
+> sdma driver, the client drivers like uart need to initialize the
+> peripheral_config/peripheral_size for sdma, otherwise, the random value
+> of local variable slave_config may cause unexpected peripheral_config
+> and make sdma mess up.
+> 
 
-configs tested: 53
-configs skipped: 2
+If this a fix, please add a Fixes: tag. I am not sure it is though,
+see below.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> ---
+>  drivers/tty/serial/imx.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 522445a8f666..bb8c2a712e94 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -1320,6 +1320,8 @@ static int imx_uart_dma_init(struct imx_port *sport)
 
-gcc tested configs:
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-i386                                defconfig
-x86_64                           allyesconfig
-arc                  randconfig-r043-20220801
-i386                             allyesconfig
-powerpc                           allnoconfig
-s390                 randconfig-r044-20220801
-riscv                randconfig-r042-20220801
-powerpc                          allmodconfig
-x86_64               randconfig-a014-20220801
-arm                                 defconfig
-x86_64               randconfig-a015-20220801
-sh                               allmodconfig
-x86_64               randconfig-a011-20220801
-mips                             allyesconfig
-x86_64               randconfig-a012-20220801
-arm64                            allyesconfig
-arm                              allyesconfig
-x86_64               randconfig-a013-20220801
-x86_64               randconfig-a016-20220801
-m68k                             allmodconfig
-arc                              allyesconfig
-i386                 randconfig-a012-20220801
-alpha                            allyesconfig
-i386                 randconfig-a013-20220801
-i386                 randconfig-a014-20220801
-i386                 randconfig-a011-20220801
-i386                 randconfig-a016-20220801
-i386                 randconfig-a015-20220801
-m68k                             allyesconfig
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-ia64                             allmodconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                           rhel-8.3-kvm
-x86_64                           rhel-8.3-syz
+This function starts with 
 
-clang tested configs:
-hexagon              randconfig-r045-20220801
-hexagon              randconfig-r041-20220801
-i386                 randconfig-a004-20220801
-i386                 randconfig-a006-20220801
-i386                 randconfig-a001-20220801
-i386                 randconfig-a002-20220801
-i386                 randconfig-a003-20220801
-i386                 randconfig-a005-20220801
-x86_64               randconfig-a002-20220801
-x86_64               randconfig-a001-20220801
-x86_64               randconfig-a003-20220801
-x86_64               randconfig-a004-20220801
-x86_64               randconfig-a005-20220801
-x86_64               randconfig-a006-20220801
+struct dma_slave_config slave_config = {};
+
+>  	slave_config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+>  	/* one byte less than the watermark level to enable the aging timer */
+>  	slave_config.src_maxburst = RXTL_DMA - 1;
+> +	slave_config.peripheral_config = NULL;
+> +	slave_config.peripheral_size = 0;
+
+So these are already zero-initialized.
+
+>  	ret = dmaengine_slave_config(sport->dma_chan_rx, &slave_config);
+>  	if (ret) {
+>  		dev_err(dev, "error in RX dma configuration.\n");
+> @@ -1346,6 +1348,8 @@ static int imx_uart_dma_init(struct imx_port *sport)
+>  	slave_config.dst_addr = sport->port.mapbase + URTX0;
+>  	slave_config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+>  	slave_config.dst_maxburst = TXTL_DMA;
+> +	slave_config.peripheral_config = NULL;
+> +	slave_config.peripheral_size = 0;
+
+Not sure if this is required. If preceding dmaengine_slave_config()
+indeed makes clearing necessary, you should note that in the commit
+message.
+
+Cheers,
+Ahmad
+
+>  	ret = dmaengine_slave_config(sport->dma_chan_tx, &slave_config);
+>  	if (ret) {
+>  		dev_err(dev, "error in TX dma configuration.");
+
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
