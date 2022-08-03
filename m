@@ -2,104 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0CBFC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:47:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A764C19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236001AbiHCJri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 05:47:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58546 "EHLO
+        id S237537AbiHCJsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 05:48:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232303AbiHCJrf (ORCPT
+        with ESMTP id S232303AbiHCJsN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 05:47:35 -0400
-Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C331CB12
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 02:47:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1659519997; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=XvWsWjE8t5zW4M60jT2kOoKrtmPXvGOMsKVwKyiC2PnFszBqjdRoLPEB5p0Gm4snpFnbYZXTpo2f16yAE99b5YKURvkAqOpSpV5x+fcKGA+qHTZ9eoviJpaSLmXBMEjSoOQdwCbL6hIrRDBCVDyg36UZvsrFYIrC069hNuHmhpY=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1659519997; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=tCHNfkvLKa0BySi4rSrFMkX48wCJeADFiMbfJkU5ves=; 
-        b=HOyH+TgaaaO2ChMWCD3C9KPP3EGmrp0QUke4MOKwGprGZFQbFRQp2xY9Tyyz1Plz5al4841MlxDMKySAaxJH9rog+bQClxfO6KmUcnb5DaNhRAWlZbs+p/c19AN2GoqAjkTfstZP4KCTqfHkN47VuysSTIieON8M5FOw4lISLis=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659519997;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=tCHNfkvLKa0BySi4rSrFMkX48wCJeADFiMbfJkU5ves=;
-        b=LjjQilODd69kMHJImKMUgwONAibLg0YAN8FOsMPeE36IMjtDxzLrJj9TY/02IOqe
-        rezK8hZNAgPX0BkAmfPwP/s8bqbqgOW/MpEIK7ECFtoMn1CH3yZ9MJfBduOnZBv2L/h
-        Ky8fP0E8dFzeKVY9obsL3O2nyFW+hyIdjbg/9I3M=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 1659519981497938.089830690879; Wed, 3 Aug 2022 15:16:21 +0530 (IST)
-Date:   Wed, 03 Aug 2022 15:16:21 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "Ingo Molnar" <mingo@kernel.org>
-Cc:     "x86" <x86@kernel.org>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "Andy Lutomirski" <luto@kernel.org>,
-        "Peter Zijlstra" <peterz@infradead.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "linux-kernel-mentees" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>
-Message-ID: <182631957a7.c72ff42439506.3030495024426988155@siddh.me>
-In-Reply-To: <YupC88xuQ4rcyLVR@gmail.com>
-References: <20220731160913.632092-1-code@siddh.me>
- <YukFgFTaq4Aw+uht@gmail.com>
- <1825f63b142.8968bde3116633.1242410031840350968@siddh.me>
- <Yuo2UkkyaYtZ3rMZ@gmail.com>
- <18262ed2459.44b0d74d434377.3690496800292832933@siddh.me>
- <Yuo7A0KYoNnbgwWT@gmail.com>
- <18263030220.8a990e82436929.3216192040531777412@siddh.me> <YupC88xuQ4rcyLVR@gmail.com>
-Subject: Re: [PATCH] x86/numa: Use cpumask_available instead of hardcoded
- NULL check
+        Wed, 3 Aug 2022 05:48:13 -0400
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA1820F44
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 02:48:09 -0700 (PDT)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220803094806euoutp0134b168757e7d74015616f1820e545266~HzLnPdcBf3139831398euoutp01-
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:48:06 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220803094806euoutp0134b168757e7d74015616f1820e545266~HzLnPdcBf3139831398euoutp01-
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1659520086;
+        bh=AD8v/RK3vFIqsgabYiTtVZbPbcAOQ4zUOz/AmbfbvbE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iRXn0UmwY8hgWPVxsZu8A4quC3F9VbzMhhgCbJH3bi8sYQrS/a38E4joFjL2Sj98e
+         0eBSTpIQdpisjkixXy2QI+conYm5vRrmGFtEuMKDttQ3oflV0zmuy6UX0dC5TCSpia
+         WM7ITptkhlLkJzvwvmVL/VkVV6w6wbwaoV80V/kc=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20220803094804eucas1p23f4f95acc37debaf32ebca7b7461228e~HzLlsvk8B2078320783eucas1p2-;
+        Wed,  3 Aug 2022 09:48:04 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id 47.F2.09580.4544AE26; Wed,  3
+        Aug 2022 10:48:04 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220803094803eucas1p2ee8d16f3b6e08203ac9b4e0df6f53d9d~HzLlKJBYJ2274622746eucas1p2y;
+        Wed,  3 Aug 2022 09:48:03 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220803094803eusmtrp29abd99fd25b82a7151d193ea5f023056~HzLlJU8T40985609856eusmtrp2q;
+        Wed,  3 Aug 2022 09:48:03 +0000 (GMT)
+X-AuditID: cbfec7f5-9c3ff7000000256c-08-62ea44546ac3
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id 9A.DB.09095.3544AE26; Wed,  3
+        Aug 2022 10:48:03 +0100 (BST)
+Received: from localhost (unknown [106.210.248.112]) by eusmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220803094803eusmtip28563b2ce9e5f1b5ca2b66ba8b64b2160~HzLkybMHr1682216822eusmtip2o;
+        Wed,  3 Aug 2022 09:48:03 +0000 (GMT)
+From:   Pankaj Raghav <p.raghav@samsung.com>
+To:     Johannes.Thumshirn@wdc.com, snitzer@kernel.org, axboe@kernel.dk,
+        damien.lemoal@opensource.wdc.com, agk@redhat.com, hch@lst.de
+Cc:     dm-devel@redhat.com, matias.bjorling@wdc.com, gost.dev@samsung.com,
+        linux-kernel@vger.kernel.org, pankydev8@gmail.com,
+        jaegeuk@kernel.org, hare@suse.de, linux-block@vger.kernel.org,
+        linux-nvme@lists.infradead.org, bvanassche@acm.org,
+        Pankaj Raghav <p.raghav@samsung.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Adam Manzanares <a.manzanares@samsung.com>
+Subject: [PATCH v9 01/13] block: make bdev_nr_zones and disk_zone_no generic
+ for npo2 zone size
+Date:   Wed,  3 Aug 2022 11:47:49 +0200
+Message-Id: <20220803094801.177490-2-p.raghav@samsung.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220803094801.177490-1-p.raghav@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrJKsWRmVeSWpSXmKPExsWy7djP87ohLq+SDC4sFrWYfljRYv2pY8wW
+        q+/2s1lM+/CT2eL32fPMFnvfzWa1uHlgJ5PFnkWTmCxWrj7KZPFk/Sxmi79d95gs9t7Stri8
+        aw6bxfxlT9ktJrR9Zba4MeEpo8XnpS3sFmtuPmWxOHFL2kHY4/IVb4+ds+6ye1w+W+qxaVUn
+        m8fmJfUeu282sHnsbL3P6vF+31U2j74tqxg9Np+u9vi8Sc6j/UA3UwBPFJdNSmpOZllqkb5d
+        AlfG36ntTAVXRSqeTXjF1sA4S7CLkZNDQsBE4vb5NcxdjFwcQgIrGCW2H3jFBuF8YZS4tLKP
+        CcL5zChx7cMe1i5GDrCW7mO6EPHljBL7b/+Dan/JKPFt2kI2kCI2AS2Jxk52kLiIQDOjxN2/
+        PawgDrPAGyaJZct/s4MsFxZIlNjV/ZwNxGYRUJVouPGCCcTmFbCSmHn4OwvEgfISMy99B6vn
+        FLCWmPIPZBtIjaDEyZlPwGqYgWqat84Gu0JC4DCnxIYbS1ghml0kLm89ywRhC0u8Or6FHcKW
+        kfi/cz5UvFri6Y3fUM0tjBL9O9ezQfxpLdF3JgfEZBbQlFi/Sx+i3FHiRtt7dogKPokbbwUh
+        TuCTmLRtOjNEmFeio00IolpJYufPJ1BLJSQuN82B+spDYsLRzewTGBVnIXlmFpJnZiHsXcDI
+        vIpRPLW0ODc9tdg4L7Vcrzgxt7g0L10vOT93EyMwNZ7+d/zrDsYVrz7qHWJk4mA8xCjBwawk
+        wnvH5XmSEG9KYmVValF+fFFpTmrxIUZpDhYlcd7kzA2JQgLpiSWp2ampBalFMFkmDk6pBiYR
+        3Qj3p2uVHpZXxX42tGU49Lnnd35V4NTGy0pxuWeTDlnUFR+tiE77xvHVvSy65M62qwu3PK9j
+        1P0sFaBU9WLu5BK+27fDzxxK33TxsP5ZYYNVyu7rFbcGK3tM80h+UrJKcnbG5mzWZVWXV1++
+        YLU6J3Nu9Lcw9z8b4qRZtlX91H+9ZJ6Z1lTV+0lTChQ0XV94P721UHauStyFdQJdfu6n9rg1
+        Gxo2Xre6Z6u7YuIzhrsr2LX0Q7zy8vdxbnV+HxvHNnmCSNxhLakkl3PPl/KanmBeGs0ru6jU
+        qeje/8edp3udLqvPb39SmXbefDqDb/OBJdvPCXM4ca5gFnv9MamqMeqsXvI8A8u3slMepSqx
+        FGckGmoxFxUnAgDeHdQF/AMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrOIsWRmVeSWpSXmKPExsVy+t/xe7rBLq+SDPb80bOYfljRYv2pY8wW
+        q+/2s1lM+/CT2eL32fPMFnvfzWa1uHlgJ5PFnkWTmCxWrj7KZPFk/Sxmi79d95gs9t7Stri8
+        aw6bxfxlT9ktJrR9Zba4MeEpo8XnpS3sFmtuPmWxOHFL2kHY4/IVb4+ds+6ye1w+W+qxaVUn
+        m8fmJfUeu282sHnsbL3P6vF+31U2j74tqxg9Np+u9vi8Sc6j/UA3UwBPlJ5NUX5pSapCRn5x
+        ia1StKGFkZ6hpYWekYmlnqGxeayVkamSvp1NSmpOZllqkb5dgl7G36ntTAVXRSqeTXjF1sA4
+        S7CLkYNDQsBEovuYbhcjF4eQwFJGiaULdzF1MXICxSUkbi9sYoSwhSX+XOtiA7GFBJ4zSjSd
+        5gbpZRPQkmjsZAfpFRHoZpS4fOYcK4jDLPCHSeLv0dMsIA3CAvESR0+3soLYLAKqEg03XoAt
+        4BWwkph5+DsLxAJ5iZmXvrOD2JwC1hJT/v1jhlhmJbHu7yxWiHpBiZMzn4DVMwPVN2+dzTyB
+        UWAWktQsJKkFjEyrGEVSS4tz03OLDfWKE3OLS/PS9ZLzczcxAmN427Gfm3cwznv1Ue8QIxMH
+        4yFGCQ5mJRHeOy7Pk4R4UxIrq1KL8uOLSnNSiw8xmgLdPZFZSjQ5H5hE8kriDc0MTA1NzCwN
+        TC3NjJXEeT0LOhKFBNITS1KzU1MLUotg+pg4OKUamPxrN894KbnldNZ3Ltf+tq3Wf4If6rB+
+        2flbIsxEsPpoUI/KNOMV0q171MMDT3iLbn3Ivia8wHvrqlV+M1xWLjtku/z0+VPBC5W4fPwm
+        1STvd1j+su5mReUF73X7l66tst3rm7dI/+1z1Q6W2T6bfm1ruc1skbV2S/PsRVsczr29ovpY
+        f4d+udXLTzs2fa/a2SJodV5HJmNjXLl6hOFiM+kKh0U5j18wb39rXNUSfnmywPaiCU+vc0+8
+        vfG8p9RM4cK5s5edEMg5sGbf2UO6O5R9lV5Y/NK9ucLen7cw4pIkM+/UQ+V7b/pl/JDfrxex
+        JY59yR41JT6WM49iDwfrSvfo/ZKfnL3yeNM5ybX8E1KUWIozEg21mIuKEwGNwBmyagMAAA==
+X-CMS-MailID: 20220803094803eucas1p2ee8d16f3b6e08203ac9b4e0df6f53d9d
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220803094803eucas1p2ee8d16f3b6e08203ac9b4e0df6f53d9d
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220803094803eucas1p2ee8d16f3b6e08203ac9b4e0df6f53d9d
+References: <20220803094801.177490-1-p.raghav@samsung.com>
+        <CGME20220803094803eucas1p2ee8d16f3b6e08203ac9b4e0df6f53d9d@eucas1p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 03 Aug 2022 15:12:11 +0530  Ingo Molnar <mingo@kernel.org> wrote:
-> Oh. So I was daft, as suspected. ;-)
->=20
-> And I can confirm that while gcc-11 doesn't trigger the warning, gcc-12=
-=20
-> does:
->=20
->   $ make ARCH=3Dx86_64 CC=3Dgcc-11 arch/x86/mm/numa.o
->     CC      arch/x86/mm/numa.o
->   $
->=20
->   $ rm -f arch/x86/mm/numa.o
->   $
->   $ make ARCH=3Dx86_64 CC=3Dgcc-12 arch/x86/mm/numa.o
->=20
->     CC      arch/x86/mm/numa.o
->   arch/x86/mm/numa.c: In function =E2=80=98cpumask_of_node=E2=80=99:
->   arch/x86/mm/numa.c:916:39: error: the comparison will always evaluate a=
-s =E2=80=98false=E2=80=99 for the address of =E2=80=98node_to_cpumask_map=
-=E2=80=99 will never be NULL [-Werror=3Daddress]
->     916 |         if (node_to_cpumask_map[node] =3D=3D NULL) {
->=20
->=20
-> > [...]
->=20
-> Yeah - and I agree with your fix - will apply it.
->=20
-> Thanks for your patience :-)
->=20
->     Ingo
->=20
+Adapt bdev_nr_zones and disk_zone_no functions so that they can
+also work for non-power-of-2 zone sizes.
 
-No worries, and thanks! :)
-Siddh
+As the existing deployments assume that a device zone size is a power of
+2 number of sectors, power-of-2 optimized calculation is used for those
+devices.
+
+There are no direct hot paths modified and the changes just
+introduce one new branch per call.
+
+Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
+Reviewed-by: Adam Manzanares <a.manzanares@samsung.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+---
+ block/blk-zoned.c      | 13 +++++++++----
+ include/linux/blkdev.h |  8 +++++++-
+ 2 files changed, 16 insertions(+), 5 deletions(-)
+
+diff --git a/block/blk-zoned.c b/block/blk-zoned.c
+index a264621d4905..dce9c95b4bcd 100644
+--- a/block/blk-zoned.c
++++ b/block/blk-zoned.c
+@@ -111,17 +111,22 @@ EXPORT_SYMBOL_GPL(__blk_req_zone_write_unlock);
+  * bdev_nr_zones - Get number of zones
+  * @bdev:	Target device
+  *
+- * Return the total number of zones of a zoned block device.  For a block
+- * device without zone capabilities, the number of zones is always 0.
++ * Return the total number of zones of a zoned block device, including the
++ * eventual small last zone if present. For a block device without zone
++ * capabilities, the number of zones is always 0.
+  */
+ unsigned int bdev_nr_zones(struct block_device *bdev)
+ {
+ 	sector_t zone_sectors = bdev_zone_sectors(bdev);
++	sector_t capacity = bdev_nr_sectors(bdev);
+ 
+ 	if (!bdev_is_zoned(bdev))
+ 		return 0;
+-	return (bdev_nr_sectors(bdev) + zone_sectors - 1) >>
+-		ilog2(zone_sectors);
++
++	if (is_power_of_2(zone_sectors))
++		return (capacity + zone_sectors - 1) >> ilog2(zone_sectors);
++
++	return DIV_ROUND_UP_SECTOR_T(capacity, zone_sectors);
+ }
+ EXPORT_SYMBOL_GPL(bdev_nr_zones);
+ 
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 84b13fdd34a7..ab82d1ff0cce 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -674,9 +674,15 @@ static inline unsigned int disk_nr_zones(struct gendisk *disk)
+ 
+ static inline unsigned int disk_zone_no(struct gendisk *disk, sector_t sector)
+ {
++	sector_t zone_sectors = disk->queue->limits.chunk_sectors;
++
+ 	if (!blk_queue_is_zoned(disk->queue))
+ 		return 0;
+-	return sector >> ilog2(disk->queue->limits.chunk_sectors);
++
++	if (is_power_of_2(zone_sectors))
++		return sector >> ilog2(zone_sectors);
++
++	return div64_u64(sector, zone_sectors);
+ }
+ 
+ static inline bool disk_zone_is_seq(struct gendisk *disk, sector_t sector)
+-- 
+2.25.1
+
