@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67A18C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:50:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 325A5C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238201AbiHCPud (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:50:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49138 "EHLO
+        id S238284AbiHCPuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237860AbiHCPuZ (ORCPT
+        with ESMTP id S238218AbiHCPua (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:50:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9CF1D26EA
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:50:24 -0700 (PDT)
+        Wed, 3 Aug 2022 11:50:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E33E12DC3
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:50:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659541823;
+        s=mimecast20190719; t=1659541829;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=/BrQz+CyfVcc2k2vo2CUTQfHHEz6+03jB7eKZ/pazJY=;
-        b=VZa33uCQNyAByARwc28HRf0H8Kg7dmLPmVB6CEMNVFZClPZbFLjExIkL4Jrss5ZY8hocuI
-        bTm5dPzZaYDclYT1Orz/w37AwF0iZ0OTXRSCqwI/mZPcGFGuWNogBSCvk6tj14MkdjqCSO
-        e/uTEPqSoQsNfJlSUtGQJGYsGSqm0Dk=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WNhWOc+yr+2wT/jsCzj92Jb7fDCD7N/zAbD0yvwDZp4=;
+        b=N+f+cRfejLnlQcfGi15oRAQPh+5pZ+RVCThe/Y8G7EuJqM7VL2Y9epPUkP0ddpUhI/sn8Z
+        93xpWDvoFETeTPRqnSHC20ENZ1oXK0GWAIXIBblN7+m50Jx9qIQmQ2Jl+SF0slQB9WrGeJ
+        dznWc0w9s7RMo++nE+14AHdPJKsEkuQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-358-3w-6go72NbWtFWzI4ESLZQ-1; Wed, 03 Aug 2022 11:50:17 -0400
-X-MC-Unique: 3w-6go72NbWtFWzI4ESLZQ-1
+ us-mta-515-5FKKviBjP1KIafHzq22m6Q-1; Wed, 03 Aug 2022 11:50:26 -0400
+X-MC-Unique: 5FKKviBjP1KIafHzq22m6Q-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2BDCD2919EAE;
-        Wed,  3 Aug 2022 15:50:17 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 35EE8101A54E;
+        Wed,  3 Aug 2022 15:50:25 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.40.194.242])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 877F01121314;
-        Wed,  3 Aug 2022 15:50:12 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 91AB01121314;
+        Wed,  3 Aug 2022 15:50:21 +0000 (UTC)
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Borislav Petkov <bp@alien8.de>,
@@ -51,66 +52,43 @@ Cc:     Borislav Petkov <bp@alien8.de>,
         "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
         Vitaly Kuznetsov <vkuznets@redhat.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v3 00/13] SMM emulation and interrupt shadow fixes
-Date:   Wed,  3 Aug 2022 18:49:58 +0300
-Message-Id: <20220803155011.43721-1-mlevitsk@redhat.com>
-Content-Type: text/plain; charset="utf-8"
+Subject: [PATCH v3 02/13] KVM: x86: emulator: em_sysexit should update ctxt->mode
+Date:   Wed,  3 Aug 2022 18:50:00 +0300
+Message-Id: <20220803155011.43721-3-mlevitsk@redhat.com>
+In-Reply-To: <20220803155011.43721-1-mlevitsk@redhat.com>
+References: <20220803155011.43721-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series is a result of long debug work to find out why=0D
-sometimes guests with win11 secure boot=0D
-were failing during boot.=0D
-=0D
-During writing a unit test I found another bug, turns out=0D
-that on rsm emulation, if the rsm instruction was done in real=0D
-or 32 bit mode, KVM would truncate the restored RIP to 32 bit.=0D
-=0D
-I also refactored the way we write SMRAM so it is easier=0D
-now to understand what is going on.=0D
-=0D
-The main bug in this series which I fixed is that we=0D
-allowed #SMI to happen during the STI interrupt shadow,=0D
-and we did nothing to both reset it on #SMI handler=0D
-entry and restore it on RSM.=0D
-=0D
-V3: addressed most of the review feedback from Sean (thanks!)=0D
-=0D
-Best regards,=0D
-	Maxim Levitsky=0D
-=0D
-Maxim Levitsky (13):=0D
-  bug: introduce ASSERT_STRUCT_OFFSET=0D
-  KVM: x86: emulator: em_sysexit should update ctxt->mode=0D
-  KVM: x86: emulator: introduce emulator_recalc_and_set_mode=0D
-  KVM: x86: emulator: update the emulation mode after rsm=0D
-  KVM: x86: emulator: update the emulation mode after CR0 write=0D
-  KVM: x86: emulator/smm: number of GPRs in the SMRAM image depends on=0D
-    the image format=0D
-  KVM: x86: emulator/smm: add structs for KVM's smram layout=0D
-  KVM: x86: emulator/smm: use smram structs in the common code=0D
-  KVM: x86: emulator/smm: use smram struct for 32 bit smram load/restore=0D
-  KVM: x86: emulator/smm: use smram struct for 64 bit smram load/restore=0D
-  KVM: x86: SVM: use smram structs=0D
-  KVM: x86: SVM: don't save SVM state to SMRAM when VM is not long mode=0D
-    capable=0D
-  KVM: x86: emulator/smm: preserve interrupt shadow in SMRAM=0D
-=0D
- arch/x86/include/asm/kvm_host.h |  11 +-=0D
- arch/x86/kvm/emulate.c          | 305 +++++++++++++++++---------------=0D
- arch/x86/kvm/kvm_emulate.h      | 223 ++++++++++++++++++++++-=0D
- arch/x86/kvm/svm/svm.c          |  30 ++--=0D
- arch/x86/kvm/vmx/vmcs12.h       |   5 +-=0D
- arch/x86/kvm/vmx/vmx.c          |   4 +-=0D
- arch/x86/kvm/x86.c              | 175 +++++++++---------=0D
- include/linux/build_bug.h       |   9 +=0D
- 8 files changed, 497 insertions(+), 265 deletions(-)=0D
-=0D
--- =0D
-2.26.3=0D
-=0D
+This is one of the instructions that can change the
+processor mode.
+
+Note that this is likely a benign bug, because the only problematic
+mode change is from 32 bit to 64 bit which can lead to truncation of RIP,
+and it is not possible to do with sysexit,
+since sysexit running in 32 bit mode will be limited to 32 bit version.
+
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+---
+ arch/x86/kvm/emulate.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index 047c583596bb86..7bdc495710bd0e 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -2888,6 +2888,7 @@ static int em_sysexit(struct x86_emulate_ctxt *ctxt)
+ 	ops->set_segment(ctxt, ss_sel, &ss, 0, VCPU_SREG_SS);
+ 
+ 	ctxt->_eip = rdx;
++	ctxt->mode = usermode;
+ 	*reg_write(ctxt, VCPU_REGS_RSP) = rcx;
+ 
+ 	return X86EMUL_CONTINUE;
+-- 
+2.26.3
 
