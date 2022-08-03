@@ -2,67 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF249C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:42:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E9EC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235621AbiHCKmp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 06:42:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
+        id S234699AbiHCKvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 06:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233781AbiHCKmm (ORCPT
+        with ESMTP id S232663AbiHCKvo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 06:42:42 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93FF2637;
-        Wed,  3 Aug 2022 03:42:32 -0700 (PDT)
-X-QQ-mid: bizesmtp77t1659523333t492x03g
-Received: from localhost.localdomain ( [182.148.15.41])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 03 Aug 2022 18:42:11 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000020
-X-QQ-FEAT: zfj4kEUeXSYNzadscJ6QW9RfbqciXydduLNxxDqVFV4NdIs50s6qL9wWaX+Ls
-        ANXKBozCdUqp0+ID0DlXVoPdK5vSdi6o1dYoceEahvJkgd5kyHNW5E+/Gu+BZa5vk6rbpxy
-        MQSEumPSAAck+kt8EYlAVF53TxPyk6XAmMO4O9k1mDvpIk1BHezOYSiLTtRVfOcYtqid09u
-        QE2UyQ6UdpsEyDCL8thws4/jj0tzjY9w91lw2OlQwtKmRn+cihFvLBiPJhnm4VnpBPWRlGo
-        jAd7euv81JR0hbnVskXgaGQgpnpsbkOJ9ZYjhPg5wYO8Q2HSj39Bq1Y130ZuWKpMd7CKAj1
-        95lChvx1FmmpOSVKTBWzVOB1u0qw9mE5QdsJL1I95V45KVyJxc=
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     gregkh@linuxfoundation.org
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] serial: fsl_lpuart: Fix comment typo
-Date:   Wed,  3 Aug 2022 18:42:08 +0800
-Message-Id: <20220803104208.4127-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 3 Aug 2022 06:51:44 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477151BEBD
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 03:51:42 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id a11so8508832wmq.3
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 03:51:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=UKgtTNEBRcEuJKNYzz9fav0XLRpqgY1r5hhJ/ETR5F4=;
+        b=l1j1LNiLEHPl29Pqd5P8h+R7lQ9danPifmXUoG1hTfeY7KvWVeWx4Abd/xixiNrTZ9
+         JBlyQVkJyX80pZtlMqZ6Zbq0haNbmZHQinkkW4C8DIpLFF0kl4WJPthEg6PNo2p6eTCp
+         attrMx7gN07hxshRXfb9PDygzeU0NjnkZhcnRjJ6DAgsr6WsA9grBWaP5hMz0rPsDIlh
+         OhW7WsQJxFhhOVrOT3KtkmQqcemojHqyp6C37wCh3drpgH1D4H6IuVjlNJF8eQYJ6AY8
+         SeNbscjbVDScrpQ1WsxQGbjQLluEMJUv13H4KPRayh0XvtQIJxmLIKNRGUukTiwDLMFr
+         Oncw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=UKgtTNEBRcEuJKNYzz9fav0XLRpqgY1r5hhJ/ETR5F4=;
+        b=K8KGa6ylfbRyksCbGMRehTBj1xkGLzqviY6sApgHM8k4YSbA9wAvzyhxMzMTLsQbna
+         iwevCBho1d34RMU9dn8htoraEY642Dk4jvjxtdxkpYVvy2qDdDL7OeECmd24GqX6AkVP
+         Rea2GTPbw45Pr+kAn4k3fe89LXmAqcLLmGdAcDCVFeaZzaudqTxI88/s+I5IkF7ucM/s
+         ANGiR4nUIFPnSpvBw2ZgLoVeZbt++qvE8LLWrGHUCNkkcaSFoEApGIzDNDsUrToSOCJu
+         fl5+sl7AzJocWPhU1Vvkhvck21b0w4TTPPbZBUxzu1sK+RVnllMbqqNhpT3fXHr4InPn
+         uROw==
+X-Gm-Message-State: ACgBeo0qxL/bZq87dMm5VvPcTGJu/2XUHnPyyoSWY3daQoES0n/qEPZH
+        DS39msS5AZKjjWBbo5Kd0MggiQ==
+X-Google-Smtp-Source: AA6agR4ooQgNyvGSBedKzPOVSNxL7PaXRTSiaL3eh/8HzCV27FgkpUxBQmODfbbFRFzAFLhywsacXA==
+X-Received: by 2002:a05:600c:3845:b0:3a3:227d:c1c6 with SMTP id s5-20020a05600c384500b003a3227dc1c6mr2467572wmr.9.1659523900775;
+        Wed, 03 Aug 2022 03:51:40 -0700 (PDT)
+Received: from ?IPV6:2a05:6e02:1041:c10:6e48:fbdd:280d:6dac? ([2a05:6e02:1041:c10:6e48:fbdd:280d:6dac])
+        by smtp.googlemail.com with ESMTPSA id g11-20020a05600c4ecb00b003a02cbf862esm2331719wmq.13.2022.08.03.03.51.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Aug 2022 03:51:40 -0700 (PDT)
+Message-ID: <57687bbc-580a-ef07-bc50-6bc9f5c14ec9@linaro.org>
+Date:   Wed, 3 Aug 2022 12:51:38 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v8 1/6] thermal: mediatek: Relocate driver to mediatek
+ folder
+Content-Language: en-US
+To:     Balsam CHIHI <bchihi@baylibre.com>
+Cc:     rafael@kernel.org, rui.zhang@intel.com, amitk@kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        khilman@baylibre.com, mka@chromium.org, robh+dt@kernel.org,
+        krzk+dt@kernel.org, matthias.bgg@gmail.com, p.zabel@pengutronix.de,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, james.lo@mediatek.com,
+        fan.chen@mediatek.com, louis.yu@mediatek.com,
+        rex-bc.chen@mediatek.com, abailon@baylibre.com
+References: <20220726135506.485108-1-bchihi@baylibre.com>
+ <20220726135506.485108-2-bchihi@baylibre.com>
+ <24250d03-b25f-e521-5abd-f36109885c36@linaro.org>
+ <CAGuA+opxZ7DDrWHcnTRhMcm7YveCAypdy9MDSytt58asgekayw@mail.gmail.com>
+ <CAGuA+ooOUXaBM+uPvEEohFLtO8sRd4T=DMcc6Fvo9P92gsq4yg@mail.gmail.com>
+ <9b224465-e9e5-43d3-50eb-3614decbd8b2@linaro.org>
+ <CAGuA+op-mO5ZMz_EvSOYUNiZ_4OOwLFQqFqMrCQBVMcG3mbcPQ@mail.gmail.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <CAGuA+op-mO5ZMz_EvSOYUNiZ_4OOwLFQqFqMrCQBVMcG3mbcPQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `as' is duplicated in the comment, remove one.
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/tty/serial/fsl_lpuart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Balsam,
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index fc7d235a1e27..19e36998f6db 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2776,7 +2776,7 @@ static int __maybe_unused lpuart_suspend(struct device *dev)
- 		 * EDMA driver during suspend will forcefully release any
- 		 * non-idle DMA channels. If port wakeup is enabled or if port
- 		 * is console port or 'no_console_suspend' is set the Rx DMA
--		 * cannot resume as as expected, hence gracefully release the
-+		 * cannot resume as expected, hence gracefully release the
- 		 * Rx DMA path before suspend and start Rx DMA path on resume.
- 		 */
- 		if (irq_wake) {
+On 03/08/2022 10:41, Balsam CHIHI wrote:
+> On Fri, Jul 29, 2022 at 5:35 PM Daniel Lezcano
+> <daniel.lezcano@linaro.org> wrote:
+>>
+>> Hi Balsam,
+>>
+>> On 29/07/2022 17:21, Balsam CHIHI wrote:
+>>
+>> [ ... ]
+>>
+>> You may want to wait next week before sending a new version, I'm still
+>> reviewing your series (note you can send it anyway if you prefer)
+>>
+> 
+> Hi Daniel,
+> 
+> Thank you for the review.
+> I have finished implementing the changes requested by the maintainers
+> and would like to resubmit the series.
+> Do I still have to wait for your feedback to send it again?
+
+At your convenience, I'll review the new version if you send it
+
+
+
 -- 
-2.35.1
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
