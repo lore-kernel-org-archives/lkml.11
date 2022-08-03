@@ -2,111 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66E3FC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A571C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236462AbiHCPvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49254 "EHLO
+        id S236289AbiHCPvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238264AbiHCPuw (ORCPT
+        with ESMTP id S238298AbiHCPu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:50:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3DFF96453
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:50:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659541843;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LmwB0r7xATrpDyRlyUFgvOk4mUnvm3hP8rUm/cmUZV8=;
-        b=KEJbekhtR/XqmhQY0sETXiS3JicF3L0nmCTo7TE9+ktsKvsX66Jolsyo4E2g3b525Pu02V
-        MFEj8nloJMasvoUcqyB89PXA/nN0VQDrUuFg6DrrIcqMaWYCaAierrrPBUST3l6kL2b3eg
-        qODmNiN5p2CID2P5Ud8FsUP3uZU6JKs=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-408-XCfdXdIDMCOVUNhfW_Rq0A-1; Wed, 03 Aug 2022 11:50:39 -0400
-X-MC-Unique: XCfdXdIDMCOVUNhfW_Rq0A-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Wed, 3 Aug 2022 11:50:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CE1DFB3;
+        Wed,  3 Aug 2022 08:50:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3AD7D3C0D841;
-        Wed,  3 Aug 2022 15:50:38 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.194.242])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 991C11121315;
-        Wed,  3 Aug 2022 15:50:34 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        linux-kernel@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Sean Christopherson <seanjc@google.com>, x86@kernel.org,
-        Jim Mattson <jmattson@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH v3 05/13] KVM: x86: emulator: update the emulation mode after CR0 write
-Date:   Wed,  3 Aug 2022 18:50:03 +0300
-Message-Id: <20220803155011.43721-6-mlevitsk@redhat.com>
-In-Reply-To: <20220803155011.43721-1-mlevitsk@redhat.com>
-References: <20220803155011.43721-1-mlevitsk@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1768616EC;
+        Wed,  3 Aug 2022 15:50:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07BB7C433D6;
+        Wed,  3 Aug 2022 15:50:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659541846;
+        bh=CQlWCz5t+ycatYOBjr5Kk6EwNwSmzl5rVsLrkUCwrkQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fLwDHlhv9XmBlCnQBJvie+dGhSlFusJcEr3U0Mhd7dLsqCP6/kJlzCf6AXb9VDhnj
+         SAPwlnxA5uZ/ImPauj+uirOrkwITas7qemumOLqySP14BT+Wj2s2M/oIixKlfVfy66
+         XESLndslcxpuO6v6x7q4+ACag50e7jnhQkavbp3A=
+Date:   Wed, 3 Aug 2022 17:50:43 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        Andrey Strachuk <strochuk@ispras.ru>
+Subject: Re: [GIT PULL] USB / Thunderbolt driver changes for 6.0-rc1
+Message-ID: <YuqZU/JJyMQJxva0@kroah.com>
+References: <YuqB0tl2hjT3x7a4@kroah.com>
+ <YuqXtcaUPflINBd6@dev-arch.thelio-3990X>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuqXtcaUPflINBd6@dev-arch.thelio-3990X>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CR0.PE toggles real/protected mode, thus its update
-should update the emulation mode.
+On Wed, Aug 03, 2022 at 08:43:49AM -0700, Nathan Chancellor wrote:
+> On Wed, Aug 03, 2022 at 04:10:26PM +0200, Greg KH wrote:
+> > Andrey Strachuk (1):
+> >       usb: cdns3: change place of 'priv_ep' assignment in cdns3_gadget_ep_dequeue(), cdns3_gadget_ep_enable()
+> 
+> For the record, this breaks allmodconfig with clang (I haven't seen a
+> formal report on it anywhere and this missed -next coverage because
+> Stephen is on vacation):
+> 
+>     drivers/usb/cdns3/cdns3-gadget.c:2290:11: error: variable 'priv_dev' is uninitialized when used here [-Werror,-Wuninitialized]
+>                     dev_dbg(priv_dev->dev, "usbss: invalid parameters\n");
+>                             ^~~~~~~~
+>     include/linux/dev_printk.h:155:18: note: expanded from macro 'dev_dbg'
+>             dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+>                             ^~~
+>     include/linux/dynamic_debug.h:167:7: note: expanded from macro 'dynamic_dev_dbg'
+>                             dev, fmt, ##__VA_ARGS__)
+>                             ^~~
+>     include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
+>             __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+>                                                                 ^~~~~~~~~~~
+>     include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
+>                     func(&id, ##__VA_ARGS__);               \
+>                                 ^~~~~~~~~~~
+>     drivers/usb/cdns3/cdns3-gadget.c:2278:31: note: initialize the variable 'priv_dev' to silence this warning
+>             struct cdns3_device *priv_dev;
+>                                         ^
+>                                         = NULL
+>     1 error generated.
+> 
+> I know you don't take patches during the merge window, so I guess we'll
+> just have to have x86_64 allmodconfig be broken with clang for -rc1? :/
 
-This is likely a benign bug because there is no writeback
-of state, other than the RIP increment, and when toggling
-CR0.PE, the CPU has to execute code from a very low memory address.
+I can send fix-up patches that break the build before -rc1 if you have
+it.  Also you can send it and Linus can pick it up directly if it breaks
+his workflow.
 
-Also CR0.PG toggle when EFER.LMA is set, toggles the long mode.
+Odd that this was never reported, 0-day didn't even say anything?
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/kvm/emulate.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+thanks,
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 5e91b26cc1d8aa..765ec65b2861ba 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -3658,11 +3658,23 @@ static int em_movbe(struct x86_emulate_ctxt *ctxt)
- 
- static int em_cr_write(struct x86_emulate_ctxt *ctxt)
- {
--	if (ctxt->ops->set_cr(ctxt, ctxt->modrm_reg, ctxt->src.val))
-+	int cr_num = ctxt->modrm_reg;
-+	int r;
-+
-+	if (ctxt->ops->set_cr(ctxt, cr_num, ctxt->src.val))
- 		return emulate_gp(ctxt, 0);
- 
- 	/* Disable writeback. */
- 	ctxt->dst.type = OP_NONE;
-+
-+	if (cr_num == 0) {
-+		/* CR0 write might have updated CR0.PE and/or CR0.PG
-+		 * which can affect the cpu execution mode */
-+		r = emulator_recalc_and_set_mode(ctxt);
-+		if (r != X86EMUL_CONTINUE)
-+			return r;
-+	}
-+
- 	return X86EMUL_CONTINUE;
- }
- 
--- 
-2.26.3
-
+greg k-h
