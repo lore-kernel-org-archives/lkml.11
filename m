@@ -2,160 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50801C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:46:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BBF2C19F29
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233822AbiHCQqE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 12:46:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34740 "EHLO
+        id S236343AbiHCQrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 12:47:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233814AbiHCQpi (ORCPT
+        with ESMTP id S230163AbiHCQr2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 12:45:38 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11AF1ADB0
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:45:35 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id f65so15588467pgc.12
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 09:45:35 -0700 (PDT)
+        Wed, 3 Aug 2022 12:47:28 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 471B21ADB6;
+        Wed,  3 Aug 2022 09:47:27 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id r4so14489949edi.8;
+        Wed, 03 Aug 2022 09:47:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=zvXdeRuA5sLY5zynbWXHtTh6B+8PVsCOPRs6rWFCsCI=;
-        b=a4BdvhaGeDTpBJ744nfOprIfMN+VxMz6rcQGh159BErSpIQVDJJ8K5rcpUOiwkJIbq
-         ccSLQ1wgw9Ep9j++KSkTPXDXO8/n+JRs7l5XCCIZ2GAm8bzHnkQI0OPS40LNIPmfAsJ/
-         irRjfhnjq1cav+2d3lCNenk0kDxX+Ku/+0+0GtHaX2d1tChKTD8jju2INtlYSBOggylg
-         te/7q5M3lPuUquNndM2le/pCUfAFV7mv4Ymt/pySn7yd/xEeMb7Q6SUTYYfZOfmuGdb8
-         K+KRJjNHk2q55xTTigO8fVlwxsnr74LeBxbLHMgJ0ufrF3+9YIzk0RvatoJfq+gSYkLa
-         W1TQ==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=F9U8c5AKnNzADIrH/woXdXw4Gb44VjbMAOdRYmkqed4=;
+        b=XlNmQq6S0+jFh4sI5VMS9M71qHh8MAqZaCCjTzikhPe54IetlcJDPAJP4Lyw4C9MUJ
+         f5IBMXHrBga7+ekouyx1g+DIzkZn4SJhrSuJQmu5hxfonUr8kAObWR37LKhgL7mPAQTY
+         uKRn2l/tbYrf+zOu2WC8Is4HeaUyqYXfLC4++EkFDiFbxrpOWO64Y6yAwuLpOCouKPu/
+         NczmDyL7OZ/dktIO5/k21eQwXbJdy5cWVyE1tsu7rn/NubH5l37Vv7JFXUDLQjnFvMO2
+         4zYADWk5kOPyp29OpozCPo0M9yEErqd40s2MGMhXx9IiOpQ47GW7eZb2mu8+paquwQIu
+         dwHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=zvXdeRuA5sLY5zynbWXHtTh6B+8PVsCOPRs6rWFCsCI=;
-        b=GzglVd2e8KgiHJgWLZYqYDUTCQT5Py9uBQvNc/kHiOYw5k7JoAE99TLB7VOcSkJ7e/
-         1XWMJ+68SK8+CFVat1WT6SSt0XXCkYGybaIaBYvhKlbdwS6qnZNuOFyhAFVJW00rWp2u
-         1IHhSIpabDTzunxV+WtoAvuJsqpbJopkiPQVhWMy3mXVqkXnH7NOaBHpT6hLnF94B/Iv
-         MNUKFwLWLDtzqNW+nb0ltIRUOViDJubS2zD7q4KCGi1jp6aKsBGFVovTNk8ItTxT/lB9
-         +EdpBj3iVZyN1ubNIHfzUjyGzs60oOyo4gU8V3d1lL37QWIWX7NIIRrUfcsYziM78Bre
-         myOA==
-X-Gm-Message-State: ACgBeo3f8IjbdJozKSpvCQqIoOceeEdymIyT+QXoPhl1b2cRW1zwx3Rl
-        gASPkiGnBi5xIYPVxro4QgDIoQ==
-X-Google-Smtp-Source: AA6agR6Au7Zfg+OM55tlZl8j7l1vuaz6zzcbeNJcOPK1uMadkFvbbF8MajabNMEfQA8B9JXdsg9kGA==
-X-Received: by 2002:a05:6a00:1993:b0:52d:951a:d0ad with SMTP id d19-20020a056a00199300b0052d951ad0admr13205062pfl.47.1659545134954;
-        Wed, 03 Aug 2022 09:45:34 -0700 (PDT)
-Received: from google.com (33.5.83.34.bc.googleusercontent.com. [34.83.5.33])
-        by smtp.gmail.com with ESMTPSA id u3-20020a17090341c300b0016d9d6d05f7sm2245614ple.273.2022.08.03.09.45.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 09:45:34 -0700 (PDT)
-Date:   Wed, 3 Aug 2022 16:45:30 +0000
-From:   Mingwei Zhang <mizhang@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>
-Subject: Re: [PATCH 1/5] KVM: x86: Get vmcs12 pages before checking pending
- interrupts
-Message-ID: <YuqmKkxEsDwBvayo@google.com>
-References: <20220802230718.1891356-1-mizhang@google.com>
- <20220802230718.1891356-2-mizhang@google.com>
- <060419e118445978549f0c7d800f96a9728c157c.camel@redhat.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=F9U8c5AKnNzADIrH/woXdXw4Gb44VjbMAOdRYmkqed4=;
+        b=FCRFC1oLcJk1CEORodiaVK1gGLrVNSxvMf7Ne21EvEs/XUJtLW6SrbnVr2NQDTE6sU
+         A3ILEL6b0Uw536FpAiH8fxUZ9W2A6UcWljTdFk660j5Fvg9pN9BmqYl/Pt+Qy7J1BWcN
+         nsFhMttOwh++I3YLxe4BE/9z6Mdfqm2B3fC6S9IWRHT4le/ROX69f1v9za1wx1JoafdO
+         7IDMa9ee6/v4GcVcVN7GXVYJ+0PpnvnP+Yobg4s1dORgCwmzBu938nz+EjdMp+SpPNJd
+         dsZR9PcuyhmnLRDDWoCBn5fvRZfwwufjH6+D5j/kd+d0mB7tZpqXYVb729iFOO9Nt72n
+         yKEw==
+X-Gm-Message-State: AJIora/HPnsoDXRN3trCgIlwjBh+VvnWnNSFcY846V4ebFMAhzHlycP/
+        iwp8Olow6d5/oWD/SQqnjBFP7t3zugrq4DStO/s=
+X-Google-Smtp-Source: AGRyM1tijRtTlwrij9+gOsmp+egQvFU4YUIh9jrOQHap6DUWAT20SFlkm/kgaq3ikXR8bG5bsPMiHriEGiA6MKUL2cE=
+X-Received: by 2002:a05:6402:2b88:b0:43a:6c58:6c64 with SMTP id
+ fj8-20020a0564022b8800b0043a6c586c64mr27201021edb.348.1659545245667; Wed, 03
+ Aug 2022 09:47:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <060419e118445978549f0c7d800f96a9728c157c.camel@redhat.com>
+References: <20220718153448.173652-1-jason.gerecke@wacom.com> <20220803145937.698603-1-jason.gerecke@wacom.com>
+In-Reply-To: <20220803145937.698603-1-jason.gerecke@wacom.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 3 Aug 2022 18:46:48 +0200
+Message-ID: <CAHp75Vd6yEctJoNT6TpJ1+h4ZQckyLsaUSeSCV4MHqg+LUDkcg@mail.gmail.com>
+Subject: Re: [PATCH v2] i2c: Use u8 type in i2c transfer calls
+To:     Jason Gerecke <killertofu@gmail.com>
+Cc:     linux-i2c <linux-i2c@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Wolfram Sang <wsa-dev@sang-engineering.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ping Cheng <pinglinux@gmail.com>,
+        "Tobita, Tatsunosuke" <tatsunosuke.tobita@wacom.com>,
+        Jason Gerecke <jason.gerecke@wacom.com>,
+        Ping Cheng <ping.cheng@wacom.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 03, 2022, Maxim Levitsky wrote:
-> On Tue, 2022-08-02 at 23:07 +0000, Mingwei Zhang wrote:
-> > From: Oliver Upton <oupton@google.com>
-> > 
-> > vmx_guest_apic_has_interrupts implicitly depends on the virtual APIC
-> > page being present + mapped into the kernel address space. However, with
-> > demand paging we break this dependency, as the KVM_REQ_GET_VMCS12_PAGES
-> > event isn't assessed before entering vcpu_block.
-> > 
-> > Fix this by getting vmcs12 pages before inspecting the guest's APIC
-> > page. Note that upstream does not have this issue, as they will directly
-> > get the vmcs12 pages on vmlaunch/vmresume instead of relying on the
-> > event request mechanism. However, the upstream approach is problematic,
-> > as the vmcs12 pages will not be present if a live migration occurred
-> > before checking the virtual APIC page.
-> 
-> Since this patch is intended for upstream, I don't fully understand
-> the meaning of the above paragraph.
+On Wed, Aug 3, 2022 at 4:59 PM Jason Gerecke <killertofu@gmail.com> wrote:
+>
+> The 'i2c_transfer_buffer_flags' function (and related inlines) defines its
 
-My apology. Some of the statement needs to be updated, which I should do
-before sending. But I think the point here is that there is a missing
-get_nested_state_pages() call here within vcpu_block() when there is the
-request of KVM_REQ_GET_NESTED_STATE_PAGES.
+We refer to the functions like func() (without any quotes as well).
 
-> 
-> 
-> > 
-> > Signed-off-by: Oliver Upton <oupton@google.com>
-> > Signed-off-by: Mingwei Zhang <mizhang@google.com>
-> > ---
-> >  arch/x86/kvm/x86.c | 17 +++++++++++++++++
-> >  1 file changed, 17 insertions(+)
-> > 
-> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > index 5366f884e9a7..1d3d8127aaea 100644
-> > --- a/arch/x86/kvm/x86.c
-> > +++ b/arch/x86/kvm/x86.c
-> > @@ -10599,6 +10599,23 @@ static inline int vcpu_block(struct kvm_vcpu *vcpu)
-> >  {
-> >  	bool hv_timer;
-> >  
-> > +	/*
-> > +	 * We must first get the vmcs12 pages before checking for interrupts
-> > +	 * that might unblock the guest if L1 is using virtual-interrupt
-> > +	 * delivery.
-> > +	 */
-> > +	if (kvm_check_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu)) {
-> > +		/*
-> > +		 * If we have to ask user-space to post-copy a page,
-> > +		 * then we have to keep trying to get all of the
-> > +		 * VMCS12 pages until we succeed.
-> > +		 */
-> > +		if (unlikely(!kvm_x86_ops.nested_ops->get_nested_state_pages(vcpu))) {
-> > +			kvm_make_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
-> > +			return 0;
-> > +		}
-> > +	}
-> > +
-> >  	if (!kvm_arch_vcpu_runnable(vcpu)) {
-> >  		/*
-> >  		 * Switch to the software timer before halt-polling/blocking as
-> 
-> 
-> If I understand correctly, you are saying that if apic backing page is migrated in post copy
-> then 'get_nested_state_pages' will return false and thus fail?
+> 'buf' argument to be of type 'char*'. This is a poor choice of type given
 
-What I mean is that when the vCPU was halted and then migrated in this
-case, KVM did not call get_nested_state_pages() before getting into
-kvm_arch_vcpu_runnable(). This function checks the apic backing page and
-fails on that check and triggered the warning.
-> 
-> AFAIK both SVM and VMX versions of 'get_nested_state_pages' assume that this is not the case
-> for many things like MSR bitmaps and such - they always uses non atomic versions
-> of guest memory access like 'kvm_vcpu_read_guest' and 'kvm_vcpu_map' which
-> supposed to block if they attempt to access HVA which is not present, and then
-> userfaultd should take over and wake them up.
+char *
 
-You are right here.
-> 
-> If that still fails, nested VM entry is usually failed, and/or the whole VM
-> is crashed with 'KVM_EXIT_INTERNAL_ERROR'.
-> 
-> Anything I missed? 
-> 
-> Best regards,
-> 	Maxim Levitsky
-> 
+> that most callers actually pass a 'u8*' and that the function itself ends
+
+most of the callers
+
+u8 *
+
+> up just storing the variable to a 'u8*'-typed member of 'struct i2c_msg'
+
+u8 *
+
+> anyway.
+>
+> Changing the type of the 'buf' argument to 'u8*' vastly reduces the number
+
+u8 *
+
+> of (admittedly usually-silent) Wpointer-sign warnings that are generated
+
+-Wpointer-sign or replace with simple English words.
+
+> as the types get needlessly juggled back and forth.
+>
+> At the same time, update the max1363 driver to match the new interface so
+> we don't introduce a new Wincompatible-function-pointer-types warning.
+
+-Wincompatible-function-pointer-types
+
+...
+
+> Changes in v2:
+>   - Added modifications to the max1363 driver required to avoid warnings
+
+Have you really checked _all_ callers of APIs that you have changed here?
+
+For example, drivers/media/usb/em28xx/em28xx-input.c still uses
+unsigned char for i2c_master_recv().
+
+I believe you need to create a coccinelle script and run it over the
+kernel source tree and then create a patch out of it.
+
+-- 
+With Best Regards,
+Andy Shevchenko
