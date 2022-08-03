@@ -2,113 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78FC8C19F29
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:01:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 766E3C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:01:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236275AbiHCQB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 12:01:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34418 "EHLO
+        id S238316AbiHCQAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 12:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238154AbiHCQBU (ORCPT
+        with ESMTP id S237785AbiHCQAd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 12:01:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC18B48C97;
-        Wed,  3 Aug 2022 09:01:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78064B82306;
-        Wed,  3 Aug 2022 16:01:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08EB1C433D7;
-        Wed,  3 Aug 2022 16:01:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659542470;
-        bh=ag/lSTQWRd8gqBoVPmhF9Le1IGQ4IHOAtatLaz5Oc50=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=B5xyF8osvAl4j2QkDFLrHszV+msLoA2Y7AIEdlCUxic278wSuJnZ6TsijTh3Tjkg2
-         wY4RyDxIqyTqFrfrXXSJmoNQPwWiTGrLW97FB/PaDHFHhhIi+p0/sApQBy+8F+NKCc
-         XbWOQtcVGfw7xmOYZ9TNl8eCbuJLq6aOHiq0LmKuXVpiVVI8SK3vXmON+kxgZVnRDY
-         TKf+FZSTvUf4TMXMn1Aa17Aeakz3Nb7Ri9piwSmaiO36Pdp/u+8wazZWXyMRV9Vono
-         NeU8cNRYBt9emO+NtYyKlvLCuCchGmgKEkf+58AhXU6W37nlDO+Myp82lvPEwDDBjX
-         eVBiXkGRfMUhA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 593C240736; Wed,  3 Aug 2022 13:01:07 -0300 (-03)
-Date:   Wed, 3 Aug 2022 13:01:07 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Stephane Eranian <eranian@google.com>,
-        =?utf-8?B?6LCt5qKT54WK?= <tanzixuan.me@gmail.com>,
-        Zixuan Tan <tanzixuangg@gmail.com>, terrelln@fb.com,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] perf build: Suppress openssl v3 deprecation warnings in
- libcrypto feature test
-Message-ID: <Yuqbw8rTWLL+njpc@kernel.org>
-References: <20220625153439.513559-1-tanzixuan.me@gmail.com>
- <YrhxE4s0hLvbbibp@krava>
- <CABwm_eT_LE6VbLMgT31yqW=tc_obLP=6E0jnMqVn1sMdWrVVNw@mail.gmail.com>
- <Yrqcpr7ICzpsoGrc@krava>
- <YufUAiLqKiuwdvcP@krava>
- <YuloQYU72pe4p3eK@kernel.org>
- <YuokoBdtJ2Jp1R25@krava>
+        Wed, 3 Aug 2022 12:00:33 -0400
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A47513D46
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:00:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.es; i=@amazon.es; q=dns/txt; s=amazon201209;
+  t=1659542432; x=1691078432;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=YnukQX1NaPPxnCt9j6BcQMbDXjmoLHezBB1bg8OWWI0=;
+  b=nfLEXhldioOU8/en2DUsJuILl5q6JjQTkMCNy1qmzeBd8x6xEdoAINOc
+   1/9XLk7ah2j4QWdRk9D5ER82duVSO+XDBO4LLfY2Vk1VD6L2WOFjXpWu0
+   0+KwAWsft6Rr90LwWaHyg50hwhAccHWoVFsetkYmIwGjVkDfFFp9kFXnP
+   0=;
+X-IronPort-AV: E=Sophos;i="5.93,214,1654560000"; 
+   d="scan'208";a="115239824"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-1box-2b-3386f33d.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 15:57:19 +0000
+Received: from EX13D37EUA003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-1box-2b-3386f33d.us-west-2.amazon.com (Postfix) with ESMTPS id 141F4A2723;
+        Wed,  3 Aug 2022 15:57:19 +0000 (UTC)
+Received: from [192.168.18.61] (10.43.162.227) by EX13D37EUA003.ant.amazon.com
+ (10.43.165.7) with Microsoft SMTP Server (TLS) id 15.0.1497.36; Wed, 3 Aug
+ 2022 15:57:14 +0000
+Message-ID: <5d199960-bad7-e2ea-d3fb-d9b92eefbcf8@amazon.es>
+Date:   Wed, 3 Aug 2022 17:57:09 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YuokoBdtJ2Jp1R25@krava>
-X-Url:  http://acmel.wordpress.com
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.1.0
+Subject: Re: [PATCH 0/2] virt: vmgenid: add generation counter
+Content-Language: en-US
+To:     <linux-kernel@vger.kernel.org>
+CC:     <tytso@mit.edu>, <Jason@zx2c4.com>, <dwmw@amazon.co.uk>,
+        <graf@amazon.de>, <xmarcalx@amazon.co.uk>,
+        <gregkh@linuxfoundation.org>, <mst@redhat.com>, <ani@anisinha.ca>,
+        <imammedo@redhat.com>
+References: <20220803152127.48281-1-bchalios@amazon.es>
+From:   "Chalios, Babis" <bchalios@amazon.es>
+In-Reply-To: <20220803152127.48281-1-bchalios@amazon.es>
+X-Originating-IP: [10.43.162.227]
+X-ClientProxiedBy: EX13d09UWA004.ant.amazon.com (10.43.160.158) To
+ EX13D37EUA003.ant.amazon.com (10.43.165.7)
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Aug 03, 2022 at 09:32:48AM +0200, Jiri Olsa escreveu:
-> On Tue, Aug 02, 2022 at 03:09:05PM -0300, Arnaldo Carvalho de Melo wrote:
-> > Em Mon, Aug 01, 2022 at 03:24:18PM +0200, Jiri Olsa escreveu:
-> > > On Tue, Jun 28, 2022 at 08:16:06AM +0200, Jiri Olsa wrote:
-> > > > On Mon, Jun 27, 2022 at 11:08:34AM +0800, 谭梓煊 wrote:
-> > > > > #ifdef HAVE_LIBCRYPTO                <-- but check this, it's always false
+KENvcnJlY3RseSkgQ0MnaW5nIG1vcmUgcGVvcGxlIGluIHRoZSBkaXNjdXNzaW9uLiBBcG9sb2dp
+ZXMgZm9yIHRoaXMuCgpPbiAzLzgvMjIgMTc6MjEsIGJjaGFsaW9zQGFtYXpvbi5lcyB3cm90ZToK
+PiBGcm9tOiBCYWJpcyBDaGFsaW9zIDxiY2hhbGlvc0BhbWF6b24uZXM+Cj4KPiBMaW51eCByZWNl
+bnRseSBhZGRlZCBzdXBwb3J0IGZvciB0aGUgVk0gR2VuZXJhdGlvbiBJRCBtZWNoYW5pc20gZnJv
+bQo+IE1pY3Jvc29mdC4gVGhlIHdheSB0aGlzIHdvcmtzIGN1cnJlbnRseSBpcyB1c2luZyB0aGUg
+MTI4LWJpdCBibG9iCj4gcHJvdmlkZWQgYnkgdGhlIHZtZ2VuaWQgZGV2aWNlIHRvIHJlLXNlZWQg
+dGhlIFJORy4gV2hpbGUgdGhpcyB3b3JrcyBpdAo+IGhhcyB0d28gbWFpbiBpc3N1ZXMsIChhKSBp
+dCBpcyBpbmhlcmVudGx5IHJhY3kgZHVlIHRvIHRoZSBmYWN0IHRoYXQgaXQKPiByZWxpZXMgb24g
+YSBBQ1BJIG5vdGlmaWNhdGlvbiBiZWluZyBkZWxpdmVyZWQgYW5kIGhhbmRsZWQgYW5kIChiKSB0
+aGUgSUQKPiBpcyB1bnN1aXRhYmxlIGZvciBleHBvc2luZyB0byB1c2VyLXNwYWNlLgo+Cj4gVGhp
+cyBwYXRjaC1zZXQgZXh0ZW5kcyB0aGUgdm1nZW5pZCBkZXZpY2UgdG8gaW50cm9kdWNlIGEgZ2Vu
+ZXJhdGlvbgo+IGNvdW50ZXIsIGEgMzItYml0IGNvdW50ZXIgd2hpY2ggaXMgZGlmZmVyZW50IGV2
+ZXJ5IHRpbWUgdGhlIHVuaXF1ZSBJRAo+IGNoYW5nZXMuIFRoZSBhZGRpdGlvbiB0byB0aGUgb3Jp
+Z2luYWwgaW1wbGVtZW50YXRpb24gaW4gUUVNVSBjYW4gYmUKPiBmb3VuZCBoZXJlOgo+IGh0dHBz
+Oi8vbGlzdHMubm9uZ251Lm9yZy9hcmNoaXZlL2h0bWwvcWVtdS1kZXZlbC8yMDIyLTA4L21zZzAw
+NTI0Lmh0bWwuCj4KPiBUaGUgZmlyc3QgcGF0Y2ggcmUtd29ya3Mgc2xpZ2h0bHkgdGhlIGN1cnJl
+bnQgdm1nZW5pZCBkcml2ZXIgdG8gYWRkIGEKPiBmdW5jdGlvbiB0aGF0IHBhcnNlcyBhbiBvYmpl
+Y3QgZnJvbSB0aGUgdm1nZW5pZCBkZXZpY2UgYW5kIHJldHVybnMgdGhlCj4gcGh5c2ljYWwgYWRk
+cmVzcyBvZiB0aGUgdm1nZW5pZCBkYXRhLiBUaGUgc2Vjb25kIHBhdGNoIHVzZXMgdGhhdAo+IGZ1
+bmN0aW9uIHRvIHBhcnNlIGFkZGl0aW9uYWxseSB0aGUgYWRkcmVzcyBvZiB0aGUgZ2VuZXJhdGlv
+biBjb3VudGVyCj4gZnJvbSB0aGUgdm1nZW5pZCBuYW1lc3BhY2UuIFRoZSBjb3VudGVyIGlzIHRo
+ZW4gZXhwb3NlZCB0byB0aGUKPiB1c2VyLXNwYWNlIHRocm91Z2ggYSBtaXNjLWRldmljZSB3aGlj
+aCBwcm92aWRlcyBgcmVhZGAgYW5kIGBtbWFwYAo+IGludGVyZmFjZXMuCj4KPiBCYWJpcyBDaGFs
+aW9zICgyKToKPiAgICB2aXJ0OiB2bWdlbmlkOiBhZGQgaGVscGVyIGZ1bmN0aW9uIHRvIHBhcnNl
+IEFERFIKPiAgICB2aXJ0OiB2bWdlbmlkOiBhZGQgc3VwcG9ydCBmb3IgZ2VuZXJhdGlvbiBjb3Vu
+dGVyCj4KPiAgIERvY3VtZW50YXRpb24vdmlydC92bWdlbmlkLnJzdCB8IDEyMCArKysrKysrKysr
+KysrKysrKysrKysrKysrKwo+ICAgZHJpdmVycy92aXJ0L3ZtZ2VuaWQuYyAgICAgICAgIHwgMTUx
+ICsrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tLQo+ICAgMiBmaWxlcyBjaGFuZ2VkLCAy
+NTEgaW5zZXJ0aW9ucygrKSwgMjAgZGVsZXRpb25zKC0pCj4gICBjcmVhdGUgbW9kZSAxMDA2NDQg
+RG9jdW1lbnRhdGlvbi92aXJ0L3ZtZ2VuaWQucnN0Cj4KCkFtYXpvbiBTcGFpbiBTZXJ2aWNlcyBz
+b2NpZWRhZCBsaW1pdGFkYSB1bmlwZXJzb25hbCwgQ2FsbGUgUmFtaXJleiBkZSBQcmFkbyA1LCAy
+ODA0NSBNYWRyaWQuIFJlZ2lzdHJvIE1lcmNhbnRpbCBkZSBNYWRyaWQgLiBUb21vIDIyNDU4IC4g
+Rm9saW8gMTAyIC4gSG9qYSBNLTQwMTIzNCAuIENJRiBCODQ1NzA5MzYK
 
-> > > > nice :)
-
-> > > > > #define BUILD_ID_MD5
-> > > > > #undef BUILD_ID_SHA /* does not seem to work well when linked with Java */
-> > > > > #undef BUILD_ID_URANDOM /* different uuid for each run */
-
-> > > > > #ifdef BUILD_ID_SHA
-> > > > > #include <openssl/sha.h>
-> > > > > #endif
-
-> > > > > #ifdef BUILD_ID_MD5
-> > > > > #include <openssl/md5.h>
-> > > > > #endif
-> > > > > #endif                               <-- this block will be skipped
-> > > > > ```
-
-> > > > > Maybe we should fix this, to really make use of libcrypto if it is available?
-
-> > > > yea, I think that was the original idea, let's keep the variable with
-> > > > SUPPORT suffix and use the -Wdeprecated-declarations for genelf.c
-> > > > 
-> > > > full fix would be to detect the new API and use it when it's available but..
-> > > > given that the check was false at least since 2016, perhaps we could remove
-> > > > that code? ;-) Stephane?
-> > > 
-> > > ping
-> > 
-> > So, we should start with 谭梓煊 patch, then fix that ifdef and go on
-> > from there?
-> 
-> yes, I thought we could remove that, but there's no reply from
-> Stephane so let's fix that
-
-Yeah, I did it and it seems to build, so lets ship it :-)
-
-- Arnaldo
