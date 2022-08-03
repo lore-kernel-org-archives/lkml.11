@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 691CAC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D73C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:30:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238071AbiHCP2R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:28:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58976 "EHLO
+        id S238045AbiHCPab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:30:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236287AbiHCP2O (ORCPT
+        with ESMTP id S236050AbiHCPa1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:28:14 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43191658B
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:28:13 -0700 (PDT)
+        Wed, 3 Aug 2022 11:30:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95835FC5
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:30:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 58297CE23C1
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 15:28:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48E75C433C1;
-        Wed,  3 Aug 2022 15:28:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9143AB822D7
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 15:30:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3780C433C1;
+        Wed,  3 Aug 2022 15:30:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659540490;
-        bh=bNPdkVFgo8y7TFHkpyCYZo3hf4s+EbbUgOaCuZ/XapU=;
+        s=korg; t=1659540624;
+        bh=WyiGNSvjUwTkeWatQt6mvRLOsng36yiXnSh2JSzLRrg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CtDkPqDaAkMu0pAXBxk+rZWYGPOAXtyQYMWBUEBXhOKYx7nSmauQkHNwFmKLIs8Rf
-         I3M1x2arvdZcy3jKYFRCIX9CabezLBAjze3B0TtdteuLBiQLXKwVnkXut+OnfpuCo9
-         q0XwiDu1Hm430WYQVyL/ozhASmcAxVbxbSH5/t5Q=
-Date:   Wed, 3 Aug 2022 17:28:08 +0200
+        b=i6Jc7cQbD2cp2V52UmyKRjQOZyQPrH26eeYGyQKiRCcM50RyTyUIdw5lXyOut5mXV
+         Py9O9dinpZU5uHS/nRKPHG3Cit8NnTzIQzuikohG4AoCqyWK+2OSQPmNtLAP9PtrC5
+         IkRvV45yNk27fFbVzY2jsAYraB87SQOZcCPLK/SY=
+Date:   Wed, 3 Aug 2022 17:30:21 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     bchalios@amazon.es
 Cc:     linux-kernel@vger.kernel.org, tytso@mit.edu, Jason@zx2c4.com,
         dwmw@amazon.co.uk, graf@amazon.de, xmarcalx@amazon.co.uk
 Subject: Re: [PATCH 2/2] virt: vmgenid: add support for generation counter
-Message-ID: <YuqUCPN11aSUmjDy@kroah.com>
+Message-ID: <YuqUjUBxq6X738t/@kroah.com>
 References: <20220803152127.48281-1-bchalios@amazon.es>
  <20220803152127.48281-3-bchalios@amazon.es>
 MIME-Version: 1.0
@@ -47,60 +47,63 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Wed, Aug 03, 2022 at 05:21:27PM +0200, bchalios@amazon.es wrote:
-> From: Babis Chalios <bchalios@amazon.es>
-> 
-> VM Generation ID provides a means of reseeding kernel's RNG using a
-> 128-bit UUID when a VM fork occurs, thus avoiding issues running
-> multiple VMs with the exact same RNG state. However, user-space
-> applications, such as user-space PRNGs and applications that maintain
-> world-unique data, need a mechanism to handle VM fork events as well.
-> 
-> To handle the user-space use-case, this: <url> qemu patch extends
-> Microsoft's original vmgenid specification adding an extra page which
-> holds a single 32-bit generation counter, which increases every time a
-> VM gets restored from a snapshot.
-> 
-> This patch exposes the generation counter through a character device
-> (`/dev/vmgenid`) that provides a `read` and `mmap` interface, for
-> user-space applications to consume. Userspace applications should read
-> this value before starting a transaction involving cached random bits
-> and ensure that it has not changed while committing the transaction.
-> 
-> It can be used from qemu using the `-device vmgenid,guid=auto,genctr=42`
-> parameter to start a VM with a generation counter with value 42.
-> Reading 4 bytes from `/dev/vmgenid` will return the value 42. Next, use
-> `savevm my_snapshot` in the monitor to snapshot the VM. Now, start
-> another VM using `-device vmgenid,guid=auto,genctr=43 -loadvm
-> my_snapshot`. Reading now from `/dev/vmgenid` will return 43.
-> 
-> Signed-off-by: Babis Chalios <bchalios@amazon.es>
-> ---
->  Documentation/virt/vmgenid.rst | 120 +++++++++++++++++++++++++++++++++
->  drivers/virt/vmgenid.c         | 103 +++++++++++++++++++++++++++-
->  2 files changed, 221 insertions(+), 2 deletions(-)
->  create mode 100644 Documentation/virt/vmgenid.rst
-> 
-> diff --git a/Documentation/virt/vmgenid.rst b/Documentation/virt/vmgenid.rst
-> new file mode 100644
-> index 000000000..61c29e4a7
-> --- /dev/null
-> +++ b/Documentation/virt/vmgenid.rst
-> @@ -0,0 +1,120 @@
-> +.. SPDX-License-Identifier: GPL-2.0
+> +static const struct file_operations fops = {
+> +	.owner = THIS_MODULE,
+> +	.open = vmgenid_open,
+> +	.read = vmgenid_read,
+> +	.mmap = vmgenid_mmap,
+> +	.llseek = noop_llseek,
+
+Where is this new user/kernel api being documented?
+
+See, put it in the code please, no one knows to look in a random file in
+Documentation/ 
+
+
+> +};
 > +
-> +=======
-> +VMGENID
-> +=======
+> +static struct miscdevice vmgenid_misc = {
+> +	.minor = MISC_DYNAMIC_MINOR,
+> +	.name = "vmgenid",
+> +	.fops = &fops,
+>  };
+>  
+>  static int parse_vmgenid_address(struct acpi_device *device, acpi_string object_name,
+> @@ -57,7 +124,7 @@ static int vmgenid_add(struct acpi_device *device)
+>  	phys_addr_t phys_addr;
+>  	int ret;
+>  
+> -	state = devm_kmalloc(&device->dev, sizeof(*state), GFP_KERNEL);
+> +	state = devm_kzalloc(&device->dev, sizeof(*state), GFP_KERNEL);
+>  	if (!state)
+>  		return -ENOMEM;
+>  
+> @@ -74,6 +141,27 @@ static int vmgenid_add(struct acpi_device *device)
+>  
+>  	device->driver_data = state;
+>  
+> +	/* Backwards compatibility. If CTRA is not there we just don't expose
+> +	 * the char device
+> +	 */
+> +	ret = parse_vmgenid_address(device, "CTRA", &state->gen_cntr_addr);
+> +	if (ret)
+> +		return 0;
+> +
+> +	state->next_counter = devm_memremap(&device->dev, state->gen_cntr_addr,
+> +			sizeof(u32), MEMREMAP_WB);
+> +	if (IS_ERR(state->next_counter))
+> +		return 0;
+> +
+> +	memcpy(&state->misc, &vmgenid_misc, sizeof(state->misc));
+> +	ret = misc_register(&state->misc);
+> +	if (ret) {
+> +		devm_memunmap(&device->dev, state->next_counter);
+> +		return 0;
 
-<snip>
+Why are you not returning an error?  Why is this ok?
 
-This file is now just floating in the directory, not tied to anything,
-so auto-generation of the documentation will not pick it up or link to
-it, right?
-
-So, why does this have to be a separate file at all?  Why not put this
-in the .c file and pull it straight from there so that it keeps in sync
-with the code easier?
+And why call devm_memunmap() directly?  That kind of defeats the purpose
+of using devm_memremap(), right?
 
 thanks,
 
