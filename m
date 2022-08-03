@@ -2,144 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E6C1C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7583C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237904AbiHCJwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 05:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59438 "EHLO
+        id S237754AbiHCJxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 05:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237682AbiHCJwW (ORCPT
+        with ESMTP id S237705AbiHCJwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 05:52:22 -0400
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50069.outbound.protection.outlook.com [40.107.5.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F15905A2F7;
-        Wed,  3 Aug 2022 02:51:53 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PqYl+d7RL29o6d0IGqtV28ExVqJmH4Y0tiVTiTKNl9fvmsKrFZ498VYJ10d2AxABU27Q7cmXAffJoH4OtdRcGG3ZOmWO5rPpwaPhrXQm6D/nocJWm4LYEX7qSXUHjGzazzAzWglbRu4w3i3HrdM49nv9cht3oQbFiUL8LqUoajbpZO0422pdp2ZJu2upHTlkVwYR2Yll309Pezye41TVCJsvP4IPg6UbdHzzIzjIuW7JCS037tEq8ptjcMRcyusf7+2BFlCtosZvWBdG2ml8E2t1IoI1a4cf1RIvwFkizSsQLkMNxdtNiRvC3VcsSHZl3tZncRdbtot+XMZl7hlBRg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9a/sx7f3vTNtUDw7N6gMGrSh4I3BAb3BV33W4m8HhmA=;
- b=MmWWmzV4hifEM0bRuggkmpAt5XQA+9m48NEc4OrIrYbANU9o4GCExvCejp1n5vif0T5XoIHAQ8moKQH1pyrw91iYcUvK6ZZ9w1wQOLhuCrEpojpMVyB7iTr+P8xdkeYB2WQ0kJ81vxkqw0B6g64oOZ/KYA9H0eu4a2eF15YXv+3bnhVSqi+5EDfBcimGK6mVP6rX61VqMgcAWiptUWFOBcWuJoFOlFEb4nzkkcWRdFHIAFOn3cK4mV7Cm6B3OK+0mtvj3mmL406oeHHlkzZjJheuxLDV9LQkbAGRUxZLFBwoFgrIR/sYxUikLOQAmaMJSMO80ybqEj3/vGdmbNJcFQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9a/sx7f3vTNtUDw7N6gMGrSh4I3BAb3BV33W4m8HhmA=;
- b=o+5icGM4p6PrrPu2m57OPGw29xKyQXZZhBcz4701Ph3tu+Pff6kEEATOZhtnRFav9Dc45BnSdrU+zz2SJMKdpbG8Ms4hl9zOt0LAgBiFZ5dOC8k6Cmr1nT9si9GIGlu2YAm9kNTh91HQ40bpGV7vQp2kIYQ0GjAMtBC/hQWEY4o=
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by AM0PR04MB6945.eurprd04.prod.outlook.com (2603:10a6:208:17f::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Wed, 3 Aug
- 2022 09:51:51 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::3c6c:b7e6:a93d:d442]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::3c6c:b7e6:a93d:d442%4]) with mapi id 15.20.5504.014; Wed, 3 Aug 2022
- 09:51:51 +0000
-From:   Peng Fan <peng.fan@nxp.com>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: [PATCH 0/2] arm64: dts: imx93: clk update
-Thread-Topic: [PATCH 0/2] arm64: dts: imx93: clk update
-Thread-Index: AQHYpx5WBQqWIZwTcECbPYrfzyS4L62c7w4A
-Date:   Wed, 3 Aug 2022 09:51:51 +0000
-Message-ID: <DU0PR04MB9417AAEE24D03B7ECA412342889C9@DU0PR04MB9417.eurprd04.prod.outlook.com>
-References: <20220803095103.3883035-1-peng.fan@oss.nxp.com>
-In-Reply-To: <20220803095103.3883035-1-peng.fan@oss.nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6a1babb3-b14b-4748-9bd8-08da7535ca1e
-x-ms-traffictypediagnostic: AM0PR04MB6945:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: tvgsoIMUpHOK2eCJIgAKs/5wU36123QWgV5IrEHexOR7917BKCuuv7mPAm6JiybyWBVmo8HZN74vLh1bOFczcx7qnDykoKyVQuaa4lDybBMWIc55MyQeKRr+TlzN7BOA/2zcxKayNvTQqFRaNM8lGEO1Zr/niXEwXAhsvGDwLcuTWbYMIR/x6Xa/5Z97LgtVofJMsLJfMGPbiiiQ8kdwKd9ZnCqPcYZaSoSU1TbzSmM1bElZ3QLa9GY0QvWLemowZNGRqKWv3dH82RilRDSfSbbpBWx/5JcsR2kJLcwg0uY2zeLkkWKdFBznumDWkUbG/Tha/9kakkARPsktCHD/C3DNqFk7bVK8daIFUkjP2EhUB36QnyjKB5mp8jm4zZod1ohONnZyB4vx5isO448czSL/S0Eq5BhS2cabOcVzaAMSQ1gg1de/p7CAp9p3jXPwTDXqQKt2wx3WUN1//3LKcwrLdp6aXEL4WjRpIeULQ+go2hyK4X9BXitVI+tWcNpwhXpSCObzYCtc9duaixGcRIXk8rXk8Dx7BUx7mJwwp/mrMTrS9tqqHx6yrvV2zIVzFEjGzmqPuZ/cLKA5QunRFLHHzuEsGkHkGfC7w3LcULCJCRKrk/rLnyheFXVv2ewMFoPGJ3vu77TA/dfLrWsMfAe7ybZjyR9xDWucy5xLhAKl1YIFGgVhBIs5VLTMZzui1rMLOeueK15syzKGKODE3s+SvJaNaXuAmPf3m2KFo7Qqfz4wDQTdYZW1wROCdh3/YCq8UH+GReHYUTHoMLEJJ0nQQW86knV68X8FX0tS4epXEpwTsovSuSLm7Sdnwiaf
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(366004)(376002)(346002)(39860400002)(38100700002)(122000001)(6506007)(7696005)(33656002)(66446008)(76116006)(44832011)(66556008)(4326008)(64756008)(38070700005)(66946007)(8676002)(66476007)(9686003)(26005)(4744005)(83380400001)(41300700001)(86362001)(54906003)(52536014)(2906002)(478600001)(110136005)(15650500001)(8936002)(186003)(5660300002)(55016003)(316002)(71200400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Re6Y1j4TkQEIR4ufwAwnXadv00LK5sVtLkAu038uKt7TKnmrr5xzFyMe60xI?=
- =?us-ascii?Q?AUhA72z5JeYT6JT9Y9oIEreySnzvf/0kdi4ZCKHZkR4vn4sXoYkEZ38BP1rb?=
- =?us-ascii?Q?VgqKDJToyNMg86UPUySk7hZ74RMPUG2F7D2FaFRQVUBd+y4bPrZbAauxwhnQ?=
- =?us-ascii?Q?oX7NcMB1P0FGfbYiG5p4JRfKqgklnYZbNmH1XSOnuYrBpUTGkbs+3G7urR9G?=
- =?us-ascii?Q?XH9r+5xrpdtsV9sx16XvFOdEMkDw4LyuWC93hv+eMTRw+SGaPqHHnVLxn+Tb?=
- =?us-ascii?Q?gHd4cVXlCONrkf14XmEnoCVIBCYok2isfRU05/LQN78wKc8LqovtFLN/ZE/Q?=
- =?us-ascii?Q?ZpmKaWzrmVSCrYVkLfw+fq/HWUCox3uDUjKEK/P3v+4tFGbAQD48TdErEbys?=
- =?us-ascii?Q?mJtGyKnMijP4g8Z72tpHQ4j6u+z53pcp4JnO1T8dlzugldDP7UYH8Gf3bwOX?=
- =?us-ascii?Q?4yFI+vMFIezEXBCdtfSQme6G8w3A5zJYWuksOnGBBkBVFl91zUcHlHws2tmE?=
- =?us-ascii?Q?6aHTes64Vl1vDY9k82kAzyd7C8JHIub+dTEHGUSvaa/FLt47iSvcWA027WLm?=
- =?us-ascii?Q?zVq4g9VS8wwU1qOC9bNZ7K8O8C+0WGU4HNgQUipI9rqn3PkXb7zZO4cwCxqX?=
- =?us-ascii?Q?DF8zVFtsQWlLDm94qlpo9Xw7FosN11LI1n+KCwXtajMMYxRQ8PEqeCMaSjyN?=
- =?us-ascii?Q?JwnIRahTi9LBK9u4AN/8pafeX+XC+hvaHtEBFrWRxgDXd2nBfgrnxKiZdeu7?=
- =?us-ascii?Q?SwFzth5jvaqDPZEuLTdqKSepffdFUQWBEbo19UT80PM3yoadzZ5D58vLAIjt?=
- =?us-ascii?Q?k4YcVZwpY+22wBwnjAozk0wDK+qh21524Ali0u+QPuIrHi8oRanyTlln2hlx?=
- =?us-ascii?Q?TOo+wojs4ui3Chlhz6OfQgPGkSlnrk3YdbA4HbFXc5bp0pAxS82seb7a5fVG?=
- =?us-ascii?Q?MNh51nQrBJY66BCl9GR/0sfcydhB5CFkP2g8jYFt58S6HUL1b7/qHZBc0udv?=
- =?us-ascii?Q?Lwijxwza7Hh5LJUSZf68Z8tTLJDc5jCwTdJXtNquveEwiRQyk50TISbpGl9f?=
- =?us-ascii?Q?oZljVJWexJrcLCJcbmxxU5wDEwMTbfrNxzPab/cZh4p6F41aLok3wSNVZv2y?=
- =?us-ascii?Q?vCcE5YUuSBUK4mXxQ0xUgF/Ix4PGzKxJ2oAUM7umWInmETbSc67YObbzYoL9?=
- =?us-ascii?Q?ONFyBhwulJrRhT+PodF7YyFA0i81Wxvusz3C6wkFahoyaDWQ3JRIEkEElNzD?=
- =?us-ascii?Q?FVV10PND1ZPjrwKOMaOtn5fIeUihjdrufb4GV9F3GrwQY2JHK2DwmSu6ZYMJ?=
- =?us-ascii?Q?7U31fSkDp55tqDaH1gkLNnpYceoql55yjmMA8erk+/X9HQ0ePcNBGHemK1xe?=
- =?us-ascii?Q?ys3z6Yku55gMjd3HqnvlfCffpjRPEyAL4EbytBrEDL9DLx/3zfNav3Gl2onU?=
- =?us-ascii?Q?KE0osA7Ic0ndPq/eH1C+0mfEfGpExFuyla3gSfvQdB2xOTaROycCH8P6Ftf8?=
- =?us-ascii?Q?hSDjsTfdqiXm7Z5xqMLFileQuTg527nU+E+GgOqF5ZuFJgPfyXVPoHa7pHha?=
- =?us-ascii?Q?Y2tstxtiFAoVQBZSIiQ=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 3 Aug 2022 05:52:47 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D49A45B074
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 02:52:12 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 5DB4734629;
+        Wed,  3 Aug 2022 09:52:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1659520331; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/0gkymsQMT+3p07Wmp2Go5vhAryU8sKMLilIM8iKdig=;
+        b=hZk0vWqajdiWp10AiAtouLUKdzyRExhdBJ5uzM3Z6JK3zC7XwPJrYU+nKwbDlnv4NYQ5Yd
+        H/tcNEzoQYHybwx2fR+1INdT6BefIPyt99Pp2y+ZM5VZBpOWdt3FClA9KzIlAKUmg1hYqo
+        RdG6NH3o2AAHXYabtkqni8CnuCiG3dg=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3DDE813AD8;
+        Wed,  3 Aug 2022 09:52:11 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id zDH8C0tF6mIxFAAAMHmgww
+        (envelope-from <mhocko@suse.com>); Wed, 03 Aug 2022 09:52:11 +0000
+Date:   Wed, 3 Aug 2022 11:52:10 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Baoquan He <bhe@redhat.com>,
+        John Donnelly <john.p.donnelly@oracle.com>,
+        David Hildenbrand <david@redhat.com>, linux-mm@kvack.org,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] dma/pool: do not complain if DMA pool is not allocated
+Message-ID: <YupFSpXOrcfXJNya@dhcp22.suse.cz>
+References: <20220325122559.14251-1-mhocko@kernel.org>
+ <Yj28gjonUa9+0yae@dhcp22.suse.cz>
+ <20220325164856.GA16800@lst.de>
+ <Yj3zyLs4f+ba6UqF@dhcp22.suse.cz>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a1babb3-b14b-4748-9bd8-08da7535ca1e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Aug 2022 09:51:51.0441
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: D+7z+ifSUFId1YQZq+e8+nE+hZwJgv7LDylV0InqJMap/bkwsxHzXw3Qm7VK1lnyUpTSt5wsEHlwzVmIWe2xwA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6945
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yj3zyLs4f+ba6UqF@dhcp22.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Subject: [PATCH 0/2] arm64: dts: imx93: clk update
+On Fri 25-03-22 17:54:33, Michal Hocko wrote:
+> On Fri 25-03-22 17:48:56, Christoph Hellwig wrote:
+> > On Fri, Mar 25, 2022 at 01:58:42PM +0100, Michal Hocko wrote:
+> > > Dang, I have just realized that I have misread the boot log and it has
+> > > turned out that a674e48c5443 is covering my situation because the
+> > > allocation failure message says:
+> > >
+> > > Node 0 DMA free:0kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:636kB managed:0kB mlocked:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+> > 
+> > As in your report is from a kernel that does not have a674e48c5443
+> > yet?
+> 
+> yes. I just mixed up the early boot messages and thought that DMA zone
+> ended up with a single page. That message was saying something else
+> though.
 
-Please ignore this version, push button too early.
+OK, so I have another machine spewing this warning. Still on an older
+kernel but I do not think the current upstream would be any different in
+that regards. This time the DMA zone is populated and consumed from
+large part and the pool size request is just too large for it:
 
-Thanks,
-Peng.
->=20
-> From: Peng Fan <peng.fan@nxp.com>
->=20
-> Correct sdhc clk
-> Add gpio clk
->=20
-> Haibo Chen (1):
->   arm64: dts: imx93: assign the correct ipg/ahb clock for usdhc
->=20
-> Peng Fan (1):
->   arm64: dts: imx93: add gpio clk
->=20
->  arch/arm64/boot/dts/freescale/imx93.dtsi | 27 ++++++++++++++++++------
->  1 file changed, 21 insertions(+), 6 deletions(-)
->=20
-> --
-> 2.25.1
+[   14.017417][    T1] swapper/0: page allocation failure: order:10, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0-7
+[   14.017429][    T1] CPU: 4 PID: 1 Comm: swapper/0 Not tainted 5.14.21-150400.22-default #1 SLE15-SP4 0b6a6578ade2de5c4a0b916095dff44f76ef1704
+[   14.017434][    T1] Hardware name: XXXX
+[   14.017437][    T1] Call Trace:
+[   14.017444][    T1]  <TASK>
+[   14.017449][    T1]  dump_stack_lvl+0x45/0x57
+[   14.017469][    T1]  warn_alloc+0xfe/0x160
+[   14.017490][    T1]  __alloc_pages_slowpath.constprop.112+0xc27/0xc60
+[   14.017497][    T1]  ? rdinit_setup+0x2b/0x2b
+[   14.017509][    T1]  ? rdinit_setup+0x2b/0x2b
+[   14.017512][    T1]  __alloc_pages+0x2d5/0x320
+[   14.017517][    T1]  alloc_page_interleave+0xf/0x70
+[   14.017531][    T1]  atomic_pool_expand+0x4a/0x200
+[   14.017541][    T1]  ? rdinit_setup+0x2b/0x2b
+[   14.017544][    T1]  __dma_atomic_pool_init+0x44/0x90
+[   14.017556][    T1]  dma_atomic_pool_init+0xad/0x13f
+[   14.017560][    T1]  ? __dma_atomic_pool_init+0x90/0x90
+[   14.017562][    T1]  do_one_initcall+0x41/0x200
+[   14.017581][    T1]  kernel_init_freeable+0x236/0x298
+[   14.017589][    T1]  ? rest_init+0xd0/0xd0
+[   14.017596][    T1]  kernel_init+0x16/0x120
+[   14.017599][    T1]  ret_from_fork+0x22/0x30
+[   14.017604][    T1]  </TASK>
+[...]
+[   14.018026][    T1] Node 0 DMA free:160kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:15996kB managed:15360kB mlocked:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+[   14.018035][    T1] lowmem_reserve[]: 0 0 0 0 0
+[   14.018339][    T1] Node 0 DMA: 0*4kB 0*8kB 0*16kB 1*32kB (U) 0*64kB 1*128kB (U) 0*256kB 0*512kB 0*1024kB 0*2048kB 0*4096kB = 160kB
 
+So the DMA zone has only 160kB free while the pool would like to use 4MB
+of it which obviously fails. I haven't tried to check who is consuming
+the DMA zone memory and why but this shouldn't be all that important
+because the pool clearly cannot allocate and there is not much the
+user/admin can do about that. Well, the pool could be explicitly
+requested smaller but is that really what we expect them to do?
+  
+> > > I thought there are only few pages in the managed by the DMA zone. This
+> > > is still theoretically possible so I think __GFP_NOWARN makes sense here
+> > > but it would require to change the patch description.
+> > > 
+> > > Is this really worth it?
+> > 
+> > In general I think for kernels where we need the pool and can't allocate
+> > it, a warning is very useful.  We just shouldn't spew it when there is
+> > no need for the pool to start with.
+> 
+> Well, do we have any way to find that out during early boot?
+
+Thinking about it. We should get a warning when the actual allocation
+from the pool fails no? That would be more useful information than the
+pre-allocation failure when it is not really clear whether anybody is
+ever going to consume it.
+
+What do you think? Should I repost my original patch with the updated
+changelog?
+-- 
+Michal Hocko
+SUSE Labs
