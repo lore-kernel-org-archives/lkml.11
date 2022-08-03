@@ -2,247 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5889C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 11:40:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D991C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 11:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237607AbiHCLkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 07:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58406 "EHLO
+        id S236149AbiHCLoQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 07:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236088AbiHCLkG (ORCPT
+        with ESMTP id S234710AbiHCLoN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 07:40:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 541A31054C
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 04:40:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659526804;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JwfvYO99TCB9FiKX3BYcocI/S5+Oq3USCEZauc8Ysww=;
-        b=Y9K08+BU22N8Am63BEFKxuUhvTwgsssPilFl65hI9xdNNnCTkUWWZsOCYleTN3+OZfb7Ng
-        PAB5ZitGAPBnwWZ0TkRYjYjonqTUAuQdixTweULcokrZTJCcuN8M2fpXEP0ifPeRjBXNi2
-        IAeeqGTVjUk8vMHP7z4ExdAAwu7wvNc=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-125-_abjqHj5NZWB3OuLR3Qyag-1; Wed, 03 Aug 2022 07:40:03 -0400
-X-MC-Unique: _abjqHj5NZWB3OuLR3Qyag-1
-Received: by mail-wr1-f71.google.com with SMTP id w22-20020adf8bd6000000b002206311fb96so2261245wra.12
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 04:40:03 -0700 (PDT)
+        Wed, 3 Aug 2022 07:44:13 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE41E8A;
+        Wed,  3 Aug 2022 04:44:12 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id l19so1824127wms.1;
+        Wed, 03 Aug 2022 04:44:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=LUgPmzfFrSU+sgyYZ7FLrRfFna9TgeCoupYf3hfmbVM=;
+        b=I5iSeXD2E2HuW+RNmn6sqrIRZoU+oUnjHcoBMjjcK4Fg829T1o0xuSuO8J8DhWV7ED
+         vEEgRzHzWk8Hf5b0vVxS0E+I/ioiSjXGxTdpFo84jTNaNHHkTLBbMNXwkUbAFukospM1
+         f2ra3pCkANb2SQe17MGW1JGk3eLcjLZh6ORaMEWvR0Sdv+6uztD+KE6v+j2u34NNWqDk
+         WzmS8bf3SUBYUpN/flrHKDDvUrEuXDKgajCogUm/R+jn6rLi5bYgl6TEVHQmLlEI5Le/
+         Iz0cY1QqZlAcGiCkmE6Da3h8OW+kzCLhXHoQ0vZuCoMp/Xq/ZjO5LGpCcadpFevI8Dej
+         KXTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=JwfvYO99TCB9FiKX3BYcocI/S5+Oq3USCEZauc8Ysww=;
-        b=mLr/xSRobVn5rhVXvvPuocVlu/YRU4XIPJ2xSX5kJ9WkxS6TtbdPhWgOLO29AJr8q8
-         P6ur/YCTsgMG7Dmh5ttc4JuFp968W1/BgJWl5S2o+KPkCpijBAP2phwXU9fMyv+76k1u
-         AUKEbo0ac38063Rxmp5Ne7ClpQ6Oz/c1VSE0BqaF1Ou5lA9/jX/U0UWWZNuMyITHaBNr
-         EL00KdV62jCqNzaXJwcnOox4FcGD7f2Eg4+hbjZyfBpCaY8rZ5ITlDqkPlifD2GjDDSQ
-         py1ogKBrmXdaxDSUMzSjUHkqYRngrN/4Apbjbcifc/3fAWcdwGzV37HYjRHnPeGRO8tW
-         3eMQ==
-X-Gm-Message-State: ACgBeo3xOofONrcCT4N98ps5Ps4s1pOVWcZPJVPSHGf+VgOpTPBbZk++
-        eW4CCxvAu91AdXYIgan+2D+a5d/Ij3m0nGfJaBPCBHnt8BojvoIaa4gb6HOAiJDwP4DLYSJcKo2
-        PWpnkGZPJnTFye1MFxy/mzzXY
-X-Received: by 2002:a05:600c:5029:b0:3a3:7308:6a43 with SMTP id n41-20020a05600c502900b003a373086a43mr2482222wmr.99.1659526801885;
-        Wed, 03 Aug 2022 04:40:01 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7Rj/RNdfFfFtzgtWn3I7gaknofBvNO8dT4fRFSg4D4OhE4MQPKh3aT/w+L1QYSSL2Mvr0VaA==
-X-Received: by 2002:a05:600c:5029:b0:3a3:7308:6a43 with SMTP id n41-20020a05600c502900b003a373086a43mr2482207wmr.99.1659526801602;
-        Wed, 03 Aug 2022 04:40:01 -0700 (PDT)
-Received: from redhat.com ([2.54.191.86])
-        by smtp.gmail.com with ESMTPSA id a1-20020adfe5c1000000b0021e491fd250sm11957635wrn.89.2022.08.03.04.39.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 04:40:01 -0700 (PDT)
-Date:   Wed, 3 Aug 2022 07:39:57 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Vladimir Murzin <vladimir.murzin@arm.com>
-Cc:     Laurent Vivier <lvivier@redhat.com>, linux-kernel@vger.kernel.org,
-        amit@kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
-        Matt Mackall <mpm@selenic.com>,
-        virtualization@lists.linux-foundation.org,
-        Dmitriy Vyukov <dvyukov@google.com>, rusty@rustcorp.com.au,
-        akong@redhat.com, Alexander Potapenko <glider@google.com>,
-        linux-crypto@vger.kernel.org,
-        Mauricio De Carvalho <Mauricio.DeCarvalho@arm.com>,
-        Kevin Brodsky <Kevin.Brodsky@arm.com>
-Subject: Re: [PATCH v2 4/4] hwrng: virtio - always add a pending request
-Message-ID: <20220803073243-mutt-send-email-mst@kernel.org>
-References: <20211028101111.128049-1-lvivier@redhat.com>
- <20211028101111.128049-5-lvivier@redhat.com>
- <7e64ce61-89b1-40aa-8295-00ca42b9a959@arm.com>
- <2c1198c4-77aa-5cb8-6bb4-b974850651be@arm.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=LUgPmzfFrSU+sgyYZ7FLrRfFna9TgeCoupYf3hfmbVM=;
+        b=C6FLilupqZG6VVWbgjX48ZG9Pld6ROa2CO3peRFQVSBVtyxRmBjjjH4Uc4HZUdyfmj
+         Yi1Oafg+/9uwP0vYB8RZ8KI8Q89jOT92MPWt+1IrRwfjchaA+Qmsle34swkdmvNpbzm8
+         SCEcHrYxzEcw9H+MPkfc4LyNNbrZymqYLsAZs6Wry7gCa+ZSBv/UvB3syIyBT4digNzr
+         9DjVST/nrrWcvIL5T/cgE5DyVAasravWbL+X7Iy1GOxjN/kMASylNMGeTdww3SHbhbvC
+         4ZozLqVXja2JxNjPqiTpfrmxJDxmITKu74sYkmC6VPEPxosgAuwbCB0gVKdyoVvMYZIJ
+         CIzw==
+X-Gm-Message-State: ACgBeo0mRh6PUdiE4+JtEHbaru7ul3w7TamSwi3/xG3Qs/mfus7P4qh0
+        P+S9WfhlnNYTWzH+r9MVAvAt/YczCqMgqw==
+X-Google-Smtp-Source: AA6agR7Vug208ac1x5wt34gy+nfQqrOWgxntapVKh5V13+9AI/VPo4Tyuie4HoKDtGIXcWNmktMXzw==
+X-Received: by 2002:a05:600c:34c9:b0:3a4:f1d7:edbd with SMTP id d9-20020a05600c34c900b003a4f1d7edbdmr2569978wmq.128.1659527050494;
+        Wed, 03 Aug 2022 04:44:10 -0700 (PDT)
+Received: from [192.168.1.145] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id p36-20020a05600c1da400b003a2eacc8179sm2307934wms.27.2022.08.03.04.44.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Aug 2022 04:44:09 -0700 (PDT)
+Message-ID: <cb74e4d0-8170-0837-fa43-d269a8db4d90@gmail.com>
+Date:   Wed, 3 Aug 2022 13:44:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2c1198c4-77aa-5cb8-6bb4-b974850651be@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 1/1] leds: mt6360: Get rid of custom
+ led_init_default_state_get()
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Gene Chen <gene_chen@richtek.com>, linux-leds@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Pavel Machek <pavel@ucw.cz>
+References: <20220802212532.7091-1-andriy.shevchenko@linux.intel.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220802212532.7091-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 03, 2022 at 09:57:35AM +0100, Vladimir Murzin wrote:
-> On 8/2/22 13:49, Vladimir Murzin wrote:
-> > Hi Laurent,
-> > 
-> > On 10/28/21 11:11, Laurent Vivier wrote:
-> >> If we ensure we have already some data available by enqueuing
-> >> again the buffer once data are exhausted, we can return what we
-> >> have without waiting for the device answer.
-> >>
-> >> Signed-off-by: Laurent Vivier <lvivier@redhat.com>
-> >> ---
-> >>  drivers/char/hw_random/virtio-rng.c | 26 ++++++++++++--------------
-> >>  1 file changed, 12 insertions(+), 14 deletions(-)
-> >>
-> >> diff --git a/drivers/char/hw_random/virtio-rng.c b/drivers/char/hw_random/virtio-rng.c
-> >> index 8ba97cf4ca8f..0a7dde135db1 100644
-> >> --- a/drivers/char/hw_random/virtio-rng.c
-> >> +++ b/drivers/char/hw_random/virtio-rng.c
-> >> @@ -20,7 +20,6 @@ struct virtrng_info {
-> >>  	struct virtqueue *vq;
-> >>  	char name[25];
-> >>  	int index;
-> >> -	bool busy;
-> >>  	bool hwrng_register_done;
-> >>  	bool hwrng_removed;
-> >>  	/* data transfer */
-> >> @@ -44,16 +43,18 @@ static void random_recv_done(struct virtqueue *vq)
-> >>  		return;
-> >>  
-> >>  	vi->data_idx = 0;
-> >> -	vi->busy = false;
-> >>  
-> >>  	complete(&vi->have_data);
-> >>  }
-> >>  
-> >> -/* The host will fill any buffer we give it with sweet, sweet randomness. */
-> >> -static void register_buffer(struct virtrng_info *vi)
-> >> +static void request_entropy(struct virtrng_info *vi)
-> >>  {
-> >>  	struct scatterlist sg;
-> >>  
-> >> +	reinit_completion(&vi->have_data);
-> >> +	vi->data_avail = 0;
-> >> +	vi->data_idx = 0;
-> >> +
-> >>  	sg_init_one(&sg, vi->data, sizeof(vi->data));
-> >>  
-> >>  	/* There should always be room for one buffer. */
-> >> @@ -69,6 +70,8 @@ static unsigned int copy_data(struct virtrng_info *vi, void *buf,
-> >>  	memcpy(buf, vi->data + vi->data_idx, size);
-> >>  	vi->data_idx += size;
-> >>  	vi->data_avail -= size;
-> >> +	if (vi->data_avail == 0)
-> >> +		request_entropy(vi);
-> >>  	return size;
-> >>  }
-> >>  
-> >> @@ -98,13 +101,7 @@ static int virtio_read(struct hwrng *rng, void *buf, size_t size, bool wait)
-> >>  	 * so either size is 0 or data_avail is 0
-> >>  	 */
-> >>  	while (size != 0) {
-> >> -		/* data_avail is 0 */
-> >> -		if (!vi->busy) {
-> >> -			/* no pending request, ask for more */
-> >> -			vi->busy = true;
-> >> -			reinit_completion(&vi->have_data);
-> >> -			register_buffer(vi);
-> >> -		}
-> >> +		/* data_avail is 0 but a request is pending */
-> >>  		ret = wait_for_completion_killable(&vi->have_data);
-> >>  		if (ret < 0)
-> >>  			return ret;
-> >> @@ -126,8 +123,7 @@ static void virtio_cleanup(struct hwrng *rng)
-> >>  {
-> >>  	struct virtrng_info *vi = (struct virtrng_info *)rng->priv;
-> >>  
-> >> -	if (vi->busy)
-> >> -		complete(&vi->have_data);
-> >> +	complete(&vi->have_data);
-> >>  }
-> >>  
-> >>  static int probe_common(struct virtio_device *vdev)
-> >> @@ -163,6 +159,9 @@ static int probe_common(struct virtio_device *vdev)
-> >>  		goto err_find;
-> >>  	}
-> >>  
-> >> +	/* we always have a pending entropy request */
-> >> +	request_entropy(vi);
-> >> +
-> >>  	return 0;
-> >>  
-> >>  err_find:
-> >> @@ -181,7 +180,6 @@ static void remove_common(struct virtio_device *vdev)
-> >>  	vi->data_idx = 0;
-> >>  	complete(&vi->have_data);
-> >>  	vdev->config->reset(vdev);
-> >> -	vi->busy = false;
-> >>  	if (vi->hwrng_register_done)
-> >>  		hwrng_unregister(&vi->hwrng);
-> >>  	vdev->config->del_vqs(vdev);
-> > 
-> > We observed that after this commit virtio-rng implementation in FVP doesn't
-> > work
-> > 
-> > INFO: bp.virtio_rng: Selected Random Generator Device: XORSHIFT DEVICE
-> > INFO: bp.virtio_rng: Using seed value: 0x5674bba8
-> > Error: FVP_Base_AEMvA: bp.virtio_rng: <vq0-requestq> Found invalid descriptor index
-> > In file: (unknown):0
-> > In process: FVP_Base_AEMvA.thread_p_12 @ 935500020 ns
-> > Info: FVP_Base_AEMvA: bp.virtio_rng: Could not extract buffer
-> > 
-> > while basic baremetal test works as expected
-> > 
-> > INFO: bp.virtio_rng: Selected Random Generator Device: XORSHIFT DEVICE
-> > INFO: bp.virtio_rng: Using seed value: 0x541c142e
-> > Info: FVP_Base_AEMv8A: bp.virtio_rng: Generated Number: 0x4b098991ceb377e6
-> > Info: FVP_Base_AEMv8A: bp.virtio_rng: Generated Number: 0xbdcbe3f765ba62f7
-> > 
-> > We are trying to get an idea what is missing and where, yet none of us familiar
-> > with the driver :(
-> > 
-> > I'm looping Kevin who originally reported that and Mauricio who is looking form
-> > the FVP side. 
+
+
+On 02/08/2022 23:25, Andy Shevchenko wrote:
+> LED core provides a helper to parse default state from firmware node.
+> Use it instead of custom implementation.
 > 
-> With the following diff FVP works agin
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+
+> ---
+>   drivers/leds/flash/leds-mt6360.c | 38 +++++---------------------------
+>   1 file changed, 6 insertions(+), 32 deletions(-)
 > 
-> diff --git a/drivers/char/hw_random/virtio-rng.c b/drivers/char/hw_random/virtio-rng.c
-> index a6f3a8a2ac..042503ad6c 100644
-> --- a/drivers/char/hw_random/virtio-rng.c
-> +++ b/drivers/char/hw_random/virtio-rng.c
-> @@ -54,6 +54,7 @@ static void request_entropy(struct virtrng_info *vi)
->         reinit_completion(&vi->have_data);
->         vi->data_avail = 0;
->         vi->data_idx = 0;
-> +       smp_mb();
->  
->         sg_init_one(&sg, vi->data, sizeof(vi->data));
->  
-> 
-> What do you reckon?
-> 
-> Cheers
-> Vladimir
-
-Thanks for debugging this!
-
-OK, interesting.
-
-data_idx and data_avail are accessed from virtio_read.
-
-Which as far as I can tell is invoked just with reading_mutex.
-
-
-But, request_entropy is called from probe when device is registered
-this time without locks
-so it can trigger while another thread is calling virtio_read.
-
-Second request_entropy is called from a callback random_recv_done
-also without locks.
-
-So it's great that smp_mb helped here but I suspect in fact we
-need locking. Laurent?
-
--- 
-MST
-
+> diff --git a/drivers/leds/flash/leds-mt6360.c b/drivers/leds/flash/leds-mt6360.c
+> index e1066a52d2d2..1af6c5898343 100644
+> --- a/drivers/leds/flash/leds-mt6360.c
+> +++ b/drivers/leds/flash/leds-mt6360.c
+> @@ -71,10 +71,6 @@ enum {
+>   #define MT6360_STRBTO_STEPUS		32000
+>   #define MT6360_STRBTO_MAXUS		2432000
+>   
+> -#define STATE_OFF			0
+> -#define STATE_KEEP			1
+> -#define STATE_ON			2
+> -
+>   struct mt6360_led {
+>   	union {
+>   		struct led_classdev isnk;
+> @@ -84,7 +80,7 @@ struct mt6360_led {
+>   	struct v4l2_flash *v4l2_flash;
+>   	struct mt6360_priv *priv;
+>   	u32 led_no;
+> -	u32 default_state;
+> +	enum led_default_state default_state;
+>   };
+>   
+>   struct mt6360_priv {
+> @@ -405,10 +401,10 @@ static int mt6360_isnk_init_default_state(struct mt6360_led *led)
+>   		level = LED_OFF;
+>   
+>   	switch (led->default_state) {
+> -	case STATE_ON:
+> +	case LEDS_DEFSTATE_ON:
+>   		led->isnk.brightness = led->isnk.max_brightness;
+>   		break;
+> -	case STATE_KEEP:
+> +	case LEDS_DEFSTATE_KEEP:
+>   		led->isnk.brightness = min(level, led->isnk.max_brightness);
+>   		break;
+>   	default:
+> @@ -443,10 +439,10 @@ static int mt6360_flash_init_default_state(struct mt6360_led *led)
+>   		level = LED_OFF;
+>   
+>   	switch (led->default_state) {
+> -	case STATE_ON:
+> +	case LEDS_DEFSTATE_ON:
+>   		flash->led_cdev.brightness = flash->led_cdev.max_brightness;
+>   		break;
+> -	case STATE_KEEP:
+> +	case LEDS_DEFSTATE_KEEP:
+>   		flash->led_cdev.brightness =
+>   			min(level, flash->led_cdev.max_brightness);
+>   		break;
+> @@ -760,25 +756,6 @@ static int mt6360_init_flash_properties(struct mt6360_led *led,
+>   	return 0;
+>   }
+>   
+> -static int mt6360_init_common_properties(struct mt6360_led *led,
+> -					 struct led_init_data *init_data)
+> -{
+> -	const char *const states[] = { "off", "keep", "on" };
+> -	const char *str;
+> -	int ret;
+> -
+> -	if (!fwnode_property_read_string(init_data->fwnode,
+> -					 "default-state", &str)) {
+> -		ret = match_string(states, ARRAY_SIZE(states), str);
+> -		if (ret < 0)
+> -			ret = STATE_OFF;
+> -
+> -		led->default_state = ret;
+> -	}
+> -
+> -	return 0;
+> -}
+> -
+>   static void mt6360_v4l2_flash_release(struct mt6360_priv *priv)
+>   {
+>   	int i;
+> @@ -852,10 +829,7 @@ static int mt6360_led_probe(struct platform_device *pdev)
+>   
+>   		led->led_no = reg;
+>   		led->priv = priv;
+> -
+> -		ret = mt6360_init_common_properties(led, &init_data);
+> -		if (ret)
+> -			goto out_flash_release;
+> +		led->default_state = led_init_default_state_get(child);
+>   
+>   		if (reg == MT6360_VIRTUAL_MULTICOLOR ||
+>   		    reg <= MT6360_LED_ISNKML)
