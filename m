@@ -2,105 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B5B5C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:22:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9FB5C19F2A
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:23:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235849AbiHCJWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 05:22:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40902 "EHLO
+        id S235548AbiHCJXW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 05:23:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233057AbiHCJWl (ORCPT
+        with ESMTP id S229445AbiHCJXU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 05:22:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9198919C09;
-        Wed,  3 Aug 2022 02:22:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E824615F1;
-        Wed,  3 Aug 2022 09:22:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F359C433C1;
-        Wed,  3 Aug 2022 09:22:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659518558;
-        bh=P4eKF7XDjuLzTy56svlSTm7yBbwooVXi0pHh6vFMI5U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iN7MNUUYJn+0/ttPrYuVWcF6IcLCa+5VAp1BLLjr+8jEdYvW0BLWr0DBP47nREojd
-         gcIn0lRPjRlkOiQ5RwnbBjue+TEjBduNAgRnBcG/bcs0kpzKiL/g3lU25EhucA0pjp
-         UXL+OczMnko1RZcrmcfu8hcoZUqzCsi+ZArP/6eI=
-Date:   Wed, 3 Aug 2022 11:22:35 +0200
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     Sherry Sun <sherry.sun@nxp.com>
-Cc:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH] tty: serial: imx: initialize
- peripheral_config/peripheral_size for sdma config
-Message-ID: <Yuo+W2HhOLxnQpf+@kroah.com>
-References: <20220803065737.14752-1-sherry.sun@nxp.com>
- <d4838245-030c-39b4-df4b-17b3b4c73a5b@pengutronix.de>
- <AS8PR04MB8404990740869737F326D302929C9@AS8PR04MB8404.eurprd04.prod.outlook.com>
+        Wed, 3 Aug 2022 05:23:20 -0400
+Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9664719C09
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 02:23:18 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1659518528; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=SzxExxF41r8xJbjYBAxHqwNZWS/Ssh/9WBvq+2Gtd00hAo198E4JT31rAYkmDw86v78xUmcR0tU5SeGrAQ4sAiKk8xE46IM52zwuM16uwooNb6YSAHZ2gUph69jtFU9afOlIVgG9pwsM9msi9tcowhygGUUS1zQCtsF42RiVa6M=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1659518528; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=q93C79sxRnF4sFFm2T+KqOAm96p2y3qDReUpm9q0LJ0=; 
+        b=cNC7Z7LQKOI1+CahMUn2YzdJnnyEz8ElHhuk9YAcIV32Lh1WENQINuuBp1Z55+zFrOeg1qZwP9wzsiVzzT+rIuPAE7sovxnRaqXoLcVivx5ZcCqymk11neHxfda/2t4qAFoIuUQAb9rrKSWit9PNTU6eYkTAk4b28KwsjE0LRts=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659518528;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=q93C79sxRnF4sFFm2T+KqOAm96p2y3qDReUpm9q0LJ0=;
+        b=c2CT/HK4lMxHAskVAhHR2ECPKlso2vtKy8o2kk0F81AFTb/TqGY9jEvdTcNW5KUv
+        kOhFXFNGY/6Moo7L5NTdPvmj6b9oZEtCTKKI1D1uU9KaTodb7Nm40sa/izK2uBBdje9
+        duUjDI8a2HmIwOiVPljDKYx0095Uwoyb7nyYVNnE=
+Received: from mail.zoho.in by mx.zoho.in
+        with SMTP id 1659518517817516.3995624024521; Wed, 3 Aug 2022 14:51:57 +0530 (IST)
+Date:   Wed, 03 Aug 2022 14:51:57 +0530
+From:   Siddh Raman Pant <code@siddh.me>
+To:     "Ingo Molnar" <mingo@kernel.org>
+Cc:     "x86" <x86@kernel.org>,
+        "Dave Hansen" <dave.hansen@linux.intel.com>,
+        "Andy Lutomirski" <luto@kernel.org>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        "linux-kernel-mentees" 
+        <linux-kernel-mentees@lists.linuxfoundation.org>
+Message-ID: <18263030220.8a990e82436929.3216192040531777412@siddh.me>
+In-Reply-To: <Yuo7A0KYoNnbgwWT@gmail.com>
+References: <20220731160913.632092-1-code@siddh.me>
+ <YukFgFTaq4Aw+uht@gmail.com>
+ <1825f63b142.8968bde3116633.1242410031840350968@siddh.me>
+ <Yuo2UkkyaYtZ3rMZ@gmail.com>
+ <18262ed2459.44b0d74d434377.3690496800292832933@siddh.me> <Yuo7A0KYoNnbgwWT@gmail.com>
+Subject: Re: [PATCH] x86/numa: Use cpumask_available instead of hardcoded
+ NULL check
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AS8PR04MB8404990740869737F326D302929C9@AS8PR04MB8404.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 03, 2022 at 09:15:58AM +0000, Sherry Sun wrote:
-> > On 03.08.22 08:57, Sherry Sun wrote:
-> > > Since commit 824a0a02cd74 ("dmaengine: imx-sdma: Add multi fifo
-> > > support") adds the use of
-> > > dma_slave_config->peripheral_config/peripheral_size to sdma driver,
-> > > the client drivers like uart need to initialize the
-> > > peripheral_config/peripheral_size for sdma, otherwise, the random
-> > > value of local variable slave_config may cause unexpected
-> > peripheral_config and make sdma mess up.
-> > >
-> > 
-> > If this a fix, please add a Fixes: tag. I am not sure it is though, see below.
+On Wed, 03 Aug 2022 14:38:19 +0530  Ingo Molnar <mingo@kernel.org> wrote:
 > 
-> Hi Ahmad, thanks for the comments.
-> I don't think this patch is a fix for a specific commit, so we don't need the Fixes tag.
+> * Siddh Raman Pant <code@siddh.me> wrote:
+> > There is no reason why allmodconfig would trigger the warning, [...]
 > 
-> > 
-> > > Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> > > ---
-> > >  drivers/tty/serial/imx.c | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > >
-> > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c index
-> > > 522445a8f666..bb8c2a712e94 100644
-> > > --- a/drivers/tty/serial/imx.c
-> > > +++ b/drivers/tty/serial/imx.c
-> > > @@ -1320,6 +1320,8 @@ static int imx_uart_dma_init(struct imx_port
-> > > *sport)
-> > 
-> > This function starts with
-> > 
-> > struct dma_slave_config slave_config = {};
-> > 
-> > >  	slave_config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
-> > >  	/* one byte less than the watermark level to enable the aging timer
-> > */
-> > >  	slave_config.src_maxburst = RXTL_DMA - 1;
-> > > +	slave_config.peripheral_config = NULL;
-> > > +	slave_config.peripheral_size = 0;
-> > 
-> > So these are already zero-initialized.
+> Well, unless I'm misreading your changelog, all the warning needs to 
+> trigger is CONFIG_CPUMASK_OFFSTACK=y.
 > 
-> I am not sure actually, I think initialize a struct with {} cannot guarantee that all members are initialized to 0, it may depend on the compiler.
+> > as it has CONFIG_CPUMASK_OFFSTACK=y, but the warning is because of the 
+> > other case.
+> 
+> What 'other case'? I've re-read the discussion and don't see it, but maybe 
+> I'm a bit daft this morning ...
+ 
+No, the warning is happening because CONFIG_CPUMASK_OFFSTACK is not set. This
+is because in that case cpumask_var_t type is not a pointer, and thus the var
+can never be NULL, which leads gcc to warn us when comparing with NULL.
 
-Not true, it's part of the C standard somewhere...
+The chain of events are like:
 
-thanks,
+        #ifdef CONFIG_CPUMASK_OFFSTACK
+                typedef struct cpumask *cpumask_var_t;
+        #else
+                typedef struct cpumask cpumask_var_t[1];
+        endif
 
-greg k-h
+        cpumask_var_t node_to_cpumask_map[MAX_NUMNODES];
+        ...
+        if (node_to_cpumask_map[node] == NULL) {
+
+
+The fix works because:
+
+        #ifdef CONFIG_CPUMASK_OFFSTACK
+                static inline bool cpumask_available(cpumask_var_t mask)
+                {
+                        return mask != NULL;
+                }
+        #else
+                static inline bool cpumask_available(cpumask_var_t mask)
+                {
+                        return true;
+                }
+        endif
+
+
+The conditional definitions, as pointed out earlier, can be seen from line 700
+of include/linux/cpumask.h file.
+
+> > Did you try the config file I had linked to earlier?
+> 
+> Yes, and it didn't trigger the warning.
+> 
+> Thanks,
+> 
+>     Ingo
+> 
+
+ Thanks,
+ Siddh
