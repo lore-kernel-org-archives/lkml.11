@@ -2,77 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4618C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 18:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A6C8C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 18:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237371AbiHCSRo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 14:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44940 "EHLO
+        id S237759AbiHCSR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 14:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237550AbiHCSPg (ORCPT
+        with ESMTP id S237394AbiHCSRw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 14:15:36 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 494B35F92
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 11:15:34 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id m8so22453441edd.9
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 11:15:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8igigbShakN12Ob89koTKQ1lWm3g1WOZxClAYVXZ2Fk=;
-        b=SbtAmqi938JOHKWgCPk6zuwlfb+q+tUSWi87LFyIFgUCJQMsnqFHQCSznB9s6UjIkz
-         NOQogF38C0tHsm9fO+o3nVfhGJHPhgJMtzxQsJkdrItf9WoghPYt1KzKwg7Lov73tm6O
-         RY+/aNWx+Iva3RoZFgIA5v2ae2/5nNp8W9HEwp8OKS7+gQjJySa16FmMlFv3VN0dwYTc
-         6HTGJI1pLd7X7RibAAWiVpvPD6RGLTZZ4+RRFFlbVUsbkZLUfHDhco0FRidVFRRm36Hh
-         gvYJGkPGRdd/jvbmtMSoW5tIsDDeeXynMqOvksL8ScvsdTyrCDGGd39QtkXgukTLIJ65
-         sgwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8igigbShakN12Ob89koTKQ1lWm3g1WOZxClAYVXZ2Fk=;
-        b=nsqPHKDocsaFNWn6QfpRyWT3xq4Ufme5Atze3y9QC51IsYtCVUDbwwkMY60RcMZ0me
-         E3eR/PtLaSBFDKmdBpbnZhOvcGwcOBTsIcQTvbGxtcrKmqPztg+0TFTL6/sIUAwLAzhW
-         E4hdrYGRPeS+dtU/d4OFMSiDr8+wSdvaWW67wVYygJWxOcF5kUu/j9Uyja3NY18NTiSx
-         BqjSc5Dujch739u3x2iWyRpyrKG/EF1vAjc8mDVmJDnAr0zj2Y/Fu/c/CWponIAK0ZB3
-         AyDT82AeQsJGrUN6jqSuY+ywXGty/X59HLUgormEY9kWFUmAPPH6423m6a+SrPp1+7ar
-         7I7g==
-X-Gm-Message-State: ACgBeo0PeO4VFgJl/1QfaexUGuRJwnf0gXIlem6MH0FlaP/O59qobWM1
-        I0+NaFBqPFdZD9k4XI8lajsINybIBzGwA2UP0/78bQ==
-X-Google-Smtp-Source: AA6agR4LLSRCPJNXUpL20SwIpVa0RnAlB2n3f0UmRD66Z+BHaGYrEamCp/s50h/HH62aEW1WtZ83oN0wyaoTgTAR/Qc=
-X-Received: by 2002:a05:6402:2398:b0:43d:fd2c:b0a2 with SMTP id
- j24-20020a056402239800b0043dfd2cb0a2mr4481522eda.172.1659550532854; Wed, 03
- Aug 2022 11:15:32 -0700 (PDT)
+        Wed, 3 Aug 2022 14:17:52 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133D95A175
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 11:17:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659550668; x=1691086668;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HSprJA3h+9xu55RyAVG01fa5qBNtYY99LJPlZZrdu+s=;
+  b=N31wp8+GK9TJ/lQapFEeaUDJQiYVn3XDhifMFUqLxzGEqqGJmx9J+WvI
+   m115f5GkxIYzC6JfjgMPFRDbe47WoYQIMBE+i7ku5V6FBSebdpfqBTZV3
+   t0Ol8B1+c3BwunJUKfmbvKaoXZ2bPIooJcGjss8ZX9sgh5WuSSbdPIfkp
+   UH1GnTjFHzS/9uQGuMgH9Xzz9FZSl/eFC8tQLDKyaeun9j+lxBJzjbIzj
+   ArrwgWyRuD5ktojwIY/WfgX4P1dUR9MR7W7D9e7D5HWvMPNN8xjOx/34C
+   MYtN6D0/MZaFw0RphNj2Hp6yS2rCImw/0csR1JPg3wZKSkm3oemyjftk6
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="289755269"
+X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
+   d="scan'208";a="289755269"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 11:17:47 -0700
+X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
+   d="scan'208";a="631253638"
+Received: from buichris-mobl.amr.corp.intel.com (HELO [10.209.124.150]) ([10.209.124.150])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 11:17:46 -0700
+Message-ID: <d5902382-70f4-be07-99f6-80d17cdfdcaa@intel.com>
+Date:   Wed, 3 Aug 2022 11:17:46 -0700
 MIME-Version: 1.0
-References: <20220801144952.141-1-mario.limonciello@amd.com>
-In-Reply-To: <20220801144952.141-1-mario.limonciello@amd.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 3 Aug 2022 20:15:21 +0200
-Message-ID: <CACRpkdaHfD=aSUzbY_H2dYJLSWPiY4tXve2EnAc0mBNChpToBA@mail.gmail.com>
-Subject: Re: [PATCH] pinctrl: amd: Fix an unused variable
-To:     Mario Limonciello <mario.limonciello@amd.com>
-Cc:     Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        kernel test robot <lkp@intel.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1.1 1/2] x86/sev: Use per-CPU PSC structure in prep for
+ unaccepted memory support
+Content-Language: en-US
+To:     Tom Lendacky <thomas.lendacky@amd.com>,
+        linux-kernel@vger.kernel.org, x86@kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+References: <1b50311c-448b-96aa-1d96-f4bfed409c1f@amd.com>
+ <cover.1659550264.git.thomas.lendacky@amd.com>
+ <2a2adc3570ae9c24d03fff877c4fe79ed43605e0.1659550264.git.thomas.lendacky@amd.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <2a2adc3570ae9c24d03fff877c4fe79ed43605e0.1659550264.git.thomas.lendacky@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 4:49 PM Mario Limonciello
-<mario.limonciello@amd.com> wrote:
+On 8/3/22 11:11, Tom Lendacky wrote:
+> +	/*
+> +	 * Use the MSR protocol when either:
+> +	 *   - executing in an NMI to avoid any possibility of a deadlock
+> +	 *   - per-CPU GHCBs are not yet registered, since __vmgexit_psc()
+> +	 *     uses the per-CPU GHCB.
+> +	 */
+> +	if (in_nmi() || !ghcb_percpu_ready)
+> +		return early_set_pages_state(__pa(vaddr), npages, op);
+> +
+> +	spin_lock_irqsave(&psc_desc_lock, flags);
 
-> `char *output_enable` is no longer used once switching to unicode
-> output.
->
-> Fixes: e8129a076a50 ("pinctrl: amd: Use unicode for debugfs output")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Would it be simpler to just do a spin_trylock_irqsave()?  You fall back
+to early_set_pages_state() whenever you can't acquire the lock.
 
-Patch applied!
-
-Yours,
-Linus Walleij
+That avoids even having to know what the situations are where you
+_might_ recurse.  If it recurses, the trylock will just naturally fail.
+ You simply can't have bugs where the "(in_nmi() || !ghcb_percpu_ready)"
+conditional was wrong.
