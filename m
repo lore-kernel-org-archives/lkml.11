@@ -2,137 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8DDC19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:08:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1046C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 10:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234811AbiHCKId (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 06:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50026 "EHLO
+        id S237761AbiHCKIh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 06:08:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234866AbiHCKIa (ORCPT
+        with ESMTP id S237063AbiHCKIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 06:08:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E07C12608
+        Wed, 3 Aug 2022 06:08:31 -0400
+X-Greylist: delayed 2430 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 03 Aug 2022 03:08:29 PDT
+Received: from cassarossa.samfundet.no (cassarossa.samfundet.no [IPv6:2001:67c:29f4::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B77E12AFF
         for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 03:08:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659521307;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ombNgzXxVb25gnDLaXkVZE1drvU8iJaz17u9QxcdADc=;
-        b=SLLJCuDTZMXbUd9gEFddNsbr7COrV36ZWGST+xdHMXM6JzXzzTZmkR92GlxwSIntU0juIB
-        /dAbLKCc86iDXdEWLDponISQtnqqDzdccQoQL2lCelGVpf1DofGObITI399yYFvjwH3GcA
-        FRklK0AluSqIpIeED970NxtWF2QrRCs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-562-sch-Y4pfO6mYs5fag_yzmA-1; Wed, 03 Aug 2022 06:08:24 -0400
-X-MC-Unique: sch-Y4pfO6mYs5fag_yzmA-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4DBB680A0BF;
-        Wed,  3 Aug 2022 10:08:24 +0000 (UTC)
-Received: from starship (unknown [10.40.194.242])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DD3F8492C3B;
-        Wed,  3 Aug 2022 10:08:21 +0000 (UTC)
-Message-ID: <060419e118445978549f0c7d800f96a9728c157c.camel@redhat.com>
-Subject: Re: [PATCH 1/5] KVM: x86: Get vmcs12 pages before checking pending
- interrupts
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Mingwei Zhang <mizhang@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>
-Date:   Wed, 03 Aug 2022 13:08:20 +0300
-In-Reply-To: <20220802230718.1891356-2-mizhang@google.com>
-References: <20220802230718.1891356-1-mizhang@google.com>
-         <20220802230718.1891356-2-mizhang@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+Received: from egtvedt by cassarossa.samfundet.no with local (Exim 4.94.2)
+        (envelope-from <egtvedt@samfundet.no>)
+        id 1oJAfS-00DURx-CF; Wed, 03 Aug 2022 11:27:54 +0200
+Date:   Wed, 3 Aug 2022 11:27:54 +0200
+From:   Hans-Christian Noren Egtvedt <egtvedt@samfundet.no>
+To:     torvalds@linux-foundation.org
+Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>, hskinnemoen@gmail.com,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] AVR32 change for 6.0 - outstanding cleanups
+Message-ID: <Yuo/mq0VrqTH9BS+@samfundet.no>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-08-02 at 23:07 +0000, Mingwei Zhang wrote:
-> From: Oliver Upton <oupton@google.com>
-> 
-> vmx_guest_apic_has_interrupts implicitly depends on the virtual APIC
-> page being present + mapped into the kernel address space. However, with
-> demand paging we break this dependency, as the KVM_REQ_GET_VMCS12_PAGES
-> event isn't assessed before entering vcpu_block.
-> 
-> Fix this by getting vmcs12 pages before inspecting the guest's APIC
-> page. Note that upstream does not have this issue, as they will directly
-> get the vmcs12 pages on vmlaunch/vmresume instead of relying on the
-> event request mechanism. However, the upstream approach is problematic,
-> as the vmcs12 pages will not be present if a live migration occurred
-> before checking the virtual APIC page.
+Hello Linus,
 
-Since this patch is intended for upstream, I don't fully understand
-the meaning of the above paragraph.
+please pull
 
+git://git.kernel.org/pub/scm/linux/kernel/git/egtvedt/linux-avr32.git for-linus
 
-> 
-> Signed-off-by: Oliver Upton <oupton@google.com>
-> Signed-off-by: Mingwei Zhang <mizhang@google.com>
-> ---
->  arch/x86/kvm/x86.c | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 5366f884e9a7..1d3d8127aaea 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -10599,6 +10599,23 @@ static inline int vcpu_block(struct kvm_vcpu *vcpu)
->  {
->  	bool hv_timer;
->  
-> +	/*
-> +	 * We must first get the vmcs12 pages before checking for interrupts
-> +	 * that might unblock the guest if L1 is using virtual-interrupt
-> +	 * delivery.
-> +	 */
-> +	if (kvm_check_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu)) {
-> +		/*
-> +		 * If we have to ask user-space to post-copy a page,
-> +		 * then we have to keep trying to get all of the
-> +		 * VMCS12 pages until we succeed.
-> +		 */
-> +		if (unlikely(!kvm_x86_ops.nested_ops->get_nested_state_pages(vcpu))) {
-> +			kvm_make_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
-> +			return 0;
-> +		}
-> +	}
-> +
->  	if (!kvm_arch_vcpu_runnable(vcpu)) {
->  		/*
->  		 * Switch to the software timer before halt-polling/blocking as
+to receive the following AVR32 related changes for 6.0 (no-op's)
 
+Hans-Christian Noren Egtvedt (8):
+      dma:dw: remove reference to AVR32 architecture in core.c
+      mfd: remove reference to AVR32 architecture in atmel-smc.c
+      misc: update maintainer email address and description for atmel-ssc
+      net: remove cdns,at32ap7000-macb device tree entry
+      sound:spi: remove reference to AVR32 in Atmel AT73C213 DAC driver
+      usb:udc: remove reference to AVR32 architecture in Atmel USBA Kconfig
+      video: remove support for non-existing atmel,at32ap-lcdc in atmel_lcdfb
+      video:backlight: remove reference to AVR32 architecture in ltv350qv
 
-If I understand correctly, you are saying that if apic backing page is migrated in post copy
-then 'get_nested_state_pages' will return false and thus fail?
+Mostly changes to documentation and comments.
 
-AFAIK both SVM and VMX versions of 'get_nested_state_pages' assume that this is not the case
-for many things like MSR bitmaps and such - they always uses non atomic versions
-of guest memory access like 'kvm_vcpu_read_guest' and 'kvm_vcpu_map' which
-supposed to block if they attempt to access HVA which is not present, and then
-userfaultd should take over and wake them up.
+ Documentation/devicetree/bindings/display/atmel,lcdc.txt | 1 -
+ Documentation/devicetree/bindings/net/cdns,macb.yaml     | 3 +--
+ drivers/dma/dw/core.c                                    | 3 ---
+ drivers/mfd/atmel-smc.c                                  | 4 ++--
+ drivers/misc/atmel-ssc.c                                 | 4 ++--
+ drivers/net/ethernet/cadence/macb_main.c                 | 1 -
+ drivers/usb/gadget/udc/Kconfig                           | 4 ++--
+ drivers/video/backlight/ltv350qv.c                       | 3 +--
+ sound/spi/Kconfig                                        | 2 +-
+ 9 files changed, 9 insertions(+), 16 deletions(-)
 
-If that still fails, nested VM entry is usually failed, and/or the whole VM
-is crashed with 'KVM_EXIT_INTERNAL_ERROR'.
-
-Anything I missed? 
-
+-- 
 Best regards,
-	Maxim Levitsky
-
+Hans-Christian Noren Egtvedt
