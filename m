@@ -2,145 +2,290 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A26C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 20:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44246C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 20:29:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238690AbiHCU2m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 16:28:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39328 "EHLO
+        id S238707AbiHCU3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 16:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238612AbiHCU2i (ORCPT
+        with ESMTP id S238643AbiHCU3T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 16:28:38 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6135059262;
-        Wed,  3 Aug 2022 13:28:37 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id q124so829521iod.3;
-        Wed, 03 Aug 2022 13:28:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=qns3k2bMfWZ5++no4JhoINAIs2Mgvwk2maknIEZXZGA=;
-        b=aEWJqLOnfAJre5C81Ylqs5yMywTkNY2DxE1pRS3Qa06+/3s5LtLaxsW7WkgO6B5/iM
-         +6BWdNFChgc7bTjv3aUJZwTqbv0KgFnZFwS9WTQkvR4yi7GsiYdyQ3hplToWzIpt1xLl
-         nKqSRu0Q+G1bONulaZMWnTzrfCqKqm1bjsfuB7HmTit/6A7yOCNnFyNCLWg9y07ZO4/J
-         w7bMXsP5oQFM+/Jnwk7rvdi0mWNboq0GB1SXVeG5uMJ89rUXo9zV1ai9KmXDcQnc4P2J
-         quCXLPa5enl2sXd9VRyx9l7hS16EtrjKd18Yvn92oBfx25bdm6+CG6rczOBbCrvgZb2e
-         REZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=qns3k2bMfWZ5++no4JhoINAIs2Mgvwk2maknIEZXZGA=;
-        b=H4QTyPdOnWwrzB56yipgzOmbk/uDfzHeQ9FZtIgVGQ+KJzbpQhOyYz0Ld169K6xfi2
-         YHIQnKeLgTf6MCGhJqoxdK/J08Inh7CJgQe7H55AKVrOUWg4sp92jZYOrfXtIzfbcFcs
-         8KTiWy0XeNAdk7h20bwXCICi29eQ0Vf5WXB6EHW0g5sQW+EjBnLDC/swjveA8rT0BC10
-         yLAqLQigCW2SMAzXGqk5gucK5V4L7HhJjMDXgMxJzXjY6a66a1PnC+BGti+Y/8dWhOz4
-         HmjhMqNoeH/I+vjVwlo4NYnX/GD1GFvJTswtJOW9bNeAI2vzkehS/Pm8f4P46uHdJlEX
-         d0tA==
-X-Gm-Message-State: AJIora8AHo6BfNGlhVP6y1gHZn5GvloIsxUPL3CG+ajotlonpmIgz7qP
-        4S310S8kE78VpAOVfZ9Y7wVmkqUoUagP5G5DPWkDbrzP
-X-Google-Smtp-Source: AGRyM1uH9w+FBi6w0iZfzdHO3chJWDFvIKlbdmizYyLuuwR3oEBqq5s53/WwKRKL0zGMjQBFej7UhPKp3nXHYVah3Eg=
-X-Received: by 2002:a05:6638:4883:b0:33f:7948:e685 with SMTP id
- ct3-20020a056638488300b0033f7948e685mr11202421jab.138.1659558516113; Wed, 03
- Aug 2022 13:28:36 -0700 (PDT)
+        Wed, 3 Aug 2022 16:29:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17795A3F4
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 13:29:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FD3C61512
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 20:29:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A1CCC433D7
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 20:29:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659558556;
+        bh=M4RXF3NWAp8nnU1Fudf651MANFL1NemSc2kweEG+F/Y=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=AZU3589pF4ViNrIaFmARLOKp75vnpKT7VwzrFfq788WTRuyfAvKBhVT7Z7BB77lC7
+         k7lpwIreRNmPLrlijIkLD2K5Z7azJUl/Q+3JhagNi9exbYTLRu1rOLir3po4lTIzyj
+         3jIjwlBKnMaUw/AUfnZ+18N7PHYbMN3COaCrhjBXCNjOyKSDGGnJFzdDM9lsv8WJDY
+         ZatxF7xRGs0Y4ZzI7uro0eUBAdh7h9CfMWM9PLuDcLeBZTpANzJOoUGg7gCWWKKg0S
+         lC2px0x2FSygXA8B2D7duDwR48QI8np6jzlX/MycJU7+lvoBETFsUwNtFtu+S/89yV
+         w6X7C/+hvbcaA==
+Received: by mail-oi1-f171.google.com with SMTP id i4so21129969oif.2
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 13:29:16 -0700 (PDT)
+X-Gm-Message-State: ACgBeo1WiXrPBqtmjL8s81C5qJjhV2jDkJMuuttzJuQsn1AlQqvd/Ef6
+        s/CNNCEt4w2b0rj+j0QwTUTWK6fpxyT70hbRptk=
+X-Google-Smtp-Source: AA6agR4W+/Lq0LXeQPFjWfACJeth9zE0FFJ+cKYGI5VQycXhAkBPgprobN6TltZS+4b4pVCsCSkDF2fEHCD4dnXmf4A=
+X-Received: by 2002:a05:6808:1888:b0:342:a0c3:f7d4 with SMTP id
+ bi8-20020a056808188800b00342a0c3f7d4mr55057oib.286.1659558555749; Wed, 03 Aug
+ 2022 13:29:15 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220803172302.1976981-1-robdclark@gmail.com> <c80d70b6-a7ad-5900-ea7a-f0f2157e4a40@quicinc.com>
-In-Reply-To: <c80d70b6-a7ad-5900-ea7a-f0f2157e4a40@quicinc.com>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Wed, 3 Aug 2022 13:29:02 -0700
-Message-ID: <CAF6AEGuDajmv=bnQ9hNgCbkB8ubpFhhoFZVL4881O=2B9xh+_Q@mail.gmail.com>
-Subject: Re: [PATCH 1/2] drm/msm: Move hangcheck timer restart
-To:     Akhil P Oommen <quic_akhilpo@quicinc.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org,
-        Rob Clark <robdclark@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        open list <linux-kernel@vger.kernel.org>
+References: <CAFCwf11=9qpNAepL7NL+YAV_QO=Wv6pnWPhKHKAepK3fNn+2Dg@mail.gmail.com>
+ <YuahxB6geST6ZtGN@kroah.com> <TYAPR01MB62013A228CD094847524F8D8929A9@TYAPR01MB6201.jpnprd01.prod.outlook.com>
+ <CAFCwf139nRjebnMfHPuhHWBh_6pWuRm=9sBjgAFL9u9GsOqEzw@mail.gmail.com> <TYAPR01MB620151C7322BCC174266FA2C929C9@TYAPR01MB6201.jpnprd01.prod.outlook.com>
+In-Reply-To: <TYAPR01MB620151C7322BCC174266FA2C929C9@TYAPR01MB6201.jpnprd01.prod.outlook.com>
+From:   Oded Gabbay <ogabbay@kernel.org>
+Date:   Wed, 3 Aug 2022 23:28:48 +0300
+X-Gmail-Original-Message-ID: <CAFCwf13n+VZL6tUgKm3pcFmk9FCTGrE4LmdQEgo5+jUyi3Kguw@mail.gmail.com>
+Message-ID: <CAFCwf13n+VZL6tUgKm3pcFmk9FCTGrE4LmdQEgo5+jUyi3Kguw@mail.gmail.com>
+Subject: Re: New subsystem for acceleration devices
+To:     Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiho Chu <jiho.chu@samsung.com>, Arnd Bergmann <arnd@arndb.de>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 3, 2022 at 12:52 PM Akhil P Oommen <quic_akhilpo@quicinc.com> wrote:
+On Wed, Aug 3, 2022 at 7:44 AM <yuji2.ishikawa@toshiba.co.jp> wrote:
 >
-> On 8/3/2022 10:53 PM, Rob Clark wrote:
-> > From: Rob Clark <robdclark@chromium.org>
+> > -----Original Message-----
+> > From: Oded Gabbay <ogabbay@kernel.org>
+> > Sent: Monday, August 1, 2022 5:21 PM
+> > To: ishikawa yuji(=E7=9F=B3=E5=B7=9D =E6=82=A0=E5=8F=B8 =E2=97=8B=EF=BC=
+=B2=EF=BC=A4=EF=BC=A3=E2=96=A1=EF=BC=A1=EF=BC=A9=EF=BC=B4=EF=BC=A3=E2=97=8B=
+=EF=BC=A5=EF=BC=A1=E9=96=8B)
+> > <yuji2.ishikawa@toshiba.co.jp>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>; Jiho Chu
+> > <jiho.chu@samsung.com>; Arnd Bergmann <arnd@arndb.de>;
+> > Linux-Kernel@Vger. Kernel. Org <linux-kernel@vger.kernel.org>
+> > Subject: Re: New subsystem for acceleration devices
 > >
-> > Don't directly restart the hangcheck timer from the timer handler, but
-> > instead start it after the recover_worker replays remaining jobs.
+> > On Mon, Aug 1, 2022 at 5:35 AM <yuji2.ishikawa@toshiba.co.jp> wrote:
+> > >
+> > > > -----Original Message-----
+> > > > From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > > Sent: Monday, August 1, 2022 12:38 AM
+> > > > To: Oded Gabbay <oded.gabbay@gmail.com>
+> > > > Cc: ishikawa yuji(=E7=9F=B3=E5=B7=9D =E6=82=A0=E5=8F=B8 =E2=97=8B=
+=EF=BC=B2=EF=BC=A4=EF=BC=A3=E2=96=A1=EF=BC=A1=EF=BC=A9=EF=BC=B4=EF=BC=A3=E2=
+=97=8B=EF=BC=A5=EF=BC=A1=E9=96=8B)
+> > > > <yuji2.ishikawa@toshiba.co.jp>; Jiho Chu <jiho.chu@samsung.com>;
+> > > > Arnd Bergmann <arnd@arndb.de>; Linux-Kernel@Vger. Kernel. Org
+> > > > <linux-kernel@vger.kernel.org>
+> > > > Subject: Re: New subsystem for acceleration devices
+> > > >
+> > > > On Sun, Jul 31, 2022 at 02:45:34PM +0300, Oded Gabbay wrote:
+> > > > > Hi,
+> > > > > Greg and I talked a couple of months ago about preparing a new
+> > > > > accel subsystem for compute/acceleration devices that are not GPU=
+s
+> > > > > and I think your drivers that you are now trying to upstream fit =
+it as well.
+> > > > >
+> > > > > Would you be open/interested in migrating your drivers to this ne=
+w
+> > > > subsystem ?
+> > > > >
+> > > > > Because there were no outstanding candidates, I have done so far
+> > > > > only a basic and partial implementation of the infrastructure for
+> > > > > this subsystem, but if you are willing to join I believe I can
+> > > > > finish it rather quickly.
+> > > > >
+> > > > > At start, the new subsystem will provide only a common device
+> > > > > character (e.g. /dev/acX) so everyone will do open/close/ioctl on
+> > > > > the same device character. Also sysfs/debugfs entries will be
+> > > > > under that device and maybe an IOCTL to retrieve information.
+> > > > >
+> > > > > In the future I plan to move some of habanalabs driver's code int=
+o
+> > > > > the subsystem itself, for common tasks such as memory management,
+> > > > > dma memory allocation, etc.
+> > > > >
+> > > > > Of course, you will be able to add your own IOCTLs as you see fit=
+.
+> > > > > There will be a range of IOCTLs which are device-specific (simila=
+r
+> > > > > to drm).
+> > > > >
+> > > > > wdyt ?
+> > > >
+> > > > That sounds reasonable to me as a sane plan forward, thanks for
+> > > > working on this.
+> > > >
+> > > > greg k-h
+> > >
+> > > Hi,
+> > > Thank you for your suggestion.
+> > > I'm really interested in the idea to have a dedicated subsystem for
+> > accelerators.
+> > > Let me challenge if the Visconti DNN driver can be re-written to the
+> > framework.
+> > > As Visconti SoC has several accelerators as well as DNN, having a
+> > > general/common interface will be a big benefit for us to maintain dri=
+vers for a
+> > long time.
+> > >
+> > > I've heard that the framework has some basic implementation.
+> > > Do you have some sample code or enumeration of idea to describe the
+> > framework?
+> > > Would you share them with me? if that does not bother you.
+> > >
+> > Great to hear that!
 > >
-> > If the kthread is blocked for other reasons, there is no point to
-> > immediately restart the timer.  Fixes a random symptom of the problem
-> > fixed in the next patch.
+> > I will need a couple of days to complete the code and clean it up becau=
+se I
+> > stopped working on it a couple of months ago as there were no other can=
+didates
+> > at the time.
+> > Once I have it ready I will put it in my linux repo and send you a bran=
+ch name.
 > >
-> > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > ---
-> >   drivers/gpu/drm/msm/msm_gpu.c | 14 +++++++++-----
-> >   1 file changed, 9 insertions(+), 5 deletions(-)
+> > In the meantime, I'd like to describe at a high level how this framewor=
+k is going
+> > to work.
 > >
-> > diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-> > index fba85f894314..8f9c48eabf7d 100644
-> > --- a/drivers/gpu/drm/msm/msm_gpu.c
-> > +++ b/drivers/gpu/drm/msm/msm_gpu.c
-> > @@ -328,6 +328,7 @@ find_submit(struct msm_ringbuffer *ring, uint32_t fence)
-> >   }
+> > I'll start with the main theme of this framework which is allowing maxi=
+mum
+> > flexibility to the different device drivers. This is because in my opin=
+ion there is
+> > and always will be a large variance between different compute accelerat=
+ors,
+> > which stems from the fact their h/w is designed for different purposes.=
+ I believe
+> > that it would be nearly impossible to create a standard acceleration AP=
+I that will
+> > be applicable to all compute accelerators.
 > >
-> >   static void retire_submits(struct msm_gpu *gpu);
-> > +static void hangcheck_timer_reset(struct msm_gpu *gpu);
+> > Having said that, there are many things that can be common. I'll just n=
+ame here
+> > a few things:
 > >
-> >   static void get_comm_cmdline(struct msm_gem_submit *submit, char **comm, char **cmd)
-> >   {
-> > @@ -420,6 +421,8 @@ static void recover_worker(struct kthread_work *work)
-> >       }
+> > - Exposing devices in a uniform way (same device character files) and
+> > managing the major/minor/open/close (with callbacks to the open/close o=
+f the
+> > device driver)
 > >
-> >       if (msm_gpu_active(gpu)) {
-> > +             bool restart_hangcheck = false;
-> > +
-> >               /* retire completed submits, plus the one that hung: */
-> >               retire_submits(gpu);
+> > - Defining a standard user API for monitoring applications that usually=
+ run in a
+> > data-center. There is a big difference between the acceleration uAPI an=
+d a
+> > monitoring uAPI and while the former is highly specialized, the latter =
+can be
+> > standardized.
 > >
-> > @@ -436,10 +439,15 @@ static void recover_worker(struct kthread_work *work)
-> >                       unsigned long flags;
+> > - Common implementation of a memory manager that will give services of
+> > allocating kernel memory that can be
+> >   mmap'ed by the user.
 > >
-> >                       spin_lock_irqsave(&ring->submit_lock, flags);
-> > -                     list_for_each_entry(submit, &ring->submits, node)
-> > +                     list_for_each_entry(submit, &ring->submits, node) {
-> >                               gpu->funcs->submit(gpu, submit);
-> > +                             restart_hangcheck = true;
-> > +                     }
-> >                       spin_unlock_irqrestore(&ring->submit_lock, flags);
-> >               }
-> > +
-> > +             if (restart_hangcheck)
-> > +                     hangcheck_timer_reset(gpu);
-> >       }
+> > - For devices with on-chip MMU, common memory manager for allocating
+> > device memory and managing it.
 > >
-> >       mutex_unlock(&gpu->lock);
-> > @@ -515,10 +523,6 @@ static void hangcheck_handler(struct timer_list *t)
-> >               kthread_queue_work(gpu->worker, &gpu->recover_work);
-> >       }
+> > - Integration with dma-buf for interoperability with other drivers.
 > >
-> > -     /* if still more pending work, reset the hangcheck timer: */
-> In the scenario mentioned here, shouldn't we restart the timer?
-
-yeah, actually the case where we don't want to restart the timer is
-*only* when we schedule recover_work..
-
-BR,
--R
-
+> > The initial implementation of the framework will expose two device char=
+acter
+> > files per device. One will be used for the main/compute operations and =
+the
+> > other one will be used for monitoring applications.
+> > This is done in case there are some limitations on the main device file=
+ (e.g.
+> > allowing only a single compute application to be connected to the devic=
+e).
+> >
+> > Each driver will call a register function during its probe function (ve=
+ry similar to
+> > what is done in the drm subsystem). This will register the device in th=
+e accel
+> > framework and expose the device character files. Every call on those fi=
+les (e.g.
+> > open, ioctl) will then go through the accel subsystem first and then wi=
+ll go to
+> > the callbacks of the specific device drivers. The framework will take c=
+are of
+> > allocating major and minor numbers and handle these issues in a uniform=
+ way.
+> >
+> > For now, I plan to define a single ioctl in the common part, which is a=
+n
+> > information ioctl, allowing the user to retrieve various information on=
+ the device
+> > (fixed or dynamic). I don't want to jump ahead of myself and define oth=
+er
+> > common ioctls before gaining some traction. As I wrote above, each driv=
+er will
+> > be allowed to define its own custom ioctls.
+> >
+> > There will be an infrastructure to add custom sysfs and debugfs entries=
+. Once
+> > we start working, I'm sure we will find some properties that we can mov=
+e to the
+> > infrastructure itself (e.g. asking to reset the device, operational sta=
+tus)
+> >
+> > I don't know if I want to add the memory manager we prepared in habanal=
+abs
+> > driver at day one, because I would like to minimize the effort we have =
+to convert
+> > our drivers to using this framework. From the above, I believe you can =
+see the
+> > current effort is not large.
+> >
+> > That's it from high-level pov. As I wrote at the beginning, I'll get ba=
+ck to you in a
+> > few days with a link to a git repo containing the initial implementatio=
+n.
+> >
 >
-> -Akhil.
-> > -     if (fence_after(ring->fctx->last_fence, ring->hangcheck_fence))
-> > -             hangcheck_timer_reset(gpu);
-> > -
-> >       /* workaround for missing irq: */
-> >       msm_gpu_retire(gpu);
-> >   }
-> >
+> Hi Oded,
 >
+> Thank you for sharing high level idea with me.
+> I'm grad to hear that the DNN driver can be ported to the accelerator fra=
+mework without too-much effort. I think we can start with minimum implement=
+ation and find better way.
+> Currently the driver does not have API for monitoring. I'll prepare some =
+logic to match the framework.
+>
+> Some of my interests are handling IOMMU and DMA-BUF.
+> Currently the DNN driver has its own minimum implementation of those two.
+> Will DMA-BUF feature of accelerator framework be provided soon?
+I didn't plan it to be on the initial release, but I'm sure we can
+make it a priority to be added soon after we do the initial
+integration and everything is accepted to the kernel.
+Oded
+>
+> > > If you need further information on the current DNN driver, please let=
+ me know.
+> > > Also, I can provide some for other accelerator drivers which are curr=
+ently
+> > under cleaning up for contribution.
+> > I looked at the patches you sent and I believe it will be a good match =
+for this
+> > framework.
+> > If you have additional drivers that you think can be a goot match, by a=
+ll means,
+> > please send links to me.
+> >
+> > Thanks,
+> > Oded
+>
+> Visconti DSP driver might be interesting for you as it provides multiple =
+functions and requires external firmware.
+> The problem is that I don't have official public repository.
+> I wonder if it's possible to post some pieces of code to this ML.
+>
+> Regards,
+>         Yuji
