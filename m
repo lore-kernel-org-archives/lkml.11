@@ -2,104 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D54C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 12:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E237BC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 13:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237402AbiHCM4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 08:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55268 "EHLO
+        id S236305AbiHCNBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 09:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235594AbiHCM4s (ORCPT
+        with ESMTP id S235709AbiHCNBr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 08:56:48 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9E62DC5
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 05:56:47 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 1C7304D53C;
-        Wed,  3 Aug 2022 12:56:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1659531405; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VBjG8dobIZkku1CWQkR/K9igC2Gpo0t0c8G7EPf8X8M=;
-        b=V0weYV7JGTmeNz+1PQTWXbPhLVwOzwSmgj9cw1QTp/LuCKl9ek5J9/LRFtGh9pnj+bQ71I
-        Ilq0+Q22P68fXmKnVfhFuIdP9FFoh2S9uN6V/dYZVEVrtBGmtOQLdsP/xh6eU8IQngbLcY
-        6E2U8fvdpFgvtryeHmh98daEEwklPsY=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EF84813AD8;
-        Wed,  3 Aug 2022 12:56:44 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id xiMdOIxw6mKNbgAAMHmgww
-        (envelope-from <mhocko@suse.com>); Wed, 03 Aug 2022 12:56:44 +0000
-Date:   Wed, 3 Aug 2022 14:56:44 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Feng Tang <feng.tang@intel.com>
-Cc:     Muchun Song <songmuchun@bytedance.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "bwidawsk@kernel.org" <bwidawsk@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>
-Subject: Re: [PATCH] mm: mempolicy: fix policy_nodemask() for
- MPOL_PREFERRED_MANY case
-Message-ID: <YupwjN6K6e6V3y+Q@dhcp22.suse.cz>
-References: <YuidPA9knCOoaT0c@FVFYT0MHHV2J>
- <Yui7hWZYMX31ktOr@feng-skl>
- <YujGy8EIeZc1Avc7@FVFYT0MHHV2J>
- <YujUyCIBjFj+FzX5@feng-skl>
- <YujoLQt09Js/sSQL@dhcp22.suse.cz>
- <YuoYkPk+YzdPNvmN@feng-snb>
- <YuolieBmdaIzoS3t@dhcp22.suse.cz>
- <Yuqs+BTpfh9/PjtP@feng-clx>
- <Yupb+1mmn9sQ/G8K@dhcp22.suse.cz>
- <Yurd2iYp4XMIYM7T@feng-clx>
+        Wed, 3 Aug 2022 09:01:47 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81081B7E7;
+        Wed,  3 Aug 2022 06:01:46 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id q7-20020a17090a7a8700b001f300db8677so1964516pjf.5;
+        Wed, 03 Aug 2022 06:01:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=kkm/gMyaSfsgZa6BAvqiI+XJ+6EHE76B0lrGvtObm68=;
+        b=L/SijQ11QQB4tA2T/w89ghqjitftl7G35W0WKZ3y6fMlQ+KHVOLgBzPuVBWsUIrOLi
+         MUU4xW5lisRPxH/PtGgzP3/1X26bFTOGlnkAZ63bO8HPmTHj+x6Pf0OzweHmJkxAzK7O
+         Jlwa6Gpgb2bJNknRoSnrobta3oK8MpK2mto6zEBDSpLAoLfUCKeeaX6guUFZwmM4DkuB
+         FSn2t0DmmiPigBX2GauHNx94MZ+bvSsA3UXwFXAPhGWGaL0lGxITIjUclUqGB47RK9sE
+         amybsoxbepanZyPD0YbKqS8PjDQoO58Q0cVnGI3UBXgwfcDyHoDSos+7T/wQUxXlg5O9
+         X1xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=kkm/gMyaSfsgZa6BAvqiI+XJ+6EHE76B0lrGvtObm68=;
+        b=CW5mW9qrhBLcUb0QNs9JnkGgtYhAKjSXxiEAxIR5JCcT8FwIk7cagZ884T+DdGo7P4
+         1pLDZBYKda6uE6Knm1FrUrfk9aOpaT3qwKkyOnuZEKgg6hsv7wc09ZKzCFJIoFLo+Lai
+         zduXAuKFqzqJnJIgRBNH1hMelsiXrT0+pDhtjj78pmQfN45GX3F5N0s7v/3QhUUr4nVD
+         FNgLx3cGe5V0dQHRFOgpN7Jd+K7D4Ag5s1eCBmUrHj21Jr57fWiMs54RQg5KbHyEpQwe
+         AbQvlAFGisRH93ptEeVUyirirAWT++7/VnyAO5Ag9POSBm8W7og6YdC/mXtTU72twMrq
+         7Sog==
+X-Gm-Message-State: ACgBeo2ya1iDNvsH9NS6XQDiPamhp0/f8qvArrRNV6fxRKKktDSUTL7y
+        CCeV/BRAFoRGX1QTwbTnlGM=
+X-Google-Smtp-Source: AA6agR5oniDmiwWiAAG3wuydieVGKh0x6Lwc+40CC2AWxzv1cu6xbRlS/gV7Dc6Jy85GJGXJ55zUnA==
+X-Received: by 2002:a17:90b:ec7:b0:1f2:fa08:44cd with SMTP id gz7-20020a17090b0ec700b001f2fa0844cdmr4767178pjb.183.1659531705888;
+        Wed, 03 Aug 2022 06:01:45 -0700 (PDT)
+Received: from localhost.localdomain ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id k3-20020a170902c40300b0016f1ef2cd44sm198058plk.154.2022.08.03.06.01.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Aug 2022 06:01:45 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/2] KVM: x86/svm/pmu: Rewrite get_gp_pmc_amd() for more counters scalability
+Date:   Wed,  3 Aug 2022 21:01:24 +0800
+Message-Id: <20220803130124.72340-2-likexu@tencent.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220803130124.72340-1-likexu@tencent.com>
+References: <20220803130124.72340-1-likexu@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yurd2iYp4XMIYM7T@feng-clx>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 04-08-22 04:43:06, Feng Tang wrote:
-> On Wed, Aug 03, 2022 at 07:28:59PM +0800, Michal Hocko wrote:
-[...]
-> > +struct mempolicy *policy_mbind_nodemask(gfp_t gfp)
-> > +{
-> > +#ifdef CONFIG_MEMPOLICY
-> > +	struct mempolicy *mpol = get_task_policy(current);
-> > +
-> > +	/*
-> > +	 * only enforce MBIND which overlaps with cpuset policy (from policy_nodemask)
-> > +	 * specifically for hugetlb case
-> > +	 */
-> > +	if (mpol->mode == MPOL_BIND &&
-> > +		(apply_policy_zone(mpol, gfp_zone(gfp)) &&
-> > +		 cpuset_nodemask_valid_mems_allowed(&policy->nodes))
-> > +		return &mpol->nodes;
-> > +#endif
-> > +	return NULL;
-> 
-> I saw the logic is not changed, and it confused me that if there is
-> no qualified node, it will still return NULL which effectively equals
-> node_states[N_MEMORY], while I think it should return a all zero
-> nodemasks.
+From: Like Xu <likexu@tencent.com>
 
-This is a separate thing and I have to admit that the existing code is
-rather non-intuitive or even broken. I guess we do not care all that
-much because MBIND with completely non-overlapping cpusets is just a
-broken configuration. I am not sure this case is interesting or even
-supported.
+If the number of AMD gp counters continues to grow, the code will
+be very clumsy and the switch-case design of inline get_gp_pmc_amd()
+will also bloat the kernel text size.
 
+The target code is taught to manage two groups of MSRs, each
+representing a different version of the AMD PMU counter MSRs.
+The MSR addresses of each group are contiguous, with no holes,
+and there is no intersection between two sets of addresses,
+but they are discrete in functionality by design like this:
+
+[Group A : All counter MSRs are tightly bound to all event select MSRs ]
+
+  MSR_K7_EVNTSEL0			0xc0010000
+  MSR_K7_EVNTSELi			0xc0010000 + i
+  ...
+  MSR_K7_EVNTSEL3			0xc0010003
+  MSR_K7_PERFCTR0			0xc0010004
+  MSR_K7_PERFCTRi			0xc0010004 + i
+  ...
+  MSR_K7_PERFCTR3			0xc0010007
+
+[Group B : The counter MSRs are interleaved with the event select MSRs ]
+
+  MSR_F15H_PERF_CTL0		0xc0010200
+  MSR_F15H_PERF_CTR0		(0xc0010200 + 1)
+  ...
+  MSR_F15H_PERF_CTLi		(0xc0010200 + 2 * i)
+  MSR_F15H_PERF_CTRi		(0xc0010200 + 2 * i + 1)
+  ...
+  MSR_F15H_PERF_CTL5		(0xc0010200 + 2 * 5)
+  MSR_F15H_PERF_CTR5		(0xc0010200 + 2 * 5 + 1)
+
+Rewrite get_gp_pmc_amd() in this way: first determine which group of
+registers is accessed, then determine if it matches its requested type,
+applying different scaling ratios respectively, and finally get pmc_idx
+to pass into amd_pmc_idx_to_pmc().
+
+Signed-off-by: Like Xu <likexu@tencent.com>
+---
+v1: https://lore.kernel.org/kvm/20220510115718.93335-3-likexu@tencent.com/
+v1 -> v2 Changelog:
+- Move amd_pmc_idx_to_pmc() to the front for reuse;
+- Apply msr_base and ratio semantics to the switch statement;
+
+ arch/x86/kvm/svm/pmu.c | 85 +++++++++---------------------------------
+ 1 file changed, 17 insertions(+), 68 deletions(-)
+
+diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
+index d1c3b766841e..d90af8cdd405 100644
+--- a/arch/x86/kvm/svm/pmu.c
++++ b/arch/x86/kvm/svm/pmu.c
+@@ -23,90 +23,49 @@ enum pmu_type {
+ 	PMU_TYPE_EVNTSEL,
+ };
+ 
+-enum index {
+-	INDEX_ZERO = 0,
+-	INDEX_ONE,
+-	INDEX_TWO,
+-	INDEX_THREE,
+-	INDEX_FOUR,
+-	INDEX_FIVE,
+-	INDEX_ERROR,
+-};
+-
+-static enum index msr_to_index(u32 msr)
++static struct kvm_pmc *amd_pmc_idx_to_pmc(struct kvm_pmu *pmu, int pmc_idx)
+ {
+-	switch (msr) {
+-	case MSR_F15H_PERF_CTL0:
+-	case MSR_F15H_PERF_CTR0:
+-	case MSR_K7_EVNTSEL0:
+-	case MSR_K7_PERFCTR0:
+-		return INDEX_ZERO;
+-	case MSR_F15H_PERF_CTL1:
+-	case MSR_F15H_PERF_CTR1:
+-	case MSR_K7_EVNTSEL1:
+-	case MSR_K7_PERFCTR1:
+-		return INDEX_ONE;
+-	case MSR_F15H_PERF_CTL2:
+-	case MSR_F15H_PERF_CTR2:
+-	case MSR_K7_EVNTSEL2:
+-	case MSR_K7_PERFCTR2:
+-		return INDEX_TWO;
+-	case MSR_F15H_PERF_CTL3:
+-	case MSR_F15H_PERF_CTR3:
+-	case MSR_K7_EVNTSEL3:
+-	case MSR_K7_PERFCTR3:
+-		return INDEX_THREE;
+-	case MSR_F15H_PERF_CTL4:
+-	case MSR_F15H_PERF_CTR4:
+-		return INDEX_FOUR;
+-	case MSR_F15H_PERF_CTL5:
+-	case MSR_F15H_PERF_CTR5:
+-		return INDEX_FIVE;
+-	default:
+-		return INDEX_ERROR;
+-	}
++	unsigned int num_counters = pmu->nr_arch_gp_counters;
++
++	if (pmc_idx >= num_counters)
++		return NULL;
++
++	return &pmu->gp_counters[array_index_nospec(pmc_idx, num_counters)];
+ }
+ 
+ static inline struct kvm_pmc *get_gp_pmc_amd(struct kvm_pmu *pmu, u32 msr,
+ 					     enum pmu_type type)
+ {
+ 	struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
++	unsigned int idx;
+ 
+ 	if (!vcpu->kvm->arch.enable_pmu)
+ 		return NULL;
+ 
+ 	switch (msr) {
+-	case MSR_F15H_PERF_CTL0:
+-	case MSR_F15H_PERF_CTL1:
+-	case MSR_F15H_PERF_CTL2:
+-	case MSR_F15H_PERF_CTL3:
+-	case MSR_F15H_PERF_CTL4:
+-	case MSR_F15H_PERF_CTL5:
++	case MSR_F15H_PERF_CTL0 ... MSR_F15H_PERF_CTR5:
+ 		if (!guest_cpuid_has(vcpu, X86_FEATURE_PERFCTR_CORE))
+ 			return NULL;
+-		fallthrough;
++		idx = (unsigned int)((msr - MSR_F15H_PERF_CTL0) / 2);
++		if ((msr == (MSR_F15H_PERF_CTL0 + 2 * idx)) !=
++		    (type == PMU_TYPE_EVNTSEL))
++			return NULL;
++		break;
+ 	case MSR_K7_EVNTSEL0 ... MSR_K7_EVNTSEL3:
+ 		if (type != PMU_TYPE_EVNTSEL)
+ 			return NULL;
++		idx = msr - MSR_K7_EVNTSEL0;
+ 		break;
+-	case MSR_F15H_PERF_CTR0:
+-	case MSR_F15H_PERF_CTR1:
+-	case MSR_F15H_PERF_CTR2:
+-	case MSR_F15H_PERF_CTR3:
+-	case MSR_F15H_PERF_CTR4:
+-	case MSR_F15H_PERF_CTR5:
+-		if (!guest_cpuid_has(vcpu, X86_FEATURE_PERFCTR_CORE))
+-			return NULL;
+-		fallthrough;
+ 	case MSR_K7_PERFCTR0 ... MSR_K7_PERFCTR3:
+ 		if (type != PMU_TYPE_COUNTER)
+ 			return NULL;
++		idx = msr - MSR_K7_PERFCTR0;
+ 		break;
+ 	default:
+ 		return NULL;
+ 	}
+ 
+-	return &pmu->gp_counters[msr_to_index(msr)];
++	return amd_pmc_idx_to_pmc(pmu, idx);
+ }
+ 
+ static bool amd_hw_event_available(struct kvm_pmc *pmc)
+@@ -122,16 +81,6 @@ static bool amd_pmc_is_enabled(struct kvm_pmc *pmc)
+ 	return true;
+ }
+ 
+-static struct kvm_pmc *amd_pmc_idx_to_pmc(struct kvm_pmu *pmu, int pmc_idx)
+-{
+-	unsigned int num_counters = pmu->nr_arch_gp_counters;
+-
+-	if (pmc_idx >= num_counters)
+-		return NULL;
+-
+-	return &pmu->gp_counters[array_index_nospec(pmc_idx, num_counters)];
+-}
+-
+ static bool amd_is_valid_rdpmc_ecx(struct kvm_vcpu *vcpu, unsigned int idx)
+ {
+ 	struct kvm_pmu *pmu = vcpu_to_pmu(vcpu);
 -- 
-Michal Hocko
-SUSE Labs
+2.37.1
+
