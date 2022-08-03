@@ -2,115 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 144EBC00140
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 01:16:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9930CC19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 01:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234696AbiHCBQe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 21:16:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39000 "EHLO
+        id S235193AbiHCBQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 21:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229631AbiHCBQb (ORCPT
+        with ESMTP id S229631AbiHCBQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 21:16:31 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C310A5509D
-        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 18:16:29 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 08D872C0302;
-        Wed,  3 Aug 2022 01:16:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1659489386;
-        bh=RHb6z3FlisRbkOdYvmYzCDevXzAM2e8f7oJpOTfus7s=;
-        h=From:To:Cc:Subject:Date:From;
-        b=MKVJ1eeSOQGM+HPjKp/ksSmTeFKXY17Fz5Ee613XtBLsjL19KJx3Ew7IfFvAztMCu
-         1x+EuOeeVM6fOh7m6rE9Z8xsqm7F04WjCxDpUEvz/tZog+lOT3a4M9qqFbMCvlM6j4
-         UhCsm6qbI+1AQMfF65s1WSTDiJqDRb0vvFtEz4Jb8BpXfrZj7aCSMbSO8SdXgzhnCp
-         GiWwfNUfvuPX2QDIc5S9oJBEkPA+GrWTTAeauGJi/3jsVba0k5lhzRpDyIT0mZu6ji
-         yzdsXb2eRPXt1PbWoOVlinbeFBcK+Y16yAWrzfwmfXc6Y8r9v7rXKolduZxfhfxfjk
-         mbDCdnmxiaQSg==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B62e9cc690000>; Wed, 03 Aug 2022 13:16:25 +1200
-Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id D54BA13ED0C;
-        Wed,  3 Aug 2022 13:16:25 +1200 (NZST)
-Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id D1EEB2A0090; Wed,  3 Aug 2022 13:16:25 +1200 (NZST)
-From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        vadym.kochan@plvision.eu, gregory.clement@bootlin.com
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH] arm64: dts: marvell: Add UART1-3 for AC5/AC5X
-Date:   Wed,  3 Aug 2022 13:16:23 +1200
-Message-Id: <20220803011623.3607642-1-chris.packham@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.37.1
+        Tue, 2 Aug 2022 21:16:44 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A50C2558CC
+        for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 18:16:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659489403; x=1691025403;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=S4FrL8dGMuHIj7Th2f0eB4F0KnVVDKrax3h1wxVa1nY=;
+  b=UF7EJpcPGFIUPVFcK/96JuZqSU9Wu+TondFB6zkL1ruC64IFvbuak8ub
+   jD8TQwj5vnGheAuUJNDo2Sc1RXGMJaumbGPdIOwpeGmHy/sXu3uiNjG58
+   tBpTyl81ZMWjYmR8uf2O6dfBa3ELsnL2BNpjH4wGCP8tAjc37r9FHXKCM
+   83ONrtdYSToSCYusH127gt7b5NGYWpBdC784ZcQiNpozG1JAQcAg4GVe1
+   Lygy3Aay10PVpKcUY2bXtBPhm+Y4Eg2fJunR+WqP58bJsRRuX7cn1dZG9
+   d1k1rLLb2+NUZZrqRtpfrPDVpSb/0KBKtOq+uTLv5GH/kpixKd8UZWQTG
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="287116405"
+X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
+   d="scan'208";a="287116405"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 18:16:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
+   d="scan'208";a="670665347"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 02 Aug 2022 18:16:41 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oJ305-000Ge1-0t;
+        Wed, 03 Aug 2022 01:16:41 +0000
+Date:   Wed, 3 Aug 2022 09:16:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Wesley Cheng <wcheng@codeaurora.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Steev Klimaszewski <steev@kali.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [steev:linux-v5.19.0 69/198] ERROR: modpost:
+ "typec_switch_get_drvdata" [drivers/phy/qualcomm/phy-qcom-qmp.ko] undefined!
+Message-ID: <202208030957.PlLylDr3-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=F5opiZpN c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=biHskzXt2R4A:10 a=ngK7aFzLhKCcFdMQWeYA:9
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The AC5/AC5X SoC has 4 UART blocks. Add the additional UART1-3 blocks to
-the base dtsi file.
+tree:   https://github.com/steev/linux linux-v5.19.0
+head:   a4510d0cef54eda304739679db13f1f17abe4125
+commit: 52c2355f918241ce43caf2fbceb8aff380038507 [69/198] phy: qcom-qmp: Register as a typec switch for orientation detection
+config: openrisc-randconfig-r023-20220801 (https://download.01.org/0day-ci/archive/20220803/202208030957.PlLylDr3-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/steev/linux/commit/52c2355f918241ce43caf2fbceb8aff380038507
+        git remote add steev https://github.com/steev/linux
+        git fetch --no-tags steev linux-v5.19.0
+        git checkout 52c2355f918241ce43caf2fbceb8aff380038507
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash
 
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
----
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Notes:
-    This applies on top of the series adding the AC5/AC5X SoC which is in
-    Gregory's mvebu/dt64 tree but hasn't made it to Linus's (yet).
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
- arch/arm64/boot/dts/marvell/ac5-98dx25xx.dtsi | 30 +++++++++++++++++++
- 1 file changed, 30 insertions(+)
+>> ERROR: modpost: "typec_switch_get_drvdata" [drivers/phy/qualcomm/phy-qcom-qmp.ko] undefined!
+>> ERROR: modpost: "typec_switch_register" [drivers/phy/qualcomm/phy-qcom-qmp.ko] undefined!
 
-diff --git a/arch/arm64/boot/dts/marvell/ac5-98dx25xx.dtsi b/arch/arm64/b=
-oot/dts/marvell/ac5-98dx25xx.dtsi
-index 80b44c7df56a..914fcf9e2c24 100644
---- a/arch/arm64/boot/dts/marvell/ac5-98dx25xx.dtsi
-+++ b/arch/arm64/boot/dts/marvell/ac5-98dx25xx.dtsi
-@@ -95,6 +95,36 @@ uart0: serial@12000 {
- 				status =3D "okay";
- 			};
-=20
-+			uart1: serial@12100 {
-+				compatible =3D "snps,dw-apb-uart";
-+				reg =3D <0x11000 0x100>;
-+				reg-shift =3D <2>;
-+				interrupts =3D <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>;
-+				reg-io-width =3D <1>;
-+				clocks =3D <&cnm_clock>;
-+				status =3D "disabled";
-+			};
-+
-+			uart2: serial@12200 {
-+				compatible =3D "snps,dw-apb-uart";
-+				reg =3D <0x12200 0x100>;
-+				reg-shift =3D <2>;
-+				interrupts =3D <GIC_SPI 85 IRQ_TYPE_LEVEL_HIGH>;
-+				reg-io-width =3D <1>;
-+				clocks =3D <&cnm_clock>;
-+				status =3D "disabled";
-+			};
-+
-+			uart3: serial@12300 {
-+				compatible =3D "snps,dw-apb-uart";
-+				reg =3D <0x12300 0x100>;
-+				reg-shift =3D <2>;
-+				interrupts =3D <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
-+				reg-io-width =3D <1>;
-+				clocks =3D <&cnm_clock>;
-+				status =3D "disabled";
-+			};
-+
- 			mdio: mdio@22004 {
- 				#address-cells =3D <1>;
- 				#size-cells =3D <0>;
---=20
-2.37.1
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
