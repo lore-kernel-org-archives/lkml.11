@@ -2,116 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99754C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BFA0C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:44:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237468AbiHCJm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 05:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55350 "EHLO
+        id S235706AbiHCJov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 05:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237460AbiHCJmY (ORCPT
+        with ESMTP id S233564AbiHCJos (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 05:42:24 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD781CB12
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 02:42:23 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id n8so27565966yba.2
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 02:42:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=/5J/hTicAQKvIdTCsN8vIr3eGdVqz6oWNgR8PbCUFZ0=;
-        b=UW16xIvrWocqAhSPd2fuZKeM91zaflQgPYWDJgcud8Cri8Ym2URa03dCI1zYrFIezW
-         fICUhA0MZ7uec2/HuZSKY8g8uGB5q9N7Au4XQr5K6FFHmZ0hO8ktztxtkSHEE/vb6IJn
-         KEbgA906UOjZ2Rsii9K4/vyPRuud1tCOtgEnGKmFhWYZsrm+DJlhbb1l0W8029yPcEw/
-         8c52Bmse7AJhuI4irdCL1QGGKXLNRBxfMKaBMuCSsl1oJGfOPZbVh8tpZKDkfDCUULtN
-         JQPCee3tCjakxMT3yWiBiUPIVoXDmFby7RIPPsTaDJd+7IqvhfoTZn6FAP+2a7YrsBk5
-         gNYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=/5J/hTicAQKvIdTCsN8vIr3eGdVqz6oWNgR8PbCUFZ0=;
-        b=z0Fs0EpFe6MuqpKki3zm2vNwqWgY6iMSRz5RcpnGS8GWqcmhAcQE9nuyj0EkESYXmP
-         6aS07jOiIK/PiOT8ZpVI7E1rySycMor5zDo/jUgvhnlG6XvIeEZ20AJan/6vPYJgVWCC
-         iJuYtMUtDyu1jqeG0HXwOuZRVa9sIY3aIaf7bm4V+IHyMJOQXCq/QuT4WaA6BbSWrxQe
-         o9yrJeB4Q3uAlZ9RsK0B3j1CP9W08wuJ2zyDB7g+HCh8CVj9HlQS7pWHmGxGvYu6iGHM
-         pA+WPxEacRxQunozEunBOquSZRZXBS6Dpb4FCbT7uiT4MSiqa618V4MX9a+BZUdiGSuQ
-         cIzg==
-X-Gm-Message-State: ACgBeo28ZxgApPY/2zcxck9E6p3BZmFG0AD3RsO4SoojC54L/KwZNuob
-        vDlkk1jCnACw9WbNGTUJBqyjA4PrLOf1TwffbGzpmg==
-X-Google-Smtp-Source: AA6agR7WMDXiL70b6NLngI/XHKFbP2/r+w7WmXN1qYL7/w1ywK0n4OfWAmZKsLbnW7QxKw6oUWpd6k7KLsAW0q+NLBo=
-X-Received: by 2002:a25:d7d3:0:b0:671:899b:eafc with SMTP id
- o202-20020a25d7d3000000b00671899beafcmr18510665ybg.485.1659519742790; Wed, 03
- Aug 2022 02:42:22 -0700 (PDT)
+        Wed, 3 Aug 2022 05:44:48 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2071.outbound.protection.outlook.com [40.107.94.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F29183AD
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 02:44:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bGF9rO9wXTxfs7lk3PDIvEF8bH99dXYwtovpvN8gsw/JJ2LwCTx2hZjY/MLxcDq4mw3X6FCE1/tGp/pqkTHJfc8758rVSl5u2lGcxHZLaPYbTcBCMisIhBb+1wjufdwdDbsgA0gvRVOrKxldps5DfBAbSzeC+Wljv3Z3b5b+DkJ4chvzH1jemG2lGWLvF4UKws4Aehmxud+DyjavI8NumclbxNwK2LmZyfAPQbC7UdzdkRIT/xku/fIl9O8unuBZCvnV0nAQ3prUUtAk7akFF+Ql2Jw1frAMeEYWT89AiAc7zyzM63XE6E07RImHZYmqVXb+8Egex0xvV/sfxuxM3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=szHf4s+88m0CEqNN2QZ1zx+hWp5iUeNXUQPAHii4v+4=;
+ b=gQA6IaKU6F64Imx5O8nlOElIdI9EtvkBj7dZeRywY6yIYkfWzBDXFUiX5ouZ+CBXKciZA1b0TJI+lQkuap2KdSOkUJBN6otcFJ8YCj11YhtuKZGHGqcFMaW2P/00/V7ErEZ7hH9WAj8Gf8W79P1IJRKsgKC9Ih7ELL2wADzw5z6/Egw9NGEGt7l1b6msLQo/2K2x90cbxAACF7reSoqnsDHJemb//P3f5HmkmVznZ+RabRV+l0QegjC2z235KQlOb1k/Wg95whVZd9eSyjSxl0frWjLvgpYZ68i+SFm9T5QZIr7jY7wpQ1drYA57AYKIL5nMEEkVDX5gUDa8VML6uA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=szHf4s+88m0CEqNN2QZ1zx+hWp5iUeNXUQPAHii4v+4=;
+ b=OCySqVkLxYib49E6dAV+sNSUHDtl6V6xZVCDXol5trK1R01/8cyOQsF7Z2YBUu9DNegqbVmDrQp4GJuBXcoV3q7a580zws9vU99LsyuzSKW7l7/Q3SG7CU361Lo6c4pDOPqKQLQUHs4LL3U8APeT0PE0f2w7bbFqBmxa0nDnol8=
+Received: from DM6PR12MB2619.namprd12.prod.outlook.com (2603:10b6:5:45::18) by
+ DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5482.12; Wed, 3 Aug 2022 09:44:44 +0000
+Received: from DM6PR12MB2619.namprd12.prod.outlook.com
+ ([fe80::4c95:9b06:87e6:4382]) by DM6PR12MB2619.namprd12.prod.outlook.com
+ ([fe80::4c95:9b06:87e6:4382%7]) with mapi id 15.20.5482.016; Wed, 3 Aug 2022
+ 09:44:44 +0000
+From:   "Quan, Evan" <Evan.Quan@amd.com>
+To:     Zhen Ni <nizhen@uniontech.com>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+        "Koenig, Christian" <Christian.Koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>
+CC:     "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 2/2] drm/amd/pm: Fix a potential gpu_metrics_table memory
+ leak
+Thread-Topic: [PATCH 2/2] drm/amd/pm: Fix a potential gpu_metrics_table memory
+ leak
+Thread-Index: AQHYpxpQryhDJqQVRUCYhQ/o9FJ3I62c7NUA
+Date:   Wed, 3 Aug 2022 09:44:44 +0000
+Message-ID: <DM6PR12MB2619E2FF16B6C68483876874E49C9@DM6PR12MB2619.namprd12.prod.outlook.com>
+References: <20220803091959.10030-1-nizhen@uniontech.com>
+ <20220803091959.10030-2-nizhen@uniontech.com>
+In-Reply-To: <20220803091959.10030-2-nizhen@uniontech.com>
+Accept-Language: en-US, zh-CN
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Enabled=true;
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SetDate=2022-08-03T09:44:41Z;
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Method=Standard;
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Name=General;
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ActionId=6f15ba6f-db17-4bc4-a2ac-5837bf90b298;
+ MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ContentBits=1
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 11b30138-f5e6-435e-e337-08da7534cbee
+x-ms-traffictypediagnostic: DM8PR12MB5445:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 76QQfVZ0FyAMPHrpDI/8CIw26TwGMisODbbY/D3FM3XZ3PwWaNIeDuLVEjgQ6VRLwWXVgBTr0zmAFlwwO1XiqIqqFwrpFOHk0yAM5iFWpetmMbinS7+5ApT01RdmFOAHDqhv9prGbDkqGa+Z3hVXXdwKC3MpLHsk/uM66eDW3D+ievj/iL7WYFcyeTbAadcOzIQ9mmV8SOD/CLr8jFbBoheA2CXud/oOcLxxWcIse/6PO07w4o1fVnCzz+c2xBoX3GQ7733xW1xhPWe/3JlS9YUnuqVEfPmySjiExGiJEy/4sJUUNkOob2C7woNeWT/25sUsdYfpE0NtBnqVsukf2op/nU2WhIAHXANY2OaQHJYgmVcl8IonI2rop/3kIqb/SR1UWQB2Pet4Gm5uc0zpTPr3I/duBio5oT0XraawI8hJTlXMxj4et1iDiGQMfWQus2kaKORS0hqlee3gg45EWVFuWsnYf/lkdLatBW/OUlMBwO9iXlj15iNkUNfS0cFoqDc01fgt1/ROcFu26DdHJIc8nBc5qZsa5Io1PeGIdJQ+X2AKZBcAqJiJEZptJA5HMeLUWfv1fvgaGG3gb01pbH0Nx5ngrw7YntJMUy8BPDowg9KVrtcvDUGGoBoYLHlRe755ZMuR8UEj/30er8ZXl7OWwDh3+jniLJD09YupOTr00+ut47OgfBFu/AdLP7HQm8+I9s2o1d1IsPaePiaXa8HAZdz1E5N6i59/dmF1FdXHDeH4fAccaIdhbKecEdT3zaIAupQ5v1N/wxx0JGkPWaI0qYV7+8y1bgJV2ZD+uQ6uRHtXj+7JgZcHZ+ue4FbM
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB2619.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(346002)(366004)(376002)(396003)(71200400001)(5660300002)(86362001)(33656002)(316002)(66946007)(76116006)(4326008)(66476007)(8936002)(52536014)(8676002)(6636002)(54906003)(38070700005)(55016003)(110136005)(66446008)(26005)(64756008)(9686003)(53546011)(186003)(38100700002)(66556008)(122000001)(478600001)(83380400001)(6506007)(2906002)(41300700001)(7696005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?J5+pBUyL5LH8l0L2kgm3qHGX9aSpNwzKuzR25TunuAPKWII6xzoLDS9l0GHt?=
+ =?us-ascii?Q?gwwyxI0c8BmBDlpWFw9MrjbER0cdktFwaDPHFXB7tSuqPctj2TTmslXf9ze5?=
+ =?us-ascii?Q?9nngdYumN6SdP+kt8IpP7RBGVR5Tr2tMb1YROWmZjtBncapS2eYj0VCPaFp/?=
+ =?us-ascii?Q?8tz88Nscx96Hf9GeMWSQt7+NiWkEiBh/y0SRP4Sv4/8tc4La7y4iSMl9y0Qv?=
+ =?us-ascii?Q?1+c4KH63Q6R1Vb/lJRC8tiaC8NbAoDqysbQF7Pajs76HI3V/hTDHrtqgRw/T?=
+ =?us-ascii?Q?fCvvtu3h7GGT+/asseGfxoPkymltnnQhUkU9FpyliftesmH3vEf1Fv2ZkXjJ?=
+ =?us-ascii?Q?I5TH9obOCywdtlGrrqNoebUADJzRk3Jg5/QTBtBeUy0jRjYhvYyHmDroUg1J?=
+ =?us-ascii?Q?kqoFL70rE7eKJ++ldHgNp719cZhzBAJWsCgvZn0W00mUhq7Raljbnv2soNl9?=
+ =?us-ascii?Q?5C2NiML5lIjVxv5eYI3SMQpnNYZGBvFFFhnyFQ/SQ5cQW5L6kqPQNUwmkjNb?=
+ =?us-ascii?Q?LkPUwcs3t0UQXmt823MKJOit+maSXw2Rv/K2Xi8q+yjQcrrI1IOXeTFePVEr?=
+ =?us-ascii?Q?3m1vmXrACImet6s1u51huD9Tkz6aZ2BJUQFJTHvsnCxB9ct/kkYLTaziQB2l?=
+ =?us-ascii?Q?osHCH/r/AA5a/F0PbH5xzgXQi3stSKV52VQDz1OJF/TvYc19z3By+2tytNvO?=
+ =?us-ascii?Q?jVSV6e77YEAmWfz39R/vJGWxzU2dbkMiZlijL39iFArvbCyeHiIbtHSZoQNi?=
+ =?us-ascii?Q?gHbWCKaNLM2JRK8Brd1VyUuef49PvwLqG4x1MetYruje87q8VdffQ/iG3E7L?=
+ =?us-ascii?Q?/Q/SuvKvKEDTa2XCsyjL+MXlfVGZX0EUMPGwTPlyPqnV2kW5Fpz0txj6qUYF?=
+ =?us-ascii?Q?8AGtpwZDdL4O3OQiDtecv7bGX+VsU80+uufsYMb2qiT0IFQV+g7vSm0sgB4Q?=
+ =?us-ascii?Q?AfzYdbAHOwjJM5LvruOUypHkSkZuYb9nfi2kq6iIp5BxMceimN806Kf6pMvt?=
+ =?us-ascii?Q?eDCmrqC5SIhHI0yYakDkF/j6pb11gxvj3NkIAmNdYYCNaopbJ10UgUYgjyjx?=
+ =?us-ascii?Q?k3b8IqEv644QA2LA0Kqo8L+MN16TkRjjj2gAnFXPyoaEiJMYjes0qGS0Og9v?=
+ =?us-ascii?Q?p7rlmnOJ52y0xU7FEaZn8LVQ1T6+oAfLfpiW/ROC5aLK69f2RkE7FT4kaOIh?=
+ =?us-ascii?Q?8JW1cpVvWlomWrzhoc5g4QRom/OzZQ+Q9bDrv8wu3aDmXTW9ziKlzJIHGPTT?=
+ =?us-ascii?Q?FFaZ+QUF+K/s6fJCJnwuwvqVAheYAg25a3KWoz0aZICj78io64KVUSRcMj+W?=
+ =?us-ascii?Q?VgtTF4K8iHac+3+NwVRPkjZr1plrtpKgko2OB5WROlaapCAq4AaLITd/a4gZ?=
+ =?us-ascii?Q?5/kF1/iUiw7sGNuc04wFI5U+6tlg0qGk4u+egD/rtsGd1XxJ8+xlGYA+N1fm?=
+ =?us-ascii?Q?mGZrsqWy3iCKFD0OfpTLnaidn7IMO0/ngDYEXPdC+K+erv0vdeZ+3ndZSPBO?=
+ =?us-ascii?Q?cQJ8nOuOOmrqhoWNdgPKVIaw8t5cC2KL8re8CcRNpg3kocRtp1MQoDI4YFjL?=
+ =?us-ascii?Q?hHVZvvWUekiJoWynaAU=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-11-glider@google.com>
- <CANpmjNOYqXSw5+Sxt0+=oOUQ1iQKVtEYHv20=sh_9nywxXUyWw@mail.gmail.com>
-In-Reply-To: <CANpmjNOYqXSw5+Sxt0+=oOUQ1iQKVtEYHv20=sh_9nywxXUyWw@mail.gmail.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Wed, 3 Aug 2022 11:41:46 +0200
-Message-ID: <CAG_fn=UToPvi8-1puuCS95o1V36MkAwFyQKFgp0AxBROcNgfKg@mail.gmail.com>
-Subject: Re: [PATCH v4 10/45] libnvdimm/pfn_dev: increase MAX_STRUCT_PAGE_SIZE
-To:     Marco Elver <elver@google.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB2619.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 11b30138-f5e6-435e-e337-08da7534cbee
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Aug 2022 09:44:44.5901
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: db/R/GYKZSLOjduNSP0JdhBRKohqUtFczhmiLA2q/9r9olH4kWBcFp8mvQNRaGNA
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5445
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(+ Dan Williams)
+[AMD Official Use Only - General]
 
-On Mon, Jul 11, 2022 at 6:27 PM Marco Elver <elver@google.com> wrote:
->
-> On Fri, 1 Jul 2022 at 16:23, Alexander Potapenko <glider@google.com> wrote:
-> >
-> > KMSAN adds extra metadata fields to struct page, so it does not fit into
-> > 64 bytes anymore.
->
-> Does this somehow cause extra space being used in all kernel configs?
-> If not, it would be good to note this in the commit message.
+Thanks for the fixes! The series is reviewed-by: Evan Quan <evan.quan@amd.c=
+om>
 
-I actually couldn't verify this on QEMU, because the driver never got loaded.
-Looks like this increases the amount of memory used by the nvdimm
-driver in all kernel configs that enable it (including those that
-don't use KMSAN), but I am not sure how much is that.
-
-Dan, do you know how bad increasing MAX_STRUCT_PAGE_SIZE can be?
-
->
-> > Signed-off-by: Alexander Potapenko <glider@google.com>
->
-> Reviewed-by: Marco Elver <elver@google.com>
+Evan
+> -----Original Message-----
+> From: Zhen Ni <nizhen@uniontech.com>
+> Sent: Wednesday, August 3, 2022 5:20 PM
+> To: airlied@linux.ie; daniel@ffwll.ch; Quan, Evan <Evan.Quan@amd.com>;
+> Deucher, Alexander <Alexander.Deucher@amd.com>; Koenig, Christian
+> <Christian.Koenig@amd.com>; Pan, Xinhui <Xinhui.Pan@amd.com>
+> Cc: amd-gfx@lists.freedesktop.org; dri-devel@lists.freedesktop.org; linux=
+-
+> kernel@vger.kernel.org; Zhen Ni <nizhen@uniontech.com>
+> Subject: [PATCH 2/2] drm/amd/pm: Fix a potential gpu_metrics_table
+> memory leak
+>=20
+> Memory is allocated for gpu_metrics_table in
+> smu_v13_0_5_init_smc_tables(), but not freed in
+> smu_v13_0_5_fini_smc_tables(). This may cause memory leaks, fix it.
+>=20
+> Signed-off-by: Zhen Ni <nizhen@uniontech.com>
+> ---
+>  drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>=20
+> diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c
+> b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c
+> index b81711c4ff33..267c9c43a010 100644
+> --- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c
+> +++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_5_ppt.c
+> @@ -167,6 +167,9 @@ static int smu_v13_0_5_fini_smc_tables(struct
+> smu_context *smu)
+>  	kfree(smu_table->watermarks_table);
+>  	smu_table->watermarks_table =3D NULL;
+>=20
+> +	kfree(smu_table->gpu_metrics_table);
+> +	smu_table->gpu_metrics_table =3D NULL;
+> +
+>  	return 0;
+>  }
+>=20
+> --
+> 2.20.1
+>=20
+>=20
