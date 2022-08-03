@@ -2,91 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E26D5C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 22:26:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC19EC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 22:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237812AbiHCW0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 18:26:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49756 "EHLO
+        id S238577AbiHCW3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 18:29:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237132AbiHCWZ6 (ORCPT
+        with ESMTP id S238883AbiHCW3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 18:25:58 -0400
-Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83FB838A2;
-        Wed,  3 Aug 2022 15:25:56 -0700 (PDT)
-Received: by mail-il1-f176.google.com with SMTP id z6so8196827iln.13;
-        Wed, 03 Aug 2022 15:25:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=75J351RhvLWaNaDEuKDQSYMAYS+EvEUS1HxFqA844aM=;
-        b=I7XRoEjwIypDIeh6aIaHHsDsuFe/vhOQLSfuTeEAt1VtQCmDGQN9eyqy6TKiSmPM7g
-         rey6oZ2owioNznHb0+qn1DMYFHcLu0ce15askHhQ8eONf4VLsiGRALH3FHmOzKyOdbl+
-         KzQDXTaxqOfw+eDTez5GtclEgwkZHUOxmGg8rZOKqvmisrs8eZggu8CVoVPjRVr/5S5x
-         F+PKrAtNWattw6iHVBuqwP8YckLUdAnUXJyDIfa5qE2p8XeUEXalHET+ThA/wQiiAzNS
-         Ng3WBfDxw4XOCqNOs3qXz15A43N3XTjvzbDe24DArW/Ulvd3wMbS5ZSwlXo7jJCQqxBt
-         /a6g==
-X-Gm-Message-State: AJIora9oatnpyCqIlr3vT3yeb33GSU5KSvnm+gQ5C3BRv3/HfNo4x86H
-        nGEgDPWYiNi2VfJ5BPTITQ==
-X-Google-Smtp-Source: AGRyM1vFgEiM4mqDqG8n02VeO5CgzGHFBqz8H57zw5X0V7f6EMV3CS5bmW+6+WMG6BHO7ysuxySmDQ==
-X-Received: by 2002:a05:6e02:1a25:b0:2dc:743c:864a with SMTP id g5-20020a056e021a2500b002dc743c864amr11342302ile.248.1659565555800;
-        Wed, 03 Aug 2022 15:25:55 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id bc11-20020a0566383ccb00b00335b403c3b4sm8176076jab.48.2022.08.03.15.25.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 15:25:55 -0700 (PDT)
-Received: (nullmailer pid 2730520 invoked by uid 1000);
-        Wed, 03 Aug 2022 22:25:53 -0000
-Date:   Wed, 3 Aug 2022 16:25:53 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Elvis Wang <Elvis.Wang@mediatek.com>
-Cc:     Jassi Brar <jassisinghbrar@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        CK Hu <ck.hu@mediatek.com>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH 1/2] dt-bindings: mailbox: add definition for mt8188
-Message-ID: <20220803222553.GA2727128-robh@kernel.org>
-References: <20220729084319.6880-1-Elvis.Wang@mediatek.com>
- <20220729084319.6880-2-Elvis.Wang@mediatek.com>
+        Wed, 3 Aug 2022 18:29:13 -0400
+Received: from mx01.ayax.eu (mx01.ayax.eu [188.137.98.110])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B455C372
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 15:29:12 -0700 (PDT)
+Received: from [192.168.192.146] (port=42920 helo=nx64de-df6d00)
+        by mx01.ayax.eu with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <gszymaszek@short.pl>)
+        id 1oJMrP-0008TF-9L; Thu, 04 Aug 2022 00:29:03 +0200
+Date:   Thu, 4 Aug 2022 00:29:01 +0200
+From:   Grzegorz Szymaszek <gszymaszek@short.pl>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Grzegorz Szymaszek <gszymaszek@short.pl>,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+Subject: [PATCH 2/3] staging: r8188eu: make use of the DRV_NAME macro
+Message-ID: <c1f348be8de5c767e72171590c6e405f6fb2bb59.1659565180.git.gszymaszek@short.pl>
+Mail-Followup-To: Grzegorz Szymaszek <gszymaszek@short.pl>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg KH <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev
+References: <6c83e05e5dbccff5630ccfed9e40bf84c889b647.1659565180.git.gszymaszek@short.pl>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220729084319.6880-2-Elvis.Wang@mediatek.com>
+In-Reply-To: <6c83e05e5dbccff5630ccfed9e40bf84c889b647.1659565180.git.gszymaszek@short.pl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 04:43:18PM +0800, Elvis Wang wrote:
-> Add dt-binding header for mt8188.
-> 
-> Signed-off-by: Elvis Wang <Elvis.Wang@mediatek.com>
-> ---
->  Documentation/devicetree/bindings/mailbox/mtk-gce.txt | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/mailbox/mtk-gce.txt b/Documentation/devicetree/bindings/mailbox/mtk-gce.txt
-> index c2aeba63bd47..50f97f6feeef 100644
-> --- a/Documentation/devicetree/bindings/mailbox/mtk-gce.txt
-> +++ b/Documentation/devicetree/bindings/mailbox/mtk-gce.txt
-> @@ -41,9 +41,9 @@ Optional properties for a client mutex node:
->    defined in 'dt-bindings/gce/<chip>-gce.h'.
->  
->  Some vaules of properties are defined in 'dt-bindings/gce/mt8173-gce.h',
-> -'dt-bindings/gce/mt8183-gce.h', 'dt-bindings/gce/mt8186-gce.h'
-> -'dt-bindings/gce/mt8192-gce.h', 'dt-bindings/gce/mt8195-gce.h' or
-> -'dt-bindings/gce/mt6779-gce.h'.
-> +'dt-bindings/gce/mt8183-gce.h', 'dt-bindings/gce/mt8186-gce.h',
-> +'dt-bindings/gce/mt8188-gce.h', 'dt-bindings/gce/mt8192-gce.h',
-> +'dt-bindings/gce/mt8195-gce.h' or 'dt-bindings/gce/mt6779-gce.h'.
->  Such as sub-system ids, thread priority, event ids.
+The DRV_NAME macro is defined with the name of the r8188eu driver, but
+it seems it wasn't actually used anywhere. Replace a hardcoded constant
+string of the same value in the driver's struct rtw_usb_drv, field
+.usbdrv.name. The affected file already includes include/drv_types.h,
+where the macro is declared.
 
-What about a new compatible string?
+Signed-off-by: Grzegorz Szymaszek <gszymaszek@short.pl>
+---
+ drivers/staging/r8188eu/os_dep/usb_intf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Really, this needs to be converted to schema...
-
-Rob
+diff --git a/drivers/staging/r8188eu/os_dep/usb_intf.c b/drivers/staging/r8188eu/os_dep/usb_intf.c
+index 68869c5daeff..256b9045488e 100644
+--- a/drivers/staging/r8188eu/os_dep/usb_intf.c
++++ b/drivers/staging/r8188eu/os_dep/usb_intf.c
+@@ -54,7 +54,7 @@ struct rtw_usb_drv {
+ };
+ 
+ static struct rtw_usb_drv rtl8188e_usb_drv = {
+-	.usbdrv.name = "r8188eu",
++	.usbdrv.name = DRV_NAME,
+ 	.usbdrv.probe = rtw_drv_init,
+ 	.usbdrv.disconnect = rtw_dev_remove,
+ 	.usbdrv.id_table = rtw_usb_id_tbl,
+-- 
+2.35.1
