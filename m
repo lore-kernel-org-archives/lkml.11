@@ -2,118 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A9CC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:22:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F032AC19F29
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238086AbiHCPWZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:22:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55324 "EHLO
+        id S238041AbiHCPZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:25:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238090AbiHCPWW (ORCPT
+        with ESMTP id S233041AbiHCPZI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:22:22 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61FA13A4AF;
-        Wed,  3 Aug 2022 08:22:20 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 395E911FB;
-        Wed,  3 Aug 2022 08:22:20 -0700 (PDT)
-Received: from [10.57.12.36] (unknown [10.57.12.36])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 86C143F70D;
-        Wed,  3 Aug 2022 08:22:18 -0700 (PDT)
-Message-ID: <ae7e7d7b-bf90-7f23-8a27-e6358b3ff4f6@arm.com>
-Date:   Wed, 3 Aug 2022 16:22:13 +0100
+        Wed, 3 Aug 2022 11:25:08 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D825FDB
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:25:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.es; i=@amazon.es; q=dns/txt; s=amazon201209;
+  t=1659540307; x=1691076307;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Tbu2vI/tuQpJhdPLbiU7SzaNS+QVhrT4UaYznxDPAGo=;
+  b=PwiM9MseAso+d9qYizAKUqLkzNMJBd+ArBmzMTnX4w8r8lSzqCkyWzQe
+   AtETtTXtohYTHIK8sRTgO9P5A+pLYcAKgsERe/QeDGG4xQ6oJPdxjJ4Bl
+   EmV/bK/n0KbV9ldI6JC8B9eYNsIIyzLGCzDVFHI+DNJX2v0+5abJ1Raz/
+   M=;
+X-IronPort-AV: E=Sophos;i="5.93,214,1654560000"; 
+   d="scan'208";a="115297759"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-e6c05252.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 15:21:44 +0000
+Received: from EX13D37EUA003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2a-e6c05252.us-west-2.amazon.com (Postfix) with ESMTPS id C002143D01;
+        Wed,  3 Aug 2022 15:21:42 +0000 (UTC)
+Received: from f4d4887fdcfb.ant.amazon.com (10.43.162.134) by
+ EX13D37EUA003.ant.amazon.com (10.43.165.7) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Wed, 3 Aug 2022 15:21:37 +0000
+From:   <bchalios@amazon.es>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <bchalios@amazon.es>, <tytso@mit.edu>, <Jason@zx2c4.com>,
+        <dwmw@amazon.co.uk>, <graf@amazon.de>, <xmarcalx@amazon.co.uk>,
+        <gregkh@linuxfoundation.org>
+Subject: [PATCH 0/2] virt: vmgenid: add generation counter
+Date:   Wed, 3 Aug 2022 17:21:25 +0200
+Message-ID: <20220803152127.48281-1-bchalios@amazon.es>
+X-Mailer: git-send-email 2.32.1 (Apple Git-133)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] spi: bitbang: Fix lsb-first Rx
-Content-Language: en-GB
-To:     Mark Brown <broonie@kernel.org>,
-        =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Christian Hewitt <christianshewitt@gmail.com>
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <28324d8622da80461cce35a82859b003d6f6c4b0.1659538737.git.robin.murphy@arm.com>
- <YuqOBYJSP8Pm7Bz5@sirena.org.uk>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YuqOBYJSP8Pm7Bz5@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+X-Originating-IP: [10.43.162.134]
+X-ClientProxiedBy: EX13D07UWB003.ant.amazon.com (10.43.161.66) To
+ EX13D37EUA003.ant.amazon.com (10.43.165.7)
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-03 16:02, Mark Brown wrote:
-> On Wed, Aug 03, 2022 at 03:58:57PM +0100, Robin Murphy wrote:
->> Shifting the recieved bit by "bits" inserts it at the top of the
->> *currently remaining* Tx data, so we end up accumulating the whole
->> transfer into bit 0 of the output word. Oops.
->>
->> For the algorithm to work as intended, we need to remember where the
->> top of the *original* word was, and shift Rx to there.
-> 
-> So if this never worked we presumably have some systems out there which
-> somehow rely on the old behaviour that we need to fix somehow - copying
-> in everyone from the original change...
+From: Babis Chalios <bchalios@amazon.es>
 
-Hmm, I can't imagine anyone's relying too critically on data transfer 
-corruption :/
+Linux recently added support for the VM Generation ID mechanism from
+Microsoft. The way this works currently is using the 128-bit blob
+provided by the vmgenid device to re-seed the RNG. While this works it
+has two main issues, (a) it is inherently racy due to the fact that it
+relies on a ACPI notification being delivered and handled and (b) the ID
+is unsuitable for exposing to user-space.
 
-Apparently these TM16x8 chips are the only thing so far to even want 
-lsb-first bitbang support at all, so I strongly suspect I'm the first 
-person to try the receive side of it (since Rockchip's SPI hardware 
-doesn't seem to support 3-wire half-duplex). It actually took me quite a 
-while to figure out that this wasn't my bug in trying to hook up the 
-matrix-keymap stuff, since half the bytes I was expecting to get back do 
-only have bit 0 set anyway.
+This patch-set extends the vmgenid device to introduce a generation
+counter, a 32-bit counter which is different every time the unique ID
+changes. The addition to the original implementation in QEMU can be
+found here:
+https://lists.nongnu.org/archive/html/qemu-devel/2022-08/msg00524.html.
 
-Cheers,
-Robin.
+The first patch re-works slightly the current vmgenid driver to add a
+function that parses an object from the vmgenid device and returns the
+physical address of the vmgenid data. The second patch uses that
+function to parse additionally the address of the generation counter
+from the vmgenid namespace. The counter is then exposed to the
+user-space through a misc-device which provides `read` and `mmap`
+interfaces.
 
->> Fixes: 1847e3046c52 ("spi: gpio: Implement LSB First bitbang support")
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>   drivers/spi/spi-bitbang-txrx.h | 6 ++++--
->>   1 file changed, 4 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/spi/spi-bitbang-txrx.h b/drivers/spi/spi-bitbang-txrx.h
->> index 267342dfa738..2dcbe166df63 100644
->> --- a/drivers/spi/spi-bitbang-txrx.h
->> +++ b/drivers/spi/spi-bitbang-txrx.h
->> @@ -116,6 +116,7 @@ bitbang_txrx_le_cpha0(struct spi_device *spi,
->>   {
->>   	/* if (cpol == 0) this is SPI_MODE_0; else this is SPI_MODE_2 */
->>   
->> +	u8 rxbit = bits - 1;
->>   	u32 oldbit = !(word & 1);
->>   	/* clock starts at inactive polarity */
->>   	for (; likely(bits); bits--) {
->> @@ -135,7 +136,7 @@ bitbang_txrx_le_cpha0(struct spi_device *spi,
->>   		/* sample LSB (from slave) on leading edge */
->>   		word >>= 1;
->>   		if ((flags & SPI_MASTER_NO_RX) == 0)
->> -			word |= getmiso(spi) << (bits - 1);
->> +			word |= getmiso(spi) << rxbit;
->>   		setsck(spi, cpol);
->>   	}
->>   	return word;
->> @@ -148,6 +149,7 @@ bitbang_txrx_le_cpha1(struct spi_device *spi,
->>   {
->>   	/* if (cpol == 0) this is SPI_MODE_1; else this is SPI_MODE_3 */
->>   
->> +	u8 rxbit = bits - 1;
->>   	u32 oldbit = !(word & 1);
->>   	/* clock starts at inactive polarity */
->>   	for (; likely(bits); bits--) {
->> @@ -168,7 +170,7 @@ bitbang_txrx_le_cpha1(struct spi_device *spi,
->>   		/* sample LSB (from slave) on trailing edge */
->>   		word >>= 1;
->>   		if ((flags & SPI_MASTER_NO_RX) == 0)
->> -			word |= getmiso(spi) << (bits - 1);
->> +			word |= getmiso(spi) << rxbit;
->>   	}
->>   	return word;
->>   }
->> -- 
->> 2.36.1.dirty
->>
+Babis Chalios (2):
+  virt: vmgenid: add helper function to parse ADDR
+  virt: vmgenid: add support for generation counter
+
+ Documentation/virt/vmgenid.rst | 120 ++++++++++++++++++++++++++
+ drivers/virt/vmgenid.c         | 151 ++++++++++++++++++++++++++++-----
+ 2 files changed, 251 insertions(+), 20 deletions(-)
+ create mode 100644 Documentation/virt/vmgenid.rst
+
+-- 
+2.37.1
+
+Amazon Spain Services sociedad limitada unipersonal, Calle Ramirez de Prado 5, 28045 Madrid. Registro Mercantil de Madrid . Tomo 22458 . Folio 102 . Hoja M-401234 . CIF B84570936
+
