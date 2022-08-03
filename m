@@ -2,118 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D079C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 14:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97423C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 14:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238719AbiHCORn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 10:17:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39396 "EHLO
+        id S236261AbiHCOU4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 10:20:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238656AbiHCORc (ORCPT
+        with ESMTP id S229723AbiHCOUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 10:17:32 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B95DB863;
-        Wed,  3 Aug 2022 07:17:31 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27398q1a000827;
-        Wed, 3 Aug 2022 16:17:03 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=gzklWwUpe4hcnf+G9HdQnLHm5xwgT1JwzAwRZjqCTuY=;
- b=7NzmMvP7Fqmifd1D3Vo8qH+6NHGb0Z5MHbFnO0ubBQ8ipiyLG2KUtLQDUNzMaE118cy7
- OaGWcGiio6B83+w50rd4l3ysauOM4PrUU2Nn4P/JkNDvE7+NYncJFdPwlxjQD7Gns248
- mIOK1W8FHhaMOAia2yTFr6pxiN6sJYx/imhjsxkpaNv4qjeEZ7Z2TIzYT0+IRu/m0CWF
- dCZBN+B3P9uhfzD/gG3lM7gpWSk+0Rb/GQLkBji/aRHov7OethlsCn5Qj9J2at78k1W+
- oMYckbMWPhEsaHtT8VuUtlXdpMiS1ZtDmbiJL5/qChdQzpUQ7dhJBeU7IGUMW73+SIeA Zw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hq2b01bq5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 03 Aug 2022 16:17:03 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 159B110002A;
-        Wed,  3 Aug 2022 16:17:02 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 0EDDB2248CC;
-        Wed,  3 Aug 2022 16:17:02 +0200 (CEST)
-Received: from localhost (10.75.127.44) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Wed, 3 Aug
- 2022 16:17:01 +0200
-From:   <patrice.chotard@foss.st.com>
-To:     Mark Brown <broonie@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     <linux-spi@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
-        <patrice.chotard@foss.st.com>
-Subject: [PATCH 2/3] spi: stm32-qspi: Remove stm32_qspi_get_mode() unused parameter
-Date:   Wed, 3 Aug 2022 16:16:56 +0200
-Message-ID: <20220803141657.301793-3-patrice.chotard@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220803141657.301793-1-patrice.chotard@foss.st.com>
-References: <20220803141657.301793-1-patrice.chotard@foss.st.com>
+        Wed, 3 Aug 2022 10:20:54 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E0D1581B;
+        Wed,  3 Aug 2022 07:20:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659536453; x=1691072453;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=qvzA0DLXBqyk6MhWAQKb2NBSKTCR9jls3SHT+NRtjyE=;
+  b=gK+RlPwvZQgZuIiMOpqtW/4v7UZdZm1tGWdR6emM2hJ+RiOcl3DPJtYm
+   J/6vobPyI00nPkpCIGFB7aIOpqjf/XxYY5OGLZCzYO/Og5/seWb3+IWgC
+   DZbvNnvOz3BaMJO/DyW+GzVLPWL6WLomXjy/ROQhMaXI8eR3lN6zGCAdq
+   T/2KSzqnwwC2sRh1KLmGRTFpslX8NEQxs1KiexmWS+Tf8iin9VmOSxRlI
+   dgXmig4g0hBahrkxNekE0i61BT/MRu+skFbX+nELmgyEBBiK5/fK62J0z
+   2LSBfDR0hPymaYQmLiDddZDLL25nlqY/pmZ/xtoVfRQCgLiNKNoKQx4xs
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="272729909"
+X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
+   d="scan'208";a="272729909"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 07:20:52 -0700
+X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
+   d="scan'208";a="631165944"
+Received: from buichris-mobl.amr.corp.intel.com (HELO [10.209.124.150]) ([10.209.124.150])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 07:20:52 -0700
+Message-ID: <54cf3e98-49d3-81f5-58e6-ca62671ab457@intel.com>
+Date:   Wed, 3 Aug 2022 07:20:52 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v5 07/22] x86/virt/tdx: Implement SEAMCALL function
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, len.brown@intel.com,
+        tony.luck@intel.com, rafael.j.wysocki@intel.com,
+        reinette.chatre@intel.com, dan.j.williams@intel.com,
+        peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com
+References: <cover.1655894131.git.kai.huang@intel.com>
+ <095e6bbc57b4470e1e9a9104059a5238c9775f00.1655894131.git.kai.huang@intel.com>
+ <069a062e-a4a6-09af-7b74-7f4929f2ec0b@intel.com>
+ <5ce7ebfe54160ea35e432bf50207ebed32db31fc.camel@intel.com>
+ <84e93539-a2f9-f68e-416a-ea3d8fc725af@intel.com>
+ <6bef368ccc68676e4acaecc4b6dc52f598ea7f2f.camel@intel.com>
+ <ea03e55499f556388c0a5f9ed565e72e213c276f.camel@intel.com>
+ <978c3d37-97c9-79b9-426a-2c27db34c38a@intel.com>
+ <0b20f1878d31658a9e3cd3edaf3826fe8731346e.camel@intel.com>
+ <c96a78c6a8caf25b01e450f139c934688d1735b0.camel@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <c96a78c6a8caf25b01e450f139c934688d1735b0.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-03_03,2022-08-02_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrice Chotard <patrice.chotard@foss.st.com>
+On 8/2/22 19:37, Kai Huang wrote:
+> On Thu, 2022-07-21 at 13:52 +1200, Kai Huang wrote:
+>> Also, if I understand correctly above, your suggestion is we want to prevent any
+>> CMR memory going offline so it won't be hot-removed (assuming we can get CMRs
+>> during boot).  This looks contradicts to the requirement of being able to allow
+>> moving memory from core-mm to driver.  When we offline the memory, we cannot
+>> know whether the memory will be used by driver, or later hot-removed.
+> Hi Dave,
+> 
+> The high level flow of device hot-removal is:
+> 
+> acpi_scan_hot_remove()
+> 	-> acpi_scan_try_to_offline()
+> 		-> acpi_bus_offline()
+> 			-> device_offline()
+> 				-> memory_subsys_offline()
+> 	-> acpi_bus_trim()
+> 		-> acpi_memory_device_remove()
+> 
+> 
+> And memory_subsys_offline() can also be triggered via /sysfs:
+> 
+> 	echo 0 > /sys/devices/system/memory/memory30/online
+> 
+> After the memory block is offline, my understanding is kernel can theoretically
+> move it to, i.e. ZONE_DEVICE via memremap_pages().
+> 
+> As you can see memory_subsys_offline() is the entry point of memory device
+> offline (before it the code is generic for all ACPI device), and it cannot
+> distinguish whether the removal is from ACPI event, or from /sysfs, so it seems
+> we are unable to refuse to offline memory in  memory_subsys_offline() when it is
+> called from ACPI event.
+> 
+> Any comments?
 
-Remove "struct stm32_qspi *qspi" from parameter list of
-stm32_qspi_get_mode() as this parameter is unused.
+I suggest refactoring the code in a way that makes it possible to
+distinguish the two cases.
 
-Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
----
- drivers/spi/spi-stm32-qspi.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+It's not like you have some binary kernel.  You have the source code for
+the whole thing and can propose changes *ANYWHERE* you need.  Even better:
 
-diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
-index 94356781e75b..622d1442a9b7 100644
---- a/drivers/spi/spi-stm32-qspi.c
-+++ b/drivers/spi/spi-stm32-qspi.c
-@@ -348,7 +348,7 @@ static int stm32_qspi_wait_poll_status(struct stm32_qspi *qspi)
- 	return 0;
- }
- 
--static int stm32_qspi_get_mode(struct stm32_qspi *qspi, u8 buswidth)
-+static int stm32_qspi_get_mode(u8 buswidth)
- {
- 	if (buswidth == 4)
- 		return CCR_BUSWIDTH_4;
-@@ -381,11 +381,11 @@ static int stm32_qspi_send(struct spi_mem *mem, const struct spi_mem_op *op)
- 	ccr = qspi->fmode;
- 	ccr |= FIELD_PREP(CCR_INST_MASK, op->cmd.opcode);
- 	ccr |= FIELD_PREP(CCR_IMODE_MASK,
--			  stm32_qspi_get_mode(qspi, op->cmd.buswidth));
-+			  stm32_qspi_get_mode(op->cmd.buswidth));
- 
- 	if (op->addr.nbytes) {
- 		ccr |= FIELD_PREP(CCR_ADMODE_MASK,
--				  stm32_qspi_get_mode(qspi, op->addr.buswidth));
-+				  stm32_qspi_get_mode(op->addr.buswidth));
- 		ccr |= FIELD_PREP(CCR_ADSIZE_MASK, op->addr.nbytes - 1);
- 	}
- 
-@@ -395,7 +395,7 @@ static int stm32_qspi_send(struct spi_mem *mem, const struct spi_mem_op *op)
- 
- 	if (op->data.nbytes) {
- 		ccr |= FIELD_PREP(CCR_DMODE_MASK,
--				  stm32_qspi_get_mode(qspi, op->data.buswidth));
-+				  stm32_qspi_get_mode(op->data.buswidth));
- 	}
- 
- 	writel_relaxed(ccr, qspi->io_base + QSPI_CCR);
--- 
-2.25.1
+$ grep -A2 ^ACPI\$ MAINTAINERS
+ACPI
+M:	"Rafael J. Wysocki" <rafael@kernel.org>
+R:	Len Brown <lenb@kernel.org>
 
+The maintainer of ACPI works for our employer.  Plus, he's a nice
+helpful guy that you can go ask how you might refactor this or
+approaches you might take.  Have you talked to Rafael about this issue?
+
+Also, from a two-minute grepping session, I noticed this:
+
+> static acpi_status acpi_bus_offline(acpi_handle handle, u32 lvl, void *data,
+>                                     void **ret_p)
+> {
+...
+>         if (device->handler && !device->handler->hotplug.enabled) {
+>                 *ret_p = &device->dev;
+>                 return AE_SUPPORT;
+>         }
+
+It looks to me like if you simply set:
+
+	memory_device_handler->hotplug.enabled = false;
+
+you'll get most of the behavior you want.  ACPI memory hotplug would not
+work and the changes would be confined to the ACPI world.  The
+"lower-level" bus-based hotplug would be unaffected.
+
+Now, I don't know what kind of locking would be needed to muck with a
+global structure like that.  But, it's a start.
