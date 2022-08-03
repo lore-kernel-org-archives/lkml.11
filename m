@@ -2,133 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D863C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:08:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77D0EC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237987AbiHCQIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 12:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39026 "EHLO
+        id S238127AbiHCQLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 12:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231966AbiHCQI2 (ORCPT
+        with ESMTP id S236287AbiHCQLA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 12:08:28 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B921EAFB
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:08:27 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id f22so11077263edc.7
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 09:08:27 -0700 (PDT)
+        Wed, 3 Aug 2022 12:11:00 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383B232EDC
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:10:59 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id s5-20020a17090a13c500b001f4da9ffe5fso2496734pjf.5
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 09:10:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=xyUh09AlPzLX3J7tBRjrcHuU0ktE1LHzV+qFDFqyRNU=;
-        b=gVXf52XWMaxBvWtCj7zNqZZaHLyEq+am9sa1BecCKpaJJth2oKrBKTZKEuy/lrgyel
-         BFVOGo+0KGV+gozB2wf858p5PlrjGu7O41KHCmrTbSqf2LsolYNINmrBU1Ih72qe+ahT
-         1KLeRnPSslaBPljatc716TjeOPC+O8/Av5c+c=
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=P8Kl/xKU4IYrDHB8lVGv34ItbSelul5121WYDgLOaI0=;
+        b=AxI/+//w2k08IiKw07QSnQ9ESu4dwG+wQ2H1SGE72Li0sSxNMpJ1h74H0Sl4CJKqsa
+         ih4rUvBv/IKrC+E+wGXXNKFxSl7R7LsDyo7QhY8j3ZKQFk/x5XOWF3SohPzArzZc4FId
+         y0S0s1uCBL7zRxZmyrax7xPhctcK9wyQJl1iQa3qwhzZBZ1qUWh6cU1SwH23tg25LmC8
+         jBcT2MqicnNp3pX3l51BnQDlLyL6gz89Z9nzF04zcjcJZEzZWF8b1I0ueoZnVcTP6M/F
+         8B2+3QzRsv2P/2XqGNrJUbuo11iswfZMfh/VT12eZ01MuohkIatWG1v+qHWPimCnW99S
+         FJPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=xyUh09AlPzLX3J7tBRjrcHuU0ktE1LHzV+qFDFqyRNU=;
-        b=BaxRFtCp1lVV/69QryD/IQ31Ct3R8c3kVfNZ1Pbtw2otEHbL76mCpW3H7J9RQRVnp6
-         bkIdJ0FZQyKNQwvKfhuL9+gr3ua2F9FQbnOlmm+Vry9Vm2Fh3hgPBRN9j7+If73VgVe8
-         U+Ax9EAxTOEVGbcEFp5GjZVmaI9pfyqyxZmECLQgmJQC/Kro3LxqT+krIrXpP1J19Dj7
-         itMln8GyuCfIOiw87D4HGr7dJ97CKvXVOOw+ApiQ0E7eyBwVtv73ZG9kbQsj1Z1AWMhP
-         CONpauHzrQd8BwszT/s4kRcOy/DrvdfwNTcgnlPsK1o5dR0tBiuyxHCYk2bK6jppNJdX
-         1A7w==
-X-Gm-Message-State: AJIora9qvRUppXqnrGByrEsrTakCmIyz5GpxvQE1m8Rh6na8QMry3TnY
-        v4tJMhI7tA8ADtqAzqP4eHKyOxbBKjO7AIOn
-X-Google-Smtp-Source: AGRyM1s1IwTNckkGezJB6XHnH0LhNd6tTcScwl9TEzYTr6iJwecbCbbdKv5FYbd5qCwLiP03aS9N9A==
-X-Received: by 2002:a50:ee85:0:b0:43d:3e0:6157 with SMTP id f5-20020a50ee85000000b0043d03e06157mr26750637edr.19.1659542905412;
-        Wed, 03 Aug 2022 09:08:25 -0700 (PDT)
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
-        by smtp.gmail.com with ESMTPSA id p16-20020a17090653d000b007309b35b335sm2316631ejo.104.2022.08.03.09.08.23
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Aug 2022 09:08:24 -0700 (PDT)
-Received: by mail-wm1-f50.google.com with SMTP id u14-20020a05600c00ce00b003a323062569so1089533wmm.4
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 09:08:23 -0700 (PDT)
-X-Received: by 2002:a05:600c:2d07:b0:3a3:585:5d96 with SMTP id
- x7-20020a05600c2d0700b003a305855d96mr3424259wmf.38.1659542903592; Wed, 03 Aug
- 2022 09:08:23 -0700 (PDT)
-MIME-Version: 1.0
-References: <YufsTLpighCI7qSf@alley> <CAHk-=wie+VC-R5=Hm=Vrg5PLrJxb1XiV67Efx-9Cr1fBKCWHTQ@mail.gmail.com>
- <YuqXkCZEfsSKoIX6@alley>
-In-Reply-To: <YuqXkCZEfsSKoIX6@alley>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 3 Aug 2022 09:08:07 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wj0umHOtL1TB_7Tvinoqhxz6BnL-jEC0eQfVihHOmbWjw@mail.gmail.com>
-Message-ID: <CAHk-=wj0umHOtL1TB_7Tvinoqhxz6BnL-jEC0eQfVihHOmbWjw@mail.gmail.com>
-Subject: Re: [GIT PULL] printk for 5.20
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>, Jan Kara <jack@suse.cz>,
-        Peter Zijlstra <peterz@infradead.org>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=P8Kl/xKU4IYrDHB8lVGv34ItbSelul5121WYDgLOaI0=;
+        b=x9vfZJ2MYwiCHM9c0MuSVZMKXPdKt9aqUOHRQ3SyB/cCN3p7jfNsh1E3pY8HA9kKBq
+         i2W8AMfqAA8CB2jBcP46UJ1kl6elf0vN3RIoI0+s/JDNGHdNNp7RJwXOlK8zTOarYbbr
+         esqXAUXw+ZXYe1R/wYSB5/g0xW/LTxybI4uvRXgsbOv1oWRW77KY8INhqe/gnxBDZiKf
+         3CKaXzhSKkekLR/gP/bPyQjOrGW6mQO4gKJbFED3RHE4vvPO0DT6eWEylB3AYncHAird
+         gQWUyE795z3JlDI5sTGusURwkGlw+DDX5KNLD8aOqQHc4cQiFKqAOoFn7guut90TzuU+
+         Eybw==
+X-Gm-Message-State: ACgBeo27UYcxG3IvAtyjm8x5FPXI2ezxzRPfzBgSqwY/s/FIK9UBxB9p
+        a5kTjjlcb7UMjWK7IeefF4qJ5Q==
+X-Google-Smtp-Source: AA6agR5JGK8PeZUbKGzAWb+OwiWFpZoHLTuXqycARkDvNa2Nl3oOUNhgSpR3SKoJI1jAkIYufUZsSw==
+X-Received: by 2002:a17:90a:b010:b0:1f3:161c:30a0 with SMTP id x16-20020a17090ab01000b001f3161c30a0mr5426664pjq.243.1659543058557;
+        Wed, 03 Aug 2022 09:10:58 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id d9-20020a170903230900b0016f057b88c9sm2226388plh.26.2022.08.03.09.10.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Aug 2022 09:10:57 -0700 (PDT)
+Date:   Wed, 3 Aug 2022 16:10:53 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Andrew Jones <andrew.jones@linux.dev>
+Cc:     Jinrong Liang <ljr.kernel@gmail.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jinrong Liang <cloudliang@tencent.com>, kvm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH] selftests: kvm: Fix a compile error in
+ selftests/kvm/rseq_test.c
+Message-ID: <YuqeDetNukKp9lyF@google.com>
+References: <20220802071240.84626-1-cloudliang@tencent.com>
+ <20220802150830.rgzeg47enbpsucbr@kamzik>
+ <CAFg_LQWB5hV9CLnavsCmsLbQCMdj1wqe-gVP7vp_mRGt+Eh+nQ@mail.gmail.com>
+ <20220803142637.3y5fj2cwyvbrwect@kamzik>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220803142637.3y5fj2cwyvbrwect@kamzik>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 3, 2022 at 8:43 AM Petr Mladek <pmladek@suse.com> wrote:
->
-> On Tue 2022-08-02 20:19:34, Linus Torvalds wrote:
-> > And printing messages to a console is not some "oh, we'll just stop
-> > doing that because you asked for PREEMPT_RT".
->
-> My thinking was that PREEMPT_RT was used only by some rather small
-> community that was very well aware of the upstream status. I kind of
-> though that this was their choice.
+On Wed, Aug 03, 2022, Andrew Jones wrote:
+> On Wed, Aug 03, 2022 at 09:58:51PM +0800, Jinrong Liang wrote:
+> > My ldd version is (GNU libc) 2.28, and I get a compilation error in this case.
+> > But I use another ldd (Ubuntu GLIBC 2.31-0ubuntu9.2) 2.31 is compiling fine.
+> > This shows that compilation errors may occur in different GNU libc environments.
+> > Would it be more appropriate to use syscall for better compatibility?
+> 
+> OK, it's a pity, but no big deal to use syscall().
 
-Oh, I agree that it probably is a pretty small community.
+Ya, https://man7.org/linux/man-pages/man2/gettid.2.html says:
 
-And I also think that people who are really into RT are basically
-always going to have extra patches anyway - I think the bulk of the
-core stuff has made it upstream, but not *all* has made it.
+  The gettid() system call first appeared on Linux in kernel 2.4.11.  Library
+  support was added in glibc 2.30.
 
-And the "real RT" people tend to also have long lead times - it's not
-just about "we need guaranteed latency", it also tends to be about
-"our hardware is special and stays around for years" too - and likely
-wouldn't ever really use upstream kernels directly anyway.
+But there are already two other instances of syscall(SYS_gettid) in KVM selftests,
+tools/testing/selftests/kvm/lib/assert.c even adds a _gettid() wrapper.
 
-In fact, I don't think anybody can currently even enable PREEMPT_RT in
-an upstream kernel anyway without extra patches. Much of the RT
-infrastructure has been merged, but some of the grottier parts are
-literally just "to make it easier to maintain the real external
-patch".
+So rather than having to remember (or discover) to use syscall(SYS_gettid), I wonder
+if it's possible to conditionally define gettid()?  E.g. check for GLIBC version?
+Or do
 
-So I agree with you that in reality it probably wouldn't really affect
-very many people, if any.
+  #define gettid() syscall(SYS_gettid)
 
-I suspect the most immediate effect would literally be people who want
-to experiment with it, "just because".
-
-Not the serious RT users who probably have special hardware anyway and
-are likely to also have special debug interfaces (exactly _because_
-they have special latency concerns).
-
-So that's why I'd suspect that the actual effect would be on people
-who just want to tinker with it, and download the necessary RT patches
-and set up some data acquisition station for their own use or
-whatever.
-
-But thinking some more about it, even the "serious RT" people almost
-certainly don't really want some kind of static "disable it all". Not
-even if it was a separate Kconfig question like I suggested.
-
-You'd most likely want it to be dynamic, because things like "log to
-console" is different at bootup when the system hasn't started yet -
-you can't really have realtime response when your hardware hasn't even
-initialized yet - and when things are actually running.
-
-So I think even then you really just want a "turn off console logging"
-dynamic flag, not a Kconfig option.
-
-Which I think we already have, in the form of log levels. No?
-
-          Linus
+so that it's always available and simply overrides the library's gettid() if it's
+provided?
