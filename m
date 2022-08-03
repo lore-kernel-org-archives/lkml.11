@@ -2,123 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C84FC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56D53C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237048AbiHCQu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 12:50:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39312 "EHLO
+        id S237237AbiHCQxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 12:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237274AbiHCQux (ORCPT
+        with ESMTP id S233814AbiHCQxO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 12:50:53 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C05CCA189;
-        Wed,  3 Aug 2022 09:50:51 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id z2so11828781edc.1;
-        Wed, 03 Aug 2022 09:50:51 -0700 (PDT)
+        Wed, 3 Aug 2022 12:53:14 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288C6AE49
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:53:14 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id f11-20020a17090a4a8b00b001f2f7e32d03so4044137pjh.0
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 09:53:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=PjTfETeJx0AMMZL3GKU4/eS5rgFKC9COqcGk3w/9o1g=;
-        b=RPjG5sqWlEVUG+FaGHhTHzrtfDDIQy9PaG+zA5JW9dlCiZ3Z0LE11d9jbNzc0GzWlv
-         7dxRtQPzF6XErhrq213RJiKzm2AYDl54i1HidvN4HOG0qWwJnPRh1g8LuPk4wljOGZyd
-         /dJQgFe95fwphCbKi9lPhv5qNjOlc/BNyGFOV1rFJzqlJe2C+2GVezKeI2lJaZ1T8KzD
-         FqD6PYeueeqHeAi/ndyUbJ2El51k69i2NbFDCWe5T4L3VApZzJ6c6SHsFl2IhopQbSMi
-         nqZ8zwRckOsGv0lE9TTC3I6O4n+vNunzXzY09C40PZCu9lQO+tH7JTDXuNd6vv/JnqA9
-         Bxpw==
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=4Tus1R0xuYRBtU57ePhS4E0yErBE8jqpbyDcNdaMSVs=;
+        b=hOAAnwWYgICjdTGqOw5garJoe78sf1ZPhQp/JtblQa1n8WVvtl1Fg/5jWqoeYo+rV6
+         7IfjUmYUrRJxxpVkbn6d6UqnIwUQF5h+dTk9ur292aTyc3sqiAWEaEKgtiA3adPZmThc
+         Ehdvbzz0F2xF6f1w74818d4nrbakcb+oJf8WVILrmoeGG6YWj5cyxlo59sXgwRAcDgcr
+         o3l21zBhmUQYo/J09tb7tT0p92hNAebXF4z9EW3tCROG+TB0AQ9ljtAyoMIa2tTGv29k
+         sCC9GynpxgwcvxRd6jkW8LT9FUX/kthjaOzCWdWvOuOyVMCKT87QcHxQ9jWr7T2/c74f
+         6iZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=PjTfETeJx0AMMZL3GKU4/eS5rgFKC9COqcGk3w/9o1g=;
-        b=5ZV8SfI6DBtobuh9wLR0x45d4mJVkUjBnTGN2s5WNMQl2DVLCxBNLJ506NOKFwASXG
-         Thm32fkQaamP8K0mYaRE6NQ8UN2Qe4XlZKxO1atbDFvlj2nxv7joi0mg7403F1uyBBuC
-         tDkctvd3Nm+/8rlELnSbr6rfNQbNLkd1o0JrBV6VwIi3LU7aGQrsDxtEOX5rP03mesoY
-         5b8eNHkMi0ByDAlCQKaSFcmt70Xiibovb3MPmq1Bnwq7oarakAmJyYGfKgt6Ttmdx05T
-         7GkMaXI9e5Pl+ebuEyTgJzL5/En0Mycttpe5BjBYQ/hQ1wDEPVIKmz6i03dNi7fn0Edb
-         qZ4Q==
-X-Gm-Message-State: ACgBeo1+oiGuxEWito5VSj9CdC17qd44fnpuL5KFpdb2XVVfYpYf2XXP
-        G/uPNkW0CCYGq9dnXrl1goPxcaAS++wJ340kydw=
-X-Google-Smtp-Source: AA6agR7vS40R5OQ498i9IT1CvyAd1hMJU4jDcIj/iSesCqOe/KJJq7hhbIxQYX/cnqzG52JaEKruskYuCXMZqJxqPpg=
-X-Received: by 2002:a50:cccb:0:b0:43d:efd3:88fb with SMTP id
- b11-20020a50cccb000000b0043defd388fbmr9358488edj.265.1659545450254; Wed, 03
- Aug 2022 09:50:50 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=4Tus1R0xuYRBtU57ePhS4E0yErBE8jqpbyDcNdaMSVs=;
+        b=67r+lCf2pRkegZqmoW6TBuNq/MOlrdbiDWyT7x0DSJ79Ld3asAdmkx2OUnFQ4q2ESW
+         t4KLYptBo6tiLt/RmGhvGxh5NuvlltiYAeXNRUIFcgYuyNfG7wTMsld+qsUBnv6Dz3cY
+         ltaLglZS+9lhyyzCzRB/qwBwLh7+lLpToRzTcVpxyTCBzIp+vgkCiJa2Ao8ZEbdmWFH9
+         yXZhGRI6pvAhEQnWDbiMMUtJCS9eNB8IxXbgoWNUOZnYW8DQ/nxRo09cOlm2OlfA21ci
+         Hs8zg+cqnf2mrJu0gdjL9Tk1yiJiZOMaIR/2v6hvYlt+FyC0NwzDSB4W2owYZkH996f+
+         PRnQ==
+X-Gm-Message-State: ACgBeo2AYSCOuOPwXMRQUAywUcV4Ld1o9PXFlYr46lEL0M8YnWK4ANO9
+        BksAhksDaO4f4QY4/3Exr+3KIw==
+X-Google-Smtp-Source: AA6agR7kWU1ywQmU447El8WR3xMws9kT7tW9gC1cfIkjl3e897HcALT+8//M66UiFUkC7BWWKnEm0Q==
+X-Received: by 2002:a17:903:1d2:b0:16f:1664:dd3b with SMTP id e18-20020a17090301d200b0016f1664dd3bmr3275358plh.60.1659545593573;
+        Wed, 03 Aug 2022 09:53:13 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id 145-20020a621497000000b00527dba9e37bsm13168880pfu.73.2022.08.03.09.53.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Aug 2022 09:53:13 -0700 (PDT)
+Date:   Wed, 3 Aug 2022 16:53:09 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Mingwei Zhang <mizhang@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH v2 2/2] kvm: nVMX: add tracepoint for kvm:kvm_nested_vmrun
+Message-ID: <Yuqn9QFA6ycHXgJx@google.com>
+References: <20220718171333.1321831-1-mizhang@google.com>
+ <20220718171333.1321831-3-mizhang@google.com>
 MIME-Version: 1.0
-References: <20220803153300.58732-1-sebastian.wuerl@ororatech.com> <CAHp75VdCH2tJQq3v_-iNP27oWFGF7EtKc-w299tLhDV85WbroQ@mail.gmail.com>
-In-Reply-To: <CAHp75VdCH2tJQq3v_-iNP27oWFGF7EtKc-w299tLhDV85WbroQ@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 3 Aug 2022 18:50:13 +0200
-Message-ID: <CAHp75VcTyubQFXyKA1RoYkpWowfKYwA1N_zZtmvGTeCmDG89Ow@mail.gmail.com>
-Subject: Re: [PATCH] drivers/net/can/spi/mcp251x.c: Fix race condition on
- receive interrupt
-To:     =?UTF-8?Q?Sebastian_W=C3=BCrl?= <sebastian.wuerl@ororatech.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-can@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718171333.1321831-3-mizhang@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 3, 2022 at 6:48 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Wed, Aug 3, 2022 at 5:36 PM Sebastian W=C3=BCrl
-> <sebastian.wuerl@ororatech.com> wrote:
-> >
-> > The mcp251x driver uses both receiving mailboxes of the can controller
->
-> CAN
->
-> > chips. For retrieving the CAN frames from the controller via SPI, it ch=
-ecks
-> > once per interrupt which mailboxes have been filled, an will retrieve t=
-he
-> > messages accordingly.
-> >
-> > This introduces a race condition, as another CAN frame can enter mailbo=
-x 1
-> > while mailbox 0 is emptied. If now another CAN frame enters mailbox 0 u=
-ntil
-> > the interrupt handler is called next, mailbox 0 is emptied before
-> > mailbox 1, leading to out-of-order CAN frames in the network device.
-> >
-> > This is fixed by checking the interrupt flags once again after freeing
-> > mailbox 0, to correctly also empty mailbox 1 before leaving the handler=
-.
-> >
-> > For reproducing the bug I created the following setup:
-> >  - Two CAN devices, one Raspberry Pi with MCP2515, the other can be any=
-.
-> >  - Setup CAN to 1 MHz
-> >  - Spam bursts of 5 CAN-messages with increasing CAN-ids
-> >  - Continue sending the bursts while sleeping a second between the burs=
-ts
-> >  - Check on the RPi whether the received messages have increasing CAN-i=
-ds
-> >  - Without this patch, every burst of messages will contain a flipped p=
-air
->
-> Fixes tag?
+Capitalize KVM in the shortlog, i.e. "KVM: nVMX:".
 
-Also fix the Subject prefix (you may see the most used ones by running
-`git log --no-merges --oneline -- drivers/net/can/spi/mcp251x.c`).
+On Mon, Jul 18, 2022, Mingwei Zhang wrote:
+> From: David Matlack <dmatlack@google.com>
+> 
+> This tracepoint is called by nested SVM during emulated VMRUN. Call
+> also during emulated VMLAUNCH and VMRESUME in nested VMX.
 
---=20
-With Best Regards,
-Andy Shevchenko
+Please reword this so it's a more coherent statement of what the patch does, e.g.
+
+  Call trace_kvm_nested_vmenter() during nested VMLAUNCH/VMRESUME to
+  bring parity with nSVM's usage of the tracepoint during nested VMRUN.
