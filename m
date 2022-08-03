@@ -2,167 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1727BC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 20:28:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A26C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 20:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238698AbiHCU2F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 16:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38508 "EHLO
+        id S238690AbiHCU2m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 16:28:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238664AbiHCU16 (ORCPT
+        with ESMTP id S238612AbiHCU2i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 16:27:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9DEA35A3FD
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 13:27:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659558476;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oVq6qfh71Z4eyfH2Jr7IUkThH+5zHyp5mI30K20IkZo=;
-        b=RCWuYes8YlKC3Edz4Y9HXW/tUad8qH59UFhrTvnNoAiJyZ35WEmr8z59XXedH63AMwO24t
-        yUvFClOrNlRoievoQ2VOz9GGN0+33b1i/tH/qs6o687lQkCqaneNjRtwhWaKjAoJU5lgoc
-        HBY3Xx6wqhXhtL5GmDXwO+l8JmmxY5Y=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-58-ZBGfC-xvPquZaeSGukkZqg-1; Wed, 03 Aug 2022 16:27:55 -0400
-X-MC-Unique: ZBGfC-xvPquZaeSGukkZqg-1
-Received: by mail-qk1-f199.google.com with SMTP id l15-20020a05620a28cf00b006b46997c070so14489717qkp.20
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 13:27:55 -0700 (PDT)
+        Wed, 3 Aug 2022 16:28:38 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6135059262;
+        Wed,  3 Aug 2022 13:28:37 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id q124so829521iod.3;
+        Wed, 03 Aug 2022 13:28:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=qns3k2bMfWZ5++no4JhoINAIs2Mgvwk2maknIEZXZGA=;
+        b=aEWJqLOnfAJre5C81Ylqs5yMywTkNY2DxE1pRS3Qa06+/3s5LtLaxsW7WkgO6B5/iM
+         +6BWdNFChgc7bTjv3aUJZwTqbv0KgFnZFwS9WTQkvR4yi7GsiYdyQ3hplToWzIpt1xLl
+         nKqSRu0Q+G1bONulaZMWnTzrfCqKqm1bjsfuB7HmTit/6A7yOCNnFyNCLWg9y07ZO4/J
+         w7bMXsP5oQFM+/Jnwk7rvdi0mWNboq0GB1SXVeG5uMJ89rUXo9zV1ai9KmXDcQnc4P2J
+         quCXLPa5enl2sXd9VRyx9l7hS16EtrjKd18Yvn92oBfx25bdm6+CG6rczOBbCrvgZb2e
+         REZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=oVq6qfh71Z4eyfH2Jr7IUkThH+5zHyp5mI30K20IkZo=;
-        b=Zrh6mvRa42nDn22dR+bNY2tRWmTqJylM51yoeK2seHyTwcLdu4zD0RBtRASCOxcbNl
-         ioyfe+i0rB810kSiqDSsIrYuApvInacveXS4gZPhRcWKX9fuBddb9tfG3LINr0ECoJkS
-         ABoi5waKEVv1gxS+gx1Y/Y0pHCr1A0LbYTcgd0yvWQR+Yt4I6KdqMkPf2AKDshIXrVIf
-         3mbzWwtBRfMdh26b2XjXnvOA+ylmdkalx3xnm2pzz51uatEFTEumk52LlT2ZBB4zL3WC
-         f5acdDbty2XXJZyVU44ny69au9qIZHD4iOaXhzDVf1jHY+F9BwvrvIxiHrvJUSqj+U4t
-         FSog==
-X-Gm-Message-State: AJIora8pYIb3Na36ggzGoGfTAgvdHQ7Y6/1I007/vTJ7EYUu3GwO70qi
-        7afYeB7heknx9XoMBbyiGQBfRmQ/SbEq7kR71XwRN9Vc8ihesylVpd/Tq1jXJyWt0yikI8yu8da
-        osAz4bL007WXrOZHMw0I/0XRK
-X-Received: by 2002:a05:620a:1a20:b0:6b5:fb66:c0ed with SMTP id bk32-20020a05620a1a2000b006b5fb66c0edmr20320471qkb.582.1659558475275;
-        Wed, 03 Aug 2022 13:27:55 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sYkLbaReZU3W97WVBuS4zUUlBeI7W8a0WinyCLm13NPrWmXKMpW3LlStpLdb0upC3LPX+pRA==
-X-Received: by 2002:a05:620a:1a20:b0:6b5:fb66:c0ed with SMTP id bk32-20020a05620a1a2000b006b5fb66c0edmr20320447qkb.582.1659558474989;
-        Wed, 03 Aug 2022 13:27:54 -0700 (PDT)
-Received: from [192.168.8.138] (pool-100-0-245-4.bstnma.fios.verizon.net. [100.0.245.4])
-        by smtp.gmail.com with ESMTPSA id r4-20020ae9d604000000b006b614fe291bsm12931459qkk.28.2022.08.03.13.27.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Aug 2022 13:27:54 -0700 (PDT)
-Message-ID: <848f35a693b26bfd15b3c6539eacd3e313dcd3a7.camel@redhat.com>
-Subject: Re: [RESEND RFC 18/18] drm/display/dp_mst: Move all payload info
- into the atomic state
-From:   Lyude Paul <lyude@redhat.com>
-To:     "Lin, Wayne" <Wayne.Lin@amd.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
-        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>
-Cc:     Ville =?ISO-8859-1?Q?Syrj=E4l=E4?= 
-        <ville.syrjala@linux.intel.com>, "Zuo, Jerry" <Jerry.Zuo@amd.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Imre Deak <imre.deak@intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <sean@poorly.run>,
-        "Wentland, Harry" <Harry.Wentland@amd.com>,
-        "Li, Sun peng (Leo)" <Sunpeng.Li@amd.com>,
-        "Siqueira, Rodrigo" <Rodrigo.Siqueira@amd.com>,
-        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-        "Koenig, Christian" <Christian.Koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        "Kazlauskas, Nicholas" <Nicholas.Kazlauskas@amd.com>,
-        "Li, Roman" <Roman.Li@amd.com>, "Shih, Jude" <Jude.Shih@amd.com>,
-        Simon Ser <contact@emersion.fr>,
-        "Lakha, Bhawanpreet" <Bhawanpreet.Lakha@amd.com>,
-        Mikita Lipski <mikita.lipski@amd.com>,
-        Claudio Suarez <cssk@net-c.es>, "Chen, Ian" <Ian.Chen@amd.com>,
-        Colin Ian King <colin.king@intel.com>,
-        "Wu, Hersen" <hersenxs.wu@amd.com>,
-        "Liu, Wenjing" <Wenjing.Liu@amd.com>, "Lei, Jun" <Jun.Lei@amd.com>,
-        "Strauss, Michael" <Michael.Strauss@amd.com>,
-        "Ma, Leo" <Hanghong.Ma@amd.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        =?ISO-8859-1?Q?Jos=E9?= Roberto de Souza 
-        <jose.souza@intel.com>, He Ying <heying24@huawei.com>,
-        Anshuman Gupta <anshuman.gupta@intel.com>,
-        Andi Shyti <andi.shyti@linux.intel.com>,
-        Ashutosh Dixit <ashutosh.dixit@intel.com>,
-        Juston Li <juston.li@intel.com>,
-        Sean Paul <seanpaul@chromium.org>,
-        Fernando Ramos <greenfoo@u92.eu>,
-        Luo Jiaxing <luojiaxing@huawei.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:INTEL DRM DRIVERS" <intel-gfx@lists.freedesktop.org>
-Date:   Wed, 03 Aug 2022 16:27:51 -0400
-In-Reply-To: <CO6PR12MB5489BAFF2DDCD67F8BDCD827FC819@CO6PR12MB5489.namprd12.prod.outlook.com>
-References: <20220607192933.1333228-1-lyude@redhat.com>
-         <20220607192933.1333228-19-lyude@redhat.com>
-         <CO6PR12MB5489BAFF2DDCD67F8BDCD827FC819@CO6PR12MB5489.namprd12.prod.outlook.com>
-Organization: Red Hat Inc.
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=qns3k2bMfWZ5++no4JhoINAIs2Mgvwk2maknIEZXZGA=;
+        b=H4QTyPdOnWwrzB56yipgzOmbk/uDfzHeQ9FZtIgVGQ+KJzbpQhOyYz0Ld169K6xfi2
+         YHIQnKeLgTf6MCGhJqoxdK/J08Inh7CJgQe7H55AKVrOUWg4sp92jZYOrfXtIzfbcFcs
+         8KTiWy0XeNAdk7h20bwXCICi29eQ0Vf5WXB6EHW0g5sQW+EjBnLDC/swjveA8rT0BC10
+         yLAqLQigCW2SMAzXGqk5gucK5V4L7HhJjMDXgMxJzXjY6a66a1PnC+BGti+Y/8dWhOz4
+         HmjhMqNoeH/I+vjVwlo4NYnX/GD1GFvJTswtJOW9bNeAI2vzkehS/Pm8f4P46uHdJlEX
+         d0tA==
+X-Gm-Message-State: AJIora8AHo6BfNGlhVP6y1gHZn5GvloIsxUPL3CG+ajotlonpmIgz7qP
+        4S310S8kE78VpAOVfZ9Y7wVmkqUoUagP5G5DPWkDbrzP
+X-Google-Smtp-Source: AGRyM1uH9w+FBi6w0iZfzdHO3chJWDFvIKlbdmizYyLuuwR3oEBqq5s53/WwKRKL0zGMjQBFej7UhPKp3nXHYVah3Eg=
+X-Received: by 2002:a05:6638:4883:b0:33f:7948:e685 with SMTP id
+ ct3-20020a056638488300b0033f7948e685mr11202421jab.138.1659558516113; Wed, 03
+ Aug 2022 13:28:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220803172302.1976981-1-robdclark@gmail.com> <c80d70b6-a7ad-5900-ea7a-f0f2157e4a40@quicinc.com>
+In-Reply-To: <c80d70b6-a7ad-5900-ea7a-f0f2157e4a40@quicinc.com>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Wed, 3 Aug 2022 13:29:02 -0700
+Message-ID: <CAF6AEGuDajmv=bnQ9hNgCbkB8ubpFhhoFZVL4881O=2B9xh+_Q@mail.gmail.com>
+Subject: Re: [PATCH 1/2] drm/msm: Move hangcheck timer restart
+To:     Akhil P Oommen <quic_akhilpo@quicinc.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org,
+        Rob Clark <robdclark@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-07-05 at 09:10 +0000, Lin, Wayne wrote:
-> > +struct drm_dp_mst_port;
+On Wed, Aug 3, 2022 at 12:52 PM Akhil P Oommen <quic_akhilpo@quicinc.com> wrote:
+>
+> On 8/3/2022 10:53 PM, Rob Clark wrote:
+> > From: Rob Clark <robdclark@chromium.org>
+> >
+> > Don't directly restart the hangcheck timer from the timer handler, but
+> > instead start it after the recover_worker replays remaining jobs.
+> >
+> > If the kthread is blocked for other reasons, there is no point to
+> > immediately restart the timer.  Fixes a random symptom of the problem
+> > fixed in the next patch.
+> >
+> > Signed-off-by: Rob Clark <robdclark@chromium.org>
+> > ---
+> >   drivers/gpu/drm/msm/msm_gpu.c | 14 +++++++++-----
+> >   1 file changed, 9 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+> > index fba85f894314..8f9c48eabf7d 100644
+> > --- a/drivers/gpu/drm/msm/msm_gpu.c
+> > +++ b/drivers/gpu/drm/msm/msm_gpu.c
+> > @@ -328,6 +328,7 @@ find_submit(struct msm_ringbuffer *ring, uint32_t fence)
+> >   }
+> >
+> >   static void retire_submits(struct msm_gpu *gpu);
+> > +static void hangcheck_timer_reset(struct msm_gpu *gpu);
+> >
+> >   static void get_comm_cmdline(struct msm_gem_submit *submit, char **comm, char **cmd)
+> >   {
+> > @@ -420,6 +421,8 @@ static void recover_worker(struct kthread_work *work)
+> >       }
+> >
+> >       if (msm_gpu_active(gpu)) {
+> > +             bool restart_hangcheck = false;
 > > +
-> >   /* DP MST stream allocation (payload bandwidth number) */
-> >   struct dc_dp_mst_stream_allocation {
-> >    uint8_t vcp_id;
-> >    /* number of slots required for the DP stream in
-> >    * transport packet */
-> >    uint8_t slot_count;
-> > + /* The MST port this is on, this is used to associate DC MST payloads
-> > with their
-> > + * respective DRM payloads allocations, and can be ignored on non-
-> > Linux.
-> > + */
-> 
-> Is it necessary for adding this new member? Since this is for setting the DC
-> HW and not relating to drm.
+> >               /* retire completed submits, plus the one that hung: */
+> >               retire_submits(gpu);
+> >
+> > @@ -436,10 +439,15 @@ static void recover_worker(struct kthread_work *work)
+> >                       unsigned long flags;
+> >
+> >                       spin_lock_irqsave(&ring->submit_lock, flags);
+> > -                     list_for_each_entry(submit, &ring->submits, node)
+> > +                     list_for_each_entry(submit, &ring->submits, node) {
+> >                               gpu->funcs->submit(gpu, submit);
+> > +                             restart_hangcheck = true;
+> > +                     }
+> >                       spin_unlock_irqrestore(&ring->submit_lock, flags);
+> >               }
+> > +
+> > +             if (restart_hangcheck)
+> > +                     hangcheck_timer_reset(gpu);
+> >       }
+> >
+> >       mutex_unlock(&gpu->lock);
+> > @@ -515,10 +523,6 @@ static void hangcheck_handler(struct timer_list *t)
+> >               kthread_queue_work(gpu->worker, &gpu->recover_work);
+> >       }
+> >
+> > -     /* if still more pending work, reset the hangcheck timer: */
+> In the scenario mentioned here, shouldn't we restart the timer?
 
-I don't entirely know, honestly. The reasons I did it:
+yeah, actually the case where we don't want to restart the timer is
+*only* when we schedule recover_work..
 
- * Mapping things from DRM to DC and from DC to DRM is really confusing for
-   outside contributors like myself, so it wasn't even really clear to me if
-   there was another way to reconstruct the DRM context from the spots where
-   we call from DC up to DM (not a typo, see next point).
- * These DC structs for MST are already layer mixing as far as I can tell,
-   just not in an immediately obvious way. While this struct itself is for DC,
-   there's multiple spots where we pass the DC payload structs down from DM to
-   DC, then pass them back up from DC to DM and have to figure out how to
-   reconstruct the DRM context that we actually need to use the MST helpers
-   from that. So, that kind of further complicates the confusion of where
-   layers should be separated.
- * As far as I'm aware with C there shouldn't be any issue with adding a
-   pointer to a struct whose contents are undefined. IMHO, this is also
-   preferable to just using void* because then at least you get some hint as
-   to the actual type of the data and avoid the possibility of casting it to
-   the wrong type. So tl;dr, on any platform even outside of Linux with a
-   reasonably compliant compiler this should still build just fine. It'll even
-   give you the added bonus of warning people if they try to access the
-   contents of this member in DC on non-Linux platforms. If void* is preferred
-   though I'm fine with switching it to that.
+BR,
+-R
 
--- 
-Cheers, Lyude Paul (she/her) Software Engineer at Red Hat
-
+>
+> -Akhil.
+> > -     if (fence_after(ring->fctx->last_fence, ring->hangcheck_fence))
+> > -             hangcheck_timer_reset(gpu);
+> > -
+> >       /* workaround for missing irq: */
+> >       msm_gpu_retire(gpu);
+> >   }
+> >
+>
