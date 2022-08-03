@@ -2,90 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B39CCC19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F0D9C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 16:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237903AbiHCQGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 12:06:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37968 "EHLO
+        id S238082AbiHCQHG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 12:07:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233632AbiHCQGe (ORCPT
+        with ESMTP id S234851AbiHCQHC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 12:06:34 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 068891A83F
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:06:34 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id w3so6409243edc.2
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 09:06:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5szB0Yt8wfbiTaP8/uH11/lZ59NOlpGeFsdpgoLNvJ8=;
-        b=ic+vNPABuREX+PIjwaM+VOGEJw6oF2ebKuLtvGvb4/Hb7YaZRdZFas4fPAdzbAg7jx
-         aesjy+76DTWh4E6VOx93inA8iC/941RMQo8fsSmtWm07+lOlWWxdSUMOghm1jrWvVoR4
-         U/LivSCQiuMwcebAF9+j1uTdx7DTBfUBhs5nQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5szB0Yt8wfbiTaP8/uH11/lZ59NOlpGeFsdpgoLNvJ8=;
-        b=pexTTRVzRaMO7v8lZ7aq1/o/OsZKFkH0JUSzfvaPch+KJcY5rXXMZDCnlCXOq30j8F
-         I2PFpNtytYAgG3FCb0Ym2nCoPUhDuKzqUmaPBUZP4/5UwAWobhtCLMeyPOqMnYAr5ux4
-         tm2+T3E7DY45gjljdjkguVYdYI89RweFAl6VsScffvpWKxNpSDBjNIXQTwqwehRMj1BI
-         FC8A/DS+ATn2SS9t9L5bQ2NXGQHc013+2A5B7Dk545zazAXzwS0SYXEa9D/q3XXx0XmT
-         v9C5Mt/D0HNblgPGleaNMavh3Esif0u4qDsGfrh6ayk1MMipmXld+FgJiUSvWetjO7oU
-         WOGw==
-X-Gm-Message-State: AJIora/7sgaaLm9MsfKA7EmxhNOwZpqn1PLPVAgBSfvV4q034mYl+8oi
-        uiBLdxTegocI8KmRsoQ7suDjb5DKknms+BlR2wcfRQ==
-X-Google-Smtp-Source: AGRyM1tY9355tF5SR98IYTJw6jtydsojrQZtfOZY+tbbLicCH00rJyvlJeK55pfPj3vsy9eOthOXBZnjsNPgYb7wPm8=
-X-Received: by 2002:aa7:d813:0:b0:43c:dedd:b4e8 with SMTP id
- v19-20020aa7d813000000b0043cdeddb4e8mr26254900edq.231.1659542792573; Wed, 03
- Aug 2022 09:06:32 -0700 (PDT)
+        Wed, 3 Aug 2022 12:07:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019F91A82F
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 09:07:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9894C6176F
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 16:07:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90B64C433C1;
+        Wed,  3 Aug 2022 16:06:59 +0000 (UTC)
+Date:   Wed, 3 Aug 2022 12:06:57 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>, Jan Kara <jack@suse.cz>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [GIT PULL] printk for 5.20
+Message-ID: <20220803120657.03f35595@gandalf.local.home>
+In-Reply-To: <YuqXkCZEfsSKoIX6@alley>
+References: <YufsTLpighCI7qSf@alley>
+        <CAHk-=wie+VC-R5=Hm=Vrg5PLrJxb1XiV67Efx-9Cr1fBKCWHTQ@mail.gmail.com>
+        <YuqXkCZEfsSKoIX6@alley>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <CAJ-EccPH46FGKQj8gYEg5HGpmmRiqzrZouTZauwpvX-+2j4GNA@mail.gmail.com>
- <CAHk-=wim4B671BOPfxoXDSz0xfOruqoKCMQrjAX0R95PH5Wy4g@mail.gmail.com>
-In-Reply-To: <CAHk-=wim4B671BOPfxoXDSz0xfOruqoKCMQrjAX0R95PH5Wy4g@mail.gmail.com>
-From:   Micah Morton <mortonm@chromium.org>
-Date:   Wed, 3 Aug 2022 09:08:22 -0700
-Message-ID: <CAJ-EccOP4Yq4RSBSkA_71kagqvA=a+tUV63UbHWZVM2uqJMDFQ@mail.gmail.com>
-Subject: Re: [GIT PULL] SafeSetID changes for v6.0
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-security-module <linux-security-module@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 2, 2022 at 3:20 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Mon, Aug 1, 2022 at 7:40 PM Micah Morton <mortonm@chromium.org> wrote:
-> >
-> > This pull request contains one commit that touches common kernel code,
-> >
-> > one that adds functionality internal to the SafeSetID LSM code, and a
-> >
-> > few other commits that only modify the SafeSetID LSM selftest.
-> [...]
->
-> What odd MUA do you use that causes this double-spaced text email?
->
-> I can read it, but it really is a bit strange. It was all plain text,
-> and marked as utf-8, and otherwise looked normal except for that
-> double spacing.
->
-> I get flashbacks to my "writing papers at university" days.
+On Wed, 3 Aug 2022 17:43:12 +0200
+Petr Mladek <pmladek@suse.com> wrote:
 
-I know, it was ugly. I just switched laptops to a Mac and thought for
-sure the mail message preview I was seeing in gmail after copy+paste
-from a terminal window was just some weird scaling issue on my
-external monitor or something. Sure enough the message was sent off
-looking like a double spaced book report from 8th grade :)
+> On the positive side. My intuition told me that it was very controversial.
+> This is why I clearly described the effect. And it was the very first
+> sentence in the commit message. I think that I made it _very visible_.
 
-I'll have to find what's going wrong with the copy+paste to gmail on
-this particular device.
+Right. I do not see you doing anything to lose Linus's trust. You stated
+upfront exactly what it was doing. And let Linus decide if it was right or
+not. Maybe it was a misjudgment on your part. But chalk it up as a learning
+experience. I personally find you a good maintainer.
 
->
->              Linus
+-- Steve
