@@ -2,81 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BF20C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:59:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E560C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 08:59:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235111AbiHCI7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 04:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52668 "EHLO
+        id S235207AbiHCI72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 04:59:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231495AbiHCI7G (ORCPT
+        with ESMTP id S231495AbiHCI70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 04:59:06 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE432251E
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 01:59:05 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VLGE8GG_1659517139;
-Received: from 30.178.80.143(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VLGE8GG_1659517139)
-          by smtp.aliyun-inc.com;
-          Wed, 03 Aug 2022 16:59:01 +0800
-Message-ID: <c4058896-947d-c802-ac57-bf03eb986378@linux.alibaba.com>
-Date:   Wed, 3 Aug 2022 16:58:59 +0800
+        Wed, 3 Aug 2022 04:59:26 -0400
+Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D1B32251E
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 01:59:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1659517103; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=Z0C1RFtHhWVL38VXioPhEM9PPXQDeSm2BDZOVRVGojx6UymDi/ZUoEg/9UlUSIi8g46xDsAVg3Wogu/iGCelF+aWVZgdR30N2JlZVoWe0d7g9IZEbw8HknkaCjZS/WUf9xENkOYap7Kid2PxtROalZuz9xImGkscEjCgzYGXK/w=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1659517103; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=UWM3Q8d65CxhgoPYwJTl/FGjavrP+S1bO4WDYI0LZmM=; 
+        b=W1ZXKcqpJWvXzse0uYPyMk5Wbt9n5kgRL/CVobzc02368p5EC0Ah11Wp88I6dQluMagaIz4YapLyoKV4I92lJKghTxunvVTR7ciVfMNZTYGJTZrhddT9YrFsVYVxEqNoANNhdj+Cq8NcBSExPI+hLofdFE4yO4jASvWPZLYwIZc=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659517103;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=UWM3Q8d65CxhgoPYwJTl/FGjavrP+S1bO4WDYI0LZmM=;
+        b=aCGxjGguCX3vmghCE0g7WVP1LHmEMjvjiTKUyp/oqsYrIKb3ZJNjNRLgT+oM4CoJ
+        rWMDVAwlOrhZwXBzDi0MRaLxBoGofBlWCY+U+51CCIwe+hrxMUUzFVdUFsrOuwCpAcw
+        54wHQHb2HtbY4dhL/2oz06j/DHLsiwL0BnUp6/mc=
+Received: from mail.zoho.in by mx.zoho.in
+        with SMTP id 1659517084780174.63182416015275; Wed, 3 Aug 2022 14:28:04 +0530 (IST)
+Date:   Wed, 03 Aug 2022 14:28:04 +0530
+From:   Siddh Raman Pant <code@siddh.me>
+To:     "Ingo Molnar" <mingo@kernel.org>
+Cc:     "x86" <x86@kernel.org>,
+        "Dave Hansen" <dave.hansen@linux.intel.com>,
+        "Andy Lutomirski" <luto@kernel.org>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        "linux-kernel-mentees" 
+        <linux-kernel-mentees@lists.linuxfoundation.org>
+Message-ID: <18262ed2459.44b0d74d434377.3690496800292832933@siddh.me>
+In-Reply-To: <Yuo2UkkyaYtZ3rMZ@gmail.com>
+References: <20220731160913.632092-1-code@siddh.me>
+ <YukFgFTaq4Aw+uht@gmail.com>
+ <1825f63b142.8968bde3116633.1242410031840350968@siddh.me> <Yuo2UkkyaYtZ3rMZ@gmail.com>
+Subject: Re: [PATCH] x86/numa: Use cpumask_available instead of hardcoded
+ NULL check
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.0.3
-Subject: Re: [PATCH] sched/debug: avoid executing show_state and causing rcu
- stall warning
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com,
-        linux-kernel@vger.kernel.org
-References: <1659489525-82994-1-git-send-email-liusong@linux.alibaba.com>
- <Yuo0U2aWUZRLBAsA@gmail.com>
-From:   Liu Song <liusong@linux.alibaba.com>
-In-Reply-To: <Yuo0U2aWUZRLBAsA@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-> * Liu Song <liusong@linux.alibaba.com> wrote:
->
->> From: Liu Song <liusong@linux.alibaba.com>
->>
->> If the number of CPUs is large, "sysrq_sched_debug_show" will execute for
->> a long time. Every time I execute "echo t > /proc/sysrq-trigger" on my
->> 128-core machine, the rcu stall warning will be triggered. Moreover,
->> sysrq_sched_debug_show does not need to be protected by rcu_read_lock,
->    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
->> and no rcu stall warning will appear after adjustment.
->>
-> That doesn't mean it doesn't have to be protected by *any* lock - which
-> your patch implements AFAICS.
->
-> There's a couple of lines such as:
->
->          for_each_online_cpu(cpu) {
-
-Hi,
-
-Here I refer to the implementation of "sysrq_timer_list_show", and I 
-don't see any lock.
-
-Maybe there is a problem with the implementation of "sysrq_timer_list_show".
-
-
-Thanks
-
->
-> ... which need to be protected against CPU hotplug events.
->
-> I haven't checked any of the deeper code to see what RCU or other
-> protection it may need, but clearly you didn't either ...
->
+On Wed, 03 Aug 2022 14:18:18 +0530  Ingo Molnar <mingo@kernel.org> wrote:
+> 
+> * Siddh Raman Pant <code@siddh.me> wrote:
+> 
+> > On Tue, 02 Aug 2022 16:37:44 +0530  Ingo Molnar <mingo@kernel.org> wrote:
+> > > Your fix makes sense I suppose, but I'm wondering how testing didn't 
+> > > trigger this warning.
+> > > 
+> > > Off-stack isn't a rare config option:
+> > > 
+> > >   kepler:~/tip> make allmodconfig
+> > >   #
+> > >   # No change to .config
+> > >   #
+> > >   kepler:~/tip> grep CPUMASK_OFFSTACK .config
+> > >   CONFIG_CPUMASK_OFFSTACK=y
+> > >   kepler:~/tip> 
+> > > 
+> > > What am I missing?
+> > 
+> > Maybe this triggers on certain config options set, or maybe due to new
+> > gcc version? (I'm using gcc-12, I also likely saw while on gcc-11.)
+> > It nevertheless is a helpful warning.
+> > 
+> > I just now tried `make defconfig` (default configuration based on
+> > 'x86_64_defconfig') and compiling with `make -j13 all`, and gcc doesn't
+> > give any warning. (CONFIG_CPUMASK_OFFSTACK isn't even listed in the
+> > .config file produced, grep fails.)
+> 
+> Does 'allmodconfig' reproduce the warning for you:
+> 
+>   $ make allmodconfig
+>   $ make arch/x86/mm/numa.o
+> 
+> ?
+> 
+> If yes, then this could be due to gcc-12, as it doesn't reproduce with 
+> gcc-11 for me:
+> 
+>    gcc version 11.2.0 (Ubuntu 11.2.0-19ubuntu1) 
+> 
 > Thanks,
->
-> 	Ingo
+> 
+>     Ingo
+> 
+
+There is no reason why allmodconfig would trigger the warning, as it has
+CONFIG_CPUMASK_OFFSTACK=y, but the warning is because of the other case.
+Still, I tried that, and as expected there was no warning.
+
+Did you try the config file I had linked to earlier?
+
+Thanks,
+Siddh
