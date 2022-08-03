@@ -2,54 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 859BDC00140
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 00:24:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4871C00140
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 00:24:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234593AbiHCAYp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 20:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41160 "EHLO
+        id S234875AbiHCAYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 20:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbiHCAYn (ORCPT
+        with ESMTP id S232123AbiHCAYn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 2 Aug 2022 20:24:43 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD86371A5
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0CA239BB6
         for <linux-kernel@vger.kernel.org>; Tue,  2 Aug 2022 17:24:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1659486282; x=1691022282;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=3DsjlwD58ZxUfhl3gDUiPA9dH45sXj3Z7zgEqfAuR1g=;
-  b=RMDCI8tbqN0I9UoWPej+DR1jr6+Mc1sazUfEowSmSVksX7eYoOtoLg9D
-   K0Z2NGJ5Cu9TZSRG68BmjA7f0xyLzSsMabMAIEmIIn+XAJmRvJiAe+kh2
-   YxKOT9sOOf8cVgeYU2wcuXlHPW0x7SZCDcA45nsyPMv9HF7dR7JrBJZOa
-   hZtQfmuwsW2929Y7TUv5QEVQs4GOWGyLSWIZgmZU+O/6mlza+5NHcgKrs
-   uSwCdK5dPmdKhvjir0v98Z0/eju6VK+lxkFqGWHJH4xEd5Ty8mfEyC61N
-   8Yl6ubDBbwQeQNawn4YhcmfJ79pVObpnK2BKOnrm/JRbQOVoS0UEY6Rgb
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="287109700"
+  bh=YJ9F1zfubWLUWqXd3sOpa1teyy5VoGJvngrqfZfARO0=;
+  b=Vl1LRKm8cqE0yh1w+V5WOMhFfBNPjLleZJ3htYZAV4L2Jybca23gmlHm
+   ly/gUKrbBewtIblrVTQiOiTph6my8BSejkspmCzZeSrgOn0NNgcEBt8WS
+   JXO0+xxXBOgsiOI4YrfiB9HCvFiEP8mncqiIaH69uxBRVA2L9uoLH+FLB
+   GKdqmdRlRf7FFVInx0+XW/ioJOVw+tkGd/ykuiHWj085flzH11lxEN0AY
+   JfTy8ZYSo2DBrwV1cPgaS77JinjFnMc7pDR5dk0iOxlok8hEZTeLeVWAE
+   Fw1v0yGQPkeEW/9s4ihLU5jhHyhzKR1/6yg9wxIkURNfm4seBkQ5Hku6K
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="290322998"
 X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
-   d="scan'208";a="287109700"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 17:24:41 -0700
+   d="scan'208";a="290322998"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 17:24:42 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
-   d="scan'208";a="848394029"
+   d="scan'208";a="778802035"
 Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 02 Aug 2022 17:24:40 -0700
+  by orsmga005.jf.intel.com with ESMTP; 02 Aug 2022 17:24:40 -0700
 Received: from kbuild by e0eace57cfef with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oJ2Bj-000GbQ-1N;
+        id 1oJ2Bj-000GbN-1J;
         Wed, 03 Aug 2022 00:24:39 +0000
-Date:   Wed, 3 Aug 2022 08:24:21 +0800
+Date:   Wed, 3 Aug 2022 08:24:08 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
-Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:crng/random/jd/vdso 9/9] vgetrandom.c:undefined
- reference to `__memset'
-Message-ID: <202208030854.seELtKRV-lkp@intel.com>
+To:     Ralph Campbell <rcampbell@nvidia.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Alistair Popple <apopple@nvidia.com>
+Subject: [akpm-mm:mm-stable 242/251] hmm-tests.c:1607:42: error:
+ 'HMM_DMIRROR_MIGRATE' undeclared; did you mean 'HMM_DMIRROR_WRITE'?
+Message-ID: <202208030814.FpNJkXbm-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -57,33 +58,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block crng/random/jd/vdso
-head:   29d7baa1e13b4304df93126e0c8baf56584b720a
-commit: 29d7baa1e13b4304df93126e0c8baf56584b720a [9/9] random: implement getrandom() in vDSO
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220803/202208030854.seELtKRV-lkp@intel.com/config)
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-stable
+head:   1a44131d4f524e18d873bbe363598e39841001bf
+commit: f6c3e1ae0114cd0f5123cf38187d450c1b119e67 [242/251] mm/hmm: add a test for cross device private faults
 compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/29d7baa1e13b4304df93126e0c8baf56584b720a
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block crng/random/jd/vdso
-        git checkout 29d7baa1e13b4304df93126e0c8baf56584b720a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+reproduce:
+        # https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git/commit/?id=f6c3e1ae0114cd0f5123cf38187d450c1b119e67
+        git remote add akpm-mm https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git
+        git fetch --no-tags akpm-mm mm-stable
+        git checkout f6c3e1ae0114cd0f5123cf38187d450c1b119e67
+        make O=/tmp/kselftest headers
+        make O=/tmp/kselftest -C tools/testing/selftests
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
-All error/warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
-   ld: arch/x86/entry/vdso/vgetrandom.o: in function `__vdso_getrandom':
->> vgetrandom.c:(.text+0x50b): undefined reference to `__memset'
-   objdump: 'arch/x86/entry/vdso/vdso64.so.dbg': No such file
---
->> ld: arch/x86/entry/vdso/vgetrandom-x32.o: warning: relocation against `__memset' in read-only section `.text'
-   ld: arch/x86/entry/vdso/vgetrandom-x32.o: relocation R_X86_64_PC32 against undefined symbol `__memset' can not be used when making a shared object; recompile with -fPIC
-   ld: final link failed: bad value
-   objdump: 'arch/x86/entry/vdso/vdsox32.so.dbg': No such file
+   hmm-tests.c: In function 'hmm2_double_map':
+>> hmm-tests.c:1607:42: error: 'HMM_DMIRROR_MIGRATE' undeclared (first use in this function); did you mean 'HMM_DMIRROR_WRITE'?
+    1607 |         ret = hmm_dmirror_cmd(self->fd1, HMM_DMIRROR_MIGRATE, buffer, npages);
+         |                                          ^~~~~~~~~~~~~~~~~~~
+         |                                          HMM_DMIRROR_WRITE
+   hmm-tests.c:1607:42: note: each undeclared identifier is reported only once for each function it appears in
 
 -- 
 0-DAY CI Kernel Test Service
