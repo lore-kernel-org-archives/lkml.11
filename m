@@ -2,92 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F032AC19F29
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:25:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C16DC19F29
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:25:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238041AbiHCPZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56664 "EHLO
+        id S237851AbiHCPZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:25:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233041AbiHCPZI (ORCPT
+        with ESMTP id S238082AbiHCPZf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:25:08 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D825FDB
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:25:06 -0700 (PDT)
+        Wed, 3 Aug 2022 11:25:35 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 733AF264E
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:25:33 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id 17so16813014pfy.0
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 08:25:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.es; i=@amazon.es; q=dns/txt; s=amazon201209;
-  t=1659540307; x=1691076307;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Tbu2vI/tuQpJhdPLbiU7SzaNS+QVhrT4UaYznxDPAGo=;
-  b=PwiM9MseAso+d9qYizAKUqLkzNMJBd+ArBmzMTnX4w8r8lSzqCkyWzQe
-   AtETtTXtohYTHIK8sRTgO9P5A+pLYcAKgsERe/QeDGG4xQ6oJPdxjJ4Bl
-   EmV/bK/n0KbV9ldI6JC8B9eYNsIIyzLGCzDVFHI+DNJX2v0+5abJ1Raz/
-   M=;
-X-IronPort-AV: E=Sophos;i="5.93,214,1654560000"; 
-   d="scan'208";a="115297759"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-e6c05252.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 15:21:44 +0000
-Received: from EX13D37EUA003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-e6c05252.us-west-2.amazon.com (Postfix) with ESMTPS id C002143D01;
-        Wed,  3 Aug 2022 15:21:42 +0000 (UTC)
-Received: from f4d4887fdcfb.ant.amazon.com (10.43.162.134) by
- EX13D37EUA003.ant.amazon.com (10.43.165.7) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Wed, 3 Aug 2022 15:21:37 +0000
-From:   <bchalios@amazon.es>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <bchalios@amazon.es>, <tytso@mit.edu>, <Jason@zx2c4.com>,
-        <dwmw@amazon.co.uk>, <graf@amazon.de>, <xmarcalx@amazon.co.uk>,
-        <gregkh@linuxfoundation.org>
-Subject: [PATCH 0/2] virt: vmgenid: add generation counter
-Date:   Wed, 3 Aug 2022 17:21:25 +0200
-Message-ID: <20220803152127.48281-1-bchalios@amazon.es>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vY5Gs44ObcZqhnAkDw1pnGHq29Y4iUKBpPeypGL8C04=;
+        b=lJgAtu/cwXyf8s1wIwQZ0CNNCCdmo3JMXJHH0lscHNOrNNBxXncxE/VrJgKSC2OmjC
+         NOerG+8+aBL44+OZSHHph5NPJruytt71lzo8W8GEOnfS5lwOAUxXXIw2UcxyknUXR/1L
+         lrVum/jmFqx0a1SppZUxYzDhGpaUJrzClIxxqSDWVBqc1ZjPa2kFfiJJMtWL/QhR5YOu
+         /SaveEvW+ChdAin3Rtr7GwieqNMZCrxQJSNTs8AQckr40CoFwDoWcA9et803Nq9RtZ7J
+         lrZ+le+z4NnubOJuVZXbTqF06axzexzf8tC/L2kW1P/kN1hk1pcSDjSyrqdoaXFeehIc
+         6pxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vY5Gs44ObcZqhnAkDw1pnGHq29Y4iUKBpPeypGL8C04=;
+        b=puzGvyoyMIFR3zMYHxzIgv8E6k1flPSHZRsHWe6RTQDKapyJhz/Uf3wozg0V0Nson+
+         2KToY1DVOn4wwr7Siurvpa5oQUBuyCrTLtBkkv05sEqepKj1Ccm7EeEGp0to20DXD7wq
+         AqpuxwNcPDrelcH4oUWA140p5DD7wLV7uLC9xkPp9sdkzOXS4FO+H6SSBuvEfnTzehoN
+         so83SRvJQL0/w+gU5W1r0wFyJKwM7fCwm8JPLh7cafXErTIAGSja3y5sgSw71T+7VYEp
+         DHBYyBZkfOLzPFmAdR5qZRHwYVLqXp9cSZ/L58MrGDbQVDz+DWoBHiiH8DAtVVh/B0hz
+         ZVdQ==
+X-Gm-Message-State: AJIora/w8+sdz37jc2vuOOz+rr9xAn7be0KM7gSrDueJCaQswE0aSV3R
+        OtRH3xesVAzlYPcCMQExoWkpPHWzM9Hrhtyo
+X-Google-Smtp-Source: AGRyM1vmGDb1Z3T7ofJ95dzDpNMA/3hyYgDtd8/HkcsQWLW3sJTFg2aNQGuKVlVz5njqGZrL2NFrHg==
+X-Received: by 2002:a05:6a00:1a0c:b0:528:6baa:a2e3 with SMTP id g12-20020a056a001a0c00b005286baaa2e3mr26609309pfv.27.1659540332794;
+        Wed, 03 Aug 2022 08:25:32 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s (173.242.120.83.16clouds.com. [173.242.120.83])
+        by smtp.gmail.com with ESMTPSA id h23-20020a17090a055700b001f3162e4e55sm1756596pjf.35.2022.08.03.08.25.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Aug 2022 08:25:32 -0700 (PDT)
+Date:   Wed, 3 Aug 2022 23:25:27 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH] perf symbol: Fail to read phdr workaround
+Message-ID: <20220803152527.GA133193@leoy-ThinkPad-X240s>
+References: <20220731164923.691193-1-irogers@google.com>
+ <20220801015259.GA101027@leoy-ThinkPad-X240s>
+ <CAP-5=fVSjCQ4jeAeyP5THnQVyXDpKd6Ob33C7PDwFB_6+YSXuw@mail.gmail.com>
+ <YufJP5YqeEBM51HL@kernel.org>
 MIME-Version: 1.0
-X-Originating-IP: [10.43.162.134]
-X-ClientProxiedBy: EX13D07UWB003.ant.amazon.com (10.43.161.66) To
- EX13D37EUA003.ant.amazon.com (10.43.165.7)
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YufJP5YqeEBM51HL@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Babis Chalios <bchalios@amazon.es>
+Hi Arnaldo, Ian,
 
-Linux recently added support for the VM Generation ID mechanism from
-Microsoft. The way this works currently is using the 128-bit blob
-provided by the vmgenid device to re-seed the RNG. While this works it
-has two main issues, (a) it is inherently racy due to the fact that it
-relies on a ACPI notification being delivered and handled and (b) the ID
-is unsuitable for exposing to user-space.
+On Mon, Aug 01, 2022 at 09:38:23AM -0300, Arnaldo Carvalho de Melo wrote:
 
-This patch-set extends the vmgenid device to introduce a generation
-counter, a 32-bit counter which is different every time the unique ID
-changes. The addition to the original implementation in QEMU can be
-found here:
-https://lists.nongnu.org/archive/html/qemu-devel/2022-08/msg00524.html.
+[...]
 
-The first patch re-works slightly the current vmgenid driver to add a
-function that parses an object from the vmgenid device and returns the
-physical address of the vmgenid data. The second patch uses that
-function to parse additionally the address of the generation counter
-from the vmgenid namespace. The counter is then exposed to the
-user-space through a misc-device which provides `read` and `mmap`
-interfaces.
+> I also think we could have something like a 'perf test' mode where, when
+> asked to, it would enable tests that involve downloading such files to
+> perform tests, such as this dacapo benchmark, and then would test if the
+> output matches expectations.
 
-Babis Chalios (2):
-  virt: vmgenid: add helper function to parse ADDR
-  virt: vmgenid: add support for generation counter
+I am working on testing script for java symbols, one of the steps shared by
+Ian is:
 
- Documentation/virt/vmgenid.rst | 120 ++++++++++++++++++++++++++
- drivers/virt/vmgenid.c         | 151 ++++++++++++++++++++++++++++-----
- 2 files changed, 251 insertions(+), 20 deletions(-)
- create mode 100644 Documentation/virt/vmgenid.rst
+  # /tmp/perf/perf record -k 1 java -agentpath:/tmp/perf/libperf-jvmti.so \
+    -jar dacapo-9.12-MR1-bach.jar -n 10 fop
 
--- 
-2.37.1
+The question is how we can specify the path for the lib
+libperf-jvmti.so in the testing script?
 
-Amazon Spain Services sociedad limitada unipersonal, Calle Ramirez de Prado 5, 28045 Madrid. Registro Mercantil de Madrid . Tomo 22458 . Folio 102 . Hoja M-401234 . CIF B84570936
+If we can run the test case from the root folder of Linux kernel
+source code, the lib libperf-jvmti.so can be found in the folder
+$linux/tools/perf, but for the integration testing the lib should be
+placed in an installed folder.  Any suggestion if we have exited
+way to specify the path for libperf-jvmti.so, or need to introduce a
+new shell envorinment variable for the lib path?
 
+Thanks,
+Leo
