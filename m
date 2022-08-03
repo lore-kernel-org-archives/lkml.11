@@ -2,85 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7600C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF4FDC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 15:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237837AbiHCPsA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 11:48:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47214 "EHLO
+        id S238122AbiHCPu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 11:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231493AbiHCPr5 (ORCPT
+        with ESMTP id S236984AbiHCPuY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 11:47:57 -0400
-Received: from smtp86.ord1d.emailsrvr.com (smtp86.ord1d.emailsrvr.com [184.106.54.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217D2DF57
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:47:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=openvpn.net;
-        s=20170822-45nk5nwl; t=1659541676;
-        bh=i/m2J20otiRpiEV1Tx+blspiXLX0KONsIWyQG+pcTiU=;
-        h=Date:Subject:To:From:From;
-        b=huUq7ZsKeZpZCi7rOTPb9Z+dMn3GHOzc0b6J5Nw6GYqHFBmBIwpAReWJ+xvJqpXBT
-         BDyXY9lvsMALa+BXOaBYmkBZEpMbRpwCdSXJl/A2u+v2h/+yyz94b6DBFye1QOFMtE
-         PMitvMUdrcUDz+DI/WjSAcuWoT0z65sD2Md2QFZQ=
-X-Auth-ID: antonio@openvpn.net
-Received: by smtp11.relay.ord1d.emailsrvr.com (Authenticated sender: antonio-AT-openvpn.net) with ESMTPSA id 9666A60083;
-        Wed,  3 Aug 2022 11:47:55 -0400 (EDT)
-Message-ID: <1219c53f-362e-cd55-73e0-87dfe281ec34@openvpn.net>
-Date:   Wed, 3 Aug 2022 17:48:45 +0200
+        Wed, 3 Aug 2022 11:50:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B93FB262B
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 08:50:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659541822;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=psYHeyeefyckM8qqiGafKX9oY62tjOLZwMmaha8+kwM=;
+        b=IS1wzzyw1h5IJH6dg67u+A91BrdPfYhx376dSs0gdN4O2z5PimsEo6O4U2tfJk6xXJRX6b
+        BehDDRNLgVUw+Zp1h71+3ttck1estKUFm9TUoVhEjSeXHZ9sKDakLe0O0qDOopt2EVihDD
+        yOpAnlb8hoIP5ZEjRuPebPzceFoLBkA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-398-Ug3rWSMHO2yf6usSNZ-GxQ-1; Wed, 03 Aug 2022 11:50:21 -0400
+X-MC-Unique: Ug3rWSMHO2yf6usSNZ-GxQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 31A298041B5;
+        Wed,  3 Aug 2022 15:50:21 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.40.194.242])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8C5BB1121314;
+        Wed,  3 Aug 2022 15:50:17 +0000 (UTC)
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     kvm@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        linux-kernel@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Sean Christopherson <seanjc@google.com>, x86@kernel.org,
+        Jim Mattson <jmattson@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH v3 01/13] bug: introduce ASSERT_STRUCT_OFFSET
+Date:   Wed,  3 Aug 2022 18:49:59 +0300
+Message-Id: <20220803155011.43721-2-mlevitsk@redhat.com>
+In-Reply-To: <20220803155011.43721-1-mlevitsk@redhat.com>
+References: <20220803155011.43721-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [RFC 1/1] net: introduce OpenVPN Data Channel Offload (ovpn-dco)
-Content-Language: en-US
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-References: <20220719014704.21346-1-antonio@openvpn.net>
- <20220719014704.21346-2-antonio@openvpn.net> <YtbNBUZ0Kz7pgmWK@lunn.ch>
- <c490b87c-085b-baca-b7e4-c67a3ee2c25e@openvpn.net> <YuKKJxSFOgOL836y@lunn.ch>
- <52b9d7c9-9f7c-788e-2327-33af63b9c748@openvpn.net>
- <20220803084202.4e249bdb@hermes.local>
-From:   Antonio Quartulli <antonio@openvpn.net>
-Organization: OpenVPN Inc.
-In-Reply-To: <20220803084202.4e249bdb@hermes.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Classification-ID: 70813dac-6f10-4cbb-869c-dc05eee17d75-1-1
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
+ASSERT_STRUCT_OFFSET allows to assert during the build of
+the kernel that a field in a struct have an expected offset.
 
-On 03/08/2022 17:42, Stephen Hemminger wrote:
-> Kernel submissions for upstream must be standalone, and any infrastructure
-> that is only used by an out of tree kernel driver will not be accepted.
-> 
-> The version you propose upstream must have no linux-compat wrappers.
-> Sorry kernel developers don't care or want to be concerned about some
-> out of tree project.
+KVM used to have such macro, but there is almost nothing KVM specific
+in it so move it to build_bug.h, so that it can be used in other
+places in KVM.
 
-There must have been some confusion - sorry about that.
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+---
+ arch/x86/kvm/vmx/vmcs12.h | 5 ++---
+ include/linux/build_bug.h | 9 +++++++++
+ 2 files changed, 11 insertions(+), 3 deletions(-)
 
-The repository I linked in my previous email is this very same driver 
-packaged as "out-of-tree" module (i.e. for people running a kernel that 
-does not yet ship ovpn-dco) and contains some compat wrapper.
-
-
-The driver I have submitted to the list is 100% standalone and does not 
-contain any compat code.
-
-
-The only extra component required to do something useful with this 
-driver is the OpenVPN software in userspace.
-
-
-I hope this clarifies.
-
-Regards,
-
-
+diff --git a/arch/x86/kvm/vmx/vmcs12.h b/arch/x86/kvm/vmx/vmcs12.h
+index 746129ddd5ae02..01936013428b5c 100644
+--- a/arch/x86/kvm/vmx/vmcs12.h
++++ b/arch/x86/kvm/vmx/vmcs12.h
+@@ -208,9 +208,8 @@ struct __packed vmcs12 {
+ /*
+  * For save/restore compatibility, the vmcs12 field offsets must not change.
+  */
+-#define CHECK_OFFSET(field, loc)				\
+-	BUILD_BUG_ON_MSG(offsetof(struct vmcs12, field) != (loc),	\
+-		"Offset of " #field " in struct vmcs12 has changed.")
++#define CHECK_OFFSET(field, loc) \
++	ASSERT_STRUCT_OFFSET(struct vmcs12, field, loc)
+ 
+ static inline void vmx_check_vmcs12_offsets(void)
+ {
+diff --git a/include/linux/build_bug.h b/include/linux/build_bug.h
+index e3a0be2c90ad98..3aa3640f8c181f 100644
+--- a/include/linux/build_bug.h
++++ b/include/linux/build_bug.h
+@@ -77,4 +77,13 @@
+ #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
+ #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+ 
++
++/*
++ * Compile time check that field has an expected offset
++ */
++#define ASSERT_STRUCT_OFFSET(type, field, expected_offset)	\
++	BUILD_BUG_ON_MSG(offsetof(type, field) != (expected_offset),	\
++		"Offset of " #field " in " #type " has changed.")
++
++
+ #endif	/* _LINUX_BUILD_BUG_H */
 -- 
-Antonio Quartulli
-OpenVPN Inc.
+2.26.3
+
