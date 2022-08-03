@@ -2,154 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C96EC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 19:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52AA2C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 19:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238700AbiHCT1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 15:27:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60330 "EHLO
+        id S238534AbiHCT1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 15:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238558AbiHCT1S (ORCPT
+        with ESMTP id S238594AbiHCT1Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 15:27:18 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CAB5B795
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 12:27:13 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id s4-20020a17090a760400b001f3120342daso7640239pjk.4
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 12:27:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:reply-to:from:to:cc;
-        bh=GeP9RItuT5cX0x8bod8txy1j8Bx4gMfigExcAQKorEA=;
-        b=TH39iZbQfjrOovP6PSkDuCuS1K49VQy+rHdokoRe8Vd6fIqvucm5OmGFpX08KC9cko
-         qtR88vT2RLqC05Cjmf6Qzexgo6uCk80zekZzYc6Gbs2AHwjSuiMZWV6RxkWIqgYCP9YV
-         EpjmxTFjxvjk3OhnIB55DRUzd2ILIDgUtghPGZ1aErMB5J/1QFgVyJRyjCqikMW9qkmj
-         glgZaRijKDZxBX1i9q5SGvO4pQzh5QxwCQppSNvjsedGAq1C2fgTBZ7SyEfTM6dcfk9/
-         9cugZPgy2EL0e253nEbHKTfXTshu9tCvTxTdR73CbL3M21WKLLHajXj1R15ryMZU9Scg
-         UIFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=GeP9RItuT5cX0x8bod8txy1j8Bx4gMfigExcAQKorEA=;
-        b=2dzD+z+hkf46iaMirVn9bHQr95YmQ673j43owm8ss0yR4/BycztZ0S/CT0r5JbG2kn
-         vUjgk9y7Cw2lL5DJQerEusJXDW11ENCjZFxa3uyla9ufb8uRJHavJ3Sjgdud0faIUOSs
-         HTlTGMwlj3R/9HuSFrASvfhrT1iEuZPE48kaxODHXcMepP3FQNuMFn+ORkHC+3ZkEt44
-         a2e3G3i7yANVLQdsnrFQb2wAKfK2wPjWvrpce9Zydpe2VUEVGQx/Mt+AnzAGCuFi6MQm
-         SdOjknyhAwiYS3roEjRrCs6EmKcyqdkvrX5L7LAB3cwNO/6RoTWf08lOo2BhNrVXFCw7
-         7ikQ==
-X-Gm-Message-State: ACgBeo1XmsgMRACPk+lwD3MRwwEuT3NWNOoORArQHVogZSrcdEJgwLOW
-        YUB7mQthuIW2kaTuBLTF6yOALz0HM/0=
-X-Google-Smtp-Source: AA6agR70W4WfP/jyajIwpsWZD3Yz/LI6VDrsaqbQLRj42kpQfzh6LodaF+ZwCJ1s72gveDyQK98NJvXN98c=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:903:110e:b0:16c:defc:a092 with SMTP id
- n14-20020a170903110e00b0016cdefca092mr27719373plh.143.1659554832817; Wed, 03
- Aug 2022 12:27:12 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed,  3 Aug 2022 19:26:57 +0000
-In-Reply-To: <20220803192658.860033-1-seanjc@google.com>
-Message-Id: <20220803192658.860033-7-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220803192658.860033-1-seanjc@google.com>
-X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
-Subject: [PATCH v2 6/7] KVM: VMX: Adjust number of LBR records for
- PERF_CAPABILITIES at refresh
-From:   Sean Christopherson <seanjc@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, Like Xu <like.xu.linux@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 3 Aug 2022 15:27:24 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517725B787;
+        Wed,  3 Aug 2022 12:27:13 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id D07665FD36;
+        Wed,  3 Aug 2022 22:27:10 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1659554830;
+        bh=I6vdD/Bwy6gfYtG6Ow/MeIyIZrRN95jKhnC5qo+nMoA=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=R20dkrN/hY99HOi03dXLOFjJfOTxEkPMbN/c1Rbjbm0L+ieU3il+hG9UofVe6NM3C
+         WcKQh1pDwKd+6DBczGnZZr1T808zq+cyfK99cItwNR+xEH8ACpl0Usu70Cxl1AovPw
+         72StiN4LgKPgv8ONAoPqFouHdiKvfWKYJuLa5+Mtfhw3nGk4aY4IdrT6gvQ/QvAFf9
+         uVzPUZdPP9C3lAl0tCTN4mremYAPt9PEd//EpoWYkjOfKfukf8D/oSUBI00+dwv14J
+         s4pxPJPeVYyaNCq73eYhxXkN3cu63bsvx9zG3/ioPRrCjqEs/6n7PHq0MrgZfvfCKL
+         FPniNoUtu0+ew==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Wed,  3 Aug 2022 22:27:10 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+CC:     "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>
+Subject: Re: [PATCH v4 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Thread-Topic: [PATCH v4 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Thread-Index: AQHYpzqIoQnaRj7vNkq2cXUUGjAB/62dSAuAgAAIFYCAAAq8AIAAAmwA
+Date:   Wed, 3 Aug 2022 19:26:55 +0000
+Message-ID: <20220803192706.ls6kizgqkw46thln@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220803131132.19630-1-ddrokosov@sberdevices.ru>
+ <20220803131132.19630-3-ddrokosov@sberdevices.ru>
+ <67041dbe-ad6c-c53f-9760-bd7b5988d137@wanadoo.fr>
+ <20220803184001.fcappv7grdjyaetn@CAB-WSD-L081021.sigma.sbrf.ru>
+ <1406f120-9542-d90e-1258-5a8a300c1822@wanadoo.fr>
+In-Reply-To: <1406f120-9542-d90e-1258-5a8a300c1822@wanadoo.fr>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <635E08126EDABF4E8786D6E8269D9479@sberdevices.ru>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/03 16:08:00 #20044033
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that the PMU is refreshed when MSR_IA32_PERF_CAPABILITIES is written
-by host userspace, zero out the number of LBR records for a vCPU during
-PMU refresh if PMU_CAP_LBR_FMT is not set in PERF_CAPABILITIES instead of
-handling the check at run-time.
-
-guest_cpuid_has() is expensive due to the linear search of guest CPUID
-entries, intel_pmu_lbr_is_enabled() is checked on every VM-Enter, _and_
-simply enumerating the same "Model" as the host causes KVM to set the
-number of LBR records to a non-zero value.
-
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/vmx/pmu_intel.c | 12 +++---------
- arch/x86/kvm/vmx/vmx.h       |  7 +++++--
- 2 files changed, 8 insertions(+), 11 deletions(-)
-
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 862c1a4d971b..c399637a3a79 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -171,13 +171,6 @@ static inline struct kvm_pmc *get_fw_gp_pmc(struct kvm_pmu *pmu, u32 msr)
- 	return get_gp_pmc(pmu, msr, MSR_IA32_PMC0);
- }
- 
--bool intel_pmu_lbr_is_enabled(struct kvm_vcpu *vcpu)
--{
--	struct x86_pmu_lbr *lbr = vcpu_to_lbr_records(vcpu);
--
--	return lbr->nr && (vcpu_get_perf_capabilities(vcpu) & PMU_CAP_LBR_FMT);
--}
--
- static bool intel_pmu_is_valid_lbr_msr(struct kvm_vcpu *vcpu, u32 index)
- {
- 	struct x86_pmu_lbr *records = vcpu_to_lbr_records(vcpu);
-@@ -592,7 +585,9 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
- 	bitmap_set(pmu->all_valid_pmc_idx,
- 		INTEL_PMC_MAX_GENERIC, pmu->nr_arch_fixed_counters);
- 
--	if (cpuid_model_is_consistent(vcpu))
-+	perf_capabilities = vcpu_get_perf_capabilities(vcpu);
-+	if (cpuid_model_is_consistent(vcpu) &&
-+	    (perf_capabilities & PMU_CAP_LBR_FMT))
- 		x86_perf_get_lbr(&lbr_desc->records);
- 	else
- 		lbr_desc->records.nr = 0;
-@@ -600,7 +595,6 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
- 	if (lbr_desc->records.nr)
- 		bitmap_set(pmu->all_valid_pmc_idx, INTEL_PMC_IDX_FIXED_VLBR, 1);
- 
--	perf_capabilities = vcpu_get_perf_capabilities(vcpu);
- 	if (perf_capabilities & PERF_CAP_PEBS_FORMAT) {
- 		if (perf_capabilities & PERF_CAP_PEBS_BASELINE) {
- 			pmu->pebs_enable_mask = counter_mask;
-diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
-index 35b39dab175d..413702dc1315 100644
---- a/arch/x86/kvm/vmx/vmx.h
-+++ b/arch/x86/kvm/vmx/vmx.h
-@@ -532,6 +532,11 @@ static inline struct x86_pmu_lbr *vcpu_to_lbr_records(struct kvm_vcpu *vcpu)
- 	return &vcpu_to_lbr_desc(vcpu)->records;
- }
- 
-+static inline bool intel_pmu_lbr_is_enabled(struct kvm_vcpu *vcpu)
-+{
-+	return !!vcpu_to_lbr_records(vcpu)->nr;
-+}
-+
- static inline bool intel_pmu_has_perf_global_ctrl(struct kvm_pmu *pmu)
- {
- 	/*
-@@ -545,8 +550,6 @@ static inline bool intel_pmu_has_perf_global_ctrl(struct kvm_pmu *pmu)
- }
- 
- void intel_pmu_cross_mapped_check(struct kvm_pmu *pmu);
--bool intel_pmu_lbr_is_enabled(struct kvm_vcpu *vcpu);
--
- int intel_pmu_create_guest_lbr_event(struct kvm_vcpu *vcpu);
- void vmx_passthrough_lbr_msrs(struct kvm_vcpu *vcpu);
- 
--- 
-2.37.1.559.g78731f0fdb-goog
-
+T24gV2VkLCBBdWcgMDMsIDIwMjIgYXQgMDk6MTg6MjZQTSArMDIwMCwgQ2hyaXN0b3BoZSBKQUlM
+TEVUIHdyb3RlOg0KPiBMZSAwMy8wOC8yMDIyIMOgIDIwOjM5LCBEbWl0cnkgUm9rb3NvdiBhIMOp
+Y3JpdMKgOg0KPiA+IEhlbGxvIENocmlzdG9waGUsDQo+ID4gDQo+ID4gVGhhbmsgeW91IGZvciBx
+dWljayByZXZpZXcNCj4gPiANCj4gPiBPbiBXZWQsIEF1ZyAwMywgMjAyMiBhdCAwODoxMTowNVBN
+ICswMjAwLCBDaHJpc3RvcGhlIEpBSUxMRVQgd3JvdGU6DQo+ID4gPiBMZSAwMy8wOC8yMDIyIMOg
+IDE1OjExLCBEbWl0cnkgUm9rb3NvdiBhIMOpY3JpdMKgOg0KPiA+ID4gPiBNU0EzMTEgaXMgYSB0
+cmktYXhpYWwsIGxvdy1nIGFjY2VsZXJvbWV0ZXIgd2l0aCBJMkMgZGlnaXRhbCBvdXRwdXQgZm9y
+DQo+ID4gPiA+IHNlbnNpdGl2aXR5IGNvbnN1bWVyIGFwcGxpY2F0aW9ucy4gSXQgaGFzIGR5bmFt
+aWMgdXNlci1zZWxlY3RhYmxlIGZ1bGwNCj4gPiA+ID4gc2NhbGVzIHJhbmdlIG9mICstMmcvKy00
+Zy8rLThnLystMTZnIGFuZCBhbGxvd3MgYWNjZWxlcmF0aW9uIG1lYXN1cmVtZW50cw0KPiA+ID4g
+PiB3aXRoIG91dHB1dCBkYXRhIHJhdGVzIGZyb20gMUh6IHRvIDEwMDBIei4NCj4gPiA+ID4gDQo+
+ID4gPiA+IFNwZWM6IGh0dHBzOi8vY2RuLXNob3AuYWRhZnJ1aXQuY29tL3Byb2R1Y3QtZmlsZXMv
+NTMwOS9NU0EzMTEtVjEuMS1FTkcucGRmDQo+ID4gPiA+IA0KPiA+ID4gPiBUaGlzIGRyaXZlciBz
+dXBwb3J0cyBmb2xsb3dpbmcgTVNBMzExIGZlYXR1cmVzOg0KPiA+ID4gPiAgICAgICAtIElJTyBp
+bnRlcmZhY2UNCj4gPiA+ID4gICAgICAgLSBEaWZmZXJlbnQgcG93ZXIgbW9kZXM6IE5PUk1BTCBh
+bmQgU1VTUEVORCAodXNpbmcgcG1fcnVudGltZSkNCj4gPiA+ID4gICAgICAgLSBPRFIgKE91dHB1
+dCBEYXRhIFJhdGUpIHNlbGVjdGlvbg0KPiA+ID4gPiAgICAgICAtIFNjYWxlIGFuZCBzYW1wX2Zy
+ZXEgc2VsZWN0aW9uDQo+ID4gPiA+ICAgICAgIC0gSUlPIHRyaWdnZXJlZCBidWZmZXIsIElJTyBy
+ZWcgYWNjZXNzDQo+ID4gPiA+ICAgICAgIC0gTkVXX0RBVEEgaW50ZXJydXB0ICsgdHJpZ2dlcg0K
+PiA+ID4gPiANCj4gPiA+ID4gQmVsb3cgZmVhdHVyZXMgdG8gYmUgZG9uZToNCj4gPiA+ID4gICAg
+ICAgLSBNb3Rpb24gRXZlbnRzOiBBQ1RJVkUsIFRBUCwgT1JJRU5ULCBGUkVFRkFMTA0KPiA+ID4g
+PiAgICAgICAtIExvdyBQb3dlciBtb2RlDQo+ID4gPiA+IA0KPiA+ID4gPiBTaWduZWQtb2ZmLWJ5
+OiBEbWl0cnkgUm9rb3NvdiA8ZGRyb2tvc292LWk0cjhvQStlTGxIOTlySGtQK0Z4SXdAcHVibGlj
+LmdtYW5lLm9yZz4NCj4gPiA+ID4gLS0tDQo+ID4gPiA+ICAgIE1BSU5UQUlORVJTICAgICAgICAg
+ICAgICAgIHwgICAgNiArDQo+ID4gPiA+ICAgIGRyaXZlcnMvaWlvL2FjY2VsL0tjb25maWcgIHwg
+ICAxMyArDQo+ID4gPiA+ICAgIGRyaXZlcnMvaWlvL2FjY2VsL01ha2VmaWxlIHwgICAgMiArDQo+
+ID4gPiA+ICAgIGRyaXZlcnMvaWlvL2FjY2VsL21zYTMxMS5jIHwgMTMyMyArKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysNCj4gPiA+ID4gICAgNCBmaWxlcyBjaGFuZ2VkLCAxMzQ0
+IGluc2VydGlvbnMoKykNCj4gPiA+ID4gICAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvaWlv
+L2FjY2VsL21zYTMxMS5jDQo+ID4gPiA+IA0KPiA+ID4gDQo+ID4gPiBIaSwNCj4gPiA+IGEgZmV3
+IG5pdHMgYmVsb3cuDQo+ID4gPiANCj4gPiA+IFsuLi5dDQo+ID4gPiANCj4gPiA+ID4gK3N0YXRp
+YyBpbnQgbXNhMzExX2NoZWNrX3BhcnRpZChzdHJ1Y3QgbXNhMzExX3ByaXYgKm1zYTMxMSkNCj4g
+PiA+ID4gK3sNCj4gPiA+ID4gKwlzdHJ1Y3QgZGV2aWNlICpkZXYgPSBtc2EzMTEtPmRldjsNCj4g
+PiA+ID4gKwl1bnNpZ25lZCBpbnQgcGFydGlkOw0KPiA+ID4gPiArCWludCBlcnI7DQo+ID4gPiA+
+ICsNCj4gPiA+ID4gKwllcnIgPSByZWdtYXBfcmVhZChtc2EzMTEtPnJlZ3MsIE1TQTMxMV9QQVJU
+SURfUkVHLCAmcGFydGlkKTsNCj4gPiA+ID4gKwlpZiAoZXJyKQ0KPiA+ID4gPiArCQlyZXR1cm4g
+ZGV2X2Vycl9wcm9iZShkZXYsIGVyciwNCj4gPiA+ID4gKwkJCQkgICAgICJmYWlsZWQgdG8gcmVh
+ZCBwYXJ0aWQgKCVkKVxuIiwgZXJyKTsNCj4gPiA+IA0KPiA+ID4gTm8gbmVlZCBmb3IgIiglZCki
+IGFuZCBlcnIuDQo+ID4gPiANCj4gPiANCj4gPiBEbyB5b3UgbWVhbiBmb3IgYWxsIGRldl9lcnIo
+KSBjYWxscz8gSSB0aGluayBzb21ldGltZXMgaXQncyBoZWxwZnVsIHRvDQo+ID4ga25vdyB0aGUg
+YWN0dWFsIGVycm9yIHZhbHVlIGdvdCBmcm9tIGV4dGVybmFsIEFQSSwgaXNuJ3Q/IENvdWxkIHlv
+dSBwbGVhc2UNCj4gPiBleHBsYWluIHlvdXIgcG9pbnQgaWYgcG9zc2libGU/DQo+ID4gDQo+IA0K
+PiBObywgbXkgY29tbWVudCBpcyBvbmx5IGZvciBkZXZfZXJyX3Byb2JlKCkgZnVuY3Rpb24uDQo+
+IEhhdmluZyByZXQgZm9yIGRldl9lcnIoKSBjYWxscyBpcyBmaW5lLg0KPiANCj4gU2VlOiBodHRw
+czovL2VsaXhpci5ib290bGluLmNvbS9saW51eC92NS4xOS9zb3VyY2UvZHJpdmVycy9iYXNlL2Nv
+cmUuYyNMNDczMg0KPiANCj4gZGV2X2Vycl9wcm9iZSgpIGFscmVhZHkgaGFzIGEgImVycm9yICVw
+ZTouLi4sIEVSUl9QVFIoZXJyKSINCj4gVGhpcyBtZWFucyB0aGF0IGlmIHJldCA9IC1FTk9NRU06
+DQo+ICAgICIoJWQpIiAgICAgICAtLT4gIigtMTIpIg0KPiAgICAiZXJyb3IgJXBlOiIgLS0+ICJl
+cnJvciAtRU5PTUVNOiINCj4gDQo+IFNvIHRoZXJlIGlzIG5vIHJlYWwgbmVlZCB0byBkdXBsaWNh
+dGUgdGhlIGVycm9yIGNvZGUgaW4gdGhlIG1lc3NhZ2UgaXRzZWxmLA0KPiBpdCBpcyBhbHJlYWR5
+IGRpc3BsYXllZCBpbiBhIGh1bWFuIHJlYWRhYmxlIG1hbm5lci4NCj4gDQo+IFdoYXQgeW91ciBj
+b2RlIGRvZXMgd291bGQgcmVzdWx0IGluOg0KPiAgICAiZXJyb3IgLUVOT01FTTogZmFpbGVkIHRv
+IHJlYWQgcGFydGlkICgtMTIpXG4iDQpodHRwczovL2VsaXhpci5ib290bGluLmNvbS9saW51eC92
+NS4xOS9zb3VyY2UvZHJpdmVycy9iYXNlL2NvcmUuYyNMNDczMj4gDQoNCkhtbSwgdmVyeSBpbnRl
+cmVzdGluZy4gVGhhbmsgeW91IGZvciBnb29kIHBvaW50LiBJIHdpbGwgZml4IGl0IGluIHRoZQ0K
+djUsIGFuZCB3aWxsIHVzZSAlcGUgZm9yIGFsbCBkZXZfZXJyKCkgY2FsbHMsIEkgc3VwcG9zZSBp
+dCdzIGhlbHBmdWwuDQoNClsuLi5dDQoNCj4gPiA+ID4gKwlpZiAobXNhMzExLT52ZGQpIHsNCj4g
+PiA+ID4gKwkJZXJyID0gcmVndWxhdG9yX2VuYWJsZShtc2EzMTEtPnZkZCk7DQo+ID4gPiA+ICsJ
+CWlmIChlcnIpDQo+ID4gPiA+ICsJCQlyZXR1cm4gZGV2X2Vycl9wcm9iZShkZXYsIGVyciwNCj4g
+PiA+ID4gKwkJCQkJICAgICAiY2Fubm90IGVuYWJsZSB2ZGQgc3VwcGx5XG4iKTsNCj4gPiA+ID4g
+Kw0KPiA+ID4gPiArCQllcnIgPSBkZXZtX2FkZF9hY3Rpb25fb3JfcmVzZXQoZGV2LCBtc2EzMTFf
+dmRkX2Rpc2FibGUsDQo+ID4gPiA+ICsJCQkJCSAgICAgICBtc2EzMTEtPnZkZCk7DQo+ID4gPiA+
+ICsJCWlmIChlcnIpIHsNCj4gPiA+ID4gKwkJCXJlZ3VsYXRvcl9kaXNhYmxlKG1zYTMxMS0+dmRk
+KTsNCj4gPiA+IA0KPiA+ID4gRG91YmxlIHJlZ3VsYXRvcl9kaXNhYmxlKCksIGJlY2F1c2Ugb2Yg
+dGhlIF9vcl9yZXNldCgpPw0KPiA+ID4gDQo+ID4gDQo+ID4gWWVwLiBJZiBkZXZtX2FkZF9hY3Rp
+b25fb3JfcmVzZXQoKSByZXR1cm5zIGFuIGVycm9yLCB3ZSB3aWxsIG5vdA0KPiA+IGNhbGwgcmVn
+dWxhdG9yX2Rpc2FibGUoKSBieSBkZXZtIHN1YnN5c3RlbS4gSXQgbWVhbnMsIHdlIGhhdmUgdG8N
+Cj4gPiBjYWxsIGl0IGRpcmVjdGx5Lg0KPiANCj4gTm8uDQo+IA0KPiBTZWUNCmh0dHBzOi8vZWxp
+eGlyLmJvb3RsaW4uY29tL2xpbnV4L3Y1LjE5L3NvdXJjZS9pbmNsdWRlL2xpbnV4L2RldmljZS5o
+I0wyNDkNCj4gDQo+IElmIGRldm1fYWRkX2FjdGlvbl9vcl9yZXNldCgpIGZhaWxzLCAiYWN0aW9u
+IiBpcyBjYWxsZWQuIFRoaXMgaXMgdGhlIG1lYW5pbmcNCj4gb2YgdGhlIF9vcl9yZXNldCBzdWZm
+aXguDQo+IA0KPiBTbyBoZXJlLCBtc2EzMTFfdmRkX2Rpc2FibGUoKSB3b3VsZCBiZSBjYWxsZWQg
+YW5kIHRoaXMgZnVuY3Rpb24gaXM6DQo+IA0KPiArc3RhdGljIHZvaWQgbXNhMzExX3ZkZF9kaXNh
+YmxlKHZvaWQgKnZkZCkNCj4gK3sNCj4gKwlyZWd1bGF0b3JfZGlzYWJsZSh2ZGQpOw0KPiArfQ0K
+PiANCj4gYW5kICJ2ZGQiIHdpbGwgYmUgdGhlIHZhbHVlIG9mICJtc2EzMTEtPnZkZCINCj4gDQo+
+IFNvLCB1bmxlc3MgSSBtaXNzZWQgc29tZXRoaW5nIG9idmlvdXMsIHlvdXIgY29kZSB3aWxsIGNh
+bGwgdHdpY2UNCj4gcmVndWxhdG9yX2Rpc2FibGUobXNhMzExLT52ZGQpLg0KPiANCj4gT25lIGlu
+IGRldm1fYWRkX2FjdGlvbl9vcl9yZXNldCgpIGFuZCBvbmUgZXhwbGljaXRseSBhZnRlciB0aGUg
+ImlmIChlcnIpIg0KPiANCg0KWW91IGFyZSB0b3RhbGx5IHJpZ2h0LCB0aGFua3MgYSBsb3QgZm9y
+IHRoZSBleHBsYW5hdGlvbi4gSSB3aWxsIGZpeCB0aGF0DQppbiB0aGUgdjUuDQoNCj4gDQo+IEhv
+cGluZyBJJ20gY2xlYXIgYW5kIHRoYXQgSSBkaWRuJ3QgbWlzcyBzb21ldGhpbmcgb2J2aW91cy4N
+Cj4gDQo+IENKDQo+IA0KPiA+IA0KPiA+ID4gPiArCQkJcmV0dXJuIGRldl9lcnJfcHJvYmUoZGV2
+LCBlcnIsDQo+ID4gPiA+ICsJCQkJCSAgICAgImNhbm5vdCBhZGQgdmRkIGRpc2FibGUgYWN0aW9u
+XG4iKTsNCj4gPiA+ID4gKwkJfQ0KPiA+ID4gPiArCX0NCj4gPiA+ID4gKw0KPiA+ID4gPiArCWVy
+ciA9IG1zYTMxMV9jaGVja19wYXJ0aWQobXNhMzExKTsNCj4gPiA+ID4gKwlpZiAoZXJyKQ0KPiA+
+ID4gPiArCQlyZXR1cm4gZXJyOw0KPiA+ID4gPiArDQo+ID4gPiA+ICsJZXJyID0gbXNhMzExX3Nv
+ZnRfcmVzZXQobXNhMzExKTsNCj4gPiA+ID4gKwlpZiAoZXJyKQ0KPiA+ID4gPiArCQlyZXR1cm4g
+ZXJyOw0KPiA+ID4gPiArDQo+ID4gPiA+ICsJZXJyID0gbXNhMzExX3NldF9wd3JfbW9kZShtc2Ez
+MTEsIE1TQTMxMV9QV1JfTU9ERV9OT1JNQUwpOw0KPiA+ID4gPiArCWlmIChlcnIpDQo+ID4gPiA+
+ICsJCXJldHVybiBkZXZfZXJyX3Byb2JlKGRldiwgZXJyLA0KPiA+ID4gPiArCQkJCSAgICAgImZh
+aWxlZCB0byBwb3dlciBvbiBkZXZpY2UgKCVkKVxuIiwgZXJyKTsNCj4gPiA+IA0KPiA+ID4gTm8g
+bmVlZCBmb3IgIiglZCkiIGFuZCBlcnINCj4gPiANCj4gPiBBc2tlZCBmb3IgdGhlIGNsYXJpZmlj
+YXRpb24gYWJvdmUuDQo+ID4gDQo+ID4gPiANCj4gPiA+IENKDQo+ID4gDQo+IA0KDQotLSANClRo
+YW5rIHlvdSwNCkRtaXRyeQ==
