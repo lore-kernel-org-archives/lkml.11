@@ -2,133 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F0A3C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:22:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B5B5C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 09:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237022AbiHCJV5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 05:21:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40218 "EHLO
+        id S235849AbiHCJWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 05:22:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235286AbiHCJVy (ORCPT
+        with ESMTP id S233057AbiHCJWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 05:21:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 89F1458B7F
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 02:21:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659518512;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wC3/PO//oorDVUr2wMWH5HeOq129lBqXeyqiPu4d5kY=;
-        b=LLug/YxOpuUiLdJGsPupsn5dSMcEWoCe7s20Trd/dqEHtlWypP3uofpuUJNuOo412PGLUn
-        M8GgsTDqn6ma2bpPA5R7AgUXvgrWPl9ikwGtBfq/wvYB/MH1H0t2L76rNSLp/X1X/vVFQj
-        uhLkdXBoDmRdqMYmZ4ioCgaV7loK5PY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-638-pfCCUwv0NiOp6IpbbF09sw-1; Wed, 03 Aug 2022 05:21:47 -0400
-X-MC-Unique: pfCCUwv0NiOp6IpbbF09sw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Wed, 3 Aug 2022 05:22:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9198919C09;
+        Wed,  3 Aug 2022 02:22:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 20B4D1C06ED1;
-        Wed,  3 Aug 2022 09:21:46 +0000 (UTC)
-Received: from localhost (ovpn-13-216.pek2.redhat.com [10.72.13.216])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5FB4E2026D4C;
-        Wed,  3 Aug 2022 09:21:44 +0000 (UTC)
-Date:   Wed, 3 Aug 2022 17:21:41 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     akpm@linux-foundation.org, pmladek@suse.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Arjan van de Ven <arjan@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Xiaoming Ni <nixiaoming@huawei.com>
-Subject: Re: [PATCH v2 02/13] notifier: Add panic notifiers info and purge
- trailing whitespaces
-Message-ID: <Yuo+JVGsYm1V8Asx@MiWiFi-R3L-srv>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
- <20220719195325.402745-3-gpiccoli@igalia.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E824615F1;
+        Wed,  3 Aug 2022 09:22:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F359C433C1;
+        Wed,  3 Aug 2022 09:22:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659518558;
+        bh=P4eKF7XDjuLzTy56svlSTm7yBbwooVXi0pHh6vFMI5U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iN7MNUUYJn+0/ttPrYuVWcF6IcLCa+5VAp1BLLjr+8jEdYvW0BLWr0DBP47nREojd
+         gcIn0lRPjRlkOiQ5RwnbBjue+TEjBduNAgRnBcG/bcs0kpzKiL/g3lU25EhucA0pjp
+         UXL+OczMnko1RZcrmcfu8hcoZUqzCsi+ZArP/6eI=
+Date:   Wed, 3 Aug 2022 11:22:35 +0200
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     Sherry Sun <sherry.sun@nxp.com>
+Cc:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH] tty: serial: imx: initialize
+ peripheral_config/peripheral_size for sdma config
+Message-ID: <Yuo+W2HhOLxnQpf+@kroah.com>
+References: <20220803065737.14752-1-sherry.sun@nxp.com>
+ <d4838245-030c-39b4-df4b-17b3b4c73a5b@pengutronix.de>
+ <AS8PR04MB8404990740869737F326D302929C9@AS8PR04MB8404.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220719195325.402745-3-gpiccoli@igalia.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+In-Reply-To: <AS8PR04MB8404990740869737F326D302929C9@AS8PR04MB8404.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/19/22 at 04:53pm, Guilherme G. Piccoli wrote:
-> Although many notifiers are mentioned in the comments, the panic
-> notifiers infrastructure is not. Also, the file contains some
-> trailing whitespaces. Fix both issues here.
+On Wed, Aug 03, 2022 at 09:15:58AM +0000, Sherry Sun wrote:
+> > On 03.08.22 08:57, Sherry Sun wrote:
+> > > Since commit 824a0a02cd74 ("dmaengine: imx-sdma: Add multi fifo
+> > > support") adds the use of
+> > > dma_slave_config->peripheral_config/peripheral_size to sdma driver,
+> > > the client drivers like uart need to initialize the
+> > > peripheral_config/peripheral_size for sdma, otherwise, the random
+> > > value of local variable slave_config may cause unexpected
+> > peripheral_config and make sdma mess up.
+> > >
+> > 
+> > If this a fix, please add a Fixes: tag. I am not sure it is though, see below.
 > 
-> Cc: Arjan van de Ven <arjan@linux.intel.com>
-> Cc: Cong Wang <xiyou.wangcong@gmail.com>
-> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Cc: Valentin Schneider <valentin.schneider@arm.com>
-> Cc: Xiaoming Ni <nixiaoming@huawei.com>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+> Hi Ahmad, thanks for the comments.
+> I don't think this patch is a fix for a specific commit, so we don't need the Fixes tag.
 > 
-> ---
+> > 
+> > > Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> > > ---
+> > >  drivers/tty/serial/imx.c | 4 ++++
+> > >  1 file changed, 4 insertions(+)
+> > >
+> > > diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c index
+> > > 522445a8f666..bb8c2a712e94 100644
+> > > --- a/drivers/tty/serial/imx.c
+> > > +++ b/drivers/tty/serial/imx.c
+> > > @@ -1320,6 +1320,8 @@ static int imx_uart_dma_init(struct imx_port
+> > > *sport)
+> > 
+> > This function starts with
+> > 
+> > struct dma_slave_config slave_config = {};
+> > 
+> > >  	slave_config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+> > >  	/* one byte less than the watermark level to enable the aging timer
+> > */
+> > >  	slave_config.src_maxburst = RXTL_DMA - 1;
+> > > +	slave_config.peripheral_config = NULL;
+> > > +	slave_config.peripheral_size = 0;
+> > 
+> > So these are already zero-initialized.
 > 
-> V2:
-> - no change.
-> 
->  include/linux/notifier.h | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/notifier.h b/include/linux/notifier.h
-> index aef88c2d1173..d5b01f2e3fcc 100644
-> --- a/include/linux/notifier.h
-> +++ b/include/linux/notifier.h
-> @@ -208,12 +208,12 @@ static inline int notifier_to_errno(int ret)
->  
->  /*
->   *	Declared notifiers so far. I can imagine quite a few more chains
-> - *	over time (eg laptop power reset chains, reboot chain (to clean 
-> + *	over time (eg laptop power reset chains, reboot chain (to clean
->   *	device units up), device [un]mount chain, module load/unload chain,
-> - *	low memory chain, screenblank chain (for plug in modular screenblankers) 
-> + *	low memory chain, screenblank chain (for plug in modular screenblankers)
->   *	VC switch chains (for loadable kernel svgalib VC switch helpers) etc...
->   */
-> - 
-> +
->  /* CPU notfiers are defined in include/linux/cpu.h. */
->  
->  /* netdevice notifiers are defined in include/linux/netdevice.h */
-> @@ -224,6 +224,8 @@ static inline int notifier_to_errno(int ret)
->  
->  /* Virtual Terminal events are defined in include/linux/vt.h. */
->  
-> +/* Panic notifiers are defined in include/linux/panic_notifier.h. */
-> +
+> I am not sure actually, I think initialize a struct with {} cannot guarantee that all members are initialized to 0, it may depend on the compiler.
 
-LGTM,
+Not true, it's part of the C standard somewhere...
 
-Reviewed-by: Baoquan He <bhe@redhat.com>
+thanks,
 
->  #define NETLINK_URELEASE	0x0001	/* Unicast netlink socket released */
->  
->  /* Console keyboard events.
-> -- 
-> 2.37.1
-> 
-
+greg k-h
