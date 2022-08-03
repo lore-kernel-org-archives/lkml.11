@@ -2,149 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B282C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 01:26:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D640C00140
+	for <linux-kernel@archiver.kernel.org>; Wed,  3 Aug 2022 01:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234762AbiHCB0r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 2 Aug 2022 21:26:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47120 "EHLO
+        id S235424AbiHCB2f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 2 Aug 2022 21:28:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231809AbiHCB0p (ORCPT
+        with ESMTP id S234385AbiHCB2d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 2 Aug 2022 21:26:45 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6906C205DC;
-        Tue,  2 Aug 2022 18:26:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659490004; x=1691026004;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BH8xdsbiuKShIsJ1RG8m6Kh4+8oFpaixloeAq3Mozfg=;
-  b=oH0/9sKHK8QRWdj/kjnAEnQARh+KOxDF3OwPRkjzVNwcEDrkiekWz6pj
-   Bn0h3fLrGC4omdlhm2ChAkivZue3hn2FVlSEGfC45iQb3tDxt43I66t3k
-   26m2sxAswnZSL0/EeXJegLfTVKvxKDx000GMA/TCZ5oyCHGm7RAhte26Q
-   WtoMmqsYMtN+k8o8bTBmFP9iuFO9ppWwypgD0aaTrumppAE6vBmVX1nI/
-   LP4fK69skNFJ8DLb4jyY23tu+Cy0tgJhwH4ThfqLeWFRBstgSbDhmprtt
-   9fv5OCjad14v/+HTLopXStktL/njM58leIPEFnF7mzuPB1PTyXBf8u0FE
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="290771949"
-X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
-   d="scan'208";a="290771949"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 18:26:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,212,1654585200"; 
-   d="scan'208";a="670667902"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 02 Aug 2022 18:26:42 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJ39l-000GeR-1Q;
-        Wed, 03 Aug 2022 01:26:41 +0000
-Date:   Wed, 3 Aug 2022 09:26:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH v1 1/1] leds: an30259a: Get rid of custom
- led_init_default_state_get()
-Message-ID: <202208030939.UxKQfaZY-lkp@intel.com>
-References: <20220802212554.7216-1-andriy.shevchenko@linux.intel.com>
-MIME-Version: 1.0
+        Tue, 2 Aug 2022 21:28:33 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2109.outbound.protection.outlook.com [40.107.237.109])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F4E205E1;
+        Tue,  2 Aug 2022 18:28:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d3wVSzB1+j0pSszPC+X69I6GLu7MVwGoZWWSxaRBuqb5oICIEj/ehBAYQ9+3KGqH0zMS5rg2Y9HRRphjm/qt87IO6nmOkdhXI6g3uVuoDpiYPFN707TelmARQV5t9XyehzsVITOXygnZio/Emunqiuzy7Cqa7EJku4pRWluKLmivfWai9acDJSDRaJk2Ls4Lx9czsZeEPG0ugNrWfI/E7LI88NrxFPkO4Vd7TUq4ikhu6PsFU0gIwHkc3PG80fuQlkZXzmNppInnUjrKMXqQAx9MZv9HXekxfJCOkMIVfSgAfJIpZyvEnLAkSgyNSfjqoWQmf51fFkZvxm8eyMmFjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Q0kVP3F1uMN9slbJCUWyqjDHGYwLcoc0Ra+9uaXCRuk=;
+ b=OipdziJsUO52h9u1xngtvHv8lkZ7MM57RNkEuykLrR2GeS3Ju2JWwTMXetnGPA1jGQ57fYIPZBL+tcmvRU06vCSoJCK0PfNrCF9CmF/RhXnOCwtG89kfBgeuMDpD2naNjGInGm8vLyedxqJKrimie3mcGO3Wyy56bNKUcaKx5tRLz8Y1uTE1jYXYfpw1/4RSyfocog1Ff2Q4NoIASxp3AituND9XCcm1fFvfPj0v7KwQxUKo7FaMAP+z0O3YxBg3TY75XpyzxG27eC380Ij1fj8pf8xFcmCx3RF2HxmWTDTbPHXOuNFxig1CKBhxnMJttCGe4DDrmuoWoa0oVzCtDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q0kVP3F1uMN9slbJCUWyqjDHGYwLcoc0Ra+9uaXCRuk=;
+ b=VTvHcHPdZFBlfKGUk9hr1LRehchfPG+0v926uPkXwo4ruVatqijKnXYigY8zYMpHh3j2+XxH/TwzC48PNgPoKC4vIONRlB0Zby5tHsmMZvEOhN2kVXYK7zfYGotXsNakLrsnTQeWwWO+vesa6jZsEeAxzG51IoCzwUi5Dvex7LY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by DM6PR10MB4138.namprd10.prod.outlook.com
+ (2603:10b6:5:218::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.14; Wed, 3 Aug
+ 2022 01:28:28 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b869:6c52:7a8d:ddee]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b869:6c52:7a8d:ddee%4]) with mapi id 15.20.5482.014; Wed, 3 Aug 2022
+ 01:28:28 +0000
+Date:   Tue, 2 Aug 2022 18:28:24 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>, katie.morris@in-advantage.com
+Subject: Re: [PATCH v14 mfd 9/9] mfd: ocelot: add support for the vsc7512
+ chip via spi
+Message-ID: <YunPOAnGaI9xF79n@euler>
+References: <20220722040609.91703-1-colin.foster@in-advantage.com>
+ <20220722040609.91703-10-colin.foster@in-advantage.com>
+ <CAHp75Ve-pqgb56punEL=p=PnEtjRnqTBSqgs+vVn1Zv8F94g9Q@mail.gmail.com>
+ <YuiJLK8ncbHH3OhE@euler>
+ <CAHp75VcHU+Rh2ROjMcK+Yuyu1Ty9C0Dcx2SjrnrM4BV9NuMZig@mail.gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220802212554.7216-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <CAHp75VcHU+Rh2ROjMcK+Yuyu1Ty9C0Dcx2SjrnrM4BV9NuMZig@mail.gmail.com>
+X-ClientProxiedBy: SJ0PR05CA0185.namprd05.prod.outlook.com
+ (2603:10b6:a03:330::10) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a1a03852-c0ba-47ce-93c7-08da74ef77bb
+X-MS-TrafficTypeDiagnostic: DM6PR10MB4138:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ZEIrPv0R5/i0Qze9bhPLspauQyBhZ6bGvCpJ/nAj8FHADxcfKxq7wOsMsx1givfNqGUjFFrnboU3Bb+ZP16lToSAAavSTNPJ7Op50Fn+sudsFImdVBEt3K6/+iqAymwtHOBM3w4C2SuEhZ9h0Hxyp4tNC6lxC/Vt8LX65PlCIPhFdTiBJzUi/86/5raOHFcbTIZWf4RhhnvXwD4ZTdnGkDtb/aETA8WthgnsWE871QEZwPQuYYamx3s4VDmGupyoLKRsSCzfcy8COQyFUU0K97U2bvf7FIGce8IXdRHq0Qv+2/X/P4AKzhwxJH0a3JqRA0N749BtVYrcy0ti0ssITwdsqd0m2zXj5bofbRI69mC3uGA8/P/DUw2y403bkDMtngbOTO/2NOL2UG6CkIaUvAazg/VjS4KjpOZjijFGBlRdn3y2zYLvrhLdlJzXpRGz4sQBapvy8ZzFjaq2rice6/3QgWybvx6vX3N+cT4arKhAcxMPy7/gM9P/N2ZTyTNeAdX5K8bWOdjhdftsrp3fydPEXFc6pNKWEn8yhLIT89h3a9QtFvaSPWUIzDKAhmMYlOCmPh/B+qykNvjena2qlZqU+tipqJrp0fWc2NUFjE2mCmVQbPoZBVxmcuV7jy50ccPvjbFv9p2dY6wMHTQMKvhMlRdJtaZnRMtlL6SZ+bnatBEXPY8vVfwnnuWwRg7hl9hQasGnWE4IkfcdMrPSlR+ZXho0c3rOASn/N5GB3ajgN7K//E2qCo2F4NorAH9W
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(366004)(376002)(136003)(346002)(39830400003)(396003)(316002)(7416002)(5660300002)(4744005)(107886003)(186003)(66946007)(8936002)(8676002)(44832011)(4326008)(66556008)(2906002)(66476007)(478600001)(6486002)(33716001)(9686003)(53546011)(26005)(6916009)(54906003)(6506007)(41300700001)(6666004)(6512007)(86362001)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LGtv+hwi2BrgEOnGngs28BGC99CyxE1x0r5XacumZrQU8M1xAVc7qQG/0JGo?=
+ =?us-ascii?Q?i1WqSuwTAs5iGkfD05EZtS4X/BBrBF58Dpnu4L+W5Tz4sZ7iSW9VzzOl4d/m?=
+ =?us-ascii?Q?5iZSw8DJHtJ3gusdTWYP1+wnTZ7v2Sm6ETHePZGps17GXTnmY/M+3lWULNYN?=
+ =?us-ascii?Q?1FGR9VUmVpgg7Y6IDDEKpcb10ejt5aaFwyuICtnuPU5M3G11V0Rzm7ZkJy8W?=
+ =?us-ascii?Q?FsfExV8g2mAon9nyI8cmiq2Qs2t7hhsQ6HzRIP5ylS6+bWJtxic5dWZgfeBL?=
+ =?us-ascii?Q?F5Zh+EeHkkovtyEFbYCPmSuxyP0tuyJvYM8vkogZizopNQ4HntSBo9Z2MhGN?=
+ =?us-ascii?Q?g3g7VbajhXMF5fsf0sy3VD8M6lHmLiEwfsL+nBh0Aez3+WwrpSZf+BNfsZm2?=
+ =?us-ascii?Q?pa20IhUlL+5DkKfQaCJgQRxt0tzZ4gghpB62BaJdYTUcoZqlVJ2nfwqYIh2W?=
+ =?us-ascii?Q?Ft+jL7aH3vGbCz681EFdHEy0YBIM6aSQE1EuwsAj+x1UgALxYFXxbNeD9a5s?=
+ =?us-ascii?Q?8qHq5YPtzICT3I0Tvuk6IleC4ECpV57DvPl+ebl4zv8wFi+qddIZXnGqTPDO?=
+ =?us-ascii?Q?fAeqWZ+8mBLqmQlaz2BanfWNCgAO5cvjtNL+zdQVrVkhIwxOC3YIq9caG9rG?=
+ =?us-ascii?Q?XpGmMauf8q4IrGhqjokUe3ba+5NVKYAc1E4oDTUiJ1PQa4HENgN6m0M3q6c9?=
+ =?us-ascii?Q?OYLit4SdkOgr2dkQlr6jG6x53GgqaBmLd4mSZ1+7YDdE+J/iSSMjFKtGRZRc?=
+ =?us-ascii?Q?5tZ76cSBf1ihDdeWikgakiHSssiRTKzlT+NPatHXxbiDmcsL6q6yZlWd8+oa?=
+ =?us-ascii?Q?Pc2UaMBtR1TendKF0H0+5NLK5wIXMurEYfhjoEekZ75O9WUl2aZdW70tblBM?=
+ =?us-ascii?Q?TjrgYV44IqS6PRkj2PpdhSHujGOS8cQ31sxiaCnJ6j5aRoTo7kxOBRubiDsa?=
+ =?us-ascii?Q?J80FCaTis1024fv+I+tUaS9m8WJNfRncgYCwlIVatZBtSnlWD9Ads+zPA+U3?=
+ =?us-ascii?Q?+tA7k38GjwzjKbrsdziO3uf3JwrUFuruuVvDbKowAkxDyQ5cI5Aww5jDL/Fs?=
+ =?us-ascii?Q?XR+FlclyjUNAVYhdvJH7+7tcnsY0djqnYPcM4aVubP4d64aE6nIlAldkgusD?=
+ =?us-ascii?Q?zmfrBRLAfLBO32q535yC0YxoDdlnV+qTXFTontBbSkNLu7WU5p92fFpETIRO?=
+ =?us-ascii?Q?x6W5D2zVtGl8iGwBfi0zqspcNrXjKB9nVDFxzJc0Xq3ZVHq7gNseLOp4cXV8?=
+ =?us-ascii?Q?G8BA36JtWzGLjGYN2ub43/H8k7+sPAmnVBVTdSsfvuVdGCN7c/8ttNpoO4zZ?=
+ =?us-ascii?Q?zxcB4UtZwpcmNDejd0T+sDlDa1v5c0TPfiwByBIBzfZbW7HHfpqn3xwr4uvl?=
+ =?us-ascii?Q?1QMCxE9Q/Zm5qQvzizhhPz9+Qo5PWtVw1u6v27gWIHGctzYf0OFu50GTajRJ?=
+ =?us-ascii?Q?2Kotu5hcQYavgy4yQfZhxaKqLwZFxaP3P9bQDBaif29NYIQ1ny0QXFLbTdks?=
+ =?us-ascii?Q?rbqe83BZ3K173w6tfggEisfhOW8mF+UW/OgjKTTLe510RjQ0w9bVF0jLrNn9?=
+ =?us-ascii?Q?G8KI4hferx1gU542KWsw6uhbiXAOzGncGtTlrg33LmBuTG2HotGdtWFnHKAh?=
+ =?us-ascii?Q?4Q=3D=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a1a03852-c0ba-47ce-93c7-08da74ef77bb
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Aug 2022 01:28:28.3477
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xgOM1sC8pIZ4NQlYd6ZM1laL3zbaOrALMBMlqFtHYZNyixY5daklPEEJwewIMR1xbQy+SD4RgayJDNhR/XjBStDMIcjhAeJYY1vLjYDlt28=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB4138
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+On Tue, Aug 02, 2022 at 10:47:04AM +0200, Andy Shevchenko wrote:
+> On Tue, Aug 2, 2022 at 4:17 AM Colin Foster
+> <colin.foster@in-advantage.com> wrote:
+> 
+> ...
+> 
+> See above. I.o.w. use index based assignments.
 
-I love your patch! Yet something to improve:
+Will do. Thanks, and I'll hopefully be able to send out the next version
+shortly.
 
-[auto build test ERROR on pavel-leds/for-next]
-[also build test ERROR on linus/master v5.19 next-20220728]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/leds-an30259a-Get-rid-of-custom-led_init_default_state_get/20220803-053038
-base:   git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git for-next
-config: x86_64-randconfig-a005-20220801 (https://download.01.org/0day-ci/archive/20220803/202208030939.UxKQfaZY-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/757448b8fc5bcbc4303ce9570d5dd555f1e2b22e
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Andy-Shevchenko/leds-an30259a-Get-rid-of-custom-led_init_default_state_get/20220803-053038
-        git checkout 757448b8fc5bcbc4303ce9570d5dd555f1e2b22e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/leds/leds-an30259a.c:227:24: error: call to undeclared function 'led_init_default_state_get'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-                   led->default_state = led_init_default_state_get(led->fwnode);
-                                        ^
-   drivers/leds/leds-an30259a.c:204:14: warning: unused variable 'str' [-Wunused-variable]
-           const char *str;
-                       ^
-   1 warning and 1 error generated.
-
-
-vim +/led_init_default_state_get +227 drivers/leds/leds-an30259a.c
-
-   197	
-   198	static int an30259a_dt_init(struct i2c_client *client,
-   199				    struct an30259a *chip)
-   200	{
-   201		struct device_node *np = dev_of_node(&client->dev), *child;
-   202		int count, ret;
-   203		int i = 0;
-   204		const char *str;
-   205		struct an30259a_led *led;
-   206	
-   207		count = of_get_available_child_count(np);
-   208		if (!count || count > AN30259A_MAX_LEDS)
-   209			return -EINVAL;
-   210	
-   211		for_each_available_child_of_node(np, child) {
-   212			u32 source;
-   213	
-   214			ret = of_property_read_u32(child, "reg", &source);
-   215			if (ret != 0 || !source || source > AN30259A_MAX_LEDS) {
-   216				dev_err(&client->dev, "Couldn't read LED address: %d\n",
-   217					ret);
-   218				count--;
-   219				continue;
-   220			}
-   221	
-   222			led = &chip->leds[i];
-   223	
-   224			led->num = source;
-   225			led->chip = chip;
-   226			led->fwnode = of_fwnode_handle(child);
- > 227			led->default_state = led_init_default_state_get(led->fwnode);
-   228	
-   229			i++;
-   230		}
-   231	
-   232		if (!count)
-   233			return -EINVAL;
-   234	
-   235		chip->num_leds = i;
-   236	
-   237		return 0;
-   238	}
-   239	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> 
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
