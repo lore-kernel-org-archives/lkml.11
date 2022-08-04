@@ -2,116 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E227C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 07:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00480C19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 07:40:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239169AbiHDHiq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 03:38:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57272 "EHLO
+        id S239187AbiHDHkb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 03:40:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239056AbiHDHim (ORCPT
+        with ESMTP id S229823AbiHDHk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 03:38:42 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14FD56BBD;
-        Thu,  4 Aug 2022 00:38:40 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id w10so18632700plq.0;
-        Thu, 04 Aug 2022 00:38:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=az7WEft7Sc4VxW/LA8uRMUGhN50YXVj2wsFEmSNbwI0=;
-        b=h0zSFS6uH0vCgxTmF8cF89TYwWQJxdnOVHmR7BohpAqY5YufgaVpHKSzbD77CaVusq
-         QMt/bgVtdLGi5IxWW1OFmUEGlZ8dN1s/r9p/gpbeAUkuSX7dyDKki7z5M4lnWUgBVO4f
-         vgEz8DuxBG3g78WK4iu99y0cgfsJZCNFh3PC73OTA7M7XDi3i667MCsOEBwQoc8AAlW7
-         33jgSB7whMXVoNVE2pJ1RsBT+gPLxSq9uP3cWaWxgfgrTJaRMtHotYWWW+yXF+kGO2Ja
-         48yryQNBuL8blZx4WMaIR9jfo74A7wVIRohIBnCiBRpQito6oBJVUcMbwQNj+nIxGKjY
-         ez6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=az7WEft7Sc4VxW/LA8uRMUGhN50YXVj2wsFEmSNbwI0=;
-        b=sewiGGVLeCN5b6/uHl3XrqkWjH1Z7KBOHlyyBRLz1VC3qwX2VYAxDlsQB16kWhXePj
-         FeCflX5tXE/lDMRNfDo5ZPpRUiKmuaenBd2r1GnQHGCWaBIYbAzBwsHWVwIWHgpln1RJ
-         SQ06acklt3JZE5Fa6FSnAtHP8vBa9A4vTisqkleaCoc25geyLnHHxc0o9NHV4rgQVgDY
-         z23CrK+nCYo7VBBGFCru6uzRnyuMdH8ul2cBsGNcAi/q5S9hnHVA7RLUgVADgMMSuq9z
-         AhWhiS9A3wt6nXMFhfq0LOkk2kKHHWxNSAyyMAUogbSb1KCcxCaWK8kkNk97q7VtEra3
-         zKPg==
-X-Gm-Message-State: ACgBeo0uyxv8/U8D+id4sS+uKtdoW02Lx1qqptsJsdamz2c3MqhMh8n7
-        TC18FegVPy2nqk6schojrko=
-X-Google-Smtp-Source: AA6agR5HjKkbWfhVRJdYtWXLHBqJVjeFK9L9Gw6l6MBsKAAvTPO+da1RezAp5CdL271RyeBZoct95w==
-X-Received: by 2002:a17:90b:1bd2:b0:1f5:313a:de64 with SMTP id oa18-20020a17090b1bd200b001f5313ade64mr727237pjb.116.1659598720030;
-        Thu, 04 Aug 2022 00:38:40 -0700 (PDT)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id k20-20020a170902761400b0016f1ef2cd44sm116556pll.154.2022.08.04.00.38.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Aug 2022 00:38:39 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests: kvm/x86: test if it checks all the bits in the LBR_FMT bit-field
-Date:   Thu,  4 Aug 2022 15:38:19 +0800
-Message-Id: <20220804073819.76460-1-likexu@tencent.com>
-X-Mailer: git-send-email 2.37.1
+        Thu, 4 Aug 2022 03:40:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5ED422B3B;
+        Thu,  4 Aug 2022 00:40:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D294B82245;
+        Thu,  4 Aug 2022 07:40:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C7ADC433C1;
+        Thu,  4 Aug 2022 07:40:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659598824;
+        bh=Ah06rLZ4P9R/uZ+rl/z6T5V8R+Zu0TXa61Ms+9cM+e4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=n6Zy3n5vwolf1+DFA4lW+ulv1MkhFPGNi5yg2HtakmJBeXRq/SLpxEX8gz4wSmVIs
+         goi0xzpQ7jM5uE+3IKwF66oxwe0hUqycy619LVWITrAR/E8hLRdLNFAW+d2/MahrV4
+         Yz3SckBbkiYTiJuhv9QstOmIKZH/iBplZ/S5s3jIZK1pIC6Jgot6zjJwnUeN5wyxPe
+         YR+EhOJAuhc74CXFrWmh24WSKnsUi/ESVopK5V03O03sBxlwxJAnjW1MoncLOncZmT
+         +PsI0kCuJ7ndTQAk4tNg8jqY+HfPxrbi8jvC9MNE3GWj6HLUEuiHesY0gBksmj+wNT
+         tpLIRqjd5I9dQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oJVTI-00038p-QO; Thu, 04 Aug 2022 09:40:44 +0200
+Date:   Thu, 4 Aug 2022 09:40:44 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Linux USB List <linux-usb@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 5/8] Revert "dt-bindings: usb: dwc3: Add wakeup-source
+ property support"
+Message-ID: <Yut3/PA/ClacgJsw@hovoldconsulting.com>
+References: <20220802151404.1797-1-johan+linaro@kernel.org>
+ <20220802151404.1797-6-johan+linaro@kernel.org>
+ <CAL_JsqL5ZCzfd06rxOdQodFjk4G3QpDCsxA5heM71x0q5d-hCw@mail.gmail.com>
+ <YuokOn0KHEqv/CR4@hovoldconsulting.com>
+ <20220803232644.GA2806113-robh@kernel.org>
+ <Yutdd7kWx2sc1yQu@hovoldconsulting.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yutdd7kWx2sc1yQu@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+On Thu, Aug 04, 2022 at 07:47:35AM +0200, Johan Hovold wrote:
+> On Wed, Aug 03, 2022 at 05:26:44PM -0600, Rob Herring wrote:
+> > On Wed, Aug 03, 2022 at 09:31:06AM +0200, Johan Hovold wrote:
+> > > On Tue, Aug 02, 2022 at 11:17:22AM -0600, Rob Herring wrote:
+> > > > On Tue, Aug 2, 2022 at 9:14 AM Johan Hovold <johan+linaro@kernel.org> wrote:
+> > > 
+> > > > > It should also not be used to
+> > > > > work around Linux driver implementation issues such as how to coordinate
+> > > > > the glue and core dwc3 drivers.
+> > > > >
+> > > > > For the Qualcomm dwc3 controllers, it is the glue device that manages
+> > > > > the wakeup interrupts, which may or may not be able to wake the system
+> > > > > up from system suspend.
+> > > > 
+> > > > While the reasoning to add this may have been for QCom, having this
+> > > > property for other users makes sense. On some platforms, 'snps,dwc3'
+> > > > is the only node (i.e. there's no wrapper node). So I don't think this
+> > > > should be reverted.
+> > > 
+> > > Fair enough. Let's keep it in the core child node then where we can
+> > > still retrieve from the glue parent directly.
+> > > 
+> > > (I assume you're not suggesting also adding 'wakeup-source' to the qcom
+> > > glue node, which is where the actual wakeup interrupts live.)
+> > 
+> > 'wakeup-source' belongs wherever the interrupt that causes wakeup is 
+> > defined.
+> 
+> Thanks for clarifying. That was my understanding as well, but I
+> misinterpreted your wish to keep the 'wakeup-source' property also in
+> the core node.
+> 
+> My thought was that if it turns out that there are systems that do not
+> use a glue node but that do indeed support wakeup, then such a property
+> could be added back later.
+> 
+> But let's keep it in the binding then.
 
-User space only enable guest LBR feature when the exactly supported
-LBR format value is initialized to the MSR_IA32_PERF_CAPABILITIES.
-The input is also invalid if only partially supported bits are set.
+I realise it may not have been clear that the patch I suggested to
+revert was first merged for 6.0-rc1, in case that makes any difference.
 
-Note for PEBS feature, the PEBS_FORMAT bit field is the primary concern,
-thus if the PEBS_FORMAT input is empty, the other bits check about PEBS
-(like PEBS_TRAP or ARCH_REG) will be ignored.
+But I'll drop the revert unless I hear otherwise.
 
-Signed-off-by: Like Xu <likexu@tencent.com>
----
- tools/testing/selftests/kvm/x86_64/vmx_pmu_caps_test.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/kvm/x86_64/vmx_pmu_caps_test.c b/tools/testing/selftests/kvm/x86_64/vmx_pmu_caps_test.c
-index 6ec901dab61e..98483947f921 100644
---- a/tools/testing/selftests/kvm/x86_64/vmx_pmu_caps_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/vmx_pmu_caps_test.c
-@@ -13,6 +13,7 @@
- 
- #define _GNU_SOURCE /* for program_invocation_short_name */
- #include <sys/ioctl.h>
-+#include <linux/bitmap.h>
- 
- #include "kvm_util.h"
- #include "vmx.h"
-@@ -56,7 +57,7 @@ int main(int argc, char *argv[])
- 	const struct kvm_cpuid_entry2 *entry_a_0;
- 	struct kvm_vm *vm;
- 	struct kvm_vcpu *vcpu;
--	int ret;
-+	int ret, bit;
- 	union cpuid10_eax eax;
- 	union perf_capabilities host_cap;
- 
-@@ -97,6 +98,12 @@ int main(int argc, char *argv[])
- 	ret = _vcpu_set_msr(vcpu, MSR_IA32_PERF_CAPABILITIES, 0x30);
- 	TEST_ASSERT(ret == 0, "Bad PERF_CAPABILITIES didn't fail.");
- 
-+	/* testcase 4, reject LBR_FMT if only partially supported bits are set */
-+	for_each_set_bit(bit, (unsigned long *)&host_cap.capabilities, 6) {
-+		ret = _vcpu_set_msr(vcpu, MSR_IA32_PERF_CAPABILITIES, BIT_ULL(bit));
-+		TEST_ASSERT(ret == 0, "Bad PERF_CAPABILITIES didn't fail.");
-+	}
-+
- 	printf("Completed perf capability tests.\n");
- 	kvm_vm_free(vm);
- }
--- 
-2.37.1
-
+Johan
