@@ -2,84 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C5B7C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 21:50:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BEB6C25B06
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 21:53:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239784AbiHDVub (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 17:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59674 "EHLO
+        id S235674AbiHDVxk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 17:53:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239275AbiHDVuT (ORCPT
+        with ESMTP id S229813AbiHDVxj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 17:50:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E10AE79;
-        Thu,  4 Aug 2022 14:50:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68783B82772;
-        Thu,  4 Aug 2022 21:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1767DC433D7;
-        Thu,  4 Aug 2022 21:50:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659649814;
-        bh=U9FHl9gguirW2oSvipcGPJE3ApaupYYhfXavrVBTQ40=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mNR4Jtu1rQQ9cAnEb6BKOfX7zZQ1UAwrXOLLVz2WTER0gBuPY01AlXM/pvkSaGS5p
-         LV28SOWuEamxYbaO6vGKLyJnT1wuodAhHpryOUaGPopltZ07/J0+wpPwb/FKwIe+Nj
-         fjPU9k8qiU313eSn3LiVA3KLKrW4rfojcqokqzThNv8scmbiWyXJEgSlz6Ai7w3SCQ
-         PF/pVPQbRzBS3qwv8DvrW3QdVY0TIKSEPZRXhECmTuihJpuOEBx6mqWSdGRCIowBtN
-         awm42g4C3kgTEHHGB5JMAyhJwFj0aALMplTzIxRNFneaWjAmjcKBeEyxjuoDcX/Fw0
-         hkpMLhdElybyA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F0084C43142;
-        Thu,  4 Aug 2022 21:50:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Thu, 4 Aug 2022 17:53:39 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C799E99
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 14:53:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659650018; x=1691186018;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=6T0NBZXCpqtaao1kys1WExwQYMUr16QwE0w4vUF/ICo=;
+  b=d8crhBNY55R/mDBeBSrDogRUC7ZgSOksljX+y7iPKrt20qEOSOOLsQa+
+   3Aq0D6LUOnESLlu9q9BOUVku7Qe8NBeRK1u4jTCrdZG4Vd/6stbR+yNj7
+   P68QMM3YFxooqFVrdRy3T1EwbBXFi7/UbEM26FM/XjdHL8rdN+LOyT04M
+   +NY0xuPJGkjBV0BpHkWQQrEsDwwTRslrNcHzB/wKDvLzn3Gc1tjt154qW
+   5j1wuMmLG5HLTmUKmAb/ZcYQ17Gi5xhBCybLIy1IrUmQi9gWjZvfBkOcS
+   OqO/dounKkmrKCQr+pjOTx4jE6SAphBFAmA5qSx4U/wa+G7N638fdo436
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10429"; a="354051605"
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="354051605"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 14:53:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="930985992"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 04 Aug 2022 14:53:36 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oJime-000Isx-0D;
+        Thu, 04 Aug 2022 21:53:36 +0000
+Date:   Fri, 05 Aug 2022 05:53:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:sched/urgent] BUILD SUCCESS
+ 751d4cbc43879229dbc124afefe240b70fd29a85
+Message-ID: <62ec3fd1.zA1ZCcDxCH9PJTVr%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] libbpf: ensure functions with always_inline attribute are
- inline
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165964981397.20332.3782445822983785211.git-patchwork-notify@kernel.org>
-Date:   Thu, 04 Aug 2022 21:50:13 +0000
-References: <20220803151403.793024-1-james.hilliard1@gmail.com>
-In-Reply-To: <20220803151403.793024-1-james.hilliard1@gmail.com>
-To:     James Hilliard <james.hilliard1@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        sdf@google.com, haoluo@google.com, jolsa@kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/urgent
+branch HEAD: 751d4cbc43879229dbc124afefe240b70fd29a85  sched/core: Do not requeue task on CPU excluded from cpus_mask
 
-This patch was applied to bpf/bpf-next.git (master)
-by Andrii Nakryiko <andrii@kernel.org>:
+elapsed time: 697m
 
-On Wed,  3 Aug 2022 09:14:03 -0600 you wrote:
-> GCC expects the always_inline attribute to only be set on inline
-> functions, as such we should make all functions with this attribute
-> use the __always_inline macro which makes the function inline and
-> sets the attribute.
-> 
-> Fixes errors like:
-> /home/buildroot/bpf-next/tools/testing/selftests/bpf/tools/include/bpf/bpf_tracing.h:439:1: error: ‘always_inline’ function might not be inlinable [-Werror=attributes]
->   439 | ____##name(unsigned long long *ctx, ##args)
->       | ^~~~
-> 
-> [...]
+configs tested: 53
+configs skipped: 2
 
-Here is the summary with links:
-  - [v2] libbpf: ensure functions with always_inline attribute are inline
-    https://git.kernel.org/bpf/bpf-next/c/d25f40ff68aa
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-You are awesome, thank you!
+gcc tested configs:
+x86_64                              defconfig
+i386                                defconfig
+um                             i386_defconfig
+i386                             allyesconfig
+um                           x86_64_defconfig
+sh                               allmodconfig
+x86_64                        randconfig-a013
+x86_64                        randconfig-a011
+arc                  randconfig-r043-20220804
+x86_64                        randconfig-a015
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+x86_64                    rhel-8.3-kselftests
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                           rhel-8.3-syz
+x86_64                           rhel-8.3-kvm
+m68k                             allmodconfig
+x86_64                        randconfig-a006
+arc                              allyesconfig
+alpha                            allyesconfig
+m68k                             allyesconfig
+ia64                             allmodconfig
+arm                                 defconfig
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+powerpc                           allnoconfig
+x86_64                               rhel-8.3
+x86_64                           allyesconfig
+mips                             allyesconfig
+arm                              allyesconfig
+powerpc                          allmodconfig
+arm64                            allyesconfig
+
+clang tested configs:
+hexagon              randconfig-r045-20220804
+riscv                randconfig-r042-20220804
+hexagon              randconfig-r041-20220804
+x86_64                        randconfig-a012
+s390                 randconfig-r044-20220804
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a002
+i386                          randconfig-a004
+i386                          randconfig-a006
+x86_64                        randconfig-a005
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
