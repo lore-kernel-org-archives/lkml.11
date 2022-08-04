@@ -2,139 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C533FC19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 18:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12876C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 18:29:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240002AbiHDS1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 14:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58576 "EHLO
+        id S239231AbiHDS3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 14:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237530AbiHDS1h (ORCPT
+        with ESMTP id S231248AbiHDS3D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 14:27:37 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8695C37A
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 11:27:36 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-3246910dac3so3569487b3.12
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 11:27:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eX8vBdPif72AOCUJ7zNNVFek4nz2akIAnOhX0YOIrkY=;
-        b=LuZu0Ou/YgZIzgjMKDbHl+R0wB/6H/k9edimEwdI91oFh0iP12UJy5wg27oD9TmSik
-         AHBmMfm8N99XSQPgEVhEzhJnrWj+/i5saSv7vIOk45CUPV1kgZ0V/PHRd3LUHd8iQHwz
-         p8mNT9kgcxQQ2w5IbvvDxlxdZErHgdPMfuYWqkL4eYcKMiFhSb6LaVoN7HKKLqp3yEx5
-         iFTMpX2iffHDNdomN48pWCVnH2Kp428CANAN4rbBjvkjEkkOkuRftYjgdIbo72JPF0ZE
-         lPbr6jqt17aRChsotgl3Bjkg8x+1l00+OiKZ9CdNvMuWKCvOmONY0ng462Q0hJTLSovo
-         8/Aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eX8vBdPif72AOCUJ7zNNVFek4nz2akIAnOhX0YOIrkY=;
-        b=V/zgPuqPzsNauHP9T/yI2ZugCZWymtN2jw/YaUnwpFnWQqicm+LSETDoXJk9VL1ZrF
-         IRgQNhIqX3vMiP0Sej6Xr1jzqQlsvt1uREeJ3KnF+jJRu1EsheaKDFs1BF44B2qOep0u
-         Snm+jmF3Yg2QTGZR0zYjRrt6YJf8yFrXWR6WzxHFTgBLwj7TlDS+X/BL9Z7poaTRk5JX
-         QWoJdwi/4XJHBGqfLXV+WXfvh7ru5fQVigxe77qKY3PwaxArLAOwsGHuMik13c8u5eS4
-         ZSMfHB45vKJUc7NKL6SPs64YRQpRo+Bi8Tcs7b2hRzjrWkaI7r5AIr9/iYMUc97ZREoQ
-         mLVg==
-X-Gm-Message-State: ACgBeo3wMO3D9sKk0E24CneKgzbvQShOx5LWuiAJtIUMbgy0kWOxLseE
-        bw7RVPA4YtuO8SUQP7PHmCm8Rrol5zuPPXC6SN0XNg==
-X-Google-Smtp-Source: AA6agR7LdJ6XIMIA+KJyTSzFSbHsNimiVZHMY8XMW1klW1NNcy0mp80qvlVqIg7vzvT4Yfv022i2v5WunDitOL7XDSQ=
-X-Received: by 2002:a81:50d4:0:b0:31f:5f85:566a with SMTP id
- e203-20020a8150d4000000b0031f5f85566amr2783119ywb.218.1659637655607; Thu, 04
- Aug 2022 11:27:35 -0700 (PDT)
+        Thu, 4 Aug 2022 14:29:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E351D0C4
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 11:29:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 417FC61617
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 18:29:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63E50C433C1;
+        Thu,  4 Aug 2022 18:29:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659637741;
+        bh=B6nriIfph8fYOJUBlU0yKPRkJ6yBSCpseUxsuW/Ai4E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tpoZW/Z3yXpE3cKMpPr4lKB1hrOMbxh5rHlOgQtjaJo/x1T0eO8OkTsSIq4hRJoPy
+         1GkGJMgFh/dnzpVuAqSQifxCptE94w9u3kLRY14GQRbNEPDJiuJoF0yKBoUWR/ts0x
+         FrJiPCWfCl9ONd6ha95QpvlYMjOmS7r+MmDJDqVXpjtdzzM62U9jCnidJ22iebr3u2
+         GRVfQIJBD9oAPpvYIf0sjF0HKCYB9HtKiVvG2jl5S5KcSgnRJfnb8fiHx/WUxKhia/
+         m+/a4FvHrzAdbC7PD6jWwSoFnHZpNy3q5BgxjqLyphQvzGAxKBOtLVfFxcg6TuB8m8
+         6V2CVmjGNkLnA==
+Date:   Thu, 4 Aug 2022 18:28:59 +0000
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Chao Yu <chao@kernel.org>
+Cc:     jaegeuk@kernel.org, linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+Subject: Re: [f2fs-dev] [PATCH] f2fs: fix to check compression feature before
+ enabling file compression
+Message-ID: <YuwP67c0oNjhojmt@gmail.com>
+References: <20220804134140.14455-1-chao@kernel.org>
 MIME-Version: 1.0
-References: <20220804061133.4110734-1-victor.liu@nxp.com> <20220804061133.4110734-2-victor.liu@nxp.com>
- <CAL_Jsq+B5PMOmZO4hz5DyEsA4V=UkrNn-6b58h8VbcPa2iaQ1g@mail.gmail.com>
-In-Reply-To: <CAL_Jsq+B5PMOmZO4hz5DyEsA4V=UkrNn-6b58h8VbcPa2iaQ1g@mail.gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 4 Aug 2022 11:26:58 -0700
-Message-ID: <CAGETcx94De-wofRjtPgNxa+YQoU3+j+we+4K9Evm=vtzhopX8g@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] drivers: bus: simple-pm-bus: Populate simple MFD
- child devices
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Liu Ying <victor.liu@nxp.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220804134140.14455-1-chao@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 4, 2022 at 5:18 AM Rob Herring <robh+dt@kernel.org> wrote:
->
-> On Thu, Aug 4, 2022 at 12:10 AM Liu Ying <victor.liu@nxp.com> wrote:
-> >
-> > There could be simple MFD device(s) connected to a simple PM bus as child
-> > node(s), like Freescale i.MX8qxp pixel link MSI bus. Add a child match
-> > table as an argument to of_platform_populate() function call to specify
-> > the simple MFD devices so that they can be populated.
->
-> There could be a simple-bus under it as well. You should just use
-> of_platform_default_populate() instead.
+On Thu, Aug 04, 2022 at 09:41:40PM +0800, Chao Yu wrote:
+> From: Chao Yu <chao.yu@oppo.com>
+> 
+> This patch disallow to enable file compression in image which doesn't
+> support compression feature.
+> 
+> Signed-off-by: Chao Yu <chao.yu@oppo.com>
+> ---
+>  fs/f2fs/file.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+> index 24f5b02c78e7..4a3f4eaa3fc5 100644
+> --- a/fs/f2fs/file.c
+> +++ b/fs/f2fs/file.c
+> @@ -1872,6 +1872,8 @@ static int f2fs_setflags_common(struct inode *inode, u32 iflags, u32 mask)
+>  			if (!f2fs_disable_compressed_file(inode))
+>  				return -EINVAL;
+>  		} else {
+> +			if (!f2fs_sb_has_compression(F2FS_I_SB(inode)))
+> +				return -EOPNOTSUPP;
+>  			if (!f2fs_may_compress(inode))
+>  				return -EINVAL;
+>  			if (S_ISREG(inode->i_mode) && F2FS_HAS_BLOCKS(inode))
+> -- 
 
-I'm confused why we even need this patch. Wouldn't this driver
-automatically probe simple-mfd buses and populate its child devices?
-We already have it in simple_pm_bus_of_match.
+How is this different from the same check that occurs earlier in the function?
 
-I'm wondering if you are trying to workaround the behavior of having
-"ONLY_BUS" set in simple_pm_bus_of_match for "simple-mfd". Have you
-tried deleting that field and see if it does what you want?
-
-And we wouldn't need to use of_platform_default_populate() because
-this driver would take care of doing that recursively. Especially when
-you need the clocks and power domain to be able to access the child
-devices, you want the driver to probe and do that at each level before
-automatically recursively adding all the grand-children devices.
-
--Saravana
-
->
-> >
-> > Signed-off-by: Liu Ying <victor.liu@nxp.com>
-> > ---
-> > v1->v3:
-> > * No change.
-> >
-> >  drivers/bus/simple-pm-bus.c | 7 ++++++-
-> >  1 file changed, 6 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/bus/simple-pm-bus.c b/drivers/bus/simple-pm-bus.c
-> > index 6b8d6257ed8a..ff5f8ca5c024 100644
-> > --- a/drivers/bus/simple-pm-bus.c
-> > +++ b/drivers/bus/simple-pm-bus.c
-> > @@ -13,6 +13,11 @@
-> >  #include <linux/platform_device.h>
-> >  #include <linux/pm_runtime.h>
-> >
-> > +static const struct of_device_id simple_pm_bus_child_matches[] = {
-> > +       { .compatible = "simple-mfd", },
-> > +       {}
-> > +};
-> > +
-> >  static int simple_pm_bus_probe(struct platform_device *pdev)
-> >  {
-> >         const struct device *dev = &pdev->dev;
-> > @@ -49,7 +54,7 @@ static int simple_pm_bus_probe(struct platform_device *pdev)
-> >         pm_runtime_enable(&pdev->dev);
-> >
-> >         if (np)
-> > -               of_platform_populate(np, NULL, lookup, &pdev->dev);
-> > +               of_platform_populate(np, simple_pm_bus_child_matches, lookup, &pdev->dev);
-> >
-> >         return 0;
-> >  }
-> > --
-> > 2.25.1
-> >
+- Eric
