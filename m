@@ -2,232 +2,303 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C6E5C00144
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 05:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38CE1C00144
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 05:34:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236876AbiHDFaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 01:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36740 "EHLO
+        id S237111AbiHDFeo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 01:34:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232030AbiHDFaP (ORCPT
+        with ESMTP id S232030AbiHDFel (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 01:30:15 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF2937F9F
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 22:30:10 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id y23so10667951ljh.12
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 22:30:10 -0700 (PDT)
+        Thu, 4 Aug 2022 01:34:41 -0400
+Received: from mail-oa1-x44.google.com (mail-oa1-x44.google.com [IPv6:2001:4860:4864:20::44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7F33E74D
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 22:34:40 -0700 (PDT)
+Received: by mail-oa1-x44.google.com with SMTP id 586e51a60fabf-10cf9f5b500so23196619fac.2
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 22:34:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=uxn4ZMmx203WyOlSVHDAZZ2QkYW3oqKlf8ih7gOJLnk=;
-        b=lLQxvyHvx/3rSn3OOh5hrXaiIxuWrgi5BJsmJOY3SHUfBtpiGAuBPLHWhCq8woPyVn
-         9qHFOvW4QzuQzEI2D+GDZ517t6en3Cu5ooj8WFYjQ9C3Vd6Q9vyBuqPmdhKK6oBmseFB
-         FYYRJLjiEBkK0fFWh7ewCMPBqh8a30fJR1VbtM9jEAG98GVfOyCK0nP3iL4BMwJq5Knf
-         65y3j9b2n2M+/juywtwuDE2r8/2ZFW7kEMW49kb6SKp0PvUL7jvQVgGMC55i9Drv20Ss
-         0IZiavEcWLnfMmou8KX2MDI9Uvw4iYB4DuJ6n2JdmCEoesKnWFQjynzaLzwU++D7lOB2
-         XALA==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=eqO2GtYLnN7H8loOSrIFFhgBlZEWlA8JNy12iUGG61Q=;
+        b=RZjZyF5xtsj0J3nCLe9sOFJt1ljNSoVHUxDn259NuaKelwtuaZ+c6PVRsJgiGhWfVr
+         3GglKu8mYbVF3PqI5Mpfx8aimJgq0Yht5I6ucsiZ+lxUeekSszKKBpVZgFk9evQ3bktW
+         5QFsC7JBfjYD3s/QZmKlW4r3MwRwOtSRcqj4U1ixw/2FaV3Cb1x4+B8oIMto8DiVxVNd
+         E0cN4Y5P3U1p0/F/Tf8sqG+3LIRGTftPxBDEkElrWztgdn+a/BUmftAb+0zLS8IaMFXF
+         zfLRi4DisS+NqeUdWn5+kseUYhh9c/PsVomP8YEuWUdWwe0npi/MzvVwUgq+N+V3a7t3
+         860g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=uxn4ZMmx203WyOlSVHDAZZ2QkYW3oqKlf8ih7gOJLnk=;
-        b=DgHZDYdjQqXCQMBZ90YYac3LcXfJSaZzsNEl2ZrV2Q323GvdIy+PSLS8RUOmiECs4+
-         /jl73xl+AR+5xzva3hcmUgzjT/8Gxu38x1ydfwp0UwVc0kaaufjhf74li+60slSgmbm0
-         8h4wlyiLovDsbnKd1kB8ItV+m1ICMgqm++9QadhyCcYd/akOjAjHooLckMO9vrFlWyEY
-         m6mgk9ZyEEXrStzI4x/1o9z5JI5K1hnQoqHPj4BfykcfKLj//LgQf8z0t00cTpygFpqe
-         9J6CdU3q165gLhlDLDSMvbyIozHhWSL4Z8xNfgt9xUTgYNE3u6n0q3a+sz0yAd0Pzj2r
-         vyBw==
-X-Gm-Message-State: ACgBeo3CDhLmtcDNYZhcO0IYhWCpCSQCbwST7Vges6dgIUpPUnc+dFNg
-        EUWtZu049YdCNZDC3elkTI8l62QxAn6Ko0TPrAE2DQ==
-X-Google-Smtp-Source: AA6agR7raR6yR9Gk4kq2pWN/JukLAC7hPtGF3ABVdbOWH7tEdtreK7xCt3hgltvbkoqs9ZhJiHj8UIJQ5ZSpY0tqwa8=
-X-Received: by 2002:a2e:a5ca:0:b0:25e:1c49:70f4 with SMTP id
- n10-20020a2ea5ca000000b0025e1c4970f4mr46659ljp.4.1659591008148; Wed, 03 Aug
- 2022 22:30:08 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=eqO2GtYLnN7H8loOSrIFFhgBlZEWlA8JNy12iUGG61Q=;
+        b=3XhddSauQYc1sr6JkrdnmUXsjQLKmBwt4EQGazqfXXdF51Juyyqfwd+ck/cxRXBuL/
+         QblseyUtfSGenJ0gljJ2pbB0gAIITjw52WqbTW2Z0jdGYZUSnhLjM7vzaSAcgg9ntdCU
+         IRIk6kr7HsWR7fB58/4XlnQLf92NZplKJqLZUz9bekcIZR5pUXSzuvCRJuWFqnjazPHn
+         cqH0ZKs7JUi8PfOxesr1DBBrir0YEVyont3WvIHVerIYNoHR4Tf2/yZ8M2LgalfQDJR8
+         L8KBd2+3s7ORFdgymam35gZCSYvnI2Og9BSkCuWi06QGGz5azCZvt2zdM+OI0ItzFFCs
+         2qyA==
+X-Gm-Message-State: ACgBeo0q+86zpukv5bspl1tWdEh7e8WGx9hw1vCmxnMmjKRe6pMsY4zF
+        GMNjB6rpa82XDop8Pd9JHIpsoRRUFkg=
+X-Google-Smtp-Source: AA6agR6gxBIJ8ej0i+PQkYdQATuG4G3BJiABwM5HLlbKJrD2l+1XykpH/W056KEDm561Fnh/2tF0Dw==
+X-Received: by 2002:a05:6870:41c3:b0:10c:529c:3844 with SMTP id z3-20020a05687041c300b0010c529c3844mr61434oac.0.1659591279368;
+        Wed, 03 Aug 2022 22:34:39 -0700 (PDT)
+Received: from bertie (072-190-140-095.res.spectrum.com. [72.190.140.95])
+        by smtp.gmail.com with ESMTPSA id r14-20020a056830120e00b0061c3246bd42sm4491510otp.44.2022.08.03.22.34.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Aug 2022 22:34:39 -0700 (PDT)
+Date:   Thu, 4 Aug 2022 00:34:38 -0500
+From:   Rebecca Mckeever <remckee0@gmail.com>
+To:     "Huang, Shaoqin" <shaoqin.huang@intel.com>
+Cc:     Mike Rapoport <rppt@kernel.org>,
+        Karolina Drobnik <karolinadrobnik@gmail.com>,
+        David Hildenbrand <david@redhat.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] memblock test: Add test to memblock_add() 129th region
+Message-ID: <YutabjAN+hJwUaoF@bertie>
+References: <20220801064901.980558-1-shaoqin.huang@intel.com>
+ <YujPDHym0Ly8sxqP@kernel.org>
+ <4c8def19-650e-7bc3-a581-3ce2b7c0b3cf@intel.com>
 MIME-Version: 1.0
-References: <000000000000098a0105e557f130@google.com> <YuqqLfu1E62PqnKS@monkey>
- <YuriiFpv/enJW1oE@xz-m1.local>
-In-Reply-To: <YuriiFpv/enJW1oE@xz-m1.local>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 4 Aug 2022 07:29:56 +0200
-Message-ID: <CACT4Y+ZpLmRLouc+q0vMskPQ0-d5LKKwCoKw-twZ8E9W0vqETg@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in hugetlb_change_protection
-To:     Peter Xu <peterx@redhat.com>
-Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
-        syzbot <syzbot+824e71311e757a9689ff@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, llvm@lists.linux.dev, nathan@kernel.org,
-        ndesaulniers@google.com, songmuchun@bytedance.com,
-        syzkaller-bugs@googlegroups.com, trix@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4c8def19-650e-7bc3-a581-3ce2b7c0b3cf@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-,On Wed, 3 Aug 2022 at 23:03, Peter Xu <peterx@redhat.com> wrote:
->
-> Hi, Mike,
->
-> Thanks for forwarding.
->
-> On Wed, Aug 03, 2022 at 10:02:37AM -0700, Mike Kravetz wrote:
-> > I'll start looking at this, but adding Peter this may be related to his
-> > recent changes.
-> > --
-> > Mike Kravetz
-> >
-> > On 08/03/22 08:32, syzbot wrote:
-> > > Hello,
-> > >
-> > > syzbot found the following issue on:
-> > >
-> > > HEAD commit:    e65c6a46df94 Merge tag 'drm-fixes-2022-07-30' of git://ano..
-> > > git tree:       upstream
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=139cc282080000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=26034e6fe0075dad
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=824e71311e757a9689ff
-> > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > > userspace arch: i386
-> > >
-> > > Unfortunately, I don't have any reproducer for this issue yet.
-> > >
-> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > Reported-by: syzbot+824e71311e757a9689ff@syzkaller.appspotmail.com
-> > >
-> > > ------------[ cut here ]------------
-> > > WARNING: CPU: 1 PID: 28745 at include/linux/swapops.h:319 make_pte_marker_entry include/linux/swapops.h:319 [inline]
->
-> This is the warning code I added to make sure pte marker won't be created
-> if not configured at all:
->
-> static inline swp_entry_t make_pte_marker_entry(pte_marker marker)
-> {
->         /* This should never be called if !CONFIG_PTE_MARKER */
->         WARN_ON_ONCE(1);
->         return swp_entry(0, 0);
-> }
->
-> The stack below comes from a UFFDIO_WRITEPROTECT, however logically it
-> shouldn't really reach there - if with !PTE_MARKER then it must be with
-> !PTE_MARKER_UFFD_WP, then we should have returned "false" if hugetlb wanted
-> to register with uffd-wp:
->
-> static inline bool vma_can_userfault(struct vm_area_struct *vma,
->                                      unsigned long vm_flags)
-> {
->         if (vm_flags & VM_UFFD_MINOR)
->                 return is_vm_hugetlb_page(vma) || vma_is_shmem(vma);
->
-> #ifndef CONFIG_PTE_MARKER_UFFD_WP
->         /*
->          * If user requested uffd-wp but not enabled pte markers for
->          * uffd-wp, then shmem & hugetlbfs are not supported but only
->          * anonymous.
->          */
->         if ((vm_flags & VM_UFFD_WP) && !vma_is_anonymous(vma))
->                 return false;
-> #endif
->         return vma_is_anonymous(vma) || is_vm_hugetlb_page(vma) ||
->             vma_is_shmem(vma);
-> }
->
-> Then the UFFDIO_WRITEPROTECT should have failed already.. at:
->
->         if (!userfaultfd_wp(dst_vma))
->                 goto out_unlock;
->
-> in mwriteprotect_range().
->
-> I still have no idea how the bot managed to trigger a real wr-protect upon
-> this vma (which I don't think should have registered with uffd-wp but maybe
-> it can be worked around somehow..).  However to make this even safer we can
-> also guard the pte marker callers with CONFIG_PTE_MARKER_UFFD_WP. Patch
-> attached for that, but since this seems to have no reproducer yet maybe no
-> easy way to verify it.
->
-> At the meantime, I'd also like to double check the kernel config to make
-> sure CONFIG_PTE_MARKER_UFFD_WP will always be unset when CONFIG_PTE_MARKER=n.
-> Anyone knows where I can fetch the config somewhere?
+On Tue, Aug 02, 2022 at 03:38:37PM +0800, Huang, Shaoqin wrote:
+> 
+> 
+> On 8/2/2022 3:15 PM, Mike Rapoport wrote:
+> > On Mon, Aug 01, 2022 at 02:48:36PM +0800, shaoqin.huang@intel.com wrote:
+> > > From: Shaoqin Huang <shaoqin.huang@intel.com>
+> > > 
+> > > Add 129th region into the memblock, and this will trigger the
+> > > memblock_double_array() function, this needs valid memory regions. So
+> > > using dummy_physical_memory_init() to allocate some valid memory, when
+> > > memblock_double_array() choose a new memory region from memory.regions,
+> > > it will always choose a valid memory region if we add all valid memory
+> > > region, so the memblock_double_array() must success.
+> > > 
+> > > Another thing should be done is to restore the memory.regions after
+> > > memblock_double_array(), due to now the memory.regions is pointing to a
+> > > memory region allocated by dummy_physical_memory_init(). And it will
+> > > affect the subsequent tests if we don't restore the memory region. So
+> > > Simply record the origin region, and restore it after the test.
+> > > 
+> > > Signed-off-by: Shaoqin Huang <shaoqin.huang@intel.com>
+> > > ---
+> > > Changelog:
+> > > ----------
+> > > v2:
+> > >    - Use ASSERT_EQ() to replace assert().
+> > >    - Not to expose memory_block, and add a function get_memory_block_base() to
+> > >    get the memory_block.base.
+> > >    - Add two functions for common usage, and now it has been used by this patch
+> > >    to allocate many valid memory regions and free them at the end.
+> > > 
+> > >   tools/testing/memblock/tests/basic_api.c | 54 ++++++++++++++++++++++++
+> > >   tools/testing/memblock/tests/common.c    | 38 +++++++++++++++--
+> > >   tools/testing/memblock/tests/common.h    |  6 +++
+> > >   3 files changed, 95 insertions(+), 3 deletions(-)
+> > > 
+> > > diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
+> > > index 66f46f261e66..46948d5a975e 100644
+> > > --- a/tools/testing/memblock/tests/basic_api.c
+> > > +++ b/tools/testing/memblock/tests/basic_api.c
+> > > @@ -326,6 +326,59 @@ static int memblock_add_twice_check(void)
+> > >   	return 0;
+> > >   }
+> > > +static int memblock_add_many_check(void)
+> > > +{
+> > > +	void *base[INIT_MEMBLOCK_REGIONS + 1];
+> > > +	void *orig_region;
+> > > +	struct region r = {
+> > > +		.base = SZ_16K,
+> > > +		.size = MEM_SIZE,
+> > > +	};
+> > > +
+> > > +	PREFIX_PUSH();
+> > > +
+> > > +	reset_memblock_regions();
+> > > +	memblock_allow_resize();
+> > > +
+> > > +	dummy_physical_memory_many_init(base, INIT_MEMBLOCK_REGIONS);
+> > 
+> > Why do we need this?
+> 
+> I want to memblock_add() 128 regions that every region has a valid
+> "physical" memory. So it can make sure the memblock_double_array() success
+> when add a 129-th region.
+> 
 
-Hi Peter,
+> In the last patch, I didn't put this function here, I just memblock_add()
+> 128 region at here. And after I think if we can encapsulate it to a
+> function, later it can be used to init some valid memory regions into the
+> memblock.
+> 
+> And if no others may be use this functions, the function is not needed.
+> 
+> > 
+> > dummy_physical_memory_init() allocates the "physical" memory, so to trigger
+> > memblock_double_array() it's enough to memblock_add() 129 non-intersecting
+> > chunks in the range [memory_block.base, memory_block.base + MEM_SIZE].
+> > If MEM_SIZE of 16k won't be enough, it can be increased.
+> > 
+> 
+> Yes. And now MEM_SIZE of 16k is enough, no need to increase it now.
+> 
+I experimented with only calling dummy_physical_memory_init() once at the
+beginning and then adding all 129 regions into the memory allocated with
+that call. I found that it only works if at least one of the regions is
+SZ_16K or larger. I think this is because memblock_double_array() needs to
+find a contiguous region large enough to hold
+PAGE_ALIGN(new regions array). If all the regions are SZ_8K or smaller, I
+get the error message:
 
-If you mean the kernel config for the kernel that produces the
-WARNING, it's in the report above under the "kernel config" link.
+memblock: Failed to double memory array from 128 to 256 entries !
 
-Note that so far it was triggered only once:
-https://syzkaller.appspot.com/bug?extid=824e71311e757a9689ff
-which may suggest a very narrow race condition.
+What I did was increase MEM_SIZE to SZ_32K, then memblock_add a SZ_16K
+region after calling dummy_physical_memory_init() once. Then, I made the
+remaining regions SZ_16, with a SZ_16 gap between each region.
 
-
-
-> Thanks,
->
-> > > WARNING: CPU: 1 PID: 28745 at include/linux/swapops.h:319 make_pte_marker include/linux/swapops.h:342 [inline]
-> > > WARNING: CPU: 1 PID: 28745 at include/linux/swapops.h:319 hugetlb_change_protection+0xf85/0x1610 mm/hugetlb.c:6392
-> > > Modules linked in:
-> > > CPU: 1 PID: 28745 Comm: syz-executor.3 Not tainted 5.19.0-rc8-syzkaller-00146-ge65c6a46df94 #0
-> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-> > > RIP: 0010:make_pte_marker_entry include/linux/swapops.h:319 [inline]
-> > > RIP: 0010:make_pte_marker include/linux/swapops.h:342 [inline]
-> > > RIP: 0010:hugetlb_change_protection+0xf85/0x1610 mm/hugetlb.c:6392
-> > > Code: e8 d0 5a b7 ff 0f b6 94 24 80 00 00 00 48 8b 84 24 98 00 00 00 84 d2 0f 84 ef 02 00 00 49 89 c4 e9 48 fb ff ff e8 ab 5e b7 ff <0f> 0b 48 b9 00 00 00 00 00 fc ff df 48 89 d8 48 c1 e8 03 80 3c 08
-> > > RSP: 0018:ffffc90014cc7780 EFLAGS: 00010212
-> > > RAX: 000000000000082a RBX: ffff88807750e820 RCX: ffffc90006723000
-> > > RDX: 0000000000040000 RSI: ffffffff81c30c25 RDI: 0000000000000007
-> > > RBP: ffff888074de5ea0 R08: 0000000000000007 R09: 0000000000000000
-> > > R10: 0000000000000004 R11: 0000000000000001 R12: 0000000000000000
-> > > R13: 0000000000000000 R14: 0000000000000004 R15: ffff88801fcc8e00
-> > > FS:  0000000000000000(0000) GS:ffff8880b9b00000(0063) knlGS:00000000f7f06b40
-> > > CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-> > > CR2: 0000000020000040 CR3: 000000001b84c000 CR4: 00000000003526e0
-> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > Call Trace:
-> > >  <TASK>
-> > >  change_protection+0x96b/0x3ad0 mm/mprotect.c:463
-> > >  mwriteprotect_range+0x387/0x5c0 mm/userfaultfd.c:759
-> > >  userfaultfd_writeprotect fs/userfaultfd.c:1823 [inline]
-> > >  userfaultfd_ioctl+0x438/0x4340 fs/userfaultfd.c:1997
-> > >  compat_ptr_ioctl+0x67/0x90 fs/ioctl.c:906
-> > >  __do_compat_sys_ioctl+0x1c7/0x290 fs/ioctl.c:968
-> > >  do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
-> > >  __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
-> > >  do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
-> > >  entry_SYSENTER_compat_after_hwframe+0x70/0x82
-> > > RIP: 0023:0xf7f0b549
-> > > Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
-> > > RSP: 002b:00000000f7f065cc EFLAGS: 00000296 ORIG_RAX: 0000000000000036
-> > > RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000c018aa06
-> > > RDX: 00000000200000c0 RSI: 0000000000000000 RDI: 0000000000000000
-> > > RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-> > > R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> > > R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-> > >  </TASK>
-> > > ----------------
-> > > Code disassembly (best guess):
-> > >    0:       03 74 c0 01             add    0x1(%rax,%rax,8),%esi
-> > >    4:       10 05 03 74 b8 01       adc    %al,0x1b87403(%rip)        # 0x1b8740d
-> > >    a:       10 06                   adc    %al,(%rsi)
-> > >    c:       03 74 b4 01             add    0x1(%rsp,%rsi,4),%esi
-> > >   10:       10 07                   adc    %al,(%rdi)
-> > >   12:       03 74 b0 01             add    0x1(%rax,%rsi,4),%esi
-> > >   16:       10 08                   adc    %cl,(%rax)
-> > >   18:       03 74 d8 01             add    0x1(%rax,%rbx,8),%esi
-> > >   1c:       00 00                   add    %al,(%rax)
-> > >   1e:       00 00                   add    %al,(%rax)
-> > >   20:       00 51 52                add    %dl,0x52(%rcx)
-> > >   23:       55                      push   %rbp
-> > >   24:       89 e5                   mov    %esp,%ebp
-> > >   26:       0f 34                   sysenter
-> > >   28:       cd 80                   int    $0x80
-> > > * 2a:       5d                      pop    %rbp <-- trapping instruction
-> > >   2b:       5a                      pop    %rdx
-> > >   2c:       59                      pop    %rcx
-> > >   2d:       c3                      retq
-> > >   2e:       90                      nop
-> > >   2f:       90                      nop
-> > >   30:       90                      nop
-> > >   31:       90                      nop
-> > >   32:       8d b4 26 00 00 00 00    lea    0x0(%rsi,%riz,1),%esi
-> > >   39:       8d b4 26 00 00 00 00    lea    0x0(%rsi,%riz,1),%esi
+> > > +
+> > > +	orig_region = memblock.memory.regions;
+> > > +
+> > > +	/* This adds the 129 memory_region, and makes it double array. */
+> > > +	dummy_physical_memory_init();
+> > > +	append_memblock();
+> > > +	base[INIT_MEMBLOCK_REGIONS] = get_memory_block_base();
+> > > +
+> > > +	ASSERT_EQ(memblock.memory.cnt, INIT_MEMBLOCK_REGIONS + 1);
+> > > +	ASSERT_EQ(memblock.memory.total_size, (INIT_MEMBLOCK_REGIONS + 1) * MEM_SIZE);
+> > > +	ASSERT_EQ(memblock.memory.max, INIT_MEMBLOCK_REGIONS * 2);
+> > > +
+> > > +	/* The base is very small, so it should be insert to the first region. */
+> > > +	memblock_add(r.base, r.size);
+> > > +	ASSERT_EQ(memblock.memory.regions[0].base, r.base);
+> > > +	ASSERT_EQ(memblock.memory.regions[0].size, r.size);
+> > > +
+> > > +	ASSERT_EQ(memblock.memory.cnt, INIT_MEMBLOCK_REGIONS + 2);
+> > > +	ASSERT_EQ(memblock.memory.total_size, (INIT_MEMBLOCK_REGIONS + 2) * MEM_SIZE);
+> > > +	ASSERT_EQ(memblock.memory.max, INIT_MEMBLOCK_REGIONS * 2);
+> > > +
+> > > +	/* Free these allocated memory. */
+> > > +	dummy_physical_memory_many_cleanup(base, INIT_MEMBLOCK_REGIONS + 1);
+> > > +
+> > > +	/*
+> > > +	 * The current memory.regions is occupying a range of memory that
+> > > +	 * allocated from dummy_physical_memory_init(). After free the memory,
+> > > +	 * we must not use it. So restore the origin memory region to make sure
+> > > +	 * the tests can run as normal and not affected by the double array.
+> > > +	 */
+> > > +	memblock.memory.regions = orig_region;
+> > > +	memblock.memory.cnt = INIT_MEMBLOCK_REGIONS;
+> > > +
+> > > +	test_pass_pop();
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > >   static int memblock_add_checks(void)
+> > >   {
+> > >   	prefix_reset();
+> > > @@ -339,6 +392,7 @@ static int memblock_add_checks(void)
+> > >   	memblock_add_overlap_bottom_check();
+> > >   	memblock_add_within_check();
+> > >   	memblock_add_twice_check();
+> > > +	memblock_add_many_check();
+> > >   	prefix_pop();
+> > > diff --git a/tools/testing/memblock/tests/common.c b/tools/testing/memblock/tests/common.c
+> > > index e43b2676af81..960b3ce07696 100644
+> > > --- a/tools/testing/memblock/tests/common.c
+> > > +++ b/tools/testing/memblock/tests/common.c
+> > > @@ -5,8 +5,6 @@
+> > >   #include <linux/memory_hotplug.h>
+> > >   #include <linux/build_bug.h>
+> > > -#define INIT_MEMBLOCK_REGIONS			128
+> > > -#define INIT_MEMBLOCK_RESERVED_REGIONS		INIT_MEMBLOCK_REGIONS
+> > >   #define PREFIXES_MAX				15
+> > >   #define DELIM					": "
+> > > @@ -58,10 +56,20 @@ void reset_memblock_attributes(void)
+> > >   	memblock.current_limit	= MEMBLOCK_ALLOC_ANYWHERE;
+> > >   }
+> > > +void *get_memory_block_base(void)
+> > > +{
+> > > +	return memory_block.base;
+> > > +}
+> > > +
+> > > +void append_memblock(void)
+> > > +{
+> > > +	memblock_add((phys_addr_t)memory_block.base, MEM_SIZE);
+> > > +}
+> > > +
+> > >   void setup_memblock(void)
+> > >   {
+> > >   	reset_memblock_regions();
+> > > -	memblock_add((phys_addr_t)memory_block.base, MEM_SIZE);
+> > > +	append_memblock();
+> > >   }
+> > >   void dummy_physical_memory_init(void)
+> > > @@ -75,6 +83,30 @@ void dummy_physical_memory_cleanup(void)
+> > >   	free(memory_block.base);
+> > >   }
+> > > +void dummy_physical_memory_many_init(void *base[], int cnt)
+> > > +{
+> > > +	int i;
+> > > +
+> > > +	for (i = 0; i < cnt; i++) {
+> > > +		dummy_physical_memory_init();
+> > > +		append_memblock();
+> > > +		base[i] = memory_block.base;
+> > > +
+> > > +		ASSERT_EQ(memblock.memory.cnt, i + 1);
+> > > +		ASSERT_EQ(memblock.memory.total_size, (i + 1) * MEM_SIZE);
+> > > +	}
+> > > +}
+> > > +
+> > > +void dummy_physical_memory_many_cleanup(void *base[], int cnt)
+> > > +{
+> > > +	int i;
+> > > +
+> > > +	for (i = 0; i < cnt; i++) {
+> > > +		memory_block.base = base[i];
+> > > +		dummy_physical_memory_cleanup();
+> > > +	}
+> > > +}
+> > > +
+> > >   static void usage(const char *prog)
+> > >   {
+> > >   	BUILD_BUG_ON(ARRAY_SIZE(help_opts) != ARRAY_SIZE(long_opts) - 1);
+> > > diff --git a/tools/testing/memblock/tests/common.h b/tools/testing/memblock/tests/common.h
+> > > index 3e7f23d341d7..848900aa8db6 100644
+> > > --- a/tools/testing/memblock/tests/common.h
+> > > +++ b/tools/testing/memblock/tests/common.h
+> > > @@ -11,6 +11,8 @@
+> > >   #include <../selftests/kselftest.h>
+> > >   #define MEM_SIZE SZ_16K
+> > > +#define INIT_MEMBLOCK_REGIONS			128
+> > > +#define INIT_MEMBLOCK_RESERVED_REGIONS		INIT_MEMBLOCK_REGIONS
+> > >   /**
+> > >    * ASSERT_EQ():
+> > > @@ -68,8 +70,12 @@ struct region {
+> > >   void reset_memblock_regions(void);
+> > >   void reset_memblock_attributes(void);
+> > >   void setup_memblock(void);
+> > > +void append_memblock(void);
+> > > +void *get_memory_block_base(void);
+> > >   void dummy_physical_memory_init(void);
+> > >   void dummy_physical_memory_cleanup(void);
+> > > +void dummy_physical_memory_many_init(void *base[], int cnt);
+> > > +void dummy_physical_memory_many_cleanup(void *base[], int cnt);
+> > >   void parse_args(int argc, char **argv);
+> > >   void test_fail(void);
+> > > -- 
+> > > 2.30.2
+> > > 
+> > > 
+> > 
+Thanks,
+Rebecca
