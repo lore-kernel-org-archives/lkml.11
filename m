@@ -2,50 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D442C19F29
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 02:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF7D9C19F29
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 02:17:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239364AbiHDCRR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 22:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45696 "EHLO
+        id S239033AbiHDCRV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 22:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238950AbiHDCQI (ORCPT
+        with ESMTP id S238919AbiHDCQH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 22:16:08 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26C55F13F;
-        Wed,  3 Aug 2022 19:16:07 -0700 (PDT)
-X-UUID: cd0c03c3beba4fc8bb66c9c3a75992b4-20220804
+        Wed, 3 Aug 2022 22:16:07 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2AA5D0C2;
+        Wed,  3 Aug 2022 19:16:05 -0700 (PDT)
+X-UUID: 8eac475c2a414273a2c39bff397ba2db-20220804
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=HmSmq6yMM36pKrdp31Ni74Gs/X4TNMNcYcMhqJnFRkA=;
-        b=ijS7UJZuzZU+3yA3SmQqfrf8TPlyUWSbzdwQqCIWApxkftBIfFOH8HHvDj3wrt83QNx7jnim/O+LBrcgvzmqoCTnRripn1P6WRhDFnBmXH+7y23/TBk+1ALSgECdYX78Fe2AHSj3ctXWKdHeRsMxvLWa7BXBds0inSQlC0k6vks=;
+        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=ovUTTgYrcWQQlo3FW629t06R9r9ejSghKKuovvXlD5A=;
+        b=i2cFtuVmS8uHjkLhHA/DFiYinOyrvl2k/0VVHRPu7BG0wunFJ4kjx3cKuALwSjymnzuEPOkgjjVB3bDGVL+tySvgpkwULDkfcaIafE+6NMpkStM2vI1H97NBNg01eSQPrHrmFxniY9V3fuP3ti/xi1wq5d/Jh2VPLy3gxoRkYtI=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:0ee0bc20-69af-4200-9fff-4d9fdfcd987e,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:a3c03bd0-a6cf-4fb6-be1b-c60094821ca2,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: cd0c03c3beba4fc8bb66c9c3a75992b4-20220804
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.8,REQID:872fd7c3-8caf-483f-9353-b8639a543c21,OB:0,LO
+        B:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:95
+X-CID-INFO: VERSION:1.1.8,REQID:872fd7c3-8caf-483f-9353-b8639a543c21,OB:0,LOB:
+        10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:95
+X-CID-META: VersionHash:0f94e32,CLOUDID:7ac03bd0-a6cf-4fb6-be1b-c60094821ca2,C
+        OID:f864705f7373,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 8eac475c2a414273a2c39bff397ba2db-20220804
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
         (envelope-from <tinghan.shen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 726060087; Thu, 04 Aug 2022 10:15:58 +0800
+        with ESMTP id 568264486; Thu, 04 Aug 2022 10:15:59 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 4 Aug 2022 10:15:56 +0800
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 4 Aug 2022 10:15:57 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 4 Aug 2022 10:15:56 +0800
+ Transport; Thu, 4 Aug 2022 10:15:57 +0800
 From:   Tinghan Shen <tinghan.shen@mediatek.com>
 To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        "Will Deacon" <will@kernel.org>,
+        Will Deacon <will@kernel.org>,
         Robin Murphy <robin.murphy@arm.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Lee Jones <lee@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>,
         Tinghan Shen <tinghan.shen@mediatek.com>,
@@ -54,10 +57,11 @@ CC:     <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        YT Lee <yt.lee@mediatek.corp-partner.google.com>
-Subject: [PATCH v5 10/20] arm64: dts: mt8195: Add cpufreq node
-Date:   Thu, 4 Aug 2022 10:15:43 +0800
-Message-ID: <20220804021553.14867-11-tinghan.shen@mediatek.com>
+        YC Hung <yc.hung@mediatek.corp-partner.google.com>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.corp-partner.google.com>
+Subject: [PATCH v5 16/20] arm64: dts: mt8195: Add adsp node and adsp mailbox nodes
+Date:   Thu, 4 Aug 2022 10:15:49 +0800
+Message-ID: <20220804021553.14867-17-tinghan.shen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220804021553.14867-1-tinghan.shen@mediatek.com>
 References: <20220804021553.14867-1-tinghan.shen@mediatek.com>
@@ -68,100 +72,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YT Lee <yt.lee@mediatek.corp-partner.google.com>
+From: YC Hung <yc.hung@mediatek.corp-partner.google.com>
 
-Add cpufreq node for mt8195.
+Add adsp node and adsp mailbox nodes for mt8195.
 
-Signed-off-by: YT Lee <yt.lee@mediatek.corp-partner.google.com>
+Signed-off-by: YC Hung <yc.hung@mediatek.corp-partner.google.com>
+Signed-off-by: Allen-KH Cheng
+ <allen-kh.cheng@mediatek.corp-partner.google.com>
 Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno
  <angelogioacchino.delregno@collabora.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8195.dtsi | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi | 37 ++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
  b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index 8032b839dfe8d..900aaa16f862f 100644
+index bbea0acff3d2f..f42d33414125f 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -26,6 +26,7 @@
- 			compatible = "arm,cortex-a55";
- 			reg = <0x000>;
- 			enable-method = "psci";
-+			performance-domains = <&performance 0>;
- 			clock-frequency = <1701000000>;
- 			capacity-dmips-mhz = <578>;
- 			cpu-idle-states = <&cpu_off_l &cluster_off_l>;
-@@ -38,6 +39,7 @@
- 			compatible = "arm,cortex-a55";
- 			reg = <0x100>;
- 			enable-method = "psci";
-+			performance-domains = <&performance 0>;
- 			clock-frequency = <1701000000>;
- 			capacity-dmips-mhz = <578>;
- 			cpu-idle-states = <&cpu_off_l &cluster_off_l>;
-@@ -50,6 +52,7 @@
- 			compatible = "arm,cortex-a55";
- 			reg = <0x200>;
- 			enable-method = "psci";
-+			performance-domains = <&performance 0>;
- 			clock-frequency = <1701000000>;
- 			capacity-dmips-mhz = <578>;
- 			cpu-idle-states = <&cpu_off_l &cluster_off_l>;
-@@ -62,6 +65,7 @@
- 			compatible = "arm,cortex-a55";
- 			reg = <0x300>;
- 			enable-method = "psci";
-+			performance-domains = <&performance 0>;
- 			clock-frequency = <1701000000>;
- 			capacity-dmips-mhz = <578>;
- 			cpu-idle-states = <&cpu_off_l &cluster_off_l>;
-@@ -74,6 +78,7 @@
- 			compatible = "arm,cortex-a78";
- 			reg = <0x400>;
- 			enable-method = "psci";
-+			performance-domains = <&performance 1>;
- 			clock-frequency = <2171000000>;
- 			capacity-dmips-mhz = <1024>;
- 			cpu-idle-states = <&cpu_off_b &cluster_off_b>;
-@@ -86,6 +91,7 @@
- 			compatible = "arm,cortex-a78";
- 			reg = <0x500>;
- 			enable-method = "psci";
-+			performance-domains = <&performance 1>;
- 			clock-frequency = <2171000000>;
- 			capacity-dmips-mhz = <1024>;
- 			cpu-idle-states = <&cpu_off_b &cluster_off_b>;
-@@ -98,6 +104,7 @@
- 			compatible = "arm,cortex-a78";
- 			reg = <0x600>;
- 			enable-method = "psci";
-+			performance-domains = <&performance 1>;
- 			clock-frequency = <2171000000>;
- 			capacity-dmips-mhz = <1024>;
- 			cpu-idle-states = <&cpu_off_b &cluster_off_b>;
-@@ -110,6 +117,7 @@
- 			compatible = "arm,cortex-a78";
- 			reg = <0x700>;
- 			enable-method = "psci";
-+			performance-domains = <&performance 1>;
- 			clock-frequency = <2171000000>;
- 			capacity-dmips-mhz = <1024>;
- 			cpu-idle-states = <&cpu_off_b &cluster_off_b>;
-@@ -231,6 +239,12 @@
- 		clock-output-names = "clk32k";
- 	};
+@@ -739,6 +739,43 @@
+ 			#clock-cells = <1>;
+ 		};
  
-+	performance: performance-controller@11bc10 {
-+		compatible = "mediatek,cpufreq-hw";
-+		reg = <0 0x0011bc10 0 0x120>, <0 0x0011bd30 0 0x120>;
-+		#performance-domain-cells = <1>;
-+	};
++		adsp: dsp@10803000 {
++			compatible = "mediatek,mt8195-dsp";
++			reg = <0 0x10803000 0 0x1000>,
++			      <0 0x10840000 0 0x40000>;
++			reg-names = "cfg", "sram";
++			clocks = <&topckgen CLK_TOP_ADSP>,
++				 <&clk26m>,
++				 <&topckgen CLK_TOP_AUDIO_LOCAL_BUS>,
++				 <&topckgen CLK_TOP_MAINPLL_D7_D2>,
++				 <&scp_adsp CLK_SCP_ADSP_AUDIODSP>,
++				 <&topckgen CLK_TOP_AUDIO_H>;
++			clock-names = "adsp_sel",
++				 "clk26m_ck",
++				 "audio_local_bus",
++				 "mainpll_d7_d2",
++				 "scp_adsp_audiodsp",
++				 "audio_h";
++			power-domains = <&spm MT8195_POWER_DOMAIN_ADSP>;
++			mbox-names = "rx", "tx";
++			mboxes = <&adsp_mailbox0>, <&adsp_mailbox1>;
++			status = "disabled";
++		};
 +
- 	pmu-a55 {
- 		compatible = "arm,cortex-a55-pmu";
- 		interrupt-parent = <&gic>;
++		adsp_mailbox0: mailbox@10816000 {
++			compatible = "mediatek,mt8195-adsp-mbox";
++			#mbox-cells = <0>;
++			reg = <0 0x10816000 0 0x1000>;
++			interrupts = <GIC_SPI 702 IRQ_TYPE_LEVEL_HIGH 0>;
++		};
++
++		adsp_mailbox1: mailbox@10817000 {
++			compatible = "mediatek,mt8195-adsp-mbox";
++			#mbox-cells = <0>;
++			reg = <0 0x10817000 0 0x1000>;
++			interrupts = <GIC_SPI 703 IRQ_TYPE_LEVEL_HIGH 0>;
++		};
++
+ 		afe: mt8195-afe-pcm@10890000 {
+ 			compatible = "mediatek,mt8195-audio";
+ 			reg = <0 0x10890000 0 0x10000>;
 -- 
 2.18.0
 
