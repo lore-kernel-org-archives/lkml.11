@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D0D2C25B0C
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 22:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7986AC25B08
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 22:52:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230510AbiHDWwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 18:52:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42482 "EHLO
+        id S239891AbiHDWwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 18:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239275AbiHDWv7 (ORCPT
+        with ESMTP id S239844AbiHDWwC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 18:51:59 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB513C8D4
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 15:51:56 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id ay36-20020a05600c1e2400b003a4e30d7995so3168944wmb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 15:51:56 -0700 (PDT)
+        Thu, 4 Aug 2022 18:52:02 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B632E3D5BF
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 15:52:00 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id l22so1347836wrz.7
+        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 15:52:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linexp-org.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Qj/girp3QZIjTVT0mlN9J9xZSF+SZjyq2BVb0HmFUYI=;
-        b=gDrKK+ABb++UEN5IohDsJzyGk+rDGu+3S5fXSEpKqR8svo0vm9z9XqRCMQDd1DQ/li
-         NvevuLYuXv0pKqtTfpGmLagFbHrDED0K77NPeSqhiSZNZUaJPOuugLvc3iKTDtGDul6M
-         pmRXtBfeJTa6OlV0eiZEum+kxEJ8rgk2XIXU9owLnTUiWI9cqzUSWJljhGs5eFLnL4BR
-         NLcmd1wWvc/iOn6OpEa7yUWvkKSc+T16K7d19Nab+25GgCGLd7kI1xmoZqoX5MX/udhs
-         BNxbA6wMuql7rovDGUx64AmeIokgGX09MKj6pJRgxhPmaGgAO32WLgRM2ypPLUum3d8v
-         E+3A==
+        bh=NVvhouf/ZsSYzyYoQ6bj2MFHWvALAEEXijoyeWSBKFg=;
+        b=uulocpG76CYBWxwLA5GEXzKdDuKGpYq9LwU4SDLA8pxC41uy9gzVFVcJJI69zANnHU
+         ldxRzTvckXpDK76LQ8K+UTsGtHOd1l2H5aGcZ5MtxoAyW6ymJlgCfSsoKWilg6zkP8H4
+         LfYGDZkcqlHNgo9xDsl5Cvr+wSVju+bBWSKGmsdOCOqBwcMIyMgN7iFPgE4y4DLeCFOJ
+         73g5s/7rkNoknPQxJrEqi+PJAnv5h0D2B92fADbgyTWOr+wmneoLuwVIg8qJjg44b/u6
+         c76AP/EbWH9DTMnGw9dqKlF/RQwJf7mofuHLhOExnsZhJ2TBy7uASYcOE/CqOXYIgDwK
+         WFXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Qj/girp3QZIjTVT0mlN9J9xZSF+SZjyq2BVb0HmFUYI=;
-        b=7Ra7nlu44xXU9AJ8YuJcVWeMePVU9jfGReNwDlIWHTL319hfpPZC/gvUAH3WXr9m+7
-         jUXql1wCq/PitkxzCnR7rMWqMeZpvk1xLvZV+IR6xuc7AuMuEwQQf3RG0+KcHVy6cu8K
-         6MEqW6YYiOZDPEeP2TMhozxn4P9OcL12v6SnC2RfFmBDE51glWaFKKOJfK19OUgVHv3P
-         pGMnxg8bwFUPJ+l5tjSiyIoLyeh7GJ9Sogvma8zSdlk/Qh7kmjW9HgFEfmlTzDQTSYX/
-         lgI4kbw4E4E5orwzhZstRRLUZmf4t74smk99OZIiovLZgKFgz1yJ6eKfvni8J9T2+Ydm
-         Qy5A==
-X-Gm-Message-State: ACgBeo0gli7DWmlmvc4P7OmihyjhOdgOq8yBAM/de9+WDqfG4C+E1sfE
-        aOUqFysZk9Z8S6FvsmLJGb0w9A==
-X-Google-Smtp-Source: AA6agR4yzg6P2Wq5LquxIwEqYsgiFcBCZCqmZPNRBaz0QKzziuNvGijBJqPtBb0vVxxt3kOwTBbQ0w==
-X-Received: by 2002:a05:600c:3553:b0:3a3:2b65:299e with SMTP id i19-20020a05600c355300b003a32b65299emr7295841wmq.145.1659653514941;
-        Thu, 04 Aug 2022 15:51:54 -0700 (PDT)
+        bh=NVvhouf/ZsSYzyYoQ6bj2MFHWvALAEEXijoyeWSBKFg=;
+        b=F3ypn/Ybtg1EXHwkX4AUu1LjuPvrqVzFgapx7+YFtFwkTABHe3ylW74V4fxMQAziCQ
+         NqFTXXri3FQl5X1v9kvdt3bzii8Yc08UfEp6T2dj59ez7xI6fuX/ifFZIB9z3OdwQI+w
+         9v6WJpwxVPwpuVWp0C4+0d7eLitSPT+urul+MDb1MYojB6M4a1Edy2oyEuOVg51IOGf/
+         JB8gLxaEmh5H1v17c8FF5freJ5YnbRCyVHCdAom755c0/DPoVWx2PpH77+aMdfW8jEC/
+         I10ocEoqQyI3aeCSRgFE5zHPG6ynQNExn7s5bmIB0E3jFm6TAHhWR/26/4nru8mHqhAa
+         P3kQ==
+X-Gm-Message-State: ACgBeo0nZZT5u1w4qhrCGce4Erxe/0UVvnYmUG9cWJD+iIDzH6bscR7x
+        CIyiQNk2FSwGZPJlblddgT5Fug==
+X-Google-Smtp-Source: AA6agR6HvXFtI57ltAEhsG8lThHVAc2eG2lOpuZr9RKn9yTuCAcxSLLJgoF5FO4a22lPVSu83bX+yw==
+X-Received: by 2002:adf:fe42:0:b0:21f:8df:2239 with SMTP id m2-20020adffe42000000b0021f08df2239mr2524670wrs.644.1659653519299;
+        Thu, 04 Aug 2022 15:51:59 -0700 (PDT)
 Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:31aa:ed2c:3f7:19d])
-        by smtp.gmail.com with ESMTPSA id a16-20020a056000051000b0021f87e8945asm2495906wrf.12.2022.08.04.15.51.53
+        by smtp.gmail.com with ESMTPSA id a16-20020a056000051000b0021f87e8945asm2495906wrf.12.2022.08.04.15.51.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Aug 2022 15:51:54 -0700 (PDT)
+        Thu, 04 Aug 2022 15:51:59 -0700 (PDT)
 From:   Daniel Lezcano <daniel.lezcano@linexp.org>
 To:     daniel.lezcano@linaro.org, rafael@kernel.org
 Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
@@ -62,10 +62,12 @@ Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
         glaroque@baylibre.com, miquel.raynal@bootlin.com,
         shawnguo@kernel.org, niklas.soderlund@ragnatech.se,
         matthias.bgg@gmail.com, j-keerthy@ti.com,
-        Amit Kucheria <amitk@kernel.org>
-Subject: [PATCH v5 02/33] thermal/of: Make new code and old code co-exist
-Date:   Fri,  5 Aug 2022 00:43:18 +0200
-Message-Id: <20220804224349.1926752-3-daniel.lezcano@linexp.org>
+        Amit Kucheria <amitk@kernel.org>,
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/UNIPHIER
+        ARCHITECTURE)
+Subject: [PATCH v5 04/33] thermal/drivers/uniphier: Switch to new of API
+Date:   Fri,  5 Aug 2022 00:43:20 +0200
+Message-Id: <20220804224349.1926752-5-daniel.lezcano@linexp.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220804224349.1926752-1-daniel.lezcano@linexp.org>
 References: <20220804224349.1926752-1-daniel.lezcano@linexp.org>
@@ -75,79 +77,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This transient change allows to use old and new OF together until all
-the drivers are converted to use the new OF API.
+The thermal OF code has a new API allowing to migrate the OF
+initialization to a simpler approach. The ops are no longer device
+tree specific and are the generic ones provided by the core code.
 
-This will go away when the old OF code will be removed.
+Convert the ops to the thermal_zone_device_ops format and use the new
+API to register the thermal zone with these generic ops.
 
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
 ---
- drivers/thermal/thermal_core.c |  6 ------
- drivers/thermal/thermal_of.c   | 13 +++++++++++--
- 2 files changed, 11 insertions(+), 8 deletions(-)
+ drivers/thermal/uniphier_thermal.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-index f50098d33152..b4c68410c158 100644
---- a/drivers/thermal/thermal_core.c
-+++ b/drivers/thermal/thermal_core.c
-@@ -1491,10 +1491,6 @@ static int __init thermal_init(void)
- 	if (result)
- 		goto unregister_governors;
- 
--	result = of_parse_thermal_zones();
--	if (result)
--		goto unregister_class;
--
- 	result = register_pm_notifier(&thermal_pm_nb);
- 	if (result)
- 		pr_warn("Thermal: Can not register suspend notifier, return %d\n",
-@@ -1502,8 +1498,6 @@ static int __init thermal_init(void)
- 
- 	return 0;
- 
--unregister_class:
--	class_unregister(&thermal_class);
- unregister_governors:
- 	thermal_unregister_governors();
- error:
-diff --git a/drivers/thermal/thermal_of.c b/drivers/thermal/thermal_of.c
-index d4fd06b576aa..07bde07ddc04 100644
---- a/drivers/thermal/thermal_of.c
-+++ b/drivers/thermal/thermal_of.c
-@@ -485,6 +485,15 @@ thermal_zone_of_sensor_register(struct device *dev, int sensor_id, void *data,
- {
- 	struct device_node *np, *child, *sensor_np;
- 	struct thermal_zone_device *tzd = ERR_PTR(-ENODEV);
-+	static int old_tz_initialized;
-+	int ret;
-+
-+	if (!old_tz_initialized) {
-+		ret = of_parse_thermal_zones();
-+		if (ret)
-+			return ERR_PTR(ret);
-+		old_tz_initialized = 1;
-+	}
- 
- 	np = of_find_node_by_name(NULL, "thermal-zones");
- 	if (!np)
-@@ -1004,7 +1013,7 @@ __init *thermal_of_build_thermal_zone(struct device_node *np)
- 	return ERR_PTR(ret);
+diff --git a/drivers/thermal/uniphier_thermal.c b/drivers/thermal/uniphier_thermal.c
+index 4cae5561a2a3..4111d99ef50e 100644
+--- a/drivers/thermal/uniphier_thermal.c
++++ b/drivers/thermal/uniphier_thermal.c
+@@ -187,9 +187,9 @@ static void uniphier_tm_disable_sensor(struct uniphier_tm_dev *tdev)
+ 	usleep_range(1000, 2000);	/* The spec note says at least 1ms */
  }
  
--static __init void of_thermal_free_zone(struct __thermal_zone *tz)
-+static void of_thermal_free_zone(struct __thermal_zone *tz)
+-static int uniphier_tm_get_temp(void *data, int *out_temp)
++static int uniphier_tm_get_temp(struct thermal_zone_device *tz, int *out_temp)
  {
- 	struct __thermal_bind_params *tbp;
- 	int i, j;
-@@ -1517,7 +1526,7 @@ EXPORT_SYMBOL_GPL(devm_thermal_of_zone_unregister);
-  * Return: 0 on success, proper error code otherwise
-  *
-  */
--int __init of_parse_thermal_zones(void)
-+int of_parse_thermal_zones(void)
- {
- 	struct device_node *np, *child;
- 	struct __thermal_zone *tz;
+-	struct uniphier_tm_dev *tdev = data;
++	struct uniphier_tm_dev *tdev = tz->devdata;
+ 	struct regmap *map = tdev->regmap;
+ 	int ret;
+ 	u32 temp;
+@@ -204,7 +204,7 @@ static int uniphier_tm_get_temp(void *data, int *out_temp)
+ 	return 0;
+ }
+ 
+-static const struct thermal_zone_of_device_ops uniphier_of_thermal_ops = {
++static const struct thermal_zone_device_ops uniphier_of_thermal_ops = {
+ 	.get_temp = uniphier_tm_get_temp,
+ };
+ 
+@@ -289,8 +289,8 @@ static int uniphier_tm_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, tdev);
+ 
+-	tdev->tz_dev = devm_thermal_zone_of_sensor_register(dev, 0, tdev,
+-						&uniphier_of_thermal_ops);
++	tdev->tz_dev = devm_thermal_of_zone_register(dev, 0, tdev,
++						     &uniphier_of_thermal_ops);
+ 	if (IS_ERR(tdev->tz_dev)) {
+ 		dev_err(dev, "failed to register sensor device\n");
+ 		return PTR_ERR(tdev->tz_dev);
 -- 
 2.25.1
 
