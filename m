@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B24CC19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 15:10:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EABCC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 15:10:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239664AbiHDPKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 11:10:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
+        id S239998AbiHDPKo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 11:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239339AbiHDPKE (ORCPT
+        with ESMTP id S238914AbiHDPKE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 4 Aug 2022 11:10:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3491A5FAC0;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DDA1F637;
         Thu,  4 Aug 2022 08:09:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA537B8256B;
-        Thu,  4 Aug 2022 15:09:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EB34C4347C;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1EBE4B82521;
+        Thu,  4 Aug 2022 15:09:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5672DC43159;
         Thu,  4 Aug 2022 15:09:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1659625795;
-        bh=OoTOgjpz5JFq6UJf0u64NVueuER3638cyeEWhnzjxUU=;
+        bh=AgrQZfa5kuZZEXO/hg1xFcWJZuBRQIUG8Mw/dSpRsM4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JmfxhuYjg1145GVy3MogH8SsRBxtS78xFJ4D0gFXf0HG7VED0UmQzbIg8L4Z9BH97
-         6DWXHgCtFwwNlBqEWW+1MKcXr2C/2xyR3Z4ReFw+yzJwbs3uNIOidvnYUxCIINcjD/
-         mAHM9+y9dqv5gweh6PM+GbMRs9Sjm/nJoUcxR5nAeznBdX0d/K/yhstkzRRjXDcZVX
-         OO4tXahmfeNlTIAdNHRWgiO9pwmIWyJaTuiwm7eShthrwY9MQKXL0yCAxJbHet30+9
-         0u0LRQX47eCYJylOoWUfcpu4z4ijs8Ddc+QA2lwxcy/Egsbd2e9BRDflZXcbPdqtoh
-         TBRceERd6GN3Q==
+        b=Cw4EtrOYS/wDTxjM9Nm9Nv1EmSHMeT0Fgb0dyICUhwaN/4V4HX6NFPDL/FqMOM6gm
+         HKBL/K2Lzx5t0RQt0Niyxj/RP0uO+LTsFUWtG5PQVpqdAgJTHTFtwTM1fyHJfa+Z/0
+         oU18S8eJpKHtbCdBrx8NZP44K8e/YNwHyFYOPMarxl8bnePJ51+3nVfiFftbfySnHL
+         nIQTMFr4W7YvKhnhxIz+cOt7o7lUOqSPzIYynUJbVQ9bDtSAOApQ08SI+rJ8nWrH+R
+         EP/U7h/RWE2t7JFCteqFJ+VJPUdqRxRLe9zoFk+Ko/DFY4K8yFmiJNGRr9mlCD1HEJ
+         KTJBW0rmJahEg==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oJcUL-00069W-45; Thu, 04 Aug 2022 17:10:17 +0200
+        id 1oJcUL-00069e-Ev; Thu, 04 Aug 2022 17:10:17 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Felipe Balbi <balbi@kernel.org>
@@ -52,10 +52,10 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
         linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>, stable@vger.kernel.org
-Subject: [PATCH v2 4/9] usb: dwc3: qcom: fix use-after-free on runtime-PM wakeup
-Date:   Thu,  4 Aug 2022 17:09:56 +0200
-Message-Id: <20220804151001.23612-5-johan+linaro@kernel.org>
+        Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH v2 8/9] usb: dwc3: qcom: fix wakeup implementation
+Date:   Thu,  4 Aug 2022 17:10:00 +0200
+Message-Id: <20220804151001.23612-9-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220804151001.23612-1-johan+linaro@kernel.org>
 References: <20220804151001.23612-1-johan+linaro@kernel.org>
@@ -65,75 +65,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Qualcomm dwc3 runtime-PM implementation checks the xhci
-platform-device pointer in the wakeup-interrupt handler to determine
-whether the controller is in host mode and if so triggers a resume.
+It is the Qualcomm glue wakeup interrupts that may be able to wake the
+system from suspend and this can now be described in the devicetree.
 
-After a role switch in OTG mode the xhci platform-device would have been
-freed and the next wakeup from runtime suspend would access the freed
-memory.
+Move the wakeup-source property handling over from the core driver and
+instead propagate the capability setting to the core device during
+probe.
 
-Note that role switching is executed from a freezable workqueue, which
-guarantees that the pointer is stable during suspend.
+This is needed as there is currently no way for the core driver to query
+the wakeup setting of the glue device, but it is the core driver that
+manages the PHY power state during suspend.
 
-Also note that runtime PM has been broken since commit 2664deb09306
-("usb: dwc3: qcom: Honor wakeup enabled/disabled state"), which
-incidentally also prevents this issue from being triggered.
+Also don't leave the PHYs enabled when system wakeup has been disabled
+through sysfs.
 
-Fixes: a4333c3a6ba9 ("usb: dwc3: Add Qualcomm DWC3 glue driver")
-Cc: stable@vger.kernel.org      # 4.18
+Fixes: 649f5c842ba3 ("usb: dwc3: core: Host wake up support from system suspend")
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
+ drivers/usb/dwc3/core.c      | 5 ++---
+ drivers/usb/dwc3/dwc3-qcom.c | 6 +++++-
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
-Changes in v2
- - new patch
-
- drivers/usb/dwc3/dwc3-qcom.c | 14 +++++++++++++-
- drivers/usb/dwc3/host.c      |  1 +
- 2 files changed, 14 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+index 16d1f328775f..8c8e32651473 100644
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -1822,7 +1822,6 @@ static int dwc3_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, dwc);
+ 	dwc3_cache_hwparams(dwc);
+-	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
+ 
+ 	spin_lock_init(&dwc->lock);
+ 	mutex_init(&dwc->mutex);
+@@ -1984,7 +1983,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+ 		dwc3_core_exit(dwc);
+ 		break;
+ 	case DWC3_GCTL_PRTCAP_HOST:
+-		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
++		if (!PMSG_IS_AUTO(msg) && !device_may_wakeup(dwc->dev)) {
+ 			dwc3_core_exit(dwc);
+ 			break;
+ 		}
+@@ -2045,7 +2044,7 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
+ 		spin_unlock_irqrestore(&dwc->lock, flags);
+ 		break;
+ 	case DWC3_GCTL_PRTCAP_HOST:
+-		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
++		if (!PMSG_IS_AUTO(msg) && !device_may_wakeup(dwc->dev)) {
+ 			ret = dwc3_core_init_for_resume(dwc);
+ 			if (ret)
+ 				return ret;
 diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
-index e9364141661b..6884026b9fad 100644
+index 6ae0b7fc4e2c..b05f67d206d2 100644
 --- a/drivers/usb/dwc3/dwc3-qcom.c
 +++ b/drivers/usb/dwc3/dwc3-qcom.c
-@@ -298,6 +298,14 @@ static void dwc3_qcom_interconnect_exit(struct dwc3_qcom *qcom)
- 	icc_put(qcom->icc_path_apps);
- }
+@@ -786,6 +786,7 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
+ 	struct resource		*res, *parent_res = NULL;
+ 	int			ret, i;
+ 	bool			ignore_pipe_clk;
++	bool			wakeup_source;
  
-+/* Only usable in contexts where the role can not change. */
-+static bool dwc3_qcom_is_host(struct dwc3_qcom *qcom)
-+{
-+	struct dwc3 *dwc = platform_get_drvdata(qcom->dwc3);
+ 	qcom = devm_kzalloc(&pdev->dev, sizeof(*qcom), GFP_KERNEL);
+ 	if (!qcom)
+@@ -901,7 +902,10 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto interconnect_exit;
+ 
+-	device_init_wakeup(&pdev->dev, 1);
++	wakeup_source = of_property_read_bool(dev->of_node, "wakeup-source");
++	device_init_wakeup(&pdev->dev, wakeup_source);
++	device_init_wakeup(&qcom->dwc3->dev, wakeup_source);
 +
-+	return dwc->xhci;
-+}
-+
- static enum usb_device_speed dwc3_qcom_read_usb2_speed(struct dwc3_qcom *qcom)
- {
- 	struct dwc3 *dwc = platform_get_drvdata(qcom->dwc3);
-@@ -460,7 +468,11 @@ static irqreturn_t qcom_dwc3_resume_irq(int irq, void *data)
- 	if (qcom->pm_suspended)
- 		return IRQ_HANDLED;
- 
--	if (dwc->xhci)
-+	/*
-+	 * This is safe as role switching is done from a freezable workqueue
-+	 * and the wakeup interrupts are disabled as part of resume.
-+	 */
-+	if (dwc3_qcom_is_host(qcom))
- 		pm_runtime_resume(&dwc->xhci->dev);
- 
- 	return IRQ_HANDLED;
-diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
-index f56c30cf151e..f6f13e7f1ba1 100644
---- a/drivers/usb/dwc3/host.c
-+++ b/drivers/usb/dwc3/host.c
-@@ -135,4 +135,5 @@ int dwc3_host_init(struct dwc3 *dwc)
- void dwc3_host_exit(struct dwc3 *dwc)
- {
- 	platform_device_unregister(dwc->xhci);
-+	dwc->xhci = NULL;
- }
+ 	qcom->is_suspended = false;
+ 	pm_runtime_set_active(dev);
+ 	pm_runtime_enable(dev);
 -- 
 2.35.1
 
