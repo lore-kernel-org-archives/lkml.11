@@ -2,154 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E41FAC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 16:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B31ACC25B06
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 16:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234497AbiHDQHK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 12:07:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59086 "EHLO
+        id S234035AbiHDQIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 12:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234090AbiHDQHH (ORCPT
+        with ESMTP id S232196AbiHDQIO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 12:07:07 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6B62E9C4
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 09:07:07 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 274FjOp9011361;
-        Thu, 4 Aug 2022 16:06:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=Rw13iibRroFj5r1LOCo0kCVDpTitY73SlDYq+UMuyOU=;
- b=UKgcCzDFA1ql3bFcegYpzYfqBaTsFrN7oWPKCzceDP34gnEVPlx6TIN5SCwYLM/kpIjU
- ppFWcWNFh47waXhvqBEWxnBHTD73uxChdcTMe1f2hGHO8JEZhSz8mGiAxs0otQQPUDRb
- 43cXIxOLiKYjMLg+tAU2CORoMS+W/ygX9HHMM2BB/7QX4zg3+QVc6HkXwkykt85fCCBe
- 3usju4E4jXV8U1P4SbXjfLxsvYbywwfPn3NFnybczuz5rlxLpPlDR2IZX3f0CnGqSGCa
- lhxhqFKaBj/svmwEEhZIT2E+fTSFi+En/qDO6sTrVQJaLMc2NY6wFEgh/Jw3l65K8a23 kA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hrh1m0jpt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 04 Aug 2022 16:06:44 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 274FlAhd019559;
-        Thu, 4 Aug 2022 16:06:44 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hrh1m0h7n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 04 Aug 2022 16:06:43 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 274FpjfQ024253;
-        Thu, 4 Aug 2022 16:02:23 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3hrf2184vb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 04 Aug 2022 16:02:23 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 274G2a1v32964982
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 4 Aug 2022 16:02:36 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F257C42042;
-        Thu,  4 Aug 2022 16:02:20 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 932E742041;
-        Thu,  4 Aug 2022 16:02:20 +0000 (GMT)
-Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.176.127])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Thu,  4 Aug 2022 16:02:20 +0000 (GMT)
-Date:   Thu, 4 Aug 2022 18:02:12 +0200
-From:   Alexander Gordeev <agordeev@linux.ibm.com>
-To:     Baoquan He <bhe@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        akpm@linux-foundation.org, hch@infradead.org,
-        wangkefeng.wang@huawei.com, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 02/11] mm: ioremap: fixup the physical address
-Message-ID: <YuvthDzuPlAwD/LA@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-References: <20220801144029.57829-1-bhe@redhat.com>
- <20220801144029.57829-3-bhe@redhat.com>
+        Thu, 4 Aug 2022 12:08:14 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC3F1583E;
+        Thu,  4 Aug 2022 09:08:13 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id 130so11923356pfv.13;
+        Thu, 04 Aug 2022 09:08:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=pQ0wjiUpMxMUrhiOjjlA1NT+tSkd+3JCN8+vuokHeWQ=;
+        b=FCfEBDCpzV6BUH81I7/XX4t1j8llNmRGQwHJDlguWpwcckuQU7kS5bRA1CkvCPn1jX
+         qWeiQS5f0eQSfAw8sY6JZ6sQdSTjrZvl/qEZba9goON6ohvch8LCLr9Fzk2DepcC5hgJ
+         7vg7hMWfHVhkzB3tVqE5zZDCtbYc2dbLo1oRzGXiq76+ZROPrTPzeRm/dSIyEwdcv8XO
+         HUBvQKbDHqSj9U/pGTlra7uQEY9cCvgUYG7zujGw1AxO0IKiDD21kDx6nKTTo6k+TKjn
+         zjtKtQYXOYPUJUhN3M0WXxJvVBN39ji3vunyvoS8ntoEqLlQrsAHqmL3dkv9D3Co910Q
+         oAiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=pQ0wjiUpMxMUrhiOjjlA1NT+tSkd+3JCN8+vuokHeWQ=;
+        b=LchddmIFQomIYJmt5SBMf9MKI/lZXwpZXl5GcXHNStF7Pacji6yKUtPh0w6m7YQfZX
+         aJM1q/jtcwjZxSxugnA5qecf4I8unIA8O8Xt5xT1CEaZlEUVnbdT+XKLe/fnWxQbD8Qx
+         SuzTqbsxlr7TDo/9JJ73ydgISnp6+wQftxBwyHko79+AFayDzfJ5BA/oO9N0U/jnrI1G
+         a5KgJhDZY1vsb8UG9kCLKpr1VxIsY5Aibc3kFr4xkkiHhm91vbVHpxkr254u4G3NV5at
+         sOHc04dnGK9rojI9f3W6yrAysRDupHW1iA2gOa/uuphsCuhbrmQ7jyKQQ5h4Xc6iyfmQ
+         dKWw==
+X-Gm-Message-State: ACgBeo2pelMupQ0ROKOOlozObDzK/WR6dsPurRAObHfKcEgIfsn0JfhX
+        7FP/HzG0c8Fg5/SOnKkpWajM/uaehaFDU6VawOa3CL5r
+X-Google-Smtp-Source: AA6agR4ffrzAKh9l9yfmb3mD4mHL7Lr5NSjz0DrBKMx2JR5RdEYONXPODTeceLYmSekdcAsIZ1UyflNhle9vw59Fg+4=
+X-Received: by 2002:a05:6a00:3392:b0:52b:4896:b317 with SMTP id
+ cm18-20020a056a00339200b0052b4896b317mr2548845pfb.17.1659629293075; Thu, 04
+ Aug 2022 09:08:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220801144029.57829-3-bhe@redhat.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: QmAPIXvbkzQJeLCkH0SYbeYlEeA0TOhP
-X-Proofpoint-ORIG-GUID: 8VpsT3-3-3ZognIn2Ue-Z5ucQQ5rXMa9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-04_03,2022-08-04_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- priorityscore=1501 bulkscore=0 lowpriorityscore=0 phishscore=0
- mlxlogscore=488 adultscore=0 spamscore=0 mlxscore=0 malwarescore=0
- impostorscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2206140000 definitions=main-2208040068
+References: <20220729145525.1729066-1-Jason@zx2c4.com> <CAHk-=wiLwz=9h9LD1-_yb1+T+u59a2EjTmMvCiGj4A-ZsPN1wA@mail.gmail.com>
+ <YuXCpyULk6jFgGV5@zx2c4.com> <87zggnsqwj.ffs@tglx> <Yuhe6IIFXqNMZs5b@zx2c4.com>
+ <87bkt2sqq4.ffs@tglx> <YuktqQS7Rb0IbJNh@zx2c4.com> <878ro6smmm.ffs@tglx>
+ <CAHmME9pNN6Pc_1NaMDv+hqv_ULXiVUYFXM=Xigu_StvGS_-53A@mail.gmail.com>
+ <87zggmqo0w.ffs@tglx> <Yuvki1nU2vJeINNk@zx2c4.com>
+In-Reply-To: <Yuvki1nU2vJeINNk@zx2c4.com>
+Reply-To: noloader@gmail.com
+From:   Jeffrey Walton <noloader@gmail.com>
+Date:   Thu, 4 Aug 2022 12:08:00 -0400
+Message-ID: <CAH8yC8nwHPMtsHHbkvUYrqjWBBs6WtuaFKjXpMP5cSnp+AJyKg@mail.gmail.com>
+Subject: Re: [PATCH RFC v1] random: implement getrandom() in vDSO
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        X86 ML <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 01, 2022 at 10:40:20PM +0800, Baoquan He wrote:
-> This is a preparation patch, no functionality change.
+On Thu, Aug 4, 2022 at 11:40 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> On Wed, Aug 03, 2022 at 12:27:43AM +0200, Thomas Gleixner wrote:
+> > Jason!
+>
+>  ...
+> > Vs. the storage problem. That yells TLS, but that makes your process
+> > wide sharing moot, which might not be the worst of all things IMO.
+>
+> Yea, TLS is what we want here. The `void *state` argument thing is meant
+> for this. You allocate an array of states using that alloc function, and
+> then you divvy them up per-thread.
 
-There is, please see below.
+I think it would be wise to give each thread its own state. It will
+simplify locking and help avoid contention.
 
-> @@ -3,11 +3,17 @@
->  #include <linux/mm.h>
->  #include <linux/io.h>
->  
-> -void __iomem *ioremap_allowed(phys_addr_t phys_addr, size_t size, unsigned long prot)
-> +void __iomem *
-> +ioremap_allowed(phys_addr_t *paddr, size_t size, unsigned long *prot_val)
->  {
-> -	unsigned long last_addr = phys_addr + size - 1;
-> +	unsigned long last_addr, offset, phys_addr = *paddr;
->  	int ret = -EINVAL;
->  
-> +	offset = phys_addr & (~PAGE_MASK);
-> +	phys_addr -= offset;
-
-FWIW, phys_addr &= PAGE_MASK looks much more usual.
-
-> @@ -11,13 +11,20 @@
->  #include <linux/io.h>
->  #include <linux/export.h>
->  
-> -void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
-> +void __iomem *ioremap_prot(phys_addr_t paddr, size_t size,
->  			   unsigned long prot)
->  {
->  	unsigned long offset, vaddr;
-> -	phys_addr_t last_addr;
-> +	phys_addr_t last_addr, phys_addr = paddr;
->  	struct vm_struct *area;
->  	void __iomem *base;
-> +	unsigned long prot_val = prot;
-
-Why prot_val is needed?
-
-> +	base = ioremap_allowed(&phys_addr, size, &prot_val);
-> +	if (IS_ERR(base))
-> +		return NULL;
-> +	else if (base)
-> +		return base;
-
-By moving ioremap_allowed() here you allow it to be called
-before the wrap-around check, including architectures that
-do not do fixups.
-
-And now ioremap_allowed() semantics, prototype and name turn
-less than obvious. Why not introduce a separate fixup callback?
-
->  	/* Disallow wrap-around or zero size */
->  	last_addr = phys_addr + size - 1;
-> @@ -29,12 +36,6 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
->  	phys_addr -= offset;
->  	size = PAGE_ALIGN(size + offset);
->  
-> -	base = ioremap_allowed(phys_addr, size, prot);
-> -	if (IS_ERR(base))
-> -		return NULL;
-> -	else if (base)
-> -		return base;
-> -
->  	area = get_vm_area_caller(size, VM_IOREMAP,
->  			__builtin_return_address(0));
->  	if (!area)
+Jeff
