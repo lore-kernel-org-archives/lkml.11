@@ -2,162 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24FC0C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 12:43:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E161C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 12:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239756AbiHDMn3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 08:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
+        id S239210AbiHDMrZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 08:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239732AbiHDMnW (ORCPT
+        with ESMTP id S230140AbiHDMrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 08:43:22 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0B62BB01
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 05:43:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659617000; x=1691153000;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=boeQQhfSs+1eNQufXVd3SPhe8Leg/Z7JKh4sSYUz+1w=;
-  b=dV+DCmnjmw9/bDyjNkSV4sLZtKEtEoNbf7Z/rTjvJE24lhllVwDf+72v
-   Y2O4HdCf6gQ6u4EDrVMmwlrGfrcgV2RNtvdZjDdoxevHCdueIKIcBFeKJ
-   4b0GtH6efmKPAl+kgroERN5rAgkyqNxhXECjn40sJ+/g1t0qJR6u65Q1m
-   k/tLbffcH/A/NVKqZ2un29iX0G5hiXKffFsAf4YC+CqaQ3vlimZVvcn/5
-   +vHELc/z+Z+sX4DC15r6FJ2vv5og6v9loQoF6wsGBx9CpTIepO07AhKOE
-   Ex+ZYP9sIDOUffQ7X2QtvhPPzLH2SCcj9GZ4g21oVxfS+1YyrKmG0/JzK
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10429"; a="353920228"
-X-IronPort-AV: E=Sophos;i="5.93,215,1654585200"; 
-   d="scan'208";a="353920228"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 05:43:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,215,1654585200"; 
-   d="scan'208";a="579060418"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 04 Aug 2022 05:43:19 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJaC6-000IR5-1x;
-        Thu, 04 Aug 2022 12:43:18 +0000
-Date:   Thu, 04 Aug 2022 20:42:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:dev.2022.08.03a] BUILD SUCCESS
- b07e8e7bbf95f4777f1ee4d35deafee8baa83bcb
-Message-ID: <62ebbec9.p2FujINbjfxSawvq%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
-MIME-Version: 1.0
+        Thu, 4 Aug 2022 08:47:23 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2063.outbound.protection.outlook.com [40.107.21.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B2C64D4
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 05:47:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iVzB1MmNTkdH5gBcSvegsUQNWjVGdONux5Qfv5tsVIOk8Fwmf6HyoOCYCPjXkT9UmcDzUduEmcmjJ1E8euuHLD6PpxBl1PEpioLs00yVloZrHwnyZgXGCxY0XJxwN0Ok3p9MkGnRGnfmjyDsCc3QNHgbb99f+m3CrUsRC1Ymh8ZdGmjkTgQwkZsZPAG7cyElpgu7FSOQa46Y4Kc0DQjEyMkTYV0IMbWaWBrlz9qrk2XT9kfVU3UjoCFrrLjx3Z6XKdSvRf2sCN+e/hJj6obWVTtzNsg/pW03+rvVYvuulyfnNfUePwc3KfDQILtqbgTS1BaTJxxdmevHpHrI3FFAqw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=W32BzReb18UZV39KA6o8N1I87uT/BfoN/TPb9bKbxB8=;
+ b=LkV5uhKOiB6SPR2jY8K2qHgaqFQ0jR03hClIt+ul/t2jSTFTcvUHI3gf//18tOzTzZrWdW024LpbSInWdDvGj259bq5BcStHV+Nwnpdw6hQu33XoSiTy/RBNZK5SBzESO/NM2bTFKwHp3wwJpAfK/7xJLIau6O/7AajlSjWHHjU/CJSvJRn8uU3zBT8ui4M9iDa0bv8k6Vr0PJ/KrvMjHQ0qQgs1slU1GZ8T6lBOWS4iqT5ighzuFc+yn+tvJPUezrwlXa97XHajmotvhxStJK9MxJn3wGq9sHqs2B4oWTsLXRT5FzHPPdfJEgYGpfn5elhU0ztcww48B6H73bSESw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=W32BzReb18UZV39KA6o8N1I87uT/BfoN/TPb9bKbxB8=;
+ b=RU9j9fDWQw2re1UCsgFQsA6EcD6VO+kvoexjREjlVseHmsgs401EmbW8MoVTmZmYgpnRp2UHr28KyBqHOK/BopeN9QL6XJu4vkQNqXfqEUbSFWLZG0FP7tvg2eUInPp9lwnBVAYWTRqxlZ2R0Znpf1h4AXUwJWCvv8SvAnCZkY0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM6PR0402MB3894.eurprd04.prod.outlook.com
+ (2603:10a6:209:20::14) by PAXPR04MB8733.eurprd04.prod.outlook.com
+ (2603:10a6:102:21d::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Thu, 4 Aug
+ 2022 12:47:18 +0000
+Received: from AM6PR0402MB3894.eurprd04.prod.outlook.com
+ ([fe80::88fc:ee0e:e69e:9466]) by AM6PR0402MB3894.eurprd04.prod.outlook.com
+ ([fe80::88fc:ee0e:e69e:9466%3]) with mapi id 15.20.5504.014; Thu, 4 Aug 2022
+ 12:47:18 +0000
+Date:   Thu, 4 Aug 2022 15:47:14 +0300
+From:   Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Lucas Stach <l.stach@pengutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drm/imx/dcss: get rid of HPD warning message
+Message-ID: <20220804124714.uv4rkk25srdo2k35@fsr-ub1664-121.ea.freescale.net>
+References: <20220721120912.6639-1-laurentiu.palcu@oss.nxp.com>
+ <YtlFniiVnYUoZCPM@pendragon.ideasonboard.com>
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <YtlFniiVnYUoZCPM@pendragon.ideasonboard.com>
+X-ClientProxiedBy: AM8P191CA0027.EURP191.PROD.OUTLOOK.COM
+ (2603:10a6:20b:21a::32) To AM6PR0402MB3894.eurprd04.prod.outlook.com
+ (2603:10a6:209:20::14)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 817f8c1b-e960-4403-a192-08da761776e6
+X-MS-TrafficTypeDiagnostic: PAXPR04MB8733:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: drUfS1Rp5ZexPn5GDsg+NIPWfNPRLZIjUEu8djkoCJ9FZQQ3QC9jPc06+QzPioRjY8ModRHlfhM15gnU1Mplrf2KiDcQ6q2Zkiuldp9y0nsYJBRnBT4ip6vJXHdcRd3m4PhjPbyFF5CCV/2ux/zJ2wUNJNlXXk21NcU1pfX8owIIzsQJqE9m6wNh4xWkLp1ZHLHTpIqa+JoOjbVe18MeYox1fUCidkPUCMi1SAPlXO5+MjmvJ0JWYkPa2TziDECMHH3KE9mCGsawman+6ECCGDINMlj5W95NemO1w99Kdk0qDZkl61Ap6SHEG1Fc2YwnM3g7EVnTM23aURbooqTnLb2tlsQAZc31Q9P3s8c0sLm3VLKqG8nbCEYN9pxiQ5REvXg1/D31X3RMFfEXloijILZ6z7DYmej9OK1ao2VTraK64uolMXv63PEdn98LiL3+JvbtZZdzSvNyCykmX1EXCWPC3KY3fsv0vU36HQJ18qa89dvOg8kPnEWZvcf0hYY6XI9jPlpIcgGuLxtQnqomm7KdGu9tUDmcxiqjjPzXHTL3UKvd6JM9Z8lwOQTndctwFQUGcjNr1S40GGd4prZsiZMbAO7DWnOHGtT/iatLOirEiU5Lr6aepshfUi6PrikUC0moHwmKbfyek3uEtPUyKeTq+KqZK9O7iqLI0FNpUw7ac8amHM0tW4Cqd2TjlM6PW0rNqrpBEvvwuHEiEYy1v9JpUD8GYUqsfXrMuLRtwPe9k/BKBdss0vx4DoUjAo8kSV4Apjr7LL41o2gMDowj3pl+8IqjLzAMajU1wZlCuH57a+hRuQ1sBmR6KNzEIccdFs0K0EEhnWyFOEEPYUFalg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0402MB3894.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(396003)(366004)(39860400002)(376002)(38100700002)(316002)(1076003)(38350700002)(6512007)(9686003)(26005)(186003)(6916009)(54906003)(66556008)(66476007)(66946007)(6506007)(52116002)(83380400001)(44832011)(86362001)(2906002)(4326008)(8676002)(7416002)(6666004)(6486002)(8936002)(4744005)(478600001)(41300700001)(5660300002)(26583001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?p5g409xq9bIAdlku2Bv7INGZibK5nlsW/uoRHVQr05CZv0tBSaGEgfpUsNE/?=
+ =?us-ascii?Q?o1bMCJ24T4Y04mtTb5IZkLWcI4jOcuROt2CJIatm0Hejv3oeXCkzcUQQM/5p?=
+ =?us-ascii?Q?i4Q75Z2tM69KiFid4bDM+SWTQ7kPsZcjl9dZcLmSGJQr9q4JsaqIBDpR4djC?=
+ =?us-ascii?Q?1duP8lLAycsEugoaaxt9GlR/nfQShmSyD/rvVPm7QMb4YiRyVpF5tSQgoHbj?=
+ =?us-ascii?Q?nXqQ/8PZ2yaQSJqQm5iI6cIRDHyiR53UwU7CNPZ5rcqPYmWKjxoBV+6gaeSe?=
+ =?us-ascii?Q?DtgiDgxnpHi1Qhj/Ow7RvCAkXwRPc0OWpxtbzB3WTK5rN2eOvUgWLSxJPsAN?=
+ =?us-ascii?Q?c0QiTg2GRZ94XX20z7ZFlARYEo2bFD6byUsq3wy+SARUc2NaU9bjGOl7tI8S?=
+ =?us-ascii?Q?j4u53yJDPfM0+z/Be6zI4wklThQPgpyXzb7OqnxVU6WjF07aJDibDuN6BL/K?=
+ =?us-ascii?Q?aErpSKzmu4a1f4n0+896OH1MfU54J++O8mBFcPryx5Z+F/vO/IwiI0oHEgaC?=
+ =?us-ascii?Q?31WCh3E2BfddRBwnTpw/s/iiVqfC7aC1cZu73uw6JL296g1uA6Ow7lIVaY7r?=
+ =?us-ascii?Q?NFwE42ktId3cTLUhJTZB/4ZtgWQIGFuh0Y0F3BwUhfbX9mkDgH08FYLs1Z5G?=
+ =?us-ascii?Q?rML9taI/gncppYQ1Qt3Cz4n9b84Jrz9W+Cels+XvTCOwAxR/ly5ICXMXQ3F/?=
+ =?us-ascii?Q?CMmstr/VGowcJbjHA4bTHsXEPCeE5mQcSC3k8nu0TNPCFyY6Q6vTPegKBb2X?=
+ =?us-ascii?Q?a+eW+hzsfFIj0GsoanDHT26kyHIhmfqcMHOmsxecWHotb8E52l44bvkTfUaE?=
+ =?us-ascii?Q?OM2OSN8Fiv/rYRfWvVZDQHXyum+7DIQGJiKHdIY83EhF0oXmFDwAr4qlTr2/?=
+ =?us-ascii?Q?fBKdjmzs7oYUySRx0xzdxVnmjKbAzQX9AoAxgOWPrt7G1Fy9QAlWTUfXYMuX?=
+ =?us-ascii?Q?Y/L/xqkrHNvE7TrdzfCdrYpALgGl+SYH3Pd9ScKhuIcfvLlGu9pcaCfTBjFR?=
+ =?us-ascii?Q?b34pe8K8p1J0PFzh65ZzCXeNnpz+H55hh+GuDriJw+qZ3nsMMKuSY7BaHDJN?=
+ =?us-ascii?Q?Vn6kERvGMtUeRK9IxXhAqU8X+gHVfOY9mHYPEa0iTkwpvlhKnnjpLVHUjiS1?=
+ =?us-ascii?Q?Js2Rwkf4lbjTHsLhWno6RBqpA8XSW8EChSeqTR9QG6mGSFL7FzGBkO+TTv0Z?=
+ =?us-ascii?Q?lf+5TZ1QjAAgy4fG7cVVa7JxHoyDDJjxWdD5n8JVORVUPST19H/nC31d+Z57?=
+ =?us-ascii?Q?x3htBKF2rnLQgakOufuf9t/QlZnRazmq5bBB9dONQF+fgyqvWBdH4seBssMe?=
+ =?us-ascii?Q?CTvZKkkSIeLRZ+rqvO6BXZGfGe4lOrBKQMPM4uiXjCZiSBV2bciGY/hQC3Lt?=
+ =?us-ascii?Q?GKe/BiDNVPRqkPcR/zsXkjl2PvdLO2Y2DC0bw+8mbCkOUuDFARXTBDOfN8Bu?=
+ =?us-ascii?Q?oL2Uncc6fT61twlOn4e8WPnkS7pKssglvH5EnhiahGJPyES3BqplilPe53vq?=
+ =?us-ascii?Q?GoK7xN5YI533kAx1v+7UncNOlsePp8/qn0/fKBCmSrCdcufVUQJHfsGU+7va?=
+ =?us-ascii?Q?z1o/4YN2pgSuECDORH1+9bqTKsdT8CgZ1Mip0tKawQJy2a/dlnKNtR8ykffB?=
+ =?us-ascii?Q?ig=3D=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 817f8c1b-e960-4403-a192-08da761776e6
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR0402MB3894.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Aug 2022 12:47:18.6559
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IMN255p5P+jehRXOYWJIBLzIu6LduqCrH+fOMvIXbgfVeKF1dcqPo42g6MoMcWhSIg2fb96Hyo8pAV5o6i3I6w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8733
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.08.03a
-branch HEAD: b07e8e7bbf95f4777f1ee4d35deafee8baa83bcb  rcu: Add full-sized polling for start_poll_expedited()
+On Thu, Jul 21, 2022 at 03:25:02PM +0300, Laurent Pinchart wrote:
+> Hi Laurentiu,
+> 
+> Thank you for the patch.
+> 
+> On Thu, Jul 21, 2022 at 03:09:12PM +0300, Laurentiu Palcu wrote:
+> > When DCSS + MIPI_DSI is used, and the last bridge in the chain supports
+> > HPD, we can see a "Hot plug detection already enabled" warning stack
+> > trace dump that's thrown when DCSS is initialized.
+> > 
+> > The problem appeared when HPD was enabled by default in the
+> > bridge_connector initialization, which made the
+> > drm_bridge_connector_enable_hpd() call, in DCSS init path, redundant.
+> > So, let's remove that call.
+> > 
+> > Fixes: 09077bc311658 ("drm/bridge_connector: enable HPD by default if supported")
+> > Signed-off-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
+> 
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-elapsed time: 733m
+Applied to drm-misc/drm-misc-fixes.
 
-configs tested: 86
-configs skipped: 2
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-um                           x86_64_defconfig
-um                             i386_defconfig
-i386                                defconfig
-i386                             allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-csky                              allnoconfig
-alpha                             allnoconfig
-arc                               allnoconfig
-riscv                             allnoconfig
-x86_64                           allyesconfig
-xtensa                         virt_defconfig
-arm                        multi_v7_defconfig
-sh                          rsk7264_defconfig
-loongarch                         allnoconfig
-arm                            qcom_defconfig
-arm64                            allyesconfig
-arm                                 defconfig
-arm                              allyesconfig
-arc                  randconfig-r043-20220804
-um                                  defconfig
-sh                          r7785rp_defconfig
-sh                                  defconfig
-mips                 decstation_r4k_defconfig
-sh                        sh7757lcr_defconfig
-m68k                             allyesconfig
-loongarch                           defconfig
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-powerpc                           allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                          randconfig-c001
-x86_64                           rhel-8.3-kvm
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                    rhel-8.3-kselftests
-x86_64                         rhel-8.3-kunit
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-arc                           tb10x_defconfig
-arc                     haps_hs_smp_defconfig
-powerpc                 mpc8540_ads_defconfig
-sh                        sh7785lcr_defconfig
-i386                          debian-10.3-kvm
-i386                        debian-10.3-kunit
-i386                         debian-10.3-func
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220804
-nios2                         3c120_defconfig
-sh                        apsh4ad0a_defconfig
-parisc64                            defconfig
-arm                           viper_defconfig
-s390                                defconfig
-s390                             allmodconfig
-arc                                 defconfig
-alpha                               defconfig
-s390                             allyesconfig
-
-clang tested configs:
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-mips                           rs90_defconfig
-powerpc                      obs600_defconfig
-i386                          randconfig-a013
-i386                          randconfig-a011
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-mips                          malta_defconfig
-arm                       cns3420vb_defconfig
-i386                          randconfig-a015
-x86_64                        randconfig-k001
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+laurentiu
