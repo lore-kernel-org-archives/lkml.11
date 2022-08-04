@@ -2,138 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E595C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 15:10:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 845B5C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 15:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240148AbiHDPKt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 11:10:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47494 "EHLO
+        id S239963AbiHDPLS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 11:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239158AbiHDPKD (ORCPT
+        with ESMTP id S240150AbiHDPKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 11:10:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFBE35F9B8;
-        Thu,  4 Aug 2022 08:09:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80347B824B9;
-        Thu,  4 Aug 2022 15:09:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FB1BC433B5;
-        Thu,  4 Aug 2022 15:09:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659625795;
-        bh=su1qZdfKRKL1PgRyMjnBJaoi0zKc/vCrn+42pIEye6Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I4nrMAiTzXcGOE38UQFzJeLJ0KEjb8TOsucdYwnEHRn6lPP+73Xl2YAA77ps1Amil
-         /TAZDZ4jizpFS+Z+5Iz9YH7rdMvJY1P/UVSZqAUZVoK0si76yDr1BcBzpijIF+IWFt
-         P85p08xAxnPbPZX6ZA2bvOMLwlsXqxKH8AiNiH24wjyXQxyERgp475FP9L6657H3Ge
-         QjqB8fmwrbIKAdwsA+1s3rWDVNp7o9lNBjDX8CLcVD+ChDwU4acLlhcRrBbbTEyQzY
-         qE7JJaQPwiu2I5zW3H/nOKzOxhkWo6F1kapxlYLJpbt8sekO5+bOeWi40ekccp+K5s
-         hdB93JQkp/OSg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1oJcUK-00069Q-Sm; Thu, 04 Aug 2022 17:10:16 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krishna Kurapati <quic_kriskura@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        "Matthias Kaehlcke" <mka@chromium.org>,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
-        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>, stable@vger.kernel.org,
-        Andrew Halaney <ahalaney@redhat.com>
-Subject: [PATCH v2 1/9] usb: dwc3: fix PHY disable sequence
-Date:   Thu,  4 Aug 2022 17:09:53 +0200
-Message-Id: <20220804151001.23612-2-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220804151001.23612-1-johan+linaro@kernel.org>
-References: <20220804151001.23612-1-johan+linaro@kernel.org>
+        Thu, 4 Aug 2022 11:10:49 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11D61F629
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 08:10:21 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id z25so31270155lfr.2
+        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 08:10:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=hpeUu0NXjIKeDxrj1XvCVY0IHP/A19r5SCTdBTc4poo=;
+        b=Kh85gxdhYSlqdAnFGKtWf1X96UzuK99fB6PMLFsVEir/gy4CUTXn9Q7gSQH5HL+hmH
+         5fiv8sKP+9XHg8rdOWvWxqwaj7k32XabwOvuFHXm6V4+fiSewoNo7hCDwZjQhDueqYs4
+         XmK1MIYM4pM3wyYF1RxI+TH/M5vUofrOuwJjH0qoJncp45EVEmEP8BBdkio5kcQRusl5
+         eCOAyTxCaTM1qoZfqFataziHaodtWfuCxYzmBQ/270eymSl6EMjyM2W4U37kyJfn992J
+         UFAdcrInWKtDTeTvAAK+KXcKmUpewoBoic0kwTpHhwXWs6UQBsaP/Cx8RMrW0w73Raa0
+         nGTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hpeUu0NXjIKeDxrj1XvCVY0IHP/A19r5SCTdBTc4poo=;
+        b=DCh8sZwdvzBc2Zb+A7hWLKr+notTDPaZk1kHlH43mVxDFCGsiyZX4daTjE+EpdW3jS
+         kYFV8mMOx7MikblR98t2acgTrDiufp33LJXj8P/kYkqQhDu5YFCLsIfVY8T6ay7iid3O
+         9xZUrQetJUKS7Y0lRqpOOILVqs5kMncdwpvgdxXxneWRWMp46D80MhCJeai0K7gUNYYv
+         uvCLHMedXtmvf076pAYPCPUlzHJw8TERWJGGjH+6/TxEggAWhmocvCvDgiEoYNTkU0k3
+         ACJ+pnWbYn6KvD3EMyxDHqSfMRjuQDMXuRQCpX+YWgp6Mu/LwOWD6Ccx9ruOylOqk4De
+         xbFg==
+X-Gm-Message-State: ACgBeo27uExH3JBfxq+RbOOunw4g6PHHLog0BDpESQMWTdU/kRbdkGnl
+        rPbM0bwW00D1qLGx1kEbTUfzyw==
+X-Google-Smtp-Source: AA6agR5P+y/EbBAMoQ+LTEgNQu0vBX7lomMzrDb+OspfhiiXti9s5Ad+GU6HMsv+zF+cKNzhJcVZ5Q==
+X-Received: by 2002:a05:6512:3192:b0:48a:a8fe:1407 with SMTP id i18-20020a056512319200b0048aa8fe1407mr889711lfe.550.1659625821153;
+        Thu, 04 Aug 2022 08:10:21 -0700 (PDT)
+Received: from [192.168.1.6] ([77.222.167.48])
+        by smtp.gmail.com with ESMTPSA id h4-20020a19ca44000000b0048b041d96dasm149994lfj.153.2022.08.04.08.10.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Aug 2022 08:10:20 -0700 (PDT)
+Message-ID: <1260ddb0-7022-4934-e579-8ca6d9e87b7f@linaro.org>
+Date:   Thu, 4 Aug 2022 17:10:18 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] dt-bindings: arm: aspeed: adjust qcom,dc-scm-v1-bmc
+ compatible after rename
+Content-Language: en-US
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+References: <20220804092710.64636-1-krzysztof.kozlowski@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220804092710.64636-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Generic PHYs must be powered-off before they can be tore down.
+On 04/08/2022 11:27, Krzysztof Kozlowski wrote:
+> The Nuvia DC-SCM BMC board compatible was renamed iin commit
+> 7f058112873e ("ARM: dts: aspeed: nuvia: rename vendor nuvia to qcom"),
+> so adjust the bindings as well.
+> 
+> Fixes: f77024c80147 ("dt-bindings: arm: aspeed: document board compatibles")
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml b/Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml
+> index 1895ce9de461..20469519e497 100644
+> --- a/Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml
+> +++ b/Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml
+> @@ -80,7 +80,7 @@ properties:
+>                - ibm,tacoma-bmc
+>                - inventec,transformer-bmc
+>                - jabil,rbp-bmc
+> -              - nuvia,dc-scm-bmc
+> +              - qcom,dc-scm-bmc
 
-Similarly, suspending legacy PHYs after having powered them off makes no
-sense.
+I missed to add last-minute change, so this is not correct.
 
-Fix the dwc3_core_exit() (e.g. called during suspend) and open-coded
-dwc3_probe() error-path sequences that got this wrong.
-
-Note that this makes dwc3_core_exit() match the dwc3_core_init() error
-path with respect to powering off the PHYs.
-
-Fixes: 03c1fd622f72 ("usb: dwc3: core: add phy cleanup for probe error handling")
-Fixes: c499ff71ff2a ("usb: dwc3: core: re-factor init and exit paths")
-Cc: stable@vger.kernel.org      # 4.8
-Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/usb/dwc3/core.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-index c5c238ab3083..16d1f328775f 100644
---- a/drivers/usb/dwc3/core.c
-+++ b/drivers/usb/dwc3/core.c
-@@ -833,15 +833,16 @@ static void dwc3_core_exit(struct dwc3 *dwc)
- {
- 	dwc3_event_buffers_cleanup(dwc);
- 
-+	usb_phy_set_suspend(dwc->usb2_phy, 1);
-+	usb_phy_set_suspend(dwc->usb3_phy, 1);
-+	phy_power_off(dwc->usb2_generic_phy);
-+	phy_power_off(dwc->usb3_generic_phy);
-+
- 	usb_phy_shutdown(dwc->usb2_phy);
- 	usb_phy_shutdown(dwc->usb3_phy);
- 	phy_exit(dwc->usb2_generic_phy);
- 	phy_exit(dwc->usb3_generic_phy);
- 
--	usb_phy_set_suspend(dwc->usb2_phy, 1);
--	usb_phy_set_suspend(dwc->usb3_phy, 1);
--	phy_power_off(dwc->usb2_generic_phy);
--	phy_power_off(dwc->usb3_generic_phy);
- 	dwc3_clk_disable(dwc);
- 	reset_control_assert(dwc->reset);
- }
-@@ -1879,16 +1880,16 @@ static int dwc3_probe(struct platform_device *pdev)
- 	dwc3_debugfs_exit(dwc);
- 	dwc3_event_buffers_cleanup(dwc);
- 
--	usb_phy_shutdown(dwc->usb2_phy);
--	usb_phy_shutdown(dwc->usb3_phy);
--	phy_exit(dwc->usb2_generic_phy);
--	phy_exit(dwc->usb3_generic_phy);
--
- 	usb_phy_set_suspend(dwc->usb2_phy, 1);
- 	usb_phy_set_suspend(dwc->usb3_phy, 1);
- 	phy_power_off(dwc->usb2_generic_phy);
- 	phy_power_off(dwc->usb3_generic_phy);
- 
-+	usb_phy_shutdown(dwc->usb2_phy);
-+	usb_phy_shutdown(dwc->usb3_phy);
-+	phy_exit(dwc->usb2_generic_phy);
-+	phy_exit(dwc->usb3_generic_phy);
-+
- 	dwc3_ulpi_exit(dwc);
- 
- err4:
--- 
-2.35.1
-
+Best regards,
+Krzysztof
