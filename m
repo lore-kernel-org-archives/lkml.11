@@ -2,228 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B816C19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 08:43:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C4E7C19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 08:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239518AbiHDIn3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 04:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48482 "EHLO
+        id S239379AbiHDIpH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 04:45:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239224AbiHDImx (ORCPT
+        with ESMTP id S239346AbiHDIof (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 04:42:53 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49D767CB2
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 01:41:33 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oJWQ2-0007xA-P9; Thu, 04 Aug 2022 10:41:26 +0200
-Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1oJWPw-00043J-Kr; Thu, 04 Aug 2022 10:41:20 +0200
-Date:   Thu, 4 Aug 2022 10:41:20 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     Adam Ford <aford173@gmail.com>
-Cc:     Fabio Estevam <festevam@gmail.com>, Marek Vasut <marex@denx.de>,
-        Stefan Agner <stefan@agner.ch>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        arm-soc <linux-arm-kernel@lists.infradead.org>,
-        Jagan Teki <jagan@amarulasolutions.com>, robert.chiras@nxp.com,
-        laurentiu.palcu@nxp.com
-Subject: Re: imx8mm lcdif->dsi->adv7535 no video, no errors
-Message-ID: <20220804084120.in435n4ofdw6ksfj@pengutronix.de>
-References: <CAOMZO5DUTxQKbpTVOgaVC0V7hPqJG77sgmkW8p=aNpG8th-aLw@mail.gmail.com>
- <CAHCN7xL2w7a=SeXbwcNNxqb3kpRV9Bs0AbK0Nmjbj+dm0NDaVA@mail.gmail.com>
- <CAOMZO5BQWnUj4Ouq3=vhqq55zN8otO_9vPX8ht+muFM_5pg9Fg@mail.gmail.com>
- <CAHCN7xJy6X5733m3zwcFMuWM9oGHJEmKrs2KUNhzMzNVggRx0g@mail.gmail.com>
- <20220802080820.jyf3tfpgcj3pvbtp@pengutronix.de>
- <CAHCN7xL-7wGnEhY9+zDXYjigZfnfsnY_NsRf+enYt_BPsFxgnQ@mail.gmail.com>
- <CAHCN7xLpCbOY+Ma6gKJievw6aUZ5-Qs4S=zxjTgRu=Be7zvhoQ@mail.gmail.com>
- <CAHCN7xKzYcCPL0ddTENGw6xdCMNdYw-m5u4NSBHb96Vb_tByGg@mail.gmail.com>
- <20220803062024.vn7awasmifkp5xow@pengutronix.de>
- <CAHCN7xL3maPyX8eUiT6mKYei==6pkEvVTwX3vY+1uLTSNDGQ3Q@mail.gmail.com>
+        Thu, 4 Aug 2022 04:44:35 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C3522B2C
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 01:42:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659602574; x=1691138574;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Rd37YsN2R+cKed2cLhxUrMyllbBQxMnZsWu1bDpROSY=;
+  b=eEKlaeU4WAH7DQp3/STWPTmp21cCsuFrRj5z4Kd3mgoR5bwG0xnBydnK
+   FN8hFzlEpEcCxbd1DQTMcsoEBAwdQ+7bm40VUpHq9Rrs6x7lHZ75D1Saa
+   +KMw3JrrcXixuzXT+2jwCBgK/cSNDrnf2CJkgr6JLeFk/XdN0PA+cF0Cz
+   XJDKr81BRIpLOvImV+0kr436tlrDSx8bZGseuovvWKtJUDS5iTQbBiJ5V
+   HygmCIN47OdweI61nk/j8j08ymwx1sRrgxESVKywJGrtJqmS3Jq+QQPFK
+   zDdcmWWIU91ScCvCVDCDqKlNZK1fYMQlC0JJGPlKBGh9RjTTRbAD9p15L
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="289890318"
+X-IronPort-AV: E=Sophos;i="5.93,215,1654585200"; 
+   d="scan'208";a="289890318"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 01:42:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,215,1654585200"; 
+   d="scan'208";a="930724964"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 04 Aug 2022 01:42:44 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oJWRH-000IA9-2c;
+        Thu, 04 Aug 2022 08:42:43 +0000
+Date:   Thu, 4 Aug 2022 16:42:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: io_uring/io_uring.c:2932:40: warning: variable 'prev' set but not
+ used
+Message-ID: <202208041642.HDHLXJ6J-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHCN7xL3maPyX8eUiT6mKYei==6pkEvVTwX3vY+1uLTSNDGQ3Q@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22-08-03, Adam Ford wrote:
-> On Wed, Aug 3, 2022 at 1:20 AM Marco Felsch <m.felsch@pengutronix.de> wrote:
-> >
-> > On 22-08-02, Adam Ford wrote:
-> >
-> > ...
-> >
-> > > > I did some reading about the internal timing generator.  It appears
-> > > > that it's required when video formats use fractional bytes, and it's
-> > > > preconfigured to run at 720p by default, but registers 28h through 37h
-> > > > configure it for other video modes.
-> > >
-> > > I think there may still be some issues with the DSIM since some of the
-> > > clock frequencies are set in the device tree.
-> > >
-> > > From what I can tell, the pixel rate is calculated based on the
-> >
-> > By pixel rate you mean the HDMI pixel rate from the ADV? If so then yes.
-> > The ADV has an divider which is already configured by the driver but
-> > meaningless since the driver is lacking of setting the "manual-divider"
-> > bit within the same register.
-> 
-> I was thinking about the pixel clock from the DSI to the ADV.  I did
-> see the manual-divider bit was missing.  I tried enabling that bit,
-> but it didn't appear to make much difference.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b44f2fd87919b5ae6e1756d4c7ba2cbba22238e1
+commit: ed29b0b4fd835b058ddd151c49d021e28d631ee6 io_uring: move to separate directory
+date:   10 days ago
+config: arm-randconfig-r013-20220804 (https://download.01.org/0day-ci/archive/20220804/202208041642.HDHLXJ6J-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ed29b0b4fd835b058ddd151c49d021e28d631ee6
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout ed29b0b4fd835b058ddd151c49d021e28d631ee6
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-This depends, e.g. I saw that the HDMI pixel clock is correct if I had
-set this bit, set the divider manually to 6 and configured the dsi-host
-burst clock to 891MHz:
-  -> 891MHz / 2 = 445.5 (DSI-Clock) -> 445.5 / 6 = 74.25 (HDMI pixel
-  clock for 720P)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Of course this doesn't happen automatically yet :( I also find it a bit
-of too reduce the lane line, I had removed this logic too. But as I
-said, I got no frames shown on my HDMI monitor.
+All warnings (new ones prefixed by >>):
 
-...
+   io_uring/io_uring.c: In function '__io_submit_flush_completions':
+>> io_uring/io_uring.c:2932:40: warning: variable 'prev' set but not used [-Wunused-but-set-variable]
+    2932 |         struct io_wq_work_node *node, *prev;
+         |                                        ^~~~
 
-> > > samsung,burst-clock-frequency = <1500000000>;
-> >
-> > This is not correct since the burst-clock-freq. specifies the hs-clock
-> > for the data lanes (see above).
-> 
-> But I don't think the clock should be fixed. I think it should vary as
-> the resolution changes. 
 
-You're right and this is something we have on our TODO list as well. But
-this needs a bit more work within the DRM framework. So the client and
-the host can negotiate the frequency.
+vim +/prev +2932 io_uring/io_uring.c
 
-Remember our main problem: with a correct burst-clock-frequency set and
-lane number set for 720P, the ADV don't display anything.
+7a743e225b2a9da fs/io_uring.c Pavel Begunkov 2020-03-03  2928  
+c450178d9be9dc4 fs/io_uring.c Pavel Begunkov 2021-09-08  2929  static void __io_submit_flush_completions(struct io_ring_ctx *ctx)
+a141dd896f544df fs/io_uring.c Jens Axboe     2021-08-12  2930  	__must_hold(&ctx->uring_lock)
+905c172f32c56f0 fs/io_uring.c Pavel Begunkov 2021-02-10  2931  {
+6f33b0bc4ea43f5 fs/io_uring.c Pavel Begunkov 2021-09-24 @2932  	struct io_wq_work_node *node, *prev;
+cd0ca2e048dc0dd fs/io_uring.c Pavel Begunkov 2021-08-09  2933  	struct io_submit_state *state = &ctx->submit_state;
+905c172f32c56f0 fs/io_uring.c Pavel Begunkov 2021-02-10  2934  
+3d4aeb9f98058c3 fs/io_uring.c Pavel Begunkov 2021-11-10  2935  	if (state->flush_cqes) {
+79ebeaee8a21a00 fs/io_uring.c Jens Axboe     2021-08-10  2936  		spin_lock(&ctx->completion_lock);
+6f33b0bc4ea43f5 fs/io_uring.c Pavel Begunkov 2021-09-24  2937  		wq_list_for_each(node, prev, &state->compl_reqs) {
+6f33b0bc4ea43f5 fs/io_uring.c Pavel Begunkov 2021-09-24  2938  			struct io_kiocb *req = container_of(node, struct io_kiocb,
+6f33b0bc4ea43f5 fs/io_uring.c Pavel Begunkov 2021-09-24  2939  						    comp_list);
+5182ed2e332e8e1 fs/io_uring.c Pavel Begunkov 2021-06-26  2940  
+f43de1f88841d59 fs/io_uring.c Pavel Begunkov 2022-06-15  2941  			if (!(req->flags & REQ_F_CQE_SKIP))
+91ef75a7db0d085 fs/io_uring.c Pavel Begunkov 2022-06-15  2942  				__io_fill_cqe_req(ctx, req);
+905c172f32c56f0 fs/io_uring.c Pavel Begunkov 2021-02-10  2943  		}
+3d4aeb9f98058c3 fs/io_uring.c Pavel Begunkov 2021-11-10  2944  
+905c172f32c56f0 fs/io_uring.c Pavel Begunkov 2021-02-10  2945  		io_commit_cqring(ctx);
+79ebeaee8a21a00 fs/io_uring.c Jens Axboe     2021-08-10  2946  		spin_unlock(&ctx->completion_lock);
+905c172f32c56f0 fs/io_uring.c Pavel Begunkov 2021-02-10  2947  		io_cqring_ev_posted(ctx);
+3d4aeb9f98058c3 fs/io_uring.c Pavel Begunkov 2021-11-10  2948  		state->flush_cqes = false;
+3d4aeb9f98058c3 fs/io_uring.c Pavel Begunkov 2021-11-10  2949  	}
+5182ed2e332e8e1 fs/io_uring.c Pavel Begunkov 2021-06-26  2950  
+1cce17aca621c38 fs/io_uring.c Pavel Begunkov 2021-09-24  2951  	io_free_batch_list(ctx, state->compl_reqs.first);
+6f33b0bc4ea43f5 fs/io_uring.c Pavel Begunkov 2021-09-24  2952  	INIT_WQ_LIST(&state->compl_reqs);
+7a743e225b2a9da fs/io_uring.c Pavel Begunkov 2020-03-03  2953  }
+7a743e225b2a9da fs/io_uring.c Pavel Begunkov 2020-03-03  2954  
 
-> From what I can tell, NXP's DSI code doesn't
-> hard code this value, but it does appear to cap it at 1.5G.  I did
-> soom looking into the NXP frequency calculation
+:::::: The code at line 2932 was first introduced by commit
+:::::: 6f33b0bc4ea43f5c5ce7b7c9ab66051f80837862 io_uring: use slist for completion batching
 
-Can you provide me a link? There are a lot frequencies involved in this
-discussion ^^ Just that I look at the same location.
+:::::: TO: Pavel Begunkov <asml.silence@gmail.com>
+:::::: CC: Jens Axboe <axboe@kernel.dk>
 
-> and it is capable of adjusting resolutions to some extent and from
-> what I can see the 891MHz clock is only set when 1080p.  At 720p,
-> thier kernel shows the output frequency at  445.5 MHz. 
-
-Yes, we need the dynamic handling but hardcoding it isn't the way we
-should go either. We have the dynamic PLL calculation, so we can
-configure it to all possible values not just a few VESA standards.
-
-> The way the DSIM is currently configured, it's fixed at 891MHz, so I
-> don't expect the output feeding the adv7535 to be correct for the
-> different resolutions.
-
-Why not? The ADV can work with that hs-clock and for 720P@60 we need a
-bandwidth of roughly (only pixels no package header/footer overhead):
-
-  1280x720x24x60 = 1327104000 Bit/s = 1327.104 MBit/s
-
-With 891MHz and 2 lanes we have
-
-  891MBps * 2 = 1782000000 Bit/s = 1782 MBit/s
-
-So this should be fine. With 445.5 MHz and 2 lanes we have not enough
-bandwidth and with 445.5 MHz and 4 lanes we have exactly the same
-bandwidth.
-
-Therefore I still think that there is problem within the ADV.
-
-...
-
-> > > With these settings and the above mentioned code changes, 1080p still
-> > > appears, however when attempting other modes, the display still fails
-> > > to load.  I also noticed that the phy ref clock is set to 27MHz
-> > > instead of NXP's 12MHz.
-> >
-> > That's interesting, I didn't noticed that NXP uses 12 MHz as refclock
-> > but I don't think that this is the problem. Since we have other
-> > converter chips using the bridge driver and they work fine. I still
-> > think that the main problem is within the ADV driver.
-> 
-> Do the other converter chips work fine at different resolutions?
-
-Yes.
-
-> 
-> >
-> > > I attempted to play with that setting, but I couldn't get 1080p to
-> > > work again, so I backed it out.
-> > >
-> > > Maybe I am headed in the wrong direction, but I'm going to examine the
-> > > P/M/S calculation of the timing on NXP's kernel to see how the DSIM in
-> > > this code compares.
-> >
-> > I think the pms values are fine.
-> 
-> I compared the P/M/S values between this driver and NXP's and they
-> calculate different values of PMS when running at 1080P.
-
-NXP don't calculate anything if I remember correctly, they just provide
-PLL values so they reach the frequency. On the other hand with the
-patches from Jagan we can configure the PLL to what-ever value :)
-
-> NXP @ 1080p:
-> fout = 891000, fin = 12000, m = 297, p = 2, s = 1, best_delta = 0
-> 
-> This kernel @ 1080p:
-> 
-> PLL freq 891000000, (p 3, m 99, s 0)
-
-As you said, we use a differnet fin value 27MHz instead of the 12MHz so
-those values must be different.
-
-> at 720P, the NXP Kernel
-> fout = 445500, fin = 12000, m = 297, p = 2, s = 2, best_delta = 0
-> (working)
-> 
-> at 720P, this kernel:
-> PLL freq 891000000, (p 3, m 99, s 0)
-> hs_clk = 891000000, byte_clk = 111375000, esc_clk = 18562500
-> (not working)
-
-Yes, as I said you need to configure the PLL manually (see above).
-
-> > > If someone who understands the interactions between these different
-> > > components has suggestions, I'm willing to run some experiments.
-> >
-> > Did managed to get access to the ADV7535 programming guide? This is the
-> > black box here. Let me check if I can provide you a link with our repo
-> > so you can test our current DSIM state if you want.
-> 
-> I do have access to the programming guide, but it's under NDA, but
-> I'll try to answer questions if I can.
-
-Thanks a lot for your work :)
-
-Regards,
-  Marco
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
