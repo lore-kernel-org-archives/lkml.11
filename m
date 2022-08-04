@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D541C25B07
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E595C19F2A
 	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 15:10:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240192AbiHDPKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 11:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47478 "EHLO
+        id S240148AbiHDPKt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 11:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239029AbiHDPKD (ORCPT
+        with ESMTP id S239158AbiHDPKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 4 Aug 2022 11:10:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6247E5E308;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFBE35F9B8;
         Thu,  4 Aug 2022 08:09:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 968526106C;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80347B824B9;
         Thu,  4 Aug 2022 15:09:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A548C41679;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FB1BC433B5;
         Thu,  4 Aug 2022 15:09:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1659625795;
-        bh=IO2m3x1jImWrsxZYiJ2BMxGUrpa2LxovXjBMsp4YmCo=;
+        bh=su1qZdfKRKL1PgRyMjnBJaoi0zKc/vCrn+42pIEye6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QanGkkS4xs9guEML3UUpdfeTWuhqiyq1gKgwPxX0liM7aZuxQKXtTSxuFlR5aBUBU
-         2JLwKWrkuUxAAMKOH8mLsuGPQ2eYFH7zIT54cDycwqHzjYQXB9rQGG092mY+o0g9AU
-         U0WYe8pYX45Z+mxM25zX5lxAhBml0q91KPnohgt+OUYOPCvTLUZjZpKzY7oyRyV5j0
-         gVlz7IJJkIhOLCUA1lNgtFbVqIR4XdCK8+Sy2DiNUV18khQlQ8oRrhbTTw+rCTyCjl
-         AIulqYUjJl1RC84pkMhtDJTD0Am4w+NNQgswzBDGUw8NOo1nIxzKGCAvRTWac5j6EZ
-         ovUq+BCe8ycVQ==
+        b=I4nrMAiTzXcGOE38UQFzJeLJ0KEjb8TOsucdYwnEHRn6lPP+73Xl2YAA77ps1Amil
+         /TAZDZ4jizpFS+Z+5Iz9YH7rdMvJY1P/UVSZqAUZVoK0si76yDr1BcBzpijIF+IWFt
+         P85p08xAxnPbPZX6ZA2bvOMLwlsXqxKH8AiNiH24wjyXQxyERgp475FP9L6657H3Ge
+         QjqB8fmwrbIKAdwsA+1s3rWDVNp7o9lNBjDX8CLcVD+ChDwU4acLlhcRrBbbTEyQzY
+         qE7JJaQPwiu2I5zW3H/nOKzOxhkWo6F1kapxlYLJpbt8sekO5+bOeWi40ekccp+K5s
+         hdB93JQkp/OSg==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oJcUL-00069c-CT; Thu, 04 Aug 2022 17:10:17 +0200
+        id 1oJcUK-00069Q-Sm; Thu, 04 Aug 2022 17:10:16 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Felipe Balbi <balbi@kernel.org>
@@ -52,11 +52,11 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
         linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 7/9] dt-bindings: usb: qcom,dwc3: add wakeup-source property
-Date:   Thu,  4 Aug 2022 17:09:59 +0200
-Message-Id: <20220804151001.23612-8-johan+linaro@kernel.org>
+        Johan Hovold <johan+linaro@kernel.org>, stable@vger.kernel.org,
+        Andrew Halaney <ahalaney@redhat.com>
+Subject: [PATCH v2 1/9] usb: dwc3: fix PHY disable sequence
+Date:   Thu,  4 Aug 2022 17:09:53 +0200
+Message-Id: <20220804151001.23612-2-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220804151001.23612-1-johan+linaro@kernel.org>
 References: <20220804151001.23612-1-johan+linaro@kernel.org>
@@ -66,41 +66,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a wakeup-source property to the binding to describe whether the
-wakeup interrupts can wake the system from suspend.
+Generic PHYs must be powered-off before they can be tore down.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Similarly, suspending legacy PHYs after having powered them off makes no
+sense.
+
+Fix the dwc3_core_exit() (e.g. called during suspend) and open-coded
+dwc3_probe() error-path sequences that got this wrong.
+
+Note that this makes dwc3_core_exit() match the dwc3_core_init() error
+path with respect to powering off the PHYs.
+
+Fixes: 03c1fd622f72 ("usb: dwc3: core: add phy cleanup for probe error handling")
+Fixes: c499ff71ff2a ("usb: dwc3: core: re-factor init and exit paths")
+Cc: stable@vger.kernel.org      # 4.8
+Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
+ drivers/usb/dwc3/core.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-Changes in v2
- - disallow 'wakeup-source' in child node (Krzysztof)
-
- Documentation/devicetree/bindings/usb/qcom,dwc3.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml b/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
-index fea3e7092ace..d5959bdea63e 100644
---- a/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
-+++ b/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
-@@ -108,12 +108,17 @@ properties:
-       HS/FS/LS modes are supported.
-     type: boolean
+diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+index c5c238ab3083..16d1f328775f 100644
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -833,15 +833,16 @@ static void dwc3_core_exit(struct dwc3 *dwc)
+ {
+ 	dwc3_event_buffers_cleanup(dwc);
  
-+  wakeup-source: true
++	usb_phy_set_suspend(dwc->usb2_phy, 1);
++	usb_phy_set_suspend(dwc->usb3_phy, 1);
++	phy_power_off(dwc->usb2_generic_phy);
++	phy_power_off(dwc->usb3_generic_phy);
 +
- # Required child node:
+ 	usb_phy_shutdown(dwc->usb2_phy);
+ 	usb_phy_shutdown(dwc->usb3_phy);
+ 	phy_exit(dwc->usb2_generic_phy);
+ 	phy_exit(dwc->usb3_generic_phy);
  
- patternProperties:
-   "^usb@[0-9a-f]+$":
-     $ref: snps,dwc3.yaml#
+-	usb_phy_set_suspend(dwc->usb2_phy, 1);
+-	usb_phy_set_suspend(dwc->usb3_phy, 1);
+-	phy_power_off(dwc->usb2_generic_phy);
+-	phy_power_off(dwc->usb3_generic_phy);
+ 	dwc3_clk_disable(dwc);
+ 	reset_control_assert(dwc->reset);
+ }
+@@ -1879,16 +1880,16 @@ static int dwc3_probe(struct platform_device *pdev)
+ 	dwc3_debugfs_exit(dwc);
+ 	dwc3_event_buffers_cleanup(dwc);
  
-+    properties:
-+      wakeup-source: false
+-	usb_phy_shutdown(dwc->usb2_phy);
+-	usb_phy_shutdown(dwc->usb3_phy);
+-	phy_exit(dwc->usb2_generic_phy);
+-	phy_exit(dwc->usb3_generic_phy);
+-
+ 	usb_phy_set_suspend(dwc->usb2_phy, 1);
+ 	usb_phy_set_suspend(dwc->usb3_phy, 1);
+ 	phy_power_off(dwc->usb2_generic_phy);
+ 	phy_power_off(dwc->usb3_generic_phy);
+ 
++	usb_phy_shutdown(dwc->usb2_phy);
++	usb_phy_shutdown(dwc->usb3_phy);
++	phy_exit(dwc->usb2_generic_phy);
++	phy_exit(dwc->usb3_generic_phy);
 +
- required:
-   - compatible
-   - reg
+ 	dwc3_ulpi_exit(dwc);
+ 
+ err4:
 -- 
 2.35.1
 
