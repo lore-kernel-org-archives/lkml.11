@@ -2,63 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCBEC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A97C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:55:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240081AbiHDOwT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 10:52:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33900 "EHLO
+        id S239974AbiHDOzd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 10:55:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240062AbiHDOwK (ORCPT
+        with ESMTP id S234583AbiHDOzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 10:52:10 -0400
-X-Greylist: delayed 497 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 04 Aug 2022 07:52:07 PDT
-Received: from mail.crfreenet.org (varda.crfreenet.org [185.133.240.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F329F2A25D;
-        Thu,  4 Aug 2022 07:52:07 -0700 (PDT)
-Received: from finarfin (slizka.chapadla.cz [93.99.228.74])
-        by mail.crfreenet.org (Postfix) with ESMTP id 9C74B2C230E;
-        Thu,  4 Aug 2022 16:43:47 +0200 (CEST)
-Date:   Thu, 4 Aug 2022 16:43:47 +0200
-From:   Ondrej Zajicek <santiago@crfreenet.org>
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     deller@gmx.de, adaplas@gmail.com, akpm@linux-foundation.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] Fix bugs in *_set_par() caused by user input
-Message-ID: <YuvbI8NEpzciTgfc@finarfin>
-References: <20220804124125.3506755-1-zheyuma97@gmail.com>
+        Thu, 4 Aug 2022 10:55:31 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B627712AE5;
+        Thu,  4 Aug 2022 07:55:29 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 95EF91C81131;
+        Thu,  4 Aug 2022 22:55:27 +0800 (CST)
+Received: from NTHCCAS03.nuvoton.com (10.1.20.28) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 4 Aug
+ 2022 22:55:27 +0800
+Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS03.nuvoton.com
+ (10.1.20.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1847.3; Thu, 4 Aug 2022
+ 22:55:27 +0800
+Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS04.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Thu, 4 Aug 2022 22:55:26 +0800
+Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
+        id 23FBE62EFD; Thu,  4 Aug 2022 17:55:26 +0300 (IDT)
+From:   Tomer Maimon <tmaimon77@gmail.com>
+To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
+        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
+        <benjaminfair@google.com>, <jic23@kernel.org>, <minyard@acm.org>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
+CC:     <openbmc@lists.ozlabs.org>,
+        <openipmi-developer@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        Tomer Maimon <tmaimon77@gmail.com>
+Subject: [PATCH v1] dt-binding: ipmi: add fallback to npcm845 compatible
+Date:   Thu, 4 Aug 2022 17:55:16 +0300
+Message-ID: <20220804145516.217482-1-tmaimon77@gmail.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220804124125.3506755-1-zheyuma97@gmail.com>
-X-Operating-System: Debian GNU/Linux
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 04, 2022 at 08:41:22PM +0800, Zheyu Ma wrote:
-> In the function *_set_par(), the value of 'screen_size' is
-> calculated by the user input. If the user provides the improper value,
-> the value of 'screen_size' may larger than 'info->screen_size', which
-> may cause a bug in the memset_io().
+Add to npcm845 KCS compatible string a fallback to npcm750 KCS compatible
+string.
 
-Hi
+Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+---
+ Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I did not saw fbdev code in years, but should not this be already checked
-by *_check_var() ?
-
-arkfb_check_var():
-
-	...
-	/* Check whether have enough memory */
-	mem = ((var->bits_per_pixel * var->xres_virtual) >> 3) * var->yres_virtual;
-	if (mem > info->screen_size)
-	...
-
+diff --git a/Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt b/Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt
+index cbc10a68ddef..4fda76e63396 100644
+--- a/Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt
++++ b/Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt
+@@ -7,7 +7,7 @@ used to perform in-band IPMI communication with their host.
+ Required properties:
+ - compatible : should be one of
+     "nuvoton,npcm750-kcs-bmc"
+-    "nuvoton,npcm845-kcs-bmc"
++    "nuvoton,npcm845-kcs-bmc", "nuvoton,npcm750-kcs-bmc"
+ - interrupts : interrupt generated by the controller
+ - kcs_chan : The KCS channel number in the controller
+ 
 -- 
-Elen sila lumenn' omentielvo
+2.33.0
 
-Ondrej 'Santiago' Zajicek (email: santiago@crfreenet.org)
-OpenPGP encrypted e-mails preferred (KeyID 0x11DEADC3, wwwkeys.pgp.net)
-"To err is human -- to blame it on a computer is even more so."
