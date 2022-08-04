@@ -2,94 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D08C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 15:00:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FBD9C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 15:01:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240164AbiHDPAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 11:00:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39978 "EHLO
+        id S240145AbiHDPA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 11:00:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240138AbiHDPAF (ORCPT
+        with ESMTP id S240158AbiHDPAv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 11:00:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B472251A36
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 07:59:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 323D2B8258F
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 14:59:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5ADBC433C1;
-        Thu,  4 Aug 2022 14:59:51 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="RJUdSGbh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1659625190;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GlywDwIYA79HfUqSNMAJ+LFUue5+U5J9GyiTgQoafZc=;
-        b=RJUdSGbhsLrWtZZfKWJ2orpGi4YppE6A7Wv9kdZMwbbqVgz3e6Wkmg0gFcBppUVk3Urozr
-        bWIQhPnnvYl67cOKb3nj+lc+N/ikDA3GOWCqcmiE/acGbBPmVEaP2eYQgT+6L+9+mLS8AE
-        mMZC+Qo0xTDqH6FeurOR2ACmdUmiQ0I=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 852c8a41 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Thu, 4 Aug 2022 14:59:49 +0000 (UTC)
-Date:   Thu, 4 Aug 2022 16:59:46 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     bchalios@amazon.es
-Cc:     linux-kernel@vger.kernel.org, tytso@mit.edu, dwmw@amazon.co.uk,
-        graf@amazon.de, xmarcalx@amazon.co.uk, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com
-Subject: Re: [PATCH 0/2] virt: vmgenid: add generation counter
-Message-ID: <Yuve4vuAnU85mdRY@zx2c4.com>
-References: <20220803152127.48281-1-bchalios@amazon.es>
+        Thu, 4 Aug 2022 11:00:51 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 689FB14012
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 08:00:50 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id q16so107577pgq.6
+        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 08:00:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=IaifTpn3u0w2qUkig48qynKFfInn0OoAePTEgfMQ/6g=;
+        b=SM4HtroITzHOZUFHTx7wGP7tvdu9IAxGSxtCMAsBe810xu9aIob9MCZbOolfYzn2+e
+         j79pj5EZWJJzVBm+DlQ9qL0YGGyMyf/egYOSXlw8RgRiClXjQpthTrp7Iqh3PIPjnPAn
+         8+TJD8GinwO57p/omdUnuI5NwqNeM/WSRUkLJT77l1kK5Z4bFz3EuPcZDKrCtkP+ptrr
+         0n/tLCQMaprvpWJ4hh+JWoWexfkLJE+kbl41zeroCm6WyfmY97oCLde4x/mAI5hEbBin
+         fSB7HHpNIuAsqyLbyIMYwB3mCYCMkcOCi78C1cbpMRas/0ldqGJvXkvK2lzByC0iONsi
+         oEMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=IaifTpn3u0w2qUkig48qynKFfInn0OoAePTEgfMQ/6g=;
+        b=aukMVn0Qb4ypBvf2pBPLUzQ4XR40WMczgACWwmmv3xUNaQL0QFkVXHrvg8tnz6GNau
+         5xtbkfTqdXG2oPYvWWU03cwxWhaf9+9jaDndLkTleqJAk3AqYumvOt9YCm77mjqrIiaq
+         X7Z/xqBFHZUEpMh9u4HIyCQD6d8Cn8sm9Shxi1ablzSPQ13nlAwHNdZBWTA01mXUcJQH
+         TDgxr4E+Yjpt3sw3GxEZnAx6fm1tGZOE3P7zq07p+dsyKovDFb97ceNvW24L8lwhHMVd
+         ETwjf71Z89/EwQyQdnMLhKsQ7QQxTjK4UATK4xTH0+ZMAgsOBLPa3IOsbJXRcNKzNVcE
+         2orQ==
+X-Gm-Message-State: ACgBeo3PbsjjcI6FMbpTnojfsD+iWt13Fy2uTnJtHx8VArQV3FiFXTTh
+        Fb3dEbvFyPTA98rRtbDS6QeVQggCgQGkaA==
+X-Google-Smtp-Source: AA6agR6vOOf5eInTDw94W1UE+cE40wpAwMxYjG3kliNFyyKOGQTat2W+Q3wfOpjiZ2CFqYuVxfrSRg==
+X-Received: by 2002:aa7:919a:0:b0:52a:eeef:3e65 with SMTP id x26-20020aa7919a000000b0052aeeef3e65mr2112688pfa.15.1659625249718;
+        Thu, 04 Aug 2022 08:00:49 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id e6-20020a170902784600b0016357fd0fd1sm1119297pln.69.2022.08.04.08.00.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Aug 2022 08:00:49 -0700 (PDT)
+Date:   Thu, 4 Aug 2022 15:00:45 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>
+Subject: Re: [PATCH v2 7/7] KVM: VMX: Simplify capability check when handling
+ PERF_CAPABILITIES write
+Message-ID: <YuvfHZLGbU08S4ee@google.com>
+References: <20220803192658.860033-1-seanjc@google.com>
+ <20220803192658.860033-8-seanjc@google.com>
+ <41e0b2a0-c53d-870f-d619-4008eb222d42@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220803152127.48281-1-bchalios@amazon.es>
+In-Reply-To: <41e0b2a0-c53d-870f-d619-4008eb222d42@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Babis,
-
-On Wed, Aug 03, 2022 at 05:21:25PM +0200, bchalios@amazon.es wrote:
-> From: Babis Chalios <bchalios@amazon.es>
+On Thu, Aug 04, 2022, Like Xu wrote:
+> On 4/8/2022 3:26 am, Sean Christopherson wrote:
+> > Explicitly check for the absence of host support for LBRs or PEBS when
+> > userspace attempts to enable said features by writing PERF_CAPABILITIES.
+> > Comparing host support against the incoming value is unnecessary and
+> > weird since the checks are buried inside an if-statement that verifies
+> > userspace wants to enable the feature.
 > 
-> Linux recently added support for the VM Generation ID mechanism from
-> Microsoft. The way this works currently is using the 128-bit blob
-> provided by the vmgenid device to re-seed the RNG. While this works it
-> has two main issues, (a) it is inherently racy due to the fact that it
-> relies on a ACPI notification being delivered and handled and (b) the ID
-> is unsuitable for exposing to user-space.
+> If you mean this part in the KVM:
 > 
-> This patch-set extends the vmgenid device to introduce a generation
-> counter, a 32-bit counter which is different every time the unique ID
-> changes. The addition to the original implementation in QEMU can be
-> found here:
-> https://lists.nongnu.org/archive/html/qemu-devel/2022-08/msg00524.html.
+> 	case MSR_IA32_PERF_CAPABILITIES: {
+> 		...
+> 		if (data & ~msr_ent.data)
+> 			return 1;
+> 		...
 > 
-> The first patch re-works slightly the current vmgenid driver to add a
-> function that parses an object from the vmgenid device and returns the
-> physical address of the vmgenid data. The second patch uses that
-> function to parse additionally the address of the generation counter
-> from the vmgenid namespace. The counter is then exposed to the
-> user-space through a misc-device which provides `read` and `mmap`
-> interfaces.
+> then this patch brings a flaw, for example:
+> 
+> a user space can successfully set 0x1 on a host that reports a value of 0x5,
+> which should not happen since the semantics of 0x1 and 0x5 for LBR_FMT
+> may be completely different from the guest LBR driver's perspective.
 
-First, with regards to your mmap interface, it's more likely that this
-kind of thing will be eventually folded into my investigations regarding
-the RNG and the vDSO (which would make this kind of thing accessible
-without needing the file system).
+/facepalm
 
-Regarding the counter itself, I don't want to rush into augmenting the
-vmgenid mechanism until we've had some conversations with Microsoft. But
-also, it seems like you might have missed the extensive previous
-discussion about this. There was some tradeoff in efficiency about
-mapping this all the way through, as doing so would require the counter
-to be in a totally separate page as the main 128-bit ID, versus just
-having the kernel manage a separate counter and incur a potential [maybe
-acceptable? unclear] race.
-
-Jason
+I keep forgetting the caps need to match the host exactly.  Thanks!
