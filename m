@@ -2,91 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0B2C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 12:41:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41486C19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 12:41:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238920AbiHDMlk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 08:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58418 "EHLO
+        id S239211AbiHDMlt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 08:41:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231946AbiHDMli (ORCPT
+        with ESMTP id S239082AbiHDMlm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 08:41:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A86E2AE07
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 05:41:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAF4361758
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 12:41:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33F5EC433D7;
-        Thu,  4 Aug 2022 12:41:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659616897;
-        bh=Dc8h4lXPsmDxSsos/j+7yqEliVIW1p/oerQvtS7WdCg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GRsuPn65ESqnBp32JRUoDmuH6zGlK8xou9hyDdZflWicz2iUIEMP6HkB5NkWtbe/+
-         JWlXBjY7yczQBjyWx6Pft9+ePBzGnA+A68/lMKhv3d5ckL5zq3Yh2S1iS7c7XtH5PL
-         rHlc2GZbYX1lsjUNfLqdWFwhHAHZmAJkoZRLev7SKVHlGlfxdesblmNHkxpNURNwMa
-         ONnKlZzDU1JOAH8AJms/hZqoi4OvJ8RwxTSgm02gxSyPUGR/MuxFjWVpPvn3N7gEOG
-         4kt1RSAYu8ta0fpCR2JXy8G03nMZuzVnuv1LNZRleQv761DhK9hFagSMIBb7kHvxgp
-         KOeh8yDsATBRg==
-Date:   Thu, 4 Aug 2022 13:41:30 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Chunxu Li <chunxu.li@mediatek.com>
-Cc:     pierre-louis.bossart@linux.intel.com,
-        peter.ujfalusi@linux.intel.com, lgirdwood@gmail.com,
-        angelogioacchino.delregno@collabora.com, daniel.baluta@nxp.com,
-        matthias.bgg@gmail.com, yc.hung@mediatek.com,
-        tinghan.shen@mediatek.com, linux-kernel@vger.kernel.org,
-        alsa-devel@alsa-project.org, sound-open-firmware@alsa-project.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        project_global_chrome_upstream_group@mediatek.com
-Subject: Re: [PATCH 2/2] ASoC: SOF: mediatek: Add .of_machine_select field
- for mt8186
-Message-ID: <Yuu+elYxBv3xZ1O2@sirena.org.uk>
-References: <20220804091359.31449-1-chunxu.li@mediatek.com>
- <20220804091359.31449-3-chunxu.li@mediatek.com>
+        Thu, 4 Aug 2022 08:41:42 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EABC2AE3C;
+        Thu,  4 Aug 2022 05:41:41 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id f28so11000441pfk.1;
+        Thu, 04 Aug 2022 05:41:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=Jxp/ZZ2IP/r5wdh/E9VL2sjWN7cCRv4O2EVI3aFNd88=;
+        b=mB1b1iZj1jk6+iE3H8+0/DIUxhsUtKMmi1cUlKktRqiKRdQl6wcVCaH0fxiKE5L1St
+         Oo0ssMdoZK+r/XpROJQAL4ajPnwpPXVyS3osq1JaxsveNY7yOUdGfwwVcgyxRjB/7+rD
+         TatDIZp8jwH4Q892sSBKqahFwQjQh0tcbDYNmkFOpnl+GyaYDpreX6AY0LN/kjjWFVOp
+         KjALY8HLg1vivHOSjiIKxVIuoT/K5JZwwypcojJ/gbMP0ILl+YPZy1lNDvz2V6+ybajI
+         5yjS77Vurc+ZDrE4mltLD27p3SSiNZrMPLy3NaQgwQ2c6Z6lz5tAfKQFxCDcvZoz+4o7
+         K7XA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=Jxp/ZZ2IP/r5wdh/E9VL2sjWN7cCRv4O2EVI3aFNd88=;
+        b=h9zk69+U3nMJjofMCydSWGm8Rz295uBFKGmF7/Xzg68xyzzZ8PazD9dSuX90LlDcB4
+         cuGlEHd9MgOsFOd95b+oUgnzOV6RUkq/6zX5RGeDi6yVxTn9hSmow+JrmYahFmVl+RLB
+         iojKZLiDNSMk64m+ZDakltjeD8TYl7nzTFRNEC1uMIdmqZosY3jwT8OGoDYLlHllcT1Y
+         ewTWyZqBr106JWZepoPp2iC8VRxzFB8NyEpjXfoF9wQJXJqrt4qzPhqxyjwUJWXtToxi
+         vKET+dn91jqfgHV8zxyCWo9iL7ES9E0H99tYOVqVvfIZ3G/HmTIPIZbOy4m/uikVYi7h
+         jlKQ==
+X-Gm-Message-State: ACgBeo0eM7uUYGWwa4NCULvnMpRYCENGNMux2PPR1Wk7p2BlS4aN8YGO
+        D2TPWvH/6Sa71ARNChIAe+6XEFEMJrpOWVA=
+X-Google-Smtp-Source: AA6agR7OCkCZOlQGd61Gl4vRVugbgIJJG5uCOjm6CCDU2oMYjrbQ4/YazeoSktpsodzeVz9eh6wGsg==
+X-Received: by 2002:a05:6a00:1c4b:b0:52e:6c05:8f1f with SMTP id s11-20020a056a001c4b00b0052e6c058f1fmr1746153pfw.7.1659616900533;
+        Thu, 04 Aug 2022 05:41:40 -0700 (PDT)
+Received: from localhost.localdomain ([166.111.133.51])
+        by smtp.gmail.com with ESMTPSA id i8-20020a63bf48000000b0041b672e93c2sm1070769pgo.17.2022.08.04.05.41.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Aug 2022 05:41:40 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     deller@gmx.de, adaplas@gmail.com, santiago@crfreenet.org,
+        akpm@linux-foundation.org
+Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH 0/3] Fix bugs in *_set_par() caused by user input
+Date:   Thu,  4 Aug 2022 20:41:22 +0800
+Message-Id: <20220804124125.3506755-1-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="EPdOmWtiZ4ZH+2f9"
-Content-Disposition: inline
-In-Reply-To: <20220804091359.31449-3-chunxu.li@mediatek.com>
-X-Cookie: Did I say 2?  I lied.
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+In the function *_set_par(), the value of 'screen_size' is
+calculated by the user input. If the user provides the improper value,
+the value of 'screen_size' may larger than 'info->screen_size', which
+may cause a bug in the memset_io().
 
---EPdOmWtiZ4ZH+2f9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Zheyu Ma (3):
+  video: fbdev: vt8623fb: Check the size of screen before memset_io()
+  video: fbdev: arkfb: Check the size of screen before memset_io()
+  video: fbdev: s3fb: Check the size of screen before memset_io()
 
-On Thu, Aug 04, 2022 at 05:13:59PM +0800, Chunxu Li wrote:
+ drivers/video/fbdev/arkfb.c    | 2 ++
+ drivers/video/fbdev/s3fb.c     | 2 ++
+ drivers/video/fbdev/vt8623fb.c | 2 ++
+ 3 files changed, 6 insertions(+)
 
-> +static struct snd_sof_of_mach sof_mt8186_machs[] = {
-> +	{
-> +		.board = "mediatek,mt8186",
-> +		.sof_tplg_filename = "sof-mt8186.tplg",
+-- 
+2.25.1
 
-The mediatek,mt8186 compatible looks like a SoC compatible not a board
-compatible...
-
---EPdOmWtiZ4ZH+2f9
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLrvnoACgkQJNaLcl1U
-h9CJ+wf+NC3QV3rzYT893qKD9jkvsm37SLmwNK0cEbtOpP0ohpK2gakhRwXQzh+B
-/wS1eGl0aXdtaxOkKueZwXQONVV7MsnuxuGXwyHFrcPwfuVICQPm1vQWwSLmBcS/
-iUmtW8SSN++aMZwgYEUAJiFmbMDl5eH/gHTdn9y5dFi+9yQkE2Rw9uieV8eNfrZD
-GBhv0YHtv687Q8VOL3FXafwlw5qruOIUYZ6ixEYoalp/rajx1CNxta++q+nse1KV
-mDHHEdY4xb84FDeKV/VA8UTHICqp6NYIQgLoRyWkk7n1wPEvSebxTpGJJGoBVabe
-RhAhhFa0pZfWYE5UBgEJ9BOpBQCsCw==
-=zf1M
------END PGP SIGNATURE-----
-
---EPdOmWtiZ4ZH+2f9--
