@@ -2,157 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7393C19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 10:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 778ECC19F2C
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 10:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239089AbiHDKz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 06:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45846 "EHLO
+        id S239174AbiHDK4m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 06:56:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238380AbiHDKzw (ORCPT
+        with ESMTP id S239183AbiHDK40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 06:55:52 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C321116D
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 03:55:49 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id tl27so18322279ejc.1
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 03:55:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ce2wN3up1tX8smnqeRp0FZBQrQKCapvS40FaCXtgzDI=;
-        b=RUTIhajFko4zqfu2qCvTEfrs6BI2DFEpl7C5KaqhptXfDG7NoefWq9aBp7AqoRVHow
-         eGxe2BcOLBlJm6InK4R3GY1zzpHGuMw1G+iWniMNITj0c5pX4eFfkMR8xOUheG+KA/k2
-         fvWWyXpJxhyuhj6sNfDWi7g6SjYW6r0V0L4ag/uB6s9OnF+VXsUc37B2hicgu9fZ9Fmi
-         h6etxWwedKazizncHl8/Z+mB7HFnIermHRfHLqSnFUuzSm86URvHF9ThbdttT5d1hpHi
-         DZg/8LRhxeNgs/qhkHGoTBikX7vP3lK00Xa4ZupQptwC6HJePRTxrpZuu8EtarFk28dT
-         0ZgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ce2wN3up1tX8smnqeRp0FZBQrQKCapvS40FaCXtgzDI=;
-        b=6GB1eXp1EylTGttSj9JPr0Gw/r5bceROtKDmzmu99leW8+voM10DarcLKeMAzoA7aT
-         Wgix4u//KERqUD5nD0Uc5GMfQ3Ds8eFpEtgZyun6cakx+1p9DK/GEEUae0Lwsw97SUzu
-         szOxj7sB6OsIZ9lxIS06SyLVmZpvE4V53Wex95Acd50UCmWP+k7NEHMaxA5h8yD2Cpm7
-         tZYQmcdle1eOQwb/akPSeR3UQpnZ97Ul4CLRz6gdDJsVnnvPLCvOIIzTmzZt9tbLoq11
-         9XCuqRT2Y5GqL0xDDFFS9nR7GC2T591gW3YowbTieD2cN09/1XvwjUwgcfZz/1KPLcWp
-         eLcw==
-X-Gm-Message-State: ACgBeo0EEldxf8HMTx8ERj3IhvNQ1qb6MIjd0sOVkJop91rVfftFOuQV
-        xKHFWVj0nWol9l9kYZa+VhY=
-X-Google-Smtp-Source: AA6agR5RECceYtuALfh0gjI+JiMeqEY/3WAH4FahaWMKzXmO6/eBdFz+LEBUVCde/n2r9FIQ1pNQSg==
-X-Received: by 2002:a17:907:1c24:b0:72b:838f:cada with SMTP id nc36-20020a1709071c2400b0072b838fcadamr992852ejc.125.1659610548401;
-        Thu, 04 Aug 2022 03:55:48 -0700 (PDT)
-Received: from localhost.localdomain (ip5f5abba5.dynamic.kabel-deutschland.de. [95.90.187.165])
-        by smtp.gmail.com with ESMTPSA id y89-20020a50bb62000000b0043ba0cf5dbasm510013ede.2.2022.08.04.03.55.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Aug 2022 03:55:48 -0700 (PDT)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 1/2] staging: r8188eu: make handle_txrpt_ccx_88e() static
-Date:   Thu,  4 Aug 2022 12:55:31 +0200
-Message-Id: <20220804105532.7532-2-straube.linux@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220804105532.7532-1-straube.linux@gmail.com>
-References: <20220804105532.7532-1-straube.linux@gmail.com>
+        Thu, 4 Aug 2022 06:56:26 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5ED13E33;
+        Thu,  4 Aug 2022 03:56:25 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 84CC520EDD;
+        Thu,  4 Aug 2022 10:56:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1659610583; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mlktYDm7Q9WWK6B+W/bogBPhH4hH8aSA3B4MxQAXBh8=;
+        b=TPP8b3t9rP/4eLEeZXO6gehvwrqcL7GwZPmNp1ThS0tbE/j1542zCGpq07mMbmExjzmwlX
+        lXfgzuJ0CY6iYJqXmo4ApAu9S70VWGRjriAiRy5aI4x0SlodVrU8dHzjD3ON/ppZumNNz6
+        +x3nxSFky7Yjy+JgErlSstlF1EA2l8I=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1659610583;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mlktYDm7Q9WWK6B+W/bogBPhH4hH8aSA3B4MxQAXBh8=;
+        b=o817tBQaO2BN6keT74Cjjte1SJotvXncGsbi9oVX1SnL7Y2Brd2tIf1H/kzQQWeXDBGYly
+        BMVwf/IvHGGT+ZCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 06ED513A94;
+        Thu,  4 Aug 2022 10:56:23 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id YtDiANel62J/GwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 04 Aug 2022 10:56:23 +0000
+Message-ID: <5c6e8435-22bb-234a-87a1-96c9f4e93dc9@suse.cz>
+Date:   Thu, 4 Aug 2022 12:56:22 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.3
+Subject: Re: [PATCH Part2 v6 27/49] KVM: SVM: Mark the private vma unmerable
+ for SEV-SNP guests
+Content-Language: en-US
+To:     Ashish Kalra <Ashish.Kalra@amd.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        linux-crypto@vger.kernel.org
+Cc:     tglx@linutronix.de, mingo@redhat.com, jroedel@suse.de,
+        thomas.lendacky@amd.com, hpa@zytor.com, ardb@kernel.org,
+        pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
+        jmattson@google.com, luto@kernel.org, dave.hansen@linux.intel.com,
+        slp@redhat.com, pgonda@google.com, peterz@infradead.org,
+        srinivas.pandruvada@linux.intel.com, rientjes@google.com,
+        dovmurik@linux.ibm.com, tobin@ibm.com, bp@alien8.de,
+        michael.roth@amd.com, kirill@shutemov.name, ak@linux.intel.com,
+        tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com, alpergun@google.com,
+        dgilbert@redhat.com, jarkko@kernel.org
+References: <cover.1655761627.git.ashish.kalra@amd.com>
+ <bb10f0a4c5eb13a5338f77ef34f08f1190d4ae30.1655761627.git.ashish.kalra@amd.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <bb10f0a4c5eb13a5338f77ef34f08f1190d4ae30.1655761627.git.ashish.kalra@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function handle_txrpt_ccx_88e() is only used in usb_ops_linux.c.
-Make it static and remove the now empty file rtl8188e_xmit.c.
+On 6/21/22 01:08, Ashish Kalra wrote:
+> From: Brijesh Singh <brijesh.singh@amd.com>
+> 
+> When SEV-SNP is enabled, the guest private pages are added in the RMP
+> table; while adding the pages, the rmp_make_private() unmaps the pages
+> from the direct map. If KSM attempts to access those unmapped pages then
+> it will trigger #PF (page-not-present).
+> 
+> Encrypted guest pages cannot be shared between the process, so an
+> userspace should not mark the region mergeable but to be safe, mark the
+> process vma unmerable before adding the pages in the RMP table.
+> 
+> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
----
- drivers/staging/r8188eu/Makefile              |  1 -
- drivers/staging/r8188eu/hal/rtl8188e_xmit.c   | 22 -------------------
- drivers/staging/r8188eu/hal/usb_ops_linux.c   | 14 ++++++++++++
- .../staging/r8188eu/include/rtl8188e_xmit.h   |  2 --
- 4 files changed, 14 insertions(+), 25 deletions(-)
- delete mode 100644 drivers/staging/r8188eu/hal/rtl8188e_xmit.c
+Note this doesn't really mark the vma unmergeable, rather it unmarks it as
+mergeable, and unmerges any already merged pages.
+Which seems like a good idea. Is snp_launch_update() the only place that
+needs it or can private pages be added elsewhere too?
 
-diff --git a/drivers/staging/r8188eu/Makefile b/drivers/staging/r8188eu/Makefile
-index eea16eb7caa0..cddfee3efd36 100644
---- a/drivers/staging/r8188eu/Makefile
-+++ b/drivers/staging/r8188eu/Makefile
-@@ -18,7 +18,6 @@ r8188eu-y = \
- 		hal/rtl8188e_phycfg.o \
- 		hal/rtl8188e_rf6052.o \
- 		hal/rtl8188e_rxdesc.o \
--		hal/rtl8188e_xmit.o \
- 		hal/rtl8188eu_recv.o \
- 		hal/rtl8188eu_xmit.o \
- 		hal/usb_halinit.o \
-diff --git a/drivers/staging/r8188eu/hal/rtl8188e_xmit.c b/drivers/staging/r8188eu/hal/rtl8188e_xmit.c
-deleted file mode 100644
-index 46b871f3f631..000000000000
---- a/drivers/staging/r8188eu/hal/rtl8188e_xmit.c
-+++ /dev/null
-@@ -1,22 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/* Copyright(c) 2007 - 2011 Realtek Corporation. */
--
--#define _RTL8188E_XMIT_C_
--
--#include "../include/osdep_service.h"
--#include "../include/drv_types.h"
--#include "../include/rtl8188e_hal.h"
--
--void handle_txrpt_ccx_88e(struct adapter *adapter, u8 *buf)
--{
--	struct txrpt_ccx_88e *txrpt_ccx = (struct txrpt_ccx_88e *)buf;
--
--	if (txrpt_ccx->int_ccx) {
--		if (txrpt_ccx->pkt_ok)
--			rtw_ack_tx_done(&adapter->xmitpriv,
--					RTW_SCTX_DONE_SUCCESS);
--		else
--			rtw_ack_tx_done(&adapter->xmitpriv,
--					RTW_SCTX_DONE_CCX_PKT_FAIL);
--	}
--}
-diff --git a/drivers/staging/r8188eu/hal/usb_ops_linux.c b/drivers/staging/r8188eu/hal/usb_ops_linux.c
-index c1a4d023f627..f29bfa948ce7 100644
---- a/drivers/staging/r8188eu/hal/usb_ops_linux.c
-+++ b/drivers/staging/r8188eu/hal/usb_ops_linux.c
-@@ -190,6 +190,20 @@ int rtw_writeN(struct adapter *adapter, u32 addr, u32 length, u8 *data)
- 	return RTW_STATUS_CODE(ret);
- }
- 
-+static void handle_txrpt_ccx_88e(struct adapter *adapter, u8 *buf)
-+{
-+	struct txrpt_ccx_88e *txrpt_ccx = (struct txrpt_ccx_88e *)buf;
-+
-+	if (txrpt_ccx->int_ccx) {
-+		if (txrpt_ccx->pkt_ok)
-+			rtw_ack_tx_done(&adapter->xmitpriv,
-+					RTW_SCTX_DONE_SUCCESS);
-+		else
-+			rtw_ack_tx_done(&adapter->xmitpriv,
-+					RTW_SCTX_DONE_CCX_PKT_FAIL);
-+	}
-+}
-+
- static int recvbuf2recvframe(struct adapter *adapt, struct sk_buff *pskb)
- {
- 	u8	*pbuf;
-diff --git a/drivers/staging/r8188eu/include/rtl8188e_xmit.h b/drivers/staging/r8188eu/include/rtl8188e_xmit.h
-index 8adb672f7a07..c69fed23ded9 100644
---- a/drivers/staging/r8188eu/include/rtl8188e_xmit.h
-+++ b/drivers/staging/r8188eu/include/rtl8188e_xmit.h
-@@ -147,6 +147,4 @@ bool rtl8188eu_xmitframe_complete(struct adapter *padapter,
- 				 struct xmit_priv *pxmitpriv,
- 				 struct xmit_buf *pxmitbuf);
- 
--void handle_txrpt_ccx_88e(struct adapter *adapter, u8 *buf);
--
- #endif /* __RTL8188E_XMIT_H__ */
--- 
-2.37.1
+However, AFAICS nothing stops userspace to do another
+madvise(MADV_MERGEABLE) afterwards, so we should make somehow sure that ksm
+will still be prevented, as we should protect the kernel even from a buggy
+userspace. So either we stop it with a flag at vma level (see ksm_madvise()
+for which flags currently stop it), or page level - currently only
+PageAnon() pages are handled. The vma level is probably easier/cheaper.
+
+It's also possible that this will solve itself with the switch to UPM as
+those vma's or pages might be incompatible with ksm naturally (didn't check
+closely), and then this patch can be just dropped. But we should double-check.
 
