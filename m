@@ -2,95 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F9A6C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 18:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D914DC19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 18:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239738AbiHDSGq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 14:06:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
+        id S239811AbiHDSG4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 14:06:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239732AbiHDSGn (ORCPT
+        with ESMTP id S239744AbiHDSGu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 14:06:43 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC16F6BD5E
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 11:06:42 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id g5so273454ybg.11
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 11:06:42 -0700 (PDT)
+        Thu, 4 Aug 2022 14:06:50 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 708A76BD6B;
+        Thu,  4 Aug 2022 11:06:49 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id r11so176722qkm.7;
+        Thu, 04 Aug 2022 11:06:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=W5vtOsGoRNFUeWobww4WWm+woSsVgSrVSuurs+lnPco=;
-        b=Q4OVg/NCWfPBpO0ZwT+yZpjwRI5Ie989Hve6f+OWo+s3Asy9HPU46cI5AIaTJdwuNj
-         NjmBa5dIdzN0o/iUiosBRTX85lzcOmurw8yGwJzgJkPQYVw10FbxjXSrGeKDmqs0BXYf
-         n6ePRZze6YOK4/F60l5ES0L2Wro7NL1X+FOQnKyjwlB+EivnOGXcPo2dSwVzqjG7lgve
-         Duwd+X0N+MA4+cwin9Ls9y894QMToWhZ5iz6qpEv0WfnHjVAkUdXPUZKMTwIQvZEa1Qj
-         5/AL2iZPzqcNSvCTmTlpPAZ0uSVVrU/53dFvYKzwaEVDbsjhh9RPBE1UGMJuMEFgCcSG
-         vYDg==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=y3+JykshimcRvVUYlZhe+TenGi8byAV3WGSAtjZy0eA=;
+        b=YSs45KNCZLfu4uJuUtGczuTH/TEv4YlnE6oTTVSDHua/Uql+ECewIwQH9+902neCcb
+         rCjhq15b0NJS2b+rfv5kLrlKH+Dj+DXh8GbfUH/Rfa2+C/29JuO4Yzq4Kv1iCx8vU8gq
+         +AngSNd4n56L1F6oSKR8o6UMIkO7zdOhigt2TanGCo5ZzO1BLwz0LlOHsohfJZDcPrcC
+         PqXw0OGv67dYKoZOjv07MdwScHcRxJGUcDIiFZHRFYBowuOlhF9TwJZEaZOBtvyODgix
+         OeYkGgNhA8LXJXVJ1ag3acbyUvWyhoM4h59zPvkA6FF0mof2zoFxM84Rkz/p8Hg//z3m
+         ySCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=W5vtOsGoRNFUeWobww4WWm+woSsVgSrVSuurs+lnPco=;
-        b=X8lhYf3lf51mbF4A586RTCtJ/kT8jiyLqNa/qYW6K4lOMqOOLO2sJIQ+hsBbejrH+U
-         KKnJvuTovwHTQc6n5ePzPRFdFgjWbyHgJ/W4SL5PWJUQGlgtyjzL+4HDzhGdvx72r2F7
-         /wuyfP6YwMo10qsn9uJIjOhrAuf7gSupkk1KJFdwSqgB89ZuBafqeXndKALsU2j+jvIX
-         dS+Ja4Sp9EttTJBG1bSmNRtq9aYWEoooVhphziuRKdZGUnEvFgZD5Kak7v3G38OVE3Dt
-         6mGaLEIo6FHROpe0dzab/+GOQFTquuPxAuNHY1gv6SzXT1dYNrN/+1vMww2AryKr60L0
-         PiAg==
-X-Gm-Message-State: ACgBeo1OdKRH0tPFjHpRRjyKBe1S567tsTnQfRq/6DIZznI9Ay6X1tAt
-        Mnily/O+Jow73SuZiLBSPv8ksrayQk32iDjUMpw=
-X-Google-Smtp-Source: AA6agR57/OeeTbYU5ZkJThBEpdOtwXIQZvZCIqiQ04Q1TZ4ctcZEEhntZH9Yy6UT9m1c3NZp2bWN9S5OdB1CpEm2Tx4=
-X-Received: by 2002:a25:508b:0:b0:672:e8af:3bfe with SMTP id
- e133-20020a25508b000000b00672e8af3bfemr2283126ybb.106.1659636401974; Thu, 04
- Aug 2022 11:06:41 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=y3+JykshimcRvVUYlZhe+TenGi8byAV3WGSAtjZy0eA=;
+        b=J95HNoyaUuoJ6cHTUJSRJosa9H4YG0uzMO1X8KhIg2XzRcxMk/MIgZpCDBnR/uPTVQ
+         OYP4GibANtOYcjTf21Y4/aJNaKmQOwj3S3AAoTaVsRDhpPS+5MceegbOCj+5nxmydZtf
+         3eQnC6UcPVltDQ/7fA3Hu1uJfCqPUmQDEuEWvMc+vRiUYP07y/WkqN1S7Gv4tseSo0Kp
+         cw6q8zgdxJhs4bgTol4JPgGrUtdfqcLhpS1WrpPz7HqtKu/JoVsMGxDgTfDjSiZxK6o+
+         zrfsY83it7zzaxoiFSrrJWKdClVFDeny8NyW92fYJ2C6JDscS0Cy/Ozw7+y8TO80Crc3
+         TZFQ==
+X-Gm-Message-State: ACgBeo25sA4LOc59A35duzUh1NfovApKRk0SwTO314GuT1D4c4GYNFiU
+        /QlU4fcWaOaM8YlVNu53ZDs=
+X-Google-Smtp-Source: AA6agR4Bnk+RQQz36m5puIvy9vdqcx4tDaJ7i51taW4+0gFJ0meiPCeayKXoHUijH/Q4K/6cb6OAtg==
+X-Received: by 2002:a05:620a:bcc:b0:6b8:60f0:f419 with SMTP id s12-20020a05620a0bcc00b006b860f0f419mr2375002qki.157.1659636408364;
+        Thu, 04 Aug 2022 11:06:48 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id x8-20020a05620a258800b006b5e45ff82csm1175635qko.93.2022.08.04.11.06.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Aug 2022 11:06:47 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     bcm-kernel-feedback-list@broadcom.com,
+        William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     kursad.oney@broadcom.com, dan.beygelman@broadcom.com,
+        anand.gore@broadcom.com, joel.peshkin@broadcom.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] ARM: dts: bcmbca: bcm6846: fix timer node cpu mask flag
+Date:   Thu,  4 Aug 2022 11:06:44 -0700
+Message-Id: <20220804180644.1339317-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220801194647.29437-1-william.zhang@broadcom.com>
+References: <20220801194647.29437-1-william.zhang@broadcom.com>
 MIME-Version: 1.0
-References: <Yut2otE1h2xtC79o@debian> <CAHk-=wjPF0dXvDeqPiSzpev4KhhWU0-R8muaYVF73vy2Vw=QTw@mail.gmail.com>
-In-Reply-To: <CAHk-=wjPF0dXvDeqPiSzpev4KhhWU0-R8muaYVF73vy2Vw=QTw@mail.gmail.com>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Thu, 4 Aug 2022 19:06:05 +0100
-Message-ID: <CADVatmOTkf1LfC0teDe8OLm6+Ctm28TWvefRM=frf+aB_seSKw@mail.gmail.com>
-Subject: Re: mainline build failure due to 6fdd2077ec03 ("drm/amd/amdgpu: add
- memory training support for PSP_V13")
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Chengming Gui <Jack.Gui@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        amd-gfx mailing list <amd-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 4, 2022 at 6:17 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Thu, Aug 4, 2022 at 12:35 AM Sudip Mukherjee (Codethink)
-> <sudipm.mukherjee@gmail.com> wrote:
-> >
-> > I will be happy to test any patch or provide any extra log if needed.
->
-> It sounds like that file just needs to get a
->
->     #include <linux/vmalloc.h>
->
-> there, and for some reason architectures other than alpha and mips end
-> up getting it accidentally through other headers.
->
-> Mind testing just adding that header file, and perhaps even sending a
-> patch if (when) that works for you?
+On Mon,  1 Aug 2022 12:46:45 -0700, William Zhang <william.zhang@broadcom.com> wrote:
+> The cpu mask flag value should match the number of cpu cores in the
+> chip. Correct the value to two cpus for BCM6846 dual core SoC.
+> 
+> Fixes: de1a99ac0b64 ("ARM: dts: Add DTS files for bcmbca SoC BCM6846")
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+> ---
 
-Tested on alpha allmodconfig, that worked.
-And also sent the patch.
-
-
+Applied to https://github.com/Broadcom/stblinux/commits/devicetree/fixes, thanks!
 --
-Regards
-Sudip
+Florian
