@@ -2,151 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA8CC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 01:34:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A1CFC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 01:36:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238930AbiHDBe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 21:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
+        id S238946AbiHDBgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 21:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229728AbiHDBez (ORCPT
+        with ESMTP id S229728AbiHDBgV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 21:34:55 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2695B7AB;
-        Wed,  3 Aug 2022 18:34:53 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lyrmh1qjmzjXSw;
-        Thu,  4 Aug 2022 09:31:48 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 4 Aug 2022 09:34:51 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 4 Aug 2022 09:34:50 +0800
-Subject: Re: [PATCH v3 1/3] rcu/exp: Use NMI to get the backtrace of
- cpu_curr(other_cpu) first
-To:     <paulmck@kernel.org>
-CC:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>,
-        "Mel Gorman" <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        <linux-kernel@vger.kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        "Mathieu Desnoyers" <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>, <rcu@vger.kernel.org>
-References: <20220730102330.1255-1-thunder.leizhen@huawei.com>
- <20220730102330.1255-2-thunder.leizhen@huawei.com>
- <20220801231415.GC2860372@paulmck-ThinkPad-P17-Gen-1>
- <1fd08a9a-fd2b-2608-da55-5bc526515131@huawei.com>
- <20220804000700.GM2125313@paulmck-ThinkPad-P17-Gen-1>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <c8d7a8e1-6372-f81c-e2a8-936692fb44d8@huawei.com>
-Date:   Thu, 4 Aug 2022 09:34:50 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        Wed, 3 Aug 2022 21:36:21 -0400
+X-Greylist: delayed 419 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 03 Aug 2022 18:36:19 PDT
+Received: from proxmox1.postmarketos.org (proxmox1.postmarketos.org [IPv6:2a01:4f8:a0:821d::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C2D720BD7;
+        Wed,  3 Aug 2022 18:36:19 -0700 (PDT)
+Received: from [192.168.20.102] (unknown [77.239.252.99])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by proxmox1.postmarketos.org (Postfix) with ESMTPSA id 1C9D514015B;
+        Thu,  4 Aug 2022 01:29:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=postmarketos.org;
+        s=donut; t=1659576558;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nRaqQSwJE0HG3dU4ptJs4IAer95j88GgLQPrsa6QiKQ=;
+        b=yqIm8IT+tVTcypMS/waMqRVq2pDNsPD5JJrWicP0sd46VynMJL5Z3Rmt7mxIZYqhn9GJwX
+        YZ6AknPi0KgiKLUVYGGi9fzCmn4CUjMig4BdMF3Z8ij8YGd9lCQVsr2PMoqK7je7K6PVtd
+        EE7nWOy8JgbrqmshX6Vr4dhH+90anyI=
+Message-ID: <f66c2053-74bd-04fb-13e4-8eeb7f426608@postmarketos.org>
+Date:   Thu, 4 Aug 2022 04:29:17 +0300
 MIME-Version: 1.0
-In-Reply-To: <20220804000700.GM2125313@paulmck-ThinkPad-P17-Gen-1>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] clk: qcom: gcc-sdm660: Use floor ops for SDCC1 clock
 Content-Language: en-US
+To:     Marijn Suijten <marijn.suijten@somainline.org>,
+        phone-devel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Taniya Das <tdas@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220714203822.186448-1-marijn.suijten@somainline.org>
+From:   Alexey Minnekhanov <alexeymin@postmarketos.org>
+In-Reply-To: <20220714203822.186448-1-marijn.suijten@somainline.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 7/14/22 23:38, Marijn Suijten wrote:
+> In commit 3f905469c8ce ("clk: qcom: gcc: Use floor ops for SDCC clocks")
+> floor ops were applied to SDCC2 only, but flooring is also required on
+> the SDCC1 apps clock which is used by the eMMC card on Sony's Nile
+> platform, and otherwise result in the typicial "Card appears
+> overclocked" warnings observed on many other platforms before:
+> 
+>      mmc0: Card appears overclocked; req 52000000 Hz, actual 100000000 Hz
+>      mmc0: Card appears overclocked; req 52000000 Hz, actual 100000000 Hz
+>      mmc0: Card appears overclocked; req 104000000 Hz, actual 192000000 Hz
+> 
+> Fixes: f2a76a2955c0 ("clk: qcom: Add Global Clock controller (GCC) driver for SDM660")
+> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+>
 
+Tried this on my SDM660 xiaomi-lavender, warnings are gone, thanks!
 
-On 2022/8/4 8:07, Paul E. McKenney wrote:
-> On Tue, Aug 02, 2022 at 10:06:00AM +0800, Leizhen (ThunderTown) wrote:
->>
->>
->> On 2022/8/2 7:14, Paul E. McKenney wrote:
->>> On Sat, Jul 30, 2022 at 06:23:28PM +0800, Zhen Lei wrote:
->>>> The backtrace of cpu_curr(other_cpu) is unwinded based on the 'fp' saved
->>>> during its last switch-out. For the most part, it's out of date. So try
->>>> to use NMI to get the backtrace first, just like those functions in
->>>> "tree_stall.h" did. Such as rcu_dump_cpu_stacks().
->>>>
->>>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
->>>
->>> Much better, thank you!
->>>
->>>> ---
->>>>  kernel/rcu/tree_exp.h | 3 ++-
->>>>  1 file changed, 2 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
->>>> index 0f70f62039a9090..21381697de23f0b 100644
->>>> --- a/kernel/rcu/tree_exp.h
->>>> +++ b/kernel/rcu/tree_exp.h
->>>> @@ -665,7 +665,8 @@ static void synchronize_rcu_expedited_wait(void)
->>>>  				mask = leaf_node_cpu_bit(rnp, cpu);
->>>>  				if (!(READ_ONCE(rnp->expmask) & mask))
->>>>  					continue;
->>>> -				dump_cpu_task(cpu);
->>>> +				if (!trigger_single_cpu_backtrace(cpu))
->>>> +					dump_cpu_task(cpu);
->>>
->>> But why not just leave this unchanged, rather than adding the call to
->>> trigger_single_cpu_backtrace() in this patch and then removing it in
->>> the next patch?
->>
->> To make the patch clear and easy to describe. Otherwise, I need to
->> give an additional description of it in the next patch, because I
->> searched all dump_cpu_task(). This seems to make the next patch
->> less simple.
->>
->> Some of the patch sets I've seen have been done step by step like
->> this. But I can't find it now.
->>
->> On the other hand, this patch is a small fix. Earlier versions may
->> only backport it, not the next cleanup patch.
-> 
-> You do have the option of doing a Cc to stable to control the backporting,
-> if that is a potential issue for you.
-> 
-> On the commit log, just say that the one use case already avoided doing
-> the trigger_single_cpu_backtrace(), and thus did not need to be updated.
-> 
-> So please resend the series, but without the undo/redo.  There would
-> thus be two patches rather than three, but there are plenty of other
-> things that need fixing anyway.
-
-OK, thanks.
-
-> 
-> 							Thanx, Paul
-> 
->>>>  			}
->>>>  		}
->>>>  		jiffies_stall = 3 * rcu_exp_jiffies_till_stall_check() + 3;
->>>> -- 
->>>> 2.25.1
->>>>
->>> .
->>>
->>
->> -- 
->> Regards,
->>   Zhen Lei
-> .
-> 
-
--- 
-Regards,
-  Zhen Lei
+Tested-by: Alexey Minnekhanov <alexeymin@postmarketos.org>
