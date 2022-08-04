@@ -2,91 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5112DC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D6EC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:38:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239467AbiHDOhb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 10:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49736 "EHLO
+        id S239650AbiHDOiu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 10:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239988AbiHDOhC (ORCPT
+        with ESMTP id S240032AbiHDOiL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 10:37:02 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7CCD52475
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 07:36:57 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3F16C1480;
-        Thu,  4 Aug 2022 07:36:58 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.57.10.177])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 142293F73B;
-        Thu,  4 Aug 2022 07:36:55 -0700 (PDT)
-From:   Qais Yousef <qais.yousef@arm.com>
-To:     Ingo Molnar <mingo@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc:     linux-kernel@vger.kernel.org, Xuewen Yan <xuewen.yan94@gmail.com>,
-        Lukasz Luba <lukasz.luba@arm.com>, Wei Wang <wvw@google.com>,
-        Jonathan JMChen <Jonathan.JMChen@mediatek.com>,
-        Hank <han.lin@mediatek.com>, Qais Yousef <qais.yousef@arm.com>
-Subject: [PATCH v2 9/9] sched/fair: Consider capacity inversion in util_fits_cpu()
-Date:   Thu,  4 Aug 2022 15:36:09 +0100
-Message-Id: <20220804143609.515789-10-qais.yousef@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220804143609.515789-1-qais.yousef@arm.com>
-References: <20220804143609.515789-1-qais.yousef@arm.com>
+        Thu, 4 Aug 2022 10:38:11 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC35A4C627
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 07:38:00 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id w29so14982250qtv.9
+        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 07:38:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=7+IHbVKhZDeIBaRjLawIcx6LVul+QTItAJZIivf7gqY=;
+        b=ufg49NFoFDlcynz7pWTVmRZhy3xSI5kCn759tZ9vmnuuILMCnEORQp/wBS20nhayS0
+         0V/i9wvAy3/uIPea3V1Dc3KE6RFzKLuc6hvXJCqHND9c6lE2XyrjkibgMVbhDeCn1v2R
+         gyUSdh5efbQF1Kfqv/rldgMScFGi1Zexm0JHNJFrnmsrmNTcqvJkS+57bkDuzgzP49qa
+         9fpV2hKosk1g95G4qPSblTffq9M3wpMi/Fp/BVJkOYDM++1irp2TinOWITa9Hh41mj1e
+         Md8QcHg4Gk2QOv3qB75ic5zv5DgccD9sqiLfEBzzfZ6NHDB5JxQX5smDIAnM9m40i0vL
+         VmvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=7+IHbVKhZDeIBaRjLawIcx6LVul+QTItAJZIivf7gqY=;
+        b=3hf0fCxTC8Wxd5IEZht6wO52ONUxXsGSwFEj2jPIp4BHR4s6YLGE8G32V9WjuUKiel
+         jzzfYZJPweSFsZqXt85C/+M5HdCYZXjS4qoTFV8Ko/E350cpiTM+aoTz4hYOcCTQVMXb
+         X+C+ZNxEPLVcQfKBiDjcWFYa8lgFboFl1gz5ntXQLvmrg+qCtjLhriUXO3dDwC/t+HYl
+         ZDBC9OKv5kSOYG7T1DepnddbrMnomuYBs5EKv1YsYdSqx2re0+Thd2AiD4Qty8dI/Kts
+         GP+ScGVGyqXLgsyrXxMqBqHBN72vNbqa/Gnjtu3XeuzuRE90qsPSS7Tzmj3ly/LEi13Z
+         lzLQ==
+X-Gm-Message-State: ACgBeo0FAxojMHzIKVw+m4wnUGHyboJH6vrU8gKqNX377g2ZfDevKgXg
+        /Fu6BagFDkv9C5d5hZbdnw0gH1+m65qoxORn7l3HMg==
+X-Google-Smtp-Source: AA6agR4WNXQ2KgIruLMHS5Z92OaFYRF1mhbz0dJnN3rCVTFktyanCvf1eGyY73ch+e2FzcsIKbVSG1MHLbE2q7LsGcE=
+X-Received: by 2002:ac8:5942:0:b0:31f:39f6:aba7 with SMTP id
+ 2-20020ac85942000000b0031f39f6aba7mr1755983qtz.295.1659623879819; Thu, 04 Aug
+ 2022 07:37:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220804103456.3176943-1-abel.vesa@linaro.org>
+In-Reply-To: <20220804103456.3176943-1-abel.vesa@linaro.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Thu, 4 Aug 2022 17:37:48 +0300
+Message-ID: <CAA8EJpoYrXNBeZfDTAmjhsHaMqO+jeUVt4BtQkKy=T7Q0EuH8A@mail.gmail.com>
+Subject: Re: [RFC] clk: qcom: common: Detach the power domain at the end of probe
+To:     Abel Vesa <abel.vesa@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Mike Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We do consider thermal pressure in util_fits_cpu() for uclamp_min only.
-With the exception of the biggest cores which by definition are the max
-performance point of the system and all tasks by definition should fit.
+On Thu, 4 Aug 2022 at 13:35, Abel Vesa <abel.vesa@linaro.org> wrote:
+>
+> None of the CCs actually need the PD attached to their device,
+> but rather some GDSCs registered by those CCs need that PD as a parent
+> in order to propagate power gating and the performance state.
+>
+> So lets detach the PD from the CC right at the end of probe, after
+> everything has been successfully set up.
 
-Even under thermal pressure, the capacity of the biggest CPU is the
-highest in the system and should still fit every task. Except when it
-reaches capacity inversion point, then this is no longer true.
+Would it still be possible to read the clock registers if we detach
+the device from the domain?
+I think it was the original issue behind putting the dispcc/videocc
+into the MMCX domain: to be able to poke into the clock registers,
+which are gated by the MMCX.
 
-We can handle this by using the inverted capacity as capacity_orig in
-util_fits_cpu(). Which not only addresses the problem above, but also
-ensure uclamp_max now considers the inverted capacity. Force fitting
-a task when a CPU is in this adverse state will contribute to making the
-thermal throttling last longer.
 
-Signed-off-by: Qais Yousef <qais.yousef@arm.com>
----
- kernel/sched/fair.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+> Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index cb32dc9a057f..77ae343e32a3 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -4293,12 +4293,16 @@ static inline int util_fits_cpu(unsigned long util,
- 	 * For uclamp_max, we can tolerate a drop in performance level as the
- 	 * goal is to cap the task. So it's okay if it's getting less.
- 	 *
--	 * In case of capacity inversion, which is not handled yet, we should
--	 * honour the inverted capacity for both uclamp_min and uclamp_max all
--	 * the time.
-+	 * In case of capacity inversion we should honour the inverted capacity
-+	 * for both uclamp_min and uclamp_max all the time.
- 	 */
--	capacity_orig = capacity_orig_of(cpu);
--	capacity_orig_thermal = capacity_orig - arch_scale_thermal_pressure(cpu);
-+	capacity_orig = cpu_in_capacity_inversion(cpu);
-+	if (capacity_orig) {
-+		capacity_orig_thermal = capacity_orig;
-+	} else {
-+		capacity_orig = capacity_orig_of(cpu);
-+		capacity_orig_thermal = capacity_orig - arch_scale_thermal_pressure(cpu);
-+	}
- 
- 	/*
- 	 * We want to force a task to fit a cpu as implied by uclamp_max.
+
 -- 
-2.25.1
-
+With best wishes
+Dmitry
