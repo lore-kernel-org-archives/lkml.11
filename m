@@ -2,154 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C7B9C19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 10:00:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A6EC19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 10:04:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239300AbiHDKAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 06:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42846 "EHLO
+        id S239338AbiHDKEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 06:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239444AbiHDKAN (ORCPT
+        with ESMTP id S231266AbiHDKEG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 06:00:13 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D96CD6
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 03:00:12 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id p8so18844350plq.13
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 03:00:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=xEcIvnsbZUdlFBjyUR9fIf/N3w9Hl5PIUeXssxyl3nU=;
-        b=BrmNKweclJGGnTyk8LTo2IlzmSWZIdEI3A5CI74mxEW5hGv3nV3kNpXiCMqPjDrM9b
-         elTr+PgPu0j25KT+BXUvp1o8benxSLDUXBtAWzG+2fRCAyY0uFyHqo3eN1bduOoj0ZaE
-         4RTS5BjxcmmgMa79sxR3ryi+J1JFiePAm0+dxYmygIOgoVoYPPrwS7IlACmqbomr439e
-         Du4KVsmfunB0TBHvOMtxtdhhxlLnOtMl00RjUIRiSUsXfB1qQOcEfgs8+vVPFX1VZEeh
-         puvzKZxHT5uBsG/m6o/PSxnZtCUo9twYE6PdxVaQrMENHai04FPDVBI2Rt7a/HQQsiAB
-         OTpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=xEcIvnsbZUdlFBjyUR9fIf/N3w9Hl5PIUeXssxyl3nU=;
-        b=GvSDDLDibkYI/g2fDYRy6pPM2Vs3sSRdeIytbgpRq7c8DGI3CiQ1Ya90ELVKgu3Zq7
-         XJGW2N0oWB5z4FaN3A2Edrfo4LsIKLDOi6//oFC6ih2E0iHTZlbLQ1YtMQi4yPwglHXu
-         KswaBMuUa2c+tJ+e4A1XnR+29oYs8ErwPjcEOIUsVkOCTpzC4umnbcZpOeRf9TTqdAXu
-         OAKL19tBRqRYaqMKIuPiQf7aXNMEYlw1fs8oX6a5wTdoK2xcHFl2Dtoh10+PwGsJUDab
-         wVjzGF9KskWprM8YnPXzNX209kEzhYfGQ1ob4EZFcNj/sXFCMoX/guisDn2jSjVYz6VD
-         GPUQ==
-X-Gm-Message-State: ACgBeo2/y30olafNu9XjW+vkxiNyMC+3SEx5WpmTe9OrfIu9LljhDui5
-        t1nfwluPS40tA0eCoJTp3FCwGl0oHLYiEtdRFpQ=
-X-Google-Smtp-Source: AA6agR6Zdj2hsmBo/hkifFtUIwMKR1IUkjwsS+vUGU5/tUea/PuIuiut51yMGLuy/91oGE8CBPjmJzLfUBYiLIG2hNg=
-X-Received: by 2002:a17:902:c406:b0:16e:df76:5267 with SMTP id
- k6-20020a170902c40600b0016edf765267mr1204050plk.8.1659607211344; Thu, 04 Aug
- 2022 03:00:11 -0700 (PDT)
+        Thu, 4 Aug 2022 06:04:06 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4F96435;
+        Thu,  4 Aug 2022 03:04:04 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1oJXhi-007m61-LH; Thu, 04 Aug 2022 20:03:47 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Thu, 04 Aug 2022 18:03:46 +0800
+Date:   Thu, 4 Aug 2022 18:03:46 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Abhishek Shah <abhishek.shah@columbia.edu>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        steffen.klassert@secunet.com, linux-kernel@vger.kernel.org,
+        Gabriel Ryan <gabe@cs.columbia.edu>,
+        Fan Du <fan.du@windriver.com>,
+        Steffen Klassert <klassert@kernel.org>
+Subject: [PATCH] af_key: Do not call xfrm_probe_algs in parallel
+Message-ID: <YuuZgsdmJK8roKLD@gondor.apana.org.au>
+References: <CAEHB24-9hXY+TgQKxJB4bE9a9dFD9C+Lan+ShBwpvwaHVAGMFg@mail.gmail.com>
+ <YtoWqEkKzvimzWS5@gondor.apana.org.au>
+ <CAEHB249ygptvp9wpynMF7zZ2Kcet0+bwLVuVg5UReZHOU1+8HA@mail.gmail.com>
+ <YuNGR/5U5pSo6YM3@gondor.apana.org.au>
 MIME-Version: 1.0
-References: <20220712082036.5130-1-wuyun.abel@bytedance.com>
- <20220712082036.5130-2-wuyun.abel@bytedance.com> <8e7d75d4-613e-f35e-e932-323789666fb1@huawei.com>
- <4dde05be-8470-5984-0a30-ba077b9fe6bd@bytedance.com>
-In-Reply-To: <4dde05be-8470-5984-0a30-ba077b9fe6bd@bytedance.com>
-From:   Chen Yu <yu.chen.surf@gmail.com>
-Date:   Thu, 4 Aug 2022 17:59:59 +0800
-Message-ID: <CADjb_WQA7av8xCiUkTAHn2tQbGPeed1sMD=WWJ3DfCG-aRhKSA@mail.gmail.com>
-Subject: Re: [PATCH 1/5] sched/fair: ignore SIS_UTIL when has idle core
-To:     Abel Wu <wuyun.abel@bytedance.com>
-Cc:     Yicong Yang <yangyicong@huawei.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Yicong Yang <yangyicong@hisilicon.com>,
-        Josh Don <joshdon@google.com>, Chen Yu <yu.c.chen@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuNGR/5U5pSo6YM3@gondor.apana.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 3:11 PM Abel Wu <wuyun.abel@bytedance.com> wrote:
->
->
-> On 7/14/22 2:19 PM, Yicong Yang Wrote:
-> > On 2022/7/12 16:20, Abel Wu wrote:
-> >> When SIS_UTIL is enabled, SIS domain scan will be skipped if
-> >> the LLC is overloaded. Since the overloaded status is checked
-> >> in the load balancing at LLC level, the interval is llc_size
-> >> miliseconds. The duration might be long enough to affect the
-> >> overall system throughput if idle cores are out of reach in
-> >> SIS domain scan.
-> >>
-> >> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
-> >> ---
-> >>   kernel/sched/fair.c | 15 +++++++++------
-> >>   1 file changed, 9 insertions(+), 6 deletions(-)
-> >>
-> >> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> >> index a78d2e3b9d49..cd758b3616bd 100644
-> >> --- a/kernel/sched/fair.c
-> >> +++ b/kernel/sched/fair.c
-> >> @@ -6392,16 +6392,19 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
-> >>      struct sched_domain *this_sd;
-> >>      u64 time = 0;
-> >>
-> >> -    this_sd = rcu_dereference(*this_cpu_ptr(&sd_llc));
-> >> -    if (!this_sd)
-> >> -            return -1;
-> >> -
-> >>      cpumask_and(cpus, sched_domain_span(sd), p->cpus_ptr);
-> >>
-> >> -    if (sched_feat(SIS_PROP) && !has_idle_core) {
-> >> +    if (has_idle_core)
-> >> +            goto scan;
-> >> +
-> >> +    if (sched_feat(SIS_PROP)) {
-> >>              u64 avg_cost, avg_idle, span_avg;
-> >>              unsigned long now = jiffies;
-> >>
-> >> +            this_sd = rcu_dereference(*this_cpu_ptr(&sd_llc));
-> >> +            if (!this_sd)
-> >> +                    return -1;
-> >> +
-> >
-> > I don't follow the change here. True that this_sd is used only in SIS_PROP, but it seems irrelevant with your
-> > commit. Does the position of this make any performance difference?
->
-> No, this change doesn't make much difference to performance. Are
-> you suggesting that I should make this a separate patch?
->
-I took a look at this patch again before I start a OLTP test. I
-thought the position change of
-dereference sd_llc might not be closely connected with current change
-as Yicong mentioned.
-Besides, after moving the dereference inside SIS_PROP, we might do
-cpumask_and() no matter whether
-sd_llc is valid or not, which might be of extra cost?
+When namespace support was added to xfrm/afkey, it caused the
+previously single-threaded call to xfrm_probe_algs to become
+multi-threaded.  This is buggy and needs to be fixed with a mutex.
 
-thanks,
-Chenyu
+Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
+Fixes: 283bc9f35bbb ("xfrm: Namespacify xfrm state/policy locks")
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 
-> Thanks,
-> Abel
->
-> >
-> > Thanks.
-> >
-> >>              /*
-> >>               * If we're busy, the assumption that the last idle period
-> >>               * predicts the future is flawed; age away the remaining
-> >> @@ -6436,7 +6439,7 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
-> >>                              return -1;
-> >>              }
-> >>      }
-> >> -
-> >> +scan:
-> >>      for_each_cpu_wrap(cpu, cpus, target + 1) {
-> >>              if (has_idle_core) {
-> >>                      i = select_idle_core(p, cpu, cpus, &idle_cpu);
-> >>
-
-
-
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index fb16d7c4e1b8..20e73643b9c8 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -1697,9 +1697,12 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
+ 		pfk->registered |= (1<<hdr->sadb_msg_satype);
+ 	}
+ 
++	mutex_lock(&pfkey_mutex);
+ 	xfrm_probe_algs();
+ 
+ 	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
++	mutex_unlock(&pfkey_mutex);
++
+ 	if (!supp_skb) {
+ 		if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
+ 			pfk->registered &= ~(1<<hdr->sadb_msg_satype);
 -- 
-Thanks,
-Chenyu
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
