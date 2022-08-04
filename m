@@ -2,76 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A97C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:55:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA78CC25B06
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239974AbiHDOzd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 10:55:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36804 "EHLO
+        id S240074AbiHDOz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 10:55:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234583AbiHDOzb (ORCPT
+        with ESMTP id S239980AbiHDOzy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 10:55:31 -0400
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B627712AE5;
-        Thu,  4 Aug 2022 07:55:29 -0700 (PDT)
-Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 95EF91C81131;
-        Thu,  4 Aug 2022 22:55:27 +0800 (CST)
-Received: from NTHCCAS03.nuvoton.com (10.1.20.28) by NTHCCAS04.nuvoton.com
- (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 4 Aug
- 2022 22:55:27 +0800
-Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS03.nuvoton.com
- (10.1.20.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1847.3; Thu, 4 Aug 2022
- 22:55:27 +0800
-Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS04.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
- Transport; Thu, 4 Aug 2022 22:55:26 +0800
-Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 23FBE62EFD; Thu,  4 Aug 2022 17:55:26 +0300 (IDT)
-From:   Tomer Maimon <tmaimon77@gmail.com>
-To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
-        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
-        <benjaminfair@google.com>, <jic23@kernel.org>, <minyard@acm.org>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
-CC:     <openbmc@lists.ozlabs.org>,
-        <openipmi-developer@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v1] dt-binding: ipmi: add fallback to npcm845 compatible
-Date:   Thu, 4 Aug 2022 17:55:16 +0300
-Message-ID: <20220804145516.217482-1-tmaimon77@gmail.com>
-X-Mailer: git-send-email 2.33.0
+        Thu, 4 Aug 2022 10:55:54 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C5E61CB36;
+        Thu,  4 Aug 2022 07:55:54 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 553BF5BD9F;
+        Thu,  4 Aug 2022 14:55:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1659624951;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9vqM3B55556WrkSb/OXBXnK58c5Ih8NOpEHlhkqemA4=;
+        b=rNHv8QiNy3c5z8yVJYDxDTuMZdudL77DDEKwQScGWzveekPm6K6d92Eigi3//1z18P+j6T
+        RIBk2A9+Gbr/GaG2LQxCIKam5jar59qcEluUyW+jEfFYSJEX8asRo/4CPEA/glwkOL3smh
+        GG2PYfSwMM3DbGo8ER53fwfpz2KVsng=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1659624951;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9vqM3B55556WrkSb/OXBXnK58c5Ih8NOpEHlhkqemA4=;
+        b=qsfVFAylGeEqH5umlWB9oet2ZyR410Fy05HQBAnbpgYI4e03uyEiOpEcA7GMckUO5MF1So
+        TftfKIPExmNcPRCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2244513A94;
+        Thu,  4 Aug 2022 14:55:51 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id vtRSB/fd62IaAwAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Thu, 04 Aug 2022 14:55:51 +0000
+Date:   Thu, 4 Aug 2022 16:50:48 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com,
+        Omar Sandoval <osandov@osandov.com>
+Subject: Re: [PATCH] btrfs: change btrfs_insert_file_extent() to
+ btrfs_insert_hole_extent()
+Message-ID: <20220804145048.GS13489@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com,
+        Omar Sandoval <osandov@osandov.com>
+References: <41e212570f521d9c0838b5ab8e66da0f942c7f46.1658615058.git.sweettea-kernel@dorminy.me>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <41e212570f521d9c0838b5ab8e66da0f942c7f46.1658615058.git.sweettea-kernel@dorminy.me>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add to npcm845 KCS compatible string a fallback to npcm750 KCS compatible
-string.
+On Sat, Jul 23, 2022 at 06:25:29PM -0400, Sweet Tea Dorminy wrote:
+> From: Omar Sandoval <osandov@osandov.com>
+> 
+> btrfs_insert_file_extent() is only ever used to insert holes, so rename
+> it and remove the redundant parameters.
+> 
+> Signed-off-by: Omar Sandoval <osandov@osandov.com>
+> Signed-off-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
 
-Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
----
- Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt b/Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt
-index cbc10a68ddef..4fda76e63396 100644
---- a/Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt
-+++ b/Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt
-@@ -7,7 +7,7 @@ used to perform in-band IPMI communication with their host.
- Required properties:
- - compatible : should be one of
-     "nuvoton,npcm750-kcs-bmc"
--    "nuvoton,npcm845-kcs-bmc"
-+    "nuvoton,npcm845-kcs-bmc", "nuvoton,npcm750-kcs-bmc"
- - interrupts : interrupt generated by the controller
- - kcs_chan : The KCS channel number in the controller
- 
--- 
-2.33.0
-
+Added to misc-next, thanks. The patch is from long ago so there was
+probably intention to do more than just inserting hole but I don't
+remember any pending feature that would use the helper. If we need it it
+can be extended again.
