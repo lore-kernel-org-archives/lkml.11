@@ -2,105 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E880EC19F2C
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 08:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 510D3C19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 08:28:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238288AbiHDIYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 04:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36784 "EHLO
+        id S239453AbiHDI2j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 04:28:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbiHDIYm (ORCPT
+        with ESMTP id S235042AbiHDI2a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 04:24:42 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C084C636;
-        Thu,  4 Aug 2022 01:24:38 -0700 (PDT)
-Received: from mail-ej1-f52.google.com ([209.85.218.52]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MRnXY-1nqTl91Vb0-00TFTN; Thu, 04 Aug 2022 10:24:37 +0200
-Received: by mail-ej1-f52.google.com with SMTP id c24so4771700ejd.11;
-        Thu, 04 Aug 2022 01:24:37 -0700 (PDT)
-X-Gm-Message-State: ACgBeo1ODei5vSwkfmgxd+RMkNkBJYahML4QqrXyvnGlAAohjLkf5ouW
-        9HPhMcGAQfTwRweY2+WsTKG/+E51uYJRgn+Mpyg=
-X-Google-Smtp-Source: AA6agR7mx2DcqpUWDVSgizEz+I+v1CueGd21v5hR8W+ij/iiqR6AnsafECfmF4+yDDNQfg74+XRR1lx7VIfSL42tGVw=
-X-Received: by 2002:a17:907:d0f:b0:72e:db1f:9b91 with SMTP id
- gn15-20020a1709070d0f00b0072edb1f9b91mr603460ejc.470.1659601476990; Thu, 04
- Aug 2022 01:24:36 -0700 (PDT)
+        Thu, 4 Aug 2022 04:28:30 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770EA65821
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 01:28:28 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oJWD7-0006bS-EP; Thu, 04 Aug 2022 10:28:05 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 719DCC28ED;
+        Thu,  4 Aug 2022 08:28:02 +0000 (UTC)
+Date:   Thu, 4 Aug 2022 10:28:01 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Sebastian =?utf-8?B?V8O8cmw=?= <sebastian.wuerl@ororatech.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Christian Pellegrin <chripell@fsfe.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] can: mcp251x: Fix race condition on receive interrupt
+Message-ID: <20220804082801.prjdwdindpe3alk3@pengutronix.de>
+References: <20220804081411.68567-1-sebastian.wuerl@ororatech.com>
 MIME-Version: 1.0
-References: <20220711122459.13773-1-me@linux.beauty> <20220711122459.13773-5-me@linux.beauty>
- <CAK8P3a2Mr0ZMXGDx6htYEbBBtm4mubk-meSASJjPRK1j1O-hEA@mail.gmail.com>
- <181efcca6ae.de84203d522625.7740936811073442334@linux.beauty>
- <CAK8P3a30o1RLifV1TMqDJ26vLhVdOzz3wP6yPrayLV2GPxUtwQ@mail.gmail.com> <18267b7a61f.12b26bd91245310.4476663913461696630@linux.beauty>
-In-Reply-To: <18267b7a61f.12b26bd91245310.4476663913461696630@linux.beauty>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 4 Aug 2022 10:24:20 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0zSGqj3YEi+i9yfSLk8-aJtyiY6Bj069cxCdErk81+cw@mail.gmail.com>
-Message-ID: <CAK8P3a0zSGqj3YEi+i9yfSLk8-aJtyiY6Bj069cxCdErk81+cw@mail.gmail.com>
-Subject: Re: [PATCH 4/4] sample/reserved_mem: Introduce a sample of struct
- page and dio support to no-map rmem
-To:     Li Chen <me@linux.beauty>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Li Chen <lchen@ambarella.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:yzIq8vPx8ZJNLHi/8z+h6JR8GjTYb5Rb2KDVoPjo6kuFclbusm9
- n43hDbTALvs30gNLs4/GKVw2NRxBXHG6kL5K1bR2gzPvtWxyl9RUZIEen5QdoNgQUNt9N/a
- hnZVqZHGEVWzLPJhdGpoKlZMUFn16b02TLX+YyY8Rw4SXsUHoy1FUB0tEoeuaa1da4sDDNG
- iWB87lCpj+48aIUj8sZzA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:yldv/sAQqdM=:EwoksoRYbM8iRTgYdnh2Yp
- A5QecUZZ53vcBhiB3yv4FaJtYWM7cBBiXj3rQ41Eledd1Uvn7yLVKzZtJ5F5w3skDcy/qJjZD
- NaAA4ikEEUmwoWNv9dbZXSjkmptgV5r0v1FIQoPy3cOESZHhMJW+TcqHJK9gBUmW57qf965Gq
- PhULGktuvvzfqVB2hdg9hL+8EHNEaP2czv5Gc2GkBRvvAb7l8axDjou3VYxBlESI92Q0gCR4L
- dnlp04UkIlzB5bBRTCFscwfMYpxByiaTVEJe8iqClIKOJym4xgegmZZNwgYFvX4a5DZYHJpIg
- Nj3Ui4D6N0HjivDuvo5jdmjeakDxVbzoO2ZBtT6tNbmakH3/X90APX6gJKFYuoXBJzwlRTDtK
- IEpnBB/CTeWcweaJlUXD614sFiEdhwijVvkapA/2J6evO+e7teFmfNJGE83VQ1YfTVnoJfc9z
- IthtoNfsKKOf0vI61qvh4nBbpoiqD/i1W6Rd4Cck1jFwyyyADTXXxVb77r3eC7Pw3B+z4XIJ8
- eCP7NAoF4fqM7Kgh2razmMMqZvCNW9h7Q7xyw/eeI6f5gdYgHQ4jmSsf9sI+ShKGPExr9Ag9k
- TVEp8dprAzmLeu3XqwhKgQBuO3jZ9G0gQQJRXf0noZ1pKnkdgdBx83VKg8Y79U97v17DwBzER
- Y3LlGdv8i5GAWfgMoH/fdi0JuB7wl5YC/zFARgpwxhhVwwElBa7SAcc6u2erOQr60qRxXPp6G
- WVB7Vd+PXQKtRXs+VK2iuHrQWhvl6Hg0wrdMBzrWY1GarGNhS2zN2T+FLDFnYUvdty1EL8JCk
- bzkUGGZVDlRKlGbFEsa4f7WUxAzccN8PB/p8XWoiTcuIFKg0husKD6e7WsAFve4+LjzuZ/dWo
- 03bsVvPzleYJgF0zWO/g==
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="qwd6lmx2fq4bhe5q"
+Content-Disposition: inline
+In-Reply-To: <20220804081411.68567-1-sebastian.wuerl@ororatech.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 4, 2022 at 9:17 AM Li Chen <me@linux.beauty> wrote:
-> ---- On Tue, 12 Jul 2022 16:50:46 +0900  Arnd Bergmann  wrote ---
->  > Does your hardware require a fixed address for the buffer? If it can be
->  > anywhere in memory (or at least within a certain range) but just has to
->  > be physically contiguous, the normal way would be to use a CMA area
->  > to allocate from, which gives you 'struct page' backed pages.
->
-> CMA does support Direct I/O, but it has its own issue:
-> It does not guarantee that the memory previously borrowed by the OS will be returned to the device.
->
-> We've been plagued by examples like this in the past:
-> Many other kernel modules/subsystems have already allocated much memory from both non-CMA and CMA memory,
-> When our DSP driver got probed then, cma_alloc will fail in that non-CMA system memory is not enough
-> for CMA memory to migrate.
 
-This part should at least be possible to solve by declaring the amount
-and location of
-CMA areas in the right way. It's not great to fine-tune the DT for a
-particular kernel's
-use, but if you know which other drivers require CMA type allocations
-you can find a lower
-bound that should suffice.
+--qwd6lmx2fq4bhe5q
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Most coherent allocations tend to be long-lived and only for very
-small memory regions.
-If you have another driver that uses large or periodic
-dma_alloc_coherent() type allocations,
-you can consider either giving that device its own CMA area, or fixing
-it to use streaming
-mappings.
+On 04.08.2022 10:14:11, Sebastian W=C3=BCrl wrote:
+> The mcp251x driver uses both receiving mailboxes of the CAN controller
+> chips. For retrieving the CAN frames from the controller via SPI, it chec=
+ks
+> once per interrupt which mailboxes have been filled and will retrieve the
+> messages accordingly.
+>=20
+> This introduces a race condition, as another CAN frame can enter mailbox 1
+> while mailbox 0 is emptied. If now another CAN frame enters mailbox 0 unt=
+il
+> the interrupt handler is called next, mailbox 0 is emptied before
+> mailbox 1, leading to out-of-order CAN frames in the network device.
+>=20
+> This is fixed by checking the interrupt flags once again after freeing
+> mailbox 0, to correctly also empty mailbox 1 before leaving the handler.
+>=20
+> For reproducing the bug I created the following setup:
+>  - Two CAN devices, one Raspberry Pi with MCP2515, the other can be any.
+>  - Setup CAN to 1 MHz
+>  - Spam bursts of 5 CAN-messages with increasing CAN-ids
+>  - Continue sending the bursts while sleeping a second between the bursts
+>  - Check on the RPi whether the received messages have increasing CAN-ids
+>  - Without this patch, every burst of messages will contain a flipped pair
+>=20
+> Fixes: bf66f3736a94 ("can: mcp251x: Move to threaded interrupts instead o=
+f workqueues.")
+> Signed-off-by: Sebastian W=C3=BCrl <sebastian.wuerl@ororatech.com>
 
-        Arnd
+I've reduced the scope of intf1, eflag1 while applying the patch to
+can-next/master.
+
+Thanks,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--qwd6lmx2fq4bhe5q
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLrgw4ACgkQrX5LkNig
+0105lQgAsm+Bkp2do8C0S2QsVI8ZhY+9fLBsoaF/xT63CdKufAbDA6tDFMI6sCEC
+5krLrMRxtRogbpx8nJkPcWhIULA8vAs26KCuSEJO4xcOqsfZxeq0YF4DnFjZzmdA
+IYKPer7wB78gBgdBQiJlad44enwtcfVREGHDfd3PhZ34AMFUrKMEOGZ+ATleK1QB
+ryXUSa8i3SDTfKBWQx86/ns8i42JdnBTHcsNSkuPDvPf1DBWe9hWZabP0yky1ck9
+XCvbL3kNGepG0TBBRXSMTADNGj3DXgA7QvsMq38ZVE2EX4i5oia56dauC2X4H2E5
+2hPZiEAgghwGJMHb8dx+5uUSEqNNaw==
+=G5re
+-----END PGP SIGNATURE-----
+
+--qwd6lmx2fq4bhe5q--
