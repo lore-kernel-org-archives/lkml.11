@@ -2,97 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD7D3C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 16:06:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E41FAC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 16:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233197AbiHDQGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 12:06:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58580 "EHLO
+        id S234497AbiHDQHK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 12:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbiHDQGq (ORCPT
+        with ESMTP id S234090AbiHDQHH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 12:06:46 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4EC18359;
-        Thu,  4 Aug 2022 09:06:44 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id m9so320442ljp.9;
-        Thu, 04 Aug 2022 09:06:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=doWgkAfEcmSMhRNIxRoHTjD9fSl7Q2XFQ3gDJGe0anw=;
-        b=ol8FGt9Nf2Z6wRH9+PBYBRZWr/mV/XxqQGI6MsWoo8AAtYSdpU+ccBcQS+OBt/Cs7x
-         y89b+5ZJJgMhmz2STGcabI/FvRtYUvFWHNpmD/zcR2SqufhuydBni9/X1su/VrQtGrAk
-         b7OTuHYD+HcpBAn9Spnw5HpL4R/xdmMWNwt9d2lJODm/uzGSDKGwelMLKoGNfnJaJFdh
-         uUK0YFMQT5XHNFP1zbQvy4XEkjlG55+IwyQ7IT+RK70lLpUjf2WfjLaDIyz+2VhKqnrL
-         f+NCnaZnrDlByG64E4opEA0vClInStUiXu6uAG1qTdYJEfxBZX0j0n2H8ZzpE1qFjdKK
-         PEEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=doWgkAfEcmSMhRNIxRoHTjD9fSl7Q2XFQ3gDJGe0anw=;
-        b=26Xh1KGFzKLxAIrq4lpfiWDJP+o3PqIOBK+tF71IpYQUPgNB16ah6IkuZUzII4GMCO
-         HG0Gw9hUCy3T9DPtjXMByv2Ei7FCjNfwIDkeOd4/xKlHOGoCKI7MyWwJeI0y7NFBYKWW
-         T1GvjzsMl77peq2B0gUso58u0LTIfgrwhPAAsc5g8aO3T67bJDrVVAQWJLNYVpTwwFJv
-         4NZXtKzXAwTYiIpwWvVk/GL0+OxfV0UIw4bdw9oJ55SyWQcbvGyv3nXDehMJQdWo/uWn
-         jFAmhPuP66WVl2xAC1gOYyYLO9MSkJ5eZEldPCgKbz9Ies1o9NbKMr7BWOR2C87PeAYV
-         RLiQ==
-X-Gm-Message-State: ACgBeo3pp1doeFDUQg7o7XHhzR9k3lQF0LQCteB5pKx+5eHMn1l4AR9G
-        C5xkmZBDzpVORZZL2c0SdIQ=
-X-Google-Smtp-Source: AA6agR6arIMVr5ZpqkmYYrIbLYSsjbSmE1QXdkDiGQWBQKuq95jBD5GPbzFKhKy2A88I/chujsCzrQ==
-X-Received: by 2002:a05:651c:1581:b0:255:48d1:fdae with SMTP id h1-20020a05651c158100b0025548d1fdaemr823958ljq.286.1659629203108;
-        Thu, 04 Aug 2022 09:06:43 -0700 (PDT)
-Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
-        by smtp.gmail.com with ESMTPSA id h4-20020a2eb0e4000000b0025e2b567434sm169804ljl.9.2022.08.04.09.06.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Aug 2022 09:06:41 -0700 (PDT)
-From:   Marcus Folkesson <marcus.folkesson@gmail.com>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-input@vger.kernel.org
-Subject: [PATCH 2/2] MAINTAINERS: Add entry for RC Simulator Controllers
-Date:   Thu,  4 Aug 2022 18:10:41 +0200
-Message-Id: <20220804161041.4147310-2-marcus.folkesson@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220804161041.4147310-1-marcus.folkesson@gmail.com>
-References: <20220804161041.4147310-1-marcus.folkesson@gmail.com>
+        Thu, 4 Aug 2022 12:07:07 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6B62E9C4
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 09:07:07 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 274FjOp9011361;
+        Thu, 4 Aug 2022 16:06:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=Rw13iibRroFj5r1LOCo0kCVDpTitY73SlDYq+UMuyOU=;
+ b=UKgcCzDFA1ql3bFcegYpzYfqBaTsFrN7oWPKCzceDP34gnEVPlx6TIN5SCwYLM/kpIjU
+ ppFWcWNFh47waXhvqBEWxnBHTD73uxChdcTMe1f2hGHO8JEZhSz8mGiAxs0otQQPUDRb
+ 43cXIxOLiKYjMLg+tAU2CORoMS+W/ygX9HHMM2BB/7QX4zg3+QVc6HkXwkykt85fCCBe
+ 3usju4E4jXV8U1P4SbXjfLxsvYbywwfPn3NFnybczuz5rlxLpPlDR2IZX3f0CnGqSGCa
+ lhxhqFKaBj/svmwEEhZIT2E+fTSFi+En/qDO6sTrVQJaLMc2NY6wFEgh/Jw3l65K8a23 kA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hrh1m0jpt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 04 Aug 2022 16:06:44 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 274FlAhd019559;
+        Thu, 4 Aug 2022 16:06:44 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hrh1m0h7n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 04 Aug 2022 16:06:43 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 274FpjfQ024253;
+        Thu, 4 Aug 2022 16:02:23 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma01fra.de.ibm.com with ESMTP id 3hrf2184vb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 04 Aug 2022 16:02:23 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 274G2a1v32964982
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 4 Aug 2022 16:02:36 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F257C42042;
+        Thu,  4 Aug 2022 16:02:20 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 932E742041;
+        Thu,  4 Aug 2022 16:02:20 +0000 (GMT)
+Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.176.127])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Thu,  4 Aug 2022 16:02:20 +0000 (GMT)
+Date:   Thu, 4 Aug 2022 18:02:12 +0200
+From:   Alexander Gordeev <agordeev@linux.ibm.com>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        akpm@linux-foundation.org, hch@infradead.org,
+        wangkefeng.wang@huawei.com, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 02/11] mm: ioremap: fixup the physical address
+Message-ID: <YuvthDzuPlAwD/LA@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+References: <20220801144029.57829-1-bhe@redhat.com>
+ <20220801144029.57829-3-bhe@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220801144029.57829-3-bhe@redhat.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: QmAPIXvbkzQJeLCkH0SYbeYlEeA0TOhP
+X-Proofpoint-ORIG-GUID: 8VpsT3-3-3ZognIn2Ue-Z5ucQQ5rXMa9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-04_03,2022-08-04_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 bulkscore=0 lowpriorityscore=0 phishscore=0
+ mlxlogscore=488 adultscore=0 spamscore=0 mlxscore=0 malwarescore=0
+ impostorscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2206140000 definitions=main-2208040068
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an entry for RC Simulator Controllers and add myself
-as maintainers of this driver.
+On Mon, Aug 01, 2022 at 10:40:20PM +0800, Baoquan He wrote:
+> This is a preparation patch, no functionality change.
 
-Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
----
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
+There is, please see below.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 64379c699903..216b9f021f72 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16896,6 +16896,13 @@ M:	Patrick Lerda <patrick9876@free.fr>
- S:	Maintained
- F:	drivers/media/rc/ir-rcmm-decoder.c
- 
-+RC SIMULATOR CONTROLLERS
-+M:	Marcus Folkesson <marcus.folkesson@gmail.com>
-+L:	linux-input@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/hid/rcsim.rst
-+F:	drivers/hid/hid-rcsim.c
-+
- RCUTORTURE TEST FRAMEWORK
- M:	"Paul E. McKenney" <paulmck@kernel.org>
- M:	Josh Triplett <josh@joshtriplett.org>
--- 
-2.37.1
+> @@ -3,11 +3,17 @@
+>  #include <linux/mm.h>
+>  #include <linux/io.h>
+>  
+> -void __iomem *ioremap_allowed(phys_addr_t phys_addr, size_t size, unsigned long prot)
+> +void __iomem *
+> +ioremap_allowed(phys_addr_t *paddr, size_t size, unsigned long *prot_val)
+>  {
+> -	unsigned long last_addr = phys_addr + size - 1;
+> +	unsigned long last_addr, offset, phys_addr = *paddr;
+>  	int ret = -EINVAL;
+>  
+> +	offset = phys_addr & (~PAGE_MASK);
+> +	phys_addr -= offset;
 
+FWIW, phys_addr &= PAGE_MASK looks much more usual.
+
+> @@ -11,13 +11,20 @@
+>  #include <linux/io.h>
+>  #include <linux/export.h>
+>  
+> -void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
+> +void __iomem *ioremap_prot(phys_addr_t paddr, size_t size,
+>  			   unsigned long prot)
+>  {
+>  	unsigned long offset, vaddr;
+> -	phys_addr_t last_addr;
+> +	phys_addr_t last_addr, phys_addr = paddr;
+>  	struct vm_struct *area;
+>  	void __iomem *base;
+> +	unsigned long prot_val = prot;
+
+Why prot_val is needed?
+
+> +	base = ioremap_allowed(&phys_addr, size, &prot_val);
+> +	if (IS_ERR(base))
+> +		return NULL;
+> +	else if (base)
+> +		return base;
+
+By moving ioremap_allowed() here you allow it to be called
+before the wrap-around check, including architectures that
+do not do fixups.
+
+And now ioremap_allowed() semantics, prototype and name turn
+less than obvious. Why not introduce a separate fixup callback?
+
+>  	/* Disallow wrap-around or zero size */
+>  	last_addr = phys_addr + size - 1;
+> @@ -29,12 +36,6 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
+>  	phys_addr -= offset;
+>  	size = PAGE_ALIGN(size + offset);
+>  
+> -	base = ioremap_allowed(phys_addr, size, prot);
+> -	if (IS_ERR(base))
+> -		return NULL;
+> -	else if (base)
+> -		return base;
+> -
+>  	area = get_vm_area_caller(size, VM_IOREMAP,
+>  			__builtin_return_address(0));
+>  	if (!area)
