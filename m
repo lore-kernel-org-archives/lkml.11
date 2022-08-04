@@ -2,82 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A025C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 22:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E48A2C25B06
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 22:46:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235298AbiHDWn6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 18:43:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35594 "EHLO
+        id S240178AbiHDWqJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 18:46:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230335AbiHDWny (ORCPT
+        with ESMTP id S239916AbiHDWqG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 18:43:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B9625C64
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 15:43:53 -0700 (PDT)
+        Thu, 4 Aug 2022 18:46:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB800C24
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 15:46:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76E78B82753
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 22:43:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ADEDC433C1;
-        Thu,  4 Aug 2022 22:43:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BD08B826E4
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 22:46:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 69B14C433D6;
+        Thu,  4 Aug 2022 22:46:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659653031;
-        bh=iTffOwoeKm5s6NsokKGfJ9XtxAISgvJzsUXoAitQXp8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Q3v+fFLGf5wQF3GIHiotFQrBbVjC8pjV3eCjhbPuhm1d1YLklK0YDiBn3QxkiTFkb
-         sXNamCIlPTnsEg6F5AlPGys1aGRkpRb32JhYaJZ8L6p/mT2QFV4IZ4G5BlgiAFzGuX
-         JFg/JQ0KTqnvgRLVndky9sowtyYcMocgxZqIp3CJxubIkMAh8Nn2gYIydnZ9D2difO
-         +S4MCgYgCc6CXhv5R1wMW3nWP5rnT7R1tE5KWg9oBRsrGiEo+qN4Zc+FQ7m/GHIunD
-         EdaOZmnKj8B3VJDHWeVhvkmxiZo7d5+RGDMPwurpdrlg5hcXx3b2MUx1VduM38OBNf
-         T+tlYCRaWcAIA==
-Date:   Thu, 4 Aug 2022 15:43:48 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Arnd Bergmann <arnd@kernel.org>,
-        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: mainline build failure for x86_64 allmodconfig with clang
-Message-ID: <YuxLpHndYb0ZEWQI@dev-arch.thelio-3990X>
-References: <YuwRyQYPCb1FD+mr@debian>
- <CAHk-=whptVSSZL=wSUQJdRBeVfS+Xy_K4anQ7eQOky7XUrXhUQ@mail.gmail.com>
- <CAK8P3a2bEaExue0OtNeLa2CVzBx-1dE9w2HZ2PAV5N8Ct9G=JQ@mail.gmail.com>
- <YuwvfsztWaHvquwC@dev-arch.thelio-3990X>
- <CAHk-=whpa_FJjvzWdWdSzecTbVtndbQqg35=_o+ohM3X1_xKTA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=whpa_FJjvzWdWdSzecTbVtndbQqg35=_o+ohM3X1_xKTA@mail.gmail.com>
+        s=k20201202; t=1659653163;
+        bh=QwWGxEGYpivv/q9IQZQYPUVVnG6Oj48r558KUSTiG/o=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=Uolp0NKohRLr+hagc8vZHgfMaagDoG4NiVdLCHfLSi96W+ZFHw+N1w3ly+/dRAFDi
+         FvWYUpNKeaFIUDjSb/xBdc6/LztOyTV4YAk4LNIOzZqmb/IXAASZOZXjoa5eY/8nWz
+         SjtThDM9MM9Bi3v0g/MUasjbAi2Lk3FzgYJhfmyX84ERFKVG56Ws4cTtQMEzzbQema
+         V8JuyFSO5yN2ialzeySZlI0we8BZvlw88uCE5geES4PMOmOMybCe6hUAm4yDziOVZu
+         LEDs4suC67+4DW/xJ5he7OOX5IMj0cY+0oMphE6TCh5LA9r3rUgqzRC+pZNamndoVr
+         W22GyqJC+HjgQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4F6CCC43142;
+        Thu,  4 Aug 2022 22:46:03 +0000 (UTC)
+Subject: Re: [GIT PULL] xen: branch for v6.0-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220803075226.2400-1-jgross@suse.com>
+References: <20220803075226.2400-1-jgross@suse.com>
+X-PR-Tracked-List-Id: Xen developer discussion <xen-devel.lists.xenproject.org>
+X-PR-Tracked-Message-Id: <20220803075226.2400-1-jgross@suse.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/xen/tip.git for-linus-6.0-rc1-tag
+X-PR-Tracked-Commit-Id: 251e90e7e346a23742b90e2c4db19d322e071d99
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 7447691ef994ffd8072809a11ca9167a2d91564f
+Message-Id: <165965316331.20279.7058969435031457273.pr-tracker-bot@kernel.org>
+Date:   Thu, 04 Aug 2022 22:46:03 +0000
+To:     Juergen Gross <jgross@suse.com>
+Cc:     torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
+        xen-devel@lists.xenproject.org, sstabellini@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 04, 2022 at 02:59:01PM -0700, Linus Torvalds wrote:
-> On Thu, Aug 4, 2022 at 1:43 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> >
-> > I do note that commit 1b54a0121dba ("drm/amd/display: Reduce stack size
-> > in the mode support function") did have a workaround for GCC. It appears
-> > clang will still inline mode_support_configuration(). If I mark it as
-> > 'noinline', the warning disappears in that file.
-> 
-> That sounds like probably the best option for now. Gcc does not inline
-> that function (at least for allmodconfig builds in my testing), so if
-> that makes clang match what gcc does, it seems a reasonable thing to
-> do.
+The pull request you sent on Wed,  3 Aug 2022 09:52:26 +0200:
 
-Sounds good. That solution only takes care of the warning in
-display_mode_vba_32.c. I will try and come up with something similar for
-the other two files tomorrow, unless the AMD folks beat me to it, since
-they will know the driver better than I will ;)
+> git://git.kernel.org/pub/scm/linux/kernel/git/xen/tip.git for-linus-6.0-rc1-tag
 
-Cheers,
-Nathan
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/7447691ef994ffd8072809a11ca9167a2d91564f
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
