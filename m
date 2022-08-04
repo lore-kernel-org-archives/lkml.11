@@ -2,68 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96038C19F21
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 19:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A6F3C19F21
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 19:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240277AbiHDT10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 15:27:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37738 "EHLO
+        id S240278AbiHDT13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 15:27:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239861AbiHDT1S (ORCPT
+        with ESMTP id S239894AbiHDT1T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 15:27:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D6C6D9FA
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 12:27:17 -0700 (PDT)
+        Thu, 4 Aug 2022 15:27:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04DE6BD69;
+        Thu,  4 Aug 2022 12:27:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 340696170E
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 19:27:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 93384C433B5;
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0230B82718;
+        Thu,  4 Aug 2022 19:27:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5548AC433D6;
         Thu,  4 Aug 2022 19:27:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1659641236;
-        bh=df/03loVxlorTieG9wxP71eq8MpkMGRv5lckju659Rw=;
+        bh=cGh4BYfLRpyvCEbTkyNzUakXTF3RwU2wYJMG6Of3Pdw=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=CjpRz+fX/whD6D9XVkE8uPF6xU1wh6DYSF4zXs/l8gbXXZhTjMNAp+2gwoijT9Asm
-         2B1mwgl6jPLzIL5lcJaS9teNxqaZU9zBZf0p7YcalJ2pfHIrikUNzKw+KVarHbVKMM
-         gaVFS0BP7EN6wUKOH5fFrmIKNTnrrUYgjznLy3YyUgd787znbVxiFXJZbgE8n/myfG
-         bsgRdMXBgvITNtrjQxGaFH7T2K7lADMCqHGY0DkcwqwvGQ02YXdUq379iJdq0MBp9j
-         ZKJSlJl/TGedefvNen6nmPcGdaGyopAiy6CXKja3BlQai9W/cw5Dx8kUct0fh1CrWb
-         qeyArAYEXOMdQ==
+        b=WAVG1rHX+iCpF+9cq/EHsFgKDMDiP+g+q54z5vRHyj48JU2uy/BCgpFm9pE1E/3Pz
+         W5t82cTY/+9Sh1/u70DXsYqFARhkzmSziXmn7+/qRfV5ZjxhStBuZ7s0KGClC1tpW/
+         VO2v6U5i5iM7ZAe75W9Uff81G9F/kb62YfBWofFtE0PbEB0ZPaQ+9EIsmCInu95hhE
+         VHmnt1ulfFxedgn3/vHQeZ0Vpe+SSjxzoxnHhX/Sgpd2yXQt5ycX/8tiqN7UioQ20k
+         fBhgXejQzy7+5vFtydr2HJaxGvBG+bBl+7OjYegZz79thLjPwpp7mRk+8f6ZxNopyd
+         qo+0tiIJZ9UJg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 835D3C43142;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4729EC43140;
         Thu,  4 Aug 2022 19:27:16 +0000 (UTC)
-Subject: Re: [GIT PULL] Driver core changes for 6.0-rc1
+Subject: Re: [GIT PULL] SPDX update for 6.0-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YuqDMLF2AQyj4+N1@kroah.com>
-References: <YuqDMLF2AQyj4+N1@kroah.com>
+In-Reply-To: <YuqBtvFv1gaAkD+E@kroah.com>
+References: <YuqBtvFv1gaAkD+E@kroah.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YuqDMLF2AQyj4+N1@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-6.0-rc1
-X-PR-Tracked-Commit-Id: 273aaa24369cb8d0f246bb16f7122b91a1ef5188
+X-PR-Tracked-Message-Id: <YuqBtvFv1gaAkD+E@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/spdx.git tags/spdx-6.0-rc1
+X-PR-Tracked-Commit-Id: 58301e1c15db89c0edc6a122c8f6fb5af271954b
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: cfeafd94668910334a77c9437a18212baf9f5610
-Message-Id: <165964123653.8981.11316916554539708453.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: c1c76700a0d6e6090ccfe1209527f14c21b6681b
+Message-Id: <165964123628.8981.13216930391133803828.pr-tracker-bot@kernel.org>
 Date:   Thu, 04 Aug 2022 19:27:16 +0000
 To:     Greg KH <gregkh@linuxfoundation.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Saravana Kannan <saravanak@google.com>
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org, linux-spdx@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Wed, 3 Aug 2022 16:16:16 +0200:
+The pull request you sent on Wed, 3 Aug 2022 16:09:58 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git tags/driver-core-6.0-rc1
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/spdx.git tags/spdx-6.0-rc1
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/cfeafd94668910334a77c9437a18212baf9f5610
+https://git.kernel.org/torvalds/c/c1c76700a0d6e6090ccfe1209527f14c21b6681b
 
 Thank you!
 
