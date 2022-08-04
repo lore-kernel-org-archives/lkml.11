@@ -2,130 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D979C19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 09:22:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 666B1C19F2C
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 09:23:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238985AbiHDJWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 05:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46452 "EHLO
+        id S239114AbiHDJX0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 05:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbiHDJWb (ORCPT
+        with ESMTP id S229527AbiHDJXY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 05:22:31 -0400
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 118FC65653;
-        Thu,  4 Aug 2022 02:22:29 -0700 (PDT)
-Received: by mail-ej1-f42.google.com with SMTP id k26so20075867ejx.5;
-        Thu, 04 Aug 2022 02:22:28 -0700 (PDT)
+        Thu, 4 Aug 2022 05:23:24 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E0A22B29;
+        Thu,  4 Aug 2022 02:23:23 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id t5so4750324edc.11;
+        Thu, 04 Aug 2022 02:23:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=94Q4kaaMwy5G5HfhtZ+9vdLQKCyzSdsUN6J+1BjLmpM=;
+        b=gvGQ/BWK13ZuVwVHOZNku+D1Ip1lq+ZnqMfLk1KV7GfW5x6o3SM44xDgi9hBaLZsTB
+         Zg6bbo4HZ+ZAzS8cJpTmMrSPPHjI/sTlCTxBrBFCQKTtO+twLacveSP4QTplHnbWcJcc
+         P7SvYnpSgSpVQcr1bt5hTi7YZ8lS4JJWR8qjVlxCmYBH6dRPeh0htm9aLScNGRoTLV1o
+         VzpQRlQYPWm4fcrzvfAIlQ+4GBpZnqpr8uqE34r2jYdjMWksiMDGqYFemHgWOqA3A0+u
+         CAKqVvKcf+OfNGIiH1slb19Ho2oQ5uhXzr/DkjPodHeAoivzF+c2VhNTKdok/SX44MCJ
+         Sm0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=KLFS4WUlaqxZbqoy7i8FOJPlIwGNfBkjIWJSYKEP0DM=;
-        b=Lu3eMfFMg5YQ95Hxel+uncrI6PQ4kkPR46VScIK4X0f960uTO6qXwxYB25FfB10msO
-         fe9CuDl+RGxNh5NoFuQmLEvMEgcXQPXcsnNmHXSDDW5LqG52/pH/TxdAc9Nn/fAPnS0a
-         qkRKon5NRh3UfNXxI0RsJ6r0m4VZGVw2yrsJwJ9HAZ3lDLuwDbpDVpKVxzk+VXJxvqo5
-         jVeCRCZJaV4hYwTZg2qaLzRh9BfLbGwy8rG9jpadrnbaEQGT80WFCsG4WtRcgl/TIICK
-         JTS4+EhetoTWx4ImNC6GMFUN6eo3grpWM7F+8ksysW26vmrUXPGsERMAA93e3l9OcCbL
-         otrg==
-X-Gm-Message-State: ACgBeo28Gc/F8G8j9AZanhV+vWZU0sMNvTRB8ky5kVf9CZ4IycpeO4I/
-        BjOCPsCU6nUOjM1oC0l4yAs4ahFWoISXSg==
-X-Google-Smtp-Source: AA6agR7nr7rXhSDs20ISvDf9usQGNbKryjMfX5Glou808Dft/hnakz10xMZehmVM2yJKUeqPtOtHwQ==
-X-Received: by 2002:a17:907:b14:b0:730:abbd:e965 with SMTP id h20-20020a1709070b1400b00730abbde965mr711749ejl.245.1659604947641;
-        Thu, 04 Aug 2022 02:22:27 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id a17-20020aa7cf11000000b0043cfb6af49asm377023edy.16.2022.08.04.02.22.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Aug 2022 02:22:27 -0700 (PDT)
-Message-ID: <2d4e82f9-e370-bb01-8656-fe0376c22a77@kernel.org>
-Date:   Thu, 4 Aug 2022 11:22:26 +0200
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=94Q4kaaMwy5G5HfhtZ+9vdLQKCyzSdsUN6J+1BjLmpM=;
+        b=iSIP4C22q75iWAeXbWntbzsq3qe5bnZHLv3a1HvDhab91wB3W2RVoue8QPjy/+HUFI
+         tU5EpvnPRO1Yysp0ibXkBR49Eiz07Kpvm+Sozv1L5Q5QvOMHtH8BLmsDqomeWA5OSctH
+         r+gFO9VCFFsH/0rN3i2BgHwZp7K/2JZ8x2XUuRnadJJVZApmM+rDmrG8uTgPC21h61xj
+         ThGD7qz8wKAZxS6V3B70ij4rVj45XrtYSVr9DhTowXxgnrCmwCW3YIv00znGn4QN+Fwb
+         NcaH2W5f5giXp3GgjgbP0UiYBbEeTfTdi1HrE/4efIzz5faGtnM8zFs2bi8dTo2hbgts
+         xLrg==
+X-Gm-Message-State: ACgBeo0vJB0sl0ZtO7u1LG9+mw96t0q4HAkg46NwTfWdaCYCxpDVnFub
+        60MJAdGldC/gfrmlzD47Zm8=
+X-Google-Smtp-Source: AA6agR6mol/l9PnbDY7eeiSHEN4lcS0b/yZlZ2NnoDtUtidZg3LAQXT+rso4GvZok5HFCHf8NPrycQ==
+X-Received: by 2002:a05:6402:f22:b0:43e:8623:d32c with SMTP id i34-20020a0564020f2200b0043e8623d32cmr1097307eda.265.1659605002537;
+        Thu, 04 Aug 2022 02:23:22 -0700 (PDT)
+Received: from gmail.com (195-38-112-141.pool.digikabel.hu. [195.38.112.141])
+        by smtp.gmail.com with ESMTPSA id kd25-20020a17090798d900b006f3ef214ddesm142937ejc.68.2022.08.04.02.23.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Aug 2022 02:23:21 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Thu, 4 Aug 2022 11:23:19 +0200
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Kyle Huey <me@kylehuey.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org,
+        Robert O'Callahan <robert@ocallahan.org>,
+        David Manouchehri <david.manouchehri@riseup.net>,
+        Borislav Petkov <bp@suse.de>, kvm@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v2] x86/fpu: Allow PKRU to be (once again) written by
+ ptrace.
+Message-ID: <YuuQB8YihPWQfuOk@gmail.com>
+References: <20220804031632.52921-1-khuey@kylehuey.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] tty: vt: selection: Add check for valid tiocl_selection
- values
-Content-Language: en-US
-To:     Helge Deller <deller@gmx.de>,
-        Khalid Masum <khalid.masum.92@gmail.com>,
-        syzbot <syzbot+14b0e8f3fd1612e35350@syzkaller.appspotmail.com>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <000000000000bbdd0405d120c155@google.com>
- <20220729065139.6529-1-khalid.masum.92@gmail.com>
- <eb4a26aa-da30-ceee-7d27-c1e902dd4218@gmx.de> <YuV9PybMPgc83Jis@p100>
- <1eb62346-304b-54d5-8a62-8a35888d51bd@kernel.org>
- <35e860bb-c76c-ca5f-3f48-2bf6cb798689@gmx.de>
- <0fbc2150-b4aa-f2cb-5084-3a9f69b3455d@gmx.de>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <0fbc2150-b4aa-f2cb-5084-3a9f69b3455d@gmx.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220804031632.52921-1-khuey@kylehuey.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04. 08. 22, 10:44, Helge Deller wrote:
-> On 8/4/22 09:15, Helge Deller wrote:
->> Hello Jiri,
->>
->> Thanks for looking into this patch!
->>
->> On 8/4/22 07:47, Jiri Slaby wrote:
->>> On 30. 07. 22, 20:49, Helge Deller wrote:
->>>> The line and column numbers for the selection need to start at 1.
->>>> Add the checks to prevent invalid input.
->>>>
->>>> Signed-off-by: Helge Deller <deller@gmx.de>
->>>> Reported-by: syzbot+14b0e8f3fd1612e35350@syzkaller.appspotmail.com
->>>>
->>>> diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
->>>> index f7755e73696e..58692a9b4097 100644
->>>> --- a/drivers/tty/vt/selection.c
->>>> +++ b/drivers/tty/vt/selection.c
->>>> @@ -326,6 +326,9 @@ static int vc_selection(struct vc_data *vc, struct tiocl_selection *v,
->>>>            return 0;
->>>>        }
->>>>
->>>> +    if (!v->xs || !v->ys || !v->xe || !v->ye)
->>>> +        return -EINVAL;
->>>
->>> Hmm, I'm not sure about this. It potentially breaks userspace (by
->>> returning EINVAL now).
->>
->> Right.
->> According to the code below, my interpretation is that all xs/ys/xe/ye values
->> should be > 0. But of course I might be wrong on this, as I didn't find any
->> documentation for TIOCL_SETSEL.
->>
->> And if userspace tries to set an invalid selection (e.g. by selecting row 0),
->> my patch now returns -EINVAL, while it returned success before.
->>
->>> And the code below should handle this just fine, right:
->>>>        v->xs = min_t(u16, v->xs - 1, vc->vc_cols - 1);
->>>>        v->ys = min_t(u16, v->ys - 1, vc->vc_rows - 1);
->>>>        v->xe = min_t(u16, v->xe - 1, vc->vc_cols - 1);
->>
->> It "handles it fine" in the sense that it can cope with the
->> input and will not crash.
->> But it returns (maybe?) unexpected results...
-> 
-> After some more thinking maybe you are right.
-> In case a user provided invalid values in the past, simply an unexpected
-> selection was set, but nothing broke.
-> Since the patch doesn't fix any critical issue, we could just drop this patch
-> and leave it as is.
 
-We can still do a trial and revert it if something breaks... It's just 
-that _noone_ knows with all this undocumented stuff ;).
+* Kyle Huey <me@kylehuey.com> wrote:
 
-But in fact, 0 currently means full row/column. Isn't it on purpose?
+> diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
+> index 0531d6a06df5..dfb79e2ee81f 100644
+> --- a/arch/x86/kernel/fpu/core.c
+> +++ b/arch/x86/kernel/fpu/core.c
+> @@ -406,16 +406,7 @@ int fpu_copy_uabi_to_guest_fpstate(struct fpu_guest *gfpu, const void *buf,
+>  	if (ustate->xsave.header.xfeatures & ~xcr0)
+>  		return -EINVAL;
+>  
+> -	ret = copy_uabi_from_kernel_to_xstate(kstate, ustate);
+> -	if (ret)
+> -		return ret;
+> -
+> -	/* Retrieve PKRU if not in init state */
+> -	if (kstate->regs.xsave.header.xfeatures & XFEATURE_MASK_PKRU) {
+> -		xpkru = get_xsave_addr(&kstate->regs.xsave, XFEATURE_PKRU);
+> -		*vpkru = xpkru->pkru;
+> -	}
+> -	return 0;
+> +	return copy_uabi_from_kernel_to_xstate(kstate, ustate, vpkru);
+>  }
+>  EXPORT_SYMBOL_GPL(fpu_copy_uabi_to_guest_fpstate);
 
-Today, we are out of luck, codesearch.debian.net gives no clue about users:
-https://codesearch.debian.net/search?q=%5CbTIOCL_SETSEL%5Cb&literal=0
+So this removes 'ret' and 'xpkru' use from 
+fpu_copy_uabi_to_guest_fpstate(), but leaves the variables in place, 
+generating a build warning (and error with CONFIG_WERROR=y) ...
 
-thanks,
--- 
-js
-suse labs
+Thanks,
+
+	Ingo
