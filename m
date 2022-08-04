@@ -2,140 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD482C00144
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 05:56:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8668C00144
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 06:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238933AbiHDF4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 01:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54416 "EHLO
+        id S238433AbiHDGKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 02:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiHDF4m (ORCPT
+        with ESMTP id S229538AbiHDGKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 01:56:42 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B1E61101
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 22:56:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659592601; x=1691128601;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=WuiSEBophrQc/ISXHMcTf+eN27iJ0Puc1lcpkCjfnUg=;
-  b=BIvVzUJ6r+9onvr0HKHj2Y5xXgkXgxFDc82vasVCRJKNFP2cOH+MF2J4
-   L/U63obemGwqUnigikcyUXMfJ0rEeVdtjSUcEYKn+vFMNaUWduCQgYhTK
-   nuVpeL7L+TeOmMiRDH2ggW80lIjrShwakQ2mKAYk8ffxa8Ljs1SaIQheD
-   MY51XJckL720hSDLFQ5klK7Qzg4ZAAo26ko7FAuj1YHgwVn/3dlI8G0aj
-   XcqMEjzjiVHIloUYQ3chf0m9SkwwZHBVmiCmrIqtnZB3ykff/YJyk7OPh
-   ewqYeSYzTqmtbdD/p9efFECw6vFeFXDlQtWyNijAtOVKIt/M1493XmYU8
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="287408532"
-X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="287408532"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 22:56:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
-   d="scan'208";a="848839307"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 03 Aug 2022 22:56:40 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJTqZ-000I4h-2y;
-        Thu, 04 Aug 2022 05:56:39 +0000
-Date:   Thu, 4 Aug 2022 13:56:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Russell King <rmk+kernel@arm.linux.org.uk>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [rmk-arm:clearfog 8/9] drivers/pci/pcie/portdrv_core.c:330
- pcie_port_device_register() warn: inconsistent indenting
-Message-ID: <202208041347.FHCjyytU-lkp@intel.com>
+        Thu, 4 Aug 2022 02:10:01 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2086.outbound.protection.outlook.com [40.107.22.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC1C6110D;
+        Wed,  3 Aug 2022 23:10:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GWOKTPr+ue2AUepYs30ZCfZ83BSDqqyXGixkDo/dRG7mkS1Jqnht35/3qzHD6ytqLOoHGpGmAF8pQZQ2Pm1VmIhJHntA3bVvO/z34yoJwz8wXP0pBrZ2M4obdlUVuIhaNf+uC7QvrN0aCV/NKR8n7T+MhB/xYCgKl1XiS90gPTz9oGOyBbIRFuDnHFe1+/SWEj7TjqlNZN1O2J9c5vHb3CVout8sW4i4HhmLSn29XzMBD47FTjJelEiPfcYoGV91xQclBbRF8rIOId9K163L51Ru1WSL2yJWsIMatJZ9cpaUIgbDB8zTPKk9Z+5K+QROrReDFYQI3IW6WRH8jzS+Dw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JrTYwvvlNqzQygbT9FcPjuvNQWCPSVW2R5YbKDgQcCw=;
+ b=UEpRe+l8KTvj8WMkweJUixg7BqW17rF9uAFPkzRBrmbgRtbjIaQCxuDgC3wElCEDSJTvIb3hiGnRWjZqx6K4Jxs1nkcdz7lF31JwjtfCQ8iZU1MrGsvYWhAdYuQsSjcMg+rQZZqDma5LFYfqh5RqO8SPbSv0Q5ziTAox5XrpG8JY7HdKt0F7luuuAbT7Hr1n2gyiqTgnKHch6iNgmCRGnkJ8DxTsn5lTkjLzukhmW5Q2a17hEKKw8d1hBfrBjXmG/++UEMvduhpmJwZ1bsv44YFjmYXHekVHmvzIy/UsPlXUu+kjmPOZuzOZ4lg7YW36HSEWfC8Ug61eyqtdfbF4Ng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JrTYwvvlNqzQygbT9FcPjuvNQWCPSVW2R5YbKDgQcCw=;
+ b=DGarc/00kgeEU80w7+WLv7XfcnlPA5RiPE7PwHG0WDAG1JSfcMZssexjXXvgd/XkRsrvXlWsgWML4axO625Fganztb9ye0N9uCZfBRpb4evrjZUk4UK5UpdLg75F7fl1I3QHx3OV1qQgAKKks05bDUam2sQwpO6c1P2NZSvWYN4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM7PR04MB7046.eurprd04.prod.outlook.com (2603:10a6:20b:113::22)
+ by DBBPR04MB7721.eurprd04.prod.outlook.com (2603:10a6:10:1f6::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.15; Thu, 4 Aug
+ 2022 06:09:57 +0000
+Received: from AM7PR04MB7046.eurprd04.prod.outlook.com
+ ([fe80::2549:869e:d80b:3a1b]) by AM7PR04MB7046.eurprd04.prod.outlook.com
+ ([fe80::2549:869e:d80b:3a1b%5]) with mapi id 15.20.5504.015; Thu, 4 Aug 2022
+ 06:09:57 +0000
+From:   Liu Ying <victor.liu@nxp.com>
+To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, saravanak@google.com,
+        gregkh@linuxfoundation.org, geert+renesas@glider.be,
+        krzysztof.kozlowski@linaro.org, robh@kernel.org
+Subject: [PATCH v3 0/3] drivers: bus: Add Freescale i.MX8qxp pixel link MSI bus support
+Date:   Thu,  4 Aug 2022 14:11:30 +0800
+Message-Id: <20220804061133.4110734-1-victor.liu@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR02CA0046.apcprd02.prod.outlook.com
+ (2603:1096:4:196::15) To AM7PR04MB7046.eurprd04.prod.outlook.com
+ (2603:10a6:20b:113::22)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8c16623b-bf6b-4421-e5fd-08da75dff4ae
+X-MS-TrafficTypeDiagnostic: DBBPR04MB7721:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: R+cuDfixZrlrSJjUEx2xAL+Z1NBk0g0ysEg8n2jhrC6y0dh46IILuyb4uy0hunUqiRfl2kzsCGGyoUHLto4AZsDI1o+8HjJUMM/PuBVisewb8VlncZglPZdJONtzIuHRLh7GNN8m93y3ZKh86xqsyJLZmeWuuBEdmJ83K3m7FYYHjQ+Tq9wfOMuzCM+WQfC9Iy9PMgBUxuEUdinx7mmCMmYzehFv4OVklfz2V56JGPEDdbh25UC+YF7mFzNEwaXhPvO3Czdca3bWNrGNkMPPL66paYkBymquIY0DOO6iT+LQb7Lw2lWIT8PsxXTNN1SBXwk1Z83uZ2tPaGr/gLH3W2fiEEoARsQkKaqMpg7rSmPFLqaptgtTBlXvwhjAfQXU4CI1Pqt6eTQsZj+5hWKIH6WgaR+a9sSiTCP5ddPh5k4nhCzKxDq7CE6gcPfNK5NDyLwlolRo20ao3hr0CTi4krtHXantwiwPpeUcwMC5HfEEfTjLci5ldL3OEoTFCOsJ3njrh90tt5Kxiq5KCdR3JIfuGUsJA08FF+SFoMRb+zwH1wMV2rFm5M7ponWqWb5VVE1WNW7VRVcYVWvYeVIw+oOcY3/nfQd2rgpI1PJUsGcnjfoeV2+fNbUw0XW5+XEldN2Nsb27nv4dLTYZ9PaPMu/WbW4AzqYkoJio4gqHwp3aqJZYo56ILWoqzPwP0aaHwhJS8s8RwXZcno8h0vPcfkfrXYKWMRi5v1ZqSV8ZTGvwBkxBrQQwTrdbLZmsntLAqABKcDQGHAjegxuloRUMiZ+fteodSdu7QhWZSNWJ7kQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB7046.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(396003)(366004)(136003)(39860400002)(52116002)(6506007)(41300700001)(2906002)(6666004)(2616005)(26005)(86362001)(6512007)(1076003)(38100700002)(186003)(83380400001)(38350700002)(36756003)(5660300002)(7416002)(66946007)(6486002)(478600001)(4326008)(66556008)(66476007)(8936002)(8676002)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LvS/SPDfKpiDMsXg7uxDdF5DCwIWZHhqCWSXVBuqACEMAsgfi9pcdsQn1VPD?=
+ =?us-ascii?Q?TyQRI5nhpRrmXb2ofSVLf7lPDiJGwqRcna0W6YHBWkurZLU4ljjlIynzzBVX?=
+ =?us-ascii?Q?8NQwIhoUfpVAFwct4BjvRac15o5oMwnFeBTKd4X4A3kYTcJTeAGK+ss2z2cY?=
+ =?us-ascii?Q?MqIS2NjtTSXa8prsoeuOHj9xCH/+XuN5MhRL4ZYntRqzIklaR+SqcDUhvqzH?=
+ =?us-ascii?Q?MiPh/vDxCC+V+J8UmVErPmcpDktnq62aENcMQqmHwbRy+68t5dsbLDMcbQCZ?=
+ =?us-ascii?Q?6aT7bnP15E2FCMc9Wbi6sWrJe9xKoz3a2ExBTLjckC0OnxJ6u0DDi/3NQcbx?=
+ =?us-ascii?Q?A3OBDkQUgltToI+JcSqTMVBukxTCKXF4OljrZjKXTWZ7fnY8qhg1tPyG3caL?=
+ =?us-ascii?Q?guKsIWcupUiiZc3BycDCU/aL3VRUCFLe0rb9w47t1ZRlRtvfeP+OxdTV7AxC?=
+ =?us-ascii?Q?FScSTJ1eCRXpCSQx9bMStJxsOQe+mQ7GMndY4RQynYY84RWxEwq7KOPSUIrC?=
+ =?us-ascii?Q?dHw5k3mExNzcqX9D+MDqiA9kFRBZb+d6TY2Un+T1nu8cUh98jpokPsXgPzjh?=
+ =?us-ascii?Q?3sIEm7DL3kzM2XMwUEP5g1I9p6O+2qzrBgJmN87j3uLus6pZV+Zy0d+l2MPw?=
+ =?us-ascii?Q?FCKDmY4Vv1nsg/aWc4fE5WQx3MsqvFCjW80OmyGJlSetsvrbObxfp4bLgrd5?=
+ =?us-ascii?Q?VWGSWRBhLQs8AMlB0srAI5YCkhl8ZsnAznnu9Az8H0vxQJqtTmpvgPMpZzUB?=
+ =?us-ascii?Q?M9OY06LdVvBgzE0gkZTvP930LMiAH6cla+2g5eig+wFboELXyro85Y7Foa6r?=
+ =?us-ascii?Q?UtD+NHVVWdxIlVPiGDWg0tdrJlJ3FHBaw9lWrNcLvYpF+4UBgEJFr2BOzsPD?=
+ =?us-ascii?Q?caJKUIuJGhDfIAUH06UEVJevsW5V+Xfm/gMLxBKdyxgqemlI++RBJ55DaGfR?=
+ =?us-ascii?Q?3lJEwZ2fYo8DMj6YQu9b5XvVnKiIl4H9AjwiICwIzMtyjmptEg9NUapfFBQa?=
+ =?us-ascii?Q?HqK1l6F9/Qag0Y2eW+fW//k4Fm18f9dIup/STw7F7dWnZfDW7bsG+kAYkXUo?=
+ =?us-ascii?Q?auZl+cJugLBed88fZc+SLSdE9ZulMFMXLR5dFrycvXHO/13DbhL42P+wa1qs?=
+ =?us-ascii?Q?6ulnSQDfme8BR4W0KBDSTD2Ieykxdff2L8/a6L0DP8UKuCiDv7IjcPll/A1K?=
+ =?us-ascii?Q?YAUtSdlyMYl8xYdF2YtQJH2GxNdGBsOnJvP81BppAMShmtNbDes9NVUKESXd?=
+ =?us-ascii?Q?z9mJ8cVsghm0UpOgh3AqziW6ZC8H91rpnQyfAhrSz0iuUPtuSIeSCe4B5FZV?=
+ =?us-ascii?Q?vCKu5yP/pzfo6wBk4RVDIb/k1+YJ5cfpnIs8KDCkB81bqK02Ur4CogGdzHY4?=
+ =?us-ascii?Q?oFVpKcHs7KI+RbaxKJvmr/Uj0hAtj/Ro/jRoCQ9hWY9wRn+9V5dDbNm+GXPx?=
+ =?us-ascii?Q?Al6DEauWPB+Eb0Ex5VD3qTFgSqWEPVqtVNp7tKorGQMH2vuTlHlRdu10MPRC?=
+ =?us-ascii?Q?ZjT4NScgLCRQRk7BSYwjZ20SBnTzua7yvhAf9Sr8SFtyDsg4Qpf4ifBQxIy9?=
+ =?us-ascii?Q?xejH+XWLOH96Jh25MUQjeryxsFLNq95kVcR6jpgM?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c16623b-bf6b-4421-e5fd-08da75dff4ae
+X-MS-Exchange-CrossTenant-AuthSource: AM7PR04MB7046.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Aug 2022 06:09:57.1806
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NiPRuh4s8IrQzG+3oBHvkriIYyIvJ8qRLaJ5tUh6+fWpDrTIAaM8nRCqvoUkNjwd/ZWtMXanJr3CceDHgLQPxA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB7721
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.armlinux.org.uk/~rmk/linux-arm clearfog
-head:   6df556f02478218e0aae7757ef1a7025569464d8
-commit: 006166c0b29e4fde042ada6c2608ae4b41c1e9dc [8/9] mvebu/clearfog pcie updates
-config: i386-randconfig-m021 (https://download.01.org/0day-ci/archive/20220804/202208041347.FHCjyytU-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+Hi,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+This series aims to add Freescale i.MX8qxp pixel link MSI bus support
+by using the existing simple-pm-bus driver. A power domain and two input
+clocks need to be enabled before the MSI bus accesses it's child devices,
+which matches what a simple power-managed bus is(See simple-pm-bus.yaml).
 
-New smatch warnings:
-drivers/pci/pcie/portdrv_core.c:330 pcie_port_device_register() warn: inconsistent indenting
+Patch 1 adds support to populate simple MFD child devices in the
+simple-pm-bus driver, since the MSI bus may connect those devices.
 
-Old smatch warnings:
-drivers/pci/pcie/portdrv_core.c:343 pcie_port_device_register() warn: inconsistent indenting
+Patch 2 enables/disables functional clock(s) as a bulk in the
+simple-pm-bus driver when the simple-pm-bus is being power managed,
+since the MSI bus takes the two input clocks as functional clocks.
 
-vim +330 drivers/pci/pcie/portdrv_core.c
+Patch 3 adds dt-bindings for the MSI bus.
 
-   310	
-   311	/**
-   312	 * pcie_port_device_register - register PCI Express port
-   313	 * @dev: PCI Express port to register
-   314	 *
-   315	 * Allocate the port extension structure and register services associated with
-   316	 * the port.
-   317	 */
-   318	int pcie_port_device_register(struct pci_dev *dev)
-   319	{
-   320		int status, capabilities, i, nr_service;
-   321		int irqs[PCIE_PORT_DEVICE_MAXSERVICES];
-   322	
-   323		/* Enable PCI Express port device */
-   324		status = pci_enable_device(dev);
-   325		if (status)
-   326			return status;
-   327	
-   328		/* Get and check PCI Express port services */
-   329		capabilities = get_port_device_capability(dev);
- > 330	dev_info(&dev->dev, "PCIe capabilities: 0x%x\n", capabilities);
-   331		if (!capabilities)
-   332			return 0;
-   333	
-   334		pci_set_master(dev);
-   335		/*
-   336		 * Initialize service irqs. Don't use service devices that
-   337		 * require interrupts if there is no way to generate them.
-   338		 * However, some drivers may have a polling mode (e.g. pciehp_poll_mode)
-   339		 * that can be used in the absence of irqs.  Allow them to determine
-   340		 * if that is to be used.
-   341		 */
-   342		status = pcie_init_service_irqs(dev, irqs, capabilities);
-   343	dev_info(&dev->dev, "init_service_irqs: %d\n", status);
-   344		if (status) {
-   345			capabilities &= PCIE_PORT_SERVICE_HP;
-   346			if (!capabilities)
-   347				goto error_disable;
-   348		}
-   349	
-   350		/* Allocate child services if any */
-   351		status = -ENODEV;
-   352		nr_service = 0;
-   353		for (i = 0; i < PCIE_PORT_DEVICE_MAXSERVICES; i++) {
-   354			int service = 1 << i;
-   355			if (!(capabilities & service))
-   356				continue;
-   357			if (!pcie_device_init(dev, service, irqs[i]))
-   358				nr_service++;
-   359		}
-   360		if (!nr_service)
-   361			goto error_cleanup_irqs;
-   362	
-   363		return 0;
-   364	
-   365	error_cleanup_irqs:
-   366		pci_free_irq_vectors(dev);
-   367	error_disable:
-   368		pci_disable_device(dev);
-   369		return status;
-   370	}
-   371	
+v2->v3:
+* Add a pattern property to allow child nodes in the MSI bus dt-binding. (Rob)
+
+v1->v2:
+Address Krzysztof's comments on patch 3:
+* Add a select to explicitly select the MSI bus dt-binding.
+* List 'simple-pm-bus' explicitly as one item of compatible strings.
+* Require compatible and reg properties.
+* Put reg property just after compatible property in example.
+
+Liu Ying (3):
+  drivers: bus: simple-pm-bus: Populate simple MFD child devices
+  drivers: bus: simple-pm-bus: Use clocks
+  dt-bindings: bus: Add Freescale i.MX8qxp pixel link MSI bus binding
+
+ .../bus/fsl,imx8qxp-pixel-link-msi-bus.yaml   | 108 ++++++++++++++++++
+ drivers/bus/simple-pm-bus.c                   |  61 +++++++++-
+ 2 files changed, 168 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/bus/fsl,imx8qxp-pixel-link-msi-bus.yaml
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
