@@ -2,325 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A047C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC3AC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239670AbiHDObg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 10:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45352 "EHLO
+        id S239550AbiHDOcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 10:32:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239550AbiHDOb3 (ORCPT
+        with ESMTP id S234481AbiHDOca (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 10:31:29 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F78A32DBC
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 07:31:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659623487; x=1691159487;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=gFKbARwhryqBiRlQXGxuMXT1EYYHYdVhOsiHCLeWKj8=;
-  b=fjwNaBK7gtBecSy6Cd1yamvtXrkOSMoy7q8FYtaFMip7E0Ls2uk0E1gR
-   fYrauj4cgATd5E85llYQoYjw/vB1sjTk0Idduwj/orEvabAXDx3gVwSBL
-   2TP36DnxyvocbRdWzGc6jb95iS4hnKwD0A9XshmhFthCKyhyXetI8bFC1
-   JaUoelpMgVlTtZgsTAuTmu6fE/VHIhHB4oeX0EjzKTA6fotfGOT/Gef0q
-   t9XS6B38kYTkN1+Yxd9tNTBdqhHk4+cQGkP/94V9RU0qOBfVDADDlKkAt
-   XVMKYgVJMmzRj4llFavIzbp/+St4RbPnUpVa5/IMzlkHm4U2PbRR4gQ9I
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10429"; a="272991600"
-X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="272991600"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 07:31:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="930827953"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 04 Aug 2022 07:31:22 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJbsf-000IXB-2v;
-        Thu, 04 Aug 2022 14:31:21 +0000
-Date:   Thu, 4 Aug 2022 22:31:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jolsa-perf:bpf/tracing_multi 12/18] do_mounts.c:(.text+0x37e):
- multiple definition of `bpf_tracing_multi_attach';
- init/main.o:main.c:(.text+0x70): first defined here
-Message-ID: <202208042254.Lnk0UNlF-lkp@intel.com>
+        Thu, 4 Aug 2022 10:32:30 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04B032DBC
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 07:32:29 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id m2so40961pls.4
+        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 07:32:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Rr2Pmo9V1ip7mpaWN6TKvPgMKQ/gdhrNUf8Hfcj3w28=;
+        b=JeLiSXeWD5kKcICYxtuINTuI83kExyBVAByVqzorbfaPrFzMIUkdbtdcIl/7iWa24/
+         ynamBKsxBYq9g4YE2enYvNTCrozTaFhif0QQrPXVGABzDw3vNaRhPzXtQxLuGtLpU07l
+         JbjqVVcIIUw01hjT6uJrmwM0b9KPkpeTdtJQIONntn5AJAHIERliOsgzOs517JXXMocF
+         oSNx8zbP3bzrKtQ+Q0U/FUvc7YXgWsZeX/rjoZmwbweV+9eak2buR2/m5cRHFRd6Vn06
+         SJnFMOdEdzDr6BbtOa+kdaB0xspbzqqyZDPdq8UuZ0qscd1bJ+v6oE5oZKkm9UX5LLzW
+         Iwvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Rr2Pmo9V1ip7mpaWN6TKvPgMKQ/gdhrNUf8Hfcj3w28=;
+        b=Yi0FwFolrFxnbMwHIjFL4Qky7++pHD+vYeNcHK6aqYWpBE1MGqzVw913anjjDxvD0n
+         ETGS9SvqD2hN7FdA2hvFPkCptx7GvRUdVj2yD2Skcb8pkXeJ+bfvyT7C3LuS33nv1IiV
+         ovXSE0ewV/QLb2aQMMH+MlHLh6lxtf3yVD1ZczG3HOOgCa3/JsFBR6OHxT47MH4P6Q0z
+         MM3n0zceZN/FLpgUIPUNmfETgw/admokkVjLbNkQH/kgVww7sGZlwGS44T3+30Z6Y576
+         ClRB7zI8qYYKv9I4laToQ7yXrKNCHW2Ie9lA6o6IDRSQtLk0t98IayhnZJi4hfWRvF2l
+         S5Kw==
+X-Gm-Message-State: ACgBeo1SFGAgywQhlOjSiC5d1igf8vG+pSORtBl//Pf+Sau6aPUAjid4
+        XLHj8cHPkbqotuwjwQBim0Bi2w==
+X-Google-Smtp-Source: AA6agR6ya5W9EiMXXKHhiSITfTpXmFpxuzceNoHfF8stnLD/15dphS0KEkGx6o/Lc1lNBXuUKRvaIg==
+X-Received: by 2002:a17:902:e74a:b0:16e:d768:158e with SMTP id p10-20020a170902e74a00b0016ed768158emr2123220plf.12.1659623549147;
+        Thu, 04 Aug 2022 07:32:29 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id i15-20020a170902c94f00b0016beceac426sm1071892pla.138.2022.08.04.07.32.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Aug 2022 07:32:28 -0700 (PDT)
+Message-ID: <5756a75e-ea84-a04b-be07-90e7ee6626d6@kernel.dk>
+Date:   Thu, 4 Aug 2022 08:32:27 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] audit, io_uring, io-wq: Fix memory leak in
+ io_sq_thread() and io_wqe_worker()
+Content-Language: en-US
+To:     Paul Moore <paul@paul-moore.com>, Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     Pavel Begunkov <asml.silence@gmail.com>,
+        Eric Paris <eparis@redhat.com>,
+        Peilin Ye <peilin.ye@bytedance.com>, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-audit@redhat.com
+References: <20220803050230.30152-1-yepeilin.cs@gmail.com>
+ <20220803222343.31673-1-yepeilin.cs@gmail.com>
+ <CAHC9VhSjA444kYPEsBwWz3fuvY7ohmYb-HKWej4EmBy4mbS4Fw@mail.gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <CAHC9VhSjA444kYPEsBwWz3fuvY7ohmYb-HKWej4EmBy4mbS4Fw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tracing_multi
-head:   3f77a2c51293ea19f1ce6a9b06b9fa394beecd13
-commit: e005380dc118dbc67a921f1797c50541f4c3f1e5 [12/18] bpf: Add support to create tracing multi link
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220804/202208042254.Lnk0UNlF-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=e005380dc118dbc67a921f1797c50541f4c3f1e5
-        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-        git fetch --no-tags jolsa-perf bpf/tracing_multi
-        git checkout e005380dc118dbc67a921f1797c50541f4c3f1e5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
+On 8/4/22 7:51 AM, Paul Moore wrote:
+> On Wed, Aug 3, 2022 at 6:24 PM Peilin Ye <yepeilin.cs@gmail.com> wrote:
+>>
+>> From: Peilin Ye <peilin.ye@bytedance.com>
+>>
+>> Currently @audit_context is allocated twice for io_uring workers:
+>>
+>>   1. copy_process() calls audit_alloc();
+>>   2. io_sq_thread() or io_wqe_worker() calls audit_alloc_kernel() (which
+>>      is effectively audit_alloc()) and overwrites @audit_context,
+>>      causing:
+>>
+>>   BUG: memory leak
+>>   unreferenced object 0xffff888144547400 (size 1024):
+>> <...>
+>>     hex dump (first 32 bytes):
+>>       00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
+>>       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>>     backtrace:
+>>       [<ffffffff8135cfc3>] audit_alloc+0x133/0x210
+>>       [<ffffffff81239e63>] copy_process+0xcd3/0x2340
+>>       [<ffffffff8123b5f3>] create_io_thread+0x63/0x90
+>>       [<ffffffff81686604>] create_io_worker+0xb4/0x230
+>>       [<ffffffff81686f68>] io_wqe_enqueue+0x248/0x3b0
+>>       [<ffffffff8167663a>] io_queue_iowq+0xba/0x200
+>>       [<ffffffff816768b3>] io_queue_async+0x113/0x180
+>>       [<ffffffff816840df>] io_req_task_submit+0x18f/0x1a0
+>>       [<ffffffff816841cd>] io_apoll_task_func+0xdd/0x120
+>>       [<ffffffff8167d49f>] tctx_task_work+0x11f/0x570
+>>       [<ffffffff81272c4e>] task_work_run+0x7e/0xc0
+>>       [<ffffffff8125a688>] get_signal+0xc18/0xf10
+>>       [<ffffffff8111645b>] arch_do_signal_or_restart+0x2b/0x730
+>>       [<ffffffff812ea44e>] exit_to_user_mode_prepare+0x5e/0x180
+>>       [<ffffffff844ae1b2>] syscall_exit_to_user_mode+0x12/0x20
+>>       [<ffffffff844a7e80>] do_syscall_64+0x40/0x80
+>>
+>> Then,
+>>
+>>   3. io_sq_thread() or io_wqe_worker() frees @audit_context using
+>>      audit_free();
+>>   4. do_exit() eventually calls audit_free() again, which is okay
+>>      because audit_free() does a NULL check.
+>>
+>> As suggested by Paul Moore, fix it by deleting audit_alloc_kernel() and
+>> redundant audit_free() calls.
+>>
+>> Fixes: 5bd2182d58e9 ("audit,io_uring,io-wq: add some basic audit support to io_uring")
+>> Suggested-by: Paul Moore <paul@paul-moore.com>
+>> Cc: stable@vger.kernel.org
+>> Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+>> ---
+>> Change since v1:
+>>   - Delete audit_alloc_kernel() (Paul Moore)
+>>
+>>  fs/io-wq.c            |  3 ---
+>>  fs/io_uring.c         |  4 ----
+>>  include/linux/audit.h |  5 -----
+>>  kernel/auditsc.c      | 25 -------------------------
+>>  4 files changed, 37 deletions(-)
+> 
+> This looks good to me, thanks!  Although it looks like the io_uring
+> related changes will need to be applied by hand as they are pointing
+> to the old layout under fs/ as opposed to the newer layout in
+> io_uring/ introduced during this merge window.
+> 
+> Jens, did you want to take this via the io_uring tree or should I take
+> it via the audit tree?  If the latter, an ACK would be appreciated, if
+> the former my ACK is below.
+> 
+> Acked-by: Paul Moore <paul@paul-moore.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All error/warnings (new ones prefixed by >>):
-
-   In file included from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from arch/x86/um/ldt.c:9:
->> include/linux/trace_events.h:797:5: warning: no previous prototype for 'bpf_tracing_multi_attach' [-Wmissing-prototypes]
-     797 | int bpf_tracing_multi_attach(struct bpf_prog *prog, const union bpf_attr *attr)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
---
-   In file included from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from arch/x86/um/tls_32.c:8:
->> include/linux/trace_events.h:797:5: warning: no previous prototype for 'bpf_tracing_multi_attach' [-Wmissing-prototypes]
-     797 | int bpf_tracing_multi_attach(struct bpf_prog *prog, const union bpf_attr *attr)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
-   arch/x86/um/tls_32.c:23:5: warning: no previous prototype for 'do_set_thread_area' [-Wmissing-prototypes]
-      23 | int do_set_thread_area(struct user_desc *info)
-         |     ^~~~~~~~~~~~~~~~~~
-   arch/x86/um/tls_32.c:39:5: warning: no previous prototype for 'do_get_thread_area' [-Wmissing-prototypes]
-      39 | int do_get_thread_area(struct user_desc *info)
-         |     ^~~~~~~~~~~~~~~~~~
-   arch/x86/um/tls_32.c:187:5: warning: no previous prototype for 'arch_switch_tls' [-Wmissing-prototypes]
-     187 | int arch_switch_tls(struct task_struct *to)
-         |     ^~~~~~~~~~~~~~~
---
-   In file included from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from kernel/fork.c:55:
->> include/linux/trace_events.h:797:5: warning: no previous prototype for 'bpf_tracing_multi_attach' [-Wmissing-prototypes]
-     797 | int bpf_tracing_multi_attach(struct bpf_prog *prog, const union bpf_attr *attr)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/fork.c:163:13: warning: no previous prototype for 'arch_release_task_struct' [-Wmissing-prototypes]
-     163 | void __weak arch_release_task_struct(struct task_struct *tsk)
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/fork.c:852:20: warning: no previous prototype for 'arch_task_cache_init' [-Wmissing-prototypes]
-     852 | void __init __weak arch_task_cache_init(void) { }
-         |                    ^~~~~~~~~~~~~~~~~~~~
-   kernel/fork.c:947:12: warning: no previous prototype for 'arch_dup_task_struct' [-Wmissing-prototypes]
-     947 | int __weak arch_dup_task_struct(struct task_struct *dst,
-         |            ^~~~~~~~~~~~~~~~~~~~
---
-   In file included from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from kernel/exit.c:42:
->> include/linux/trace_events.h:797:5: warning: no previous prototype for 'bpf_tracing_multi_attach' [-Wmissing-prototypes]
-     797 | int bpf_tracing_multi_attach(struct bpf_prog *prog, const union bpf_attr *attr)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/exit.c:1814:13: warning: no previous prototype for 'abort' [-Wmissing-prototypes]
-    1814 | __weak void abort(void)
-         |             ^~~~~
---
-   In file included from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from include/linux/syscalls_api.h:1,
-                    from kernel/sched/sched.h:60,
-                    from kernel/sched/fair.c:54:
->> include/linux/trace_events.h:797:5: warning: no previous prototype for 'bpf_tracing_multi_attach' [-Wmissing-prototypes]
-     797 | int bpf_tracing_multi_attach(struct bpf_prog *prog, const union bpf_attr *attr)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:675:5: warning: no previous prototype for 'sched_update_scaling' [-Wmissing-prototypes]
-     675 | int sched_update_scaling(void)
-         |     ^~~~~~~~~~~~~~~~~~~~
---
-   In file included from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from fs/pipe.c:24:
->> include/linux/trace_events.h:797:5: warning: no previous prototype for 'bpf_tracing_multi_attach' [-Wmissing-prototypes]
-     797 | int bpf_tracing_multi_attach(struct bpf_prog *prog, const union bpf_attr *attr)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
-   fs/pipe.c:757:15: warning: no previous prototype for 'account_pipe_buffers' [-Wmissing-prototypes]
-     757 | unsigned long account_pipe_buffers(struct user_struct *user,
-         |               ^~~~~~~~~~~~~~~~~~~~
-   fs/pipe.c:763:6: warning: no previous prototype for 'too_many_pipe_buffers_soft' [-Wmissing-prototypes]
-     763 | bool too_many_pipe_buffers_soft(unsigned long user_bufs)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/pipe.c:770:6: warning: no previous prototype for 'too_many_pipe_buffers_hard' [-Wmissing-prototypes]
-     770 | bool too_many_pipe_buffers_hard(unsigned long user_bufs)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/pipe.c:777:6: warning: no previous prototype for 'pipe_is_unprivileged_user' [-Wmissing-prototypes]
-     777 | bool pipe_is_unprivileged_user(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/pipe.c:1253:5: warning: no previous prototype for 'pipe_resize_ring' [-Wmissing-prototypes]
-    1253 | int pipe_resize_ring(struct pipe_inode_info *pipe, unsigned int nr_slots)
-         |     ^~~~~~~~~~~~~~~~
---
-   In file included from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from fs/d_path.c:2:
->> include/linux/trace_events.h:797:5: warning: no previous prototype for 'bpf_tracing_multi_attach' [-Wmissing-prototypes]
-     797 | int bpf_tracing_multi_attach(struct bpf_prog *prog, const union bpf_attr *attr)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
-   fs/d_path.c:318:7: warning: no previous prototype for 'simple_dname' [-Wmissing-prototypes]
-     318 | char *simple_dname(struct dentry *dentry, char *buffer, int buflen)
-         |       ^~~~~~~~~~~~
---
-   In file included from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from fs/io_uring.c:45:
->> include/linux/trace_events.h:797:5: warning: no previous prototype for 'bpf_tracing_multi_attach' [-Wmissing-prototypes]
-     797 | int bpf_tracing_multi_attach(struct bpf_prog *prog, const union bpf_attr *attr)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
-   fs/io_uring.c: In function '__io_submit_flush_completions':
-   fs/io_uring.c:3150:40: warning: variable 'prev' set but not used [-Wunused-but-set-variable]
-    3150 |         struct io_wq_work_node *node, *prev;
-         |                                        ^~~~
---
-   In file included from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from kernel/time/hrtimer.c:30:
->> include/linux/trace_events.h:797:5: warning: no previous prototype for 'bpf_tracing_multi_attach' [-Wmissing-prototypes]
-     797 | int bpf_tracing_multi_attach(struct bpf_prog *prog, const union bpf_attr *attr)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/time/hrtimer.c:120:35: warning: initialized field overwritten [-Woverride-init]
-     120 |         [CLOCK_REALTIME]        = HRTIMER_BASE_REALTIME,
-         |                                   ^~~~~~~~~~~~~~~~~~~~~
-   kernel/time/hrtimer.c:120:35: note: (near initialization for 'hrtimer_clock_to_base_table[0]')
-   kernel/time/hrtimer.c:121:35: warning: initialized field overwritten [-Woverride-init]
-     121 |         [CLOCK_MONOTONIC]       = HRTIMER_BASE_MONOTONIC,
-         |                                   ^~~~~~~~~~~~~~~~~~~~~~
-   kernel/time/hrtimer.c:121:35: note: (near initialization for 'hrtimer_clock_to_base_table[1]')
-   kernel/time/hrtimer.c:122:35: warning: initialized field overwritten [-Woverride-init]
-     122 |         [CLOCK_BOOTTIME]        = HRTIMER_BASE_BOOTTIME,
-         |                                   ^~~~~~~~~~~~~~~~~~~~~
-   kernel/time/hrtimer.c:122:35: note: (near initialization for 'hrtimer_clock_to_base_table[7]')
-   kernel/time/hrtimer.c:123:35: warning: initialized field overwritten [-Woverride-init]
-     123 |         [CLOCK_TAI]             = HRTIMER_BASE_TAI,
-         |                                   ^~~~~~~~~~~~~~~~
-   kernel/time/hrtimer.c:123:35: note: (near initialization for 'hrtimer_clock_to_base_table[11]')
-   kernel/time/hrtimer.c: In function '__run_hrtimer':
-   kernel/time/hrtimer.c:1648:14: warning: variable 'expires_in_hardirq' set but not used [-Wunused-but-set-variable]
-    1648 |         bool expires_in_hardirq;
-         |              ^~~~~~~~~~~~~~~~~~
---
-   In file included from include/trace/syscall.h:7,
-                    from include/linux/syscalls.h:88,
-                    from net/socket.c:79:
->> include/linux/trace_events.h:797:5: warning: no previous prototype for 'bpf_tracing_multi_attach' [-Wmissing-prototypes]
-     797 | int bpf_tracing_multi_attach(struct bpf_prog *prog, const union bpf_attr *attr)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
-   net/socket.c: In function '__sys_getsockopt':
-   net/socket.c:2278:13: warning: variable 'max_optlen' set but not used [-Wunused-but-set-variable]
-    2278 |         int max_optlen;
-         |             ^~~~~~~~~~
---
-   ld: init/do_mounts.o: in function `bpf_tracing_multi_attach':
->> do_mounts.c:(.text+0x37e): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: init/noinitramfs.o: in function `bpf_tracing_multi_attach':
-   noinitramfs.c:(.text+0x0): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: arch/um/drivers/mconsole_kern.o: in function `bpf_tracing_multi_attach':
-   mconsole_kern.c:(.text+0x7ae): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: arch/x86/um/ldt.o: in function `bpf_tracing_multi_attach':
-   ldt.c:(.text+0x59e): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: arch/x86/um/tls_32.o: in function `bpf_tracing_multi_attach':
-   tls_32.c:(.text+0x199): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: arch/x86/um/../kernel/sys_ia32.o: in function `bpf_tracing_multi_attach':
-   sys_ia32.c:(.text+0x0): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: arch/x86/um/syscalls_32.o: in function `bpf_tracing_multi_attach':
-   syscalls_32.c:(.text+0x0): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/fork.o: in function `bpf_tracing_multi_attach':
-   fork.c:(.text+0xa10): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/exec_domain.o: in function `bpf_tracing_multi_attach':
-   exec_domain.c:(.text+0x13): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/cpu.o: in function `bpf_tracing_multi_attach':
-   cpu.c:(.text+0x4c9): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/exit.o: in function `bpf_tracing_multi_attach':
-   exit.c:(.text+0x5a1): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/sysctl.o: in function `bpf_tracing_multi_attach':
-   sysctl.c:(.text+0xf71): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/capability.o: in function `bpf_tracing_multi_attach':
-   capability.c:(.text+0x4e7): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/ptrace.o: in function `bpf_tracing_multi_attach':
-   ptrace.c:(.text+0x1c5): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/signal.o: in function `bpf_tracing_multi_attach':
-   signal.c:(.text+0x967): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/sys.o: in function `bpf_tracing_multi_attach':
-   sys.c:(.text+0xeb8): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/umh.o: in function `bpf_tracing_multi_attach':
-   umh.c:(.text+0x628): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/pid.o: in function `bpf_tracing_multi_attach':
-   pid.c:(.text+0x1ef): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/nsproxy.o: in function `bpf_tracing_multi_attach':
-   nsproxy.c:(.text+0x202): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/reboot.o: in function `bpf_tracing_multi_attach':
-   reboot.c:(.text+0x520): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/kmod.o: in function `bpf_tracing_multi_attach':
-   kmod.c:(.text+0x27f): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/groups.o: in function `bpf_tracing_multi_attach':
-   groups.c:(.text+0x110): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/sched/core.o: in function `bpf_tracing_multi_attach':
-   core.c:(.text+0x9d4): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/sched/fair.o: in function `bpf_tracing_multi_attach':
-   fair.c:(.text+0xfbd): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/sched/build_policy.o: in function `bpf_tracing_multi_attach':
-   build_policy.c:(.text+0x1915): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/sched/build_utility.o: in function `bpf_tracing_multi_attach':
-   build_utility.c:(.text+0x1138): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/power/qos.o: in function `bpf_tracing_multi_attach':
-   qos.c:(.text+0x157): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/power/main.o: in function `bpf_tracing_multi_attach':
-   main.c:(.text+0x5c2): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/power/process.o: in function `bpf_tracing_multi_attach':
-   process.c:(.text+0x276): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/power/suspend.o: in function `bpf_tracing_multi_attach':
-   suspend.c:(.text+0x100): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/printk/printk.o: in function `bpf_tracing_multi_attach':
-   printk.c:(.text+0x1d8b): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/module/main.o: in function `bpf_tracing_multi_attach':
-   main.c:(.text+0x7a0): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/freezer.o: in function `bpf_tracing_multi_attach':
-   freezer.c:(.text+0x149): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/time/time.o: in function `bpf_tracing_multi_attach':
-   time.c:(.text+0x51c): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/time/timer.o: in function `bpf_tracing_multi_attach':
-   timer.c:(.text+0x9c0): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/time/hrtimer.o: in function `bpf_tracing_multi_attach':
-   hrtimer.c:(.text+0xbb2): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/time/posix-timers.o: in function `bpf_tracing_multi_attach':
-   posix-timers.c:(.text+0xc60): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/time/posix-clock.o: in function `bpf_tracing_multi_attach':
-   posix-clock.c:(.text+0x3c7): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/time/itimer.o: in function `bpf_tracing_multi_attach':
-   itimer.c:(.text+0x522): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/time/tick-common.o: in function `bpf_tracing_multi_attach':
-   tick-common.c:(.text+0xa6): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/futex/syscalls.o: in function `bpf_tracing_multi_attach':
-   syscalls.c:(.text+0x60): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/uid16.o: in function `bpf_tracing_multi_attach':
-   uid16.c:(.text+0x41): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/acct.o: in function `bpf_tracing_multi_attach':
-   acct.c:(.text+0x7b6): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: kernel/seccomp.o: in function `bpf_tracing_multi_attach':
-   seccomp.c:(.text+0x1159): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: mm/oom_kill.o: in function `bpf_tracing_multi_attach':
-   oom_kill.c:(.text+0x1ee): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: mm/fadvise.o: in function `bpf_tracing_multi_attach':
-   fadvise.c:(.text+0x1fa): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: mm/page-writeback.o: in function `bpf_tracing_multi_attach':
-   page-writeback.c:(.text+0x15cf): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: mm/readahead.o: in function `bpf_tracing_multi_attach':
-   readahead.c:(.text+0x454): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: mm/shmem.o: in function `bpf_tracing_multi_attach':
-   shmem.c:(.text+0x23c7): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: mm/debug.o: in function `bpf_tracing_multi_attach':
-   debug.c:(.text+0x1aa): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-   ld: mm/mmap_lock.o: in function `bpf_tracing_multi_attach':
-   mmap_lock.c:(.text+0x0): multiple definition of `bpf_tracing_multi_attach'; init/main.o:main.c:(.text+0x70): first defined here
-..
+Probably better if I take it, since I need to massage it into the
+current tree anyway. We can then use this one as the base for the stable
+backports that are going to be required.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Jens Axboe
+
