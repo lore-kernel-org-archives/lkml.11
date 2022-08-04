@@ -2,177 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5E2C00144
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 04:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCCA0C00144
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 04:55:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238788AbiHDExb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 00:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
+        id S238755AbiHDEz0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 00:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238725AbiHDEx1 (ORCPT
+        with ESMTP id S229991AbiHDEzY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 00:53:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 144325F9B9
-        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 21:53:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659588805;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OLmka0NC3UlfBuYckPNASUIU1cERM9leULZwcp5E6j4=;
-        b=Ka08RA122PHXGQkfLfjiGk7FJK+r0Nmc+cX40mvz11B36cB4VZlQHaAfvCZIomsPtENxCK
-        jGCrAF3QxuxHlV/wVmv2n0Rxc4ghcu4COAru1ArEVn97DDPBWNINexvn9jwiR3arjgPzag
-        LUs3oGPAbup9q1S+HNysv/ZQZ7mqp1E=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-594-EpHnSM9dO8KOPYsQSwKELw-1; Thu, 04 Aug 2022 00:53:24 -0400
-X-MC-Unique: EpHnSM9dO8KOPYsQSwKELw-1
-Received: by mail-lf1-f70.google.com with SMTP id m5-20020ac24245000000b0048a7c6bf079so5620700lfl.15
-        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 21:53:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OLmka0NC3UlfBuYckPNASUIU1cERM9leULZwcp5E6j4=;
-        b=fk4A7juF8GrYF6TvtR8EKKkLR4ziKJQahiRm4xX51ekDcgyQ0vP1NtXklsnvbzcOPR
-         /sBYXccEQFMbMATLhkSndsW0UnEzcladgJfrtqCWjAohIdPvCIIzt0AtHq6LDdJa5wE0
-         f4gQfaHF4IBZ7mDm31SW52NU7JQnoROk/Lycb/ZMj95uKUvM8Sz3aGhrnTmarNxuDGXG
-         IoTEfSN74SrBU2SI4aSGZIjyCD3dVExPNEfPtcDyr+Nufk+9Xt92MVZobTI6YJztDBxh
-         D/csam7huwFuMxryTArXOJVOwJHXJMD6LWgWiSBPHiJiLdeQuXVm2ePX4AwsklcAF5q9
-         PoOA==
-X-Gm-Message-State: ACgBeo0CVpOmvw+BlJVRI0LJE18VgvDkTpNbdQxz/AQlVcEeFU8Sepdn
-        70jPtPZv1Mg0/QhG3XDGLnQbgIk693lasT38FaTCE2u4I7LcQedFK3Kp6ia9NcWUpJ5Ba5vmLOm
-        MiuEdGrMvZx4YTQ1QerI9vFGTqwK7nApVz+qEzaBo
-X-Received: by 2002:a05:6512:3f0e:b0:48a:5edd:99b2 with SMTP id y14-20020a0565123f0e00b0048a5edd99b2mr82485lfa.124.1659588800238;
-        Wed, 03 Aug 2022 21:53:20 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4E+uvfcwgkuiwuzZB+8RJjAjNJM0hEmaUlpNaRuyeUjSSQarpOIMjsof16sQtNs6Wj+6Y44uUEG5p2j1j0Q+g=
-X-Received: by 2002:a05:6512:3f0e:b0:48a:5edd:99b2 with SMTP id
- y14-20020a0565123f0e00b0048a5edd99b2mr82481lfa.124.1659588800034; Wed, 03 Aug
- 2022 21:53:20 -0700 (PDT)
+        Thu, 4 Aug 2022 00:55:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457419FE2;
+        Wed,  3 Aug 2022 21:55:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5D40B82493;
+        Thu,  4 Aug 2022 04:55:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CE07C433D6;
+        Thu,  4 Aug 2022 04:55:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659588920;
+        bh=HnsU+b8k30Q3vGwqLH//3BHKuwTI/NeOTRFdsLejRrY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pHPZDwP7URy67k76afgFsEaz5LW9tQzOCmSft6/vcJu8aciaTzdAWofgx+XM8Sq4N
+         DjB17lmc1LbgW5iBiMzTw8yGUXnhz1Trs8soeRPY8jJOZwie3qHaATQaCtquHk1cGX
+         kDK2tsPnl5kA5ZQdYLWVwPG3DDt06onaQaFF9EcfS+/pEVkb2PVBet5MbfLbJlm2bN
+         Tyvdz0T56hm4iulHmW6/hGgQQDU3TeCF/1VgEP0/SVSQpO3YiC17hQYsaMlm6kCpC3
+         eQ1y1wOWTPNJM+1uhjqquAfyDiDIaHzyf6gTs5Ng2qNfa+2nGZhq05qL3p/G+L1U9M
+         NRxPO6GkMnULg==
+Date:   Wed, 3 Aug 2022 21:55:18 -0700
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Chen Zhongjin <chenzhongjin@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-arch@vger.kernel.org, peterz@infradead.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com, mbenes@suse.cz
+Subject: Re: [PATCH] Revert "x86/unwind/orc: Don't skip the first frame for
+ inactive tasks"
+Message-ID: <20220804045518.bfhe3rxhpkxzn4hk@treble>
+References: <20220727031506.59322-1-chenzhongjin@huawei.com>
 MIME-Version: 1.0
-References: <20220803045523.23851-1-xieyongji@bytedance.com> <20220803045523.23851-6-xieyongji@bytedance.com>
-In-Reply-To: <20220803045523.23851-6-xieyongji@bytedance.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 4 Aug 2022 12:53:09 +0800
-Message-ID: <CACGkMEs4LxYh1K3O=ycu-r+AJjSmvrJpHZbw+i+SDM-w-pbm+A@mail.gmail.com>
-Subject: Re: [PATCH v5 5/5] vduse: Support querying information of IOVA regions
-To:     Xie Yongji <xieyongji@bytedance.com>
-Cc:     mst <mst@redhat.com>, Liu Xiaodong <xiaodong.liu@intel.com>,
-        Maxime Coquelin <maxime.coquelin@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220727031506.59322-1-chenzhongjin@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 3, 2022 at 12:56 PM Xie Yongji <xieyongji@bytedance.com> wrote:
->
-> This introduces a new ioctl: VDUSE_IOTLB_GET_INFO to
-> support querying some information of IOVA regions.
->
-> Now it can be used to query whether the IOVA region
-> supports userspace memory registration.
->
-> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+On Wed, Jul 27, 2022 at 11:15:06AM +0800, Chen Zhongjin wrote:
+> This reverts commit f1d9a2abff66aa8156fbc1493abed468db63ea48.
+> 
+> When CONFIG_GCOV_PROFILE_ALL is enabled, show_stack() and related
+> functions (e.g. dump_stack) will break for x86 ORC unwinder.
+> 
+> Call Trace:
+>  <TASK>
+>  ? dump_stack_lvl+0x83/0xb7
+>  ? schedule+0x1/0x190
+>  ? dump_stack+0x13/0x1f
+>  ? handler_pre0+0x3f/0x53 [kp_unwind]
+>  ...
+> 
+> show_trace_log_lvl() searches text address on stack to validate
+> whether unwind results are reliable. The code:
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+Hi,
 
-> ---
->  drivers/vdpa/vdpa_user/vduse_dev.c | 39 ++++++++++++++++++++++++++++++
->  include/uapi/linux/vduse.h         | 24 ++++++++++++++++++
->  2 files changed, 63 insertions(+)
->
-> diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
-> index eedff0a3885a..41c0b29739f1 100644
-> --- a/drivers/vdpa/vdpa_user/vduse_dev.c
-> +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
-> @@ -1228,6 +1228,45 @@ static long vduse_dev_ioctl(struct file *file, unsigned int cmd,
->                                            umem.size);
->                 break;
->         }
-> +       case VDUSE_IOTLB_GET_INFO: {
-> +               struct vduse_iova_info info;
-> +               struct vhost_iotlb_map *map;
-> +               struct vduse_iova_domain *domain = dev->domain;
-> +
-> +               ret = -EFAULT;
-> +               if (copy_from_user(&info, argp, sizeof(info)))
-> +                       break;
-> +
-> +               ret = -EINVAL;
-> +               if (info.start > info.last)
-> +                       break;
-> +
-> +               if (!is_mem_zero((const char *)info.reserved,
-> +                                sizeof(info.reserved)))
-> +                       break;
-> +
-> +               spin_lock(&domain->iotlb_lock);
-> +               map = vhost_iotlb_itree_first(domain->iotlb,
-> +                                             info.start, info.last);
-> +               if (map) {
-> +                       info.start = map->start;
-> +                       info.last = map->last;
-> +                       info.capability = 0;
-> +                       if (domain->bounce_map && map->start == 0 &&
-> +                           map->last == domain->bounce_size - 1)
-> +                               info.capability |= VDUSE_IOVA_CAP_UMEM;
-> +               }
-> +               spin_unlock(&domain->iotlb_lock);
-> +               if (!map)
-> +                       break;
-> +
-> +               ret = -EFAULT;
-> +               if (copy_to_user(argp, &info, sizeof(info)))
-> +                       break;
-> +
-> +               ret = 0;
-> +               break;
-> +       }
->         default:
->                 ret = -ENOIOCTLCMD;
->                 break;
-> diff --git a/include/uapi/linux/vduse.h b/include/uapi/linux/vduse.h
-> index 9885e0571f09..11bd48c72c6c 100644
-> --- a/include/uapi/linux/vduse.h
-> +++ b/include/uapi/linux/vduse.h
-> @@ -233,6 +233,30 @@ struct vduse_iova_umem {
->  /* De-register the userspace memory. Caller should set iova and size field. */
->  #define VDUSE_IOTLB_DEREG_UMEM _IOW(VDUSE_BASE, 0x19, struct vduse_iova_umem)
->
-> +/**
-> + * struct vduse_iova_info - information of one IOVA region
-> + * @start: start of the IOVA region
-> + * @last: last of the IOVA region
-> + * @capability: capability of the IOVA regsion
-> + * @reserved: for future use, needs to be initialized to zero
-> + *
-> + * Structure used by VDUSE_IOTLB_GET_INFO ioctl to get information of
-> + * one IOVA region.
-> + */
-> +struct vduse_iova_info {
-> +       __u64 start;
-> +       __u64 last;
-> +#define VDUSE_IOVA_CAP_UMEM (1 << 0)
-> +       __u64 capability;
-> +       __u64 reserved[3];
-> +};
-> +
-> +/*
-> + * Find the first IOVA region that overlaps with the range [start, last]
-> + * and return some information on it. Caller should set start and last fields.
-> + */
-> +#define VDUSE_IOTLB_GET_INFO   _IOWR(VDUSE_BASE, 0x1a, struct vduse_iova_info)
-> +
->  /* The control messages definition for read(2)/write(2) on /dev/vduse/$NAME */
->
->  /**
-> --
-> 2.20.1
->
+Thanks for the patch.  The change itself makes sense, though I'm having
+trouble recreating the bug described in the patch description.
 
+I enabled CONFIG_GCOV_PROFILE_ALL and did 'echo l >
+/proc/sysrq-trigger', but I got a valid stack trace:
+
+  # echo l > /proc/sysrq-trigger
+  [  343.916728] sysrq: Show backtrace of all active CPUs
+  [  343.917459] NMI backtrace for cpu 2
+  [  343.917884] CPU: 2 PID: 1007 Comm: bash Not tainted 5.19.0-rc8+ #68
+  [  343.918562] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.0-1.fc36 04/01/2014
+  [  343.919534] Call Trace:
+  [  343.919904]  <TASK>
+  [  343.920226]  dump_stack_lvl+0xcc/0x11b
+  [  343.920742]  dump_stack+0x17/0x24
+  [  343.921199]  nmi_cpu_backtrace.cold+0xb5/0x10d
+  [  343.921795]  ? lapic_can_unplug_cpu+0xa0/0xa0
+  [  343.922375]  nmi_trigger_cpumask_backtrace+0x171/0x200
+  [  343.923053]  arch_trigger_cpumask_backtrace+0x21/0x30
+  [  343.923599]  sysrq_handle_showallcpus+0x1f/0x30
+  [  343.924104]  __handle_sysrq.cold+0x81/0x234
+  [  343.924576]  write_sysrq_trigger+0x6a/0x90
+  [  343.925098]  proc_reg_write+0x99/0x120
+  [  343.925587]  vfs_write+0x16c/0x350
+  [  343.926093]  ksys_write+0x8c/0x180
+  [  343.926597]  __x64_sys_write+0x21/0x30
+  [  343.927144]  do_syscall_64+0x76/0x100
+  [  343.927676]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+  [  343.928343] RIP: 0033:0x7f555e8f7b50
+  [  343.928822] Code: 73 01 c3 48 8b 0d 38 83 2c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 79 db 2c 00 00 75 10 b8 01 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 1e e3 01 00 48 89 04 24
+  [  343.930801] RSP: 002b:00007ffdd20d0978 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+  [  343.931761] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f555e8f7b50
+  [  343.932551] RDX: 0000000000000002 RSI: 000055ff471bfe20 RDI: 0000000000000001
+  [  343.933347] RBP: 000055ff471bfe20 R08: 00007f555ebc2740 R09: 00007f555f80f700
+  [  343.934155] R10: 0000000000000073 R11: 0000000000000246 R12: 0000000000000002
+  [  343.934962] R13: 0000000000000001 R14: 00007f555ebc15e0 R15: 00007f555ebbd3c0
+  [  343.935798]  </TASK>
+  [  343.936341] Sending NMI from CPU 2 to CPUs 0-1,3:
+  [  343.937163] NMI backtrace for cpu 3
+  [  343.937167] CPU: 3 PID: 600 Comm: systemd-journal Not tainted 5.19.0-rc8+ #68
+
+Was this with an upstream kernel?  Can you share the config and
+toolchain versions?
+
+-- 
+Josh
