@@ -2,104 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD14C19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 08:40:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F1E8C19F2C
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 08:40:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239204AbiHDIkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 04:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46240 "EHLO
+        id S239460AbiHDIku (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 04:40:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232031AbiHDIko (ORCPT
+        with ESMTP id S229823AbiHDIko (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 4 Aug 2022 04:40:44 -0400
-Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A257022B2C;
-        Thu,  4 Aug 2022 01:40:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1659602405; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=HRa3cgBUGDhLJOtXf2p82GY0rr1az36E7wc+47StGrLH24UiWFXG02fYWxBaIkRwq4b6HktX88yLGouzmORH98fcPv34XoxZSUkd9ALyKhkdMrO6IavL66N9GhRKAv9CeB+KaSf+fozh9nMccDG2w7ZB7oGgZar3TWS9XP8bbEc=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1659602405; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=r2MuNRxKA7fyF0B0LyObbHN/r25kRQ6vAlitFSyZznY=; 
-        b=M45y1dKNyTY6JZnb43I7pv82XRyC3YLpg0KUU3Z2jYxw4jUzWFL3SRIhgb1YgsCzgrEqGtum2r95MDP7DKrwTAXsGA2hMLk9Yil1KwgTRC7vfKSgk51gpve5kIJ8/hqq6eOqzK1kBfWKlkQGLz0Il1YEdPLhawnMXipl5Cj0pUo=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659602405;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=r2MuNRxKA7fyF0B0LyObbHN/r25kRQ6vAlitFSyZznY=;
-        b=T0BsybSAEPB/jwKl7nOSOJlUl9RcaSNLbHjm5I6vh4QRQfBm0T0UuTdRR9LJmJMt
-        jtJKYRrEWjDEh0edLVRQFLlYfJySlysO818hkuy3jjbnaGZPjWFIsUtZeVTL805Txbj
-        d57YVkn/WeDCN0HwAykHwjczjl1VaQ3Ln1wL5zdU=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 1659602376436867.9051997344565; Thu, 4 Aug 2022 14:09:36 +0530 (IST)
-Date:   Thu, 04 Aug 2022 14:09:36 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "Eric Biggers" <ebiggers@kernel.org>
-Cc:     "David Howells" <dhowells@redhat.com>,
-        "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        "linux-security-modules" <linux-security-module@vger.kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "linux-kernel-mentees" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        "syzbot+c70d87ac1d001f29a058" 
-        <syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com>
-Message-ID: <182680296de.8276ed8742454.8804921618540697946@siddh.me>
-In-Reply-To: <Yuq7Q//SH/HjLsxH@gmail.com>
-References: <20220728155121.12145-1-code@siddh.me>
- <YunKlJCDlmyn2hJ4@sol.localdomain>
- <18261d8a63a.33799d2a402802.7512018232560408914@siddh.me>
- <Yun1rC59USrgd0fu@sol.localdomain>
- <182621f8dca.1e0e6161130907.1470656861897824669@siddh.me>
- <YuoKi0GigXm/Hcb+@sol.localdomain>
- <18262dcb20e.4bf31faa421018.1228982721921458740@siddh.me> <Yuq7Q//SH/HjLsxH@gmail.com>
-Subject: Re: [PATCH v3] kernel/watch_queue: Make pipe NULL while clearing
- watch_queue
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA16525C72
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 01:40:43 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id e8-20020a17090a280800b001f2fef7886eso4827678pjd.3
+        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 01:40:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=a2oIHkAvkJO2cSfKWxioTgiamZhg17v1e6s9LLinDPg=;
+        b=p9gBnon7Qe4+n3jGGSchfH2hlPUh1qW2IZZUkGROGiAQBP615zModVjmiJdo1pXP7t
+         eI9kTMaHionxfwUx+d6J1/GPODQWR5hVB3IQ4ZF1bPX0EQd5y4l5iTeBhntKTdJImMXz
+         0uw5hMUF3hpAUVhFS4mmoGkds6WvqVJHDS9BMyxNXs6KdqnIrTBTh7858/Rzvy1w2OP9
+         RD5l1j4JMA/e1xX7KIhVp8EKUICQvemMlLwlRzMsJ+PU37vVhEO9rC94+7Vi64El0/uy
+         nJjEQJkmVqCkqj4yEFWhclu176syv+CVEbtmNb61sS5OQDQdM+KDdgGXQbEPip9NMi0e
+         F4sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=a2oIHkAvkJO2cSfKWxioTgiamZhg17v1e6s9LLinDPg=;
+        b=ikAu3xYyMs5wXhZ5HWi5tNvTsq9s9nxTcxB4R0s1FEacrqNMD4T3b3kcS03n73MKN3
+         PhToe37OxTjb4yKyQVLyLNg3RjtsOOGW2YUf6lgGRgt+YzlIMH9Y7E3O60V39v/bw4x3
+         u4HEmDnAWiI3tDFYPT0odHrpuwi7PSM6j40dcZ+rAqct442Z9roSLOUEtXkHOguQ5oUS
+         2+j389jkM41Wxl7xliXNpkT7n2Wq/OijEQtKb7RsVsMhWnmXuxTBY0/pH6KR/lyNZWg5
+         vxMkzK5AmSE5OjhV6U6quShug99jJi7rYjnipihFnD0JOqUB9xLPoFo51GvMiYjZFOpD
+         fdow==
+X-Gm-Message-State: ACgBeo2qJHXgvnn36DScDeDHcN/uxA8UkkX9o2D+rI1fNHML+Tm2bjsD
+        KcjbArCWQhzziym4+6cyhbPL5zPO3TI=
+X-Google-Smtp-Source: AA6agR7bbCaDD0oTap6AzaKjr4WaHeIizvt92qD+b8YbUMYrIEWjGkzBhPMaThBzMqGq/HUsnzD9wg==
+X-Received: by 2002:a17:90b:4a07:b0:1f5:1aff:4ab with SMTP id kk7-20020a17090b4a0700b001f51aff04abmr9575816pjb.216.1659602442783;
+        Thu, 04 Aug 2022 01:40:42 -0700 (PDT)
+Received: from localhost ([198.11.178.15])
+        by smtp.gmail.com with ESMTPSA id o16-20020a170902d4d000b0015e8d4eb2easm233783plg.308.2022.08.04.01.40.41
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 04 Aug 2022 01:40:42 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Tejun Heo <tj@kernel.org>, Petr Mladek <pmladek@suse.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Wedson Almeida Filho <wedsonaf@google.com>
+Subject: [RFC PATCH 0/8] workqueue: Fix for prematurely wakeups and cleanups
+Date:   Thu,  4 Aug 2022 16:41:27 +0800
+Message-Id: <20220804084135.92425-1-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 03 Aug 2022 23:45:31 +0530  Eric Biggers  wrote:
-> Well, you should try listening instead.  Because you are not listening.
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-Sorry for that, never meant to come across like that.
+Patch1-3 are fixes for prematurely wakeups and patch4-8 are cleanups.
 
-> Even if wqueue->pipe was set to NULL during free_pipe_info(), there would still
-> have been a use-after-free, as the real bug was the lack of synchronization
-> between post_one_notification() and free_pipe_info().  That is fixed now.
+Patch2 fixes when prematurely wakeup happens after kthread_bind_mask().
+Patch3 fixes when prematurely wakeup happens before kthread_bind_mask().
+Patch1 prepares for patch2-3.
 
-Okay, noted.
+Like Petr's patch[1], a completion is introduced to do the synchronization,
+but the synchronization is done in a different direction which allows the
+newly created worker itself do some initialization instead of the manager
+and allows for a more simplified code.
+(The changed synchronization direction is not necessarily better.)
 
-> To re-iterate, I encourage you to send a cleanup patch if you see an
-> opportunity.  It looks like the state wqueue->defunct==true could be replaced
-> with wqueue->pipe==NULL, which would be simpler, so how about doing that?  Just
-> don't claim that it is "fixing" something, unless it is, as that makes things
-> very confusing and difficult for everyone.
+And make workqueue code less dependence on the semantics that kthread
+provides.
 
-Okay, I will do that. That actually seems like a plausible thing to do, in
-v2 convo, David Howells had also remarked similarly about `defunct` to a reply.
 
-https://lore.kernel.org/linux-kernel/3565221.1658933355@warthog.procyon.org.uk/
+[1]: https://lore.kernel.org/all/20220622140853.31383-1-pmladek@suse.com/
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: "Eric W. Biederman" <ebiederm@xmission.com>
+Cc: Tejun Heo <tj@kernel.org>,
+Cc: Petr Mladek <pmladek@suse.com>
+Cc: Michal Hocko <mhocko@suse.com>,
+Cc: Peter Zijlstra <peterz@infradead.org>,
+Cc: Wedson Almeida Filho <wedsonaf@google.com>
 
-> A reproducer can just be written as a normal program, in C or another language.
-> The syzkaller reproducers are really hard to read as they are auto-generated, so
-> don't read too much into them -- they're certainly not examples of good code.
-> 
-> - Eric
+Lai Jiangshan (8):
+  workqueue: Unconditionally set cpumask in worker_attach_to_pool()
+  workqueue: Make create_worker() safe against prematurely wakeups
+  workqueue: Set PF_NO_SETAFFINITY instead of kthread_bind_mask()
+  workqueue: Set/Clear PF_WQ_WORKER while attaching/detaching
+  workqueue: Use worker_set_flags() in worker_enter_idle()
+  workqueue: Simplify the starting of the newly created worker
+  workqueue: Remove the outer loop in maybe_create_worker()
+  workqueue: Move the locking out of maybe_create_worker()
 
-Okay, noted.
+ kernel/workqueue.c          | 123 +++++++++++++++---------------------
+ kernel/workqueue_internal.h |  11 +++-
+ 2 files changed, 60 insertions(+), 74 deletions(-)
 
-Thanks for your patience, I probably annoyed you.
+-- 
+2.19.1.6.gb485710b
 
-Thanks,
-Siddh
