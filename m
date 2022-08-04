@@ -2,158 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12FAAC19F2C
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 07:25:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B823C19F2C
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 07:27:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238461AbiHDHZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 03:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48258 "EHLO
+        id S238988AbiHDH1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 03:27:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234510AbiHDHZj (ORCPT
+        with ESMTP id S238202AbiHDH1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 03:25:39 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04150BF5B
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 00:25:37 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id v7so1783171ljj.4
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 00:25:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=tnOwkKfhBzXFppIxRkEPpyNln0liXtEqX58YRBpJcr8=;
-        b=KaBX5C27LU2/hiVV41fSRkEObVVMYRvfYHSIbaXVoHOpgKYVOS4QKSU78WR0R5+b9a
-         OF+nzgrQ97gospGyxLfTDJvji0fJzMtG6v4s0CH5S0dGTdF4c3VSDpo87ozuZDrlXGfz
-         hFrmYFfZti4EdlIVJ+ij29gERCwU0TCakfaI/YHBdE6kYhTw8npkUQEKxbQDKaJeEx95
-         bJpHQLNv9DmZlIrF7IrpiHo0n/gntGbQRSL8spUyRFeDqhZm8czbKSHvH0Hr658EMLX+
-         dkaJNTlUaQ+wg7SgajA3tBtf5O+v82Xjx9mcAtSZXmxRtH7D7I20Q63MYjC0Lw0TfrxF
-         KNGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=tnOwkKfhBzXFppIxRkEPpyNln0liXtEqX58YRBpJcr8=;
-        b=uA3Eg5GexG63ANrljEf49advH0cC2H2ImwtAvF4p+9xeUeIpazifbvPMckEA+Nyp/c
-         Gvz87XdC28odorMy23tzifRxSiZtCG/fPocNIpvIe4rZ2Q6jGhIYoUQyTVl6HpGrcDNN
-         tLCN3aQw4fjR6wJ13k7NKd/KZWMZFyeG0qFYtuwoqaFSG5vG3dUKHKSoT0mk3qFOpyJ7
-         yIR9RSTU3VOa9y/mOYnztlAjvz3/g/lgdvaUdxzSN6F2N8c89YHi/j+pa5A1ncMwxlJu
-         QzIrKLbRfqw4Q5rmtE0lIQs4QeVuRpBrbIcGu7UW+0auSLKCI+ozZ6rwU6uyt0OaZuEX
-         /dgw==
-X-Gm-Message-State: ACgBeo32GUNdhM/g98w5m8wzDyMKrmdMH9qL29EChNcEtD6kH6b7KOUE
-        NbxnmsIl6nLJCjl5G4YnUPEaTg==
-X-Google-Smtp-Source: AA6agR76ryk0wDxrVOrzMuTszxXgfwzTdW7WwyPRIhNvuxMuIMxK8DVdk/uToJEoH+F0vEOAkYdCdw==
-X-Received: by 2002:a2e:9e43:0:b0:25d:d8e9:7b15 with SMTP id g3-20020a2e9e43000000b0025dd8e97b15mr163697ljk.234.1659597935350;
-        Thu, 04 Aug 2022 00:25:35 -0700 (PDT)
-Received: from [192.168.1.6] ([77.222.167.48])
-        by smtp.gmail.com with ESMTPSA id bi36-20020a05651c232400b0025e5ff004a0sm17514ljb.100.2022.08.04.00.25.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Aug 2022 00:25:34 -0700 (PDT)
-Message-ID: <1d6b475b-412d-da94-8505-0fd6f8f6a2c9@linaro.org>
-Date:   Thu, 4 Aug 2022 09:25:30 +0200
+        Thu, 4 Aug 2022 03:27:48 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6430D22B05;
+        Thu,  4 Aug 2022 00:27:46 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lz0br4pGXz19G3M;
+        Thu,  4 Aug 2022 15:24:40 +0800 (CST)
+Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 4 Aug 2022 15:27:44 +0800
+Received: from [127.0.0.1] (10.67.108.67) by dggpemm500013.china.huawei.com
+ (7.185.36.172) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 4 Aug
+ 2022 15:27:43 +0800
+Message-ID: <5ee1dfb5-fa70-d412-43c2-3e90ee057eec@huawei.com>
+Date:   Thu, 4 Aug 2022 15:27:39 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2] pmic: add mt6366 regulator document
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0
+Subject: Re: [PATCH] Revert "x86/unwind/orc: Don't skip the first frame for
+ inactive tasks"
 Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
-        =?UTF-8?B?WmhpeW9uZyBUYW8gKOmZtuW/l+WLhyk=?= 
-        <Zhiyong.Tao@mediatek.com>,
-        "lee.jones@linaro.org" <lee.jones@linaro.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        =?UTF-8?B?RWRkaWUgSHVhbmcgKOm7g+aZuuWCkSk=?= 
-        <eddie.huang@mediatek.com>,
-        "a.zummo@towertech.it" <a.zummo@towertech.it>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "fshao@chromium.org" <fshao@chromium.org>
-Cc:     =?UTF-8?B?U2VuIENodSAo5YKo5qOuKQ==?= <Sen.Chu@mediatek.com>,
-        =?UTF-8?B?SHVpIExpdSAo5YiY6L6JKQ==?= <Hui.Liu@mediatek.com>,
-        =?UTF-8?B?QWxsZW4tS0ggQ2hlbmcgKOeoi+WGoOWLsyk=?= 
-        <Allen-KH.Cheng@mediatek.com>,
-        =?UTF-8?B?SHNpbi1Ic2l1bmcgV2FuZyAo546L5L+h6ZuEKQ==?= 
-        <Hsin-Hsiung.Wang@mediatek.com>,
-        Sean Wang <Sean.Wang@mediatek.com>,
-        =?UTF-8?B?TWFjcGF1bCBMaW4gKOael+aZuuaWjCk=?= 
-        <Macpaul.Lin@mediatek.com>,
-        =?UTF-8?B?V2VuIFN1ICjomIflhqDmlocp?= <Wen.Su@mediatek.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
-        Project_Global_Chrome_Upstream_Group 
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        zhiyong tao <zhiyong.tao@mediatk.com>
-References: <20220728062749.18701-1-zhiyong.tao@mediatek.com>
- <20220728062749.18701-2-zhiyong.tao@mediatek.com>
- <03a13ed4-e7cd-6f7d-f8f7-9b1e6193e202@linaro.org>
- <3d97d4c46467909739b8b69662412fe162dbe613.camel@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <3d97d4c46467909739b8b69662412fe162dbe613.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <x86@kernel.org>,
+        <linux-arch@vger.kernel.org>, <peterz@infradead.org>,
+        <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <dave.hansen@linux.intel.com>, <hpa@zytor.com>, <mbenes@suse.cz>
+References: <20220727031506.59322-1-chenzhongjin@huawei.com>
+ <20220804045518.bfhe3rxhpkxzn4hk@treble>
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+In-Reply-To: <20220804045518.bfhe3rxhpkxzn4hk@treble>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.108.67]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/08/2022 11:50, Rex-BC Chen wrote:
-> On Thu, 2022-07-28 at 18:46 +0800, Krzysztof Kozlowski wrote:
->> On 28/07/2022 08:27, Zhiyong Tao wrote:
->>> From: zhiyong tao <zhiyong.tao@mediatek.com>
->>>
->>> Add mt6366 regulator document
->>
->> As usual with Mediatek your emails fail to properly pass modern SMTP
->> checks and you end up in spam.
->>
->> I reported it months ago to folks in Mediatek. No improvements since
->> that time.
->>
->> I stopped checking my spam folder for Mediatek stuff and all will be
->> ignored. I will also stop complaining about it - just ignore
->> Mediatek.
->>
->> Fix your systems, instead of putting additional effort on community
->> and
->> on reviewers.
->>
-> 
-> Hello Krzysztof,
-> 
-> I am Rex from MediaTek chrome project team.
-> We noticed your complain of our upstream mail.
-> 
-> First of all, sorry for the inconvenience.
-> We really want to fix this SPAM issue.
-> 
-> From our side, we can make sure mails for kernel upstream from MediaTek
-> is clear and these mails pass the verification of DMARC/DKIM/SPF.
-> Therefore, to identify the root cause, could you please provide us some
-> mails that seen as SPAM from MediaTek?
-> It's more useful if you can use the form of attachment. In that case,
-> we can analyze whole mails including mail headers.
-> 
-> We really appreciate your big support, and we hope we can fix this
-> issue to reduce the inconvenience for reviewing series from MediaTek.
-> If you can spare some time to help us for this, it would very helpful!!
-> 
-> Our IT also adjust the DKIM setting today. If the situation of this
-> issue it much better, please also let us know.
-> 
 
+On 2022/8/4 12:55, Josh Poimboeuf wrote:
+> On Wed, Jul 27, 2022 at 11:15:06AM +0800, Chen Zhongjin wrote:
+>> This reverts commit f1d9a2abff66aa8156fbc1493abed468db63ea48.
+>>
+>> When CONFIG_GCOV_PROFILE_ALL is enabled, show_stack() and related
+>> functions (e.g. dump_stack) will break for x86 ORC unwinder.
+>>
+>> Call Trace:
+>>   <TASK>
+>>   ? dump_stack_lvl+0x83/0xb7
+>>   ? schedule+0x1/0x190
+>>   ? dump_stack+0x13/0x1f
+>>   ? handler_pre0+0x3f/0x53 [kp_unwind]
+>>   ...
+>>
+>> show_trace_log_lvl() searches text address on stack to validate
+>> whether unwind results are reliable. The code:
+> Hi,
+>
+> Thanks for the patch.  The change itself makes sense, though I'm having
+> trouble recreating the bug described in the patch description.
+>
+> I enabled CONFIG_GCOV_PROFILE_ALL and did 'echo l >
+> /proc/sysrq-trigger', but I got a valid stack trace:
+>
+>    # echo l > /proc/sysrq-trigger
+>    [  343.916728] sysrq: Show backtrace of all active CPUs
+>    [  343.917459] NMI backtrace for cpu 2
+>    [  343.917884] CPU: 2 PID: 1007 Comm: bash Not tainted 5.19.0-rc8+ #68
+>    [  343.918562] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.0-1.fc36 04/01/2014
+>    [  343.919534] Call Trace:
+>    [  343.919904]  <TASK>
+>    [  343.920226]  dump_stack_lvl+0xcc/0x11b
+>    [  343.920742]  dump_stack+0x17/0x24
+>    [  343.921199]  nmi_cpu_backtrace.cold+0xb5/0x10d
+>    [  343.921795]  ? lapic_can_unplug_cpu+0xa0/0xa0
+>    [  343.922375]  nmi_trigger_cpumask_backtrace+0x171/0x200
+>    [  343.923053]  arch_trigger_cpumask_backtrace+0x21/0x30
+>    [  343.923599]  sysrq_handle_showallcpus+0x1f/0x30
+>    [  343.924104]  __handle_sysrq.cold+0x81/0x234
+>    [  343.924576]  write_sysrq_trigger+0x6a/0x90
+>    [  343.925098]  proc_reg_write+0x99/0x120
+>    [  343.925587]  vfs_write+0x16c/0x350
+>    [  343.926093]  ksys_write+0x8c/0x180
+>    [  343.926597]  __x64_sys_write+0x21/0x30
+>    [  343.927144]  do_syscall_64+0x76/0x100
+>    [  343.927676]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>    [  343.928343] RIP: 0033:0x7f555e8f7b50
+>    [  343.928822] Code: 73 01 c3 48 8b 0d 38 83 2c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 79 db 2c 00 00 75 10 b8 01 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 1e e3 01 00 48 89 04 24
+>    [  343.930801] RSP: 002b:00007ffdd20d0978 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+>    [  343.931761] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f555e8f7b50
+>    [  343.932551] RDX: 0000000000000002 RSI: 000055ff471bfe20 RDI: 0000000000000001
+>    [  343.933347] RBP: 000055ff471bfe20 R08: 00007f555ebc2740 R09: 00007f555f80f700
+>    [  343.934155] R10: 0000000000000073 R11: 0000000000000246 R12: 0000000000000002
+>    [  343.934962] R13: 0000000000000001 R14: 00007f555ebc15e0 R15: 00007f555ebbd3c0
+>    [  343.935798]  </TASK>
+>    [  343.936341] Sending NMI from CPU 2 to CPUs 0-1,3:
+>    [  343.937163] NMI backtrace for cpu 3
+>    [  343.937167] CPU: 3 PID: 600 Comm: systemd-journal Not tainted 5.19.0-rc8+ #68
+>
+> Was this with an upstream kernel?  Can you share the config and
+> toolchain versions?
 Hi,
 
-Since few days there were no @mediatek.com emails in my spam folder,
-either because nothing was sent to me, or they passed spam filters.
+My kernel is upstream and config is defconfig with only 
+CONFIG_GCOV_PROFILE_ALL=y then make menuconfig.
 
-If this is the result of some changes, then it seems working. Thank you.
+CONFIG_CC_VERSION_TEXT="gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0"
 
-I'll let you now when I find something new in the spam.
+And I got:
 
-Best regards,
-Krzysztof
+[   29.745728] NMI backtrace for cpu 1
+[   29.745728] CPU: 1 PID: 135 Comm: sh Not tainted 
+5.19.0-02858-ge2b542100719 #58
+[   29.745728] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), 
+BIOS rel-1.15.0-0-g2dd4b9b3f8404
+[   29.745728] Call Trace:
+[   29.745728]  <TASK>
+[   29.745728]  ? dump_stack_lvl+0x72/0xa1
+[   29.745728]  ? dump_stack+0x13/0x1f
+[   29.745728]  ? nmi_cpu_backtrace+0x19f/0x1d0
+[   29.745728]  ? lapic_can_unplug_cpu+0xf0/0xf0
+[   29.745728]  ? nmi_trigger_cpumask_backtrace+0x15e/0x210
+[   29.745728]  ? arch_trigger_cpumask_backtrace+0x18/0x30
+[   29.745728]  ? sysrq_handle_showallcpus+0x16/0x30
+[   29.745728]  ? __handle_sysrq+0xc4/0x250
+[   29.745728]  ? write_sysrq_trigger+0x46/0x60
+[   29.745728]  ? proc_reg_write+0xbc/0x120
+[   29.745728]  ? preempt_count_add+0x8e/0x130
+[   29.745728]  ? vfs_write+0xfe/0x460
+[   29.745728]  ? ksys_write+0xdc/0x170
+[   29.745728]  ? fpregs_assert_state_consistent+0x2d/0x90
+[   29.745728]  ? __x64_sys_write+0x19/0x30
+[   29.745728]  ? do_syscall_64+0x3a/0x90
+[   29.745728]  ? entry_SYSCALL_64_after_hwframe+0x63/0xcd
+[   29.745728]  </TASK>
+
+
+It also happened with CONFIG_CC_VERSION_TEXT="gcc-8 (Ubuntu 
+8.4.0-1ubuntu1~18.04) 8.4.0".
+
+I believe disassemble show_stack in vmlinux and if we have:
+
+     push   %rbp
+
+     mov    %rsp,%rbp
+
+     ... (no regs pushed to stack)
+
+     callq  <show_trace_log_lvl>
+
+This can be reproduced.
+
+Your stacktrace looks just as normal as the one in my commit message 
+(show_stack is optimized out).
+
+
+Best,
+
+Chen
+
+
+
