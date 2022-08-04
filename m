@@ -2,146 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECC3C19F2C
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 11:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E7BBC19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 11:02:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239493AbiHDLBN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 07:01:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49638 "EHLO
+        id S239581AbiHDLCC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 07:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239436AbiHDLAy (ORCPT
+        with ESMTP id S239572AbiHDLBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 07:00:54 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E5352228D;
-        Thu,  4 Aug 2022 04:00:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1659610853; x=1691146853;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6AE46jTvHPsB/PdH0ziYZs9AOmnJ2WGSpj6xBgaIZA8=;
-  b=e4nPnYUGOVWbElCLuLp/+dU31KJfh3uXwkmJExnUU4urRQtuaZyrABc/
-   0Wz1XZyOjuSHhtv423EJMjRqDQkclYc1WQnx6KpqjxaPVn0aRlyEpWTiw
-   6ESxChv7bbwVmgOSlRc6EFg5gdEtzV9DpW69UGTuMlPwQyBbUu+5CERMO
-   L5HGTGuWl+yat9ElrQSsKciNYQGTgygqoHkOCzj9N5Pa0gH4BbOFFoNG+
-   g3qxXVMfahVa3bocnUPsZHfIGQaI91XLzADbqZ83T0MUBanRC/FclBtKR
-   jzYJL4AguOcwVGzvANOfSk5GY+Y/yhZLXrd+TkIbVuQowj2sCUCb55uGC
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,215,1654585200"; 
-   d="scan'208";a="170952626"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Aug 2022 04:00:52 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 4 Aug 2022 04:00:52 -0700
-Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.28 via Frontend Transport; Thu, 4 Aug 2022 04:00:49 -0700
-From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-To:     <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <gregkh@linuxfoundation.org>,
-        <arnd@arndb.de>, <dragan.cvetic@xilinx.com>,
-        <derek.kiernan@xilinx.com>
-Subject: [PATCH RFC char-misc-next 5/5] misc: microchip: pci1xxxx: Add power management functions - suspend & resume handlers.
-Date:   Thu, 4 Aug 2022 22:02:19 +0530
-Message-ID: <20220804163219.921640-6-kumaravel.thiagarajan@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220804163219.921640-1-kumaravel.thiagarajan@microchip.com>
-References: <20220804163219.921640-1-kumaravel.thiagarajan@microchip.com>
+        Thu, 4 Aug 2022 07:01:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88B3261B37
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 04:01:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659610878;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ja8DJZE704PWhWiVwa+IkYEZUfwBCbT5/nl9Rxcn20s=;
+        b=XvlVdUmdJTfGh4bn78RyXDffSoWZV5/cldhyJipa2Gfh3wVkYWiBb+eRSa2O7bdXdtbkPF
+        WNtV83s7YW4f8KlomynjeX9WsDHRJW57i+Y3wQG4ara/acKjpJNtMLuoixSBLRtBoCWeDg
+        XupJHLUndZNCiA7PcHpgAttOpoBvW84=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-104-_IGKsNlxOfq_yc9Ex3lKgg-1; Thu, 04 Aug 2022 07:01:09 -0400
+X-MC-Unique: _IGKsNlxOfq_yc9Ex3lKgg-1
+Received: by mail-ej1-f71.google.com with SMTP id qk37-20020a1709077fa500b00730c2d975a0so615492ejc.13
+        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 04:01:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=Ja8DJZE704PWhWiVwa+IkYEZUfwBCbT5/nl9Rxcn20s=;
+        b=2GhI7WCJl5pFk9uR2Dh+FFxhnxnVVUm5Ao5O3E2kEmzLzeHatqHkxKLsaOXONfIDsP
+         JAKZkzpPO7NVxeIaRAQCi8+jUkj7TRBBbMpX/6+YPnOO7CpLPMhVm+lS75VElsVpUYhc
+         d7oNc+SR868A8CjRLP5UemeZNe68nbt+5NmVHC81Lj3av235hi/lTVS9PbE++PcTu1/s
+         GIj+4vRI9qDGCDa0gfvzHrX3ErnQNu1FuUISYtleukxRRXWMnCvQQ47KAREEOL0vq2R7
+         A0hFVRjgUWBkKHS2V89ijNMGNUs8QRfxG1nxp7f/Q6Q8kmOPHGxGyINudyxy0RbkFAYM
+         uB9w==
+X-Gm-Message-State: ACgBeo0SJOyhBHLRSHEZHqLD4rk4LnI7qHDevs4alfbTtTvxcVedYRfZ
+        RSJFJe9IksTLBAM/Abb0nJVsaa4j1vLq4SKNR071Q5+2pq3ZBcGuS4ZEA53gnh+uAH9jiJ/A9Dd
+        d1tOYBIZchdkfFehCi/p5n0OY
+X-Received: by 2002:a17:907:3e0e:b0:72b:568f:7fa7 with SMTP id hp14-20020a1709073e0e00b0072b568f7fa7mr1028669ejc.119.1659610867853;
+        Thu, 04 Aug 2022 04:01:07 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4cIXLgva61l3MByTN1QLsYZYOv8abIXXSRU/VwPQHdywWn7XZbzNgvDk3iuWQUuxjDBy7l9g==
+X-Received: by 2002:a17:907:3e0e:b0:72b:568f:7fa7 with SMTP id hp14-20020a1709073e0e00b0072b568f7fa7mr1028657ejc.119.1659610867576;
+        Thu, 04 Aug 2022 04:01:07 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c706:8900:2c18:b992:1fa1:f88b? (p200300cbc70689002c18b9921fa1f88b.dip0.t-ipconnect.de. [2003:cb:c706:8900:2c18:b992:1fa1:f88b])
+        by smtp.gmail.com with ESMTPSA id b8-20020a170906038800b0072af56103casm185015eja.220.2022.08.04.04.01.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Aug 2022 04:01:07 -0700 (PDT)
+Message-ID: <daffa3ff-5016-732d-f842-bdeed5e6a0de@redhat.com>
+Date:   Thu, 4 Aug 2022 13:01:06 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] mm/smaps: Don't access young/dirty bit if pte unpresent
+Content-Language: en-US
+To:     Peter Xu <peterx@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Cc:     Yang Shi <shy828301@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Konstantin Khlebnikov <khlebnikov@openvz.org>
+References: <20220803220329.46299-1-peterx@redhat.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220803220329.46299-1-peterx@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Power event handlers suspend and resume are invoked by the operating
-system to notify the driver about the power events. Wakeup is enabled
-before entering suspend and disabled after resuming.
+On 04.08.22 00:03, Peter Xu wrote:
+> These bits should only be valid when the ptes are present.  Introducing two
+> booleans for it and set it to false when !pte_present().
+> 
+> Cc: Konstantin Khlebnikov <khlebnikov@openvz.org>
+> Fixes: b1d4d9e0cbd0 ("proc/smaps: carefully handle migration entries", 2012-05-31)
+> Signed-off-by: Peter Xu <peterx@redhat.com>
+> ---
+>  fs/proc/task_mmu.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
+> index 9913f3be9fd2..482f91577f8c 100644
+> --- a/fs/proc/task_mmu.c
+> +++ b/fs/proc/task_mmu.c
+> @@ -527,10 +527,12 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
+>  	struct vm_area_struct *vma = walk->vma;
+>  	bool locked = !!(vma->vm_flags & VM_LOCKED);
+>  	struct page *page = NULL;
+> -	bool migration = false;
+> +	bool migration = false, young = false, dirty = false;
+>  
+>  	if (pte_present(*pte)) {
+>  		page = vm_normal_page(vma, addr, *pte);
+> +		young = pte_young(*pte);
+> +		dirty = pte_dirty(*pte);
+>  	} else if (is_swap_pte(*pte)) {
+>  		swp_entry_t swpent = pte_to_swp_entry(*pte);
+>  
+> @@ -560,8 +562,7 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
+>  	if (!page)
+>  		return;
+>  
+> -	smaps_account(mss, page, false, pte_young(*pte), pte_dirty(*pte),
+> -		      locked, migration);
+> +	smaps_account(mss, page, false, young, dirty, locked, migration);
+>  }
+>  
+>  #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 
-Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
----
- .../misc/mchp_pci1xxxx/mchp_pci1xxxx_gpio.c   | 37 +++++++++++++++++++
- 1 file changed, 37 insertions(+)
+Reviewed-by: David Hildenbrand <david@redhat.com>
 
-diff --git a/drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gpio.c b/drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gpio.c
-index c58d27407c4d..404633704d2f 100644
---- a/drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gpio.c
-+++ b/drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gpio.c
-@@ -14,6 +14,7 @@
- #include "mchp_pci1xxxx_gp.h"
- 
- #define PCI1XXXX_NR_PINS		93
-+#define PERI_GEN_RESET			0
- #define OUT_EN_OFFSET(x)		((((x) / 32) * 4) + 0x400)
- #define INP_EN_OFFSET(x)		((((x) / 32) * 4) + 0x400 + 0x10)
- #define OUT_OFFSET(x)			((((x) / 32) * 4) + 0x400 + 0x20)
-@@ -291,6 +292,38 @@ static struct irq_chip pci1xxxx_gpio_irqchip = {
- 	.irq_set_type = pci1xxxx_gpio_set_type,
- };
- 
-+static int pci1xxxx_gpio_suspend(struct device *dev)
-+{
-+	struct pci1xxxx_gpio *priv = dev_get_drvdata(dev);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&priv->lock, flags);
-+	pci1xxx_assign_bit(priv->reg_base, PIO_GLOBAL_CONFIG_OFFSET,
-+			   16, true);
-+	pci1xxx_assign_bit(priv->reg_base, PIO_GLOBAL_CONFIG_OFFSET,
-+			   17, false);
-+	pci1xxx_assign_bit(priv->reg_base, PERI_GEN_RESET, 16, true);
-+	spin_unlock_irqrestore(&priv->lock, flags);
-+
-+	return 0;
-+}
-+
-+static int pci1xxxx_gpio_resume(struct device *dev)
-+{
-+	struct pci1xxxx_gpio *priv = dev_get_drvdata(dev);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&priv->lock, flags);
-+	pci1xxx_assign_bit(priv->reg_base, PIO_GLOBAL_CONFIG_OFFSET,
-+			   17, true);
-+	pci1xxx_assign_bit(priv->reg_base, PIO_GLOBAL_CONFIG_OFFSET,
-+			   16, false);
-+	pci1xxx_assign_bit(priv->reg_base, PERI_GEN_RESET, 16, false);
-+	spin_unlock_irqrestore(&priv->lock, flags);
-+
-+	return 0;
-+}
-+
- static int pci1xxxx_gpio_setup(struct pci1xxxx_gpio *priv, int irq)
- {
- 	struct gpio_chip *gchip = &priv->gpio;
-@@ -325,6 +358,7 @@ static int pci1xxxx_gpio_setup(struct pci1xxxx_gpio *priv, int irq)
- 	girq->parents = NULL;
- 	girq->default_type = IRQ_TYPE_NONE;
- 	girq->handler = handle_bad_irq;
-+
- 	return 0;
- }
- 
-@@ -370,6 +404,8 @@ static int pci1xxxx_gpio_probe(struct auxiliary_device *aux_dev,
- 	return devm_gpiochip_add_data(&(aux_dev->dev), &priv->gpio, priv);
- }
- 
-+static SIMPLE_DEV_PM_OPS(pci1xxxx_gpio_pm_ops, pci1xxxx_gpio_suspend, pci1xxxx_gpio_resume);
-+
- const struct auxiliary_device_id pci1xxxx_gpio_auxiliary_id_table[] = {
- 	{.name = "mchp_pci1xxxx_gp.gp_gpio"},
- 	{}
-@@ -378,6 +414,7 @@ const struct auxiliary_device_id pci1xxxx_gpio_auxiliary_id_table[] = {
- static struct auxiliary_driver pci1xxxx_gpio_driver = {
- 	.driver = {
- 		.name = "PCI1xxxxGPIO",
-+		.pm = &pci1xxxx_gpio_pm_ops,
- 		},
- 	.probe = pci1xxxx_gpio_probe,
- 	.id_table = pci1xxxx_gpio_auxiliary_id_table
 -- 
-2.25.1
+Thanks,
+
+David / dhildenb
 
