@@ -2,151 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 293DAC00144
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 04:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5E2C00144
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 04:53:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238573AbiHDExW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 00:53:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47718 "EHLO
+        id S238788AbiHDExb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 00:53:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbiHDExU (ORCPT
+        with ESMTP id S238725AbiHDEx1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 00:53:20 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D382186FC;
-        Wed,  3 Aug 2022 21:53:19 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 9E3204C1B95;
-        Thu,  4 Aug 2022 04:53:18 +0000 (UTC)
-Received: from pdx1-sub0-mail-a254.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 22D024C198D;
-        Thu,  4 Aug 2022 04:53:18 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1659588798; a=rsa-sha256;
-        cv=none;
-        b=UzJ89vCEHfXrGxb4SG4j907x9I3S1kbJQGeF6ZdG/Qg4WkRaYdk0uXuFclrZY7Nv2Sgkpf
-        GvDy6VLDyRNxrpIto6xc2ywpKXeiWSbGzGOayqvrUZvNnwc3E+esJMjShq6UAS+JeY1Yiu
-        awpMnOfFiQGT4LuVB8OA6L8f9yGHSDJCmUIJRROT07i5bH7PRmwuSI2hXSQLn8cpN9Mm3y
-        Tt7O166p00csnFZcbBFTzUMXQHBgC99fwJPfB6f8JcXPR5eyG7VpOu5FXty+bxh2GTOWzm
-        1Z5GZCxQHACtkSCoyaJorWGXs9NuOsUEp+chSH9tTUGCs5ljx9Cbch7vx3mrsA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1659588798;
+        Thu, 4 Aug 2022 00:53:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 144325F9B9
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 21:53:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659588805;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=CR0IilEjTmSBglJdVE7uE6gZjyN8Yc4w1VrpHAB9SKI=;
-        b=RUFzHgnn3guUieZkusMS6aeTqOrk+j6mRtLgiUOnhOxLmz917/MHkEFkRxmHGoZPnQNgTK
-        hmC2q6B/AuZS6OqjeFYInWGXVpGC3VQjvcIhhJqp2Xy6LfLhQx67j5m0R5ecN1umN9sF6Y
-        eKmkQG1bYOAO+OL30jTnHlWXJyvBlsuzVvOz3noNjpR4JSej34FUdXTr/T693e+PyVx+dW
-        QekXuKsYaMdZPpnaPShVAIwz1Xh3ls+kj9mR8WY4j5SgiL+As5acKrsijQKZoSqZpA+lJr
-        +44WwUPuQRqXOWbaFIUXLbisL3tXCZESX6Q2gtdk+Iy15fFn9ZHXgkbrnllL3w==
-ARC-Authentication-Results: i=1;
-        rspamd-7c478d8c66-lg758;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Absorbed-Unite: 5769d0a00ad3aa03_1659588798489_2908946806
-X-MC-Loop-Signature: 1659588798489:3535241750
-X-MC-Ingress-Time: 1659588798489
-Received: from pdx1-sub0-mail-a254.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.110.28.208 (trex/6.7.1);
-        Thu, 04 Aug 2022 04:53:18 +0000
-Received: from offworld (unknown [104.36.25.245])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a254.dreamhost.com (Postfix) with ESMTPSA id 4LyxF91s2Xz83;
-        Wed,  3 Aug 2022 21:53:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1659588797;
-        bh=CR0IilEjTmSBglJdVE7uE6gZjyN8Yc4w1VrpHAB9SKI=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=Lfu43C+ook7NEcJrRA+sgZLN8yzafbMbSLrolenUTCPndBEiEaGUuYX+GXis54iuz
-         2JovFM8Nyo4z527M5I9bk5atJQDtMfBCccdUsms32ysCCZ1aJ6qRJp1NgJRiYUp2KX
-         7xWLMt7Zc8M7wJy6ouuDSDfaIIUb516U3oHaARfEt17X5s2WVF7aQMjx03nVLxx7O1
-         KG1piapNDZ5MOr5pgI8jdN4uOC+9C/TxxkFDnddvtt//dsXNdwY0WpOfZtfAwsddbE
-         wXPuRkfb4nO9yqfo9ekm3zsrHpSKbnwaEXLyApVwrtzjgXMxrDBll04xg31jM7/6nN
-         /KKG1mJ7KnjIQ==
-Date:   Wed, 3 Aug 2022 21:36:19 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     linux-cxl@vger.kernel.org
-Cc:     dan.j.williams@intel.com, bwidawsk@kernel.org,
-        Jonathan.Cameron@huawei.com, ira.weiny@intel.com,
-        alison.schofield@intel.com, vishal.l.verma@intel.com,
-        a.manzanares@samsung.com, mcgrof@kernel.org,
-        linux-kernel@vger.kernel.org, dave.jiang@intel.com
-Subject: Re: [RFC PATCH 0/2] cxl: BG operations and device sanitation
-Message-ID: <20220804043619.ko5luhppbvcoh4s5@offworld>
-References: <20220804045029.2905056-1-dave@stgolabs.net>
+         in-reply-to:in-reply-to:references:references;
+        bh=OLmka0NC3UlfBuYckPNASUIU1cERM9leULZwcp5E6j4=;
+        b=Ka08RA122PHXGQkfLfjiGk7FJK+r0Nmc+cX40mvz11B36cB4VZlQHaAfvCZIomsPtENxCK
+        jGCrAF3QxuxHlV/wVmv2n0Rxc4ghcu4COAru1ArEVn97DDPBWNINexvn9jwiR3arjgPzag
+        LUs3oGPAbup9q1S+HNysv/ZQZ7mqp1E=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-594-EpHnSM9dO8KOPYsQSwKELw-1; Thu, 04 Aug 2022 00:53:24 -0400
+X-MC-Unique: EpHnSM9dO8KOPYsQSwKELw-1
+Received: by mail-lf1-f70.google.com with SMTP id m5-20020ac24245000000b0048a7c6bf079so5620700lfl.15
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 21:53:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OLmka0NC3UlfBuYckPNASUIU1cERM9leULZwcp5E6j4=;
+        b=fk4A7juF8GrYF6TvtR8EKKkLR4ziKJQahiRm4xX51ekDcgyQ0vP1NtXklsnvbzcOPR
+         /sBYXccEQFMbMATLhkSndsW0UnEzcladgJfrtqCWjAohIdPvCIIzt0AtHq6LDdJa5wE0
+         f4gQfaHF4IBZ7mDm31SW52NU7JQnoROk/Lycb/ZMj95uKUvM8Sz3aGhrnTmarNxuDGXG
+         IoTEfSN74SrBU2SI4aSGZIjyCD3dVExPNEfPtcDyr+Nufk+9Xt92MVZobTI6YJztDBxh
+         D/csam7huwFuMxryTArXOJVOwJHXJMD6LWgWiSBPHiJiLdeQuXVm2ePX4AwsklcAF5q9
+         PoOA==
+X-Gm-Message-State: ACgBeo0CVpOmvw+BlJVRI0LJE18VgvDkTpNbdQxz/AQlVcEeFU8Sepdn
+        70jPtPZv1Mg0/QhG3XDGLnQbgIk693lasT38FaTCE2u4I7LcQedFK3Kp6ia9NcWUpJ5Ba5vmLOm
+        MiuEdGrMvZx4YTQ1QerI9vFGTqwK7nApVz+qEzaBo
+X-Received: by 2002:a05:6512:3f0e:b0:48a:5edd:99b2 with SMTP id y14-20020a0565123f0e00b0048a5edd99b2mr82485lfa.124.1659588800238;
+        Wed, 03 Aug 2022 21:53:20 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4E+uvfcwgkuiwuzZB+8RJjAjNJM0hEmaUlpNaRuyeUjSSQarpOIMjsof16sQtNs6Wj+6Y44uUEG5p2j1j0Q+g=
+X-Received: by 2002:a05:6512:3f0e:b0:48a:5edd:99b2 with SMTP id
+ y14-20020a0565123f0e00b0048a5edd99b2mr82481lfa.124.1659588800034; Wed, 03 Aug
+ 2022 21:53:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220804045029.2905056-1-dave@stgolabs.net>
-User-Agent: NeoMutt/20220429
+References: <20220803045523.23851-1-xieyongji@bytedance.com> <20220803045523.23851-6-xieyongji@bytedance.com>
+In-Reply-To: <20220803045523.23851-6-xieyongji@bytedance.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Thu, 4 Aug 2022 12:53:09 +0800
+Message-ID: <CACGkMEs4LxYh1K3O=ycu-r+AJjSmvrJpHZbw+i+SDM-w-pbm+A@mail.gmail.com>
+Subject: Re: [PATCH v5 5/5] vduse: Support querying information of IOVA regions
+To:     Xie Yongji <xieyongji@bytedance.com>
+Cc:     mst <mst@redhat.com>, Liu Xiaodong <xiaodong.liu@intel.com>,
+        Maxime Coquelin <maxime.coquelin@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-*sigh* Cc Dave.
+On Wed, Aug 3, 2022 at 12:56 PM Xie Yongji <xieyongji@bytedance.com> wrote:
+>
+> This introduces a new ioctl: VDUSE_IOTLB_GET_INFO to
+> support querying some information of IOVA regions.
+>
+> Now it can be used to query whether the IOVA region
+> supports userspace memory registration.
+>
+> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 
-On Wed, 03 Aug 2022, Davidlohr Bueso wrote:
+Acked-by: Jason Wang <jasowang@redhat.com>
 
->Hello,
+> ---
+>  drivers/vdpa/vdpa_user/vduse_dev.c | 39 ++++++++++++++++++++++++++++++
+>  include/uapi/linux/vduse.h         | 24 ++++++++++++++++++
+>  2 files changed, 63 insertions(+)
 >
->The following is a followup to some of the discussions around CXL device security
->and sanitation[0, 1]. It is marked as RFC mostly to see if the background handling
->will satisfy all users, not just sanitize/overwrite. For example there has been ideas
->to avoid command hogging the device and/or interleaving scan media regions instead
->of all in one, etc. More details in each patch, but:
+> diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
+> index eedff0a3885a..41c0b29739f1 100644
+> --- a/drivers/vdpa/vdpa_user/vduse_dev.c
+> +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
+> @@ -1228,6 +1228,45 @@ static long vduse_dev_ioctl(struct file *file, unsigned int cmd,
+>                                            umem.size);
+>                 break;
+>         }
+> +       case VDUSE_IOTLB_GET_INFO: {
+> +               struct vduse_iova_info info;
+> +               struct vhost_iotlb_map *map;
+> +               struct vduse_iova_domain *domain = dev->domain;
+> +
+> +               ret = -EFAULT;
+> +               if (copy_from_user(&info, argp, sizeof(info)))
+> +                       break;
+> +
+> +               ret = -EINVAL;
+> +               if (info.start > info.last)
+> +                       break;
+> +
+> +               if (!is_mem_zero((const char *)info.reserved,
+> +                                sizeof(info.reserved)))
+> +                       break;
+> +
+> +               spin_lock(&domain->iotlb_lock);
+> +               map = vhost_iotlb_itree_first(domain->iotlb,
+> +                                             info.start, info.last);
+> +               if (map) {
+> +                       info.start = map->start;
+> +                       info.last = map->last;
+> +                       info.capability = 0;
+> +                       if (domain->bounce_map && map->start == 0 &&
+> +                           map->last == domain->bounce_size - 1)
+> +                               info.capability |= VDUSE_IOVA_CAP_UMEM;
+> +               }
+> +               spin_unlock(&domain->iotlb_lock);
+> +               if (!map)
+> +                       break;
+> +
+> +               ret = -EFAULT;
+> +               if (copy_to_user(argp, &info, sizeof(info)))
+> +                       break;
+> +
+> +               ret = 0;
+> +               break;
+> +       }
+>         default:
+>                 ret = -ENOIOCTLCMD;
+>                 break;
+> diff --git a/include/uapi/linux/vduse.h b/include/uapi/linux/vduse.h
+> index 9885e0571f09..11bd48c72c6c 100644
+> --- a/include/uapi/linux/vduse.h
+> +++ b/include/uapi/linux/vduse.h
+> @@ -233,6 +233,30 @@ struct vduse_iova_umem {
+>  /* De-register the userspace memory. Caller should set iova and size field. */
+>  #define VDUSE_IOTLB_DEREG_UMEM _IOW(VDUSE_BASE, 0x19, struct vduse_iova_umem)
 >
->Patch 1 adds the required background cmd handling bits. While this is currently
->only polling, it would be good to know if there are any fundamental blockers for
->supporting irqs (beyond just background ops) between PCIe and CXL. For example,
->are there any requirements/difficulties that is not the standard MSI/MSI-X PCI
->vector allocation + devm_request_irq()? I have not looked at this into details but
->it the topic has come up in the past as delicate', iirc.
+> +/**
+> + * struct vduse_iova_info - information of one IOVA region
+> + * @start: start of the IOVA region
+> + * @last: last of the IOVA region
+> + * @capability: capability of the IOVA regsion
+> + * @reserved: for future use, needs to be initialized to zero
+> + *
+> + * Structure used by VDUSE_IOTLB_GET_INFO ioctl to get information of
+> + * one IOVA region.
+> + */
+> +struct vduse_iova_info {
+> +       __u64 start;
+> +       __u64 last;
+> +#define VDUSE_IOVA_CAP_UMEM (1 << 0)
+> +       __u64 capability;
+> +       __u64 reserved[3];
+> +};
+> +
+> +/*
+> + * Find the first IOVA region that overlaps with the range [start, last]
+> + * and return some information on it. Caller should set start and last fields.
+> + */
+> +#define VDUSE_IOTLB_GET_INFO   _IOWR(VDUSE_BASE, 0x1a, struct vduse_iova_info)
+> +
+>  /* The control messages definition for read(2)/write(2) on /dev/vduse/$NAME */
 >
->Patch 2 implements the sanitation commands (overwrite and secure erase).
+>  /**
+> --
+> 2.20.1
 >
->As for testing, while I used the mock device to test the secure erase command, I
->ended up hacking up a prototype[2] for qemu to support overwrite and bg commands.
->So while the some of the paths this series introduces have been exercised, there
->is of course a lot more to do.
->
->Applies against Dave's cxl-security branch[2] which deals with the pmem-only bits.
->
->Thanks,
->Davidlohr
->
->[0]: https://lore.kernel.org/all/20220708172455.gi37dh3od4w5lqrd@offworld/
->[1]: https://lore.kernel.org/all/165791918718.2491387.4203738301057301285.stgit@djiang5-desk3.ch.intel.com/
->[2]: https://github.com/davidlohr/qemu/commit/64a93a5b824b59d3b547f06f7fbb1269fb4790ce
->[3]: https://git.kernel.org/pub/scm/linux/kernel/git/djiang/linux.git/log/?h=cxl-security
->
->Davidlohr Bueso (2):
->  cxl/mbox: Add background operation handling machinery
->  cxl/mem: Support sanitation commands
->
-> Documentation/ABI/testing/sysfs-bus-cxl |  19 ++
-> drivers/cxl/core/core.h                 |   2 +-
-> drivers/cxl/core/mbox.c                 | 304 +++++++++++++++++++++++-
-> drivers/cxl/core/memdev.c               |  58 +++++
-> drivers/cxl/core/port.c                 |   9 +-
-> drivers/cxl/cxl.h                       |   8 +
-> drivers/cxl/cxlmem.h                    |  65 ++++-
-> drivers/cxl/pci.c                       |   3 +-
-> drivers/cxl/pmem.c                      |   5 +-
-> drivers/cxl/security.c                  |  13 +-
-> include/uapi/linux/cxl_mem.h            |   2 +
-> 11 files changed, 461 insertions(+), 27 deletions(-)
->
->--
->2.37.1
->
+
