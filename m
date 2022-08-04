@@ -2,55 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3021AC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 13:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B6DC19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 13:26:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237338AbiHDN0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 09:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59746 "EHLO
+        id S239760AbiHDN0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 09:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234774AbiHDN0K (ORCPT
+        with ESMTP id S239162AbiHDN0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 4 Aug 2022 09:26:10 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 872F6BE3D
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 06:26:05 -0700 (PDT)
-Date:   Thu, 04 Aug 2022 13:26:02 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14C0BF4C
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 06:26:07 -0700 (PDT)
+Date:   Thu, 04 Aug 2022 13:26:04 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1659619563;
+        s=2020; t=1659619566;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=actxm17J1u9+a5S7ejW8aD7uHgzwTLbARsY1csd+A7U=;
-        b=QTpLjUXRlXvsVjFfPINDQztJp/H3cNQTNtd7ux/2iNeroMnx+zoQl4iGag4sE/J7WTrUkY
-        bbiu+E26vYuR76lZtu+V+fYMZwV24gsSKaCHpgNgNFJt8s8RCcE8OoaVtzUC+xciZl+czN
-        lJJdCzMG6ppXANEKX1jbz+yW1tTcO/7rU2eSW2U2a7kBK5QwlYNMSbjVKZ5K+03b1A2eZE
-        eELlr9dT6PXmNX9K8YpUsuGByW+u+CeL6RNmflgSUP20xnC7l8juSYn9migkhBwqhIQGtw
-        EOwyBLQivRHrC61G3FcmXm9fkzgeHB7MnD995jzx1wfXi69fUgtI9Es8QZqoxw==
+        bh=cFHLBCO5SHBgy6/VPCSR/0dLlOdvs5/InwJBhBRvG+M=;
+        b=sdDSQk7ujJckDHFtwb9v+FZrVwIh+u6Jz9fXMZthKcv4mQBJN101iot+otIfR4KrSlVEfG
+        ZRjkONRx3t8T1tq7LuVXYuOkmhdlpEU+m1dRI3+1nsJn9h75b1I8G7SRFbYaHM3keMAOHo
+        uaVEuHoP8mdFb4OK6B77Gc4yEviW8S8YywSlJz3+AYHm2OWG7s+VfNkNpiMUrZwl9Y2/Hx
+        LqYc9Uiwo3sAaA5C7IRPx3uu3n1BLW92sPUeLePuNGI3KZe5hHy0LUB/T1/IihTaOKdFLj
+        4DrTB8rVpDCosDg1D/nbpaB5i8l6vb/P6voFgi+o9OD0ZLpURHj/6wnEgvpeog==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1659619563;
+        s=2020e; t=1659619566;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=actxm17J1u9+a5S7ejW8aD7uHgzwTLbARsY1csd+A7U=;
-        b=XIZp0qPy8cXOBT2gHnS2l474Bz/Hwd6nqMzkA0iS/D6nOXxGeeWJa6kzMHODZO/2qPd5Jx
-        4HHCiZBXtqlCfZBw==
-From:   "irqchip-bot for Huacai Chen" <tip-bot2@linutronix.de>
+        bh=cFHLBCO5SHBgy6/VPCSR/0dLlOdvs5/InwJBhBRvG+M=;
+        b=fMuUpipGtXVPWpy00NFrMyAqRtA6M/FIuxlcupvKeLlpdIdxJBQeA+G3HiplRjy8r3b15x
+        vk/PWVWRwdvj5FBg==
+From:   "irqchip-bot for Michael Kelley" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-fixes] irqchip/loongson-eiointc: Fix a build warning
-Cc:     kernel test robot <lkp@intel.com>,
-        Huacai Chen <chenhuacai@loongson.cn>,
-        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220804025457.213979-1-chenhuacai@loongson.cn>
-References: <20220804025457.213979-1-chenhuacai@loongson.cn>
+Subject: [irqchip: irq/irqchip-fixes] iommu/hyper-v: Use helper instead of
+ directly accessing affinity
+Cc:     Michael Kelley <mikelley@microsoft.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Joerg Roedel <jroedel@suse.de>, Marc Zyngier <maz@kernel.org>,
+        tglx@linutronix.de
+In-Reply-To: <1658796820-2261-1-git-send-email-mikelley@microsoft.com>
+References: <1658796820-2261-1-git-send-email-mikelley@microsoft.com>
 MIME-Version: 1.0
-Message-ID: <165961956239.15455.13873160402185072060.tip-bot2@tip-bot2>
+Message-ID: <165961956454.15455.6170338476537736674.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,36 +63,54 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the irq/irqchip-fixes branch of irqchip:
 
-Commit-ID:     54cfa910b443b3d90b3e00bd96cdf563a285390b
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/54cfa910b443b3d90b3e00bd96cdf563a285390b
-Author:        Huacai Chen <chenhuacai@loongson.cn>
-AuthorDate:    Thu, 04 Aug 2022 10:54:57 +08:00
+Commit-ID:     b0a4ab7ca4ce993d1cc51cbc85e9f341c729a3d4
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/b0a4ab7ca4ce993d1cc51cbc85e9f341c729a3d4
+Author:        Michael Kelley <mikelley@microsoft.com>
+AuthorDate:    Mon, 25 Jul 2022 17:53:40 -07:00
 Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Thu, 04 Aug 2022 10:04:57 +01:00
+CommitterDate: Thu, 04 Aug 2022 10:02:09 +01:00
 
-irqchip/loongson-eiointc: Fix a build warning
+iommu/hyper-v: Use helper instead of directly accessing affinity
 
-Make acpi_get_vec_parent() be a static function, to avoid:
-drivers/irqchip/irq-loongson-eiointc.c:289:20: warning: no previous prototype for 'acpi_get_vec_parent'
+Recent changes to solve inconsistencies in handling IRQ masks #ifdef
+out the affinity field in irq_common_data for non-SMP configurations.
+The current code in hyperv_irq_remapping_alloc() gets a compiler error
+in that case.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Fix this by using the new irq_data_update_affinity() helper, which
+handles the non-SMP case correctly.
+
+Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220804025457.213979-1-chenhuacai@loongson.cn
+Fixes: aa0813581b8d ("genirq: Provide an IRQ affinity mask in non-SMP configs")
+Link: https://lore.kernel.org/r/1658796820-2261-1-git-send-email-mikelley@microsoft.com
 ---
- drivers/irqchip/irq-loongson-eiointc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/hyperv-iommu.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/irqchip/irq-loongson-eiointc.c b/drivers/irqchip/irq-loongson-eiointc.c
-index 3174678..bffb7b3 100644
---- a/drivers/irqchip/irq-loongson-eiointc.c
-+++ b/drivers/irqchip/irq-loongson-eiointc.c
-@@ -290,7 +290,7 @@ static void acpi_set_vec_parent(int node, struct irq_domain *parent, struct acpi
- 	}
- }
- 
--struct irq_domain *acpi_get_vec_parent(int node, struct acpi_vector_group *vec_group)
-+static struct irq_domain *acpi_get_vec_parent(int node, struct acpi_vector_group *vec_group)
+diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+index 51bd66a..e190bb8 100644
+--- a/drivers/iommu/hyperv-iommu.c
++++ b/drivers/iommu/hyperv-iommu.c
+@@ -68,7 +68,6 @@ static int hyperv_irq_remapping_alloc(struct irq_domain *domain,
  {
- 	int i;
+ 	struct irq_alloc_info *info = arg;
+ 	struct irq_data *irq_data;
+-	struct irq_desc *desc;
+ 	int ret = 0;
  
+ 	if (!info || info->type != X86_IRQ_ALLOC_TYPE_IOAPIC || nr_irqs > 1)
+@@ -90,8 +89,7 @@ static int hyperv_irq_remapping_alloc(struct irq_domain *domain,
+ 	 * Hypver-V IO APIC irq affinity should be in the scope of
+ 	 * ioapic_max_cpumask because no irq remapping support.
+ 	 */
+-	desc = irq_data_to_desc(irq_data);
+-	cpumask_copy(desc->irq_common_data.affinity, &ioapic_max_cpumask);
++	irq_data_update_affinity(irq_data, &ioapic_max_cpumask);
+ 
+ 	return 0;
+ }
