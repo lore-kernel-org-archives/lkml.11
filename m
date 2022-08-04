@@ -2,93 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA25C19F29
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 02:20:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C82C19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 02:20:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239079AbiHDCUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 22:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49016 "EHLO
+        id S238927AbiHDCUu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 22:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239016AbiHDCUS (ORCPT
+        with ESMTP id S239346AbiHDCU0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 22:20:18 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6100361117;
-        Wed,  3 Aug 2022 19:18:32 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id 15-20020a17090a098f00b001f305b453feso3861460pjo.1;
-        Wed, 03 Aug 2022 19:18:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=1dsYc5CCG9nBj+rwfi2DNCDwXt8IjUaLCNS+n83XUDY=;
-        b=YgmSq8oWeAz+cQHVwYA7934UN/e/erwNkvrnNnaXVoLMGsIUxpUGx2sHDVRtMXL0Y8
-         VUEGXN2D92C7TfNQ87s9YS0G5apme5vjhrlToMaF2qx8aRC2B46LwwOih5icuoHNgc7x
-         jm3qsYdVxWS8pOAcrI/79KbzYdH5CliWfVYFTuFcHXZi1bEdZUWdTrDkru6JO4JvJBXk
-         XhGuWyRXe4Zz5qLf/6eidQLncbrSWvNkXbMtnEIyYgzVKQQTy4326FpqWL9OoJvKTpva
-         6JJVKmIedYmG8MmMIScKgBOiQ+J+8oELEdf5sNmSAlLhkfw4FuHJnvO4jUnhwpORVk0d
-         eUSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=1dsYc5CCG9nBj+rwfi2DNCDwXt8IjUaLCNS+n83XUDY=;
-        b=bVB1L9aS6Q/iWtWmPrWIQDJaNhq2HF2MH4eRaYPmwra7b2kw9UiHqAtPwCSvAb2EN4
-         HTFGMuE9IJquQ5SCCoIX1XxRnMsUNKL7dyzlXgQEP72QW8Gk3Mg3qcrS6OalEaOYiD2U
-         HIzJZb4qG9BAVrVbZ6kuRvq8gwXzYxlvu689C+neEAdnCzIEa9V9qDIrxUl/T24sEne9
-         SzlB8BPKckGbBR2V7OljqG/pmqqgoRDOGLLdw5wfyAP1RcRbiMCdUOINUOHBl/Cx3JIT
-         Ls5CIu3T2vmtEKeCz8a15oaJWI6AR3UYCwjQZzdKXOksteEiK7CwD/vuoXZvs8S0eSE1
-         GPRg==
-X-Gm-Message-State: ACgBeo3n8kzHtU7vD7J2DczEhmJ+Ri6UQuxq7kPJs735WQKtzlmRuiNb
-        3DqjHGcaal1gU9pv4UPUU7Q=
-X-Google-Smtp-Source: AA6agR4ZyAwkqOmwDBIOTcfsNUAteDufXkFgihVuncQD+861YXQPlsEFAkRWZ6+vDvSK9KhQJHTrWw==
-X-Received: by 2002:a17:902:e884:b0:16d:87b2:657d with SMTP id w4-20020a170902e88400b0016d87b2657dmr29256131plg.2.1659579511663;
-        Wed, 03 Aug 2022 19:18:31 -0700 (PDT)
-Received: from [192.168.43.80] (subs03-180-214-233-2.three.co.id. [180.214.233.2])
-        by smtp.gmail.com with ESMTPSA id j9-20020a17090a31c900b001ef7c7564fdsm2316855pjf.21.2022.08.03.19.18.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Aug 2022 19:18:31 -0700 (PDT)
-Message-ID: <4503fbf0-aeda-8e85-432a-8808f7312152@gmail.com>
-Date:   Thu, 4 Aug 2022 09:18:26 +0700
+        Wed, 3 Aug 2022 22:20:26 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C746050C
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 19:19:03 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lyslf23Zjz1M8cY;
+        Thu,  4 Aug 2022 10:15:58 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 4 Aug 2022 10:19:01 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.61) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 4 Aug 2022 10:19:00 +0800
+From:   Yang Jihong <yangjihong1@huawei.com>
+To:     <rostedt@goodmis.org>, <mingo@redhat.com>,
+        <linux-kernel@vger.kernel.org>
+CC:     <yangjihong1@huawei.com>
+Subject: [PATCH] ftrace: Fix NULL pointer dereference in is_ftrace_trampoline when ftrace is dead
+Date:   Thu, 4 Aug 2022 10:16:10 +0800
+Message-ID: <20220804021610.209791-1-yangjihong1@huawei.com>
+X-Mailer: git-send-email 2.30.GIT
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] PCI: fix the invalid aer-inject git tree
-Content-Language: en-US
-To:     Huang Shijie <shijie@os.amperecomputing.com>, bhelgaas@google.com
-Cc:     patches@amperecomputing.com, zwang@amperecomputing.com,
-        darren@os.amperecomputing.com, corbet@lwn.net,
-        yangyicong@hisilicon.com, linux-pci@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220804094755.1885603-1-shijie@os.amperecomputing.com>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20220804094755.1885603-1-shijie@os.amperecomputing.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.61]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/4/22 16:47, Huang Shijie wrote:
-> The old tree is invalid now, fix it with the right git tree:
->     https://git.kernel.org/pub/scm/linux/kernel/git/gong.chen/aer-inject.git
-> 
-<snip>
-> -	     https://git.kernel.org/cgit/linux/kernel/git/gong.chen/aer-inject.git/
-> +            https://git.kernel.org/pub/scm/linux/kernel/git/gong.chen/aer-inject.git/
-<snip>
-> - *   https://git.kernel.org/cgit/linux/kernel/git/gong.chen/aer-inject.git/
-> + *   https://git.kernel.org/pub/scm/linux/kernel/git/gong.chen/aer-inject.git/
->   *
->   * Copyright 2009 Intel Corporation.
->   *     Huang Ying <ying.huang@intel.com>
+ftrace_startup does not remove ops from ftrace_ops_list when
+ftrace_startup_enable fails:
 
-This is essentially s:cgit:pub/scm:.
+register_ftrace_function
+  ftrace_startup
+    __register_ftrace_function
+      ...
+      add_ftrace_ops(&ftrace_ops_list, ops)
+      ...
+    ...
+    ftrace_startup_enable // if ftrace failed to modify, ftrace_disabled is set to 1
+    ...
+  return 0 // ops is in the ftrace_ops_list.
 
-Better wording is "The aer-inject tree have been moved to <new location>.
-Update the link."
+When ftrace_disabled = 1, unregister_ftrace_function simply returns without doing anything:
+unregister_ftrace_function
+  ftrace_shutdown
+    if (unlikely(ftrace_disabled))
+            return -ENODEV;  // return here, __unregister_ftrace_function is not executed,
+                             // as a result, ops is still in the ftrace_ops_list
+    __unregister_ftrace_function
+    ...
 
+If ops is dynamically allocated, it will be free later, in this case,
+is_ftrace_trampoline accesses NULL pointer:
+
+is_ftrace_trampoline
+  ftrace_ops_trampoline
+    do_for_each_ftrace_op(op, ftrace_ops_list) // OOPS! op may be NULL!
+
+Syzkaller reports as follows:
+[ 1203.506103] BUG: kernel NULL pointer dereference, address: 000000000000010b
+[ 1203.508039] #PF: supervisor read access in kernel mode
+[ 1203.508798] #PF: error_code(0x0000) - not-present page
+[ 1203.509558] PGD 800000011660b067 P4D 800000011660b067 PUD 130fb8067 PMD 0
+[ 1203.510560] Oops: 0000 [#1] SMP KASAN PTI
+[ 1203.511189] CPU: 6 PID: 29532 Comm: syz-executor.2 Tainted: G    B   W         5.10.0 #8
+[ 1203.512324] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[ 1203.513895] RIP: 0010:is_ftrace_trampoline+0x26/0xb0
+[ 1203.514644] Code: ff eb d3 90 41 55 41 54 49 89 fc 55 53 e8 f2 00 fd ff 48 8b 1d 3b 35 5d 03 e8 e6 00 fd ff 48 8d bb 90 00 00 00 e8 2a 81 26 00 <48> 8b ab 90 00 00 00 48 85 ed 74 1d e8 c9 00 fd ff 48 8d bb 98 00
+[ 1203.518838] RSP: 0018:ffffc900012cf960 EFLAGS: 00010246
+[ 1203.520092] RAX: 0000000000000000 RBX: 000000000000007b RCX: ffffffff8a331866
+[ 1203.521469] RDX: 0000000000000000 RSI: 0000000000000008 RDI: 000000000000010b
+[ 1203.522583] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8df18b07
+[ 1203.523550] R10: fffffbfff1be3160 R11: 0000000000000001 R12: 0000000000478399
+[ 1203.524596] R13: 0000000000000000 R14: ffff888145088000 R15: 0000000000000008
+[ 1203.525634] FS:  00007f429f5f4700(0000) GS:ffff8881daf00000(0000) knlGS:0000000000000000
+[ 1203.526801] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1203.527626] CR2: 000000000000010b CR3: 0000000170e1e001 CR4: 00000000003706e0
+[ 1203.528611] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 1203.529605] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+Therefore, when ftrace_startup_enable fails, we need to rollback registration
+process and remove ops from ftrace_ops_list.
+
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+---
+ kernel/trace/ftrace.c | 30 +++++++++++++++++++++---------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
+
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 601ccf1b2f09..63bf7b67ab2e 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -2922,24 +2922,36 @@ int ftrace_startup(struct ftrace_ops *ops, int command)
+ 	ops->flags |= FTRACE_OPS_FL_ENABLED | FTRACE_OPS_FL_ADDING;
+ 
+ 	ret = ftrace_hash_ipmodify_enable(ops);
+-	if (ret < 0) {
+-		/* Rollback registration process */
+-		__unregister_ftrace_function(ops);
+-		ftrace_start_up--;
+-		ops->flags &= ~FTRACE_OPS_FL_ENABLED;
+-		if (ops->flags & FTRACE_OPS_FL_DYNAMIC)
+-			ftrace_trampoline_free(ops);
+-		return ret;
+-	}
++	if (ret < 0)
++		goto out_rollback_registration;
+ 
+ 	if (ftrace_hash_rec_enable(ops, 1))
+ 		command |= FTRACE_UPDATE_CALLS;
+ 
+ 	ftrace_startup_enable(command);
+ 
++	/*
++	 * If ftrace_startup_enable fails,
++	 * we need to rollback registration process.
++	 */
++	if (unlikely(ftrace_disabled)) {
++		ret = -ENODEV;
++		goto out_rollback_registration;
++	}
++
+ 	ops->flags &= ~FTRACE_OPS_FL_ADDING;
+ 
+ 	return 0;
++
++out_rollback_registration:
++	/* Rollback registration process */
++	__unregister_ftrace_function(ops);
++	ftrace_start_up--;
++	ops->flags &= ~FTRACE_OPS_FL_ENABLED;
++	if (ops->flags & FTRACE_OPS_FL_DYNAMIC)
++		ftrace_trampoline_free(ops);
++
++	return ret;
+ }
+ 
+ int ftrace_shutdown(struct ftrace_ops *ops, int command)
 -- 
-An old man doll... just what I always wanted! - Clara
+2.30.GIT
+
