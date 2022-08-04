@@ -2,92 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FB17C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 18:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14BADC25B06
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 18:55:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236826AbiHDSwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 14:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45928 "EHLO
+        id S235060AbiHDSzi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 14:55:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234837AbiHDSw2 (ORCPT
+        with ESMTP id S232130AbiHDSzg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 14:52:28 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C648015A0A
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 11:52:27 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id m4so930310ejr.3
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 11:52:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=d9A+1UrQLh0WcW9MhwNlbIKjJoOc9nVaeZ+f3kn5XJg=;
-        b=Wghr6irArPcwVSc+CNnhrrsEu9dnr4MgYqspEvpRuXFzsOtqFWg2OW0RZw0DsbJhbG
-         7KYJuxI+hGsaf1e3eCH86NhWL3mKYHLchNkwelwizVdbqx2TCHmSyTmd7/UiTNDRDtqj
-         1bkDxMnc43SYw+VE+NmTMF0O+9AkEy2ziVWdw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=d9A+1UrQLh0WcW9MhwNlbIKjJoOc9nVaeZ+f3kn5XJg=;
-        b=CXEjwFaHGJnx1AnDmbdlXZUqj7eLSNUlng1b1njWq6Xazc0qE60xHb//B3fCx5/VZg
-         VWZwHfaEvUJGzEtVRz5FPmnh964QDcLCQnrwolwBfkBNCh+2sNRukDGtEqYDUI9Z/Ew6
-         xGdpoTm8yTb51GenSe24Zqzl43WnbxIGJRGyN/iV4Xvfmm0ZJF9y5p2lWmGBiHhcHyKe
-         WL8r5qX4MmV1KUC1zmTe03ezUH9ArGYDOyM2wmD92RxVbo07IAw0V41y5QaUswO4aDRA
-         nAHR6nEF5d1TqK4TT12o5qygJH6bKCbjRPboQMG8gbnczc0pAXQSa5xIg7ujDgwtq6mM
-         2ukA==
-X-Gm-Message-State: ACgBeo1HMwMKKMYKzbO/QxJXNq5OZaTtU13/BfvWwjHTgygsUnXQqoh5
-        PFPyv3s/Pe5fxipnV+72v6UfmGRmAko10v4D
-X-Google-Smtp-Source: AA6agR6EINyJukn2W2sH/R57jRmbwGxpwtX0pZarH5B2/x6XuDsubXCre7w7b5AWlgK9eozBlVupqw==
-X-Received: by 2002:a17:907:da0:b0:730:d0ba:7b13 with SMTP id go32-20020a1709070da000b00730d0ba7b13mr2545120ejc.332.1659639146153;
-        Thu, 04 Aug 2022 11:52:26 -0700 (PDT)
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
-        by smtp.gmail.com with ESMTPSA id o19-20020a1709061d5300b0072af4af2f46sm637058ejh.74.2022.08.04.11.52.25
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Aug 2022 11:52:25 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id l22so785338wrz.7
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 11:52:25 -0700 (PDT)
-X-Received: by 2002:adf:edcb:0:b0:21e:d043:d271 with SMTP id
- v11-20020adfedcb000000b0021ed043d271mr2265646wro.274.1659639145076; Thu, 04
- Aug 2022 11:52:25 -0700 (PDT)
+        Thu, 4 Aug 2022 14:55:36 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C3C65A2;
+        Thu,  4 Aug 2022 11:55:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659639335; x=1691175335;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vTjXRsL4lAnfzqth+z2XycE86BJ3XSQ3FJU78c46BNU=;
+  b=Mb6Uom0PeUWSmRlY9CGzmj+0X2WD7MZhsWsdiOexQeKvk20aFjfoDsvI
+   /zZqGi4MuD8Wt+AggIUZn9GRi1pZTr11UVWrhHHx0/0czibQNglDPRflx
+   sGB4+2HO+1QP62LSvID/Gm57sY7h51Wi8GBARpvCyPnFBMaR7WmWAEVxG
+   OINGlE6IGbtudnp4LV/ap+PtQUS/jWGibDyzg81invPpanUGII5/RPr5T
+   9c6JEwIP+otOTttRlS/bGpj+/CYli9Cj6cJqhcGCbEjzUN9IodzJMNmOE
+   jrUDJHbhWqq3YTmJHHTs0PCVEuWt22T2MQIZAkBJTH7Gl65P3vstdTnhu
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10429"; a="288779234"
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="288779234"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 11:55:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="671382107"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 04 Aug 2022 11:55:31 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oJg0J-000Ijv-0J;
+        Thu, 04 Aug 2022 18:55:31 +0000
+Date:   Fri, 5 Aug 2022 02:55:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yang Jihong <yangjihong1@huawei.com>, rostedt@goodmis.org,
+        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, yangjihong1@huawei.com
+Subject: Re: [PATCH] perf/core: Fix syzkaller reported issue "Internal error
+ in read_pmevcntrn"
+Message-ID: <202208050241.9fLxoaz4-lkp@intel.com>
+References: <20220804105918.113833-1-yangjihong1@huawei.com>
 MIME-Version: 1.0
-References: <YuwRyQYPCb1FD+mr@debian>
-In-Reply-To: <YuwRyQYPCb1FD+mr@debian>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 4 Aug 2022 11:52:09 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whptVSSZL=wSUQJdRBeVfS+Xy_K4anQ7eQOky7XUrXhUQ@mail.gmail.com>
-Message-ID: <CAHk-=whptVSSZL=wSUQJdRBeVfS+Xy_K4anQ7eQOky7XUrXhUQ@mail.gmail.com>
-Subject: Re: mainline build failure for x86_64 allmodconfig with clang
-To:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220804105918.113833-1-yangjihong1@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 4, 2022 at 11:37 AM Sudip Mukherjee (Codethink)
-<sudipm.mukherjee@gmail.com> wrote:
->
-> git bisect points to 3876a8b5e241 ("drm/amd/display: Enable building new display engine with KCOV enabled").
+Hi Yang,
 
-Ahh. So that was presumably why it was disabled before - because it
-presumably does disgusting things that make KCOV generate even bigger
-stack frames than it already has.
+Thank you for the patch! Perhaps something to improve:
 
-Those functions do seem to have fairly big stack footprints already (I
-didn't try to look into why, I assume it's partly due to aggressive
-inlining, and probably some automatic structures on stack). But gcc
-doesn't seem to make it all that much worse with KCOV (and my clang
-build doesn't enable KCOV).
+[auto build test WARNING on tip/perf/core]
+[also build test WARNING on linus/master v5.19 next-20220803]
+[cannot apply to acme/perf/core]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-So it's presumably some KCOV-vs-clang thing. Nathan?
+url:    https://github.com/intel-lab-lkp/linux/commits/Yang-Jihong/perf-core-Fix-syzkaller-reported-issue-Internal-error-in-read_pmevcntrn/20220804-190347
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 326ecc15c61c349cd49d1700ff9e3e31c6fd1cd5
+config: x86_64-randconfig-a015 (https://download.01.org/0day-ci/archive/20220805/202208050241.9fLxoaz4-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/9c758a8d3d13d1ac89f651850b79d91b23b41b02
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Yang-Jihong/perf-core-Fix-syzkaller-reported-issue-Internal-error-in-read_pmevcntrn/20220804-190347
+        git checkout 9c758a8d3d13d1ac89f651850b79d91b23b41b02
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/events/
 
-              Linus
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from include/linux/spinlock.h:54,
+                    from include/linux/wait.h:9,
+                    from include/linux/wait_bit.h:8,
+                    from include/linux/fs.h:6,
+                    from kernel/events/core.c:11:
+   kernel/events/core.c: In function 'perf_output_read_group':
+   kernel/events/core.c:6942:27: error: 'flags' undeclared (first use in this function)
+    6942 |         local_irq_restore(flags);
+         |                           ^~~~~
+   include/linux/typecheck.h:11:16: note: in definition of macro 'typecheck'
+      11 |         typeof(x) __dummy2; \
+         |                ^
+   include/linux/irqflags.h:228:22: note: in expansion of macro 'raw_irqs_disabled_flags'
+     228 |                 if (!raw_irqs_disabled_flags(flags))    \
+         |                      ^~~~~~~~~~~~~~~~~~~~~~~
+   kernel/events/core.c:6942:9: note: in expansion of macro 'local_irq_restore'
+    6942 |         local_irq_restore(flags);
+         |         ^~~~~~~~~~~~~~~~~
+   kernel/events/core.c:6942:27: note: each undeclared identifier is reported only once for each function it appears in
+    6942 |         local_irq_restore(flags);
+         |                           ^~~~~
+   include/linux/typecheck.h:11:16: note: in definition of macro 'typecheck'
+      11 |         typeof(x) __dummy2; \
+         |                ^
+   include/linux/irqflags.h:228:22: note: in expansion of macro 'raw_irqs_disabled_flags'
+     228 |                 if (!raw_irqs_disabled_flags(flags))    \
+         |                      ^~~~~~~~~~~~~~~~~~~~~~~
+   kernel/events/core.c:6942:9: note: in expansion of macro 'local_irq_restore'
+    6942 |         local_irq_restore(flags);
+         |         ^~~~~~~~~~~~~~~~~
+>> include/linux/typecheck.h:12:25: warning: comparison of distinct pointer types lacks a cast
+      12 |         (void)(&__dummy == &__dummy2); \
+         |                         ^~
+   include/linux/irqflags.h:193:17: note: in expansion of macro 'typecheck'
+     193 |                 typecheck(unsigned long, flags);        \
+         |                 ^~~~~~~~~
+   include/linux/irqflags.h:228:22: note: in expansion of macro 'raw_irqs_disabled_flags'
+     228 |                 if (!raw_irqs_disabled_flags(flags))    \
+         |                      ^~~~~~~~~~~~~~~~~~~~~~~
+   kernel/events/core.c:6942:9: note: in expansion of macro 'local_irq_restore'
+    6942 |         local_irq_restore(flags);
+         |         ^~~~~~~~~~~~~~~~~
+>> include/linux/typecheck.h:12:25: warning: comparison of distinct pointer types lacks a cast
+      12 |         (void)(&__dummy == &__dummy2); \
+         |                         ^~
+   include/linux/irqflags.h:182:17: note: in expansion of macro 'typecheck'
+     182 |                 typecheck(unsigned long, flags);        \
+         |                 ^~~~~~~~~
+   include/linux/irqflags.h:230:17: note: in expansion of macro 'raw_local_irq_restore'
+     230 |                 raw_local_irq_restore(flags);           \
+         |                 ^~~~~~~~~~~~~~~~~~~~~
+   kernel/events/core.c:6942:9: note: in expansion of macro 'local_irq_restore'
+    6942 |         local_irq_restore(flags);
+         |         ^~~~~~~~~~~~~~~~~
+
+
+vim +12 include/linux/typecheck.h
+
+e0deaff470900a4c Andrew Morton 2008-07-25   4  
+e0deaff470900a4c Andrew Morton 2008-07-25   5  /*
+e0deaff470900a4c Andrew Morton 2008-07-25   6   * Check at compile time that something is of a particular type.
+e0deaff470900a4c Andrew Morton 2008-07-25   7   * Always evaluates to 1 so you may use it easily in comparisons.
+e0deaff470900a4c Andrew Morton 2008-07-25   8   */
+e0deaff470900a4c Andrew Morton 2008-07-25   9  #define typecheck(type,x) \
+e0deaff470900a4c Andrew Morton 2008-07-25  10  ({	type __dummy; \
+e0deaff470900a4c Andrew Morton 2008-07-25  11  	typeof(x) __dummy2; \
+e0deaff470900a4c Andrew Morton 2008-07-25 @12  	(void)(&__dummy == &__dummy2); \
+e0deaff470900a4c Andrew Morton 2008-07-25  13  	1; \
+e0deaff470900a4c Andrew Morton 2008-07-25  14  })
+e0deaff470900a4c Andrew Morton 2008-07-25  15  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
