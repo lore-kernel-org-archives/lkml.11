@@ -2,131 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05FF4C19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 08:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35807C19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 08:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231458AbiHDIqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 04:46:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47046 "EHLO
+        id S231819AbiHDItS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 04:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbiHDIpy (ORCPT
+        with ESMTP id S229687AbiHDItQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 04:45:54 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9471E7;
-        Thu,  4 Aug 2022 01:45:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1659602742;
-        bh=zBHeLt3swzlhQhq8Mg+oecUGN1GpWSW7/ADB/NwqugE=;
-        h=X-UI-Sender-Class:Date:Subject:From:To:References:In-Reply-To;
-        b=CpTM/L9+EiQjofNeKED27cW/pamOhQHaWJ9kPCuJeGNRydk0SMqBL12zLE5U7scY2
-         ChiR3HgHcbzURgwYXlywvO9tNjrPyVfZ3hMk6FXlDhAEyjqgynuBMJYoxJz2+1Oxqs
-         G67677hbWeXBbnsz7/tZ/dA52064VRTU6wi2QNN8=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.176.33]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MGhuU-1oEcel3x1W-00DpdQ; Thu, 04
- Aug 2022 10:45:42 +0200
-Message-ID: <0fbc2150-b4aa-f2cb-5084-3a9f69b3455d@gmx.de>
-Date:   Thu, 4 Aug 2022 10:44:51 +0200
+        Thu, 4 Aug 2022 04:49:16 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F9AC3F;
+        Thu,  4 Aug 2022 01:49:14 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id b16so16941359edd.4;
+        Thu, 04 Aug 2022 01:49:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PDqST7Byow9W+iNy4StAr+ocDX/ur332SaJcGD+0QOs=;
+        b=Iac/k5ega7/2roee9dVTuPSAofjPoyHYUAjuYJvvpKrIGY7b2AfJ5ZLodTuwTsj7pi
+         yYh+Tf9dp/SG4ZE++/7FX3vZRBKuAqLAJ3PSzmxu2doTZRGj9T6BbRrTvNZ/6QZG4CyA
+         QDOdbQGb3x7krNvtvMbwoP1UXgxt1TrsXSq21lEcmM48Vg/GTo/kBIDPyPixIMLddRCl
+         65Cxm0kZZj6wyw3JWpE0ELMGU4WDxreJYTtlEXDH77ppjnfUwTUwSeIxj5ZhPwy7uecD
+         Lhx8k5AvcU/yBMt/RF20fGIJ3ZAyklaR/bz1glW6xtuO95kGl3zPz42qLOUuBSf3tM8A
+         jfuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=PDqST7Byow9W+iNy4StAr+ocDX/ur332SaJcGD+0QOs=;
+        b=o+bRD27XiVY8iqjSeLNJBzBRzfpIChF9SPAdL06zeZ/c2H2sfXNyVoi/grRWTCRt0P
+         QDhFAZds2USE+/mFQUZGw+irx8q0Dpe/zHDPXGZs7U5pm9anPZQulKhT22N2dY7hImhS
+         UbBH7NtO1tkPaMHae6CjXT6RvcVtje9LF+ndSmWc7W3Dr22jk6MZZc8kzDu/E1iig0h7
+         WV5la3gX7MPvMFZiw8EawsZgS+yk/eb4xnDLYJgC2iQ3TP2m8aBr4lRQgTfYRt9Wavea
+         KSFrAWykWmooq+LDlNcb5dBy68JhJSh8B/Eju17o7n4kS4ao30kJKPqsFkvDkA9OOtl2
+         U0jg==
+X-Gm-Message-State: ACgBeo0rDrCydVUYNMAK/IqR6wIgtAqhZd8wRUI0udn/zeWFt50zPw0u
+        v9zJju3ROz6CN0nArHvzt4k=
+X-Google-Smtp-Source: AA6agR6EX97LVGRg3+3k1XQ4q9e9rO9X3J4o5LnVoZ/LF7tZx30N+5SegaDbFCgkQHVYF+mhZCbTYw==
+X-Received: by 2002:a05:6402:84f:b0:437:6293:d264 with SMTP id b15-20020a056402084f00b004376293d264mr937597edz.317.1659602952927;
+        Thu, 04 Aug 2022 01:49:12 -0700 (PDT)
+Received: from gmail.com (195-38-112-141.pool.digikabel.hu. [195.38.112.141])
+        by smtp.gmail.com with ESMTPSA id d6-20020a056402144600b0043bbb3535d6sm325949edx.66.2022.08.04.01.49.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Aug 2022 01:49:12 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Thu, 4 Aug 2022 10:49:10 +0200
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Vince Weaver <vincent.weaver@maine.edu>
+Cc:     Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Rob Herring <robh@kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v3 1/3] perf: Align user space counter reading with code
+Message-ID: <YuuIBr2aqB+1992Q@gmail.com>
+References: <20220719223946.176299-1-irogers@google.com>
+ <20220719223946.176299-2-irogers@google.com>
+ <ef5125e0-8265-8c16-e904-c95c8ddc2754@maine.edu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] tty: vt: selection: Add check for valid tiocl_selection
- values
-Content-Language: en-US
-From:   Helge Deller <deller@gmx.de>
-To:     Jiri Slaby <jirislaby@kernel.org>,
-        Khalid Masum <khalid.masum.92@gmail.com>,
-        syzbot <syzbot+14b0e8f3fd1612e35350@syzkaller.appspotmail.com>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <000000000000bbdd0405d120c155@google.com>
- <20220729065139.6529-1-khalid.masum.92@gmail.com>
- <eb4a26aa-da30-ceee-7d27-c1e902dd4218@gmx.de> <YuV9PybMPgc83Jis@p100>
- <1eb62346-304b-54d5-8a62-8a35888d51bd@kernel.org>
- <35e860bb-c76c-ca5f-3f48-2bf6cb798689@gmx.de>
-In-Reply-To: <35e860bb-c76c-ca5f-3f48-2bf6cb798689@gmx.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:fvnbUjIfRjo7BJSx+mfDA4vZyG8NWXczmkia6v3VEBCbAyao9hd
- exfzNMaGvcGQxH4Wvi0pQPqDGVjRjsbygiweWzqqKN84vnc01cUaFT500sLFmneopmj6TuN
- 7D8EJ8pXwbhM7DmAcvWEYyuPh8lKGaxGucyqyJFgRu34oMBEb142RvDrcK9gdV236pr3wtT
- Oy5TtUfMy3fcCyOUFruuw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:yOyWATsJFEw=:5/aYH5v3o7Xf+v2pqkfDUK
- reV/GHEIayBJfoEzdblpgI9tivDovDbUtiadXbrco1O1Kz/139sfsYQ0v7CvR3uzJp9KLYDwR
- HUy9n1zYPpW92BNmMt4mGO64m+SNpC6k2xcrQbAl2p5exmUCgv2eDZfXtukUFmM+A+s+9eTIu
- fbTTBaE+RPM4bPa4tMbNhMFuJoEGAc7jSz71EUcLdnwqnZPhmD7G3rsvvV241xFytVD74Ty3E
- DN36Oqb8zFSsDDuDzzrFynP9ZkH9htFN8iZtWXV1Ecwarp06/GJ1hFwvyNU+eZJn9wJ9/xYc1
- Vz/Ll7S7kfQ2eeR3kcoitXlP/MIv1Av93Kgs1HtcLMS1xSz78IMy3hN6YqPGEB7TlaroAwUZG
- y5kVhKzUGPqeszSaqofYC/PzSRHw2iK3V6qVK/VvqE00bFveRyxB1zS+dJ0BvQJejXPNnj4ad
- cgz6VWmb/Fd5NMRDtzGM/aao8Dd6CI2jlwp7jnO4IevakW7ptE4FfazIc6q19UIolnrfbp8iS
- gVJVJy2UDEssqoqTP4SRJkL8yGAYfFKJQjtILiwX2hZ3KY0ByVOniP0SYkQOpjdE+ziCgUgqS
- jX7qKet8R6eQ+eeg+YlPeSteXvgcwVUY2nTw1aluOUEEOPX/SNX8nzkOfu/19NOk7Xa4akCBJ
- wyy2rO8r28wZmTUdJNbgwdhJB7cjj0DXgD7oM4Yl3neecSqDqf33kEas6KlrehHj4wqS/1nC9
- UlbKQ0qZ/Gu4bwXXDZRhZAt+IBh33/hIFUzUOSeOV6r1CPxUykUDa+pUpA6ednhIhbU6njKyN
- mL5FPM5oSG1euYGSbNvhs8aAOeFPBzteq/Ga48v6SNffpjl7uFIaM6nc2ZYAVSTqkpO885DS0
- 4aj/gQ4TV+8y+WCkmOWfkRlFa1C2C1Ksy6kAi/iZkKUBApFP/7g8R3fIq3eWUWgw1yQghgEiA
- yp4/ctSMTC1V4CyUq5FSDXI39NTc47Oifz6kyw0yIaH4aQ3D1HKftyJgepHkvQDIjaMDcteUl
- JqmX9jvje5xHJOL+I8Q87bWPd7IFqWfnb4ETlQ5dNBl+VJBqYiGEzc+0amG0leXUMsi6KI9VY
- qwmRjvX9VRaDMvvEOmOmfJU4qF/5hyagZQAEzySWsild0wCtSTf7hWrsg==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ef5125e0-8265-8c16-e904-c95c8ddc2754@maine.edu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/4/22 09:15, Helge Deller wrote:
-> Hello Jiri,
->
-> Thanks for looking into this patch!
->
-> On 8/4/22 07:47, Jiri Slaby wrote:
->> On 30. 07. 22, 20:49, Helge Deller wrote:
->>> The line and column numbers for the selection need to start at 1.
->>> Add the checks to prevent invalid input.
->>>
->>> Signed-off-by: Helge Deller <deller@gmx.de>
->>> Reported-by: syzbot+14b0e8f3fd1612e35350@syzkaller.appspotmail.com
->>>
->>> diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
->>> index f7755e73696e..58692a9b4097 100644
->>> --- a/drivers/tty/vt/selection.c
->>> +++ b/drivers/tty/vt/selection.c
->>> @@ -326,6 +326,9 @@ static int vc_selection(struct vc_data *vc, struct=
- tiocl_selection *v,
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return 0;
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->>>
->>> +=C2=A0=C2=A0=C2=A0 if (!v->xs || !v->ys || !v->xe || !v->ye)
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -EINVAL;
->>
->> Hmm, I'm not sure about this. It potentially breaks userspace (by
->> returning EINVAL now).
->
-> Right.
-> According to the code below, my interpretation is that all xs/ys/xe/ye v=
-alues
-> should be > 0. But of course I might be wrong on this, as I didn't find =
-any
-> documentation for TIOCL_SETSEL.
->
-> And if userspace tries to set an invalid selection (e.g. by selecting ro=
-w 0),
-> my patch now returns -EINVAL, while it returned success before.
->
->> And the code below should handle this just fine, right:
->>>       v->xs =3D min_t(u16, v->xs - 1, vc->vc_cols - 1);
->>>       v->ys =3D min_t(u16, v->ys - 1, vc->vc_rows - 1);
->>>       v->xe =3D min_t(u16, v->xe - 1, vc->vc_cols - 1);
->
-> It "handles it fine" in the sense that it can cope with the
-> input and will not crash.
-> But it returns (maybe?) unexpected results...
 
-After some more thinking maybe you are right.
-In case a user provided invalid values in the past, simply an unexpected
-selection was set, but nothing broke.
-Since the patch doesn't fix any critical issue, we could just drop this pa=
-tch
-and leave it as is.
+* Vince Weaver <vincent.weaver@maine.edu> wrote:
 
-Helge
+> On Tue, 19 Jul 2022, Ian Rogers wrote:
+> 
+> > Align the user space counter reading documentation with the code in
+> > perf_mmap__read_self. Previously the documentation was based on the perf
+> > rdpmc test, but now general purpose code is provided by libperf.
+> > 
+> > Signed-off-by: Ian Rogers <irogers@google.com>
+> > ---
+> >  include/uapi/linux/perf_event.h       | 35 +++++++++++++++++----------
+> >  tools/include/uapi/linux/perf_event.h | 35 +++++++++++++++++----------
+> >  2 files changed, 44 insertions(+), 26 deletions(-)
+> > 
+> > diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+> > index d37629dbad72..6826dabb7e03 100644
+> > --- a/include/uapi/linux/perf_event.h
+> > +++ b/include/uapi/linux/perf_event.h
+> > @@ -538,9 +538,13 @@ struct perf_event_mmap_page {
+> >  	 *
+> >  	 *     if (pc->cap_usr_time && enabled != running) {
+> >  	 *       cyc = rdtsc();
+> > -	 *       time_offset = pc->time_offset;
+> >  	 *       time_mult   = pc->time_mult;
+> >  	 *       time_shift  = pc->time_shift;
+> > +	 *       time_offset = pc->time_offset;
+> > +	 *       if (pc->cap_user_time_short) {
+> > +	 *         time_cycles = pc->time_cycles;
+> > +	 *         time_mask = pc->time_mask;
+> > +	 *       }
+> 
+> From what I've been told, and from what perf_mmap__read_self() actually 
+> does, many of these MMAP fields need to be accessed by READ_ONCE()
+> (a GPLv2 only interface) to be correct.
+
+BTW., for this purpose I guess we could add a READ_ONCE() variant to perf 
+tooling that reimplements it with more relaxed licensing, so that the 
+headers & sample code can be included in GPL-incompatible projects?
+
+READ_ONCE() isn't a super complicated primitive, and we've always been 
+permissive with simple primitives.
+
+Thanks,
+
+	Ingo
