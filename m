@@ -2,253 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C4A5C19F29
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 01:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A23ABC19F29
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 01:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238961AbiHDBhD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 21:37:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52928 "EHLO
+        id S238957AbiHDBsn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 21:48:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238957AbiHDBg6 (ORCPT
+        with ESMTP id S229596AbiHDBsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 21:36:58 -0400
-Received: from mail1.bemta34.messagelabs.com (mail1.bemta34.messagelabs.com [195.245.231.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AEFA5D0DD;
-        Wed,  3 Aug 2022 18:36:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fujitsu.com;
-        s=170520fj; t=1659577013; i=@fujitsu.com;
-        bh=RzfBUxm2e+0u6f5z03qEi8YXRUiCis7xn6IbNdE5OmY=;
-        h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-         In-Reply-To:Content-Type:Content-Transfer-Encoding;
-        b=AGkrjHtXb0C2WhUMOk9QamCI3DGCctzewDri863e/yeYShl0KOyH9C4b1yzzCfIYW
-         FQDXiWTpJb3gurEXTcy+qygdbBGOkHPwtNkgcTUgRXnekJ722SWLY0I2sUZWLizIvX
-         1SYBD1dAq72IXb/7OC4B9ETDnW2VK6iWR1CEe0JBNOYdCEjXo8ti6+6oG8WyoyPG/I
-         63apvbrbLRlMm03pztZ3lQH/OFv8yPHE7tf1mb++xjcswipL7Fh+THTVD/uLhsSmw+
-         5bHPIePqczwuj4evGG8azBr0Zsdafr9L1w3OqXlSTCVgg9QcXlYRoDGwl0V1g3mSJU
-         xn76jYhAE7wbQ==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrCKsWRWlGSWpSXmKPExsViZ8ORpLta6XW
-  SwaQtjBZbjt1jtLj8hM/i9IRFTBZ79p5ksbi8aw6bxa4/O9gtVv74w+rA7nFqkYTH5hVaHptW
-  dbJ5vNg8k9Hj8ya5ANYo1sy8pPyKBNaM4weaGAveqVW8PPWMrYHxinwXIxeHkMBGRomF9/ewQ
-  zhLmCT6bz1lg3C2MUo8XXyMpYuRk4NXwE7i2cL/jCA2i4CKxOKFH9gh4oISJ2c+Aarh4BAVSJ
-  b4ttcIJCws4CuxdlMfM4gtIqApceTbNSaQmcwCJ5kkmk5sYoJYcJZJ4nbnFyaQKjYBHYkLC/6
-  ygticAhoSp7bPArOZBSwkFr85yA5hy0s0b53NDLJMQkBJYmZ3PEhYQqBCYtasNiYIW03i6rlN
-  zBMYhWYhOW8WkkmzkExawMi8itE6qSgzPaMkNzEzR9fQwEDX0NBU19gCSBnqJVbpJuqlluqWp
-  xaX6BrpJZYX66UWF+sVV+Ym56To5aWWbGIERlVKsVr+Dsa/K3/qHWKU5GBSEuWtPPUqSYgvKT
-  +lMiOxOCO+qDQntfgQowwHh5IEr6vi6yQhwaLU9NSKtMwcYITDpCU4eJREeHXkgNK8xQWJucW
-  Z6RCpU4zGHOd37t/LzLG24cBeZiGWvPy8VClx3kcKQKUCIKUZpXlwg2CJ5xKjrJQwLyMDA4MQ
-  T0FqUW5mCar8K0ZxDkYlYd6b8kBTeDLzSuD2vQI6hQnkFK4XIKeUJCKkpBqYZB6seHrO7ELU4
-  oXSx/6HGSRvnxBXWe+9QbVF+Ep7s11f84avU9KqbTV3/rtzfUeinsSWDbcS1OYFbLpf/UdXT8
-  fQortuUuerL32zc+0+RiXHWc28a2CwNbxHUbmy/e3EpAyz2abn/m9d+JlZ+aDeZIXshRJuXzw
-  KVnCvuD+law/Hugnds0SfTkhXMajynZBoonPgscws3mfz5qRuXyrzoGdizyFhpUkTY+JOn121
-  w0q4+r9Ec23IJv72acKT06tmWE99pd6m0S6au/DWBfWDWVM+LhauyQiTPuiy/sK0HKdS/cNHG
-  htyEp8Y6J7e5Hhx5my/HbU3UjYbBCoZnS4q67iue1Dg1ZdIt9Y6l81uSizFGYmGWsxFxYkAiK
-  hwsrcDAAA=
-X-Env-Sender: ruansy.fnst@fujitsu.com
-X-Msg-Ref: server-3.tower-565.messagelabs.com!1659577002!445523!1
-X-Originating-IP: [62.60.8.98]
-X-SYMC-ESS-Client-Auth: outbound-route-from=pass
-X-StarScan-Received: 
-X-StarScan-Version: 9.87.3; banners=-,-,-
-X-VirusChecked: Checked
-Received: (qmail 4843 invoked from network); 4 Aug 2022 01:36:43 -0000
-Received: from unknown (HELO n03ukasimr03.n03.fujitsu.local) (62.60.8.98)
-  by server-3.tower-565.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 4 Aug 2022 01:36:43 -0000
-Received: from n03ukasimr03.n03.fujitsu.local (localhost [127.0.0.1])
-        by n03ukasimr03.n03.fujitsu.local (Postfix) with ESMTP id A912B1AD;
-        Thu,  4 Aug 2022 02:36:42 +0100 (BST)
-Received: from R01UKEXCASM126.r01.fujitsu.local (R01UKEXCASM126 [10.183.43.178])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by n03ukasimr03.n03.fujitsu.local (Postfix) with ESMTPS id 9D75E1AC;
-        Thu,  4 Aug 2022 02:36:42 +0100 (BST)
-Received: from [192.168.22.78] (10.167.225.141) by
- R01UKEXCASM126.r01.fujitsu.local (10.183.43.178) with Microsoft SMTP Server
- (TLS) id 15.0.1497.32; Thu, 4 Aug 2022 02:36:39 +0100
-Message-ID: <ece5e040-35cd-3570-728e-b010fab52c70@fujitsu.com>
-Date:   Thu, 4 Aug 2022 09:36:29 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Subject: Re: [PATCH] xfs: fail dax mount if reflink is enabled on a partition
-To:     "Darrick J. Wong" <djwong@kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-xfs@vger.kernel.org" <linux-xfs@vger.kernel.org>,
-        "nvdimm@lists.linux.dev" <nvdimm@lists.linux.dev>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "david@fromorbit.com" <david@fromorbit.com>,
-        "hch@infradead.org" <hch@infradead.org>
-References: <20220609143435.393724-1-ruansy.fnst@fujitsu.com>
- <Yr5AV5HaleJXMmUm@magnolia>
- <74b0a034-8c77-5136-3fbd-4affb841edcb@fujitsu.com>
- <Ytl7yJJL1fdC006S@magnolia>
- <7fde89dc-2e8f-967b-d342-eb334e80255c@fujitsu.com>
- <YuNn9NkUFofmrXRG@magnolia>
- <0ea1cbe1-79d7-c22b-58bf-5860a961b680@fujitsu.com>
- <YusYDMXLYxzqMENY@magnolia>
-From:   Shiyang Ruan <ruansy.fnst@fujitsu.com>
-In-Reply-To: <YusYDMXLYxzqMENY@magnolia>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+        Wed, 3 Aug 2022 21:48:40 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2107.outbound.protection.outlook.com [40.107.94.107])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16DF15F10D;
+        Wed,  3 Aug 2022 18:48:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bwFpyDOkrcmhGLTvWI2gbNvEyyLNHQoQH5OLD4k23aiA8Kz37YIlzS71Fc5u9xeuoB9YthzbUN5/SJDGHEbnTz/BBnBHOHDDjUZyMnu8S3EREWmdkC6LJzHtk4YPWE86mGOt5N9gYjd3xyfgbrpFaFAtPHrtdL6Yw78htIbdIc3AiRCyZl88eUCk0MQxhQ+5BOQ5IgOAlCSOzXiEjNDFdHXr3ZUQ/vPUY66PrkVOMFnOwF9fScufsfLLl9vTfuceOdNr1q82INeexBLBBfaDkah1zxkYkFRFE+ivUGV9ckDfcMBQW0u++AN9ozh2GMqIwSeRBXxEzlLyagQoKz5SoQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=urbUIPd9Cik0C5kD5S69kP3XzxRa2GiocManyWSuA9A=;
+ b=ZKG8IHRKWqy+3mviLDuZxUmjhv+DNkKFCzD02vsgE/AZN8Ei68Zgcpv4eK3gUzrraaFP5PeD9xz/KMdYnDrZSfjmOyPAclDa6Rrbb423764wovP4pJ46SrtQ1nuCo/CiodRhwJxoEcDcQSOdRJ5IGzmXZTw59+HYVJb2IgfgfNGeehyxQhYQrBuHkjuek95OCofde2QL1wvNvJjwlGXZb/0AsKAPfOtnFx4Gtna6WB4EIFyI8pI7cmGUqd9CjsalLL9NRsM0ydrpDcdt9NPIviOpsZzlW8OIQxBDiI1NZ+b2gEdhurE6Knsrjs6iD8znvIffeEDqCPvQBgjd8LIyUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
+ header.from=os.amperecomputing.com; dkim=pass
+ header.d=os.amperecomputing.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=os.amperecomputing.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=urbUIPd9Cik0C5kD5S69kP3XzxRa2GiocManyWSuA9A=;
+ b=Aq95Uqo3jsrMD9t+xQI2bOMqmDDPzzFW2BMHjssiYIEJBbrmHkKAmepPGfTCbb70X6lBzm+v55Y6EG1c1hEsBK9Ea8uddqVp6x7zil8Qs/SOT2sZCZhBmTWrIFqBPJ7DvQed+DrtnhLHJgYPANgg0GuwUnJRVMorSkqCxzKyS5o=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
+Received: from DM8PR01MB6824.prod.exchangelabs.com (2603:10b6:8:23::24) by
+ CH2PR01MB6086.prod.exchangelabs.com (2603:10b6:610:45::24) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5482.14; Thu, 4 Aug 2022 01:48:33 +0000
+Received: from DM8PR01MB6824.prod.exchangelabs.com
+ ([fe80::7058:9dd4:aa01:614a]) by DM8PR01MB6824.prod.exchangelabs.com
+ ([fe80::7058:9dd4:aa01:614a%5]) with mapi id 15.20.5504.014; Thu, 4 Aug 2022
+ 01:48:33 +0000
+From:   Huang Shijie <shijie@os.amperecomputing.com>
+To:     bhelgaas@google.com
+Cc:     patches@amperecomputing.com, zwang@amperecomputing.com,
+        darren@os.amperecomputing.com, corbet@lwn.net,
+        yangyicong@hisilicon.com, linux-pci@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Huang Shijie <shijie@os.amperecomputing.com>
+Subject: [PATCH] PCI: fix the invalid aer-inject git tree
+Date:   Thu,  4 Aug 2022 09:47:55 +0000
+Message-Id: <20220804094755.1885603-1-shijie@os.amperecomputing.com>
+X-Mailer: git-send-email 2.30.2
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.167.225.141]
-X-ClientProxiedBy: G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) To
- R01UKEXCASM126.r01.fujitsu.local (10.183.43.178)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain
+X-ClientProxiedBy: CH2PR02CA0003.namprd02.prod.outlook.com
+ (2603:10b6:610:4e::13) To DM8PR01MB6824.prod.exchangelabs.com
+ (2603:10b6:8:23::24)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d47650c2-fcb6-46c2-3b11-08da75bb704f
+X-MS-TrafficTypeDiagnostic: CH2PR01MB6086:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WWm5kTzIjrrelyoW55LMEHoUjvVwdK2PpwYyz7JInpVF8ufCdDIK18tij7X23T5kMqHXKjXff+IVn1Vcmi+67bwrRZLDvi40sISfLTsVWuLDKM0D1LTifs5AUhyPuoqc7eAQiPlrkQFcumVhuiOjFD8aTrBr6bzMgL42Vkm1lZTd3SOWM+DXPhMZQT9awDhvPVuBo06GZHTze35+07IA/AIJYIIF0SJCHQqm0sGKhHSx4kn2tMk5TK6nSXeMcN5OdS+5Sk3C2To0NZTJrMAPlhlbnNySrg2NADcb2VoBWGOGkN3KoudYx6zNZHY8pW3IfCA7pB9p9nHI6ZekrBqmQLDBFD/spYtAxFt29sFEW1EekKdJB4A2TQDr04PXUVovfwgV9oZ3pcfiKLlct/Ghw6San5oMcGjf9HKXFVQQL7WjOqBRaQfZ6gzjAKIo6hWC48FlakS0Po7YlaYd1x81gMlM7tU4koLgEn/EUz4YI4zM/pOQD2oLfonlPLWhte4bPEB+XyEvnlAVBLc5Qw77LkIbj2C5ntQYxRYgqDHg5UMJNNFF9/D8lHtGH67k0REZ2gyRvQQ9pB6PVZP5zxAv58R+lnyPJwLvJY/jWOS1F8xojY+1LhVZkJMAWGA8kURMVzT/RdOYo5sJNz0OCfxA6AYpIHgaWyNG4z1By/HyDLgDvLpo1qwyNN0X1mQtfpJqI1ePqvxFP3yaHQl3gBNqSSbHaOVwutOeeHqTc4mHA5PTRp69Ra44qpU2keMo5c3H4yRvw2PNihwxbyvrpzZHAS6Md4ow8YoSfFURG9VZCq4v8+GBGq4M2Z7iVrlykrQp
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR01MB6824.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(396003)(376002)(346002)(39850400004)(83380400001)(5660300002)(2616005)(107886003)(186003)(8936002)(66946007)(4326008)(2906002)(66556008)(1076003)(66476007)(8676002)(316002)(966005)(478600001)(6486002)(52116002)(6916009)(6512007)(6506007)(41300700001)(86362001)(26005)(6666004)(38350700002)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?D2Hb16XGGg0ewkLcGHyZLXtmtpVkpuyulx1wt1gkSSaXd6ubZP6HPZYOk1SU?=
+ =?us-ascii?Q?60bnwU2VFw7s3tlX3y91FB6MWnPiru7J3Li49JSe/+BHe4ZbAJolYke8HApV?=
+ =?us-ascii?Q?tjY+8FxOzRNKezd8AIa1wxwoXtWGcQpqTj4FkR8fBVB0UwctL3YbMvvUzIkT?=
+ =?us-ascii?Q?tCvPcCiaYnQO87MuH3Xag4Cdy1WdWpC7xgsTILGec1ExnrL5z250iMMP3Yc6?=
+ =?us-ascii?Q?M6c2DFA6+y9vxGcvv0PU23GNQos6skoMiX5pPDX71HkTaokHpzt6VviccCAE?=
+ =?us-ascii?Q?s+VOmfuILkYArvll3/dlNWv3S10tWlTpg32cxYQLbCk979l2uz0uWep39D+u?=
+ =?us-ascii?Q?O1H8/XRnyBppOZT3c4O94Zqzi4dyBGZsFwt6ZnPnfUv8iOxKlXzqZ0y/h8bW?=
+ =?us-ascii?Q?uDx6JhjUs4uNrm4owX3geb1+kxOPIcTIysgI1RIqVs+FqxD17xmFfaEbQwse?=
+ =?us-ascii?Q?qILOqR7h/kWQ9dPufvfaB28ldSMVxKhyxIEjqQWBvePJSoUAENNWiPExGYl7?=
+ =?us-ascii?Q?j4MqSXEyTQLPmqYE/PNwcUg/rmbF8PLAHgp/tmTk/uBC81oJvk0s9hkuiMfy?=
+ =?us-ascii?Q?D7a770ftdWTBbXwKofNvYCO4lqjlN6+XSILdkCtd26qBOQ43gsZympwyjETu?=
+ =?us-ascii?Q?VgAL26lm7hhocbD4X5ob3Sz8tKUyp+AyVyRyOOauGHCgS8LaAaOCnVtp5Oq3?=
+ =?us-ascii?Q?wt2zGrDGHDSLLpyz5P4OEHGYfFOvcPcdIUzKSsIFWdJ9Kg6Gne8cNQQV/2Wz?=
+ =?us-ascii?Q?Qh2MIsrYAzL6g9d4Mdi7cS3vQiM9oum0WqT1YUkVA4V7zf0eCytog//qVoXG?=
+ =?us-ascii?Q?yT3AYYhCz7dxvAUbcWX8H5F7H/8lVMClPdtFzFEMVqL7MSqoio9MtFthwviW?=
+ =?us-ascii?Q?s/dmpyjvAQNs3ncMbDtoTGmdCGqAF57u23OIb3xQkAtTRpvTrM44k1wrkNaf?=
+ =?us-ascii?Q?zqBY5KmEWQ1XY28iHWw7hCBpCfgSdV2IaQtzUvPVeEB4hTJO2AxlVwJqmqSt?=
+ =?us-ascii?Q?FyV57Vgoks6c1z//75b9FxB+v5ORFbVuaYsbPTj/2M7IC1Ih8NAsHlw/RwV/?=
+ =?us-ascii?Q?1OoS44vYOnCkTM8QKaBKofDMcVAs2BxLaWYFcLoqsnnhq6ffCi4aDFAhzHJs?=
+ =?us-ascii?Q?fHGEWENK9QTH3TTerpTWzuvDTnMe+uYyliqj82/lcL13143HalhYUPZj5t/u?=
+ =?us-ascii?Q?chLdMXIJNTcqmnJh0yZfyCzNrghXWTmNUcdbjet+44b2qaJmijsrC7J3BS8D?=
+ =?us-ascii?Q?UZ9Vmfk4UdEvEt/MjPpuqbwEl/A2XKb14e4v02XO6ZOUN6o6DW5HHeLwAjTJ?=
+ =?us-ascii?Q?cs6JSClYCLTkOczAmkGONnhLPPXpy7ax9NqEk0LSY54p4QWHbh7Ac5fmvZQt?=
+ =?us-ascii?Q?IGvqmJqpMYjbd0k5TBgnfRRo2c8FwdcsmnqcSMZk9Fer9ESEi4lR9EyPsb/H?=
+ =?us-ascii?Q?3fkcooE/RpursL3NLMyVfc24U9MFH6lpGgyScH9kzGKpgLqcw/m6MJD1cSCj?=
+ =?us-ascii?Q?H2CZEehQgcU5DLb7mXVX0P1v3XzSCW4DadB9T7mRcbYFHwAncw+WrByCAH59?=
+ =?us-ascii?Q?4Da67THr0T4OndeBUkX0c9FUM7Lzyx2tHDZwz3AXMbXULFaZj64me8LxNYHA?=
+ =?us-ascii?Q?vShEdFInm515S5tXWzknPPU=3D?=
+X-OriginatorOrg: os.amperecomputing.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d47650c2-fcb6-46c2-3b11-08da75bb704f
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR01MB6824.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Aug 2022 01:48:33.4776
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NtzAMhxGYDlNm+p18B5a1fQ9an78iAZyQlP6XFpFBnCiesVUUZIujASXZCkThK52RSTATEWfPXDvrrRZ/dJZBEmBhbpxOW9wlSsRdbqXwKXWemu4udAcpOpNqod7euCq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR01MB6086
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The old tree is invalid now, fix it with the right git tree:
+    https://git.kernel.org/pub/scm/linux/kernel/git/gong.chen/aer-inject.git
 
+Signed-off-by: Huang Shijie <shijie@os.amperecomputing.com>
+---
+ Documentation/PCI/pcieaer-howto.rst | 2 +-
+ drivers/pci/pcie/Kconfig            | 2 +-
+ drivers/pci/pcie/aer_inject.c       | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-在 2022/8/4 8:51, Darrick J. Wong 写道:
-> On Wed, Aug 03, 2022 at 06:47:24AM +0000, ruansy.fnst@fujitsu.com wrote:
->>
->>
->> 在 2022/7/29 12:54, Darrick J. Wong 写道:
->>> On Fri, Jul 29, 2022 at 03:55:24AM +0000, ruansy.fnst@fujitsu.com wrote:
->>>>
->>>>
->>>> 在 2022/7/22 0:16, Darrick J. Wong 写道:
->>>>> On Thu, Jul 21, 2022 at 02:06:10PM +0000, ruansy.fnst@fujitsu.com wrote:
->>>>>> 在 2022/7/1 8:31, Darrick J. Wong 写道:
->>>>>>> On Thu, Jun 09, 2022 at 10:34:35PM +0800, Shiyang Ruan wrote:
->>>>>>>> Failure notification is not supported on partitions.  So, when we mount
->>>>>>>> a reflink enabled xfs on a partition with dax option, let it fail with
->>>>>>>> -EINVAL code.
->>>>>>>>
->>>>>>>> Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
->>>>>>>
->>>>>>> Looks good to me, though I think this patch applies to ... wherever all
->>>>>>> those rmap+reflink+dax patches went.  I think that's akpm's tree, right?
->>>>>>>
->>>>>>> Ideally this would go in through there to keep the pieces together, but
->>>>>>> I don't mind tossing this in at the end of the 5.20 merge window if akpm
->>>>>>> is unwilling.
->>>>>>
->>>>>> BTW, since these patches (dax&reflink&rmap + THIS + pmem-unbind) are
->>>>>> waiting to be merged, is it time to think about "removing the
->>>>>> experimental tag" again?  :)
->>>>>
->>>>> It's probably time to take up that question again.
->>>>>
->>>>> Yesterday I tried running generic/470 (aka the MAP_SYNC test) and it
->>>>> didn't succeed because it sets up dmlogwrites atop dmthinp atop pmem,
->>>>> and at least one of those dm layers no longer allows fsdax pass-through,
->>>>> so XFS silently turned mount -o dax into -o dax=never. :(
->>>>
->>>> Hi Darrick,
->>>>
->>>> I tried generic/470 but it didn't run:
->>>>      [not run] Cannot use thin-pool devices on DAX capable block devices.
->>>>
->>>> Did you modify the _require_dm_target() in common/rc?  I added thin-pool
->>>> to not to check dax capability:
->>>>
->>>>            case $target in
->>>>            stripe|linear|log-writes|thin-pool)  # add thin-pool here
->>>>                    ;;
->>>>
->>>> then the case finally ran and it silently turned off dax as you said.
->>>>
->>>> Are the steps for reproduction correct? If so, I will continue to
->>>> investigate this problem.
->>>
->>> Ah, yes, I did add thin-pool to that case statement.  Sorry I forgot to
->>> mention that.  I suspect that the removal of dm support for pmem is
->>> going to force us to completely redesign this test.  I can't really
->>> think of how, though, since there's no good way that I know of to gain a
->>> point-in-time snapshot of a pmem device.
->>
->> Hi Darrick,
->>
->>   > removal of dm support for pmem
->> I think here we are saying about xfstest who removed the support, not
->> kernel?
->>
->> I found some xfstests commits:
->> fc7b3903894a6213c765d64df91847f4460336a2  # common/rc: add the restriction.
->> fc5870da485aec0f9196a0f2bed32f73f6b2c664  # generic/470: use thin-pool
->>
->> So, this case was never able to run since the second commit?  (I didn't
->> notice the not run case.  I thought it was expected to be not run.)
->>
->> And according to the first commit, the restriction was added because
->> some of dm devices don't support dax.  So my understanding is: we should
->> redesign the case to make the it work, and firstly, we should add dax
->> support for dm devices in kernel.
-> 
-> dm devices used to have fsdax support; I think Christoph is actively
-> removing (or already has removed) all that support.
-> 
->> In addition, is there any other testcase has the same problem?  so that
->> we can deal with them together.
-> 
-> The last I checked, there aren't any that require MAP_SYNC or pmem aside
-> from g/470 and the three poison notification tests that you sent a few
-> days ago.
+diff --git a/Documentation/PCI/pcieaer-howto.rst b/Documentation/PCI/pcieaer-howto.rst
+index 0b36b9ebfa4b..b31fc9a0edbc 100644
+--- a/Documentation/PCI/pcieaer-howto.rst
++++ b/Documentation/PCI/pcieaer-howto.rst
+@@ -294,7 +294,7 @@ After reboot with new kernel or insert the module, a device file named
+ Then, you need a user space tool named aer-inject, which can be gotten
+ from:
+ 
+-    https://git.kernel.org/cgit/linux/kernel/git/gong.chen/aer-inject.git/
++    https://git.kernel.org/pub/scm/linux/kernel/git/gong.chen/aer-inject.git/
+ 
+ More information about aer-inject can be found in the document comes
+ with its source code.
+diff --git a/drivers/pci/pcie/Kconfig b/drivers/pci/pcie/Kconfig
+index 788ac8df3f9d..d6ea0fd9892d 100644
+--- a/drivers/pci/pcie/Kconfig
++++ b/drivers/pci/pcie/Kconfig
+@@ -43,7 +43,7 @@ config PCIEAER_INJECT
+ 	  error injection can fake almost all kinds of errors with the
+ 	  help of a user space helper tool aer-inject, which can be
+ 	  gotten from:
+-	     https://git.kernel.org/cgit/linux/kernel/git/gong.chen/aer-inject.git/
++            https://git.kernel.org/pub/scm/linux/kernel/git/gong.chen/aer-inject.git/
+ 
+ #
+ # PCI Express ECRC
+diff --git a/drivers/pci/pcie/aer_inject.c b/drivers/pci/pcie/aer_inject.c
+index 2dab275d252f..262b06b0dc1d 100644
+--- a/drivers/pci/pcie/aer_inject.c
++++ b/drivers/pci/pcie/aer_inject.c
+@@ -6,7 +6,7 @@
+  * trigger various real hardware errors. Software based error
+  * injection can fake almost all kinds of errors with the help of a
+  * user space helper tool aer-inject, which can be gotten from:
+- *   https://git.kernel.org/cgit/linux/kernel/git/gong.chen/aer-inject.git/
++ *   https://git.kernel.org/pub/scm/linux/kernel/git/gong.chen/aer-inject.git/
+  *
+  * Copyright 2009 Intel Corporation.
+  *     Huang Ying <ying.huang@intel.com>
+-- 
+2.30.2
 
-Ok.  Got it.  Thank you!
-
-
---
-Ruan.
-
-> 
-> --D
-> 
->>
->> --
->> Thanks,
->> Ruan
->>
->>
->>>
->>> --D
->>>
->>>>
->>>> --
->>>> Thanks,
->>>> Ruan.
->>>>
->>>>
->>>>
->>>>>
->>>>> I'm not sure how to fix that...
->>>>>
->>>>> --D
->>>>>
->>>>>>
->>>>>> --
->>>>>> Thanks,
->>>>>> Ruan.
->>>>>>
->>>>>>>
->>>>>>> Reviewed-by: Darrick J. Wong <djwong@kernel.org>
->>>>>>>
->>>>>>> --D
->>>>>>>
->>>>>>>> ---
->>>>>>>>      fs/xfs/xfs_super.c | 6 ++++--
->>>>>>>>      1 file changed, 4 insertions(+), 2 deletions(-)
->>>>>>>>
->>>>>>>> diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
->>>>>>>> index 8495ef076ffc..a3c221841fa6 100644
->>>>>>>> --- a/fs/xfs/xfs_super.c
->>>>>>>> +++ b/fs/xfs/xfs_super.c
->>>>>>>> @@ -348,8 +348,10 @@ xfs_setup_dax_always(
->>>>>>>>      		goto disable_dax;
->>>>>>>>      	}
->>>>>>>>      
->>>>>>>> -	if (xfs_has_reflink(mp)) {
->>>>>>>> -		xfs_alert(mp, "DAX and reflink cannot be used together!");
->>>>>>>> +	if (xfs_has_reflink(mp) &&
->>>>>>>> +	    bdev_is_partition(mp->m_ddev_targp->bt_bdev)) {
->>>>>>>> +		xfs_alert(mp,
->>>>>>>> +			"DAX and reflink cannot work with multi-partitions!");
->>>>>>>>      		return -EINVAL;
->>>>>>>>      	}
->>>>>>>>      
->>>>>>>> -- 
->>>>>>>> 2.36.1
->>>>>>>>
->>>>>>>>
->>>>>>>>
