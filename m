@@ -2,227 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D7BCC25B07
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 21:42:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E72C25B08
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 21:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236084AbiHDVm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 17:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55282 "EHLO
+        id S235510AbiHDVtl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 17:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235674AbiHDVmY (ORCPT
+        with ESMTP id S229627AbiHDVti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 17:42:24 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938864AD5B;
-        Thu,  4 Aug 2022 14:42:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1659649343; x=1691185343;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=DycE60ZHFlHY7IZxTQKn3nmGZVc4sC/DqRr2Ek6ZW1k=;
-  b=UgL2QPbRwii1dO69CWFeRI5fmDTt+Csg7kL6SSjnUNMTPl9pRkjIKtfp
-   aEnwlEWuF+EYniJDu+4bk6cgwwHIKi3wxfCnPpjSZe7gh0/nD/Oa2BIHe
-   YwbSjHIcanAnhL4PoN6tamNnh19ahJmU3DJ49W+Kv5HhTtRIou++Vr3MD
-   g=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 04 Aug 2022 14:42:23 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 14:42:23 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 4 Aug 2022 14:42:22 -0700
-Received: from [10.111.167.208] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 4 Aug 2022
- 14:42:20 -0700
-Message-ID: <32a0765e-00d9-1a67-bf36-4060c5fcb008@quicinc.com>
-Date:   Thu, 4 Aug 2022 14:42:18 -0700
+        Thu, 4 Aug 2022 17:49:38 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5EB15FE2
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 14:49:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659649777; x=1691185777;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=7rt23PMPBzBSBIB2zxEb7Hv++9uljuJHhPCfAnJfZWQ=;
+  b=bcsf/hV1JEdW9cISLAd94bVXJ6LIqw/UfUG0STLMiH/X5r8dFpP9iXgT
+   Fr6NevmbS75AC3VnDWXV9qbxIyEpMxfPBcx06idv7bXx2V2Xk0uMZSAFI
+   a1XxFFCaTPsmtSJ8WhVD84ro61Qm7fMP1/AMMSTosCk3kjSLroL9fH8CW
+   M8VG+igziS5K2XOL7WC3/vUnQF5y5td2hjcf2f+W4JIjKyJrzzRgFzlQF
+   Ija8wSoDljNFNCeaWP43Rt4nIpAcXpkNFiklPRbhMW+hqtpeh70bI9Xso
+   59ebVWBNskx72JMd+xbiB04KLdh5884m0ynz4/6VjINSd1KX1aeP/s7FK
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10429"; a="287615122"
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="287615122"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 14:49:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="671427889"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 04 Aug 2022 14:49:36 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oJiil-000Isj-3D;
+        Thu, 04 Aug 2022 21:49:35 +0000
+Date:   Fri, 5 Aug 2022 05:48:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mark:arm64/stacktrace/data-driven 4/4]
+ arch/arm64/include/asm/stacktrace.h:153:13: error: cannot compile this GNU
+ array range designator extension yet
+Message-ID: <202208050544.mUKbvIhP-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 2/5] usb: gadget: Add function wakeup support
-Content-Language: en-US
-To:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        "balbi@kernel.org" <balbi@kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "quic_wcheng@quicinc.com" <quic_wcheng@quicinc.com>,
-        "quic_jackp@quicinc.com" <quic_jackp@quicinc.com>,
-        "quic_mrana@quicinc.com" <quic_mrana@quicinc.com>
-References: <1659467920-9095-1-git-send-email-quic_eserrao@quicinc.com>
- <1659467920-9095-3-git-send-email-quic_eserrao@quicinc.com>
- <049219f1-8c68-e4cc-7bf9-1e8c214e80aa@synopsys.com>
-From:   Elson Serrao <quic_eserrao@quicinc.com>
-In-Reply-To: <049219f1-8c68-e4cc-7bf9-1e8c214e80aa@synopsys.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git arm64/stacktrace/data-driven
+head:   468d82fe55b7d215b8d1733a8b34a1fc94cd431b
+commit: 468d82fe55b7d215b8d1733a8b34a1fc94cd431b [4/4] WIP: arm64: make stacktrace data-driven
+config: arm64-randconfig-r003-20220803 (https://download.01.org/0day-ci/archive/20220805/202208050544.mUKbvIhP-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 26dd42705c2af0b8f6e5d6cdb32c9bd5ed9524eb)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/commit/?id=468d82fe55b7d215b8d1733a8b34a1fc94cd431b
+        git remote add mark https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git
+        git fetch --no-tags mark arm64/stacktrace/data-driven
+        git checkout 468d82fe55b7d215b8d1733a8b34a1fc94cd431b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from arch/arm64/kernel/stacktrace.c:19:
+>> arch/arm64/include/asm/stacktrace.h:153:13: error: cannot compile this GNU array range designator extension yet
+                   .stacks = {
+                             ^
+   1 error generated.
 
 
-On 8/2/2022 4:51 PM, Thinh Nguyen wrote:
-> On 8/2/2022, Elson Roy Serrao wrote:
->> An interface which is in function suspend state has to send a function
->> wakeup notification to the host in case it needs to initate any data
->> transfer. One notable difference between this and the existing remote
->> wakeup mechanism is that this can be called per-interface, and a UDC
->> would need to know the particular interface number to convey in its
->> Device Notification transaction packet.  Hence, we need to introduce
->> a new callback in the gadget_ops structure that UDC device drivers
->> can implement.  Similarly add a convenience function in the composite
->> driver which function drivers can call. Add support to handle such
->> requests in the composite layer and invoke the gadget op.
-> 
-> Sending the function wake notification should be done in the controller
-> driver. The controller driver knows when is the proper link state
-> (U0/ON) the device is in and would notify the host then.
-> 
-> What we need to add in the usb_gadget is whether the device is remote
-> wakeup capable. Something like a flag usb_gadget->rw_capable.
-> 
-> We would also need some functions like usb_gadget_enable_remote_wakeup()
-> and usb_gadget_disable_remote_wakeup() for the gadget driver to notify
-> the controller driver when it checks against USB_CONFIG_ATT_WAKEUP in
-> the bmAttributes configuration.
-> 
-> BR,
-> Thinh
+vim +153 arch/arm64/include/asm/stacktrace.h
 
+   143	
+   144	/*
+   145	 * We can only safely access per-cpu stacks from current in a non-preemptible
+   146	 * context.
+   147	 */
+   148	
+   149	static __always_inline struct kernel_stack_info
+   150	get_accessible_kernel_stacks(const struct task_struct *tsk)
+   151	{
+   152		struct kernel_stack_info info = {
+ > 153			.stacks = {
 
-If we handle this in controller driver, then it would fail to get the 
-right interface id when multiple functions have to send function wake 
-notification. As per USB3.0 spec (below snippets) a function can be 
-independently placed into function suspend state within a composite 
-device and each function in function suspend state has to send a 
-function wake notification to exit.
-
-USB 3.0 Spec Section 9.2.5.3
-"A function may be placed into Function Suspend independently of other 
-functions within a composite device"
-
-USB 3.0 Spec Section 9.2.5.4
-"A function may signal that it wants to exit from Function Suspend by 
-sending a Function Wake Notification to the host if it is enabled for 
-function remote wakeup. This applies to single function devices as well 
-as multiple function ( i.e., composite) devices. If the link is in
-a non-U0 state, then the device must transition the link to U0 prior to 
-sending the remote wake message. If a remote wake event occurs in 
-multiple functions, each function shall send a Function Wake Notification"
-
-Best Regards,
-Elson
-
-> 
->> Signed-off-by: Elson Roy Serrao <quic_eserrao@quicinc.com>
->> ---
->>    drivers/usb/gadget/composite.c | 32 ++++++++++++++++++++++++++++++++
->>    drivers/usb/gadget/udc/core.c  |  9 +++++++++
->>    include/linux/usb/composite.h  |  1 +
->>    include/linux/usb/gadget.h     |  2 ++
->>    4 files changed, 44 insertions(+)
->>
->> diff --git a/drivers/usb/gadget/composite.c b/drivers/usb/gadget/composite.c
->> index 403563c..6bdce23 100644
->> --- a/drivers/usb/gadget/composite.c
->> +++ b/drivers/usb/gadget/composite.c
->> @@ -490,6 +490,38 @@ int usb_interface_id(struct usb_configuration *config,
->>    }
->>    EXPORT_SYMBOL_GPL(usb_interface_id);
->>    
->> +int usb_func_wakeup(struct usb_function *func)
->> +{
->> +	int ret, id;
->> +	unsigned long flags;
->> +
->> +	if (!func || !func->config || !func->config->cdev ||
->> +	    !func->config->cdev->gadget)
->> +		return -EINVAL;
->> +
->> +	DBG(func->config->cdev, "%s function wakeup\n", func->name);
->> +
->> +	spin_lock_irqsave(&func->config->cdev->lock, flags);
->> +
->> +	for (id = 0; id < MAX_CONFIG_INTERFACES; id++)
->> +		if (func->config->interface[id] == func)
->> +			break;
->> +
->> +	if (id == MAX_CONFIG_INTERFACES) {
->> +		ERROR(func->config->cdev, "Invalid function id:%d\n", id);
->> +		ret = -EINVAL;
->> +		goto err;
->> +	}
->> +
->> +	ret = usb_gadget_func_wakeup(func->config->cdev->gadget, id);
->> +
->> +err:
->> +	spin_unlock_irqrestore(&func->config->cdev->lock, flags);
->> +
->> +	return ret;
->> +}
->> +EXPORT_SYMBOL(usb_func_wakeup);
->> +
->>    static u8 encode_bMaxPower(enum usb_device_speed speed,
->>    		struct usb_configuration *c)
->>    {
->> diff --git a/drivers/usb/gadget/udc/core.c b/drivers/usb/gadget/udc/core.c
->> index 7886497..fe5c504 100644
->> --- a/drivers/usb/gadget/udc/core.c
->> +++ b/drivers/usb/gadget/udc/core.c
->> @@ -816,6 +816,15 @@ int usb_gadget_activate(struct usb_gadget *gadget)
->>    }
->>    EXPORT_SYMBOL_GPL(usb_gadget_activate);
->>    
->> +int usb_gadget_func_wakeup(struct usb_gadget *gadget, int interface_id)
->> +{
->> +	if (gadget->speed < USB_SPEED_SUPER || !gadget->ops->func_wakeup)
->> +		return -EOPNOTSUPP;
->> +
->> +	return gadget->ops->func_wakeup(gadget, interface_id);
->> +}
->> +EXPORT_SYMBOL_GPL(usb_gadget_func_wakeup);
->> +
->>    /* ------------------------------------------------------------------------- */
->>    
->>    #ifdef	CONFIG_HAS_DMA
->> diff --git a/include/linux/usb/composite.h b/include/linux/usb/composite.h
->> index 9d27622..31b35d7 100644
->> --- a/include/linux/usb/composite.h
->> +++ b/include/linux/usb/composite.h
->> @@ -254,6 +254,7 @@ int config_ep_by_speed_and_alt(struct usb_gadget *g, struct usb_function *f,
->>    
->>    int config_ep_by_speed(struct usb_gadget *g, struct usb_function *f,
->>    			struct usb_ep *_ep);
->> +int usb_func_wakeup(struct usb_function *func);
->>    
->>    #define	MAX_CONFIG_INTERFACES		16	/* arbitrary; max 255 */
->>    
->> diff --git a/include/linux/usb/gadget.h b/include/linux/usb/gadget.h
->> index 3ad58b7..76f9de4 100644
->> --- a/include/linux/usb/gadget.h
->> +++ b/include/linux/usb/gadget.h
->> @@ -311,6 +311,7 @@ struct usb_udc;
->>    struct usb_gadget_ops {
->>    	int	(*get_frame)(struct usb_gadget *);
->>    	int	(*wakeup)(struct usb_gadget *);
->> +	int	(*func_wakeup)(struct usb_gadget *gadget, int interface_id);
->>    	int	(*set_selfpowered) (struct usb_gadget *, int is_selfpowered);
->>    	int	(*vbus_session) (struct usb_gadget *, int is_active);
->>    	int	(*vbus_draw) (struct usb_gadget *, unsigned mA);
->> @@ -612,6 +613,7 @@ int usb_gadget_disconnect(struct usb_gadget *gadget);
->>    int usb_gadget_deactivate(struct usb_gadget *gadget);
->>    int usb_gadget_activate(struct usb_gadget *gadget);
->>    int usb_gadget_check_config(struct usb_gadget *gadget);
->> +int usb_gadget_func_wakeup(struct usb_gadget *gadget, int interface_id);
->>    #else
->>    static inline int usb_gadget_frame_number(struct usb_gadget *gadget)
->>    { return 0; }
-> 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
