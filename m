@@ -2,119 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EFF7C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 18:08:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 145B9C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 18:09:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239818AbiHDSIk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 14:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45510 "EHLO
+        id S239896AbiHDSJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 14:09:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238488AbiHDSIg (ORCPT
+        with ESMTP id S239854AbiHDSJL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 14:08:36 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF036BD76
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 11:08:32 -0700 (PDT)
-Received: from linux.gnuweeb.org (linux.gnuweeb.org [172.17.0.3])
-        by gnuweeb.org (Postfix) with ESMTPSA id A77767E295;
-        Thu,  4 Aug 2022 18:08:31 +0000 (UTC)
-X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1659636511;
-        bh=YbhOBwc9/fp+EJUtdTULgx+1f0UukDq/9CZZosXIem4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L1K+rKOx0REOkMQ1ct49BhB4CWXEZ87ETTTY0zL9cJGGLIpDqxUKiJ0Lp+b1t5ggJ
-         2ugK2izB0QZ3wTeYCt2vNTtOBFv3Jj9KDHmW3ftnoj5rSHC5WVpvFqrHACoOrGkNO3
-         5skAyHsOXfsSsFBEU7cCbuS3jYDgwFQVIxczQHrppiYWT74cYxSQUBJHBCiv2P9U+5
-         yzZus2Vt7pTv/Vzhazz/y2oOZnfGivis4rFsn7npbOxRBPZJAAw+IXTN99+DD7hcpl
-         ih49IV+jf3ycjkz9sHevaLYAyzVFm9QzS952r5qL7K85/8+JJVOxOrGGI04pmq8+9V
-         wq5E9Lw9aoUOA==
-From:   Kanna Scarlet <knscarlet@gnuweeb.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Kanna Scarlet <knscarlet@gnuweeb.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bill Metzenthen <billm@melbpc.org.au>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] x86: Change mov $0, %reg with xor %reg, %reg
-Date:   Thu,  4 Aug 2022 18:08:05 +0000
-Message-Id: <20220804180805.9077-1-knscarlet@gnuweeb.org>
+        Thu, 4 Aug 2022 14:09:11 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251DD6C100;
+        Thu,  4 Aug 2022 11:09:07 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id w29so387328qtv.9;
+        Thu, 04 Aug 2022 11:09:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=7YtNDFh6ST2k4SsLWxBwY8nye0IX5sU3y1EdIwkl8Y0=;
+        b=HJpiFr2FnpnyHX3e3nOjEhkmQm/yNnI9l+CFBLQwNOb03B0DEogNd7VszJ7oTvzbrk
+         rg7cI1ao/sZqXQh3wdSV9/1lOdYp2MwwB9n4axsMK4YteGvXedRRoF8JNPUqeM7CODjE
+         m3SY5D+Ef/pvyobfW1vSmOlPbxC4QLv990KT+F1rXRlxX73YgeqyTvP+6tfSZw/ajtBi
+         tbYFFCW2rgS8yytQBWTE3MYrn8ggy6zZCCitVciiud5sjH8serplIN/q0I4xTKSH11Ro
+         K7cXKek/ErYVt/X/f7oIhgDekfBmxyjZyXr1fZovuhAeOexGA8KqLIUbOD76i7AqB5Ke
+         rADQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=7YtNDFh6ST2k4SsLWxBwY8nye0IX5sU3y1EdIwkl8Y0=;
+        b=e24Aefcqw8Hcz8LTemlwiCFy811K1RedV34caq34hQlusX5AyzITLPbTT5Q66GEIC+
+         LXDgDB/wT+PPwo8lZNstwPkGW4WyrGXs8VYO7p8YzwcFlBRMMHIfBzkzt8YXBCSXLRL9
+         xgA4ZMRcHQQZ1rg9jwpo1CA4ghK/zBhxXK9Qa6CBtl4FYpA8YvbYjctY+elYXlDrYF9H
+         LrB0lp/3oQZPNQ3Qm98jN3UeZJe+y22CXcVZYFnXeDUBLW/anSrOt/w3HGrKMP9FbEtu
+         SLTsHv2jvxehmCpCTfekkp5tM9R8asWAjf8KLsMixitX+/y4rVfqgvNSOIGKNDQOQQmy
+         /IKQ==
+X-Gm-Message-State: ACgBeo1LX6nOKjVSVggf157dWcCzakFnc78taOmQwERdjL/ItTt2PHvN
+        +NwbECQqladZeFzw4LfRn+5XzHjm9U8=
+X-Google-Smtp-Source: AA6agR4Obr7D43Rgtf8qnfYZB5YyDWBlRKU3Ez9M/+NfyrSP4yG1KMb4xV8Va3K/IM3r/i9TkCl0xg==
+X-Received: by 2002:ac8:7fcb:0:b0:31e:f635:c9a0 with SMTP id b11-20020ac87fcb000000b0031ef635c9a0mr2685442qtk.157.1659636546121;
+        Thu, 04 Aug 2022 11:09:06 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id bm32-20020a05620a19a000b006b8e63dfffbsm1195929qkb.58.2022.08.04.11.09.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Aug 2022 11:09:05 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     bcm-kernel-feedback-list@broadcom.com,
+        William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     kursad.oney@broadcom.com, joel.peshkin@broadcom.com,
+        anand.gore@broadcom.com, dan.beygelman@broadcom.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] ARM: dts: bcmbca: bcm6878: cosmetic change
+Date:   Thu,  4 Aug 2022 11:09:02 -0700
+Message-Id: <20220804180902.1339964-1-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <Yuvrd2yWLnyxOVLU@zn.tnic>
-References: <20220804152656.8840-1-knscarlet@gnuweeb.org> <20220804152656.8840-2-knscarlet@gnuweeb.org> <Yuvrd2yWLnyxOVLU@zn.tnic>
+In-Reply-To: <20220801194754.29492-2-william.zhang@broadcom.com>
+References: <20220801194754.29492-1-william.zhang@broadcom.com> <20220801194754.29492-2-william.zhang@broadcom.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/4/22 10:53 PM, Borislav Petkov wrote:
-> Bonus points if you find out what other advantage
->
-> XOR reg,reg
->
-> has when it comes to clearing integer registers.
+On Mon,  1 Aug 2022 12:47:54 -0700, William Zhang <william.zhang@broadcom.com> wrote:
+> Add new line between dts node.
+> 
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+> 
+> ---
 
-Hello sir Borislav,
-
-Thank you for your response. I tried to find out other advantages of
-xor reg,reg on Google and found this:
-https://stackoverflow.com/a/33668295/7275114
-
-  "xor (being a recognized zeroing idiom, unlike mov reg, 0) has some
-  obvious and some subtle advantages:
-
-  1. smaller code-size than mov reg,0. (All CPUs)
-  2. avoids partial-register penalties for later code.
-     (Intel P6-family and SnB-family).
-  3. doesn't use an execution unit, saving power and freeing up
-     execution resources. (Intel SnB-family)
-  4. smaller uop (no immediate data) leaves room in the uop cache-line
-     for nearby instructions to borrow if needed. (Intel SnB-family).
-  5. doesn't use up entries in the physical register file. (Intel
-     SnB-family (and P4) at least, possibly AMD as well since they use
-     a similar PRF design instead of keeping register state in the ROB
-     like Intel P6-family microarchitectures.)"
-
-Should I add all in the explanation sir? I will send v2 revision
-tomorrow.
-
-We also find more files to patch with this command:
-
-   grep -rE "mov.?\s+\\$\\0\s*," arch/x86
-
-it shows many immediate zero moves to 64-bit register in file
-arch/x86/crypto/curve25519-x86_64.c, but the next instruction may depend
-on the previous %rflags value, we are afraid to change this because
-xor touches %rflags. We will try to change it to movl $0, %r32 to
-reduce the code size.
-
-Example cmovc needs %rflags
-
-    "  adcx %1, %%r11;"
-    "  movq %%r11, 24(%2);"
-
-    /* Step 3: Fold the carry bit back in; guaranteed not to carry at this point */
-    "  mov $0, %%rax;"
-    "  cmovc %%rdx, %%rax;"
-
-Thanks.
-
-Regards,
--- 
-Kanna Scarlet
-
+Applied to https://github.com/Broadcom/stblinux/commits/devicetree/fixes, thanks!
+--
+Florian
