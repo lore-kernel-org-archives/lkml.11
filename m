@@ -2,119 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FA10C19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 09:51:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54762C19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 09:52:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239394AbiHDJvs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 05:51:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37054 "EHLO
+        id S231847AbiHDJwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 05:52:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239392AbiHDJvn (ORCPT
+        with ESMTP id S239329AbiHDJvs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 05:51:43 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4497A26AE5
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 02:51:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659606699; x=1691142699;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=1mAFulNWoLFTDJufnr4AN2fWHLLvDVf708xkkVeQJ1E=;
-  b=M+/3U3Ovfr9OCwTzG146hQeYzhjcBldufqZndJW83LTxYvNOyrQ5mkgV
-   eMcABYYeo4EyebC1WrKkiBF0SBrjS4CiEGzMBRe27jJGLReCLa2ZVEJh7
-   gMpj69cIbByFFq7t7dkHPUvCtzJ4ZvZZqdRzVrC+X2cts3LXrA6gJ+R90
-   KQU9kiHi4YCUSQa5EXmHpGZTEzwSs/VT6mLoej16XrMLtLu2ezxDomEMX
-   XhU2DoFVpQQ2w20RlqHzAi7KLFS8QyP7olL5jmTk5hy4VvtW9VcZix7g5
-   wzRp1edxGMeRGVpSU21ZjdCIBYjCro6HjIQZDfmqQtNtTCSmz2uxnWCOF
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="272939370"
-X-IronPort-AV: E=Sophos;i="5.93,215,1654585200"; 
-   d="scan'208";a="272939370"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 02:51:38 -0700
-X-IronPort-AV: E=Sophos;i="5.93,215,1654585200"; 
-   d="scan'208";a="745405452"
-Received: from mpcastil-mobl2.amr.corp.intel.com (HELO [10.249.40.52]) ([10.249.40.52])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 02:51:34 -0700
-Message-ID: <43ada0d7-f094-7f63-3717-30c64834edd6@linux.intel.com>
-Date:   Thu, 4 Aug 2022 11:47:46 +0200
+        Thu, 4 Aug 2022 05:51:48 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8F5275F3;
+        Thu,  4 Aug 2022 02:51:47 -0700 (PDT)
+Date:   Thu, 04 Aug 2022 09:51:45 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1659606706;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=V9KFp3Q8FANAJlxYolRoliLVkamvy/Db09livD6w2ms=;
+        b=B33og1K3qhK2OzBZe5bJcaHsQ1m/GNOrv6WpuB9cV+YutQkBuISUTHNXVefQ8Evwk1m2TR
+        oN4swROXBaX4uf6tHmzquNXPsTL4fjneQm9Q8UQrCc8D4xEmWyyGdGV6b2c6IHpGmlARzy
+        Yrxopxo/jkiWWtjmTvrLu146oQ2YiUjBE/S0VuvFI0QTMgSWlUUL/q4Ok6eKSyAT6Nxxkz
+        x/meVQae1TjUPRJLStJZDLisRENOb1fMc2miybMCnAzlWEATtRHrAyWVYfFG6ZFWHaad+X
+        FtM/WVY+DRzl+6MHL/cvOp8bh1du1o1JaSDdfpLRUZ4eJhmUgAMfKU5WXas5iw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1659606706;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=V9KFp3Q8FANAJlxYolRoliLVkamvy/Db09livD6w2ms=;
+        b=ePh6+61LxOZqTEn7tDkUdlbgRK/MqCEYBY08Cl9xr68mK/OcOnpjigX6Kt//Hsyi/MpKFc
+        c/D1fdDk/hXUZ0CQ==
+From:   "tip-bot2 for Mel Gorman" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: sched/urgent] sched/core: Do not requeue task on CPU excluded
+ from cpus_mask
+Cc:     Mel Gorman <mgorman@techsingularity.net>,
+        Ingo Molnar <mingo@kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220804092119.20137-1-mgorman@techsingularity.net>
+References: <20220804092119.20137-1-mgorman@techsingularity.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH resend] ASoC: SOF: ipc3-topology: Fix clang -Wformat
- warning
-Content-Language: en-US
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Justin Stitt <justinstitt@google.com>
-Cc:     Daniel Baluta <daniel.baluta@nxp.com>, alsa-devel@alsa-project.org,
-        llvm@lists.linux.dev, Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Tom Rix <trix@redhat.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        linux-kernel@vger.kernel.org, sound-open-firmware@alsa-project.org
-References: <20220803204442.2996580-1-justinstitt@google.com>
- <Yure82N7/4NLEMsW@dev-arch.thelio-3990X>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <Yure82N7/4NLEMsW@dev-arch.thelio-3990X>
-Content-Type: text/plain; charset=UTF-8
+Message-ID: <165960670500.15455.2504938304719155397.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The following commit has been merged into the sched/urgent branch of tip:
 
+Commit-ID:     751d4cbc43879229dbc124afefe240b70fd29a85
+Gitweb:        https://git.kernel.org/tip/751d4cbc43879229dbc124afefe240b70fd29a85
+Author:        Mel Gorman <mgorman@techsingularity.net>
+AuthorDate:    Thu, 04 Aug 2022 10:21:19 +01:00
+Committer:     Ingo Molnar <mingo@kernel.org>
+CommitterDate: Thu, 04 Aug 2022 11:26:13 +02:00
 
-On 8/3/22 15:47, Nathan Chancellor wrote:
-> On Wed, Aug 03, 2022 at 01:44:42PM -0700, Justin Stitt wrote:
->> When building with Clang we encounter these warnings:
->> | sound/soc/sof/ipc3-topology.c:2343:4: error: format specifies type
->> | 'unsigned char' but the argument has type 'int' [-Werror,-Wformat]
->> |                  SOF_ABI_MAJOR, SOF_ABI_MINOR, SOF_ABI_PATCH);
->> |                  ^~~~~~~~~~~~~~~^~~~~~~~~~~~~~~^~~~~~~~~~~~~
->>
->> Use correct format specifier `%d` since args are of type int.
->>
->> Link: https://github.com/ClangBuiltLinux/linux/issues/378
->> Reported-by: Nathan Chancellor <nathan@kernel.org>
->> Suggested-by: Nathan Chancellor <nathan@kernel.org>
->> Signed-off-by: Justin Stitt <justinstitt@google.com>
-> 
-> Thanks for resending!
-> 
-> Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+sched/core: Do not requeue task on CPU excluded from cpus_mask
 
-Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+The following warning was triggered on a large machine early in boot on
+a distribution kernel but the same problem should also affect mainline.
 
-> 
->> ---
->> Note: resending with the subject corrected, this patch fixes a build
->> warning that will break the Clang build when CONFIG_WERROR=y.
->>
->> Original patch: https://lore.kernel.org/all/20220721211218.4039288-1-justinstitt@google.com/
->> Reported by Nathan here: https://lore.kernel.org/all/YtmrCJjQrSbv8Aj1@dev-arch.thelio-3990X/
->>
->>  sound/soc/sof/ipc3-topology.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/sound/soc/sof/ipc3-topology.c b/sound/soc/sof/ipc3-topology.c
->> index b2cc046b9f60..65923e7a5976 100644
->> --- a/sound/soc/sof/ipc3-topology.c
->> +++ b/sound/soc/sof/ipc3-topology.c
->> @@ -2338,7 +2338,7 @@ static int sof_ipc3_parse_manifest(struct snd_soc_component *scomp, int index,
->>  	}
->>  
->>  	dev_info(scomp->dev,
->> -		 "Topology: ABI %d:%d:%d Kernel ABI %hhu:%hhu:%hhu\n",
->> +		 "Topology: ABI %d:%d:%d Kernel ABI %d:%d:%d\n",
->>  		 man->priv.data[0], man->priv.data[1], man->priv.data[2],
->>  		 SOF_ABI_MAJOR, SOF_ABI_MINOR, SOF_ABI_PATCH);
->>  
->> -- 
->> 2.37.1.359.gd136c6c3e2-goog
->>
+   WARNING: CPU: 439 PID: 10 at ../kernel/workqueue.c:2231 process_one_work+0x4d/0x440
+   Call Trace:
+    <TASK>
+    rescuer_thread+0x1f6/0x360
+    kthread+0x156/0x180
+    ret_from_fork+0x22/0x30
+    </TASK>
+
+Commit c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+optimises ttwu by queueing a task that is descheduling on the wakelist,
+but does not check if the task descheduling is still allowed to run on that CPU.
+
+In this warning, the problematic task is a workqueue rescue thread which
+checks if the rescue is for a per-cpu workqueue and running on the wrong CPU.
+While this is early in boot and it should be possible to create workers,
+the rescue thread may still used if the MAYDAY_INITIAL_TIMEOUT is reached
+or MAYDAY_INTERVAL and on a sufficiently large machine, the rescue
+thread is being used frequently.
+
+Tracing confirmed that the task should have migrated properly using the
+stopper thread to handle the migration. However, a parallel wakeup from udev
+running on another CPU that does not share CPU cache observes p->on_cpu and
+uses task_cpu(p), queues the task on the old CPU and triggers the warning.
+
+Check that the wakee task that is descheduling is still allowed to run
+on its current CPU and if not, wait for the descheduling to complete
+and select an allowed CPU.
+
+Fixes: c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/20220804092119.20137-1-mgorman@techsingularity.net
+---
+ kernel/sched/core.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index addc3c2..02afa1c 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3802,7 +3802,7 @@ bool cpus_share_cache(int this_cpu, int that_cpu)
+ 	return per_cpu(sd_llc_id, this_cpu) == per_cpu(sd_llc_id, that_cpu);
+ }
+ 
+-static inline bool ttwu_queue_cond(int cpu)
++static inline bool ttwu_queue_cond(struct task_struct *p, int cpu)
+ {
+ 	/*
+ 	 * Do not complicate things with the async wake_list while the CPU is
+@@ -3811,6 +3811,10 @@ static inline bool ttwu_queue_cond(int cpu)
+ 	if (!cpu_active(cpu))
+ 		return false;
+ 
++	/* Ensure the task will still be allowed to run on the CPU. */
++	if (!cpumask_test_cpu(cpu, p->cpus_ptr))
++		return false;
++
+ 	/*
+ 	 * If the CPU does not share cache, then queue the task on the
+ 	 * remote rqs wakelist to avoid accessing remote data.
+@@ -3840,7 +3844,7 @@ static inline bool ttwu_queue_cond(int cpu)
+ 
+ static bool ttwu_queue_wakelist(struct task_struct *p, int cpu, int wake_flags)
+ {
+-	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(cpu)) {
++	if (sched_feat(TTWU_QUEUE) && ttwu_queue_cond(p, cpu)) {
+ 		sched_clock_cpu(cpu); /* Sync clocks across CPUs */
+ 		__ttwu_queue_wakelist(p, cpu, wake_flags);
+ 		return true;
