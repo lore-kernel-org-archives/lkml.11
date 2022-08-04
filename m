@@ -2,89 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA78CC25B06
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98447C25B06
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240074AbiHDOz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 10:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
+        id S240088AbiHDO5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 10:57:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239980AbiHDOzy (ORCPT
+        with ESMTP id S234742AbiHDO5S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 10:55:54 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C5E61CB36;
-        Thu,  4 Aug 2022 07:55:54 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 553BF5BD9F;
-        Thu,  4 Aug 2022 14:55:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1659624951;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9vqM3B55556WrkSb/OXBXnK58c5Ih8NOpEHlhkqemA4=;
-        b=rNHv8QiNy3c5z8yVJYDxDTuMZdudL77DDEKwQScGWzveekPm6K6d92Eigi3//1z18P+j6T
-        RIBk2A9+Gbr/GaG2LQxCIKam5jar59qcEluUyW+jEfFYSJEX8asRo/4CPEA/glwkOL3smh
-        GG2PYfSwMM3DbGo8ER53fwfpz2KVsng=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1659624951;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9vqM3B55556WrkSb/OXBXnK58c5Ih8NOpEHlhkqemA4=;
-        b=qsfVFAylGeEqH5umlWB9oet2ZyR410Fy05HQBAnbpgYI4e03uyEiOpEcA7GMckUO5MF1So
-        TftfKIPExmNcPRCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2244513A94;
-        Thu,  4 Aug 2022 14:55:51 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id vtRSB/fd62IaAwAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Thu, 04 Aug 2022 14:55:51 +0000
-Date:   Thu, 4 Aug 2022 16:50:48 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        Omar Sandoval <osandov@osandov.com>
-Subject: Re: [PATCH] btrfs: change btrfs_insert_file_extent() to
- btrfs_insert_hole_extent()
-Message-ID: <20220804145048.GS13489@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        Omar Sandoval <osandov@osandov.com>
-References: <41e212570f521d9c0838b5ab8e66da0f942c7f46.1658615058.git.sweettea-kernel@dorminy.me>
+        Thu, 4 Aug 2022 10:57:18 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC281CB25;
+        Thu,  4 Aug 2022 07:57:17 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id c17so12680179lfb.3;
+        Thu, 04 Aug 2022 07:57:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=8JNbodMueoEd4ImyROxuslz2NcHFXRVvVz0CY4xXL6Q=;
+        b=bUH+Fm34iVCV0p1rnEdX7I6T1s493igT+HExDi/8Bhg86px9EzTwZTVvUSbf23x0of
+         mUq+/03uJNyMCFifoCjpjyuHVsojpxUnto7vAtLNf6K34nXhpCkorYve4tN9A0x1IN+j
+         7BzjyLh0v7qiC4xxeyC0Nqz9xefm77pozxJFiUCQLTKO5B0jpb5LLj2+twXU/M8SGVEN
+         SL/qH7MYCFzgUxfeNB9Uq7GsDPBCSMVr+gMTlehGk1R5bHihdhOhNtJ8IR7cEJoSIFJV
+         wCz/688Im08X6cSOzhAuLEmrg2elXqS1NKam5DRQsQr1Bm9kVLcdvnK7PGcvf+vyR6jS
+         dDyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=8JNbodMueoEd4ImyROxuslz2NcHFXRVvVz0CY4xXL6Q=;
+        b=M94KwqC39BpdUh2NV4WCRkhT8tGZrsbRnSvDHbBnIxQGOSA5SGgkfjQZ2rcaEog8/3
+         Yog3p8tjngdKu2icwYA2p2W0zFzkE3Ty1kZUtFGJFsgFwqzPTbaMySLfIdDiZJbTeiHU
+         Gpb1cF8+Y94elLRClIxMP84aECCsKhgEYqHOr4WzT+xxviZcKBWZCWh3dxiT9mghchOq
+         ad+rdvRoPNLaDoCKCmLPhQRLnG4QgmYuWY6BsRBuGIcqjXE6Qv+aTaJn3BrTz58F2yyG
+         yyGMpz2modbNYhdGDuIsHmKOZuwmeooO49Q+sUrCAw7ecX73wY8LfBbcQgmeRM3hajRg
+         ExdA==
+X-Gm-Message-State: ACgBeo1RdVfjF8wF5OO4gnteu+NBDYU2bQ+DB3aMF/St0uw3xUhHe6XY
+        QfbnGCFETYAWpN5rVkfcxjtuhMzFLJO0grtsmSs=
+X-Google-Smtp-Source: AA6agR7OOuSag4FDjo6Dbl4xoBFIuVP0LQIgpdmgsRMbcMKMGKSS86wDo0KAR/8Kfe7Qgrw6h0G1IyqONkTOqsC5PMY=
+X-Received: by 2002:a05:6512:3990:b0:48a:ae02:1000 with SMTP id
+ j16-20020a056512399000b0048aae021000mr787247lfu.401.1659625035106; Thu, 04
+ Aug 2022 07:57:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <41e212570f521d9c0838b5ab8e66da0f942c7f46.1658615058.git.sweettea-kernel@dorminy.me>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+References: <20220717121124.154734-1-tmaimon77@gmail.com> <20220718125155.GA40038@minyard.net>
+ <CAP6Zq1haOErfj2HZkqKwXZKr3+QvWP2VYK6QQOH5cjHYJ2rV0w@mail.gmail.com>
+ <20220726194708.GO3834@minyard.net> <CAP6Zq1hHXiZw2a6+o30N-GUhcA_ZJoYH+wZa8AzLu3NmYST+kw@mail.gmail.com>
+ <20220727154700.GS3834@minyard.net>
+In-Reply-To: <20220727154700.GS3834@minyard.net>
+From:   Tomer Maimon <tmaimon77@gmail.com>
+Date:   Thu, 4 Aug 2022 17:57:03 +0300
+Message-ID: <CAP6Zq1gQkoRqMc2+7ZDjwdyyfAhF+PuNjSQfSSS7yQojXS__mw@mail.gmail.com>
+Subject: Re: [PATCH v1 0/2] char: ipmi: kcs: add Arbel NPCM8XX support
+To:     minyard@acm.org
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        openipmi-developer@lists.sourceforge.net,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 23, 2022 at 06:25:29PM -0400, Sweet Tea Dorminy wrote:
-> From: Omar Sandoval <osandov@osandov.com>
-> 
-> btrfs_insert_file_extent() is only ever used to insert holes, so rename
-> it and remove the redundant parameters.
-> 
-> Signed-off-by: Omar Sandoval <osandov@osandov.com>
-> Signed-off-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Hi Corey,
 
-Added to misc-next, thanks. The patch is from long ago so there was
-probably intention to do more than just inserting hole but I don't
-remember any pending feature that would use the helper. If we need it it
-can be extended again.
+Sorry, miss this email...
+
+On Wed, 27 Jul 2022 at 18:47, Corey Minyard <minyard@acm.org> wrote:
+>
+> On Wed, Jul 27, 2022 at 08:39:08AM +0300, Tomer Maimon wrote:
+> > Hi Corey,
+> >
+> > On Tue, 26 Jul 2022 at 22:47, Corey Minyard <minyard@acm.org> wrote:
+> > >
+> > > On Tue, Jul 26, 2022 at 10:41:38PM +0300, Tomer Maimon wrote:
+> > > > Hi Corey,
+> > > >
+> > > >
+> > > > On Mon, 18 Jul 2022 at 15:51, Corey Minyard <minyard@acm.org> wrote:
+> > > > >
+> > > > > On Sun, Jul 17, 2022 at 03:11:22PM +0300, Tomer Maimon wrote:
+> > > > > > This patch set adds Arbel NPCM8XX Keyboard Controller Style (KCS) support to
+> > > > > > KCS NPCM driver.
+> > > > > >
+> > > > > > The NPCM KCS driver tested on NPCM845 evaluation board.
+> > > > >
+> > > > > This seems reasonable, I've pulled it into my tree.  If anyone has any
+> > > > > issues with this, please respond.
+> > > > >
+> > > > > -corey
+> > > > >
+> > > > > >
+> > > > > > Tomer Maimon (2):
+> > > > > >   dt-bindings: ipmi: Add npcm845 compatible
+> > > > > >   char: ipmi: modify NPCM KCS configuration
+> > > > > >
+> > > > > >  Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt | 5 +++--
+> > > > > >  drivers/char/ipmi/Kconfig                                  | 6 +++---
+> > > > > >  2 files changed, 6 insertions(+), 5 deletions(-)
+> > > > > >
+> > > > > > --
+> > > > > > 2.33.0
+> > > > > >
+> > > >
+> > > > Sorry but I need to do a little fix in the document file.
+> > > >
+> > > > Can I do it or have you already applied the patches?
+> > >
+> > > At this point I'd prefer a patch on top of what is there.  5.19 isn't
+> > > released yet, so the window isn't open, but that will happen soon and I
+> > > don't want to rebase at this point.
+> > O.K. thanks,
+> > I will wait until 5.19 is released and then I will send the patch.
+>
+> Oh, sorry I wasn't clear.  You can send it now, I just don't want to
+> rebase what I have already.  Just a new patch on top of it, and I'll get
+> it in to 5.19.
+>
+> -corey
+
+Sent a patch now.
+
+Best regards,
+
+Tomer
