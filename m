@@ -2,111 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88991C19F21
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 20:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D11C19F21
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 20:12:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235164AbiHDUF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 16:05:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33084 "EHLO
+        id S235126AbiHDUME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 16:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234772AbiHDUFy (ORCPT
+        with ESMTP id S232290AbiHDUMC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 16:05:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 532889FE2;
-        Thu,  4 Aug 2022 13:05:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF1B1B82726;
-        Thu,  4 Aug 2022 20:05:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60512C433C1;
-        Thu,  4 Aug 2022 20:05:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659643549;
-        bh=DR5dO2HhWSe0IcUJOiD/fg0ANKhZCMxKZk0PtAJCVIE=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=ASDi46ygtgSS3Hd63mUk69Ip0+B6d8iPklvvrBFp7dK1MDB9txrTrDce8RR7Om83f
-         VOtLQyfHm6vN+Jvl9dDxzsbJO7477LdDd1dhWchfqUt5pZ5w54r8qbrgm1uIln/zjO
-         1efVbVUaCoKX9s32agmUMURLeCnPKuhjMQOeWjjanJJnVcG4t/JCt/32kr34hi9OK3
-         GT0HZCbtDIn7WdhtQx2ETZiInLZKja3l9iXYW/X/va3cayacLrdkSKO7RBkVKfS4fc
-         U9IgMn9zPNjxUM/P46K3k+ET9Q7mcqR632iBzdYXWfvK5w+7PEc/U2GPiWOPRY7+HM
-         JWWCCDLkUTP2A==
-Content-Type: text/plain; charset="utf-8"
+        Thu, 4 Aug 2022 16:12:02 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5123337198
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 13:12:01 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id w19so1254776ejc.7
+        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 13:12:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=CFe0UOoTCAkxSytuVhyN3o9Glboy3Ar/1a94xydXHAU=;
+        b=HkqzuZNZeF82/IruQotWTWj+m/LkRjl8BedqywgWKArBNgbeG4cSgm3o6DeuNQpnbO
+         iXsKBNmWxLL5j8wlZW3YHLKGXRN2/VhBAZNDn43TWPj5Llk5syIlPkKIarOUeEexWeNK
+         wBFBcXnG5/JOxmtxH9yGRzLAXbGRgIREbDzOSeIYlNiixaN6kyKqkfBC7GkkJ8TF2jYW
+         1oAxvDaEe2nXwPaSag8CJHwOBeP31fTaTGjdJwV4h2VXdnOd53Abelw9tria8vIRi3nX
+         L9aQ8/hc9s8jZVEwkhOx8yVVlRBWmkvFCbZt9bA5zeqN80rdmskvnCrgDhQZsYrNdknk
+         2Q/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=CFe0UOoTCAkxSytuVhyN3o9Glboy3Ar/1a94xydXHAU=;
+        b=D5it6rnBNxuNbIEmGax3yVFi2E6Yrc9WwC/LQudsyvx4NQpPzQoIxm5rfkP90k6+BP
+         o/1yoeI8lnA1GeROBBhDHnLcA+H43kTImzRxVi70TDfLPnak8K4DoMJiH+F681PoQO+w
+         /jkzyLeztGLXFg+Xrj13qjbqvvDcEbQzUk3oAMolaJvd/Zm3gRpcN92eirrSOBtptxJR
+         +R0PjdfU+auVKfKmw/l2/YoFrXogGdHBaM57s2iW22xynT+yJgIoO1twD5G/fIm0HHws
+         7vL5K/P3jADypGN14G9HyqnITa5oNU0LlyyIBLSQIYEI4mC+Q/3ma7QMzhY1FIqC9/DN
+         XH/Q==
+X-Gm-Message-State: ACgBeo0BbrQEwl/AK3ebpbdznXnkl7aGV99ZOfh6WA1gxcCxj7pdZGVB
+        FZejQnlr/2h0II05Xf5VtpQ=
+X-Google-Smtp-Source: AA6agR5PCMokznkJ9u6pJzc+bdIm0KEIT63Ru8c2tuStKZ6ufXcMvK8IGiViutsvLNGXJGwGNaQk4g==
+X-Received: by 2002:a17:907:2d90:b0:72f:5bb:1f32 with SMTP id gt16-20020a1709072d9000b0072f05bb1f32mr2660516ejc.758.1659643919821;
+        Thu, 04 Aug 2022 13:11:59 -0700 (PDT)
+Received: from [192.168.1.103] (p54a07b82.dip0.t-ipconnect.de. [84.160.123.130])
+        by smtp.gmail.com with ESMTPSA id gt26-20020a170906f21a00b006fef0c7072esm688374ejb.144.2022.08.04.13.11.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Aug 2022 13:11:59 -0700 (PDT)
+Message-ID: <c3b30433-7231-6ebb-b0ea-44e760c4af69@gmail.com>
+Date:   Thu, 4 Aug 2022 22:11:58 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CAP6Zq1hOxG+2X-qTbvPkrVHQ5zf04GO21m1n328Jiqgzns2CMA@mail.gmail.com>
-References: <20220711123519.217219-1-tmaimon77@gmail.com> <20220711123519.217219-5-tmaimon77@gmail.com> <20220711195544.70A30C34115@smtp.kernel.org> <CAP6Zq1ie_RgJ_9S3ftoVJ=eJHX1xR4_O_czKZghNPKVEFOzC8Q@mail.gmail.com> <20220718191454.5B5D3C341C0@smtp.kernel.org> <CAP6Zq1ju08GSjNnEG+zDUC8W6aQMJxd5He7QJxy9++hTy0Dc7A@mail.gmail.com> <20220723030226.8E43CC341C6@smtp.kernel.org> <CAP6Zq1gUvMFG9BNObVNLpVgbMRpV7e--HFxknP8kvL4nGk8Hsw@mail.gmail.com> <20220729225603.12528C433D6@smtp.kernel.org> <CAP6Zq1hOxG+2X-qTbvPkrVHQ5zf04GO21m1n328Jiqgzns2CMA@mail.gmail.com>
-Subject: Re: [PATCH v8 04/16] clk: npcm8xx: add clock controller
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/3] staging: r8188eu: set firmware path in a macro
+Content-Language: en-US
+To:     Grzegorz Szymaszek <gszymaszek@short.pl>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
         Greg KH <gregkh@linuxfoundation.org>,
-        Jonathan =?utf-8?q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Olof Johansson <olof@lixom.net>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Thomas G leixner <tglx@linutronix.de>,
-        Patrick Venture <venture@google.com>,
-        Vinod Koul <vkoul@kernel.org>, Will Deacon <will@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Nancy Yuen <yuenn@google.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        SERIAL DRIVERS <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Date:   Thu, 04 Aug 2022 13:05:47 -0700
-User-Agent: alot/0.10
-Message-Id: <20220804200549.60512C433C1@smtp.kernel.org>
+        Phillip Potter <phil@philpotter.co.uk>,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+References: <YuoQ37PIKzWO1zIY@kroah.com>
+ <6c83e05e5dbccff5630ccfed9e40bf84c889b647.1659565180.git.gszymaszek@short.pl>
+From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
+In-Reply-To: <6c83e05e5dbccff5630ccfed9e40bf84c889b647.1659565180.git.gszymaszek@short.pl>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Tomer Maimon (2022-08-04 07:01:30)
-> On Sat, 30 Jul 2022 at 01:56, Stephen Boyd <sboyd@kernel.org> wrote:
-> >
-> > Because it is jumbled in some range?
-> Yes.
-> >
-> > >
-> > > I do see a way to combine the clock and the reset driver, the NPCM
-> > > reset driver is serving other NPCM BMC's.
-> > > Should we use regmap to handle the clock registers instead of ioremap?
-> >
-> > Sure? Using regmap or not looks like a parallel discussion. How does it
-> > help use platform APIs?
-> I mean to use regmap API instead of platform API for handing the clock
-> and reset registers.
-> the regmap API gives only one user access to R/W (lock).
-> I will be happy to get more suggestions, on how should we solve this situ=
-ation.
->=20
+On 8/4/22 00:28, Grzegorz Szymaszek wrote:
+> diff --git a/drivers/staging/r8188eu/os_dep/os_intfs.c b/drivers/staging/r8188eu/os_dep/os_intfs.c
+> index 5bd3022e4b40..5985054da935 100644
+> --- a/drivers/staging/r8188eu/os_dep/os_intfs.c
+> +++ b/drivers/staging/r8188eu/os_dep/os_intfs.c
+> @@ -18,7 +18,7 @@ MODULE_LICENSE("GPL");
+>   MODULE_DESCRIPTION("Realtek Wireless Lan Driver");
+>   MODULE_AUTHOR("Realtek Semiconductor Corp.");
+>   MODULE_VERSION(DRIVERVERSION);
+> -MODULE_FIRMWARE("rtlwifi/rtl8188eufw.bin");
+> +MODULE_FIRMWARE(FW_RTL8188EU);
+>   
+>   #define CONFIG_BR_EXT_BRNAME "br0"
+>   #define RTW_NOTCH_FILTER 0 /* 0:Disable, 1:Enable, */
 
-Using platform APIs means using platform_*() functions, not of_*()
-functions, which are open-firmware/DT related. Regmap can be used to
-operate on registers mapped as __iomem, which is different from platform
-APIs.
 
-Is having a lock even necessary? Do the reset and clk controls live
-within a shared register where we would need to prevent one driver from
-accessing that register at the same time as the other?
+It failed to apply your patch as the following line:
+MODULE_FIRMWARE("rtlwifi/rtl8188eufw.bin");
+is not in the repo. Inserted line in my repo to apply patch.
+
+Why is the coverletter missing?
+
+Tested all three patches.
+
+Tested-by: Philipp Hortmann <philipp.g.hortmann@gmail.com> # Edimax N150
+
+
+
