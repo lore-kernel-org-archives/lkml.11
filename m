@@ -2,129 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1534C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 21:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E7BC25B08
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 21:54:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239465AbiHDVxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 17:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33516 "EHLO
+        id S239609AbiHDVyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 17:54:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233810AbiHDVxj (ORCPT
+        with ESMTP id S239733AbiHDVxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 17:53:39 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A18B7D6
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 14:53:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659650019; x=1691186019;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=OHCsl+XUzQO7RT4641GA7PUmBwvdkIz4kTfdE4EpX5E=;
-  b=EJyaBDjd9OeY24PKTzTBwfP8Xi2AEqIe6nAKgSm65zTGyBsLrj6zxyIU
-   wLJ/VU2lYP3/Pwy9vyH/2ibxrsiXMKHCXuR+dzvCrQmXRzbcxbM3MAm5T
-   uhZoEbQtKTNAPH4XWZci0utCZhDT+O5CPmeL79hyRqvM5a1XrTRx4Vc8c
-   jxW9AY01cJhiRVRo26iEClJJGbCtIzt3HE8EzsiHWkfQj0uUFz984117B
-   cVc/R2zwUxmyjSrJItHpyVrXmDuPIcxbPjZcOO8JKuNgetbOAU4el2KOO
-   wk1BHDY75l1KfGmnHEFf9UhlpEHW7yMK8lUjqR6ejzbwpc2HdapdSjS+b
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10429"; a="354051606"
-X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="354051606"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 14:53:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="671428782"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 04 Aug 2022 14:53:36 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oJime-000Isz-0H;
-        Thu, 04 Aug 2022 21:53:36 +0000
-Date:   Fri, 05 Aug 2022 05:52:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:locking/core] BUILD SUCCESS
- 9aeaf5bc4e30ec968ae660b865ed491a28daf500
-Message-ID: <62ec3fa4.IzBQy9swDRQCCzlS%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 4 Aug 2022 17:53:54 -0400
+Received: from mail-0201.mail-europe.com (mail-0201.mail-europe.com [51.77.79.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126F318342
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 14:53:52 -0700 (PDT)
+Date:   Thu, 04 Aug 2022 21:53:39 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+        s=protonmail3; t=1659650027; x=1659909227;
+        bh=y4kH6rqMb1GQXexTQtqvrxt2lPMXsfbG1mA+tOI739c=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
+         Feedback-ID:Message-ID;
+        b=wM9wd65TfEblAUDKRbzgTQvO3TV4GZxemmJjMEH1Cz5y6ECqepuDQVdgMESpvifyD
+         gXshbM8wh7P1p8UYqRv4Nfrn8H8oWCpz+3Q8CC2pq5GzOk5k2hDvZa9vLMpfOmwwIo
+         oIwmG5SazSMYhH9bMc/HXXwlSPLB3TXZd5d/ZrXrrYPmMGQw0bzwPsekUq4zrOrPDo
+         roHQ8fQpjRKH+jGseZqZej5DRHia1fXKlhrTcEQlE+biBtQWbH0EsiWi+pyu+kzD10
+         ZzHKO6wob5s/R676oDfF4AmVU7tyHtgHcLSkdr7UwgwYHZColKGUOCDV/w2Th+Xwdz
+         rPELh2wEWCY1g==
+To:     Hans de Goede <hdegoede@redhat.com>
+From:   =?utf-8?Q?Barnab=C3=A1s_P=C5=91cze?= <pobrn@protonmail.com>
+Cc:     "Luke D. Jones" <luke@ljones.dev>, markgross@kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+Reply-To: =?utf-8?Q?Barnab=C3=A1s_P=C5=91cze?= <pobrn@protonmail.com>
+Subject: Re: [PATCH v2 1/1] asus-wmi: Add support for TUF laptop keyboard states
+Message-ID: <ybhjXWmB07-FDJ_Shcl8d3jd7Y6SJdoQ1XPQrxe1q6MVogS6BaYdjkf-g9DAdXWvfmmemMVGWk9t34LDhiJTFidhVXkkfOwXHMNx-f1Vgq0=@protonmail.com>
+In-Reply-To: <db7f33c8-404d-6e41-73af-370e148a4eed@redhat.com>
+References: <20220803231331.48788-1-luke@ljones.dev> <20220803231331.48788-2-luke@ljones.dev> <db7f33c8-404d-6e41-73af-370e148a4eed@redhat.com>
+Feedback-ID: 20568564:user:proton
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking/core
-branch HEAD: 9aeaf5bc4e30ec968ae660b865ed491a28daf500  locking/spinlocks: Mark spinlocks noinline when inline spinlocks are disabled
+Hi Hans
 
-elapsed time: 697m
 
-configs tested: 53
-configs skipped: 2
+2022. augusztus 4., cs=C3=BCt=C3=B6rt=C3=B6k 15:22 keltez=C3=A9ssel, Hans d=
+e Goede <hdegoede@redhat.com> =C3=ADrta:
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> [...]
+> Please make this an extra attribute for the led_class_device,
+> you can do this by adding this attribute to a separate
+> attribute_group, lets say e.g. "tuf_rgb_attributes" and then
+> in the "[PATCH] asus-wmi: Add support for TUF laptop keyboard RGB"
+> code add:
+>
+> =09mc_cdev->led_cdev.groups =3D tuf_rgb_attributes;
+>
+> and then the "tuf_krgb_state" file should show up as:
+> /sys/class/leds/asus::multicolour/tuf_krgb_state
 
-gcc tested configs:
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-i386                                defconfig
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-arc                  randconfig-r043-20220804
-x86_64                               rhel-8.3
-x86_64                        randconfig-a015
-x86_64                           allyesconfig
-i386                          randconfig-a014
-i386                             allyesconfig
-arm                                 defconfig
-i386                          randconfig-a012
-i386                          randconfig-a016
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                    rhel-8.3-kselftests
-x86_64                        randconfig-a006
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                           rhel-8.3-kvm
-x86_64                           rhel-8.3-syz
-arm                              allyesconfig
-powerpc                           allnoconfig
-i386                          randconfig-a001
-arm64                            allyesconfig
-alpha                            allyesconfig
-i386                          randconfig-a003
-arc                              allyesconfig
-i386                          randconfig-a005
-ia64                             allmodconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-sh                               allmodconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
+I am not sure this will work because `led_classdev_multicolor_register_ext(=
+)`
+overrides the embedded LED device's `led_classdev::groups` with
+`led_multicolor_groups` to provide the multi-color functionality
+before calling `led_classdev_register_ext()`.
 
-clang tested configs:
-hexagon              randconfig-r045-20220804
-hexagon              randconfig-r041-20220804
-x86_64                        randconfig-a012
-i386                          randconfig-a013
-riscv                randconfig-r042-20220804
-x86_64                        randconfig-a016
-s390                 randconfig-r044-20220804
-x86_64                        randconfig-a014
-i386                          randconfig-a011
-i386                          randconfig-a015
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> [...]
+
+
+Regards,
+Barnab=C3=A1s P=C5=91cze
