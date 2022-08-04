@@ -2,109 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E92FC25B0E
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 11:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC21C19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 11:22:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239574AbiHDLRa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 07:17:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60472 "EHLO
+        id S231710AbiHDLWL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 07:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239570AbiHDLQ6 (ORCPT
+        with ESMTP id S230059AbiHDLWJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 07:16:58 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5256622BCB;
-        Thu,  4 Aug 2022 04:16:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1659611817; x=1691147817;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=w+SN/SaIr+LvXT/a1kPPp+iizidghf+YuAzNx6mKr9c=;
-  b=Wir5wLd8j8rWP60lJBlKyLpcO0u1+XIYhoEaF9Hv1B79m5euXJ07mdAQ
-   r/yLLFUEFfee8GknbT3WR/qw3PSpreluIdkco/UMm975lsq+1bHUoj7YY
-   ZC5LAdiIXjQmpV5SFdYYft9LF1Y/xb21DsAqIEDafFoYiveZnBmuLYG4v
-   0=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 04 Aug 2022 04:16:57 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 04:16:56 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 4 Aug 2022 04:16:56 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 4 Aug 2022 04:16:50 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <linux-remoteproc@vger.kernel.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <lgirdwood@gmail.com>,
-        <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>, <devicetree@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH v2 8/8] remoteproc: qcom: Update QDSP6 out-of-reset timeout value
-Date:   Thu, 4 Aug 2022 16:45:51 +0530
-Message-ID: <1659611751-7928-9-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1659611751-7928-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1659611751-7928-1-git-send-email-quic_srivasam@quicinc.com>
+        Thu, 4 Aug 2022 07:22:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFCDA2AE3C;
+        Thu,  4 Aug 2022 04:22:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B31E61633;
+        Thu,  4 Aug 2022 11:22:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66CAFC433C1;
+        Thu,  4 Aug 2022 11:22:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659612126;
+        bh=+6dpbCtRNHtHBP52GVj83vVSR1+Voq0GAalHci9STfo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=H96xntaymC3uNf+tMPPHBHt/Oyt8sPKSgJkgAbsJPwMRIj8i4D2aVzWriBLvnsnc/
+         Ryc1VzufKdWBXVfGwQeg8VDhM954gGrFU+xGs0kzGcQksD7hE9J4tm4NgRARONKlga
+         UOt0wRnhz5tTTqwri2t62CKOoHf6SaUL/cR/z7WE=
+Date:   Thu, 4 Aug 2022 13:22:03 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Evgeniy Baskov <baskov@ispras.ru>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [RFC PATCH 0/8] x86_64: Harden compressed kernel, part 1
+Message-ID: <Yuur2x+H5ESwJmcr@kroah.com>
+References: <cover.1659369873.git.baskov@ispras.ru>
+ <e6e7fef1-0dff-ef72-8a17-8ecec89994ca@intel.com>
+ <893da11995f93a7ea8f7485d17bf356a@ispras.ru>
+ <e8342722-20f8-a566-59c5-8e8f7f271d98@intel.com>
+ <29312ea704885f1b8d3c229e1f22dad7@ispras.ru>
+ <973736db-2480-bbaa-d2ce-6e1b6dd2ed0c@intel.com>
+ <09c1c94fb9c5006199d88caa88f237a3@ispras.ru>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <09c1c94fb9c5006199d88caa88f237a3@ispras.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update QDSP6 out-of-reset timeout value to 1 second, as sometimes
-ADSP boot failing on SC7280 based platforms with existing value.
-Also add few micro seconds sleep after enabling boot core
-start register.
+On Thu, Aug 04, 2022 at 01:41:58PM +0300, Evgeniy Baskov wrote:
+> On 2022-08-03 17:05, Dave Hansen wrote:
+> > 
+> > That shows me that it's _possible_ to build a more strict PE loader that
+> > wouldn't load Linux.  But, in practice is anyone using a more strict PE
+> > loader?  Does anyone actually want that in practice?  Or, again, is this
+> > more strict PE loader just an academic demonstration?
+> > 
+> > The README starts:
+> > 
+> > 	This branch demonstrates...
+> > 
+> > That doesn't seem like something that's _important_ to deal with.
+> > Sounds like a proof-of-concept.
+> > 
+> > Don't get me wrong, I'm all for improving thing, even if the benefits
+> > are far off.  But, let's not fool ourselves.
+> 
+> We have commercial closed-source UEFI firmware implementation at ISP RAS
+> that follows the behavior of the secure_pe branch. That firmware is used
+> as a part of [1].
+> 
+> [1] https://www.ispras.ru/en/technologies/asperitas/
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
----
-Changes since V1:
-	-- Fix typo error.
+Are there any plans on getting those changes merged back upstream to the
+main UEFI codebase so that others can test this type of functionality
+out?
 
- drivers/remoteproc/qcom_q6v5_adsp.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+thanks,
 
-diff --git a/drivers/remoteproc/qcom_q6v5_adsp.c b/drivers/remoteproc/qcom_q6v5_adsp.c
-index f81da47..18a6bf6 100644
---- a/drivers/remoteproc/qcom_q6v5_adsp.c
-+++ b/drivers/remoteproc/qcom_q6v5_adsp.c
-@@ -34,7 +34,7 @@
- /* time out value */
- #define ACK_TIMEOUT			1000
- #define ACK_TIMEOUT_US			1000000
--#define BOOT_FSM_TIMEOUT		10000
-+#define BOOT_FSM_TIMEOUT		1000000
- /* mask values */
- #define EVB_MASK			GENMASK(27, 4)
- /*QDSP6SS register offsets*/
-@@ -468,13 +468,14 @@ static int adsp_start(struct rproc *rproc)
- 
- 	/* De-assert QDSP6 stop core. QDSP6 will execute after out of reset */
- 	writel(LPASS_BOOT_CORE_START, adsp->qdsp6ss_base + CORE_START_REG);
-+	usleep_range(100, 110);
- 
- 	/* Trigger boot FSM to start QDSP6 */
- 	writel(LPASS_BOOT_CMD_START, adsp->qdsp6ss_base + BOOT_CMD_REG);
- 
- 	/* Wait for core to come out of reset */
- 	ret = readl_poll_timeout(adsp->qdsp6ss_base + BOOT_STATUS_REG,
--			val, (val & BIT(0)) != 0, 10, BOOT_FSM_TIMEOUT);
-+			val, (val & BIT(0)) != 0, 100, BOOT_FSM_TIMEOUT);
- 	if (ret) {
- 		dev_err(adsp->dev, "failed to bootup adsp\n");
- 		goto disable_adsp_clks;
--- 
-2.7.4
-
+greg k-h
