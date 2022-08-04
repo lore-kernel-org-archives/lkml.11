@@ -2,194 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 438FFC00144
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 07:04:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF8D5C19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 07:05:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237782AbiHDHEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 03:04:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33674 "EHLO
+        id S238987AbiHDHFb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 03:05:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230033AbiHDHEO (ORCPT
+        with ESMTP id S238670AbiHDHF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 03:04:14 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E15561B32
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 00:04:14 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so4609873pjf.2
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 00:04:14 -0700 (PDT)
+        Thu, 4 Aug 2022 03:05:27 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F7164F5
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 00:05:26 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id d14so17655136lfl.13
+        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 00:05:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=cUekWLrPgUEora35ZdVnAqX5JYjKG5HOy4KX6css4CI=;
-        b=QPO+zLIiCdmFGdf/XWvBwyiS74mJt7wWSWl/C1ThRN6z4CyoZ+YzKXLOG9CYCsOAjy
-         pESDAeAFpsVGCvuIACoBHEOBvMwPGxXvc5yO6Wr3q9iGjJwyJ5zLP7Q9p+TkOefWw6al
-         zJBo0i3wk/92Gc3Nb6ozQbEkCj9VfGbYi2QTRoswBWTdJOX//nypLbW8qH4yFPzlpawz
-         yi4e+FEq2T2jAODZYN2cvvAGll6sip2cNdqR79wVVBhS9GjDOOODiJLDQj0R8KtjRP9j
-         nayWhNosU4lTYTHksc8+67b1WRT34vHgiWphrmq3UQcOKNP4Uf3LkpKsWuZOyCNLeee7
-         jV0Q==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=8nMuzVeetPyhe+M16iIwrFxgbYWe0kXYut8sK7EQU0Y=;
+        b=lD5CSRtXzBY36OaOtiXdl27m3c6V+TNn43Zwl1Qv7zaK2KULIMLwbv9FPsoBFXB4aE
+         lqMoIcQqEdiaokJTtdDxsOgsrBGqKhdhoVK/ry0euHC47RtoWG8/KBwiBm21OYPBC1Z2
+         4PkLG0prwBsvAWEz5xjzPmMV95G7Gs+lzBKGQOd6l2j1mfYG1Ux+vbykdn0gVyIlosAW
+         OYsBRENhh0zzL35Q7xQMQyapfUnAAHddd3qhB75JQTVEwpZg9yQdrD9+lmfzZg5mOomk
+         uiTE0X+bT6VXPoynAUprQ2I28PZEvw6jE+MYtoo397KAxc/bgmh3FASAQ4HpPTK91y41
+         evHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=cUekWLrPgUEora35ZdVnAqX5JYjKG5HOy4KX6css4CI=;
-        b=GC+uiYpf0/rgjZJA4SYz0N1WM9RVmwsMVf0KVbQzJN4+pWI+JuMuV1oKM9gt4C6eLB
-         ABzvx79lWXLnO447pmjPEdhKktMWh03xd+djHcUbVW+kEPDLOLHEHSKKUxQVAtMGUthg
-         i+LxlbfZJwlRSMA4WJ0GKsbVh091/CuS9DtIkIKlHETTZgB4NUoSQf4yIhi9dJqcoAxX
-         vARegwspRSE9HngB4PrDMlI7cJ/eX3O19qCDGOqvpuyFyv4EEZ8y/6J+Y/GCc4fBS9XT
-         /GhjmVCtxhO8qGkmO1sB4lZSN+nvUk5da4H7JJhSDJcHATkYgUdzVyFXC9SjfwaCqJl3
-         bARQ==
-X-Gm-Message-State: ACgBeo2lrj2JgjioKFU+iyLTblrMqWFvPwxfaAKX9ecbFsRi/4Y+r8BH
-        f/D6JZtT6a05tEmU3IClZr9dNA==
-X-Google-Smtp-Source: AA6agR4RBR5A2LMFu7WVTBT4OJEIU6wrU9QOyMc26cyjcb3TqU3U+3skQ8herBu/NW1aJZW+cOuUlQ==
-X-Received: by 2002:a17:90b:164d:b0:1f0:31c1:9e88 with SMTP id il13-20020a17090b164d00b001f031c19e88mr596853pjb.206.1659596653619;
-        Thu, 04 Aug 2022 00:04:13 -0700 (PDT)
-Received: from MacBook-Pro.local.net ([139.177.225.225])
-        by smtp.gmail.com with ESMTPSA id ik4-20020a170902ab0400b0016da68b09b3sm58692plb.87.2022.08.04.00.04.10
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 04 Aug 2022 00:04:13 -0700 (PDT)
-From:   lizhe.67@bytedance.com
-To:     dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org
-Cc:     linux-kernel@vger.kernel.org, lizefan.x@bytedance.com,
-        yuanzhu@bytedance.com, lizhe.67@bytedance.com
-Subject: [RFC] x86/mm/dump_pagetables: Allow dumping pagetables by pid
-Date:   Thu,  4 Aug 2022 15:04:01 +0800
-Message-Id: <20220804070401.86524-1-lizhe.67@bytedance.com>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8nMuzVeetPyhe+M16iIwrFxgbYWe0kXYut8sK7EQU0Y=;
+        b=S3YFo+sbmAVtLMnzJjk1l3l7+7pu0NYnukr6LKkuoP/vtS9y2cJWuygVY8xcX3XjDE
+         FBAeT4hRschHTOlaAj94+ckfShHu1pho7Nlj6cjFrE1G4cwUNdulJLn03EWPvpOTwF2j
+         Vohbgoa8yspaaxWpSHm8z5UZDKjOB7CleArA5pYvDaIudlfWQ0xT9kohuN3k6SAudhIu
+         xcsv5t5c0DU1k3OiKsaTq3zQgzYciTR2cN2FS4rxkHo6vfkKKammOiB654pb/AU9mIit
+         phNyxmxGDPclJLO6qpvp9BDOLm4CfUSAwIfWH0yf+gXBxhRrJyUkb+QVEaA57vRpWJFE
+         5WFA==
+X-Gm-Message-State: ACgBeo1jtOLwKiFIrZSrETgpAlvB4zLvV+ove6qkmYeTxZJZMAWuS1K2
+        Tmm/4aNLn9lX2QV/Ohepdlx7jQ==
+X-Google-Smtp-Source: AA6agR4nu7I3vhsmogjlzU0lvqxd4qGusLqm2g20Ed9y4Ai1CgW6tIioiBSmBvwIuInJs6NkltBZeQ==
+X-Received: by 2002:a05:6512:33ca:b0:48a:779b:fbe2 with SMTP id d10-20020a05651233ca00b0048a779bfbe2mr239568lfg.557.1659596724770;
+        Thu, 04 Aug 2022 00:05:24 -0700 (PDT)
+Received: from [192.168.1.6] ([77.222.167.48])
+        by smtp.gmail.com with ESMTPSA id v14-20020a2e2f0e000000b0025e436214c8sm15160ljv.78.2022.08.04.00.05.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Aug 2022 00:05:24 -0700 (PDT)
+Message-ID: <535f97e5-5a79-5d62-fba4-419a451eb14a@linaro.org>
+Date:   Thu, 4 Aug 2022 09:05:22 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v4 1/2] ARM: dts: imx7d: add dts for UC-8210/8220 hardware
+Content-Language: en-US
+To:     =?UTF-8?B?SmltbXkgQ2hlbiAo6Zmz5rC46YGUKQ==?= <jimmy.chen@moxa.com>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        "soc@kernel.org" <soc@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Cc:     "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220719030718.28826-1-jimmy.chen@moxa.com>
+ <SEYPR01MB4272BC601A478A322F964AFEFA9F9@SEYPR01MB4272.apcprd01.prod.exchangelabs.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <SEYPR01MB4272BC601A478A322F964AFEFA9F9@SEYPR01MB4272.apcprd01.prod.exchangelabs.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Zhe <lizhe.67@bytedance.com>
+On 04/08/2022 08:53, Jimmy Chen (陳永達) wrote:
+> Any advice is appreciated for this patch?
 
-In current kernel we can only dump a user task's pagetable
-by task itself. Sometimes we need to inspect the page table
-attributes of different memory maps to user space to meet
-the relevant development and debugging requirements. This
-patch helps us to make our works easier. It add two file
-named 'pid' and 'pid_pgtable_show'. We can use 'pid' to
-input the task we want to inspect and get pagetable info
-from 'pid_pgtable_show'.
+You already received comments and did not implement them.
+https://lore.kernel.org/all/df14931e-847e-4776-74ae-8c35a1cd863d@linaro.org/
 
-User space can use file 'pid' and 'pid_pgtable_show' as follows.
-====
-$ echo $pid > /sys/kernel/debug/page_tables/pid
-$ cat /sys/kernel/debug/page_tables/pid_pgtable_show
+Implement first all the feedback.
 
-Signed-off-by: Li Zhe <lizhe.67@bytedance.com>
----
- arch/x86/mm/debug_pagetables.c | 82 ++++++++++++++++++++++++++++++++++
- 1 file changed, 82 insertions(+)
 
-diff --git a/arch/x86/mm/debug_pagetables.c b/arch/x86/mm/debug_pagetables.c
-index 092ea436c7e6..53a8ced44080 100644
---- a/arch/x86/mm/debug_pagetables.c
-+++ b/arch/x86/mm/debug_pagetables.c
-@@ -4,6 +4,8 @@
- #include <linux/module.h>
- #include <linux/seq_file.h>
- #include <linux/pgtable.h>
-+#include <linux/slab.h>
-+#include <linux/sched/mm.h>
- 
- static int ptdump_show(struct seq_file *m, void *v)
- {
-@@ -31,6 +33,84 @@ static int ptdump_curusr_show(struct seq_file *m, void *v)
- }
- 
- DEFINE_SHOW_ATTRIBUTE(ptdump_curusr);
-+
-+static pid_t trace_pid;
-+static int ptdump_pid_pgtable_show(struct seq_file *m, void *v)
-+{
-+	struct task_struct *task;
-+	struct mm_struct *mm;
-+
-+	if (trace_pid == 0)
-+		return 0;
-+
-+	rcu_read_lock();
-+	task = find_task_by_vpid(trace_pid);
-+	if (!task) {
-+		rcu_read_unlock();
-+		return -ESRCH;
-+	}
-+	mm = get_task_mm(task);
-+	rcu_read_unlock();
-+
-+	if (mm && mm->pgd)
-+		ptdump_walk_pgd_level_debugfs(m, mm, true);
-+
-+	if (mm)
-+		mmput(mm);
-+
-+	return 0;
-+}
-+
-+DEFINE_SHOW_ATTRIBUTE(ptdump_pid_pgtable);
-+
-+static ssize_t ptdump_pid_write(struct file *file, const char __user *buffer,
-+				size_t count, loff_t *f_pos)
-+{
-+	pid_t pid;
-+	int ret = -ENOMEM;
-+	char *tmp = kzalloc(count, GFP_KERNEL);
-+
-+	if (!tmp)
-+		return ret;
-+
-+	if (copy_from_user(tmp, buffer, count)) {
-+		ret = -EFAULT;
-+		goto out;
-+	}
-+
-+	ret = kstrtoint(tmp, 0, &pid);
-+	if (ret) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+	kfree(tmp);
-+	trace_pid = pid;
-+	return count;
-+
-+out:
-+	kfree(tmp);
-+	return ret;
-+}
-+
-+static int ptdump_show_pid(struct seq_file *m, void *v)
-+{
-+	seq_printf(m, "%d\n", trace_pid);
-+	return 0;
-+}
-+
-+static int ptdump_open_pid(struct inode *inode, struct file *filp)
-+{
-+	return single_open(filp, ptdump_show_pid, NULL);
-+}
-+
-+static const struct file_operations ptdump_pid_fops = {
-+	.owner		= THIS_MODULE,
-+	.open		= ptdump_open_pid,
-+	.write		= ptdump_pid_write,
-+	.read		= seq_read,
-+	.llseek		= seq_lseek,
-+	.release	= single_release,
-+};
- #endif
- 
- #if defined(CONFIG_EFI) && defined(CONFIG_X86_64)
-@@ -57,6 +137,8 @@ static int __init pt_dump_debug_init(void)
- #ifdef CONFIG_PAGE_TABLE_ISOLATION
- 	debugfs_create_file("current_user", 0400, dir, NULL,
- 			    &ptdump_curusr_fops);
-+	debugfs_create_file("pid_pgtable_show", 0400, dir, NULL, &ptdump_pid_pgtable_fops);
-+	debugfs_create_file("pid", 0400, dir, NULL, &ptdump_pid_fops);
- #endif
- #if defined(CONFIG_EFI) && defined(CONFIG_X86_64)
- 	debugfs_create_file("efi", 0400, dir, NULL, &ptdump_efi_fops);
--- 
-2.20.1
-
+Best regards,
+Krzysztof
