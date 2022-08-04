@@ -2,115 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03AAEC19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 07:55:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4633DC19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 07:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239426AbiHDHzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 03:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42006 "EHLO
+        id S239347AbiHDHzk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 03:55:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239248AbiHDHzN (ORCPT
+        with ESMTP id S239374AbiHDHzY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 03:55:13 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2C9CCA;
-        Thu,  4 Aug 2022 00:55:11 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id o3so18638280ple.5;
-        Thu, 04 Aug 2022 00:55:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=54EqQuczfqvI67ynZTrQgux+A6Axf8M7+eUWnl+GYQY=;
-        b=cVvxsSqtBgVzs6aiz10oHaHm4BLtplcM53UWYI+G5pjnuwJUc3oRhj3weJSnrlGKqh
-         nKIbIYP3MR44OtTfhC3fY3VXb7XYqbeCWM0DnHU8dfhBpgJcRjOvYYApUnYM3ZWyM0DH
-         +gEsu4fW2AFnBXhi94q3/SkW5waCCujMqWMHVXEVzVnUxPNRAnmJK8jekFEq8nJE1LyA
-         6Gx3Z8G5LETxOETlFaC0FW39Nk9B2Ta01iN4IQ/IegkzcodvnGRTvLMNpT3nsKjPTfcW
-         23M0PvZB6OtfN19bWoQSPH0E6lxTZC4yhlAg+VnnB8dy+lgClPSJEmupU7UyFKZskf59
-         aB1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=54EqQuczfqvI67ynZTrQgux+A6Axf8M7+eUWnl+GYQY=;
-        b=BcEO2pTC2VG0AKTjSeQWAWg/BibY1SoVJ8Gi50No+CchG30ZJGug1MH372g7bAxXYa
-         FeUcp1Xq2NGcPDNOVjwKN4oEeK0W6C0D2UJDwQRayyZaRVmurZmts74HzHgotNSI055s
-         uH6hZg2B9ViUyjsO56LcqhtiLJDn/HijcDuVismgpo6kR5KIMxJn6PiMalP919cOedzq
-         OQX4Iz41O6tBogAltVWyeKSrt+BHuKTqAH0269tKPcvkeXuRsGRa13E8FXuvWDvdJjrG
-         6OrMsT65cLNr0H5BG6cI/dPUcNQfWqeJjv6vynNDMFFdV0/DghWiUQSeqvCQcB/uY0em
-         Vuxg==
-X-Gm-Message-State: ACgBeo10cM9hytWb7aVOgDgyJ/vsQ0j40TZSnSlS3thVQr/kxgNz+L9R
-        XrVSeoWrdRI3MjfwXW3pHgc=
-X-Google-Smtp-Source: AA6agR77gkuDrlhTcNbgqjfi0218/cHVu0gMIrsXDqtw+AsPkqT5H7nssypNgyJ7Vj9t1bCBLumAhQ==
-X-Received: by 2002:a17:90b:2684:b0:1f4:f2a7:f2b3 with SMTP id pl4-20020a17090b268400b001f4f2a7f2b3mr9481691pjb.70.1659599711055;
-        Thu, 04 Aug 2022 00:55:11 -0700 (PDT)
-Received: from debian.me (subs02-180-214-232-23.three.co.id. [180.214.232.23])
-        by smtp.gmail.com with ESMTPSA id a3-20020aa795a3000000b005289ef6db79sm267652pfk.32.2022.08.04.00.55.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Aug 2022 00:55:10 -0700 (PDT)
-Received: by debian.me (Postfix, from userid 1000)
-        id 6B8D8103C7A; Thu,  4 Aug 2022 14:55:05 +0700 (WIB)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-next@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 1/3] cxl/regions: add padding for cxl_rr_ep_add nested lists
-Date:   Thu,  4 Aug 2022 14:54:46 +0700
-Message-Id: <20220804075448.98241-2-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220804075448.98241-1-bagasdotme@gmail.com>
-References: <20220804075448.98241-1-bagasdotme@gmail.com>
-MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1606; i=bagasdotme@gmail.com; h=from:subject; bh=+rB33dYg6FImuKcvI16eK0u18nQbK2ix0CrW/vabL24=; b=owGbwMvMwCn83935mHOB8QHG02pJDEmvq93fBd9OWX81yKdphabZ0cKjEU8OWq/MP1DH5af+IPL5 x1mmHVNZGIQ5GWTFFFneVO4W4/iw8mh/8PdMmDmsTCBDGLg4BWAiDJ8Y69QjNniY7Tya0rRu7e0dzQ cCjp//zHoz7tDTq3s8FLa9PNoVNWWW/yW53rR4vcNP1n95PZWxVihp1dcjprerL7tyGAoytTez8F9r 2Hy06cK8KQ7cLwOu+5y3qLCxV91V/D9wy9VVm4xaAQ==
-X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=EC79BB1608F0A9C58F53F769FF4743C6437033C0
-Content-Transfer-Encoding: 8bit
+        Thu, 4 Aug 2022 03:55:24 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A63963A3
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 00:55:22 -0700 (PDT)
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220804075520epoutp013a9cf9efb66b8844f9c3e015441c1e14~IFSczMoep1800818008epoutp01P
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 07:55:20 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220804075520epoutp013a9cf9efb66b8844f9c3e015441c1e14~IFSczMoep1800818008epoutp01P
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1659599720;
+        bh=mRoo2+RxB2FCJcuy7yBWNotnojgpEK0MxUVIWL+IP08=;
+        h=Subject:Reply-To:From:To:In-Reply-To:Date:References:From;
+        b=VzIVcW+59r59qvgcArd2WecbWhyCNWnqzAtO+oGiYTRwaSmsEuN8t3CnthDuJZuyL
+         Yx5ibqysJVAaFB+AOmOp/Rc7ksb79/fp39Sx7gYFKg5M2RbPkYhuvo2SNTNrZSR1PF
+         hUoglK1yfcDuu/axxC3LAoKsdvq6MItlcSTQfG04=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
+        20220804075520epcas2p4af89c0e99659108a6869eb9419155928~IFSchrjLM0583705837epcas2p4D;
+        Thu,  4 Aug 2022 07:55:20 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.69]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4Lz1HD17C0z4x9QD; Thu,  4 Aug
+        2022 07:55:20 +0000 (GMT)
+X-AuditID: b6c32a45-471ff700000025c2-d7-62eb7b68d7c6
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        F4.94.09666.86B7BE26; Thu,  4 Aug 2022 16:55:20 +0900 (KST)
+Mime-Version: 1.0
+Subject: [PATCH v7 5/6] scsi: ufs: wb: Modify messages
+Reply-To: j-young.choi@samsung.com
+Sender: Jinyoung CHOI <j-young.choi@samsung.com>
+From:   Jinyoung CHOI <j-young.choi@samsung.com>
+To:     ALIM AKHTAR <alim.akhtar@samsung.com>,
+        "avri.altman@wdc.com" <avri.altman@wdc.com>,
+        "bvanassche@acm.org" <bvanassche@acm.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "beanhuo@micron.com" <beanhuo@micron.com>,
+        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
+        "stanley.chu@mediatek.com" <stanley.chu@mediatek.com>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+In-Reply-To: <20220804074224epcms2p18f0ac2f92073aeed981718a9cab23866@epcms2p1>
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20220804075519epcms2p148b6ae956b172925b26304b50d6a0da9@epcms2p1>
+Date:   Thu, 04 Aug 2022 16:55:19 +0900
+X-CMS-MailID: 20220804075519epcms2p148b6ae956b172925b26304b50d6a0da9
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrGJsWRmVeSWpSXmKPExsWy7bCmuW5G9eskg1tH2CxOPlnDZvFg3jY2
+        i5c/r7JZHHzYyWIx7cNPZouXhzQtFt3YxmRxedccNovu6zvYLJYf/8dksXTrTUYHbo/LV7w9
+        Fu95yeQxYdEBRo+Wk/tZPL6v72Dz+Pj0FotH35ZVjB6fN8l5tB/oZgrgjMq2yUhNTEktUkjN
+        S85PycxLt1XyDo53jjc1MzDUNbS0MFdSyEvMTbVVcvEJ0HXLzAE6VkmhLDGnFCgUkFhcrKRv
+        Z1OUX1qSqpCRX1xiq5RakJJTYF6gV5yYW1yal66Xl1piZWhgYGQKVJiQndFwcwtzwSrZitZ5
+        xxgbGN+JdzFycEgImEgcXKnRxcjFISSwg1Fi2apJLCBxXgFBib87hLsYOTmEBcwkvj1exwZi
+        CwkoSZxbM4sRpERYwEDiVq85SJhNQE/i55IZYCUiAm0sEutPs4PYEgK8EjPan7JA2NIS25dv
+        BWvlFPCTuH84CyKsIfFjWS8zhC0qcXP1W3YY+/2x+YwQtohE672zUDWCEg9+7oaKS0ocOvSV
+        DeKRfIkNBwIhwjUSb5cfgCrRl7jWsRHsAl4BX4k/MxaDxVkEVCWmv14ANdJFouHBAlYQm1lA
+        XmL72znMICOZBTQl1u/Sh5iuLHHkFgvMTw0bf7Ojs5kF+CQ6Dv+Fi++Y94QJolVNYlGTEURY
+        RuLr4fnsExiVZiHCeBaStbMQ1i5gZF7FKJZaUJybnlpsVGAIj9Xk/NxNjOAEq+W6g3Hy2w96
+        hxiZOBgPMUpwMCuJ8K6wfJ0kxJuSWFmVWpQfX1Sak1p8iNEU6OGJzFKiyfnAFJ9XEm9oYmlg
+        YmZmaG5kamCuJM7rlbIhUUggPbEkNTs1tSC1CKaPiYNTqoGJZT/nobV2xRs2uxTVM/jxBjDM
+        2PwmQXRfqfP7Qim74Pi6DR/CNV92ZYu77/3wyDn+6JK9USEG0fxPV/W4/cpW8U3KfiHQYfN9
+        y8fD5i5Rhjz6m4MDrtS9T9uivWv+01TrG/bPpts4KiSE73mSvsTsQZpG4tytSx8WKkQyrna4
+        6tf9Ma3fcv5hoDOrdLav8Be8s5kv0vKZQ4P+Vam9xpXn90jGx3xXZzXLXlN4Z5PcsV0fu3Ln
+        FyTGmC/pTTW6lOSqZnD+3d9o8cn12j5XFh8JvfX8wl6bCxb3Mtc5lZ4yE/oXVSqydmvTQkm/
+        fYybDTN3+nocsY4zkPscLP1hnUBW91aja2/OrZrWl6dhpsRSnJFoqMVcVJwIAKiu7fo5BAAA
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220804074224epcms2p18f0ac2f92073aeed981718a9cab23866
+References: <20220804074224epcms2p18f0ac2f92073aeed981718a9cab23866@epcms2p1>
+        <CGME20220804074224epcms2p18f0ac2f92073aeed981718a9cab23866@epcms2p1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sphinx reported indentation warnings:
+Messages are modified to fit the format of others.
 
-Documentation/driver-api/cxl/memory-devices:457: ./drivers/cxl/core/region.c:732: WARNING: Unexpected indentation.
-Documentation/driver-api/cxl/memory-devices:457: ./drivers/cxl/core/region.c:733: WARNING: Block quote ends without a blank line; unexpected unindent.
-Documentation/driver-api/cxl/memory-devices:457: ./drivers/cxl/core/region.c:735: WARNING: Unexpected indentation.
-
-These warnings above are due to missing blank line padding in the nested list
-in kernel-doc comment for cxl_rr_ep_add().
-
-Add the paddings to fix the warnings.
-
-Fixes: 384e624bb211b4 ("cxl/region: Attach endpoint decoders")
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Reviewed-by: Avri Altman <avri.altman@wdc.com>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Jinyoung Choi <j-young.choi@samsung.com>
 ---
- drivers/cxl/core/region.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/ufs/core/ufs-sysfs.c |  2 +-
+ drivers/ufs/core/ufshcd.c    | 23 +++++++++++------------
+ 2 files changed, 12 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/cxl/core/region.c b/drivers/cxl/core/region.c
-index dc71ec457608d2..616db51c4e78cf 100644
---- a/drivers/cxl/core/region.c
-+++ b/drivers/cxl/core/region.c
-@@ -728,11 +728,14 @@ static int cxl_rr_ep_add(struct cxl_region_ref *cxl_rr,
-  * in particular decoder target lists.
-  *
-  * The steps are:
-+ *
-  * - validate that there are no other regions with a higher HPA already
-  *   associated with @port
-  * - establish a region reference if one is not already present
-+ *
-  *   - additionally allocate a decoder instance that will host @cxlr on
-  *     @port
-+ *
-  * - pin the region reference by the endpoint
-  * - account for how many entries in @port's target list are needed to
-  *   cover all of the added endpoints.
+diff --git a/drivers/ufs/core/ufs-sysfs.c b/drivers/ufs/core/ufs-sysfs.c
+index 5a571960c93a..efdfa74b4c1b 100644
+--- a/drivers/ufs/core/ufs-sysfs.c
++++ b/drivers/ufs/core/ufs-sysfs.c
+@@ -230,7 +230,7 @@ static ssize_t wb_on_store(struct device *dev, struct device_attribute *attr,
+ 		 * If the platform supports UFSHCD_CAP_CLK_SCALING, turn WB
+ 		 * on/off will be done while clock scaling up/down.
+ 		 */
+-		dev_warn(dev, "To control WB through wb_on is not allowed!\n");
++		dev_warn(dev, "It is not allowed to configure WB!\n");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index 5099d161f115..6460e3c643fa 100644
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -5737,13 +5737,13 @@ int ufshcd_wb_toggle(struct ufs_hba *hba, bool enable)
+ 
+ 	ret = __ufshcd_wb_toggle(hba, enable, QUERY_FLAG_IDN_WB_EN);
+ 	if (ret) {
+-		dev_err(hba->dev, "%s Write Booster %s failed %d\n",
+-			__func__, enable ? "enable" : "disable", ret);
++		dev_err(hba->dev, "%s: Write Booster %s failed %d\n",
++			__func__, enable ? "enabling" : "disabling", ret);
+ 		return ret;
+ 	}
+ 
+ 	hba->dev_info.wb_enabled = enable;
+-	dev_info(hba->dev, "%s Write Booster %s\n",
++	dev_dbg(hba->dev, "%s: Write Booster %s\n",
+ 			__func__, enable ? "enabled" : "disabled");
+ 
+ 	return ret;
+@@ -5757,11 +5757,11 @@ static void ufshcd_wb_toggle_buf_flush_during_h8(struct ufs_hba *hba,
+ 	ret = __ufshcd_wb_toggle(hba, enable,
+ 			QUERY_FLAG_IDN_WB_BUFF_FLUSH_DURING_HIBERN8);
+ 	if (ret) {
+-		dev_err(hba->dev, "%s: WB-Buf Flush during H8 %s failed: %d\n",
+-			__func__, enable ? "enable" : "disable", ret);
++		dev_err(hba->dev, "%s: WB-Buf Flush during H8 %s failed %d\n",
++			__func__, enable ? "enabling" : "disabling", ret);
+ 		return;
+ 	}
+-	dev_dbg(hba->dev, "%s WB-Buf Flush during H8 %s\n",
++	dev_dbg(hba->dev, "%s: WB-Buf Flush during H8 %s\n",
+ 			__func__, enable ? "enabled" : "disabled");
+ }
+ 
+@@ -5775,14 +5775,13 @@ int ufshcd_wb_toggle_buf_flush(struct ufs_hba *hba, bool enable)
+ 
+ 	ret = __ufshcd_wb_toggle(hba, enable, QUERY_FLAG_IDN_WB_BUFF_FLUSH_EN);
+ 	if (ret) {
+-		dev_err(hba->dev, "%s WB-Buf Flush %s failed %d\n", __func__,
+-			enable ? "enable" : "disable", ret);
++		dev_err(hba->dev, "%s: WB-Buf Flush %s failed %d\n",
++			__func__, enable ? "enabling" : "disabling", ret);
+ 		return ret;
+ 	}
+ 
+ 	hba->dev_info.wb_buf_flush_enabled = enable;
+-
+-	dev_dbg(hba->dev, "%s WB-Buf Flush %s\n",
++	dev_dbg(hba->dev, "%s: WB-Buf Flush %s\n",
+ 			__func__, enable ? "enabled" : "disabled");
+ 
+ 	return ret;
+@@ -5800,7 +5799,7 @@ static bool ufshcd_wb_presrv_usrspc_keep_vcc_on(struct ufs_hba *hba,
+ 					      QUERY_ATTR_IDN_CURR_WB_BUFF_SIZE,
+ 					      index, 0, &cur_buf);
+ 	if (ret) {
+-		dev_err(hba->dev, "%s dCurWriteBoosterBufferSize read failed %d\n",
++		dev_err(hba->dev, "%s: dCurWriteBoosterBufferSize read failed %d\n",
+ 			__func__, ret);
+ 		return false;
+ 	}
+@@ -5885,7 +5884,7 @@ static bool ufshcd_wb_need_flush(struct ufs_hba *hba)
+ 				      QUERY_ATTR_IDN_AVAIL_WB_BUFF_SIZE,
+ 				      index, 0, &avail_buf);
+ 	if (ret) {
+-		dev_warn(hba->dev, "%s dAvailableWriteBoosterBufferSize read failed %d\n",
++		dev_warn(hba->dev, "%s: dAvailableWriteBoosterBufferSize read failed %d\n",
+ 			 __func__, ret);
+ 		return false;
+ 	}
 -- 
-An old man doll... just what I always wanted! - Clara
-
+2.25.1
