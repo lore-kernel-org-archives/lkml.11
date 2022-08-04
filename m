@@ -2,79 +2,284 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BAB2C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 18:51:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2393CC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 18:52:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240075AbiHDSvT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 14:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45076 "EHLO
+        id S235070AbiHDSw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 14:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240144AbiHDSvG (ORCPT
+        with ESMTP id S232643AbiHDSwZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 14:51:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C77846D9FE;
-        Thu,  4 Aug 2022 11:50:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B235661625;
-        Thu,  4 Aug 2022 18:50:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1CCFC433D7;
-        Thu,  4 Aug 2022 18:50:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659639055;
-        bh=m7gbpioiTTpHCUtP6HqOQngY+wqQ8d/zSfbprVPAx5o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Im1+lXQev4xyjoSV38vPLfOXUFCosL5ywaLbu27oFTIVywVSXxOQ6zvTEzdDinSUa
-         /N+jN4r8JenLnPancbu6l11L2O3FSLWNikp12DA5gErV5aJFiDyrb2qzPT064PLVO3
-         r1Me40iXc5PoM3auNDflNrU+mkkZNP3t5GmivKmP1Wcu8aKkGDcccse+CplV5j8zu8
-         h29qalG4x3tupfDlv38ftw6L7FkIH7VZTp5VCSnEBsUcXXvXjDFlyjr717N2hPsg+7
-         LjY8JiM7X07SQNt2vtPuW2VqQzqg8g5iSUZ/8mDcCa2OGjFnlSuGA7Nhf2uLWBEfZB
-         p1ead9hCes0pQ==
-Date:   Thu, 4 Aug 2022 11:50:52 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        Andrey Strachuk <strochuk@ispras.ru>
-Subject: Re: [GIT PULL] USB / Thunderbolt driver changes for 6.0-rc1
-Message-ID: <YuwVDE94jZVMMyX6@dev-arch.thelio-3990X>
-References: <YuqB0tl2hjT3x7a4@kroah.com>
- <YuqXtcaUPflINBd6@dev-arch.thelio-3990X>
- <CAHk-=wjdoqmF4fC8orFv0pRZBUfgyQMGM8yS136_vZ=9=8uQ3Q@mail.gmail.com>
+        Thu, 4 Aug 2022 14:52:25 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78FA017A9C
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 11:52:24 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id p14-20020a17090a74ce00b001f4d04492faso631004pjl.4
+        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 11:52:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=R8r8TMhgTxWlQtMf2zR7eE1G5lFAMwszO7l0MwcjJvg=;
+        b=Cx/rwLFMn2qjQqTJoNb8PrDeC0lPKN2fPwnfYPkf5n9WtJhKMHvPHnoKP3+kOda9jR
+         us6cCCHpFq4HbGj6m8OgJKx/KrgKmmYI2G7ai94zbeZl+bsnmnRtN1W91gjtLCHwsh4X
+         M/74bMwB+yMvPpTtnUz4cxkIUCO55G5colrzQLaQp+PP5jTEYqOLDqS2OfdUi5rXk+HG
+         t/seNwUKpin53kjQxBNLH2wukOgF2dLTXQ2CnPD6f+OJwMe4l2ZUuJIw+eUlRBC5z+md
+         fPHUdO9MsMTM6bDP2PoWOvXz/WkGVNyvpjlOJSk4rTdskCyT5n2n5jmFEAUIMGLUmR5/
+         Y5dg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=R8r8TMhgTxWlQtMf2zR7eE1G5lFAMwszO7l0MwcjJvg=;
+        b=CjreO9luPu7szJWbOzuN57Btped3P7TZe5vJLzpCg2G4Q5NElo/ItO8OUiYVjMG4AC
+         ZnkIz+yTfU6EUBIRvjRKSX71ensxLmw6i8ei5eLvkNM9nKuOK+XRhNGB7rjLvUx7q2oA
+         OnrvZf98ZH/y312ngT90ns55RJ2yPyptcbMumNpyv8hQGOohY2zuQecgco/MGg3Hh1AI
+         C1SiUBmW4JbxHt71JwKpjQXnudkO2yE0l4svtziBSXaGbmIJc9sv3scWebANyRvBwF6L
+         2s7Le0kqQ9Os44xWHeTy46283VpykmBUjqE/HZd7sI7LfJcwKhy0T6tjEK2EmwwbHV82
+         yGpA==
+X-Gm-Message-State: ACgBeo0DNlZWs50JzKT783NISqErk26Epe/bZKSifH15bmXhDyhmFqE+
+        EtqmmY6SjHNPnlUZXg3SvrgL4A==
+X-Google-Smtp-Source: AA6agR5QAXH1I1HWoCno+q21o1XdqjDguCgg+98eFSthw/vO1BBt5jnEXGk7G8aQIqmPeADNT2eSpg==
+X-Received: by 2002:a17:902:e5c9:b0:16e:f3b6:ddc4 with SMTP id u9-20020a170902e5c900b0016ef3b6ddc4mr3067614plf.30.1659639143754;
+        Thu, 04 Aug 2022 11:52:23 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id b3-20020aa79503000000b0052d3899f8c2sm1379665pfp.4.2022.08.04.11.52.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Aug 2022 11:52:23 -0700 (PDT)
+Date:   Thu, 4 Aug 2022 18:52:19 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Uros Bizjak <ubizjak@gmail.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [PATCH] x86/acrn: Improve ACRN hypercalls
+Message-ID: <YuwVY8iGkifExuli@google.com>
+References: <20220804180358.32944-1-ubizjak@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHk-=wjdoqmF4fC8orFv0pRZBUfgyQMGM8yS136_vZ=9=8uQ3Q@mail.gmail.com>
+In-Reply-To: <20220804180358.32944-1-ubizjak@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 04, 2022 at 11:45:25AM -0700, Linus Torvalds wrote:
-> On Wed, Aug 3, 2022 at 8:43 AM Nathan Chancellor <nathan@kernel.org> wrote:
-> >
-> > For the record, this breaks allmodconfig with clang (I haven't seen a
-> > formal report on it anywhere and this missed -next coverage because
-> > Stephen is on vacation):
+On Thu, Aug 04, 2022, Uros Bizjak wrote:
+> As explained in section 6.47.5.2, "Specifying Registers for Local Variables"
+> of the GCC info documentation, the correct way to specify register for
+> input operands when calling Extended 'asm' is to define a local register
+> variable and associate it with a specified register:
 > 
-> Hmm. It passes my own internal clang testing, but that's for a more
-> limited config.
+> 	register unsigned long r8 asm ("r8") = hcall_id;
 
-I figured that would be the case. It appears that allmodconfig is now
-broken for other reasons though (I missed the errors in -next amongst
-some other breakage, I only caught it this morning around the same time
-as Sudip):
+Using "register" for input operands is subtly dangerous.  The compiler (at least
+some versions of GCC) isn't smart enough to realize that it must not clobber the
+register between setting the register and passing it into asm().  Or maybe that's
+the designed/intended behavior, but if so, IMO it's a terrible design.
 
-https://lore.kernel.org/YuwRyQYPCb1FD+mr@debian/
+And since kernel style is to put declarations at the beginning of functions, it's
+quite easy for a developer/debugger to mess this up (speaking from multiple
+experiences).
 
-> So I've merged this in my tree, but would appreciate a fixup patch if
-> you have one.
+E.g. adding a pr_warn_ratelimited() after the register declaration generates code
+that doesn't even load r8.
 
-I CC'd you on https://lore.kernel.org/20220803162422.2981308-1-nathan@kernel.org/,
-let me know if you don't see it for some reason or if there is a better
-fix.
+Dump of assembler code for function fake_acrn_example:
+Address range 0xffffffff8105a1e0 to 0xffffffff8105a216:
+   0xffffffff8105a1e0 <+0>:	call   0xffffffff8104a8c0 <__fentry__>
+   0xffffffff8105a1e5 <+5>:	push   %rbp
+   0xffffffff8105a1e6 <+6>:	mov    $0xffffffff81e08b40,%rsi
+   0xffffffff8105a1ed <+13>:	mov    %rsp,%rbp
+   0xffffffff8105a1f0 <+16>:	push   %r12
+   0xffffffff8105a1f2 <+18>:	movslq %edi,%r12
+   0xffffffff8105a1f5 <+21>:	mov    $0xffffffff822229e0,%rdi
+   0xffffffff8105a1fc <+28>:	call   0xffffffff81545e30 <___ratelimit>
+   0xffffffff8105a201 <+33>:	test   %eax,%eax
+   0xffffffff8105a203 <+35>:	jne    0xffffffff81843bf0 <fake_acrn_example.cold>
+   0xffffffff8105a209 <+41>:	vmcall
+   0xffffffff8105a20c <+44>:	mov    -0x8(%rbp),%r12
+   0xffffffff8105a210 <+48>:	leave
+   0xffffffff8105a211 <+49>:	jmp    0xffffffff81c01a40 <__x86_return_thunk>
 
-Cheers,
-Nathan
+
+diff --git a/arch/x86/include/asm/acrn.h b/arch/x86/include/asm/acrn.h
+index 601867085b95..adc867a4a3d6 100644
+--- a/arch/x86/include/asm/acrn.h
++++ b/arch/x86/include/asm/acrn.h
+@@ -35,6 +35,9 @@ static inline long acrn_hypercall0(unsigned long hcall_id)
+        long result;
+
+        register unsigned long r8 asm ("r8") = hcall_id;
++
++       pr_warn_ratelimited("acrn: issuing hypercall = %ld\n", hcall_id);
++
+        asm volatile("vmcall"
+                     : "=a" (result)
+                     : "r" (r8)
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index fad8faa29d04..1b6e13a8bb9d 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -33,6 +33,7 @@
+ #include <asm/kvm_para.h>              /* kvm_handle_async_pf          */
+ #include <asm/vdso.h>                  /* fixup_vdso_exception()       */
+ #include <asm/irq_stack.h>
++#include <asm/acrn.h>
+
+ #define CREATE_TRACE_POINTS
+ #include <asm/trace/exceptions.h>
+@@ -1542,3 +1543,9 @@ DEFINE_IDTENTRY_RAW_ERRORCODE(exc_page_fault)
+
+        irqentry_exit(regs, state);
+ }
++
++
++long fake_acrn_example(int hcall)
++{
++       return acrn_hypercall0(hcall);
++}
+
+Compile tested, but the below appears to generate sane code, e.g. reloads r8 when
+given:
+
+long fake_acrn_example(long hcall)
+{
+	pr_warn_ratelimited("acrn: attempting hcall2 for %ld\n", hcall);
+	if (acrn_hypercall2(hcall, 0, 0))
+		return -EINVAL;
+
+	pr_warn_ratelimited("acrn: attempting hcall1 for %ld\n", hcall);
+	if (acrn_hypercall1(hcall, 0))
+		return -EINVAL;
+
+	pr_warn_ratelimited("acrn: attempting hcall0 for %ld\n", hcall);
+	return acrn_hypercall0(hcall);
+}
+
+---
+From: Uros Bizjak <ubizjak@gmail.com>
+Date: Thu, 4 Aug 2022 20:03:58 +0200
+Subject: [PATCH] x86/acrn: Use "register" input constraint to set r8 for ACRN
+ hypercalls
+
+As explained in section 6.47.5.2, "Specifying Registers for Local Variables"
+of the GCC info documentation, the correct way to specify register for
+input operands when calling Extended 'asm' is to define a local register
+variable and associate it with a specified register:
+
+	register unsigned long r8 asm ("r8") = hcall_id;
+
+Use the above approach instead of explicit MOV to R8 at the beginning
+of the asm. The relaxed assignment allows compiler to optimize and
+shrink drivers/virt/acrn.o for 181 bytes:
+
+   text    data     bss     dec     hex filename
+   4284     208       0    4492    118c hsm-new.o
+   4465     208       0    4673    1241 hsm-old.o
+
+Wrap the register approach in a macro as using "register" for inputs is
+subtly dangerous.  If the compiler detects that the register (r8) would
+be clobbered between setting it (declaration) and consuming it (asm), the
+compiler is apparently allowed to ignore the input.
+
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+Co-developed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/include/asm/acrn.h | 50 +++++++++++++++----------------------
+ 1 file changed, 20 insertions(+), 30 deletions(-)
+
+diff --git a/arch/x86/include/asm/acrn.h b/arch/x86/include/asm/acrn.h
+index e003a01b7c67..0817415f6d74 100644
+--- a/arch/x86/include/asm/acrn.h
++++ b/arch/x86/include/asm/acrn.h
+@@ -21,6 +21,23 @@ static inline u32 acrn_cpuid_base(void)
+ 	return 0;
+ }
+
++/*
++  * Do not put code between the r8 register declaration and its usage in asm(),
++  * the compiler is allowed to ignore the register input if r8 would be
++  * clobbered before the asm() blob, e.g. by a function call.
++  */
++#define ACRN_HYPERCALL(id, params...)			\
++({							\
++	long result;					\
++	register unsigned long r8 asm ("r8") = id;	\
++							\
++	asm volatile("vmcall"				\
++		     : "=a" (result)			\
++		     : "r" (r8), ##params		\
++		     : "memory");			\
++	result;						\
++})
++
+ /*
+  * Hypercalls for ACRN
+  *
+@@ -29,50 +46,23 @@ static inline u32 acrn_cpuid_base(void)
+  *   - Hypercall number is passed in R8 register.
+  *   - Up to 2 arguments are passed in RDI, RSI.
+  *   - Return value will be placed in RAX.
+- *
+- * Because GCC doesn't support R8 register as direct register constraints, use
+- * supported constraint as input with a explicit MOV to R8 in beginning of asm.
+  */
+ static inline long acrn_hypercall0(unsigned long hcall_id)
+ {
+-	long result;
+-
+-	asm volatile("movl %1, %%r8d\n\t"
+-		     "vmcall\n\t"
+-		     : "=a" (result)
+-		     : "g" (hcall_id)
+-		     : "r8", "memory");
+-
+-	return result;
++	return ACRN_HYPERCALL(hcall_id);
+ }
+
+ static inline long acrn_hypercall1(unsigned long hcall_id,
+ 				   unsigned long param1)
+ {
+-	long result;
+-
+-	asm volatile("movl %1, %%r8d\n\t"
+-		     "vmcall\n\t"
+-		     : "=a" (result)
+-		     : "g" (hcall_id), "D" (param1)
+-		     : "r8", "memory");
+-
+-	return result;
++	return ACRN_HYPERCALL(hcall_id, "D" (param1));
+ }
+
+ static inline long acrn_hypercall2(unsigned long hcall_id,
+ 				   unsigned long param1,
+ 				   unsigned long param2)
+ {
+-	long result;
+-
+-	asm volatile("movl %1, %%r8d\n\t"
+-		     "vmcall\n\t"
+-		     : "=a" (result)
+-		     : "g" (hcall_id), "D" (param1), "S" (param2)
+-		     : "r8", "memory");
+-
+-	return result;
++	return ACRN_HYPERCALL(hcall_id, "D" (param1), "S" (param2));
+ }
+
+ #endif /* _ASM_X86_ACRN_H */
+
+base-commit: 91dd4df51571bbea4d31e265cfbd59a85e0876be
+--
+
