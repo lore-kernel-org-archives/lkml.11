@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A081EC19F29
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 02:17:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE967C19F29
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 02:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239182AbiHDCR3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 22:17:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45752 "EHLO
+        id S239407AbiHDCRe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 22:17:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238914AbiHDCQH (ORCPT
+        with ESMTP id S238901AbiHDCQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 22:16:07 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D045FAD3;
-        Wed,  3 Aug 2022 19:16:04 -0700 (PDT)
-X-UUID: c8948a3ca0a242ccb861c6c546d3836d-20220804
+        Wed, 3 Aug 2022 22:16:06 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09EF35FACD;
+        Wed,  3 Aug 2022 19:16:03 -0700 (PDT)
+X-UUID: 724f2b5033614715ab0b907d44318a3e-20220804
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=Pw6UOnzzp2foxR6c6ktjD5ih72KYR1z3GNOKwj8+Q8A=;
-        b=OdWKydA17vbEW/HBm6ogcjlWxR0U6j2Q3pRDWpqUgjIxfkgQ1HvYefJzAisDQUymMHEAIHF/4j1P5dJg4hNb0Mw3tiC+EdrXUyGdwErvNyzDQZN48cyTKuJJSPc+1hP0n36mHAPS6fcfbzBFxUbn3asL57xAf5kaXweB0pBAR7c=;
+        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=8O6G4k4vMW79Saml4R4eo//c6gNNaw0fDyOgHkkdvtw=;
+        b=oo92lFEFJnHArzipuSbcdTLGktGOlhNc+oOm9guB3+eGSNAWOWSTkoA+h6Jz/L3ihSqpWP1Id/ObCMIzhU2xkEMdQxDHi/YizNcvfVj9BH7nspTILiZcLQkve8pHWtdbB2cFbNoVAcIwbKY9ELJ3ebmQSGhKTUl5O2FgAFysWEg=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:03a96c25-4300-4d5c-82f7-29fd4f4dda7d,OB:10,L
-        OB:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:95
-X-CID-INFO: VERSION:1.1.8,REQID:03a96c25-4300-4d5c-82f7-29fd4f4dda7d,OB:10,LOB
-        :10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:95
-X-CID-META: VersionHash:0f94e32,CLOUDID:78432cd1-841b-4e95-ad42-8f86e18f54fc,C
-        OID:a79384265421,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+X-CID-O-INFO: VERSION:1.1.8,REQID:b8cfe660-8124-4e03-beab-93826efaf06d,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:95
+X-CID-INFO: VERSION:1.1.8,REQID:b8cfe660-8124-4e03-beab-93826efaf06d,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
+        ION:quarantine,TS:95
+X-CID-META: VersionHash:0f94e32,CLOUDID:14c03bd0-a6cf-4fb6-be1b-c60094821ca2,C
+        OID:e2aee46074ee,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
         RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: c8948a3ca0a242ccb861c6c546d3836d-20220804
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+X-UUID: 724f2b5033614715ab0b907d44318a3e-20220804
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
         (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1465924314; Thu, 04 Aug 2022 10:15:58 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1621848889; Thu, 04 Aug 2022 10:15:57 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 4 Aug 2022 10:15:56 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 4 Aug 2022 10:15:55 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 4 Aug 2022 10:15:56 +0800
+ Transport; Thu, 4 Aug 2022 10:15:55 +0800
 From:   Tinghan Shen <tinghan.shen@mediatek.com>
 To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
         "Will Deacon" <will@kernel.org>,
@@ -56,11 +56,10 @@ To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
 CC:     <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Tzung-Bi Shih <tzungbi@chromium.org>
-Subject: [PATCH v5 09/20] arm64: dts: mt8195: Disable I2C0 node
-Date:   Thu, 4 Aug 2022 10:15:42 +0800
-Message-ID: <20220804021553.14867-10-tinghan.shen@mediatek.com>
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v5 02/20] dt-bindings: memory: mediatek: Update condition for mt8195 smi node
+Date:   Thu, 4 Aug 2022 10:15:35 +0800
+Message-ID: <20220804021553.14867-3-tinghan.shen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220804021553.14867-1-tinghan.shen@mediatek.com>
 References: <20220804021553.14867-1-tinghan.shen@mediatek.com>
@@ -71,33 +70,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tzung-Bi Shih <tzungbi@chromium.org>
+The max clock items for the dts node with compatible
+'mediatek,mt8195-smi-sub-common' should be 3.
 
-The I2C0 node should not be enabled globally, as usage is board
-dependent; disable it in dtsi.
+However, the dtbs_check of such node will get following message,
+arch/arm64/boot/dts/mediatek/mt8195-evb.dtb: smi@14010000: clock-names:
+ ['apb', 'smi', 'gals0'] is too long
+         From schema:
+ Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
 
-Signed-off-by: Tzung-Bi Shih <tzungbi@chromium.org>
+It's because the 'mediatek,mt8195-smi-sub-common' compatible incorrectly
+matches the 'else' conditions for gen2 HW without gals.
+
+Rewrite the 'else' condition to specifically identify the compatibles
+that utilizing gen2 HW without gals.
+
 Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno
  <angelogioacchino.delregno@collabora.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/boot/dts/mediatek/mt8195.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../memory-controllers/mediatek,smi-common.yaml       | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
- b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index 436687ba826f4..8032b839dfe8d 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -829,7 +829,7 @@
- 			clock-names = "main", "dma";
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--			status = "okay";
-+			status = "disabled";
- 		};
+diff --git
+ a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+index 71bc5cefb49cf..4f5dd0a20109e 100644
+---
+ a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
++++
+ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+@@ -144,7 +144,16 @@ allOf:
+             - const: gals0
+             - const: gals1
  
- 		i2c1: i2c@11e01000 {
+-    else:  # for gen2 HW that don't have gals
++  - if:  # for gen2 HW that don't have gals
++      properties:
++        compatible:
++          enum:
++            - mediatek,mt2712-smi-common
++            - mediatek,mt6795-smi-common
++            - mediatek,mt8167-smi-common
++            - mediatek,mt8173-smi-common
++
++    then:
+       properties:
+         clocks:
+           minItems: 2
 -- 
 2.18.0
 
