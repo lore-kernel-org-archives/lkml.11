@@ -2,97 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D43DC00144
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 05:47:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 306B3C19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 05:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239048AbiHDFrj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 01:47:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46508 "EHLO
+        id S234516AbiHDFro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 01:47:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238980AbiHDFrW (ORCPT
+        with ESMTP id S238988AbiHDFrX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 01:47:22 -0400
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C9860697;
+        Thu, 4 Aug 2022 01:47:23 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2063.outbound.protection.outlook.com [40.107.220.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FE5606A1;
         Wed,  3 Aug 2022 22:47:12 -0700 (PDT)
-Received: by mail-ej1-f44.google.com with SMTP id c24so4209557ejd.11;
-        Wed, 03 Aug 2022 22:47:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=+Qy5efYo9rDk2BsamMw6aPZr7j8DOLrxvf8t4GZMPAc=;
-        b=e4j4DTK4TpZ50GqUq+QmB6n96AUftRtepLJXdnFw2973CuBoZtfN7hTjBlVwqNdp6J
-         VfxMjNJgNeZVkx4kHllU3l0iNk16CAlQq6yJ2s1KZri/Bo3zrgNTT2glpQXckp04CM7x
-         5DhAqGU0NjibJQP7JooDVfJq7TmKhPrKzEhZwq0fFJCS+LGysyz+CkcMDmBcLIGXHK1B
-         uxPJ7ifdTSg7D2oj4zGDRNx3mQgO7a41+wODmzEN2H9cqLScDAXfp/X6kauvfBolQ4VL
-         l73YyxSlOm7Xes/VQNQwcoDDXAkf88eEAuWJ5YA0ThIBM95bH88bPg74idpAzyOKrcik
-         1ehw==
-X-Gm-Message-State: ACgBeo2MHZtsJ5kseGfNoVT4pgTSa4U6USBfaEii6sJC2stM3hvwAya/
-        FQxZ2j3FSvGYtTv4O66JcMI=
-X-Google-Smtp-Source: AA6agR4oUuaNBzJoYT26uMDLtGGEjB1kpaM/SRsRVEbHpQbaFOy7rHx5Ud1iTdXfq+qFj1rrnNWe+Q==
-X-Received: by 2002:a17:907:3ea8:b0:730:9756:7c81 with SMTP id hs40-20020a1709073ea800b0073097567c81mr189092ejc.726.1659592030840;
-        Wed, 03 Aug 2022 22:47:10 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id e3-20020a1709067e0300b0070efa110afcsm8002633ejr.83.2022.08.03.22.47.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Aug 2022 22:47:10 -0700 (PDT)
-Message-ID: <1eb62346-304b-54d5-8a62-8a35888d51bd@kernel.org>
-Date:   Thu, 4 Aug 2022 07:47:09 +0200
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JX5mClMI+bR1izV1zm5lq+CysMmK3zA0CciGvEck6SrrbcJo/tsaJ9PHcTnPtSY0A1UZsZooxraw78Zn21nbfkAgXPRVtILkEr/jt2/CLTfbmwUV0IK49aH7OLi3k/p+WyomBjp+ntzvSDIF9FpnFsV2QbD6QK4zQtd0byUoBuPdZE+jL9cGByOWK7DW96AYa6kiH8kn90M4gDjnj4cqM825L2F2tNtotV5SMHE8QkJBJt+dCRheptWCHfEW/PVjs5eVjoxMaDLS4e50icSUtH1+cnKWS/dA3L51YGQpj3YqfC05mP6H4WDyq/JLKvu8kkTDTwmi3y2D0LzC4/s8gQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=deokd5XzMEHlnuOZQW21t//HUwofZo1wcheqUx+YY+I=;
+ b=VMK61LgtYWO706G/FJhcc9gibn6w2tOR2VYEroqmdCWXU7VEH1FJSMB6RoV90A6nadlnhjKkKQEXAxOiGi4l3H1C9BO+UJpAZuuAbBNfi/o2GkK+MuKSt3FQvn+aXD1Z/VNOEr4RWQrVFIUeye2lqw3OO85RffeQTufIZ+qouiFILxZ8CSA7zND2ROL9hi2pmcnnH9R1N95k4/55yrWOHHd5HdMicC50R5xUTNkRYyB0aDiI4OSy0Eo+4xl/HxqUNmBF1T65O+ZAj5HZu9CxtqOt5i9t/ycNGNdEigmD8XBxayyOst0Jcd0WSgbDrkEtLp2SN8VxhsPYSAIZXYDDJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=deokd5XzMEHlnuOZQW21t//HUwofZo1wcheqUx+YY+I=;
+ b=enutVI+EGR5jVcGxmWg92TQ1usow1ol5wl1x1ACcv8cf6f5rq+Lo4r77mMV8zVkdP0NHdkDCOI/V4gQQFpVLE3X3s0xpHk1LHakRAQBpl+RxqeDwQhhWyhA+5tssyoQtRS0FAzmhDdecgWWvuYbJmEX/Tkh9DxgAZHl5J0dXvXM=
+Received: from DS7PR03CA0281.namprd03.prod.outlook.com (2603:10b6:5:3ad::16)
+ by DM6PR12MB4809.namprd12.prod.outlook.com (2603:10b6:5:1f9::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.14; Thu, 4 Aug
+ 2022 05:47:08 +0000
+Received: from DM6NAM11FT059.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3ad:cafe::8e) by DS7PR03CA0281.outlook.office365.com
+ (2603:10b6:5:3ad::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.16 via Frontend
+ Transport; Thu, 4 Aug 2022 05:47:08 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT059.mail.protection.outlook.com (10.13.172.92) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5504.14 via Frontend Transport; Thu, 4 Aug 2022 05:47:07 +0000
+Received: from jasmine-meng.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 4 Aug
+ 2022 00:47:00 -0500
+From:   Meng Li <li.meng@amd.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        Huang Rui <ray.huang@amd.com>, <linux-pm@vger.kernel.org>
+CC:     "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Nathan Fontenot <nathan.fontenot@amd.com>,
+        Deepak Sharma <deepak.sharma@amd.com>,
+        "Alex Deucher" <alexander.deucher@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Jinzhou Su <Jinzhou.Su@amd.com>,
+        Perry Yuan <Perry.Yuan@amd.com>,
+        Xiaojian Du <Xiaojian.Du@amd.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Borislav Petkov <bp@alien8.de>, <linux-kernel@vger.kernel.org>,
+        Meng Li <li.meng@amd.com>
+Subject: [PATCH V2 0/4] Add tbench/gitsource new test cases for amd-pstate-ut
+Date:   Thu, 4 Aug 2022 13:44:10 +0800
+Message-ID: <20220804054414.1510764-1-li.meng@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] tty: vt: selection: Add check for valid tiocl_selection
- values
-Content-Language: en-US
-To:     Helge Deller <deller@gmx.de>,
-        Khalid Masum <khalid.masum.92@gmail.com>,
-        syzbot <syzbot+14b0e8f3fd1612e35350@syzkaller.appspotmail.com>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <000000000000bbdd0405d120c155@google.com>
- <20220729065139.6529-1-khalid.masum.92@gmail.com>
- <eb4a26aa-da30-ceee-7d27-c1e902dd4218@gmx.de> <YuV9PybMPgc83Jis@p100>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <YuV9PybMPgc83Jis@p100>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 304135ed-2c05-47b2-e8f7-08da75dcc4b4
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4809:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UXxlI/85PAOVlwm9S1ee8PivfIEEwcjE8+DU9L0zF2EcDLZFTGG6hloi3Zzh0ojb+oAjFyW4xVJ70kKLaMD7/6FkSBkjLieTX88LIFbqDoSb8E9TCryBUz0Z6+FiOMcz6/foUMBG0qWCEX+7ks6XG3KCGxHMV5gUz/nlQLdbuZSvTygR9tVRNwZuVvWXaVd5A+hDoPVLAHK7aRM4QO/+hOiPf1DsY+wMEVwKLb7x5BUBDbc5cKb9ecwTE8QkAEgGoJx7tEGXZzNnVSD6c6AflkrOE88dEcXGX8FyGTX9X4hUiPq1DL4R7W0+1+uFPGFXPkX3L1Nkeo7RQVJZHm4PplX8XZgtRVrpaR+rMiwa69jbVLB7A/vrfOs2DXxKAaQl3XW2dBiApt2ypLzIBu0xRgnibxCJbNLswTtWA/ENbnt00NXvpdDCzFrEO1Xj6cUU4pDp+q5DcqvsyMrL/Opc9+u7nlq8lBJM/Z1M50Ojp6Fss6S5X2XH2i1MKAryhKrwfH7JNjDX0wCZNmfB0zXXskmr0O8rD+LDKbYlkvvhFujze13uOCRthJ9Tgc4msi3VkfhZSJItltgGynuXMTnqGCVdR0luhdgmqzXR7JlMRfAdujjfOs3d53c/L0Vi0H6SRfTYgjFUZix9R/yigd+cDGxieTF/CNx0yYKWMtou8LzvEWNJ2gmYDh+rxxgHZECbnzO7Zzx4ZxlnOt0PqffYwY2wkcb85PIowx/sJS9o5R6uJzxR+/E7OHB8/TDqP64p/yDI4VTIDR3EOlYgAlDNy1hvW+XP12tEETTe2Sy2BZww5HpECe6jXC/fIKA58/V5bLU26ZWCWmdaAvasOxfy7nxwPda7hM0hHBlmjeWafy1ID+TLvqBp8BKWNNGpm1SlgZm7sGHK5G8njSp+S8nBDU8qDjl0/hjnkR2FYlAFJZA=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(376002)(136003)(346002)(36840700001)(46966006)(40470700004)(36756003)(8676002)(4326008)(83380400001)(8936002)(5660300002)(70586007)(36860700001)(86362001)(2906002)(40460700003)(186003)(2616005)(336012)(426003)(70206006)(81166007)(316002)(47076005)(40480700001)(110136005)(54906003)(1076003)(16526019)(966005)(82740400003)(82310400005)(478600001)(41300700001)(356005)(26005)(6666004)(7696005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Aug 2022 05:47:07.8854
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 304135ed-2c05-47b2-e8f7-08da75dcc4b4
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT059.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4809
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30. 07. 22, 20:49, Helge Deller wrote:
-> The line and column numbers for the selection need to start at 1.
-> Add the checks to prevent invalid input.
-> 
-> Signed-off-by: Helge Deller <deller@gmx.de>
-> Reported-by: syzbot+14b0e8f3fd1612e35350@syzkaller.appspotmail.com
-> 
-> diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
-> index f7755e73696e..58692a9b4097 100644
-> --- a/drivers/tty/vt/selection.c
-> +++ b/drivers/tty/vt/selection.c
-> @@ -326,6 +326,9 @@ static int vc_selection(struct vc_data *vc, struct tiocl_selection *v,
->   		return 0;
->   	}
-> 
-> +	if (!v->xs || !v->ys || !v->xe || !v->ye)
-> +		return -EINVAL;
+Hi all:
 
-Hmm, I'm not sure about this. It potentially breaks userspace (by 
-returning EINVAL now). And the code below should handle this just fine, 
-right:
+The new patches are modified on the basis of the previous patch
+https://lore.kernel.org/lkml/20220526034725.1708916-1-li.meng@amd.com/.
 
-> +
->   	v->xs = min_t(u16, v->xs - 1, vc->vc_cols - 1);
->   	v->ys = min_t(u16, v->ys - 1, vc->vc_rows - 1);
->   	v->xe = min_t(u16, v->xe - 1, vc->vc_cols - 1);
+First, we modify amd-pstate-ut.sh to basic.sh as a basic test, mainly for
+AMD P-State kernel drivers. The purpose of this modification is to facilitate
+the subsequent addition of gitsource, tbench and other tests.
+You can test specific functions by specifying test cases.
+Default test all cases, include basic, tbench and gitsource etc.
 
-?
+Secondly, add tbench.sh trigger the tbench testing and monitor the cpu
+information.
+1) Download and install tbench codes.
+2) Run tbench benchmark on specific governors, ondemand or schedutil.
+3) Run tbench benchmark comparative test on acpi-cpufreq kernel driver.
+4) Get desire performance, frequency, load by perf.
+5) Get power consumption and throughput by amd_pstate_trace.py.
+6) Analyse test results and save it in file selftest.tbench.csv. 
+7) Plot png images about performance, energy and performance per watt
+for each test.
 
-thanks,
+Third, add gitsource.sh trigger the gitsource testing and monitor the cpu
+information.
+1) Download and tar gitsource codes.
+2) Run gitsource benchmark on specific governors, ondemand or schedutil.
+3) Run tbench benchmark comparative test on acpi-cpufreq kernel driver.
+4) Get desire performance, frequency, load by perf.
+5) Get power consumption and throughput by amd_pstate_trace.py.
+6) Get run time by /usr/bin/time.
+7) Analyse test results and save it in file selftest.gitsource.csv. 
+8) Plot png images about time, energy and performance per watt
+for each test.
+
+Finally, modify rst document to introduce test steps and results etc.
+
+See patch series in below git repo:
+V1:https://lore.kernel.org/lkml/20220706073622.672135-1-li.meng@amd.com/
+
+Changes from V1->V2:
+- selftests: amd-pstate:
+- - delete main.sh and merge funtions into run.sh
+- selftests: amd-pstate:
+- - modify ppw to performance per watt for tbench.
+- - add comments for performance per watt for tbench.
+- - add comparative test on acpi-cpufreq for tbench.
+- - calculate drop between amd-pstate and acpi-cpufreq etc.
+- - plot images about perfrmance,energy and ppw for tbench.
+- selftests: amd-pstate:
+- - modify ppw to performance per watt for gitsource.
+- - add comments for performance per watt for gitsource.
+- - add comparative test on acpi-cpufreq for gitsource.
+- - calculate drop between amd-pstate and acpi-cpufreq etc.
+- - plot images about perfrmance,energy and ppw for gitsource.
+- Documentation: amd-pstate:
+- - modify rst doc, introduce comparative test etc.
+
+Thanks, 
+Jasmine 
+
+Meng Li (4):
+  selftests: amd-pstate: Modify amd-pstate-ut.sh to basic.sh.
+  selftests: amd-pstate: Trigger tbench benchmark and test cpus
+  selftests: amd-pstate: Trigger gitsource benchmark and test cpus
+  Documentation: amd-pstate: Add tbench and gitsource test introduction
+
+ Documentation/admin-guide/pm/amd-pstate.rst   | 192 +++++++++-
+ tools/testing/selftests/amd-pstate/Makefile   |  11 +-
+ .../selftests/amd-pstate/amd-pstate-ut.sh     |  55 ---
+ tools/testing/selftests/amd-pstate/basic.sh   |  38 ++
+ .../testing/selftests/amd-pstate/gitsource.sh | 345 +++++++++++++++++
+ tools/testing/selftests/amd-pstate/run.sh     | 358 ++++++++++++++++++
+ tools/testing/selftests/amd-pstate/tbench.sh  | 358 ++++++++++++++++++
+ 7 files changed, 1282 insertions(+), 75 deletions(-)
+ delete mode 100755 tools/testing/selftests/amd-pstate/amd-pstate-ut.sh
+ create mode 100755 tools/testing/selftests/amd-pstate/basic.sh
+ create mode 100755 tools/testing/selftests/amd-pstate/gitsource.sh
+ create mode 100755 tools/testing/selftests/amd-pstate/run.sh
+ create mode 100755 tools/testing/selftests/amd-pstate/tbench.sh
+
 -- 
-js
-suse labs
+2.25.1
+
