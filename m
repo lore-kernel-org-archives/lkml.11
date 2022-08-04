@@ -2,169 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D34CEC19F21
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 19:02:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC759C19F21
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 19:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbiHDTCh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 15:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51432 "EHLO
+        id S229678AbiHDTDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 15:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229678AbiHDTCf (ORCPT
+        with ESMTP id S232454AbiHDTD2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 15:02:35 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6357139BB3;
-        Thu,  4 Aug 2022 12:02:34 -0700 (PDT)
-Date:   Thu, 04 Aug 2022 19:02:30 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1659639752;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WAXs2btTEI1qqN1M213Bb2k1VGPdxbUE9Px/51ZXhzk=;
-        b=Vz2t9JUHqGR9cbT271qDdvepB8fTybAGiunWE+bwwKuUOqyTCXzv2RWlNEwnPayuRGWVWz
-        kN7JvUTYh8F1ApbysYpEuS07Pj2fSnm4Cx8GMIoeuG9cY6ZfWJXWgOtlyfSmqJuen5xx4u
-        Gwl82KxhOArkD27bqiADZf9f3C0QVsAWyWXfQH4IJad2RldIP+ya2wzHxUexgoaVQfedbY
-        SvvsBOTF30yDMfBUnsI+4WN1VM3Rq1i+MFYdA+rnS0PVIh07gIxt6Dr+r961qM8pg9SAbs
-        2WW7jkFbwr6Mmf4EL0axHHQoZVHBHZ0RTApZi4aDUWaUZZQunjBG8sL7YDQlDw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1659639752;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WAXs2btTEI1qqN1M213Bb2k1VGPdxbUE9Px/51ZXhzk=;
-        b=DOfjDmzvl8mZedRI+QMHJEZ/kDC7IFTSwo03/DjFQ/5T1lqN2Gn3Vupv5AfaQ0N15nyaUu
-        3VBELcImJMLqwXAQ==
-From:   "tip-bot2 for Andrea Righi" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86/entry: Build thunk_$(BITS) only if CONFIG_PREEMPTION=y
-Cc:     Andrea Righi <andrea.righi@canonical.com>,
-        Ingo Molnar <mingo@kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <Ke7EWjcX+ZlXO@arighi-desktop>
-References: <Ke7EWjcX+ZlXO@arighi-desktop>
+        Thu, 4 Aug 2022 15:03:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7194F6D9CB;
+        Thu,  4 Aug 2022 12:03:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE1BF616C2;
+        Thu,  4 Aug 2022 19:03:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53C97C433C1;
+        Thu,  4 Aug 2022 19:03:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659639806;
+        bh=X7SaZV8NQYFASqG1eXvSDJ7c73ijas8hXeL+BClnemQ=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=WUY/8Ckxx+AsFlgt80MLBv3NCXV9f7cIh/nqssiOjPAqpQHGJ4eElZ4F6jqqn6az4
+         JkS1m8vkuGjssI3FX9Y4LL5ZXWLFOluw4CYz29z1FB6zpeW6LpS4w2lVGX3uNZlQk+
+         W/azQHgk3I6TatLgVaMr8GP6YMBGUn6uDBAeYmz8ZU7Dd0aMI33w7eFSDAwPLA4Mi/
+         d0fck0RxnUIFs5N6W4Ff5febReOhje5PkxF7UEeorYXkzb/bEg1ELOltMNLoRxfwOX
+         IdWmiM6scwlj/IoILvwNb1J8MIu9bue89EBqmkrh9ow5VGRT1mLck9vw2febnfVuMW
+         XVwy98XYMZWig==
+Message-ID: <cf24d6b5496598e7717428c6bdcb2366a7d49529.camel@kernel.org>
+Subject: Re: [RFC PATCH 0/3] Rename "cifs" module to "smbfs"
+From:   Jeff Layton <jlayton@kernel.org>
+To:     Enzo Matsumiya <ematsumiya@suse.de>, Tom Talpey <tom@talpey.com>
+Cc:     linux-cifs@vger.kernel.org, smfrench@gmail.com, pc@cjr.nz,
+        ronniesahlberg@gmail.com, nspmangalore@gmail.com,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        samba-technical@lists.samba.org, pshilovsky@samba.org
+Date:   Thu, 04 Aug 2022 15:03:23 -0400
+In-Reply-To: <20220803015655.7u5b6i4eo5sfnryb@cyberdelia>
+References: <20220801190933.27197-1-ematsumiya@suse.de>
+         <c05f4fc668fa97e737758ab03030d7170c0edbd9.camel@kernel.org>
+         <20220802193620.dyvt5qiszm2pobsr@cyberdelia>
+         <6f3479265b446d180d71832fd0c12650b908ebe2.camel@kernel.org>
+         <1c2e8880-3efe-b55d-ee50-87d57efc3130@talpey.com>
+         <20220803015655.7u5b6i4eo5sfnryb@cyberdelia>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
 MIME-Version: 1.0
-Message-ID: <165963975056.15455.12803766346489134957.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+On Tue, 2022-08-02 at 22:56 -0300, Enzo Matsumiya wrote:
+> On 08/02, Tom Talpey wrote:
+> > The initial goal is to modularize the SMB1 code, so it can be completel=
+y
+> > removed from a running system. The extensive refactoring logically lead=
+s
+> > to this directory renaming, but renaming is basically a side effect.
+> >=20
 
-Commit-ID:     de979c83574abf6e78f3fa65b716515c91b2613d
-Gitweb:        https://git.kernel.org/tip/de979c83574abf6e78f3fa65b716515c91b2613d
-Author:        Andrea Righi <andrea.righi@canonical.com>
-AuthorDate:    Thu, 14 Jul 2022 09:49:15 +02:00
-Committer:     Ingo Molnar <mingo@kernel.org>
-CommitterDate: Thu, 04 Aug 2022 12:23:50 +02:00
+This is a great technical goal. Splitting up cifs.ko into smaller
+modules would be great, in addition to being able to turn off smb1
+support.
 
-x86/entry: Build thunk_$(BITS) only if CONFIG_PREEMPTION=y
+> > Stamping out the four-letter word C-I-F-S is a secondary goal. At this
+> > point, the industry has stopped using it. You make a good point that
+> > it's still visible outside the kernel source though.
+> >=20
+> > It makes good sense to do the refactoring in place, at first. Splitting
+> > the {smb1,cifs}*.[ch] files will be more complex, but maybe easier to
+> > review and merge, without folding in a new directory tree and git rm/mv=
+.
+> > Either way, there will be at least two modules, maybe three if we split
+> > out generic subroutines.
+> >=20
+> > Enzo, you're up to your elbows in this code now, is it too ugly without
+> > the new directories?
+>=20
+> Having things in separate directories and code appropriately distributed
+> in coherently named headers/sources certainly makes things easier to
+> work with.
+>=20
+> Of course this patch is not important, by far, but from what I
+> gathered, it was some people's wish to move away from "cifs" name.
+>=20
+> Answering your question (IIUC), Tom, I'm ok with postponing this change.
+>=20
+>=20
 
-With CONFIG_PREEMPTION disabled, arch/x86/entry/thunk_$(BITS).o becomes
-an empty object file.
+Cool. I'm not even really opposed to moving the directory to a new one,
+but I think a change of that magnitude ought to have some clear
+technical benefit. Maybe it'll look more palatable once the breakup into
+multiple modules is in place.
 
-With some old versions of binutils (i.e., 2.35.90.20210113-1ubuntu1) the
-GNU assembler doesn't generate a symbol table for empty object files and
-objtool fails with the following error when a valid symbol table cannot
-be found:
-
-  arch/x86/entry/thunk_64.o: warning: objtool: missing symbol table
-
-To prevent this from happening, build thunk_$(BITS).o only if
-CONFIG_PREEMPTION is enabled.
-
-BugLink: https://bugs.launchpad.net/bugs/1911359
-
-Fixes: 320100a5ffe5 ("x86/entry: Remove the TRACE_IRQS cruft")
-Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Link: https://lore.kernel.org/r/Ys/Ke7EWjcX+ZlXO@arighi-desktop
----
- arch/x86/entry/Makefile   | 3 ++-
- arch/x86/entry/thunk_32.S | 2 --
- arch/x86/entry/thunk_64.S | 4 ----
- arch/x86/um/Makefile      | 3 ++-
- 4 files changed, 4 insertions(+), 8 deletions(-)
-
-diff --git a/arch/x86/entry/Makefile b/arch/x86/entry/Makefile
-index eeadbd7..ca2fe18 100644
---- a/arch/x86/entry/Makefile
-+++ b/arch/x86/entry/Makefile
-@@ -11,12 +11,13 @@ CFLAGS_REMOVE_common.o		= $(CC_FLAGS_FTRACE)
- 
- CFLAGS_common.o			+= -fno-stack-protector
- 
--obj-y				:= entry.o entry_$(BITS).o thunk_$(BITS).o syscall_$(BITS).o
-+obj-y				:= entry.o entry_$(BITS).o syscall_$(BITS).o
- obj-y				+= common.o
- 
- obj-y				+= vdso/
- obj-y				+= vsyscall/
- 
-+obj-$(CONFIG_PREEMPTION)	+= thunk_$(BITS).o
- obj-$(CONFIG_IA32_EMULATION)	+= entry_64_compat.o syscall_32.o
- obj-$(CONFIG_X86_X32_ABI)	+= syscall_x32.o
- 
-diff --git a/arch/x86/entry/thunk_32.S b/arch/x86/entry/thunk_32.S
-index 7591bab..ff6e700 100644
---- a/arch/x86/entry/thunk_32.S
-+++ b/arch/x86/entry/thunk_32.S
-@@ -29,10 +29,8 @@ SYM_CODE_START_NOALIGN(\name)
- SYM_CODE_END(\name)
- 	.endm
- 
--#ifdef CONFIG_PREEMPTION
- 	THUNK preempt_schedule_thunk, preempt_schedule
- 	THUNK preempt_schedule_notrace_thunk, preempt_schedule_notrace
- 	EXPORT_SYMBOL(preempt_schedule_thunk)
- 	EXPORT_SYMBOL(preempt_schedule_notrace_thunk)
--#endif
- 
-diff --git a/arch/x86/entry/thunk_64.S b/arch/x86/entry/thunk_64.S
-index 505b488..f38b07d 100644
---- a/arch/x86/entry/thunk_64.S
-+++ b/arch/x86/entry/thunk_64.S
-@@ -31,14 +31,11 @@ SYM_FUNC_END(\name)
- 	_ASM_NOKPROBE(\name)
- 	.endm
- 
--#ifdef CONFIG_PREEMPTION
- 	THUNK preempt_schedule_thunk, preempt_schedule
- 	THUNK preempt_schedule_notrace_thunk, preempt_schedule_notrace
- 	EXPORT_SYMBOL(preempt_schedule_thunk)
- 	EXPORT_SYMBOL(preempt_schedule_notrace_thunk)
--#endif
- 
--#ifdef CONFIG_PREEMPTION
- SYM_CODE_START_LOCAL_NOALIGN(__thunk_restore)
- 	popq %r11
- 	popq %r10
-@@ -53,4 +50,3 @@ SYM_CODE_START_LOCAL_NOALIGN(__thunk_restore)
- 	RET
- 	_ASM_NOKPROBE(__thunk_restore)
- SYM_CODE_END(__thunk_restore)
--#endif
-diff --git a/arch/x86/um/Makefile b/arch/x86/um/Makefile
-index ba5789c..a8cde4e 100644
---- a/arch/x86/um/Makefile
-+++ b/arch/x86/um/Makefile
-@@ -28,7 +28,8 @@ else
- 
- obj-y += syscalls_64.o vdso/
- 
--subarch-y = ../lib/csum-partial_64.o ../lib/memcpy_64.o ../entry/thunk_64.o
-+subarch-y = ../lib/csum-partial_64.o ../lib/memcpy_64.o
-+subarch-$(CONFIG_PREEMPTION) += ../entry/thunk_64.o
- 
- endif
- 
+--=20
+Jeff Layton <jlayton@kernel.org>
