@@ -2,143 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A652C19F21
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 19:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB8BC19F21
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 19:04:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235265AbiHDTDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 15:03:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52252 "EHLO
+        id S238773AbiHDTEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 15:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238723AbiHDTDo (ORCPT
+        with ESMTP id S232290AbiHDTEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 15:03:44 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949B26D9DC
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 12:03:42 -0700 (PDT)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id E0B63240002;
-        Thu,  4 Aug 2022 19:03:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1659639819;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=4nE99AddbBTDV20nAD4BnDjQ/Hm3DjH+zY3AnfZeX48=;
-        b=EuPh2ayLRlPvYsatzErYAhX1TLivjE2MjGf4OsmcRY/WIuccI5op8rZ+T5ZHwyvABBcI8M
-        sZOtMyl0vQxbJfLnUDi7uCPppZsV5LaksCrTrIhsL+em5QWfELNqdqdrRG8Pvn8yDb00TK
-        ZCq+7jkAh6VQgthDZLfBH46MPr7d/MJfSYkO0Zpdqzl32pVmM/HaqlOjz7H3Kc7e5o1Z44
-        8HUI8J26tQgsdMOZdLZCMduG6XQEqwhYiW51O+uKp0EDApzKfA3tANqiABv4FS2UsuTRCK
-        lZEjlnFSKp/s7C5iq/DGIZ0pEdvL97r7VbOu4y/Uq1LN29wybnsOZW37eTCM5w==
-From:   alexandre.belloni@bootlin.com
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] init/Kconfig: fix CC_HAS_ASM_GOTO_TIED_OUTPUT test with dash
-Date:   Thu,  4 Aug 2022 21:03:20 +0200
-Message-Id: <20220804190320.262510-1-alexandre.belloni@bootlin.com>
-X-Mailer: git-send-email 2.37.1
+        Thu, 4 Aug 2022 15:04:21 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D5B6D56D
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 12:04:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659639860; x=1691175860;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Zeb314LA7OHiqwgRSF20NPO4aqmgQgIU8MCpZ86Aap4=;
+  b=ebEnk0CnjVLeS6AvNn6u0YCpN4GtqebTv6I1ocZSlrnc2g+jLOVs0x9Y
+   M7V1YPSCySseIaHkLpDWvEbdCHiJMDYfQ1kBtfqyP1oeKyLN5XeBhs193
+   OXDSDW61wiSqTR+jI87bKJ7V+ucayXftMDOjhAxgF8E/ZgGMyh6YgIjyI
+   x3tFqcqoWB2mf0XXaC+//7LPwDpDC8gectBVK4nxAWWvvksONPGNliceR
+   JXMLMjZs0B/PHc9cKwn8jBwfzL7ewQyzGlGaxBvO+0TDCywS1OTYLIzOR
+   Z+pHHe7XJW1pE8ZZ431OYHcT3qKDSKC7Pdb/QNcUDa29/39h6J+w+rLDT
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10429"; a="270404358"
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="270404358"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 12:03:57 -0700
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="631709547"
+Received: from lnavery-mobl1.amr.corp.intel.com (HELO [10.255.228.146]) ([10.255.228.146])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 12:03:56 -0700
+Message-ID: <6c516a7c-ac97-e0b1-b056-06a17d1b7420@intel.com>
+Date:   Thu, 4 Aug 2022 12:03:56 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] x86/acrn: Improve ACRN hypercalls
+Content-Language: en-US
+To:     Uros Bizjak <ubizjak@gmail.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+References: <20220804180358.32944-1-ubizjak@gmail.com>
+ <91ccae0b-6135-6163-f59b-4e99624090a5@intel.com>
+ <CAFULd4YRzEXL1+cvBPT1hmfq=ZLwtrexHt+vDABnA2QMiVMBpg@mail.gmail.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <CAFULd4YRzEXL1+cvBPT1hmfq=ZLwtrexHt+vDABnA2QMiVMBpg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+On 8/4/22 11:56, Uros Bizjak wrote:
+> The %r8 is not preserved across function calls, so your statement
+> above is correct. But as long as there is no function call *between*
+> the variable definition and the assembly, the approach with the local
+> register variable works without any problems. It is even something GCC
+> itself has used in its library for years.
 
-When using dash as /bin/sh, the CC_HAS_ASM_GOTO_TIED_OUTPUT test fails
-with a syntax error which is not the one we are looking for:
+I'm glad it's workout out for GCC.  But, the kernel is not GCC.  I
+specifically asked for the ACRN code to be the way that it is today and
+your argument is not making me reconsider it in the slightest.
 
-<stdin>: In function ‘foo’:
-<stdin>:1:29: warning: missing terminating " character
-<stdin>:1:29: error: missing terminating " character
-<stdin>:2:5: error: expected ‘:’ before ‘+’ token
-<stdin>:2:7: warning: missing terminating " character
-<stdin>:2:7: error: missing terminating " character
-<stdin>:2:5: error: expected declaration or statement at end of input
-
-Move all the CC_HAS_ASM_GOTO tests to scripts/gcc-goto.sh to solve the
-escaping issues.
-
-Fixes: 1aa0e8b144b6 ("Kconfig: Add option for asm goto w/ tied outputs to workaround clang-13 bug")
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
----
- init/Kconfig        |  6 +++---
- scripts/gcc-goto.sh | 31 +++++++++++++++++++++++++++++++
- 2 files changed, 34 insertions(+), 3 deletions(-)
-
-diff --git a/init/Kconfig b/init/Kconfig
-index c984afc489de..9903a11cfe7d 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -71,16 +71,16 @@ config CC_CAN_LINK_STATIC
- 	default $(success,$(srctree)/scripts/cc-can-link.sh $(CC) $(CLANG_FLAGS) $(USERCFLAGS) $(USERLDFLAGS) $(m32-flag) -static)
- 
- config CC_HAS_ASM_GOTO
--	def_bool $(success,$(srctree)/scripts/gcc-goto.sh $(CC))
-+	def_bool $(success,$(srctree)/scripts/gcc-goto.sh goto $(CC))
- 
- config CC_HAS_ASM_GOTO_OUTPUT
- 	depends on CC_HAS_ASM_GOTO
--	def_bool $(success,echo 'int foo(int x) { asm goto ("": "=r"(x) ::: bar); return x; bar: return 0; }' | $(CC) -x c - -c -o /dev/null)
-+	def_bool $(success,$(srctree)/scripts/gcc-goto.sh goto_output $(CC))
- 
- config CC_HAS_ASM_GOTO_TIED_OUTPUT
- 	depends on CC_HAS_ASM_GOTO_OUTPUT
- 	# Detect buggy gcc and clang, fixed in gcc-11 clang-14.
--	def_bool $(success,echo 'int foo(int *x) { asm goto (".long (%l[bar]) - .\n": "+m"(*x) ::: bar); return *x; bar: return 0; }' | $CC -x c - -c -o /dev/null)
-+	def_bool $(success,$(srctree)/scripts/gcc-goto.sh goto_tied_output $(CC))
- 
- config TOOLS_SUPPORT_RELR
- 	def_bool $(success,env "CC=$(CC)" "LD=$(LD)" "NM=$(NM)" "OBJCOPY=$(OBJCOPY)" $(srctree)/scripts/tools-support-relr.sh)
-diff --git a/scripts/gcc-goto.sh b/scripts/gcc-goto.sh
-index 8b980fb2270a..aa9498b74df8 100755
---- a/scripts/gcc-goto.sh
-+++ b/scripts/gcc-goto.sh
-@@ -3,6 +3,11 @@
- # Test for gcc 'asm goto' support
- # Copyright (C) 2010, Jason Baron <jbaron@redhat.com>
- 
-+TEST=$1
-+shift
-+
-+case $TEST in
-+    "goto")
- cat << "END" | $@ -x c - -fno-PIE -c -o /dev/null
- int main(void)
- {
-@@ -20,3 +25,29 @@ entry:
- 	return 0;
- }
- END
-+    ;;
-+
-+    "goto_output")
-+cat << "END" | $@ -x c - -c -o /dev/null
-+int foo(int x) {
-+	asm goto ("": "=r"(x) ::: bar);
-+	return x;
-+	bar: return 0;
-+}
-+END
-+    ;;
-+
-+    "goto_tied_output")
-+cat << "END" | $@ -x c - -c -o /dev/null
-+int foo(int *x) {
-+	asm goto (".long (%l[bar]) - .\n": "+m"(*x) ::: bar);
-+	return *x;
-+	bar: return 0;
-+}
-+END
-+    ;;
-+
-+    *)
-+	exit -1
-+    ;;
-+esac
--- 
-2.37.1
-
+So, thanks for the patch, but I don't think we should apply it.
