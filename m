@@ -2,131 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D813C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 410C3C19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239992AbiHDOBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 10:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57062 "EHLO
+        id S240012AbiHDOCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 10:02:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235162AbiHDOBo (ORCPT
+        with ESMTP id S240006AbiHDOCN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 10:01:44 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF20E1C128;
-        Thu,  4 Aug 2022 07:01:43 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id a9so18139695lfm.12;
-        Thu, 04 Aug 2022 07:01:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=JaMe6j4fYY9HfpaAc4kq+NXQn/JQWze+bei2ZzmND0I=;
-        b=QSKMyIcYM/epVOjE3xPWm4g7Fax7lyHTwJQV6QgjlHcsv/cO9qjGpwNheGqSJgDhfx
-         emrqTQFK2mDSQ4NpoATQJCLyuB2zWwcio2s5WMthC2HEW4OqjfATYWffLDBA8Z5QtKkZ
-         EdrQwKuI1Rigsooo83kdn/f1PCIPbrD2BeU9N0Ide6iYB/yq/yopo5SIbE4Bzvo2NpxE
-         8pavzD0D8zzoVWA1GgymHDDf+Lv4icd/sdUYt/dTojG8d5rqwxgNhQtDboOQP+0F3yy1
-         vW6yfJMOZl/AXpGWD0W9//zTRIQ+q+NfA0h4Ybvt7EaW+eLXglfH6Vb3cto0ZC1/rGyw
-         T/MQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=JaMe6j4fYY9HfpaAc4kq+NXQn/JQWze+bei2ZzmND0I=;
-        b=U4EhkMyn/NpqG3NKFpACQtE5Usb5SPIK/ICMSr4meFQxUuAA/p9R8Lgsf+vTF0Pbok
-         q3F2P4uZbep8NP14lCW2EOx/Jc/PafM4bPdIcuNde1+Ub8UgAhm4pNvQJnYWcKJiQQ1J
-         8EzTSwgrq7GAHxe1PBnyc/EcAXZjoQ+4Opb7EmH3mumf067gSl0ylCFrT+kVNBdWhAsX
-         hCqKaskt7hu8xOfbEex38hgBXWWf+UJWIjhQwIx8/EhcmxoFsS3YcQvZrf8g0IjOub2J
-         J2O9r/sJpjpe1yxWe01cn59Cp9NC7WKQfqUJn54TsiwOjjDMkLluxuxADciaT9nKNaMa
-         U00g==
-X-Gm-Message-State: ACgBeo0O6nFMuwWooNnrPrAq7SvBrHzoJKQIOKPIsLz5Ad/6UK2uLJw+
-        FsCsPa8KKauXlmYUxX66+52QdlzHCJgHFlJhMVw=
-X-Google-Smtp-Source: AA6agR65paGn+KC3Fe8XeawVhkTkP00otnvSfxoWcwCf52HbrAmRlzdXLDzIJw4f2/h6gbNdmVYU9iaaEEjx63FHNO4=
-X-Received: by 2002:a05:6512:692:b0:48a:f5fb:188c with SMTP id
- t18-20020a056512069200b0048af5fb188cmr816276lfe.111.1659621702117; Thu, 04
- Aug 2022 07:01:42 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220711123519.217219-1-tmaimon77@gmail.com> <20220711123519.217219-5-tmaimon77@gmail.com>
- <20220711195544.70A30C34115@smtp.kernel.org> <CAP6Zq1ie_RgJ_9S3ftoVJ=eJHX1xR4_O_czKZghNPKVEFOzC8Q@mail.gmail.com>
- <20220718191454.5B5D3C341C0@smtp.kernel.org> <CAP6Zq1ju08GSjNnEG+zDUC8W6aQMJxd5He7QJxy9++hTy0Dc7A@mail.gmail.com>
- <20220723030226.8E43CC341C6@smtp.kernel.org> <CAP6Zq1gUvMFG9BNObVNLpVgbMRpV7e--HFxknP8kvL4nGk8Hsw@mail.gmail.com>
- <20220729225603.12528C433D6@smtp.kernel.org>
-In-Reply-To: <20220729225603.12528C433D6@smtp.kernel.org>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Thu, 4 Aug 2022 17:01:30 +0300
-Message-ID: <CAP6Zq1hOxG+2X-qTbvPkrVHQ5zf04GO21m1n328Jiqgzns2CMA@mail.gmail.com>
-Subject: Re: [PATCH v8 04/16] clk: npcm8xx: add clock controller
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
+        Thu, 4 Aug 2022 10:02:13 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977D022510;
+        Thu,  4 Aug 2022 07:02:12 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 3A5DB320084E;
+        Thu,  4 Aug 2022 10:02:09 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Thu, 04 Aug 2022 10:02:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1659621728; x=
+        1659708128; bh=1eA4iGFdB1hSPhLdnXy+RIRq8L8CPiMUngiNCofOlf8=; b=e
+        PhSfoyw6gHLVk7s8WM8IZDKmpUQjAzaNGawz3qdd8BFdQ6i0atrrsKoDNQrAMRt6
+        iCCry5YCWJMfdbEbLzQV8kXcDr/lc8j3lcTQFiiTNQ1jGObu8vEGzkdQ38WmWUFY
+        nwI2hVfVIdoShi1wGO8qmAmFBJmw0QBF0JaK4PUyDoofaBIHfZjc95x9gcd6ZaGf
+        L0ZpG/QG788Ebq2L2ZZ/9bY/rEnQjAn67gIgmJU1flKYbL5uaQZdn23qtn0kiLPD
+        Ef1xLZ7ePri+DfO+7A+PlbK1t4+YyDuxTb95AZll0vGHixwflVNXRX+v54+8D1zZ
+        AZPRjHeFuCARLREjf8loA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659621728; x=
+        1659708128; bh=1eA4iGFdB1hSPhLdnXy+RIRq8L8CPiMUngiNCofOlf8=; b=j
+        Tr7QZcywzvL4mE21n0o2/hwDBh5RlzBVksUYdfwtNyVwn0EgMiK+CVlzXdc6FWzL
+        EevCi131Rl/8qNR/oSYLUmHnprX9Ml+Vg8pMdQHyqmJ1x75pmR8LKzdEhYNYGwDm
+        LYelmlmq3YiJFHRkKRm0viHdlCHrAy42V8AGt7j7T1jCARQ5BAJokwTVCPRlJ2CT
+        NnZubfFZJin9XW+i7TbfRXFuveKFnM+N6FirXhdhDQX2ThOVMr/ATApPSLyAtbT+
+        Qhc7fe50+AmB/tEN8A5ZMGBbtI0CoarT8pbOMqR6219YLwGPYVTEDDIqYURObfWq
+        7ReVe1yBNrhAYF71C5+Iw==
+X-ME-Sender: <xms:X9HrYjMuMsegJHJIa-Tpg76t4cVkbPMFbNnwXG7A5whPTccX_lwwKw>
+    <xme:X9HrYt-Z2f7hFDpfNSYh0r90MhsLudvojK_c9syBVduyczPNG1LB5HkdWYd2gaPmO
+    LwST8BLJ-4l2JiZgA>
+X-ME-Received: <xmr:X9HrYiQ22TWTwzeELA4EJOGSNuvsjFbG2iJesG3iAXNoAjaFmyegeT2M6y_6LyM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddvledgjeduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevufgjfhfkgggtgfesthhqmhdttddtjeenucfhrhhomhepufgrmhhu
+    vghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecugg
+    ftrfgrthhtvghrnhepgfekhfegffeigeegkedtudduueffkedufeffgffhleffgeelhedu
+    veegfefftdetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
+    homhepshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
+X-ME-Proxy: <xmx:X9HrYnvRM3oL-9qEnBTOaiCuRbiVk_N8oiZdzXLf-Dnz-j-JQEdQCg>
+    <xmx:X9HrYrd37JkE-p3vorHhpXRC9wI6k-9etasuyJyKuLrb9qpNLTxA6A>
+    <xmx:X9HrYj3_14zvUQIRf_KQzCimWyPNG_w2VCZuAx0C3a00n7qtp2pktw>
+    <xmx:YNHrYv5GnJcsICndGOBcJDT2gpfWEHCTx2W8PhwmKbPLPoMCzkyKGw>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 4 Aug 2022 10:02:03 -0400 (EDT)
+Date:   Thu, 04 Aug 2022 14:01:58 +0000
+From:   Samuel Holland <samuel@sholland.org>
+To:     =?UTF-8?Q?Jernej_=C5=A0krabec?= <jernej.skrabec@gmail.com>,
+        Rob Herring <robh@kernel.org>
+CC:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Olof Johansson <olof@lixom.net>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Thomas G leixner <tglx@linutronix.de>,
-        Patrick Venture <venture@google.com>,
-        Vinod Koul <vkoul@kernel.org>, Will Deacon <will@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Nancy Yuen <yuenn@google.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        SERIAL DRIVERS <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        Maxime Ripard <mripard@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH v2 3/4] regulator: dt-bindings: Add Allwinner D1 LDOs
+In-Reply-To: <5588658.DvuYhMxLoT@jernej-laptop>
+References: <20220802053213.3645-1-samuel@sholland.org> <20220802150452.GA86158-robh@kernel.org> <918a83a7-1b8d-04b1-4f7b-386fc800e653@sholland.org> <5588658.DvuYhMxLoT@jernej-laptop>
+Message-ID: <3FDF728B-787D-481F-A807-A05DADA02198@sholland.org>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Autocrypt: addr=samuel@sholland.org; prefer-encrypt=mutual;
+ keydata= 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
+ jQQElQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 30 Jul 2022 at 01:56, Stephen Boyd <sboyd@kernel.org> wrote:
+On August 4, 2022 5:11:39 AM UTC, "Jernej =C5=A0krabec" <jernej=2Eskrabec@g=
+mail=2Ecom> wrote:
+>> > 'simple-mfd' also means the child nodes have zero dependence on the
+>> > parent node and its resources=2E
+>>=20
+>> That is correct=2E The regulators have zero dependencies on the audio c=
+odec
+>> resources (clocks/resets/etc=2E)=2E The _only_ relationship is the over=
+lapping
+>> address of the MMIO register=2E
 >
-> Quoting Tomer Maimon (2022-07-24 02:06:54)
-> > On Sat, 23 Jul 2022 at 06:02, Stephen Boyd <sboyd@kernel.org> wrote:
-> > > Furthermore, in DT, reg properties aren't supposed to overlap. When that
-> > > happens it usually indicates the DT is being written to describe driver
-> > > structure instead of the IP blocks that are delivered by the hardware
-> > > engineer. In this case it sounds like a combined clk and reset IP block
-> > > because they piled all the SoC glue stuff into a register range. Are
-> > > there more features in this IO range?
-> >
-> > No, this range only combined the reset and clock together, but it
-> > combined in a way that we cannot split it to two or even three
-> > different registers...
->
-> Because it is jumbled in some range?
-Yes.
->
-> >
-> > I do see a way to combine the clock and the reset driver, the NPCM
-> > reset driver is serving other NPCM BMC's.
-> > Should we use regmap to handle the clock registers instead of ioremap?
->
-> Sure? Using regmap or not looks like a parallel discussion. How does it
-> help use platform APIs?
-I mean to use regmap API instead of platform API for handing the clock
-and reset registers.
-the regmap API gives only one user access to R/W (lock).
-I will be happy to get more suggestions, on how should we solve this situation.
+>LDO registers are at the end of analogue codec MMIO space, right? We can=
+=20
+>easily split that to separate device, like it's been done for A20 timer &=
+=20
+>watchdog=2E
 
-Thanks,
+No, there are some audio-related registers after the LDO register ("POWER_=
+REG" in the D1 and V853 manuals)=2E
+So it is not possible to cleanly split the MMIO region=2E
 
-Tomer
+Regards,
+Samuel
