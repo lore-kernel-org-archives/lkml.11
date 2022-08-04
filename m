@@ -2,118 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00480C19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 07:40:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C1A3C19F2C
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 07:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239187AbiHDHkb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 03:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58622 "EHLO
+        id S239217AbiHDHkj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 03:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbiHDHk2 (ORCPT
+        with ESMTP id S239199AbiHDHkf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 03:40:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5ED422B3B;
-        Thu,  4 Aug 2022 00:40:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D294B82245;
-        Thu,  4 Aug 2022 07:40:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C7ADC433C1;
-        Thu,  4 Aug 2022 07:40:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659598824;
-        bh=Ah06rLZ4P9R/uZ+rl/z6T5V8R+Zu0TXa61Ms+9cM+e4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=n6Zy3n5vwolf1+DFA4lW+ulv1MkhFPGNi5yg2HtakmJBeXRq/SLpxEX8gz4wSmVIs
-         goi0xzpQ7jM5uE+3IKwF66oxwe0hUqycy619LVWITrAR/E8hLRdLNFAW+d2/MahrV4
-         Yz3SckBbkiYTiJuhv9QstOmIKZH/iBplZ/S5s3jIZK1pIC6Jgot6zjJwnUeN5wyxPe
-         YR+EhOJAuhc74CXFrWmh24WSKnsUi/ESVopK5V03O03sBxlwxJAnjW1MoncLOncZmT
-         +PsI0kCuJ7ndTQAk4tNg8jqY+HfPxrbi8jvC9MNE3GWj6HLUEuiHesY0gBksmj+wNT
-         tpLIRqjd5I9dQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oJVTI-00038p-QO; Thu, 04 Aug 2022 09:40:44 +0200
-Date:   Thu, 4 Aug 2022 09:40:44 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krishna Kurapati <quic_kriskura@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Linux USB List <linux-usb@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 5/8] Revert "dt-bindings: usb: dwc3: Add wakeup-source
- property support"
-Message-ID: <Yut3/PA/ClacgJsw@hovoldconsulting.com>
-References: <20220802151404.1797-1-johan+linaro@kernel.org>
- <20220802151404.1797-6-johan+linaro@kernel.org>
- <CAL_JsqL5ZCzfd06rxOdQodFjk4G3QpDCsxA5heM71x0q5d-hCw@mail.gmail.com>
- <YuokOn0KHEqv/CR4@hovoldconsulting.com>
- <20220803232644.GA2806113-robh@kernel.org>
- <Yutdd7kWx2sc1yQu@hovoldconsulting.com>
+        Thu, 4 Aug 2022 03:40:35 -0400
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7CF92A70A
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 00:40:33 -0700 (PDT)
+Date:   Thu, 4 Aug 2022 16:40:25 +0900
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1659598832;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=aKocoFOHQjUWCKVWggVJ2diOKUCvDqNI0lkZdeg2bgA=;
+        b=i9z7N0lExHqwmkveUOibcw3zZZk0YbJ90WJB3O858Gpqzft3a0kkWOFQj8zmJvOzvcIDtE
+        mbvuw/O43psDK87O1qnOBvSsdZ5tUncP0EDzG5ZdtSFBurwyXRbknQQBWGZiLGsZZXFptI
+        8wpOloER93fRmvRiOZyL/P1FmU5mwss=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     Muchun Song <songmuchun@bytedance.com>,
+        Linux-MM <linux-mm@kvack.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Subject: Re: [bug report] mm, hwpoison: memory_failure races with
+ alloc_fresh_huge_page/free_huge_page
+Message-ID: <20220804074025.GA2551573@ik1-406-35019.vs.sakura.ne.jp>
+References: <3c542543-0965-ef60-4627-1a4116077a5b@huawei.com>
+ <Yuii5FnAXe/q7fx/@FVFYT0MHHV2J>
+ <f2ad010b-b3bf-77c9-2256-701114b5d57e@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Yutdd7kWx2sc1yQu@hovoldconsulting.com>
+In-Reply-To: <f2ad010b-b3bf-77c9-2256-701114b5d57e@huawei.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 04, 2022 at 07:47:35AM +0200, Johan Hovold wrote:
-> On Wed, Aug 03, 2022 at 05:26:44PM -0600, Rob Herring wrote:
-> > On Wed, Aug 03, 2022 at 09:31:06AM +0200, Johan Hovold wrote:
-> > > On Tue, Aug 02, 2022 at 11:17:22AM -0600, Rob Herring wrote:
-> > > > On Tue, Aug 2, 2022 at 9:14 AM Johan Hovold <johan+linaro@kernel.org> wrote:
-> > > 
-> > > > > It should also not be used to
-> > > > > work around Linux driver implementation issues such as how to coordinate
-> > > > > the glue and core dwc3 drivers.
-> > > > >
-> > > > > For the Qualcomm dwc3 controllers, it is the glue device that manages
-> > > > > the wakeup interrupts, which may or may not be able to wake the system
-> > > > > up from system suspend.
-> > > > 
-> > > > While the reasoning to add this may have been for QCom, having this
-> > > > property for other users makes sense. On some platforms, 'snps,dwc3'
-> > > > is the only node (i.e. there's no wrapper node). So I don't think this
-> > > > should be reverted.
-> > > 
-> > > Fair enough. Let's keep it in the core child node then where we can
-> > > still retrieve from the glue parent directly.
-> > > 
-> > > (I assume you're not suggesting also adding 'wakeup-source' to the qcom
-> > > glue node, which is where the actual wakeup interrupts live.)
+On Tue, Aug 02, 2022 at 02:27:36PM +0800, Miaohe Lin wrote:
+> On 2022/8/2 12:07, Muchun Song wrote:
+> > On Tue, Aug 02, 2022 at 10:00:50AM +0800, Miaohe Lin wrote:
+> >> Hi all:
+> >>     When I investigate the mm/memory-failure.c code again, I found there's a possible race window
+> >> between memory_failure and alloc_fresh_huge_page/free_huge_page. Thank about the below scene:
+> >>
+> >> CPU 1							CPU 2
+> >> alloc_fresh_huge_page -- page refcnt > 0		memory_failure
+> >>   prep_new_huge_page					  get_huge_page_for_hwpoison
+> >> 							    !PageHeadHuge -- so 2(not a hugepage) is returned
+> >>     hugetlb_vmemmap_optimize -- subpages is read-only
+> >>     set_compound_page_dtor -- PageHuge is true now, but too late!!!
+> >> 							  TestSetPageHWPoison(p)
+> >> 							    -- We might write to read-only subpages here!!!
+> >>
+> >> Another similar scene:
+> >>
+> >> CPU 1							CPU 2
+> >> free_huge_page -- page refcnt == 0 and not PageHuge	memory_failure
+> >> 							  get_huge_page_for_hwpoison
+> >> 							    !PageHeadHuge -- so 2(not a hugepage) is returned
+> >> 							  TestSetPageHWPoison(p)
+> >> 							    -- We might write to read-only subpages here!!!
+> >>   hugetlb_vmemmap_restore -- subpages can be written to now, but too late!!!
+> >>
 > > 
-> > 'wakeup-source' belongs wherever the interrupt that causes wakeup is 
-> > defined.
-> 
-> Thanks for clarifying. That was my understanding as well, but I
-> misinterpreted your wish to keep the 'wakeup-source' property also in
-> the core node.
-> 
-> My thought was that if it turns out that there are systems that do not
-> use a glue node but that do indeed support wakeup, then such a property
-> could be added back later.
-> 
-> But let's keep it in the binding then.
+> > I agree this race is possible, I have proposed this race in thread [1].
 
-I realise it may not have been clear that the patch I suggested to
-revert was first merged for 6.0-rc1, in case that makes any difference.
+Thank you for reminding this, and I agree that we need some solution.
 
-But I'll drop the revert unless I hear otherwise.
+> 
+> Oh, I remember I see the race proposed in [1] but I did not look into that carefully at that time. Sorry.
+> 
+> > But I didn't think more how to solve it.
+> I hope this thread can find a good solution. :)
 
-Johan
+Both of the races show that __get_huge_page_for_hwpoison() fails to
+capture the case of generic compound page during turning into hugetlb,
+What makes things complicated is that no one knows to which state
+such a compound page finally turns into. So I think that if the page
+to be handled is an unknown compound page, we need to wait until it
+becomes some known page state to avoid misjudging.
+
+If we need a quick small fix, we may replace the check "!PageHeadHuge()"
+in __get_huge_page_for_hwpoison() with "!PageCompound()", and add another
+retry path in get_huge_page_for_hwpoison() for non-hugetlb compound pages.
+
+Thanks,
+Naoya Horiguchi
+
+> 
+> > 
+> > [1] https://lore.kernel.org/linux-mm/20220623235153.2623702-1-naoya.horiguchi@linux.dev/T/#ma094a7cea7df8fd9a77a91551bf39077d89e23bd
+> > 
+> >> I think the above scenes are possible. But I can't found a stable solution to fix it. Any suggestions?
+> >> Or is it not worth to fix it as it's too rare? Or am I miss something?
+> >>
+> > 
+> > Luckily, the system will panic at once, which encountering this race. However,
+> > we don't see any bug report. If we have an easy way to fix it, I think it is worth.
+> 
+> Agree. But I can't find a easy way to fix it yet.
+> 
+> > Just a quick reply, no suggestion/solutions from me.
+> 
+> Many thanks for your quick reply.
+> 
+> > 
+> > Thanks.
+> > 
+> >> Any response would be appreciated!
+> >>
+> >> Thanks!
+> >>
+> > .
+> > 
+> 
