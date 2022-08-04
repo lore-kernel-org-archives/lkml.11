@@ -2,105 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A42C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 18:02:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2403DC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 18:04:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239561AbiHDSCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 14:02:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39926 "EHLO
+        id S239629AbiHDSEP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 14:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230456AbiHDSCO (ORCPT
+        with ESMTP id S230456AbiHDSEM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 14:02:14 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9F71EC4B
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 11:02:13 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id z17so656018wrq.4
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 11:02:13 -0700 (PDT)
+        Thu, 4 Aug 2022 14:04:12 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C968D1EC4B
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 11:04:10 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id uj29so796805ejc.0
+        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 11:04:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc;
-        bh=/C+hKhyGa8Z8FqlEwwzUM2g+6zJUxH3CoGD+BmNpkRU=;
-        b=R8+tjsNc1/Im1xglpXDPLenvKjzuwlsNixpILoBBmgw1sfowInHxLfXcsUxBYDCPqe
-         BT0FbPwYmxRogJJkTHEWDG9cuc6pw4fni2WFcQ1bHrQDsMmEWDf7mUGRFtKfQ1BZzYk3
-         7R4XAhochon4AtoWTnt32GOF3r5207wHw2Sfu8eR0RWFknb4QFrg32JZawvESIn4Vpjw
-         zI+Oy82c5uBFxWD8obCGqB1qwzab8ZbyTu9W15RiyYXGUxMg0C44+SiJzpmxJjj71M8z
-         dsdCNlaUcILZ501DtzJB2AWnBMuDOaoBPenga+h78WHT+qH9stUufLiZ9TdsRU8wF5GC
-         G4qQ==
+        bh=zYQ4AmPmJLRVcb+bNCTWwvbd+0C4LlEW8cfgqPE+hSI=;
+        b=ePwm60I3RCUYrPqjeEnw6l8QeP/cqoxaEn8va4UTHa9CHjAFsqfxZdW3Kh0RzYAEaP
+         k5F3tXevcvoqvH2RDvPGdAdlqO69WAnf2gp7Nj/1AnlEhOnniHeCTCY2OtwMtyI/fURG
+         Bd2OYnPF2OLCO9d81/VGf2JdGe+btCxpQqC21W2r/FRo/M+9/k4wnTsJnOTGa7uszYQp
+         WuuwVSdTeAbILv4uevIXHd9xb1aFiV/WUnVBvfU/tTkqjVkBmFsqRHA1pLSWaciMLxWL
+         W1QyT0NyAtNPuMWlHxRj62ab/wCx7iQ2lATH8Bm+zyGSczyuQeELAYQHm8KJoTaLeLk4
+         wi+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc;
-        bh=/C+hKhyGa8Z8FqlEwwzUM2g+6zJUxH3CoGD+BmNpkRU=;
-        b=TS1XZ5OeJsSwAQjTxv4owQ5RrC+jmwAmfh0BK/U2wadHTU3dg7e+Def1s+L2JHidhG
-         vRknxf++qt8F/fCyOBnNPYKG1EHbNDNea1xBCJlsuNGNCp4n/iat6ww7oGrHoxObwZHh
-         nEQKKkPLEZZjXy/p8MoL+uWquzLs/5v6jfBkFimAps+PzywHaCMHqwrI7ssdJJiy/Th3
-         mvdy1izPdcz4zcu4/QOsczqRR+KNPqzNKWhJIn6y3g6ISoXpKNDo21pz37RFbteiWWhT
-         ZhY/4y1sYrCMwBG0dSmh2Sks5icHFuQ5+sv2SMsYtB96RF2wfpXfyR1sJAvkmxWtv905
-         JHsw==
-X-Gm-Message-State: ACgBeo19ojcMwwB/ICaqNlu3Tk291JkoANjJ/uDhCB3jxSI6yQjCkyac
-        EVfXK+jGCQO0jJKDGdct41c=
-X-Google-Smtp-Source: AA6agR7MZ6Eh57nonDd1sdO5SezOu2y7/MW7ivmV4BitL7fH4HYDy4P9YkvpltcjsrHf+7Vev7SsRQ==
-X-Received: by 2002:a05:6000:186f:b0:21d:96af:31ea with SMTP id d15-20020a056000186f00b0021d96af31eamr2145172wri.646.1659636131906;
-        Thu, 04 Aug 2022 11:02:11 -0700 (PDT)
-Received: from debian.office.codethink.co.uk ([2405:201:8005:8149:e5c9:c0ac:4d82:e94b])
-        by smtp.gmail.com with ESMTPSA id n32-20020a05600c3ba000b003a2e27fc275sm2411299wms.12.2022.08.04.11.02.06
+        bh=zYQ4AmPmJLRVcb+bNCTWwvbd+0C4LlEW8cfgqPE+hSI=;
+        b=oDerPPsgYVj7UIQGerBZcDZYawaUkerpYCXVxMFT65Hk1z3H8Fkmyez9BZtztX3tc/
+         K2Tw8bnH7ngymRVKs5UFROx5BvkwCWui0DEI/FEWmTiRW51oGO6eHOJv3BBEXwCZ0JWp
+         V6j0WCPOIx6h3aXrO3lJRlqZ9k1tjH6NsCYOrf6r5ELw7wvxAalQwgr9Vzm7znBYVOYD
+         MujUCSaemOnyyTKx8YZKbXSDt4Di1projwm2S6ol1BTwi/gljnNxnCP3GFinipo+yQj8
+         r34/DFV33yV+xow/IGAluYxMDpPQHepyPqHKQ/Gt5fTP29IqTfxbQYc71Azgyd8z5jWx
+         p2fQ==
+X-Gm-Message-State: ACgBeo0UfXsNz7i/y+jr63o/cRfLsDNtS4V/jlyPLdf6S3R1fx3VEJf4
+        bV+XWpJccqgbIjKJMgi5rXtThsoUh8+1DQ==
+X-Google-Smtp-Source: AA6agR4p3/jYBTiz/l3f40m5Sg0bUtmpt+oz0h6mYWULe5xfm36Ya0c+xFUf4qNc2QGBZn7wPU7osQ==
+X-Received: by 2002:a17:907:1690:b0:72b:4f11:66c4 with SMTP id hc16-20020a170907169000b0072b4f1166c4mr2216435ejc.562.1659636249291;
+        Thu, 04 Aug 2022 11:04:09 -0700 (PDT)
+Received: from localhost.localdomain ([46.248.82.114])
+        by smtp.gmail.com with ESMTPSA id t22-20020a05640203d600b0043ce5d4d2c3sm979006edw.14.2022.08.04.11.04.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Aug 2022 11:02:11 -0700 (PDT)
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To:     Alex Deucher <alexander.deucher@amd.com>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH] drm/amd/amdgpu: fix build failure due to implicit declaration
-Date:   Thu,  4 Aug 2022 19:01:46 +0100
-Message-Id: <20220804180146.63184-1-sudipm.mukherjee@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Thu, 04 Aug 2022 11:04:08 -0700 (PDT)
+From:   Uros Bizjak <ubizjak@gmail.com>
+To:     x86@kernel.org, linux-kernel@vger.kernel.org
+Cc:     Uros Bizjak <ubizjak@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: [PATCH] x86/acrn: Improve ACRN hypercalls
+Date:   Thu,  4 Aug 2022 20:03:58 +0200
+Message-Id: <20220804180358.32944-1-ubizjak@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The builds for alpha and mips allmodconfig fails with the error:
+As explained in section 6.47.5.2, "Specifying Registers for Local Variables"
+of the GCC info documentation, the correct way to specify register for
+input operands when calling Extended 'asm' is to define a local register
+variable and associate it with a specified register:
 
-drivers/gpu/drm/amd/amdgpu/psp_v13_0.c:534:23:
-  error: implicit declaration of function 'vmalloc'; did you mean
-  'kvmalloc'? [-Werror=implicit-function-declaration]
+	register unsigned long r8 asm ("r8") = hcall_id;
 
-drivers/gpu/drm/amd/amdgpu/psp_v13_0.c:534:21:
-  error: assignment to 'void *' from 'int' makes pointer from integer
-  without a cast [-Werror=int-conversion]
+Use the above approach instead of explicit MOV to R8 at the beginning
+of the asm. The relaxed assignment allows compiler to optimize and
+shrink drivers/virt/acrn.o for 181 bytes:
 
-drivers/gpu/drm/amd/amdgpu/psp_v13_0.c:545:33: error: implicit declaration
-  of function 'vfree'; did you mean 'kvfree'?
-  [-Werror=implicit-function-declaration]
+   text    data     bss     dec     hex filename
+   4284     208       0    4492    118c hsm-new.o
+   4465     208       0    4673    1241 hsm-old.o
 
-Add the header file for vmalloc and vfree.
-
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
 ---
- drivers/gpu/drm/amd/amdgpu/psp_v13_0.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/include/asm/acrn.h | 27 ++++++++++++---------------
+ 1 file changed, 12 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/psp_v13_0.c b/drivers/gpu/drm/amd/amdgpu/psp_v13_0.c
-index 63b2d32545cc..726a5bba40b2 100644
---- a/drivers/gpu/drm/amd/amdgpu/psp_v13_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/psp_v13_0.c
-@@ -22,6 +22,7 @@
+diff --git a/arch/x86/include/asm/acrn.h b/arch/x86/include/asm/acrn.h
+index e003a01b7c67..601867085b95 100644
+--- a/arch/x86/include/asm/acrn.h
++++ b/arch/x86/include/asm/acrn.h
+@@ -29,19 +29,16 @@ static inline u32 acrn_cpuid_base(void)
+  *   - Hypercall number is passed in R8 register.
+  *   - Up to 2 arguments are passed in RDI, RSI.
+  *   - Return value will be placed in RAX.
+- *
+- * Because GCC doesn't support R8 register as direct register constraints, use
+- * supported constraint as input with a explicit MOV to R8 in beginning of asm.
   */
- #include <linux/dev_printk.h>
- #include <drm/drm_drv.h>
-+#include <linux/vmalloc.h>
- #include "amdgpu.h"
- #include "amdgpu_psp.h"
- #include "amdgpu_ucode.h"
+ static inline long acrn_hypercall0(unsigned long hcall_id)
+ {
+ 	long result;
+ 
+-	asm volatile("movl %1, %%r8d\n\t"
+-		     "vmcall\n\t"
++	register unsigned long r8 asm ("r8") = hcall_id;
++	asm volatile("vmcall"
+ 		     : "=a" (result)
+-		     : "g" (hcall_id)
+-		     : "r8", "memory");
++		     : "r" (r8)
++		     : "memory");
+ 
+ 	return result;
+ }
+@@ -51,11 +48,11 @@ static inline long acrn_hypercall1(unsigned long hcall_id,
+ {
+ 	long result;
+ 
+-	asm volatile("movl %1, %%r8d\n\t"
+-		     "vmcall\n\t"
++	register unsigned long r8 asm ("r8") = hcall_id;
++	asm volatile("vmcall"
+ 		     : "=a" (result)
+-		     : "g" (hcall_id), "D" (param1)
+-		     : "r8", "memory");
++		     : "r" (r8), "D" (param1)
++		     : "memory");
+ 
+ 	return result;
+ }
+@@ -66,11 +63,11 @@ static inline long acrn_hypercall2(unsigned long hcall_id,
+ {
+ 	long result;
+ 
+-	asm volatile("movl %1, %%r8d\n\t"
+-		     "vmcall\n\t"
++	register unsigned long r8 asm ("r8") = hcall_id;
++	asm volatile("vmcall"
+ 		     : "=a" (result)
+-		     : "g" (hcall_id), "D" (param1), "S" (param2)
+-		     : "r8", "memory");
++		     : "r" (r8), "D" (param1), "S" (param2)
++		     : "memory");
+ 
+ 	return result;
+ }
 -- 
-2.30.2
+2.37.1
 
