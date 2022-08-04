@@ -2,88 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1ECDC19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:36:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B9A1C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 14:36:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239791AbiHDOgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 10:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48984 "EHLO
+        id S239807AbiHDOgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 10:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234258AbiHDOgU (ORCPT
+        with ESMTP id S239600AbiHDOge (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 10:36:20 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB2332060
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 07:36:19 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id z187so9615239pfb.12
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 07:36:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:in-reply-to:references:subject:message-id:date
-         :mime-version:content-transfer-encoding;
-        bh=q+k2/oQCg1jExDf3V4wAMLxe+YHu3Cav2Cj1hEhSNaI=;
-        b=hE/oiEFnClv6y9rBHS2KMK6uuYGV0bVD21qZwtxdqZZmyh8k38w/J6Qot3ihBwHCsr
-         +9bjT8zHi1y2HAOFKWIAT0cE2At/qgXJNxJMte7A2oqMd7MD9csFv3Hi4a75c5HMJ2iA
-         GtwMS+oGPYOklrpW7S0botKdD3HBD3wXtRpXfjlQYKeW+mGGBCAJjfGk0Jfbgih5+NLr
-         pD+VnyUgWZ2lTvRKRodcgEjHjACT105SBfJGerMo6oqdwY6tfVz7XNgUK6YEX5wtZ1vk
-         vCcHZ9gczAibbdkDA+LGnxCrdEt+13gYZhYXchttcZhGXn+L38dkEeV0oZvFKdNWgy4H
-         n+bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
-         :message-id:date:mime-version:content-transfer-encoding;
-        bh=q+k2/oQCg1jExDf3V4wAMLxe+YHu3Cav2Cj1hEhSNaI=;
-        b=HtpDxB+SHuplgxNdYTBSxezKCDKRI1RRU35kPeAarCk5pD+6cfeYKdPP4l6EsSVah3
-         hJ2IHv6eCWCh+QE50mk36H/sOQ6NF0GvcgXVJ2eOHrzB8sbfOMa6WwKGknTPkvI5nWcC
-         EJ4uhLSoobJP3St+B1R+lIZahP94qz5xZvjomeLQgAPooilyA2pG0v+PJI+YCLYLPWHk
-         RpRz26RaPZrPaTrPXn0dPudAXXg+IOLeuG4Tz7dCkeb3MuNVCKMfGLLLPZhA8W0epJSw
-         3R6b+p0b7PiKqzlT+LbglevN0sLMJytAaqaGV09l5xM0EniuT6UHfIFhJktLbx3+MGn0
-         M73w==
-X-Gm-Message-State: ACgBeo1B/0o0Q+QD+Rb+TZch57eg+bJlIkUDJ2HXXhU27ai7wQdRjTFr
-        ZiJXBL+0uEuHAOPJKA7L/y8GAQ==
-X-Google-Smtp-Source: AA6agR7McvvMMvvmO1Lg8S2YS4nUVsullv7y6a/2XZIXBqXo7EJcpWXdQpN/AKwj5X+DJQwZRxS8eg==
-X-Received: by 2002:a63:82c2:0:b0:41b:c0f3:39b3 with SMTP id w185-20020a6382c2000000b0041bc0f339b3mr1878157pgd.86.1659623778954;
-        Thu, 04 Aug 2022 07:36:18 -0700 (PDT)
-Received: from [127.0.1.1] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id x12-20020a17090300cc00b0016d2db82962sm1084731plc.16.2022.08.04.07.36.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Aug 2022 07:36:18 -0700 (PDT)
-From:   Jens Axboe <axboe@kernel.dk>
-To:     paul@paul-moore.com, yepeilin.cs@gmail.com, eparis@redhat.com,
-        asml.silence@gmail.com
-Cc:     linux-audit@redhat.com, peilin.ye@bytedance.com,
-        io-uring@vger.kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220803222343.31673-1-yepeilin.cs@gmail.com>
-References: <20220803050230.30152-1-yepeilin.cs@gmail.com> <20220803222343.31673-1-yepeilin.cs@gmail.com>
-Subject: Re: [PATCH v2] audit, io_uring, io-wq: Fix memory leak in io_sq_thread() and io_wqe_worker()
-Message-Id: <165962377794.930556.772272743019429536.b4-ty@kernel.dk>
-Date:   Thu, 04 Aug 2022 08:36:17 -0600
+        Thu, 4 Aug 2022 10:36:34 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F88831903
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 07:36:33 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CB20211FB;
+        Thu,  4 Aug 2022 07:36:33 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.57.10.177])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9A5983F73B;
+        Thu,  4 Aug 2022 07:36:31 -0700 (PDT)
+From:   Qais Yousef <qais.yousef@arm.com>
+To:     Ingo Molnar <mingo@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc:     linux-kernel@vger.kernel.org, Xuewen Yan <xuewen.yan94@gmail.com>,
+        Lukasz Luba <lukasz.luba@arm.com>, Wei Wang <wvw@google.com>,
+        Jonathan JMChen <Jonathan.JMChen@mediatek.com>,
+        Hank <han.lin@mediatek.com>, Qais Yousef <qais.yousef@arm.com>
+Subject: [PATCH v2 0/9] Fix relationship between uclamp and fits_capacity()
+Date:   Thu,  4 Aug 2022 15:36:00 +0100
+Message-Id: <20220804143609.515789-1-qais.yousef@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 3 Aug 2022 15:23:43 -0700, Peilin Ye wrote:
-> From: Peilin Ye <peilin.ye@bytedance.com>
-> 
-> Currently @audit_context is allocated twice for io_uring workers:
-> 
->   1. copy_process() calls audit_alloc();
->   2. io_sq_thread() or io_wqe_worker() calls audit_alloc_kernel() (which
->      is effectively audit_alloc()) and overwrites @audit_context,
->      causing:
-> 
-> [...]
+Relationship between uclamp and fits_capacity() is currently broken. Mostly due
+to how uclamp should interact with migration margin and capacity pressure. But
+also due not all users were converted to consider uclamp before calling
+fits_capacity(). Namely cpu_overutilized().
 
-Applied, thanks!
+The meat of the series is patch 1 where we introduce a new function,
+util_fits_cpu(), that takes uclamp into account. The new function should
+replace all call sits to fits_capacity(), which what subsequent patches do.
+Except for patch 7 where we fix handling of early exit condition in
+find_energy_efficient_cpu(AKA feec()) that must be uclamp aware too.
 
-[1/1] audit, io_uring, io-wq: Fix memory leak in io_sq_thread() and io_wqe_worker()
-      commit: f482aa98652795846cc55da98ebe331eb74f3d0b
+util_fits_cpu() will revert back to a simple call to fits_capacity() if uclamp
+is not being used on the system.
 
-Best regards,
+Last two patches still need testing and verification, but they address the
+various thermal handling issues raised in v1. We can re-order the patches, but
+added at the end to facilitate review at this stage. Hope the approach and the
+logic make sense.
+
+I'll be on holidays, so if I don't respond to review comments fast enough,
+apologies in advance.
+
+Changes in v2:
+
+	* use uclamp_rq_is_idle() in uclamp_rq_util_with() (Xuewen)
+
+	* Simplify logic in update_sg_wakeup_stats() when converting
+	  task_fits_cpu() (Vincent)
+
+	* Better handling of thermal pressure (Vincent)
+
+	  - We consider thermal pressure for uclamp_min in patch 1
+	  - 2 new patches to handle capacity inversion which improves handling
+	    when:
+
+		+ There're multiple big cpus on separate perf domains.
+		+ A task is boosted by uclamp_min and inspite of thermal
+		  pressure, the big cpu is still the best placement.
+
+		  e.g: p0->util_avg = 300, p0->uclamp_min = 1024
+
+		  This task should stay on big CPU until thermal pressure is in
+		  capacity inversion.
+
+	v1 discussion: https://lore.kernel.org/lkml/20220629194632.1117723-1-qais.yousef@arm.com/
+
+	Thanks for all reviewers on v1!
+
+
+Qais Yousef (9):
+  sched/uclamp: Fix relationship between uclamp and migration margin
+  sched/uclamp: Make task_fits_capacity() use util_fits_cpu()
+  sched/uclamp: Fix fits_capacity() check in feec()
+  sched/uclamp: Make select_idle_capacity() use util_fits_cpu()
+  sched/uclamp: Make asym_fits_capacity() use util_fits_cpu()
+  sched/uclamp: Make cpu_overutilized() use util_fits_cpu()
+  sched/uclamp: Cater for uclamp in find_energy_efficient_cpu()'s early
+    exit condition
+  sched/fair: Detect capacity inversion
+  sched/fair: Consider capacity inversion in util_fits_cpu()
+
+ kernel/sched/core.c  |  10 +-
+ kernel/sched/fair.c  | 290 ++++++++++++++++++++++++++++++++++++++-----
+ kernel/sched/sched.h |  70 ++++++++++-
+ 3 files changed, 329 insertions(+), 41 deletions(-)
+
 -- 
-Jens Axboe
-
+2.25.1
 
