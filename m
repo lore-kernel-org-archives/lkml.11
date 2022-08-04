@@ -2,125 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 148D6C19F2D
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 07:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18858C19F2C
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 07:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239239AbiHDHkr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 03:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
+        id S239205AbiHDHmc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 03:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239211AbiHDHki (ORCPT
+        with ESMTP id S234760AbiHDHm3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 03:40:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE91661D7A
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 00:40:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659598836;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+WZV3/cdkw6cQVZQcHjV7n6CKEOnJ0svsTCr3g/sk6M=;
-        b=Vxs+fw2cdA36/+WF/lVr/lssRN0Ci3q0sxpuUUpi4uN67th8pmZdkqzY/AVsFHhADZlUFd
-        JduosQkqJ5K5g0CD5XuVY7hPLevtc01ehLpvYxz54WFiO1VIQJFRnnPIFfmhGjBmpWDQsH
-        lGZRWO1NNbydICJazT773TmKPqmOwvU=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-608-T3yfTbQhPFGkZN7gVc7Oww-1; Thu, 04 Aug 2022 03:40:35 -0400
-X-MC-Unique: T3yfTbQhPFGkZN7gVc7Oww-1
-Received: by mail-wm1-f72.google.com with SMTP id 189-20020a1c02c6000000b003a50fa69823so379386wmc.2
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 00:40:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=+WZV3/cdkw6cQVZQcHjV7n6CKEOnJ0svsTCr3g/sk6M=;
-        b=HRUlPG2IeGoBhIIwO1/mq4WIKNBQdw8a90zVt2ZieKJfmlolT5oaq5ihtUZt8XQMkl
-         NXcHtKK6FKJcL31xUTNiV+Ivao6OuhQL0KT8adF/kLkaMIjjn6f+lR5AHnP/wvvrIjrt
-         bM6USuhjZG7c3QLWEU8iqTlal7Dcbv2GHrUcm/rcq6/NNoxA6QWESpy4IdyQJhxWYjXg
-         40qZCzRmb9H+mv2LKRBKAJoD80v4gbNK0faMkCuZpYvOYtF10MXO/ktFgqfCkJ+0AGJ0
-         yRHtOh4bMjYd/5FrglKXHQjccLDZBF+MBBC4ImKaTy7fQMOynoYcqxJQsw90OZsDPo7l
-         lxag==
-X-Gm-Message-State: ACgBeo3bpsuehiGJx0ps+2pxSyMorgLn6oFpfR49u29F5O0kvtIdeqT7
-        xrfRCfvHy+Hpt/vVuAk4WjdPVuQYP8AM0SisrwGwHd6d0OpBAJO2j2mLgFOa1/VRAc02yYVCtWP
-        EBuJdkdKriIgqF0z416S8MZ2H
-X-Received: by 2002:a05:600c:22cc:b0:3a5:1209:bbba with SMTP id 12-20020a05600c22cc00b003a51209bbbamr537666wmg.131.1659598834569;
-        Thu, 04 Aug 2022 00:40:34 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR62Y6ne1DiShrSRbqQYc5mJ1dX+bf+AhMe3Je4WkCvDmV0K71eWzKuDsDTM0GKL/fS5+JSR8Q==
-X-Received: by 2002:a05:600c:22cc:b0:3a5:1209:bbba with SMTP id 12-20020a05600c22cc00b003a51209bbbamr537653wmg.131.1659598834309;
-        Thu, 04 Aug 2022 00:40:34 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c706:8900:2c18:b992:1fa1:f88b? (p200300cbc70689002c18b9921fa1f88b.dip0.t-ipconnect.de. [2003:cb:c706:8900:2c18:b992:1fa1:f88b])
-        by smtp.gmail.com with ESMTPSA id c16-20020adffb50000000b002205c907474sm226711wrs.107.2022.08.04.00.40.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Aug 2022 00:40:33 -0700 (PDT)
-Message-ID: <4cfb6fd5-f820-b56d-bbfe-13c92a5bf682@redhat.com>
-Date:   Thu, 4 Aug 2022 09:40:33 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2] mm/gup.c: Simplify and fix
- check_and_migrate_movable_pages() return codes
-Content-Language: en-US
-To:     Alistair Popple <apopple@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, jgg@nvidia.com, minchan@kernel.org,
-        linux-kernel@vger.kernel.org, jhubbard@nvidia.com,
-        pasha.tatashin@soleen.com
-References: <814dee5d3aadd38c3370eaaf438ba7eee9bf9d2b.1659399696.git-series.apopple@nvidia.com>
- <20220802171215.3c909e1984ec345ff94af155@linux-foundation.org>
- <87czdg7tlt.fsf@nvdebian.thelocal>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <87czdg7tlt.fsf@nvdebian.thelocal>
-Content-Type: text/plain; charset=UTF-8
+        Thu, 4 Aug 2022 03:42:29 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075C232DAA
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 00:42:27 -0700 (PDT)
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220804074226epoutp02512206b34b3cb8b1e8b8c3b748302ab3~IFHLVmRKo2192321923epoutp02S
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 07:42:26 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220804074226epoutp02512206b34b3cb8b1e8b8c3b748302ab3~IFHLVmRKo2192321923epoutp02S
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1659598946;
+        bh=Rm83Ec5yFCaQndyEYNktaf6vrS+E3EUgRBd9vlEqa4E=;
+        h=Subject:Reply-To:From:To:Date:References:From;
+        b=BcyBYWlizkylV4wi07KVSbhY3UWioAE1U9oDaZYXMptUTm1s6EZ9eIfxJrSxtgqFW
+         mNlnnZcuc06/s2x8A8ynQpP+m++s8uL44LkiCJ/FpIaCwWqdVWn+aLPiIEAfnxLZt9
+         v4Q4w9E66INNgFG3ZlcZIz/dIwok2tCR5krUn/f4=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20220804074225epcas2p340956e2923a6957fcdfbb4be56442c03~IFHKqa6eo0759107591epcas2p3M;
+        Thu,  4 Aug 2022 07:42:25 +0000 (GMT)
+Received: from epsmges2p4.samsung.com (unknown [182.195.36.99]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4Lz10J6MtHz4x9Px; Thu,  4 Aug
+        2022 07:42:24 +0000 (GMT)
+X-AuditID: b6c32a48-9f7ff700000025be-55-62eb78607d6f
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
+        E6.E1.09662.0687BE26; Thu,  4 Aug 2022 16:42:24 +0900 (KST)
+Mime-Version: 1.0
+Subject: [PATCH v7 0/6] scsi: ufs: wb: Add sysfs attribute and cleanup
+Reply-To: j-young.choi@samsung.com
+Sender: Jinyoung CHOI <j-young.choi@samsung.com>
+From:   Jinyoung CHOI <j-young.choi@samsung.com>
+To:     ALIM AKHTAR <alim.akhtar@samsung.com>,
+        "avri.altman@wdc.com" <avri.altman@wdc.com>,
+        "bvanassche@acm.org" <bvanassche@acm.org>,
+        "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+        "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        "beanhuo@micron.com" <beanhuo@micron.com>,
+        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
+        "stanley.chu@mediatek.com" <stanley.chu@mediatek.com>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20220804074224epcms2p18f0ac2f92073aeed981718a9cab23866@epcms2p1>
+Date:   Thu, 04 Aug 2022 16:42:24 +0900
+X-CMS-MailID: 20220804074224epcms2p18f0ac2f92073aeed981718a9cab23866
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrDJsWRmVeSWpSXmKPExsWy7bCmhW5Cxeskg5udxhYnn6xhs3gwbxub
+        xcufV9ksDj7sZLGY9uEns8XLQ5oWvf1b2SwW3djGZHF51xw2i+7rO9gslh//x2SxdOtNRgce
+        j8tXvD0W73nJ5DFh0QFGj5aT+1k8vq/vYPP4+PQWi0ffllWMHp83yXm0H+hmCuCMyrbJSE1M
+        SS1SSM1Lzk/JzEu3VfIOjneONzUzMNQ1tLQwV1LIS8xNtVVy8QnQdcvMAbpYSaEsMacUKBSQ
+        WFyspG9nU5RfWpKqkJFfXGKrlFqQklNgXqBXnJhbXJqXrpeXWmJlaGBgZApUmJCd8eLxX6aC
+        /bwVC/qusjcwHuDqYuTkkBAwkXj6eh57FyMXh5DADkaJY9s/MHUxcnDwCghK/N0hDGIKC7hJ
+        zLnOD1IuJKAkcW7NLEaIsIHErV5zkDCbgJ7EzyUz2EBsEYE2Fon1p9khpvNKzGh/ygJhS0ts
+        X76VEcLWkPixrJcZwhaVuLn6LTuM/f7YfKgaEYnWe2ehagQlHvzcDRWXlDh06CsbyAkSAvkS
+        Gw4EQoRrJN4uPwBVoi9xrWMj2FpeAV+Jrp6XYKexCKhKrJ31lA2ixkVi78EDYDazgLzE9rdz
+        mEFGMgtoSqzfpQ8xXVniyC0WmEcaNv5mR2czC/BJdBz+CxffMe8JE0SrmsSiJiOIsIzE18Pz
+        oUo8JKb0vGGbwKg4CxHGs5CcMAvhhAWMzKsYxVILinPTU4uNCkzg0Zqcn7uJEZxstTx2MM5+
+        +0HvECMTB+MhRgkOZiUR3hWWr5OEeFMSK6tSi/Lji0pzUosPMZoCPT+RWUo0OR+Y7vNK4g1N
+        LA1MzMwMzY1MDcyVxHm9UjYkCgmkJ5akZqemFqQWwfQxcXBKNTCpH51y0OQry++NgbIVj9by
+        HRSO2vu5zWR16BP9OObtXIy71aqs9l/5NpF9cluP2jHOAL7Jtes/uLwtszy1vNKU2zZ+D3ei
+        4a68B88/qd795HCqtv82f0Do6l8rBOZGCItWWrP827p9rsFCHbMJ6+4mvPvHWGD5dEPg0mVH
+        VQ+vOLpC5Nne6nZppYwVvKy5zu9cxEtT7JsX7vhmW8jtc2JxwGZtJvtpfWaVC1+zrDtuO0Wr
+        o9LmG8+eP0EmGVf18/2F2HZ2nuA6PXHtyxcbpzhELpv89UqB5jKvB4kXndcG35DeyXuj7WdK
+        c/yk29yv7MLf8Mn8Wu65/sbLvnd9tu+4G5/JtHMbioV+F72w6ZWOEktxRqKhFnNRcSIAxhoe
+        rD8EAAA=
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220804074224epcms2p18f0ac2f92073aeed981718a9cab23866
+References: <CGME20220804074224epcms2p18f0ac2f92073aeed981718a9cab23866@epcms2p1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04.08.22 02:12, Alistair Popple wrote:
-> 
-> Andrew Morton <akpm@linux-foundation.org> writes:
-> 
->> On Tue,  2 Aug 2022 10:30:12 +1000 Alistair Popple <apopple@nvidia.com> wrote:
->>
->>> When pinning pages with FOLL_LONGTERM check_and_migrate_movable_pages()
->>> is called to migrate pages out of zones which should not contain any
->>> longterm pinned pages.
->>>
->>> When migration succeeds all pages will have been unpinned so pinning
->>> needs to be retried. This is indicated by returning zero. When all pages
->>> are in the correct zone the number of pinned pages is returned.
->>>
->>> However migration can also fail, in which case pages are unpinned and
->>> -ENOMEM is returned. However if the failure was due to not being unable
->>> to isolate a page zero is returned. This leads to indefinite looping in
->>> __gup_longterm_locked().
->>>
->>> Fix this by simplifying the return codes such that zero indicates all
->>> pages were successfully pinned in the correct zone while errors indicate
->>> either pages were migrated and pinning should be retried or that
->>> migration has failed and therefore the pinning operation should fail.
->>>
->>> This fixes the indefinite looping on page isolation failure by failing
->>> the pin operation instead of retrying indefinitely.
->>>
->>
->> Are we able to identify a Fixes: for this?  Presumably something in the
->> series "Add MEMORY_DEVICE_COHERENT for coherent device memory mapping"?
-> 
-> It seems the infinite loop was desired behaviour so I will re-spin this
-> as a pure clean-up.
-> 
+This patch series is to clean up UFS's Write Booster code and
+adds sysfs attribute which can control the specific feature of it.
 
-How can the infinite loop trigger when we allow longterm-pinning the
-shared zeropage? (note: disallowing that for now was a bug)
+V2:
+	- modify commit message
+	- move & modify err messages
+	- remove unnesscessary debug messages
+V3:
+	- split patch (functional, non-functional)
+V4:
+	- split patch (The number of patches from 2 to 7)
+	- modify dev messages
+	- modify commit message
+V5:
+	- drop (scsi: ufs: wb: Move ufshcd_is_wb_allowed() to callee)
+	- fix condition check
+	- add document for sysfs attribute
+	- move ufshcd_is_wb_buf_flush_allowed() to ufs-priv.h
+V6:
+	- Change the function name from ufshcd_wb_config() to
+	ufshcd_configure_wb()
+	- modify document description for wb_buf_flush_en attribute
+	- fix some dev_err messages
+V7:
+	- renaming sysfs attribute name 
+	  (wb_buf_flush_en -> enable_wb_buf_flush)
+	- update document description
+	- change debug message level (info -> dbg)
+	  (5.19/scsi-fixes, https://git.kernel.org/mkp/scsi/c/2ae57c995003)
+
+Jinyoung Choi (6):
+  scsi: ufs: wb: Change wb_enabled condition test
+  scsi: ufs: wb: Change functions name and modify parameter name
+  scsi: ufs: wb: Add explicit flush sysfs attribute
+  scsi: ufs: wb: Introduce ufshcd_is_wb_buf_flush_allowed() to improve
+    readability
+  scsi: ufs: wb: Modify messages
+  scsi: ufs: wb: Move the comment to the right position
+
+ Documentation/ABI/testing/sysfs-driver-ufs |  9 +++
+ drivers/ufs/core/ufs-sysfs.c               | 47 ++++++++++++++-
+ drivers/ufs/core/ufshcd-priv.h             |  6 ++
+ drivers/ufs/core/ufshcd.c                  | 70 ++++++++++++----------
+ include/ufs/ufshcd.h                       |  1 +
+ 5 files changed, 99 insertions(+), 34 deletions(-)
 
 -- 
-Thanks,
-
-David / dhildenb
-
+2.25.1
