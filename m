@@ -2,104 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C50D4C19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 11:00:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A4E6C19F2C
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 11:00:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239167AbiHDLAD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 07:00:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48334 "EHLO
+        id S239350AbiHDLAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 07:00:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiHDLAA (ORCPT
+        with ESMTP id S239251AbiHDLAh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 07:00:00 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81AC813D05
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 03:59:58 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-31f41584236so196783907b3.5
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 03:59:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=mYh7Ouih07Y3JkD/4mGPnS2e5gIQyHSI8E3r8KOj1vc=;
-        b=oUwjUKM8jcd/JaE0oM61547C6N9OXxl5+tpApKpWs3g4cD4FmPmzuXjFJCmlZSqtGT
-         RVd0ZwA2ntr1g/bgWzJ5+TcCpjOnnFQW/HQtRSPEQfsIxKWFLM/JIrQqWZds5kgWvj2T
-         GnyIAMHEM6N90RW9JSK2B5g0dz7u+ci4ZV/U0Uk0J5613kSXMvkwBnD+6RnRbUUvfO+/
-         XaENnOTnBDXOqZxAnVtQXSvu76TKbBlNNKCrbZ+mm2m9ZbAY1RrSRdieHWw1k5ynAQT1
-         puJC+VaImpXclR2yDkggDC6xQA/XawXFQGMKNEEw53p/zO61G213O+jA51nZLq2liTRD
-         vAIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=mYh7Ouih07Y3JkD/4mGPnS2e5gIQyHSI8E3r8KOj1vc=;
-        b=gp0qXYPP3V3kjEKZMe22ljJz7FQg4x2kf5bzTyFT7vLGUFsb9nqg6pUOkZ1jx6v7nk
-         XX6g0o+4hbEYbfH+XwCmjmcpvKJc9NrTW2r9mHSJvGR2OYxlM7LzuFHHSeeB2xFfmvS7
-         eqhSJCNFieO4z6a+vj1hB+ybVMM1ZRskhtbNiBWC+Em/wa0MJ+frLDw4jUD17zxVBeo1
-         Fm1HV1TlpmcIYedJEwU4AXzSIQzsUEMTVZwwpcxs4xgaoM2+SuVy1Ca/KzQA3xrKIKRC
-         edyIK4SAvG5OOIBlzRjc+VgatuhPW3OsjprRcPhUJhfplAMY0GzDS0B6rzkkb0NPp+PJ
-         otyw==
-X-Gm-Message-State: ACgBeo2ALyHIoV0vjoFjIoYQQLkZTalmDeHyBrRt7zKNzR7O0AQCRxih
-        xz2Y9FtsX3ubjPUYUP+SSkqzUSoz35SkMqJJyiSPqA==
-X-Google-Smtp-Source: AA6agR7lf5Dq9DgZgvvP2FPGckvJRR3LeclWaANwXGWpFM1rOqMiuHvwOGZ84pGNZvRCelokRf4Bk5BKMXgyOLIaVQk=
-X-Received: by 2002:a81:b812:0:b0:328:68e4:c886 with SMTP id
- v18-20020a81b812000000b0032868e4c886mr1082057ywe.502.1659610797795; Thu, 04
- Aug 2022 03:59:57 -0700 (PDT)
+        Thu, 4 Aug 2022 07:00:37 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F022F10FF1;
+        Thu,  4 Aug 2022 04:00:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1659610833; x=1691146833;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=FcR3d8jHHEyu09i4b0k6HT4o5pB8ZX+bOopB6/B3OmU=;
+  b=vJdk8nxlx0acRWzJpoFeapR3VH14Zk9sUR4KKhtk3P7/7D1mgwrlPWLB
+   H+hbqwBa2bkF8lxDRiYcm5kfRb1gh+zHeMBkfHqNTT3A//eoRmQVavrdm
+   nyAJJym+9s2xcCI5dx5GCYpN5BYnsfKygZkf5uebXA2O2JntWkxNFfmFm
+   WNb9+8pAwA/OHkgJGPMc7lrGY1IIKaJfGWVt/qsw9gP8m86u7qUXitP/Q
+   H2itPaRxYidsgUGAzJrTIpfmbiLrB5YE3KZweiwHTF2C5gGgOrZzAugcq
+   9R0siw1bj86o53SwIZsnqk2uEErpkQXzQYnqDAJnVB5R4ned7oiKqNobX
+   g==;
+X-IronPort-AV: E=Sophos;i="5.93,215,1654585200"; 
+   d="scan'208";a="185080252"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Aug 2022 04:00:31 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Thu, 4 Aug 2022 04:00:27 -0700
+Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.28 via Frontend Transport; Thu, 4 Aug 2022 04:00:24 -0700
+From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+To:     <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <gregkh@linuxfoundation.org>,
+        <arnd@arndb.de>, <dragan.cvetic@xilinx.com>,
+        <derek.kiernan@xilinx.com>
+Subject: [PATCH RFC char-misc-next 0/5] misc: microchip: pci1xxxx: Add auxiliary bus driver and the GPIO driver for PIO function of pci1xxxx.
+Date:   Thu, 4 Aug 2022 22:02:14 +0530
+Message-ID: <20220804163219.921640-1-kumaravel.thiagarajan@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220714160951.9364-1-pdk@semihalf.com> <20220802154128.21175-1-pdk@semihalf.com>
- <YuuKu4b02siXj/TS@google.com>
-In-Reply-To: <YuuKu4b02siXj/TS@google.com>
-From:   Patryk Duda <pdk@semihalf.com>
-Date:   Thu, 4 Aug 2022 12:59:42 +0200
-Message-ID: <CAGOBvLpB2Xc5NDT_Ffq-_Bc-CRZQ6eAHV9ctSVkcOfqcCCc4Ag@mail.gmail.com>
-Subject: Re: [PATCH v1] platform/chrome: cros_ec_proto: Update version on
- GET_NEXT_EVENT failure
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Gwendal Grignou <gwendal@google.com>,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
-        upstream@semihalf.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-czw., 4 sie 2022 o 11:00 Tzung-Bi Shih <tzungbi@kernel.org> napisa=C5=82(a)=
-:
->
-> On Tue, Aug 02, 2022 at 05:41:28PM +0200, Patryk Duda wrote:
-> > Fixes: 3300fdd630d4 ("platform/chrome: cros_ec: handle MKBP more events=
- flag")
-> > Cc: <stable@vger.kernel.org> # 5.10+
->
-> Any concerns if removing the Cc tag?  As I think a Fixes tag should be
-> sufficient.  On a related note, why did you specify for only 5.10+?
-Submitting patches document mentions that 'Fixes:' helps stable kernel
-team in determining which stable kernel versions should receive the fix.
+pci1xxxx is a PCIe switch with a multi-function endpoint on one of its
+downstream ports. PIO function is one of the functions in the
+multi-function endpoint. PIO function combines a GPIO controller and also
+an interface to program pci1xxxx'x OTP & EEPROM. This patch adds an
+auxiliary bus driver that enumerates separate child devices for gpio and
+OTP/EEPROM interface and the gpio controller driver for the first child.
 
-However, there is a note:
-"Attaching a Fixes: tag does not subvert the stable kernel rules process
-nor the requirement to Cc: stable@vger.kernel.org on all stable patch
-candidates."
-https://www.kernel.org/doc/html/v5.19/process/submitting-patches.html#using=
--reported-by-tested-by-reviewed-by-suggested-by-and-fixes
+Kumaravel Thiagarajan (5):
+  misc: microchip: pci1xxxx: load auxiliary bus driver for the PIO
+    function in the multi-function endpoint of pci1xxxx device.
+  misc: microchip: pci1xxxx: load gpio driver for the gpio controller
+    auxiliary device enumerated by the auxiliary bus driver.
+  misc: microchip: pci1xxxx: Add functions to configure gpio pins as
+    input / output, get status, handle I/O for gpio pins.
+  misc: microchip: pci1xxxx: Add gpio irq handler and irq helper
+    functions irq_ack, irq_mask, irq_unmask and irq_set_type of
+    irq_chip.
+  misc: microchip: pci1xxxx: Add power management functions - suspend &
+    resume handlers.
 
-Stable kernel versions older than 5.10 don't suffer from this issue.
->
->
-> > Signed-off-by: Patryk Duda <pdk@semihalf.com>
->
-> You should collect the Reviewed-by tags the patch already got as dropping
-> `ver_mask` initialization isn't a big change.  I could do that for the pa=
-tch
-> this time.
-Thank you!
->
-> [...]
-> > v0 -> v1
-> > - Dropped `ver_mask` initialization.
->
-> Please start versioning from v1 next time.
-Ok, thanks!
+ MAINTAINERS                                   |   9 +
+ drivers/misc/Kconfig                          |   1 +
+ drivers/misc/Makefile                         |   3 +-
+ drivers/misc/mchp_pci1xxxx/Kconfig            |  10 +
+ drivers/misc/mchp_pci1xxxx/Makefile           |   1 +
+ drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.c | 167 +++++++
+ drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.h |  28 ++
+ .../misc/mchp_pci1xxxx/mchp_pci1xxxx_gpio.c   | 438 ++++++++++++++++++
+ 8 files changed, 656 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/misc/mchp_pci1xxxx/Kconfig
+ create mode 100644 drivers/misc/mchp_pci1xxxx/Makefile
+ create mode 100644 drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.c
+ create mode 100644 drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gp.h
+ create mode 100644 drivers/misc/mchp_pci1xxxx/mchp_pci1xxxx_gpio.c
+
+-- 
+2.25.1
+
