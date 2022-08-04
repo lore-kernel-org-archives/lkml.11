@@ -2,152 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C2F8C19F29
-	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 02:17:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C42C2C19F2D
+	for <linux-kernel@archiver.kernel.org>; Thu,  4 Aug 2022 02:18:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239416AbiHDCRi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 3 Aug 2022 22:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45676 "EHLO
+        id S239430AbiHDCST (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 3 Aug 2022 22:18:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238933AbiHDCQH (ORCPT
+        with ESMTP id S239344AbiHDCRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 3 Aug 2022 22:16:07 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4DF5FAD5;
-        Wed,  3 Aug 2022 19:16:05 -0700 (PDT)
-X-UUID: 73fbe67277224c8698e231a2c4711b90-20220804
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=7QEfDCmJpysBJ72erbrBABvMpGnkHVze3l/EuEEccys=;
-        b=jq2bAjoYa62PNQto15vHXvGPViBRIRd7FO3InRSrUcLafckwxGhRnxSrBqWR/ncMUq/PssYeWeEjLbK36rvHID3FwPpZonLdxtf3R/x7AdAZSfrT/9S9Puzvqu0reCATtAoQcqUqU+sJYBAKETnt6KTLWYxcFYreTVcoTFJ9hOE=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:5e8eabc8-49ca-45c3-b03e-664e0b4aed57,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:3ac03bd0-a6cf-4fb6-be1b-c60094821ca2,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 73fbe67277224c8698e231a2c4711b90-20220804
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-        (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 936671233; Thu, 04 Aug 2022 10:15:58 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 4 Aug 2022 10:15:56 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 4 Aug 2022 10:15:56 +0800
-From:   Tinghan Shen <tinghan.shen@mediatek.com>
-To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lee Jones <lee@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        MandyJH Liu <mandyjh.liu@mediatek.com>
-CC:     <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v5 07/20] arm64: dts: mediatek: Update mt81xx scpsys node to align with dt-bindings
-Date:   Thu, 4 Aug 2022 10:15:40 +0800
-Message-ID: <20220804021553.14867-8-tinghan.shen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220804021553.14867-1-tinghan.shen@mediatek.com>
-References: <20220804021553.14867-1-tinghan.shen@mediatek.com>
+        Wed, 3 Aug 2022 22:17:55 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712D561108
+        for <linux-kernel@vger.kernel.org>; Wed,  3 Aug 2022 19:16:40 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id dc19so11744197ejb.12
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 19:16:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=gWfB+VoJpyYH7MVy8NFfYamTDBAr8iMYEneTb6NC9lw=;
+        b=AbMyIOhgL2dl1hzzmxIOuXXLlv2CHsUHyc0nBU0b9kYHeBhKNJpvT4yy4gbNcHULNL
+         lELD4wT/TU/PA4httB4Gp0LkUc5L81fXdda4je4IfbFClE7yrwfgNhqGJjJ2aClFDO3Z
+         vNlGwYP5ZH/Id4nKRTdzm9trYbDJX4uWZXjXM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=gWfB+VoJpyYH7MVy8NFfYamTDBAr8iMYEneTb6NC9lw=;
+        b=sC00+cyLGsbkJfbMtWR9SSbmiTFarYl7e4CNo8DKa+dnSMpKtd+rfEWwN2x9RTmMeO
+         DBkMvRwfclJGrYhz2wLI55eBydeg8Mr5JctAbq0hHa8/sAhT5gTezqknVnO8uz8sa9Lh
+         xfLMzIxZHugGmVFqL/XURcn0jslHTr28LG6dyCsZItVb5on6TWNHQxrzpUi7A+eEyOqJ
+         yJvEUJyRNWp+DhXjgrz1WJJ7egwlo2Ms6OEpcRaw6NFvo5G56C5GKyoPjKZcW8eUXmVT
+         ADiNEdgDuHDH3qbZTVLqDsaYcZ3uA5Hw37t18/FkIWSZFJjekfU3JL6Dpvh94Kz0KlB6
+         HdIg==
+X-Gm-Message-State: AJIora97teszIcAHvnRxrvrDxBXn1sLVGD/tJLolFUXMONc5fV/iZHdu
+        o0bXx7Go14/yFVo0FdcaDVlDnyg6S21IQD/x
+X-Google-Smtp-Source: AGRyM1t5Gbx3s1Qwcr2Yl21wMzQO/pxQFzAc9AW50OLkgtV5cTl/0YHpovCrh1HDT9YnzjY8R596mw==
+X-Received: by 2002:a17:906:1315:b0:72c:5348:a153 with SMTP id w21-20020a170906131500b0072c5348a153mr22089492ejb.446.1659579390471;
+        Wed, 03 Aug 2022 19:16:30 -0700 (PDT)
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com. [209.85.128.44])
+        by smtp.gmail.com with ESMTPSA id 17-20020a170906201100b006fee98045cdsm99527ejo.10.2022.08.03.19.16.29
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Aug 2022 19:16:29 -0700 (PDT)
+Received: by mail-wm1-f44.google.com with SMTP id i128-20020a1c3b86000000b003a3a22178beso1797757wma.3
+        for <linux-kernel@vger.kernel.org>; Wed, 03 Aug 2022 19:16:29 -0700 (PDT)
+X-Received: by 2002:a05:600c:2d07:b0:3a3:585:5d96 with SMTP id
+ x7-20020a05600c2d0700b003a305855d96mr4620406wmf.38.1659579388908; Wed, 03 Aug
+ 2022 19:16:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <YurA3aSb4GRr4wlW@ZenIV> <CAHk-=wizUgMbZKnOjvyeZT5E+WZM0sV+zS5Qxt84wp=BsRk3eQ@mail.gmail.com>
+ <YuruqoGHJONpdZcK@home.goodmis.org> <CAHk-=whJvgykcTnR+BMJNwd+me5wvg+CxjSBeiPYTR1B2g5NpQ@mail.gmail.com>
+ <20220803185936.228dc690@gandalf.local.home> <YusDmF39ykDmfSkF@casper.infradead.org>
+ <CAHk-=wh6VSqsnANHkQpw=yD-Hkt90Y1LX=ad9+r+SusfriUOfA@mail.gmail.com>
+ <YusV8cr382PeBNLM@casper.infradead.org> <20220803213255.3ab719e3@gandalf.local.home>
+In-Reply-To: <20220803213255.3ab719e3@gandalf.local.home>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 3 Aug 2022 19:16:12 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiMFU1+pyG9AgbGSZfxNpoOzOEmjVyy87J6Q8aPKAJ7jQ@mail.gmail.com>
+Message-ID: <CAHk-=wiMFU1+pyG9AgbGSZfxNpoOzOEmjVyy87J6Q8aPKAJ7jQ@mail.gmail.com>
+Subject: Re: [git pull] vfs.git pile 3 - dcache
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update scpsys nodes using simple-mfd in mt81xx SoC devicetree
-to align with the bindings.
+On Wed, Aug 3, 2022 at 6:33 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+> We don't care if the lock is held or not. The point of the matter is that
+> spinlocks in RT do not disable preemption. The code that the
+> preempt_disable_under_spinlock() is inside, can not be preempted. If it is,
+> bad things can happen.
 
-Add specific compatibles for syscon node, even it's a dummy compatible,
-because syscon node must come with a specific compatible.
+I think you're missing Willy's point - the use would be to verify that
+the spinlock really *is* held, because that's what disables preemption
+on non-RT.
 
-Remove the '#power-domain-cells" propertry since the simple-mfd node is
-not the power domain provider; the provider is the child node.
+But no, I don't think it's worth the pain to have to specify which
+spinlock is held, because the spinlock might have been taken by the
+caller and we don't even have access to it - or care - we just know
+somebody did take it.
 
-Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/mt8167.dtsi | 3 +--
- arch/arm64/boot/dts/mediatek/mt8173.dtsi | 3 +--
- arch/arm64/boot/dts/mediatek/mt8183.dtsi | 3 +--
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 3 +--
- 4 files changed, 4 insertions(+), 8 deletions(-)
+If we want extra debuggingm it might be something like just verifying
+that yes, the preempt count (on a non-RT preemptible kernel) really is
+elevated already.
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8167.dtsi
- b/arch/arm64/boot/dts/mediatek/mt8167.dtsi
-index 54655f2feb04d..fbe1a1128cc6a 100644
---- a/arch/arm64/boot/dts/mediatek/mt8167.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8167.dtsi
-@@ -36,9 +36,8 @@
- 		};
- 
- 		scpsys: syscon@10006000 {
--			compatible = "syscon", "simple-mfd";
-+			compatible = "mediatek,mt8167-scpsys", "syscon", "simple-mfd";
- 			reg = <0 0x10006000 0 0x1000>;
--			#power-domain-cells = <1>;
- 
- 			spm: power-controller {
- 				compatible = "mediatek,mt8167-power-controller";
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
- b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-index 6d9513c1f5bfb..b4d48f8b7eebb 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-@@ -444,9 +444,8 @@
- 		};
- 
- 		scpsys: syscon@10006000 {
--			compatible = "syscon", "simple-mfd";
-+			compatible = "mediatek,mt8173-scpsys", "syscon", "simple-mfd";
- 			reg = <0 0x10006000 0 0x1000>;
--			#power-domain-cells = <1>;
- 
- 			/* System Power Manager */
- 			spm: power-controller {
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
- b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-index 9d32871973a29..28d84f0054ee0 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -761,9 +761,8 @@
- 		};
- 
- 		scpsys: syscon@10006000 {
--			compatible = "syscon", "simple-mfd";
-+			compatible = "mediatek,mt8183-scpsys", "syscon", "simple-mfd";
- 			reg = <0 0x10006000 0 0x1000>;
--			#power-domain-cells = <1>;
- 
- 			/* System Power Manager */
- 			spm: power-controller {
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
- b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index cbae5a5ee4a0b..8cd5906fe3a89 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -306,9 +306,8 @@
- 		};
- 
- 		scpsys: syscon@10006000 {
--			compatible = "syscon", "simple-mfd";
-+			compatible = "mediatek,mt8192-scpsys", "syscon", "simple-mfd";
- 			reg = <0 0x10006000 0 0x1000>;
--			#power-domain-cells = <1>;
- 
- 			/* System Power Manager */
- 			spm: power-controller {
--- 
-2.18.0
+> I wonder if raw_preempt_disable() would be another name to use?
 
+NO!
+
+The point is that normal non-RT code does *not* disable preemption at
+all, because it is already disabled thanks to the earlier spinlock.
+
+So we definitely do *not* want to call this "raw_preempt_disable()",
+because it's actually not supposed to normally disable anything at
+all. Only for RT, where the spinlock code doesn't do it.
+
+             Linus
