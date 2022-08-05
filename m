@@ -2,229 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D184DC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 23:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6DF7C19F2D
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 23:05:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241383AbiHEXCK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 19:02:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57366 "EHLO
+        id S241467AbiHEXFZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 19:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238665AbiHEXCF (ORCPT
+        with ESMTP id S238665AbiHEXFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 19:02:05 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B455E336
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 16:02:03 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id 13so3800474pgc.8
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 16:02:03 -0700 (PDT)
+        Fri, 5 Aug 2022 19:05:22 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF6311811
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 16:05:21 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id m123-20020a253f81000000b0066ff6484995so3171297yba.22
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 16:05:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kylehuey.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=nFYDqdYlKjDN/X9hygUy8BrADildhN55ltpacqhkjvk=;
-        b=Ub3SJjm4lKtLgOBKlk6F0NN6b1z1p0/7UOM205dCDKd00WpkwlCyMquyC48vh26HIN
-         AVj+rJuIZ/MSzJYPOHfeasr/8Ptjd9hcbaG7mCh4CcKVIV6KGlLp4LMDfRQLpK0V2uFI
-         sa6gu0npzlMwUn4NaoewDvikeJhWC4WItKEoeY1ka87GBAp0Pggs5I83tZDz3A183AP0
-         bry8r1oFq0y9dkh7Fnnv9EjGJyJUw8dBejX7HxmYZFF7oFUqAk68mv8/sjxcCYCkeucJ
-         6KImTMRFEdsmYxb1zT2bEAwb4/oO3nsdvGQYoLB3JZ5jI2Pnz6Zf+4/wNEfb3aGzP6pY
-         1QaA==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:reply-to:from:to:cc;
+        bh=e2Wr2MwiioMSCLqWtC02430vhbFmKWBtRWtzfefBsQM=;
+        b=soiQYBuzvfzJhZrCaJmG97rWO+rQNcOYYYd9Aif7XN/d9aHuOLnpmsWBbNBCS2VcZq
+         8VwCDxIM2tKb29vfhcGvgz2e73bJES5UuQRPQUwp+OKnvc8C4EkRPy+iqJU1asN1lqK3
+         hW7qJpe/Qsvze8bAQiZLsnUFUiVWkXCYygkcTtSR66CvVmEUInaebi/b56NU0+dUMkaz
+         CYB3dIzK/Jp8BOjxk9m+inCnWiPqGIg6SToroEyivHmAG7xh927QbERV4RQPMrVGVqrL
+         coLnpCCjTDfjFScGddYRa4OOL9+0bQiMRFKb8nx7uRRPbTtIHfT2MPuY5RvWn9VdT7CQ
+         kOYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=nFYDqdYlKjDN/X9hygUy8BrADildhN55ltpacqhkjvk=;
-        b=i8qjRa94NJqfhzEz+1+cn3dQ88+cI6ShM2nkGAfveEcmsPnyeT0lT2XNgHSwosGm4Y
-         ZYrR9oZmKj9EI2smqDKxRh6IMHCKiBFruAPi2F3EmHQP9c00bTVk5keMZXGGmgOy2jwC
-         ZHuskb5J/dn6uSYZhqEyL1daiXlaZ7Zey8GTD6sBfzADEvUpEG55tmtmUELZzr4cZyeW
-         nKDO/YLKWg3S+CImtgDdwQYPcW8grTePpbAKsT5fxHONVgUUyU2N4bLJDyFlrPIWNeQF
-         fIfXTB+HPbGCrWCcejlz63BlcAoa/9z3ezJnUmF6/aeN/yaESw6GC9Dw15aKHAWC7c4T
-         PS8g==
-X-Gm-Message-State: ACgBeo1SWvCV9XMWJ2ja5rKAy39dqurnCJBk3BwKU7qS4sFPceNvlwwF
-        JmWBdK2yUo/LzdCG++7S4A2AqQ==
-X-Google-Smtp-Source: AA6agR4bTfP1/w3A+DEkFJCGOJfEqaQeFteArUJJ+Jh14QBa7OAVShI1FIYTgY0tQSaGOH4Gxk7IoQ==
-X-Received: by 2002:a05:6a00:1248:b0:52b:ca7:f2b6 with SMTP id u8-20020a056a00124800b0052b0ca7f2b6mr8878508pfi.82.1659740522715;
-        Fri, 05 Aug 2022 16:02:02 -0700 (PDT)
-Received: from minbar.home.kylehuey.com (c-71-198-251-229.hsd1.ca.comcast.net. [71.198.251.229])
-        by smtp.gmail.com with ESMTPSA id g18-20020a635652000000b0041af82dacf7sm1958702pgm.73.2022.08.05.16.02.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 16:02:02 -0700 (PDT)
-From:   Kyle Huey <me@kylehuey.com>
-X-Google-Original-From: Kyle Huey <khuey@kylehuey.com>
-To:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>
-Cc:     Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Robert O'Callahan <robert@ocallahan.org>,
-        David Manouchehri <david.manouchehri@riseup.net>,
-        Kyle Huey <me@kylehuey.com>
-Subject: [PATCH v4 2/2] selftests/vm/pkeys: Add a regression test for setting PKRU through ptrace
-Date:   Fri,  5 Aug 2022 16:01:58 -0700
-Message-Id: <20220805230158.39378-2-khuey@kylehuey.com>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220805230158.39378-1-khuey@kylehuey.com>
-References: <20220805230158.39378-1-khuey@kylehuey.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=cc:to:from:subject:mime-version:message-id:date:reply-to
+         :x-gm-message-state:from:to:cc;
+        bh=e2Wr2MwiioMSCLqWtC02430vhbFmKWBtRWtzfefBsQM=;
+        b=wWLbiPML4Pfae9cYFphntc3Z3T/PKIzLc2UZI358rzscSE092mi2835Z2bT+GRUSkn
+         6VWqi6HCLfiOVERPsDSwuN04SiUYKRvAFPEif4krH8TP+nZIE4Aq4hu6qkMxJ6pJJMp4
+         ZicBV+cbHtRUfO0DFGDG8tzGSNclvDpPyY1F0068AoAfijG97HRg/7k5au7qLuyCuHzG
+         JvaaWHptLqm/iHg+Pro1aG7KmYLXNTOaLIbJMN1E2kifieMKeUFQv6rZR4m4ny56gVb+
+         m0clt2R35bSpXvwm3D2w2e3DXH9Ds9BqmtF3dZKAIm0pqYZ92sI/hW5alUxM+5PKlz7e
+         qgTw==
+X-Gm-Message-State: ACgBeo3u2OBv6xXiGi28GhjAC0WZ9hmYuHZ4wtT8jCkwXsRoDHN9vG27
+        4Z/XmlFS1ktFJXlS7Y8rVG0UsCLzBwk=
+X-Google-Smtp-Source: AA6agR4lozPjZq7A5eAdRjsEine2rVyRuK9dj0Z1TmdZln8C1d5Zi+RXznCNaeEBHpEvNyyBow5i/eE6LLI=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a81:bb43:0:b0:31d:d6d8:2d57 with SMTP id
+ a3-20020a81bb43000000b0031dd6d82d57mr8104067ywl.236.1659740720440; Fri, 05
+ Aug 2022 16:05:20 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Fri,  5 Aug 2022 23:05:05 +0000
+Message-Id: <20220805230513.148869-1-seanjc@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
+Subject: [PATCH v3 0/8] KVM: x86: Apply NX mitigation more precisely
+From:   Sean Christopherson <seanjc@google.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Matlack <dmatlack@google.com>,
+        Yan Zhao <yan.y.zhao@intel.com>,
+        Mingwei Zhang <mizhang@google.com>,
+        Ben Gardon <bgardon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kyle Huey <me@kylehuey.com>
+Precisely track (via kvm_mmu_page) if a non-huge page is being forced
+and use that info to avoid unnecessarily forcing smaller page sizes in
+disallowed_hugepage_adjust().
 
-This tests PTRACE_SETREGSET with NT_X86_XSTATE modifying PKRU directly and
-removing the PKRU bit from XSTATE_BV.
+KVM incorrectly assumes that the NX huge page mitigation is the only
+scenario where KVM will create a non-leaf page instead of a huge page.
+As a result, if the original source of huge page incompatibility goes
+away, the NX mitigation is enabled, and KVM encounters an present shadow
+page when attempting to install a huge page, KVM will force a smaller page
+regardless of whether or not a smaller page is actually necessary to
+satisfy the NX huge page mitigation.
 
-Signed-off-by: Kyle Huey <me@kylehuey.com>
----
- tools/testing/selftests/vm/pkey-x86.h        | 12 +++
- tools/testing/selftests/vm/protection_keys.c | 88 +++++++++++++++++++-
- 2 files changed, 98 insertions(+), 2 deletions(-)
+Unnecessarily forcing small pages can result in degraded guest performance,
+especially on larger VMs.  The bug was originally discovered when testing
+dirty log performance, as KVM would leave small pages lying around when
+zapping collapsible SPTEs.  That case was indadvertantly fixed by commit
+5ba7c4c6d1c7 ("KVM: x86/MMU: Zap non-leaf SPTEs when disabling dirty
+logging"), but other scenarios are still affected, e.g. KVM will not
+rebuild a huge page if the mmu_notifier zaps a range of PTEs because the
+primary MMU is creating a huge page.
 
-diff --git a/tools/testing/selftests/vm/pkey-x86.h b/tools/testing/selftests/vm/pkey-x86.h
-index b078ce9c6d2a..72c14cd3ddc7 100644
---- a/tools/testing/selftests/vm/pkey-x86.h
-+++ b/tools/testing/selftests/vm/pkey-x86.h
-@@ -104,6 +104,18 @@ static inline int cpu_has_pkeys(void)
- 	return 1;
- }
- 
-+static inline int cpu_max_xsave_size(void)
-+{
-+	unsigned long XSTATE_CPUID = 0xd;
-+	unsigned int eax;
-+	unsigned int ebx;
-+	unsigned int ecx;
-+	unsigned int edx;
-+
-+	__cpuid_count(XSTATE_CPUID, 0, eax, ebx, ecx, edx);
-+	return ecx;
-+}
-+
- static inline u32 pkey_bit_position(int pkey)
- {
- 	return pkey * PKEY_BITS_PER_PKEY;
-diff --git a/tools/testing/selftests/vm/protection_keys.c b/tools/testing/selftests/vm/protection_keys.c
-index 291bc1e07842..27759d3ed9cd 100644
---- a/tools/testing/selftests/vm/protection_keys.c
-+++ b/tools/testing/selftests/vm/protection_keys.c
-@@ -18,12 +18,13 @@
-  *	do a plain mprotect() to a mprotect_pkey() area and make sure the pkey sticks
-  *
-  * Compile like this:
-- *	gcc      -o protection_keys    -O2 -g -std=gnu99 -pthread -Wall protection_keys.c -lrt -ldl -lm
-- *	gcc -m32 -o protection_keys_32 -O2 -g -std=gnu99 -pthread -Wall protection_keys.c -lrt -ldl -lm
-+ *	gcc -mxsave      -o protection_keys    -O2 -g -std=gnu99 -pthread -Wall protection_keys.c -lrt -ldl -lm
-+ *	gcc -mxsave -m32 -o protection_keys_32 -O2 -g -std=gnu99 -pthread -Wall protection_keys.c -lrt -ldl -lm
-  */
- #define _GNU_SOURCE
- #define __SANE_USERSPACE_TYPES__
- #include <errno.h>
-+#include <linux/elf.h>
- #include <linux/futex.h>
- #include <time.h>
- #include <sys/time.h>
-@@ -1550,6 +1551,86 @@ void test_implicit_mprotect_exec_only_memory(int *ptr, u16 pkey)
- 	do_not_expect_pkey_fault("plain read on recently PROT_EXEC area");
- }
- 
-+#if defined(__i386__) || defined(__x86_64__)
-+void test_ptrace_modifies_pkru(int *ptr, u16 pkey)
-+{
-+	pid_t child;
-+	int status, ret;
-+	int pkey_offset = pkey_reg_xstate_offset();
-+	size_t xsave_size = cpu_max_xsave_size();
-+	void *xsave;
-+	u32 *pkey_register;
-+	u64 *xstate_bv;
-+	struct iovec iov;
-+
-+	child = fork();
-+	pkey_assert(child >= 0);
-+	dprintf3("[%d] fork() ret: %d\n", getpid(), child);
-+	if (!child) {
-+		u32 pkey_register = read_pkey_reg();
-+
-+		ptrace(PTRACE_TRACEME, 0, 0, 0);
-+		raise(SIGSTOP);
-+
-+		/*
-+		 * need __read_pkey_reg() version so we do not do shadow_pkey_reg
-+		 * checking
-+		 */
-+		if (pkey_register == __read_pkey_reg())
-+			exit(1);
-+
-+		raise(SIGSTOP);
-+
-+		exit(__read_pkey_reg());
-+	}
-+
-+	pkey_assert(child == waitpid(child, &status, 0));
-+	dprintf3("[%d] waitpid(%d) status: %x\n", getpid(), child, status);
-+	pkey_assert(WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP);
-+
-+	xsave = (void *)malloc(xsave_size);
-+	pkey_assert(xsave > 0);
-+
-+	iov.iov_base = xsave;
-+	iov.iov_len = xsave_size;
-+	ret = ptrace(PTRACE_GETREGSET, child, (void *)NT_X86_XSTATE, &iov);
-+	pkey_assert(ret == 0);
-+
-+	pkey_register = (u32 *)(xsave + pkey_offset);
-+	pkey_assert(*pkey_register == read_pkey_reg());
-+
-+	*pkey_register = !read_pkey_reg();
-+
-+	ret = ptrace(PTRACE_SETREGSET, child, (void *)NT_X86_XSTATE, &iov);
-+	pkey_assert(ret == 0);
-+
-+	ret = ptrace(PTRACE_CONT, child, 0, 0);
-+	pkey_assert(ret == 0);
-+
-+	pkey_assert(child == waitpid(child, &status, 0));
-+	dprintf3("[%d] waitpid(%d) status: %x\n", getpid(), child, status);
-+	pkey_assert(WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP);
-+
-+	ret = ptrace(PTRACE_GETREGSET, child, (void *)NT_X86_XSTATE, &iov);
-+	pkey_assert(ret == 0);
-+
-+	xstate_bv = (u64 *)(xsave + 512);
-+	*xstate_bv &= ~(1 << 9);
-+
-+	ret = ptrace(PTRACE_SETREGSET, child, (void *)NT_X86_XSTATE, &iov);
-+	pkey_assert(ret == 0);
-+
-+	ret = ptrace(PTRACE_CONT, child, 0, 0);
-+	pkey_assert(ret == 0);
-+
-+	pkey_assert(child == waitpid(child, &status, 0));
-+	dprintf3("[%d] waitpid(%d) status: %x\n", getpid(), child, status);
-+	pkey_assert(WIFEXITED(status));
-+	pkey_assert(WEXITSTATUS(status) == 0);
-+	free(xsave);
-+}
-+#endif
-+
- void test_mprotect_pkey_on_unsupported_cpu(int *ptr, u16 pkey)
- {
- 	int size = PAGE_SIZE;
-@@ -1585,6 +1666,9 @@ void (*pkey_tests[])(int *ptr, u16 pkey) = {
- 	test_pkey_syscalls_bad_args,
- 	test_pkey_alloc_exhaust,
- 	test_pkey_alloc_free_attach_pkey0,
-+#if defined(__i386__) || defined(__x86_64__)
-+	test_ptrace_modifies_pkru,
-+#endif
- };
- 
- void run_tests_once(void)
+v3:
+ - Bug the VM if KVM attempts to double account a shadow page that
+   disallows a NX huge page. [David]
+ - Split the rename to separate patch. [Paolo]
+ - Rename more NX huge page variables/functions. [David]
+ - Combine and tweak the comments about enforcing the NX huge page
+   mitigation for non-paging MMUs. [Paolo, David]
+ - Call out that the shadow MMU holds mmu_lock for write and doesn't need
+   to manual handle memory ordering when accounting NX huge pages. [David]
+ - Add a smp_rmb() when unlinking shadow pages in the TDP MMU.
+ - Rename spte_to_sp() to spte_to_child_sp(). [David]
+ - Collect reviews. [David]
+ - Tweak the changelog for the final patch to call out that precise
+   accounting addresses real world performance bugs. [Paolo]
+ - Reword the changelog for the patch to (almost) always tag disallowed
+   NX huge pages, and call out that it doesn't fix the TDP MMU. [David]
+
+v2: Rebase, tweak a changelog accordingly.
+
+v1: https://lore.kernel.org/all/20220409003847.819686-1-seanjc@google.com
+
+Mingwei Zhang (1):
+  KVM: x86/mmu: explicitly check nx_hugepage in
+    disallowed_hugepage_adjust()
+
+Sean Christopherson (7):
+  KVM: x86/mmu: Bug the VM if KVM attempts to double count an NX huge
+    page
+  KVM: x86/mmu: Tag disallowed NX huge pages even if they're not tracked
+  KVM: x86/mmu: Rename NX huge pages fields/functions for consistency
+  KVM: x86/mmu: Properly account NX huge page workaround for nonpaging
+    MMUs
+  KVM: x86/mmu: Set disallowed_nx_huge_page in TDP MMU before setting
+    SPTE
+  KVM: x86/mmu: Track the number of TDP MMU pages, but not the actual
+    pages
+  KVM: x86/mmu: Add helper to convert SPTE value to its shadow page
+
+ arch/x86/include/asm/kvm_host.h |  19 ++---
+ arch/x86/kvm/mmu/mmu.c          | 123 +++++++++++++++++++++-----------
+ arch/x86/kvm/mmu/mmu_internal.h |  33 ++++-----
+ arch/x86/kvm/mmu/paging_tmpl.h  |   6 +-
+ arch/x86/kvm/mmu/spte.c         |  12 ++++
+ arch/x86/kvm/mmu/spte.h         |  17 +++++
+ arch/x86/kvm/mmu/tdp_mmu.c      |  59 ++++++++++-----
+ arch/x86/kvm/mmu/tdp_mmu.h      |   2 +
+ 8 files changed, 178 insertions(+), 93 deletions(-)
+
+
+base-commit: 93472b79715378a2386598d6632c654a2223267b
 -- 
-2.37.0
+2.37.1.559.g78731f0fdb-goog
 
