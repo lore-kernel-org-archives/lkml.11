@@ -2,152 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C24ABC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 13:43:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55EF0C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 13:49:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233513AbiHENng (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 09:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52794 "EHLO
+        id S240611AbiHENtr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 09:49:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240725AbiHENna (ORCPT
+        with ESMTP id S231631AbiHENto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 09:43:30 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB57A26AD3;
-        Fri,  5 Aug 2022 06:43:25 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id A46E05FD06;
-        Fri,  5 Aug 2022 16:43:22 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1659707002;
-        bh=ZNxsBXeMZ0NBVx7yd+OxgeV/4yUg2rQxV6ljhZklxjo=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=hAaDeTfEOLQ8MEKeZMWODqu4FTygeU6ul4xPt3OVwFKHVKDtSYQqB728rj8lhsC46
-         ArWGTPDwhl/TUju6lcLJz7WLWd+y8slu14yTJ3zfkFc6ZQm/G8504oD7frJTWh16ba
-         W7PzbqHMFutLRlESnfpK9jf79iiYiDp2FnP95yjGyIhnXR7wjJb35xBbfBrBRv+Ajx
-         +X/sd2Mju00WGlvYiFc7ibe5hP+XMVOqVPM3pPjHa9ffmitSs9W93wIcKtPD2cgs4z
-         c4i7bQY5nGMn0Il6VktplNr0x+gUrnjcQbsgGqVVmI1mnDpn78i2qV6jdSavcgAOMy
-         4DiXFxUb0t1aw==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Fri,  5 Aug 2022 16:43:22 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Jerome Brunet <jbrunet@baylibre.com>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "narmstrong@baylibre.com" <narmstrong@baylibre.com>,
-        "khilman@baylibre.com" <khilman@baylibre.com>,
-        "martin.blumenstingl@googlemail.com" 
-        <martin.blumenstingl@googlemail.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-amlogic@lists.infradead.org" 
-        <linux-amlogic@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1] arm64: dts: meson-axg: reserve memory region for
- Amlogic TrustOS
-Thread-Topic: [PATCH v1] arm64: dts: meson-axg: reserve memory region for
- Amlogic TrustOS
-Thread-Index: AQHYqCKmlgn31IcXkUK0U/+U7ZMA562fwScAgABe64A=
-Date:   Fri, 5 Aug 2022 13:42:53 +0000
-Message-ID: <20220805134317.y6lnpgefolfq4iim@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220804165317.29086-1-ddrokosov@sberdevices.ru>
- <1jfsibqfez.fsf@starbuckisacylon.baylibre.com>
-In-Reply-To: <1jfsibqfez.fsf@starbuckisacylon.baylibre.com>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1C39E89F7937BD45A6D243AD02E27093@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        Fri, 5 Aug 2022 09:49:44 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A6B4D151;
+        Fri,  5 Aug 2022 06:49:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1659707374; x=1691243374;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=t5KjsovnLft0eC6PhANCf5G4JupnQ193gjR6obVUIxY=;
+  b=ip9nnkAgIzQoesVAzwLEBQUIdyl2yJhoZ9iRMFOkMzaYENGZeAHiF2x+
+   IAdPUjqaaZd4Vh+CLsPdNxtbiRmVbM5DpTXfNrROL1U9y8Bv80sDZJd/f
+   mHCdCxoNJ7HOi9c98F8tPv8kcRHPJhcSDLk82Uy0YpoGDfFtUt32e76dj
+   9SRWU0iUQUp1PKOrLf3MMjPAWh/L44LGLBtzuc6RCMa+1VCONofszhzFQ
+   NQwQASPguHFH775EW1+0heJ2y0zi2b8cnLX6t4pHZoOJd2WULh+0SZr1N
+   2tN/2gIwH6tx3IwG7Mow5JF1K5JSPhzpEYH86Bu/E75a/5gm7+2pcLuDU
+   g==;
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="107754683"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Aug 2022 06:49:32 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 5 Aug 2022 06:49:25 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
+ Transport; Fri, 5 Aug 2022 06:49:22 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Daire McNamara <daire.mcnamara@microchip.com>,
+        <linux-kernel@vger.kernel.org>
+CC:     Conor Dooley <conor.dooley@microchip.com>,
+        <devicetree@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Wolfram Sang" <wsa@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Jassi Brar" <jassisinghbrar@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH] MAINTAINERS: add PolarFire SoC dt bindings
+Date:   Fri, 5 Aug 2022 14:49:09 +0100
+Message-ID: <20220805134908.749935-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/05 06:43:00 #20054623
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Jerome,
+So far when I added bindings for the platform I never added them to
+our MAINTAINERS entry. No time like the present to improve the coverage.
 
-Thank you for the feedback.
+Suggested-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
+I have another maintainers change queued, I'll send this via soc along
+with it unless there are any objections.
 
-On Fri, Aug 05, 2022 at 10:03:34AM +0200, Jerome Brunet wrote:
->=20
-> On Thu 04 Aug 2022 at 16:52, Dmitry Rokosov <DDRokosov@sberdevices.ru> wr=
-ote:
->=20
-> > For the all AXG SoC based boards, which run Amlogic vendor ATF and
-> > TrustOS this memory region 0x5300000-0x6300000 is reserved by BL32,
-> > so tag it as no-map in the kernel iomem.
->=20
-> This may be true for the boards you have seen so far but not all ship
-> with this specific AML TEE. Some don't have TEE at all, other may have
-> different TEE regions.
->=20
-> 16 MB may be a significant part of the available memory on some AXG
-> devices. Reserving that memory on all AXG devices, regardless of what is
-> actually running does not seem appropriate.
->=20
-> I know the same has been done for other devices but I don't think we shou=
-ld
-> continue to do so. This should be set either
-> * per device if it is fixed
-> * dynamically by the bootloader depending on the ATF (which is probably b=
-etter)
->=20
+CC: Mark Brown <broonie@kernel.org>
+CC: Wolfram Sang <wsa@kernel.org>
+CC: Thierry Reding <thierry.reding@gmail.com>
+CC: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+CC: Jassi Brar <jassisinghbrar@gmail.com>
+CC: Linus Walleij <linus.walleij@linaro.org>
+CC: Bartosz Golaszewski <brgl@bgdev.pl>
+CC: Wolfgang Grandegger <wg@grandegger.com>
+CC: Marc Kleine-Budde <mkl@pengutronix.de>
+CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Arnd Bergmann <arnd@arndb.de>
+CC: Olof Johansson <olof@lixom.net>
+CC: Michael Turquette <mturquette@baylibre.com>
+CC: Stephen Boyd <sboyd@kernel.org>
+---
+ MAINTAINERS | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-I agree with you, *.dtsi is a common device tree base file which is
-included in the all board trees. But looks like I don't understand meson
-dtsi policy about TEE reserved memory regions. I mean g12 and gx dtsi
-have statically defined TrustOS regions inside, and all meson dtsi have
-hardcoded ATF regions. All of these regions are aligned with Amlogic ATF
-and Amlogic Trust OS reserved memory addresses. And if I want to use
-upstream ATF or optee build for Amlogic board, I need to patch dtsi file,
-which is not right way as you mentioned.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index cf7906eaa5ca..295941b6a413 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17525,6 +17525,15 @@ M:	Conor Dooley <conor.dooley@microchip.com>
+ M:	Daire McNamara <daire.mcnamara@microchip.com>
+ L:	linux-riscv@lists.infradead.org
+ S:	Supported
++F:	Documentation/devicetree/bindings/clock/microchip,mpfs.yaml
++F:	Documentation/devicetree/bindings/gpio/microchip,mpfs-gpio.yaml
++F:	Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml
++F:	Documentation/devicetree/bindings/mailbox/microchip,mpfs-mailbox.yaml
++F:	Documentation/devicetree/bindings/net/can/microchip,mpfs-can.yaml
++F:	Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
++F:	Documentation/devicetree/bindings/soc/microchip/microchip,mpfs-sys-controller.yaml
++F:	Documentation/devicetree/bindings/spi/microchip,mpfs-spi.yaml
++F:	Documentation/devicetree/bindings/usb/microchip,mpfs-musb.yaml
+ F:	arch/riscv/boot/dts/microchip/
+ F:	drivers/char/hw_random/mpfs-rng.c
+ F:	drivers/clk/microchip/clk-mpfs.c
 
-If we want to use per-board TEE memory regions definitions I suppose we
-need to move secos reserved ranges from gx and g12 dtsi files and move
-all secmon definitions from all meson dtsi files to appropriate board
-dtses (or mark them with status =3D "disable").
+base-commit: 899926f2ccb4453c51943f6738a71b2c5ad98b71
+-- 
+2.36.1
 
-What do you think?
-
-> >
-> > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> > ---
-> >  arch/arm64/boot/dts/amlogic/meson-axg.dtsi | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> >
-> > diff --git a/arch/arm64/boot/dts/amlogic/meson-axg.dtsi b/arch/arm64/bo=
-ot/dts/amlogic/meson-axg.dtsi
-> > index 3f5254eeb47b..1fa0d3805969 100644
-> > --- a/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
-> > +++ b/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
-> > @@ -142,6 +142,12 @@ secmon_reserved: secmon@5000000 {
-> >  			reg =3D <0x0 0x05000000 0x0 0x300000>;
-> >  			no-map;
-> >  		};
-> > +
-> > +		/* 16 MiB reserved for Amlogic Trust OS (BL32) */
-> > +		secos_reserved: secos@5300000 {
-> > +			reg =3D <0x0 0x05300000 0x0 0x1000000>;
-> > +			no-map;
-> > +		};
-> >  	};
-> > =20
-> >  	scpi {
->=20
-
---=20
-Thank you,
-Dmitry=
