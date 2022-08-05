@@ -2,101 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C77DEC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:38:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 806D3C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:40:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240520AbiHEIi2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 04:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56364 "EHLO
+        id S240091AbiHEIkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 04:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240323AbiHEIiS (ORCPT
+        with ESMTP id S234956AbiHEIkO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 04:38:18 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913821573A;
-        Fri,  5 Aug 2022 01:38:15 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id u133so1654359pfc.10;
-        Fri, 05 Aug 2022 01:38:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=tWL9Jm/bpwdH+2kthrf64sjurZaAu1v9jeTRfOFzaRk=;
-        b=gmYB/lbt52jMbEuG3Zdd/bgE/4p37nTSEKKAqy2XsPflvi7dgFsQju6tru82mGz6bi
-         KdayvIZN9EWGeXYWngWnueZWPq1SHLUc5VXhnDaVNpCOSgFEoLMFZcGRDRdUSIeJXySb
-         5Je7TRD9H15bjMLKUfM0IoPBhPkxLNsAE0QCbjCtIAKKT4pSwhff6ucrG8nvQ/cfp4SS
-         qB56Nhib44SgQ+z5EAAFGpoNOtBQegQKjcFlA1mnsEkwnuoUhK6neeZxXvxr6A+ghqWf
-         vTC6HVBg+xKtumZZRPhifpeaa3zl679v12dYr3l00lITNca8qHCbGvLQYIuyP4vn3j5K
-         AREw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=tWL9Jm/bpwdH+2kthrf64sjurZaAu1v9jeTRfOFzaRk=;
-        b=qJsU2thxqSJkGCj/xGk6TQk0ARxHoK3MIgbzoufWCUMbro8flI1NSRD8ZU9JrSyXsY
-         W1jgH+EVj1qGmLAsXp0odmJnkLv+mNI/ckvSLExHMn0JF7IIrRqXpLDKZHptoRrytbVd
-         c1cnowNZyBsSQO+XZvY/6DVNKr50blwX8VZ/DyMlayWeyA/e6SvZ31YbDzdtzSkJoJO4
-         qgnsUpvgbkR7ovqs7AXcAACPcKhk9gJOMUAc4jLqxI99/7HSixwUQ7YWEbUmnKQSvycq
-         9zkkxpBJEI57C3Ex8K6+2FXu371Wr+QE4EwJateuia2ZOUz852h/+7mfednv+lGMTVXy
-         ttOw==
-X-Gm-Message-State: ACgBeo3E0wrig4UZ9qky8F2RrDwwDxHeKMYg6NkgyQw1n+GmMvGS1RkH
-        MudfrkXeTN2/HDDHNKNio+MltgaU76Q7iQ==
-X-Google-Smtp-Source: AA6agR696WotLrZ+yJrQxzh6qi+rXKVpa2DKo6vyDlWmOoIPB7SaESu/twbumMOmGjTsQ6qGkVHfWQ==
-X-Received: by 2002:a17:903:234d:b0:16f:3e9:491b with SMTP id c13-20020a170903234d00b0016f03e9491bmr5762810plh.89.1659688684410;
-        Fri, 05 Aug 2022 01:38:04 -0700 (PDT)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id c126-20020a621c84000000b005289627ae6asm2347686pfc.187.2022.08.05.01.38.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 01:38:04 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] KVM: x86: Reject writes to PERF_CAPABILITIES feature MSR after KVM_RUN
-Date:   Fri,  5 Aug 2022 16:37:43 +0800
-Message-Id: <20220805083744.78767-2-likexu@tencent.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220805083744.78767-1-likexu@tencent.com>
-References: <20220805083744.78767-1-likexu@tencent.com>
+        Fri, 5 Aug 2022 04:40:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A850C64;
+        Fri,  5 Aug 2022 01:40:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1239BB82659;
+        Fri,  5 Aug 2022 08:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB55C433D6;
+        Fri,  5 Aug 2022 08:40:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659688809;
+        bh=hAlOWo0xSVS1q+XjsMEjNMfwAR8lstA2lMQ30Qmj/V8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QdrmKQ5hAFYAOFqUDfvhlIll4nYmCnsUP//sQ+J7r0UxNJiuPIBQkyrChaZH4I/Ah
+         orlYKPOQKJYgxbqZDy5WykOFeKLQhMKhP14Bd1kgdML9VNzr5o2GvsbwAEOH6x8Ezj
+         gEj7LwrgsQB/v4COdsgGSGpJRgXHxLuyIoxF4/p/5q3OHLSTqvR/YlEMoewfdqsLFA
+         hpzNYh6ztezevoe7rSP06oKlwkDxM/lQZ7MnqslLYddMAuKWPE2YPgx+oHTMXsZ/JU
+         c0qObE9ymz6oFhGNO7ye/aCL3NT7H75B0uieX0Q8cxnN8kvxYHRfQdgM2TMnS/293k
+         p/M1JecFKsBkQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oJssi-0008UA-Bi; Fri, 05 Aug 2022 10:40:32 +0200
+Date:   Fri, 5 Aug 2022 10:40:32 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm64: dts: qcom: sc8280xp-lenovo-thinkpad-x13s: Add LID
+ switch
+Message-ID: <YuzXgGQkLEqwqp31@hovoldconsulting.com>
+References: <20220730193617.1688563-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220730193617.1688563-1-bjorn.andersson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+On Sat, Jul 30, 2022 at 12:36:17PM -0700, Bjorn Andersson wrote:
+> Add gpio-keys for exposing the LID switch state.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>  .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    | 25 +++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+> index 84dc92dda0b8..f3246cc13d15 100644
+> --- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+> @@ -7,6 +7,8 @@
+>  /dts-v1/;
+>  
+>  #include <dt-bindings/gpio/gpio.h>
+> +#include <dt-bindings/input/gpio-keys.h>
+> +#include <dt-bindings/input/input.h>
+>  #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+>  
+>  #include "sc8280xp.dtsi"
+> @@ -26,6 +28,21 @@ backlight {
+>  		pinctrl-0 = <&edp_bl_en>, <&edp_bl_pwm>;
+>  	};
+>  
+> +	gpio-keys {
+> +		compatible = "gpio-keys";
+> +
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&hall_int_state>;
+> +
+> +		switch-lid {
+> +			gpios = <&tlmm 107 GPIO_ACTIVE_LOW>;
+> +			linux,input-type = <EV_SW>;
+> +			linux,code = <SW_LID>;
+> +			wakeup-source;
+> +			wakeup-event-action = <EV_ACT_DEASSERTED>;
+> +		};
+> +	};
+> +
+>  	vreg_edp_bl: regulator-edp-bl {
+>  		compatible = "regulator-fixed";
+>  
+> @@ -347,6 +364,14 @@ reset {
+>  		};
+>  	};
+>  
+> +	hall_int_state: hall-int-state {
 
-KVM may do the "wrong" thing if userspace changes PERF_CAPABILITIES
-after running the vCPU, i.e. after KVM_RUN. Similar to disallowing CPUID
-changes after KVM_RUN, KVM should also disallow changing the feature MSRs
-(conservatively starting from PERF_CAPABILITIES) after KVM_RUN to prevent
-unexpected behavior.
+This node should go before the keyboard node to maintain the sort order.
 
-Applying the same logic to most feature msrs in do_set_msr() may
-reduce the flexibility (one odd but reasonable user space may want
-per-vcpu control, feature by feature) and also increases the overhead.
+Also, none of the other labels have a "state" suffix and the other
+active-low pin node names have a "-n" suffix.
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Like Xu <likexu@tencent.com>
----
- arch/x86/kvm/x86.c | 3 +++
- 1 file changed, 3 insertions(+)
+So I believe this should be
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 33560bfa0cac..3fb933bfb3bd 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3540,6 +3540,9 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 
- 		if (!msr_info->host_initiated)
- 			return 1;
-+		if (vcpu->arch.last_vmentry_cpu != -1 &&
-+		    vcpu->arch.perf_capabilities != data)
-+			return 1;
- 		if (kvm_get_msr_feature(&msr_ent))
- 			return 1;
- 		if (data & ~msr_ent.data)
--- 
-2.37.1
+	hall_int_n: hall-int-n-state
 
+for consistency.
+
+> +		pins = "gpio107";
+> +		function = "gpio";
+> +
+
+Newline not needed (nor used in the other nodes).
+
+> +		input-enable;
+> +		bias-disable;
+> +	};
+> +
+>  	qup0_i2c4_default: qup0-i2c4-default-state {
+>  		pins = "gpio171", "gpio172";
+>  		function = "qup4";
+
+Looks good otherwise and appears to work as intended:
+
+Reviewed-by: Johan Hovold <johan+linaro@kernel.org>
+Tested-by: Johan Hovold <johan+linaro@kernel.org>
+
+Johan
