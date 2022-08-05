@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C9EC25B0C
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 15:46:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9CD4C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 15:46:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241272AbiHEPqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 11:46:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47978 "EHLO
+        id S240892AbiHEPqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 11:46:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241076AbiHEPph (ORCPT
+        with ESMTP id S241286AbiHEPpk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 11:45:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0008867CB6;
-        Fri,  5 Aug 2022 08:44:11 -0700 (PDT)
+        Fri, 5 Aug 2022 11:45:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0480F66107;
+        Fri,  5 Aug 2022 08:44:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AAC40B82985;
-        Fri,  5 Aug 2022 15:44:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E11BFC433C1;
-        Fri,  5 Aug 2022 15:44:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94F7161642;
+        Fri,  5 Aug 2022 15:44:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBDE8C43140;
+        Fri,  5 Aug 2022 15:44:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659714249;
-        bh=NuOpRdMsihtMLYOwhaS3C4UEtVr+be11RVn2cwjc27A=;
+        s=k20201202; t=1659714258;
+        bh=X6lh4WNmtZCkT50Wc3ckSm0pNtS3+5we4IFm0nIix5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bLUNXDszz/zBqQ3brx1rD/r7bdkpSyhZXciDVIvfIarmxR1WnGSa74LxDuUcI33XI
-         dGcJxGZQj2taqZRKpOZhVCWP0WQT76D10FmmwH/4mX3Kwy6HPk7Gy8jjZdPj1963j2
-         F5mh9r/0rLOdO5fmZb+qPv2WE3IxKqQUTUPEZkg6x5Gv0E6zto0I2bHcDR1ReL6vSf
-         bcWE/gq0lY7tzsVSnrZ3DFs+ey6RrhDGOC9Ox2ZQn+p73D+pmuefTTJHL2g8vxZ6Vg
-         cmn09dJMAemfoRXhr8M34QoqyyQWAVFAENaDrV5aUuNedV/eMEXSTzomRUzCmfX1G3
-         +wMAopQNkWbOA==
+        b=n33OKap5HI0sHaP457m8TQx6V8F0lhENA/iuRONTMEd0dBAf9TiRE9uNftFWVK7ue
+         loOkIUOtslXGBUxGcBDuSW/kScD2nvyvqGelKsGlrOMkatC1aRd1PEPLONBw6VPGYg
+         xkhlbVEeHQfeXT7GtXaL4wwtFP+EHczGb/2470qy3xA6LypqCR8Vu5QoQPyybBCini
+         ov1z1UidJ2t5rO3n4e+9RlCxyH4stgf9snAVhcmUcXt06AmM7++MG2ZtRcG2ghEB3E
+         hbYL3uQWgKeFK7J0MUF4vWErkC1hGVMndodVFqOy9drEcVUPe3hKW+W711zCbhD9nZ
+         pfI1xTczu/kug==
 From:   Miguel Ojeda <ojeda@kernel.org>
 To:     Linus Torvalds <torvalds@linux-foundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -39,12 +39,14 @@ Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-fsdevel@vger.kernel.org, patches@lists.linux.dev,
         Jarkko Sakkinen <jarkko@kernel.org>,
         Miguel Ojeda <ojeda@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
         Alex Gaynor <alex.gaynor@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>
-Subject: [PATCH v9 17/27] scripts: decode_stacktrace: demangle Rust symbols
-Date:   Fri,  5 Aug 2022 17:42:02 +0200
-Message-Id: <20220805154231.31257-18-ojeda@kernel.org>
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        David Gow <davidgow@google.com>,
+        Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+        =?UTF-8?q?Bj=C3=B6rn=20Roy=20Baron?= <bjorn3_gh@protonmail.com>
+Subject: [PATCH v9 19/27] scripts: add `generate_rust_target.rs`
+Date:   Fri,  5 Aug 2022 17:42:04 +0200
+Message-Id: <20220805154231.31257-20-ojeda@kernel.org>
 In-Reply-To: <20220805154231.31257-1-ojeda@kernel.org>
 References: <20220805154231.31257-1-ojeda@kernel.org>
 MIME-Version: 1.0
@@ -53,51 +55,216 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Recent versions of both Binutils (`c++filt`) and LLVM (`llvm-cxxfilt`)
-provide Rust v0 mangling support.
+This script takes care of generating the custom target specification
+file for `rustc`, based on the kernel configuration.
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+It also serves as an example of a Rust host program.
+
+A dummy architecture is kept in this patch so that a later patch
+adds x86 support on top with as few changes as possible.
+
 Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
 Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
 Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
 Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
+Co-developed-by: David Gow <davidgow@google.com>
+Signed-off-by: David Gow <davidgow@google.com>
 Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 ---
- scripts/decode_stacktrace.sh | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ scripts/.gitignore              |   1 +
+ scripts/generate_rust_target.rs | 171 ++++++++++++++++++++++++++++++++
+ 2 files changed, 172 insertions(+)
+ create mode 100644 scripts/generate_rust_target.rs
 
-diff --git a/scripts/decode_stacktrace.sh b/scripts/decode_stacktrace.sh
-index 7075e26ab2c4..564c5632e1a2 100755
---- a/scripts/decode_stacktrace.sh
-+++ b/scripts/decode_stacktrace.sh
-@@ -8,6 +8,14 @@ usage() {
- 	echo "	$0 -r <release> | <vmlinux> [<base path>|auto] [<modules path>]"
- }
- 
-+# Try to find a Rust demangler
-+if type llvm-cxxfilt >/dev/null 2>&1 ; then
-+	cppfilt=llvm-cxxfilt
-+elif type c++filt >/dev/null 2>&1 ; then
-+	cppfilt=c++filt
-+	cppfilt_opts=-i
-+fi
+diff --git a/scripts/.gitignore b/scripts/.gitignore
+index eed308bef604..b7aec8eb1bd4 100644
+--- a/scripts/.gitignore
++++ b/scripts/.gitignore
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ /asn1_compiler
+ /bin2c
++/generate_rust_target
+ /insert-sys-cert
+ /kallsyms
+ /module.lds
+diff --git a/scripts/generate_rust_target.rs b/scripts/generate_rust_target.rs
+new file mode 100644
+index 000000000000..7256c9606cf0
+--- /dev/null
++++ b/scripts/generate_rust_target.rs
+@@ -0,0 +1,171 @@
++// SPDX-License-Identifier: GPL-2.0
 +
- if [[ $1 == "-r" ]] ; then
- 	vmlinux=""
- 	basepath="auto"
-@@ -180,6 +188,12 @@ parse_symbol() {
- 	# In the case of inlines, move everything to same line
- 	code=${code//$'\n'/' '}
- 
-+	# Demangle if the name looks like a Rust symbol and if
-+	# we got a Rust demangler
-+	if [[ $name =~ ^_R && $cppfilt != "" ]] ; then
-+		name=$("$cppfilt" "$cppfilt_opts" "$name")
-+	fi
++//! The custom target specification file generator for `rustc`.
++//!
++//! To configure a target from scratch, a JSON-encoded file has to be passed
++//! to `rustc` (introduced in [RFC 131]). These options and the file itself are
++//! unstable. Eventually, `rustc` should provide a way to do this in a stable
++//! manner. For instance, via command-line arguments. Therefore, this file
++//! should avoid using keys which can be set via `-C` or `-Z` options.
++//!
++//! [RFC 131]: https://rust-lang.github.io/rfcs/0131-target-specification.html
 +
- 	# Replace old address with pretty line numbers
- 	symbol="$segment$name ($code)"
- }
++use std::{
++    collections::HashMap,
++    fmt::{Display, Formatter, Result},
++    io::BufRead,
++};
++
++enum Value {
++    Boolean(bool),
++    Number(i32),
++    String(String),
++    Object(Object),
++}
++
++type Object = Vec<(String, Value)>;
++
++/// Minimal "almost JSON" generator (e.g. no `null`s, no arrays, no escaping),
++/// enough for this purpose.
++impl Display for Value {
++    fn fmt(&self, formatter: &mut Formatter<'_>) -> Result {
++        match self {
++            Value::Boolean(boolean) => write!(formatter, "{}", boolean),
++            Value::Number(number) => write!(formatter, "{}", number),
++            Value::String(string) => write!(formatter, "\"{}\"", string),
++            Value::Object(object) => {
++                formatter.write_str("{")?;
++                if let [ref rest @ .., ref last] = object[..] {
++                    for (key, value) in rest {
++                        write!(formatter, "\"{}\": {},", key, value)?;
++                    }
++                    write!(formatter, "\"{}\": {}", last.0, last.1)?;
++                }
++                formatter.write_str("}")
++            }
++        }
++    }
++}
++
++struct TargetSpec(Object);
++
++impl TargetSpec {
++    fn new() -> TargetSpec {
++        TargetSpec(Vec::new())
++    }
++}
++
++trait Push<T> {
++    fn push(&mut self, key: &str, value: T);
++}
++
++impl Push<bool> for TargetSpec {
++    fn push(&mut self, key: &str, value: bool) {
++        self.0.push((key.to_string(), Value::Boolean(value)));
++    }
++}
++
++impl Push<i32> for TargetSpec {
++    fn push(&mut self, key: &str, value: i32) {
++        self.0.push((key.to_string(), Value::Number(value)));
++    }
++}
++
++impl Push<String> for TargetSpec {
++    fn push(&mut self, key: &str, value: String) {
++        self.0.push((key.to_string(), Value::String(value)));
++    }
++}
++
++impl Push<&str> for TargetSpec {
++    fn push(&mut self, key: &str, value: &str) {
++        self.push(key, value.to_string());
++    }
++}
++
++impl Push<Object> for TargetSpec {
++    fn push(&mut self, key: &str, value: Object) {
++        self.0.push((key.to_string(), Value::Object(value)));
++    }
++}
++
++impl Display for TargetSpec {
++    fn fmt(&self, formatter: &mut Formatter<'_>) -> Result {
++        // We add some newlines for clarity.
++        formatter.write_str("{\n")?;
++        if let [ref rest @ .., ref last] = self.0[..] {
++            for (key, value) in rest {
++                write!(formatter, "    \"{}\": {},\n", key, value)?;
++            }
++            write!(formatter, "    \"{}\": {}\n", last.0, last.1)?;
++        }
++        formatter.write_str("}")
++    }
++}
++
++struct KernelConfig(HashMap<String, String>);
++
++impl KernelConfig {
++    /// Parses `include/config/auto.conf` from `stdin`.
++    fn from_stdin() -> KernelConfig {
++        let mut result = HashMap::new();
++
++        let stdin = std::io::stdin();
++        let mut handle = stdin.lock();
++        let mut line = String::new();
++
++        loop {
++            line.clear();
++
++            if handle.read_line(&mut line).unwrap() == 0 {
++                break;
++            }
++
++            if line.starts_with('#') {
++                continue;
++            }
++
++            let (key, value) = line.split_once('=').expect("Missing `=` in line.");
++            result.insert(key.to_string(), value.trim_end_matches('\n').to_string());
++        }
++
++        KernelConfig(result)
++    }
++
++    /// Does the option exist in the configuration (any value)?
++    ///
++    /// The argument must be passed without the `CONFIG_` prefix.
++    /// This avoids repetition and it also avoids `fixdep` making us
++    /// depend on it.
++    fn has(&self, option: &str) -> bool {
++        let option = "CONFIG_".to_owned() + option;
++        self.0.contains_key(&option)
++    }
++}
++
++fn main() {
++    let cfg = KernelConfig::from_stdin();
++    let mut ts = TargetSpec::new();
++
++    // `llvm-target`s are taken from `scripts/Makefile.clang`.
++    if cfg.has("DUMMY_ARCH") {
++        ts.push("arch", "dummy_arch");
++    } else {
++        panic!("Unsupported architecture");
++    }
++
++    ts.push("emit-debug-gdb-scripts", false);
++    ts.push("frame-pointer", "may-omit");
++    ts.push(
++        "stack-probes",
++        vec![("kind".to_string(), Value::String("none".to_string()))],
++    );
++
++    // Everything else is LE, whether `CPU_LITTLE_ENDIAN` is declared or not
++    // (e.g. x86). It is also `rustc`'s default.
++    if cfg.has("CPU_BIG_ENDIAN") {
++        ts.push("target-endian", "big");
++    }
++
++    println!("{}", ts);
++}
 -- 
 2.37.1
 
