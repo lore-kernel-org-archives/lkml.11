@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D47C25B0C
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 593FDC25B0D
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240508AbiHEIey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 04:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51818 "EHLO
+        id S240511AbiHEIe6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 04:34:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237309AbiHEIes (ORCPT
+        with ESMTP id S240414AbiHEIeu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 04:34:48 -0400
+        Fri, 5 Aug 2022 04:34:50 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8607318345;
-        Fri,  5 Aug 2022 01:34:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B08D18385;
+        Fri,  5 Aug 2022 01:34:49 -0700 (PDT)
 Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lzf2g6578zjXgW;
-        Fri,  5 Aug 2022 16:31:39 +0800 (CST)
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lzf2k0fHyzjXjJ;
+        Fri,  5 Aug 2022 16:31:42 +0800 (CST)
 Received: from kwepemm600007.china.huawei.com (7.193.23.208) by
  dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 5 Aug 2022 16:34:42 +0800
+ 15.1.2375.24; Fri, 5 Aug 2022 16:34:45 +0800
 Received: from localhost.localdomain (10.69.192.56) by
  kwepemm600007.china.huawei.com (7.193.23.208) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 5 Aug 2022 16:34:41 +0800
+ 15.1.2375.24; Fri, 5 Aug 2022 16:34:42 +0800
 From:   Jie Hai <haijie1@huawei.com>
 To:     <vkoul@kernel.org>, <wangzhou1@hisilicon.com>
 CC:     <haijie1@huawei.com>, <liudongdong3@huawei.com>,
         <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v5 2/7] dmaengine: hisilicon: Fix CQ head update
-Date:   Fri, 5 Aug 2022 16:25:31 +0800
-Message-ID: <20220805082536.41145-3-haijie1@huawei.com>
+Subject: [PATCH v5 4/7] dmaengine: hisilicon: Use macros instead of magic number
+Date:   Fri, 5 Aug 2022 16:25:33 +0800
+Message-ID: <20220805082536.41145-5-haijie1@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220805082536.41145-1-haijie1@huawei.com>
 References: <20220625074422.3479591-1-haijie1@huawei.com>
@@ -48,46 +48,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After completion of data transfer of one or multiple descriptors,
-the completion status and the current head pointer to submission
-queue are written into the CQ and interrupt can be generated to
-inform the software. In interrupt process CQ is read and cq_head
-is updated.
+readl_relaxed_poll_timeout() uses magic numbers 10 and 1000, which
+indicate maximum time to sleep between reads in us and timeout in us,
+respectively.
 
-hisi_dma_irq updates cq_head only when the completion status is
-success. When an abnormal interrupt reports, cq_head will not update
-which will cause subsequent interrupt processes read the error CQ
-and never report the correct status.
+Use macros HISI_DMA_POLL_Q_STS_DELAY_US and
+HISI_DMA_POLL_Q_STS_TIME_OUT_US instead of these two numbers.
 
-This patch updates cq_head whenever CQ is accessed.
-
-Fixes: e9f08b65250d ("dmaengine: hisilicon: Add Kunpeng DMA engine support")
 Signed-off-by: Jie Hai <haijie1@huawei.com>
 Acked-by: Zhou Wang <wangzhou1@hisilicon.com>
 ---
- drivers/dma/hisi_dma.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/dma/hisi_dma.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/dma/hisi_dma.c b/drivers/dma/hisi_dma.c
-index 98bc488893cc..837f7e4adfa6 100644
+index 0233b42143c7..5d62fe62ba00 100644
 --- a/drivers/dma/hisi_dma.c
 +++ b/drivers/dma/hisi_dma.c
-@@ -436,12 +436,10 @@ static irqreturn_t hisi_dma_irq(int irq, void *data)
- 	desc = chan->desc;
- 	cqe = chan->cq + chan->cq_head;
- 	if (desc) {
-+		chan->cq_head = (chan->cq_head + 1) % hdma_dev->chan_depth;
-+		hisi_dma_chan_write(hdma_dev->base, HISI_DMA_CQ_HEAD_PTR,
-+				    chan->qp_num, chan->cq_head);
- 		if (FIELD_GET(STATUS_MASK, cqe->w0) == STATUS_SUCC) {
--			chan->cq_head = (chan->cq_head + 1) %
--					hdma_dev->chan_depth;
--			hisi_dma_chan_write(hdma_dev->base,
--					    HISI_DMA_CQ_HEAD_PTR, chan->qp_num,
--					    chan->cq_head);
- 			vchan_cookie_complete(&desc->vd);
- 		} else {
- 			dev_err(&hdma_dev->pdev->dev, "task error!\n");
+@@ -36,6 +36,9 @@
+ 
+ #define PCI_BAR_2			2
+ 
++#define HISI_DMA_POLL_Q_STS_DELAY_US	10
++#define HISI_DMA_POLL_Q_STS_TIME_OUT_US	1000
++
+ enum hisi_dma_mode {
+ 	EP = 0,
+ 	RC,
+@@ -185,15 +188,19 @@ static void hisi_dma_reset_or_disable_hw_chan(struct hisi_dma_chan *chan,
+ {
+ 	struct hisi_dma_dev *hdma_dev = chan->hdma_dev;
+ 	u32 index = chan->qp_num, tmp;
++	void __iomem *addr;
+ 	int ret;
+ 
+ 	hisi_dma_pause_dma(hdma_dev, index, true);
+ 	hisi_dma_enable_dma(hdma_dev, index, false);
+ 	hisi_dma_mask_irq(hdma_dev, index);
+ 
+-	ret = readl_relaxed_poll_timeout(hdma_dev->base +
+-		HISI_DMA_Q_FSM_STS + index * HISI_DMA_OFFSET, tmp,
+-		FIELD_GET(HISI_DMA_FSM_STS_MASK, tmp) != RUN, 10, 1000);
++	addr = hdma_dev->base +
++	       HISI_DMA_Q_FSM_STS + index * HISI_DMA_OFFSET;
++
++	ret = readl_relaxed_poll_timeout(addr, tmp,
++		FIELD_GET(HISI_DMA_FSM_STS_MASK, tmp) != RUN,
++		HISI_DMA_POLL_Q_STS_DELAY_US, HISI_DMA_POLL_Q_STS_TIME_OUT_US);
+ 	if (ret) {
+ 		dev_err(&hdma_dev->pdev->dev, "disable channel timeout!\n");
+ 		WARN_ON(1);
+@@ -208,9 +215,9 @@ static void hisi_dma_reset_or_disable_hw_chan(struct hisi_dma_chan *chan,
+ 		hisi_dma_unmask_irq(hdma_dev, index);
+ 	}
+ 
+-	ret = readl_relaxed_poll_timeout(hdma_dev->base +
+-		HISI_DMA_Q_FSM_STS + index * HISI_DMA_OFFSET, tmp,
+-		FIELD_GET(HISI_DMA_FSM_STS_MASK, tmp) == IDLE, 10, 1000);
++	ret = readl_relaxed_poll_timeout(addr, tmp,
++		FIELD_GET(HISI_DMA_FSM_STS_MASK, tmp) == IDLE,
++		HISI_DMA_POLL_Q_STS_DELAY_US, HISI_DMA_POLL_Q_STS_TIME_OUT_US);
+ 	if (ret) {
+ 		dev_err(&hdma_dev->pdev->dev, "reset channel timeout!\n");
+ 		WARN_ON(1);
 -- 
 2.33.0
 
