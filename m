@@ -2,183 +2,291 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 421C0C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 20:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC55DC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 20:53:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238673AbiHEUwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 16:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32874 "EHLO
+        id S234826AbiHEUxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 16:53:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234587AbiHEUwe (ORCPT
+        with ESMTP id S230098AbiHEUx3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 16:52:34 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D998414D0F
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 13:52:33 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 275KnLmC031988;
-        Fri, 5 Aug 2022 20:52:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=vvTjhwols0PebIHwJvyp7HypDepzWhjqNQNxDAlUzC0=;
- b=S/ahcY0kJaYKHG32QtedUvMbHi79qPI+nfj7l6TbOm5Rl1xVGGcE+rUid9sNwDJEhz6/
- XikkrN7l/7VDX8Fj7CVnILTpxbCzJZppZVOi4bCXpqLD6ExM83KmesDV+4z7ELwspONw
- amdGZOFnvcfmytCnEsMvra2i97qDZTc0OeZN0zYIewfs6KcgDkFvCxqAWA48YCvCEmQO
- o+BPKXx/1GJY4EJMyX8CbHJ1P0woSNKnXiljz5VRykgG/RtvARRzCs2z2UBozrhtgPd3
- lSVY+yaWquyiKiOmrBBx8TZyPWXO58sGZQ5zT6ce7JZQAe7m0T/1hDRcf2AUxDYsbEhA vA== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hmw6trupt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 05 Aug 2022 20:52:18 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 275K4vjY010864;
-        Fri, 5 Aug 2022 20:52:17 GMT
-Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam04lp2171.outbound.protection.outlook.com [104.47.73.171])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3hmu35qbjx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 05 Aug 2022 20:52:17 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CGwOzpQRfuaw9ZbRKD9iwPyxYbAbbg554pSd2K5Lfs38PWMnWTEz+PoYzC4isLt8G/lKfXYkOKgX1+uz5XY1oimiEheXvVnpNwSaB4p1AYR7wkx/3G9dWA7f0mtafgzjtecCJXL+pjkcxa1vImuFP1ofaNH5eTHqFUNtoa1Beo3h4i1s3p9eFjGlDFsIm/8QHlkNSTsi1eLXmuUw65mgQnp6GsBCSLrF8cMesU8juzHE9o5Wf6mPEZ7a2wPE2IGfe/MXgayKRnCCLpDJgkRNZ2OJRGOgP8sUKc1YMpUrhVO8UO56mjG5HT1EQatCjSov+rIpDBT3a/rh7qBwI9KccQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vvTjhwols0PebIHwJvyp7HypDepzWhjqNQNxDAlUzC0=;
- b=ZINRuLSGl28Fd19SSbft0UNJP5CQ0YZh+ObqxY4ff63XkRRyDYNgsvAQYDiSXcyHBDCGlTRd1Jlc6DPcZfvvek06Eh0IHBpd2N/aSEbAeF6dlM/yi0owy7yU3pN0W34ZfMt9qty4ncM/PRhxgyIkn4Q0LuuJ8u9a/PB6l/xLLVx6HYMezpdQ9tqdBTV1CUgHj7+cIuxXdfpcfiLRyZWJxSGWbmYkRgpVhZ8Z6xO6ISEeESFg6pKHacuZ72V2ImwCeEqGbWInxT33eaCpOR8K+78f64h4OsRdauNu2xsVCn9qDf3mOB5nwCMDk2w0omqgtymEpH/0TAEeQWohZdiynA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vvTjhwols0PebIHwJvyp7HypDepzWhjqNQNxDAlUzC0=;
- b=hovMntIakh3Ej2ShFCf2Y/fviQELVHOY3Xdwl/FEkGWNww9E5UMfAQS/775CNInBdvOizwxmnCT/mDm2EhCQHgf37mbSy0aitQfktUki+bpKFS5eUiJgNWleX7Iqe9RGIjm2M7H9Gisl34kHtdjtcL9lCW5aMwVZx8Icajqriu0=
-Received: from SN4PR10MB5559.namprd10.prod.outlook.com (2603:10b6:806:202::16)
- by MW4PR10MB5881.namprd10.prod.outlook.com (2603:10b6:303:18e::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16; Fri, 5 Aug
- 2022 20:52:16 +0000
-Received: from SN4PR10MB5559.namprd10.prod.outlook.com
- ([fe80::1c9e:630c:a63f:fdf]) by SN4PR10MB5559.namprd10.prod.outlook.com
- ([fe80::1c9e:630c:a63f:fdf%3]) with mapi id 15.20.5504.016; Fri, 5 Aug 2022
- 20:52:16 +0000
-From:   William Kucharski <william.kucharski@oracle.com>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-CC:     Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] shmem: Update folio if shmem_replace_page() updates the
- page
-Thread-Topic: [PATCH] shmem: Update folio if shmem_replace_page() updates the
- page
-Thread-Index: AQHYpAsmmbDT6gJKuEORFdp5TP+PXK2g0leA
-Date:   Fri, 5 Aug 2022 20:52:15 +0000
-Message-ID: <0BAD35F3-C90F-4425-ADEE-B39E507D4AE0@oracle.com>
-References: <20220730042518.1264767-1-willy@infradead.org>
-In-Reply-To: <20220730042518.1264767-1-willy@infradead.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3729.0.22.1.31)
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3a01c55d-0941-4fcf-42ef-08da77246136
-x-ms-traffictypediagnostic: MW4PR10MB5881:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: jgXnbCMobM4qO2O1IxvXso23L9sQVxJmKFx7/MWcohoM4g5M/KXMpT/BzUdfCGrHVmcK1Wr/zVyyQHepuw+tYLMmBc6dQ6RAaSN3uCKfkbCfBXsV5xjg9QNtDj5vTTO6SOazQNFxorM0evoREe5d47v/2tZGrM5rgu1dFzUnjvPGEDU33AKVYnfwaAjUIw7RjN4GW654ESGRoYKpRfN7BuOK9E6WHSLWJxsZeYYtmTUP1jnmCfcuV7gdpMqp8SI/7l4oI93RUbD6YkhGCn79KBCH/rwwIzkpELnskL2TkqfWRR2wEy/7+59GLwaqgLhp6Idp0RdQ/jD+NGIzI1fOtq8fqunCSJ5T/Ofn8RmIr8Ql9iHFpee0LyQKbxeP3C7LqBVOH03OV+xvNAaHIq4ycdXTYbXvJmG3yLVL1mWUYRTcb4ZKO7ucJ4skWmCMfaxa7mu0OOyzxN2/NcDVXlMVU/4UvJ9GYWBvSilrJ2Hh+Ts5fOMdGqHVg+vbMFARM2HmSac7jvAOElrboZEynlZwleutAAud5+wqNS7ktC46uYviqGQMmgYIuB81UhsYD/SaKkGnZKZHs+L45i3yG7BZsbI80sujwbKXFLIeS9G4FJrurI5fpacebX9lBPTfpsERKszfzimFFYPISYIwrv/OcB2ckwBqBIpS6OumzSFR/VCF8ZrOOZXvnTr6GXAQbZyJ0CeRAykfS8AJo5fLy6Sgol5JLGdskZ40Y9ikonlgBZ+7WEQLIHDDG8ghbpoYg0T7cTU5MJXPOww6ZzvJZdSKMsuC2JQd3JWswkza8ZCNBIhTKojw9GYGR/lpNlnJ/p17gtzl63y9qwC3nhT4F6+noA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN4PR10MB5559.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(136003)(396003)(376002)(346002)(366004)(186003)(478600001)(2616005)(66476007)(91956017)(66946007)(64756008)(66446008)(76116006)(8676002)(54906003)(316002)(66556008)(6916009)(33656002)(86362001)(4326008)(36756003)(5660300002)(41300700001)(44832011)(4744005)(71200400001)(6506007)(53546011)(6512007)(38100700002)(122000001)(8936002)(2906002)(38070700005)(6486002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?MStqyYc8Jtj4ZLUjKWMkYYakH7eyR5IkOuaRQZ+mzPc6OA4hpeWbRIZhVZ3j?=
- =?us-ascii?Q?LApBTG71f5JJ8r7bPrnI4MIHHfKNHHwIpiM0P4xbQ9bvaaVxRLx437YrGnoQ?=
- =?us-ascii?Q?V6z7bSWqGoszVLgIXSL1yeFpk4KOHbIvbyrUssu85k1xSMtUDnuDfKXE1oGs?=
- =?us-ascii?Q?7XdgCNnES75QhLh5nJgHi15PPv0J0s3k1inTP0v07MtpSAXD9SCv7IRXhSOU?=
- =?us-ascii?Q?h9XFXPW141DM4439n/JDQyvVECYZ379wzzIyhJhMRsKps2s2LyfSKYUisVUc?=
- =?us-ascii?Q?fMCsLlx6qGHgZhHZktxJ5cLkfxulTYM87JTzBKiYfrzSxjyTP20hdAuj4EBx?=
- =?us-ascii?Q?sydzD6+cSwxYXMbuWOVX2SAsZSiJ2AboovN85Vrgu0LtcA3E0vEJtk0FkLA8?=
- =?us-ascii?Q?JKIE760nh4owIu2qK/+2L1JseSmXebROKVEnlbgfkKvtM1mlXWu1Q5+D8+oK?=
- =?us-ascii?Q?Wu45QWIlI7XcOQqRVGAQfnt73B/rvCaD/RKNNFl6bR8wrri3HuxPpxLKphcb?=
- =?us-ascii?Q?BiY+bn3acvusLe7xjE+InrYBjbgWrjmKsYVYw1Tsf6YGA65Zu+Jo0usUUf2f?=
- =?us-ascii?Q?R633+8o754Jg7MBUzft95V3zts5bkAOmpB81Q3hBFiDfEOc4NnLd495MnM8A?=
- =?us-ascii?Q?PK7ldbGiAjzT7lrJUaAizBlvwUnlfIz52ZZKlORyVUEVnXhIf+jJbjqX6AdV?=
- =?us-ascii?Q?lZ084rfWgCk+eJqgams1WVMV3M7jyI+9yWU+cva0ho+73p6TO9x9ap5crucb?=
- =?us-ascii?Q?TDeYeZhKfQ85oV2IpRQJ7WvemSI0obn3wLIKJ+8NrKGBDAVFhiKaEjmr/LFX?=
- =?us-ascii?Q?tIaUifrBmrI6usURfl2ZkFbpFy+iMJrO256lKfgERPg68CJ0K+Y8SUwUvdyV?=
- =?us-ascii?Q?+9FiNHvSs9Xt7G1UMs0rtcafpxEm9y6tyechc7E564bB/LkumTHesiJffnZq?=
- =?us-ascii?Q?AA3RM1++LzNsCkGZDZ/a/Mw3/js8We8Hvg6nxvDtYVqIfYThD26Qp14g3BZT?=
- =?us-ascii?Q?ssQfJaDK+QXWI/ySmZFZTWOuIMIs0QRjJr8RfPShlP1wrnxTo7C0ctqlEWoz?=
- =?us-ascii?Q?FGuyxxTVkIFCbJlpdV0IeKw53foRjsMWFQDa1F88JKNHnULRmYzD+s64Xnbc?=
- =?us-ascii?Q?NbLeQRJYHGhwEiAh71Qkwr1UKTdK0kI6NwUTK0NhS3eYImbYFES0GuEenQCO?=
- =?us-ascii?Q?TisOnVoYvNCpQBr9cVjf15jsmUCbzDjmEp5FsUnjnm/OqWW/AJ+89LsvmhJD?=
- =?us-ascii?Q?jhFcj6WxIxWrQjQGpYbngdwTwbtOeJR4YFks/lNvVu9HneKI2ds418is+4Gt?=
- =?us-ascii?Q?kOD/esQ3qdCYT/yTXGLFIu13+1it2UEyGc0qUmsibnMzikLfGLW/SHHjvxT0?=
- =?us-ascii?Q?gh/Tm3MRo1OW90s1DJllNTKcMjogmQN5YuJ8QTyhMskAhuqpJ33kLo6V7N8C?=
- =?us-ascii?Q?m4HOepn2jDLlhmVEMyx7IMwdEkLU63CshdwDII1NcJMGLM6OoKjQe4XSP067?=
- =?us-ascii?Q?kUmAXtBNS94P4bAoD/J9CesPPMsU4iAlqsnAzakWuzYjud+sHfbtKGi1wVSj?=
- =?us-ascii?Q?8qfE2ovJVQd7Sen4Q7iok5bvDsCw8iJgv32jzMXrDS2neLD7NYL5EKh29gqG?=
- =?us-ascii?Q?+JtzycW2Tgu2QoYWPu985HQaDORCfUfvP7LnxcjbC3NI?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2FA4CED649D4FA438DD7688A3EF76FF0@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Fri, 5 Aug 2022 16:53:29 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B2C14D0F
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 13:53:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659732808; x=1691268808;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=EXghPQuaJMyTR5Ic0RE8Yvr7esSnX3aRewGCrlOrFTU=;
+  b=HsOlkPPDqca8i9kk8NaqKpAIAXnQtsa9DGCKi7vPNldrxEzXROxy9BeV
+   JRv5wjgjNvUmASG+7j7sLEuFrCXUwe1XvJotsl4EcfxhM/NpsU38g72i7
+   1BnmZh05GzP6ZLhk6ejbnxvg5RIATOBU+8c7/nAaOqSwN47FZ+X9xkZkr
+   BVhSmnYn6OMQN6ohwym2jHxqEzrGFcDuSXPU4sPxSPiZwl21kwNbQGqMq
+   tkFbMhMbaXGvq5hIiv7++L7XVlNGqDyV4ixz/cnECHgONnkfuvw4/Fgtz
+   RqRtFEsfBdCYjLVAbE/SGNgOb32+YRcaF6GNU/7+OWqif+NsvCFePLU8P
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="316185191"
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="316185191"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 13:53:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="849447496"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 05 Aug 2022 13:53:26 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 62A8611C; Fri,  5 Aug 2022 23:53:38 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: [PATCH v1 5/5] regmap: mmio: Introduce IO accessors that can talk to IO port
+Date:   Fri,  5 Aug 2022 23:53:21 +0300
+Message-Id: <20220805205321.19452-5-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220805205321.19452-1-andriy.shevchenko@linux.intel.com>
+References: <20220805205321.19452-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN4PR10MB5559.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3a01c55d-0941-4fcf-42ef-08da77246136
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Aug 2022 20:52:15.9195
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: wx9ALKEhkBWOxVIc9Ft6u8o2qqwjWDLATJEgL/S6E59YrjK6IivpSCXEwbgEPRS7GyJwggGNexmh/7lti49ZDY7tk3wBMlQCuL6BJEazVTI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR10MB5881
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-05_11,2022-08-05_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxlogscore=999
- malwarescore=0 bulkscore=0 spamscore=0 phishscore=0 mlxscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2208050091
-X-Proofpoint-GUID: 93Czjeimj5cMWV1u9tw7ygTTgWg2QQS7
-X-Proofpoint-ORIG-GUID: 93Czjeimj5cMWV1u9tw7ygTTgWg2QQS7
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Looks good.
+Currently regmap MMIO is inconsistent with IO accessors. I.e.
+the Big Endian counterparts are using ioreadXXbe() / iowriteXXbe()
+which are not clean implementations of readXXbe(). Besides that
+some users may use regmap MMIO for IO ports, and this can be done
+by assigning ioreadXX()/iowriteXX() and their Big Endian counterparts
+to the regmap context.
 
-Reviewed-by: William Kucharski <william.kucharski@oracle.com>
+That said, reimplement current Big Endian MMIO accessors by replacing
+ioread()/iowrite() with respective read()/write() and swab() calls.
+While at it, add IO port support with a corresponding flag added.
 
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/base/regmap/regmap-mmio.c | 102 +++++++++++++++++++++++++++---
+ include/linux/regmap.h            |   3 +
+ 2 files changed, 96 insertions(+), 9 deletions(-)
 
-> On Jul 29, 2022, at 10:25 PM, Matthew Wilcox (Oracle) <willy@infradead.or=
-g> wrote:
->=20
-> If we allocate a new page, we need to make sure that our folio matches
-> that new page.  This will be solved by changing shmem_replace_page()
-> to shmem_replace_folio(), but this is the minimal fix.
->=20
-> Fixes: da08e9b79323 ("mm/shmem: convert shmem_swapin_page() to shmem_swap=
-in_folio()")
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> ---
-> mm/shmem.c | 1 +
-> 1 file changed, 1 insertion(+)
->=20
-> diff --git a/mm/shmem.c b/mm/shmem.c
-> index a6f565308133..bcc0a3c7b5bf 100644
-> --- a/mm/shmem.c
-> +++ b/mm/shmem.c
-> @@ -1771,6 +1771,7 @@ static int shmem_swapin_folio(struct inode *inode, =
-pgoff_t index,
->=20
-> if (shmem_should_replace_folio(folio, gfp)) {
-> error =3D shmem_replace_page(&page, gfp, info, index);
-> + folio =3D page_folio(page);
-> if (error)
-> goto failed;
-> }
-> --=20
-> 2.35.1
+diff --git a/drivers/base/regmap/regmap-mmio.c b/drivers/base/regmap/regmap-mmio.c
+index 698295a8f5a6..6a0d370ac83b 100644
+--- a/drivers/base/regmap/regmap-mmio.c
++++ b/drivers/base/regmap/regmap-mmio.c
+@@ -74,6 +74,12 @@ static void regmap_mmio_write8_relaxed(struct regmap_mmio_context *ctx,
+ 	writeb_relaxed(val, ctx->regs + reg);
+ }
+ 
++static void regmap_mmio_iowrite8(struct regmap_mmio_context *ctx,
++				 unsigned int reg, unsigned int val)
++{
++	iowrite8(val, ctx->regs + reg);
++}
++
+ static void regmap_mmio_write16le(struct regmap_mmio_context *ctx,
+ 				  unsigned int reg,
+ 				  unsigned int val)
+@@ -88,9 +94,21 @@ static void regmap_mmio_write16le_relaxed(struct regmap_mmio_context *ctx,
+ 	writew_relaxed(val, ctx->regs + reg);
+ }
+ 
++static void regmap_mmio_iowrite16le(struct regmap_mmio_context *ctx,
++				    unsigned int reg, unsigned int val)
++{
++	iowrite16(val, ctx->regs + reg);
++}
++
+ static void regmap_mmio_write16be(struct regmap_mmio_context *ctx,
+ 				  unsigned int reg,
+ 				  unsigned int val)
++{
++	writew(swab16(val), ctx->regs + reg);
++}
++
++static void regmap_mmio_iowrite16be(struct regmap_mmio_context *ctx,
++				    unsigned int reg, unsigned int val)
+ {
+ 	iowrite16be(val, ctx->regs + reg);
+ }
+@@ -109,9 +127,21 @@ static void regmap_mmio_write32le_relaxed(struct regmap_mmio_context *ctx,
+ 	writel_relaxed(val, ctx->regs + reg);
+ }
+ 
++static void regmap_mmio_iowrite32le(struct regmap_mmio_context *ctx,
++				    unsigned int reg, unsigned int val)
++{
++	iowrite32(val, ctx->regs + reg);
++}
++
+ static void regmap_mmio_write32be(struct regmap_mmio_context *ctx,
+ 				  unsigned int reg,
+ 				  unsigned int val)
++{
++	writel(swab32(val), ctx->regs + reg);
++}
++
++static void regmap_mmio_iowrite32be(struct regmap_mmio_context *ctx,
++				    unsigned int reg, unsigned int val)
+ {
+ 	iowrite32be(val, ctx->regs + reg);
+ }
+@@ -144,6 +174,12 @@ static unsigned int regmap_mmio_read8_relaxed(struct regmap_mmio_context *ctx,
+ 	return readb_relaxed(ctx->regs + reg);
+ }
+ 
++static unsigned int regmap_mmio_ioread8(struct regmap_mmio_context *ctx,
++					unsigned int reg)
++{
++	return ioread8(ctx->regs + reg);
++}
++
+ static unsigned int regmap_mmio_read16le(struct regmap_mmio_context *ctx,
+ 				         unsigned int reg)
+ {
+@@ -156,8 +192,20 @@ static unsigned int regmap_mmio_read16le_relaxed(struct regmap_mmio_context *ctx
+ 	return readw_relaxed(ctx->regs + reg);
+ }
+ 
++static unsigned int regmap_mmio_ioread16le(struct regmap_mmio_context *ctx,
++					   unsigned int reg)
++{
++	return ioread16(ctx->regs + reg);
++}
++
+ static unsigned int regmap_mmio_read16be(struct regmap_mmio_context *ctx,
+ 				         unsigned int reg)
++{
++	return swab16(readw(ctx->regs + reg));
++}
++
++static unsigned int regmap_mmio_ioread16be(struct regmap_mmio_context *ctx,
++					   unsigned int reg)
+ {
+ 	return ioread16be(ctx->regs + reg);
+ }
+@@ -174,8 +222,20 @@ static unsigned int regmap_mmio_read32le_relaxed(struct regmap_mmio_context *ctx
+ 	return readl_relaxed(ctx->regs + reg);
+ }
+ 
++static unsigned int regmap_mmio_ioread32le(struct regmap_mmio_context *ctx,
++					   unsigned int reg)
++{
++	return ioread32(ctx->regs + reg);
++}
++
+ static unsigned int regmap_mmio_read32be(struct regmap_mmio_context *ctx,
+ 				         unsigned int reg)
++{
++	return swab32(readl(ctx->regs + reg));
++}
++
++static unsigned int regmap_mmio_ioread32be(struct regmap_mmio_context *ctx,
++					   unsigned int reg)
+ {
+ 	return ioread32be(ctx->regs + reg);
+ }
+@@ -253,7 +313,10 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
+ #endif
+ 		switch (config->val_bits) {
+ 		case 8:
+-			if (config->use_relaxed_mmio) {
++			if (config->io_port) {
++				ctx->reg_read = regmap_mmio_ioread8;
++				ctx->reg_write = regmap_mmio_iowrite8;
++			} else if (config->use_relaxed_mmio) {
+ 				ctx->reg_read = regmap_mmio_read8_relaxed;
+ 				ctx->reg_write = regmap_mmio_write8_relaxed;
+ 			} else {
+@@ -262,7 +325,10 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
+ 			}
+ 			break;
+ 		case 16:
+-			if (config->use_relaxed_mmio) {
++			if (config->io_port) {
++				ctx->reg_read = regmap_mmio_ioread16le;
++				ctx->reg_write = regmap_mmio_iowrite16le;
++			} else if (config->use_relaxed_mmio) {
+ 				ctx->reg_read = regmap_mmio_read16le_relaxed;
+ 				ctx->reg_write = regmap_mmio_write16le_relaxed;
+ 			} else {
+@@ -271,7 +337,10 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
+ 			}
+ 			break;
+ 		case 32:
+-			if (config->use_relaxed_mmio) {
++			if (config->io_port) {
++				ctx->reg_read = regmap_mmio_ioread32le;
++				ctx->reg_write = regmap_mmio_iowrite32le;
++			} else if (config->use_relaxed_mmio) {
+ 				ctx->reg_read = regmap_mmio_read32le_relaxed;
+ 				ctx->reg_write = regmap_mmio_write32le_relaxed;
+ 			} else {
+@@ -290,16 +359,31 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
+ #endif
+ 		switch (config->val_bits) {
+ 		case 8:
+-			ctx->reg_read = regmap_mmio_read8;
+-			ctx->reg_write = regmap_mmio_write8;
++			if (config->io_port) {
++				ctx->reg_read = regmap_mmio_ioread8;
++				ctx->reg_write = regmap_mmio_iowrite8;
++			} else {
++				ctx->reg_read = regmap_mmio_read8;
++				ctx->reg_write = regmap_mmio_write8;
++			}
+ 			break;
+ 		case 16:
+-			ctx->reg_read = regmap_mmio_read16be;
+-			ctx->reg_write = regmap_mmio_write16be;
++			if (config->io_port) {
++				ctx->reg_read = regmap_mmio_ioread16be;
++				ctx->reg_write = regmap_mmio_iowrite16be;
++			} else {
++				ctx->reg_read = regmap_mmio_read16be;
++				ctx->reg_write = regmap_mmio_write16be;
++			}
+ 			break;
+ 		case 32:
+-			ctx->reg_read = regmap_mmio_read32be;
+-			ctx->reg_write = regmap_mmio_write32be;
++			if (config->io_port) {
++				ctx->reg_read = regmap_mmio_ioread32be;
++				ctx->reg_write = regmap_mmio_iowrite32be;
++			} else {
++				ctx->reg_read = regmap_mmio_read32be;
++				ctx->reg_write = regmap_mmio_write32be;
++			}
+ 			break;
+ 		default:
+ 			ret = -EINVAL;
+diff --git a/include/linux/regmap.h b/include/linux/regmap.h
+index 7cf2157134ac..8cccc247cd37 100644
+--- a/include/linux/regmap.h
++++ b/include/linux/regmap.h
+@@ -311,6 +311,8 @@ typedef void (*regmap_unlock)(void *);
+  *		  This field is a duplicate of a similar file in
+  *		  'struct regmap_bus' and serves exact same purpose.
+  *		   Use it only for "no-bus" cases.
++ * @io_port:	  Support IO port accessors. Makes sense only when MMIO vs. IO port
++ *		  access can be distinguished.
+  * @max_register: Optional, specifies the maximum valid register address.
+  * @wr_table:     Optional, points to a struct regmap_access_table specifying
+  *                valid ranges for write access.
+@@ -399,6 +401,7 @@ struct regmap_config {
+ 	size_t max_raw_write;
+ 
+ 	bool fast_io;
++	bool io_port;
+ 
+ 	unsigned int max_register;
+ 	const struct regmap_access_table *wr_table;
+-- 
+2.35.1
 
