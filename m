@@ -2,105 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55687C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 12:20:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF55C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 12:22:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240777AbiHEMUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 08:20:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56824 "EHLO
+        id S240647AbiHEMWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 08:22:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240811AbiHEMUF (ORCPT
+        with ESMTP id S240837AbiHEMVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 08:20:05 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D447A506
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 05:19:46 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id tl27so4760370ejc.1
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 05:19:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
-         :cc;
-        bh=Sb8YvNB59ODw1an6ha6Ie3iag8hDt0GZw+CZTxlCMRc=;
-        b=MWt382uJO5dILVUI3JyjixhKUvoKabVNq8ZEzM+v+aAiBNJDdOddUayN5fXs4JXN8C
-         m7vMNueJ5wj/9mdXiYdCQpzXo8ty1BfkK/8+3ZpS8HuvkeeMqC33iNFeCD7nS37+qJR9
-         dXRuDA48OC2aC5WF+bPRqKE+OXD4TCNDbOiDaPVJrX9qlMIqZ3YHFHaYl5VM18cAxUly
-         d+DjxRaTzF5H9CXGJdcTtL/Srmz9pmabQWXJBf19r0+8PSHkhyxfZ4niw1espmCLa2TS
-         f2S8ZPT+aEFEDXvnPF2lPACNsHDuzAlCmrzuvVpYkJ4XVLGahm9o19VUJZifYJh3N3cs
-         gFyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc;
-        bh=Sb8YvNB59ODw1an6ha6Ie3iag8hDt0GZw+CZTxlCMRc=;
-        b=7rn7K2GDN7bDIgQoS1p3M1wpH1EC8gWfxvkf53fLXQFeIVHLKF6JeNbYwQN3TmOBLQ
-         vLs4Cv+nYPvkYe9xmOZT/tqFLxtpEvHJPGCMNjvap1vipyflvL3cdl7Wvusk6lnPMqGF
-         mp6TC5DQTvoC5BqQy2wxYvSmgJhcSwLcJ34fxC2epCm2sLjyMn6mqPrkKvmXHRuXUUIs
-         iWjv8MPbqDPLNyoZDeC8+mk9KAQcg/T3yU/5PSuZUNPVpseOvdb0MN5U6LzpQkvFWjiZ
-         TMlnch5YNsHdHIyuDn3te2sYRHBM/0InlOXi4VVWtrbcL76uEHL3wShkRKO+lczWneK8
-         v5EA==
-X-Gm-Message-State: ACgBeo1BJgQMiUJF3fdKg1Ozlqb6BPH/uS6Ih1TU+gabuhyGJAKlZ+c+
-        iyMaOLwjVzfr6036FYRGS0KnAg==
-X-Google-Smtp-Source: AA6agR4jbzi6qTGaK1l/Q47nB7mzGrUQT8Ocd6+d8ebwjA/2eV+ceRVHwhYbHsLTYRZ6CgV6LafJRw==
-X-Received: by 2002:a17:907:a06a:b0:730:d10e:fff3 with SMTP id ia10-20020a170907a06a00b00730d10efff3mr5314861ejc.109.1659701980966;
-        Fri, 05 Aug 2022 05:19:40 -0700 (PDT)
-Received: from localhost.localdomain (2a02-8440-5241-be09-b892-f882-607f-7a79.rev.sfr.net. [2a02:8440:5241:be09:b892:f882:607f:7a79])
-        by smtp.gmail.com with ESMTPSA id kx13-20020a170907774d00b0072b3464c043sm1506111ejc.116.2022.08.05.05.19.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 05:19:40 -0700 (PDT)
-From:   Jerome Neanne <jneanne@baylibre.com>
-To:     lgirdwood@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
-        nm@ti.com, kristo@kernel.org, dmitry.torokhov@gmail.com
-Cc:     khilman@baylibre.com, narmstrong@baylibre.com, msp@baylibre.com,
-        j-keerthy@ti.com, lee.jones@linaro.org, jneanne@baylibre.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-input@vger.kernel.org
-Subject: [PATCH v3 10/10] arm64: defconfig: Add tps65219 as modules
-Date:   Fri,  5 Aug 2022 14:18:52 +0200
-Message-Id: <20220805121852.21254-11-jneanne@baylibre.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220805121852.21254-1-jneanne@baylibre.com>
-References: <20220805121852.21254-1-jneanne@baylibre.com>
+        Fri, 5 Aug 2022 08:21:39 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A60FD53D39
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 05:21:04 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 5BC461FB38;
+        Fri,  5 Aug 2022 12:21:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1659702063; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=I0oY5YWPhgM2IlpoF7mZNylwLRRP1KQGnETW5/3iDT8=;
+        b=kqUYgshwg4iQ2O+0Jv+MpzwodvJh/2298p4V5io04RyriA32JIlwg3X27Fm9jJ65PSe2pR
+        Vmowuf0W65uBJLAKVf/5KOim14XRe2J0T6tvjIq4aIzGjbNcJ7no5qmxvy/jOHvzy91CEz
+        2IJrEOKAckb0e4Dp9PiOz164jXtXU/o=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1659702063;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=I0oY5YWPhgM2IlpoF7mZNylwLRRP1KQGnETW5/3iDT8=;
+        b=r0IPwi/iF3xcmSqV3466v+5SiM9nB9wzh2n7tcpyb603XbknzzMKLDthd0464aYk9I5e1Z
+        gaRWlCM8l20KdyDA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3A7EB13A9C;
+        Fri,  5 Aug 2022 12:21:03 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id r7gvDS8L7WLMFgAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Fri, 05 Aug 2022 12:21:03 +0000
+Message-ID: <2dfa9d52-e547-ea25-645d-4e4793a0c9ce@suse.de>
+Date:   Fri, 5 Aug 2022 14:21:02 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 0/4] drm/udl: Fix stray URBs and cleanup
+Content-Language: en-US
+To:     Takashi Iwai <tiwai@suse.de>, dri-devel@lists.freedesktop.org
+Cc:     Dave Airlie <airlied@redhat.com>, Sean Paul <sean@poorly.run>,
+        linux-kernel@vger.kernel.org
+References: <20220804075826.27036-1-tiwai@suse.de>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220804075826.27036-1-tiwai@suse.de>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------L5o39UAhZTPm0xcOvB4jeVmw"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds defconfig option to support TPS65219 PMIC, MFD, Regulators
-and power-button.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------L5o39UAhZTPm0xcOvB4jeVmw
+Content-Type: multipart/mixed; boundary="------------yTYSTv9eefGIpsT9p6gkhhhD";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Takashi Iwai <tiwai@suse.de>, dri-devel@lists.freedesktop.org
+Cc: Dave Airlie <airlied@redhat.com>, Sean Paul <sean@poorly.run>,
+ linux-kernel@vger.kernel.org
+Message-ID: <2dfa9d52-e547-ea25-645d-4e4793a0c9ce@suse.de>
+Subject: Re: [PATCH 0/4] drm/udl: Fix stray URBs and cleanup
+References: <20220804075826.27036-1-tiwai@suse.de>
+In-Reply-To: <20220804075826.27036-1-tiwai@suse.de>
 
-Signed-off-by: Jerome Neanne <jneanne@baylibre.com>
----
- arch/arm64/configs/defconfig | 3 +++
- 1 file changed, 3 insertions(+)
+--------------yTYSTv9eefGIpsT9p6gkhhhD
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index d5b2d2dd4904..d64e00355fcd 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -406,6 +406,7 @@ CONFIG_TOUCHSCREEN_GOODIX=m
- CONFIG_TOUCHSCREEN_EDT_FT5X06=m
- CONFIG_INPUT_MISC=y
- CONFIG_INPUT_PM8941_PWRKEY=y
-+CONFIG_INPUT_TPS65219_PWRBUTTON=m
- CONFIG_INPUT_PM8XXX_VIBRATOR=m
- CONFIG_INPUT_PWM_BEEPER=m
- CONFIG_INPUT_PWM_VIBRA=m
-@@ -639,6 +640,7 @@ CONFIG_MFD_SPMI_PMIC=y
- CONFIG_MFD_RK808=y
- CONFIG_MFD_SEC_CORE=y
- CONFIG_MFD_SL28CPLD=y
-+CONFIG_MFD_TPS65219=m
- CONFIG_MFD_ROHM_BD718XX=y
- CONFIG_MFD_WCD934X=m
- CONFIG_REGULATOR_FIXED_VOLTAGE=y
-@@ -666,6 +668,7 @@ CONFIG_REGULATOR_QCOM_SPMI=y
- CONFIG_REGULATOR_RK808=y
- CONFIG_REGULATOR_S2MPS11=y
- CONFIG_REGULATOR_TPS65132=m
-+CONFIG_REGULATOR_TPS65219=m
- CONFIG_REGULATOR_VCTRL=m
- CONFIG_RC_CORE=m
- CONFIG_RC_DECODERS=y
--- 
-2.17.1
+SGkgVGFrYXNoaSwNCg0KQW0gMDQuMDguMjIgdW0gMDk6NTggc2NocmllYiBUYWthc2hpIEl3
+YWk6DQo+IEhpLA0KPiANCj4gdGhpcyBpcyBhIHNlcmllcyBvZiBmaXhlcyBmb3IgVURMIGRy
+aXZlciB0byBhZGRyZXNzIHRoZSBsZWZ0b3ZlciBVUkJzDQo+IGF0IHN1c3BlbmQvcmVzdW1l
+LiAgSXQgYmVnaW5zIHdpdGggdGhlIHNpbXBsaWZpY2F0aW9uIG9mIEZJRk8gY29udHJvbA0K
+PiBjb2RlIHdpdGggdGhlIHN0YW5kYXJkIHdhaXQgcXVldWUsIGZvbGxvd2VkIGJ5IHRoZSBo
+YW5kbGluZyBvZiBwZW5kaW5nDQo+IFVSQnMsIGFuZCByZXBsYWNlIEJVR19PTigpIHdpdGgg
+V0FSTl9PTigpIGFzIGEgY2xlYW51cC4NCg0KUmV2aWV3ZWQtYnk6IFRob21hcyBaaW1tZXJt
+YW5uIDx0emltbWVybWFubkBzdXNlLmRlPg0KDQpUaGF0J3MgYSBsb3QgYmV0dGVyIHRoYW4g
+d2hhdCdzIGN1cnJlbnRseSB0aGVyZS4gSWYgbm8gb3RoZXIgcmV2aWV3cyANCmNvbWUgaW4s
+IEknbGwgYWRkIHRoZSBwYXRjaGVzIG5leHQgd2Vlay4NCg0KQmVzdCByZWdhcmRzDQpUaG9t
+YXMNCg0KPiANCj4gDQo+IFRha2FzaGkNCj4gDQo+ID09PQ0KPiANCj4gVGFrYXNoaSBJd2Fp
+ICg0KToNCj4gICAgZHJtL3VkbDogUmVwbGFjZSBzZW1hcGhvcmUgd2l0aCBhIHNpbXBsZSB3
+YWl0IHF1ZXVlDQo+ICAgIGRybS91ZGw6IFN5bmMgcGVuZGluZyBVUkJzIGF0IHN1c3BlbmQg
+LyBkaXNjb25uZWN0DQo+ICAgIGRybS91ZGw6IEtpbGwgcGVuZGluZyBVUkJzIGF0IHN1c3Bl
+bmQgYW5kIGRpc2Nvbm5lY3QNCj4gICAgZHJtL3VkbDogUmVwbGFjZSBCVUdfT04oKSB3aXRo
+IFdBUk5fT04oKQ0KPiANCj4gICBkcml2ZXJzL2dwdS9kcm0vdWRsL3VkbF9kcnYuaCAgICAg
+IHwgIDE0ICsrKy0NCj4gICBkcml2ZXJzL2dwdS9kcm0vdWRsL3VkbF9tYWluLmMgICAgIHwg
+MTI1ICsrKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tDQo+ICAgZHJpdmVycy9ncHUvZHJt
+L3VkbC91ZGxfbW9kZXNldC5jICB8ICAgNCArDQo+ICAgZHJpdmVycy9ncHUvZHJtL3VkbC91
+ZGxfdHJhbnNmZXIuYyB8ICAgMyArLQ0KPiAgIDQgZmlsZXMgY2hhbmdlZCwgNzkgaW5zZXJ0
+aW9ucygrKSwgNjcgZGVsZXRpb25zKC0pDQo+IA0KDQotLSANClRob21hcyBaaW1tZXJtYW5u
+DQpHcmFwaGljcyBEcml2ZXIgRGV2ZWxvcGVyDQpTVVNFIFNvZnR3YXJlIFNvbHV0aW9ucyBH
+ZXJtYW55IEdtYkgNCk1heGZlbGRzdHIuIDUsIDkwNDA5IE7DvHJuYmVyZywgR2VybWFueQ0K
+KEhSQiAzNjgwOSwgQUcgTsO8cm5iZXJnKQ0KR2VzY2jDpGZ0c2bDvGhyZXI6IEl2byBUb3Rl
+dg0K
 
+--------------yTYSTv9eefGIpsT9p6gkhhhD--
+
+--------------L5o39UAhZTPm0xcOvB4jeVmw
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmLtCy4FAwAAAAAACgkQlh/E3EQov+C7
+1w//VKahL1slF0E4gpAKSaeMj5F0uCyAblwJ1XldBx/bm8iZNC2DD9bSpvh1izNORRVXr+Puigr8
+hYCnFIVDxqMBmVso9A4WZxQNPviDtBfjNa6ucupLwzZU/0TlNml5Fo8sfd43rSD/Ou+n0gkuigLi
+sdOcA+1QdOI63uwvy1MONxtcduW2ddLB32aDtVFI7Q9voFWnN4Oj5jzxADkw6vU7JLYMy15KKWqf
+yxdNxQmuVBiKz/ynjuKaBD0EHQ8ZNNifHyL5iAHoTyADI41m+mNHPun8GNWAZx0wIL1kUeF4QOcc
+/m6ruWRjL3FTLThYvp89/MoNdyC96cvIxwWxSFCNmDpCaT1SVMr+11xw7j1+URy2DRXY/Axsbg6Z
+BV4YkuW2BXJ0rxUZsZtlHL4du1Gs93UaBGvC77rIsqmdV08VwtJxxNmt/rcaOdRf+R3J7OC1+0GO
+RzJjwEw7QsPHqt1KLZhjXtN2ZWZLx55bD3AfD7sB7XAR+ncMQ+SZ5i+Z8eKNKenoiYTMveGqnm8u
+cRZRhgJxcKydPVpCC9F8Tj5heGII4zvN6xPUCjfmUMtyBvYLjhWgG0tJTyANbMDDmONuQQoC1fnv
+6yVR2QWGhkvpINc8AHrTRpo+I0+H/WUui7eHfZJqZrFfiaz9eUXK6PPzEjWvY+BiHJXtTS4fU5l1
+89o=
+=mw3w
+-----END PGP SIGNATURE-----
+
+--------------L5o39UAhZTPm0xcOvB4jeVmw--
