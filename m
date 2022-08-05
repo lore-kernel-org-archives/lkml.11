@@ -2,69 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF3AC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 17:42:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE37C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 17:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240963AbiHERmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 13:42:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54410 "EHLO
+        id S241246AbiHERmt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 13:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241586AbiHERmb (ORCPT
+        with ESMTP id S241599AbiHERmh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 13:42:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96690F590;
-        Fri,  5 Aug 2022 10:42:30 -0700 (PDT)
+        Fri, 5 Aug 2022 13:42:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D9C6E8BB
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 10:42:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FACFB82990;
-        Fri,  5 Aug 2022 17:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ED046C43140;
-        Fri,  5 Aug 2022 17:42:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CFB861806
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 17:42:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8F4F0C43142;
+        Fri,  5 Aug 2022 17:42:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659721348;
-        bh=dSVWoW3MstJHngFlG333N133CVdlxOx7L6Rqcj/Fva4=;
+        s=k20201202; t=1659721355;
+        bh=/gPgfnZgwkcCQqNDClgGNDe1+fJwyJWEZR5QUqles5Q=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Cx8PjIqEBbdyFmc3SAaSlsoUV2v93Zvd7lwNf8ovgxQ/EcXYUHrUtdd1rl2vL2EQ0
-         4UJeISec2rlHeY3TjcJQ/GmYUpQdNs5rDIDVnqSGnBjBCLv5FAcbPYqyT+ZGqYJf0B
-         Dei+2UYwioynRrtIaG8YkPCt0IRpbDsqRQkP55GbwkLgPFXYVx4QQLBBqJoaUAHPGI
-         8KSf8WfVNuzfNNvgiyOIYCj1HLWsd5oHVXcjn+8v2wNYgJ/vhPIV0U4tE7VxsySq1u
-         2NemtYtWaSdIQzPqi0QdkSyBpcqRtJEE8HPG+XFgpQhzY+m64rSRxh0b04JVuP5eKa
-         RinTFfGtOW0rg==
+        b=NRAJSHUoLa7h5Y+oDYbcVR6B0uVzAOxWQdfrUgJkMAxLWGNwT02Od+RXg90Lx7aYe
+         DKcOtNlnzPyx+7+fXFxC9aon+c9K4BB4k89SS5Upyr8+9UZGlOikpSLQx2R4pBZQXw
+         2vDexn6YlG4upXjWIvdqqchoeTWlValdllFAA5beUNsbpXWY4YAyAu9goZO/cuhXxg
+         annIbVW31cVnePQ/sMAqr5h0fMO1XUVWrL9jSjHuVFQDNhaxSacxSPKQ1HYCrufazP
+         oze8yEy6NeF+1ny5sBMgsvsxvBWfDZXl6YppX0atEcu2ixSQifi60HNXYczqNkhcH6
+         BEH8Xb2nXamwQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DE0CBC43140;
-        Fri,  5 Aug 2022 17:42:27 +0000 (UTC)
-Subject: Re: [GIT PULL] asm-generic: updates for 6.0
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7F2AFC43142;
+        Fri,  5 Aug 2022 17:42:35 +0000 (UTC)
+Subject: Re: [GIT PULL] printk for 5.20 (sane changes)
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAK8P3a2jgQcLaDXX6eOTNrU0RJ2O625e75LBMy6v2ABP0cdoww@mail.gmail.com>
-References: <CAK8P3a2jgQcLaDXX6eOTNrU0RJ2O625e75LBMy6v2ABP0cdoww@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-arm-kernel.lists.infradead.org>
-X-PR-Tracked-Message-Id: <CAK8P3a2jgQcLaDXX6eOTNrU0RJ2O625e75LBMy6v2ABP0cdoww@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic.git tags/asm-generic-6.0
-X-PR-Tracked-Commit-Id: 6f05e014b96c8846cdc39acdf10bbdbafb9c78a0
+In-Reply-To: <YuuoT1n6cosaVoiF@alley>
+References: <YuuoT1n6cosaVoiF@alley>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YuuoT1n6cosaVoiF@alley>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git tags/printk-for-5.20-sane
+X-PR-Tracked-Commit-Id: 96dd9a2f958be4781d8d01ed881a46864bf458aa
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 3bd6e5854bf9bb5436d6b533e206561839e3b284
-Message-Id: <165972134790.14838.9190012685058273910.pr-tracker-bot@kernel.org>
-Date:   Fri, 05 Aug 2022 17:42:27 +0000
-To:     Arnd Bergmann <arnd@kernel.org>
+X-PR-Merge-Commit-Id: a1b02751d6ec21ec1b9c7c6826fc896ffde1c33d
+Message-Id: <165972135551.14838.12165895072124799610.pr-tracker-bot@kernel.org>
+Date:   Fri, 05 Aug 2022 17:42:35 +0000
+To:     Petr Mladek <pmladek@suse.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>, Jan Kara <jack@suse.cz>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 5 Aug 2022 12:25:12 +0200:
+The pull request you sent on Thu, 4 Aug 2022 13:06:55 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic.git tags/asm-generic-6.0
+> git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git tags/printk-for-5.20-sane
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/3bd6e5854bf9bb5436d6b533e206561839e3b284
+https://git.kernel.org/torvalds/c/a1b02751d6ec21ec1b9c7c6826fc896ffde1c33d
 
 Thank you!
 
