@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 989E1C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 13:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8655C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 13:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240811AbiHEN6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 09:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60858 "EHLO
+        id S240851AbiHEN6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 09:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238142AbiHEN5q (ORCPT
+        with ESMTP id S236440AbiHEN5q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 5 Aug 2022 09:57:46 -0400
-Received: from relay01.th.seeweb.it (relay01.th.seeweb.it [5.144.164.162])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69635004E;
-        Fri,  5 Aug 2022 06:57:43 -0700 (PDT)
+Received: from relay03.th.seeweb.it (relay03.th.seeweb.it [5.144.164.164])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BD752DD2;
+        Fri,  5 Aug 2022 06:57:44 -0700 (PDT)
 Received: from localhost.localdomain (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id E3A791FAF9;
-        Fri,  5 Aug 2022 15:57:40 +0200 (CEST)
+        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 806B11FBC6;
+        Fri,  5 Aug 2022 15:57:42 +0200 (CEST)
 From:   Marijn Suijten <marijn.suijten@somainline.org>
 To:     phone-devel@vger.kernel.org
 Cc:     ~postmarketos/upstreaming@lists.sr.ht,
@@ -38,9 +38,9 @@ Cc:     ~postmarketos/upstreaming@lists.sr.ht,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: [PATCH v2 3/5] arm64: dts: qcom: Add PM6125 PMIC
-Date:   Fri,  5 Aug 2022 15:57:27 +0200
-Message-Id: <20220805135729.1037079-4-marijn.suijten@somainline.org>
+Subject: [PATCH v2 5/5] arm64: dts: qcom: sm6125-seine: Configure additional trinket thermistors
+Date:   Fri,  5 Aug 2022 15:57:29 +0200
+Message-Id: <20220805135729.1037079-6-marijn.suijten@somainline.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220805135729.1037079-1-marijn.suijten@somainline.org>
 References: <20220805135729.1037079-1-marijn.suijten@somainline.org>
@@ -50,184 +50,197 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This PMIC is commonly used on boards with an SM6125 SoC and looks very
-similar in layout to the PM6150.
+In addition to PMIC-specific (pm6125) thermistors downstream extends
+this set with the rf-pa0/rf-pa1, quiet, camera-flash and UFS/eMMC
+thermistors in sm6125 (trinket) board and seine-specific DT files.  All
+thermistors report sensible temperature readings in userspace.
 
-Downstream declares more nodes to be available, but these have been
-omitted from this patch: the pwm/lpg block is unused on my reference
-device making it impossible to test/validate, and the spmi-clkdiv does
-not have a single device-tree binding using this driver yet, hence
-inclusion is better postponed until ie. audio which uses these clocks is
-brought up.
+The sensors are also added to their respective Thermal Monitor node,
+with thermal zones to match where applicable: emmc-ufs and camera-flash
+are not available on the TM5 block, hence cannot be configured with a
+tripping point and will not have a thermal zone.
 
 Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 ---
- arch/arm64/boot/dts/qcom/pm6125.dtsi | 154 +++++++++++++++++++++++++++
- 1 file changed, 154 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/pm6125.dtsi
+ .../qcom/sm6125-sony-xperia-seine-pdx201.dts  | 151 ++++++++++++++++++
+ 1 file changed, 151 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/pm6125.dtsi b/arch/arm64/boot/dts/qcom/pm6125.dtsi
-new file mode 100644
-index 000000000000..25ef15fbfda7
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/pm6125.dtsi
-@@ -0,0 +1,154 @@
-+// SPDX-License-Identifier: BSD-3-Clause
+diff --git a/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts b/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts
+index c5967140d028..bfeea20fdd4f 100644
+--- a/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts
++++ b/arch/arm64/boot/dts/qcom/sm6125-sony-xperia-seine-pdx201.dts
+@@ -9,6 +9,7 @@
+ #include "pm6125.dtsi"
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/input/gpio-keys.h>
++#include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+ 
+ / {
+ 	/* required for bootloader to select correct board */
+@@ -82,12 +83,162 @@ cmdline_mem: memory@ffd00000 {
+ 			no-map;
+ 		};
+ 	};
 +
-+#include <dt-bindings/iio/qcom,spmi-vadc.h>
-+#include <dt-bindings/input/input.h>
-+#include <dt-bindings/input/linux-event-codes.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/spmi/spmi.h>
-+
-+/ {
 +	thermal-zones {
-+		pm6125-thermal {
-+			polling-delay-passive = <100>;
++		rf-pa0-thermal {
++			polling-delay-passive = <0>;
 +			polling-delay = <0>;
-+
-+			thermal-sensors = <&pm6125_temp>;
++			thermal-sensors = <&pm6125_adc_tm 0>;
 +
 +			trips {
-+				trip0 {
-+					temperature = <95000>;
-+					hysteresis = <0>;
-+					type = "passive";
++				active-config0 {
++					temperature = <125000>;
++					hysteresis = <1000>;
++					type = "critical";
 +				};
++			};
++		};
 +
-+				trip1 {
-+					temperature = <115000>;
-+					hysteresis = <0>;
-+					type = "hot";
++		quiet-thermal {
++			polling-delay-passive = <0>;
++			polling-delay = <5000>;
++			thermal-sensors = <&pm6125_adc_tm 1>;
++
++			trips {
++				active-config0 {
++					temperature = <125000>;
++					hysteresis = <1000>;
++					type = "critical";
 +				};
++			};
++		};
 +
-+				trip2 {
-+					temperature = <145000>;
-+					hysteresis = <0>;
++		xo-thermal {
++			polling-delay-passive = <0>;
++			polling-delay = <0>;
++			thermal-sensors = <&pm6125_adc_tm 2>;
++
++			trips {
++				active-config0 {
++					temperature = <125000>;
++					hysteresis = <1000>;
++					type = "critical";
++				};
++			};
++		};
++
++		rf-pa1-thermal {
++			polling-delay-passive = <0>;
++			polling-delay = <0>;
++			thermal-sensors = <&pm6125_adc_tm 3>;
++
++			trips {
++				active-config0 {
++					temperature = <125000>;
++					hysteresis = <1000>;
 +					type = "critical";
 +				};
 +			};
 +		};
 +	};
-+};
+ };
+ 
+ &hsusb_phy1 {
+ 	status = "okay";
+ };
+ 
++&pm6125_adc {
++	pinctrl-names = "default";
++	pinctrl-0 = <&camera_flash_therm &emmc_ufs_therm &rf_pa1_therm>;
 +
-+&spmi_bus {
-+	pmic@0 {
-+		compatible = "qcom,pm6125", "qcom,spmi-pmic";
-+		reg = <0x0 SPMI_USID>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		pm6125_pon: pon@800 {
-+			compatible = "qcom,pm8998-pon";
-+			reg = <0x800>;
-+			mode-bootloader = <0x2>;
-+			mode-recovery = <0x1>;
-+
-+			pon_pwrkey: pwrkey {
-+				compatible = "qcom,pm8941-pwrkey";
-+				interrupts = <0x0 0x8 0x0 IRQ_TYPE_EDGE_BOTH>;
-+				debounce = <15625>;
-+				linux,code = <KEY_POWER>;
-+				bias-pull-up;
-+				status = "disabled";
-+			};
-+
-+			pon_resin: resin {
-+				compatible = "qcom,pm8941-resin";
-+				interrupts = <0x0 0x8 0x1 IRQ_TYPE_EDGE_BOTH>;
-+				debounce = <15625>;
-+				bias-pull-up;
-+				status = "disabled";
-+			};
-+		};
-+
-+		pm6125_temp: temp-alarm@2400 {
-+			compatible = "qcom,spmi-temp-alarm";
-+			reg = <0x2400>;
-+			interrupts = <0x0 0x24 0x0 IRQ_TYPE_EDGE_RISING>;
-+			io-channels = <&pm6125_adc ADC5_DIE_TEMP>;
-+			io-channel-names = "thermal";
-+			#thermal-sensor-cells = <0>;
-+		};
-+
-+		pm6125_adc: adc@3100 {
-+			compatible = "qcom,spmi-adc5";
-+			reg = <0x3100>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
-+			#io-channel-cells = <1>;
-+
-+			ref-gnd@0 {
-+				reg = <ADC5_REF_GND>;
-+				qcom,pre-scaling = <1 1>;
-+			};
-+
-+			vref-1p25@1 {
-+				reg = <ADC5_1P25VREF>;
-+				qcom,pre-scaling = <1 1>;
-+			};
-+
-+			die-temp@6 {
-+				reg = <ADC5_DIE_TEMP>;
-+				qcom,pre-scaling = <1 1>;
-+			};
-+
-+			vph-pwr@83 {
-+				reg = <ADC5_VPH_PWR>;
-+				qcom,pre-scaling = <1 3>;
-+			};
-+
-+			vcoin@85 {
-+				reg = <ADC5_VCOIN>;
-+				qcom,pre-scaling = <1 3>;
-+			};
-+
-+			xo-therm@4c {
-+				reg = <ADC5_XO_THERM_100K_PU>;
-+				qcom,pre-scaling = <1 1>;
-+				qcom,hw-settle-time = <200>;
-+				qcom,ratiometric;
-+			};
-+		};
-+
-+		pm6125_adc_tm: adc-tm@3500 {
-+			compatible = "qcom,spmi-adc-tm5";
-+			reg = <0x3500>;
-+			interrupts = <0x0 0x35 0x0 IRQ_TYPE_EDGE_RISING>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			#thermal-sensor-cells = <1>;
-+			status = "disabled";
-+		};
-+
-+		pm6125_rtc: rtc@6000 {
-+			compatible = "qcom,pm8941-rtc";
-+			reg = <0x6000>, <0x6100>;
-+			reg-names = "rtc", "alarm";
-+			interrupts = <0x0 0x61 0x1 IRQ_TYPE_EDGE_RISING>;
-+			status = "disabled";
-+		};
-+
-+		pm6125_gpio: gpios@c000 {
-+			compatible = "qcom,pm6125-gpio", "qcom,spmi-gpio";
-+			reg = <0xc000>;
-+			gpio-controller;
-+			gpio-ranges = <&pm6125_gpio 0 0 9>;
-+			#gpio-cells = <2>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+		};
++	rf-pa0-therm@4d {
++		reg = <ADC5_AMUX_THM1_100K_PU>;
++		qcom,ratiometric;
++		qcom,hw-settle-time = <200>;
++		qcom,pre-scaling = <1 1>;
 +	};
 +
-+	pmic@1 {
-+		compatible = "qcom,pm6125", "qcom,spmi-pmic";
-+		reg = <0x1 SPMI_USID>;
++	quiet-therm@4e {
++		reg = <ADC5_AMUX_THM2_100K_PU>;
++		qcom,ratiometric;
++		qcom,hw-settle-time = <200>;
++		qcom,pre-scaling = <1 1>;
++	};
++
++	camera-flash-therm@52 {
++		reg = <ADC5_GPIO1_100K_PU>;
++		qcom,ratiometric;
++		qcom,hw-settle-time = <200>;
++		qcom,pre-scaling = <1 1>;
++	};
++
++	emmc-ufs-therm@54 {
++		reg = <ADC5_GPIO3_100K_PU>;
++		qcom,ratiometric;
++		qcom,hw-settle-time = <200>;
++		qcom,pre-scaling = <1 1>;
++	};
++
++	rf-pa1-therm@55 {
++		reg = <ADC5_GPIO4_100K_PU>;
++		qcom,ratiometric;
++		qcom,hw-settle-time = <200>;
++		qcom,pre-scaling = <1 1>;
 +	};
 +};
++
++&pm6125_adc_tm {
++	status = "okay";
++
++	rf-pa0-therm@0 {
++		reg = <0>;
++		io-channels = <&pm6125_adc ADC5_AMUX_THM1_100K_PU>;
++		qcom,ratiometric;
++		qcom,hw-settle-time-us = <200>;
++	};
++
++	quiet-therm@1 {
++		reg = <1>;
++		io-channels = <&pm6125_adc ADC5_AMUX_THM2_100K_PU>;
++		qcom,ratiometric;
++		qcom,hw-settle-time-us = <200>;
++	};
++
++	xo-therm@2 {
++		reg = <2>;
++		io-channels = <&pm6125_adc ADC5_XO_THERM_100K_PU>;
++		qcom,ratiometric;
++		qcom,hw-settle-time-us = <200>;
++	};
++
++	rf-pa1-therm@3 {
++		reg = <3>;
++		io-channels = <&pm6125_adc ADC5_GPIO4_100K_PU>;
++		qcom,ratiometric;
++		qcom,hw-settle-time-us = <200>;
++	};
++};
++
++&pm6125_gpio {
++	camera_flash_therm: camera-flash-therm-state {
++		pins = "gpio3";
++		function = PMIC_GPIO_FUNC_NORMAL;
++		bias-high-impedance;
++	};
++
++	emmc_ufs_therm: emmc-ufs-therm-state {
++		pins = "gpio6";
++		function = PMIC_GPIO_FUNC_NORMAL;
++		bias-high-impedance;
++	};
++
++	rf_pa1_therm: rf-pa1-therm-state {
++		pins = "gpio7";
++		function = PMIC_GPIO_FUNC_NORMAL;
++		bias-high-impedance;
++	};
++};
++
+ &pon_pwrkey {
+ 	status = "okay";
+ };
 -- 
 2.37.1
 
