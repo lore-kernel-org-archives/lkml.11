@@ -2,86 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0094CC19F2A
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 03:07:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 498D1C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 03:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233049AbiHEDHo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 4 Aug 2022 23:07:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38632 "EHLO
+        id S235099AbiHEDOP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 4 Aug 2022 23:14:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240060AbiHEDHY (ORCPT
+        with ESMTP id S229477AbiHEDOL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 4 Aug 2022 23:07:24 -0400
-Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842231054B
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 20:07:23 -0700 (PDT)
-Received: by mail-pf1-f182.google.com with SMTP id f30so776783pfq.4
-        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 20:07:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=nrJp3vudFTu47iN2kppYhxEnbGVtQ/lyisC1RF0DUQQ=;
-        b=ZnR0ECYhDdxyk0MUwzRaH75wh4ER21oa8C3y7A6Br/P3sDHVw5gVZqZbtN+lfmgGJ+
-         +4yH9dfVGVXs9JOu4fOTbjZHI9FOr4X3Zzo9Mu4vSn1A5XZxqgWfKCs4xxQn7obnjcNj
-         MxBgFiX0BG4/ISkm/Tv5LYEkUav+5iwEgSVuhQmrpb3tJ8vqnSnQWsb9wyeK4piIOPHc
-         dGqk5+8++bnFNBh7CJxlUx/kEg8JKSrPLEIG5Ifqq/vtssNLLgjiSUamXbmcmCS5LQgi
-         EDvZaMGol2rKRz51fOp4g6fm/1QSr6b+4b1H1476JPheYe5lFRNnm/zj9Uvp6eWUW7cY
-         6okw==
-X-Gm-Message-State: ACgBeo08BmvO+feqI6s/Y0vc9MnhPFiJuu/B0Q6bc0JAofDlf9UP8Or6
-        Br4JMnfjFECt2LDXQ46Db8YxGe3DYfQ=
-X-Google-Smtp-Source: AA6agR5CsW2UEtrPEI5xm1dsJS55qRMjv/DqEIvEnrAyf20o70RDZvucqoRFHsYMvkD1nDFr5LFp3Q==
-X-Received: by 2002:a65:5688:0:b0:3c2:1015:988e with SMTP id v8-20020a655688000000b003c21015988emr4080338pgs.280.1659668842795;
-        Thu, 04 Aug 2022 20:07:22 -0700 (PDT)
-Received: from [192.168.3.217] ([98.51.102.78])
-        by smtp.gmail.com with ESMTPSA id g130-20020a625288000000b0052dc77fa40esm1644504pfb.215.2022.08.04.20.07.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Aug 2022 20:07:22 -0700 (PDT)
-Message-ID: <18f28bb5-d8ac-20a5-fd6a-932cda454209@acm.org>
-Date:   Thu, 4 Aug 2022 20:07:20 -0700
+        Thu, 4 Aug 2022 23:14:11 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325402127A
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 20:14:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659669250; x=1691205250;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=0cX+DQoW2QryIy+M2qCtgHGKyzKjLOtceyNmjms8I8k=;
+  b=n4HQrI2cXvFjZZmT6vDrV5UlPYcOHTYW/MMhTG/yrKliqdeC8g08MUqb
+   vk4RRhz2YAX3at4CImTaWhUu0h5vPKjv2bMhV2BH/MEOJ8epBApgTjMWq
+   eVubJzcS7CfiRx/2t8gQcAGd6orDdlw4/uyH4naw0c6zq3lzSzB8/nnxw
+   /1sB9juxWEXDA/AOoxqXY/FFfnD37TrDtWw8d47Ph31dkKsuo+clVfY6X
+   kfdRkAmv1xU009LBM5KFr7GbcYWSYaidgV1A7Y/eQRW312VOOUtm2iuyf
+   3ZLnOSCabw+RoNocHhtPAUbxbmy56u2d9E+XPcvbNASoJkEnDmzTzC4b/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10429"; a="351822765"
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="351822765"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Aug 2022 20:14:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="671541637"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 04 Aug 2022 20:14:08 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oJnmp-000J5p-35;
+        Fri, 05 Aug 2022 03:14:07 +0000
+Date:   Fri, 5 Aug 2022 11:14:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dylan Yudaken <dylany@fb.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Jens Axboe <axboe@kernel.dk>
+Subject: io_uring/net.c:564:44: sparse: sparse: incorrect type in assignment
+ (different address spaces)
+Message-ID: <202208051104.7NeIlCzj-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: include/trace/events/nilfs2.h:191:1: sparse: sparse: cast to
- restricted blk_opf_t
-Content-Language: en-US
-To:     Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Ryusuke Konishi <konishi.ryusuke@gmail.com>
-References: <202208051050.mUx9O9G8-lkp@intel.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <202208051050.mUx9O9G8-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/4/22 19:03, kernel test robot wrote:
-> sparse warnings: (new ones prefixed by >>)
->     fs/nilfs2/segment.c: note: in included file (through include/trace/trace_events.h, include/trace/define_trace.h, include/trace/events/nilfs2.h):
->>> include/trace/events/nilfs2.h:191:1: sparse: sparse: cast to restricted blk_opf_t
->>> include/trace/events/nilfs2.h:191:1: sparse: sparse: cast to restricted blk_opf_t
->>> include/trace/events/nilfs2.h:191:1: sparse: sparse: restricted blk_opf_t degrades to integer
->>> include/trace/events/nilfs2.h:191:1: sparse: sparse: restricted blk_opf_t degrades to integer
-> 
-> vim +191 include/trace/events/nilfs2.h
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   31be1d0fbd950395701d9fd47d8fb1f99c996f61
+commit: 9bb66906f23e50d6db1e11f7498b72dfca1982a2 io_uring: support multishot in recvmsg
+date:   11 days ago
+config: alpha-randconfig-s043-20220804 (https://download.01.org/0day-ci/archive/20220805/202208051104.7NeIlCzj-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9bb66906f23e50d6db1e11f7498b72dfca1982a2
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 9bb66906f23e50d6db1e11f7498b72dfca1982a2
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=alpha SHELL=/bin/bash
 
-Hi Luc and Linus,
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-I think the above sparse warnings refer to the following macro:
+sparse warnings: (new ones prefixed by >>)
+   io_uring/net.c: note: in included file (through io_uring/io_uring.h):
+   io_uring/slist.h:138:29: sparse: sparse: no newline at end of file
+>> io_uring/net.c:564:44: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void [noderef] __user *msg_control_user @@     got void * @@
+   io_uring/net.c:564:44: sparse:     expected void [noderef] __user *msg_control_user
+   io_uring/net.c:564:44: sparse:     got void *
+>> io_uring/net.c:569:14: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void [noderef] __user * @@     got void * @@
+   io_uring/net.c:569:14: sparse:     expected void [noderef] __user *
+   io_uring/net.c:569:14: sparse:     got void *
 
-#define is_signed_type(type)	(((type)(-1)) < (type)1)
+vim +564 io_uring/net.c
 
-Is the current plan still to modify sparse such that it stops 
-complaining about the above macro?
+   548	
+   549	static int io_recvmsg_prep_multishot(struct io_async_msghdr *kmsg,
+   550					     struct io_sr_msg *sr, void __user **buf,
+   551					     size_t *len)
+   552	{
+   553		unsigned long ubuf = (unsigned long) *buf;
+   554		unsigned long hdr;
+   555	
+   556		hdr = sizeof(struct io_uring_recvmsg_out) + kmsg->namelen +
+   557			kmsg->controllen;
+   558		if (*len < hdr)
+   559			return -EFAULT;
+   560	
+   561		if (kmsg->controllen) {
+   562			unsigned long control = ubuf + hdr - kmsg->controllen;
+   563	
+ > 564			kmsg->msg.msg_control_user = (void *) control;
+   565			kmsg->msg.msg_controllen = kmsg->controllen;
+   566		}
+   567	
+   568		sr->buf = *buf; /* stash for later copy */
+ > 569		*buf = (void *) (ubuf + hdr);
+   570		kmsg->payloadlen = *len = *len - hdr;
+   571		return 0;
+   572	}
+   573	
 
-See also 
-https://lore.kernel.org/linux-sparse/20220626095814.7wtma47w4sph7dha@mail/
-
-Thanks,
-
-Bart.
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
