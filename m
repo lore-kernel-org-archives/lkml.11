@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B93DC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 09:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 304ACC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 09:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240555AbiHEJXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 05:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57638 "EHLO
+        id S237022AbiHEJXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 05:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237869AbiHEJXX (ORCPT
+        with ESMTP id S240264AbiHEJXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 5 Aug 2022 05:23:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558B778203;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB61478201;
         Fri,  5 Aug 2022 02:23:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05E4CB8285A;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 647FDB8285C;
         Fri,  5 Aug 2022 09:23:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99349C43145;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4F4DC43151;
         Fri,  5 Aug 2022 09:23:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1659691399;
-        bh=xfjyRRCXzzCzBzpor87xc8JJpDRO1zj71SbBmtHDyb4=;
+        bh=2z6kLjTnIFxpkN2jRIF3jLC49t4msD6VHl4Ik60e4Cw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=miKvhm3Ie669U/JDPfQlzw9s7YQ72rTd9mtTmx0ubWW4i1hyTgsf0iyZ7TyaaqmA7
-         nxn4DtmEcBjsVnzfYLELntOeR+T8oYRRAc+dw7yeYTYuyAITKO1of+ips4BwHtY6s2
-         OWvoo4O15TX+ki+4FzOrf3G1Loe0wsY5RrXE86g8JB1kEO+nIIAJIqxH/jMEPf2j7J
-         sx/xycFYxY6VwfNYIzXHg2bZGG/57p4hPP11Jd2V8xrjxiRR+mnWV6+p7561lCBEhu
-         WAdxBVf0bOkgGYByChxezrHkjWwrZ7tosTVj11Y2k4/gU5KlZpZfZ+Y+v6TEBD97/x
-         DzzWJLFf+XnRQ==
+        b=IiwZGeBodikZ+pDjD6x3/vpKAGqQpO3nNSyYsBsl1lP9Y4d2VEgpFqO2zKSY++rrq
+         BVCCO0YNXxsFJzhiQbFXLGnRUb/l6frLCOz5UHczuTKw5YrNWYdq/gk3QTDHQqHKNZ
+         9+NFpamLH3l1xgjVbpje1u0L92z+Xq+hP1l8H3iuc2aUxJqaMeOa+88fXz5lhyQmjB
+         BJHBoi/makEBChT2DoC+oVFAzmNxfKhN7KRhlBw7szKV2uzpEXLdSL1BT4OUpHfgsr
+         ptdt7fho4OkSY/g7qQ/sn6JkED4crBim0IU4x3R4OHOiowHPyWa1rO17pV8EFItywn
+         5byZ7QAJj/njw==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oJtYV-0001JI-W9; Fri, 05 Aug 2022 11:23:44 +0200
+        id 1oJtYW-0001JO-61; Fri, 05 Aug 2022 11:23:44 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc:     Andy Gross <agross@kernel.org>,
@@ -45,9 +45,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 4/7] arm64: dts: qcom: sc8280xp-lenovo-thinkpad-x13s: disable touchscreen pull-up
-Date:   Fri,  5 Aug 2022 11:23:14 +0200
-Message-Id: <20220805092317.4985-5-johan+linaro@kernel.org>
+Subject: [PATCH 6/7] arm64: dts: qcom: sc8280xp-lenovo-thinkpad-x13s: mark HID wakeup sources
+Date:   Fri,  5 Aug 2022 11:23:16 +0200
+Message-Id: <20220805092317.4985-7-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220805092317.4985-1-johan+linaro@kernel.org>
 References: <20220805092317.4985-1-johan+linaro@kernel.org>
@@ -57,27 +57,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The (optional) touchscreen interrupt line has an external pull-up so
-disable the internal one as is done for the keyboard and touchpad.
+The touchpad and keyboard can wake the system from suspend so declare
+them as wakeup sources.
 
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-index 562b4458e039..85efce641a4e 100644
+index 76ba2d5fa17e..1ca72f6ba55a 100644
 --- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
 +++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-@@ -363,7 +363,7 @@ ts0_default: ts0-default-state {
- 		int-n {
- 			pins = "gpio175";
- 			function = "gpio";
--			bias-pull-up;
-+			bias-disable;
- 		};
+@@ -221,6 +221,8 @@ touchpad@2c {
  
- 		reset-n {
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&tpad_default>;
++
++		wakeup-source;
+ 	};
+ 
+ 	keyboard@68 {
+@@ -233,6 +235,8 @@ keyboard@68 {
+ 
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&kybd_default>;
++
++		wakeup-source;
+ 	};
+ };
+ 
 -- 
 2.35.1
 
