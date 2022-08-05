@@ -2,95 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24AD5C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 06:41:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD68EC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 06:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236889AbiHEGl1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 02:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
+        id S236906AbiHEGoT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 02:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235930AbiHEGlZ (ORCPT
+        with ESMTP id S235305AbiHEGoQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 02:41:25 -0400
-X-Greylist: delayed 1369 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 04 Aug 2022 23:41:23 PDT
-Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95EC8193C9;
-        Thu,  4 Aug 2022 23:41:23 -0700 (PDT)
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <prvs=1230fa8b07=ms@dev.tdt.de>)
-        id 1oJqfF-000L0w-30; Fri, 05 Aug 2022 08:18:29 +0200
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1oJqfE-000D8k-28; Fri, 05 Aug 2022 08:18:28 +0200
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id A0153240049;
-        Fri,  5 Aug 2022 08:18:27 +0200 (CEST)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 2E793240040;
-        Fri,  5 Aug 2022 08:18:27 +0200 (CEST)
-Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id AADA028738;
-        Fri,  5 Aug 2022 08:18:26 +0200 (CEST)
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org
-Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Martin Schiller <ms@dev.tdt.de>
-Subject: [PATCH net] net/x25: fix call timeouts in blocking connects
-Date:   Fri,  5 Aug 2022 08:18:10 +0200
-Message-ID: <20220805061810.10824-1-ms@dev.tdt.de>
-X-Mailer: git-send-email 2.20.1
+        Fri, 5 Aug 2022 02:44:16 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B561A72EF3;
+        Thu,  4 Aug 2022 23:44:15 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2756i746089741;
+        Fri, 5 Aug 2022 01:44:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1659681847;
+        bh=NbN5ZatZ9hEF4yiwVQsDazWp0tE/VwWe3Ve57SMPHRE=;
+        h=From:To:CC:Subject:Date;
+        b=p1G0WHr0J/3pRMeJ/Wyznmsm2sPNGKUY3hPcQXKLuJzN28VUudAfHEdjHlaBHYMrh
+         JW4n1oIbV/K2BdXJlfR95XuGR/nhz3iG/IOt5NZetNVhORPwY4xcQwxlzyS+ynYsZz
+         7T0FuEKKlVScc2Jvg2FrKbn2NU60+YjNyiAMqDDc=
+Received: from DLEE102.ent.ti.com (dlee102.ent.ti.com [157.170.170.32])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2756i7k8021649
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 5 Aug 2022 01:44:07 -0500
+Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 5
+ Aug 2022 01:44:06 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 5 Aug 2022 01:44:06 -0500
+Received: from localhost.localdomain (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2756hvND086657;
+        Fri, 5 Aug 2022 01:44:00 -0500
+From:   Matt Ranostay <mranostay@ti.com>
+To:     <lee@kernel.org>, <nm@ti.com>
+CC:     <linux-rtc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, Matt Ranostay <mranostay@ti.com>
+Subject: [PATCH 0/4] mfd: add tps6594x support for j7200 platform
+Date:   Thu, 4 Aug 2022 23:43:48 -0700
+Message-ID: <20220805064352.793918-1-mranostay@ti.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-purgate-type: clean
-X-purgate: clean
-X-purgate-ID: 151534::1659680308-95942F7B-D01DC08B/0/0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a userspace application starts a blocking connect(), a CALL REQUEST
-is sent, the t21 timer is started and the connect is waiting in
-x25_wait_for_connection_establishment(). If then for some reason the t21
-timer expires before any reaction on the assigned logical channel (e.g.
-CALL ACCEPT, CLEAR REQUEST), there is sent a CLEAR REQUEST and timer
-t23 is started waiting for a CLEAR confirmation. If we now receive a
-CLEAR CONFIRMATION from the peer, x25_disconnect() is called in
-x25_state2_machine() with reason "0", which means "normal" call
-clearing. This is ok, but the parameter "reason" is used as sk->sk_err
-in x25_disconnect() and sock_error(sk) is evaluated in
-x25_wait_for_connection_establishment() to check if the call is still
-pending. As "0" is not rated as an error, the connect will stuck here
-forever.
+This patchset series adds support for the TPS6594x PMIC along with
+initial support for its RTC, and poweroff sequence.
 
-To fix this situation, also check if the sk->sk_state changed form
-TCP_SYN_SENT to TCP_CLOSE in the meantime, which is also done by
-x25_disconnect().
+Additionally, add usage of the PMIC for the J7200 platform's device tree.
 
-Signed-off-by: Martin Schiller <ms@dev.tdt.de>
----
- net/x25/af_x25.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Keerthy (3):
+  MFD: TPS6594x: Add new mfd device for TPS6594x PMIC
+  rtc: rtc-tps6594x: Add support for TPS6594X PMIC RTC
+  arm64: dts: ti: k3-j7200-common-proc-board: Add TPS6594x PMIC node
 
-diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index 6bc2ac8d8146..3b55502b2965 100644
---- a/net/x25/af_x25.c
-+++ b/net/x25/af_x25.c
-@@ -719,6 +719,11 @@ static int x25_wait_for_connection_establishment(str=
-uct sock *sk)
- 			sk->sk_socket->state =3D SS_UNCONNECTED;
- 			break;
- 		}
-+		rc =3D -ENOTCONN;
-+		if (sk->sk_state =3D=3D TCP_CLOSE) {
-+			sk->sk_socket->state =3D SS_UNCONNECTED;
-+			break;
-+		}
- 		rc =3D 0;
- 		if (sk->sk_state !=3D TCP_ESTABLISHED) {
- 			release_sock(sk);
---=20
-2.20.1
+Matt Ranostay (1):
+  Documentation: tps6594x: Add DT bindings for the TPS6594x PMIC
+
+ .../devicetree/bindings/mfd/ti,tps6594x.yaml  |  53 +++++
+ .../dts/ti/k3-j7200-common-proc-board.dts     |  16 ++
+ drivers/mfd/Kconfig                           |  14 ++
+ drivers/mfd/Makefile                          |   1 +
+ drivers/mfd/tps6594x.c                        | 106 ++++++++++
+ drivers/rtc/Kconfig                           |  10 +
+ drivers/rtc/Makefile                          |   1 +
+ drivers/rtc/rtc-tps6594x.c                    | 181 ++++++++++++++++++
+ include/linux/mfd/tps6594x.h                  |  66 +++++++
+ 9 files changed, 448 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/ti,tps6594x.yaml
+ create mode 100644 drivers/mfd/tps6594x.c
+ create mode 100644 drivers/rtc/rtc-tps6594x.c
+ create mode 100644 include/linux/mfd/tps6594x.h
+
+-- 
+2.36.1
 
