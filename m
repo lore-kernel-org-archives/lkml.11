@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 490E7C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 15:46:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C9EC25B0C
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 15:46:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241241AbiHEPqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 11:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47730 "EHLO
+        id S241272AbiHEPqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 11:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241141AbiHEPpa (ORCPT
+        with ESMTP id S241076AbiHEPph (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 11:45:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8098971712;
-        Fri,  5 Aug 2022 08:44:03 -0700 (PDT)
+        Fri, 5 Aug 2022 11:45:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0008867CB6;
+        Fri,  5 Aug 2022 08:44:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDA7E61640;
-        Fri,  5 Aug 2022 15:44:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16817C433B5;
-        Fri,  5 Aug 2022 15:43:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AAC40B82985;
+        Fri,  5 Aug 2022 15:44:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E11BFC433C1;
+        Fri,  5 Aug 2022 15:44:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659714242;
-        bh=FzcxabaZhSQ69xBMAwnH2bzRNcykHT1NhBRq2p1N3ek=;
+        s=k20201202; t=1659714249;
+        bh=NuOpRdMsihtMLYOwhaS3C4UEtVr+be11RVn2cwjc27A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VXW1GvZfwu7IDJbJAXyQ4oy7QyUNzEJSNBta1CYHQ6yiMze/2oDjPjH5stV+eeATu
-         qSpmugbtXguvu13FXRHznpn01r+zwo0YHl/VzocXyNDRZ4VMbf0pz3bTTk9wlhvp0l
-         VT4/zvmAR7lsJ7lVMbdOo97f1nndsfYkbaBiNUK2L3TBtRZzSYcJ8nfZxPTI7IukZc
-         QI41ceKkoFkRPqYPVxeQQ+msMAIpVjN4wV96fMwaXuCGNXNt8ITYUVsUlyZ2fTlDkO
-         3eFD0uItpuCPXL+TDwDI808DJgbQ8ja0G3sBz+ChYpXn00oj45fGx6HvEYMuEXSYGj
-         oW71aNkwEIO4Q==
+        b=bLUNXDszz/zBqQ3brx1rD/r7bdkpSyhZXciDVIvfIarmxR1WnGSa74LxDuUcI33XI
+         dGcJxGZQj2taqZRKpOZhVCWP0WQT76D10FmmwH/4mX3Kwy6HPk7Gy8jjZdPj1963j2
+         F5mh9r/0rLOdO5fmZb+qPv2WE3IxKqQUTUPEZkg6x5Gv0E6zto0I2bHcDR1ReL6vSf
+         bcWE/gq0lY7tzsVSnrZ3DFs+ey6RrhDGOC9Ox2ZQn+p73D+pmuefTTJHL2g8vxZ6Vg
+         cmn09dJMAemfoRXhr8M34QoqyyQWAVFAENaDrV5aUuNedV/eMEXSTzomRUzCmfX1G3
+         +wMAopQNkWbOA==
 From:   Miguel Ojeda <ojeda@kernel.org>
 To:     Linus Torvalds <torvalds@linux-foundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -41,14 +41,10 @@ Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
         Miguel Ojeda <ojeda@kernel.org>,
         Kees Cook <keescook@chromium.org>,
         Alex Gaynor <alex.gaynor@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Joe Perches <joe@perches.com>,
-        Andy Whitcroft <apw@canonical.com>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH v9 15/27] scripts: checkpatch: diagnose uses of `%pA` in the C side as errors
-Date:   Fri,  5 Aug 2022 17:42:00 +0200
-Message-Id: <20220805154231.31257-16-ojeda@kernel.org>
+        Wedson Almeida Filho <wedsonaf@google.com>
+Subject: [PATCH v9 17/27] scripts: decode_stacktrace: demangle Rust symbols
+Date:   Fri,  5 Aug 2022 17:42:02 +0200
+Message-Id: <20220805154231.31257-18-ojeda@kernel.org>
 In-Reply-To: <20220805154231.31257-1-ojeda@kernel.org>
 References: <20220805154231.31257-1-ojeda@kernel.org>
 MIME-Version: 1.0
@@ -57,54 +53,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The `%pA` format specifier is only intended to be used from Rust.
+Recent versions of both Binutils (`c++filt`) and LLVM (`llvm-cxxfilt`)
+provide Rust v0 mangling support.
 
-`checkpatch.pl` already gives a warning for invalid specificers:
-
-    WARNING: Invalid vsprintf pointer extension '%pA'
-
-This makes it an error and introduces an explanatory message:
-
-    ERROR: Invalid vsprintf pointer extension '%pA' - '%pA' is only intended to be used from Rust code
-
-Suggested-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
 Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
 Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
 Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
 Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
-Co-developed-by: Joe Perches <joe@perches.com>
-Signed-off-by: Joe Perches <joe@perches.com>
 Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 ---
- scripts/checkpatch.pl | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ scripts/decode_stacktrace.sh | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-index 503e8abbb2c1..23799e8013b3 100755
---- a/scripts/checkpatch.pl
-+++ b/scripts/checkpatch.pl
-@@ -6782,15 +6782,19 @@ sub process {
- 				}
- 				if ($bad_specifier ne "") {
- 					my $stat_real = get_stat_real($linenr, $lc);
-+					my $msg_level = \&WARN;
- 					my $ext_type = "Invalid";
- 					my $use = "";
- 					if ($bad_specifier =~ /p[Ff]/) {
- 						$use = " - use %pS instead";
- 						$use =~ s/pS/ps/ if ($bad_specifier =~ /pf/);
-+					} elsif ($bad_specifier =~ /pA/) {
-+						$use =  " - '%pA' is only intended to be used from Rust code";
-+						$msg_level = \&ERROR;
- 					}
+diff --git a/scripts/decode_stacktrace.sh b/scripts/decode_stacktrace.sh
+index 7075e26ab2c4..564c5632e1a2 100755
+--- a/scripts/decode_stacktrace.sh
++++ b/scripts/decode_stacktrace.sh
+@@ -8,6 +8,14 @@ usage() {
+ 	echo "	$0 -r <release> | <vmlinux> [<base path>|auto] [<modules path>]"
+ }
  
--					WARN("VSPRINTF_POINTER_EXTENSION",
--					     "$ext_type vsprintf pointer extension '$bad_specifier'$use\n" . "$here\n$stat_real\n");
-+					&{$msg_level}("VSPRINTF_POINTER_EXTENSION",
-+						      "$ext_type vsprintf pointer extension '$bad_specifier'$use\n" . "$here\n$stat_real\n");
- 				}
- 			}
- 		}
++# Try to find a Rust demangler
++if type llvm-cxxfilt >/dev/null 2>&1 ; then
++	cppfilt=llvm-cxxfilt
++elif type c++filt >/dev/null 2>&1 ; then
++	cppfilt=c++filt
++	cppfilt_opts=-i
++fi
++
+ if [[ $1 == "-r" ]] ; then
+ 	vmlinux=""
+ 	basepath="auto"
+@@ -180,6 +188,12 @@ parse_symbol() {
+ 	# In the case of inlines, move everything to same line
+ 	code=${code//$'\n'/' '}
+ 
++	# Demangle if the name looks like a Rust symbol and if
++	# we got a Rust demangler
++	if [[ $name =~ ^_R && $cppfilt != "" ]] ; then
++		name=$("$cppfilt" "$cppfilt_opts" "$name")
++	fi
++
+ 	# Replace old address with pretty line numbers
+ 	symbol="$segment$name ($code)"
+ }
 -- 
 2.37.1
 
