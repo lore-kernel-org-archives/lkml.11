@@ -2,85 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BDFC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 12:13:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CECCC25B06
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 12:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240724AbiHEMNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 08:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
+        id S240407AbiHEMQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 08:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240698AbiHEMNI (ORCPT
+        with ESMTP id S232176AbiHEMQr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 08:13:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60091D0DE;
-        Fri,  5 Aug 2022 05:13:07 -0700 (PDT)
+        Fri, 5 Aug 2022 08:16:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D84E00D;
+        Fri,  5 Aug 2022 05:16:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 979D6B828AD;
-        Fri,  5 Aug 2022 12:13:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CE06C433D7;
-        Fri,  5 Aug 2022 12:13:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99F06B82499;
+        Fri,  5 Aug 2022 12:16:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF72C433C1;
+        Fri,  5 Aug 2022 12:16:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659701585;
-        bh=t9CH9WRFKEssnrpvuoTtroxI/JC7U60bvI5ioCNeR1s=;
-        h=From:To:Cc:Subject:Date:From;
-        b=iPH8zI3cxO/wWZ7cN1O9nlzhMQAUjQjZs9NnniiCPXQKfTk/YRdKt3Yjii9I9PTmi
-         4/6PF/Wg1TpXiprdMKnopgS4eSxAMH5W080act5UbhVq8jTcccJXb2EeH7qY+hqUFh
-         ohjX9t3fZPyvoxkVOCrNuQ8DEaCk2tiFN2r9UOltYZxS0q+lMGUoy/CxbqKJkZfqGQ
-         B6frpqTx98htQJRtDt+tCboW7X57FpaexRFERqqKk6KLvZeA0qbJC1wNWSx1loQ9IR
-         1YbCExg6IsWSH3SjLUmbiNwtBdhg2e0etY50sOMjAZpDqNVlbwq2Kvf9Ptmq8uTB2I
-         pplhPBUHIFSuw==
+        s=k20201202; t=1659701803;
+        bh=5UHdzuuFV8kmaDUIDaJ0bB1eL8ArPmNMQE+pegWiMIg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ysy0ubfxuKe5LEp1KN0RXvbDjtQJeyzn6TnW1BR/mtr+HtGBn4m9B05OfRaJ5vbIk
+         v94GfnQ4dzvKq5N2PPeHvJiyxbuULAdICCJboOrftXAVYtYKrtvntWSgTel4TcmTRg
+         xzKZt+GIQ6ND1YrkiG3jdRzoIX9vcXiMFD1wVN+9vz3fB8wVzwAJjk+r/bN79TC4qR
+         /6WVmNst9d2bIluPu0KUCKByMNzsdPiFFaly7e7bFpFSXHlWkWkxWRtLsjpT3UJA6c
+         H7VdZIdFRWnZZVoq3c1XeLeR+7Zc5MvKAAJt8715vHKwqtTng6q5phkZ7ZmB9LR5xY
+         G+WP8eXW3QdcQ==
 Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1oJwCn-0002hG-F1; Fri, 05 Aug 2022 14:13:29 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        (envelope-from <johan@kernel.org>)
+        id 1oJwGJ-0002kM-KT; Fri, 05 Aug 2022 14:17:07 +0200
+Date:   Fri, 5 Aug 2022 14:17:07 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 0/2] clk: gcc-sc8280xp: fix broken suspend
-Date:   Fri,  5 Aug 2022 14:12:48 +0200
-Message-Id: <20220805121250.10347-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/7] arm64: dts: qcom: sc8280xp: HID wakeup sources and
+ alt. touchpad
+Message-ID: <Yu0KQyGaa4vHclDR@hovoldconsulting.com>
+References: <20220805092317.4985-1-johan+linaro@kernel.org>
+ <03f115b0-74ae-7793-5248-61df76ab184b@somainline.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <03f115b0-74ae-7793-5248-61df76ab184b@somainline.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Qualcomm PCIe driver currently does not implement suspend at all so
-we need to mark the GDSCs as always-on to prevent genpd from disabling
-them.
+On Fri, Aug 05, 2022 at 01:02:14PM +0200, Konrad Dybcio wrote:
+> On 5.08.2022 11:23, Johan Hovold wrote:
 
-Similarly, the Qualcomm dwc3 USB suspend implementation is also
-incomplete and the controller doesn't currently survive a suspend cycle
-unless the GDSC is kept on. Note that this has nothing to with whether
-wakeup is enabled or not (cf. [1]).
+> > Included is also support for the alternate (second-source) touchpad
+> > found on some X13s laptops. Note that the node is disabled for now as
+> > ideally the boot firmware should be determining which touchpad is
+> > actually populated.
 
-With these two workarounds, we have somewhat functional suspend on the
-SC8280XP reference design and Lenovo Thinkpad X13s until the missing
-driver support is in place (even USB remote wakeup works with [2]
-applied).
+> Interesting, what bootloader is used on these? Are you chainloading
+> something on top of Qualcomm's XBL UEFI?
+
+We're using GRUB currently. Not sure how we'd go about implementing
+this, and perhaps we'll just end up enabling both in DT instead
+eventually.
+
+> > With some additional fixes it is possible to have both nodes enabled and
+> > letting Linux do the probing, but let's wait for a conclusion to the
+> > discussion about whether that is desirable before enabling them both:
+> > 
+> > 	https://lore.kernel.org/all/YuJXMHoT4ijUxnRb@hovoldconsulting.com
 
 Johan
-
-[1] https://lore.kernel.org/all/20220804151001.23612-3-johan+linaro@kernel.org/
-[2] https://lore.kernel.org/all/20220804151001.23612-1-johan+linaro@kernel.org/
-
-
-Johan Hovold (2):
-  clk: gcc-sc8280xp: keep PCIe power-domains always-on
-  clk: gcc-sc8280xp: keep USB power-domains always-on
-
- drivers/clk/qcom/gcc-sc8280xp.c | 21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
-
--- 
-2.35.1
-
