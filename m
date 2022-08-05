@@ -2,83 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5EEAC19F2D
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 13:57:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B65C28B2B
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 13:57:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235095AbiHEN52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 09:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60496 "EHLO
+        id S238027AbiHEN5s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 09:57:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231492AbiHEN5Z (ORCPT
+        with ESMTP id S236932AbiHEN5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 09:57:25 -0400
-Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 616B9BC32;
-        Fri,  5 Aug 2022 06:57:23 -0700 (PDT)
-Received: by mail-pf1-f182.google.com with SMTP id z187so2306842pfb.12;
-        Fri, 05 Aug 2022 06:57:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=WXsHnW98Ol/RR5LVCi+lD4WhQ/7kAEJ76/fSyx1eUIs=;
-        b=S5DA0pZAZ6x+OdpWADKIE6qKzgcf1fJMQxBIPu7XvBRDngWSbM/Pv49a/azv1woHh2
-         MbrAvmDr8h7n1AXt2FdHmrW/ak9ycNFxsnzcH7VkaNe4RrH8+0BdF5w/+5SyyENvaNOu
-         ZcD0kjUqLMMYd6A92CTAdsnKmKCXu05/gxEDMY0NUsRgbT834CE9Cw5gumSO115RwUH2
-         qF3tjMBL8qJS6TlgACrHDmoGvJSzbF8LAhsulR5plvZLbCAwilDI/mXr+yU9sMekCP+n
-         aq8xg2F0QQuoqTA/edw1M5LCsVF+9YpG8AvauPzAHMqkusDYAKBM6LjxDNRzAmIPjDG9
-         K+zQ==
-X-Gm-Message-State: ACgBeo0DOEvUL7jYm//3OGpLMxHlidrgOMC/ZWoXSADrXuAK6cZWMQVV
-        WWzib94U99f4SBJOLqnflsHcnk4GOe0=
-X-Google-Smtp-Source: AA6agR62oAu3mdPvL4Yt6CYvizPyqvuAN1v2Us7b4hFhGKtkTfR92yJf+SoRooWfkiF6Zui4o9azWQ==
-X-Received: by 2002:a05:6a00:2449:b0:528:3a29:e79d with SMTP id d9-20020a056a00244900b005283a29e79dmr7269921pfj.39.1659707842665;
-        Fri, 05 Aug 2022 06:57:22 -0700 (PDT)
-Received: from [192.168.3.217] ([98.51.102.78])
-        by smtp.gmail.com with ESMTPSA id u5-20020a170903124500b0016bf2a4598asm3055571plh.229.2022.08.05.06.57.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Aug 2022 06:57:21 -0700 (PDT)
-Message-ID: <d105bbea-9414-053a-1481-dfed663c83a8@acm.org>
-Date:   Fri, 5 Aug 2022 06:57:20 -0700
+        Fri, 5 Aug 2022 09:57:43 -0400
+Received: from relay02.th.seeweb.it (relay02.th.seeweb.it [IPv6:2001:4b7a:2000:18::163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B0E51439
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 06:57:41 -0700 (PDT)
+Received: from localhost.localdomain (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id C6A441FAA7;
+        Fri,  5 Aug 2022 15:57:39 +0200 (CEST)
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     phone-devel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: [PATCH v2 2/5] iio: adc: qcom-spmi-adc5: Add missing VCOIN/GPIO[134] channels
+Date:   Fri,  5 Aug 2022 15:57:26 +0200
+Message-Id: <20220805135729.1037079-3-marijn.suijten@somainline.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220805135729.1037079-1-marijn.suijten@somainline.org>
+References: <20220805135729.1037079-1-marijn.suijten@somainline.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] RDMA/srp: Check dev_set_name() return value
-Content-Language: en-US
-To:     Bo Liu <liubo03@inspur.com>, jgg@ziepe.ca, leon@kernel.org
-Cc:     linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220805053434.3944-1-liubo03@inspur.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <20220805053434.3944-1-liubo03@inspur.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/4/22 22:34, Bo Liu wrote:
-> It's possible that dev_set_name() returns -ENOMEM, catch and handle this.
-> 
-> Signed-off-by: Bo Liu <liubo03@inspur.com>
-> ---
->   drivers/infiniband/ulp/srp/ib_srp.c | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/infiniband/ulp/srp/ib_srp.c b/drivers/infiniband/ulp/srp/ib_srp.c
-> index 7720ea270ed8..a6f788e3b84b 100644
-> --- a/drivers/infiniband/ulp/srp/ib_srp.c
-> +++ b/drivers/infiniband/ulp/srp/ib_srp.c
-> @@ -3905,8 +3905,9 @@ static struct srp_host *srp_add_port(struct srp_device *device, u8 port)
->   
->   	host->dev.class = &srp_class;
->   	host->dev.parent = device->dev->dev.parent;
-> -	dev_set_name(&host->dev, "srp-%s-%d", dev_name(&device->dev->dev),
-> -		     port);
-> +	if (dev_set_name(&host->dev, "srp-%s-%d", dev_name(&device->dev->dev),
-> +		     port))
-> +		goto free_host;
->   
->   	if (device_register(&host->dev))
->   		goto free_host;
+These channels are specified in downstream kernels [1] and actively used
+by e.g. the Sony Seine platform on the SM6125 SoC.  Note that GPIO2
+isn't used on this platform and, while the definition downstream is
+identical to the other GPIOx_100K_PU definitions, has been omitted for
+lack of proper testing.
 
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+[1]: https://source.codeaurora.org/quic/la/kernel/msm-4.14/tree/drivers/iio/adc/qcom-spmi-adc5.c?h=LA.UM.7.11.r1-05200-NICOBAR.0#n688
+
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+---
+ drivers/iio/adc/qcom-spmi-adc5.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
+index 87438d1e5c0b..0dc4fe612433 100644
+--- a/drivers/iio/adc/qcom-spmi-adc5.c
++++ b/drivers/iio/adc/qcom-spmi-adc5.c
+@@ -526,6 +526,8 @@ static const struct adc5_channels adc5_chans_pmic[ADC5_MAX_CHANNEL] = {
+ 					SCALE_HW_CALIB_DEFAULT)
+ 	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 1,
+ 					SCALE_HW_CALIB_DEFAULT)
++	[ADC5_VCOIN]		= ADC5_CHAN_VOLT("vcoin", 1,
++					SCALE_HW_CALIB_DEFAULT)
+ 	[ADC5_DIE_TEMP]		= ADC5_CHAN_TEMP("die_temp", 0,
+ 					SCALE_HW_CALIB_PMIC_THERM)
+ 	[ADC5_USB_IN_I]		= ADC5_CHAN_VOLT("usb_in_i_uv", 0,
+@@ -549,6 +551,12 @@ static const struct adc5_channels adc5_chans_pmic[ADC5_MAX_CHANNEL] = {
+ 					SCALE_HW_CALIB_THERM_100K_PULLUP)
+ 	[ADC5_AMUX_THM2]	= ADC5_CHAN_TEMP("amux_thm2", 0,
+ 					SCALE_HW_CALIB_PM5_SMB_TEMP)
++	[ADC5_GPIO1_100K_PU]	= ADC5_CHAN_TEMP("gpio1_100k_pu", 0,
++					SCALE_HW_CALIB_THERM_100K_PULLUP)
++	[ADC5_GPIO3_100K_PU]	= ADC5_CHAN_TEMP("gpio3_100k_pu", 0,
++					SCALE_HW_CALIB_THERM_100K_PULLUP)
++	[ADC5_GPIO4_100K_PU]	= ADC5_CHAN_TEMP("gpio4_100k_pu", 0,
++					SCALE_HW_CALIB_THERM_100K_PULLUP)
+ };
+ 
+ static const struct adc5_channels adc7_chans_pmic[ADC5_MAX_CHANNEL] = {
+-- 
+2.37.1
+
