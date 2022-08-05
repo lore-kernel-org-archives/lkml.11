@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0422C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 17:30:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07BDCC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 17:30:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241290AbiHERar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 13:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45106 "EHLO
+        id S241386AbiHERav (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 13:30:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241224AbiHERae (ORCPT
+        with ESMTP id S241301AbiHERag (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 13:30:34 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B7AE090
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 10:30:24 -0700 (PDT)
+        Fri, 5 Aug 2022 13:30:36 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E0D19C03
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 10:30:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659720624; x=1691256624;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=sRHTxQHs2LaOvIhv67s67Ysp5FgHFBpgDInzTG4TkTA=;
-  b=AAfix122dcw8RKDOGoJe/RXu5j8L1hHmLzYd8603ATJVi/zC2MFlm48+
-   h5PWoJNw8jfpOPf+5onaOhvBFj8ZBXUwWg1oB+dvjc4JTHqkxrXhq5SqF
-   V7gJUistp0leuFH3hII8MH26COjoEvFl9GvpXcNqgZEE1MaDOrDZjYUZT
-   kFVpQlW9ZVCIuU7z/WAjbzzqx898Gfp5+VgMnl6BLz1Ux8+PDnPJULjgG
-   tqLKCuaIFhIrh0emMdXanjq7QX+7A98ZZdlUyRS/ZVH4x5qvVWx/f/vvH
-   V1rw8B8JNZnhjL0GJXBhWeV/9I0pXh2OBewBTTFCZln5B8YUs9aLg92D6
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="316144777"
+  t=1659720627; x=1691256627;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=lNpl3WpX5qBLgUm1l2qwRW/uFaqWkaKUUWTJTe511pE=;
+  b=GljWQ+Nl9aioX0ZwA6tmsf/IDgb/8l9DiSeges51mje1zNmisFi+IZ46
+   ZWjca0QMOf2GzopGKAu6UMJ4G/0VfdPGTkocw9aN2fOnHqr3cBvvthot4
+   dckwiMBTJ76HKlflH1yCpoZqGcm+LLW7biupXGk+KYkA9qMY/nqBU1/w9
+   fMp5MY41NXzLBe0/g83LGdjZH+Sb9yUUV62Z9DLfd1NOA+1ZEVB5pmFPJ
+   hXNgAffF2lrdd0pFgQp5UCAtkV9U8vU3Gl1ZSCalJj0DXttwC4zsqP3jk
+   sbZRAiqAdV/SJ0XTpLxX5b3i2qrx4huetE4zjtz2l7VM2JwMxZDi+LumY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="287814607"
 X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="316144777"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 10:30:24 -0700
+   d="scan'208";a="287814607"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 10:30:20 -0700
 X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="730067989"
+   d="scan'208";a="663064578"
 Received: from amecham-mobl.amr.corp.intel.com (HELO localhost) ([10.255.0.242])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 10:30:22 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 10:30:19 -0700
 From:   ira.weiny@intel.com
 To:     Rik van Riel <riel@surriel.com>, Borislav Petkov <bp@alien8.de>,
         Dave Hansen <dave.hansen@intel.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+Cc:     Ira Weiny <ira.weiny@intel.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org, kernel-team@fb.com
-Subject: [RFC PATCH 2/5] entry: Add calls for save/restore auxiliary pt_regs
-Date:   Fri,  5 Aug 2022 10:30:06 -0700
-Message-Id: <20220805173009.3128098-3-ira.weiny@intel.com>
+Subject: [RFC PATCH 0/5] Print CPU at segfault time
+Date:   Fri,  5 Aug 2022 10:30:04 -0700
+Message-Id: <20220805173009.3128098-1-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220805173009.3128098-1-ira.weiny@intel.com>
-References: <20220805173009.3128098-1-ira.weiny@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -57,118 +54,63 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Some architectures have auxiliary pt_regs space available to store
-information on the stack during exceptions.  This information is easier
-to obtain and store within C code rather than in arch specific assembly.
 
-Define empty calls to architecture specific save and restore auxiliary
-pt_regs functions.  Call these functions on generic entry/exit.
+Rik reported that the knowledge of which CPU's are seeing faults can help in
+determining which CPUs are failing in a large data center.[1]
 
-NOTE: Due to the split nature of the Xen exit code
-irqentry_exit_cond_resched() requires an unbalanced call to
-arch_restore_aux_pt_regs().
+Storing the CPU at exception entry time allows this print to report the CPU
+which actually took the exception.  This still may not be the CPU which is
+failing but it should be closer.
 
-Cc: Rik van Riel <riel@surriel.com>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+Dave and Boris recognized that the auxiliary pt_regs work I did for the PKS
+series could help to store this value and avoid passing the CPU throughout the
+fault handler call stack.
 
----
-Forward ported from PKS series
-	https://lore.kernel.org/lkml/20220419170649.1022246-20-ira.weiny@intel.com/
----
- include/linux/entry-common.h |  8 ++++++++
- kernel/entry/common.c        | 16 ++++++++++++++--
- 2 files changed, 22 insertions(+), 2 deletions(-)
+I'm posting this RFC for a few reasons.
 
-diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
-index 976cce7cf803..1c09ba64ad28 100644
---- a/include/linux/entry-common.h
-+++ b/include/linux/entry-common.h
-@@ -79,6 +79,14 @@ static __always_inline void arch_enter_from_user_mode(struct pt_regs *regs);
- static __always_inline void arch_enter_from_user_mode(struct pt_regs *regs) {}
- #endif
- 
-+#ifndef arch_save_aux_pt_regs
-+static inline void arch_save_aux_pt_regs(struct pt_regs *regs) { }
-+#endif
-+
-+#ifndef arch_restore_aux_pt_regs
-+static inline void arch_restore_aux_pt_regs(struct pt_regs *regs) { }
-+#endif
-+
- /**
-  * enter_from_user_mode - Establish state when coming from user mode
-  *
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index 8c0f334c4b75..a70a0f314aee 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -317,7 +317,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 
- 	if (user_mode(regs)) {
- 		irqentry_enter_from_user_mode(regs);
--		return ret;
-+		goto aux_save;
- 	}
- 
- 	/*
-@@ -356,7 +356,7 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 		instrumentation_end();
- 
- 		ret.exit_rcu = true;
--		return ret;
-+		goto aux_save;
- 	}
- 
- 	/*
-@@ -371,6 +371,11 @@ noinstr irqentry_state_t irqentry_enter(struct pt_regs *regs)
- 	trace_hardirqs_off_finish();
- 	instrumentation_end();
- 
-+aux_save:
-+	instrumentation_begin();
-+	arch_save_aux_pt_regs(regs);
-+	instrumentation_end();
-+
- 	return ret;
- }
- 
-@@ -401,6 +406,7 @@ void dynamic_irqentry_exit_cond_resched(void)
- 
- void irqentry_exit_cond_resched(struct pt_regs *regs)
- {
-+	arch_restore_aux_pt_regs(regs);
- 	irqentry_exit_cond_resched_internal();
- }
- 
-@@ -408,6 +414,10 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
- {
- 	lockdep_assert_irqs_disabled();
- 
-+	instrumentation_begin();
-+	arch_restore_aux_pt_regs(regs);
-+	instrumentation_end();
-+
- 	/* Check whether this returns to user mode */
- 	if (user_mode(regs)) {
- 		irqentry_exit_to_user_mode(regs);
-@@ -459,6 +469,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
- 	instrumentation_begin();
- 	trace_hardirqs_off_finish();
- 	ftrace_nmi_enter();
-+	arch_save_aux_pt_regs(regs);
- 	instrumentation_end();
- 
- 	return irq_state;
-@@ -467,6 +478,7 @@ irqentry_state_t noinstr irqentry_nmi_enter(struct pt_regs *regs)
- void noinstr irqentry_nmi_exit(struct pt_regs *regs, irqentry_state_t irq_state)
- {
- 	instrumentation_begin();
-+	arch_restore_aux_pt_regs(regs);
- 	ftrace_nmi_exit();
- 	if (irq_state.lockdep) {
- 		trace_hardirqs_on_prepare();
+1) I've left in arch_restore_aux_pt_regs().  This is called on exception exit
+   and is not needed for this use case but I believe it is better to leave it
+   for symmetry within the generic entry code.  This also means that patch
+   1/5 could be dropped completely.
+
+2) I want to see if 0day has any issues with the Kconfig option changes I made
+   which may creep in from a 32bit build.
+
+3) The final patch could be squashed with Rik's but it seemed better to leave
+   them split for authorship clarity.
+
+Compile tested only.
+
+[1] https://lore.kernel.org/all/20220805101644.2e674553@imladris.surriel.com/
+
+Ira Weiny (4):
+  entry: Pass pt_regs to irqentry_exit_cond_resched()
+  entry: Add calls for save/restore auxiliary pt_regs
+  x86/entry: Add auxiliary pt_regs space
+  x86/entry: Store CPU info on exception entry
+
+Rik van Riel (1):
+  x86,mm: print likely CPU at segfault time
+
+ arch/arm64/include/asm/preempt.h    |  2 +-
+ arch/arm64/kernel/entry-common.c    |  4 +--
+ arch/x86/Kconfig                    |  4 +++
+ arch/x86/entry/calling.h            | 19 ++++++++++++++
+ arch/x86/entry/common.c             |  2 +-
+ arch/x86/entry/entry_64.S           | 22 ++++++++++++++++
+ arch/x86/entry/entry_64_compat.S    |  6 +++++
+ arch/x86/include/asm/entry-common.h | 12 +++++++++
+ arch/x86/include/asm/ptrace.h       | 19 ++++++++++++++
+ arch/x86/kernel/asm-offsets_64.c    | 15 +++++++++++
+ arch/x86/kernel/head_64.S           |  6 +++++
+ arch/x86/mm/fault.c                 | 10 ++++++++
+ include/linux/entry-common.h        | 25 +++++++++++++-----
+ kernel/entry/common.c               | 29 ++++++++++++++++-----
+ kernel/sched/core.c                 | 40 ++++++++++++++---------------
+ 15 files changed, 178 insertions(+), 37 deletions(-)
+
+
+base-commit: b2a88c212e652e94f1e4b635910972ac57ba4e97
 -- 
 2.35.3
 
