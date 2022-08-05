@@ -2,97 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A54D6C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 06:44:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58151C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 06:46:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238597AbiHEGou (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 02:44:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53198 "EHLO
+        id S235377AbiHEGqr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 02:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237468AbiHEGoo (ORCPT
+        with ESMTP id S231800AbiHEGqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 02:44:44 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC0ED7434C;
-        Thu,  4 Aug 2022 23:44:43 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2756idxm007872;
-        Fri, 5 Aug 2022 01:44:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1659681879;
-        bh=6rPE/bXMV/XtZVzrkJNNtd/XO2H6ocUbL1oqvByw9Vw=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=UjkrB1RWx7GcWYfuwFNH8CTQ/+orVxGEVC/vQkuxkywUGRl/C1GsVA3Lxjj+XEppT
-         Iakkax0oVGEvBiZg3RVdF9DAaP5nyw/G/D67V4sqtQXweQrnp6QXCE0YkF9GH0JS+J
-         XSof1r/MDvsFRiFKDwdXlUAoIry85UW1ZBY/g7ns=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2756idl2026653
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 5 Aug 2022 01:44:39 -0500
-Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 5
- Aug 2022 01:44:39 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 5 Aug 2022 01:44:39 -0500
-Received: from localhost.localdomain (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2756hvNH086657;
-        Fri, 5 Aug 2022 01:44:32 -0500
-From:   Matt Ranostay <mranostay@ti.com>
-To:     <lee@kernel.org>, <nm@ti.com>
-CC:     <linux-rtc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, Keerthy <j-keerthy@ti.com>
-Subject: [PATCH 4/4] arm64: dts: ti: k3-j7200-common-proc-board: Add TPS6594x PMIC node
-Date:   Thu, 4 Aug 2022 23:43:52 -0700
-Message-ID: <20220805064352.793918-5-mranostay@ti.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220805064352.793918-1-mranostay@ti.com>
-References: <20220805064352.793918-1-mranostay@ti.com>
+        Fri, 5 Aug 2022 02:46:43 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C0C140D4
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 23:46:42 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id e15so2223433lfs.0
+        for <linux-kernel@vger.kernel.org>; Thu, 04 Aug 2022 23:46:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=elKcXDfUxPr5UWB5Ig8rgcGqrF7Nd89MhfB2Oxmopfk=;
+        b=V32+S7YUV/1rfANMUeraQkvs58A9sCUKhnleazkhDf2cidrJm6vb96ts6qDSCw05Kc
+         V9CqHvp+Q9ntGdAboe41XOq12L8axSuUoSYofJ6X92D9MwzVEHjJMpsnuXcBk4s2uUb4
+         jden0La+rvdxwlcdfn1ZZDPi0NZHXxIn5Qap88of0Mj4xBYt0oP+Bqo1SZ5E6e3N1Ip3
+         mj1RfJxCGFsHUrQJwIbho//GG7e7B2cHfuxt2tF+mU64Z4rUttZT0zgHhuUqro5p934c
+         gx6JfOifTojzkd/vrmmi5k12KEYjpn3YMZ2Tny1xaNbY1unGDxJNjO+giV7kb5YnxbC8
+         8xtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=elKcXDfUxPr5UWB5Ig8rgcGqrF7Nd89MhfB2Oxmopfk=;
+        b=fQ23moQRjGDa7mfrDa0Hnc/tFDmwyNaly6qGj/HoOHu7PlSiyhQJ7coZ0PGwEjqj4Z
+         5qwtXqwbAvSgeye+UgFXssHgP7+7otSsg8y2EmgKuHUs9EWxk3Jtw2shmkilAK4IMRcO
+         ekHUYdhOoGzR6Id9nQ3J9SuMoPE5/uXpMqWAQdqXtsWo56m4DZEEtMMjC+9FopeNbT4+
+         JMCzNPprqa2RSzCFhn/ePBkyqb8Sz4Z6Slj0xr+9Fo247EkV1aDFl+oWpqc58qVGewAj
+         S1J7x2nJBENkSycF/bdTbCrrSzv4JOE1oWP29ekS6FwuRuocyU1eGJ+ul4spPgziSlmm
+         kMfQ==
+X-Gm-Message-State: ACgBeo0/dzkOX1Nwv5HEMMOCRfyZtugVah7/uUEifVjrEF5j1Jzg8hO8
+        GmDxowX/2YYHOagimbjM9k5dng==
+X-Google-Smtp-Source: AA6agR7L9ksA8IWx0gxOVnH6K4HcwGa/7uD0x3KwylcNpI/FkJHrjksOnqu6DQW3NEJoMGkK4Sk9Mw==
+X-Received: by 2002:a05:6512:31c9:b0:48b:27af:ad36 with SMTP id j9-20020a05651231c900b0048b27afad36mr2100250lfe.394.1659682000569;
+        Thu, 04 Aug 2022 23:46:40 -0700 (PDT)
+Received: from [192.168.1.6] ([77.222.167.48])
+        by smtp.gmail.com with ESMTPSA id t18-20020a056512069200b0048b08e25979sm360374lfe.199.2022.08.04.23.46.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Aug 2022 23:46:39 -0700 (PDT)
+Message-ID: <e84277b2-55ab-6b6d-c2bf-34736b0622be@linaro.org>
+Date:   Fri, 5 Aug 2022 08:46:37 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v3 1/4] spi: dt-binding: document microchip coreQSPI
+Content-Language: en-US
+To:     Naga Sureshkumar Relli <nagasuresh.relli@microchip.com>,
+        broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, conor.dooley@microchip.com
+Cc:     linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Valentina.FernandezAlanis@microchip.com
+References: <20220805053019.996484-1-nagasuresh.relli@microchip.com>
+ <20220805053019.996484-2-nagasuresh.relli@microchip.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220805053019.996484-2-nagasuresh.relli@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keerthy <j-keerthy@ti.com>
+On 05/08/2022 07:30, Naga Sureshkumar Relli wrote:
+> Add microchip coreQSPI compatible string and update the title/description
+> to reflect this addition.
+> 
+> Signed-off-by: Naga Sureshkumar Relli <nagasuresh.relli@microchip.com>
 
-Add TPS6594x PMIC + RTC definition for J7200 common processor board
-device tree.
 
-Signed-off-by: Keerthy <j-keerthy@ti.com>
----
- .../boot/dts/ti/k3-j7200-common-proc-board.dts   | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j7200-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j7200-common-proc-board.dts
-index 121975dc8239..6deab4f9a04b 100644
---- a/arch/arm64/boot/dts/ti/k3-j7200-common-proc-board.dts
-+++ b/arch/arm64/boot/dts/ti/k3-j7200-common-proc-board.dts
-@@ -353,3 +353,19 @@ &pcie1_ep {
- 	num-lanes = <2>;
- 	status = "disabled";
- };
-+
-+&wkup_i2c0 {
-+	status = "okay";
-+};
-+
-+&wkup_i2c0 {
-+	tps6594x: tps6594x@48 {
-+		compatible = "ti,tps6594x";
-+		reg = <0x48>;
-+		ti,system-power-controller;
-+
-+		rtc {
-+			compatible = "ti,tps6594x-rtc";
-+		};
-+	};
-+};
--- 
-2.36.1
 
+Best regards,
+Krzysztof
