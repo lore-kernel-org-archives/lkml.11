@@ -2,92 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F43C19F2D
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 07:00:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FAB3C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 07:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240060AbiHEHAw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 03:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36898 "EHLO
+        id S240084AbiHEHCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 03:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237674AbiHEHAl (ORCPT
+        with ESMTP id S231528AbiHEHCP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 03:00:41 -0400
-Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id DE55713D73;
-        Fri,  5 Aug 2022 00:00:32 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [218.12.16.98])
-        by mail-app3 (Coremail) with SMTP id cC_KCgC3CLX7v+xiMjiWAg--.8908S2;
-        Fri, 05 Aug 2022 15:00:28 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-atm-general@lists.sourceforge.net
-Cc:     3chas3@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH] atm: idt77252: fix use-after-free bugs caused by tst_timer
-Date:   Fri,  5 Aug 2022 15:00:08 +0800
-Message-Id: <20220805070008.18007-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgC3CLX7v+xiMjiWAg--.8908S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrZw1kXF1xAF4rJrWkXrWkZwb_yoWkKrXEga
-        4FvasrA3yqgrn7Zay5tF43ZF4jkw4UWFn3Wry2gFZxGrZrXFW7Aw4DXrsI9F1F9F48ZF93
-        GrW5tasrJ3s7GjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb2AFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_GF4l
-        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
-        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAK
-        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
-        4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY
-        6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUPb18UUUUU=
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgEMAVZdta7yZwAssn
+        Fri, 5 Aug 2022 03:02:15 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34462248C7
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 00:02:13 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 92BE71A1929;
+        Fri,  5 Aug 2022 09:02:12 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 679611A1912;
+        Fri,  5 Aug 2022 09:02:12 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id E4C6A180031C;
+        Fri,  5 Aug 2022 15:02:10 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: fsl_sai: Update slots number according to bclk_ratio
+Date:   Fri,  5 Aug 2022 14:45:26 +0800
+Message-Id: <1659681926-13493-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are use-after-free bugs caused by tst_timer. The root cause
-is that there are no functions to stop tst_timer in idt77252_exit().
-One of the possible race conditions is shown below:
+The bclk_ratio is set by .set_bclk_ratio API.
+bclk_ratio = slots * slot_width
+So if slots is not set by .set_tdm_slot, then it can be calculated
+by bclk_ratio.
 
-    (thread 1)          |        (thread 2)
-                        |  idt77252_init_one
-                        |    init_card
-                        |      fill_tst
-                        |        mod_timer(&card->tst_timer, ...)
-idt77252_exit           |  (wait a time)
-                        |  tst_timer
-                        |
-                        |    ...
-  kfree(card) // FREE   |
-                        |    card->soft_tst[e] // USE
-
-The idt77252_dev is deallocated in idt77252_exit() and used in
-timer handler.
-
-This patch adds del_timer_sync() in idt77252_exit() in order that
-the timer handler could be stopped before the idt77252_dev is
-deallocated.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
 ---
- drivers/atm/idt77252.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/fsl/fsl_sai.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/atm/idt77252.c b/drivers/atm/idt77252.c
-index 81ce81a75fc..681cb378679 100644
---- a/drivers/atm/idt77252.c
-+++ b/drivers/atm/idt77252.c
-@@ -3752,6 +3752,7 @@ static void __exit idt77252_exit(void)
- 		card = idt77252_chain;
- 		dev = card->atmdev;
- 		idt77252_chain = card->next;
-+		del_timer_sync(&card->tst_timer);
+diff --git a/sound/soc/fsl/fsl_sai.c b/sound/soc/fsl/fsl_sai.c
+index 7523bb944b21..acf76ea21138 100644
+--- a/sound/soc/fsl/fsl_sai.c
++++ b/sound/soc/fsl/fsl_sai.c
+@@ -535,12 +535,14 @@ static int fsl_sai_hw_params(struct snd_pcm_substream *substream,
+ 	u32 pins, bclk;
+ 	int ret, i;
  
- 		if (dev->phy->stop)
- 			dev->phy->stop(dev);
+-	if (sai->slots)
+-		slots = sai->slots;
+-
+ 	if (sai->slot_width)
+ 		slot_width = sai->slot_width;
+ 
++	if (sai->slots)
++		slots = sai->slots;
++	else if (sai->bclk_ratio)
++		slots = sai->bclk_ratio / slot_width;
++
+ 	pins = DIV_ROUND_UP(channels, slots);
+ 
+ 	/*
 -- 
 2.17.1
 
