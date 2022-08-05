@@ -2,126 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 374DCC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 09:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3704EC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 09:36:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240458AbiHEJdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 05:33:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37894 "EHLO
+        id S240358AbiHEJg1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 05:36:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240358AbiHEJdg (ORCPT
+        with ESMTP id S237747AbiHEJgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 05:33:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 307F9785A4
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 02:33:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659692014;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xYlx1DnAo8B9+NfOiZ3N/1FJnpyi9Ccc/zGwvzzjckA=;
-        b=emU67s/j87JTNik36g5Byeu/LORojTlI7ZHFAWvXTJaBNYIlGK+1RrEI9strhL414zpaTQ
-        FmtAOOadUV/gREsmzEU9X5kU9yMVzwZFkbUnTJnxq8WJSiZRmdAbnSLDSLcTmfdRWVvDeU
-        MmyLUUdaEk7yf88BbAJYXlPjkb+Zwcw=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-480-ecdi-_GqPeCVQeOE5tFqAg-1; Fri, 05 Aug 2022 05:33:33 -0400
-X-MC-Unique: ecdi-_GqPeCVQeOE5tFqAg-1
-Received: by mail-ed1-f72.google.com with SMTP id w5-20020a05640234c500b0043dda025648so1271260edc.8
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 02:33:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=xYlx1DnAo8B9+NfOiZ3N/1FJnpyi9Ccc/zGwvzzjckA=;
-        b=W1vYtz7Ts7ePId91/JnsCEjXlLuCr3Ii73PTUcCEoR5w+epiT2ch1JG2M3KsQwc3W0
-         5+aGiINC0A1X21RJTeKBBpzrIM0hcTnc5yCySCL+kukJe98qe+vzNhcGPEk7Q+K3SoD2
-         ElNirusEi3PXI2VGpxxsH4y2MKT9NCLdHK4ob8kkp4dPKD/WcgofAP4/h9MvX+hbgld5
-         TBmMVNPwRelW9J1/ehQKoFtGUc4dFvBzOAYdFm6slZiIq6BtaenUQtw9BZNGO2xULa/W
-         enVlhlvuoeJ9c6ZDZEHhxWT/wzPAg0lmxiDxfHUtnZoupb/Se/emVsvmncw7Vu4tATdy
-         mdcQ==
-X-Gm-Message-State: ACgBeo00C8tKWeW53kbMO9oQwLDjZLcQCyMugti1nEFl6tQmuh8FU1G+
-        8xJcA3M60gCfK1yvZGtk/X2UnNkX96U3AjkCsv0XRAuAqZaEcw0rrEmKrtqnHLRFTrjAzmqvBHs
-        1joqRjcP2JtWEKTJm7tAH6Q0e
-X-Received: by 2002:a05:6402:14b:b0:43d:a7dd:4376 with SMTP id s11-20020a056402014b00b0043da7dd4376mr5720905edu.89.1659692011865;
-        Fri, 05 Aug 2022 02:33:31 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR46YXts34qcUmbZ8bk88rZFf9E99ZwGCvk7kKq0jUzslOf62qTsuofT429JrWEKTMlswPHRuQ==
-X-Received: by 2002:a05:6402:14b:b0:43d:a7dd:4376 with SMTP id s11-20020a056402014b00b0043da7dd4376mr5720896edu.89.1659692011657;
-        Fri, 05 Aug 2022 02:33:31 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
-        by smtp.googlemail.com with ESMTPSA id bc2-20020a056402204200b0043e8334f762sm1793670edb.65.2022.08.05.02.33.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Aug 2022 02:33:31 -0700 (PDT)
-Message-ID: <ba7e528b-8f60-5c0d-868f-98a8fa5cf847@redhat.com>
-Date:   Fri, 5 Aug 2022 11:33:30 +0200
+        Fri, 5 Aug 2022 05:36:25 -0400
+Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0843A29C91
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 02:36:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1659692143; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=HdRixjmY7k8QmEF2vJHaiZupbePpR/Hu1Oqp9XUbYzHXJGRTY3+pm0yWidT675bqbaYBpS9HveNo4tO6DX0V8Gzk+eVexXVxsYc3dCu1KOboGGBC0A67zBjRpKTwsh0ZzER0wItw+t5xXRsCd1CMYjOndNwUoPNbPGiLQRv5Wvs=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1659692143; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=G8MsDCNn/ZMR+NcTrqGGmERIgvdoqAtb+ck1u1WQQns=; 
+        b=Exz9DJO9SDONKHw3+wLd5DntW4JHs7hNnUWnzSJFsVa5TaX58Gy0Z65JPCCgzzYRPsexWzzgB3a3i43nFjnFWJOLJwtdPDn+1Cl/8G329zudX5fcYM2W7e8cHwsB3qviaQcI7dAaYwu1xWtaroSGz52UyeuY1lGsHXWuZGOqBZ0=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659692143;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=G8MsDCNn/ZMR+NcTrqGGmERIgvdoqAtb+ck1u1WQQns=;
+        b=JrkzXZwEhfuPxSVR+Vtx8JiRjTCCR+078sCcwoc2XKVOp6jwNyuxjNbF4BTDvACx
+        WBh2BHk5ED7fRmznza4E1R2XiZGWQzDgTDBnEH6ZvThDH8RJ+QD0acm3ris8YM7SL6u
+        sQYJkdV+mtVaHNQ6X3jRDTAGUZW8kL1jNbYxw9E0=
+Received: from mail.zoho.in by mx.zoho.in
+        with SMTP id 1659692132718539.7638172100387; Fri, 5 Aug 2022 15:05:32 +0530 (IST)
+Date:   Fri, 05 Aug 2022 15:05:32 +0530
+From:   Siddh Raman Pant <code@siddh.me>
+To:     "Eric Biggers" <ebiggers@kernel.org>
+Cc:     "Jonathan Corbet" <corbet@lwn.net>,
+        "David Howells" <dhowells@redhat.com>,
+        "Randy Dunlap" <rdunlap@infradead.org>,
+        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
+        "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        "linux-kernel-mentees" 
+        <linux-kernel-mentees@lists.linuxfoundation.org>
+Message-ID: <1826d5c2956.568f80f5118689.2103252186884814555@siddh.me>
+In-Reply-To: <YuzFIx36zDXX0z/0@sol.localdomain>
+References: <cover.1659618705.git.code@siddh.me>
+ <6bac2d4c2b50d921eb16fa5344ffe258be90c651.1659618705.git.code@siddh.me> <YuzFIx36zDXX0z/0@sol.localdomain>
+Subject: Re: [PATCH 2/3] kernel/watch_queue: Improve struct annotation
+ formatting
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Leonardo Bras <leobras@redhat.com>, Peter Xu <peterx@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220805073544.555261-1-leobras@redhat.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [RFC PATCH 1/1] kvm: Use a new spinlock to avoid atomic
- operations in kvm_get_dirty_log_protect
-In-Reply-To: <20220805073544.555261-1-leobras@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/5/22 09:35, Leonardo Bras wrote:
-> 1 - Spin-Locking in mark_page_dirty_in_slot():
-> I understand this function happens a lot in the guest and should probably
-> be as fast as possible, so introducing a lock here seems
-> counter-productive, but to be fair, I could not see it any slower than a
-> couple cycles in my current setup (x86_64 machine).
+On Fri, 05 Aug 2022 12:52:11 +0530  Eric Biggers  wrote:
+> On Thu, Aug 04, 2022 at 07:00:23PM +0530, Siddh Raman Pant wrote:
+> > Improve formatting struct annotations in watch_queue.h, so that they
+> > fall in the preferred 80 character limit.
+> > 
+> > Signed-off-by: Siddh Raman Pant code@siddh.me>
+> 
+> This patch isn't just fixing overly long lines, but rather is introducing
+> kerneldoc comments and documenting things that weren't documented before.
+> That's fine, but please make the commit message accurately describe the patch.
+> 
+> > diff --git a/include/linux/watch_queue.h b/include/linux/watch_queue.h
+> > index fc6bba20273b..c99c39ec6548 100644
+> > --- a/include/linux/watch_queue.h
+> > +++ b/include/linux/watch_queue.h
+> > @@ -18,57 +18,103 @@
+> >  
+> >  struct cred;
+> >  
+> > +/**
+> > + * watch_type_filter - Filter on watch type
+> 
+> If you're going to use kerneldoc comments, they should be correctly formatted.
+> This is not, since it's missing the word struct.  You can run this command to
+> see the kerneldoc warnings:
+> 
+> 	./scripts/kernel-doc -v -none include/linux/watch_queue.h
+> 
+> > + * @lock: Spinlock
+> 
+> Please make sure that comments provide useful information and don't just repeat
+> what the code says.
+> 
+> - Eric
+> 
 
-Maybe too small workload?  32 vcpus at 8 GB/s would mean 256 MB/s/vCPU, 
-i.e. 16384 pages/second *at most*.  That might not create too much 
-contention.
-
-One possibility here is to use a global (for all VMs) 
-percpu_rw_semaphore, or perhaps even RCU.  The write critical section is 
-so short that it could be a win nevertheless.
-
-However...
-
-> 2 - Qemu will use the 'manual_dirty_log_protect'
-> I understand that more recent versions qemu will use
-> 'manual_dirty_log_protect' when available, so this approach will not
-> benefit this use case, which is quite common.
-> A counter argument would be: there are other hypervisors that could benefit
-> from it, and that is also applicable for older qemu versions.
-
-... that was my first thought indeed.  I would just consider the old API 
-to be legacy and not bother with it.  Mostly because of the ability to 
-clear a small part of the bitmap(*), and the initially-all-set 
-optimization, manual dirty log ought to be superior even if 
-CLEAR_DIRTY_LOG has to use atomics.
-
-> - I am also trying to think on improvements for the
->   'manual_dirty_log_protect' use case, which seems to be very hard to
->   improve. For starters, using the same approach to remove the atomics
->   does not seem to cause any relevant speedup.
-
-Yes, there are two issues:
-
-1) CLEAR_DIRTY_LOG does not clear all bits, only those passed in by 
-userspace.  This means that the inactive bitmap still has some bits set
-
-2) the ability to clear part of the bitmap makes it hard to do a 
-wholesale switch in CLEAR_DIRTY_LOG; this is the dealbreaker
+Okay, will do.
 
 Thanks,
-
-Paolo
-
-(*) for the old API, that requires a workaround of using multiple small 
-memslots, e.g. 1-32G in size
-
+Siddh
