@@ -2,176 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9788CC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 12:56:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2DC2C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 12:56:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240824AbiHEM4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 08:56:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51058 "EHLO
+        id S240416AbiHEM4q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 08:56:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240808AbiHEM4J (ORCPT
+        with ESMTP id S240860AbiHEM4c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 08:56:09 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D5F024BE5;
-        Fri,  5 Aug 2022 05:56:05 -0700 (PDT)
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Lzlrq6RZ6z689n7;
-        Fri,  5 Aug 2022 20:53:31 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 5 Aug 2022 14:56:02 +0200
-Received: from [10.126.170.142] (10.126.170.142) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2375.24; Fri, 5 Aug 2022 13:56:01 +0100
-Message-ID: <93448cc1-7b21-3b04-92d2-65d61ba140fe@huawei.com>
-Date:   Fri, 5 Aug 2022 13:56:04 +0100
+        Fri, 5 Aug 2022 08:56:32 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 87B152F003
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 05:56:24 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 02EB3106F;
+        Fri,  5 Aug 2022 05:56:25 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.42.224])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5B0953F73B;
+        Fri,  5 Aug 2022 05:56:23 -0700 (PDT)
+Date:   Fri, 5 Aug 2022 13:56:20 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Bruno Goncalves <bgoncalv@redhat.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        CKI Project <cki-project@redhat.com>,
+        Sudeep Holla <sudeep.holla@arm.com>
+Subject: Re: [5.19.0] [aarch64] WARNING: CPU: 0 PID: 1 at
+ mm/page_alloc.c:5407 __alloc_pages+0x1a0/0x290
+Message-ID: <Yu0TdPm3CUT6gq/J@FVFF77S0Q05N>
+References: <CA+QYu4rPbfH-4wNR06Vn=31RCGKFFEB-KRskn52Jtig_UugYzg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v4 13/17] perf pmu-events: Don't assume pmu_event is an
- array
-To:     Ian Rogers <irogers@google.com>, Will Deacon <will@kernel.org>,
-        "James Clark" <james.clark@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        "Namhyung Kim" <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        "Kan Liang" <kan.liang@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-perf-users@vger.kernel.org>
-CC:     Stephane Eranian <eranian@google.com>
-References: <20220804221816.1802790-1-irogers@google.com>
- <20220804221816.1802790-14-irogers@google.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <20220804221816.1802790-14-irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.170.142]
-X-ClientProxiedBy: lhreml704-chm.china.huawei.com (10.201.108.53) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+QYu4rPbfH-4wNR06Vn=31RCGKFFEB-KRskn52Jtig_UugYzg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/08/2022 23:18, Ian Rogers wrote:
-> Current code assumes that a struct pmu_event can be iterated over
-> forward until a NULL pmu_event is encountered. This makes it difficult
-> to refactor pmu_event. Add a loop function taking a callback function
-> that's passed the struct pmu_event. This way the pmu_event is only
-> needed for one element and not an entire array.
+On Fri, Aug 05, 2022 at 11:47:57AM +0200, Bruno Goncalves wrote:
+> Hello,
 > 
-> Switch existing code iterating over the pmu_event arrays to use the new
-> loop function pmu_events_table_for_each_event.
+> Since commit "c1c76700a0d6" we started to hit the following call trace
+> on aarch64 VMs when looking at journalctl log
 
+For everyone else's benefit that's commit:
 
-I find it hard to follow the change from the description. The title is 
-"Don't assume pmu_event is an array", but that is rightly what 
-pmu_events_table_for_each_event() does.
+  c1c76700a0d6 ("Merge tag 'spdx-6.0-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/spdx")
 
-If I check - for exmaple - pmu_add_cpu_aliases_map(), you just switch it 
-over to using pmu_events_table_for_each_event(), which seems resonable. 
-So it just seems here that we're refactoring the code, and not changing 
-the nature of how we handle pmu_events *.
+Could you please include the commit title when citing a patch?
 
+... did you try to bisect this?
+
+> kernel: Mountpoint-cache hash table entries: 16384 (order: 5, 131072
+> bytes, linear)
+> kernel: ACPI PPTT: No PPTT table found, CPU and cache topology may be inaccurate
+> kernel: ------------[ cut here ]------------
+> kernel: WARNING: CPU: 0 PID: 1 at mm/page_alloc.c:5407 __alloc_pages+0x1a0/0x290
+
+IIUC that's:
+
+  WARN_ON_ONCE_GFP(order >= MAX_ORDER, gfp)
+
+... and IIUC that's fixed by commit:
+
+  11969d698f8cda31 ("cacheinfo: Use atomic allocation for percpu cache attributes")
+
+Thanks,
+Mark.
+
+> kernel: Modules linked in:
+> kernel: CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.0 #1
+> kernel: pstate: 20400005 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> kernel: pc : __alloc_pages+0x1a0/0x290
+> kernel: lr : alloc_page_interleave+0x24/0xbc
+> kernel: sp : ffff80000803bb90
+> kernel: x29: ffff80000803bb90 x28: 0000000000000000 x27: 0000000000000000
+> kernel: x26: 0000000000000000 x25: 0000000000000000 x24: 0000000000000000
+> kernel: x23: 000000000000001e x22: 0000000000000000 x21: 000000000000001e
+> kernel: x20: 000000000000001e x19: 0000000000040b20 x18: 0000000000000014
+> kernel: x17: 6e69206562207961 x16: 6d2079676f6c6f70 x15: 6f74206568636163
+> kernel: x14: 20646e6120555043 x13: 6574617275636361 x12: 6e69206562207961
+> kernel: x11: 6d2079676f6c6f70 x10: 6f74206568636163 x9 : ffffa4f6617fd5e8
+> kernel: x8 : ffffa4f663ed0440 x7 : 0000000000000007 x6 : 0000000000000000
+> kernel: x5 : 0000000000000000 x4 : 0000000000000001 x3 : 0000000000000000
+> kernel: x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffffa4f663c53532
+> kernel: Call trace:
+> kernel:  __alloc_pages+0x1a0/0x290
+> kernel:  alloc_page_interleave+0x24/0xbc
+> kernel:  alloc_pages+0x10c/0x16c
+> kernel:  kmalloc_order+0x3c/0xc0
+> kernel:  kmalloc_order_trace+0x38/0x130
+> kernel:  __kmalloc+0x2e8/0x350
+> kernel:  detect_cache_attributes+0x9c/0x110
+> kernel:  update_siblings_masks+0x34/0x270
+> kernel:  store_cpu_topology+0x7c/0xc0
+> kernel:  smp_prepare_cpus+0x34/0x108
+> kernel:  kernel_init_freeable+0x108/0x1b8
+> kernel:  kernel_init+0x30/0x150
+> kernel:  ret_from_fork+0x10/0x20
+> kernel: ---[ end trace 0000000000000000 ]---
+> kernel: Early cacheinfo failed, ret = -12
+> kernel: cblist_init_generic: Setting adjustable number of callback queues.
+> kernel: cblist_init_generic: Setting shift to 2 and lim to 1.
 > 
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->   tools/perf/pmu-events/empty-pmu-events.c |  34 +++--
->   tools/perf/pmu-events/jevents.py         |  34 +++--
->   tools/perf/pmu-events/pmu-events.h       |   3 +
->   tools/perf/tests/pmu-events.c            | 136 +++++++++--------
->   tools/perf/util/metricgroup.c            | 181 ++++++++++++++++-------
->   tools/perf/util/pmu.c                    |  65 ++++----
->   tools/perf/util/s390-sample-raw.c        |  42 ++++--
->   7 files changed, 313 insertions(+), 182 deletions(-)
+> test logs: https://datawarehouse.cki-project.org/kcidb/tests/4712644
+> cki issue tracker: https://datawarehouse.cki-project.org/issue/1485
 > 
-> diff --git a/tools/perf/pmu-events/empty-pmu-events.c b/tools/perf/pmu-events/empty-pmu-events.c
-> index 028f44efe48d..bee1967baa2b 100644
-> --- a/tools/perf/pmu-events/empty-pmu-events.c
-> +++ b/tools/perf/pmu-events/empty-pmu-events.c
-> @@ -247,6 +247,20 @@ static const struct pmu_sys_events pmu_sys_event_tables[] = {
->   	},
->   };
->   
-> +int pmu_events_table_for_each_event(const struct pmu_event *table, pmu_event_iter_fn fn,
-> +				    void *data)
-> +{
-> +	for (const struct pmu_event *pe = &table[0];
-> +	     pe->name || pe->metric_group || pe->metric_name;
-> +	     pe++) {
-> +		int ret = fn(pe, table, data);
-> +
-> +		if (ret)
-> +			return ret;
-> +	}
-> +	return 0;
-> +}
-> +
->   const struct pmu_event *perf_pmu__find_table(struct perf_pmu *pmu)
->   {
->   	const struct pmu_event *table = NULL;
-> @@ -291,14 +305,10 @@ int pmu_for_each_core_event(pmu_event_iter_fn fn, void *data)
->   	for (const struct pmu_events_map *tables = &pmu_events_map[0];
->   	     tables->table;
->   	     tables++) {
-> -		for (const struct pmu_event *pe = &tables->table[0];
-> -		     pe->name || pe->metric_group || pe->metric_name;
-> -		     pe++) {
-> -			int ret = fn(pe, &tables->table[0], data);
-> +		int ret = pmu_events_table_for_each_event(tables->table, fn, data);
->   
-> -			if (ret)
-> -				return ret;
-> -		}
-> +		if (ret)
-> +			return ret;
->   	}
->   	return 0;
->   }
-> @@ -319,14 +329,10 @@ int pmu_for_each_sys_event(pmu_event_iter_fn fn, void *data)
->   	for (const struct pmu_sys_events *tables = &pmu_sys_event_tables[0];
->   	     tables->name;
->   	     tables++) {
-> -		for (const struct pmu_event *pe = &tables->table[0];
-> -		     pe->name || pe->metric_group || pe->metric_name;
-> -		     pe++) {
-> -			int ret = fn(pe, &tables->table[0], data);
-> +		int ret = pmu_events_table_for_each_event(tables->table, fn, data);
->   
-> -			if (ret)
-> -				return ret;
-> -		}
-> +		if (ret)
-> +			return ret;
->   	}
->   	return 0;
->   }
-> diff --git a/tools/perf/pmu-events/jevents.py b/tools/perf/pmu-events/jevents.py
-> index e976c5e8e80b..365c960202b0 100755
-> --- a/tools/perf/pmu-events/jevents.py
-> +++ b/tools/perf/pmu-events/jevents.py
-> @@ -409,6 +409,20 @@ static const struct pmu_sys_events pmu_sys_event_tables[] = {
->   \t},
->   };
->   
-> +int pmu_events_table_for_each_event(const struct pmu_event *table, pmu_event_iter_fn fn,
-> +                                    void *data)
-
-Again we seem to be just duplicating what is in empty-pmu-events.c - can 
-we avoid this? another idea (apart from linking in other c files) is for 
-empty-pmu-events.c to be generated from jevents.py (like how it was done 
-for jevents.c)
+> kernel config: https://s3.amazonaws.com/arr-cki-prod-trusted-artifacts/trusted-artifacts/605193135/build%20aarch64/2816138306/artifacts/kernel-mainline.kernel.org-redhat_605193135_aarch64.config
+> kernel build: https://s3.amazonaws.com/arr-cki-prod-trusted-artifacts/trusted-artifacts/605193135/publish%20aarch64/2816138315/artifacts/kernel-mainline.kernel.org-redhat_605193135_aarch64.tar.gz
+> 
+> Thanks,
+> Bruno Goncalves
+> 
