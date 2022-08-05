@@ -2,75 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0288CC25B08
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D07AC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238021AbiHEIdO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 04:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
+        id S237979AbiHEIet (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 04:34:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbiHEIdN (ORCPT
+        with ESMTP id S240185AbiHEIeq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 04:33:13 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D6317A8D;
-        Fri,  5 Aug 2022 01:33:11 -0700 (PDT)
-Received: from [192.168.1.107] ([37.4.248.80]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MiMIY-1noNQQ3Cpa-00fUnp; Fri, 05 Aug 2022 10:32:52 +0200
-Message-ID: <0765e37c-be81-33dc-b4a0-8a5786417eb6@i2se.com>
-Date:   Fri, 5 Aug 2022 10:32:51 +0200
+        Fri, 5 Aug 2022 04:34:46 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8510018362;
+        Fri,  5 Aug 2022 01:34:45 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Lzf4d5fvxzTgWS;
+        Fri,  5 Aug 2022 16:33:21 +0800 (CST)
+Received: from kwepemm600007.china.huawei.com (7.193.23.208) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 5 Aug 2022 16:34:41 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ kwepemm600007.china.huawei.com (7.193.23.208) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 5 Aug 2022 16:34:40 +0800
+From:   Jie Hai <haijie1@huawei.com>
+To:     <vkoul@kernel.org>, <wangzhou1@hisilicon.com>
+CC:     <haijie1@huawei.com>, <liudongdong3@huawei.com>,
+        <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4 0/7] dmaengine: hisilicon: Add support for hisi dma driver
+Date:   Fri, 5 Aug 2022 16:25:29 +0800
+Message-ID: <20220805082536.41145-1-haijie1@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220625074422.3479591-1-haijie1@huawei.com>
+References: <20220625074422.3479591-1-haijie1@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] clk: bcm: rpi: Fix error handling of
- raspberrypi_fw_get_rate
-Content-Language: en-US
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     bcm-kernel-feedback-list@broadcom.com,
-        Maxime Ripard <maxime@cerno.tech>, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220625083643.4012-1-stefan.wahren@i2se.com>
- <7656fa2c-590a-8f0f-03ef-904e4f186c82@gmail.com>
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-In-Reply-To: <7656fa2c-590a-8f0f-03ef-904e4f186c82@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:9tIwb1WMqV0HI9ScyE0x2HNCwM17U7bJfxCSa2ZpgAd8xf+5Z98
- CKUrSBtzs81T86+DAQCEX5OlqKQ06XCUAm58ygmooM5OEilfp/pCfw6excuMTvCvLhSpBIl
- bTZlZdcLXDNAcyCSVfa1bo66s40hFgybZDtVleYXElL+XDWtiqz/fftQRBkioKMG3xskzlD
- lzbu9TKJXgBEA5mmH/FIw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:eIV8A6KxsVk=:+nACvjnCObJpAqBC5JvhIZ
- RONq6siekC9FC11WsIK/yB1Jtbeh7jT0LxXFQyRasTbyJV2bnW/ARzYu6cq+VpOOKeq+nT/oa
- 8edxrAEGgSBijxlCmWz00uZKkpB0YBDNOqLxhW4UYJLz0iQeo++0HqBtrfcYWSWKwPQMo2Qej
- U6mMzPAOAWk6j0+fot8Q7CBe+Cd9D1Ej7UrL7ehkVcMVn+tDgneixacJ2Na89v24wi5f4t6MC
- mdTJkwuZhtjXvY81VhA+X/8FsRZA9PqT5rjNACBQ8U/BWwxV+fW72UQ2MXfWIwO7c8dKRXnAX
- FYvPZ99VaDPODZ3DeG+mFiGlmTz8q8qqB8iu6qK2wb83q9t/3NBViGGhzhf7K7FEGO8ecJQC2
- tpyCo+lTm2k1gj8onvfNBy+dn8yY1/0BeEzTT2Z1t8vnOf5WCS4Meb1kjl1wGHt/rojj2xSf6
- NePocnoqSicDsbmEFdsy5iUTZlWZ1euOmnSJfOLCSXemA6DKYq0YghWpYAuBnBEyZ3G4v5sci
- z22K5hfOjr73ZFVheD/1wTb9Kzu6IS7uuVq+V0euEagIwQ8FSGd4PVAYJXEMRwpKAai7+Tlk1
- a+N8/EoPWhhaxS/0dyUDUvRXg+vyBjGWXqDUirAeZC/AFmQSQ87xyw5Uz7/+z32C4469vQkG+
- p6/kxpA/aP2EpA69s5NUpttii5vDCOuEJtLmcG4WMQdfxSlXO6Ll8ey3hZVGrenvTi6nA4e/S
- 6qqfvI/qc9Yi0rnvOqZfno+h0hxR6DDWQnzghg==
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600007.china.huawei.com (7.193.23.208)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 27.06.22 um 18:24 schrieb Florian Fainelli:
-> On 6/25/22 01:36, Stefan Wahren wrote:
->> The function raspberrypi_fw_get_rate (e.g. used for the recalc_rate
->> hook) can fail to get the clock rate from the firmware. In this case
->> we cannot return a signed error value, which would be casted to
->> unsigned long. Fix this by returning 0 instead.
->>
->> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
->
-> Fixes: 4e85e535e6cc ("clk: bcm283x: add driver interfacing with 
-> Raspberry Pi's firmware")
->
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+The HiSilicon IP08 and HiSilicon IP09 are DMA iEPs, they share the
+same pci device id but different pci revision and register layouts.
 
-gentle ping
+The original version supports HiSilicon IP08 but not HiSilicon IP09.
+This series support DMA driver for HIP08 and HIP09:
+1. Fix bugs for HIP08 DMA driver
+	- Disable hardware channels when driver detached
+	- Update cq_head whenever accessed it
+	- Support multi-thread for one DMA channel
+2. Use macros instead of magic number
+3. Add support for HIP09 DMA driver
+4. Add debugfs for HIP08 and HIP09 DMA driver
+5. Add myself as maintainer of hisi_dma.c
+
+Changes since version 4:
+ - Fix hdma_dev->base to hdma_dev->queue_base in hisi_dma_reset_or_disable_hw_chan
+
+Changes since version 3:
+ - remove reduldant braces
+ - add "Acked-by: Zhou Wang <wangzhou1@hisilicon.com>" in commit log
+
+Changes since version 2:
+ - fix unnecessary line breaks
+ - fix register bit with BIT/GENMASK and adjust hisi_dma_update_bit to it
+ - remove "Reported-by" in commit message
+ - use dmaengine root instead of hisi_dma root
+ - ignore errors for creating debugfs
+
+Changes since version 1:
+ - remove error changes casuse compile failure
+ - remove reduldant "*" in comment
+ - remove debugfs-hisi-dma doc and path in MAINTAINERS
+
+Jie Hai (7):
+  dmaengine: hisilicon: Disable channels when unregister hisi_dma
+  dmaengine: hisilicon: Fix CQ head update
+  dmaengine: hisilicon: Add multi-thread support for a DMA channel
+  dmaengine: hisilicon: Use macros instead of magic number
+  dmaengine: hisilicon: Adapt DMA driver to HiSilicon IP09
+  dmaengine: hisilicon: Dump regs to debugfs
+  MAINTAINERS: Add myself as maintainer for hisi_dma
+
+ MAINTAINERS            |   1 +
+ drivers/dma/hisi_dma.c | 650 +++++++++++++++++++++++++++++++++++------
+ 2 files changed, 555 insertions(+), 96 deletions(-)
+
+-- 
+2.33.0
 
