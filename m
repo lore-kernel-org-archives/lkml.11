@@ -2,114 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B37C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 07:55:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DF6C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 07:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240348AbiHEHzB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 03:55:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54000 "EHLO
+        id S240391AbiHEHz0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 03:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235835AbiHEHy4 (ORCPT
+        with ESMTP id S240390AbiHEHzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 03:54:56 -0400
-X-Greylist: delayed 504 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 05 Aug 2022 00:54:54 PDT
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6712872EC7;
-        Fri,  5 Aug 2022 00:54:53 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.218:53364.1398039832
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-10.133.8.199 (unknown [172.18.0.218])
-        by chinatelecom.cn (HERMES) with SMTP id D69DB280099;
-        Fri,  5 Aug 2022 15:46:16 +0800 (CST)
-X-189-SAVE-TO-SEND: +sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.218])
-        by app0025 with ESMTP id 2f870a74468f4d4b992006056bb14515 for j.vosburgh@gmail.com;
-        Fri, 05 Aug 2022 15:46:22 CST
-X-Transaction-ID: 2f870a74468f4d4b992006056bb14515
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.218
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
-To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, huyd12@chinatelecom.cn,
-        sunshouxin@chinatelecom.cn
-Subject: [PATCH] net:bonding:support balance-alb interface with vlan to bridge
-Date:   Fri,  5 Aug 2022 00:45:56 -0700
-Message-Id: <20220805074556.70297-1-sunshouxin@chinatelecom.cn>
-X-Mailer: git-send-email 2.27.0
+        Fri, 5 Aug 2022 03:55:11 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856F974DD9
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 00:55:09 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id a13so2195826ljr.11
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 00:55:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fp5QsMZSik6FokJnE0Ar1IWeqs2yo1QrPVgBHPxM4Yg=;
+        b=FWo0U9XpmnM/c3x5b05yMxNxNWw3LqzARt7sBEAGzgZMDf6xyBYCMNld6VBXAitefS
+         u+QeoCCX2Aak5H7CfdOClGQ62oSWKYXvvAaSb2RkPsFTIyPluopN4CRsP6RvrXKPaDmj
+         bQ5LaKtH1SV4fX+zFVYPRjRwCzKO78JJTj7NsiUN9S+niyPOMruQeISr/VKhF+buLMsy
+         2uBaKYodk8MLo3B5ymvTZJYNjtuAOBdTEMLJOfGkeQzBpsLV3vObNMxzZ6cr3RAmOAyd
+         gkkB6KA7LBb8yoBjWDTcuodXN1zNAj8Om5HEfjAjplSnHNUj9w+SUeIPllKfwpxvl1lw
+         LF6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fp5QsMZSik6FokJnE0Ar1IWeqs2yo1QrPVgBHPxM4Yg=;
+        b=f5PIIFOJwoN9fvHvXR1umdAA0qG47CF92jlMo+iNMNXDB/l2ACiFAI6NRU0RM0hMjf
+         ptlmxAX9tOBgQIswB3hrJXwt/UC5oIcEhwHPx5dITYOCcPrQsLILn79t8DoX6kcIcLVf
+         IVWl7ZEr0s/dHpI/MSh0+FgRjsvCK2EnT14v/8l6N7R33A56O0UBSGRN0bVXOOb4gk9n
+         XaV4C+Xo01lMSWDJe6KeZxPXxB7L8VmwHTDcEPGuKdr+8hdf4QMR7ixn5GmTeOHrdUVj
+         KCxFE9ZKh622ggMwztTnutpSw01bOYxP9aVom0EsUHKbhm1pzfXyK1SfNW80P4OgrX0P
+         rOFA==
+X-Gm-Message-State: ACgBeo0fLaChfL4dLce5hkfKE45paBqBY3NrEfh5iMlhVTs8q7zwYREH
+        h7rnRmywzOiKSDccT4pn/TQb42ce0gtHWw7Pf1g=
+X-Google-Smtp-Source: AA6agR5g8P6iwFH2TCVcFcTTf1165g9vkFTe2815uoS6iADkSdjrLz3zVOLOOsZFpj756akHhVpFng==
+X-Received: by 2002:a2e:b010:0:b0:25e:65b3:b24d with SMTP id y16-20020a2eb010000000b0025e65b3b24dmr1803174ljk.292.1659686107839;
+        Fri, 05 Aug 2022 00:55:07 -0700 (PDT)
+Received: from krzk-bin.. ([77.222.167.48])
+        by smtp.gmail.com with ESMTPSA id cf40-20020a056512282800b0048a8f119e7esm378566lfb.233.2022.08.05.00.55.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Aug 2022 00:55:06 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2] dt-bindings: iio: gyroscope: bosch,bmg160: correct number of pins
+Date:   Fri,  5 Aug 2022 09:55:03 +0200
+Message-Id: <20220805075503.16983-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In my test, balance-alb bonding with two slaves eth0 and eth1,
-and then Bond0.150 is created with vlan id attached bond0.
-After adding bond0.150 into one linux bridge, I noted that Bond0,
-bond0.150 and  bridge were assigned to the same MAC as eth0.
-Once bond0.150 receives a packet whose dest IP is bridge's
-and dest MAC is eth1's, the linux bridge cannot process it as expected.
-The patch fix the issue, and diagram as below:
+BMG160 has two interrupt pins to which interrupts can be freely mapped.
+Correct the schema to express such case and fix warnings like:
 
-eth1(mac:eth1_mac)--bond0(balance-alb,mac:eth0_mac)--eth0(mac:eth0_mac)
-      		      |
-      		   bond0.150(mac:eth0_mac)
-      		      |
-      	           bridge(ip:br_ip, mac:eth0_mac)--other port
+  qcom/msm8916-alcatel-idol347.dtb: gyroscope@68: interrupts: [[97, 1], [98, 1]] is too long
 
-Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
-Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+However the basic issue still persists - the interrupts should come in a
+defined order.
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
 ---
- drivers/net/bonding/bond_main.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index e75acb14d066..6210a9c7ca76 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1537,9 +1537,11 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
- 	struct sk_buff *skb = *pskb;
- 	struct slave *slave;
- 	struct bonding *bond;
-+	struct net_device *vlan;
- 	int (*recv_probe)(const struct sk_buff *, struct bonding *,
- 			  struct slave *);
- 	int ret = RX_HANDLER_ANOTHER;
-+	unsigned int headroom;
+Changes since v1:
+1. Accept also INT2 as one interrupt (Jonathan).
+---
+ .../devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml         | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
+index b6bbc312a7cf..1414ba9977c1 100644
+--- a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
++++ b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
+@@ -24,8 +24,10 @@ properties:
  
- 	skb = skb_share_check(skb, GFP_ATOMIC);
- 	if (unlikely(!skb))
-@@ -1591,6 +1593,24 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
- 				  bond->dev->addr_len);
- 	}
+   interrupts:
+     minItems: 1
++    maxItems: 2
+     description:
+       Should be configured with type IRQ_TYPE_EDGE_RISING.
++      If two interrupts are provided, expected order is INT1 and INT2.
  
-+	if (skb_vlan_tag_present(skb)) {
-+		if (BOND_MODE(bond) == BOND_MODE_ALB && skb->pkt_type == PACKET_HOST) {
-+			vlan = __vlan_find_dev_deep_rcu(bond->dev, skb->vlan_proto,
-+							skb_vlan_tag_get(skb) & VLAN_VID_MASK);
-+			if (vlan) {
-+				if (vlan->priv_flags & IFF_BRIDGE_PORT) {
-+					headroom = skb->data - skb_mac_header(skb);
-+					if (unlikely(skb_cow_head(skb, headroom))) {
-+						kfree_skb(skb);
-+						return RX_HANDLER_CONSUMED;
-+					}
-+					bond_hw_addr_copy(eth_hdr(skb)->h_dest, vlan->dev_addr,
-+							  vlan->addr_len);
-+				}
-+			}
-+		}
-+	}
-+
- 	return ret;
- }
- 
+ required:
+   - compatible
 -- 
-2.27.0
+2.34.1
 
