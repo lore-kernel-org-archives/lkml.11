@@ -2,80 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 015CBC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:57:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A93C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:57:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240316AbiHEI4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 04:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39078 "EHLO
+        id S240235AbiHEI43 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 04:56:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234856AbiHEI41 (ORCPT
+        with ESMTP id S229899AbiHEI41 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 5 Aug 2022 04:56:27 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA896AA3C;
-        Fri,  5 Aug 2022 01:56:25 -0700 (PDT)
-Received: from [192.168.31.174] (unknown [95.31.173.239])
-        by mail.ispras.ru (Postfix) with ESMTPSA id BBDCD40737C5;
-        Fri,  5 Aug 2022 08:56:19 +0000 (UTC)
-Message-ID: <18aa0617-0afe-2543-89cf-2f04c682ea88@ispras.ru>
-Date:   Fri, 5 Aug 2022 11:56:18 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] can: j1939: fix memory leak of skbs
-Content-Language: en-US
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+X-Greylist: delayed 453 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 05 Aug 2022 01:56:23 PDT
+Received: from forward105j.mail.yandex.net (forward105j.mail.yandex.net [5.45.198.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8CE6BD52
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 01:56:23 -0700 (PDT)
+Received: from forward103q.mail.yandex.net (forward103q.mail.yandex.net [IPv6:2a02:6b8:c0e:50:0:640:b21c:d009])
+        by forward105j.mail.yandex.net (Yandex) with ESMTP id 28F5F4ECB2CA;
+        Fri,  5 Aug 2022 11:48:46 +0300 (MSK)
+Received: from vla5-47b3f4751bc4.qloud-c.yandex.net (vla5-47b3f4751bc4.qloud-c.yandex.net [IPv6:2a02:6b8:c18:3508:0:640:47b3:f475])
+        by forward103q.mail.yandex.net (Yandex) with ESMTP id 244CB56A000F;
+        Fri,  5 Aug 2022 11:48:46 +0300 (MSK)
+Received: by vla5-47b3f4751bc4.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id xFBAKgq0sD-mhoWlJ8g;
+        Fri, 05 Aug 2022 11:48:45 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1659689325;
+        bh=WY/p0AKPurtQC7CbtbT4lh+mfKMDaL2pNRP+3Km3zMw=;
+        h=Message-Id:Date:Cc:Subject:To:From;
+        b=M6Wi8T/q+hoGx9dgUAqM+SWXRjHreA5+4/xctMXwI50sdDkbOhIa1lpKCFTHvfkHk
+         wpzCdXZytpZhjjqwUaowRjAbribwdXKZzgWE4v+sJNZNDr1NPFdY7kLskpJJv4X+f1
+         4VnnWZRwf618e2mUzK2R1P6LWUqOqSVYiG8GwZdE=
+Authentication-Results: vla5-47b3f4751bc4.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
+From:   Nikita Shubin <nikita.shubin@maquefel.me>
+Cc:     linux@yadro.com, Nikita Shubin <n.shubin@yadro.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ldv-project@linuxtesting.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>
-References: <20220708175949.539064-1-pchelkin@ispras.ru>
- <20220729042244.GC30201@pengutronix.de>
-From:   Fedor Pchelkin <pchelkin@ispras.ru>
-In-Reply-To: <20220729042244.GC30201@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Paolo Abeni <pabeni@redhat.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: phy: dp83867: fix get nvmem cell fail
+Date:   Fri,  5 Aug 2022 11:48:43 +0300
+Message-Id: <20220805084843.24542-1-nikita.shubin@maquefel.me>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Oleksij,
+From: Nikita Shubin <n.shubin@yadro.com>
 
-On 29.07.2022 07:22, Oleksij Rempel wrote:
-> Initial issue can be reproduced by using real (slow) CAN with j1939cat[1]
-> tool. Both parts should be started to make sure the j1939_session_tx_dat() will
-> actually start using the queue. After pushing about 100K of data, application
-> will try to close the socket and exit. After socket is closed, all skb related
-> to this socket will be freed and j1939_session_tx_dat() will use freed skbs.
+If CONFIG_NVMEM is not set of_nvmem_cell_get, of_nvmem_device_get
+functions will return ERR_PTR(-EOPNOTSUPP) and "failed to get nvmem
+cell io_impedance_ctrl" error would be reported despite "io_impedance_ctrl"
+is completely missing in Device Tree and we should use default values.
 
-Ok, the patch I suggested was a kind of a guess, now I understand that
-it breaks important logic.
+Check -EOPNOTSUPP togather with -ENOENT to avoid this situation.
 
-On 29.07.2022 07:22, Oleksij Rempel wrote:
- > This skb_get() is counter part of skb_unref()
- > j1939_session_skb_drop_old().
+Fixes: 5c2d0a6a0701 ("net: phy: dp83867: implement support for io_impedance_ctrl nvmem cell")
+Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
+---
+ drivers/net/phy/dp83867.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-However, we have a case [1] where j1939_session_skb_queue() is called
-but the corresponding j1939_session_skb_drop_old() is not called and it
-causes a memory leak.
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index 1e38039c5c56..6939563d3b7c 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -535,7 +535,7 @@ static int dp83867_of_init_io_impedance(struct phy_device *phydev)
+ 	cell = of_nvmem_cell_get(of_node, "io_impedance_ctrl");
+ 	if (IS_ERR(cell)) {
+ 		ret = PTR_ERR(cell);
+-		if (ret != -ENOENT)
++		if (ret != -ENOENT && ret != -EOPNOTSUPP)
+ 			return phydev_err_probe(phydev, ret,
+ 						"failed to get nvmem cell io_impedance_ctrl\n");
+ 
+-- 
+2.35.1
 
-I tried to investigate it a little bit: the thing is that
-j1939_session_skb_drop_old() can be called only when processing
-J1939_ETP_CMD_CTS. On the contrary, as I can see,
-j1939_session_skb_queue() can be called independently from
-J1939_ETP_CMD_CTS so the two functions obviously do not correspond to
-each other.
-
-In reproducer case there is a J1939_ETP_CMD_RTS processing, then
-we send some messages (where j1939_session_skb_queue() is called) and
-after that J1939_ETP_CMD_ABORT is processed and we lose those skbs.
-
-[1] https://forge.ispras.ru/issues/11743
