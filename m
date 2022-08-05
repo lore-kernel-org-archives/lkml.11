@@ -2,188 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6684CC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 11:04:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15D13C25B06
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 11:04:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240572AbiHELEB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 07:04:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36704 "EHLO
+        id S240528AbiHELEt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 07:04:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240580AbiHELDz (ORCPT
+        with ESMTP id S236596AbiHELEr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 07:03:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 50F7074CE4
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 04:03:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659697431;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mJ3wb3wnNw2CiOGpWxs5L2Tr+je+/REmFMZ2ZlIWVD0=;
-        b=cIkSOyb40RuDC5vCkr5edBPrejhxBVwSyFpjDZjbXq2ZQgOWyjS/S1HBRp1D+DwjG9C05Q
-        3XLcc4rGq5j7Rgme6AVZ2biBExx9/37cQxmC6dj16AZZSWyfMGKY0DC2t2dcbJFXxCVgt+
-        WixoE/qsZC8AzCNyhUzXqSu7FH33HZ8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-299-s0xMztL9Mhql4sPg9FocmA-1; Fri, 05 Aug 2022 07:03:36 -0400
-X-MC-Unique: s0xMztL9Mhql4sPg9FocmA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Fri, 5 Aug 2022 07:04:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE55B4B4BC;
+        Fri,  5 Aug 2022 04:04:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3F65C382ECC7;
-        Fri,  5 Aug 2022 11:03:36 +0000 (UTC)
-Received: from t480s.fritz.box (unknown [10.39.194.85])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1DCC9404E4D6;
-        Fri,  5 Aug 2022 11:03:33 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-mm@kvack.org, David Hildenbrand <david@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Peter Xu <peterx@redhat.com>,
-        Peter Feiner <pfeiner@google.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        stable@vger.kernel.org
-Subject: [PATCH v1 1/2] mm/hugetlb: fix hugetlb not supporting write-notify
-Date:   Fri,  5 Aug 2022 13:03:28 +0200
-Message-Id: <20220805110329.80540-2-david@redhat.com>
-In-Reply-To: <20220805110329.80540-1-david@redhat.com>
-References: <20220805110329.80540-1-david@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A108B827E7;
+        Fri,  5 Aug 2022 11:04:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A390C433C1;
+        Fri,  5 Aug 2022 11:04:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659697484;
+        bh=gC/a99Ij5cyWFflxaubBtEFvPnGSnVRK/jArM0HrjDg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tzLV1sSe1UNkxUbJeqPUHwgZeoqEnGMRjmYiwj/pmmZLxTkqt1L94ADCct6AeOSxu
+         YM/ngA+jTbOzrNCTffFBE2k6bEMQ9DBTgTF+EDX53UYCrFds2lgQx5WmFiqnxIle51
+         qlZ1vCsjLifulc3ElIjfxgwhwZzwitler3bxi00qQQH/5MMA3o9enadRJcEegd6vaN
+         TNomJh4i+0LbE5RfuYAHUZ342YXsb8L1PtazYs4Js0pTUloMwSjWsPv+uAm9oPqnoo
+         fXSq1h9SPvzBQoOpq+yyJl4W3bJOEzAA+bFIzslVVmdLp2+/Dx2lCAQEMm0F0sO0cc
+         o0a7xtqrsKsPg==
+Date:   Fri, 5 Aug 2022 12:04:39 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Naga Sureshkumar Relli <nagasuresh.relli@microchip.com>,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        conor.dooley@microchip.com, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Valentina.FernandezAlanis@microchip.com
+Subject: Re: [PATCH v3 4/4] MAINTAINERS: add qspi to Polarfire SoC entry
+Message-ID: <Yuz5RzEhwWa7xqlR@sirena.org.uk>
+References: <20220805053019.996484-1-nagasuresh.relli@microchip.com>
+ <20220805053019.996484-5-nagasuresh.relli@microchip.com>
+ <9e3dbc0f-b04d-c67e-7f39-9cf936ec7252@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="u0Pv/qHdI8e+zGNo"
+Content-Disposition: inline
+In-Reply-To: <9e3dbc0f-b04d-c67e-7f39-9cf936ec7252@linaro.org>
+X-Cookie: Do not write below this line.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Staring at hugetlb_wp(), one might wonder where all the logic for shared
-mappings is when stumbling over a write-protected page in a shared
-mapping. In fact, there is none, and so far we thought we could get
-away with that because e.g., mprotect() should always do the right thing
-and map all pages directly writable.
 
-Looks like we were wrong:
+--u0Pv/qHdI8e+zGNo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
---------------------------------------------------------------------------
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
- #include <fcntl.h>
- #include <unistd.h>
- #include <errno.h>
- #include <sys/mman.h>
+On Fri, Aug 05, 2022 at 08:50:37AM +0200, Krzysztof Kozlowski wrote:
+> On 05/08/2022 07:30, Naga Sureshkumar Relli wrote:
+> > Add the qspi driver to existing Polarfire SoC entry.
+> >=20
+> > Signed-off-by: Naga Sureshkumar Relli <nagasuresh.relli@microchip.com>
+> > Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
- #define HUGETLB_SIZE (2 * 1024 * 1024u)
+> This should be squashed with previous patch.
 
- static void clear_softdirty(void)
- {
-         int fd = open("/proc/self/clear_refs", O_WRONLY);
-         const char *ctrl = "4";
-         int ret;
+It's perfectly fine to have a separate patch for MAINTAINERS like this.
 
-         if (fd < 0) {
-                 fprintf(stderr, "open(clear_refs) failed\n");
-                 exit(1);
-         }
-         ret = write(fd, ctrl, strlen(ctrl));
-         if (ret != strlen(ctrl)) {
-                 fprintf(stderr, "write(clear_refs) failed\n");
-                 exit(1);
-         }
-         close(fd);
- }
+--u0Pv/qHdI8e+zGNo
+Content-Type: application/pgp-signature; name="signature.asc"
 
- int main(int argc, char **argv)
- {
-         char *map;
-         int fd;
+-----BEGIN PGP SIGNATURE-----
 
-         fd = open("/dev/hugepages/tmp", O_RDWR | O_CREAT);
-         if (!fd) {
-                 fprintf(stderr, "open() failed\n");
-                 return -errno;
-         }
-         if (ftruncate(fd, HUGETLB_SIZE)) {
-                 fprintf(stderr, "ftruncate() failed\n");
-                 return -errno;
-         }
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLs+UYACgkQJNaLcl1U
+h9AHfQf/aRy8eONwtSRpPBhbbB0cSYO6+Gu5VT0wcGqEO5uI2plQ6QjP57V1n5e6
+AWfl1yz4cY61+B9+LQiv6qGFvNY2N5wQ2EfrSLiFce2Z2BPsKGn9VmcZSzO88jf0
+CqmI17CKUsGHQ16QC89Ug99EHS7yp5RyUuVGRKAjSYknPzeUEBk05LqXf3IQdJhE
+okklAcTYGqHJzJhJq/U1g9fJjLz73eGM0aYQQryvv94jR8y3Xcn5l/baqhvzAfAg
+QsV3rWCIP7ws1Jlubf0I2kwi9wEMrgGglIwflHDcBYzADn8tPLYkGltzY8Frgp+h
+FI+HhT8c5T1BOIIPOx5uxO45oj2KqQ==
+=boCL
+-----END PGP SIGNATURE-----
 
-         map = mmap(NULL, HUGETLB_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
-         if (map == MAP_FAILED) {
-                 fprintf(stderr, "mmap() failed\n");
-                 return -errno;
-         }
-
-         *map = 0;
-
-         if (mprotect(map, HUGETLB_SIZE, PROT_READ)) {
-                 fprintf(stderr, "mmprotect() failed\n");
-                 return -errno;
-         }
-
-         clear_softdirty();
-
-         if (mprotect(map, HUGETLB_SIZE, PROT_READ|PROT_WRITE)) {
-                 fprintf(stderr, "mmprotect() failed\n");
-                 return -errno;
-         }
-
-         *map = 0;
-
-         return 0;
- }
---------------------------------------------------------------------------
-
-Above test fails with SIGBUS when there is only a single free hugetlb page.
- # echo 1 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
- # ./test
- Bus error (core dumped)
-
-And worse, with sufficient free hugetlb pages it will map an anonymous page
-into a shared mapping, for example, messing up accounting during unmap
-and breaking MAP_SHARED semantics:
- # echo 2 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
- # ./test
- # cat /proc/meminfo | grep HugePages_
- HugePages_Total:       2
- HugePages_Free:        1
- HugePages_Rsvd:    18446744073709551615
- HugePages_Surp:        0
-
-Reason in this particular case is that vma_wants_writenotify() will
-return "true", removing VM_SHARED in vma_set_page_prot() to map pages
-write-protected. Let's teach vma_wants_writenotify() that hugetlb does not
-support write-notify, including softdirty tracking.
-
-Fixes: 64e455079e1b ("mm: softdirty: enable write notifications on VMAs after VM_SOFTDIRTY cleared")
-Cc: <stable@vger.kernel.org> # v3.18+
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- mm/mmap.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 61e6135c54ef..462a6b0344ac 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -1683,6 +1683,13 @@ int vma_wants_writenotify(struct vm_area_struct *vma, pgprot_t vm_page_prot)
- 	if ((vm_flags & (VM_WRITE|VM_SHARED)) != ((VM_WRITE|VM_SHARED)))
- 		return 0;
- 
-+	/*
-+	 * Hugetlb does not require/support writenotify; especially, it does not
-+	 * support softdirty tracking.
-+	 */
-+	if (is_vm_hugetlb_page(vma))
-+		return 0;
-+
- 	/* The backer wishes to know when pages are first written to? */
- 	if (vm_ops && (vm_ops->page_mkwrite || vm_ops->pfn_mkwrite))
- 		return 1;
--- 
-2.35.3
-
+--u0Pv/qHdI8e+zGNo--
