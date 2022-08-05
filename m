@@ -2,63 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EEA4C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 14:58:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 364E4C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 14:58:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241124AbiHEO6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 10:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44930 "EHLO
+        id S241133AbiHEO6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 10:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241030AbiHEO6H (ORCPT
+        with ESMTP id S241004AbiHEO6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 10:58:07 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD5165836
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 07:57:59 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id j1so3576066wrw.1
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 07:57:59 -0700 (PDT)
+        Fri, 5 Aug 2022 10:58:10 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC716611B
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 07:58:00 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id ay36-20020a05600c1e2400b003a4e30d7995so4088030wmb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 07:58:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=kIpvuE+bW+eT/SFr+C12ZH/LKEUovzkS1DdxP7wVWjE=;
-        b=wKk9VfbxvHMAVc7uI99CGYA3+IhnPdZriOODpeqDxwKDYCf2PmRwoo8vm8JoW/y3OO
-         +oQStB1GJ5blh48C420xBWXMLzUIOvlFL88PFk2TTn/7yu5kUsbrvihZjxUjSumcKiJ3
-         6F/QGxHScm6ZWFx7QGUkiGF1EPXZpp7Yg5B1qmvd1D3Qe92JY/9+1NBJFSrxzz5xbIPm
-         aBY33429clL/3IveC/oVcEE4h4gPfFgoyAtC7wBAcn3CxNpuOiG+PcjMIjikFt7d/hSb
-         oW6hwxJXnP0TvlOGZQ2Ufz5HiB4R9f4ygJo8ZQQXTxTvyqhl4X1qL0LpRiEBRrCibxR1
-         aFpg==
+        bh=Ig27WRkfztA7dqT0A9KX7uwx0v4kJP7JKwqv4NKg4G4=;
+        b=WN+INDc+KXSjVG027ata+4qfVunryIEZU6sgh3iax/8D9/p2S9ztTZRMQ4etCKaxnt
+         vUgz/8dusKxhBI9HwFhN/PcjjXREeiS8k5tPfljZLpeAJ0S+2XyXsKqfKgkg0iRsByN8
+         B8xVyZHnuexjAehxQZ7BKes+eB+3LQiVQQaB2wplcEWVYLfCvCXsfI+Th5EiPw5Y+TCx
+         sSH8N/xB/+s7FAxX5lb7U+jZ9ot78qPkX9lMKZDs1tXdCyNkfOnCRWoaYGIZMr2euZFh
+         TySZYRhFEhEQIjS5H+nHRp3NdECfJ/496KkIdlSZ+s3YecaACOc1UIqT3bXR1WWZsmno
+         WMWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=kIpvuE+bW+eT/SFr+C12ZH/LKEUovzkS1DdxP7wVWjE=;
-        b=vvmiOy/bOmFCngKkLmA/aM0iYKlKbj9tGmkMo+TRL8lJVVz7vpz8kPlSrCbBwCQSeV
-         W+2YUXYIRKI1clj27gesnLhDkiZtoYfefsRFstdC0CorOZDLGFEX5rPF1uZiXKJDkyTv
-         TgXKGyJfHaFg+qb8NId5DOaVyRtKNhD/dX0Kau1pvgpBDSp7U0MCu15Jq9XRATmFk6cG
-         Z1P1/7b4b+ue5JWJcnSrcd1/sHr/dsRXrZMVaWh0227ZGd+ZwGmoXuaKfO38UpBEJ83l
-         LlCNYKBlwGyWOv87Z9emNUQ3ScTb7w/kQWLPxxqz8lurF0J1Zvyce/EEmbxA78BrrnPx
-         5iNw==
-X-Gm-Message-State: ACgBeo1jJNXvjHk/w016USXasg9sKfjsnC7XSto8cA8Sn90UxqFpUQdI
-        /ayrFuaPrCfXLTFELcZmboSQ+A==
-X-Google-Smtp-Source: AA6agR45hdupSZOJcF2lOhYvVvylrAuSS8NnlhDTf1hMsh5B1lwK5QBrPzFlpZzjDYONDbDSWIxHBw==
-X-Received: by 2002:a5d:504b:0:b0:220:7ae9:d7df with SMTP id h11-20020a5d504b000000b002207ae9d7dfmr4481205wrt.465.1659711478058;
-        Fri, 05 Aug 2022 07:57:58 -0700 (PDT)
+        bh=Ig27WRkfztA7dqT0A9KX7uwx0v4kJP7JKwqv4NKg4G4=;
+        b=Z/TjqwIfgHAWOw8+f9SXFT9llIsU/LuCEL0BKIpJ6TipNAgMFeDbghZgYT3Xb2BRNY
+         NABLImd5c5MkhbJgVYG4A84Jf664aiYc1TDCvpVRJVAXHZIg2vEOm5v8drFrO5z4WVLp
+         /VtxeRVfHQgrocehxfl7qqyzLDycKKs71cpJKfSN/WejPrgeck3hqTy9hiU7OuXUgFWT
+         NUsN/mpL9ryCGL8JbWURy5zXqhnr7huUXWzbcYNC6+WC6hZPyaSxitB9bRHdHno3kI6J
+         o59BnptNlQUXnRjg3bnRVa3/waEiVH83qND+1ZTY79IGwiD2m7otmJECNnX3fbGSQidl
+         5f2w==
+X-Gm-Message-State: ACgBeo2aTRGlaxfk0jOArgH/06bXFuOAPyCnxh9dMgJEH2nW7LaSHwWI
+        OlzTXxe8UgtjH4wUYoHZjICeqQ==
+X-Google-Smtp-Source: AA6agR4O1T7LTxjrOyXb06FtUVWTnJXQ5ps/gLDs0Xl/YCEB7dj1QGhOpBJJLpyUARnDYEE1ldkRBQ==
+X-Received: by 2002:a05:600c:a02:b0:39c:97cc:82e3 with SMTP id z2-20020a05600c0a0200b0039c97cc82e3mr9770907wmp.97.1659711480499;
+        Fri, 05 Aug 2022 07:58:00 -0700 (PDT)
 Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:aef0:8606:da6b:79ef])
-        by smtp.gmail.com with ESMTPSA id y1-20020adfd081000000b0022159d92004sm3102448wrh.82.2022.08.05.07.57.56
+        by smtp.gmail.com with ESMTPSA id y1-20020adfd081000000b0022159d92004sm3102448wrh.82.2022.08.05.07.57.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 07:57:57 -0700 (PDT)
+        Fri, 05 Aug 2022 07:58:00 -0700 (PDT)
 From:   Daniel Lezcano <daniel.lezcano@linaro.org>
 To:     daniel.lezcano@linaro.org, rafael@kernel.org
 Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Amit Kucheria <amitk@kernel.org>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/UNIPHIER
-        ARCHITECTURE)
-Subject: [PATCH v1 09/26] thermal/drivers/uniphier: Use generic thermal_zone_get_trip() function
-Date:   Fri,  5 Aug 2022 16:57:12 +0200
-Message-Id: <20220805145729.2491611-10-daniel.lezcano@linaro.org>
+        linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@linaro.org>,
+        linux-arm-msm@vger.kernel.org (open list:ARM/QUALCOMM SUPPORT)
+Subject: [PATCH v1 11/26] thermal/drivers/qcom: Use generic thermal_zone_get_trip() function
+Date:   Fri,  5 Aug 2022 16:57:14 +0200
+Message-Id: <20220805145729.2491611-12-daniel.lezcano@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220805145729.2491611-1-daniel.lezcano@linaro.org>
 References: <20220805145729.2491611-1-daniel.lezcano@linaro.org>
@@ -77,54 +77,71 @@ thermal zone.
 
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 ---
- drivers/thermal/uniphier_thermal.c | 26 +++++++++++---------------
- 1 file changed, 11 insertions(+), 15 deletions(-)
+ drivers/thermal/qcom/qcom-spmi-temp-alarm.c | 39 +++++++++------------
+ 1 file changed, 17 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/thermal/uniphier_thermal.c b/drivers/thermal/uniphier_thermal.c
-index 4111d99ef50e..1675174480aa 100644
---- a/drivers/thermal/uniphier_thermal.c
-+++ b/drivers/thermal/uniphier_thermal.c
-@@ -248,8 +248,7 @@ static int uniphier_tm_probe(struct platform_device *pdev)
- 	struct regmap *regmap;
- 	struct device_node *parent;
- 	struct uniphier_tm_dev *tdev;
+diff --git a/drivers/thermal/qcom/qcom-spmi-temp-alarm.c b/drivers/thermal/qcom/qcom-spmi-temp-alarm.c
+index be785ab37e53..127e8c90211c 100644
+--- a/drivers/thermal/qcom/qcom-spmi-temp-alarm.c
++++ b/drivers/thermal/qcom/qcom-spmi-temp-alarm.c
+@@ -263,17 +263,17 @@ static int qpnp_tm_update_critical_trip_temp(struct qpnp_tm_chip *chip,
+ 	return qpnp_tm_write(chip, QPNP_TM_REG_SHUTDOWN_CTRL1, reg);
+ }
+ 
+-static int qpnp_tm_set_trip_temp(struct thermal_zone_device *tz, int trip, int temp)
++static int qpnp_tm_set_trip_temp(struct thermal_zone_device *tz, int trip_id, int temp)
+ {
+ 	struct qpnp_tm_chip *chip = tz->devdata;
+-	const struct thermal_trip *trip_points;
++	struct thermal_trip trip;
+ 	int ret;
+ 
+-	trip_points = of_thermal_get_trip_points(chip->tz_dev);
+-	if (!trip_points)
+-		return -EINVAL;
++	ret = thermal_zone_get_trip(chip->tz_dev, trip_id, &trip);
++	if (ret)
++		return ret;
+ 
+-	if (trip_points[trip].type != THERMAL_TRIP_CRITICAL)
++	if (trip.type != THERMAL_TRIP_CRITICAL)
+ 		return 0;
+ 
+ 	mutex_lock(&chip->lock);
+@@ -299,22 +299,17 @@ static irqreturn_t qpnp_tm_isr(int irq, void *data)
+ 
+ static int qpnp_tm_get_critical_trip_temp(struct qpnp_tm_chip *chip)
+ {
+-	int ntrips;
 -	const struct thermal_trip *trips;
--	int i, ret, irq, ntrips, crit_temp = INT_MAX;
-+	int i, ret, irq, crit_temp = INT_MAX;
- 
- 	tdev = devm_kzalloc(dev, sizeof(*tdev), GFP_KERNEL);
- 	if (!tdev)
-@@ -296,20 +295,17 @@ static int uniphier_tm_probe(struct platform_device *pdev)
- 		return PTR_ERR(tdev->tz_dev);
- 	}
- 
--	/* get trip points */
--	trips = of_thermal_get_trip_points(tdev->tz_dev);
--	ntrips = of_thermal_get_ntrips(tdev->tz_dev);
--	if (ntrips > ALERT_CH_NUM) {
--		dev_err(dev, "thermal zone has too many trips\n");
--		return -E2BIG;
--	}
+-	int i;
 -
- 	/* set alert temperatures */
+-	ntrips = of_thermal_get_ntrips(chip->tz_dev);
+-	if (ntrips <= 0)
+-		return THERMAL_TEMP_INVALID;
+-
+-	trips = of_thermal_get_trip_points(chip->tz_dev);
+-	if (!trips)
+-		return THERMAL_TEMP_INVALID;
+-
 -	for (i = 0; i < ntrips; i++) {
--		if (trips[i].type == THERMAL_TRIP_CRITICAL &&
--		    trips[i].temperature < crit_temp)
--			crit_temp = trips[i].temperature;
--		uniphier_tm_set_alert(tdev, i, trips[i].temperature);
-+	for (i = 0; i < thermal_zone_get_num_trips(tdev->tz_dev); i++) {
+-		if (of_thermal_is_trip_valid(chip->tz_dev, i) &&
+-		    trips[i].type == THERMAL_TRIP_CRITICAL)
+-			return trips[i].temperature;
++	struct thermal_trip trip;
++	int i, ret;
 +
-+		struct thermal_trip trip;
++	for (i = 0; i < thermal_zone_get_num_trips(chip->tz_dev); i++) {
 +
-+		thermal_zone_get_trip(tdev->tz_dev, i, &trip);
-+		
-+		if (trip.type == THERMAL_TRIP_CRITICAL &&
-+		    trip.temperature < crit_temp)
-+			crit_temp = trip.temperature;
-+		uniphier_tm_set_alert(tdev, i, trip.temperature);
- 		tdev->alert_en[i] = true;
++		ret = thermal_zone_get_trip(chip->tz_dev, i, &trip);
++		if (ret)
++			continue;
++
++		if (trip.type == THERMAL_TRIP_CRITICAL)
++			return trip.temperature;
  	}
- 	if (crit_temp > CRITICAL_TEMP_LIMIT) {
+ 
+ 	return THERMAL_TEMP_INVALID;
 -- 
 2.25.1
 
