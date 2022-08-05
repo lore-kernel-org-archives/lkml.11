@@ -2,121 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED982C25B08
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC75C25B08
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:38:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239895AbiHEIiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 04:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55978 "EHLO
+        id S240262AbiHEIiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 04:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235062AbiHEIiE (ORCPT
+        with ESMTP id S239846AbiHEIiI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 04:38:04 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CB1B2B;
-        Fri,  5 Aug 2022 01:38:03 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id f30so1290525pfq.4;
-        Fri, 05 Aug 2022 01:38:03 -0700 (PDT)
+        Fri, 5 Aug 2022 04:38:08 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9BA39C;
+        Fri,  5 Aug 2022 01:38:06 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id d16so2041843pll.11;
+        Fri, 05 Aug 2022 01:38:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=yAcw6WHysBHdbzS3p6yPzUqgaV+Ou/Bsh0qiTnO7eVg=;
-        b=dpkwBfBgMoQf6OOcfrgVnoCrrCrYJRFRcUCeLLsERj6zMoviBnjieIo0BEOBYAO3J5
-         sOnVGuiPCDuNadFwcddIkxOQiCF6hUa7E0FFti+Mlxx1GfgYe0t6Myro0BLBQwRSd6bA
-         wYH48vt2jA5LAvETV9WmEXZKKiGaYJFckHf0TO6jfKGYJ2TiTEmSz465+Y7u7gB40YFp
-         15xMQzUzQXa8kLL88qw5ntVgtJFI4c/M0La5SO9V3zyQ2OUZtfLUIJXsV/8Osl3sVx43
-         DyHd4wtebtAOY2LmLkf0HgK4BFM9oZcOBR/MLEGTEDf9Uc98HbLM5kzW/0mrPHy8xtEW
-         A8Jg==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=zaMmNDb1jdF1qPpjyFS/Hn5r5odnYcSLudsP/nz881U=;
+        b=nLXAIWLlVLjmWEC59+CIRf48VfUjZiJ6SmdZ41VrOMP5/qVJJD+jctTPGy6las7EwZ
+         Xry8qJnH66U1eGbv36JBkaNeUwGnB6ug7uL/c7/DUrPL/mONaj5cj/YvxWbJzhcHLs4y
+         nIJiAXrAGh5lghaiYFLHEcVw57M0+l8wRvzDPQo8+A0TZh7gqzi1Gbj1IUITTqQGUr0T
+         T6b8EzhH3Q4hJf7Ns7qrkzDeNzi0p2KFSWGQvnP4Uh0saO+PI6AicXxKXZnWfynqEkta
+         bikgcW+jKvnvIsvg9jeE6+8AR9OP1vSNZzKajEZmC7DW3cuhTeoYnR4tzKcr81QGSR/Z
+         swwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=yAcw6WHysBHdbzS3p6yPzUqgaV+Ou/Bsh0qiTnO7eVg=;
-        b=4/OELlzZOOA+ZmlcoylQagfxOow5NNM+Ujg2eD1EZyqlZdYfnCt0ILiYIdmu7J6g0W
-         zSngvyrsGQkZkTv6OE0j+p9VS3dxhkJXwzAEfL9qIolB2O/XIH+3VxRPxU2wYyY49FwM
-         zyhbGJhId8F+KfSowFnMZPay2bzQ75ncXb6bxCx3lFTXRRSXzsJ1qKah3zsbuVeGlVkN
-         ejHiJwS4ngtr04CxdVOm3OLbUlNfZh+c1QP78RmVJS7Bdt1MD2G/pXJcXVYW1CGquhqR
-         ceGzKKXwJgNvYJkRlHJzBOd/AOQnC9AKVJnd1owcOQSAQIi0YHA07s3kMvnugzuIdcNn
-         ISLg==
-X-Gm-Message-State: ACgBeo2RjC4GamY86GEtkKoPGGA9mFdrBVNlFu8uKx4KKKLPnTg5NqEa
-        9ql5HVFcuoJlEvtgKirB6Nk=
-X-Google-Smtp-Source: AA6agR4CkBMkrL/Xf2KWLR3pQ0xcwlNp5C/WZ/cSDR53XtnVqFjJYfFa52RoB2hfLaNxNOa8nSLmWQ==
-X-Received: by 2002:a05:6a00:1946:b0:52a:e551:2241 with SMTP id s6-20020a056a00194600b0052ae5512241mr5883037pfk.29.1659688682747;
-        Fri, 05 Aug 2022 01:38:02 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=zaMmNDb1jdF1qPpjyFS/Hn5r5odnYcSLudsP/nz881U=;
+        b=Yb92VRgLrMkFls1FQKzHnBCJxxtDJChodVFD8MYbUYbP4CnWJUsIe/IFLdwk0on/tl
+         PDsFcxAsMIqt/dhT2maxS6z1mxa+fqF9YVN3Ul8rbwNZx1uMDe3/9Z1vuVS7elq/GUCR
+         vkdTcVCI4qipbMSUng9TNYjpmi7O3kt5JZzAYmIfBr/5ZUA/+VZfHI9hhUJ3sXQZcYiN
+         YfNaW6+/qqoVXTVHbcTBadKw6nhTHPJFfoqijMQLcs52l+JqZWo4Pw1ZnIkzjISpMWmS
+         x5HO+DwbV6bcYXAMM5jqT4NcvSrHiUSkZhlc7BfIlibTNCnq4oTeWme7XNrRcMQxjyJ8
+         wU2w==
+X-Gm-Message-State: ACgBeo01M9jhwRQZp1GO/EGiKocm27FEfbzP8zr2xSmzi9JKrL9IaHb4
+        DLsBJ+QxSvmvo7EIztmS5ww=
+X-Google-Smtp-Source: AA6agR6YgfRmnb7EDBsXBiBHltUu4Sdu9ZZKKGMXsrOogJUAATG8qaa1XgZoaGAb+Bw6+B4t+XVJzA==
+X-Received: by 2002:a17:90b:4b4c:b0:1f4:da77:3f80 with SMTP id mi12-20020a17090b4b4c00b001f4da773f80mr6331000pjb.55.1659688686068;
+        Fri, 05 Aug 2022 01:38:06 -0700 (PDT)
 Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id c126-20020a621c84000000b005289627ae6asm2347686pfc.187.2022.08.05.01.38.00
+        by smtp.gmail.com with ESMTPSA id c126-20020a621c84000000b005289627ae6asm2347686pfc.187.2022.08.05.01.38.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 01:38:02 -0700 (PDT)
+        Fri, 05 Aug 2022 01:38:05 -0700 (PDT)
 From:   Like Xu <like.xu.linux@gmail.com>
 X-Google-Original-From: Like Xu <likexu@tencent.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Like Xu <like.xu.linux@gmail.com>
-Subject: [PATCH v2 1/3] KVM: selftests: Test all possible "invalid" PERF_CAPABILITIES.LBR_FMT vals
-Date:   Fri,  5 Aug 2022 16:37:42 +0800
-Message-Id: <20220805083744.78767-1-likexu@tencent.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 3/3] KVM: selftests: Test writing PERF_CAPABILITIES after KVM_RUN is rejected
+Date:   Fri,  5 Aug 2022 16:37:44 +0800
+Message-Id: <20220805083744.78767-3-likexu@tencent.com>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220805083744.78767-1-likexu@tencent.com>
+References: <20220805083744.78767-1-likexu@tencent.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Like Xu <likexu@tencent.com>
 
-Test all possible input values to verify that KVM rejects all values
-except the exact host value.  Due to the LBR format affecting the core
-functionality of LBRs, KVM can't emulate "other" formats, so even though
-there are a variety of legal values, KVM should reject anything but an
-exact host match.
+KVM should also disallow changing the feature MSR PERF_CAPABILITIES after
+KVM_RUN to prevent unexpected behavior. Implement run_vcpu() in a separate
+thread approach and opportunistically rearrange test cases.
 
-Suggested-by: Like Xu <like.xu.linux@gmail.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Like Xu <likexu@tencent.com>
 ---
-v1: https://lore.kernel.org/kvm/20220804073819.76460-1-likexu@tencent.com/
-v1 -> v2 Changelog:
-- Replace testcase #3 with fully exhaustive approach; (Sean)
-
- .../selftests/kvm/x86_64/vmx_pmu_caps_test.c    | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ .../selftests/kvm/x86_64/vmx_pmu_caps_test.c  | 49 +++++++++++++------
+ 1 file changed, 34 insertions(+), 15 deletions(-)
 
 diff --git a/tools/testing/selftests/kvm/x86_64/vmx_pmu_caps_test.c b/tools/testing/selftests/kvm/x86_64/vmx_pmu_caps_test.c
-index 6ec901dab61e..928c10e520c7 100644
+index 928c10e520c7..0ee00fec8c2c 100644
 --- a/tools/testing/selftests/kvm/x86_64/vmx_pmu_caps_test.c
 +++ b/tools/testing/selftests/kvm/x86_64/vmx_pmu_caps_test.c
-@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
- 	int ret;
+@@ -13,13 +13,13 @@
+ 
+ #define _GNU_SOURCE /* for program_invocation_short_name */
+ #include <sys/ioctl.h>
++#include <pthread.h>
+ 
+ #include "kvm_util.h"
+ #include "vmx.h"
+ 
+ #define PMU_CAP_FW_WRITES	(1ULL << 13)
+ #define PMU_CAP_LBR_FMT		0x3f
+-
+ union cpuid10_eax {
+ 	struct {
+ 		unsigned int version_id:8;
+@@ -46,17 +46,28 @@ union perf_capabilities {
+ 	u64	capabilities;
+ };
+ 
++static struct kvm_vm *vm;
++static struct kvm_vcpu *vcpu;
++
+ static void guest_code(void)
+ {
+ 	wrmsr(MSR_IA32_PERF_CAPABILITIES, PMU_CAP_LBR_FMT);
+ }
+ 
++static void *run_vcpu(void *ignore)
++{
++	vcpu_run(vcpu);
++
++	TEST_ASSERT(!_vcpu_set_msr(vcpu, MSR_IA32_PERF_CAPABILITIES, 0),
++		    "Update PERF_CAPABILITIES after VCPU_RUN didn't fail.");
++
++	return NULL;
++}
++
+ int main(int argc, char *argv[])
+ {
++	pthread_t cpu_thread;
+ 	const struct kvm_cpuid_entry2 *entry_a_0;
+-	struct kvm_vm *vm;
+-	struct kvm_vcpu *vcpu;
+-	int ret;
  	union cpuid10_eax eax;
  	union perf_capabilities host_cap;
-+	uint64_t val;
- 
- 	host_cap.capabilities = kvm_get_feature_msr(MSR_IA32_PERF_CAPABILITIES);
+ 	uint64_t val;
+@@ -65,7 +76,8 @@ int main(int argc, char *argv[])
  	host_cap.capabilities &= (PMU_CAP_FW_WRITES | PMU_CAP_LBR_FMT);
-@@ -91,11 +92,17 @@ int main(int argc, char *argv[])
+ 
+ 	/* Create VM */
+-	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
++	vm = vm_create(1);
++	vcpu = vm_vcpu_add(vm, 1, guest_code);
+ 
+ 	TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_PDCM));
+ 
+@@ -77,33 +89,40 @@ int main(int argc, char *argv[])
+ 
+ 	/* testcase 1, set capabilities when we have PDCM bit */
+ 	vcpu_set_msr(vcpu, MSR_IA32_PERF_CAPABILITIES, PMU_CAP_FW_WRITES);
+-
+-	/* check capabilities can be retrieved with KVM_GET_MSR */
+ 	ASSERT_EQ(vcpu_get_msr(vcpu, MSR_IA32_PERF_CAPABILITIES), PMU_CAP_FW_WRITES);
+ 
+-	/* check whatever we write with KVM_SET_MSR is _not_ modified */
+-	vcpu_run(vcpu);
+-	ASSERT_EQ(vcpu_get_msr(vcpu, MSR_IA32_PERF_CAPABILITIES), PMU_CAP_FW_WRITES);
+-
+-	/* testcase 2, check valid LBR formats are accepted */
++	/* testcase 2, check value zero (which disables all features) is accepted */
+ 	vcpu_set_msr(vcpu, MSR_IA32_PERF_CAPABILITIES, 0);
+ 	ASSERT_EQ(vcpu_get_msr(vcpu, MSR_IA32_PERF_CAPABILITIES), 0);
+ 
++	/* testcase 3, check valid LBR formats are accepted */
  	vcpu_set_msr(vcpu, MSR_IA32_PERF_CAPABILITIES, host_cap.lbr_format);
  	ASSERT_EQ(vcpu_get_msr(vcpu, MSR_IA32_PERF_CAPABILITIES), (u64)host_cap.lbr_format);
  
--	/* testcase 3, check invalid LBR format is rejected */
--	/* Note, on Arch LBR capable platforms, LBR_FMT in perf capability msr is 0x3f,
--	 * to avoid the failure, use a true invalid format 0x30 for the test. */
--	ret = _vcpu_set_msr(vcpu, MSR_IA32_PERF_CAPABILITIES, 0x30);
--	TEST_ASSERT(ret == 0, "Bad PERF_CAPABILITIES didn't fail.");
-+	/*
-+	 * Testcase 3, check that an "invalid" LBR format is rejected.  Only an
-+	 * exact match of the host's format (and 0/disabled) is allowed.
-+	 */
-+	for (val = 1; val <= PMU_CAP_LBR_FMT; val++) {
-+		if (val == host_cap.lbr_format)
-+			continue;
-+
-+		ret = _vcpu_set_msr(vcpu, MSR_IA32_PERF_CAPABILITIES, val);
-+		TEST_ASSERT(!ret, "Bad LBR FMT = 0x%lx didn't fail", val);
-+	}
+ 	/*
+-	 * Testcase 3, check that an "invalid" LBR format is rejected.  Only an
++	 * Testcase 4, check that an "invalid" LBR format is rejected.  Only an
+ 	 * exact match of the host's format (and 0/disabled) is allowed.
+ 	 */
+ 	for (val = 1; val <= PMU_CAP_LBR_FMT; val++) {
+ 		if (val == host_cap.lbr_format)
+ 			continue;
  
+-		ret = _vcpu_set_msr(vcpu, MSR_IA32_PERF_CAPABILITIES, val);
+-		TEST_ASSERT(!ret, "Bad LBR FMT = 0x%lx didn't fail", val);
++		TEST_ASSERT(!_vcpu_set_msr(vcpu, MSR_IA32_PERF_CAPABILITIES, val),
++			    "Bad LBR FMT = 0x%lx didn't fail", val);
+ 	}
+ 
++	/* Testcase 5, check whatever use space writes is _not_ modified after VCPU_RUN */
++	vcpu_set_msr(vcpu, MSR_IA32_PERF_CAPABILITIES, host_cap.capabilities);
++
++	pthread_create(&cpu_thread, NULL, run_vcpu, NULL);
++	pthread_join(cpu_thread, NULL);
++
++	TEST_ASSERT(!_vcpu_set_msr(vcpu, MSR_IA32_PERF_CAPABILITIES, 0),
++		    "Update PERF_CAPABILITIES after VCPU_RUN didn't fail.");
++
++	ASSERT_EQ(vcpu_get_msr(vcpu, MSR_IA32_PERF_CAPABILITIES), host_cap.capabilities);
++
  	printf("Completed perf capability tests.\n");
  	kvm_vm_free(vm);
++	return 0;
+ }
 -- 
 2.37.1
 
