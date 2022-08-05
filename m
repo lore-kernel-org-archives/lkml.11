@@ -2,76 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A66D7C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 06:40:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24AD5C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 06:41:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236323AbiHEGkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 02:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49580 "EHLO
+        id S236889AbiHEGl1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 02:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236168AbiHEGkF (ORCPT
+        with ESMTP id S235930AbiHEGlZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 02:40:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E8B72EF3
-        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 23:40:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 689066141B
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 06:40:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7779BC433B5;
-        Fri,  5 Aug 2022 06:40:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659681603;
-        bh=S+AJva2MQ5IDZ8U+0eF0MnRXAqZAtMJ7OmZXdEEDWmY=;
-        h=Date:From:To:Subject:References:In-Reply-To:From;
-        b=YJVrP1BL3fLDv7G6mlyWKDLsA0+P829LYGVjKalr3coSQ+qULuwNNNCNlRzGpWJcJ
-         uicYUC8WduJC7dXXsO262HSRIeV8ImsBmjRWg6hOhVZMJ1a7ZtPD5s134FchZwWxs1
-         w5vENgChj6zMuM8wBUBZf1RqgYalVUlviOOvhAgY=
-Date:   Fri, 5 Aug 2022 08:40:01 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Grzegorz Szymaszek <gszymaszek@short.pl>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-Subject: Re: [PATCH 2/3] staging: r8188eu: make use of the DRV_NAME macro
-Message-ID: <Yuy7QSh/clQ5Ki09@kroah.com>
-References: <6c83e05e5dbccff5630ccfed9e40bf84c889b647.1659565180.git.gszymaszek@short.pl>
- <c1f348be8de5c767e72171590c6e405f6fb2bb59.1659565180.git.gszymaszek@short.pl>
+        Fri, 5 Aug 2022 02:41:25 -0400
+X-Greylist: delayed 1369 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 04 Aug 2022 23:41:23 PDT
+Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95EC8193C9;
+        Thu,  4 Aug 2022 23:41:23 -0700 (PDT)
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <prvs=1230fa8b07=ms@dev.tdt.de>)
+        id 1oJqfF-000L0w-30; Fri, 05 Aug 2022 08:18:29 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1oJqfE-000D8k-28; Fri, 05 Aug 2022 08:18:28 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id A0153240049;
+        Fri,  5 Aug 2022 08:18:27 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 2E793240040;
+        Fri,  5 Aug 2022 08:18:27 +0200 (CEST)
+Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id AADA028738;
+        Fri,  5 Aug 2022 08:18:26 +0200 (CEST)
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org
+Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin Schiller <ms@dev.tdt.de>
+Subject: [PATCH net] net/x25: fix call timeouts in blocking connects
+Date:   Fri,  5 Aug 2022 08:18:10 +0200
+Message-ID: <20220805061810.10824-1-ms@dev.tdt.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c1f348be8de5c767e72171590c6e405f6fb2bb59.1659565180.git.gszymaszek@short.pl>
+Content-Transfer-Encoding: quoted-printable
+X-purgate-type: clean
+X-purgate: clean
+X-purgate-ID: 151534::1659680308-95942F7B-D01DC08B/0/0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 04, 2022 at 12:29:01AM +0200, Grzegorz Szymaszek wrote:
-> The DRV_NAME macro is defined with the name of the r8188eu driver, but
-> it seems it wasn't actually used anywhere. Replace a hardcoded constant
-> string of the same value in the driver's struct rtw_usb_drv, field
-> .usbdrv.name. The affected file already includes include/drv_types.h,
-> where the macro is declared.
-> 
-> Signed-off-by: Grzegorz Szymaszek <gszymaszek@short.pl>
-> ---
->  drivers/staging/r8188eu/os_dep/usb_intf.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/r8188eu/os_dep/usb_intf.c b/drivers/staging/r8188eu/os_dep/usb_intf.c
-> index 68869c5daeff..256b9045488e 100644
-> --- a/drivers/staging/r8188eu/os_dep/usb_intf.c
-> +++ b/drivers/staging/r8188eu/os_dep/usb_intf.c
-> @@ -54,7 +54,7 @@ struct rtw_usb_drv {
->  };
->  
->  static struct rtw_usb_drv rtl8188e_usb_drv = {
-> -	.usbdrv.name = "r8188eu",
-> +	.usbdrv.name = DRV_NAME,
+When a userspace application starts a blocking connect(), a CALL REQUEST
+is sent, the t21 timer is started and the connect is waiting in
+x25_wait_for_connection_establishment(). If then for some reason the t21
+timer expires before any reaction on the assigned logical channel (e.g.
+CALL ACCEPT, CLEAR REQUEST), there is sent a CLEAR REQUEST and timer
+t23 is started waiting for a CLEAR confirmation. If we now receive a
+CLEAR CONFIRMATION from the peer, x25_disconnect() is called in
+x25_state2_machine() with reason "0", which means "normal" call
+clearing. This is ok, but the parameter "reason" is used as sk->sk_err
+in x25_disconnect() and sock_error(sk) is evaluated in
+x25_wait_for_connection_establishment() to check if the call is still
+pending. As "0" is not rated as an error, the connect will stuck here
+forever.
 
-Should just be KBUILD_MODNAME.
+To fix this situation, also check if the sk->sk_state changed form
+TCP_SYN_SENT to TCP_CLOSE in the meantime, which is also done by
+x25_disconnect().
 
-thanks,
+Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+---
+ net/x25/af_x25.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-greg k-h
+diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+index 6bc2ac8d8146..3b55502b2965 100644
+--- a/net/x25/af_x25.c
++++ b/net/x25/af_x25.c
+@@ -719,6 +719,11 @@ static int x25_wait_for_connection_establishment(str=
+uct sock *sk)
+ 			sk->sk_socket->state =3D SS_UNCONNECTED;
+ 			break;
+ 		}
++		rc =3D -ENOTCONN;
++		if (sk->sk_state =3D=3D TCP_CLOSE) {
++			sk->sk_socket->state =3D SS_UNCONNECTED;
++			break;
++		}
+ 		rc =3D 0;
+ 		if (sk->sk_state !=3D TCP_ESTABLISHED) {
+ 			release_sock(sk);
+--=20
+2.20.1
+
