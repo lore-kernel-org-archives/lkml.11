@@ -2,160 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF02C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 09:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 175B7C25B07
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 09:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240110AbiHEJNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 05:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50310 "EHLO
+        id S240417AbiHEJNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 05:13:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233549AbiHEJNC (ORCPT
+        with ESMTP id S240152AbiHEJNK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 05:13:02 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7590C7390A;
+        Fri, 5 Aug 2022 05:13:10 -0400
+Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A47A674DDE;
         Fri,  5 Aug 2022 02:13:01 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id z187so1707402pfb.12;
-        Fri, 05 Aug 2022 02:13:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=/PmbKSoXlx8NE7NhxNR03vLeN9/hI3MbHe4vmiJGS3I=;
-        b=ju8lg4x69mTNAkCCDTfZWjhjst9l8SDoGxK6JuJD0Ih3O3yJRMXmzAKcSPpRQoFpn1
-         xCjhyrVJ6h0CVlm1bHIetKQklYN7qY4sBPft6l7tDTD8sPii7pJkNtcr+d9LT5oJOhC7
-         sA+VbxhSgcNna+FSLSEqiqonPrOKBurxfMY8XefewziseeiHQyWn/oOqAnrQAdUsM5NS
-         rPHPlNNANeObt/bhpL33i7ju/CHCgxvXrclPqXvwTSdmVwtYuff2ZXpr7qJg7w51BkN2
-         H9dLJfluS8xAbylTTJTKd4BObtKEeNNq+8cacsFxbkz+Bn9nmjCK1cdo9kb98G0iGE4m
-         XL7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=/PmbKSoXlx8NE7NhxNR03vLeN9/hI3MbHe4vmiJGS3I=;
-        b=k9hvP0WSdagzY5zd7lC1daxtQUU9FMyV7eEF0bc7XtyUmpGJethKAQVDYvU++VRVCa
-         QBQi3mK9hJ/TezEmHZifwItjyqUARkOXs/DQzyWCLNgvFEnjMOtGFvJJc5D7/ToJ7Ubk
-         1npWIgEP4Z3cDl0w/A6JDl1XCfxDpdgM707y/HhkuwmOkD+SjZbLSrjqGOzw81h8Hspx
-         5P8+oPJrs2ogL6Y/CVg5oCTxMuwRN67TOrhOLqTBI6KhhxTseKM8h1MQIMrgQNDLq3GS
-         5aa2lrFaLlhhLxz7iKsV1evxbBFj3CmQTXjknYR3jQhZFjyFYtrfBRSwSRcnYgEjK0wL
-         caYw==
-X-Gm-Message-State: ACgBeo0HDoHR5uxpf0Nw4G18LuC4RpgBO7allqVURgDKYkd4TKTORDc7
-        eYfddPI5az4oairJqavyrJ0=
-X-Google-Smtp-Source: AA6agR5lgFgOB+298Wl0efTElU46gL/YUYfFXwuI3pGMyz1POF1VWbYaYQ7E4QZ9LvQwWaPCoMwI3Q==
-X-Received: by 2002:a63:5f09:0:b0:41c:da4f:e498 with SMTP id t9-20020a635f09000000b0041cda4fe498mr5144661pgb.276.1659690780835;
-        Fri, 05 Aug 2022 02:13:00 -0700 (PDT)
-Received: from localhost.localdomain (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
-        by smtp.gmail.com with ESMTPSA id p2-20020a170903248200b001635b86a790sm2491334plw.44.2022.08.05.02.12.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 02:13:00 -0700 (PDT)
-From:   Ken Chen <j220584470k@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Potin.Lai@quantatw.com, Cosmo.Chou@quantatw.com,
-        Michael Garner <garnermic@fb.com>,
-        Ken Chen <j220584470k@gmail.com>
-Subject: [PATCH 1/1] ARM: dts: aspeed-g6: enable more UART controllers
-Date:   Fri,  5 Aug 2022 17:09:57 +0800
-Message-Id: <20220805090957.470434-1-j220584470k@gmail.com>
-X-Mailer: git-send-email 2.25.1
+Received: from ([60.208.111.195])
+        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id AJS00156;
+        Fri, 05 Aug 2022 17:12:56 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201605.home.langchao.com (10.100.2.5) with Microsoft SMTP Server id
+ 15.1.2507.9; Fri, 5 Aug 2022 17:12:55 +0800
+From:   Bo Liu <liubo03@inspur.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] vhost-vdpa: Call ida_simple_remove() when failed
+Date:   Fri, 5 Aug 2022 05:12:54 -0400
+Message-ID: <20220805091254.20026-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.200.104.97]
+tUid:   20228051712564b68e5e4e530f6396c94bdd65571fa10
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Setup the configuration of UART6, UART7, UART8, and UART9 in
-aspeed-g6.dtsi.
+In function vhost_vdpa_probe(), when code execution fails, we should
+call ida_simple_remove() to free ida.
 
-Signed-off-by: Ken Chen <j220584470k@gmail.com>
+Signed-off-by: Bo Liu <liubo03@inspur.com>
 ---
- arch/arm/boot/dts/aspeed-g6.dtsi | 64 +++++++++++++++++++++++++++++++-
- 1 file changed, 62 insertions(+), 2 deletions(-)
+ drivers/vhost/vdpa.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
-index 8c0de3f27883b..fe7cef6b5e976 100644
---- a/arch/arm/boot/dts/aspeed-g6.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g6.dtsi
-@@ -34,8 +34,12 @@ aliases {
- 		serial2 = &uart3;
- 		serial3 = &uart4;
- 		serial4 = &uart5;
--		serial5 = &vuart1;
--		serial6 = &vuart2;
-+		serial5 = &uart6;
-+		serial6 = &uart7;
-+		serial7 = &uart8;
-+		serial8 = &uart9;
-+		serial9 = &vuart1;
-+		serial10 = &vuart2;
- 	};
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 7fa671ac4bdf..c7c89f969249 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -1396,6 +1396,7 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
  
+ err:
+ 	put_device(&v->dev);
++	ida_simple_remove(&vhost_vdpa_ida, v->minor);
+ 	return r;
+ }
  
-@@ -745,6 +749,62 @@ uart4: serial@1e78f000 {
- 				status = "disabled";
- 			};
- 
-+			uart6: serial@1e790000 {
-+				compatible = "ns16550a";
-+				reg = <0x1e790000 0x20>;
-+				reg-shift = <2>;
-+				reg-io-width = <4>;
-+				interrupts = <GIC_SPI 57 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&syscon ASPEED_CLK_GATE_UART6CLK>;
-+				no-loopback-test;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&pinctrl_uart6_default>;
-+
-+				status = "disabled";
-+			};
-+
-+			uart7: serial@1e790100 {
-+				compatible = "ns16550a";
-+				reg = <0x1e790100 0x20>;
-+				reg-shift = <2>;
-+				reg-io-width = <4>;
-+				interrupts = <GIC_SPI 58 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&syscon ASPEED_CLK_GATE_UART7CLK>;
-+				no-loopback-test;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&pinctrl_uart7_default>;
-+
-+				status = "disabled";
-+			};
-+
-+			uart8: serial@1e790200 {
-+				compatible = "ns16550a";
-+				reg = <0x1e790200 0x20>;
-+				reg-shift = <2>;
-+				reg-io-width = <4>;
-+				interrupts = <GIC_SPI 59 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&syscon ASPEED_CLK_GATE_UART8CLK>;
-+				no-loopback-test;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&pinctrl_uart8_default>;
-+
-+				status = "disabled";
-+			};
-+
-+			uart9: serial@1e790300 {
-+				compatible = "ns16550a";
-+				reg = <0x1e790300 0x20>;
-+				reg-shift = <2>;
-+				reg-io-width = <4>;
-+				interrupts = <GIC_SPI 60 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&syscon ASPEED_CLK_GATE_UART9CLK>;
-+				no-loopback-test;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&pinctrl_uart9_default>;
-+
-+				status = "disabled";
-+			};
-+
- 			i2c: bus@1e78a000 {
- 				compatible = "simple-bus";
- 				#address-cells = <1>;
 -- 
-2.31.1
+2.27.0
 
