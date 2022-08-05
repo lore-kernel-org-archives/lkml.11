@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF4DAC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 15:47:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FE75C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 15:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241371AbiHEPrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 11:47:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47928 "EHLO
+        id S241373AbiHEPrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 11:47:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241049AbiHEPpd (ORCPT
+        with ESMTP id S241395AbiHEPp4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 11:45:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C056C72ECC;
-        Fri,  5 Aug 2022 08:44:08 -0700 (PDT)
+        Fri, 5 Aug 2022 11:45:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D4975394;
+        Fri,  5 Aug 2022 08:44:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C999B82984;
-        Fri,  5 Aug 2022 15:44:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05858C433D6;
-        Fri,  5 Aug 2022 15:44:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FFE2B82987;
+        Fri,  5 Aug 2022 15:44:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 840FEC433D6;
+        Fri,  5 Aug 2022 15:44:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659714246;
-        bh=Xhoz/HriTf7Mix6x5COkG2so3swkdjDhA9Nt4WJUA3M=;
+        s=k20201202; t=1659714293;
+        bh=snCTpO1KjSoGMCbd2ZibVgNCeCXJ9RI/0mMCRcFphkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vh1PYV+BmSsfMGJFm8XrKX7aQ9EWEC4qYH/Kj5zX9KSwTpdcTXBbUDTpKNhvUgSrF
-         pDyTwsrtd4Ior5+1Z2AwGAeHYC0BOl3NsS+lptJdYhyaH7Ncsf7olf5u0dlA1IqiyR
-         GtEk0D8DDS4OuKSmdBwFOtBm67aQp83XHarxnXwx26Y5LHcWo5nHnnDsUHsTFeC2Fh
-         fD7dHKDhl9yEbcwKKQDrF/aGFVSpwyuDtR34aKWtgFv9Dv1WyXdjNC4rE5Th7UJa1a
-         zVjSrUBS06QDqPkPk+isGHY9pWML3hFMFZ5ABmb0GwoXi8+8aoui0jFzIWbOcnEgzq
-         hSvGST46e/uYA==
+        b=W4nnSD3fqKq1mlqKZ6GyHb+mnfKbt968O+PZyBC1A1yMQ7NdczRxYugrnMnFWRWVG
+         GX7jAZQsLo+uXtg1eHmwWk8wy13sieWXO1aTMU71MzO5ib0UStwzzWL73JtYF7E3N0
+         YUBpiOmZhHPNSLVb41Bba9/NOv4Fj9ALy7R0r+0CAKIPaq/27XCRtuI3dHIWRDWLJW
+         aQqULu6ghI2tz1v01ZcHAk21cfJJ9tMTNQa4++7IhhRISJ1kzb2qRRl9lOe4UePjf7
+         LGmuQdscSj35rzRTn6ma5QBIYh8FRquvhnD3U4ZNk7TiCSEnrVz9n62XChPQ8w6UXE
+         pOtXf8X0mgcuQ==
 From:   Miguel Ojeda <ojeda@kernel.org>
 To:     Linus Torvalds <torvalds@linux-foundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -41,13 +41,17 @@ Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
         Miguel Ojeda <ojeda@kernel.org>,
         Alex Gaynor <alex.gaynor@gmail.com>,
         Wedson Almeida Filho <wedsonaf@google.com>,
-        Andy Whitcroft <apw@canonical.com>,
-        Joe Perches <joe@perches.com>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH v9 16/27] scripts: checkpatch: enable language-independent checks for Rust
-Date:   Fri,  5 Aug 2022 17:42:01 +0200
-Message-Id: <20220805154231.31257-17-ojeda@kernel.org>
+        David Gow <davidgow@google.com>,
+        Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+        =?UTF-8?q?Bj=C3=B6rn=20Roy=20Baron?= <bjorn3_gh@protonmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-doc@vger.kernel.org
+Subject: [PATCH v9 25/27] x86: enable initial Rust support
+Date:   Fri,  5 Aug 2022 17:42:10 +0200
+Message-Id: <20220805154231.31257-26-ojeda@kernel.org>
 In-Reply-To: <20220805154231.31257-1-ojeda@kernel.org>
 References: <20220805154231.31257-1-ojeda@kernel.org>
 MIME-Version: 1.0
@@ -56,45 +60,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Include Rust in the "source code files" category, so that
-the language-independent tests are checked for Rust too,
-and teach `checkpatch` about the comment style for Rust files.
-
-This enables the malformed SPDX check, the misplaced SPDX license
-tag check, the long line checks, the lines without a newline check
-and the embedded filename check.
+Note that only x86_64 is covered and not all features nor mitigations
+are handled, but it is enough as a starting point and showcases
+the basics needed to add Rust support for a new architecture.
 
 Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
 Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
 Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
 Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
+Co-developed-by: David Gow <davidgow@google.com>
+Signed-off-by: David Gow <davidgow@google.com>
 Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 ---
- scripts/checkpatch.pl | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/rust/arch-support.rst |  1 +
+ arch/x86/Kconfig                    |  1 +
+ arch/x86/Makefile                   | 10 ++++++++++
+ scripts/generate_rust_target.rs     | 15 +++++++++++++--
+ 4 files changed, 25 insertions(+), 2 deletions(-)
 
-diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-index 23799e8013b3..bd0025d77bcf 100755
---- a/scripts/checkpatch.pl
-+++ b/scripts/checkpatch.pl
-@@ -3615,7 +3615,7 @@ sub process {
- 				my $comment = "";
- 				if ($realfile =~ /\.(h|s|S)$/) {
- 					$comment = '/*';
--				} elsif ($realfile =~ /\.(c|dts|dtsi)$/) {
-+				} elsif ($realfile =~ /\.(c|rs|dts|dtsi)$/) {
- 					$comment = '//';
- 				} elsif (($checklicenseline == 2) || $realfile =~ /\.(sh|pl|py|awk|tc|yaml)$/) {
- 					$comment = '#';
-@@ -3663,7 +3663,7 @@ sub process {
- 		}
+diff --git a/Documentation/rust/arch-support.rst b/Documentation/rust/arch-support.rst
+index 1152e0fbdad0..6982b63775da 100644
+--- a/Documentation/rust/arch-support.rst
++++ b/Documentation/rust/arch-support.rst
+@@ -15,4 +15,5 @@ support corresponds to ``S`` values in the ``MAINTAINERS`` file.
+ ============  ================  ==============================================
+ Architecture  Level of support  Constraints
+ ============  ================  ==============================================
++``x86``       Maintained        ``x86_64`` only.
+ ============  ================  ==============================================
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 52a7f91527fe..4d5a3f256cbc 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -258,6 +258,7 @@ config X86
+ 	select HAVE_STATIC_CALL_INLINE		if HAVE_OBJTOOL
+ 	select HAVE_PREEMPT_DYNAMIC_CALL
+ 	select HAVE_RSEQ
++	select HAVE_RUST			if X86_64
+ 	select HAVE_SYSCALL_TRACEPOINTS
+ 	select HAVE_UACCESS_VALIDATION		if HAVE_OBJTOOL
+ 	select HAVE_UNSTABLE_SCHED_CLOCK
+diff --git a/arch/x86/Makefile b/arch/x86/Makefile
+index 7854685c5f25..bab595003f07 100644
+--- a/arch/x86/Makefile
++++ b/arch/x86/Makefile
+@@ -68,6 +68,7 @@ export BITS
+ #    https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53383
+ #
+ KBUILD_CFLAGS += -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx
++KBUILD_RUSTFLAGS += -Ctarget-feature=-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2
  
- # check we are in a valid source file if not then ignore this hunk
--		next if ($realfile !~ /\.(h|c|s|S|sh|dtsi|dts)$/);
-+		next if ($realfile !~ /\.(h|c|rs|s|S|sh|dtsi|dts)$/);
+ ifeq ($(CONFIG_X86_KERNEL_IBT),y)
+ #
+@@ -155,8 +156,17 @@ else
+         cflags-$(CONFIG_GENERIC_CPU)	+= -mtune=generic
+         KBUILD_CFLAGS += $(cflags-y)
  
- # check for using SPDX-License-Identifier on the wrong line number
- 		if ($realline != $checklicenseline &&
++        rustflags-$(CONFIG_MK8)		+= -Ctarget-cpu=k8
++        rustflags-$(CONFIG_MPSC)	+= -Ctarget-cpu=nocona
++        rustflags-$(CONFIG_MCORE2)	+= -Ctarget-cpu=core2
++        rustflags-$(CONFIG_MATOM)	+= -Ctarget-cpu=atom
++        rustflags-$(CONFIG_GENERIC_CPU)	+= -Ztune-cpu=generic
++        KBUILD_RUSTFLAGS += $(rustflags-y)
++
+         KBUILD_CFLAGS += -mno-red-zone
+         KBUILD_CFLAGS += -mcmodel=kernel
++        KBUILD_RUSTFLAGS += -Cno-redzone=y
++        KBUILD_RUSTFLAGS += -Ccode-model=kernel
+ endif
+ 
+ #
+diff --git a/scripts/generate_rust_target.rs b/scripts/generate_rust_target.rs
+index 7256c9606cf0..3c6cbe2b278d 100644
+--- a/scripts/generate_rust_target.rs
++++ b/scripts/generate_rust_target.rs
+@@ -148,8 +148,19 @@ fn main() {
+     let mut ts = TargetSpec::new();
+ 
+     // `llvm-target`s are taken from `scripts/Makefile.clang`.
+-    if cfg.has("DUMMY_ARCH") {
+-        ts.push("arch", "dummy_arch");
++    if cfg.has("X86_64") {
++        ts.push("arch", "x86_64");
++        ts.push(
++            "data-layout",
++            "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128",
++        );
++        let mut features = "-3dnow,-3dnowa,-mmx,+soft-float".to_string();
++        if cfg.has("RETPOLINE") {
++            features += ",+retpoline-external-thunk";
++        }
++        ts.push("features", features);
++        ts.push("llvm-target", "x86_64-linux-gnu");
++        ts.push("target-pointer-width", "64");
+     } else {
+         panic!("Unsupported architecture");
+     }
 -- 
 2.37.1
 
