@@ -2,88 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A93C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:57:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E00C8C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:58:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240235AbiHEI43 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 04:56:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39074 "EHLO
+        id S240283AbiHEI66 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 04:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229899AbiHEI41 (ORCPT
+        with ESMTP id S234856AbiHEI6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 04:56:27 -0400
-X-Greylist: delayed 453 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 05 Aug 2022 01:56:23 PDT
-Received: from forward105j.mail.yandex.net (forward105j.mail.yandex.net [5.45.198.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8CE6BD52
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 01:56:23 -0700 (PDT)
-Received: from forward103q.mail.yandex.net (forward103q.mail.yandex.net [IPv6:2a02:6b8:c0e:50:0:640:b21c:d009])
-        by forward105j.mail.yandex.net (Yandex) with ESMTP id 28F5F4ECB2CA;
-        Fri,  5 Aug 2022 11:48:46 +0300 (MSK)
-Received: from vla5-47b3f4751bc4.qloud-c.yandex.net (vla5-47b3f4751bc4.qloud-c.yandex.net [IPv6:2a02:6b8:c18:3508:0:640:47b3:f475])
-        by forward103q.mail.yandex.net (Yandex) with ESMTP id 244CB56A000F;
-        Fri,  5 Aug 2022 11:48:46 +0300 (MSK)
-Received: by vla5-47b3f4751bc4.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id xFBAKgq0sD-mhoWlJ8g;
-        Fri, 05 Aug 2022 11:48:45 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1659689325;
-        bh=WY/p0AKPurtQC7CbtbT4lh+mfKMDaL2pNRP+3Km3zMw=;
-        h=Message-Id:Date:Cc:Subject:To:From;
-        b=M6Wi8T/q+hoGx9dgUAqM+SWXRjHreA5+4/xctMXwI50sdDkbOhIa1lpKCFTHvfkHk
-         wpzCdXZytpZhjjqwUaowRjAbribwdXKZzgWE4v+sJNZNDr1NPFdY7kLskpJJv4X+f1
-         4VnnWZRwf618e2mUzK2R1P6LWUqOqSVYiG8GwZdE=
-Authentication-Results: vla5-47b3f4751bc4.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
-From:   Nikita Shubin <nikita.shubin@maquefel.me>
-Cc:     linux@yadro.com, Nikita Shubin <n.shubin@yadro.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: phy: dp83867: fix get nvmem cell fail
-Date:   Fri,  5 Aug 2022 11:48:43 +0300
-Message-Id: <20220805084843.24542-1-nikita.shubin@maquefel.me>
-X-Mailer: git-send-email 2.35.1
+        Fri, 5 Aug 2022 04:58:55 -0400
+Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C543B74E26;
+        Fri,  5 Aug 2022 01:58:53 -0700 (PDT)
+Received: from droid06.amlogic.com (10.18.11.248) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server id 15.1.2507.9; Fri, 5 Aug 2022
+ 16:58:51 +0800
+From:   Yu Tu <yu.tu@amlogic.com>
+To:     <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+CC:     Yu Tu <yu.tu@amlogic.com>
+Subject: [PATCH V3 0/6] Add S4 SoC PLL and Peripheral clock controller
+Date:   Fri, 5 Aug 2022 16:57:10 +0800
+Message-ID: <20220805085716.5635-1-yu.tu@amlogic.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.18.11.248]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Shubin <n.shubin@yadro.com>
+1. Add PLL and Peripheral clock controller driver for S4 SOC.
 
-If CONFIG_NVMEM is not set of_nvmem_cell_get, of_nvmem_device_get
-functions will return ERR_PTR(-EOPNOTSUPP) and "failed to get nvmem
-cell io_impedance_ctrl" error would be reported despite "io_impedance_ctrl"
-is completely missing in Device Tree and we should use default values.
+Yu Tu (6):
+  dt-bindings: clock: meson: add S4 SoC PLL clock controller bindings
+  arm64: dts: meson: add S4 Soc PLL clock controller in DT
+  clk: meson: S4: add support for Amlogic S4 SoC PLL clock driver
+  dt-bindings: clk: meson: add S4 SoC peripheral clock controller
+    bindings
+  arm64: dts: meson: add S4 Soc Peripheral clock controller in DT
+  clk: meson: s4: add s4 SoC peripheral clock controller driver
 
-Check -EOPNOTSUPP togather with -ENOENT to avoid this situation.
+V2 -> V3: Use two clock controller.
+V1 -> V2: Change format as discussed in the email.
 
-Fixes: 5c2d0a6a0701 ("net: phy: dp83867: implement support for io_impedance_ctrl nvmem cell")
-Signed-off-by: Nikita Shubin <n.shubin@yadro.com>
----
- drivers/net/phy/dp83867.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Link:https://lore.kernel.org/all/20220728054202.6981-1-yu.tu@amlogic.com/
 
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 1e38039c5c56..6939563d3b7c 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -535,7 +535,7 @@ static int dp83867_of_init_io_impedance(struct phy_device *phydev)
- 	cell = of_nvmem_cell_get(of_node, "io_impedance_ctrl");
- 	if (IS_ERR(cell)) {
- 		ret = PTR_ERR(cell);
--		if (ret != -ENOENT)
-+		if (ret != -ENOENT && ret != -EOPNOTSUPP)
- 			return phydev_err_probe(phydev, ret,
- 						"failed to get nvmem cell io_impedance_ctrl\n");
- 
+ .../bindings/clock/amlogic,s4-clkc.yaml       |   92 +
+ .../bindings/clock/amlogic,s4-pll-clkc.yaml   |   51 +
+ MAINTAINERS                                   |    1 +
+ arch/arm64/boot/dts/amlogic/meson-s4.dtsi     |   34 +
+ drivers/clk/meson/Kconfig                     |   25 +
+ drivers/clk/meson/Makefile                    |    2 +
+ drivers/clk/meson/s4-pll.c                    |  891 ++++
+ drivers/clk/meson/s4-pll.h                    |   88 +
+ drivers/clk/meson/s4.c                        | 3878 +++++++++++++++++
+ drivers/clk/meson/s4.h                        |  232 +
+ include/dt-bindings/clock/amlogic,s4-clkc.h   |  131 +
+ .../dt-bindings/clock/amlogic,s4-pll-clkc.h   |   30 +
+ 12 files changed, 5455 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/amlogic,s4-clkc.yaml
+ create mode 100644 Documentation/devicetree/bindings/clock/amlogic,s4-pll-clkc.yaml
+ create mode 100644 drivers/clk/meson/s4-pll.c
+ create mode 100644 drivers/clk/meson/s4-pll.h
+ create mode 100644 drivers/clk/meson/s4.c
+ create mode 100644 drivers/clk/meson/s4.h
+ create mode 100644 include/dt-bindings/clock/amlogic,s4-clkc.h
+ create mode 100644 include/dt-bindings/clock/amlogic,s4-pll-clkc.h
+
+
+base-commit: 08fc500fe3d4b1f0603fb97ad353f246a3d52d2d
 -- 
-2.35.1
+2.33.1
 
