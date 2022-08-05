@@ -2,100 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96AC9C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 13:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E5B3C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 13:07:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240855AbiHENGp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 09:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58976 "EHLO
+        id S240735AbiHENHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 09:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231492AbiHENGo (ORCPT
+        with ESMTP id S240858AbiHENHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 09:06:44 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9270A205F5
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 06:06:35 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id p10so3182283wru.8
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 06:06:35 -0700 (PDT)
+        Fri, 5 Aug 2022 09:07:16 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 899511A812;
+        Fri,  5 Aug 2022 06:06:58 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id j4so1761557qkl.10;
+        Fri, 05 Aug 2022 06:06:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wMBHKeG+uj2RCiscp/m14dBH4g2RDMQBDvQVGQjAQpA=;
-        b=CCCgaKAT/t03FTKn2Ul9JcmLP30Sb1n8CRn2Na8/JwSzHTJuDnRH80W++218pg/NNE
-         qNCul8Ee9O3nwrro/2qu2oGUUP19pFO0mkZvk8t9Zqdz3PmFYnAuPQ942TgsZ3xpbP3O
-         I70rEKjHcXe8hBg7bGni0qxfQcHJ+RyMFCv3q/L5EB+NyyOCx9+TP5V9tKUd2FDQMrKQ
-         UDXqjphViRdXF7Na4aOOGpe53KKbLs/VfZ758wLFjLnpxZiIxC3H2JkGcerAqD/Z8Shn
-         7Dv3v5h9vehGqCXnby5bL0sFwmUjXYIKpN8vaCF01k/eswQGTs9BzDMSVwOVtSH+74Hv
-         RJNA==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=3FEi1CuKFHPWHETXS5rrQ8s9GwbgPfiuBefvLvAoBsk=;
+        b=KgL/Ti/Sw5zH9EmMfo00bYbabUMlHnfPxzlYp138btnOZ5iHJws2jxCG33uwIKAM57
+         ZH9pcxSaQ3WAvKMK+rlXSIpmF9goTDadcJBOaraf9vF+AYXYuuUCk1nn9mZTAv7A84VS
+         IGN53sF6SexwC9WgkegcjbT+ydEtt7SJLKzuOXSjM7pv7pItuF3vkyrASesCL/DMFAma
+         rvrzVZQfTooocv0qvKbynXnxhJZQrwyBscixkLCW31xTQ5ekgGyzVfdw4/3LfOktLn40
+         aBpsyR98kiE/cfno9Vr7LLF4YuYZgav13rVMy6A3nxoUQo28k9pfuse69foAmsjNPvze
+         VLuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wMBHKeG+uj2RCiscp/m14dBH4g2RDMQBDvQVGQjAQpA=;
-        b=Df81o3IrlRosSGtSXlxiUWTaUxboKNrIcTMSOrhVKynttL6DIvZEQpxbbAGY5UNsGw
-         G2Anvkj/AJhEHUOEkZU1P48qNRU60Yf7WpilVqOhIfHMCH7q0nIKhW1PN3Moc14v6MWw
-         JQ0LSvIRvlZ2YtfIwotxjwKGM7sOif+T1ezVG2ELQoiZyElcvfZlVV1DSgv0dVxhJvRY
-         KP9AAkYDApHXmn1cGK8FvM6XDkVWHpF5MD2zgG+MkoRp1YM3PReq9V6oLlSjgIB3pQtL
-         5urAmY5a9alCzbK7n+sy/F1CHpB35UCn1IHRFY5qVzXjbJqOz1FpoDm4337Gg3cM5TiP
-         sHuQ==
-X-Gm-Message-State: ACgBeo1mwTIdAPWxOapdMicr0SEP3r5Ek3cevLlSqHurX5HzDiNeDv84
-        MwahoW2ofoq4Ho8oMNTvGJhYu95alQ9hVPEY
-X-Google-Smtp-Source: AA6agR60jW2rSIVn/470RYnjAIjv8R48SysKold+eZg1dX80YmmCzW2tJNa33tfHW7I2jUj7F7L/FQ==
-X-Received: by 2002:a5d:5581:0:b0:20f:fc51:7754 with SMTP id i1-20020a5d5581000000b0020ffc517754mr4458033wrv.413.1659704793841;
-        Fri, 05 Aug 2022 06:06:33 -0700 (PDT)
-Received: from localhost (cpc109575-know16-2-0-cust250.17-2.cable.virginm.net. [94.175.88.251])
-        by smtp.gmail.com with ESMTPSA id f10-20020a05600c4e8a00b003a30fbde91dsm10920176wmq.20.2022.08.05.06.06.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 06:06:33 -0700 (PDT)
-From:   Alix Dixon <notdixon.alix@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, Alix Dixon <notdixon.alix@gmail.com>
-Subject: [PATCH] drivers: android: binder: Fixed coding style issue
-Date:   Fri,  5 Aug 2022 14:06:11 +0100
-Message-Id: <20220805130611.59289-1-notdixon.alix@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=3FEi1CuKFHPWHETXS5rrQ8s9GwbgPfiuBefvLvAoBsk=;
+        b=ySiFODdYM7al7IA01RtrIGmH8x7fqHG1ACFrx2XxZCLAPHNiP4uI6FWcaVt5ihXIxM
+         /NDhDkXyJj00/ToPSxMfihJbHA60Elhg5NFJuSkHUxTfRWlQBmAbM3AxsrFcCGaEkBVf
+         g603QBriJxvLZtRsomS4977AYJ8F7BU4rbJb12InVW+KOIBS9Bg3gaUtek/pLH/zjGDQ
+         qa9WBkDfbe5ydGLWVe+qcDVJYqVOAYXZiTKJJEI1T2LDA+7PHXWesewlOsyKtxZsq9Cw
+         JYoBlpOxM+/xdR+C1hx3vP0LMoNMdmLx3qtkBw+b6D7QIkvs6ODZEGIQTugaRCYJ0yLc
+         zePw==
+X-Gm-Message-State: ACgBeo13FHeALHTaMh/wRLuHWKumYi2K83YMPXfoKbLtHiLHxaWUIdY6
+        dZkOLa22jGGEHNUZNpnyIqBoz/QbE7DmnFPz0P4=
+X-Google-Smtp-Source: AA6agR4j0zsJqZaQf0Yu4UVNEf1JelHQhvwq9j519MOA8iXjVXlQvyGrJ/GntjcmyE7xYpQsU0Y5iOHVvVZTTJcjLGA=
+X-Received: by 2002:a05:620a:31a:b0:6b9:1f1a:7e13 with SMTP id
+ s26-20020a05620a031a00b006b91f1a7e13mr727146qkm.748.1659704817063; Fri, 05
+ Aug 2022 06:06:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220805070610.3516-1-peterwu.pub@gmail.com> <20220805070610.3516-14-peterwu.pub@gmail.com>
+In-Reply-To: <20220805070610.3516-14-peterwu.pub@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 5 Aug 2022 15:06:19 +0200
+Message-ID: <CAHp75VfiYNzmcPN8LNqvU0jKuWVFR3ODY3iWaJwpDxUdSORTOg@mail.gmail.com>
+Subject: Re: [PATCH v7 13/13] video: backlight: mt6370: Add MediaTek MT6370 support
+To:     ChiaEn Wu <peterwu.pub@gmail.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
+        Helge Deller <deller@gmx.de>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        Alice Chen <alice_chen@richtek.com>,
+        cy_huang <cy_huang@richtek.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        USB <linux-usb@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
+        szuni chen <szunichen@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixed issue with comments on multiple lines not being aligned correctly + multiline comments not being on multiple lines
+On Fri, Aug 5, 2022 at 9:08 AM ChiaEn Wu <peterwu.pub@gmail.com> wrote:
+>
+> From: ChiaEn Wu <chiaen_wu@richtek.com>
+>
+> MediaTek MT6370 is a SubPMIC consisting of a single cell battery charger
+> with ADC monitoring, RGB LEDs, dual channel flashlight, WLED backlight
+> driver, display bias voltage supply, one general purpose LDO, and the
+> USB Type-C & PD controller complies with the latest USB Type-C and PD
+> standards.
+>
+> Add a support for the MediaTek MT6370 backlight driver.
+> It controls 4 channels of 8 series WLEDs in
+> 2048 (only for MT6370/MT6371) / 16384 (only for MT6372)
+> current steps (30 mA) in exponential or linear mapping curves.
 
-Signed-off-by: Alix Dixon <notdixon.alix@gmail.com>
----
- drivers/android/binder.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+...
 
-diff --git a/drivers/android/binder.c b/drivers/android/binder.c
-index c964d7c8c..5a6da6765 100644
---- a/drivers/android/binder.c
-+++ b/drivers/android/binder.c
-@@ -5289,8 +5289,10 @@ static long binder_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
- 	unsigned int size = _IOC_SIZE(cmd);
- 	void __user *ubuf = (void __user *)arg;
- 
--	/*pr_info("binder_ioctl: %d:%d %x %lx\n",
--			proc->pid, current->pid, cmd, arg);*/
-+	/*
-+	 * pr_info("binder_ioctl: %d:%d %x %lx\n",
-+	 *		proc->pid, current->pid, cmd, arg);
-+	 */
- 
- 	binder_selftest_alloc(&proc->alloc);
- 
-@@ -6544,8 +6546,8 @@ static int __init binder_init(void)
- 	if (!IS_ENABLED(CONFIG_ANDROID_BINDERFS) &&
- 	    strcmp(binder_devices_param, "") != 0) {
- 		/*
--		* Copy the module_parameter string, because we don't want to
--		* tokenize it in-place.
-+		 * Copy the module_parameter string, because we don't want to
-+		 * tokenize it in-place.
- 		 */
- 		device_names = kstrdup(binder_devices_param, GFP_KERNEL);
- 		if (!device_names) {
+> +#include <linux/backlight.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/kernel.h>
+> +#include <linux/minmax.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+
+> +#include <linux/of_device.h>
+
+Why? Since below drop this and use fully fwnode / device property APIs.
+
+> +#include <linux/platform_device.h>
+
+Missed property.h which is heavily used in.the driver
+
+> +#include <linux/regmap.h>
+
+...
+
+> +       /*
+> +        * MT6372 uses 14 bits to control the brightness but MT6370 and MT6371
+> +        * use 11 bits. They are different so we have to use this function to
+> +        * check the vendor ID and use different mask, shift and default
+> +        * maxiimum brightness value.
+
+Use spell-checker for all your patches.
+
+> +        */
+
 -- 
-2.34.1
-
+With Best Regards,
+Andy Shevchenko
