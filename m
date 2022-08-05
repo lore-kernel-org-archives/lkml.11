@@ -2,112 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF71C25B08
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 15:52:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49170C25B08
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 15:52:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241074AbiHEPwZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 11:52:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56218 "EHLO
+        id S241517AbiHEPw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 11:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241375AbiHEPvW (ORCPT
+        with ESMTP id S230223AbiHEPvX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 11:51:22 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131E46E889;
-        Fri,  5 Aug 2022 08:49:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659714565; x=1691250565;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=NEeFuL7s2HGlJGPjMrfp/6jwPjBk7uYpbdHP2kx39AA=;
-  b=j2Aab5WItV/SZwOnPcAeZzG5yLiHM0GQJABTBTn3zqWmrNiMTO8brpLj
-   otDFaa8/46PhoJbi7dLjs0OWm9PYkV9tYAUWViQ6sLzxRp6wMBCVh1bac
-   /vzGup1EXp77D6UGBFzD9XVKAF2Vh6DF3f4TFN607d+w87b8iyRMBMiQI
-   GMzBKUrCU+ixcU6xayivS2x7mZMAZkgx+BXIJ1qNioiEYG0DYFd5GqoT2
-   v5WnCnYO0gvSxhgJIfKa7pbcysgLbUV1DqMd05Yg1wuV1eHHEcnT8wYkb
-   wRngbhPxkt5mm0M5eH/UZDgpns1vJQmaC5YvnSi59SW+uwj+T1mK+4rHX
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="288988398"
-X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="288988398"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 08:49:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="693037566"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 05 Aug 2022 08:49:05 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 9D8FC11C; Fri,  5 Aug 2022 18:49:16 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Gene Chen <gene_chen@richtek.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Eddie James <eajames@linux.ibm.com>,
-        Denis Osterland-Heim <Denis.Osterland@diehl.com>,
-        linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH v2 02/11] leds: Move led_init_default_state_get() to the global header
-Date:   Fri,  5 Aug 2022 18:48:58 +0300
-Message-Id: <20220805154907.32263-3-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220805154907.32263-1-andriy.shevchenko@linux.intel.com>
-References: <20220805154907.32263-1-andriy.shevchenko@linux.intel.com>
+        Fri, 5 Aug 2022 11:51:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1A551A1C;
+        Fri,  5 Aug 2022 08:49:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DDF3F61616;
+        Fri,  5 Aug 2022 15:49:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90D09C433B5;
+        Fri,  5 Aug 2022 15:49:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659714576;
+        bh=Yd8bNnzi3urQ1HxqR4MVS0B8oT4VBgO3urZLScQdUOo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mP1gr4Gji9IBDIpMIaPHT1+BF+hGMGZ4NfWewyiU+Vw/Gfs09NtIP3rPwss/qcwzn
+         FYP7t9eIoOv424MBCpLvM/BVhVcRaj95f4JlP7TXEerXLc+fXWgBM9tjS8cJlUXCEx
+         O7jwH5qQPjyQBYNJsPdi44XP+3pXAuPhCU+xvHD1p9C+cUmNv++wMmKfNIKp/4DSm4
+         EN4RhyAcAdYH6mNnsBuSRavq9O368GxNKEXYz+QlTwoUej2wjp+Q63hP+QiJfjySaK
+         t+JM6tZknqzvLvAK8sHudkdCYwGdAsszSZ/gn1uMSn25kkTe/FvzQE/bvAoRz/5oP9
+         0Y92WdQbVrI7g==
+From:   broonie@kernel.org
+To:     Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: linux-next: Tree for Aug 5
+Date:   Fri,  5 Aug 2022 16:49:32 +0100
+Message-Id: <20220805154932.1108442-1-broonie@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are users inside and outside LED framework that have implemented
-a local copy of led_init_default_state_get(). In order to deduplicate
-that, as the first step move the declaration from LED header to the
-global one.
+Hi all,
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/leds/leds.h  | 1 -
- include/linux/leds.h | 2 ++
- 2 files changed, 2 insertions(+), 1 deletion(-)
+Changes since 20220804:
 
-diff --git a/drivers/leds/leds.h b/drivers/leds/leds.h
-index aa64757a4d89..345062ccabda 100644
---- a/drivers/leds/leds.h
-+++ b/drivers/leds/leds.h
-@@ -27,7 +27,6 @@ ssize_t led_trigger_read(struct file *filp, struct kobject *kobj,
- ssize_t led_trigger_write(struct file *filp, struct kobject *kobj,
- 			struct bin_attribute *bin_attr, char *buf,
- 			loff_t pos, size_t count);
--enum led_default_state led_init_default_state_get(struct fwnode_handle *fwnode);
- 
- extern struct rw_semaphore leds_list_lock;
- extern struct list_head leds_list;
-diff --git a/include/linux/leds.h b/include/linux/leds.h
-index 499aea1e59b9..b96feacc73f8 100644
---- a/include/linux/leds.h
-+++ b/include/linux/leds.h
-@@ -67,6 +67,8 @@ struct led_init_data {
- 	bool devname_mandatory;
- };
- 
-+enum led_default_state led_init_default_state_get(struct fwnode_handle *fwnode);
-+
- struct led_hw_trigger_type {
- 	int dummy;
- };
--- 
-2.35.1
+The perf tree gained a conflict against Linus' tree which I fixed up.
 
+The device-mapper tree gained a conflict against Linus' tree which I
+fixed up.
+
+Stephen should be back on Monday and normal service resumed.
+
+Non-merge commits (relative to Linus' tree): 3623
+ 3914 files changed, 275727 insertions(+), 60195 deletions(-)
+
+----------------------------------------------------------------------------
+
+I have created today's linux-next tree at
+git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+(patches at http://www.kernel.org/pub/linux/kernel/next/ ).  If you
+are tracking the linux-next tree using git, you should not use "git pull"
+to do so as that will try to merge the new linux-next release with the
+old one.  You should use "git fetch" and checkout or reset to the new
+master.
+
+You can see which trees have been included by looking in the Next/Trees
+file in the source.  There are also quilt-import.log and merge.log
+files in the Next directory.  Between each merge, the tree was built
+with an arm64 defconfig, an allmodconfig cross build for x86_64, a
+multi_v7_defconfig for arm and a native build of tools/perf.
+
+Below is a summary of the state of the merge.
+
+I am currently merging 357 trees (counting Linus' and 98 trees of bug
+fix patches pending for the current merge release).
+
+Stats about the size of the tree over time can be seen at
+http://neuling.org/linux-next-size.html .
+
+Status of my local build tests will be at
+http://kisskb.ellerman.id.au/linux-next .  If maintainers want to give
+advice about cross compilers/configs that work, we are always open to add
+more builds.
+
+Thanks to Randy Dunlap for doing many randconfig builds.  And to Paul
+Gortmaker for triage and bug fixes.
