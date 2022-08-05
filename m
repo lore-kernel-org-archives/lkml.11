@@ -2,116 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E19FCC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 07:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3510FC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 07:49:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240314AbiHEHtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 03:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48754 "EHLO
+        id S240273AbiHEHtc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 03:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240211AbiHEHsy (ORCPT
+        with ESMTP id S240355AbiHEHtT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 03:48:54 -0400
-Received: from mail1.bemta32.messagelabs.com (mail1.bemta32.messagelabs.com [195.245.230.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3083BDA1;
-        Fri,  5 Aug 2022 00:48:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fujitsu.com;
-        s=170520fj; t=1659685730; i=@fujitsu.com;
-        bh=AiBJl2291nXEWiXxn1/wC4wkcqyLBRlWNI6lthScviw=;
-        h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-         MIME-Version:Content-Type;
-        b=IOG5jBiimkh1iGRp78ZD5HBjTWbHYT5u+KDLdmlDZbOHvU5JUCFc1ZywavnEC6K0G
-         Q4sZnS1GlpBNnBfXn+jXsQ5ZScF6z4vyeQV94S4XlK5HnOJrHz5E6J/fpomtAXmRgZ
-         OHpKF2ukuyIcj/OcqpT8MoXS1W5hDRWx4IrUYgk4CPbqN6DFZB4wstYxX3cAt/AXah
-         11vf45m6u58MMlovH/a4Kjucp0tfE2Kh0yvLYjDwKEdjutuNqxZQIhNav6tsU1eErN
-         g4LfzGN29DZOwpWalFcqpenseTcsHvheK4oJbQLRYPh4irSpC9QPrVnBhxxTPUOIAz
-         yJ4yKlX9r9znQ==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprEKsWRWlGSWpSXmKPExsViZ8ORqJt0+k2
-  Swdo7LBbTp15gtJg54wSjxZRfS5ktLu+aw2bx7FAvi8WHqUeYLb5MncZscerXKSaLv5f+sVmc
-  P9bP7sDlsXPWXXaPxXteMnlsWtXJ5tHb/I7N4/KTK4wenzfJeWz9fJslgD2KNTMvKb8igTXj6
-  /v4ggnsFRtvsTUwNrN1MXJxCAlsYZS423oPylnOJPHm+F1WCGc/o8SWg4/Yuxg5OdgENCTutd
-  xkBEmICHQySjzqPwbWwiywmkmir+c1C0iVsICvxIGDE8FsFgEVibO9L5lAbF4BR4mGG49ZQWw
-  JAQWJKQ/fM3cxcnBwCjhJHL0KViIkUCHxbf4hFohyQYmTM5+A2cwCEhIHX7wAK5cQUJKY2R0P
-  MaVCYtasNiYIW03i6rlNzBMYBWch6Z6FpHsBI9MqRsukosz0jJLcxMwcXUMDA11DQ1NdY10LM
-  73EKt1EvdRS3fLU4hJdQ73E8mK91OJiveLK3OScFL281JJNjMCoSilmDtvB+Kf3p94hRkkOJi
-  VR3nPH3yQJ8SXlp1RmJBZnxBeV5qQWH2KU4eBQkuANOgGUEyxKTU+tSMvMAUY4TFqCg0dJhPf
-  0SaA0b3FBYm5xZjpE6hSjopQ4b8kpoIQASCKjNA+uDZZULjHKSgnzMjIwMAjxFKQW5WaWoMq/
-  YhTnYFQS5rUCmcKTmVcCN/0V0GImoMVc/1+DLC5JREhJNTDFO1aIG2VV3V6YktOwm9HbPc/dR
-  ceuoHh/5Df2qIyOSLdr/9oYfnfXr/x0d2+aiS7T16aPZQ/SLyuy1L5g7Gd8V9c+LUEhNe1Pu5
-  DCRQkBy51Tbuw9e/q0fef3WwEvrf+Jp7yslBVaeOuyzPMvT9uKfixoSGh8mvRUY6pMkOL9z7M
-  /aP6bYDr5q/ZM56nXDk6605orw8eb1Jri923fup0Rm3lfnsp2kgu7wRb2JijyH095yDOBgyrr
-  Ln1gMXD8frcm/l/mK8G+hbIBj5a9OmF7c86BBfOUxURl+1YnOW1rkWnUuHTw3tncBbvePeHMX
-  79upVFnz9Tw9fPOzJKanuGyg1e0hvNWhaq8gxprcb0SS3FGoqEWc1FxIgCWv5DYpQMAAA==
-X-Env-Sender: lizhijian@fujitsu.com
-X-Msg-Ref: server-3.tower-587.messagelabs.com!1659685729!166593!1
-X-Originating-IP: [62.60.8.97]
-X-SYMC-ESS-Client-Auth: outbound-route-from=pass
-X-StarScan-Received: 
-X-StarScan-Version: 9.87.3; banners=-,-,-
-X-VirusChecked: Checked
-Received: (qmail 19536 invoked from network); 5 Aug 2022 07:48:50 -0000
-Received: from unknown (HELO n03ukasimr01.n03.fujitsu.local) (62.60.8.97)
-  by server-3.tower-587.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 5 Aug 2022 07:48:50 -0000
-Received: from n03ukasimr01.n03.fujitsu.local (localhost [127.0.0.1])
-        by n03ukasimr01.n03.fujitsu.local (Postfix) with ESMTP id 99C751001A0;
-        Fri,  5 Aug 2022 08:48:49 +0100 (BST)
-Received: from R01UKEXCASM126.r01.fujitsu.local (R01UKEXCASM126 [10.183.43.178])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by n03ukasimr01.n03.fujitsu.local (Postfix) with ESMTPS id 8C81910019F;
-        Fri,  5 Aug 2022 08:48:49 +0100 (BST)
-Received: from 4527b00272f8.localdomain (10.167.225.141) by
- R01UKEXCASM126.r01.fujitsu.local (10.183.43.178) with Microsoft SMTP Server
- (TLS) id 15.0.1497.32; Fri, 5 Aug 2022 08:48:44 +0100
-From:   Li Zhijian <lizhijian@fujitsu.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>, Zhu Yanjun <zyjzyj2000@gmail.com>,
-        "Leon Romanovsky" <leon@kernel.org>, <linux-rdma@vger.kernel.org>
-CC:     Xiao Yang <yangx.jy@fujitsu.com>, <y-goto@fujitsu.com>,
-        Bob Pearson <rpearsonhpe@gmail.com>,
-        Mark Bloch <mbloch@nvidia.com>, Tom Talpey <tom@talpey.com>,
-        <tomasz.gromadzki@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        <linux-kernel@vger.kernel.org>, Li Zhijian <lizhijian@fujitsu.com>
-Subject: [PATCH v4 6/6] RDMA/rxe: Enable RDMA FLUSH capability for rxe device
-Date:   Fri, 5 Aug 2022 07:55:33 +0000
-Message-ID: <1659686133-2-2-git-send-email-lizhijian@fujitsu.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1659686133-2-1-git-send-email-lizhijian@fujitsu.com>
-References: <1659685579-2-1-git-send-email-lizhijian@fujitsu.com>
- <1659686133-2-1-git-send-email-lizhijian@fujitsu.com>
+        Fri, 5 Aug 2022 03:49:19 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757966D9C5;
+        Fri,  5 Aug 2022 00:49:14 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id e8-20020a17090a280800b001f2fef7886eso2058627pjd.3;
+        Fri, 05 Aug 2022 00:49:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=E/vJaeCBGviaQ0hvzD8949Y30FhDcD4GWRiGcNZUjZ4=;
+        b=Ab4hS9bBEcHP2rHNZUseHVF0Kw0e80Tj0eXSPOSDMaSQ3heN0Lqrkw4M52EpZyd3sz
+         H9AEvm+73fn4pFMKyNCe0D7m7XhYsjeLiVYlvI+r0WhTQ/DUsXNg61ByHct2DBLbc9oc
+         ewCUbcq9frRNV20oyoqTu8u41JDh+umV94wF+N9+9UEkxR/nGoJPM4G1EGXLoFWR860r
+         fIPFpLycsY8kqzkAHDiyitnIQI/hitho4s7dx4+1EH+2TNpZUjB/R83HhmaLT+MgLuI6
+         KHiq3EkjwE6QWABljF2bgdlGIj2IKOOOQcyAcsuQjR5rgW3YcnHOymJLiCN94q/lqtx4
+         +CBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=E/vJaeCBGviaQ0hvzD8949Y30FhDcD4GWRiGcNZUjZ4=;
+        b=ORwKRgeJQQ68wpbs5E9ppXAvctFH6Yg9sfb1kGCPkksuAioUSBunZlqutTXffPs4XH
+         hlsE+kEH0JDasvlpwIkDK4uximcbLclupouKm/PtfbtdzmpZS/3z1EGSIqaOzii/UtUO
+         4VgGyIZgbBUevyQcIU69i0eUNU5ddI8gvkS3R/Y3LH053PPqedBuWm2OV+iQBLOGH5Kn
+         stXdHrgFta+vNQb36Tqm8Y0rNUVKfI5x0ZI2zkuTCUJCCDUQBhPIM9e7JiNTzpJMSq+P
+         BKoTDnvfs83mlG1YU40rflyEo72TjlRUJOUruFJMmR6TwvpbORFWrtjsQgMdVYOiRCmE
+         aX/w==
+X-Gm-Message-State: ACgBeo38jzcCJPajm+e9EPj+2lrOnKGIHVRxxjsSUSjGrFMII6VPDpvI
+        SKcoJqTkktMr2aWqMWvghhA=
+X-Google-Smtp-Source: AA6agR4RWYHTlCj4Uz5Gvo8snJllIK29/g1mtcBOELrWgSN3MOHqMmX6fls8W5al8Nbc/MsRyKi2yA==
+X-Received: by 2002:a17:90a:e2cc:b0:1f3:1151:e0ff with SMTP id fr12-20020a17090ae2cc00b001f31151e0ffmr6512965pjb.50.1659685753937;
+        Fri, 05 Aug 2022 00:49:13 -0700 (PDT)
+Received: from localhost ([117.136.0.155])
+        by smtp.gmail.com with ESMTPSA id z66-20020a626545000000b0052d3a442760sm2218418pfb.161.2022.08.05.00.49.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Aug 2022 00:49:13 -0700 (PDT)
+From:   Hawkins Jiawei <yin31149@gmail.com>
+To:     syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>
+Cc:     paskripkin@gmail.com, skhan@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        18801353760@163.com, Hawkins Jiawei <yin31149@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net v5 2/2] net: refactor bpf_sk_reuseport_detach()
+Date:   Fri,  5 Aug 2022 15:48:36 +0800
+Message-Id: <68ea55d47f10ac8faa0d44e184a5ec00a9dd0409.1659676823.git.yin31149@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1659676823.git.yin31149@gmail.com>
+References: <cover.1659676823.git.yin31149@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.167.225.141]
-X-ClientProxiedBy: G08CNEXCHPEKD07.g08.fujitsu.local (10.167.33.80) To
- R01UKEXCASM126.r01.fujitsu.local (10.183.43.178)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now we are ready to enable RDMA FLUSH capability for RXE.
-It can support Global Visibility and Persistence placement types.
+Refactor sk_user_data dereference using more generic function
+__rcu_dereference_sk_user_data_with_flags(), which improve its
+maintainability
 
-Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
 ---
- drivers/infiniband/sw/rxe/rxe_param.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/bpf/reuseport_array.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rxe/rxe_param.h b/drivers/infiniband/sw/rxe/rxe_param.h
-index 86c7a8bf3cbb..3efb515ba735 100644
---- a/drivers/infiniband/sw/rxe/rxe_param.h
-+++ b/drivers/infiniband/sw/rxe/rxe_param.h
-@@ -51,7 +51,9 @@ enum rxe_device_param {
- 					| IB_DEVICE_SRQ_RESIZE
- 					| IB_DEVICE_MEM_MGT_EXTENSIONS
- 					| IB_DEVICE_MEM_WINDOW
--					| IB_DEVICE_MEM_WINDOW_TYPE_2B,
-+					| IB_DEVICE_MEM_WINDOW_TYPE_2B
-+					| IB_DEVICE_PLT_GLOBAL_VISIBILITY
-+					| IB_DEVICE_PLT_PERSISTENT,
- 	RXE_MAX_SGE			= 32,
- 	RXE_MAX_WQE_SIZE		= sizeof(struct rxe_send_wqe) +
- 					  sizeof(struct ib_sge) * RXE_MAX_SGE,
+diff --git a/kernel/bpf/reuseport_array.c b/kernel/bpf/reuseport_array.c
+index e2618fb5870e..85fa9dbfa8bf 100644
+--- a/kernel/bpf/reuseport_array.c
++++ b/kernel/bpf/reuseport_array.c
+@@ -21,14 +21,11 @@ static struct reuseport_array *reuseport_array(struct bpf_map *map)
+ /* The caller must hold the reuseport_lock */
+ void bpf_sk_reuseport_detach(struct sock *sk)
+ {
+-	uintptr_t sk_user_data;
++	struct sock __rcu **socks;
+ 
+ 	write_lock_bh(&sk->sk_callback_lock);
+-	sk_user_data = (uintptr_t)sk->sk_user_data;
+-	if (sk_user_data & SK_USER_DATA_BPF) {
+-		struct sock __rcu **socks;
+-
+-		socks = (void *)(sk_user_data & SK_USER_DATA_PTRMASK);
++	socks = __rcu_dereference_sk_user_data_with_flags(sk, SK_USER_DATA_BPF);
++	if (socks) {
+ 		WRITE_ONCE(sk->sk_user_data, NULL);
+ 		/*
+ 		 * Do not move this NULL assignment outside of
 -- 
-2.31.1
+2.25.1
 
