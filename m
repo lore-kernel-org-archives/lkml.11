@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42242C25B08
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 21:57:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B7CEC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 21:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241992AbiHEV5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 17:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44086 "EHLO
+        id S241824AbiHEV5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 17:57:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241824AbiHEVzp (ORCPT
+        with ESMTP id S241736AbiHEVzP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 17:55:45 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868751181A;
-        Fri,  5 Aug 2022 14:54:58 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id s16so1983877ilp.3;
-        Fri, 05 Aug 2022 14:54:58 -0700 (PDT)
+        Fri, 5 Aug 2022 17:55:15 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3E17CB4F;
+        Fri,  5 Aug 2022 14:54:43 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id j20so1975519ila.6;
+        Fri, 05 Aug 2022 14:54:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=mTUAniGKH6fmmV5gDTiJdss5/weYhXTwv9+PDNZ3RQI=;
-        b=S/33lfMSw5q9gypQJIkplRl00GGe67RJ9xa8zCdLhQ0f51/eF5ILkTJXz1xEcGCCKP
-         PFby/Cmf3NBTYgJW6LVwYyZSfP0X/1AWFtllsC4tOCudOX0JQXM3v4JpTNrpNEqj6Ne9
-         ZeJB0MOUrFC0g5i1hoCbjWgNSHy2m/2h0orKLnqjj6pNxpNFTfcLTT9pdZS/yrAd0W9b
-         ZZWZsPjMmNeJkCrdNY/6LSYtmvqbaiBL/3ahA0IkoMu/5gMtxJcBU6ErfuAs/zNFAy51
-         GMzU+fGiKPfwpmqz83c4rsCzNcBinBpkwZo0L40634trC5TvFwS/ds9XGXobW185p2h0
-         6FHQ==
+        bh=oIpC7ZC5m5oABjbCTUQwv/9GbpNDm2YFIKa/3d4KInk=;
+        b=hE/xrJ9j2dYTiSesOKcrODfJJLU/a4ldIODLFLiXhQf4GJcrUu+iNVOlqQykrGN8Z+
+         mmM4z+Fkd566mIcG9GqAOLN5h4gXECZWpGLLyucbD9XujymtAydTS1UYGwzrer71eVmI
+         3Ua4X7vsB6u2xIrGFaxg+wOyA2xH8JkqqVjrtRvMjErZeIvpInLi8s5hiOiAMZTqY0dC
+         7nHWMnJ5aCYmAUlSt1UmAIJlw+icM81SJ8dVYhCcswJ3dArmI8aksUAv59z1LHh0fBCy
+         voOUuNo1OV4z+kq1+L+Fm7/y3B6eAexunwlt6Ba6T04B+xiVxownKTPq5GSGOUCaMVwM
+         itSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=mTUAniGKH6fmmV5gDTiJdss5/weYhXTwv9+PDNZ3RQI=;
-        b=c1Bbm/sqJC5wCzQShT+ACBOz/W5JXKTUQ4EDg7JtmZD/dTe96JdKkR4MjQW41zY+xk
-         P1Dii29YlucV5TC4GMdRyGzzM7zRPORkpbLR50kYl7LVggSBdrWX4FwvKgw8xOyl0fZ6
-         FfsQ0208/owiVjyBHzxGLyiLx1207XhIHKXntCMkbSiw2QStui/ubCNo0hyCp31FROWn
-         DCGuj2I2owaC+gHZtvAFr3JRU2DaLXMbeGz+T0QE8qSSKw2PgH/40TRhgmKel6tVTl1E
-         vfL6Bzt7ra6g/I/IVb5iEquLo4y+vMju2MhvHXghNwt20hVgy45p0weLyRgn2SSsrU+H
-         y59Q==
-X-Gm-Message-State: ACgBeo0Z8VDXQIrz9FOB492/mXGuuVTDakMDhBxA9Me+XzHCgUujBRNY
-        7d/BfiRXLuR+HBbZVeU76X2+8ETSL/hwRQ==
-X-Google-Smtp-Source: AA6agR7p8aLV4AMCuCW7/ITwvchFsSHG706nUxBbukte1XKyqNILQgaJYQtx7T13yN+8siYTRtw0iQ==
-X-Received: by 2002:a05:6e02:1a65:b0:2de:fbaf:ada7 with SMTP id w5-20020a056e021a6500b002defbafada7mr3969694ilv.180.1659736497241;
-        Fri, 05 Aug 2022 14:54:57 -0700 (PDT)
+        bh=oIpC7ZC5m5oABjbCTUQwv/9GbpNDm2YFIKa/3d4KInk=;
+        b=mP2pOKnwgFMfEmthQsu2pzdhMRjUonLb6o0wIx488Q8tIYWnTuOZBz0RUNaumgsFcc
+         KAMCl+L125owl/+/EWb7cR2dnXGbKQU47ZjtCMMPVKdAgbPOT4fH5HBgBPChMXQLArKT
+         KzzxJJJVivc7P5puQ8RsTNSygnIjvshzk1WIkodgqiYiKE/dSuNBRqUjLK9QyMJZQwZK
+         qw1pvWzeJjX8vf02RSPTR6tvkLRejl4Bl8j/Be4UwroXKg2vyzil5dNxjZuZgjvLyvJg
+         u2KEsVqL72TJJ1hUBuYPXcdRNmDTfExSHs9URF5+G8fHg0PXb74ZFCPA3DTauLo0kKQI
+         UzKA==
+X-Gm-Message-State: ACgBeo1UoWjFkk1ZuZ6WyZTTV6Gk/hJ2hE/NziyakuOzipwrX+hWUGck
+        9OVR6CIn8CCy1BKTX8WhwGHgh66vK4w1GQ==
+X-Google-Smtp-Source: AA6agR5qLapTrIl3lGp1qJoLRHcH/Evt6be2L7DDRrLM4hWocnV0QMSiHSZIpUvSNC/3a8paQjxKjQ==
+X-Received: by 2002:a92:d64d:0:b0:2dc:e337:58ab with SMTP id x13-20020a92d64d000000b002dce33758abmr3727652ilp.85.1659736482599;
+        Fri, 05 Aug 2022 14:54:42 -0700 (PDT)
 Received: from frodo.. (c-73-78-62-130.hsd1.co.comcast.net. [73.78.62.130])
-        by smtp.googlemail.com with ESMTPSA id e12-20020a056602044c00b0067c09fd0b53sm1765532iov.21.2022.08.05.14.54.56
+        by smtp.googlemail.com with ESMTPSA id e12-20020a056602044c00b0067c09fd0b53sm1765532iov.21.2022.08.05.14.54.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 14:54:56 -0700 (PDT)
+        Fri, 05 Aug 2022 14:54:42 -0700 (PDT)
 From:   Jim Cromie <jim.cromie@gmail.com>
 To:     linux-kernel@vger.kernel.org, jbaron@akamai.com,
         gregkh@linuxfoundation.org, dri-devel@lists.freedesktop.org,
@@ -56,9 +56,9 @@ To:     linux-kernel@vger.kernel.org, jbaron@akamai.com,
         linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
 Cc:     daniel.vetter@ffwll.ch, seanpaul@chromium.org, robdclark@gmail.com,
         Jim Cromie <jim.cromie@gmail.com>
-Subject: [PATCH v5 33/33] nouveau: WIP add 2 LEVEL_NUM classmaps for CLI, SUBDEV
-Date:   Fri,  5 Aug 2022 15:53:55 -0600
-Message-Id: <20220805215355.3509287-34-jim.cromie@gmail.com>
+Subject: [PATCH v5 20/33] dyndbg: add drm.debug style (drm/parameters/debug) bitmap support
+Date:   Fri,  5 Aug 2022 15:53:42 -0600
+Message-Id: <20220805215355.3509287-21-jim.cromie@gmail.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220805215355.3509287-1-jim.cromie@gmail.com>
 References: <20220805215355.3509287-1-jim.cromie@gmail.com>
@@ -68,238 +68,454 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-clone the nvkm_printk,_,__ macro ladder into nvkm_drmdbg,_,__.
-And alter the debug, trace, spam macros to use the renamed ladder.
+Add kernel_param_ops and callbacks to use a class-map to validate and
+apply input to a sysfs-node, which allows users to control classes
+defined in that class-map.  This supports uses like:
 
-This *sets-up* (not done yet) to remove the _subdev->debug >= (l)
-condition, once the bitmap-param is wired up correctly, and figured
-into dyndbg's jump-label enablement.  WIP.
+  echo 0x3 > /sys/module/drm/parameters/debug
 
-Then undo the 1-line change that reduced count of prdbgs from 632 to 119.
+IE add these:
 
-ie: s/NV_SUBDEV_DBG_##l/NV_DBG_##l/
+ - int param_set_dyndbg_classes()
+ - int param_get_dyndbg_classes()
+ - struct kernel_param_ops param_ops_dyndbg_classes
 
-So heres what happened: new symbol is 15 (or 10), and fails this macro
-test, so gets compiled out, and the dev_dbg is excluded.
+Following the model of kernel/params.c STANDARD_PARAM_DEFS, these are
+non-static and exported.  This might be unnecessary here.
 
-        if (CONFIG_NOUVEAU_DEBUG >= (l) && _subdev->debug >= (l))       \
-                dev_dbg(_subdev->device->dev, "%s: "f, _subdev->name, ##a); \
+get/set use an augmented kernel_param; the arg refs a new struct
+ddebug_class_param, which contains:
 
-I could hack this, by doing (l + base), but base is pretty distant.
+A union of &ulong bits, level; which points to user module's ulong
+storing the module's debug-state.  By ref'g the client's bit-state
+_var, code coordinates with existing code (like drm_debug_enabled)
+which uses it, so existing works unchanged.  Changing to a ulong
+allows use of BIT() etc.
 
-OTOH, the whole CONFIG_NOUVEAU_DEBUG check could be reworked; given
-that trace is minumum recommended, theres not that many callsites
-elided (SPAM only iirc) at compile-time, and dyndbg means keeping them
-has "zero" run-cost (and 56 bytes per callsite).  So this config item
-doesnt do much when DRM_USE_DYNAMIC_DEBUG=y.
+FLAGS: dyndbg.flags toggled by changes to bitmap. Usually just "p".
 
-So this is a useful place to stop and look around, try to guess which
-trail to take..
+MAP: a pointer to struct ddebug_classes_map, which maps those
+class-names to .class_ids 0..N that the module is using.  This
+class-map is declared & initialized by DECLARE_DYNDBG_CLASSMAP.
 
-nouveau has additional debug variables to consider:
+map-type: 4 enums DD_CLASS_TYPE_* select 2 input forms and 2 meanings.
 
-drivers/gpu/drm/nouveau/include/nvkm/core/device.h
-131:	if (_device->debug >= (l))                                             \
+numeric input:
+  DD_CLASS_TYPE_DISJOINT_BITS	integer input, independent bits. ie: drm.debug
+  DD_CLASS_TYPE_LEVEL_NUM	integer input, 0..N levels
 
-drivers/gpu/drm/nouveau/include/nvkm/core/client.h
-39:	if (_client->debug >= NV_DBG_##l)                                      \
+classnames-list (comma separated) input:
+  DD_CLASS_TYPE_DISJOINT_NAMES	each name affects a bit, others preserved
+  DD_CLASS_TYPE_LEVEL_NAMES	names have level meanings, like kern_levels.h
 
-drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
-54:	if (CONFIG_NOUVEAU_DEBUG >= (l) && _subdev->debug >= (l))              \
+_NAMES    - comma-separated classnames (with optional +-)
+_NUM      - numeric input, 0-N expected
+_BITS     - numeric input, 0x1F bitmap form expected
 
-This is another baby-step, that seems not to break, so lets get a
-snapshot.
+_DISJOINT - bits are independent
+_LEVEL    - (x<y) on bit-pos.
 
-whats done here:
+_DISJOINT treats input like a bit-vector (ala drm.debug), and sets
+each bit accordingly.  LEVEL is layered on top of this.
 
-In nouveau_drm.c, do DECLARE_DYNDBG_CLASSMAP(LEVEL_NUM type) 2x more,
-for cli and subdev, right after the drm DECLARE.  Adjust base for
-each, to share the 0..30 classid-space.
+_LEVEL treats input like a bit-pos:N, then sets bits(0..N)=1, and
+bits(N+1..max)=0.  This applies (bit<N) semantics on top of disjoint
+bits.
 
-These declare class-names: NV_CLI_DBG_* NV_SUBDEV_DBG_* accordingly.
-Note: class-name-space is flat and wide, so super-generic names like
-INFO should be prefixed; who could predict what a generic V3 does
-across all modules.
+USAGES:
 
-s should be included
+A potentially typical _DISJOINT_NAMES use:
 
-adjusting the base to avoid each other, and the 0-10
-already mapped to drm-debug-categorys (just above this addition).
+  echo +DRM_UT_CORE,+DRM_UT_KMS,-DRM_UT_DRIVER,-DRM_UT_ATOMIC \
+       > /sys/module/drm/parameters/debug_catnames
 
-In nvkm/core/debug.h, add enums to match the names, with initial
-values to match the bases.
+A standard _LEVEL_NAMES use, with one class, that sets all in the
+class-map according to (x<y):
 
-In nvkm/core/subdev.h, alter (recently added) nvkm_drmdbg_() to use
-NV_SUBDEV_DBG_* instead of NV_DBG_*.
+  : problem seen
+  echo +L7 > /sys/module/test_dynamic_debug/parameters/p_level_names
+  : problem solved
+  echo -L1 > /sys/module/test_dynamic_debug/parameters/p_level_names
 
-NB: in both classmaps, Ive left FATAL..WARN out, they're not really
-optional the way INFO..SPAM are; dyndbg shouldn't be able to turn them off.
+Note this artifact:
 
-bash-5.1# modprobe nouveau
-[  966.107833] dyndbg:   3 debug prints in module wmi
-[  966.342188] dyndbg: class[0]: module:nouveau base:15 len:5 ty:1
-[  966.342873] dyndbg:  15: 0 NV_SUBDEV_DBG_OFF
-[  966.343352] dyndbg:  16: 1 NV_SUBDEV_DBG_INFO
-[  966.343912] dyndbg:  17: 2 NV_SUBDEV_DBG_DEBUG
-[  966.344443] dyndbg:  18: 3 NV_SUBDEV_DBG_TRACE
-[  966.344938] dyndbg:  19: 4 NV_SUBDEV_DBG_SPAM
-[  966.345402] dyndbg: class[1]: module:nouveau base:10 len:5 ty:1
-[  966.346011] dyndbg:  10: 0 NV_CLI_DBG_OFF
-[  966.346477] dyndbg:  11: 1 NV_CLI_DBG_INFO
-[  966.346989] dyndbg:  12: 2 NV_CLI_DBG_DEBUG
-[  966.347442] dyndbg:  13: 3 NV_CLI_DBG_TRACE
-[  966.347875] dyndbg:  14: 4 NV_CLI_DBG_SPAM
-[  966.348284] dyndbg: class[2]: module:nouveau base:0 len:10 ty:0
-[  966.348888] dyndbg:  0: 0 DRM_UT_CORE
-[  966.349310] dyndbg:  1: 1 DRM_UT_DRIVER
-[  966.349694] dyndbg:  2: 2 DRM_UT_KMS
-[  966.350083] dyndbg:  3: 3 DRM_UT_PRIME
-[  966.350482] dyndbg:  4: 4 DRM_UT_ATOMIC
-[  966.351016] dyndbg:  5: 5 DRM_UT_VBL
-[  966.351475] dyndbg:  6: 6 DRM_UT_STATE
-[  966.351899] dyndbg:  7: 7 DRM_UT_LEASE
-[  966.352309] dyndbg:  8: 8 DRM_UT_DP
-[  966.352678] dyndbg:  9: 9 DRM_UT_DRMRES
-[  966.353104] dyndbg: module:nouveau attached 3 classes
-[  966.353759] dyndbg: 119 debug prints in module nouveau
+  : this is same as prev cmd (due to +/-)
+  echo L0 > /sys/module/test_dynamic_debug/parameters/p_level_names
 
-NOTE: it was 632 with previous commit, switching NV_DEBUG to use
-NV_SUBDEV_DBG_DEBUG instead of NV_DBG_DEBUG may be the cause.
+  : this is "even-more" off, but same wo __pr_debug_class(L0, "..").
+  echo -L0 > /sys/module/test_dynamic_debug/parameters/p_level_names
+
+A stress-test/make-work usage (kid toggling a light switch):
+
+  echo +L7,L0,L7,L0,L7,L0,L7,L0,L7,L0,L7,L0,L7 \
+       > /sys/module/test_dynamic_debug/parameters/p_level_names
+
+ddebug_apply_class_bitmap(): inside-fn, works on bitmaps, receives
+new-bits, finds diffs vs client-bitvector holding "current" state,
+and issues exec_query to commit the adjustment.
+
+param_set_dyndbg_classes(): interface fn, sends _NAMES to
+param_set_dyndbg_classnames() and returns, falls thru to handle _BITS,
+_NUM internally, and calls ddebug_apply_class_bitmap().  Finishes by
+updating state.
+
+param_set_dyndbg_classnames(): handles classnames-list in loop, calls
+ddebug_apply_class_bitmap for each, then updates state.
+
+NOTES:
+
+_LEVEL_ is overlay on _DISJOINT_; inputs are converted to a bitmask,
+and is done by callbacks.  IOW this is possible, and possibly confusing:
+
+  echo class V3 +p > control
+  echo class V1 -p > control
+
+IMO thats ok, relative verbosity is an interface property.
+
+_LEVEL_NUM maps still need class-names, even though the names are not
+usable at the sysfs interface (unlike with _NAMES style).  The names
+are the only way to >control the classes.
+
+ - It must have a "V0" name,
+   something below "V1" to turn "V1" off.
+   __pr_debug_cls(V0,..) is printk, don't do that.
+
+ - "class names" is required at the >control interface.
+ - relative levels are not enforced at >control
+
+_LEVEL_NAMES bear +/- signs, which alters the on-bit-pos by 1.  IOW,
++L2 means L0,L1,L2, and -L2 means just L0,L1.  This kinda spoils the
+readback fidelity, since the L0 bit gets turned on by any use of any
+L*, except "-L0".
+
+All the interface uncertainty here pertains to the _NAMES features.
+Nobody has actually asked for this, so its practical (if a little
+tedious) to split it out.
 
 Signed-off-by: Jim Cromie <jim.cromie@gmail.com>
 ---
- .../gpu/drm/nouveau/include/nvkm/core/debug.h | 16 +++++++++++++
- .../drm/nouveau/include/nvkm/core/subdev.h    | 17 ++++++++++----
- drivers/gpu/drm/nouveau/nouveau_drm.c         |  7 ++++++
- drivers/gpu/drm/nouveau/nvkm/core/subdev.c    | 23 +++++++++++++++++++
- 4 files changed, 59 insertions(+), 4 deletions(-)
+. drop kp->mod->name as unneeded (build-dependent) <lkp>
+. param_set_dyndbg_classnames, not _class_strings
+. DD_CLASS_TYPE_* name changes, per Jason
+. callbacks:
+  extend comments on DD_CLASS_TYPE_* handling, flow notes
+  varname changes
+. kdoc tweaks
+. add stub macro: #define KP_NAME(kp)	kp->name
+  later, add "$module." prefix when config doesn't do it
+. s/struct ddebug_classes_bitmap_param/struct ddebug_class_param/
+. fix levels state handling
 
-diff --git a/drivers/gpu/drm/nouveau/include/nvkm/core/debug.h b/drivers/gpu/drm/nouveau/include/nvkm/core/debug.h
-index b4a9c7d991ca..6a155a23a3d1 100644
---- a/drivers/gpu/drm/nouveau/include/nvkm/core/debug.h
-+++ b/drivers/gpu/drm/nouveau/include/nvkm/core/debug.h
-@@ -9,4 +9,20 @@
- #define NV_DBG_TRACE    5
- #define NV_DBG_PARANOIA 6
- #define NV_DBG_SPAM     7
+v4 had trouble where level-type's state was fouled by conversion to
+bitmap form given to apply-bitmap.  fix by:
+
+   (simplify/clarify)
+   add old-bits, new-bits to sysfs-iface&support
+   use CLASSMAP_BITMASK more
+   in param_set_dyndbg_class{es,names}():
+      move state-saving inside switches, and tailor it to type.
+      this preserves lvl-state, vs -v4 which didnt.
+
+I could "hack" in an offset, but the problem feels deeper.
+
+The root-problem may be the ambiguity wrt 0x0 > knob; per a
+input-is-assert-bitpos interpretation, it turns on bit 0.
+
+Thus far, code has avoided this ambiguity, by recommending against
+coding pr_dbg_cls(V0|L0, ""), which makes "+L0" & "-L0" equivalent,
+and "0" silent.
+
+That might be "too clever by 1/2"; accepting an int, so -1 means
+all-bits-off as well as verbosity-off, might be the better way.
+---
+ include/linux/dynamic_debug.h |  20 ++++
+ lib/dynamic_debug.c           | 218 +++++++++++++++++++++++++++++++++-
+ 2 files changed, 234 insertions(+), 4 deletions(-)
+
+diff --git a/include/linux/dynamic_debug.h b/include/linux/dynamic_debug.h
+index 46ed10682e87..956614a208a4 100644
+--- a/include/linux/dynamic_debug.h
++++ b/include/linux/dynamic_debug.h
+@@ -120,6 +120,14 @@ struct _ddebug_info {
+ 	unsigned int num_classes;
+ };
+ 
++struct ddebug_class_param {
++	union { unsigned long *bits;
++		unsigned long *lvl;
++	};
++	char flags[8];
++	const struct ddebug_class_map *map;
++};
 +
-+enum nv_cli_dbg_verbose {
-+	NV_CLI_DBG_OFF = 10,
-+	NV_CLI_DBG_INFO,
-+	NV_CLI_DBG_DEBUG,
-+	NV_CLI_DBG_TRACE,
-+	NV_CLI_DBG_SPAM
-+};
-+enum nv_subdev_dbg_verbose {
-+	NV_SUBDEV_DBG_OFF = 15,
-+	NV_SUBDEV_DBG_INFO,
-+	NV_SUBDEV_DBG_DEBUG,
-+	NV_SUBDEV_DBG_TRACE,
-+	NV_SUBDEV_DBG_SPAM
-+};
+ #if defined(CONFIG_DYNAMIC_DEBUG_CORE)
+ 
+ int ddebug_add_module(struct _ddebug_info *dyndbg, const char *modname);
+@@ -279,6 +287,10 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
+ 				   KERN_DEBUG, prefix_str, prefix_type,	\
+ 				   rowsize, groupsize, buf, len, ascii)
+ 
++struct kernel_param;
++int param_set_dyndbg_classes(const char *instr, const struct kernel_param *kp);
++int param_get_dyndbg_classes(char *buffer, const struct kernel_param *kp);
++
+ /* for test only, generally expect drm.debug style macro wrappers */
+ #define __pr_debug_cls(cls, fmt, ...) do {			\
+ 	BUILD_BUG_ON_MSG(!__builtin_constant_p(cls),		\
+@@ -325,6 +337,14 @@ static inline int ddebug_dyndbg_module_param_cb(char *param, char *val,
+ 				rowsize, groupsize, buf, len, ascii);	\
+ 	} while (0)
+ 
++struct kernel_param;
++static inline int param_set_dyndbg_classes(const char *instr, const struct kernel_param *kp)
++{ return 0; }
++static inline int param_get_dyndbg_classes(char *buffer, const struct kernel_param *kp)
++{ return 0; }
++
+ #endif /* !CONFIG_DYNAMIC_DEBUG_CORE */
+ 
++extern const struct kernel_param_ops param_ops_dyndbg_classes;
 +
  #endif
-diff --git a/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h b/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
-index 065d07ccea87..ce33c82e5c75 100644
---- a/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
-+++ b/drivers/gpu/drm/nouveau/include/nvkm/core/subdev.h
-@@ -2,6 +2,7 @@
- #ifndef __NVKM_SUBDEV_H__
- #define __NVKM_SUBDEV_H__
- #include <core/device.h>
-+#include <core/debug.h>
- 
- enum nvkm_subdev_type {
- #define NVKM_LAYOUT_ONCE(t,s,p,...) t,
-@@ -18,7 +19,7 @@ struct nvkm_subdev {
- 	enum nvkm_subdev_type type;
- 	int inst;
- 	char name[16];
--	u32 debug;
-+	unsigned long debug;
- 	struct list_head head;
- 
- 	void **pself;
-@@ -59,9 +60,17 @@ void nvkm_subdev_intr(struct nvkm_subdev *);
- #define nvkm_error(s,f,a...) nvkm_printk((s), ERROR,    err, f, ##a)
- #define nvkm_warn(s,f,a...)  nvkm_printk((s),  WARN, notice, f, ##a)
- #define nvkm_info(s,f,a...)  nvkm_printk((s),  INFO,   info, f, ##a)
--#define nvkm_debug(s,f,a...) nvkm_printk((s), DEBUG,    dbg, f, ##a)
--#define nvkm_trace(s,f,a...) nvkm_printk((s), TRACE,    dbg, f, ##a)
--#define nvkm_spam(s,f,a...)  nvkm_printk((s),  SPAM,    dbg, f, ##a)
-+
-+#define nvkm_drmdbg__(s,l,p,f,a...) do {				\
-+	const struct nvkm_subdev *_subdev = (s);			\
-+	if (CONFIG_NOUVEAU_DEBUG >= (l) && _subdev->debug >= (l))	\
-+		dev_dbg(_subdev->device->dev, "%s: "f, _subdev->name, ##a); \
-+} while(0)
-+#define nvkm_drmdbg_(s,l,f,a...) nvkm_drmdbg__((s), NV_SUBDEV_DBG_##l, dbg, f, ##a)
-+#define nvkm_debug(s,f,a...) nvkm_drmdbg_((s), DEBUG, f, ##a)
-+#define nvkm_trace(s,f,a...) nvkm_drmdbg_((s), TRACE, f, ##a)
-+#define nvkm_spam(s,f,a...)  nvkm_drmdbg_((s),  SPAM, f, ##a)
- 
- #define nvkm_error_ratelimited(s,f,a...) nvkm_printk((s), ERROR, err_ratelimited, f, ##a)
-+
- #endif
-diff --git a/drivers/gpu/drm/nouveau/nouveau_drm.c b/drivers/gpu/drm/nouveau/nouveau_drm.c
-index fd99ec0f4257..864750451dc8 100644
---- a/drivers/gpu/drm/nouveau/nouveau_drm.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_drm.c
-@@ -83,6 +83,13 @@ DECLARE_DYNDBG_CLASSMAP(drm_debug_classes, DD_CLASS_TYPE_DISJOINT_BITS, 0,
- 			"DRM_UT_DP",
- 			"DRM_UT_DRMRES");
- 
-+DECLARE_DYNDBG_CLASSMAP(nv_cli_debug_verbose, DD_CLASS_TYPE_LEVEL_NUM, 10,
-+			"NV_CLI_DBG_OFF",
-+			"NV_CLI_DBG_INFO",
-+			"NV_CLI_DBG_DEBUG",
-+			"NV_CLI_DBG_TRACE",
-+			"NV_CLI_DBG_SPAM");
-+
- MODULE_PARM_DESC(config, "option string to pass to driver core");
- static char *nouveau_config;
- module_param_named(config, nouveau_config, charp, 0400);
-diff --git a/drivers/gpu/drm/nouveau/nvkm/core/subdev.c b/drivers/gpu/drm/nouveau/nvkm/core/subdev.c
-index a74b7acb6832..20cd99cce2a4 100644
---- a/drivers/gpu/drm/nouveau/nvkm/core/subdev.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/core/subdev.c
-@@ -26,6 +26,27 @@
- #include <core/option.h>
- #include <subdev/mc.h>
- 
-+#include <linux/dynamic_debug.h>
-+#include <linux/module.h>
-+
-+#define DEBUG
-+
-+DECLARE_DYNDBG_CLASSMAP(nv_subdev_debug_verbose, DD_CLASS_TYPE_LEVEL_NAMES, 15,
-+			"NV_SUBDEV_DBG_OFF",
-+			"NV_SUBDEV_DBG_INFO",
-+			"NV_SUBDEV_DBG_DEBUG",
-+			"NV_SUBDEV_DBG_TRACE",
-+			"NV_SUBDEV_DBG_SPAM");
-+
-+static struct ddebug_class_param nv_subdev_verbose = {
-+	.bits = NULL, // wants &_subdev->debug
-+	.flags = "p",
-+	.map = &nv_subdev_debug_verbose,
-+};
-+module_param_cb(debug_subdev, &param_ops_dyndbg_classes, &nv_subdev_verbose, 0600);
-+
-+
-+
- const char *
- nvkm_subdev_type[NVKM_SUBDEV_NR] = {
- #define NVKM_LAYOUT_ONCE(type,data,ptr,...) [type] = #ptr,
-@@ -180,6 +201,8 @@ nvkm_subdev_ctor(const struct nvkm_subdev_func *func, struct nvkm_device *device
- 	else
- 		strscpy(subdev->name, nvkm_subdev_type[type], sizeof(subdev->name));
- 	subdev->debug = nvkm_dbgopt(device->dbgopt, subdev->name);
-+	nv_subdev_verbose.bits = &subdev->debug;
-+	pr_debug("updated bitmap: %px\n", &nv_subdev_verbose.bits);
- 	list_add_tail(&subdev->head, &device->subdev);
+diff --git a/lib/dynamic_debug.c b/lib/dynamic_debug.c
+index eb410b412f0d..c41e22d850e0 100644
+--- a/lib/dynamic_debug.c
++++ b/lib/dynamic_debug.c
+@@ -596,6 +596,218 @@ static int ddebug_exec_queries(char *query, const char *modname)
+ 	return nfound;
  }
  
++/* apply a new bitmap to the sys-knob's current bit-state */
++static int ddebug_apply_class_bitmap(const struct ddebug_class_param *dcp,
++				     unsigned long *new_bits, unsigned long *old_bits)
++{
++#define QUERY_SIZE 128
++	char query[QUERY_SIZE];
++	const struct ddebug_class_map *map = dcp->map;
++	int matches = 0;
++	int bi, ct;
++
++	v2pr_info("apply: 0x%lx to: 0x%lx\n", *new_bits, *old_bits);
++
++	for (bi = 0; bi < map->length; bi++) {
++		if (test_bit(bi, new_bits) == test_bit(bi, old_bits))
++			continue;
++
++		snprintf(query, QUERY_SIZE, "class %s %c%s", map->class_names[bi],
++			 test_bit(bi, new_bits) ? '+' : '-', dcp->flags);
++
++		ct = ddebug_exec_queries(query, NULL);
++		matches += ct;
++
++		v2pr_info("bit_%d: %d matches on class: %s -> 0x%lx\n", bi,
++			  ct, map->class_names[bi], *new_bits);
++	}
++	return matches;
++}
++
++/* stub to later conditionally add "$module." prefix where not already done */
++#define KP_NAME(kp)	kp->name
++
++#define CLASSMAP_BITMASK(width) ((1UL << (width)) - 1)
++
++/* accept comma-separated-list of [+-] classnames */
++static int param_set_dyndbg_classnames(const char *instr, const struct kernel_param *kp)
++{
++	const struct ddebug_class_param *dcp = kp->arg;
++	const struct ddebug_class_map *map = dcp->map;
++	unsigned long curr_bits, old_bits;
++	char *cl_str, *p, *tmp;
++	int cls_id, totct = 0;
++	bool wanted;
++
++	cl_str = tmp = kstrdup(instr, GFP_KERNEL);
++	p = strchr(cl_str, '\n');
++	if (p)
++		*p = '\0';
++
++	/* start with previously set state-bits, then modify */
++	curr_bits = old_bits = *dcp->bits;
++	vpr_info("\"%s\" > %s:0x%lx\n", cl_str, KP_NAME(kp), curr_bits);
++
++	for (; cl_str; cl_str = p) {
++		p = strchr(cl_str, ',');
++		if (p)
++			*p++ = '\0';
++
++		if (*cl_str == '-') {
++			wanted = false;
++			cl_str++;
++		} else {
++			wanted = true;
++			if (*cl_str == '+')
++				cl_str++;
++		}
++		cls_id = match_string(map->class_names, map->length, cl_str);
++		if (cls_id < 0) {
++			pr_err("%s unknown to %s\n", cl_str, KP_NAME(kp));
++			continue;
++		}
++
++		/* have one or more valid class_ids of one *_NAMES type */
++		switch (map->map_type) {
++		case DD_CLASS_TYPE_DISJOINT_NAMES:
++			/* the +/- pertains to a single bit */
++			if (test_bit(cls_id, &curr_bits) == wanted) {
++				v3pr_info("no change on %s\n", cl_str);
++				continue;
++			}
++			curr_bits ^= BIT(cls_id);
++			totct += ddebug_apply_class_bitmap(dcp, &curr_bits, dcp->bits);
++			*dcp->bits = curr_bits;
++			v2pr_info("%s: changed bit %d:%s\n", KP_NAME(kp), cls_id,
++				  map->class_names[cls_id]);
++			break;
++		case DD_CLASS_TYPE_LEVEL_NAMES:
++			/* cls_id = N in 0..max. wanted +/- determines N or N-1 */
++			old_bits = CLASSMAP_BITMASK(*dcp->lvl);
++			curr_bits = CLASSMAP_BITMASK(cls_id + (wanted ? 1 : 0 ));
++
++			totct += ddebug_apply_class_bitmap(dcp, &curr_bits, &old_bits);
++			*dcp->lvl = (cls_id + (wanted ? 1 : 0));
++			v2pr_info("%s: changed bit-%d: \"%s\" %lx->%lx\n", KP_NAME(kp), cls_id,
++				  map->class_names[cls_id], old_bits, curr_bits);
++			break;
++		default:
++			pr_err("illegal map-type value %d\n", map->map_type);
++		}
++	}
++	kfree(tmp);
++	vpr_info("total matches: %d\n", totct);
++	return 0;
++}
++
++/**
++ * param_set_dyndbg_classes - class FOO >control
++ * @instr: string echo>d to sysfs, input depends on map_type
++ * @kp:    kp->arg has state: bits/lvl, map, map_type
++ *
++ * Enable/disable prdbgs by their class, as given in the arguments to
++ * DECLARE_DYNDBG_CLASSMAP.  For LEVEL map-types, enforce relative
++ * levels by bitpos.
++ *
++ * Returns: 0 or <0 if error.
++ */
++int param_set_dyndbg_classes(const char *instr, const struct kernel_param *kp)
++{
++	const struct ddebug_class_param *dcp = kp->arg;
++	const struct ddebug_class_map *map = dcp->map;
++	unsigned long inrep, new_bits, old_bits;
++	int rc, totct = 0;
++
++	switch (map->map_type) {
++
++	case DD_CLASS_TYPE_DISJOINT_NAMES:
++	case DD_CLASS_TYPE_LEVEL_NAMES:
++		/* handle [+-]classnames list separately, we are done here */
++		return param_set_dyndbg_classnames(instr, kp);
++
++	case DD_CLASS_TYPE_DISJOINT_BITS:
++	case DD_CLASS_TYPE_LEVEL_NUM:
++		/* numeric input, accept and fall-thru */
++		rc = kstrtoul(instr, 0, &inrep);
++		if (rc) {
++			pr_err("expecting numeric input: %s > %s\n", instr, KP_NAME(kp));
++			return -EINVAL;
++		}
++		break;
++	default:
++		pr_err("%s: bad map type: %d\n", KP_NAME(kp), map->map_type);
++		return -EINVAL;
++	}
++
++	/* only _BITS,_NUM (numeric) map-types get here */
++	switch (map->map_type) {
++	case DD_CLASS_TYPE_DISJOINT_BITS:
++		/* expect bits. mask and warn if too many */
++		if (inrep & ~CLASSMAP_BITMASK(map->length)) {
++			pr_warn("%s: input: 0x%lx exceeds mask: 0x%lx, masking\n",
++				KP_NAME(kp), inrep, CLASSMAP_BITMASK(map->length));
++			inrep &= CLASSMAP_BITMASK(map->length);
++		}
++		v2pr_info("bits:%lx > %s\n", inrep, KP_NAME(kp));
++		totct += ddebug_apply_class_bitmap(dcp, &inrep, dcp->bits);
++		*dcp->bits = inrep;
++		break;
++	case DD_CLASS_TYPE_LEVEL_NUM:
++		/* input is bitpos, of highest verbosity to be enabled */
++		if (inrep > map->length) {
++			pr_warn("%s: level:%ld exceeds max:%d, clamping\n",
++				KP_NAME(kp), inrep, map->length);
++			inrep = map->length;
++		}
++		old_bits = CLASSMAP_BITMASK(*dcp->lvl);
++		new_bits = CLASSMAP_BITMASK(inrep);
++		v2pr_info("lvl:%ld bits:0x%lx > %s\n", inrep, new_bits, KP_NAME(kp));
++		totct += ddebug_apply_class_bitmap(dcp, &new_bits, &old_bits);
++		*dcp->lvl = inrep;
++		break;
++	default:
++		pr_warn("%s: bad map type: %d\n", KP_NAME(kp), map->map_type);
++	}
++	vpr_info("%s: total matches: %d\n", KP_NAME(kp), totct);
++	return 0;
++}
++EXPORT_SYMBOL(param_set_dyndbg_classes);
++
++/**
++ * param_get_dyndbg_classes - classes reader
++ * @buffer: string description of controlled bits -> classes
++ * @kp:     kp->arg has state: bits, map
++ *
++ * Reads last written state, underlying prdbg state may have been
++ * altered by direct >control.  Displays 0x for DISJOINT, 0-N for
++ * LEVEL Returns: #chars written or <0 on error
++ */
++int param_get_dyndbg_classes(char *buffer, const struct kernel_param *kp)
++{
++	const struct ddebug_class_param *dcp = kp->arg;
++	const struct ddebug_class_map *map = dcp->map;
++
++	switch (map->map_type) {
++
++	case DD_CLASS_TYPE_DISJOINT_NAMES:
++	case DD_CLASS_TYPE_DISJOINT_BITS:
++		return scnprintf(buffer, PAGE_SIZE, "0x%lx\n", *dcp->bits);
++
++	case DD_CLASS_TYPE_LEVEL_NAMES:
++	case DD_CLASS_TYPE_LEVEL_NUM:
++		return scnprintf(buffer, PAGE_SIZE, "%ld\n", *dcp->lvl);
++	default:
++		return -1;
++	}
++}
++EXPORT_SYMBOL(param_get_dyndbg_classes);
++
++const struct kernel_param_ops param_ops_dyndbg_classes = {
++	.set = param_set_dyndbg_classes,
++	.get = param_get_dyndbg_classes,
++};
++EXPORT_SYMBOL(param_ops_dyndbg_classes);
++
+ #define PREFIX_SIZE 64
+ 
+ static int remaining(int wrote)
+@@ -1037,13 +1249,11 @@ static int __ddebug_add_module(struct _ddebug_info *di, unsigned int base,
+ 	dt->ddebugs = di->descs;
+ 	dt->num_ddebugs = di->num_descs;
+ 
+-	INIT_LIST_HEAD(&dt->link);
+-
+ 	INIT_LIST_HEAD(&dt->link);
+ 	INIT_LIST_HEAD(&dt->maps);
+ 
+-	if (classes && num_classes)
+-		ddebug_attach_module_classes(dt, classes, num_classes);
++	if (di->classes && di->num_classes)
++		ddebug_attach_module_classes(dt, di->classes, di->num_classes);
+ 
+ 	mutex_lock(&ddebug_lock);
+ 	list_add_tail(&dt->link, &ddebug_tables);
 -- 
 2.37.1
 
