@@ -2,406 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E0E7C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 07:08:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B337C19F2D
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 07:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240180AbiHEHIB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 03:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42122 "EHLO
+        id S240279AbiHEHIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 03:08:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240336AbiHEHH0 (ORCPT
+        with ESMTP id S236103AbiHEHHb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 03:07:26 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5B474E22;
-        Fri,  5 Aug 2022 00:07:10 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id w10so1949094plq.0;
-        Fri, 05 Aug 2022 00:07:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=X+1p8Vs8tx/jVm1av3GnvFEpJSM9wBL0GmPT+mI4Y5s=;
-        b=NIHb8Vu95awvqUMTo2/KvlyiTNJ7UzNeiU2V+lCOfMlgScn7x7Gw+ODY2xoZ+/kZI+
-         h1X0Squl4H9926iVMpcMmPLFXIn0tz0CK4MmBAYRVK1E7H2XaFcGVCh/FEza/Aujq2yu
-         08SQNdHEqI3G2YDxKHUKYY65p4AOKn11ri9Bmw0vEtSWQWq4kzvt32bbb/tKNEhpBpnL
-         qwrdwuCtB753EhR0ywNnYegucMgOc9zxY2MAPRRqdCxvn7Uh1swGl8dMu+3kaEMKvKmK
-         1LXD/o1xN7iCraSxJb90wYux8CJmcg0+Bs+aM+0M+UhETrsdG9N0EbPufnyTqU54yrWC
-         jOpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=X+1p8Vs8tx/jVm1av3GnvFEpJSM9wBL0GmPT+mI4Y5s=;
-        b=XBNWh4S5TL5crmRbR2kKV4yCFFYwJkInfsXFsgCSifRDxl5JedlMq73WIugqLrokV0
-         T0mjZhXfN8q6QlnD4clNB5rVqYC4wcbtuL79AXrDZhk8McsYIq8ypeJOvsC2kffrKKgW
-         bS0cHPYhQlytm2vUM74KIp20bVrlskK25dZLp5NMY3WGCJCAyRqqXoVaD/SHLLeiHsOk
-         9rxi8m0RjZm6FGYpKxmT6TiTeNT12k5TK1own+iaA6UbEj89aUK0vhlt9gpmdM9ZSATQ
-         FVkub4vjInIotIMC/InBtYRb/jpmD17h6D5c4wr9tppQbFyhxvol+jAWwpL0+nnq6Fma
-         Q5fw==
-X-Gm-Message-State: ACgBeo3m6Ij6f8QJW1IsIdA1xZf39xp+jUCX9KqkW8nHRORUKCzjkAev
-        N5NiqrIdoOGr6IttxtIEaq8=
-X-Google-Smtp-Source: AA6agR6G0c2kdEwmzw6LnvUYbCgC1yPY+kZr/3B2/lEEPGNs4ClV7SHSDjQsyX3QjudsHcrAARTl5g==
-X-Received: by 2002:a17:90b:3511:b0:1f4:e0cd:1e04 with SMTP id ls17-20020a17090b351100b001f4e0cd1e04mr15011399pjb.154.1659683230545;
-        Fri, 05 Aug 2022 00:07:10 -0700 (PDT)
-Received: from RD-3580-24288.rt.l (42-72-229-62.emome-ip.hinet.net. [42.72.229.62])
-        by smtp.gmail.com with ESMTPSA id i5-20020a056a00224500b00525343b5047sm2191616pfu.76.2022.08.05.00.07.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 00:07:10 -0700 (PDT)
-From:   ChiaEn Wu <peterwu.pub@gmail.com>
-To:     lee.jones@linaro.org, daniel.thompson@linaro.org,
-        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        sre@kernel.org, chunfeng.yun@mediatek.com,
-        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
-        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
-        heikki.krogerus@linux.intel.com, deller@gmx.de,
-        andy.shevchenko@gmail.com
-Cc:     chiaen_wu@richtek.com, alice_chen@richtek.com,
-        cy_huang@richtek.com, dri-devel@lists.freedesktop.org,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        szunichen@gmail.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v7 06/13] dt-bindings: mfd: Add MediaTek MT6370
-Date:   Fri,  5 Aug 2022 15:06:03 +0800
-Message-Id: <20220805070610.3516-7-peterwu.pub@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220805070610.3516-1-peterwu.pub@gmail.com>
-References: <20220805070610.3516-1-peterwu.pub@gmail.com>
+        Fri, 5 Aug 2022 03:07:31 -0400
+Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073F974DED
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 00:07:12 -0700 (PDT)
+X-QQ-mid: bizesmtp89t1659683019t5llqh8r
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 05 Aug 2022 15:03:33 +0800 (CST)
+X-QQ-SSF: 01400000002000G0T000B00A0000000
+X-QQ-FEAT: CR3LFp2JE4nvt+CFfh6xyx180K17RHFc6YiAjlUGcQVRQd6OEQSQ+oqEsYYlF
+        BzHsAs2Y2sGZMguYibGNtUqXHkEOGrnwcXB0iTL0cRlzFd2BLtt1ciXkFS8yZrj9ETx3v6g
+        8SQMTT/n1h+UgtiDnu0+Tj11Fh+pVmie8sLgWtWIqD79AE5nDdzFHzCtSALrIWJX1XaSQ6j
+        0rd7kE4uPjhLnSxacTklwDrkpoIw6g5JMSMTHAfdKVk/OLuTzz/KTAsrw3nHXE2QA0b0tiA
+        dZi5SpqCwaqU20iWKfLyolYGBqZftUIr+sHaJbIyME+u0LbkBrRmdOl8+ToK6H8sU2y3Muy
+        x+29St9cUFt82bMVEQPloywbXe/UoI8HpSo4LN4QCvopB9UF+75LDSwU6MGOhMjELASJ1fT
+X-QQ-GoodBg: 2
+From:   Meng Tang <tangmeng@uniontech.com>
+To:     perex@perex.cz, tiwai@suse.com
+Cc:     tcrawford@system76.com, wse@tuxedocomputers.com,
+        kai.heng.feng@canonical.com, tanureal@opensource.cirrus.com,
+        cam@neo-zeon.de, kailang@realtek.com,
+        sbinding@opensource.cirrus.com, andy.chi@canonical.com,
+        yong.wu@mediatek.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>
+Subject: [PATCH] ALSA: hda/realtek: Add quirk for another Asus K42JZ model
+Date:   Fri,  5 Aug 2022 15:03:31 +0800
+Message-Id: <20220805070331.13743-1-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybglogicsvr:qybglogicsvr7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChiYuan Huang <cy_huang@richtek.com>
+There is another Asus K42JZ model with the PCI SSID 1043:1313
+that requires the quirk ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE.
+Add the corresponding entry to the quirk table.
 
-Add MediaTek MT6370 binding documentation.
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 ---
- .../devicetree/bindings/mfd/mediatek,mt6370.yaml   | 280 +++++++++++++++++++++
- include/dt-bindings/iio/adc/mediatek,mt6370_adc.h  |  18 ++
- 2 files changed, 298 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
- create mode 100644 include/dt-bindings/iio/adc/mediatek,mt6370_adc.h
+ sound/pci/hda/patch_realtek.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml b/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
-new file mode 100644
-index 0000000..410e2d4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
-@@ -0,0 +1,280 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/mediatek,mt6370.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek MT6370 SubPMIC
-+
-+maintainers:
-+  - ChiYuan Huang <cy_huang@richtek.com>
-+
-+description: |
-+  MT6370 is a highly-integrated smart power management IC, which includes a
-+  single cell Li-Ion/Li-Polymer switching battery charger, a USB Type-C &
-+  Power Delivery (PD) controller, dual flash LED current sources, a RGB LED
-+  driver, a backlight WLED driver, a display bias driver and a general LDO for
-+  portable devices.
-+
-+properties:
-+  compatible:
-+    const: mediatek,mt6370
-+
-+  reg:
-+    maxItems: 1
-+
-+  wakeup-source: true
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  interrupt-controller: true
-+
-+  "#interrupt-cells":
-+    const: 1
-+
-+  adc:
-+    type: object
-+    description: |
-+      Provides 9 channels for system monitoring, including VBUSDIV5 (lower
-+      accuracy, higher measure range), VBUSDIV2 (higher accuracy, lower
-+      measure range), VBAT, VSYS, CHG_VDDP, TS_BAT, IBUS, IBAT, and TEMP_JC.
-+
-+    properties:
-+      compatible:
-+        const: mediatek,mt6370-adc
-+
-+      "#io-channel-cells":
-+        const: 1
-+
-+    required:
-+      - compatible
-+      - "#io-channel-cells"
-+
-+  backlight:
-+    type: object
-+    $ref: /schemas/leds/backlight/mediatek,mt6370-backlight.yaml#
-+
-+  charger:
-+    type: object
-+    $ref: /schemas/power/supply/mediatek,mt6370-charger.yaml#
-+
-+  tcpc:
-+    type: object
-+    $ref: /schemas/usb/mediatek,mt6370-tcpc.yaml#
-+
-+  indicator:
-+    type: object
-+    $ref: /schemas/leds/mediatek,mt6370-indicator.yaml#
-+
-+  flashlight:
-+    type: object
-+    $ref: /schemas/leds/mediatek,mt6370-flashlight.yaml#
-+
-+  regulators:
-+    type: object
-+    description: |
-+      List all supported regulators, which support the control for DisplayBias
-+      voltages and one general purpose LDO which commonly used to drive the
-+      vibrator.
-+
-+    patternProperties:
-+      "^(dsvbst|vibldo)$":
-+        $ref: /schemas/regulator/regulator.yaml#
-+        type: object
-+        unevaluatedProperties: false
-+
-+      "^(dsvpos|dsvneg)$":
-+        $ref: /schemas/regulator/regulator.yaml#
-+        type: object
-+        unevaluatedProperties: false
-+
-+        properties:
-+          enable-gpios:
-+            maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - interrupt-controller
-+  - "#interrupt-cells"
-+  - regulators
-+  - adc
-+  - backlight
-+  - indicator
-+  - tcpc
-+  - charger
-+  - flashlight
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/leds/common.h>
-+    #include <dt-bindings/iio/adc/mediatek,mt6370_adc.h>
-+    #include <dt-bindings/usb/pd.h>
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+        pmic@34 {
-+        compatible = "mediatek,mt6370";
-+        reg = <0x34>;
-+        wakeup-source;
-+        interrupts-extended = <&gpio26 3 IRQ_TYPE_LEVEL_LOW>;
-+        interrupt-controller;
-+        #interrupt-cells = <1>;
-+
-+        mt6370_adc: adc {
-+          compatible = "mediatek,mt6370-adc";
-+          #io-channel-cells = <1>;
-+        };
-+
-+        backlight {
-+          compatible = "mediatek,mt6370-backlight";
-+          mediatek,bled-channel-use = /bits/ 8 <15>;
-+        };
-+
-+        charger {
-+          compatible = "mediatek,mt6370-charger";
-+          interrupts = <48>, <68>, <6>;
-+          interrupt-names = "attach_i", "uvp_d_evt", "mivr";
-+          io-channels = <&mt6370_adc MT6370_CHAN_IBUS>;
-+
-+          mt6370_otg_vbus: usb-otg-vbus-regulator {
-+            regulator-name = "mt6370-usb-otg-vbus";
-+            regulator-min-microvolt = <4350000>;
-+            regulator-max-microvolt = <5800000>;
-+            regulator-min-microamp = <500000>;
-+            regulator-max-microamp = <3000000>;
-+          };
-+        };
-+
-+        indicator {
-+          compatible = "mediatek,mt6370-indicator";
-+          #address-cells = <1>;
-+          #size-cells = <0>;
-+
-+          multi-led@0 {
-+            reg = <0>;
-+            function = LED_FUNCTION_INDICATOR;
-+            color = <LED_COLOR_ID_RGB>;
-+            led-max-microamp = <24000>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+            led@0 {
-+              reg = <0>;
-+              color = <LED_COLOR_ID_RED>;
-+            };
-+            led@1 {
-+              reg = <1>;
-+              color = <LED_COLOR_ID_GREEN>;
-+            };
-+            led@2 {
-+              reg = <2>;
-+              color = <LED_COLOR_ID_BLUE>;
-+            };
-+          };
-+          led@3 {
-+            reg = <3>;
-+            function = LED_FUNCTION_INDICATOR;
-+            color = <LED_COLOR_ID_WHITE>;
-+            led-max-microamp = <6000>;
-+          };
-+        };
-+
-+        flashlight {
-+          compatible = "mediatek,mt6370-flashlight";
-+          #address-cells = <1>;
-+          #size-cells = <0>;
-+          led@0 {
-+            reg = <0>;
-+            led-sources = <0>;
-+            function = LED_FUNCTION_FLASH;
-+            color = <LED_COLOR_ID_WHITE>;
-+            function-enumerator = <1>;
-+            led-max-microamp = <200000>;
-+            flash-max-microamp = <500000>;
-+            flash-max-timeout-us = <1248000>;
-+          };
-+          led@1 {
-+            reg = <1>;
-+            led-sources = <1>;
-+            function = LED_FUNCTION_FLASH;
-+            color = <LED_COLOR_ID_WHITE>;
-+            function-enumerator = <2>;
-+            led-max-microamp = <200000>;
-+            flash-max-microamp = <500000>;
-+            flash-max-timeout-us = <1248000>;
-+          };
-+        };
-+
-+        tcpc {
-+          compatible = "mediatek,mt6370-tcpc";
-+          interrupts-extended = <&gpio26 4 IRQ_TYPE_LEVEL_LOW>;
-+
-+          connector {
-+            compatible = "usb-c-connector";
-+            label = "USB-C";
-+            vbus-supply = <&mt6370_otg_vbus>;
-+            data-role = "dual";
-+            power-role = "dual";
-+            try-power-role = "sink";
-+            source-pdos = <PDO_FIXED(5000, 1000, PDO_FIXED_DUAL_ROLE | PDO_FIXED_DATA_SWAP)>;
-+            sink-pdos = <PDO_FIXED(5000, 2000, PDO_FIXED_DUAL_ROLE | PDO_FIXED_DATA_SWAP)>;
-+            op-sink-microwatt = <10000000>;
-+
-+            ports {
-+              #address-cells = <1>;
-+              #size-cells = <0>;
-+
-+              port@0 {
-+                reg = <0>;
-+                endpoint {
-+                  remote-endpoint = <&usb_hs>;
-+                };
-+              };
-+              port@1 {
-+                reg = <1>;
-+                endpoint {
-+                  remote-endpoint = <&usb_ss>;
-+                };
-+              };
-+              port@2 {
-+                reg = <2>;
-+                endpoint {
-+                  remote-endpoint = <&dp_aux>;
-+                };
-+              };
-+            };
-+          };
-+        };
-+
-+        regulators {
-+          dsvbst {
-+            regulator-name = "mt6370-dsv-vbst";
-+            regulator-min-microvolt = <4000000>;
-+            regulator-max-microvolt = <6200000>;
-+          };
-+          dsvpos {
-+            regulator-name = "mt6370-dsv-vpos";
-+            regulator-min-microvolt = <4000000>;
-+            regulator-max-microvolt = <6000000>;
-+            regulator-boot-on;
-+          };
-+          dsvneg {
-+            regulator-name = "mt6370-dsv-vneg";
-+            regulator-min-microvolt = <4000000>;
-+            regulator-max-microvolt = <6000000>;
-+            regulator-boot-on;
-+          };
-+          vibldo {
-+            regulator-name = "mt6370-vib-ldo";
-+            regulator-min-microvolt = <1600000>;
-+            regulator-max-microvolt = <4000000>;
-+          };
-+        };
-+      };
-+    };
-diff --git a/include/dt-bindings/iio/adc/mediatek,mt6370_adc.h b/include/dt-bindings/iio/adc/mediatek,mt6370_adc.h
-new file mode 100644
-index 0000000..6ee7255
---- /dev/null
-+++ b/include/dt-bindings/iio/adc/mediatek,mt6370_adc.h
-@@ -0,0 +1,18 @@
-+/* SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause */
-+
-+#ifndef __DT_BINDINGS_MEDIATEK_MT6370_ADC_H__
-+#define __DT_BINDINGS_MEDIATEK_MT6370_ADC_H__
-+
-+/* ADC Channel Index */
-+#define MT6370_CHAN_VBUSDIV5	0
-+#define MT6370_CHAN_VBUSDIV2	1
-+#define MT6370_CHAN_VSYS	2
-+#define MT6370_CHAN_VBAT	3
-+#define MT6370_CHAN_TS_BAT	4
-+#define MT6370_CHAN_IBUS	5
-+#define MT6370_CHAN_IBAT	6
-+#define MT6370_CHAN_CHG_VDDP	7
-+#define MT6370_CHAN_TEMP_JC	8
-+#define MT6370_CHAN_MAX		9
-+
-+#endif
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 383a814b8539..4461237a3474 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -6842,6 +6842,7 @@ enum {
+ 	ALC269_FIXUP_LIMIT_INT_MIC_BOOST,
+ 	ALC269VB_FIXUP_ASUS_ZENBOOK,
+ 	ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A,
++	ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE,
+ 	ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED,
+ 	ALC269VB_FIXUP_ORDISSIMO_EVE2,
+ 	ALC283_FIXUP_CHROME_BOOK,
+@@ -7427,6 +7428,15 @@ static const struct hda_fixup alc269_fixups[] = {
+ 		.chained = true,
+ 		.chain_id = ALC269VB_FIXUP_ASUS_ZENBOOK,
+ 	},
++	[ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE] = {
++		.type = HDA_FIXUP_PINS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x18, 0x01a110f0 },  /* use as headset mic */
++			{ }
++		},
++		.chained = true,
++		.chain_id = ALC269_FIXUP_HEADSET_MIC
++	}
+ 	[ALC269_FIXUP_LIMIT_INT_MIC_BOOST_MUTE_LED] = {
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = alc269_fixup_limit_int_mic_boost,
+@@ -9124,6 +9134,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x1043, 0x12a0, "ASUS X441UV", ALC233_FIXUP_EAPD_COEF_AND_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1043, 0x12e0, "ASUS X541SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x12f0, "ASUS X541UV", ALC256_FIXUP_ASUS_MIC),
++	SND_PCI_QUIRK(0x1043, 0x1313, "Asus K42JZ", ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1043, 0x13b0, "ASUS Z550SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_ASUS_ZENBOOK),
+ 	SND_PCI_QUIRK(0x1043, 0x1517, "Asus Zenbook UX31A", ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A),
 -- 
-2.7.4
+2.20.1
 
