@@ -2,197 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5973C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 12:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C92C25B08
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 12:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240771AbiHEMes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 08:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38986 "EHLO
+        id S240628AbiHEMmu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 08:42:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237907AbiHEMer (ORCPT
+        with ESMTP id S233513AbiHEMms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 08:34:47 -0400
+        Fri, 5 Aug 2022 08:42:48 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF4BF29CAB
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 05:34:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EDA81AD98
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 05:42:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659702881;
+        s=mimecast20190719; t=1659703366;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Ib0O7MHSJ2oohbcHnWP0JL7pMlC2ROClT094HDqHBVs=;
-        b=d0p+4/ZBcpY5OQQsZ0Wv2dFuApR/VGor4aNS6TuFQzh+e/twQUhIbqCiQ7tIivF0zTZvy/
-        aqFPJkSV1dc36QekD/XYeE+BYUBkevwfsV2iaZKweEkd878PvVZ1zXm2FE3O1DL4oY/FV7
-        nXe3JFOC039Pt0sKO5+U06Oo2tNXSEY=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=JbNzuUNlONNPGBpeyjfKi2f8mYMJka6a1j60uZitIeU=;
+        b=dyk/NYJrRNWrdFm4ZIvFlYQ8ihhmex0RsQd1hhHfpU5nUxm87qNlXN0mtyVuLtxt8pxFzC
+        oTQe96/VUEBSTkFT62qd1mKSP3/deAEYikF5iyqLQa4TFsdocIP4tDwPSdJKhcOUQomQ49
+        Xrnys8lFctUyKlv44ATaifUj4RS84e0=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-588-B14gVHkzPDSsh4lXrH6L_w-1; Fri, 05 Aug 2022 08:34:37 -0400
-X-MC-Unique: B14gVHkzPDSsh4lXrH6L_w-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 66A30802E5D;
-        Fri,  5 Aug 2022 12:34:37 +0000 (UTC)
-Received: from localhost (ovpn-12-174.pek2.redhat.com [10.72.12.174])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6C22640CF8E4;
-        Fri,  5 Aug 2022 12:34:35 +0000 (UTC)
-Date:   Fri, 5 Aug 2022 20:34:32 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        John Donnelly <john.p.donnelly@oracle.com>,
-        David Hildenbrand <david@redhat.com>, linux-mm@kvack.org,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] dma/pool: do not complain if DMA pool is not allocated
-Message-ID: <Yu0OWLbzLxCkSGVJ@MiWiFi-R3L-srv>
-References: <Yj28gjonUa9+0yae@dhcp22.suse.cz>
- <20220325164856.GA16800@lst.de>
- <Yj3zyLs4f+ba6UqF@dhcp22.suse.cz>
- <YupFSpXOrcfXJNya@dhcp22.suse.cz>
- <YuqNToCACD8kKBG+@MiWiFi-R3L-srv>
- <YuqOrJKcgfamdXkk@dhcp22.suse.cz>
- <YuqU87SDwP0zg+c7@MiWiFi-R3L-srv>
- <YuqX0OAItlMDfRUV@dhcp22.suse.cz>
- <YuunCO2lsLDWTGw+@MiWiFi-R3L-srv>
- <Yuu1EyC95XL98XNI@dhcp22.suse.cz>
+ us-mta-382-mrbaKI6NO1CHmFNYXh5B6w-1; Fri, 05 Aug 2022 08:42:45 -0400
+X-MC-Unique: mrbaKI6NO1CHmFNYXh5B6w-1
+Received: by mail-wr1-f71.google.com with SMTP id s25-20020adf9799000000b002207a9d2166so450749wrb.19
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 05:42:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=JbNzuUNlONNPGBpeyjfKi2f8mYMJka6a1j60uZitIeU=;
+        b=pPy72hrkJi9jh+QNizLKze2LjQhwGvBxBMmu/xIm+/SodqiZZY0V6ukPdSkKg051tP
+         oFGoKugADuEbye3YGl6qoVcZyK2msJ2zJjkwkbTWqsG3dyQX42kMS1CBAiLJj+AJpdgM
+         9WWWu753ci5OMJq232b8xahhzirrfcMxiu7ykaD/TT2u8icLyR1suf5TCSHP50Yys2tN
+         FtlNNeuAlEm/7Ucw9x+SDJdTU454TJbyGTacjQ1olZIdZmcFWmCxPTnSeQyJtcEF+doy
+         8HmxP5EySuWL3wG269ENZv5gRBv1cJijmHQ0dphBkoMn1en3AcTO7Vk9Owll7lF/qL1t
+         5+Rg==
+X-Gm-Message-State: ACgBeo3K7nwjRDtumuvCyH3FVQc93Mzpr/yGT4UE+VUUrJkCc9iCx1tX
+        ggdlHNsItzd82wI3Ym8H/kGeGSct8Tsz+pML5HPD6XIAOcxR4qs3a5g8MfU4/sbXL73QB+TB73l
+        T0bTMN1KkCBQ3WsaaTEZ/F8JL
+X-Received: by 2002:a05:6000:10c3:b0:21f:15aa:1b68 with SMTP id b3-20020a05600010c300b0021f15aa1b68mr4285507wrx.693.1659703364150;
+        Fri, 05 Aug 2022 05:42:44 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4FBixHL1jxLf6cGBv7tQy3XiRqmkIIqWAMrqrcbMs3wyml1Ga267IspwQxC1cUWPEdc4mg6g==
+X-Received: by 2002:a05:6000:10c3:b0:21f:15aa:1b68 with SMTP id b3-20020a05600010c300b0021f15aa1b68mr4285486wrx.693.1659703363869;
+        Fri, 05 Aug 2022 05:42:43 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
+        by smtp.gmail.com with ESMTPSA id l3-20020a5d4803000000b0021e42e7c7dbsm3802357wrq.83.2022.08.05.05.42.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Aug 2022 05:42:43 -0700 (PDT)
+Date:   Fri, 5 Aug 2022 14:42:39 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next] vsock: Reschedule connect_work for
+ O_NONBLOCK connect() requests
+Message-ID: <20220805124239.iy5lkeytqwjyvn7g@sgarzare-redhat>
+References: <20220804020925.32167-1-yepeilin.cs@gmail.com>
+ <20220804065923.66bor7cyxwk2bwsf@sgarzare-redhat>
+ <20220804234447.GA2294@bytedance>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <Yuu1EyC95XL98XNI@dhcp22.suse.cz>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+In-Reply-To: <20220804234447.GA2294@bytedance>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/04/22 at 02:01pm, Michal Hocko wrote:
-...snip...
-> > > > > > > Thinking about it. We should get a warning when the actual allocation
-> > > > > > > from the pool fails no? That would be more useful information than the
-> > > > > > > pre-allocation failure when it is not really clear whether anybody is
-> > > > > > > ever going to consume it.
-> > > > > > 
-> > > > > > Hi Michal,
-> > > > > > 
-> > > > > > You haven't told on which ARCH you met this issue, is it x86_64?
-> > > > > 
-> > > > > yes x86_64, so a small 16MB DMA zone.
-> > > > 
-> > > > Yeah, the 16M DMA zone is redicilous and exists only for hardly seen
-> > > > ISA-style devices support. Haven't prepared the log well.
-> > > 
-> > > Agreed on that! I would essentially suggest to completely ignore pool
-> > > pre-allocation failures for the small DMA zone. There is barely anything
-> > > to be ever consuming it.
-> > 
-> > I would personally suggest to keep it. W/o that, we even don't know the
-> > issue we are talking about now. I see below commit as a workaround, and
-> > have been trying to fix it finally with a better solution.
-> > 
-> > commit c4dc63f0032c ("mm/page_alloc.c: do not warn allocation failure on zone DMA if no managed pages")
-> 
-> This will not help in any case but an empty DMA zone. As you can see
-> this is not the case in my example.
+On Thu, Aug 04, 2022 at 04:44:47PM -0700, Peilin Ye wrote:
+>Hi Stefano,
+>
+>On Thu, Aug 04, 2022 at 08:59:23AM +0200, Stefano Garzarella wrote:
+>> The last thing I was trying to figure out before sending the patch was
+>> whether to set sock->state = SS_UNCONNECTED in vsock_connect_timeout().
+>>
+>> I think we should do that, otherwise a subsequent to connect() with
+>> O_NONBLOCK set would keep returning -EALREADY, even though the timeout has
+>> expired.
+>>
+>> What do you think?
+>
+>Thanks for bringing this up, after thinking about sock->state, I have 3
+>thoughts:
+>
+>1. I think the root cause of this memleak is, we keep @connect_work
+>   pending, even after the 2nd, blocking request times out (or gets
+>   interrupted) and sets sock->state back to SS_UNCONNECTED.
+>
+>   @connect_work is effectively no-op when sk->sk_state is
+>   TCP_CLOS{E,ING} anyway, so why not we just cancel @connect_work when
+>   blocking requests time out or get interrupted?  Something like:
+>
+>diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>index f04abf662ec6..62628af84164 100644
+>--- a/net/vmw_vsock/af_vsock.c
+>+++ b/net/vmw_vsock/af_vsock.c
+>@@ -1402,6 +1402,9 @@ static int vsock_connect(struct socket *sock, struct sockaddr *addr,
+>                lock_sock(sk);
+>
+>                if (signal_pending(current)) {
+>+                       if (cancel_delayed_work(&vsk->connect_work))
+>+                               sock_put(sk);
+>+
+>                        err = sock_intr_errno(timeout);
+>                        sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
+>                        sock->state = SS_UNCONNECTED;
+>@@ -1409,6 +1412,9 @@ static int vsock_connect(struct socket *sock, struct sockaddr *addr,
+>                        vsock_remove_connected(vsk);
+>                        goto out_wait;
+>                } else if (timeout == 0) {
+>+                       if (cancel_delayed_work(&vsk->connect_work))
+>+                               sock_put(sk);
+>+
+>                        err = -ETIMEDOUT;
+>                        sk->sk_state = TCP_CLOSE;
+>                        sock->state = SS_UNCONNECTED;
+>
+>   Then no need to worry about rescheduling @connect_work, and the state
+>   machine becomes more accurate.  What do you think?  I will ask syzbot
+>   to test this.
 
-Yeah, it's different case.
+It could work, but should we set `sk->sk_err` and call sk_error_report() 
+to wake up thread waiting on poll()?
 
-> 
-> > After attempts, I realize it's time to let one zone DMA or DMA32 cover
-> > the whole low 4G memory on x86_64. That's the real fix. The tiny 16M DMA
-> > on 64bit system is root cause.
-> 
-> Yes, I would agree with that. This means DMA zone is gone completely.
->  
-> [...]
-> > > This also mostly papers over this particular problem by allocating
-> > > allocating two pools for the same range.
-> > 
-> > No, it doesn't paper over anything, and isn't a hack. Zone dma now covers
-> > low 4G, just zone DMA32 is empty. Any allocation request with GFP_DMA will
-> > be satisfied, while request with GFP_DMA32 will fall back to zone DMA.
-> 
-> This is breaking expectation of the DMA zone on x86. This is not
-> acceptable. You really want to do it other way around. Only have DMA32
-> zone and cover the whole 32b phys address range. DMA zone would be empty
-> which is something we can have already. This would make the crap HW fail
-> on allocations.
+Maybe the previous version is simpler.
 
-OK, I will consider it in the direction that only DMA32 zone cover the
-low 4G as you suggested. Do you have pointer about them? Really
-appreciate it.
-> 
-> > See my summary about zone DMA/DMA32 on ARCHes. Currently only x86_64
-> > always has this burdensome tiny DMA zone. Other ARCH has made adjustment
-> > to avoid that conditionally. The way I took in above patch is similar
-> > with arm64 handling.
-> 
-> Yeah a historical baggage we have to live with or just stop pretending
-> we really do support that ISA HW. Or make that dynamic and only set up
-> DMA zone when there is a HW like that present.
+>
+>2. About your suggestion of setting sock->state = SS_UNCONNECTED in
+>   vsock_connect_timeout(), I think it makes sense.  Are you going to
+>   send a net-next patch for this?
 
-Ok, I see, you don't like the handling on arm64 and mips either.
+If you have time, feel free to send it.
 
-> 
-> > The two pools for the same range has been there on arm64 and mips, we
-> > can easily fix it by introducing has_managed_dma32() and checking it
-> > before allocating atomic_pool_dma32 pool, just like I have done for
-> > atomic_pool_dma there.
-> > 
-> > =============================
-> > ARCH which has DMA32
-> >         ZONE_DMA       ZONE_DMA32
-> > arm64   0~X            empty or X~4G  (X is got from ACPI or DT. Otherwise it's 4G by default, DMA32 is empty)
-> > ia64    None           0~4G
-> > mips    empty or 0~16M X~4G  (zone DMA is empty on SGI_IP22 or SGI_IP28, otherwise 16M by default like i386)
-> > riscv   None           0~4G
-> > x86_64  16M            16M~4G
-> > =============================
-> > 
-> > 
-> > As for the only one DMA or DMA32 zone exist on x86_64 you suggested, I
-> > made below draft change which only creates zone DMA32 to cover the whole
-> > low 4G meomry, just like RISC-V and ia64 are doing. It works well on
-> > one intel machine, no other change is required. However, I have one
-> > concern, it possibly comes from my own misunderstanding, please help
-> > point out where I got it wrong. If there's only DMA32 zone, and
-> > CONFIG_ZONE_DMA is disabled, how does it handle GFP_DMA allocation
-> > request?
-> 
-> the expected behavior should be to fail the allocation.
+Since it is a fix, I believe you can use the "net" tree. (Also for this 
+patch).
 
-Could you tell why we should fail the allocation?
+Remember to put the "Fixes" tag that should be the same.
 
-With my understanding, whether it is allocation request with GFP_DMA
-or GFP_DMA32, it's requesting memory for DMA buffer, or requesting
-memory under 32bit. If we only have zone DMA32 covering low 4G, and
-people requests meomry with GFP_DMA, we should try to satisfy it with
-memory from zone DMA32. Because people may not know the internal detail
-about memory from zone DMA or DMA32, and they just want to get a buffer
-for DMA transfering.
+>
+>3. After a TCP_SYN_SENT sock receives VIRTIO_VSOCK_OP_RESPONSE in
+>   virtio_transport_recv_connecting(), why don't we cancel 
+>   @connect_work?
+>   Am I missing something?
 
-With your saying, if there's only DMA32 existing and cover the whole low
-4G, any allocation request with GFP_DMA need be failed, we need search
-and change all those places where GFP_DMA is set.
+Because when the timeout will fire, vsock_connect_timeout() will just 
+call sock_put() since sk->sk_state is changed.
 
-> 
-> > See gfp_zone(), it will return ZONE_NORMAL to user even though
-> > user expects to get memory for DMA handling?
-> 
-> It's been quite some time since I've had gfp_zone cached in my brain. I
-> suspect it would require some special casing for GFP_DMA to always fail.
-> I would have to study the code again. We have discussed this at some
-> LSFMM few years back. Maybe you can find something at lwn.
-> 
-> In any case. This is a larger change. Do you agree that the warning is
-> pointless and __GFP_NOWARN is a very simple way to deal with it until we
-> sort out situation of the DMA zone on x86 which is a long standing
-> problem?
+Of course, we can cancel it if we want, but I think it's not worth it.
+In the end, this rescheduling patch should solve all the problems.
 
-I understand the warning will be annoying and customer will complain
-about it. We can mute it for the time being, and may open it later
-when we get rid of the 16M DMA zone.
-
-So, yes, I agree that there's nothing we can do currently except of
-muting it. I can add my tag when you update and post.
+Thanks,
+Stefano
 
