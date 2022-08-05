@@ -2,128 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09A2CC25B08
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 13:20:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A0EC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 13:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230169AbiHENUH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 09:20:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38406 "EHLO
+        id S240695AbiHENUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 09:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237188AbiHENUE (ORCPT
+        with ESMTP id S237188AbiHENUp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 09:20:04 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF0E29823
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 06:20:02 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id w14so2609636plp.9
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 06:20:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=dcjIT1g0RtFKgH5EkyMJsy1rJrd93nNrE+p7/OkVeLg=;
-        b=GKWrYDIzWoZ5X4vJXNLyCTeurJShxbWFGF1MGwCJVRVn9Lfh6hH0oPZeDxMIzvaDt6
-         omiY8LhyvqlYDECeD9TgltYv8wRVjjMigqkSQTQgh5zNWeRd3+VHAxxGMEXHiVucuGSS
-         SzPBdmrvGYfULHjJkhSHrYILRPGYFWWwo5bDgaZy9IiT+Oq3WQZZ0zUNtSF55JMQRr9u
-         0soKYt5nPrl3ePVhN4imhRnqssAeOP32yhhNs469RiawxmdaMP/ySGjCg0JAmOUp4hEu
-         jAI8aXPnJ/ZQMQPqXM6V6VtDh9LD9AH+dZWt6uzC2FY/iq3I1tinHWEILP3JYbBL8S6I
-         xGhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=dcjIT1g0RtFKgH5EkyMJsy1rJrd93nNrE+p7/OkVeLg=;
-        b=5/sfeork+E9KNAw45QbSuRX6OYhhUTB8/36ljckOQQ70QJ18Jv4/QbHkTYwh7/BQ0W
-         p9LQR1w9+YzT7ccn7zBQTHB08WIE+5y3Hskx92jaVHTW2tdpE8TmK/9hVuIcDm0FBF/+
-         4qZl3dE+uY1Tm8a5VQrrv15q926gv4hYaIFAvMxNXpJ6CEY+b9n8HDBWcfALx/l+yyGI
-         +DhopmBEciDeKaEH71itSG3sFIPUJ5ijrR38eelxZ0Wy4CqQp+9bblmqf4Ny5ZPccTex
-         H4xGm0Rr4kbF/FVWlWjQVhiJU/gGBmzjSU+sQ7VxmCPRDfTJsveto7FRJ8u+LxnzlItc
-         NpiQ==
-X-Gm-Message-State: ACgBeo1kLE8fAAVLfAa3wfIkzB4+REYSHZ+diwWVFf5ZQ45TKll1NeYQ
-        l9hY3L0oK7DpcgdIigeeRxnNbw==
-X-Google-Smtp-Source: AA6agR5Uw1FO39ZriroJot/zJqQ35F6AuTQRe3bn0VVE7eWp5+j84Ai4POahvu6hbOAfU8NxT/C1UQ==
-X-Received: by 2002:a17:90b:3511:b0:1f4:e0cd:1e04 with SMTP id ls17-20020a17090b351100b001f4e0cd1e04mr16532665pjb.154.1659705602470;
-        Fri, 05 Aug 2022 06:20:02 -0700 (PDT)
-Received: from bogon.bytedance.net ([61.120.150.71])
-        by smtp.gmail.com with ESMTPSA id a125-20020a621a83000000b0052dc5c14ee2sm2936716pfa.194.2022.08.05.06.19.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 06:20:01 -0700 (PDT)
-From:   Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-To:     Miklos Szeredi <miklos@szeredi.hu>,
-        linux-fsdevel@vger.kernel.org (open list:FUSE: FILESYSTEM IN USERSPACE),
-        linux-kernel@vger.kernel.org (open list)
-Cc:     Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-Subject: [PATCH] fuse: invalidate dentry on EEXIST creates or ENOENT deletes
-Date:   Fri,  5 Aug 2022 21:18:22 +0800
-Message-Id: <20220805131823.83544-1-zhangjiachen.jaycee@bytedance.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 5 Aug 2022 09:20:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE9926A
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 06:20:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFF2AB828C8
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 13:20:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 604DFC433D6;
+        Fri,  5 Aug 2022 13:20:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659705641;
+        bh=7o0cimbLP3DJS7c5Umhmno/pUUb9ozfJhSgiKERWHro=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=tt+nhnFlh2QFxFGozPuvdwChO9Ntax26GqVD95O3wn8CyLKYUhwNQHkNdVWPDhD0M
+         DLUFMJxnnIaibJLdSluPkjGKGcvZqv/Dc7sUIMrGaWjqnHdm6axXoHg2WmkJzPqFlm
+         IroVnsmDBBLmd3enUabDGy8HIzHNd5owuKu1Gby9oCxLIFvACvmqoWVY94YLGNzw3/
+         KS450dhodWffuTU6fbZVAADR6wv0a/aKdiZy1fhRxgfqRWPoghrVX3sJ9YhzZ4j5Kt
+         Yu138wBlQT52g6pABCceoXDEi/TD10sye62BG84P7RZ4un2HsW8onq7l1byVSJiTEt
+         mZOalj+4N/gmA==
+From:   Mark Brown <broonie@kernel.org>
+To:     Takashi Iwai <tiwai@suse.com>,
+        Justin Stitt <justinstitt@google.com>,
+        Jaroslav Kysela <perex@perex.cz>
+Cc:     sound-open-firmware@alsa-project.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        alsa-devel@alsa-project.org, Daniel Baluta <daniel.baluta@nxp.com>,
+        Tom Rix <trix@redhat.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        llvm@lists.linux.dev
+In-Reply-To: <20220803204442.2996580-1-justinstitt@google.com>
+References: <20220803204442.2996580-1-justinstitt@google.com>
+Subject: Re: [PATCH resend] ASoC: SOF: ipc3-topology: Fix clang -Wformat warning
+Message-Id: <165970563810.1032419.6494155990235554892.b4-ty@kernel.org>
+Date:   Fri, 05 Aug 2022 14:20:38 +0100
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.10.0-dev-fe10a
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If kernel creates a file which already exists on the server (EEXIST), we'd
-better invalidate its negative dentry cache. Similarly, if kernel wants
-to delete a file that is already deleted on the server (ENOENT), we can
-also invalidate its positive dentry cache. This commit does this by
-setting the fuse dentry timeout to 0 using fuse_invalidate_entry().
+On Wed, 3 Aug 2022 13:44:42 -0700, Justin Stitt wrote:
+> When building with Clang we encounter these warnings:
+> | sound/soc/sof/ipc3-topology.c:2343:4: error: format specifies type
+> | 'unsigned char' but the argument has type 'int' [-Werror,-Wformat]
+> |                  SOF_ABI_MAJOR, SOF_ABI_MINOR, SOF_ABI_PATCH);
+> |                  ^~~~~~~~~~~~~~~^~~~~~~~~~~~~~~^~~~~~~~~~~~~
+> 
+> Use correct format specifier `%d` since args are of type int.
+> 
+> [...]
 
-Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
----
- fs/fuse/dir.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+Applied to
 
-diff --git a/fs/fuse/dir.c b/fs/fuse/dir.c
-index 74303d6e987b..3bb34a849831 100644
---- a/fs/fuse/dir.c
-+++ b/fs/fuse/dir.c
-@@ -669,7 +669,8 @@ static int fuse_atomic_open(struct inode *dir, struct dentry *entry,
- 	if (err == -ENOSYS) {
- 		fc->no_create = 1;
- 		goto mknod;
--	}
-+	} else if (err == -EEXIST)
-+		fuse_invalidate_entry(entry);
- out_dput:
- 	dput(res);
- 	return err;
-@@ -758,6 +759,8 @@ static int create_new_entry(struct fuse_mount *fm, struct fuse_args *args,
- 	return 0;
- 
-  out_put_forget_req:
-+	if (err == -EEXIST)
-+		fuse_invalidate_entry(entry);
- 	kfree(forget);
- 	return err;
- }
-@@ -892,7 +895,7 @@ static int fuse_unlink(struct inode *dir, struct dentry *entry)
- 	if (!err) {
- 		fuse_dir_changed(dir);
- 		fuse_entry_unlinked(entry);
--	} else if (err == -EINTR)
-+	} else if (err == -EINTR || err == -ENOENT)
- 		fuse_invalidate_entry(entry);
- 	return err;
- }
-@@ -915,7 +918,7 @@ static int fuse_rmdir(struct inode *dir, struct dentry *entry)
- 	if (!err) {
- 		fuse_dir_changed(dir);
- 		fuse_entry_unlinked(entry);
--	} else if (err == -EINTR)
-+	} else if (err == -EINTR || err == -ENOENT)
- 		fuse_invalidate_entry(entry);
- 	return err;
- }
-@@ -956,7 +959,7 @@ static int fuse_rename_common(struct inode *olddir, struct dentry *oldent,
- 		/* newent will end up negative */
- 		if (!(flags & RENAME_EXCHANGE) && d_really_is_positive(newent))
- 			fuse_entry_unlinked(newent);
--	} else if (err == -EINTR) {
-+	} else if (err == -EINTR || err == -ENOENT) {
- 		/* If request was interrupted, DEITY only knows if the
- 		   rename actually took place.  If the invalidation
- 		   fails (e.g. some process has CWD under the renamed
--- 
-2.20.1
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
+Thanks!
+
+[1/1] ASoC: SOF: ipc3-topology: Fix clang -Wformat warning
+      commit: b7bf23c0865faac61564425ddc96a4a79ebf19b0
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
