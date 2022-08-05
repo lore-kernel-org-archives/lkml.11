@@ -2,110 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40BCBC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 17:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06E9DC25B08
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 17:55:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240841AbiHERy3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 13:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36378 "EHLO
+        id S241026AbiHERzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 13:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241364AbiHERy0 (ORCPT
+        with ESMTP id S241483AbiHERzi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 13:54:26 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A781E192A2;
-        Fri,  5 Aug 2022 10:54:25 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id h13so4038646wrf.6;
-        Fri, 05 Aug 2022 10:54:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=CY7nj4Dbn5hG1eBgbsltcEsXWXjhhaj6B7nXDjf979E=;
-        b=J3Zfz+3MyGk5EyyiedXaWblx79/zzFn200lbKGskp7tykjV1usM/FZeJXZm143HN9l
-         rtwZUsJtGTQr8tsIsouEGMn1ue8Q0TVXTY2x3ueSOxpRY1WWPXPA73jK4JzG5LhB5GLh
-         kLXa+PoUPofh1IpAu6KBJoAoPwjv32RJK8dfEiOokUBGozp7rmt5MnXQ6oC1DPrMZhls
-         jKhXAsIBQuiEji1KKITNgB2RBzMq3qT1rP8CRUjlM6l/DuRiGYiTAkNOrNkbg1FPk/af
-         NtW7H7EPmDfxNc4QFJlc4tL3WGi0IBO++Umy3dRNt94hPUNI0M+BEfPcvkNFcRnIK7Qy
-         UNSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=CY7nj4Dbn5hG1eBgbsltcEsXWXjhhaj6B7nXDjf979E=;
-        b=AkxUxPqalygayHK0OgFP6GX++QLILLYPjQiOB+SWf8DwCfiQvxvSJH2N8Du1e4mz4N
-         h/JH5Wu/ltI9gXXCgtB8iOMlpmXPYUNy1D2UOa3L5+e5xC515Igit18mx5mGvSM+5wlF
-         Ky2JCruSeIem3dUin4RIbOccXAtPgLvwzvcXj1Z6FhIxjoNI1ioe/8cIKHyjL9d1ZsN9
-         z6B0AHrydvqLx4+omCiN7L1rQEuM3piw+N3Zx3q0NLugAcz5VIPN+oZL0uKAXqlg2RbE
-         2b9fi3Q0bmllR8+D+KKTRq0cz8RWpftK0SUioU4g0eGiMYcFBNR3DDpcuUjs6a+zrRNf
-         lcYg==
-X-Gm-Message-State: ACgBeo08T3zKYVmvkb8yoQkUNtjZ2OFXrHQrbAgCpOS7ca5wWSpDiRe4
-        DChHGqaL6K949ugHeuqwDzo=
-X-Google-Smtp-Source: AA6agR7IiagAGZEP+xy/ZTMuCnaTw0jJTWp9G2mTqeewCjcDgMi6F/ihKED6uVAMwi8rYhLR9Eyyjw==
-X-Received: by 2002:a05:6000:1689:b0:220:8a04:69f6 with SMTP id y9-20020a056000168900b002208a0469f6mr5280368wrd.357.1659722064238;
-        Fri, 05 Aug 2022 10:54:24 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id w8-20020a5d4b48000000b0021e4edba1e5sm4373353wrs.111.2022.08.05.10.54.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 10:54:23 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Robert Jarzmik <robert.jarzmik@free.fr>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-mtd@lists.infradead.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mtd: devices: docg3: Use correct function names in comment blocks
-Date:   Fri,  5 Aug 2022 18:54:23 +0100
-Message-Id: <20220805175423.2374939-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        Fri, 5 Aug 2022 13:55:38 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3190065FB;
+        Fri,  5 Aug 2022 10:55:37 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b986e329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:986e:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 718381EC04C2;
+        Fri,  5 Aug 2022 19:55:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1659722131;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=lgHt3P8hxmYNsCsO6oz+2j46ElNujepttLSppVvmEgo=;
+        b=LhH4G9E2jS2NJtKOOrZhc5cvM3+7Wrv9VzdHWSsSgwvfMzg2i4SHyA0giKHc4WZ+vu6DWw
+        yNR87bw4s/ZIL3vRfcdv9jPSqoamVpaCFtwHf2gWSNe/wr0bUiBy793oG1PF9N/MSAVJGN
+        Nu3L3/WqLhVSJ8i5Be/Ek30EdBieORA=
+Date:   Fri, 5 Aug 2022 19:55:27 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Kim Phillips <kim.phillips@amd.com>
+Cc:     x86@kernel.org, peterz@infradead.org, bpf@vger.kernel.org,
+        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
+        linux-kernel@vger.kernel.org, thomas.lendacky@amd.com
+Subject: Re: [PATCH] x86/bugs: Enable STIBP for IBPB mitigated RetBleed
+Message-ID: <Yu1Zj5mNZiAWdJgK@zn.tnic>
+References: <20220804192201.439596-1-kim.phillips@amd.com>
+ <Yu0sT6vCofyWiAMI@zn.tnic>
+ <86921fe7-6a6b-2731-b09e-a6e03f38a6b9@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <86921fe7-6a6b-2731-b09e-a6e03f38a6b9@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The incorrect function name is being used in the comment for functions
-doc_set_reliable_mode, doc_read_seek and docg3_probe. Correct these
-comments.
+On Fri, Aug 05, 2022 at 12:04:34PM -0500, Kim Phillips wrote:
+> On 8/5/22 9:42 AM, Borislav Petkov wrote:
+> > On Thu, Aug 04, 2022 at 02:22:01PM -0500, Kim Phillips wrote:
+> > > For retbleed=ibpb, force STIBP on machines that have it,
+> > 
+> > Because?
+> 
+> See "6.1.2 IBPB On Privileged Mode Entry / SMT Safety":
+> 
+> https://www.amd.com/system/files/documents/technical-guidance-for-mitigating-branch-type-confusion_v7_20220712.pdf
+> 
+> Did you want me to re-quote the whitepaper, or reference it,
+> or paraphrase it, or...?
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/mtd/devices/docg3.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+I would like for our commit messages to be fully standalone and explain
+in detail why a change is being done. So that when doing git archeology
+months, years from now it is perfectly clear why a change was needed.
 
-diff --git a/drivers/mtd/devices/docg3.c b/drivers/mtd/devices/docg3.c
-index 5b0ae5ddad74..a7bddf80751b 100644
---- a/drivers/mtd/devices/docg3.c
-+++ b/drivers/mtd/devices/docg3.c
-@@ -300,7 +300,7 @@ static void doc_write_data_area(struct docg3 *docg3, const void *buf, int len)
- }
- 
- /**
-- * doc_set_data_mode - Sets the flash to normal or reliable data mode
-+ * doc_set_reliable_mode - Sets the flash to normal or reliable data mode
-  * @docg3: the device
-  *
-  * The reliable data mode is a bit slower than the fast mode, but less errors
-@@ -442,7 +442,7 @@ static void doc_setup_writeaddr_sector(struct docg3 *docg3, int sector, int ofs)
- }
- 
- /**
-- * doc_seek - Set both flash planes to the specified block, page for reading
-+ * doc_read_seek - Set both flash planes to the specified block, page for reading
-  * @docg3: the device
-  * @block0: the first plane block index
-  * @block1: the second plane block index
-@@ -1951,7 +1951,7 @@ static int docg3_suspend(struct platform_device *pdev, pm_message_t state)
- }
- 
- /**
-- * doc_probe - Probe the IO space for a DiskOnChip G3 chip
-+ * docg3_probe - Probe the IO space for a DiskOnChip G3 chip
-  * @pdev: platform device
-  *
-  * Probes for a G3 chip at the specified IO space in the platform data
+This holds especially true for the CPU vuln nightmares.
+
+So please explain the "why" of your change. In your own words.
+
+> "{unret,ibpb} alone does not stop sibling threads influencing the predictions of
+> other sibling threads.  For that reason, we use STIBP on processors that support
+> it, and mitigate SMT on processors that don't."
+
+Pretty much. I'd even explain each case explicitly:
+
+                        ibpb         - mitigate short speculation windows on
+                                       basic block boundaries too. Safe, highest
+                                       perf impact. On AMD, it also enables STIBP if
+				       present.
+                        ibpb,nosmt   - like ibpb, but will disable SMT when STIBP
+                                       is not available. This is the alternative for
+				       systems which do not have STIBP.
+
+> Those messages only get printed on non-AMD hardware?
+
+See, I got confused by our spaghetti code from hell. ;-\
+
 -- 
-2.35.3
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
