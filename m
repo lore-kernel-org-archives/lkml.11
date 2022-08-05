@@ -2,61 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 562CBC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 10:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B70D9C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 10:30:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240548AbiHEK0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 06:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44714 "EHLO
+        id S240286AbiHEKab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 06:30:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235062AbiHEK0j (ORCPT
+        with ESMTP id S233252AbiHEKa1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 06:26:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5BACB1F2DD
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 03:26:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659695197;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
-        b=VM1CrAZwmo9IxcxMWGbg5M1gbxuV+2l4DzbmfYuxkp6RcMA42vKca8nQ4l1sdWbyVZHKzD
-        JOjqsDcTQL7a+7ESgnHBDEfhTtmzcjI6deFRTIPHXKRm00rX+SPgdd7POHp+eAw4QncNx0
-        g/tHNbHRJZf5CFrlrkBazk5Lg9KMXTE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-54-5a5Bq0vINuulVWWeCTUw7g-1; Fri, 05 Aug 2022 06:26:34 -0400
-X-MC-Unique: 5a5Bq0vINuulVWWeCTUw7g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 097F585A585;
-        Fri,  5 Aug 2022 10:26:34 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 89D9E2026D4C;
-        Fri,  5 Aug 2022 10:26:33 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     Yu Zhang <yu.c.zhang@linux.intel.com>
-Cc:     pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
-        jmattson@google.com, joro@8bytes.org, wanpengli@tencent.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] KVM: X86: Explicitly set the 'fault.async_page_fault' value in kvm_fixup_and_inject_pf_error().
-Date:   Fri,  5 Aug 2022 06:26:31 -0400
-Message-Id: <20220805102631.1423861-1-pbonzini@redhat.com>
-In-Reply-To: <20220718074756.53788-1-yu.c.zhang@linux.intel.com>
-References: 
+        Fri, 5 Aug 2022 06:30:27 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CFC11162;
+        Fri,  5 Aug 2022 03:30:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659695425; x=1691231425;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Wl1d0jKvHZGC5Yd449Qnm7zhaueS05JbKcyoWYVXVmY=;
+  b=bbrpUbb8y1QXXHc7mCfBAWTto4uppwcrIBl65z/zdCydf0EzIYppnquY
+   D1Z6mMtelnbty6hlvnZndsMjBy3Xxjd97O6PAcPIsqRwuk6ZddtJuvZzo
+   4GFVMx+Vd+WrqXh7uVqx2IJEQMzqxNzttuzhfBluyOuoCF2rUuQ+JLFDH
+   LDO1MNhez+igrivBABGToEpcsoyOq3iPgWoD7OpAkXOV0HXzMyz3iJcsu
+   +6UhPEuFBu5qx8FGuI3RrwibylVatp7uJ3EdMiHCTWQ8tl0Aarq4b1NHZ
+   iZQKtCxJtVFkqnMTyxn2gz2phKQb6BYG8sGZJ0UwpMcBhgfEGm5FyfcGu
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10429"; a="288932143"
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="288932143"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 03:30:25 -0700
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="631968756"
+Received: from maurocar-mobl2.ger.corp.intel.com (HELO maurocar-mobl2) ([10.252.33.203])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 03:30:22 -0700
+Date:   Fri, 5 Aug 2022 12:30:18 +0200
+From:   Mauro Carvalho Chehab <mauro.chehab@linux.intel.com>
+To:     Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Cc:     Andi Shyti <andi.shyti@linux.intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jonathan Corbet <corbet@lwn.net>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Chris Wilson <chris.p.wilson@intel.com>,
+        linux-doc@vger.kernel.org, Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        intel-gfx@lists.freedesktop.org
+Subject: Re: [Intel-gfx] [PATCH v3 3/3] drm/i915/gt: document TLB cache
+ invalidation functions
+Message-ID: <20220805123018.1143f2c3@maurocar-mobl2>
+In-Reply-To: <7156b3bd-69d7-de53-dd2b-96e82a8cf0f7@linux.intel.com>
+References: <cover.1659598090.git.mchehab@kernel.org>
+        <cc68d62a1979ea859b447b94413e100472331f57.1659598090.git.mchehab@kernel.org>
+        <0698c5a5-3bf2-daa4-e10e-2715f9b0d080@infradead.org>
+        <Yuzd9Ysc3BDQHuSW@alfio.lan>
+        <7156b3bd-69d7-de53-dd2b-96e82a8cf0f7@linux.intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Queued, thanks.
+On Fri, 5 Aug 2022 10:24:25 +0100
+Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com> wrote:
 
-Paolo
+> On 05/08/2022 10:08, Andi Shyti wrote:
+> > Hi Randy,
+> >   
+> >>> +/**
+> >>> + * intel_gt_invalidate_tlb_full - do full TLB cache invalidation
+> >>> + * @gt: GT structure  
+> >>
+> >> In multiple places (here and below) it would be nice to know what a
+> >> GT structure is. I looked thru multiple C and header files yesterday
+> >> and didn't find any comments about it.
+> >>
+> >> Just saying that @gt is a GT structure isn't very helpful, other
+> >> than making kernel-doc shut up.  
+> > 
+> > the 'gt' belongs to the drivers/gpu/drm/i915/gt/ subsystem and
+> > it's widely used a throughout i915.
+> > 
+> > I think it's inappropriate to describe it just here. On the other
+> > hand I agree that a better documentation is required for the GT
+> > itself where other parts can point to.  
 
+GT is actually a well-understood term for GPU developers. It is an alias
+for:
 
+	https://en.wikipedia.org/wiki/Intel_Graphics_Technology
+
+It is basically the "core" of the GPU, where the engine units sit.
+
+I agree with Andi: terms like this should likely be defined on a glossary
+at i915.rst file.
+
+> Yeah agreed there is no point of copy pasting some explanation all over 
+> the place. Could we just do s/GT structure/struct intel_gt/, or "pointer 
+> to struct intel_gt to operate on", would that be good enough?
+
+IMO, it won't make any difference. kerneldoc already says that the
+parameter has struct intel_gt type on its output:
+
+	.. c:function:: void intel_gt_fini_tlb (struct intel_gt *gt)
+
+	   free TLB-specific vars
+
+	**Parameters**
+
+	``struct intel_gt *gt``
+	  GT structure
+	
+	**Description**
+
+	Frees any resources needed by TLB cache invalidation logic.
+
+This struct somewhat is similar to struct device. This is a container
+struct that has the common data needed to control the GT hardware.
+
+Almost all functions that work with GT needs it. There's not much sense
+to describe it everywhere. What makes sense is to have struct intel_gt
+documented at intel_gt_types.h, letting the build system to generate 
+hiperlinks to it.
+
+This is easier said than done...
+
+Regards,
+Mauro
