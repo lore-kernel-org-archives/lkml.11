@@ -2,113 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33CE3C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 16:51:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F4144C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 16:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241245AbiHEQvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 12:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48548 "EHLO
+        id S240941AbiHEQwL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 12:52:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241030AbiHEQuy (ORCPT
+        with ESMTP id S241270AbiHEQvw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 12:50:54 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E67A1C129
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 09:50:50 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id b21-20020a05600c4e1500b003a32bc8612fso1516770wmq.3
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 09:50:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=MnRM0/0IvgGtmALzay+KKuxuL9L7ec4/ENnxhkmEu0Q=;
-        b=jPNeDsvM9ON44JSlp39pKrw4+Qw+Wmp0x7j1vZHjc9WudWV8dVShaQsp8qS2bKEnh6
-         r+Ru+w9wNlXfFOmq09dJhq5OzqbB/Zc3U2D/XEqmYCo+GCAaG6egbHak0rtaQOZYX1vM
-         wuVVnNRQ0PtWAMHh4OAjoFL/3U55OTR6R2Stv0jIeB9r6uQduC/yWuUjvWqTCvgxUAsF
-         eN1Shm5ES65XWq32IzZ0Dg6xiHuvp4z8e1Mf0Z6+wJLNfoWF5Z+GyZhFpFWCFMd2eQvi
-         emQeHVs8/8HzRfYy/ZBls7NCtc6KWuDSFAimESy5FW3Awho530DJHRYTWWn+xIpJ9gNe
-         AQEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=MnRM0/0IvgGtmALzay+KKuxuL9L7ec4/ENnxhkmEu0Q=;
-        b=3ZbEsQL4U7mh/h04viTYRbaPncZclGs6Rz3REH1RluRUcX93HzwXeJMxxUazgz/ZNs
-         3NAuyOoBpY6S7H+wxcWtUWoA47vcmEv6j0nQfA5I8QZal08qXrSyTdikp++lwM9+iCo5
-         GFpGtCdQLsps6IcGb5Al7aYrm42+QFFZv2+efx79dCxBQfXKVgVRWg5KueCaANiSFwg9
-         fVvVvRwjN5iGFaiHEJEPKFt7oBbJvt9gwmwEq2zEDbJnXS9puEYLjA7ndFIC8cC9uDBv
-         ETUGvMhdzdczPTqfTzNjv/ulwVY1hVB/uWUZRO5okw1PEfvwU2MTBeZnAoT/FZSYbZsw
-         ubdA==
-X-Gm-Message-State: ACgBeo0am+G8pchMs5xFNDJ3aCb8b3wJfMGMEqphhVP1sn7BnKjMg7pe
-        gTift/nS+gmnkjNpCHuGV8jRrA==
-X-Google-Smtp-Source: AA6agR44ih/XPWj1ROUhl3PpcKPXw9THsTAXfnCoTFP9AsDJXUtGec86TVYz2HmjLlz96qab7qg1aw==
-X-Received: by 2002:a05:600c:4e94:b0:3a3:455b:a277 with SMTP id f20-20020a05600c4e9400b003a3455ba277mr5226727wmq.198.1659718248877;
-        Fri, 05 Aug 2022 09:50:48 -0700 (PDT)
-Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id h28-20020a05600c2cbc00b003a4f08495b7sm11325374wmc.34.2022.08.05.09.50.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 09:50:48 -0700 (PDT)
-From:   Ben Dooks <ben.dooks@sifive.com>
-To:     linux-pwm@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>,
-        u.kleine-koenig@pengutronix.de,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        jarkko.nikula@linux.intel.com,
-        William Salmon <william.salmon@sifive.com>,
-        Jude Onyenegecha --subject-prefix=PATCH v3 
-        <jude.onyenegecha@sifive.com>, Ben Dooks <ben.dooks@sifive.com>
-Subject: [PATCH 7/8] pwm: dwc: add snps,pwm-number to limit pwm count
-Date:   Fri,  5 Aug 2022 17:50:32 +0100
-Message-Id: <20220805165033.140958-8-ben.dooks@sifive.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220805165033.140958-1-ben.dooks@sifive.com>
-References: <20220805165033.140958-1-ben.dooks@sifive.com>
+        Fri, 5 Aug 2022 12:51:52 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852757B784;
+        Fri,  5 Aug 2022 09:51:27 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id 008ce5cc8209cc32; Fri, 5 Aug 2022 18:51:18 +0200
+Received: from kreacher.localnet (public-gprs522492.centertel.pl [31.61.160.61])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by v370.home.net.pl (Postfix) with ESMTPSA id 91B5366CECD;
+        Fri,  5 Aug 2022 18:51:17 +0200 (CEST)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Jiri Kosina <jikos@kernel.org>
+Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        linux-input@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH] i2c: ACPI: Do not check ACPI_FADT_LOW_POWER_S0
+Date:   Fri, 05 Aug 2022 18:51:11 +0200
+Message-ID: <12042830.O9o76ZdvQC@kreacher>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 31.61.160.61
+X-CLIENT-HOSTNAME: public-gprs522492.centertel.pl
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefuddguddtkecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpeffffffkefgheehffelteeiveeffeevhfelteejvddvieejjeelvdeiheeuveeuffenucfkphepfedurdeiuddrudeitddriedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepfedurdeiuddrudeitddriedupdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeejpdhrtghpthhtohepjhhikhhosheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepsggvnhhjrghmihhnrdhtihhsshhoihhrvghssehrvgguhhgrthdrtghomhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehmihhk
+ rgdrfigvshhtvghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtoheplhhinhhugidqihhnphhuthesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehmrghrihhordhlihhmohhntghivghllhhosegrmhgurdgtohhm
+X-DCC--Metrics: v370.home.net.pl 1024; Body=7 Fuz1=7 Fuz2=7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add snps,pwm-number property to indicate if the block does not have
-all 8 of the PWM blocks.
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Not sure if this should be a general PWM property consider optional
-for all PWM types, so have added a specific one here (there is only
-one other controller with a property for PWM count at the moment)
+The ACPI_FADT_LOW_POWER_S0 flag merely means that it is better to
+use low-power S0 idle on the given platform than S3 (provided that
+the latter is supported) and it doesn't preclude using either of
+them (which of them will be used depends on the choices made by user
+space).
 
-Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+Because of that, ACPI_FADT_LOW_POWER_S0 is generally not sufficient
+for making decisions in device drivers and so i2c_hid_acpi_probe()
+should not use it.
+
+Moreover, Linux always supports suspend-to-idle, so if a given
+device can wake up the system from suspend-to-idle, then it can be
+marked as wakeup capable unconditionally, so make that happen in
+i2c_hid_acpi_probe().
+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 ---
- drivers/pwm/pwm-dwc.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/hid/i2c-hid/i2c-hid-acpi.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
-index 5c319d0e3d52..5edfb8f8acbf 100644
---- a/drivers/pwm/pwm-dwc.c
-+++ b/drivers/pwm/pwm-dwc.c
-@@ -328,12 +328,20 @@ static int dwc_pwm_plat_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
- 	struct dwc_pwm *dwc;
-+	u32 nr_pwm;
- 	int ret;
+Index: linux-pm/drivers/hid/i2c-hid/i2c-hid-acpi.c
+===================================================================
+--- linux-pm.orig/drivers/hid/i2c-hid/i2c-hid-acpi.c
++++ linux-pm/drivers/hid/i2c-hid/i2c-hid-acpi.c
+@@ -105,10 +105,8 @@ static int i2c_hid_acpi_probe(struct i2c
  
- 	dwc = dwc_pwm_alloc(dev);
- 	if (!dwc)
- 		return -ENOMEM;
+ 	acpi_device_fix_up_power(adev);
  
-+	if (!device_property_read_u32(dev, "snps,pwm-number", &nr_pwm)) {
-+		if (nr_pwm > DWC_TIMERS_TOTAL)
-+			dev_err(dev, "too many PWMs specified (%d)\n", nr_pwm);
-+		else
-+			dwc->chip.npwm = nr_pwm;
-+	}
-+
- 	dwc->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(dwc->base))
- 		return dev_err_probe(dev, PTR_ERR(dwc->base),
--- 
-2.35.1
+-	if (acpi_gbl_FADT.flags & ACPI_FADT_LOW_POWER_S0) {
+-		device_set_wakeup_capable(dev, true);
+-		device_set_wakeup_enable(dev, false);
+-	}
++	device_set_wakeup_capable(dev, true);
++	device_set_wakeup_enable(dev, false);
+ 
+ 	return i2c_hid_core_probe(client, &ihid_acpi->ops,
+ 				  hid_descriptor_address, 0);
+
+
 
