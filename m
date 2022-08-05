@@ -2,83 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 233EDC25B06
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 11:15:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 810FFC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 11:17:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240537AbiHELPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 07:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43048 "EHLO
+        id S240557AbiHELRW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 07:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237960AbiHELPT (ORCPT
+        with ESMTP id S229600AbiHELRU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 07:15:19 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4BA45FF0;
-        Fri,  5 Aug 2022 04:15:17 -0700 (PDT)
-Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LzjZV3ZLGz67bC8;
-        Fri,  5 Aug 2022 19:10:58 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 5 Aug 2022 13:15:14 +0200
-Received: from [10.126.170.142] (10.126.170.142) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2375.24; Fri, 5 Aug 2022 12:15:12 +0100
-Message-ID: <04e1e8c1-d060-6658-141a-b7c1b7dd8400@huawei.com>
-Date:   Fri, 5 Aug 2022 12:15:16 +0100
+        Fri, 5 Aug 2022 07:17:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8998417A8F
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 04:17:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659698238;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=FIQQyQMEAsOWLvIGzAbbvEjFQfPZd5eSUCefghC7UrOEu5JngiygVl0T6OSXD8D7VG4mO1
+        /8BBUVGQgzLWSYWRpEAK6BGEQ+UfAoscaRaYFoLwai0FGmoc6RirdrpVHmGAbRznUw/haV
+        DdsJ4Key3BHKcGVeXQhBLxTS3T5cI8s=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-99-FaJGjcO_OzyZLoIQnp8_ow-1; Fri, 05 Aug 2022 07:17:13 -0400
+X-MC-Unique: FaJGjcO_OzyZLoIQnp8_ow-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 14C7785A585;
+        Fri,  5 Aug 2022 11:17:13 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C24E5492CA2;
+        Fri,  5 Aug 2022 11:17:12 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kai Huang <kai.huang@intel.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [PATCH v2 0/3] KVM: x86/mmu: MMIO caching bug fixes
+Date:   Fri,  5 Aug 2022 07:17:06 -0400
+Message-Id: <20220805111706.1431548-1-pbonzini@redhat.com>
+In-Reply-To: <20220803224957.1285926-1-seanjc@google.com>
+References: 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v4 08/17] perf pmu-events: Hide pmu_sys_event_tables
-To:     Ian Rogers <irogers@google.com>, Will Deacon <will@kernel.org>,
-        "James Clark" <james.clark@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        "Namhyung Kim" <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        "Kan Liang" <kan.liang@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-perf-users@vger.kernel.org>
-CC:     Stephane Eranian <eranian@google.com>
-References: <20220804221816.1802790-1-irogers@google.com>
- <20220804221816.1802790-9-irogers@google.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <20220804221816.1802790-9-irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.170.142]
-X-ClientProxiedBy: lhreml704-chm.china.huawei.com (10.201.108.53) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/08/2022 23:18, Ian Rogers wrote:
-> Move usage of the table to pmu-events.c so it may be hidden. By
-> abstracting the table the implementation can later be changed.
-> 
-> Signed-off-by: Ian Rogers<irogers@google.com>
+Queued, thanks.
 
-Reviewed-by: John Garry <john.garry@huawei.com>
+Paolo
 
-> -	const struct pmu_event *sys_event_tables = __test_pmu_get_sys_events_table();
-> +	const struct pmu_event *sys_event_tables = find_sys_events_table("pme_test_soc_sys");
-
-Maybe we can change to not need the "pme_" prefix or even some of the 
-suffix, like "_sys"
-
->   	const struct pmu_events_map *map = __test_pmu_get_events_map();
 
