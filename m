@@ -2,135 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 654CBC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 16:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A44C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 16:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240964AbiHEQhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 12:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
+        id S241222AbiHEQkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 12:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240791AbiHEQha (ORCPT
+        with ESMTP id S241135AbiHEQju (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 12:37:30 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F20179681;
-        Fri,  5 Aug 2022 09:37:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659717448; x=1691253448;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=h+XoiT91vZAlUqfEqVhh9See8InxvMKKYGhctLhARco=;
-  b=ahBBkBghFnIvyRRqO9xoM+bEUSnnVtCcGqIZcfXoDxdXJuar7FG4CWAN
-   J/qn2iT3OlW55vbnwJKt1cqEdx/muVk000Z48h95itmegLAdyZjJtI1Et
-   Ab/eB4mkm4nLO+NCygGNYvCDYFyNkq9JVqaXEnvSpK/vPKNfxUHUip3dg
-   P6iZnJw+peojJrE69W5mSPuteCUoaUW8+aB43XhUjf4HKG8he3oOJn9lR
-   82pWuU3CIO4Cb3xRKM28Is5g5ftjUvloCm9KjEtZBUKEZ7+GpvTChq30e
-   zlqsgFl7ndfbbqRzrqgEWTJduiPv1THfW+NEfQElXVHOMS4OegGMfbAMa
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="277162816"
-X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="277162816"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 09:37:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="554157911"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 05 Aug 2022 09:37:25 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oK0KC-000JYN-2F;
-        Fri, 05 Aug 2022 16:37:24 +0000
-Date:   Sat, 6 Aug 2022 00:36:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jianmin Lv <lvjianmin@loongson.cn>, lpieralisi@kernel.org,
-        robin.murphy@arm.com, guohanjun@huawei.com, sudeep.holla@arm.com,
-        rafael@kernel.org, lenb@kernel.org, robert.moore@intel.com
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: Re: [PATCH V2 2/2] LoongArch: Remove ARCH_HAS_PHYS_TO_DMA
-Message-ID: <202208060021.6kjospL6-lkp@intel.com>
-References: <1659684674-40612-3-git-send-email-lvjianmin@loongson.cn>
+        Fri, 5 Aug 2022 12:39:50 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E2A79EE5
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 09:39:46 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id bf13so3085793pgb.11
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 09:39:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc;
+        bh=KaXqnPrSeRiUFYXdAWLSE5nZAIZiti4oQlNPbQaT/uc=;
+        b=NzzcZTJcaDh9dk+slsK/g5e7PlS8Zc8DX8phr6cWjVAQVzpPD8WHwp2u4GFJxDedzJ
+         KxHStOfUfOonZ8ZrEH8Ka/oXdI90kOQlDTl+C4RQJedu59YQHFyaaoaZPpokQTCc7HZ+
+         Ls5uqrkI1ImpiDb34GwwnXJd8jmjATn9fW6Z+yYddxy24y/+6j+UUjs/Q2FKMpqlVKv8
+         kqWWZAdosK2oImekLphLk1h7a5wqYYtYnTF5hS3h8pXQGYi/QGZJI2e28RaRkwYP9NA9
+         OM2DnIs2i/8Fp+RcVA5mo8M9xQ06R/Y9h6lkXJ/xOiVrGWmoI3hZUSMDtjCMyZXoIYpP
+         zYqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=KaXqnPrSeRiUFYXdAWLSE5nZAIZiti4oQlNPbQaT/uc=;
+        b=VKdY3ahiFx3/r9PY8/DbS1EbYSd05vgQhD+B394vfIxqaBTJIVtJeuOVepfhE5RIbT
+         v7HEFDmmEMpA4IHpeeBXEyRXjrMsu16DXlYrybyEq+7euwuUdqKdJ0hZj0m5YV69OkEi
+         +4zQLYkOd8XQBmqm0oo2i2n5y4xnKcUmQjwMu5w184PMawXF3VmxOMgFNKiKEeVMfT72
+         mK+aR3S2gXq5rnUnHmP9tWCUbDsayFAkDk5HwlMArh1rdAa3UTU+zU/+LAntxrhWOVBI
+         U/AbNjplGF8mRJpokQElj41yWDu21nMne096dm19rCt07/2f/DALU2YvOyw5Myue/ktL
+         NmHQ==
+X-Gm-Message-State: ACgBeo0/QNzeA8KJvWs61AAJnd+UVQ1GKQxNGzdNqmRKuo5IMsJ2p3kS
+        Oh2iSok4+wMF+XXlFR5mFsKKg5JHAEyWuw==
+X-Google-Smtp-Source: AA6agR66kbCj8jr9qzfI6RQCl2kTuBFyodbI5RkxkXorWl9S2I+tqoH45jx+ILW8ji+7md56MOtsdg==
+X-Received: by 2002:a05:6a00:1709:b0:52e:677b:702b with SMTP id h9-20020a056a00170900b0052e677b702bmr7775274pfc.19.1659717585745;
+        Fri, 05 Aug 2022 09:39:45 -0700 (PDT)
+Received: from autolfshost ([2405:205:c8af:3bdd:c05c:f3bc:26ee:52b2])
+        by smtp.gmail.com with ESMTPSA id z66-20020a626545000000b0052d3a442760sm3207910pfb.161.2022.08.05.09.39.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Aug 2022 09:39:45 -0700 (PDT)
+Date:   Fri, 5 Aug 2022 22:09:29 +0530
+From:   Anup K Parikh <parikhanupk.foss@gmail.com>
+To:     skhan@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] Doc fix for dget_dlock
+Message-ID: <Yu1HwVoTYOeaCh4v@autolfshost>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1659684674-40612-3-git-send-email-lvjianmin@loongson.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jianmin,
+Removes the warning for dget_dlock in include/linux/dcache.h and
+enables generation of its API documentation
 
-Thank you for the patch! Perhaps something to improve:
+Signed-off-by: Anup K Parikh <parikhanupk.foss@gmail.com>
+---
+ include/linux/dcache.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[auto build test WARNING on rafael-pm/linux-next]
-[also build test WARNING on linus/master v5.19 next-20220804]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Jianmin-Lv/DMA-update-acpi_dma_get_range-to-return-dma-map-regions/20220805-153307
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git linux-next
-config: loongarch-randconfig-r011-20220805 (https://download.01.org/0day-ci/archive/20220806/202208060021.6kjospL6-lkp@intel.com/config)
-compiler: loongarch64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/30f8fbc6b485f30e8533a7848a4ad9a2e1351be8
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jianmin-Lv/DMA-update-acpi_dma_get_range-to-return-dma-map-regions/20220805-153307
-        git checkout 30f8fbc6b485f30e8533a7848a4ad9a2e1351be8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=loongarch SHELL=/bin/bash arch/loongarch/kernel/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/loongarch/kernel/dma.c:8:6: warning: no previous prototype for 'acpi_arch_dma_setup' [-Wmissing-prototypes]
-       8 | void acpi_arch_dma_setup(struct device *dev)
-         |      ^~~~~~~~~~~~~~~~~~~
-
-
-vim +/acpi_arch_dma_setup +8 arch/loongarch/kernel/dma.c
-
-     7	
-   > 8	void acpi_arch_dma_setup(struct device *dev)
-     9	{
-    10		int ret;
-    11		const struct bus_dma_region *map = NULL;
-    12	
-    13		ret = acpi_dma_get_range(dev, &map);
-    14		if (!ret) {
-    15			const struct bus_dma_region *r = map;
-    16			u64 mask, dma_start, dma_end = 0;
-    17	
-    18			/* determine the overall bounds of all dma regions */
-    19			for (dma_start = U64_MAX; r->size; r++) {
-    20	
-    21				/* Take lower and upper limits */
-    22				if (r->dma_start < dma_start)
-    23					dma_start = r->dma_start;
-    24				if (r->dma_start + r->size - 1 > dma_end)
-    25					dma_end = r->dma_start + r->size - 1;
-    26			}
-    27	
-    28			if (dma_start >= dma_end) {
-    29				dev_dbg(dev, "Invalid DMA regions configuration\n");
-    30				return;
-    31			}
-    32	
-    33			mask = DMA_BIT_MASK(ilog2(dma_end) + 1);
-    34			dev->bus_dma_limit = dma_end;
-    35			dev->dma_range_map = map;
-    36			dev->coherent_dma_mask = min(dev->coherent_dma_mask, mask);
-    37			*dev->dma_mask = min(*dev->dma_mask, mask);
-    38		}
-    39	
-
+diff --git a/include/linux/dcache.h b/include/linux/dcache.h
+index f5bba5148..ce0b36f72 100644
+--- a/include/linux/dcache.h
++++ b/include/linux/dcache.h
+@@ -297,7 +297,7 @@ extern char *dentry_path(const struct dentry *, char *, int);
+ /* Allocation counts.. */
+ 
+ /**
+- *	dget, dget_dlock -	get a reference to a dentry
++ *	dget_dlock -	get a reference to a dentry
+  *	@dentry: dentry to get a reference to
+  *
+  *	Given a dentry or %NULL pointer increment the reference count
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
