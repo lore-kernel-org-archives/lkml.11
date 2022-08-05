@@ -2,71 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1370CC25B07
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 18:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C67AC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 18:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241321AbiHESd2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 14:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35544 "EHLO
+        id S241341AbiHESdv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 14:33:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229826AbiHESdZ (ORCPT
+        with ESMTP id S241324AbiHESdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 14:33:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F2D7AC18
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 11:33:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99EBFB829EC
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 18:33:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBAA3C433C1;
-        Fri,  5 Aug 2022 18:33:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659724402;
-        bh=3f5o70JbYlPCgy6ykT0F1POnBTLd6YMhY5LFfRMH/fw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QkS9cUj74TflOnU0+bxxreIvQS+BNlIOidVDR/w+/s4epHg8niNzflgQ9Rf6KrYaq
-         SwCVQBgZ/r8jlkjw+Oc+oyPCWJsCshWhicmsbI+xiFciiWhY6qID9nYgut46YOZLiv
-         rOGJtbLMFbh+jTjlI9SpCxxrU9PLPPwB9WskudvKm4bf09hDYNruZ3PDG13q7/UYtu
-         fyzp0/SEscqaSjKVaVoqda1t+cpTk9D88/wuL6kCcvmobCywaMdcA3ooZZalupDd0H
-         nSs0FYjnLboOlqig2VSyzdqrZUnSxHEzEh3uXnapUKIe7mHAOnyhX6/i83eAi3EuXB
-         0U3k/O+rvOcbg==
-Date:   Fri, 5 Aug 2022 18:33:20 +0000
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Siddh Raman Pant <code@siddh.me>
-Cc:     "christophe.jaillet" <christophe.jaillet@wanadoo.fr>,
-        corbet <corbet@lwn.net>, dhowells <dhowells@redhat.com>,
-        edumazet <edumazet@google.com>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        mchehab <mchehab@kernel.org>, rdunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v2 3/3] kernel/watch_queue: Remove wqueue->defunct and
- use pipe for clear check
-Message-ID: <Yu1icG/o8VcfsQdy@gmail.com>
-References: <cd2a10ffd8cb11c79754f43d0d20fd3cd4ba9b7e.1659618705.git.code@siddh.me>
- <20220804144152.468916-1-code@siddh.me>
- <YuzFrzrTnTtUHMn/@sol.localdomain>
- <1826d5c4a90.282ac4bf118702.5300662644268737477@siddh.me>
+        Fri, 5 Aug 2022 14:33:43 -0400
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508157AC2B
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 11:33:41 -0700 (PDT)
+Received: from imladris.surriel.com ([96.67.55.152])
+        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <riel@shelob.surriel.com>)
+        id 1oK28b-0006gI-Hj;
+        Fri, 05 Aug 2022 14:33:33 -0400
+Message-ID: <82b27eafe952c9f5a8ea6a8bcd902a38e2b2c77a.camel@surriel.com>
+Subject: Re: [RFC PATCH 1/5] entry: Pass pt_regs to
+ irqentry_exit_cond_resched()
+From:   Rik van Riel <riel@surriel.com>
+To:     ira.weiny@intel.com, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@intel.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com
+Date:   Fri, 05 Aug 2022 14:33:32 -0400
+In-Reply-To: <20220805173009.3128098-2-ira.weiny@intel.com>
+References: <20220805173009.3128098-1-ira.weiny@intel.com>
+         <20220805173009.3128098-2-ira.weiny@intel.com>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-JFh7ZqUa7s9ijmyuP8qU"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1826d5c4a90.282ac4bf118702.5300662644268737477@siddh.me>
+Sender: riel@shelob.surriel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 03:05:41PM +0530, Siddh Raman Pant wrote:
-> On Fri, 05 Aug 2022 12:54:31 +0530  Eric Biggers  wrote:
-> > Why is the READ_ONCE() needed?  Doesn't wqueue->lock protect wqueue->pipe?
-> 
-> We are changing the pointer while a notification can be potentially waiting to
-> be posted to the pipe. So a barrier is needed to prevent compiler magic from
-> reloading the value.
-> 
 
-wqueue->pipe is only read or written while wqueue->lock is held, so that is not
-an issue at all.
+--=-JFh7ZqUa7s9ijmyuP8qU
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-- Eric
+On Fri, 2022-08-05 at 10:30 -0700, ira.weiny@intel.com wrote:
+> From: Ira Weiny <ira.weiny@intel.com>
+>=20
+> Auxiliary pt_regs space needs to be manipulated by the generic
+> entry/exit code.
+>=20
+> Ideally irqentry_exit() would take care of handling any auxiliary
+> pt_regs on exit.=C2=A0 Unfortunately, irqentry_exit() is not the only exi=
+t
+> from exception path.=C2=A0 The call to irqentry_exit_cond_resched() from
+> xen_pv_evtchn_do_upcall() bypasses irqentry_exit().
+>=20
+> Make irqentry_exit_cond_resched() symmetrical with irqentry_enter()
+> by
+> passing pt_regs to it.=C2=A0 This makes irqentry_exit_cond_resched()
+> capable
+> of handling auxiliary pt_regs in future patches.
+>=20
+> Cc: Rik van Riel <riel@surriel.com>
+> Cc: Dave Hansen <dave.hansen@linux.intel.com>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+
+Acked-by: Rik van Riel <riel@surriel.com>
+
+--=20
+All Rights Reversed.
+
+--=-JFh7ZqUa7s9ijmyuP8qU
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEKR73pCCtJ5Xj3yADznnekoTE3oMFAmLtYnwACgkQznnekoTE
+3oP1FQgAq/4oo6OX183QaOkso7rRPPrz42VmLpnAYpRbCi6GYzGZoFVrActKJlh1
+LnC28neeVEwVQmhYKzX/DPfTjeY+CTzyRG1NHb4PtZlLU+glH25HqVF4ag8YRnmg
+ULrXIq47s8WkfQya1Ps6a1ypp1B4hO5nAaOqMzsv5d9vynG3sCs5MD1PQu97UVUy
+HwPzeaXPHcYQ8L9Vm7goEW4DlQjBZvDK24GtW8/24GCaIEeoEXXHxgVbZicM9eeT
+R29FN520lXJEvINZpvvi5PBIbrF/5gV37plJesGyu/DWP8xq4NknFhg5F0SuCpPj
+SuQz2fiaSDoQQrPlizq35kI39cVnKQ==
+=c72J
+-----END PGP SIGNATURE-----
+
+--=-JFh7ZqUa7s9ijmyuP8qU--
