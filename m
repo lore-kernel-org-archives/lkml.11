@@ -2,181 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 365F0C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 16:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1846C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 16:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241469AbiHEQ3n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 12:29:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59402 "EHLO
+        id S241394AbiHEQ3x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 12:29:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241330AbiHEQ31 (ORCPT
+        with ESMTP id S241389AbiHEQ3d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 12:29:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 661B7753AC
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 09:29:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659716965;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=O1CTGsepbWky42F1RTyXU8gWqoR/QXpIkPCqa2oyjX8=;
-        b=aXvjaJyLTLsLWZYHy0zC8aPCt1KsDIqZl26FFxPLPEIvY8R8ciiVZg0qKP9uIHhwgXWw+Y
-        L0dbQkAQD1zUk746U45/6A2MLX3rIltN15P4eXHE7ZRLM7f8WAP8TjPyO1ft+UkaqttC2h
-        7gONttD0qHj1Wx+LlYRskR0uoJ5MsNs=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-321-ueNZDC8lPCW2W3-DDWq09w-1; Fri, 05 Aug 2022 12:29:16 -0400
-X-MC-Unique: ueNZDC8lPCW2W3-DDWq09w-1
-Received: by mail-wr1-f72.google.com with SMTP id e14-20020adfa44e000000b0021f15a9f984so615233wra.20
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 09:29:16 -0700 (PDT)
+        Fri, 5 Aug 2022 12:29:33 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6313B74DE2
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 09:29:31 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id z187so2661082pfb.12
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 09:29:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=NVt7Ojg3Pa9myW1UbaAE8JylBQrIfDsdr5w11ENknyw=;
+        b=lFQZi1y05/nvkc6BXdArl9nxUC1CMoH7PILR8V4/ROTQMYu78xXHNpbWVHulHnGtX+
+         ED10wQPlrJB/4a3/wgamkJy43WE0rxYMtQTsmHd+gtLFWQVVOPc1irb8FJRL/d9wAbxn
+         0Zw2Y+WVaFg4tGE4IEH2RRJ7eU9VfSk+z2x4jN/Gkam9r6a7uj9Gy4swGlxhRI6PH6RL
+         L2zrnvP6MN5U9QStnSfJL1Y9gg0zML0/XkDVeEh8rp2nD3mLfLk7gJrs2IsQkUAbp1CP
+         ES+9Yij3IV6vhzH3RTuq+f/DQSk/jPeyNph49hAP35OTN9Us/O7Syihk8WbwLmEFAqDo
+         EtPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:organization:from
-         :references:cc:to:content-language:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=O1CTGsepbWky42F1RTyXU8gWqoR/QXpIkPCqa2oyjX8=;
-        b=vqs1KuXwayFx1VbW3UjKl8wbVeJPqhwe2efnLLY2KjLy0VMrK56GzioF1P6evwG/nu
-         ICvIaV2kaIlNGInYZDZb1hyLf30aEOaOfptLgtyNBfLtVwR4Lg0bdfoAXIZukqYEI1ES
-         G8DqSCb6wfM2h8LI7x+drLXmXTTrPqi/M1HYfcQgq+oJPCFkqmYcKjZWZcSowbdxVbUd
-         LSfhN7ELkVbPZgH1lyM3ByD6okpPI6pPx2gcKWmZhTze9HrCwrrJMYlMdFlrffGBs1qI
-         +RWtzOTuGWIzAqtWIi5vqVnFlOAdiTIi4rdr5cgOcHaKtIipJmsD5qHVOzT6EEnLZCGI
-         TLSA==
-X-Gm-Message-State: ACgBeo06GFFyVt705Ky6pBhdhvPfZtlcyA7lzIMADjYTSJHvsx/edDrt
-        8XVomccFPF+sRuaLCOuo2cFt6GJayig9UBQsEpV3Z36ryCkDz/4Jzuww1SqntgeycOFrM71G9p5
-        j7tvhwkz46Y7x0rraLO5sCovQ
-X-Received: by 2002:a5d:6b10:0:b0:21e:4bbd:e893 with SMTP id v16-20020a5d6b10000000b0021e4bbde893mr4876975wrw.613.1659716955715;
-        Fri, 05 Aug 2022 09:29:15 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6gSfiuOmIzGGnakz5kqQKANQjqtdgDGvfuY8GUxyjWL663RBOrC690GnTBbkDorGJ4vk59Ig==
-X-Received: by 2002:a5d:6b10:0:b0:21e:4bbd:e893 with SMTP id v16-20020a5d6b10000000b0021e4bbde893mr4876944wrw.613.1659716955386;
-        Fri, 05 Aug 2022 09:29:15 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c706:fb00:f5c3:24b2:3d03:9d52? (p200300cbc706fb00f5c324b23d039d52.dip0.t-ipconnect.de. [2003:cb:c706:fb00:f5c3:24b2:3d03:9d52])
-        by smtp.gmail.com with ESMTPSA id j20-20020a05600c485400b003a3561d4f3fsm4498609wmo.43.2022.08.05.09.28.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Aug 2022 09:29:09 -0700 (PDT)
-Message-ID: <e0d9b4c4-1195-730a-5838-08c10905adaf@redhat.com>
-Date:   Fri, 5 Aug 2022 18:28:41 +0200
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=NVt7Ojg3Pa9myW1UbaAE8JylBQrIfDsdr5w11ENknyw=;
+        b=jrzH9uCaiTNlMdfJzcSVf1wvyNSAa5vUcZIgNcth4/i3VhFpepQEg8gXzuQv1T6wp9
+         NF/c14b0B+d6KPRDkEvBE0490rHUneuk5qsyZ4Q5r8TUQBJDw5qDQQKnIDktbQYxcBAl
+         0lqcz87cF1FA7wc9OLUEZ4NUytBXcdNi3ore+Sv4Hd59OprVUHpbLPaJBeQYqNShqupc
+         A1RyUozNjuEJz2BOUGrl1G5GbP3Q/UFSdy5T1vYJR3AF8s66pfwLV2lo+awYBNHeLVTm
+         4DTQmCy4020SH16/UmVCUY0dE0bsKAcAXUdIc4iovyeXGn+JMl53C8HcCaWNB/CwrImD
+         TvPQ==
+X-Gm-Message-State: ACgBeo1xvPxI8/AQ4c0xmlZItIgaBDRPsy9rp0O2UjA4mTmkt6cG7Scx
+        5Lt5ydq5rZHaxUUfs3H09NovSEg2svwtFw==
+X-Google-Smtp-Source: AA6agR5+qG2pYhy9LeF+iT26oZG1qHU3SLkrzITuutbQNXg0ttnlL7wTy7pN+ka1mTZ4g/wCBkRUuw==
+X-Received: by 2002:aa7:88d1:0:b0:52e:f8e:aab5 with SMTP id k17-20020aa788d1000000b0052e0f8eaab5mr7738603pff.63.1659716970583;
+        Fri, 05 Aug 2022 09:29:30 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id w18-20020a170902e89200b0016dcbdf9492sm3296786plg.92.2022.08.05.09.29.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Aug 2022 09:29:29 -0700 (PDT)
+Date:   Fri, 5 Aug 2022 16:29:25 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] KVM: x86: Reject writes to PERF_CAPABILITIES feature
+ MSR after KVM_RUN
+Message-ID: <Yu1FZX7hwT1X7DSw@google.com>
+References: <20220805083744.78767-1-likexu@tencent.com>
+ <20220805083744.78767-2-likexu@tencent.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Mike Kravetz <mike.kravetz@oracle.com>,
-        Miaohe Lin <linmiaohe@huawei.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Muchun Song <songmuchun@bytedance.com>,
-        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
-        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.vnet.ibm.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Prakash Sangappa <prakash.sangappa@oracle.com>,
-        James Houghton <jthoughton@google.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Ray Fucillo <Ray.Fucillo@intersystems.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220706202347.95150-1-mike.kravetz@oracle.com>
- <20220706202347.95150-5-mike.kravetz@oracle.com>
- <ee6af38d-f797-a64f-e5c4-78bad3753aca@huawei.com> <YuGLT+RlCynFM9Z4@monkey>
- <ae24c722-0b4a-def4-8cfe-e8b3b48a22c6@huawei.com> <YuK9KqTLqEGavv7N@monkey>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [RFC PATCH v4 4/8] hugetlbfs: catch and handle truncate racing
- with page faults
-In-Reply-To: <YuK9KqTLqEGavv7N@monkey>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220805083744.78767-2-likexu@tencent.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28.07.22 18:45, Mike Kravetz wrote:
-> On 07/28/22 10:02, Miaohe Lin wrote:
->> On 2022/7/28 3:00, Mike Kravetz wrote:
->>> On 07/27/22 17:20, Miaohe Lin wrote:
->>>> On 2022/7/7 4:23, Mike Kravetz wrote:
->>>>> Most hugetlb fault handling code checks for faults beyond i_size.
->>>>> While there are early checks in the code paths, the most difficult
->>>>> to handle are those discovered after taking the page table lock.
->>>>> At this point, we have possibly allocated a page and consumed
->>>>> associated reservations and possibly added the page to the page cache.
->>>>>
->>>>> When discovering a fault beyond i_size, be sure to:
->>>>> - Remove the page from page cache, else it will sit there until the
->>>>>   file is removed.
->>>>> - Do not restore any reservation for the page consumed.  Otherwise
->>>>>   there will be an outstanding reservation for an offset beyond the
->>>>>   end of file.
->>>>>
->>>>> The 'truncation' code in remove_inode_hugepages must deal with fault
->>>>> code potentially removing a page/folio from the cache after the page was
->>>>> returned by filemap_get_folios and before locking the page.  This can be
->>>>> discovered by a change in folio_mapping() after taking folio lock.  In
->>>>> addition, this code must deal with fault code potentially consuming
->>>>> and returning reservations.  To synchronize this, remove_inode_hugepages
->>>>> will now take the fault mutex for ALL indices in the hole or truncated
->>>>> range.  In this way, it KNOWS fault code has finished with the page/index
->>>>> OR fault code will see the updated file size.
->>>>>
->>>>> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
->>>>> ---
->>>>
->>>> <snip>
->>>>
->>>>> @@ -5606,8 +5610,10 @@ static vm_fault_t hugetlb_no_page(struct mm_struct *mm,
->>>>>  
->>>>>  	ptl = huge_pte_lock(h, mm, ptep);
->>>>>  	size = i_size_read(mapping->host) >> huge_page_shift(h);
->>>>> -	if (idx >= size)
->>>>> +	if (idx >= size) {
->>>>> +		beyond_i_size = true;
->>>>
->>>> Thanks for your patch. There is one question:
->>>>
->>>> Since races between hugetlb pagefault and truncate is guarded by hugetlb_fault_mutex,
->>>> do we really need to check it again after taking the page table lock?
->>>>
->>>
->>> Well, the fault mutex can only guard a single hugetlb page.  The fault mutex
->>> is actually an array/table of mutexes hashed by mapping address and file index.
->>> So, during truncation we take take the mutex for each page as they are
->>> unmapped and removed.  So, the fault mutex only synchronizes operations
->>> on one specific page.  The idea with this patch is to coordinate the fault
->>> code and truncate code when operating on the same page.
->>>
->>> In addition, changing the file size happens early in the truncate process
->>> before taking any locks/mutexes.
->>
->> I wonder whether we can somewhat live with it to make code simpler. When changing the file size happens
->> after checking i_size but before taking the page table lock in hugetlb_fault, the truncate code would
->> remove the hugetlb page from the page cache for us after hugetlb_fault finishes if we don't roll back
->> when checking i_size again under the page table lock?
->>
->> In a word, if hugetlb_fault see a truncated inode, back out early. If not, let truncate code does its
->> work. So we don't need to complicate the already complicated error path. Or am I miss something?
->>
+On Fri, Aug 05, 2022, Like Xu wrote:
+> From: Like Xu <likexu@tencent.com>
 > 
-> Thank you! I believe your observations and suggestions are correct.
+> KVM may do the "wrong" thing if userspace changes PERF_CAPABILITIES
+> after running the vCPU, i.e. after KVM_RUN. Similar to disallowing CPUID
+> changes after KVM_RUN, KVM should also disallow changing the feature MSRs
+> (conservatively starting from PERF_CAPABILITIES) after KVM_RUN to prevent
+> unexpected behavior.
 > 
-> We can just let the fault code proceed after the early "idx >= size",
-> and let the truncation code remove the page.  This also eliminates the
-> need for patch 3 (hugetlbfs: move routine remove_huge_page to hugetlb.c).
+> Applying the same logic to most feature msrs in do_set_msr() may
+> reduce the flexibility (one odd but reasonable user space may want
+> per-vcpu control, feature by feature)
 
-At least remaining the functions would be very welcome nonetheless :)
+I don't follow this argument.  vcpu->arch.last_vmentry_cpu is per-vCPU, nothing
+prevents userspace from defining 
 
-> 
-> I will make these changes in the next version.
+> and also increases the overhead.
 
-Just so I understand correctly, we want to let fault handling code back
-out early if we find any incompatible change, and simply retry the
-fault? I'm thinking about some kind of a high-level seqcount.
+Yes, there is a small amount of overhead, but it's trivial compared to the massive
+switch statements in {svm,vmx}_set_msr().  And there are multiple ways to make the
+overhead practically meaningless.
 
--- 
-Thanks,
+Ha!  Modern compilers are fantastic.  If we special case the VMX MSRs, which isn't
+a terrible idea anyways (it's a good excuse to add proper defines instead of open
+coding "MSR_IA32_VMX_BASIC ... MSR_IA32_VMX_VMFUNC" everywhere), then the lookup
+can use a compile-time constant array and generate what is effectively a switch
+statement without actually needed a switch statemen, and without needed to play
+macro games are have redundant lists (maintenance burden).
 
-David / dhildenb
+E.g. with some prep work, the lookup can be this
 
+/*
+ * All feature MSRs except uCode revID, which tracks the currently loaded uCode
+ * patch, are immutable once the vCPU model is defined.  Special case the VMX
+ * MSRs to keep the primarly lookup loop short.
+ */
+static bool kvm_is_immutable_feature_msr(u32 msr)
+{
+	int i;
+
+	if (msr >= KVM_FIRST_VMX_FEATURE_MSR && msr <= KVM_LAST_VMX_FEATURE_MSR)
+		return true;
+
+	for (i = 0; i < ARRAY_SIZE(msr_based_features_all_except_vmx); i++) {
+		if (msr == msr_based_features_all_except_vmx[i])
+			return msr != MSR_IA32_UCODE_REV;
+	}
+
+	return false;
+}
+
+which gcc translates to a series of CMP+JCC/SETcc instructions.
+
+   0x00000000000291d0 <+48>:	8d 86 80 fb ff ff	lea    -0x480(%rsi),%eax
+   0x00000000000291d6 <+54>:	83 f8 11	cmp    $0x11,%eax
+   0x00000000000291d9 <+57>:	76 65	jbe    0x29240 <do_set_msr+160>
+   0x00000000000291db <+59>:	81 fe 29 10 01 c0	cmp    $0xc0011029,%esi
+   0x00000000000291e1 <+65>:	74 5d	je     0x29240 <do_set_msr+160>
+   0x00000000000291e3 <+67>:	81 fe 8b 00 00 00	cmp    $0x8b,%esi
+   0x00000000000291e9 <+73>:	0f 94 c0	sete   %al
+   0x00000000000291ec <+76>:	81 fe 0a 01 00 00	cmp    $0x10a,%esi
+   0x00000000000291f2 <+82>:	0f 94 c2	sete   %dl
+   0x00000000000291f5 <+85>:	08 d0	or     %dl,%al
+   0x00000000000291f7 <+87>:	75 3e	jne    0x29237 <do_set_msr+151>
+   0x00000000000291f9 <+89>:	81 fe 45 03 00 00	cmp    $0x345,%esi
+   0x00000000000291ff <+95>:	74 36	je     0x29237 <do_set_msr+151>
+
+I'll send a series.
