@@ -2,103 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B91FC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 19:02:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C2CC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 19:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240748AbiHETCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 15:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55784 "EHLO
+        id S241240AbiHETCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 15:02:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233431AbiHETCQ (ORCPT
+        with ESMTP id S233431AbiHETC3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 15:02:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DCB6C18E29
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 12:02:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659726135;
+        Fri, 5 Aug 2022 15:02:29 -0400
+Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E3644D4CC
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 12:02:27 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id EAD9256188E;
+        Fri,  5 Aug 2022 18:43:41 +0000 (UTC)
+Received: from pdx1-sub0-mail-a254.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 72441561810;
+        Fri,  5 Aug 2022 18:43:41 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1659725021; a=rsa-sha256;
+        cv=none;
+        b=dSAjphovaKgRqgBmLW6LiKiJJ/7t50h4L45mzjroExD2IrYaeY0Vnfofu1HV4q3tlKvwML
+        dBySxJTxBn69ZgO0yec9GlU4ljKK/7kbL3tVwaISLKAGx9tnmKrQJzyADIM5XRYD03I/ro
+        rCjvDKW+FNtCRBXKTxUbbZntb5pDWMMBFVohEGoN6fE6FRij6naaSJUhibs7DWWLPntD4C
+        zPC9h0CsXfeDuXx9JppszwwuQMHGkkxNP90EPKuyyAlt/UKWC3gwby8kpdwIn40e+uTVb+
+        Ks4LK1Asl65k/869EoUiicR4ot6ij7l4YwiGdgtNfinQKTx97DUK72ZN1pKnrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1659725021;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GIcmLgWRQIu/jzaYm/Us8pJ8sFlavYikN+PtkX6N63Y=;
-        b=IbLTtwuVhIxbtQrquZZWela20ZsB5lvBrPRpWJz8/mY/EXyw+phRTu7YJw4zoKeOqr1+yv
-        QqGmmJTkTakq/cvumwMTmUAqfAMpS1Y9Aq2fGDih7Mqr02gT10plTC1pTUO+Bs0AXbjztp
-        BeLyBlo+754u1QpsFy++D2WjqJ0RU/s=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-553-qvoksAyINU6K1nsOnUEzxg-1; Fri, 05 Aug 2022 15:02:11 -0400
-X-MC-Unique: qvoksAyINU6K1nsOnUEzxg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=txcVLOHGhV2Wt2dre25z7H8dhI6acoihRqjMmhfZESY=;
+        b=FDXJj4GJ1q1DU1turFDyUoQtC9hycDIU8HPK/uOrwzA/3sHq7ad708TDKMkJUCGiXlQ04i
+        q33b5Vcp5cN3yvNW3dLAgprBoJXJwB3+reYre21hRxBdd8xx7RD3UoEDBAfqpGZIV8cyGo
+        T7ONVjDU8kF8VxTxzC5HNrC1VhMLWNsxxN7B/MH4oO80ZKz8hioUVlMYfJOoX1hutq/py/
+        LX7fSGPKuEM9qba8LEfSbgn23ynY1wV1CGs5FSc4PWrl3wEZBi1Ytf0Td8ZbxIup9MAjTD
+        K094EyGKDc6Xa3qiox8MvmfaKotrduWJhFeNhZILzQ+ME7WPjRNOnupwzg9wwQ==
+ARC-Authentication-Results: i=1;
+        rspamd-7586b5656-2jjr7;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Squirrel-Shrill: 42b4f8c64ac7c2e4_1659725021770_2147483422
+X-MC-Loop-Signature: 1659725021770:2958581256
+X-MC-Ingress-Time: 1659725021769
+Received: from pdx1-sub0-mail-a254.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.116.106.119 (trex/6.7.1);
+        Fri, 05 Aug 2022 18:43:41 +0000
+Received: from offworld (unknown [104.36.25.245])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 50F4385A586;
-        Fri,  5 Aug 2022 19:02:11 +0000 (UTC)
-Received: from [10.18.17.215] (dhcp-17-215.bos.redhat.com [10.18.17.215])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DAD99C27D95;
-        Fri,  5 Aug 2022 19:02:10 +0000 (UTC)
-Message-ID: <2fcf84e6-168b-4ee7-bc9e-5b1c3c9a3d4e@redhat.com>
-Date:   Fri, 5 Aug 2022 15:02:10 -0400
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a254.dreamhost.com (Postfix) with ESMTPSA id 4Lzvcr5xXXz3m;
+        Fri,  5 Aug 2022 11:43:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1659725021;
+        bh=txcVLOHGhV2Wt2dre25z7H8dhI6acoihRqjMmhfZESY=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=HrincwiT+hzSIM5qOvZ4a6DLd/GZl56rwuQGvHjW2Lk8TIW+6VCHhLm5zcMgXWQaf
+         5j5VuUvVYieMVjrH0uXeZ1xgG32rTlolGKbRI1mCylvBEjUTmhhYU+DKENfhlMKti8
+         qsfmCPWDomQZfWcO/UBS5THfRQbmJETp82Qm7xp8f5yBi/gKrwpiicPyjulKdaCJut
+         VbSi6A2uP8dGRqoLaIwv+a2ydtSTjmmdyXgdKrWMWck1o5XQoUs3eO4ze8nDZzLAhH
+         o1eECm/V7CXH0Jt5miw4GH/QN3jmuNiC8q4e17Sjs4WeqCKIa4Oohr1/npMSyGvnHe
+         fgF6pozEKdW2A==
+Date:   Fri, 5 Aug 2022 11:26:37 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Manfred Spraul <manfred@colorfullife.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>, 1vier1@web.de,
+        Waiman Long <longman@redhat.com>
+Subject: Re: [PATCH] ipc/util.c: Cleanup and improve sysvipc_find_ipc(), V3
+Message-ID: <20220805182637.bciu7eavmhxefsc7@offworld>
+References: <20220805115733.104763-1-manfred@colorfullife.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v5] locking/rwsem: Make handoff bit handling more
- consistent
-Content-Language: en-US
-To:     Doug Anderson <dianders@chromium.org>,
-        Hillf Danton <hdanton@sina.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Davidlohr Bueso <dave@stgolabs.net>, MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20211116012912.723980-1-longman@redhat.com>
- <CAD=FV=URCo5xv3k3jWbxV1uRkUU5k6bcnuB1puZhxayEyVc6-A@mail.gmail.com>
- <20220719104104.1634-1-hdanton@sina.com>
- <CAD=FV=Xng_Mcd-9SaK29XSbsthDWLTR6sz53VEktAQFng6a27A@mail.gmail.com>
- <20220722115510.2101-1-hdanton@sina.com>
- <CAD=FV=XS_AqMveo=a2zN+=b3DxM-yJQapd27Dq8dR+kSb2oL_A@mail.gmail.com>
- <20220723001713.2156-1-hdanton@sina.com>
- <CAD=FV=X7FnrwHSedA=1xJsrfSgQZcqu0YEAKrfoJC6BhDc-gFA@mail.gmail.com>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <CAD=FV=X7FnrwHSedA=1xJsrfSgQZcqu0YEAKrfoJC6BhDc-gFA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220805115733.104763-1-manfred@colorfullife.com>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, 05 Aug 2022, Manfred Spraul wrote:
 
-On 8/5/22 13:14, Doug Anderson wrote:
-> Hi,
+>sysvipc_find_ipc() can be simplified further:
 >
-> On Fri, Jul 22, 2022 at 5:17 PM Hillf Danton <hdanton@sina.com> wrote:
->> On Fri, 22 Jul 2022 07:02:42 -0700 Doug Anderson wrote:
->>> Thanks! I added this diff to your previous diff and my simple test
->>> still passes and I don't see your WARN_ON triggered.
->> Thanks!
->>> How do we move forward? Are you going to officially submit a patch
->>> with both of your diffs squashed together? Are we waiting for
->>> additional review from someone?
->> Given it is not unusual for us to miss anything important, lets take
->> a RWSEM_WAIT_TIMEOUT nap now or two.
-> It appears that another fix has landed in the meantime. Commit
-> 6eebd5fb2083 ("locking/rwsem: Allow slowpath writer to ignore handoff
-> bit if not set by first waiter").
+>- It uses a for() loop to locate the next entry in the idr.
+>  This can be replaced with idr_get_next().
 >
-> ...unfortunately with that patch my test cases still hangs. :(
+>- It receives two parameters (pos - which is actually
+>  an idr index and not a position, and new_pos, which
+>  is really a position).
+>  One parameter is sufficient.
+>
 
-The aim of commit 6eebd5fb2083 ("locking/rwsem: Allow slowpath writer to 
-ignore handoff bit if not set by first waiter") is to restore slowpath 
-writer behavior to be the same as before commit d257cc8cb8d5 
-("locking/rwsem: Make handoff bit handling more consistent").
+Makes sense to me.
 
-If the hang still exists, there may be other cause for it. Could you 
-share more information about what the test case is doing and any kernel 
-splat that you have?
-
-Thanks,
-Longman
-
-
+Acked-by: Davidlohr Bueso <dave@stgolabs.net>
