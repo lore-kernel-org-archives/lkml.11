@@ -2,110 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C2CC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 19:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4EC5C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 19:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241240AbiHETCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 15:02:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56074 "EHLO
+        id S241204AbiHETDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 15:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233431AbiHETC3 (ORCPT
+        with ESMTP id S240804AbiHETC4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 15:02:29 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E3644D4CC
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 12:02:27 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id EAD9256188E;
-        Fri,  5 Aug 2022 18:43:41 +0000 (UTC)
-Received: from pdx1-sub0-mail-a254.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 72441561810;
-        Fri,  5 Aug 2022 18:43:41 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1659725021; a=rsa-sha256;
-        cv=none;
-        b=dSAjphovaKgRqgBmLW6LiKiJJ/7t50h4L45mzjroExD2IrYaeY0Vnfofu1HV4q3tlKvwML
-        dBySxJTxBn69ZgO0yec9GlU4ljKK/7kbL3tVwaISLKAGx9tnmKrQJzyADIM5XRYD03I/ro
-        rCjvDKW+FNtCRBXKTxUbbZntb5pDWMMBFVohEGoN6fE6FRij6naaSJUhibs7DWWLPntD4C
-        zPC9h0CsXfeDuXx9JppszwwuQMHGkkxNP90EPKuyyAlt/UKWC3gwby8kpdwIn40e+uTVb+
-        Ks4LK1Asl65k/869EoUiicR4ot6ij7l4YwiGdgtNfinQKTx97DUK72ZN1pKnrA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1659725021;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=txcVLOHGhV2Wt2dre25z7H8dhI6acoihRqjMmhfZESY=;
-        b=FDXJj4GJ1q1DU1turFDyUoQtC9hycDIU8HPK/uOrwzA/3sHq7ad708TDKMkJUCGiXlQ04i
-        q33b5Vcp5cN3yvNW3dLAgprBoJXJwB3+reYre21hRxBdd8xx7RD3UoEDBAfqpGZIV8cyGo
-        T7ONVjDU8kF8VxTxzC5HNrC1VhMLWNsxxN7B/MH4oO80ZKz8hioUVlMYfJOoX1hutq/py/
-        LX7fSGPKuEM9qba8LEfSbgn23ynY1wV1CGs5FSc4PWrl3wEZBi1Ytf0Td8ZbxIup9MAjTD
-        K094EyGKDc6Xa3qiox8MvmfaKotrduWJhFeNhZILzQ+ME7WPjRNOnupwzg9wwQ==
-ARC-Authentication-Results: i=1;
-        rspamd-7586b5656-2jjr7;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Squirrel-Shrill: 42b4f8c64ac7c2e4_1659725021770_2147483422
-X-MC-Loop-Signature: 1659725021770:2958581256
-X-MC-Ingress-Time: 1659725021769
-Received: from pdx1-sub0-mail-a254.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.116.106.119 (trex/6.7.1);
-        Fri, 05 Aug 2022 18:43:41 +0000
-Received: from offworld (unknown [104.36.25.245])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a254.dreamhost.com (Postfix) with ESMTPSA id 4Lzvcr5xXXz3m;
-        Fri,  5 Aug 2022 11:43:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1659725021;
-        bh=txcVLOHGhV2Wt2dre25z7H8dhI6acoihRqjMmhfZESY=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=HrincwiT+hzSIM5qOvZ4a6DLd/GZl56rwuQGvHjW2Lk8TIW+6VCHhLm5zcMgXWQaf
-         5j5VuUvVYieMVjrH0uXeZ1xgG32rTlolGKbRI1mCylvBEjUTmhhYU+DKENfhlMKti8
-         qsfmCPWDomQZfWcO/UBS5THfRQbmJETp82Qm7xp8f5yBi/gKrwpiicPyjulKdaCJut
-         VbSi6A2uP8dGRqoLaIwv+a2ydtSTjmmdyXgdKrWMWck1o5XQoUs3eO4ze8nDZzLAhH
-         o1eECm/V7CXH0Jt5miw4GH/QN3jmuNiC8q4e17Sjs4WeqCKIa4Oohr1/npMSyGvnHe
-         fgF6pozEKdW2A==
-Date:   Fri, 5 Aug 2022 11:26:37 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Manfred Spraul <manfred@colorfullife.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>, 1vier1@web.de,
-        Waiman Long <longman@redhat.com>
-Subject: Re: [PATCH] ipc/util.c: Cleanup and improve sysvipc_find_ipc(), V3
-Message-ID: <20220805182637.bciu7eavmhxefsc7@offworld>
-References: <20220805115733.104763-1-manfred@colorfullife.com>
+        Fri, 5 Aug 2022 15:02:56 -0400
+Received: from mx08-0057a101.pphosted.com (mx08-0057a101.pphosted.com [185.183.31.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550551A825;
+        Fri,  5 Aug 2022 12:02:54 -0700 (PDT)
+Received: from pps.filterd (m0214196.ppops.net [127.0.0.1])
+        by mx07-0057a101.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 275IwEkG013875;
+        Fri, 5 Aug 2022 21:00:20 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=westermo.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=12052020; bh=DY+k8f6xizD0E3lDErdfonPO+Yme8zArGJdWjHyUqU8=;
+ b=3VptLbCDLonm4U2mDgkzwUEUC52OQtaEECvttjmJGO6EyOdi1IBEJtIJZS4HE+ocj+90
+ v8Rm5ZSoqnUJS4z3swui6gcJRXZJFE2D1JsnWSU1t6FqMVoJOY2lI2dIT0FztKh7xv3d
+ VrKdtuPxOCwF308CQ56PQLgEnEPUx+bbqMMu619/NybVRu65fC0I7KymMDlB3BOGvvSQ
+ UVaSrEbzvrnim4Q/wA8BLrU4Vbyv666WUHEYELrLYQIwZPYYtfpycck7h0ZsBA6w1U4T
+ oarnPJVD2oBOdaPFiVOT4BjAhL4ukEiJB6aUElOQ2GVp0asJrijgxCAEGjhmIQJNREv9 BA== 
+Received: from mail.beijerelectronics.com ([195.67.87.131])
+        by mx07-0057a101.pphosted.com (PPS) with ESMTPS id 3hr402hn6v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 05 Aug 2022 21:00:20 +0200
+Received: from Orpheus.nch.westermo.com (172.29.100.2) by
+ EX01GLOBAL.beijerelectronics.com (10.101.10.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.2375.17; Fri, 5 Aug 2022 21:00:17 +0200
+From:   Matthias May <matthias.may@westermo.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
+        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <nicolas.dichtel@6wind.com>,
+        <eyal.birger@gmail.com>, <linux-kernel@vger.kernel.org>,
+        <jesse@nicira.com>, <pshelar@nicira.com>, <tgraf@suug.ch>,
+        Matthias May <matthias.may@westermo.com>
+Subject: [PATCH v4 net] geneve: fix TOS inheriting for ipv4
+Date:   Fri, 5 Aug 2022 21:00:06 +0200
+Message-ID: <20220805190006.8078-1-matthias.may@westermo.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220805115733.104763-1-manfred@colorfullife.com>
-User-Agent: NeoMutt/20220429
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.29.100.2]
+X-ClientProxiedBy: wsevst-s0023.westermo.com (192.168.130.120) To
+ EX01GLOBAL.beijerelectronics.com (10.101.10.25)
+X-Proofpoint-GUID: AfOFOut94Z3B6azK3CtgGuOFKlYf8rtW
+X-Proofpoint-ORIG-GUID: AfOFOut94Z3B6azK3CtgGuOFKlYf8rtW
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 05 Aug 2022, Manfred Spraul wrote:
+The current code retrieves the TOS field after the lookup
+on the ipv4 routing table. The routing process currently
+only allows routing based on the original 3 TOS bits, and
+not on the full 6 DSCP bits.
+As a result the retrieved TOS is cut to the 3 bits.
+However for inheriting purposes the full 6 bits should be used.
 
->sysvipc_find_ipc() can be simplified further:
->
->- It uses a for() loop to locate the next entry in the idr.
->  This can be replaced with idr_get_next().
->
->- It receives two parameters (pos - which is actually
->  an idr index and not a position, and new_pos, which
->  is really a position).
->  One parameter is sufficient.
->
+Extract the full 6 bits before the route lookup and use
+that instead of the cut off 3 TOS bits.
 
-Makes sense to me.
+Fixes: e305ac6cf5a1 ("geneve: Add support to collect tunnel metadata.")
+Signed-off-by: Matthias May <matthias.may@westermo.com>
+---
+v1 -> v2:
+ - Fix typo in "Fixes" tag
+v2 -> v3:
+ - Add missing CCs
+v3 -> v4:
+ - Drop reference to IPv6 equivalent of this patch (Guillaume Nault)
+ - Return of full_tos in geneve_get_v4_rt only when needed (David Ahern))
+---
+ drivers/net/geneve.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-Acked-by: Davidlohr Bueso <dave@stgolabs.net>
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index 018d365f9deb..fafe7dea2227 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -797,7 +797,8 @@ static struct rtable *geneve_get_v4_rt(struct sk_buff *skb,
+ 				       struct geneve_sock *gs4,
+ 				       struct flowi4 *fl4,
+ 				       const struct ip_tunnel_info *info,
+-				       __be16 dport, __be16 sport)
++				       __be16 dport, __be16 sport,
++				       __u8 *full_tos)
+ {
+ 	bool use_cache = ip_tunnel_dst_cache_usable(skb, info);
+ 	struct geneve_dev *geneve = netdev_priv(dev);
+@@ -823,6 +824,8 @@ static struct rtable *geneve_get_v4_rt(struct sk_buff *skb,
+ 		use_cache = false;
+ 	}
+ 	fl4->flowi4_tos = RT_TOS(tos);
++	if (full_tos)
++		*full_tos = tos;
+ 
+ 	dst_cache = (struct dst_cache *)&info->dst_cache;
+ 	if (use_cache) {
+@@ -911,6 +914,7 @@ static int geneve_xmit_skb(struct sk_buff *skb, struct net_device *dev,
+ 	const struct ip_tunnel_key *key = &info->key;
+ 	struct rtable *rt;
+ 	struct flowi4 fl4;
++	__u8 full_tos;
+ 	__u8 tos, ttl;
+ 	__be16 df = 0;
+ 	__be16 sport;
+@@ -921,7 +925,7 @@ static int geneve_xmit_skb(struct sk_buff *skb, struct net_device *dev,
+ 
+ 	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
+ 	rt = geneve_get_v4_rt(skb, dev, gs4, &fl4, info,
+-			      geneve->cfg.info.key.tp_dst, sport);
++			      geneve->cfg.info.key.tp_dst, sport, &full_tos);
+ 	if (IS_ERR(rt))
+ 		return PTR_ERR(rt);
+ 
+@@ -965,7 +969,7 @@ static int geneve_xmit_skb(struct sk_buff *skb, struct net_device *dev,
+ 
+ 		df = key->tun_flags & TUNNEL_DONT_FRAGMENT ? htons(IP_DF) : 0;
+ 	} else {
+-		tos = ip_tunnel_ecn_encap(fl4.flowi4_tos, ip_hdr(skb), skb);
++		tos = ip_tunnel_ecn_encap(full_tos, ip_hdr(skb), skb);
+ 		if (geneve->cfg.ttl_inherit)
+ 			ttl = ip_tunnel_get_ttl(ip_hdr(skb), skb);
+ 		else
+@@ -1149,7 +1153,7 @@ static int geneve_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb)
+ 					  1, USHRT_MAX, true);
+ 
+ 		rt = geneve_get_v4_rt(skb, dev, gs4, &fl4, info,
+-				      geneve->cfg.info.key.tp_dst, sport);
++				      geneve->cfg.info.key.tp_dst, sport, NULL);
+ 		if (IS_ERR(rt))
+ 			return PTR_ERR(rt);
+ 
+-- 
+2.35.1
+
