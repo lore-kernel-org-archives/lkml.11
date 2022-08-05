@@ -2,107 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE249C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98D70C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 08:10:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237392AbiHEIK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 04:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36532 "EHLO
+        id S240222AbiHEIKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 04:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240222AbiHEIK0 (ORCPT
+        with ESMTP id S240436AbiHEIKd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 04:10:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D8BB31C135
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 01:10:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659687024;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Atr+DhHiSOWmg4pa/shGgRsQSRBKuEt9aU4m/334aTs=;
-        b=GyVo8EhCni5tUPsEOcoow2dNAwefz5ozYQZkL88kgEGIz7krMek9CHyhbjGh1MDcm7njXp
-        E7+VQbSsfsqiowBnXMb3Gj0geF3oGHTeyUF3FMXydfHTBeiKLGLODOtruEc3n9U0sXOrPM
-        S/3sDqxv9i5CH+qswjbGkMCFmNa6SP4=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-617-9UkwCuKLNqSUuKvquGkHlg-1; Fri, 05 Aug 2022 04:10:22 -0400
-X-MC-Unique: 9UkwCuKLNqSUuKvquGkHlg-1
-Received: by mail-wm1-f72.google.com with SMTP id 189-20020a1c02c6000000b003a50fa69823so993133wmc.2
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 01:10:22 -0700 (PDT)
+        Fri, 5 Aug 2022 04:10:33 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9EE237E8
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 01:10:30 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id bv3so2366849wrb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 01:10:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc;
+        bh=mIzmvdk7HOX9VETFYuqPj2UDBU0QS3AoESbRivQAHl8=;
+        b=gcnZiSxD9R67ltN8OoA+C/zdBHeNV2JGZ5D4MFVRoggMTlWEXjC8QXvSX8eg1vcuRz
+         Caj/+1bNiL5CnkIl7SBWYCr9W/qDpwY+nBgLfAYbsJq0Nxg1lVo2ClSi0+pA4tYGJGh9
+         p0OvePOWRB+0GgRHpIecPgrhx8j3Hvr0eHVrYe0dqDG6HPsQWNcvbcMwX5vuGuGcdiib
+         7fjEQr4gJSctW5r/8bXGXFZteM8+MRO07f9TbHyHjymC4i6/pGVyFjf4t+7UpPPwYbu6
+         hk46+qZTaKh8A6Z/QRFCFgQxdgVoVxUN4GnJLrtji0mBS+4ezKV3qsSJs93wf8Wi1ns9
+         W/eQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=Atr+DhHiSOWmg4pa/shGgRsQSRBKuEt9aU4m/334aTs=;
-        b=0sOONnBS/u1LSpHHuKxrZw/IYn8uUP93kxBaHtnt78C9w5aq0Y9vwxYA6Mw7U5a4Fo
-         kfcct+MSUSO0yWBf09IUjA4Hjlwa5TW27duKK5Py8PXogI4yH50Ktyf5DBDAD4IBVKUf
-         ahS8GFwFLRfgFlOm7SUzCtXdQLWLmV8FIq0+Prius9lFk0NDyxjAdfT41N80lXldXT07
-         /tYZXU+USs7uSMpBZH53kMN3mheZsIlkiVSo9qhcY032P0RSlmIBJvX8Xm826xofGtyv
-         dJB3vig5PHy7GDOPWyC+uqa2zRD1S4d+zQX2NV7BrjeaHmBCg1JaJpWzCwDkZByFCDdz
-         MhtQ==
-X-Gm-Message-State: ACgBeo09fq/Dnnyj7BCAMtwJ/HsQaOFJuHz2NlYwTFfG1bGDC0IZOe5k
-        gvuQNue7aF0nW07GzfjjgMqh3EpLsx++qy+zM+tnTX89ZPjCCLssJuG4PCJieZPEDziYUvbC6Ud
-        QMuF094aJq73mZ/iCXadzKPpl
-X-Received: by 2002:a05:600c:1d16:b0:3a5:2240:da2e with SMTP id l22-20020a05600c1d1600b003a52240da2emr416846wms.136.1659687021806;
-        Fri, 05 Aug 2022 01:10:21 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7KqFFWWJFPfWJSaVVoqqHnK3ueHfpqrvra3oyJst8TIyPiytSvU5+peoIm9xxviMav/0gp2A==
-X-Received: by 2002:a05:600c:1d16:b0:3a5:2240:da2e with SMTP id l22-20020a05600c1d1600b003a52240da2emr416830wms.136.1659687021608;
-        Fri, 05 Aug 2022 01:10:21 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c706:fb00:f5c3:24b2:3d03:9d52? (p200300cbc706fb00f5c324b23d039d52.dip0.t-ipconnect.de. [2003:cb:c706:fb00:f5c3:24b2:3d03:9d52])
-        by smtp.gmail.com with ESMTPSA id i17-20020a05600011d100b0021e9d98bec4sm3218381wrx.88.2022.08.05.01.10.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Aug 2022 01:10:21 -0700 (PDT)
-Message-ID: <cb695e26-350a-0857-5430-b7e4f81607b1@redhat.com>
-Date:   Fri, 5 Aug 2022 10:10:20 +0200
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc;
+        bh=mIzmvdk7HOX9VETFYuqPj2UDBU0QS3AoESbRivQAHl8=;
+        b=e/xWwARg6mroT7OpNUbpG77UWfjdcZOJ9fMsTI7Hbixwd54z7c51eUBiV07/HVMHI+
+         fjQywpTsbdDhY9ukDBu4olwy9++oo/cziCV8fbGmjqFclg50xSVGcRG3onW/CR1C9Rtm
+         Sr3JBK4qUOGNEFxAfl7hHUiFZ0/5IPYMm827BTEgCtTKXqabNubpGU6/p74ndp9hDg2H
+         FoLK2dT31WI1EZafqYO+il+8Ywz8GE/ZfnIsBSFthjAt5PHcizb583aqtUc3+oxWtzl0
+         PFNPTyU/t4FTQDQhnuv5IOKLPbSigBpZ3YmeGQDqh6nPMVugLmtZR421ydsNvdtUqS6a
+         LvbQ==
+X-Gm-Message-State: ACgBeo1Wb1DcFPN8lLMAnH78AjWnPZRVUFeaf5DPWBoOU1bJJmedUoI4
+        dByK7rwhEnsLLRGX2gtk6A/l9Q==
+X-Google-Smtp-Source: AA6agR7qv51ZP9RGn/h1aDDrkZoeyDiQrc41IP88SLryVi0tdHoioq6EljJsFm41m24QUrNDBazkzA==
+X-Received: by 2002:a5d:5403:0:b0:21e:ea93:234d with SMTP id g3-20020a5d5403000000b0021eea93234dmr3409730wrv.125.1659687029497;
+        Fri, 05 Aug 2022 01:10:29 -0700 (PDT)
+Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id o5-20020a056000010500b0021f0af83142sm3134358wrx.91.2022.08.05.01.10.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Aug 2022 01:10:28 -0700 (PDT)
+References: <20220804165317.29086-1-ddrokosov@sberdevices.ru>
+User-agent: mu4e 1.8.7; emacs 27.1
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "narmstrong@baylibre.com" <narmstrong@baylibre.com>,
+        "khilman@baylibre.com" <khilman@baylibre.com>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>
+Cc:     "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-amlogic@lists.infradead.org" 
+        <linux-amlogic@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1] arm64: dts: meson-axg: reserve memory region for
+ Amlogic TrustOS
+Date:   Fri, 05 Aug 2022 10:03:34 +0200
+In-reply-to: <20220804165317.29086-1-ddrokosov@sberdevices.ru>
+Message-ID: <1jfsibqfez.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/2] mm/gup.c: Don't pass gup_flags to
- check_and_migrate_movable_pages()
-Content-Language: en-US
-To:     Alistair Popple <apopple@nvidia.com>, linux-mm@kvack.org
-Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Ralph Campbell <rcampbell@nvidia.com>
-References: <3e20a542e756bbc0f66435c9344ff674f3ff7ac7.1659680600.git-series.apopple@nvidia.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <3e20a542e756bbc0f66435c9344ff674f3ff7ac7.1659680600.git-series.apopple@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05.08.22 08:29, Alistair Popple wrote:
-> gup_flags is passed to check_and_migrate_movable_pages() so that it can
-> call either put_page() or unpin_user_page() to drop the page reference.
-> However check_and_migrate_movable_pages() is only called for
-> FOLL_LONGTERM, which implies FOLL_PIN so there is no need to pass
-> gup_flags.
-> 
-> Signed-off-by: Alistair Popple <apopple@nvidia.com>
+
+On Thu 04 Aug 2022 at 16:52, Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+
+> For the all AXG SoC based boards, which run Amlogic vendor ATF and
+> TrustOS this memory region 0x5300000-0x6300000 is reserved by BL32,
+> so tag it as no-map in the kernel iomem.
+
+This may be true for the boards you have seen so far but not all ship
+with this specific AML TEE. Some don't have TEE at all, other may have
+different TEE regions.
+
+16 MB may be a significant part of the available memory on some AXG
+devices. Reserving that memory on all AXG devices, regardless of what is
+actually running does not seem appropriate.
+
+I know the same has been done for other devices but I don't think we should
+continue to do so. This should be set either
+* per device if it is fixed
+* dynamically by the bootloader depending on the ATF (which is probably better)
+
+>
+> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
 > ---
->  mm/gup.c | 21 ++++++++-------------
->  1 file changed, 8 insertions(+), 13 deletions(-)
-
-Reviewed-by: David Hildenbrand <david@redhat.com>
-
-
--- 
-Thanks,
-
-David / dhildenb
+>  arch/arm64/boot/dts/amlogic/meson-axg.dtsi | 6 ++++++
+>  1 file changed, 6 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/amlogic/meson-axg.dtsi b/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
+> index 3f5254eeb47b..1fa0d3805969 100644
+> --- a/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
+> +++ b/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
+> @@ -142,6 +142,12 @@ secmon_reserved: secmon@5000000 {
+>  			reg = <0x0 0x05000000 0x0 0x300000>;
+>  			no-map;
+>  		};
+> +
+> +		/* 16 MiB reserved for Amlogic Trust OS (BL32) */
+> +		secos_reserved: secos@5300000 {
+> +			reg = <0x0 0x05300000 0x0 0x1000000>;
+> +			no-map;
+> +		};
+>  	};
+>  
+>  	scpi {
 
