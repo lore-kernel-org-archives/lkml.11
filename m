@@ -2,88 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75788C25B06
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 09:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D74A0C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 09:42:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240573AbiHEJjQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 05:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42374 "EHLO
+        id S240401AbiHEJmP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 05:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229767AbiHEJjP (ORCPT
+        with ESMTP id S237309AbiHEJmM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 05:39:15 -0400
-Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F909785A9;
-        Fri,  5 Aug 2022 02:39:11 -0700 (PDT)
-Received: from [10.18.29.47] (10.18.29.47) by mail-sh.amlogic.com (10.18.11.5)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.9; Fri, 5 Aug 2022
- 17:39:09 +0800
-Message-ID: <c223a85a-b76e-0e82-9a8c-6b60588dc03a@amlogic.com>
-Date:   Fri, 5 Aug 2022 17:39:07 +0800
+        Fri, 5 Aug 2022 05:42:12 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43EB01263A
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 02:42:11 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id CA0DE37CCA;
+        Fri,  5 Aug 2022 09:42:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1659692529; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NmUGqiht02KBLjl2jJqe0krBskvbflhz7qY616lDJqk=;
+        b=txNdr1aFXCn+7avVaUrBxGT8KhhbEulqaTl3HtOZlnRgC49ij/c9UVxLe107921XqE6ws6
+        HzeQ7nLvAbhApcRk4sQvx52jsRUOJuWylNHVoev7uvL+q2Vr4eI/xpoSvjgh57HM7ycC3F
+        vyGWN0v2sgUUK0mL7WxRXfGkSUl47t4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1659692529;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NmUGqiht02KBLjl2jJqe0krBskvbflhz7qY616lDJqk=;
+        b=/1jzst56ywD7Anfj7VQuVpJ+XMFNy4da9AWYV2twMsnG1ecFxwdDnYPSukXPmR4rdeua8s
+        ZcvLEw7n03DUovDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 22158133B5;
+        Fri,  5 Aug 2022 09:42:09 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id K61/BvHl7GL/WAAAMHmgww
+        (envelope-from <jroedel@suse.de>); Fri, 05 Aug 2022 09:42:09 +0000
+Date:   Fri, 5 Aug 2022 11:42:07 +0200
+From:   Joerg Roedel <jroedel@suse.de>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Kanna Scarlet' <knscarlet@gnuweeb.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Bill Metzenthen <billm@melbpc.org.au>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1] x86: Change mov $0, %reg with xor %reg, %reg
+Message-ID: <Yuzl7+qPtK1i2aSj@suse.de>
+References: <20220804152656.8840-1-knscarlet@gnuweeb.org>
+ <20220804152656.8840-2-knscarlet@gnuweeb.org>
+ <Yuvrd2yWLnyxOVLU@zn.tnic>
+ <20220804180805.9077-1-knscarlet@gnuweeb.org>
+ <126271e264204581a42b079b51481740@AcuMS.aculab.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH V3 2/6] arm64: dts: meson: add S4 Soc PLL clock controller
- in DT
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <20220805085716.5635-1-yu.tu@amlogic.com>
- <20220805085716.5635-3-yu.tu@amlogic.com>
- <19654574-bdc0-9fa5-6465-fc88b20e20c5@linaro.org>
-From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <19654574-bdc0-9fa5-6465-fc88b20e20c5@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.18.29.47]
-X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
- (10.18.11.5)
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <126271e264204581a42b079b51481740@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
-     Thank you for your reply.
+On Fri, Aug 05, 2022 at 09:26:02AM +0000, David Laight wrote:
+> Use "xor %rax,%rax" instead of "xor %eax,%eax" to save
+> the 'reg' prefix.
 
-On 2022/8/5 17:16, Krzysztof Kozlowski wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> On 05/08/2022 10:57, Yu Tu wrote:
->> Added information about the S4 SOC PLL Clock controller in DT.
->>
->> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
->> ---
->>   arch/arm64/boot/dts/amlogic/meson-s4.dtsi | 8 ++++++++
->>   1 file changed, 8 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
->> index ff213618a598..a816b1f7694b 100644
->> --- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
->> +++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
->> @@ -92,6 +92,14 @@ apb4: apb4@fe000000 {
->>   			#size-cells = <2>;
->>   			ranges = <0x0 0x0 0x0 0xfe000000 0x0 0x480000>;
->>   
->> +			clkc_pll: pll-clock-controller@8000 {
-> 
-> Node names should be generic - clock-controller.
-> https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
-> 
-I will change to clkc_pll: clock-controller@8000, in next version.
-> 
-> Best regards,
-> Krzysztof
-> 
-> .
+Also, some places explicitly use the mov variant to zero a register
+without touching rflags. Please be careful to not change those.
+
+Regards,
+
+-- 
+Jörg Rödel
+jroedel@suse.de
+
+SUSE Software Solutions Germany GmbH
+Frankenstraße 146
+90461 Nürnberg
+Germany
+
+(HRB 36809, AG Nürnberg)
+Geschäftsführer: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+
