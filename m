@@ -2,108 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5385C25B08
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 11:58:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF7AC25B08
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 12:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240605AbiHEL6g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 07:58:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42500 "EHLO
+        id S236227AbiHEMED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 08:04:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230169AbiHEL6d (ORCPT
+        with ESMTP id S230169AbiHEMEB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 07:58:33 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B14876470;
-        Fri,  5 Aug 2022 04:58:33 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id d16so1821033qtw.8;
-        Fri, 05 Aug 2022 04:58:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:reply-to
-         :message-id:subject:cc:to:from:date:sender:from:to:cc;
-        bh=12EUweBf0CXLW8+gSAKKg9xplGZSYosR37oZCD2Y1Eg=;
-        b=VT9RgJ+oVb09HdRQa6Lq62UkO+czbOAM9zhFz3mQzPOunpvHA/Dup3iDIDNBrSTcRg
-         ISw6ghOW+btNX/HqH0k2wNgSXpUg9bL7XcttzO3HDDNNozk+y3dM1mVPrsLCuGG1wDEB
-         zPDESdIoCLKl87M3ZHZOLwvWZcZCGfdRYxSeLVkv1UokGzv1nB/bnYzWf+ZQw+cvxeeO
-         puAKsVq9rrDGTJ2pP8KskFUBBm5iQIXGPWMPTn0Fzqb9UMJ5bQb/k0gtuQPFCBlS4+N1
-         kK6jb8sG7doAKbDSIiJhVitTkmnihXzpan+QM+ytoVxdChvksAv2+bOnb1FKMbKjMQbE
-         tC4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:reply-to
-         :message-id:subject:cc:to:from:date:sender:x-gm-message-state:from
-         :to:cc;
-        bh=12EUweBf0CXLW8+gSAKKg9xplGZSYosR37oZCD2Y1Eg=;
-        b=wDByAgHNHZJ03deDYW2vEKKN/OA1nnGtxUt7DOTrHR/lVsi8rMVlIEMlGVgH88E5GU
-         A8JenB0e7ck384WpGVpOyKwjHwWnAclWHSVPn6ZEe6aHKq92+9BiXKGcKUasVVJZjloj
-         BE9uQGzUnjWznEV+XKSplBqZDmGxntS6/vc4osTcXOqMjeKYzvFFO2khP8HIp5h8ThLw
-         ZuObo52DhhJtb+bOWWN+HDgb2+l7fn0poUJQzIHZQTpoUmxMzUKa/ANwpUalcA6cAfWP
-         /pGPXM+T/fwqvAY5hK5LCvnRpoJ29Nb8+6JePLV15ZKre5summq35N5wvDNhbFQ4fxcs
-         9Ufw==
-X-Gm-Message-State: ACgBeo1gQoX60o65JtOKcTQN9vl6/Y8R8BCfCgBgE27gaHvzH+dXlOEI
-        TpCiniKe4Jqg62HbgiuuwA==
-X-Google-Smtp-Source: AA6agR4yn9VOrQApcMy/JIE89HsYzBMvrpAkEphl5ssbELPYZNrOf1zrKpwK4oe95pmrgYf1HSEKPA==
-X-Received: by 2002:a05:622a:346:b0:31f:c40:eac0 with SMTP id r6-20020a05622a034600b0031f0c40eac0mr5373701qtw.326.1659700711064;
-        Fri, 05 Aug 2022 04:58:31 -0700 (PDT)
-Received: from serve.minyard.net (serve.minyard.net. [2001:470:b8f6:1b::1])
-        by smtp.gmail.com with ESMTPSA id c8-20020ac85188000000b0031eb51dd72csm2491484qtn.85.2022.08.05.04.58.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 04:58:30 -0700 (PDT)
-Sender: Corey Minyard <tcminyard@gmail.com>
-Received: from minyard.net (unknown [IPv6:2001:470:b8f6:1b:8c5c:a823:f5bd:8751])
-        by serve.minyard.net (Postfix) with ESMTPSA id 4CFC71800FA;
-        Fri,  5 Aug 2022 11:58:29 +0000 (UTC)
-Date:   Fri, 5 Aug 2022 06:58:27 -0500
-From:   Corey Minyard <minyard@acm.org>
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Cc:     avifishman70@gmail.com, tali.perry1@gmail.com, joel@jms.id.au,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        jic23@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, openbmc@lists.ozlabs.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2] dt-binding: ipmi: add fallback to npcm845 compatible
-Message-ID: <20220805115827.GG3834@minyard.net>
-Reply-To: minyard@acm.org
-References: <20220804181800.235368-1-tmaimon77@gmail.com>
+        Fri, 5 Aug 2022 08:04:01 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80043.outbound.protection.outlook.com [40.107.8.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E96140ED;
+        Fri,  5 Aug 2022 05:03:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QL1Eb22yzLGU1z76UJcfyWb1PGTbjaK95ajYf5H5m0OwKbcJBw2yiCj9POpU/L8A5GVXNsJpe6jbSZKa/5C7CPFgMozI/9mZLT+7+ngsVmPFdygWk7LiMTZdltD/Ghh3/m7HOufi675bw1r8ofsIavFmUzmcaneaTuTi9Cdwo49gVZMmfCNiXM2K30lik5+5NLiIVfwT41DO0Vzjfc+0/6JHPy/Mq+lcOZLFupGfr/gUhhoqyfTMfE5RkQE/kNStiAFjnXSqxIedFLTcDa05nbf3+HqPAT0zNJ4t+52+ZkzMJr6pISX9gjMKuHwTJnsgyVqrBQtbt5QykX8N+WUfZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wrqnvOYYg3EExQWLYkdvzrKyXZv0psz6SCt5+a1YYww=;
+ b=X/8M/qqvqpsqUVMBZPafKUHljfmdPuTA+yKDOFHPiqYCFpchFNN7C/ufj4gNjimdnmmuzXy8pbk+D6N50ff5ZQHNEve6xnMPlb+6EDW09eM7/jFfUCw9no3VyI6nHuee4LdtmbRHOz4QWz5hsl5Er10fbsPl8EGw3Y1JT/lho4BrFOozDLWWIR2Frhgt96DIMzwIsHsaJEs3g7c+zJkZUr9pjunkoJD47EdSQy2ncArddIg05OoQ9ckymsXjF/skvZo6dYcjYm8nW1y998Hi+jHgVbWBBagI3OJ5iznr343h3f5fVAAxTovTKhZm6IVR3nAHyqRFWU9ZX5DQ+Naf4A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 194.138.21.73) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=siemens.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=siemens.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wrqnvOYYg3EExQWLYkdvzrKyXZv0psz6SCt5+a1YYww=;
+ b=zwIU0U8ryYHh1ReMwimQjYr+LQkFSEUMfzxIc/g+03tbcGWTjKmi4Kev/esKzvYm1XqoS/OmLPDda/bM9xqUUlMqGEWUyreQ1z85umBHFodoIi1pA9hsj8n9AVkjK4jF0KKGM20KCsy//uskUpBLLk4tjNh2NvYnvd47RcTMlZ9dSZp5aUVwL4+hdPSqcCdcxWdODOMlHztHfuY/nD40BOmpsHUa7dnbqDvhJw5ry4lWdOy9rZVtJoyJYCk+IJUiKJl8PpkZqA0WydIPTjAvv31d5pSlUl4EMJ/2peV/hMHTIeJcQWWI8gWSmjUauvriCC31T7zmuL2lhqldH7bGLQ==
+Received: from GV3P280CA0111.SWEP280.PROD.OUTLOOK.COM (2603:10a6:150:8::28) by
+ AS1PR10MB5413.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:4af::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16; Fri, 5 Aug
+ 2022 12:03:56 +0000
+Received: from HE1EUR01FT004.eop-EUR01.prod.protection.outlook.com
+ (2603:10a6:150:8:cafe::a4) by GV3P280CA0111.outlook.office365.com
+ (2603:10a6:150:8::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14 via Frontend
+ Transport; Fri, 5 Aug 2022 12:03:56 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 194.138.21.73)
+ smtp.mailfrom=siemens.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=siemens.com;
+Received-SPF: Pass (protection.outlook.com: domain of siemens.com designates
+ 194.138.21.73 as permitted sender) receiver=protection.outlook.com;
+ client-ip=194.138.21.73; helo=hybrid.siemens.com; pr=C
+Received: from hybrid.siemens.com (194.138.21.73) by
+ HE1EUR01FT004.mail.protection.outlook.com (10.152.1.233) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5504.14 via Frontend Transport; Fri, 5 Aug 2022 12:03:55 +0000
+Received: from DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) by
+ DEMCHDC9SNA.ad011.siemens.net (194.138.21.73) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.9; Fri, 5 Aug 2022 14:03:55 +0200
+Received: from md1za8fc.ad001.siemens.net (139.25.0.80) by
+ DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.9; Fri, 5 Aug 2022 14:03:54 +0200
+From:   Henning Schild <henning.schild@siemens.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Pavel Machek <pavel@ucw.cz>, <linux-leds@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Henning Schild <henning.schild@siemens.com>
+Subject: [PATCH] leds: simatic-ipc-leds-gpio: make sure we have the GPIO providing driver
+Date:   Fri, 5 Aug 2022 14:03:43 +0200
+Message-ID: <20220805120343.5027-1-henning.schild@siemens.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220804181800.235368-1-tmaimon77@gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [139.25.0.80]
+X-ClientProxiedBy: DEMCHDC89XA.ad011.siemens.net (139.25.226.103) To
+ DEMCHDC8A0A.ad011.siemens.net (139.25.226.106)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 15e9dfe4-9f90-4630-e6ca-08da76da9289
+X-MS-TrafficTypeDiagnostic: AS1PR10MB5413:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YHJaVW6vbEFC57cdQI0gpP2jA/CB0aquNtr/i9bHGk1td+hglSpZr9KNDn1DuY3Jlpl7uumHpitwZN92xgEe9XzC57NVciaG1RdTZ5d5XCmMaVUvHeTmkqsItD8meOFS0W0vAInOT/EkfPNMns56GIBps0gZx7+fYhWC0Mmgi9S+tq5mJVl1oWV/GQbd9Z1Ez5+KfIEWkRe9lDHh6XnuPdnfAiNnqnCCkS3o4nxz8SjLWLzQooJQUSVX2rlNIjUwYfwTql2RfTIMlkDhtsTgVtrwPUXEwfEySmET1URTm11CCEi+lkv1aSzbfPTvNi3kXZi7M7dRozqXnavn12O2hw1+8bl3k8Z/1a+hrxMDIk9Js4GSVOalJCKvor17/FKMWoxB3VnY2DYSo9nwrj64D3blwsxclrz4kAIOLar2VyonaBuyYy/2f5PH9CYmeEGG2Tb5O/RDxsk+f0z/VkQaLlScYsB/BMRIUaPt4qpaxA9P2sP77bLNhQ4uowv0jeW1oEax5wdO+YbcGeE3HGiFRLENSWqgi/pQN41urHrVZeNsKMTIOHu2/CIDR0ZWGciHkrbfRAQOP84uV3kybnZUvryHDBqlOrWUpzfJ67V18E1aOeStylxi9NssY/c1/MsJ+iKHCnsKQqJNeKlklGtd4axOUn7Rpi1yY1p5wTUjYLhhbe2QfSqrhu4Zkg6vfkIggKBLoGSLzy38yEEtfTzgMu2ojg/Y8dRm+HIGpvy7pTUwB2UhuLl1w0Z+MkMwngzoWfjiMqoBQdG5JdHC5YzUc6s7/R/9rKjfUyH4U4uHRoKB91nM6Gk5s4Vi9KmanvKOdFDNpD5yqiWpTXfntDj+hw==
+X-Forefront-Antispam-Report: CIP:194.138.21.73;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(136003)(346002)(376002)(36840700001)(46966006)(40470700004)(40480700001)(36860700001)(83380400001)(186003)(82310400005)(956004)(2616005)(36756003)(16526019)(110136005)(336012)(47076005)(82740400003)(356005)(1076003)(107886003)(26005)(82960400001)(81166007)(316002)(478600001)(86362001)(41300700001)(6666004)(2906002)(5660300002)(40460700003)(44832011)(8936002)(8676002)(4326008)(70586007)(70206006)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2022 12:03:55.8868
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 15e9dfe4-9f90-4630-e6ca-08da76da9289
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.73];Helo=[hybrid.siemens.com]
+X-MS-Exchange-CrossTenant-AuthSource: HE1EUR01FT004.eop-EUR01.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR10MB5413
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 04, 2022 at 09:18:00PM +0300, Tomer Maimon wrote:
-> Add to npcm845 KCS compatible string a fallback to npcm750 KCS compatible
-> string becuase NPCM845 and NPCM750 BMCs are using identical KCS modules.
-> 
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> ---
->  Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt b/Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt
-> index cbc10a68ddef..4fda76e63396 100644
-> --- a/Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt
-> +++ b/Documentation/devicetree/bindings/ipmi/npcm7xx-kcs-bmc.txt
-> @@ -7,7 +7,7 @@ used to perform in-band IPMI communication with their host.
->  Required properties:
->  - compatible : should be one of
->      "nuvoton,npcm750-kcs-bmc"
-> -    "nuvoton,npcm845-kcs-bmc"
-> +    "nuvoton,npcm845-kcs-bmc", "nuvoton,npcm750-kcs-bmc"
+If we register a "leds-gpio" platform device for GPIO pins that do not
+exist we get a -EPROBE_DEFER and the probe will be tried again later.
+If there is not driver to provide that pin we will poll forever and also
+create a lot of log messages.
 
-This is just wrong.  The compatible is supposed to identify the device,
-not the board the device is on.  I think compatible here should be
-"npcm7xx-kcs-bmc", and just use that everywhere.  It's fine if that is
-used on a board named npcm845.
+So check if that GPIO driver is configured, if so it will come up
+eventually. If not we exit our probe function early and do not even
+bother registering the "leds-gpio". This method was chosen over "Kconfig
+depends" since this way we can add support for more devices and GPIO
+backends more easily without "depends"ing on all GPIO backends.
 
--corey
+Signed-off-by: Henning Schild <henning.schild@siemens.com>
+---
+ drivers/leds/simple/simatic-ipc-leds-gpio.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
->  - interrupts : interrupt generated by the controller
->  - kcs_chan : The KCS channel number in the controller
->  
-> -- 
-> 2.33.0
-> 
+diff --git a/drivers/leds/simple/simatic-ipc-leds-gpio.c b/drivers/leds/simple/simatic-ipc-leds-gpio.c
+index 4c9e663a90ba..0c96ba98e338 100644
+--- a/drivers/leds/simple/simatic-ipc-leds-gpio.c
++++ b/drivers/leds/simple/simatic-ipc-leds-gpio.c
+@@ -57,6 +57,8 @@ static int simatic_ipc_leds_gpio_probe(struct platform_device *pdev)
+ 	struct gpio_desc *gpiod;
+ 	int err;
+ 
++	if (!IS_ENABLED(CONFIG_PINCTRL_BROXTON))
++		return -ENODEV;
+ 	gpiod_add_lookup_table(&simatic_ipc_led_gpio_table);
+ 	simatic_leds_pdev = platform_device_register_resndata(NULL,
+ 		"leds-gpio", PLATFORM_DEVID_NONE, NULL, 0,
+-- 
+2.35.1
+
