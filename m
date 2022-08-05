@@ -2,153 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 732F3C25B08
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 23:06:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A50F9C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 23:06:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241673AbiHEXGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 19:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60076 "EHLO
+        id S241786AbiHEXGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 19:06:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241618AbiHEXFk (ORCPT
+        with ESMTP id S241715AbiHEXGR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 19:05:40 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFAC17072
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 16:05:34 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id bt7-20020a056902136700b006777a976adfso3189041ybb.20
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 16:05:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:reply-to:from:to:cc;
-        bh=a0sejF7LmfikJFmz6Lcl1SsiJbupoK1D9mnUFihc8VU=;
-        b=UN/syhFvQS+2ABKiiRlWZevZVkyMjjsByGEV3Y+bQXxcB7y8FC9Cnha9pEVQ3n/745
-         /w8b0GESJducYshuMoCL1A7OIB2kBBFDLaSBFg9h/hv20ySYOCKWDLaR9uE4WeZ6jFrz
-         dFQARovx6wq+grTzXeYH+njsy/flyfO2ANOL6T9SMKwbJcOojBc/xwLN1GYhfGeVqa8K
-         ADZV9TDVUXSfMbcyGCxOphzyU3qBtO71i/D+A5xccpK0vLo7/5tV5jtD0ap9M431NbaF
-         LZQe0Fe/wU6HURE6VJ6LhW2Qog4ffqgDMyThZgPU142k2eXGz+LQ34I1TzLTiQjuTmR4
-         D3yA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=a0sejF7LmfikJFmz6Lcl1SsiJbupoK1D9mnUFihc8VU=;
-        b=zt3mCI/uCG7gPx00YO4az6gPwjYYb9EE9cpqD0z9az51auhV8TdSGG4Gz+fE9w6QgM
-         5yQ5RMT1qdinlL6Ri8Bd/cWJQQhp4saHjpmYJAiZ1SUZgehwPaILG8hfrH0+mhRHpDhq
-         NCEQ9GU9ZDku7rGmUft5igCKte5YVMg1/uSyeNyDHgyb3kXi8dDVF/OFihqZ3/StMhXd
-         T9E28/A+cdZ9Y+N03dr9ioYehAAZnGEd1drJXLLbLz01K/Jf94ZW4X9dE1xoEwsc23xe
-         II8WYuVHf0wJIyD4Pmj3xWMvtTwXRy5MNyHfLdPdE8w3zs+4wXfx6jCcSToX1/O6WRNB
-         biIA==
-X-Gm-Message-State: ACgBeo0xbhHOpstgfxrYhX2pGfbtj7b6yk8woIaxMpWK5YiMbJcIQzu4
-        2Z+pKIhOuIclmqt/4+Ib+UqHIxSgvPE=
-X-Google-Smtp-Source: AA6agR4jfD1+2IaL8aoXi2FQlkXtc/IkU6FWDrTk0ASjCLegEJ1d43RrPHpEHZDnVTBaOUPannz8B4FmaYw=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a81:b91:0:b0:324:f022:5d5e with SMTP id
- 139-20020a810b91000000b00324f0225d5emr8124524ywl.353.1659740733576; Fri, 05
- Aug 2022 16:05:33 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri,  5 Aug 2022 23:05:13 +0000
-In-Reply-To: <20220805230513.148869-1-seanjc@google.com>
-Message-Id: <20220805230513.148869-9-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220805230513.148869-1-seanjc@google.com>
-X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
-Subject: [PATCH v3 8/8] KVM: x86/mmu: explicitly check nx_hugepage in disallowed_hugepage_adjust()
-From:   Sean Christopherson <seanjc@google.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Matlack <dmatlack@google.com>,
-        Yan Zhao <yan.y.zhao@intel.com>,
-        Mingwei Zhang <mizhang@google.com>,
-        Ben Gardon <bgardon@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 5 Aug 2022 19:06:17 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3676D7C189;
+        Fri,  5 Aug 2022 16:05:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659740740; x=1691276740;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=No7nC8PIeuaUoN1nCFAreffB/gJ2AJPpBGbAJyjjlyY=;
+  b=LxILr6egJph/VJMQaoEHURsfywWOGKz24NHJ3c7jp+UIW87nfMhKlZEA
+   pc+W3tIgQ/ZB0nIenWzQgOKvNG5SS31g7Od2QYhJlwbZQMAV3/JQUtdvX
+   /yYxfB+XTW38CjZlIPpp4fPyd8kOgaRGUmKCmSRRVRmaVnIrP7HhLhkZk
+   Yo6z2/MKEVX77x5QuleCfFVltqVO+zJkpd3AHSyRMp1bgYkUWFa/LLEfD
+   b3xTag+pVihjXgonjGCpLAZte8BiEcQ8BNWMxFZB3m2G3nvRKegtDcQ+W
+   toVDBELDqOtzRTkCUy2tQEnweDISFsDNcghp7mPobn8WHrLY8WiSGwRDE
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="316206197"
+X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
+   d="scan'208";a="316206197"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 16:05:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
+   d="scan'208";a="779895308"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 05 Aug 2022 16:05:35 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oK6Nq-000Jo3-3B;
+        Fri, 05 Aug 2022 23:05:34 +0000
+Date:   Sat, 6 Aug 2022 07:05:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ben Dooks <ben.dooks@sifive.com>, linux-pwm@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        u.kleine-koenig@pengutronix.de,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        jarkko.nikula@linux.intel.com,
+        William Salmon <william.salmon@sifive.com>,
+        Jude Onyenegecha --subject-prefix=PATCH v3 
+        <jude.onyenegecha@sifive.com>, Ben Dooks <ben.dooks@sifive.com>
+Subject: Re: [PATCH 4/8] pwm: dwc: add of/platform support
+Message-ID: <202208060607.ojG964cE-lkp@intel.com>
+References: <20220805165033.140958-5-ben.dooks@sifive.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220805165033.140958-5-ben.dooks@sifive.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mingwei Zhang <mizhang@google.com>
+Hi Ben,
 
-Explicitly check if a NX huge page is disallowed when determining if a
-page fault needs to be forced to use a smaller sized page.  KVM currently
-assumes that the NX huge page mitigation is the only scenario where KVM
-will force a shadow page instead of a huge page, and so unnecessarily
-keeps an existing shadow page instead of replacing it with a huge page.
+I love your patch! Yet something to improve:
 
-Any scenario that causes KVM to zap leaf SPTEs may result in having a SP
-that can be made huge without violating the NX huge page mitigation.
-E.g. prior to commit 5ba7c4c6d1c7 ("KVM: x86/MMU: Zap non-leaf SPTEs when
-disabling dirty logging"), KVM would keep shadow pages after disabling
-dirty logging due to a live migration being canceled, resulting in
-degraded performance due to running with 4kb pages instead of huge pages.
+[auto build test ERROR on thierry-reding-pwm/for-next]
+[also build test ERROR on linus/master v5.19 next-20220805]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Although the dirty logging case is "fixed", that fix is coincidental,
-i.e. is an implementation detail, and there are other scenarios where KVM
-will zap leaf SPTEs.  E.g. zapping leaf SPTEs in response to a host page
-migration (mmu_notifier invalidation) to create a huge page would yield a
-similar result; KVM would see the shadow-present non-leaf SPTE and assume
-a huge page is disallowed.
+url:    https://github.com/intel-lab-lkp/linux/commits/Ben-Dooks/dt-bindings-pwm-Document-Synopsys-DesignWare-snps-pwm-dw-apb-timers-pwm2/20220806-015142
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git for-next
+config: x86_64-randconfig-a002 (https://download.01.org/0day-ci/archive/20220806/202208060607.ojG964cE-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/3bd100d711908b7d16a2c4793b4f5b597acb8d7f
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Ben-Dooks/dt-bindings-pwm-Document-Synopsys-DesignWare-snps-pwm-dw-apb-timers-pwm2/20220806-015142
+        git checkout 3bd100d711908b7d16a2c4793b4f5b597acb8d7f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/pwm/
 
-Fixes: b8e8c8303ff2 ("kvm: mmu: ITLB_MULTIHIT mitigation")
-Reviewed-by: Ben Gardon <bgardon@google.com>
-Reviewed-by: David Matlack <dmatlack@google.com>
-Signed-off-by: Mingwei Zhang <mizhang@google.com>
-[sean: add barrier comments, use spte_to_child_sp(), massage changelog]
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/mmu/mmu.c     | 17 +++++++++++++++--
- arch/x86/kvm/mmu/tdp_mmu.c |  3 ++-
- 2 files changed, 17 insertions(+), 3 deletions(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 1442129c85e0..3ddfc82868fd 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -3090,6 +3090,19 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
- 	    cur_level == fault->goal_level &&
- 	    is_shadow_present_pte(spte) &&
- 	    !is_large_pte(spte)) {
-+		u64 page_mask;
-+
-+		/*
-+		 * Ensure nx_huge_page_disallowed is read after checking for a
-+		 * present shadow page.  A different vCPU may be concurrently
-+		 * installing the shadow page if mmu_lock is held for read.
-+		 * Pairs with the smp_wmb() in kvm_tdp_mmu_map().
-+		 */
-+		smp_rmb();
-+
-+		if (!spte_to_child_sp(spte)->nx_huge_page_disallowed)
-+			return;
-+
- 		/*
- 		 * A small SPTE exists for this pfn, but FNAME(fetch)
- 		 * and __direct_map would like to create a large PTE
-@@ -3097,8 +3110,8 @@ void disallowed_hugepage_adjust(struct kvm_page_fault *fault, u64 spte, int cur_
- 		 * patching back for them into pfn the next 9 bits of
- 		 * the address.
- 		 */
--		u64 page_mask = KVM_PAGES_PER_HPAGE(cur_level) -
--				KVM_PAGES_PER_HPAGE(cur_level - 1);
-+		page_mask = KVM_PAGES_PER_HPAGE(cur_level) -
-+			    KVM_PAGES_PER_HPAGE(cur_level - 1);
- 		fault->pfn |= fault->gfn & page_mask;
- 		fault->goal_level--;
- 	}
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index 526d38704e5c..c5314ca95e08 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1202,7 +1202,8 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
- 			/*
- 			 * Ensure nx_huge_page_disallowed is visible before the
- 			 * SP is marked present, as mmu_lock is held for read.
--			 * Pairs with the smp_rmb() in tdp_mmu_unlink_sp().
-+			 * Pairs with the smp_rmb() in tdp_mmu_unlink_sp() and
-+			 * in disallowed_hugepage_adjust().
- 			 */
- 			smp_wmb();
- 
+All errors (new ones prefixed by >>):
+
+   In file included from drivers/pwm/pwm-dwc.c:19:
+   include/linux/module.h:131:49: error: redefinition of '__inittest'
+     131 |         static inline initcall_t __maybe_unused __inittest(void)                \
+         |                                                 ^~~~~~~~~~
+   include/linux/device/driver.h:266:1: note: in expansion of macro 'module_init'
+     266 | module_init(__driver##_init); \
+         | ^~~~~~~~~~~
+   include/linux/platform_device.h:264:9: note: in expansion of macro 'module_driver'
+     264 |         module_driver(__platform_driver, platform_driver_register, \
+         |         ^~~~~~~~~~~~~
+   drivers/pwm/pwm-dwc.c:369:1: note: in expansion of macro 'module_platform_driver'
+     369 | module_platform_driver(dwc_pwm_plat_driver);
+         | ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/module.h:131:49: note: previous definition of '__inittest' with type 'int (*(void))(void)'
+     131 |         static inline initcall_t __maybe_unused __inittest(void)                \
+         |                                                 ^~~~~~~~~~
+   include/linux/device/driver.h:266:1: note: in expansion of macro 'module_init'
+     266 | module_init(__driver##_init); \
+         | ^~~~~~~~~~~
+   include/linux/pci.h:1481:9: note: in expansion of macro 'module_driver'
+    1481 |         module_driver(__pci_driver, pci_register_driver, pci_unregister_driver)
+         |         ^~~~~~~~~~~~~
+   drivers/pwm/pwm-dwc.c:321:1: note: in expansion of macro 'module_pci_driver'
+     321 | module_pci_driver(dwc_pwm_driver);
+         | ^~~~~~~~~~~~~~~~~
+   include/linux/module.h:133:13: error: redefinition of 'init_module'
+     133 |         int init_module(void) __copy(initfn)                    \
+         |             ^~~~~~~~~~~
+   include/linux/device/driver.h:266:1: note: in expansion of macro 'module_init'
+     266 | module_init(__driver##_init); \
+         | ^~~~~~~~~~~
+   include/linux/platform_device.h:264:9: note: in expansion of macro 'module_driver'
+     264 |         module_driver(__platform_driver, platform_driver_register, \
+         |         ^~~~~~~~~~~~~
+   drivers/pwm/pwm-dwc.c:369:1: note: in expansion of macro 'module_platform_driver'
+     369 | module_platform_driver(dwc_pwm_plat_driver);
+         | ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/module.h:133:13: note: previous definition of 'init_module' with type 'int(void)'
+     133 |         int init_module(void) __copy(initfn)                    \
+         |             ^~~~~~~~~~~
+   include/linux/device/driver.h:266:1: note: in expansion of macro 'module_init'
+     266 | module_init(__driver##_init); \
+         | ^~~~~~~~~~~
+   include/linux/pci.h:1481:9: note: in expansion of macro 'module_driver'
+    1481 |         module_driver(__pci_driver, pci_register_driver, pci_unregister_driver)
+         |         ^~~~~~~~~~~~~
+   drivers/pwm/pwm-dwc.c:321:1: note: in expansion of macro 'module_pci_driver'
+     321 | module_pci_driver(dwc_pwm_driver);
+         | ^~~~~~~~~~~~~~~~~
+>> include/linux/module.h:139:49: error: redefinition of '__exittest'
+     139 |         static inline exitcall_t __maybe_unused __exittest(void)                \
+         |                                                 ^~~~~~~~~~
+   include/linux/device/driver.h:271:1: note: in expansion of macro 'module_exit'
+     271 | module_exit(__driver##_exit);
+         | ^~~~~~~~~~~
+   include/linux/platform_device.h:264:9: note: in expansion of macro 'module_driver'
+     264 |         module_driver(__platform_driver, platform_driver_register, \
+         |         ^~~~~~~~~~~~~
+   drivers/pwm/pwm-dwc.c:369:1: note: in expansion of macro 'module_platform_driver'
+     369 | module_platform_driver(dwc_pwm_plat_driver);
+         | ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/module.h:139:49: note: previous definition of '__exittest' with type 'void (*(void))(void)'
+     139 |         static inline exitcall_t __maybe_unused __exittest(void)                \
+         |                                                 ^~~~~~~~~~
+   include/linux/device/driver.h:271:1: note: in expansion of macro 'module_exit'
+     271 | module_exit(__driver##_exit);
+         | ^~~~~~~~~~~
+   include/linux/pci.h:1481:9: note: in expansion of macro 'module_driver'
+    1481 |         module_driver(__pci_driver, pci_register_driver, pci_unregister_driver)
+         |         ^~~~~~~~~~~~~
+   drivers/pwm/pwm-dwc.c:321:1: note: in expansion of macro 'module_pci_driver'
+     321 | module_pci_driver(dwc_pwm_driver);
+         | ^~~~~~~~~~~~~~~~~
+>> include/linux/module.h:141:14: error: redefinition of 'cleanup_module'
+     141 |         void cleanup_module(void) __copy(exitfn)                \
+         |              ^~~~~~~~~~~~~~
+   include/linux/device/driver.h:271:1: note: in expansion of macro 'module_exit'
+     271 | module_exit(__driver##_exit);
+         | ^~~~~~~~~~~
+   include/linux/platform_device.h:264:9: note: in expansion of macro 'module_driver'
+     264 |         module_driver(__platform_driver, platform_driver_register, \
+         |         ^~~~~~~~~~~~~
+   drivers/pwm/pwm-dwc.c:369:1: note: in expansion of macro 'module_platform_driver'
+     369 | module_platform_driver(dwc_pwm_plat_driver);
+         | ^~~~~~~~~~~~~~~~~~~~~~
+   include/linux/module.h:141:14: note: previous definition of 'cleanup_module' with type 'void(void)'
+     141 |         void cleanup_module(void) __copy(exitfn)                \
+         |              ^~~~~~~~~~~~~~
+   include/linux/device/driver.h:271:1: note: in expansion of macro 'module_exit'
+     271 | module_exit(__driver##_exit);
+         | ^~~~~~~~~~~
+   include/linux/pci.h:1481:9: note: in expansion of macro 'module_driver'
+    1481 |         module_driver(__pci_driver, pci_register_driver, pci_unregister_driver)
+         |         ^~~~~~~~~~~~~
+   drivers/pwm/pwm-dwc.c:321:1: note: in expansion of macro 'module_pci_driver'
+     321 | module_pci_driver(dwc_pwm_driver);
+         | ^~~~~~~~~~~~~~~~~
+
+
+vim +/__exittest +139 include/linux/module.h
+
+0fd972a7d91d6e Paul Gortmaker 2015-05-01  128  
+0fd972a7d91d6e Paul Gortmaker 2015-05-01  129  /* Each module must use one module_init(). */
+0fd972a7d91d6e Paul Gortmaker 2015-05-01  130  #define module_init(initfn)					\
+1f318a8bafcfba Arnd Bergmann  2017-02-01  131  	static inline initcall_t __maybe_unused __inittest(void)		\
+0fd972a7d91d6e Paul Gortmaker 2015-05-01  132  	{ return initfn; }					\
+cf68fffb66d60d Sami Tolvanen  2021-04-08  133  	int init_module(void) __copy(initfn)			\
+cf68fffb66d60d Sami Tolvanen  2021-04-08  134  		__attribute__((alias(#initfn)));		\
+cf68fffb66d60d Sami Tolvanen  2021-04-08  135  	__CFI_ADDRESSABLE(init_module, __initdata);
+0fd972a7d91d6e Paul Gortmaker 2015-05-01  136  
+0fd972a7d91d6e Paul Gortmaker 2015-05-01  137  /* This is only required if you want to be unloadable. */
+0fd972a7d91d6e Paul Gortmaker 2015-05-01  138  #define module_exit(exitfn)					\
+1f318a8bafcfba Arnd Bergmann  2017-02-01 @139  	static inline exitcall_t __maybe_unused __exittest(void)		\
+0fd972a7d91d6e Paul Gortmaker 2015-05-01  140  	{ return exitfn; }					\
+cf68fffb66d60d Sami Tolvanen  2021-04-08 @141  	void cleanup_module(void) __copy(exitfn)		\
+cf68fffb66d60d Sami Tolvanen  2021-04-08  142  		__attribute__((alias(#exitfn)));		\
+cf68fffb66d60d Sami Tolvanen  2021-04-08  143  	__CFI_ADDRESSABLE(cleanup_module, __exitdata);
+0fd972a7d91d6e Paul Gortmaker 2015-05-01  144  
+
 -- 
-2.37.1.559.g78731f0fdb-goog
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
