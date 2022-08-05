@@ -2,91 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AEBAC25B08
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 16:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D00FC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 16:50:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240810AbiHEQsI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 12:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46686 "EHLO
+        id S240923AbiHEQut (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 12:50:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236963AbiHEQsG (ORCPT
+        with ESMTP id S230244AbiHEQup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 12:48:06 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11C428E01;
-        Fri,  5 Aug 2022 09:48:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1659718077;
-        bh=BwxgXFyMoX6LG4RcXS/FAfwlY+oHnVTND2orTGFFzTg=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=VY4XvpIbVvbOGQNhkoQViFXEx1DZaUvp6CDdqM9Z8ieXT/ri0Aas/wsOqzvzjYKhW
-         wGWlmGB1bYJI1eR9QI4KDJ3aWyAg7Yxw6H7FN45lSVGBJ581oJ5446zPxHrRwFNSx9
-         c9Hx+f3QACVCuV2XUQCsev9DWfiirimdssBJdcaw=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.139.128]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MJVHU-1o08Bh2wEC-00JuGH; Fri, 05
- Aug 2022 18:47:57 +0200
-Message-ID: <98c1755d-5b67-70f7-c569-431e650ece70@gmx.de>
-Date:   Fri, 5 Aug 2022 18:47:07 +0200
+        Fri, 5 Aug 2022 12:50:45 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E001BEA5
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 09:50:44 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id bv3so3868632wrb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 09:50:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=yFyYh97IYuVooEC2yIKQXKO7OyDRqCyKCP13Fg1c4I4=;
+        b=NrSGXLYMebNqXf4mU8+m7aQGcgnArFz4n1QpBagkao3kWUCAU04iwwHRMQSQgSLRnA
+         O6JZq2cAbUId7q9FI+VJ7B0zBBTnKdO5gHSi2xR2O6YmVMJy/Dms3bdz3mKJ9NP4wJ4p
+         jQbz4SbEwslYi7JXN1D6aAsyqXS/iIcyTaWd9JoXidiTzl3RX9rk9h1b89GzdwVfEs71
+         k8qMK0e+mZC9xZgu9Kfqw/t2VAemEk+B5Uvupf7OE45Cslih9jEOFZ/kcfdrht719rOF
+         IMEaHJ+6IEuLG120BP9BJLvhjCBHb1LisD0wGsnZ4E2+Q41UzWuhM+f1YZk+HB8VG87O
+         hfGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=yFyYh97IYuVooEC2yIKQXKO7OyDRqCyKCP13Fg1c4I4=;
+        b=UtQDs7pbW52MiJRMER/nSsm3A0kt20IpIODveahUAassdAgqR5/eHPdkeCnmZ1UGt9
+         UeFgOXfQwCRxPvAo3LAEsLQNtrnI3JalgY2wb0R3OAnpU9ymXO92y6PZRQjpCoaRyzox
+         S1PvxxLaznyzv5NCBgUIfPcMx1rmILcSPuOKS+ghYKmFtCalP7GNmFooel4okmcM5oMN
+         50qsDR6OIh9T6TijD+jSuMDRIhh921uxp3z+VQccEqXoxhVjrLACShW7Gb4IWanGqayM
+         0aVdlWUMqV1Up1iv21keC5H+X2Kz+PZSwPH/La47ICBTF2ML2csiAumOoI0Tm9pEROL7
+         e46g==
+X-Gm-Message-State: ACgBeo1FMZW/UcelKe8+KVUEKif9wA4iaTYAyHOU2n6+4TtPH5d2j7sf
+        WoR1nO/aoc8dgRmz+iTUYUOITA==
+X-Google-Smtp-Source: AA6agR7rP8RAt3poO3DgHsTL5x3vNMfPJ30328j41H5hxzzcKLK2RonYR5W/ky83T7ZtboO9xdeECA==
+X-Received: by 2002:a05:6000:178e:b0:220:635f:eb13 with SMTP id e14-20020a056000178e00b00220635feb13mr4940675wrg.634.1659718243421;
+        Fri, 05 Aug 2022 09:50:43 -0700 (PDT)
+Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id h28-20020a05600c2cbc00b003a4f08495b7sm11325374wmc.34.2022.08.05.09.50.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Aug 2022 09:50:42 -0700 (PDT)
+From:   Ben Dooks <ben.dooks@sifive.com>
+To:     linux-pwm@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        u.kleine-koenig@pengutronix.de,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        jarkko.nikula@linux.intel.com,
+        William Salmon <william.salmon@sifive.com>,
+        Jude Onyenegecha --subject-prefix=PATCH v3 
+        <jude.onyenegecha@sifive.com>
+Subject: DesignWare PWM support for device-tree probing
+Date:   Fri,  5 Aug 2022 17:50:25 +0100
+Message-Id: <20220805165033.140958-1-ben.dooks@sifive.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 0/3] Fix bugs in *_set_par() caused by user input
-Content-Language: en-US
-To:     Zheyu Ma <zheyuma97@gmail.com>, adaplas@gmail.com,
-        santiago@crfreenet.org, akpm@linux-foundation.org
-Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <20220804124125.3506755-1-zheyuma97@gmail.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220804124125.3506755-1-zheyuma97@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:k9hWd321fIJId4w8JA+DmGPit3IfSkp0j0DDxrSaFTDDz5RI90+
- rgYRcegevBKruvpsas6YTNL7Sd/n5FS79ygEB8ZjRG1Irc6fe/UruUExSw6XHsBnIcjCFhE
- mNWteMGBNNBGslWubvmFTWBCXvw5wcK8Zb1F1A0QZWgrGN3s9QkBiQAZpxcmn1iz7E65bQT
- 3i+DL97ehXko+KCj9jU0Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:flE13ZOQYvs=:2QDXygMtVdgKv5Y2vuUzR0
- M5KIRzzFTezbFLNsDpJQ5LG+juFdRUQgvBjsRGWPtRO5tkuWCV1vg82Sik9gsmFgl2EV8wJYf
- yxv0RYGeY1WZ+Z/puTueVm8i52U6XY5b816czI9oJqdfa5Kxe6TyXOid+nYtZhBGmQBZS7J2y
- 6FYcbcZszrYilAwRCd41jM2/irzI6ahtpDj2Vk+6AVLFA3TyryTZwbZJx0qHEE6yUXeJgth6t
- CKEJCKLyZzk6pk8ZZTIAMAHORcVpoiP4ZtKRLxoMSfoqOEdITacEDsRudb7T8XqkmaXRnlqDs
- DcGnLFCXn5vqz5OVvSyTRpz7h5wq0bIy9n2hqx/U78qmSZf+ixIWct2roQbnd+aQJVZTwd5FE
- g88nuB1U9s5gRv9KRRqAsm/moGG4QGQbRPYB+LwxQNGNT7psUu8B0xX42IUz2BRiDa88+oTMF
- d3f1sMVMyOZiLuyG+jkf6GNXsCE7kflIlzTa/y7VJ+7fwIn/GlYhke2L1izcfqWu1S6+0uJc6
- VG7tW2i6z5b1C2uia0IW656WOleUh6UiBuM7hNKwgZqfQpv/mIlQ+joI3NEK11bV3ezv74XCL
- d4PrCa/BJ85hXp5ahUSl8qZtGGcvLz8RqkKOx23fSIdutWcGdGur3I0ED5c2XDmY3l6PtVhK/
- NtOk0Bse+3UnkCPQqTd5AW/s5kZBD4qB/HDjrPMosRtmwg8uPuSCXKw82yWa9p854y2G44NYH
- M/8RPpmlzneK//ZCxm9QgFKW3yK9KBQ7n/eswO029z5R65YZq9UeHyl2Yl/s1RU0vaVEaQGmX
- XgwfeBtqcvO2LBNzdS7yQFjXUy1jsUveUvMQPH3S81kfw03VGAHh5IXVOfsjP1t25kX1GEBYH
- zEmnwdbKHIFl6QzDGds40n/GYHCzAVlt2k82MT20zohKYSwMuCUbnIdoCEfcSFzvgks/VtAo+
- 0fzzvznvlnqiBUPvMR5OOxPKvwRsajZpaQJQLM4vsN6jv7pgzzQxb86qyTU+QHp7QLU3/rUzf
- Y87R3BluQnWr4zfzxLlfOSukmkGMxZZZu64SYXGaV9kuX4BUOW5N5LwoaIRlTEetj74czxAPZ
- pZex8fmT9uFxIv00ASynq8Nws47fX20o8HUE1d8qYxeqvkvuJFWr8ifxQ==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/4/22 14:41, Zheyu Ma wrote:
-> In the function *_set_par(), the value of 'screen_size' is
-> calculated by the user input. If the user provides the improper value,
-> the value of 'screen_size' may larger than 'info->screen_size', which
-> may cause a bug in the memset_io().
->
-> Zheyu Ma (3):
->   video: fbdev: vt8623fb: Check the size of screen before memset_io()
->   video: fbdev: arkfb: Check the size of screen before memset_io()
->   video: fbdev: s3fb: Check the size of screen before memset_io()
+This series is tidying up and adding device-tree support for the
+DesignWare DW-APB-timers block.
 
-applied all 3 patches to fbdev git tree.
+Changes:
 
-Thanks!
-Helge
+v3:
+- change the compatible name
+- squash down pwm count patch
+- fixup patch naming
 
->
->  drivers/video/fbdev/arkfb.c    | 2 ++
->  drivers/video/fbdev/s3fb.c     | 2 ++
->  drivers/video/fbdev/vt8623fb.c | 2 ++
->  3 files changed, 6 insertions(+)
->
+v2:
+- fix #pwm-cells count to be 3
+- fix indetation 
+- merge the two clock patches
+- add HAS_IOMEM as a config dependency
+
+
 
