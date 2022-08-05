@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89129C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 12:13:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BDFC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 12:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240714AbiHEMNL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 08:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51866 "EHLO
+        id S240724AbiHEMNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 08:13:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231192AbiHEMNH (ORCPT
+        with ESMTP id S240698AbiHEMNI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 08:13:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA1843E49;
-        Fri,  5 Aug 2022 05:13:06 -0700 (PDT)
+        Fri, 5 Aug 2022 08:13:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60091D0DE;
+        Fri,  5 Aug 2022 05:13:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE7A9619F2;
-        Fri,  5 Aug 2022 12:13:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ECA3C433D6;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 979D6B828AD;
+        Fri,  5 Aug 2022 12:13:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CE06C433D7;
         Fri,  5 Aug 2022 12:13:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1659701585;
-        bh=QE/B3jAG/zflVLqqj8OYDIfnigG3Trc7SVAyes1GBf8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S/gGN9iVAPz9t+jeVGe/UYb9jKzYNYmzaIzwad9DQ/b0S0jdol+D1b2T6xEDdZ6mp
-         6UUJq+SmcTFYdN37nCQYOGhEco6NejKAHMeMD7mipQwPWILQYH3gsQXa9Wjq6gig4j
-         ngjnERyobNSnFEsmjYPstOnHLxTLgiBUoqzyMjYblpav8Pipem4I1yWY7A54gCB3Jw
-         3OGEE4vbIJ4hl5+aLBkSzEo0z/aMYWSRgyDkl95Lj4rANCy524fivCkVSJ2iUPBEc+
-         tieImzDvG3JWP2FgoewuQfdqdEe5sY2QG5WEsFYUx95PUBaQPeb0piPl4nk9/b2VxI
-         AHOTTF/ybHcFA==
+        bh=t9CH9WRFKEssnrpvuoTtroxI/JC7U60bvI5ioCNeR1s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=iPH8zI3cxO/wWZ7cN1O9nlzhMQAUjQjZs9NnniiCPXQKfTk/YRdKt3Yjii9I9PTmi
+         4/6PF/Wg1TpXiprdMKnopgS4eSxAMH5W080act5UbhVq8jTcccJXb2EeH7qY+hqUFh
+         ohjX9t3fZPyvoxkVOCrNuQ8DEaCk2tiFN2r9UOltYZxS0q+lMGUoy/CxbqKJkZfqGQ
+         B6frpqTx98htQJRtDt+tCboW7X57FpaexRFERqqKk6KLvZeA0qbJC1wNWSx1loQ9IR
+         1YbCExg6IsWSH3SjLUmbiNwtBdhg2e0etY50sOMjAZpDqNVlbwq2Kvf9Ptmq8uTB2I
+         pplhPBUHIFSuw==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oJwCn-0002hK-Md; Fri, 05 Aug 2022 14:13:29 +0200
+        id 1oJwCn-0002hG-F1; Fri, 05 Aug 2022 14:13:29 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
@@ -44,65 +44,43 @@ Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
         Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
         linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 2/2] clk: gcc-sc8280xp: keep USB power-domains always-on
-Date:   Fri,  5 Aug 2022 14:12:50 +0200
-Message-Id: <20220805121250.10347-3-johan+linaro@kernel.org>
+Subject: [PATCH 0/2] clk: gcc-sc8280xp: fix broken suspend
+Date:   Fri,  5 Aug 2022 14:12:48 +0200
+Message-Id: <20220805121250.10347-1-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220805121250.10347-1-johan+linaro@kernel.org>
-References: <20220805121250.10347-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Qualcomm DWC3 driver suspend implementation appears to be incomplete
-for SC8280XP so keep the USB power domains always-on for now so that the
-controller survives a suspend cycle.
+The Qualcomm PCIe driver currently does not implement suspend at all so
+we need to mark the GDSCs as always-on to prevent genpd from disabling
+them.
 
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/clk/qcom/gcc-sc8280xp.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Similarly, the Qualcomm dwc3 USB suspend implementation is also
+incomplete and the controller doesn't currently survive a suspend cycle
+unless the GDSC is kept on. Note that this has nothing to with whether
+wakeup is enabled or not (cf. [1]).
 
-diff --git a/drivers/clk/qcom/gcc-sc8280xp.c b/drivers/clk/qcom/gcc-sc8280xp.c
-index eaeada42e13a..7768e6901dcc 100644
---- a/drivers/clk/qcom/gcc-sc8280xp.c
-+++ b/drivers/clk/qcom/gcc-sc8280xp.c
-@@ -6843,12 +6843,17 @@ static struct gdsc ufs_phy_gdsc = {
- 	.pwrsts = PWRSTS_OFF_ON,
- };
- 
-+/*
-+ * The Qualcomm DWC3 driver suspend implementation appears to be incomplete
-+ * for sc8280xp so keep the USB power domains always-on for now.
-+ */
- static struct gdsc usb30_mp_gdsc = {
- 	.gdscr = 0xab004,
- 	.pd = {
- 		.name = "usb30_mp_gdsc",
- 	},
- 	.pwrsts = PWRSTS_OFF_ON,
-+	.flags = ALWAYS_ON,
- };
- 
- static struct gdsc usb30_prim_gdsc = {
-@@ -6857,6 +6862,7 @@ static struct gdsc usb30_prim_gdsc = {
- 		.name = "usb30_prim_gdsc",
- 	},
- 	.pwrsts = PWRSTS_OFF_ON,
-+	.flags = ALWAYS_ON,
- };
- 
- static struct gdsc usb30_sec_gdsc = {
-@@ -6865,6 +6871,7 @@ static struct gdsc usb30_sec_gdsc = {
- 		.name = "usb30_sec_gdsc",
- 	},
- 	.pwrsts = PWRSTS_OFF_ON,
-+	.flags = ALWAYS_ON,
- };
- 
- static struct clk_regmap *gcc_sc8280xp_clocks[] = {
+With these two workarounds, we have somewhat functional suspend on the
+SC8280XP reference design and Lenovo Thinkpad X13s until the missing
+driver support is in place (even USB remote wakeup works with [2]
+applied).
+
+Johan
+
+[1] https://lore.kernel.org/all/20220804151001.23612-3-johan+linaro@kernel.org/
+[2] https://lore.kernel.org/all/20220804151001.23612-1-johan+linaro@kernel.org/
+
+
+Johan Hovold (2):
+  clk: gcc-sc8280xp: keep PCIe power-domains always-on
+  clk: gcc-sc8280xp: keep USB power-domains always-on
+
+ drivers/clk/qcom/gcc-sc8280xp.c | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
+
 -- 
 2.35.1
 
