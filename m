@@ -2,511 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49B0EC25B08
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 23:45:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 728ECC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 23:59:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241933AbiHEXpK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 19:45:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57304 "EHLO
+        id S238535AbiHEXy3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 19:54:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241927AbiHEXpA (ORCPT
+        with ESMTP id S232791AbiHEXy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 19:45:00 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7B57D1D3;
-        Fri,  5 Aug 2022 16:44:57 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9187F5C012B;
-        Fri,  5 Aug 2022 19:44:56 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Fri, 05 Aug 2022 19:44:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        tom-fitzhenry.me.uk; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1659743096; x=1659829496; bh=3IVRSRyrB7
-        FPlfE92spwjV+FSWz7caxHpzOC2ctJV88=; b=TFNkZSBtoPzd/pL+udxn5LR9QZ
-        Dy9W1AkCBJUtOYYmeYin0V2uoTHQIjnHFMdL1B8cPvyI5JhGy/QXSigU6tAs5rFM
-        TGAXNfKK+kxrdMo41UuIAnKz9ir+ht1P896hcNdfuKM+aWweJ8R75iAjxVP3XEao
-        BlijwuFhLdAAWcH9jvdoC0J1m5bIvc52LiE5LyCN8fQGWO1XZMtcg/Z02bfEjfCp
-        J1aaO8ywCnfAKqjh6c2Tc4bJlj8bs7fFWqQ0lWdTRfQBK8FzEYVZhKTteIiA7TsA
-        MJpwlNLjyVowYbmCpyW4rLm0ckEsknd7R95MmRbU+rbHdZ6x+BFHy1WZ7WvQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659743096; x=
-        1659829496; bh=3IVRSRyrB7FPlfE92spwjV+FSWz7caxHpzOC2ctJV88=; b=c
-        CU9t2eB+hVltuv1TcfbqxlPuf7Fc1IknDX5xibTNsrrOkqyQrMPX0s7vgnnBkV6i
-        u/UaTFvVQKF8/XtqB0iBboq8a6Fe8CK16zEht0Ea836azRTRDfUfLjucpLcYh9Dh
-        C/UR5av473jWmykQedimbNfmx3CtQbEkfLlTkkt7+1yrWQLDjVtDOqJNFMBQGlXu
-        Yilfr4FoJPX+M2hUwSukTAJdlWglaLlGeDgRkTE51M30RqW6idY3dKztwSn6SaEb
-        8kIeJO/oViekigNJ2P45oZ6IDHbh3hKDqgj9GHgiwa+ArzwH4N30VYzrdJQ26PaL
-        UyNLbdl/DQwgljSVZBKpw==
-X-ME-Sender: <xms:eKvtYtfrWqQIpL5NXB1PHkiG25apHt4wVKsoFntTZwdGdw7-vKeogA>
-    <xme:eKvtYrOww84EFWT_cluj1No1LjH90F94m0z28DaqU62Rhft1o7Xh62bk6bI3QHOhI
-    K5lvL6VDc3V8Gp8pg>
-X-ME-Received: <xmr:eKvtYmhmd_AA-3rgokBhXFtW0IFRwB9XTp67i2s6hZg-sOU1TNGJuTAhju4ecGxyZvYYqASPktFp02KpA4nmjMJNxVzueS58cW8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefvddgvdeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffojghfgggtgfesth
-    ekredtredtjeenucfhrhhomhepvfhomhcuhfhithiihhgvnhhrhicuoehtohhmsehtohhm
-    qdhfihhtiihhvghnrhihrdhmvgdruhhkqeenucggtffrrghtthgvrhhnpeekhfekkeduie
-    dthefggeehkeeiuedvjedthfevhfejkeegteegffdttdetvdeigfenucffohhmrghinhep
-    ghhithhlrggsrdgtohhmpdhmvghgohhushdrtghomhdpphhinhgvieegrdhorhhgnecuve
-    hluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepthhomhesthho
-    mhdqfhhithiihhgvnhhrhidrmhgvrdhukh
-X-ME-Proxy: <xmx:eKvtYm92m4XoEslRBvx4cZp-8mDBGJ3I4mVPK_MC3GzyF5ERovpfRw>
-    <xmx:eKvtYpvrMDw9uNRkB7arKlbOKoVmJ8MBXyI9Z6BHdHMltxs-RIc_cA>
-    <xmx:eKvtYlEvTLLWTPGS9iJJbD4KnFCdKpGEUU1XmKFFIc-wdFp-kpDNfQ>
-    <xmx:eKvtYqOj71wYPwMLqDt4ymFOhgZ1Hq1ZLxGqTyhjFB1TsjCfytALuw>
-Feedback-ID: iefc945ae:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 5 Aug 2022 19:44:52 -0400 (EDT)
-From:   Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
-To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        heiko@sntech.de
-Cc:     tom@tom-fitzhenry.me.uk, megi@xff.cz, martijn@brixit.nl,
-        ayufan@ayufan.eu, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] arm64: dts: rockchip: Add initial support for Pine64 PinePhone Pro
-Date:   Sat,  6 Aug 2022 09:44:11 +1000
-Message-Id: <20220805234411.303055-4-tom@tom-fitzhenry.me.uk>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220805234411.303055-1-tom@tom-fitzhenry.me.uk>
-References: <20220805234411.303055-1-tom@tom-fitzhenry.me.uk>
+        Fri, 5 Aug 2022 19:54:27 -0400
+X-Greylist: delayed 1039 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 05 Aug 2022 16:54:22 PDT
+Received: from matoro.tk (unknown [IPv6:2600:1700:4b10:9d80::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB8C1AF0D
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 16:54:22 -0700 (PDT)
+DKIM-Signature: a=rsa-sha256; bh=J8J6PPB5B9eM7a3M73is6IRjHMAiGebZrLZRQe+1Ff0=;
+ c=relaxed/relaxed; d=matoro.tk;
+ h=Subject:Subject:Sender:To:To:Cc:Cc:From:From:Date:Date:MIME-Version:MIME-Version:Content-Type:Content-Type:Content-Transfer-Encoding:Content-Transfer-Encoding:Reply-To:In-Reply-To:In-Reply-To:Message-Id:Message-Id:References:References:Autocrypt:Openpgp;
+ i=@matoro.tk; s=20220801; t=1659741627; v=1; x=1660173627;
+ b=g5XrCDNUzsVAjAjZFsZjYZ24S9aLRq7h/3KSaEGcnBcDDqaRK+RSYwnaAY90FpzwxVaQF1NF
+ 3MNa0IT70NknLcM1JlhzVaAvQ+T5FBHftTYXNPo4hgTx0R4UhKsKuCKHtlDfIrMx0qroqwzkrIt
+ 5lYn0OTCxgw9jmpERilnPHUEtyNv+qrNEGNGMyeI6gJ70td5TRT9RGCTDtcQ2E2ynutTu8f+QZy
+ 325oIMukW3iVu4swvQWbAfnHhPDMXBfw0p4VEurlJcPV4c+kgK6s2DXoCoGjYhXQ2oQEEzqG2dn
+ +ewxJ9nfIXrleZivMz1tTsf4ESkGszpDSOmZwrlReRj5erU0nycGsjb+Uz+iGJG+1XyjtYiwYzG
+ Oi3DGEclNrMEVTK+9LVsmZCrlDpLHxM9hxB0z+5YormW9a6TcAm6aQJbUiSNSBmVNio7UbtJ8NM
+ vVvqS/VxfeR7kEzvghlzoRsApdAt4BUZqLt9sdJLg/uoQ1gGs9W+/Ve9qO5bXt15gGdLqS6t8Iz
+ TezdH1KfzS7jZkbq+1+HLY1ujy8PLBYPz+mWB1zX6OpS2OfY0IU7uLdqojRK5CIO9IMaJ8saIUx
+ HdIKZ+wnH/t556N4AH1FiEvdcRzzRzBLJM4dFqYf6bicPLvHbuIZ4LZWDTEyHA/eE1ESVmLp+mX
+ ywkEoUfpnsE=
+Received: by matoro.tk (envelope-sender
+ <matoro_mailinglist_kernel@matoro.tk>) with ESMTPS id 8629941e; Fri, 05 Aug
+ 2022 19:20:27 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Date:   Fri, 05 Aug 2022 19:20:27 -0400
+From:   matoro <matoro_mailinglist_kernel@matoro.tk>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-modules <linux-modules@vger.kernel.org>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Sami Tolvanen <samitolvanen@google.com>
+Subject: Re: [PATCH v6 00/10] kbuild: yet another series of cleanups (modpost,
+ LTO, MODULE_REL_CRCS, export.h)
+In-Reply-To: <CAK7LNAQvneCi11myLpkikuXh=i5PLtTaLe0nGpDZXgv_Q1L0Ow@mail.gmail.com>
+References: <20220513113930.10488-1-masahiroy@kernel.org>
+ <CAK7LNAQvneCi11myLpkikuXh=i5PLtTaLe0nGpDZXgv_Q1L0Ow@mail.gmail.com>
+Message-ID: <2c496d24174e63b27ec047f383df6700@matoro.tk>
+X-Sender: matoro_mailinglist_kernel@matoro.tk
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a basic DT containing regulators and UART, intended to be a
-base that myself and others can add additional nodes in future patches.
+Hi Masahiro, I'm sorry to raise this after release but this seems to be 
+broken on SOME architectures.  So far I have tested:
 
-Tested to work: booting from eMMC, output over UART.
+Affected - sparc, alpha
+Unaffected - riscv, ia64
 
-This is derived from a combination of https://gitlab.com/pine64-org/linux
-and https://megous.com/git/linux.
+The affected systems are unable to load modules, similar to the 
+previously reported issue.  All module loading fails with "disagrees 
+about version of symbol module_layout".
 
-https://wiki.pine64.org/wiki/PinePhone_Pro
+Bisect blames 7b4537199a4a8480b8c3ba37a2d44765ce76cd9b, but this does 
+not revert cleanly.  Presumably CONFIG_MODVERSIONS=n would fix, but this 
+is a pretty core feature.
 
-Co-developed-by: Ondrej Jirman <megi@xff.cz>
-Co-developed-by: Martijn Braam <martijn@brixit.nl>
-Co-developed-by: Kamil Trzciński <ayufan@ayufan.eu>
-Signed-off-by: Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
----
- arch/arm64/boot/dts/rockchip/Makefile         |   1 +
- .../dts/rockchip/rk3399-pinephone-pro.dts     | 385 ++++++++++++++++++
- 2 files changed, 386 insertions(+)
- create mode 100644 arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
+Unlike the issue Sedat reported, this is on a GNU toolchain, no clang 
+involved.
 
-diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
-index ef79a672804a1..cb42e0a15808e 100644
---- a/arch/arm64/boot/dts/rockchip/Makefile
-+++ b/arch/arm64/boot/dts/rockchip/Makefile
-@@ -42,6 +42,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-neo4.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-nanopi-r4s.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-orangepi.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-pinebook-pro.dtb
-+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-pinephone-pro.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-puma-haikou.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-roc-pc.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-roc-pc-mezzanine.dtb
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
-new file mode 100644
-index 0000000000000..f5608487ad58f
---- /dev/null
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
-@@ -0,0 +1,385 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Copyright (c) 2020 Martijn Braam <martijn@brixit.nl>
-+ * Copyright (c) 2021 Kamil Trzciński <ayufan@ayufan.eu>
-+ */
-+
-+// PinePhone Pro datasheet: https://files.pine64.org/doc/PinePhonePro/PinephonePro-Schematic-V1.0-20211127.pdf
-+
-+/dts-v1/;
-+#include <dt-bindings/input/gpio-keys.h>
-+#include <dt-bindings/input/linux-event-codes.h>
-+#include "rk3399.dtsi"
-+#include "rk3399-t-opp.dtsi"
-+
-+/ {
-+	model = "Pine64 PinePhonePro";
-+	compatible = "pine64,pinephone-pro", "rockchip,rk3399";
-+	chassis-type = "handset";
-+
-+	aliases {
-+                mmc0 = &sdio0;
-+                mmc1 = &sdmmc;
-+                mmc2 = &sdhci;
-+        };
-+
-+	chosen {
-+		stdout-path = "serial2:115200n8";
-+	};
-+
-+	gpio-key-power {
-+		compatible = "gpio-keys";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwrbtn_pin>;
-+
-+		power {
-+			debounce-interval = <20>;
-+			// Per "PMU Controler", page 4.
-+			gpios = <&gpio0 RK_PA5 GPIO_ACTIVE_LOW>;
-+			label = "Power";
-+			linux,code = <KEY_POWER>;
-+			wakeup-source;
-+		};
-+	};
-+
-+	/* Power tree */
-+	/* Root power source */
-+	vcc_sysin: vcc-sysin {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc_sysin";
-+		regulator-always-on;
-+		regulator-boot-on;
-+	};
-+
-+	/* Main 3.3v supply */
-+	vcc3v3_sys: wifi_bat: vcc3v3-sys {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcc3v3_sys";
-+		regulator-always-on;
-+		regulator-boot-on;
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		vin-supply = <&vcc_sysin>;
-+	};
-+
-+	vcca1v8_s3: vcc1v8-s3 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vcca1v8_s3";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+		vin-supply = <&vcc3v3_sys>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+	};
-+};
-+
-+&cpu_l0 {
-+	cpu-supply = <&vdd_cpu_l>;
-+};
-+
-+&cpu_l1 {
-+	cpu-supply = <&vdd_cpu_l>;
-+};
-+
-+&cpu_l2 {
-+	cpu-supply = <&vdd_cpu_l>;
-+};
-+
-+&cpu_l3 {
-+	cpu-supply = <&vdd_cpu_l>;
-+};
-+
-+&cpu_b0 {
-+	cpu-supply = <&vdd_cpu_b>;
-+};
-+
-+&cpu_b1 {
-+	cpu-supply = <&vdd_cpu_b>;
-+};
-+
-+&emmc_phy {
-+	status = "okay";
-+};
-+
-+&i2c0 {
-+	// Per "SCL clock frequency", page 30, RK818 datasheet.
-+	clock-frequency = <400000>;
-+	i2c-scl-rising-time-ns = <168>;
-+	i2c-scl-falling-time-ns = <4>;
-+	status = "okay";
-+
-+	// Per "PMIC RK818-3", page 13.
-+	rk818: pmic@1c {
-+		compatible = "rockchip,rk818";
-+		reg = <0x1c>;
-+		interrupt-parent = <&gpio1>;
-+		interrupts = <RK_PC5 IRQ_TYPE_LEVEL_LOW>;
-+		#clock-cells = <1>;
-+		clock-output-names = "xin32k", "rk808-clkout2";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pmic_int_l>;
-+		rockchip,system-power-controller;
-+		wakeup-source;
-+
-+		vcc1-supply = <&vcc_sysin>;
-+		vcc2-supply = <&vcc_sysin>;
-+		vcc3-supply = <&vcc_sysin>;
-+		vcc4-supply = <&vcc_sysin>;
-+		vcc6-supply = <&vcc_sysin>;
-+		vcc7-supply = <&vcc3v3_sys>;
-+		vcc8-supply = <&vcc_sysin>;
-+		vcc9-supply = <&vcc3v3_sys>;
-+
-+		regulators {
-+			vdd_cpu_l: DCDC_REG1 {
-+				regulator-name = "vdd_cpu_l";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <750000>;
-+				regulator-max-microvolt = <1350000>;
-+				regulator-ramp-delay = <6001>;
-+				regulator-state-mem {
-+					regulator-off-in-suspend;
-+				};
-+			};
-+
-+			vdd_center: DCDC_REG2 {
-+				regulator-name = "vdd_center";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <800000>;
-+				regulator-max-microvolt = <1350000>;
-+				regulator-ramp-delay = <6001>;
-+				regulator-state-mem {
-+					regulator-off-in-suspend;
-+				};
-+			};
-+
-+			vcc_ddr: DCDC_REG3 {
-+				regulator-name = "vcc_ddr";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			vcc_1v8: vcc_wl: DCDC_REG4 {
-+				regulator-name = "vcc_1v8";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			// Audio codec.
-+			vcca3v0_codec: LDO_REG1 {
-+				regulator-name = "vcca3v0_codec";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <3000000>;
-+				regulator-max-microvolt = <3000000>;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			// Touch screen.
-+			vcc3v0_touch: LDO_REG2 {
-+				regulator-name = "vcc3v0_touch";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <3000000>;
-+				regulator-max-microvolt = <3000000>;
-+				regulator-state-mem {
-+					regulator-off-in-suspend;
-+				};
-+			};
-+
-+			vcca1v8_codec: LDO_REG3 {
-+				regulator-name = "vcca1v8_codec";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			vcc_power_on: LDO_REG4 {
-+				regulator-name = "vcc_power_on";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <3300000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			vcc_3v0: LDO_REG5 {
-+				regulator-name = "vcc_3v0";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <3000000>;
-+				regulator-max-microvolt = <3000000>;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			vcc_1v5: LDO_REG6 {
-+				regulator-name = "vcc_1v5";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <1500000>;
-+				regulator-max-microvolt = <1500000>;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+
-+			vcc1v8_dvp: LDO_REG7 {
-+				regulator-name = "vcc1v8_dvp";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
-+			};
-+
-+			vcc3v3_s3: LDO_REG8 {
-+				regulator-name = "vcc3v3_s3";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-min-microvolt = <3300000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-state-mem {
-+					regulator-off-in-suspend;
-+				};
-+			};
-+
-+			vccio_sd: LDO_REG9 {
-+				regulator-name = "vccio_sd";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <3300000>;
-+			};
-+
-+			vcc3v3_s0: SWITCH_REG {
-+				regulator-name = "vcc3v3_s0";
-+				regulator-always-on;
-+				regulator-boot-on;
-+				regulator-state-mem {
-+					regulator-on-in-suspend;
-+				};
-+			};
-+		};
-+	};
-+
-+	vdd_cpu_b: regulator@40 {
-+		compatible = "silergy,syr827";
-+		reg = <0x40>;
-+		fcs,suspend-voltage-selector = <1>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&vsel1_pin>;
-+		regulator-name = "vdd_cpu_b";
-+		regulator-min-microvolt = <712500>;
-+		regulator-max-microvolt = <1500000>;
-+		regulator-ramp-delay = <1000>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+
-+		regulator-state-mem {
-+			regulator-off-in-suspend;
-+		};
-+	};
-+
-+	vdd_gpu: regulator@41 {
-+		compatible = "silergy,syr828";
-+		reg = <0x41>;
-+		fcs,suspend-voltage-selector = <1>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&vsel2_pin>;
-+		regulator-name = "vdd_gpu";
-+		regulator-min-microvolt = <712500>;
-+		regulator-max-microvolt = <1500000>;
-+		regulator-ramp-delay = <1000>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+
-+		regulator-state-mem {
-+			regulator-off-in-suspend;
-+		};
-+	};
-+};
-+
-+&io_domains {
-+        status = "okay";
-+
-+        bt656-supply = <&vcc1v8_dvp>;
-+        audio-supply = <&vcca1v8_codec>;
-+        sdmmc-supply = <&vccio_sd>;
-+        gpio1830-supply = <&vcc_3v0>;
-+};
-+
-+&pmu_io_domains {
-+	pmu1830-supply = <&vcc_1v8>;
-+	status = "okay";
-+};
-+
-+&pinctrl {
-+	buttons {
-+		pwrbtn_pin: pwrbtn-pin {
-+			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>;
-+		};
-+	};
-+
-+	pmic {
-+		pmic_int_l: pmic-int-l {
-+			rockchip,pins = <1 RK_PC5 RK_FUNC_GPIO &pcfg_pull_up>;
-+		};
-+
-+		vsel1_pin: vsel1-pin {
-+			rockchip,pins = <1 RK_PC1 RK_FUNC_GPIO &pcfg_pull_down>;
-+		};
-+
-+		vsel2_pin: vsel2-pin {
-+			rockchip,pins = <1 RK_PB6 RK_FUNC_GPIO &pcfg_pull_down>;
-+		};
-+	};
-+};
-+
-+// Per "SDMMC Controler", page 6.
-+&sdmmc {
-+	bus-width = <4>;
-+	cap-sd-highspeed;
-+	cd-gpios = <&gpio0 RK_PA7 GPIO_ACTIVE_LOW>;
-+	disable-wp;
-+	max-frequency = <150000000>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_cd &sdmmc_bus4>;
-+	vmmc-supply = <&vcc3v3_sys>;
-+	vqmmc-supply = <&vccio_sd>;
-+	status = "okay";
-+};
-+
-+&sdhci {
-+	bus-width = <8>;
-+	mmc-hs200-1_8v;
-+	non-removable;
-+	status = "okay";
-+};
-+
-+// Enable thermal sensors.
-+&tsadc {
-+	/* tshut mode 0:CRU 1:GPIO */
-+	rockchip,hw-tshut-mode = <1>;
-+	/* tshut polarity 0:LOW 1:HIGH */
-+	rockchip,hw-tshut-polarity = <1>;
-+	status = "okay";
-+};
-+
-+&uart2 {
-+	status = "okay";
-+};
--- 
-2.37.1
+Here are the configs I am using (with make olddefconfig on upgrade to 
+5.19):
+
+Broken - sparc - https://dpaste.com/5A8F2JD6U
+Broken - alpha - https://dpaste.com/FYKK23L9X
+Working - riscv - https://dpaste.com/HV6Y4V6NT
+Working - ia64 - https://dpaste.com/HDLDNEAK4
+
+Please let me know if there's anything I can do to help track down this 
+regression.
+
+
+-------- Original Message --------
+Subject: Re: [PATCH v6 00/10] kbuild: yet another series of cleanups 
+(modpost, LTO, MODULE_REL_CRCS, export.h)
+Date: 2022-05-13 08:20
+ From: Masahiro Yamada <masahiroy@kernel.org>
+To: Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+
+On Fri, May 13, 2022 at 8:42 PM Masahiro Yamada <masahiroy@kernel.org> 
+wrote:
+> 
+> 
+> This is the third batch of cleanups in this development cycle.
+> 
+
+
+This series is available at
+git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
+  lto-cleanup-v6
+
+
+> 
+> Changes in v6:
+>   - Fix false-positive warnings when CONFIG_TRIM_UNUSED_KSYMS=y
+> 
+> Changes in v5:
+>   - Fix the build error when CONFIG_DEBUG_INFO_BTF=y (reported by 
+> Nathan)
+>   - Clean up arch/m68k/include/asm/export.h (Nick)
+>   - Keep gen_symversions (and will be removed by a later patch)
+>   - Add more comments in the script
+> 
+> Changes in v4:
+>   - Rename .vmlinux-symver.c to .vmlinux.export.c
+>     because I notice this approach is useful for further cleanups,
+>     not only for modversioning but also for overall EXPORT_SYMBOL.
+>   - New patch
+>   - New.
+>     Resent of my previous submission.
+>     
+> https://lore.kernel.org/all/20210831074004.3195284-10-masahiroy@kernel.org/
+>   - New
+>     Resent of my previous submission
+>     
+> https://lore.kernel.org/linux-kbuild/20210831074004.3195284-11-masahiroy@kernel.org/
+> 
+> Changes in v3:
+>   - New patch
+> 
+> Changes in v2:
+>   - Simplify the implementation (parse .cmd files after ELF)
+>   - New patch
+>  - replace the chain of $(if ...) with $(and )
+>   - New patch
+>   - New patch
+> 
+> Masahiro Yamada (10):
+>   modpost: extract symbol versions from *.cmd files
+>   kbuild: link symbol CRCs at final link, removing
+>     CONFIG_MODULE_REL_CRCS
+>   kbuild: stop merging *.symversions
+>   genksyms: adjust the output format to modpost
+>   kbuild: do not create *.prelink.o for Clang LTO or IBT
+>   kbuild: check static EXPORT_SYMBOL* by script instead of modpost
+>   kbuild: make built-in.a rule robust against too long argument error
+>   kbuild: make *.mod rule robust against too long argument error
+>   kbuild: add cmd_and_savecmd macro
+>   kbuild: rebuild multi-object modules when objtool is updated
+> 
+>  arch/m68k/include/asm/Kbuild    |   1 +
+>  arch/m68k/include/asm/export.h  |   2 -
+>  arch/powerpc/Kconfig            |   1 -
+>  arch/s390/Kconfig               |   1 -
+>  arch/um/Kconfig                 |   1 -
+>  include/asm-generic/export.h    |  22 ++-
+>  include/linux/export-internal.h |  16 +++
+>  include/linux/export.h          |  30 ++--
+>  init/Kconfig                    |   4 -
+>  kernel/module.c                 |  10 +-
+>  scripts/Kbuild.include          |  10 +-
+>  scripts/Makefile.build          | 134 ++++++------------
+>  scripts/Makefile.lib            |   7 -
+>  scripts/Makefile.modfinal       |   5 +-
+>  scripts/Makefile.modpost        |   9 +-
+>  scripts/check-local-export      |  64 +++++++++
+>  scripts/genksyms/genksyms.c     |  18 +--
+>  scripts/link-vmlinux.sh         |  33 ++---
+>  scripts/mod/modpost.c           | 236 +++++++++++++++++++++-----------
+>  19 files changed, 320 insertions(+), 284 deletions(-)
+>  delete mode 100644 arch/m68k/include/asm/export.h
+>  create mode 100644 include/linux/export-internal.h
+>  create mode 100755 scripts/check-local-export
+> 
+> --
+> 2.32.0
+> 
 
