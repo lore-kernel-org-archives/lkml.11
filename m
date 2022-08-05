@@ -2,65 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D249C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 17:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C3FC25B08
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 17:43:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241621AbiHERmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 13:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54596 "EHLO
+        id S241278AbiHERm7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 13:42:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241603AbiHERmj (ORCPT
+        with ESMTP id S241601AbiHERml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 13:42:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD476FA0B
+        Fri, 5 Aug 2022 13:42:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C0F74362
         for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 10:42:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F154618CF
+        by ams.source.kernel.org (Postfix) with ESMTPS id 893F3B82990
         for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 17:42:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EE9CFC433D6;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 32F5BC433D7;
         Fri,  5 Aug 2022 17:42:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659721356;
-        bh=2vJJdbGT9i2Wt+NDhMC2o2bTMNN00zXWhsuDhSO5jO8=;
+        s=k20201202; t=1659721355;
+        bh=+m9Yh0jrDA9R0KRd+ROrDYrWz3z07+PUKE+R0D6tY38=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=tJTrtpMWwSqCuriBZ0BP9q/vUnkiaYa9dzp9HAYFSsgDEwN8vY5qJIo1Q0q3Vs/8+
-         4GL9Nim1C07CVnNoAhvcw1N+USRq4ICWgemNmni5IcXvq+5V/GSbbK1MzDkgKV2KoI
-         dCr+9dvrVexL0AfjklklTyzCixDd+AGlLHIuE2AATEktGpnyU25wy45b4WevpxzDQR
-         OKUJ3eOgk25eUzxQRlVc9sx4xFJ7qNzNaQl9Jxsry59bYqpwW2xgxFiAEJ2RSvGTr/
-         s5CYhyHs83TKI4o1aanfPEDkBarAAOIzv4yejIZftGqe7I7WbLUxZqslKR7g4ZC1i9
-         CzMvt2GTrnkoQ==
+        b=Sd+lVa325TCaRwuGkwH8JVjFq/QJVyy2etK9M1yK6e27HrmI6h5AH8gA951k3lAMx
+         ejWuGzGkG1tPD8ZBh+ioLOYu3U7q5W83AAkvdZVbuQEJrF5YeAIgbuF0f4ctYQ21y8
+         dxqFkt9nOZv8c24ssaTnSviuaQOPByUitSdoXZRv9Vv2VwczZWaBBZ7zYr2omfPOqS
+         o4fbHIjXHB0nPuWEVAQ09DvmETrWffvKnPCesiN8Z6IVPYbgkcuCWSEm+prq1FhAaP
+         o+yCMvfVJ3xufDDgSWYrDAv5iJvnTztynaPrKbfAyuPzJwqeW5QbOQVWDvcefWcCuH
+         4HrXPiI98e8fg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DFA5EC43142;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 23D25C43142;
         Fri,  5 Aug 2022 17:42:35 +0000 (UTC)
-Subject: Re: [GIT PULL] arch/microblaze patches for 5.20-rc1/6.0-rc1
+Subject: Re: [GIT PULL] rtla: Updates for 5.20/6.0
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <56ae15f0-4172-a1bf-661f-1e4310ba60a1@monstr.eu>
-References: <56ae15f0-4172-a1bf-661f-1e4310ba60a1@monstr.eu>
+In-Reply-To: <20220803104936.7df810fd@gandalf.local.home>
+References: <20220803104936.7df810fd@gandalf.local.home>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <56ae15f0-4172-a1bf-661f-1e4310ba60a1@monstr.eu>
-X-PR-Tracked-Remote: git://git.monstr.eu/linux-2.6-microblaze.git tags/microblaze-v5.20
-X-PR-Tracked-Commit-Id: 5b7d1d575e3f1917cd493761781314be7bc73ef4
+X-PR-Tracked-Message-Id: <20220803104936.7df810fd@gandalf.local.home>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git trace-rtla-v5.20
+X-PR-Tracked-Commit-Id: dd0b15bda48f59eb7dee17fab91eda8389f0e98d
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 98586bd6dce3690d8ae8d8561383d9ecc715e3c2
-Message-Id: <165972135591.14838.17056115436346227999.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 29b1d469f3f6842ee4115f0b21f018fc44176468
+Message-Id: <165972135514.14838.995557390764902796.pr-tracker-bot@kernel.org>
 Date:   Fri, 05 Aug 2022 17:42:35 +0000
-To:     Michal Simek <monstr@monstr.eu>
+To:     Steven Rostedt <rostedt@goodmis.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        LKML <linux-kernel@vger.kernel.org>,
+        Andreas Schwab <schwab@suse.de>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        jianchunfu <jianchunfu@cmss.chinamobile.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 5 Aug 2022 10:49:20 +0200:
+The pull request you sent on Wed, 3 Aug 2022 10:49:36 -0400:
 
-> git://git.monstr.eu/linux-2.6-microblaze.git tags/microblaze-v5.20
+> git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git trace-rtla-v5.20
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/98586bd6dce3690d8ae8d8561383d9ecc715e3c2
+https://git.kernel.org/torvalds/c/29b1d469f3f6842ee4115f0b21f018fc44176468
 
 Thank you!
 
