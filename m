@@ -2,198 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E8E9C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 22:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C94C25B0D
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 22:22:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241690AbiHEWVg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 18:21:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35914 "EHLO
+        id S241812AbiHEWV7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 18:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241467AbiHEWVd (ORCPT
+        with ESMTP id S241818AbiHEWVu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 18:21:33 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CB7D1ADAF
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 15:21:30 -0700 (PDT)
+        Fri, 5 Aug 2022 18:21:50 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3994C1CB1B
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 15:21:49 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id j11-20020a05690212cb00b006454988d225so3152361ybu.10
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 15:21:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1659738091;
-  x=1691274091;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=4iOxNsMSbtpOM27Z8TD3Hj1cDpxzqVK5IPL4dyFrR5g=;
-  b=WL/zRxMUofsJB/SNA3df3G2Bz75aDODaZnW3uREQjzfYl6hU9TJrwmwS
-   uWi9H/CvYx15Xi78KeVvo1tsRL6Ct1pndeRChqAch5dmVMCp7gnd5UlGX
-   Wr6lX2RmLxe5mCpGxXTQoPYhocUVx6pa7maN2p+f+8WuPMhgI60itmd0N
-   5nTGRhFFOlqg5o0chGuH9BXDRMAGX9yb2IRxpgBOTe2+xc0hYhcBw1/Or
-   28CNhjEZkHimfSlBJyvi23dPnfQIkRWybEJWy4tl8LDt9nDQ/LuugMKd1
-   4O1QuxJnEN6kLZFqN8Leu3Q5bk/HUdhDn+0/g+ts5W8ChGAQmDf75ir8U
-   A==;
-From:   Niklas Carlsson <Niklas.Carlsson@axis.com>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-CC:     Niklas Carlsson <niklasc@axis.com>, <alsa-devel@alsa-project.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] ASoC: adau1761: Reset codec at probe and shutdown
-Date:   Sat, 6 Aug 2022 00:21:20 +0200
-Message-ID: <20220805222120.2560501-1-Niklas.Carlsson@axis.com>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=mbnTnCyzBrPsZ2cIyy/polFSFcHi5iA+y2wZHy5S50g=;
+        b=O1tv2Chuzvi0NDU6zf4N/Fshq6yGCqiuDTuun/edjoU5VnoWU6HlwRqRq214Cym4mz
+         noFPwUsXvo0SYNfeNEjWoXIVZcign3gEgsFpITz4QnZrbGOtKfeY+cDS9TK5falMgCNI
+         DJ6xcL5LbkGOVjDMSML6SM3jRDsvX6GsPMXFLvFKSYD1BtYOfgnhaOBaYbe12JSlISWh
+         zKPVACct5OHq40PuoLQGZTx+YFMcXX1RgsGmCiYPiEbumgKzZ847z4pJf7UeYvrXqLcR
+         FAIEKIHGSOX0P4KPT7WoPV95vsdEH3BO4vgVQ2JI3EeE9rV4Ph0MSuemj+SCfQWNltzS
+         3OGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=mbnTnCyzBrPsZ2cIyy/polFSFcHi5iA+y2wZHy5S50g=;
+        b=5wYBSxWmcS890kbBm70mdtag84TBFm+rWqFkoVlfT4Z137hbmjz/OFcsU6KCFHcuD4
+         bzQlVBx8XVX2f33ZEZfI0rzD14Z6gF4r3vI9AcWRJGzEkrv0bfIQLBQih0j20uEI5pVo
+         hF80cUMLeovOsaqmPCzi1J7Ifd34RgbXvy9Rn8YIMoFsu+bApc3lrZ4xDYCzhocLJnEI
+         6JU7eKrHN6QwLS3S9VK2wfNK2MJNXbYGsn+YUwGgqSRuQCqffqB3C+81z5EiTqLdL/rt
+         GaXAF0sAh2pp5BmQXbrfMOV80OLBtLWf6S5Hp80rwCtz/wSbQ+c8md/p7G/sl2UYz9TN
+         1fDg==
+X-Gm-Message-State: ACgBeo3DKsxt3JY2CDOl92YMgkR8oSEo5oTy5qdlAkgDDaf3UevggY+F
+        BAzOl6dxe8aIdMsQTQOTnoeEwNYPJFg=
+X-Google-Smtp-Source: AA6agR6sCneuMkIn8ODRd5RHoaPnFVjTcuaTHnQMf3gsH0n2vQfppBnVbsN+vr+g2fHjPeLdvPi2NkEA0yQ=
+X-Received: from jeffxud.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:e37])
+ (user=jeffxu job=sendgmr) by 2002:a05:6902:723:b0:677:115b:553c with SMTP id
+ l3-20020a056902072300b00677115b553cmr7776175ybt.214.1659738108553; Fri, 05
+ Aug 2022 15:21:48 -0700 (PDT)
+Date:   Fri,  5 Aug 2022 22:21:22 +0000
+In-Reply-To: <20220805222126.142525-1-jeffxu@google.com>
+Message-Id: <20220805222126.142525-2-jeffxu@google.com>
+Mime-Version: 1.0
+References: <20220805222126.142525-1-jeffxu@google.com>
+X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
+Subject: [PATCH v2 1/5] mm/memfd: add F_SEAL_EXEC
+From:   <jeffxu@google.com>
+To:     skhan@linuxfoundation.org
+Cc:     akpm@linux-foundation.org, dmitry.torokhov@gmail.com,
+        dverkamp@chromium.org, hughd@google.com, jeffxu@google.com,
+        jorgelo@chromium.org, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-mm@kvack.org, mnissler@chromium.org, jannh@google.com,
+        Jeff Xu <jeffxu@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Carlsson <niklasc@axis.com>
+From: Daniel Verkamp <dverkamp@chromium.org>
 
-ADAU1X61 doesn't have a reset pin, which leads to the codec retaining
-the register values after the device has been rebooted without a power
-cycle. This causes the driver to be out of sync with the codec.
+The new F_SEAL_EXEC flag will prevent modification of the exec bits:
+written as traditional octal mask, 0111, or as named flags, S_IXUSR |
+S_IXGRP | S_IXOTH. Any chmod(2) or similar call that attempts to modify
+any of these bits after the seal is applied will fail with errno EPERM.
 
-Simulating a hardware reset ensures that the codec is in a defined
-state.
+This will preserve the execute bits as they are at the time of sealing,
+so the memfd will become either permanently executable or permanently
+un-executable.
 
-Link: https://lore.kernel.org/all/alpine.DEB.2.02.1603291544160.3594@lnxricardw1.se.axis.com/
-Link: https://lore.kernel.org/all/alpine.DEB.2.02.1604211547540.31333@lnxricardw1.se.axis.com/
-Signed-off-by: Niklas Carlsson <niklasc@axis.com>
+Co-developed-by: Jeff Xu <jeffxu@chromium.org>
+Signed-off-by: Jeff Xu <jeffxu@chromium.org>
+Signed-off-by: Daniel Verkamp <dverkamp@chromium.org>
 ---
- sound/soc/codecs/adau1761-i2c.c |  6 +++++
- sound/soc/codecs/adau1761-spi.c |  6 +++++
- sound/soc/codecs/adau1761.c     | 43 +++++++++++++++++++++++++++++++++
- sound/soc/codecs/adau1761.h     |  1 +
- 4 files changed, 56 insertions(+)
+ include/uapi/linux/fcntl.h | 1 +
+ mm/memfd.c                 | 2 ++
+ mm/shmem.c                 | 6 ++++++
+ 3 files changed, 9 insertions(+)
 
-diff --git a/sound/soc/codecs/adau1761-i2c.c b/sound/soc/codecs/adau1761-i2c.c
-index 0683caf86aea..23bffbd74469 100644
---- a/sound/soc/codecs/adau1761-i2c.c
-+++ b/sound/soc/codecs/adau1761-i2c.c
-@@ -36,6 +36,11 @@ static int adau1761_i2c_remove(struct i2c_client *client)
- 	return 0;
+diff --git a/include/uapi/linux/fcntl.h b/include/uapi/linux/fcntl.h
+index 2f86b2ad6d7e..a472ba69596c 100644
+--- a/include/uapi/linux/fcntl.h
++++ b/include/uapi/linux/fcntl.h
+@@ -43,6 +43,7 @@
+ #define F_SEAL_GROW	0x0004	/* prevent file from growing */
+ #define F_SEAL_WRITE	0x0008	/* prevent writes */
+ #define F_SEAL_FUTURE_WRITE	0x0010  /* prevent future writes while mapped */
++#define F_SEAL_EXEC     0x0020  /* prevent chmod modifying exec bits */
+ /* (1U << 31) is reserved for signed error codes */
+ 
+ /*
+diff --git a/mm/memfd.c b/mm/memfd.c
+index 08f5f8304746..4ebeab94aa74 100644
+--- a/mm/memfd.c
++++ b/mm/memfd.c
+@@ -147,6 +147,7 @@ static unsigned int *memfd_file_seals_ptr(struct file *file)
  }
  
-+static void adau1761_i2c_shutdown(struct i2c_client *client)
-+{
-+	adau1761_shutdown(&client->dev);
-+}
-+
- static const struct i2c_device_id adau1761_i2c_ids[] = {
- 	{ "adau1361", ADAU1361 },
- 	{ "adau1461", ADAU1761 },
-@@ -63,6 +68,7 @@ static struct i2c_driver adau1761_i2c_driver = {
- 	},
- 	.probe_new = adau1761_i2c_probe,
- 	.remove = adau1761_i2c_remove,
-+	.shutdown = adau1761_i2c_shutdown,
- 	.id_table = adau1761_i2c_ids,
- };
- module_i2c_driver(adau1761_i2c_driver);
-diff --git a/sound/soc/codecs/adau1761-spi.c b/sound/soc/codecs/adau1761-spi.c
-index 7c9242c2ff94..5bbbc3d3b5be 100644
---- a/sound/soc/codecs/adau1761-spi.c
-+++ b/sound/soc/codecs/adau1761-spi.c
-@@ -50,6 +50,11 @@ static void adau1761_spi_remove(struct spi_device *spi)
- 	adau17x1_remove(&spi->dev);
- }
+ #define F_ALL_SEALS (F_SEAL_SEAL | \
++		     F_SEAL_EXEC | \
+ 		     F_SEAL_SHRINK | \
+ 		     F_SEAL_GROW | \
+ 		     F_SEAL_WRITE | \
+@@ -175,6 +176,7 @@ static int memfd_add_seals(struct file *file, unsigned int seals)
+ 	 *   SEAL_SHRINK: Prevent the file from shrinking
+ 	 *   SEAL_GROW: Prevent the file from growing
+ 	 *   SEAL_WRITE: Prevent write access to the file
++	 *   SEAL_EXEC: Prevent modification of the exec bits in the file mode
+ 	 *
+ 	 * As we don't require any trust relationship between two parties, we
+ 	 * must prevent seals from being removed. Therefore, sealing a file
+diff --git a/mm/shmem.c b/mm/shmem.c
+index e5e43b990fdc..bb530f562bdd 100644
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -1082,6 +1082,12 @@ static int shmem_setattr(struct user_namespace *mnt_userns,
+ 	if (error)
+ 		return error;
  
-+static void adau1761_spi_shutdown(struct spi_device *spi)
-+{
-+	adau1761_shutdown(&spi->dev);
-+}
++	if ((info->seals & F_SEAL_EXEC) && (attr->ia_valid & ATTR_MODE)) {
++		if ((inode->i_mode ^ attr->ia_mode) & 0111) {
++			return -EPERM;
++		}
++	}
 +
- static const struct spi_device_id adau1761_spi_id[] = {
- 	{ "adau1361", ADAU1361 },
- 	{ "adau1461", ADAU1761 },
-@@ -77,6 +82,7 @@ static struct spi_driver adau1761_spi_driver = {
- 	},
- 	.probe = adau1761_spi_probe,
- 	.remove = adau1761_spi_remove,
-+	.shutdown = adau1761_spi_shutdown,
- 	.id_table = adau1761_spi_id,
- };
- module_spi_driver(adau1761_spi_driver);
-diff --git a/sound/soc/codecs/adau1761.c b/sound/soc/codecs/adau1761.c
-index 8f887227981f..ac544e1e8dc7 100644
---- a/sound/soc/codecs/adau1761.c
-+++ b/sound/soc/codecs/adau1761.c
-@@ -974,6 +974,39 @@ static struct snd_soc_dai_driver adau1761_dai_driver = {
- 	.ops = &adau17x1_dai_ops,
- };
- 
-+static void adau1761_reset(struct regmap *regmap)
-+{
-+	size_t i;
-+
-+	/*
-+	 * Handle the lack of a reset pin in ADAU1X61 by manually writing all
-+	 * registers to their default values.
-+	 *
-+	 * Steps for performing the reset:
-+	 *   1) Make sure that the cache is marked as dirty by writing all
-+	 *      default values directly to the cache.
-+	 *
-+	 *   2) Enable the core clock which is needed for writing all registers
-+	 *      except CLOCK_CONTROL.
-+	 *
-+	 *   3) Use regcache_sync() for synchronizing the dirty cache back to
-+	 *      the hardware.
-+	 */
-+
-+	regcache_cache_only(regmap, true);
-+	for (i = 0; i < ARRAY_SIZE(adau1761_reg_defaults); i++)
-+		regmap_write(regmap, adau1761_reg_defaults[i].reg,
-+			     adau1761_reg_defaults[i].def);
-+	regcache_cache_only(regmap, false);
-+
-+	regmap_update_bits(regmap, ADAU17X1_CLOCK_CONTROL,
-+			   ADAU17X1_CLOCK_CONTROL_SYSCLK_EN,
-+			   ADAU17X1_CLOCK_CONTROL_SYSCLK_EN);
-+	regcache_sync(regmap);
-+	regmap_update_bits(regmap, ADAU17X1_CLOCK_CONTROL,
-+			   ADAU17X1_CLOCK_CONTROL_SYSCLK_EN, 0);
-+}
-+
- int adau1761_probe(struct device *dev, struct regmap *regmap,
- 	enum adau17x1_type type, void (*switch_mode)(struct device *dev))
- {
-@@ -997,6 +1030,8 @@ int adau1761_probe(struct device *dev, struct regmap *regmap,
- 	if (ret)
- 		return ret;
- 
-+	adau1761_reset(regmap);
-+
- 	/* Enable cache only mode as we could miss writes before bias level
- 	 * reaches standby and the core clock is enabled */
- 	regcache_cache_only(regmap, true);
-@@ -1006,6 +1041,14 @@ int adau1761_probe(struct device *dev, struct regmap *regmap,
- }
- EXPORT_SYMBOL_GPL(adau1761_probe);
- 
-+void adau1761_shutdown(struct device *dev)
-+{
-+	struct adau *adau = dev_get_drvdata(dev);
-+
-+	adau1761_reset(adau->regmap);
-+}
-+EXPORT_SYMBOL_GPL(adau1761_shutdown);
-+
- const struct regmap_config adau1761_regmap_config = {
- 	.val_bits = 8,
- 	.reg_bits = 16,
-diff --git a/sound/soc/codecs/adau1761.h b/sound/soc/codecs/adau1761.h
-index 7beabf448ad1..98d698ebde27 100644
---- a/sound/soc/codecs/adau1761.h
-+++ b/sound/soc/codecs/adau1761.h
-@@ -16,6 +16,7 @@ struct device;
- 
- int adau1761_probe(struct device *dev, struct regmap *regmap,
- 	enum adau17x1_type type, void (*switch_mode)(struct device *dev));
-+void adau1761_shutdown(struct device *dev);
- 
- extern const struct regmap_config adau1761_regmap_config;
- 
+ 	if (S_ISREG(inode->i_mode) && (attr->ia_valid & ATTR_SIZE)) {
+ 		loff_t oldsize = inode->i_size;
+ 		loff_t newsize = attr->ia_size;
 -- 
-2.30.2
+2.37.1.559.g78731f0fdb-goog
 
