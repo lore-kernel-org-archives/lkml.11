@@ -2,127 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2317C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 20:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34940C25B08
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 20:55:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240390AbiHEUx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 16:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33756 "EHLO
+        id S239543AbiHEUzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 16:55:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240953AbiHEUxu (ORCPT
+        with ESMTP id S237544AbiHEUzg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 16:53:50 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E1A7858B
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 13:53:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659732826; x=1691268826;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xjU61B6lF3k5YGmod3d3oaZwqF8bV+fUijf5OIFjevY=;
-  b=ZXjHKoYYk/l4zKXoN6kfNOVHsK4s0G8TgXCk4+Jdsfl4WGmdbcA4KOFQ
-   Cx2aWBDS0XTxhOl5riEpCeENC2CISpa+BzZyclMJ0h9VsZ9tZKLkbhboJ
-   BlfXtQka//HwlPk53an70bSEQdoTf8CMLY0pDwLABeCtHp1uMgYQhgzVJ
-   3QY9Zh0UlsaENI5okP0eg9N5LB8BcarYNqlakdHzge2drz9dEHwpzklYa
-   NpRIWSqAz8Sq7Y6Ekpy4RsbGMG0je/4C9utvAJQJP9IGPsdEMqIn7y2+u
-   +O/9tDxDwqMWE7Twe13bW9P7xgSigcxbY1BnrW5mfWZjsAN94/3oVUTxT
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="352011970"
-X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="352011970"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 13:53:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="931360030"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 05 Aug 2022 13:53:26 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 4AACC119; Fri,  5 Aug 2022 23:53:38 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: [PATCH v1 3/5] regmap: mmio: Remove mmio_relaxed member from context
-Date:   Fri,  5 Aug 2022 23:53:19 +0300
-Message-Id: <20220805205321.19452-3-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220805205321.19452-1-andriy.shevchenko@linux.intel.com>
-References: <20220805205321.19452-1-andriy.shevchenko@linux.intel.com>
+        Fri, 5 Aug 2022 16:55:36 -0400
+Received: from smtp.smtpout.orange.fr (smtp07.smtpout.orange.fr [80.12.242.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1125013E35
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 13:55:36 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id K4M1oAZJDoEdDK4M1o1VPQ; Fri, 05 Aug 2022 22:55:34 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Fri, 05 Aug 2022 22:55:34 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Will Deacon <will@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2] perf/arm_pmu_platform: Fix an error message related to dev_err_probe() usage
+Date:   Fri,  5 Aug 2022 22:55:30 +0200
+Message-Id: <aaeba9c12ccdb29f48fe19137cb5abeea85fbb24.1659732652.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no need to keep mmio_relaxed member in the context, it's
-onetime used during generation of the context. Remove it.
+dev_err() is a macro that expand dev_fmt, but dev_err_probe() is a
+function and cannot perform this macro expansion.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+So hard code the "hw perfevents: " prefix and dd a comment explaining why.
+
+Fixes: 11fa1dc8020a ("perf/arm_pmu_platform: Use dev_err_probe() for IRQ errors")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- drivers/base/regmap/regmap-mmio.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+Untested, but I can't see how it could work.
 
-diff --git a/drivers/base/regmap/regmap-mmio.c b/drivers/base/regmap/regmap-mmio.c
-index e1923506a89a..c2b18973144b 100644
---- a/drivers/base/regmap/regmap-mmio.c
-+++ b/drivers/base/regmap/regmap-mmio.c
-@@ -16,7 +16,6 @@
- struct regmap_mmio_context {
- 	void __iomem *regs;
- 	unsigned int val_bytes;
--	bool relaxed_mmio;
+v1 --> v2
+  - fix a typo in the comment
+---
+ drivers/perf/arm_pmu_platform.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/perf/arm_pmu_platform.c b/drivers/perf/arm_pmu_platform.c
+index 513de1f54e2d..02cca4b8f0fd 100644
+--- a/drivers/perf/arm_pmu_platform.c
++++ b/drivers/perf/arm_pmu_platform.c
+@@ -101,8 +101,11 @@ static int pmu_parse_irqs(struct arm_pmu *pmu)
+ 	struct device *dev = &pdev->dev;
  
- 	bool attached_clk;
- 	struct clk *clk;
-@@ -283,7 +282,6 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
+ 	num_irqs = platform_irq_count(pdev);
+-	if (num_irqs < 0)
+-		return dev_err_probe(dev, num_irqs, "unable to count PMU IRQs\n");
++	if (num_irqs < 0) {
++		/* dev_err_probe() does not handle dev_fmt, so hard-code the prefix */
++		return dev_err_probe(dev, num_irqs,
++				     "hw perfevents: unable to count PMU IRQs\n");
++	}
  
- 	ctx->regs = regs;
- 	ctx->val_bytes = config->val_bits / 8;
--	ctx->relaxed_mmio = config->use_relaxed_mmio;
- 
- 	switch (regmap_get_val_endian(dev, &regmap_mmio, config)) {
- 	case REGMAP_ENDIAN_DEFAULT:
-@@ -293,7 +291,7 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
- #endif
- 		switch (config->val_bits) {
- 		case 8:
--			if (ctx->relaxed_mmio) {
-+			if (config->use_relaxed_mmio) {
- 				ctx->reg_read = regmap_mmio_read8_relaxed;
- 				ctx->reg_write = regmap_mmio_write8_relaxed;
- 			} else {
-@@ -302,7 +300,7 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
- 			}
- 			break;
- 		case 16:
--			if (ctx->relaxed_mmio) {
-+			if (config->use_relaxed_mmio) {
- 				ctx->reg_read = regmap_mmio_read16le_relaxed;
- 				ctx->reg_write = regmap_mmio_write16le_relaxed;
- 			} else {
-@@ -311,7 +309,7 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
- 			}
- 			break;
- 		case 32:
--			if (ctx->relaxed_mmio) {
-+			if (config->use_relaxed_mmio) {
- 				ctx->reg_read = regmap_mmio_read32le_relaxed;
- 				ctx->reg_write = regmap_mmio_write32le_relaxed;
- 			} else {
-@@ -321,7 +319,7 @@ static struct regmap_mmio_context *regmap_mmio_gen_context(struct device *dev,
- 			break;
- #ifdef CONFIG_64BIT
- 		case 64:
--			if (ctx->relaxed_mmio) {
-+			if (config->use_relaxed_mmio) {
- 				ctx->reg_read = regmap_mmio_read64le_relaxed;
- 				ctx->reg_write = regmap_mmio_write64le_relaxed;
- 			} else {
+ 	/*
+ 	 * In this case we have no idea which CPUs are covered by the PMU.
 -- 
-2.35.1
+2.34.1
 
