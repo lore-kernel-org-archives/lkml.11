@@ -2,91 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F4144C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 16:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97609C25B07
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 16:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240941AbiHEQwL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 12:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
+        id S240999AbiHEQz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 12:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241270AbiHEQvw (ORCPT
+        with ESMTP id S230244AbiHEQz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 12:51:52 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852757B784;
-        Fri,  5 Aug 2022 09:51:27 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id 008ce5cc8209cc32; Fri, 5 Aug 2022 18:51:18 +0200
-Received: from kreacher.localnet (public-gprs522492.centertel.pl [31.61.160.61])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id 91B5366CECD;
-        Fri,  5 Aug 2022 18:51:17 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Jiri Kosina <jikos@kernel.org>
-Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-input@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH] i2c: ACPI: Do not check ACPI_FADT_LOW_POWER_S0
-Date:   Fri, 05 Aug 2022 18:51:11 +0200
-Message-ID: <12042830.O9o76ZdvQC@kreacher>
+        Fri, 5 Aug 2022 12:55:57 -0400
+X-Greylist: delayed 437 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 05 Aug 2022 09:55:56 PDT
+Received: from hop.stappers.nl (hop.stappers.nl [IPv6:2a02:2308:0:14e::686f:7030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60ACB2871A;
+        Fri,  5 Aug 2022 09:55:56 -0700 (PDT)
+Received: from gpm.stappers.nl (gpm.stappers.nl [82.168.249.201])
+        by hop.stappers.nl (Postfix) with ESMTP id EFFC4200F4;
+        Fri,  5 Aug 2022 16:48:35 +0000 (UTC)
+Received: by gpm.stappers.nl (Postfix, from userid 1000)
+        id 96E2F304049; Fri,  5 Aug 2022 18:48:35 +0200 (CEST)
+Date:   Fri, 5 Aug 2022 18:48:35 +0200
+From:   Geert Stappers <stappers@stappers.nl>
+To:     Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, patches@lists.linux.dev,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>
+Subject: Re: [PATCH v9 01/27] kallsyms: use `sizeof` instead of hardcoded size
+Message-ID: <20220805164834.4xq7hm6ee6ywjpjo@gpm.stappers.nl>
+References: <20220805154231.31257-1-ojeda@kernel.org>
+ <20220805154231.31257-2-ojeda@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 31.61.160.61
-X-CLIENT-HOSTNAME: public-gprs522492.centertel.pl
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefuddguddtkecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpeffffffkefgheehffelteeiveeffeevhfelteejvddvieejjeelvdeiheeuveeuffenucfkphepfedurdeiuddrudeitddriedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepfedurdeiuddrudeitddriedupdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeejpdhrtghpthhtohepjhhikhhosheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepsggvnhhjrghmihhnrdhtihhsshhoihhrvghssehrvgguhhgrthdrtghomhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehmihhk
- rgdrfigvshhtvghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtoheplhhinhhugidqihhnphhuthesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehmrghrihhordhlihhmohhntghivghllhhosegrmhgurdgtohhm
-X-DCC--Metrics: v370.home.net.pl 1024; Body=7 Fuz1=7 Fuz2=7
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ojgl5e33l337cax4"
+Content-Disposition: inline
+In-Reply-To: <20220805154231.31257-2-ojeda@kernel.org>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-The ACPI_FADT_LOW_POWER_S0 flag merely means that it is better to
-use low-power S0 idle on the given platform than S3 (provided that
-the latter is supported) and it doesn't preclude using either of
-them (which of them will be used depends on the choices made by user
-space).
+--ojgl5e33l337cax4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Because of that, ACPI_FADT_LOW_POWER_S0 is generally not sufficient
-for making decisions in device drivers and so i2c_hid_acpi_probe()
-should not use it.
-
-Moreover, Linux always supports suspend-to-idle, so if a given
-device can wake up the system from suspend-to-idle, then it can be
-marked as wakeup capable unconditionally, so make that happen in
-i2c_hid_acpi_probe().
-
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
- drivers/hid/i2c-hid/i2c-hid-acpi.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-Index: linux-pm/drivers/hid/i2c-hid/i2c-hid-acpi.c
-===================================================================
---- linux-pm.orig/drivers/hid/i2c-hid/i2c-hid-acpi.c
-+++ linux-pm/drivers/hid/i2c-hid/i2c-hid-acpi.c
-@@ -105,10 +105,8 @@ static int i2c_hid_acpi_probe(struct i2c
- 
- 	acpi_device_fix_up_power(adev);
- 
--	if (acpi_gbl_FADT.flags & ACPI_FADT_LOW_POWER_S0) {
--		device_set_wakeup_capable(dev, true);
--		device_set_wakeup_enable(dev, false);
--	}
-+	device_set_wakeup_capable(dev, true);
-+	device_set_wakeup_enable(dev, false);
- 
- 	return i2c_hid_core_probe(client, &ihid_acpi->ops,
- 				  hid_descriptor_address, 0);
+On Fri, Aug 05, 2022 at 05:41:46PM +0200, Miguel Ojeda wrote:
+> From: Boqun Feng <boqun.feng@gmail.com>
+>=20
+> This removes one place where the `500` constant is hardcoded.
+>=20
+> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> Co-developed-by: Miguel Ojeda <ojeda@kernel.org>
+> Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+> ---
+>  scripts/kallsyms.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+> index f18e6dfc68c5..52f5488c61bc 100644
+> --- a/scripts/kallsyms.c
+> +++ b/scripts/kallsyms.c
+> @@ -206,7 +206,7 @@ static struct sym_entry *read_symbol(FILE *in)
+> =20
+>  	rc =3D fscanf(in, "%llx %c %499s\n", &addr, &type, name);
+>  	if (rc !=3D 3) {
+> -		if (rc !=3D EOF && fgets(name, 500, in) =3D=3D NULL)
+> +		if (rc !=3D EOF && fgets(name, sizeof(name), in) =3D=3D NULL)
+>  			fprintf(stderr, "Read error or end of file.\n");
+>  		return NULL;
+>  	}
+> --=20
+> 2.37.1
+>=20
 
 
+Signed-off-by: Geert Stappers <stappers@stappers.nl>
 
+
+And I think that this patch and all other "rust" kallsyms patches
+allready should have been accepted in the v3 or v5 series.
+
+
+
+
+
+Regards
+Geert Stappers
+--=20
+Silence is hard to parse
+
+--ojgl5e33l337cax4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEin8gjG2ecykWV0FNITXRI9jBm+wFAmLtSdsACgkQITXRI9jB
+m+yFvRAAqobvCSSsxB7Z87XEpwzMkNsdtwn04eRPEsQctCU3u1bfvVVHqq9G8rvH
+RwUeyPpAOxbmEs+B5UCE3CbU5p/tSuw4au2+Gn3S23aAJLSNQd/ddtai3ca02y5a
+Sw6ype8LlZsFnhmocfB+RsHsch7PQyS0CMkcfsFaYx7Lj44YsaHMLtuHOYt2jmCI
+/B2kKn7dze85uCPF/tronsLR9aD1kpSEQ4x/ZUyZ88OtE3pQKQvPu1IWHLsGPBNC
+bjg6NzkgyO4qFb3bgmv21q+VOSK3jMwr3kY1t9FoxMsHtoPi4c5+87aj4iLze0zK
+enrSYseH670xScX19DqZvrY+C9uh5iVBsv2+Pz/0WaR3HT4sUxg3xkl1wdMlA1Ui
+xLoBK3ayljhdaxhkLx6Eif5YxyB4BBCXq3cjugkMECT0L86DSj91dPB9mWGAItFN
+dydrsOmAnh4Jl/LahJYoSmnkmCBtxAL4p2WkLmpEvHHcAfw/Hx8Bwu0LKXigMdDh
+I4/BtNKknlceQ9hzY0VkeVbj3WUnZ2bkMPd1Q87YpQPVZlj6ArS+QXEB1Uq1GeHE
+29gmr3CZOlOMiXEXnLM17uS8w9smjIkx4WpuE5CK3F4aVjYBdRWZF8NDsmYWglMT
+K3RJ/FYKfaXfeXBwLLcN/vkgqOulY1Dg3buhg6mX5kYcjNCHlt4=
+=6Oog
+-----END PGP SIGNATURE-----
+
+--ojgl5e33l337cax4--
