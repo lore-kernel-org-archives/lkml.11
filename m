@@ -2,93 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5BACC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 07:43:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C84EC25B0C
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 07:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237714AbiHEHni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 03:43:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45218 "EHLO
+        id S240139AbiHEHpJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 03:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230441AbiHEHng (ORCPT
+        with ESMTP id S230441AbiHEHpE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 03:43:36 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D59FE0;
-        Fri,  5 Aug 2022 00:43:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1659685416; x=1691221416;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=zyhxpEY3V0ezRF2TAPWgZETEsQajOrAZag7J08YVniY=;
-  b=L/C9vzWfC2cSMbQeePRdahtpc9FHEWjHv5H9ysCDkoXxxpibrqJ5n56b
-   rK9XJM8d0QKQzKneAzlH20lSprHr8zRRcgyhUI56/NraoYaLG9cj83kNg
-   HQLqg3aJXAUAYsWdXIPMcBsokcSePjKFIIEFqj9eX6jh6Q1BT9TA0YtDY
-   T3vsPXhW1bGsvJT+ZnjEZJzfTIh3fozaH23T/OfbNoxRWBx/WAEWQjDFs
-   7oHh5AnMsxGSO5O3O+oisa69d9mQwxH4dNiae8miNL5YT56iVoVK/eNM7
-   NzF8JvqQ3/muW17arHI7Q6Ces3uFJ44fDdcPFoYco6iMLEQjVdyHgcpY2
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="107704825"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Aug 2022 00:43:35 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 5 Aug 2022 00:43:31 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 5 Aug 2022 00:43:29 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Wolfram Sang <wsa@kernel.org>,
-        Daire McNamara <daire.mcnamara@microchip.com>
-CC:     Conor Dooley <conor.dooley@microchip.com>,
-        <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Andreas Buerkler <andreas.buerkler@enclustra.com>,
-        Lewis Hanly <lewis.hanly@microchip.com>
-Subject: [PATCH] i2c: microchip-core: fix erroneous late ack send
-Date:   Fri, 5 Aug 2022 08:43:46 +0100
-Message-ID: <20220805074346.4123650-1-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 5 Aug 2022 03:45:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFE9FE5;
+        Fri,  5 Aug 2022 00:45:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDEAD616C5;
+        Fri,  5 Aug 2022 07:45:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33AC1C433B5;
+        Fri,  5 Aug 2022 07:45:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659685502;
+        bh=3uWbqT42BniSI/9bdvMcYnJrSiBwh8YbURul3ZSw2bQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=k9ctC4AwDDvOGGvvqHHTcCKdJ18IT2l89Z2bKpC3S1FCkMH6XZZ/S0vmLKWdtrstG
+         83JSZmS/Q7SFRD77DvRaLq8a59WG4+HD6mwjrOEQvhUEy6cRVF5tZ4Rz8XVdFtPLex
+         9CNpePfAGtkgbw9w9+ygWjKIo4oTxiMc2p+f4mij7OkMmLAGm9I3GKRDVtPGbKJDYu
+         e8QZLkXwYzyYo4xbuMuXKxUfnFQ1JC+0gqUFi8mKnGHKkrWHkGeHsmxq1jhMsiXFoY
+         DdADwwK22saoLW3+P+ubCvuPdCmyneEgRKhGxFCIYmTQvK9D5QyAGZH1ZZy9G1kX96
+         sVXxMGuSyLxUw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1oJs1O-0005ah-15; Fri, 05 Aug 2022 09:45:26 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH 1/2] usb: dwc3: qcom: only parse 'maximum-speed' once
+Date:   Fri,  5 Aug 2022 09:44:59 +0200
+Message-Id: <20220805074500.21469-2-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220805074500.21469-1-johan+linaro@kernel.org>
+References: <20220805074500.21469-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A late ack is currently being sent at the end of a transfer due to
-incorrect logic in mchp_corei2c_empty_rx(). Currently the Assert Ack
-bit is being written to the controller's control reg after the last
-byte has been received, causing it to sent another byte with the ack.
-Instead, the AA flag should be written to to the contol register when
-the penultimate byte is read so it is sent out for the last byte.
+Add a temporary variable to the interconnect-initialisation helper to
+avoid parsing and decoding the 'maximum-speed' devicetree property
+twice.
 
-Reported-by: Andreas Buerkler <andreas.buerkler@enclustra.com>
-Fixes: 64a6f1c4987e ("i2c: add support for microchip fpga i2c controllers")
-Tested-by: Lewis Hanly <lewis.hanly@microchip.com>
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
+ drivers/usb/dwc3/dwc3-qcom.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-FYI Wolfram, I am still sitting on the MAINTAINERS update as the
-SoC updates have not been pulled yet for 6.0 (AFAICT)
-
- drivers/i2c/busses/i2c-microchip-corei2c.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/i2c/busses/i2c-microchip-corei2c.c b/drivers/i2c/busses/i2c-microchip-corei2c.c
-index 6df0f1c33278..4d7e9b25f018 100644
---- a/drivers/i2c/busses/i2c-microchip-corei2c.c
-+++ b/drivers/i2c/busses/i2c-microchip-corei2c.c
-@@ -206,7 +206,7 @@ static void mchp_corei2c_empty_rx(struct mchp_corei2c_dev *idev)
- 		idev->msg_len--;
+diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
+index 6814861bed6c..196efa9f2545 100644
+--- a/drivers/usb/dwc3/dwc3-qcom.c
++++ b/drivers/usb/dwc3/dwc3-qcom.c
+@@ -243,6 +243,7 @@ static int dwc3_qcom_interconnect_disable(struct dwc3_qcom *qcom)
+  */
+ static int dwc3_qcom_interconnect_init(struct dwc3_qcom *qcom)
+ {
++	enum usb_device_speed max_speed;
+ 	struct device *dev = qcom->dev;
+ 	int ret;
+ 
+@@ -263,8 +264,8 @@ static int dwc3_qcom_interconnect_init(struct dwc3_qcom *qcom)
+ 		return PTR_ERR(qcom->icc_path_apps);
  	}
  
--	if (idev->msg_len == 0) {
-+	if (idev->msg_len <= 1) {
- 		ctrl = readb(idev->base + CORE_I2C_CTRL);
- 		ctrl &= ~CTRL_AA;
- 		writeb(ctrl, idev->base + CORE_I2C_CTRL);
+-	if (usb_get_maximum_speed(&qcom->dwc3->dev) >= USB_SPEED_SUPER ||
+-			usb_get_maximum_speed(&qcom->dwc3->dev) == USB_SPEED_UNKNOWN)
++	max_speed = usb_get_maximum_speed(&qcom->dwc3->dev);
++	if (max_speed >= USB_SPEED_SUPER || max_speed == USB_SPEED_UNKNOWN)
+ 		ret = icc_set_bw(qcom->icc_path_ddr,
+ 			USB_MEMORY_AVG_SS_BW, USB_MEMORY_PEAK_SS_BW);
+ 	else
 -- 
-2.36.1
+2.35.1
 
