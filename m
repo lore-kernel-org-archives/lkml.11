@@ -2,175 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC83C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 23:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB4DAC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 23:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241578AbiHEXN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 19:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38256 "EHLO
+        id S241608AbiHEXVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 19:21:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241449AbiHEXNy (ORCPT
+        with ESMTP id S238141AbiHEXVG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 19:13:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F5135589
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 16:13:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659741231;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CQ0tUUX9dSdS4JRTC1zPGHaQM3Hc6bp+ASxYzjmtUmQ=;
-        b=E555HY3/Kht+Je+3fgfn9tVF44MH7avovwzM2VCN4BOZg5jU82FXTSTEXZugdZYPVj5y/3
-        1obQXpjJ79DJ5XJiMKTNcaDEVFBZh6jq1QWny9UlxBUHqJfq8KzYDcOAwU4bEr3s0SM6di
-        xlTj8kHW016iJpBtQRjtTyGGTAjoQno=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-590-sW-jUhTwMg-UXYrGQwbwag-1; Fri, 05 Aug 2022 19:13:50 -0400
-X-MC-Unique: sW-jUhTwMg-UXYrGQwbwag-1
-Received: by mail-qt1-f197.google.com with SMTP id a8-20020a05622a064800b00342240a9fccso2805949qtb.18
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 16:13:50 -0700 (PDT)
+        Fri, 5 Aug 2022 19:21:06 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE241D0F2
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 16:21:03 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id m4so7448799ejr.3
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 16:21:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=iJnXDkhY3WibcgHqNJ/apiNs6qhmQXpZMLsKos5BMCQ=;
+        b=eFUwGAvhoJ8EEYaGa/arj7adR8QlkncfXKcdX7iXgroj9yZ+Gm7dJ7Ts8/p6/xX1J5
+         x2r64ctbmyaFhx/lwup2rv3LDgDyHASHgKfhjxJiW6vrzdpSBUQpTRk11nT06VQg+LMi
+         l9uKIxCdZxEdhmLdSRr30emGV+zBPUQDQ3YRY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=CQ0tUUX9dSdS4JRTC1zPGHaQM3Hc6bp+ASxYzjmtUmQ=;
-        b=Mi+qj8AMOhHIkdL3ZFPkpQvfos/JyMjIRgH6kC1RpC4z7Fb7NDnEHXJKPtD+eUhDtk
-         ipaRHP6tdcNN9kZgSjXQ76xb5wQV+b5F8POSEhH5L8Q1MBufc+9rlcL05+vozUI2AbzY
-         WI2MREN+1PSmwrLbNIelJZPjB9q4V38+c0cpSL6/xSFwaGxn7a4Xz9sa/mV+8V+VzqQI
-         hGkNuEYkbiaXw2oBCT0FN68fEe5nga4GzP/4K+UcXruSUqGEUWGhFeXVnap1uOVSHZYx
-         0s+7J4Uum2T/1nkCn3XgqAiOHVj/9gkvJz9LxnwSAeFvR5an5wOHLI20rLbcniKfZIHn
-         AoXg==
-X-Gm-Message-State: ACgBeo3fOzIGxNmaWRUsFH/j2wPYREZMijkdManf4L4mNDy4mFAXBWdh
-        ZIGQmVSTfORw568OrkDIixzVTOQiHtbeSfDQHQDu2cZoe78AKJEfivBbxK5SIi4nxNKmg5QZ3vN
-        CAp+B4F4J3ai8pKdaMXozcnqY
-X-Received: by 2002:a05:620a:b86:b0:6b8:d74e:1e08 with SMTP id k6-20020a05620a0b8600b006b8d74e1e08mr6881001qkh.166.1659741229905;
-        Fri, 05 Aug 2022 16:13:49 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7vQnU94QQncO9wXjydH0biWvfzN2On2lgdFWzew+raRRdFz5zCSICz/EgkRwetHoifGyaVTQ==
-X-Received: by 2002:a05:620a:b86:b0:6b8:d74e:1e08 with SMTP id k6-20020a05620a0b8600b006b8d74e1e08mr6880984qkh.166.1659741229647;
-        Fri, 05 Aug 2022 16:13:49 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id r11-20020ac87eeb000000b0031f286f868dsm3289067qtc.92.2022.08.05.16.13.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 16:13:49 -0700 (PDT)
-Date:   Fri, 5 Aug 2022 19:13:47 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Peter Feiner <pfeiner@google.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] mm/hugetlb: fix hugetlb not supporting
- write-notify
-Message-ID: <Yu2kK6s8m8NLDjuV@xz-m1.local>
-References: <20220805110329.80540-1-david@redhat.com>
- <20220805110329.80540-2-david@redhat.com>
- <Yu1eCsMqa641zj5C@xz-m1.local>
- <Yu1gHnpKRZBhSTZB@monkey>
- <c2a3b903-099c-4b79-6923-8b288d404c51@redhat.com>
- <Yu1ie559zt8VvDc1@monkey>
- <73050e64-e40f-0c94-be96-316d1e8d5f3b@redhat.com>
- <Yu2CI4wGLHCjMSWm@monkey>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=iJnXDkhY3WibcgHqNJ/apiNs6qhmQXpZMLsKos5BMCQ=;
+        b=E3WcEbEzVEOy8WjUP0hK/P4xqn4/DWkoYPruQEg+JEvzm/8yw/mxzy/hf36lk9G183
+         gzGkwHRVSkB42yfegSvmuRcj9L1811oCOSurUEQJ3wKC/44zsmg7/SB9g5QdgSZJ2Cp9
+         vBv5gkZHtgeeH1QlDMdMRURT38VFECqLiof1fp8pI0MMX5HhAmdoOcYTnjOKtIP0XJf2
+         GQ3eQiBtSm5KoBZnVQuriVD7fFmBBNr1+rqBNB7mQfvlopPbV6G2WGbrPr95ZxEdEaKL
+         2WN/07zTJJ4b+UZebcK8Ua2L1RgIfrSDuSaMgWVsJoSOWT0yrD0O/9q0B6FBY4sopOpQ
+         z7KQ==
+X-Gm-Message-State: ACgBeo0RWaF7Vl/sWEWHmlphdM3YLcjMu7Mlow5kC+B6/+Nnz2h619WT
+        dnwLzWCzTCyvjgkCk4cuYYfWuVxAUHghF+5k
+X-Google-Smtp-Source: AA6agR75d0gH/FGh6g4hAyW3MAD2UBwlM4m71fCYL3m3wU3Kg9oC4EcUmoM0hCMLC0UFtkZlJQGN1A==
+X-Received: by 2002:a17:907:7292:b0:72f:d76:b243 with SMTP id dt18-20020a170907729200b0072f0d76b243mr6781374ejc.230.1659741662242;
+        Fri, 05 Aug 2022 16:21:02 -0700 (PDT)
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com. [209.85.128.54])
+        by smtp.gmail.com with ESMTPSA id l18-20020a1709060cd200b00730223dc5c0sm2054168ejh.206.2022.08.05.16.21.01
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 05 Aug 2022 16:21:01 -0700 (PDT)
+Received: by mail-wm1-f54.google.com with SMTP id v5so2056243wmj.0
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 16:21:01 -0700 (PDT)
+X-Received: by 2002:a1c:f603:0:b0:3a5:23ca:3e7c with SMTP id
+ w3-20020a1cf603000000b003a523ca3e7cmr1634050wmc.38.1659741660817; Fri, 05 Aug
+ 2022 16:21:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yu2CI4wGLHCjMSWm@monkey>
+References: <20220803133541.18b82ec9344ed0e8b975fe5b@linux-foundation.org>
+In-Reply-To: <20220803133541.18b82ec9344ed0e8b975fe5b@linux-foundation.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 5 Aug 2022 16:20:44 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wheFdrnTLNhw6+2ekT_AuJHXHTWEKVQyJrA864mmjFKtQ@mail.gmail.com>
+Message-ID: <CAHk-=wheFdrnTLNhw6+2ekT_AuJHXHTWEKVQyJrA864mmjFKtQ@mail.gmail.com>
+Subject: Re: [GIT PULL] MM updates for 5.20-rc1
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     mm-commits@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 01:48:35PM -0700, Mike Kravetz wrote:
-> On 08/05/22 20:57, David Hildenbrand wrote:
-> > On 05.08.22 20:33, Mike Kravetz wrote:
-> > > On 08/05/22 20:25, David Hildenbrand wrote:
-> > >> On 05.08.22 20:23, Mike Kravetz wrote:
-> > >>> On 08/05/22 14:14, Peter Xu wrote:
-> > >>>> On Fri, Aug 05, 2022 at 01:03:28PM +0200, David Hildenbrand wrote:
-> > >>>>> diff --git a/mm/mmap.c b/mm/mmap.c
-> > >>>>> index 61e6135c54ef..462a6b0344ac 100644
-> > >>>>> --- a/mm/mmap.c
-> > >>>>> +++ b/mm/mmap.c
-> > >>>>> @@ -1683,6 +1683,13 @@ int vma_wants_writenotify(struct vm_area_struct *vma, pgprot_t vm_page_prot)
-> > >>>>>  	if ((vm_flags & (VM_WRITE|VM_SHARED)) != ((VM_WRITE|VM_SHARED)))
-> > >>>>>  		return 0;
-> > >>>>>  
-> > >>>>> +	/*
-> > >>>>> +	 * Hugetlb does not require/support writenotify; especially, it does not
-> > >>>>> +	 * support softdirty tracking.
-> > >>>>> +	 */
-> > >>>>> +	if (is_vm_hugetlb_page(vma))
-> > >>>>> +		return 0;
-> > >>>>
-> > >>>> I'm kind of confused here..  you seems to be fixing up soft-dirty for
-> > >>>> hugetlb but here it's explicitly forbidden.
-> > >>>>
-> > >>>> Could you explain a bit more on why this patch is needed if (assume
-> > >>>> there'll be a working) patch 2 being provided?
-> > >>>>
-> > >>>
-> > >>> No comments on the patch, but ...
-> > >>>
-> > >>> Since it required little thought, I ran the test program on next-20220802 and
-> > >>> was surprised that the issue did not recreate.  Even added a simple printk
-> > >>> to make sure we were getting into vma_wants_writenotify with a hugetlb vma.
-> > >>> We were.
-> > >>
-> > >>
-> > >> ... does your config have CONFIG_MEM_SOFT_DIRTY enabled?
-> > >>
-> > > 
-> > > No, Duh!
-> > > 
-> > > FYI - Some time back, I started looking at adding soft dirty support for
-> > > hugetlb mappings.  I did not finish that work.  But, I seem to recall
-> > > places where code was operating on hugetlb mappings when perhaps it should
-> > > not.
-> > > 
-> > > Perhaps, it would also be good to just disable soft dirty for hugetlb at
-> > > the source?
-> > 
-> > I thought about that as well. But I came to the conclusion that without
-> > patch #2, hugetlb VMAs cannot possibly support write-notify, so there is
-> > no need to bother in vma_wants_writenotify() at all.
-> > 
-> > The "root" would be places where we clear VM_SOFTDIRTY. That should only
-> > be fs/proc/task_mmu.c:clear_refs_write() IIRC.
-> > 
-> > So I don't particularly care, I consider this patch a bit cleaner and
-> > more generic, but I can adjust clear_refs_write() instead of there is a
-> > preference.
-> > 
-> 
-> After a closer look, I agree that this may be the simplest/cleanest way to
-> proceed.  I was going to suggest that you note hugetlb does not support
-> softdirty, but see you did in the comment.
-> 
-> Acked-by: Mike Kravetz <mike.kravetz@oracle.com>
+On Wed, Aug 3, 2022 at 1:35 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+>
+> There are 6-7 conflicts with your tree here.  All very minor, mainly
+> related to the rename of Documentation/vm to Documentation/mm.
 
-Filtering out hugetlbfs in vma_wants_writenotify() is still a bit hard to
-follow to me, since it's not clear why hugetlbfs never wants writenotify.
+What? No. Yeah, the doc conflicts were annoying enough, with the
+Chinese translations having incorrect pointers to the original sources
+both before and after the move in the MM tree.
 
-If it's only about soft-dirty, we could have added the hugetlbfs check into
-vma_soft_dirty_enabled(), then I think it'll achieve the same thing and
-much clearer - with the soft-dirty check constantly returning false for it,
-hugetlbfs shared vmas should have vma_wants_writenotify() naturally return
-0 already.
+But that xfs conflict was positively nasty and definitely not minor.
+Had to look up Darrick Wong's "here's how to do it" message from the
+linux-next days.
 
-For the long term - shouldn't we just enable soft-dirty for hugetlbfs?  I
-remember Mike used to have that in todo.  Since we've got patch 2 already,
-I feel like that's really much close (is the only missing piece the clear
-refs write part? or maybe some more that I didn't notice).
+So I think I got it all right, but "very minor" it wasn't.
 
-Then patch 1 (or IMHO equivalant check in vma_soft_dirty_enabled(), but
-maybe in stable trees we don't have vma_soft_dirty_enabled then it's
-exactly patch 1) can be a stable-only backport just to avoid the bug from
-triggering.
-
-Thanks,
-
--- 
-Peter Xu
-
+              Linus
