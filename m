@@ -2,169 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EB7EC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 22:17:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF990C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 22:21:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241547AbiHEWR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 18:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33948 "EHLO
+        id S241644AbiHEWVe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 18:21:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238102AbiHEWR0 (ORCPT
+        with ESMTP id S241229AbiHEWVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 18:17:26 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55C7183AC
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 15:17:24 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id w14so3746272plp.9
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 15:17:24 -0700 (PDT)
+        Fri, 5 Aug 2022 18:21:31 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0DE51ADAE
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 15:21:30 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-3282fe8f48fso31473507b3.17
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 15:21:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=ZJtcr9fEhex1ZbEYDZnoQSyBPhqS7q79HP7zTOYQSF8=;
-        b=FljTYTTkjpeuCYnmkCbpOCLALwZfJbnC5bQKGbqsr2ZWzJZodmLrJgX+yf3MZeztLE
-         FWWuR7MuPGkOLeeSKrLii4CnmbfTB8h1xTcgDNJV5cttJ9oI4nuoWl7gXJsSGS+6gQhQ
-         IaL8a72rMqr72M3b1HtHbxfGl3TTu/785Z1/s=
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=vA6JwiPIQ35idH1LwuHfAoXwWih02NenmEQERtaUlQk=;
+        b=jhXFbm4GcOo7tzG+m2t/JAjwLoRiHbKfayX9CRJ+Z1nBjUfj/kt8Ulq1F0LhapnHWU
+         vQlRbYT/RRAr/19sZxiy7+Gw5YKLAuSi4obedsMyt5ePFm2VbgAXa76LqWzI0gy3+k7G
+         auoB2i1RLoWlA1oVdLXZeqvneSg9IDJwiQbvRGCr9hOj2w857WdGRB+BjlL6R4waJY4P
+         UezKtbOhs+xqa+UUczDURSiB9HsJ+jdEiKKrN79HQVMKHizSOYPwBCpveob6fId8+EHN
+         bXZmZjRBWoxEGFljMetZFd/jY81w8X/1pO15hW5wCu1fcpJu1QQ4WMOAumNIK4XDuGno
+         KpcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=ZJtcr9fEhex1ZbEYDZnoQSyBPhqS7q79HP7zTOYQSF8=;
-        b=zNv+Tnk9MOLSyQdappPrry//+XwRp16gGM4/qsSeI7Y2GxQWGt/niIVzN/VyjLnHwg
-         D8VBUGZ5os8OX3yGekFUp/Drv5C+9epxNxff7IiKySj6zF2+NxmzhrOmAKlu+mWr+4Mq
-         6lKQOOyK5L043WV+nnLzhBzdozt7WW8dJH9LeTXwgm1PuVpJ3Xljs3/uBGk97bJek6Am
-         vQyCA8ZWG4u/+p+2KENZSS1ZVfxujYx/X6uqYFy16h+cAf3I1NtgNIGP+/+F4jUl0Ryw
-         qMj4Oxrd+Dktzcd8VMRO2J0Er1kLq7sRCMkgrxRxhwVGKZfaUzlFwpbIbSZRspv4WFck
-         mQdw==
-X-Gm-Message-State: ACgBeo0793wUxlD2JdS3OuBWjQHxh4BGCW3ZuZ7gVxe/9vpw59PNmKaN
-        pUzcRBBqCtdy3Bp4+Vj0SHa5zA==
-X-Google-Smtp-Source: AA6agR5ZCKWJCg6qYS0tP2dZfL9pHJTLa4Wn6fzy1yZcEme+4Ko4oC/h354MUmj2/cT4Y+UYBTcLhQ==
-X-Received: by 2002:a17:90a:b785:b0:1f1:be59:a607 with SMTP id m5-20020a17090ab78500b001f1be59a607mr9456164pjr.84.1659737844220;
-        Fri, 05 Aug 2022 15:17:24 -0700 (PDT)
-Received: from evgreen-glaptop.lan ([98.45.66.167])
-        by smtp.gmail.com with ESMTPSA id b10-20020aa78eca000000b0052dce4edceesm3489164pfr.169.2022.08.05.15.17.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Aug 2022 15:17:23 -0700 (PDT)
-From:   Evan Green <evgreen@chromium.org>
-To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc:     Rajat Jain <rajatja@chromium.org>,
-        Evan Green <evgreen@chromium.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        Tzung-Bi Shih <tzungbi@kernel.org>,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH] platform/chrome: cros_ec: Expose suspend_timeout in debugfs
-Date:   Fri,  5 Aug 2022 15:17:17 -0700
-Message-Id: <20220805151551.1.Idd188ff3f9caddebc17ac357a13005f93333c21f@changeid>
-X-Mailer: git-send-email 2.31.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=vA6JwiPIQ35idH1LwuHfAoXwWih02NenmEQERtaUlQk=;
+        b=SlLmKAWee0xAEziheHHPJ4m0zOly5uV3k2cqCEpYEBs9xG9jkvkOYDIMEGrcZIMRd6
+         m8+q8zDhBuoWCYTd2q2p6LCzly3N0nu/RGhX+jg5dR1JKRBQnjjxcaAXW5gv5H2QCSzk
+         EFwkWZFFbTsrWg3994h0aiwZ318zD5nEYKvSi6dnIU6GNdhBDZfWCXnECEZZgeJwsPQR
+         XQ53bd4FaEGEHhTYw/y9qQRpzbTKwTW1hJN7yrAXVPFsl8njThNTg16DREAzJrFgfC5W
+         ODTtCnNq6qxcrC7Rtx4Yccx0vSpZqgDMLSYSJ1T3FD1p/UIh1F3THtBpIhRYFrZVJqvX
+         Dv2g==
+X-Gm-Message-State: ACgBeo2G0F51HMOjHhwdb/f4hdfQYvvdyovuwnGj6iKOD0bMtThS7o5N
+        aJKx5moTYpv49NPxXFfl4wuB3sf3mC0=
+X-Google-Smtp-Source: AA6agR5/FcLDV3dK7SdDaErdRpC2Y/obPbr0lLOpjjFPaMlZeqQoYgCKLv8ONTsUzWRhe9Uj92AsbR6yrYs=
+X-Received: from jeffxud.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:e37])
+ (user=jeffxu job=sendgmr) by 2002:a05:6902:13c7:b0:671:7cb2:9a82 with SMTP id
+ y7-20020a05690213c700b006717cb29a82mr7285411ybu.334.1659738090124; Fri, 05
+ Aug 2022 15:21:30 -0700 (PDT)
+Date:   Fri,  5 Aug 2022 22:21:21 +0000
+Message-Id: <20220805222126.142525-1-jeffxu@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
+Subject: [PATCH v2 0/5] mm/memfd: MFD_NOEXEC for memfd_create
+From:   <jeffxu@google.com>
+To:     skhan@linuxfoundation.org
+Cc:     akpm@linux-foundation.org, dmitry.torokhov@gmail.com,
+        dverkamp@chromium.org, hughd@google.com, jeffxu@google.com,
+        jorgelo@chromium.org, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-mm@kvack.org, mnissler@chromium.org, jannh@google.com,
+        Jeff Xu <jeffxu@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In modern Chromebooks, the embedded controller has a mechanism where
-it will watch a hardware-controlled line that toggles in suspend, and
-wake the system up if an expected sleep transition didn't occur. This
-can be very useful for detecting power management issues where the
-system appears to suspend, but doesn't actually reach its lowest
-expected power states.
+From: Jeff Xu <jeffxu@chromium.org>
 
-Sometimes it's useful in debug and test scenarios to be able to control
-the duration of that timeout, or even disable the EC timeout mechanism
-altogether. Add a debugfs control to set the timeout to values other
-than the EC-defined default, for more convenient debug and
-development iteration.
+Hi,
 
-Signed-off-by: Evan Green <evgreen@chromium.org>
----
+This v2 series MFD_NOEXEC, this series includes:
+1> address comments in V1
+2> add sysctl (vm.mfd_noexec) to change the default file permissions
+    of memfd_create to be non-executable.
 
- Documentation/ABI/testing/debugfs-cros-ec   | 22 +++++++++++++++++++++
- drivers/platform/chrome/cros_ec.c           |  3 ++-
- drivers/platform/chrome/cros_ec_debugfs.c   |  3 +++
- include/linux/platform_data/cros_ec_proto.h |  1 +
- 4 files changed, 28 insertions(+), 1 deletion(-)
+Below are cover-level for v1:
 
-diff --git a/Documentation/ABI/testing/debugfs-cros-ec b/Documentation/ABI/testing/debugfs-cros-ec
-index 1fe0add99a2a99..8e7e76e6481550 100644
---- a/Documentation/ABI/testing/debugfs-cros-ec
-+++ b/Documentation/ABI/testing/debugfs-cros-ec
-@@ -54,3 +54,25 @@ Description:
- 		this feature.
- 
- 		Output will be in the format: "0x%08x\n".
-+
-+What:		/sys/kernel/debug/<cros-ec-device>/suspend_timeout
-+Date:		August 2022
-+KernelVersion:	6.0
-+Description:
-+		Some ECs have a feature where they will track transitions to the
-+		a hardware-controlled sleep line, such as Intel's SLP_S0 line,
-+		in order to detect cases where a system failed to go into deep
-+		sleep states. The suspend_timeout file controls the amount of
-+		time in milliseconds the EC will wait before declaring a sleep
-+		timeout event and attempting to wake the system.
-+
-+		Supply 0 to use the default value coded into EC firmware. Supply
-+		65535 to disable the EC sleep failure detection mechanism.
-+		Values in between 0 and 65535 indicate the number of
-+		milliseconds the EC should wait after a sleep transition before
-+		declaring a timeout. This includes both the duration after a
-+		sleep command was received but before the hardware line changed,
-+		as well as the duration between when the hardware line changed
-+		and the kernel sent an EC resume command.
-+
-+		Output will be in the format: "%u\n".
-diff --git a/drivers/platform/chrome/cros_ec.c b/drivers/platform/chrome/cros_ec.c
-index 8aace50d446d65..e8d3e2a29a58f5 100644
---- a/drivers/platform/chrome/cros_ec.c
-+++ b/drivers/platform/chrome/cros_ec.c
-@@ -115,7 +115,7 @@ static int cros_ec_sleep_event(struct cros_ec_device *ec_dev, u8 sleep_event)
- 	if (ec_dev->host_sleep_v1) {
- 		buf.u.req1.sleep_event = sleep_event;
- 		buf.u.req1.suspend_params.sleep_timeout_ms =
--				EC_HOST_SLEEP_TIMEOUT_DEFAULT;
-+				ec_dev->suspend_timeout;
- 
- 		buf.msg.outsize = sizeof(buf.u.req1);
- 		if ((sleep_event == HOST_SLEEP_EVENT_S3_RESUME) ||
-@@ -188,6 +188,7 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
- 	ec_dev->max_passthru = 0;
- 	ec_dev->ec = NULL;
- 	ec_dev->pd = NULL;
-+	ec_dev->suspend_timeout = EC_HOST_SLEEP_TIMEOUT_DEFAULT;
- 
- 	ec_dev->din = devm_kzalloc(dev, ec_dev->din_size, GFP_KERNEL);
- 	if (!ec_dev->din)
-diff --git a/drivers/platform/chrome/cros_ec_debugfs.c b/drivers/platform/chrome/cros_ec_debugfs.c
-index 0dbceee87a4b1a..530378bd4359dd 100644
---- a/drivers/platform/chrome/cros_ec_debugfs.c
-+++ b/drivers/platform/chrome/cros_ec_debugfs.c
-@@ -470,6 +470,9 @@ static int cros_ec_debugfs_probe(struct platform_device *pd)
- 	debugfs_create_x32("last_resume_result", 0444, debug_info->dir,
- 			   &ec->ec_dev->last_resume_result);
- 
-+	debugfs_create_u16("suspend_timeout", 0664, debug_info->dir,
-+			   &ec->ec_dev->suspend_timeout);
-+
- 	ec->debug_info = debug_info;
- 
- 	dev_set_drvdata(&pd->dev, ec);
-diff --git a/include/linux/platform_data/cros_ec_proto.h b/include/linux/platform_data/cros_ec_proto.h
-index 408b29ca4004be..60132444f7daa6 100644
---- a/include/linux/platform_data/cros_ec_proto.h
-+++ b/include/linux/platform_data/cros_ec_proto.h
-@@ -169,6 +169,7 @@ struct cros_ec_device {
- 	int event_size;
- 	u32 host_event_wake_mask;
- 	u32 last_resume_result;
-+	u16 suspend_timeout;
- 	ktime_t last_event_time;
- 	struct notifier_block notifier_ready;
- 
+The default file permissions on a memfd include execute bits, which
+means that such a memfd can be filled with a executable and passed to
+the exec() family of functions. This is undesirable on systems where all
+code is verified and all filesystems are intended to be mounted noexec,
+since an attacker may be able to use a memfd to load unverified code and
+execute it.
+
+Additionally, execution via memfd is a common way to avoid scrutiny for
+malicious code, since it allows execution of a program without a file
+ever appearing on disk. This attack vector is not totally mitigated with
+this new flag, since the default memfd file permissions must remain
+executable to avoid breaking existing legitimate uses, but it should be
+possible to use other security mechanisms to prevent memfd_create calls
+without MFD_NOEXEC on systems where it is known that executable memfds
+are not necessary.
+
+This patch series adds a new MFD_NOEXEC flag for memfd_create(), which
+allows creation of non-executable memfds, and as part of the
+implementation of this new flag, it also adds a new F_SEAL_EXEC seal,
+which will prevent modification of any of the execute bits of a sealed
+memfd.
+
+I am not sure if this is the best way to implement the desired behavior
+(for example, the F_SEAL_EXEC seal is really more of an implementation
+detail and feels a bit clunky to expose), so suggestions are welcome
+for alternate approaches.
+
+v1: https://lwn.net/Articles/890096/
+
+Daniel Verkamp (4):
+  mm/memfd: add F_SEAL_EXEC
+  mm/memfd: add MFD_NOEXEC flag to memfd_create
+  selftests/memfd: add tests for F_SEAL_EXEC
+  selftests/memfd: add tests for MFD_NOEXEC
+
+Jeff Xu (1):
+  sysctl: add support for mfd_noexec
+
+ include/linux/mm.h                         |   4 +
+ include/uapi/linux/fcntl.h                 |   1 +
+ include/uapi/linux/memfd.h                 |   1 +
+ kernel/sysctl.c                            |   9 ++
+ mm/memfd.c                                 |  39 ++++-
+ mm/shmem.c                                 |   6 +
+ tools/testing/selftests/memfd/memfd_test.c | 163 ++++++++++++++++++++-
+ 7 files changed, 221 insertions(+), 2 deletions(-)
+
+
+base-commit: 9e2f40233670c70c25e0681cb66d50d1e2742829
 -- 
-2.31.0
+2.37.1.559.g78731f0fdb-goog
 
