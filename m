@@ -2,187 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20FC1C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 19:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF399C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 19:21:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241121AbiHETS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 15:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36796 "EHLO
+        id S241037AbiHETVf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 15:21:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237689AbiHETSy (ORCPT
+        with ESMTP id S231262AbiHETVd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 15:18:54 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637CF5FAD2
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 12:18:52 -0700 (PDT)
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id AA0863F468
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 19:18:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1659727130;
-        bh=OSDKJxwzJ6ueB+8LZEp7+zVxhmnAMp6wGzGM0b5M3RM=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=W7eoIdSAMWLunr+fLr01J+4/TiaspE9TMvKJab78MInR0bCwrnP1gv8GX/f8b8rT1
-         4yA3YI+Vfh0NyO4OvM8v2/86VQO7SdraNu1dWsne/Ly785ZdL0MuzjYNtyWKUmkiUH
-         5jCUdBdnjAhVkZla4Qk6wTuoP06qN0XPiC5C7hbSQsyzldN0a/Vbrhi7yPR7GKbx3A
-         6clFp1muN7UGfXLgmbIgK6T4jWi85oKkcfIVngFGllsVKqo/3pu6xGzq60pDjAwk4y
-         V+rqsl6x+/5bKlwI4JrTJhj9iPjVJ6Mll21oO8TIbnU/6aHoYD7vCHPnjESDqTmCDd
-         Lk8ixSVAqtKRA==
-Received: by mail-pl1-f198.google.com with SMTP id b8-20020a170903228800b0016f2420ddedso2071798plh.19
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 12:18:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:content-transfer-encoding:content-id:mime-version
-         :comments:references:in-reply-to:subject:cc:to:from
-         :x-gm-message-state:from:to:cc;
-        bh=OSDKJxwzJ6ueB+8LZEp7+zVxhmnAMp6wGzGM0b5M3RM=;
-        b=gPLmd0guKTIchsce4gh9al2PNSIY3d8e6iYz2zSgASI/zFw0rmIW8G6FJpvmadefRf
-         m3cxdMUFnlR2Zvne1JyX1iFZScWGVGVa09v9kUR0RzEVYx+wZwinfp+3J3xubfLBrqrq
-         qKTYCdrw0rxRiSPPvoimJBPUtaszqheeVW0v+WesEJeyjtxCiRDNz/+oYx57eZckzlt9
-         KDSiqXw5/EDm4etiJNrsSfnvJpnYWRsKujT3LSfLEDHQncUZzjdC2Gbb1ibZEOqmKhI9
-         aQatYgXv8kXxaFfc5BqL7C1JLrqyy42zU1yMEjpfiC2sv2nwWTk2mHIQ4VLXia957HBa
-         xZbA==
-X-Gm-Message-State: ACgBeo1bsFlnIQyFnW9weSBCMavVBYwtFRkfWcOC40SacwxZH0KW6ReL
-        AEQjhNxyyFrGHl/Z06Czu5ANTEaGaWgScJ12f39Y8hYeIXLF1FHsTAdDdiE4P7vmTZwihK+KIjZ
-        fMkgOXbI5riSHtHwQPhuE6AqhKjQ0Jr4VUebPZXloNw==
-X-Received: by 2002:a05:6a00:1644:b0:52e:d72c:aadc with SMTP id m4-20020a056a00164400b0052ed72caadcmr2364661pfc.5.1659727129072;
-        Fri, 05 Aug 2022 12:18:49 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5nM3Dh8SaxN151LABkSs0HGBtCpyva8n1+s+C1U28qmBQ55OWLIEvBOgfb/529p7gm874RJw==
-X-Received: by 2002:a05:6a00:1644:b0:52e:d72c:aadc with SMTP id m4-20020a056a00164400b0052ed72caadcmr2364636pfc.5.1659727128702;
-        Fri, 05 Aug 2022 12:18:48 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.157])
-        by smtp.gmail.com with ESMTPSA id d6-20020a170902654600b0016a3f9e4865sm3356697pln.148.2022.08.05.12.18.47
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 05 Aug 2022 12:18:48 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 7E6966118F; Fri,  5 Aug 2022 12:18:47 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 774AE9FA79;
-        Fri,  5 Aug 2022 12:18:47 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Sun Shouxin <sunshouxin@chinatelecom.cn>
-cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        huyd12@chinatelecom.cn
-Subject: Re: [PATCH] net:bonding:support balance-alb interface with vlan to bridge
-In-reply-to: <20220805074556.70297-1-sunshouxin@chinatelecom.cn>
-References: <20220805074556.70297-1-sunshouxin@chinatelecom.cn>
-Comments: In-reply-to Sun Shouxin <sunshouxin@chinatelecom.cn>
-   message dated "Fri, 05 Aug 2022 00:45:56 -0700."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        Fri, 5 Aug 2022 15:21:33 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02156557D
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 12:21:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659727292; x=1691263292;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=UE5wa8PamgbMDvZ2VLj/oxmN/DGbwNUA50B0fjdU0JQ=;
+  b=ZCwrwFPCIgejYQf+47LsKI9bKOd97n2QjM6TaCNUzJc/4UmiQplhCJTJ
+   89heugrYDylbTGQUFuc3RXeOEjiAUuB3+1Xhp9I8VSx2zO9Lc2WwMoVzE
+   cAz0Ef8NgN0u6Q1Brs/t9NUY/OCaQi8A6JqX4iNxEWzLlm8YdNK+9yliB
+   vVKiZkwkNj0qcKboexF4NcJjknnimxK235u1Sd66YEH6dkAWt5pzae+0S
+   THGuZ+vB4l/DZpdkOwmjNwb+kEzwXEzWpX7t07GDdpDgom3IPCDbaLyE9
+   /aAaHrd5acAvG8y1LVMmlCWzhAMhMdn7dADFylxYP6UZQ5RBcdh6Z9Q63
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="270043643"
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="270043643"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 12:21:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="745957713"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 05 Aug 2022 12:21:30 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oK2sz-000JfH-2o;
+        Fri, 05 Aug 2022 19:21:29 +0000
+Date:   Sat, 6 Aug 2022 03:20:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: drivers/remoteproc/rcar_rproc.c:45:20: sparse: sparse: incorrect
+ type in argument 1 (different address spaces)
+Message-ID: <202208060349.qkwQPlqG-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3916.1659727127.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Fri, 05 Aug 2022 12:18:47 -0700
-Message-ID: <3917.1659727127@famine>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sun Shouxin <sunshouxin@chinatelecom.cn> wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   9e2f40233670c70c25e0681cb66d50d1e2742829
+commit: d803336abdbc1bfacdb32b2cf9f4fdbee072b8ee ARM: mm: kill unused runtime hook arch_iounmap()
+date:   6 weeks ago
+config: arm-randconfig-s041-20220805 (https://download.01.org/0day-ci/archive/20220806/202208060349.qkwQPlqG-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d803336abdbc1bfacdb32b2cf9f4fdbee072b8ee
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout d803336abdbc1bfacdb32b2cf9f4fdbee072b8ee
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm SHELL=/bin/bash drivers/remoteproc/
 
->In my test, balance-alb bonding with two slaves eth0 and eth1,
->and then Bond0.150 is created with vlan id attached bond0.
->After adding bond0.150 into one linux bridge, I noted that Bond0,
->bond0.150 and  bridge were assigned to the same MAC as eth0.
->Once bond0.150 receives a packet whose dest IP is bridge's
->and dest MAC is eth1's, the linux bridge cannot process it as expected.
->The patch fix the issue, and diagram as below:
->
->eth1(mac:eth1_mac)--bond0(balance-alb,mac:eth0_mac)--eth0(mac:eth0_mac)
->      		      |
->      		   bond0.150(mac:eth0_mac)
->      		      |
->      	           bridge(ip:br_ip, mac:eth0_mac)--other port
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-	In principle, since 567b871e5033, the bond alb mode shouldn't be
-load balancing incoming traffic for an IP address arriving via a bridge
-configured above the bond.
+sparse warnings: (new ones prefixed by >>)
+   drivers/remoteproc/rcar_rproc.c:28:12: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void *va @@     got void [noderef] __iomem * @@
+   drivers/remoteproc/rcar_rproc.c:28:12: sparse:     expected void *va
+   drivers/remoteproc/rcar_rproc.c:28:12: sparse:     got void [noderef] __iomem *
+>> drivers/remoteproc/rcar_rproc.c:45:20: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void volatile [noderef] __iomem *io_addr @@     got void *va @@
+   drivers/remoteproc/rcar_rproc.c:45:20: sparse:     expected void volatile [noderef] __iomem *io_addr
+   drivers/remoteproc/rcar_rproc.c:45:20: sparse:     got void *va
 
-	Looking at it, there's logic in rlb_arp_xmit to exclude the
-bridge-over-bond case, but it relies on the MAC of traffic arriving via
-the bridge being different from the bond's MAC.  I suspect this is
-because 567b871e5033 was intended to manage traffic originating from
-other bridge ports, and didn't consider the case of the bridge itself
-when the bridge MAC equals the bond MAC.
+vim +45 drivers/remoteproc/rcar_rproc.c
 
-	The bridge MAC will equal the bond MAC if the bond is the first
-port added to the bridge, because the bridge will normally adopt the MAC
-of the first port added (unless manually set to something else).
+285892a74f1370 Julien Massot 2021-12-07  40  
+285892a74f1370 Julien Massot 2021-12-07  41  static int rcar_rproc_mem_release(struct rproc *rproc,
+285892a74f1370 Julien Massot 2021-12-07  42  				   struct rproc_mem_entry *mem)
+285892a74f1370 Julien Massot 2021-12-07  43  {
+285892a74f1370 Julien Massot 2021-12-07  44  	dev_dbg(&rproc->dev, "unmap memory: %pa\n", &mem->dma);
+285892a74f1370 Julien Massot 2021-12-07 @45  	iounmap(mem->va);
+285892a74f1370 Julien Massot 2021-12-07  46  
+285892a74f1370 Julien Massot 2021-12-07  47  	return 0;
+285892a74f1370 Julien Massot 2021-12-07  48  }
+285892a74f1370 Julien Massot 2021-12-07  49  
 
-	I think the correct fix here is to update the test in
-rlb_arp_xmit to properly exclude all bridge traffic (i.e., handle the
-bridge MAC =3D=3D bond MAC case), not to alter the destination MAC address
-in incoming traffic.
+:::::: The code at line 45 was first introduced by commit
+:::::: 285892a74f1370a12249f765c6a4e3b16194852e remoteproc: Add Renesas rcar driver
 
-	-J
+:::::: TO: Julien Massot <julien.massot@iot.bzh>
+:::::: CC: Mathieu Poirier <mathieu.poirier@linaro.org>
 
->Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
->Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
->---
-> drivers/net/bonding/bond_main.c | 20 ++++++++++++++++++++
-> 1 file changed, 20 insertions(+)
->
->diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
-ain.c
->index e75acb14d066..6210a9c7ca76 100644
->--- a/drivers/net/bonding/bond_main.c
->+++ b/drivers/net/bonding/bond_main.c
->@@ -1537,9 +1537,11 @@ static rx_handler_result_t bond_handle_frame(struc=
-t sk_buff **pskb)
-> 	struct sk_buff *skb =3D *pskb;
-> 	struct slave *slave;
-> 	struct bonding *bond;
->+	struct net_device *vlan;
-> 	int (*recv_probe)(const struct sk_buff *, struct bonding *,
-> 			  struct slave *);
-> 	int ret =3D RX_HANDLER_ANOTHER;
->+	unsigned int headroom;
-> =
-
-> 	skb =3D skb_share_check(skb, GFP_ATOMIC);
-> 	if (unlikely(!skb))
->@@ -1591,6 +1593,24 @@ static rx_handler_result_t bond_handle_frame(struc=
-t sk_buff **pskb)
-> 				  bond->dev->addr_len);
-> 	}
-> =
-
->+	if (skb_vlan_tag_present(skb)) {
->+		if (BOND_MODE(bond) =3D=3D BOND_MODE_ALB && skb->pkt_type =3D=3D PACKE=
-T_HOST) {
->+			vlan =3D __vlan_find_dev_deep_rcu(bond->dev, skb->vlan_proto,
->+							skb_vlan_tag_get(skb) & VLAN_VID_MASK);
->+			if (vlan) {
->+				if (vlan->priv_flags & IFF_BRIDGE_PORT) {
->+					headroom =3D skb->data - skb_mac_header(skb);
->+					if (unlikely(skb_cow_head(skb, headroom))) {
->+						kfree_skb(skb);
->+						return RX_HANDLER_CONSUMED;
->+					}
->+					bond_hw_addr_copy(eth_hdr(skb)->h_dest, vlan->dev_addr,
->+							  vlan->addr_len);
->+				}
->+			}
->+		}
->+	}
->+
-> 	return ret;
-> }
-> =
-
->-- =
-
->2.27.0
->
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
