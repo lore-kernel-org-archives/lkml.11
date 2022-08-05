@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62034C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 17:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F4F9C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 17:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241335AbiHERbL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 13:31:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45840 "EHLO
+        id S241349AbiHERbT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 13:31:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241317AbiHERag (ORCPT
+        with ESMTP id S241318AbiHERah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 13:30:36 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 337ED1D32B
+        Fri, 5 Aug 2022 13:30:37 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A051DA45
         for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 10:30:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1659720630; x=1691256630;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=vh4l5KbAwI6TXvI2LGgnuBRyb+jKRxL2UjEp25aMitU=;
-  b=kR4USEvk/dpFs9ScC9nUSL2PNkV4QMokZvrRF4ohNYl5PC+vvM7lhF/V
-   XMdp9UDnRch4j+yTP1p6RaARiXhgCunj23i8OLB9fO//nbDjEYCJ2ZCet
-   fbQJrsZsVIYWzvdtMS/HGnQAB1MMYcASLG3iSOZPeNtUfem187VeIo+6N
-   8qmrIdGVz8kHh0wkTVPTHeqWjm5WMrqMV8OJKOrN6DdaU+OmybN0Yc33+
-   NWqQuhN+d+HwIBX+hL6zL174Mc9zCW+LXFDLFYZdk6F3d2FUVI1R7hBbS
-   MOu2HdL7sZRMi8oHfpPwSxfRmL52StoiEAjbQfTsPAtg770jFq0NSlsxp
+  bh=iUggmBbv/Gb/pP6+Y41ZS7OmaZpg2F4gACjroqSJRII=;
+  b=Dwf8tOHyzbEVprbqAc9GRqWsYyOXda4W7shOayppfpqjLZYrT6ojQ0MH
+   qKuVwoa8rGH+hEYVL9gV5vPA6LgYi8GPmzKVNYGZIQ0FQhUNiADH1VUCc
+   wCXO7f6B5IYnXNd4cOQeDqq2V3yRsxwAQbYD24vHRk1Mua7wJzh2xLu4S
+   9hlfEEgaQ1vSErUCiB5finiUBy3pnwSkri94qckClO8fU8wQMS225IkAf
+   Vo7BPpZxjInrXxH651zKd7Sb4VqAvw9FhdclyMeNpKV4MFNG5VVjGKgdd
+   eFyAaok4nJ9QGjNG+K1c/i3PBTLzHMEyeyCQT6IRgbgiYM8t2k1vNttwC
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="287814613"
+X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="316144805"
 X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="287814613"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 10:30:21 -0700
+   d="scan'208";a="316144805"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 10:30:29 -0700
 X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="663064585"
+   d="scan'208";a="636565369"
 Received: from amecham-mobl.amr.corp.intel.com (HELO localhost) ([10.255.0.242])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 10:30:21 -0700
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 10:30:28 -0700
 From:   ira.weiny@intel.com
 To:     Rik van Riel <riel@surriel.com>, Borislav Petkov <bp@alien8.de>,
         Dave Hansen <dave.hansen@intel.com>
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+Cc:     Ira Weiny <ira.weiny@intel.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org, kernel-team@fb.com
-Subject: [RFC PATCH 1/5] entry: Pass pt_regs to irqentry_exit_cond_resched()
-Date:   Fri,  5 Aug 2022 10:30:05 -0700
-Message-Id: <20220805173009.3128098-2-ira.weiny@intel.com>
+Subject: [RFC PATCH 5/5] x86/entry: Store CPU info on exception entry
+Date:   Fri,  5 Aug 2022 10:30:09 -0700
+Message-Id: <20220805173009.3128098-6-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220805173009.3128098-1-ira.weiny@intel.com>
 References: <20220805173009.3128098-1-ira.weiny@intel.com>
@@ -57,241 +56,87 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Auxiliary pt_regs space needs to be manipulated by the generic
-entry/exit code.
+The CPU information of an exception is useful in determining where bad
+CPUs are in a large data center.
 
-Ideally irqentry_exit() would take care of handling any auxiliary
-pt_regs on exit.  Unfortunately, irqentry_exit() is not the only exit
-from exception path.  The call to irqentry_exit_cond_resched() from
-xen_pv_evtchn_do_upcall() bypasses irqentry_exit().
+Define arch_{save|restore}_auxiliary_pt_regs() and set
+ARCH_HAS_PTREGS_AUXILIARY default to yes.
 
-Make irqentry_exit_cond_resched() symmetrical with irqentry_enter() by
-passing pt_regs to it.  This makes irqentry_exit_cond_resched() capable
-of handling auxiliary pt_regs in future patches.
+Store the CPU on exception entry and use it later.
 
 Cc: Rik van Riel <riel@surriel.com>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Borislav Petkov <bp@alien8.de>
+Suggested-by: Borislav Petkov <bp@alien8.de>
+Suggested-by: Dave Hansen <dave.hansen@intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-
 ---
-Forward ported from PKS series:
-	https://lore.kernel.org/lkml/20220419170649.1022246-19-ira.weiny@intel.com/
----
- arch/arm64/include/asm/preempt.h |  2 +-
- arch/arm64/kernel/entry-common.c |  4 ++--
- arch/x86/entry/common.c          |  2 +-
- include/linux/entry-common.h     | 17 ++++++++------
- kernel/entry/common.c            | 13 +++++++----
- kernel/sched/core.c              | 40 ++++++++++++++++----------------
- 6 files changed, 43 insertions(+), 35 deletions(-)
+ arch/x86/Kconfig                    |  2 +-
+ arch/x86/include/asm/entry-common.h | 12 ++++++++++++
+ arch/x86/include/asm/ptrace.h       |  1 +
+ arch/x86/mm/fault.c                 |  4 ++--
+ 4 files changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/include/asm/preempt.h b/arch/arm64/include/asm/preempt.h
-index 0159b625cc7f..bd185a214096 100644
---- a/arch/arm64/include/asm/preempt.h
-+++ b/arch/arm64/include/asm/preempt.h
-@@ -87,7 +87,7 @@ void preempt_schedule_notrace(void);
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index b35f6a472e09..707650a6ecb2 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1876,7 +1876,7 @@ config X86_INTEL_MEMORY_PROTECTION_KEYS
  
- #ifdef CONFIG_PREEMPT_DYNAMIC
+ config ARCH_HAS_PTREGS_AUXILIARY
+ 	depends on X86_64
+-	bool
++	def_bool y
  
--DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
-+DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched_internal);
- void dynamic_preempt_schedule(void);
- #define __preempt_schedule()		dynamic_preempt_schedule()
- void dynamic_preempt_schedule_notrace(void);
-diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
-index c75ca36b4a49..a1cc8795b729 100644
---- a/arch/arm64/kernel/entry-common.c
-+++ b/arch/arm64/kernel/entry-common.c
-@@ -224,9 +224,9 @@ static void noinstr arm64_exit_el1_dbg(struct pt_regs *regs)
+ choice
+ 	prompt "TSX enable mode"
+diff --git a/arch/x86/include/asm/entry-common.h b/arch/x86/include/asm/entry-common.h
+index 674ed46d3ced..eb145106929a 100644
+--- a/arch/x86/include/asm/entry-common.h
++++ b/arch/x86/include/asm/entry-common.h
+@@ -95,4 +95,16 @@ static __always_inline void arch_exit_to_user_mode(void)
  }
+ #define arch_exit_to_user_mode arch_exit_to_user_mode
  
- #ifdef CONFIG_PREEMPT_DYNAMIC
--DEFINE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
-+DEFINE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched_internal);
- #define need_irq_preemption() \
--	(static_branch_unlikely(&sk_dynamic_irqentry_exit_cond_resched))
-+	(static_branch_unlikely(&sk_dynamic_irqentry_exit_cond_resched_internal))
- #else
- #define need_irq_preemption()	(IS_ENABLED(CONFIG_PREEMPTION))
- #endif
-diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index 6c2826417b33..f1ba770d035d 100644
---- a/arch/x86/entry/common.c
-+++ b/arch/x86/entry/common.c
-@@ -309,7 +309,7 @@ __visible noinstr void xen_pv_evtchn_do_upcall(struct pt_regs *regs)
- 
- 	inhcall = get_and_clear_inhcall();
- 	if (inhcall && !WARN_ON_ONCE(state.exit_rcu)) {
--		irqentry_exit_cond_resched();
-+		irqentry_exit_cond_resched(regs);
- 		instrumentation_end();
- 		restore_inhcall(inhcall);
- 	} else {
-diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
-index 84a466b176cf..976cce7cf803 100644
---- a/include/linux/entry-common.h
-+++ b/include/linux/entry-common.h
-@@ -412,23 +412,26 @@ irqentry_state_t noinstr irqentry_enter(struct pt_regs *regs);
- 
- /**
-  * irqentry_exit_cond_resched - Conditionally reschedule on return from interrupt
-+ * @regs:	Pointer to pt_regs of interrupted context
-  *
-  * Conditional reschedule with additional sanity checks.
-  */
-+void irqentry_exit_cond_resched(struct pt_regs *regs);
++#ifdef CONFIG_ARCH_HAS_PTREGS_AUXILIARY
 +
- void raw_irqentry_exit_cond_resched(void);
- #ifdef CONFIG_PREEMPT_DYNAMIC
- #if defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
--#define irqentry_exit_cond_resched_dynamic_enabled	raw_irqentry_exit_cond_resched
--#define irqentry_exit_cond_resched_dynamic_disabled	NULL
--DECLARE_STATIC_CALL(irqentry_exit_cond_resched, raw_irqentry_exit_cond_resched);
--#define irqentry_exit_cond_resched()	static_call(irqentry_exit_cond_resched)()
-+#define irqentry_exit_cond_resched_internal_dynamic_enabled	raw_irqentry_exit_cond_resched
-+#define irqentry_exit_cond_resched_internal_dynamic_disabled	NULL
-+DECLARE_STATIC_CALL(irqentry_exit_cond_resched_internal, raw_irqentry_exit_cond_resched);
-+#define irqentry_exit_cond_resched_internal() static_call(irqentry_exit_cond_resched_internal)()
- #elif defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
--DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
-+DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched_internal);
- void dynamic_irqentry_exit_cond_resched(void);
--#define irqentry_exit_cond_resched()	dynamic_irqentry_exit_cond_resched()
-+#define irqentry_exit_cond_resched_internal()	dynamic_irqentry_exit_cond_resched()
- #endif
- #else /* CONFIG_PREEMPT_DYNAMIC */
--#define irqentry_exit_cond_resched()	raw_irqentry_exit_cond_resched()
-+#define irqentry_exit_cond_resched_internal()	raw_irqentry_exit_cond_resched()
- #endif /* CONFIG_PREEMPT_DYNAMIC */
- 
- /**
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index 063068a9ea9b..8c0f334c4b75 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -387,18 +387,23 @@ void raw_irqentry_exit_cond_resched(void)
- }
- #ifdef CONFIG_PREEMPT_DYNAMIC
- #if defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
--DEFINE_STATIC_CALL(irqentry_exit_cond_resched, raw_irqentry_exit_cond_resched);
-+DEFINE_STATIC_CALL(irqentry_exit_cond_resched_internal, raw_irqentry_exit_cond_resched);
- #elif defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
--DEFINE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
-+DEFINE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched_internal);
- void dynamic_irqentry_exit_cond_resched(void)
- {
--	if (!static_branch_unlikely(&sk_dynamic_irqentry_exit_cond_resched))
-+	if (!static_branch_unlikely(&sk_dynamic_irqentry_exit_cond_resched_internal))
- 		return;
- 	raw_irqentry_exit_cond_resched();
- }
- #endif
- #endif
- 
-+void irqentry_exit_cond_resched(struct pt_regs *regs)
++static inline void arch_save_aux_pt_regs(struct pt_regs *regs)
 +{
-+	irqentry_exit_cond_resched_internal();
-+}
++	struct pt_regs_auxiliary *aux_pt_regs = &to_extended_pt_regs(regs)->aux;
 +
- noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
- {
- 	lockdep_assert_irqs_disabled();
-@@ -425,7 +430,7 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
- 
- 		instrumentation_begin();
- 		if (IS_ENABLED(CONFIG_PREEMPTION))
--			irqentry_exit_cond_resched();
-+			irqentry_exit_cond_resched_internal();
- 
- 		/* Covers both tracing and lockdep */
- 		trace_hardirqs_on();
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 189999007f32..38dd74ba1c86 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -8419,29 +8419,29 @@ EXPORT_SYMBOL(__cond_resched_rwlock_write);
-  * SC:might_resched
-  * SC:preempt_schedule
-  * SC:preempt_schedule_notrace
-- * SC:irqentry_exit_cond_resched
-+ * SC:irqentry_exit_cond_resched_internal
-  *
-  *
-  * NONE:
-- *   cond_resched               <- __cond_resched
-- *   might_resched              <- RET0
-- *   preempt_schedule           <- NOP
-- *   preempt_schedule_notrace   <- NOP
-- *   irqentry_exit_cond_resched <- NOP
-+ *   cond_resched                        <- __cond_resched
-+ *   might_resched                       <- RET0
-+ *   preempt_schedule                    <- NOP
-+ *   preempt_schedule_notrace            <- NOP
-+ *   irqentry_exit_cond_resched_internal <- NOP
-  *
-  * VOLUNTARY:
-- *   cond_resched               <- __cond_resched
-- *   might_resched              <- __cond_resched
-- *   preempt_schedule           <- NOP
-- *   preempt_schedule_notrace   <- NOP
-- *   irqentry_exit_cond_resched <- NOP
-+ *   cond_resched                        <- __cond_resched
-+ *   might_resched                       <- __cond_resched
-+ *   preempt_schedule                    <- NOP
-+ *   preempt_schedule_notrace            <- NOP
-+ *   irqentry_exit_cond_resched_internal <- NOP
-  *
-  * FULL:
-- *   cond_resched               <- RET0
-- *   might_resched              <- RET0
-- *   preempt_schedule           <- preempt_schedule
-- *   preempt_schedule_notrace   <- preempt_schedule_notrace
-- *   irqentry_exit_cond_resched <- irqentry_exit_cond_resched
-+ *   cond_resched                        <- RET0
-+ *   might_resched                       <- RET0
-+ *   preempt_schedule                    <- preempt_schedule
-+ *   preempt_schedule_notrace            <- preempt_schedule_notrace
-+ *   irqentry_exit_cond_resched_internal <- irqentry_exit_cond_resched_internal
++	aux_pt_regs->cpu = raw_smp_processor_id();
++}
++#define arch_save_aux_pt_regs arch_save_aux_pt_regs
++
++#endif
++
+ #endif
+diff --git a/arch/x86/include/asm/ptrace.h b/arch/x86/include/asm/ptrace.h
+index 5a9c85893459..b403b469996f 100644
+--- a/arch/x86/include/asm/ptrace.h
++++ b/arch/x86/include/asm/ptrace.h
+@@ -97,6 +97,7 @@ struct pt_regs {
+  * ARCH_HAS_PTREGS_AUXILIARY.  Failure to do so will result in a build failure.
   */
+ struct pt_regs_auxiliary {
++	int cpu;
+ };
  
- enum {
-@@ -8487,7 +8487,7 @@ void sched_dynamic_update(int mode)
- 	preempt_dynamic_enable(might_resched);
- 	preempt_dynamic_enable(preempt_schedule);
- 	preempt_dynamic_enable(preempt_schedule_notrace);
--	preempt_dynamic_enable(irqentry_exit_cond_resched);
-+	preempt_dynamic_enable(irqentry_exit_cond_resched_internal);
+ struct pt_regs_extended {
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index 82cf23975aa1..5df99fe49494 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -768,9 +768,9 @@ static inline void
+ show_signal_msg(struct pt_regs *regs, unsigned long error_code,
+ 		unsigned long address, struct task_struct *tsk)
+ {
++	struct pt_regs_auxiliary *aux_pt_regs = &to_extended_pt_regs(regs)->aux;
+ 	const char *loglvl = task_pid_nr(tsk) > 1 ? KERN_INFO : KERN_EMERG;
+-	/* This is a racy snapshot, but it's better than nothing. */
+-	int cpu = raw_smp_processor_id();
++	int cpu = aux_pt_regs->cpu;
  
- 	switch (mode) {
- 	case preempt_dynamic_none:
-@@ -8495,7 +8495,7 @@ void sched_dynamic_update(int mode)
- 		preempt_dynamic_disable(might_resched);
- 		preempt_dynamic_disable(preempt_schedule);
- 		preempt_dynamic_disable(preempt_schedule_notrace);
--		preempt_dynamic_disable(irqentry_exit_cond_resched);
-+		preempt_dynamic_disable(irqentry_exit_cond_resched_internal);
- 		pr_info("Dynamic Preempt: none\n");
- 		break;
- 
-@@ -8504,7 +8504,7 @@ void sched_dynamic_update(int mode)
- 		preempt_dynamic_enable(might_resched);
- 		preempt_dynamic_disable(preempt_schedule);
- 		preempt_dynamic_disable(preempt_schedule_notrace);
--		preempt_dynamic_disable(irqentry_exit_cond_resched);
-+		preempt_dynamic_disable(irqentry_exit_cond_resched_internal);
- 		pr_info("Dynamic Preempt: voluntary\n");
- 		break;
- 
-@@ -8513,7 +8513,7 @@ void sched_dynamic_update(int mode)
- 		preempt_dynamic_disable(might_resched);
- 		preempt_dynamic_enable(preempt_schedule);
- 		preempt_dynamic_enable(preempt_schedule_notrace);
--		preempt_dynamic_enable(irqentry_exit_cond_resched);
-+		preempt_dynamic_enable(irqentry_exit_cond_resched_internal);
- 		pr_info("Dynamic Preempt: full\n");
- 		break;
- 	}
+ 	if (!unhandled_signal(tsk, SIGSEGV))
+ 		return;
 -- 
 2.35.3
 
