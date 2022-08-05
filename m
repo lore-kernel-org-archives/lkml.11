@@ -2,110 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B43C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 16:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F73C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 16:17:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240675AbiHEQLu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 12:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47552 "EHLO
+        id S240979AbiHEQRL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 12:17:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238240AbiHEQLj (ORCPT
+        with ESMTP id S231545AbiHEQRG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 12:11:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3F38C71BF0
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 09:11:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659715897;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hDt22zsCsVGrbg9q8dPTaduQ2hORoxHmBldXfY6vzAc=;
-        b=dm/NdEyAD1Yr1+BDWbbcacTjZre9Zu5cL/GzbsukXEVHQQ/hU7aD4y+Vg9xtdgzbXkzHMI
-        cHfCKZ5p9x84NhSqUPiX1z7VRhRw2hVPKp9cF1SWEowR1imbfKl7+5GFrpm2riEXSM11qh
-        3/OfOzSq6s4Hty5nPzFKu3T6P4S4Wo0=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-644-bfnXTwRENbiisZIGl60tyA-1; Fri, 05 Aug 2022 12:11:36 -0400
-X-MC-Unique: bfnXTwRENbiisZIGl60tyA-1
-Received: by mail-wm1-f72.google.com with SMTP id q10-20020a1ce90a000000b003a4f6e08166so562364wmc.5
-        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 09:11:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=hDt22zsCsVGrbg9q8dPTaduQ2hORoxHmBldXfY6vzAc=;
-        b=I0TC9n9Yl8gMY4uv4aOvTg4P4S4iYx6F5Cnhscz+yLFz94Nx0UT9+WRbYwJgssrBi7
-         xbqlpFXiG4wKIakOYU7jPWZNTVTmCbNHFgC/ef0cYD+wKfuRUtjWgxhRcRMFkPa+wL69
-         VuAth0PDKCT/iMWE/BXJfq+Eh1kLvcbe6wbt+z29tdfiadWlz3y+fucGoIBoMpOb4sLD
-         71xXSDK0VZHP2ZJ/gGVBlct8YZzHy5ncFP4ZIonJVrJ1RFK1gjeuAv5yjn8KgrcBLq+q
-         yNUhVA57FbRTDYDNxBGkeqa7njZIptl5M7E1JEPFJGIPbo3TZl4V2ucjOqhnWwWGNCTa
-         /G/w==
-X-Gm-Message-State: ACgBeo26yCYEYohz0Wg5XNHIM4rkZzPW8zrDOIdivAtzQ7JIjpmOAKhk
-        JZ6uqkWiWlgWztf6Wjzjwpm4dyoaJ/dKxUc52ZiQlmyaAdrxIrgJpGVERv1sQPF228+MC8v+rVq
-        SYm7xuAaoRxErN3RzmWaW5fLm
-X-Received: by 2002:a5d:5273:0:b0:220:5d3e:c50f with SMTP id l19-20020a5d5273000000b002205d3ec50fmr4964719wrc.291.1659715894972;
-        Fri, 05 Aug 2022 09:11:34 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4udtf/a4YHeijwoGO6Qa35YGkwnp+iDFfapRsOcZTilnRWoETsppr0kdNEFB4CmsFBOxkxpA==
-X-Received: by 2002:a5d:5273:0:b0:220:5d3e:c50f with SMTP id l19-20020a5d5273000000b002205d3ec50fmr4964692wrc.291.1659715894774;
-        Fri, 05 Aug 2022 09:11:34 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c706:fb00:f5c3:24b2:3d03:9d52? (p200300cbc706fb00f5c324b23d039d52.dip0.t-ipconnect.de. [2003:cb:c706:fb00:f5c3:24b2:3d03:9d52])
-        by smtp.gmail.com with ESMTPSA id h20-20020a05600c351400b0039db31f6372sm10699400wmq.2.2022.08.05.09.11.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Aug 2022 09:11:34 -0700 (PDT)
-Message-ID: <58c2a14d-f8e2-4cc6-a2f7-68214405aae9@redhat.com>
-Date:   Fri, 5 Aug 2022 18:11:33 +0200
+        Fri, 5 Aug 2022 12:17:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B482C1902B
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 09:17:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D66A161775
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 16:17:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E3B0C433D7
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 16:17:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659716223;
+        bh=8grFLuwlQy0Ot8AOJ3yQKp3FjPtqCsWnDxEz8xLu22U=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=S1Zay7+AGgZcUCq7wrx5A/C0aep+dKgB5hcEjFtW4tftu/80/B6Q8OcvcwNhq+Otu
+         o222N5h+m/UXeaeDBok542Ri8zeZAGBgaLJ+Y31oeXxv6WUrdkg5fE5gyoBtFjQtmk
+         slz8VGRuiJsttzZCXh9Z0zJADXe35fRHrOy/k/qhXYgTTneYaN95kk+9Al5yDGJa6w
+         7yBzHnwUTcOdXpHxuzYOeTY70INSOjkjzzKg/g7OxKzY1RXLJ0KNZiLIBF+/1WJDjV
+         Qyd4zMIPm7hw9L2O/QptByvsMheDELqbCm0et8wP2oNga9unCv5w1R9iOgczug9GBK
+         SAZ8bzhOxoZvQ==
+Received: by mail-ej1-f47.google.com with SMTP id a7so5893936ejp.2
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 09:17:03 -0700 (PDT)
+X-Gm-Message-State: ACgBeo1w1IHBk7kyavxtf1DkdsURl99cRPjCCMouqBaw/JNffI4Of2mi
+        xq0ZgDBFID3rV3Y/uu+DYhEb2yZd5uMjd5/H32s=
+X-Google-Smtp-Source: AA6agR4R1JzUUmCUe4J6toqC9u62zKSlRPtv5bfElt/h5Y16RKiwaSKXI4eB4mnRJZxJJ+hBT4gy7eHrda+QQm1kO9Q=
+X-Received: by 2002:a17:907:28d6:b0:731:5d0:4401 with SMTP id
+ en22-20020a17090728d600b0073105d04401mr1753624ejc.765.1659716221514; Fri, 05
+ Aug 2022 09:17:01 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [RFC PATCH v4 3/8] hugetlbfs: move routine remove_huge_page to
- hugetlb.c
-Content-Language: en-US
-To:     Mike Kravetz <mike.kravetz@oracle.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Cc:     Muchun Song <songmuchun@bytedance.com>,
-        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
-        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.vnet.ibm.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Prakash Sangappa <prakash.sangappa@oracle.com>,
-        James Houghton <jthoughton@google.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Ray Fucillo <Ray.Fucillo@intersystems.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220706202347.95150-1-mike.kravetz@oracle.com>
- <20220706202347.95150-4-mike.kravetz@oracle.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220706202347.95150-4-mike.kravetz@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <YuwRyQYPCb1FD+mr@debian> <CAHk-=whptVSSZL=wSUQJdRBeVfS+Xy_K4anQ7eQOky7XUrXhUQ@mail.gmail.com>
+ <CAK8P3a2bEaExue0OtNeLa2CVzBx-1dE9w2HZ2PAV5N8Ct9G=JQ@mail.gmail.com>
+ <YuwvfsztWaHvquwC@dev-arch.thelio-3990X> <9fb73284-7572-5703-93d3-f83a43535baf@amd.com>
+In-Reply-To: <9fb73284-7572-5703-93d3-f83a43535baf@amd.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Fri, 5 Aug 2022 18:16:45 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3Fv=_+GV9r=k4jP72zZOjJowL-GOue-51EhyVDBaEfEw@mail.gmail.com>
+Message-ID: <CAK8P3a3Fv=_+GV9r=k4jP72zZOjJowL-GOue-51EhyVDBaEfEw@mail.gmail.com>
+Subject: Re: mainline build failure for x86_64 allmodconfig with clang
+To:     Harry Wentland <harry.wentland@amd.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        "Siqueira, Rodrigo" <Rodrigo.Siqueira@amd.com>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        David Airlie <airlied@linux.ie>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06.07.22 22:23, Mike Kravetz wrote:
-> In preparation for code in hugetlb.c removing pages from the page
-> cache, move remove_huge_page to hugetlb.c.  For a more descriptive
-> global name, rename to hugetlb_delete_from_page_cache.  Also,> rename huge_add_to_page_cache to be consistent.
+On Fri, Aug 5, 2022 at 5:32 PM Harry Wentland <harry.wentland@amd.com> wrote:
+> > I do notice that these files build with a non-configurable
+> > -Wframe-large-than value:
+> >
+> > $ rg frame_warn_flag drivers/gpu/drm/amd/display/dc/dml/Makefile
+> > 54:frame_warn_flag := -Wframe-larger-than=2048
+>
+> Tbh, I was looking at the history and I can't find a good reason this
+> was added. It should be safe to drop this. I would much rather use
+> the CONFIG_FRAME_WARN value than override it.
+>
+> AFAIK most builds use 2048 by default anyways.
 
-"hugetlb_add_to_page_cache"
+I'm fairly sure this was done for 32-bit builds, which default to a lower
+warning limit of 1024 bytes and would otherwise run into this
+problem when 64-bit platforms don't. With the default warning limit,
+clang warns even more about an i386 build:
 
-> 
-> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+display/dc/dml/dcn20/display_rq_dlg_calc_20.c:1549:6: error: stack
+frame size (1324) exceeds limit (1024) in 'dml20_rq_dlg_get_dlg_reg'
+display/dc/dml/dcn20/display_rq_dlg_calc_20v2.c:1550:6: error: stack
+frame size (1324) exceeds limit (1024) in 'dml20v2_rq_dlg_get_dlg_reg'
+display/dc/dml/dcn30/display_rq_dlg_calc_30.c:1742:6: error: stack
+frame size (1484) exceeds limit (1024) in 'dml30_rq_dlg_get_dlg_reg'
+display/dc/dml/dcn31/display_rq_dlg_calc_31.c:1571:6: error: stack
+frame size (1548) exceeds limit (1024) in 'dml31_rq_dlg_get_dlg_reg'
+display/dc/dml/dcn21/display_rq_dlg_calc_21.c:1657:6: error: stack
+frame size (1388) exceeds limit (1024) in 'dml21_rq_dlg_get_dlg_reg'
+display/dc/dml/dcn32/display_rq_dlg_calc_32.c:206:6: error: stack
+frame size (1276) exceeds limit (1024) in 'dml32_rq_dlg_get_dlg_reg'
+display/dc/dml/dcn31/display_mode_vba_31.c:2049:13: error: stack frame
+size (1468) exceeds limit (1024) in
+'DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation'
+display/dc/dml/dcn20/display_mode_vba_20v2.c:1145:13: error: stack
+frame size (1228) exceeds limit (1024) in
+'dml20v2_DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation'
+display/dc/dml/dcn20/display_mode_vba_20.c:1085:13: error: stack frame
+size (1340) exceeds limit (1024) in
+'dml20_DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation'
+display/dc/dml/dcn31/display_mode_vba_31.c:3908:6: error: stack frame
+size (1996) exceeds limit (1024) in
+'dml31_ModeSupportAndSystemConfigurationFull'
+display/dc/dml/dcn21/display_mode_vba_21.c:1466:13: error: stack frame
+size (1308) exceeds limit (1024) in
+'DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation'
+display/dc/dml/dcn20/display_mode_vba_20v2.c:3393:6: error: stack
+frame size (1356) exceeds limit (1024) in
+'dml20v2_ModeSupportAndSystemConfigurationFull'
+display/dc/dml/dcn20/display_mode_vba_20.c:3286:6: error: stack frame
+size (1468) exceeds limit (1024) in
+'dml20_ModeSupportAndSystemConfigurationFull'
+display/dc/dml/dcn21/display_mode_vba_21.c:3518:6: error: stack frame
+size (1228) exceeds limit (1024) in
+'dml21_ModeSupportAndSystemConfigurationFull'
+display/dc/dml/dcn30/display_mode_vba_30.c:1906:13: error: stack frame
+size (1436) exceeds limit (1024) in
+'DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation'
+display/dc/dml/dcn30/display_mode_vba_30.c:3596:6: error: stack frame
+size (2092) exceeds limit (1024) in
+'dml30_ModeSupportAndSystemConfigurationFull'
+> > I do note that commit 1b54a0121dba ("drm/amd/display: Reduce stack size
+> > in the mode support function") did have a workaround for GCC. It appears
+> > clang will still inline mode_support_configuration(). If I mark it as
+> > 'noinline', the warning disappears in that file.
+>
+> That'd be the best quick fix. I guess if we split out functions to fix
+> stack usage we should mark them as 'noinline' in the future to avoid
+> agressive compiler optimizations.
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
+While splitting out sub-functions can help reduce the maximum stack
+usage, it seems that in this case it makes the actual problem worse:
+I see 2168 bytes for the combined
+dml32_ModeSupportAndSystemConfigurationFull(), but marking
+mode_support_configuration() as noinline gives me 1992 bytes
+for the outer function plus 384 bytes for the inner one. So it does
+avoid the warning (barely), but not the problem that the warning tries
+to point out.
 
-
--- 
-Thanks,
-
-David / dhildenb
-
+        Arnd
