@@ -2,116 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C17AC00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 09:26:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD89C00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 09:26:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240240AbiHEJ0M convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 05:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
+        id S240337AbiHEJ0r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 05:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236859AbiHEJ0H (ORCPT
+        with ESMTP id S229767AbiHEJ0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 05:26:07 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 34AFD78207
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 02:26:06 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-266-0nSC5lN1Mf6CKuQecZXkzw-1; Fri, 05 Aug 2022 10:26:03 +0100
-X-MC-Unique: 0nSC5lN1Mf6CKuQecZXkzw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Fri, 5 Aug 2022 10:26:02 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Fri, 5 Aug 2022 10:26:02 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Kanna Scarlet' <knscarlet@gnuweeb.org>,
-        Borislav Petkov <bp@alien8.de>
-CC:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        "Bill Metzenthen" <billm@melbpc.org.au>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Sean Christopherson <seanjc@google.com>,
-        "Steven Rostedt" <rostedt@goodmis.org>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 1/1] x86: Change mov $0, %reg with xor %reg, %reg
-Thread-Topic: [PATCH 1/1] x86: Change mov $0, %reg with xor %reg, %reg
-Thread-Index: AQHYqC07pBmJLRD/dU+qGFItY3OGOq2gCd9A
-Date:   Fri, 5 Aug 2022 09:26:02 +0000
-Message-ID: <126271e264204581a42b079b51481740@AcuMS.aculab.com>
-References: <20220804152656.8840-1-knscarlet@gnuweeb.org>
- <20220804152656.8840-2-knscarlet@gnuweeb.org> <Yuvrd2yWLnyxOVLU@zn.tnic>
- <20220804180805.9077-1-knscarlet@gnuweeb.org>
-In-Reply-To: <20220804180805.9077-1-knscarlet@gnuweeb.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Fri, 5 Aug 2022 05:26:43 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902B27821F;
+        Fri,  5 Aug 2022 02:26:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659691602; x=1691227602;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=tG8kUD3ji7GDYQSEFarrC17CSyndXtVIb31RNBiVtX4=;
+  b=NHhh/conhaMMFuyUXq59VQLp7q9d/bX9y4mM9GMXSOLkLoSx6KVTq2Gx
+   U9u4HvBQQz3fTiG7+PZDwpMcxlZdyWVHLhtHxYqbtQjUiULZQoEea2c2n
+   UUz/CEZXzF6I82wwamyAxZtZL7zT0BHltESUX7YcPPq832r84yhNXDTni
+   jcSYmw8UCREjCurfq3U6QpO7z2rUuS3YTMumGBHfNGnRUDvHRRo2mVa47
+   xgihbM70jaY1YIdadrqqs3lkyhJX3Oq9qRvWpLbvOvZ/zWrw/uFDPfMeI
+   sr5lR5/Zd7PE7hyagM0w43nQCQO0TpwftmKMsCdtKC/R55Fm5LgtrJj1U
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10429"; a="351874347"
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="351874347"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 02:24:31 -0700
+X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
+   d="scan'208";a="554052121"
+Received: from bfglenno-mobl.ger.corp.intel.com (HELO [10.213.238.183]) ([10.213.238.183])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 02:24:27 -0700
+Message-ID: <7156b3bd-69d7-de53-dd2b-96e82a8cf0f7@linux.intel.com>
+Date:   Fri, 5 Aug 2022 10:24:25 +0100
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3 3/3] drm/i915/gt: document TLB cache invalidation
+ functions
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+To:     Andi Shyti <andi.shyti@linux.intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Niranjana Vishwanathapura <niranjana.vishwanathapura@intel.com>,
+        Chris Wilson <chris.p.wilson@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <cover.1659598090.git.mchehab@kernel.org>
+ <cc68d62a1979ea859b447b94413e100472331f57.1659598090.git.mchehab@kernel.org>
+ <0698c5a5-3bf2-daa4-e10e-2715f9b0d080@infradead.org>
+ <Yuzd9Ysc3BDQHuSW@alfio.lan>
+From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Organization: Intel Corporation UK Plc
+In-Reply-To: <Yuzd9Ysc3BDQHuSW@alfio.lan>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kanna Scarlet
-> Sent: 04 August 2022 19:08
-> 
-> On 8/4/22 10:53 PM, Borislav Petkov wrote:
-> > Bonus points if you find out what other advantage
-> >
-> > XOR reg,reg
-> >
-> > has when it comes to clearing integer registers.
-> 
-> Hello sir Borislav,
-> 
-> Thank you for your response. I tried to find out other advantages of
-> xor reg,reg on Google and found this:
-> https://stackoverflow.com/a/33668295/7275114
-> 
->   "xor (being a recognized zeroing idiom, unlike mov reg, 0) has some
->   obvious and some subtle advantages:
-> 
->   1. smaller code-size than mov reg,0. (All CPUs)
->   2. avoids partial-register penalties for later code.
->      (Intel P6-family and SnB-family).
->   3. doesn't use an execution unit, saving power and freeing up
->      execution resources. (Intel SnB-family)
->   4. smaller uop (no immediate data) leaves room in the uop cache-line
->      for nearby instructions to borrow if needed. (Intel SnB-family).
->   5. doesn't use up entries in the physical register file. (Intel
->      SnB-family (and P4) at least, possibly AMD as well since they use
->      a similar PRF design instead of keeping register state in the ROB
->      like Intel P6-family microarchitectures.)"
 
-You missed one, and an additional change:
+On 05/08/2022 10:08, Andi Shyti wrote:
+> Hi Randy,
+> 
+>>> +/**
+>>> + * intel_gt_invalidate_tlb_full - do full TLB cache invalidation
+>>> + * @gt: GT structure
+>>
+>> In multiple places (here and below) it would be nice to know what a
+>> GT structure is. I looked thru multiple C and header files yesterday
+>> and didn't find any comments about it.
+>>
+>> Just saying that @gt is a GT structure isn't very helpful, other
+>> than making kernel-doc shut up.
+> 
+> the 'gt' belongs to the drivers/gpu/drm/i915/gt/ subsystem and
+> it's widely used a throughout i915.
+> 
+> I think it's inappropriate to describe it just here. On the other
+> hand I agree that a better documentation is required for the GT
+> itself where other parts can point to.
 
-Use "xor %rax,%rax" instead of "xor %eax,%eax" to save
-the 'reg' prefix.
+Yeah agreed there is no point of copy pasting some explanation all over 
+the place. Could we just do s/GT structure/struct intel_gt/, or "pointer 
+to struct intel_gt to operate on", would that be good enough?
 
-	David
+Regards,
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Tvrtko
