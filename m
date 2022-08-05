@@ -2,92 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A05C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 05:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F8CC00140
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 05:33:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235474AbiHEFbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 01:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45568 "EHLO
+        id S235521AbiHEFdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 01:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236832AbiHEFbY (ORCPT
+        with ESMTP id S232456AbiHEFd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 01:31:24 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D323672ED5;
-        Thu,  4 Aug 2022 22:31:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1659677483; x=1691213483;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=vVDEwwIisrAGJAcixX8ELsyi9Q8IzHQ0ogkj1rP3Ut4=;
-  b=mRcdKn2L48BUsGvzPtMWrBnMfB0jV+/let3hwoWI+OrdU08FPGYYrNvi
-   tTlltyGL0Wo1MnZDjhX2WDYjllZamz4veQ5xQ0DEGh59phVm5MmyWkh9u
-   pZK7swb8GpF0rGW7p3hD/xssxD3Lkl7+4PBsWhX8wXifHtrx0Fv4r5Ocq
-   gD6vciwdezgL34MhtWTD08wC8YINJVFv3UN0a5Sq/FsjAZUzBzrca+YDf
-   t1/lEKLIVnas0A6WgDmR9+thl4RaAuvQ270MQMn7dCGhZ3WiamZrU6YxP
-   91Krsf0iw53UrjRkAzYHL6fa/Xok1/utRsRKL9j/z2roW8gnxFbwAqHl3
-   g==;
-X-IronPort-AV: E=Sophos;i="5.93,216,1654585200"; 
-   d="scan'208";a="107686271"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Aug 2022 22:31:10 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 4 Aug 2022 22:30:58 -0700
-Received: from microchip-OptiPlex-5040.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.28 via Frontend Transport; Thu, 4 Aug 2022 22:30:55 -0700
-From:   Naga Sureshkumar Relli <nagasuresh.relli@microchip.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <conor.dooley@microchip.com>
-CC:     <linux-spi@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Valentina.FernandezAlanis@microchip.com>,
-        Naga Sureshkumar Relli <nagasuresh.relli@microchip.com>
-Subject: [PATCH v3 2/4] spi: dt-binding: add coreqspi as a fallback for mpfs-qspi
-Date:   Fri, 5 Aug 2022 11:00:17 +0530
-Message-ID: <20220805053019.996484-3-nagasuresh.relli@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220805053019.996484-1-nagasuresh.relli@microchip.com>
-References: <20220805053019.996484-1-nagasuresh.relli@microchip.com>
+        Fri, 5 Aug 2022 01:33:29 -0400
+Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E036E2EF
+        for <linux-kernel@vger.kernel.org>; Thu,  4 Aug 2022 22:33:26 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id ZDM00019;
+        Fri, 05 Aug 2022 13:33:19 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201605.home.langchao.com (10.100.2.5) with Microsoft SMTP Server id
+ 15.1.2507.9; Fri, 5 Aug 2022 13:33:20 +0800
+From:   Bo Liu <liubo03@inspur.com>
+To:     <dan.j.williams@intel.com>, <vishal.l.verma@intel.com>,
+        <dave.jiang@intel.com>
+CC:     <nvdimm@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] dax: Check dev_set_name() return value
+Date:   Fri, 5 Aug 2022 01:33:19 -0400
+Message-ID: <20220805053319.3865-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-Originating-IP: [10.200.104.97]
+tUid:   2022805133319b82b3ecbb11bc9c5f2588e7020cc85a0
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Microchip's PolarFire SoC QSPI IP core is based on coreQSPI,
-so add coreqspi as a fallback to mpfs-qspi.
+It's possible that dev_set_name() returns -ENOMEM, catch and handle this.
 
-Signed-off-by: Naga Sureshkumar Relli <nagasuresh.relli@microchip.com>
+Signed-off-by: Bo Liu <liubo03@inspur.com>
 ---
- .../devicetree/bindings/spi/microchip,mpfs-spi.yaml    | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/dax/bus.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/spi/microchip,mpfs-spi.yaml b/Documentation/devicetree/bindings/spi/microchip,mpfs-spi.yaml
-index a47d4923b51b..84d32c1a4d60 100644
---- a/Documentation/devicetree/bindings/spi/microchip,mpfs-spi.yaml
-+++ b/Documentation/devicetree/bindings/spi/microchip,mpfs-spi.yaml
-@@ -18,10 +18,12 @@ allOf:
+diff --git a/drivers/dax/bus.c b/drivers/dax/bus.c
+index 1dad813ee4a6..36cf245ee467 100644
+--- a/drivers/dax/bus.c
++++ b/drivers/dax/bus.c
+@@ -765,7 +765,12 @@ static int devm_register_dax_mapping(struct dev_dax *dev_dax, int range_id)
+ 	device_initialize(dev);
+ 	dev->parent = &dev_dax->dev;
+ 	dev->type = &dax_mapping_type;
+-	dev_set_name(dev, "mapping%d", mapping->id);
++	rc = dev_set_name(dev, "mapping%d", mapping->id);
++	if (rc) {
++		kfree(mapping);
++		return rc;
++	}
++
+ 	rc = device_add(dev);
+ 	if (rc) {
+ 		put_device(dev);
+@@ -1334,7 +1339,9 @@ struct dev_dax *devm_create_dev_dax(struct dev_dax_data *data)
+ 	dev_dax->region = dax_region;
+ 	dev = &dev_dax->dev;
+ 	device_initialize(dev);
+-	dev_set_name(dev, "dax%d.%d", dax_region->id, dev_dax->id);
++	rc = dev_set_name(dev, "dax%d.%d", dax_region->id, dev_dax->id);
++	if (rc)
++		goto err_range;
  
- properties:
-   compatible:
--    enum:
--      - microchip,mpfs-spi
--      - microchip,mpfs-qspi
--      - microchip,coreqspi-rtl-v2 # FPGA QSPI
-+   oneOf:
-+    - items:
-+        - const: microchip,mpfs-qspi
-+        - const: microchip,coreqspi-rtl-v2
-+    - const: microchip,coreqspi-rtl-v2 #FPGA QSPI
-+    - const: microchip,mpfs-spi
- 
-   reg:
-     maxItems: 1
+ 	rc = alloc_dev_dax_range(dev_dax, dax_region->res.start, data->size);
+ 	if (rc)
 -- 
-2.25.1
+2.27.0
 
