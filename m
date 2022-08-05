@@ -2,89 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A903C00140
-	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 07:16:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B103FC19F2D
+	for <linux-kernel@archiver.kernel.org>; Fri,  5 Aug 2022 07:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240195AbiHEHQb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 03:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52832 "EHLO
+        id S240282AbiHEHRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 03:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230441AbiHEHQX (ORCPT
+        with ESMTP id S230441AbiHEHRs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 03:16:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9E0F35
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 00:16:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A35DEB827E6
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 07:16:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03770C433C1;
-        Fri,  5 Aug 2022 07:16:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659683779;
-        bh=pVVmulI7yI4CK6aTV3QyaslBwmz+G2X9eavrx06cU6Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jZENF4PlyknV8Xq4eLRWpsaLD7k9DL03M0OnEm0ZgeJCG2e+C6c2FmQkRpGxfhaKN
-         QcI4O9H6v/VteiJjXbPcgf8ZUteF1Qv0r6/R5Y8iJ+y+IxUacyCYxpM4L6pEdheJyU
-         9xq0FzrcSo8SvSLiEMdcNqpkII2iIX6Y+A6H0vW7mZ9EB/s2rTNECqbaGxsat4r4uF
-         nk2wbd0UxQjqcD+TsL7Jswa/J7rucfCM4L5MNzCtvnB9E/RnyLU1p9FISFrhhF7S9F
-         GiICqKj0QHURF7momLdJtgg3inVCOKbmN7GNhVNHhBWnCAv/sg/ef4t4RuDkLU7Msf
-         m6lC29AsLlR5Q==
-Date:   Fri, 5 Aug 2022 00:16:17 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Siddh Raman Pant <code@siddh.me>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        David Howells <dhowells@redhat.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>
-Subject: Re: [PATCH 0/3] kernel/watch_queue: Clean up some code
-Message-ID: <YuzDwa4otHkImo10@sol.localdomain>
-References: <cover.1659618705.git.code@siddh.me>
+        Fri, 5 Aug 2022 03:17:48 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C70B10E3;
+        Fri,  5 Aug 2022 00:17:48 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id f30so1153056pfq.4;
+        Fri, 05 Aug 2022 00:17:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VFXvqXWuizqTpdBLbyESGII1eVMtZqfMsQFHKhGg+1k=;
+        b=XQf9dqVTFmz13HUGeiLAH1G26g87e+Mc4YCTFoKb4qct+L6qSGNLbOl5VTi04nT00m
+         R1zAXn2foMABuLBuMLEl/71hCRT+KnuUtvC4BBgxGpKiOjUr0eEj2ys1nE1ia2dNdH0a
+         nXif8ZZX0rAIIut4n9jfRXtU/UAcsR7+ZXqmoBQDt12DSCiqBVhvRGuZhSgNNWJ+w0Ha
+         H2RUvqP8yLRiwVAviFQJd4wqfMaYDWgmWNGQptivy0NI773b5WJF80Spwp99yHzi2YxL
+         cwkqZ7JzZnw/2iahSyy6OXuDZJOSTPuT/MsomlUuTRxVNv+JrLJGBVJRLx4k5nKNmp7Y
+         ZAwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VFXvqXWuizqTpdBLbyESGII1eVMtZqfMsQFHKhGg+1k=;
+        b=dLtGpJps/Ne2LVPjx1UabJ0ce4kSc7IR4FrUxhX7ztEInwVE8+qc/Bps9/V9AgpMi7
+         So3LT325FtEgG0vcMCnQLWfbE6BcDyWcMWr+N+3sj2waoQl/Cx7ceg28ynS+qR2sOSYA
+         M/MJI19eVJ4b1REnUi5UgdIudc5orwJI2rjJZMMchCA0oTrVL2dqQqn2EKm+rlZ3m6Ul
+         SiJcZlEihrSqaBOxv8q3rgfXhfPhy17PM/u968VM98Wo7U/sTsgskGodqIotMeXaCkOO
+         SGqr6XifIgY38xCU3TJ7hvG1VgEO5tC4yqxN05f8PtgRe+RsQkkQ74Jnz1m7NPD10535
+         tZow==
+X-Gm-Message-State: ACgBeo2UKVKFpvofWAkvUWLYPqUYL6pypm5G5rGRCaeeePNoxmyMU0we
+        5YD7gDLXPZvjzSwxJonyc6w=
+X-Google-Smtp-Source: AA6agR5Uinecy8xRTpSjGSViqI14CB3j4arBg8VlcU0pm01Y6jx/x2HVDMeN6CKWXhujognBwlt2Sw==
+X-Received: by 2002:a63:18a:0:b0:41b:475c:6c08 with SMTP id 132-20020a63018a000000b0041b475c6c08mr4876130pgb.77.1659683867547;
+        Fri, 05 Aug 2022 00:17:47 -0700 (PDT)
+Received: from genechen-System-Product-Name.richtek.com ([2402:7500:579:6a6f:254a:2074:501f:264b])
+        by smtp.gmail.com with ESMTPSA id z23-20020aa79597000000b00528c066678csm2226147pfj.72.2022.08.05.00.17.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Aug 2022 00:17:47 -0700 (PDT)
+From:   Gene Chen <gene.chen.richtek@gmail.com>
+To:     linux@roeck-us.net, heikki.krogerus@linux.intel.com,
+        gregkh@linuxfoundation.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, gene_chen@richtek.com,
+        cy_huang@richtek.com
+Subject: [PATCH v4 0/7] usb: typec: tcpci_rt1711h: Add compatible with rt1715
+Date:   Fri,  5 Aug 2022 15:17:06 +0800
+Message-Id: <20220805071714.150882-1-gene.chen.richtek@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1659618705.git.code@siddh.me>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 04, 2022 at 07:00:21PM +0530, Siddh Raman Pant wrote:
-> There is a dangling reference to pipe in a watch_queue after clearing it.
-> Thus, NULL that pointer while clearing. This can be thought of as a v4 of
-> the patches I had sent earlier.
-> 
-> This change renders wqueue->defunct superfluous, as the latter is only used
-> to check if watch_queue is cleared. With this change, the pipe is NULL'd
-> while clearing, so we can just check if the pipe is NULL.
-> 
-> Extending comment for watch_queue->pipe in the definition of watch_queue
-> made the comment conventionally too long (it was already past 80 chars),
-> so I have changed the struct annotations to be doxygen-styled, so that
-> I can extend the comment mentioning that the pipe is NULL when watch_queue
-> is cleared.
-> 
-> Siddh Raman Pant (3):
->   kernel/watch_queue: Remove dangling pipe reference while clearing
->     watch_queue
->   kernel/watch_queue: Improve struct annotation formatting
->   kernel/watch_queue: Remove wqueue->defunct and use pipe for clear
->     check
-> 
->  include/linux/watch_queue.h | 95 +++++++++++++++++++++++++++----------
->  kernel/watch_queue.c        | 11 ++---
->  2 files changed, 75 insertions(+), 31 deletions(-)
+This patch series add binding document for rt1711h and compatible driver with
+rt1715. Also add different remote rp workaround and initial phy setting.
 
-I think patches 1 and 3 should be merged together.
+Gene Chen (7)
+ - dt-bindings usb: typec: rt1711h: Add binding for Richtek RT1711H
+ - usb: typec: tcpci_rt1711h: Fix vendor setting when set vconn
+ - usb: typec: tcpci_rt1711h: Add regulator support when source vbus
+ - usb: typec: tcpci_rt1711h: Add initial phy setting
+ - usb: typec: tcpci_rt1711h: Add compatible id with rt1715
+ - usb: typec: tcpci: Move function "tcpci_to_typec_cc" to common
+ - usb: typec: tcpci_rt1711h: Fix CC PHY noise filter of voltage level
 
-Also, please use a consistent version number for all patches in the series.  You
-have a version 1, version 2, and version 4 patch all in the same series, which
-is very confusing.
+ Documentation/devicetree/bindings/usb/richtek,rt1711h.yaml |  100 ++++++++
+ drivers/usb/typec/tcpm/tcpci.c                             |   22 -
+ drivers/usb/typec/tcpm/tcpci_rt1711h.c                     |  150 +++++++++++--
+ include/linux/usb/tcpci.h                                  |   22 +
+ 4 files changed, 259 insertions(+), 35 deletions(-)
 
-- Eric
+changelogs between v3 & v4
+ - remove reshuffling header
+ - fix commit message typo
+ 
+changelogs between v2 & v3
+ - binding compatible name with did to validate chip
+ - remove postfix name "_mask"
+ - move get cc status macro to header
+
+changelogs between v1 & v2
+ - Seperate patch by specific purpose
+ - Fix binding document error
+ - Set cc change woakaround without using tcpci ops callback
+
+
