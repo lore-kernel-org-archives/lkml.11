@@ -2,126 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F70C25B06
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 16:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FFFC25B06
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 17:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233454AbiHFQ7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 12:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40866 "EHLO
+        id S232537AbiHFRCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 13:02:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230255AbiHFQ7r (ORCPT
+        with ESMTP id S230255AbiHFRCe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 12:59:47 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9499DDEFB
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 09:59:46 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id gj1so5391719pjb.0
-        for <linux-kernel@vger.kernel.org>; Sat, 06 Aug 2022 09:59:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=yajg26YKKxsWCe5pWsAcyObGluBWF9dmEs4naRj0qv4=;
-        b=uIDNnv9DrE4FmZfzhcJqY9mat5loGMEGNaPXdogbk71eZUSYihgX00aPvwbdnK62UQ
-         w7WCL+tTA2caRRyEvOtijuO+5eSKL+qLnstj/TjnlbCMoD+NK6u/677X+r+2j4aK7Mrc
-         6kNupTzbKcr0H8zfQTU7pSFlWsvDHWt2TKgH9AvWbZktwyOS5ioISkpKdFPOp74+OrHQ
-         JfK+1iwGaHb4Y9zsAyX4dIu1OYVB4O9Ju/imaYe5drx7BEjFez7xGE8OZSc1vk91/iHf
-         cTqg767E8uHiRcSWQp4WSaeJpxlUa8/Oc1hj8Cj79xr5P+y61KUu/0ABs8qW+OvtlUE0
-         nmKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=yajg26YKKxsWCe5pWsAcyObGluBWF9dmEs4naRj0qv4=;
-        b=SWVuDwHJpW2B8HVK3VkdvKPjshHLtmCGvzJ6hK1IiUHwYbN1RnTvMMdQzIz7iMjo4L
-         6t0Kpx2PugbaqUHX79wWIcbMyfRpxZB/yewNbFWQTFexLWMGwzdgYNasmAmhdTzm0bvQ
-         LKU1ZfKcETWaZBVl4cELuRvtDivZaHxLoYr1EjK6FiXXtyVyJBO+jLJlj9Mj8SupgUnq
-         LYJ78+HBBQAcJV9FdRtVgoCfzQPVKP1anP2Ju3c3gre+//eOO2/Fx7loLoSar3FnNiYu
-         OQWzWTVCIliUEGPsr0YqIDip/+VJJQVEB2OwqSCQYTLTkgOV/l5jT6qOj1SPJ+4CV+sZ
-         wcLw==
-X-Gm-Message-State: ACgBeo0lQxfxSbMTgsWhXXZatFAijX/4tKlMLVRtRPr5bVnfopJS9YIX
-        fa7xzR+Sw6Qn2JIov71FbdcG
-X-Google-Smtp-Source: AA6agR6jABn3VGmwJnmGoFNd8Zz0PNEDWOd//4g71uTcPAMLDbdOI2l6i8cEQyUjk2VCv3EcvCitdA==
-X-Received: by 2002:a17:902:ecc2:b0:16f:3846:b279 with SMTP id a2-20020a170902ecc200b0016f3846b279mr11600093plh.127.1659805185927;
-        Sat, 06 Aug 2022 09:59:45 -0700 (PDT)
-Received: from thinkpad ([117.202.188.20])
-        by smtp.gmail.com with ESMTPSA id s12-20020a170902ea0c00b0016d9b94ddfasm5338094plg.145.2022.08.06.09.59.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Aug 2022 09:59:45 -0700 (PDT)
-Date:   Sat, 6 Aug 2022 22:29:40 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Johan Hovold <johan+linaro@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Sat, 6 Aug 2022 13:02:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E9355A8;
+        Sat,  6 Aug 2022 10:02:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D2D7611ED;
+        Sat,  6 Aug 2022 17:02:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ABCCC433C1;
+        Sat,  6 Aug 2022 17:02:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659805352;
+        bh=065uU3xsQXc3K3lPrTGT6NFVQ52mQXrrPRYVEbifapE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TRdCuqPzo+OuUDezPf8bt7U2/rXipGVTXLwtvRvjE0zhqwkUcrmB4p2+jEd/hjfOX
+         Vp3YvlVFDjPRpMv+qVIQj8oyqpP4SLz0gIRxPmChEYjulDbO+WvvOXti1IZ7uzYLCx
+         dGBqU2cEyIbhtHarQaxEYdECfQ8xLf2WTEVeMz2rdctMf+UGyQdvdTtydi9WiHFVid
+         NphBW23AsUbwT2H6XkQl7QjvWMJ0sFxY8q7atnQSyUML9zvIYyutxsuoROi89NLZ9w
+         lQ0/tloxlxKMxPuJd3duJ/ZL1gsf9J9ms6tzWky4KEWF86QXm4RlJEKLnnYN7ddhxm
+         2VdH3qra+Tm6Q==
+Date:   Sat, 6 Aug 2022 18:12:52 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai.pt@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Potin Lai <potin.lai@quantatw.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 7/7] arm64: dts: qcom: sc8280xp-lenovo-thinkpad-x13s: add
- alternate touchpad
-Message-ID: <20220806165940.GT14384@thinkpad>
-References: <20220805092317.4985-1-johan+linaro@kernel.org>
- <20220805092317.4985-8-johan+linaro@kernel.org>
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v5 2/2] iio: humidity: hdc100x: add manufacturer and
+ device ID check
+Message-ID: <20220806181252.7633f19d@jic23-huawei>
+In-Reply-To: <CAHp75VfOPgDbTdt1EXJ5+exGXCZeT9VdtcOUDt_g4fn20S2Qwg@mail.gmail.com>
+References: <20220728125435.3336618-1-potin.lai.pt@gmail.com>
+        <20220728125435.3336618-3-potin.lai.pt@gmail.com>
+        <20220731130959.50826fc4@jic23-huawei>
+        <4ea235d1-46c1-87de-760f-dc4775007ae0@gmail.com>
+        <CAHp75VcZqTpmvVV=u4t=fdx=ffzksoWVDFZmq6Lfr6DrFrB2aA@mail.gmail.com>
+        <Yuf7UAVrIJCnO40X@heinlein.stwcx.org.github.beta.tailscale.net>
+        <CAHp75Vfe33oJAf1j27B-pTd84kX5JNPd+e16ygLYgZjCs=ZJfQ@mail.gmail.com>
+        <CAHp75VfOPgDbTdt1EXJ5+exGXCZeT9VdtcOUDt_g4fn20S2Qwg@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220805092317.4985-8-johan+linaro@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 11:23:17AM +0200, Johan Hovold wrote:
-> Add support for the alternate (second-source) touchpad found on some
-> X13s laptops.
-> 
-> Note that alternate touchpad is kept disabled for now. The boot firmware
-> should determine which device is actually populated and enable only the
-> corresponding node.
-> 
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+On Mon, 1 Aug 2022 18:30:16 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> On Mon, Aug 1, 2022 at 6:26 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Mon, Aug 1, 2022 at 6:12 PM Patrick Williams <patrick@stwcx.xyz> wrote:  
+> > > On Mon, Aug 01, 2022 at 10:22:16AM +0200, Andy Shevchenko wrote:  
+> > > > On Mon, Aug 1, 2022 at 3:52 AM Potin Lai <potin.lai.pt@gmail.com> wrote:  
+> > > > > On 7/31/22 20:09, Jonathan Cameron wrote:
+> > > > > In our hardware board, we have "ti,hdc1080" as main source, and "silabs,si7020"
+> > > > > for 2nd source. This two chip are locate at same bus and same slave address,
+> > > > > and we want to use multiple compatibles to support both chips with single device
+> > > > > node in device tree.
+> > > > >
+> > > > > Ex:
+> > > > > compatible = "ti,hdc1099", "silabs,si7020";  
+> > > >
+> > > > This is simply broken DT, you must not put incompatible hardware on
+> > > > the same compatible string. DT is by definition the description of a
+> > > > certain platform. What you showed is a combination of incompatible
+> > > > chips in a single DT.  
+> > >
+> > > We were mistaken that this is the appropriate way to specify this
+> > > behavior, partially because it works as long as the probe functions
+> > > return an error the next matching driver from the compatible will probe.
+> > > It does seem that specifying two different compatibles like this would
+> > > violate the intention of the DT spec:
+> > >
+> > >     The property value consists of a concatenated list of null terminated
+> > >     strings, from most specific to most general. They allow a device to
+> > >     express its compatibility with a family of similar devices, potentially
+> > >     allowing a single device driver to match against several devices.
+> > >  
+> > > >  
+> > > > > In order to support this, I need to add ID checking mechanism into the current
+> > > > > hdc100x driver, so the si7020 chip will fail to probe with hdc100x driver
+> > > > > (because the ID checking is not failed), then success probe with si7020.
+> > > > >
+> > > > > Base on you explanation, it looks multiple compatibles is not suitable in this
+> > > > > case? Would you mind advise us what would be the better approach for our case?  
+> > > >
+> > > > If I may advise... fix your DT by dropping the wrong compatible item.  
+> > >
+> > > This doesn't really give any helpful advice.  
+> >
+> > Sorry to hear this, but it's the best and correct solution to your
+> > problem. Believe me, many Linux people will tell you the same.
+> >  
+> > > The reality is that these two chips are pin compatible and function
+> > > compatible but not driver compatible.  Boards have been manufactured
+> > > which are identical except for this chip replaced, due various to chip
+> > > shortages.
+> > >
+> > > Making probe fail so that the next 'compatible' is chosen sounds like it
+> > > isn't desired.  I'm pretty sure you can't have two DT entries for the
+> > > same i2c address, but with different 'compatible" properties, and even
+> > > if we did you'd still need probe to fail on one of them.
+> > >
+> > > Are there any other suggestions for being able to inform the kernel that
+> > > one of two chips might be present?  
+> 
+> Btw, how would it be solved in ACPI is the playing status bits by
+> firmware, depending on the run-time detected environment (straps,
+> other means). So, you may fix it on bootloader / firmware level by
+> patching DTB with status okay / disabled. I believe in DTB is the
+> number, which can be easily binary patched.
+> 
+
+Indeed, it's common to have boot firmware prelinux modify the DT.
+
+That firmware can do probing if necessary to find out which device is present
+and by the time Linux loads the DT should be correct for the particular
+hardware.  Often this is done from a high level 'board ID' but nothing
+stops you doing it this case.
+
+I've cc'd the device tree binding maintainers and list, who may be able
+to give you some useful pointers to examples of people doing this
+in their boot loaders etc.
 
 Thanks,
-Mani
 
-> ---
->  .../dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts   | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
+Jonathan
+
+
+> > I guess there is a gap in understanding what DT is. DT is the
+> > description of the *platform*. Changing any discrete component on the
+> > platform is changing the platform.  
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> index 1ca72f6ba55a..bdeb2d05aaa1 100644
-> --- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
-> @@ -211,6 +211,22 @@ &qup2_i2c5 {
->  
->  	status = "okay";
->  
-> +	touchpad@15 {
-> +		compatible = "hid-over-i2c";
-> +		reg = <0x15>;
-> +
-> +		hid-descr-addr = <0x1>;
-> +		interrupts-extended = <&tlmm 182 IRQ_TYPE_LEVEL_LOW>;
-> +		vdd-supply = <&vreg_misc_3p3>;
-> +
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&tpad_default>;
-> +
-> +		wakeup-source;
-> +
-> +		status = "disabled";
-> +	};
-> +
->  	touchpad@2c {
->  		compatible = "hid-over-i2c";
->  		reg = <0x2c>;
-> -- 
-> 2.35.1
 > 
 
--- 
-மணிவண்ணன் சதாசிவம்
