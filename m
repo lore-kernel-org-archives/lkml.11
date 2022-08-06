@@ -2,228 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C16C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 13:58:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53797C25B0C
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 14:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231564AbiHFN6X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 09:58:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58228 "EHLO
+        id S231559AbiHFOAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 10:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230018AbiHFN6V (ORCPT
+        with ESMTP id S231272AbiHFOAj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 09:58:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA9D010FF6
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 06:58:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659794298;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=M1VZLFzbc3QEJrqC5cuqzOWpSyIBVvFdj+5LhLu6pv4=;
-        b=inktaNs7sD1gd4Wz4QEaKDFJCQGxnyXzvOzu3GH4oE6Z89zzN63rL1TpLEwEEIXUIRErtV
-        rCs9m19dlRzciOeBLxnGPE71RQESrK0CcuyyT41WW1Y/PYSH8PJB0wdCH484b9OVIgeFDb
-        Wv5shHh16O2E6nOTpMfxuQvQ1PtLvSk=
-Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
- [209.85.210.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-638-Rj806vHCP9mSP4sNMvawcQ-1; Sat, 06 Aug 2022 09:58:17 -0400
-X-MC-Unique: Rj806vHCP9mSP4sNMvawcQ-1
-Received: by mail-pf1-f199.google.com with SMTP id k9-20020aa79729000000b0052d4dd3e2aeso2523703pfg.0
-        for <linux-kernel@vger.kernel.org>; Sat, 06 Aug 2022 06:58:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=M1VZLFzbc3QEJrqC5cuqzOWpSyIBVvFdj+5LhLu6pv4=;
-        b=NWIqywnapsP+1t7KCJd4D6YibawIAhbhR1NCVS441zlL9XXVlBLiUi34/l5iC7lvON
-         JmiESnkuGbOHiuVpYazxpHRRJ8U6+vXNcPgeeAoEEJtREdi8xtxPsSBqL6wZNHh6KKEL
-         ra7UCIEyRzJiz2Aido4NG6iYADnN+/r6mMNoOiLqib3GZEkPYWxqIprPBHEdX4Q8Sht2
-         UEbp2Lkx32IR7/N/eQevGpCiWvh07mFzeORJpsbXU+awvh685WznPPlbqghbPUobvVyp
-         MYuW7RJ4mf/ymwyjFoouX5BMQ2FEh4ObrsejC8lq/anTvqJ5n0ipAopDex9uJ34mqCX2
-         QISQ==
-X-Gm-Message-State: ACgBeo2vVhAh1oNCiqAETePhCNQhL490lq1yZsfKa5nUG0O9pHSzMVXO
-        XasmeWr6taFA+qJW65TKcdPBcPwknrSkYvGI7/8Mu4NHGX7S71a+LJNl8UwKKSYgGdo5UdX4ide
-        tGf9yt4trBz9XFfnBTHFQ0njc
-X-Received: by 2002:a65:56ca:0:b0:41c:b7f6:78d7 with SMTP id w10-20020a6556ca000000b0041cb7f678d7mr9535490pgs.414.1659794296252;
-        Sat, 06 Aug 2022 06:58:16 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4zkTYFuwP5/8wgbQSavTGBbDM7tgh5zCuFh2N5fVlb4s0KISmvWWClJ/x6ktAl5IiVZ+OlLA==
-X-Received: by 2002:a65:56ca:0:b0:41c:b7f6:78d7 with SMTP id w10-20020a6556ca000000b0041cb7f678d7mr9535479pgs.414.1659794295968;
-        Sat, 06 Aug 2022 06:58:15 -0700 (PDT)
-Received: from xps13.. ([240d:1a:c0d:9f00:4f2f:926a:23dd:8588])
-        by smtp.gmail.com with ESMTPSA id h12-20020a17090ac38c00b001f4fb21c11asm4871544pjt.21.2022.08.06.06.58.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Aug 2022 06:58:15 -0700 (PDT)
-From:   Shigeru Yoshida <syoshida@redhat.com>
-To:     shuah@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Shigeru Yoshida <syoshida@redhat.com>
-Subject: [PATCH] selftests/proc: Add support for vsyscall=xonly
-Date:   Sat,  6 Aug 2022 22:57:49 +0900
-Message-Id: <20220806135749.47168-1-syoshida@redhat.com>
-X-Mailer: git-send-email 2.37.1
+        Sat, 6 Aug 2022 10:00:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B96B4BD;
+        Sat,  6 Aug 2022 07:00:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BA4960CD4;
+        Sat,  6 Aug 2022 14:00:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A930FC433C1;
+        Sat,  6 Aug 2022 14:00:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659794436;
+        bh=c8FZd3Ih39ycJVziZGntn4W31W4E806xekd9LOj/6JY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hgewUI9bHJLxlVSO90x+7UBAFRwTNKsmt6AdDuJE2Go5KD0aqwwcxWK5OApX3etcS
+         +hzuSn+JTYmWCDSPOvwQQ2gClq417kUFIkwAHeSG6gMG3Uoug1BPTnWLQXnNtz0+Gv
+         mc4qjztmyAtnKnXUYxFmx+w79QwXG/7NGPEV31bexQ7PVAuHzsbG9CYBQ0Jw8Uw4GB
+         U7onZmzWtEW8o2FTx0SJbjau7m+v0MmqsucL4s9QZURQwzXUKMRs4cr6raznedeQjk
+         sq7RmX4kmEAQy3p6+fyKbrsDIFzGTiCCMBBP/jANbwhond50rISEjw/WeRhD09sOWL
+         W+tm5e40SrJig==
+Date:   Sat, 6 Aug 2022 15:10:54 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     <eugen.hristev@microchip.com>, <lars@metafoo.de>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <ludovic.desroches@microchip.com>, <robh+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v3 00/19] iio: adc: at91-sama5d2_adc: add support for
+ temperature sensor
+Message-ID: <20220806151054.7c4d80e7@jic23-huawei>
+In-Reply-To: <20220803102855.2191070-1-claudiu.beznea@microchip.com>
+References: <20220803102855.2191070-1-claudiu.beznea@microchip.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are 3 vsyscall modes: emulate, xonly, and none.  proc-pid-vm
-detects the existence of the vsyscall with memory load on the vsyscall
-page.
+On Wed, 3 Aug 2022 13:28:36 +0300
+Claudiu Beznea <claudiu.beznea@microchip.com> wrote:
 
-This works for emulate and none vsyscall modes, but fails for xonly
-because read permission is omitted with xonly vsyscall page, and it
-results in the following error:
+> Hi,
+> 
+> The following series add support for temperature sensor available on
+> SAMA7G5.
+> 
+> Temperature sensor available on SAMA7G5 provides 2 outputs VTEMP and VBG.
+> VTEMP is proportional to the absolute temperature voltage and VBG is a
+> quasi-temperature independent voltage. Both are necessary in computing
+> the temperature (for better accuracy). Also, for better accuracy the
+> following settings were imposed when measusing the temperature:
+> oversampling rate of 256, sampling frequency of 10MHz, a startup time of
+> 512 ticks, MR.tracktim=0xf, EMR.trackx=0x3.
+> 
+> For computing the temperature measured by ADC calibration data is
+> necessary. This is provided via OTP memory available on SAMA7G5.
+> 
+> Patches 1/19-4/19 provides some fixes.
+> Patches 5/19-16/19 prepares for the addition of temperature sensor
+> support.
+> Patch 17/16 adds the temperature sensor support.
+> 
+> Along with temperature sensor support I took the chance and added
+> runtime PM support in this series, too (handled in patch 19/19).
+> 
+> The rest of patches in this series are minor cleanups.
+Dropped v2 adn replaced with this one.  For now just pushed out as
+testing to let the autobuilders take another look at it.
+I'll rebase when rc1 is out and then push this out for linux-next
+to pick up.
 
-  # ./proc-pid-vm
-  proc-pid-vm: proc-pid-vm.c:328: main: Assertion `rv == len' failed.
-  Aborted (core dumped)
+Thanks,
 
-This patch fixes this issue with introducing the following rule:
+Jonathan
 
-  1. vsyscall mode is emulate if it can load memory
-  2. vsyscall mode is xonly if it can call gettimeofday() on vsyscall
-  3. vsyscall mode is node otherwise
-
-Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
----
- tools/testing/selftests/proc/proc-pid-vm.c | 77 ++++++++++++++++++----
- 1 file changed, 65 insertions(+), 12 deletions(-)
-
-diff --git a/tools/testing/selftests/proc/proc-pid-vm.c b/tools/testing/selftests/proc/proc-pid-vm.c
-index 28604c9f805c..dffd263beef3 100644
---- a/tools/testing/selftests/proc/proc-pid-vm.c
-+++ b/tools/testing/selftests/proc/proc-pid-vm.c
-@@ -211,10 +211,16 @@ static int make_exe(const uint8_t *payload, size_t len)
- }
- #endif
- 
--static bool g_vsyscall = false;
--
--static const char str_vsyscall[] =
--"ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]\n";
-+static enum { EMULATE, XONLY, NONE } g_vsyscall_mode;
-+
-+static const char * const str_vsyscall[] = {
-+	/* emulate */
-+	"ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]\n",
-+	/* xonly */
-+	"ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]\n",
-+	/* none */
-+	"",
-+};
- 
- #ifdef __x86_64__
- static void sigaction_SIGSEGV(int _, siginfo_t *__, void *___)
-@@ -225,7 +231,33 @@ static void sigaction_SIGSEGV(int _, siginfo_t *__, void *___)
- /*
-  * vsyscall page can't be unmapped, probe it with memory load.
-  */
--static void vsyscall(void)
-+static bool vsyscall_emulate(void)
-+{
-+	*(volatile int *)0xffffffffff600000UL;
-+	return true;
-+}
-+
-+/*
-+ * vsyscall page can't be unmapped, probe it with calling gettimeofday().
-+ */
-+static bool vsyscall_xonly(void)
-+{
-+	int ret;
-+	struct timeval tv;
-+	int (*f)(struct timeval *tv, struct timezone *tz);
-+
-+	/* Try to call gettimeofday() on vsyscall*/
-+	f = (void *)0xffffffffff600000UL;
-+	ret = f(&tv, NULL);
-+	if (ret < 0) {
-+		fprintf(stderr, "gettimeofday() on vsyscall, ret %d\n", ret);
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+static bool vsyscall_test(bool (*test)(void))
- {
- 	pid_t pid;
- 	int wstatus;
-@@ -246,13 +278,27 @@ static void vsyscall(void)
- 		act.sa_sigaction = sigaction_SIGSEGV;
- 		(void)sigaction(SIGSEGV, &act, NULL);
- 
--		*(volatile int *)0xffffffffff600000UL;
-+		if (!test())
-+			exit(1);
-+
- 		exit(0);
- 	}
- 	waitpid(pid, &wstatus, 0);
- 	if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) == 0) {
--		g_vsyscall = true;
-+		return true;
- 	}
-+
-+	return false;
-+}
-+
-+static void vsyscall(void)
-+{
-+	if (vsyscall_test(vsyscall_emulate))
-+		g_vsyscall_mode = EMULATE;
-+	else if (vsyscall_test(vsyscall_xonly))
-+		g_vsyscall_mode = XONLY;
-+	else
-+		g_vsyscall_mode = NONE;
- }
- 
- int main(void)
-@@ -314,11 +360,14 @@ int main(void)
- 
- 	/* Test /proc/$PID/maps */
- 	{
--		const size_t len = strlen(buf0) + (g_vsyscall ? strlen(str_vsyscall) : 0);
-+		size_t len = strlen(buf0);
- 		char buf[256];
- 		ssize_t rv;
- 		int fd;
- 
-+		if (g_vsyscall_mode != NONE)
-+			len += strlen(str_vsyscall[g_vsyscall_mode]);
-+
- 		snprintf(buf, sizeof(buf), "/proc/%u/maps", pid);
- 		fd = open(buf, O_RDONLY);
- 		if (fd == -1) {
-@@ -327,8 +376,10 @@ int main(void)
- 		rv = read(fd, buf, sizeof(buf));
- 		assert(rv == len);
- 		assert(memcmp(buf, buf0, strlen(buf0)) == 0);
--		if (g_vsyscall) {
--			assert(memcmp(buf + strlen(buf0), str_vsyscall, strlen(str_vsyscall)) == 0);
-+		if (g_vsyscall_mode != NONE) {
-+			assert(memcmp(buf + strlen(buf0),
-+				      str_vsyscall[g_vsyscall_mode],
-+				      strlen(str_vsyscall[g_vsyscall_mode])) == 0);
- 		}
- 	}
- 
-@@ -374,8 +425,10 @@ int main(void)
- 			assert(memmem(buf, rv, S[i], strlen(S[i])));
- 		}
- 
--		if (g_vsyscall) {
--			assert(memmem(buf, rv, str_vsyscall, strlen(str_vsyscall)));
-+		if (g_vsyscall_mode != NONE) {
-+			assert(memmem(buf, rv,
-+				      str_vsyscall[g_vsyscall_mode],
-+				      strlen(str_vsyscall[g_vsyscall_mode])));
- 		}
- 	}
- 
--- 
-2.37.1
+> 
+> Thank you,
+> Claudiu Beznea
+> 
+> Changes in v3:
+> - fixed compilation warning by adjusting patches 10/19, 11/19
+> 
+> Changes in v2:
+> - addressed review comments
+> - with this, new patches were intruced in this series: 2/19, 4/19,
+>   8/19, 9,19
+> - runtime pm support has been adapted to work also when CONFIG_PM
+>   is not enabled
+> - collected tags
+> 
+> Claudiu Beznea (19):
+>   iio: adc: at91-sama5d2_adc: fix AT91_SAMA5D2_MR_TRACKTIM_MAX
+>   iio: adc: at91-sama5d2_adc: check return status for pressure and touch
+>   iio: adc: at91-sama5d2_adc: lock around oversampling and sample freq
+>   iio: adc: at91-sama5d2_adc: disable/prepare buffer on suspend/resume
+>   iio: adc: at91-sama5d2_adc: exit from write_raw() when buffers are
+>     enabled
+>   iio: adc: at91-sama5d2_adc: handle different EMR.OSR for different hw
+>     versions
+>   iio: adc: at91-sama5d2_adc: move the check of oversampling in its
+>     function
+>   iio: adc: at91-sama5d2_adc: drop AT91_OSR_XSAMPLES defines
+>   iio: adc: at91-sama5d2_adc: add .read_avail() chan_info ops
+>   iio: adc: at91-sama5d2_adc: adjust osr based on specific platform data
+>   iio: adc: at91-sama5d2_adc: add 64 and 256 oversampling ratio
+>   iio: adc: at91-sama5d2_adc: move oversampling storage in its function
+>   iio: adc: at91-sama5d2_adc: update trackx on emr
+>   iio: adc: at91-sama5d2_adc: add startup and tracktim as parameter for
+>     at91_adc_setup_samp_freq()
+>   iio: adc: at91-sama5d2_adc: lock around at91_adc_read_info_raw()
+>   dt-bindings: iio: adc: at91-sama5d2_adc: add id for temperature
+>     channel
+>   iio: adc: at91-sama5d2_adc: add support for temperature sensor
+>   iio: adc: at91-sama5d2_adc: add empty line after functions
+>   iio: adc: at91-sama5d2_adc: add runtime pm support
+> 
+>  drivers/iio/adc/at91-sama5d2_adc.c            | 684 +++++++++++++++---
+>  .../dt-bindings/iio/adc/at91-sama5d2_adc.h    |   3 +
+>  2 files changed, 568 insertions(+), 119 deletions(-)
+> 
 
