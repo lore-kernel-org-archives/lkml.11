@@ -2,61 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F2BC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 11:43:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0026C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 11:43:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230122AbiHFLmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 07:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49862 "EHLO
+        id S230426AbiHFLm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 07:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbiHFLmr (ORCPT
+        with ESMTP id S229846AbiHFLms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 07:42:47 -0400
-X-Greylist: delayed 544 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 06 Aug 2022 04:42:46 PDT
-Received: from mailgate.osadl.org (mailgate.osadl.org [62.245.132.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F63013E14
+        Sat, 6 Aug 2022 07:42:48 -0400
+Received: from mailgate.osadl.org (mailgate.osadl.org [IPv6:2001:a60:9266:ffff:62:245:132:113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8539913E15
         for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 04:42:46 -0700 (PDT)
 Received: from localmail.osadl.org (localmail.osadl.org [192.168.115.248])
-        by mailgate.osadl.org (Postfix) with ESMTP id A16583004AF;
-        Sat,  6 Aug 2022 13:33:35 +0200 (CEST)
+        by mailgate.osadl.org (Postfix) with ESMTP id DC2D7300C5A;
+        Sat,  6 Aug 2022 13:33:36 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=osadl.org; s=default;
-        t=1659785617; bh=13NoCHxS6P/Vc0vRA1az1nnlXTxakQXd/y25xEgabsk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=WNwO/6hY7iMr9KKta3uKMVIN4hqy7Y3QyYsUe9g/4K32I+E4+uV1ADr1TnmysmN7q
-         M2OVqyc0FLQYQ53qxKF5g58F603OAP9CaF1fk7Dawtq1tHeK8Rf4We2JhgV8J3Zi6s
-         w4Q2qksxadeW+QiV2zTOxqxUQK0ReRDdMqfMcsNI=
+        t=1659785619; bh=QWnGpkn0KjPYyzuZJV5wYqLgFxdPZTLFrmKe2mahP3E=;
+        h=Date:From:To:Cc:Subject:References:From;
+        b=Aax0HAlsRqLaUzhaIjZvVkcaA0QQCdAEbu2HPQ7wt1Dx3cAWRN2jGmNOl4tQlnYO8
+         HXMMpqn75TokctR44dnifnuY+61Y3SMiV/GKnHYhOcDllwSm4GG6Tv2anHAV4VQuvE
+         G54un5STu0Z595/HAON31gAw+55V9r5LgdyDYtAU=
 Received: from localhost (localhost [127.0.0.1])
-        by localmail.osadl.org (Postfix) with ESMTP id 6F8C39E9AF2;
-        Sat,  6 Aug 2022 13:33:34 +0200 (CEST)
+        by localmail.osadl.org (Postfix) with ESMTP id A91DD8C2D74;
+        Sat,  6 Aug 2022 13:33:35 +0200 (CEST)
 Received: from localmail.osadl.org ([127.0.0.1])
         by localhost (localmail.osadl.org [127.0.0.1]) (amavisd-new, port 10024)
-        with LMTP id F9JvpeAve5Ri; Sat,  6 Aug 2022 13:33:33 +0200 (CEST)
+        with LMTP id d12xIJorxhyZ; Sat,  6 Aug 2022 13:33:34 +0200 (CEST)
 Received: from rack0slot6s.osadl.org (rack0slot6s.osadl.org [192.168.114.6])
-        by localmail.osadl.org (Postfix) with ESMTP id 341538BBBF5;
+        by localmail.osadl.org (Postfix) with ESMTP id 559B49CC7DF;
         Sat,  6 Aug 2022 13:33:33 +0200 (CEST)
 Received: from rack0slot6s.osadl.org (localhost [127.0.0.1])
-        by rack0slot6s.osadl.org (8.17.1/8.15.2) with ESMTP id 276BXYkf4095518;
+        by rack0slot6s.osadl.org (8.17.1/8.15.2) with ESMTP id 276BXYle4095582;
         Sat, 6 Aug 2022 13:33:34 +0200
 Received: (from root@localhost)
-        by rack0slot6s.osadl.org (8.17.1/8.17.1/Submit) id 276BXYU54095517;
+        by rack0slot6s.osadl.org (8.17.1/8.17.1/Submit) id 276BXYgW4095581;
         Sat, 6 Aug 2022 13:33:34 +0200
-Message-ID: <20220806113124.608017725@osadl.org>
+Message-ID: <20220806113334.349537884@osadl.org>
 User-Agent: quilt/0.66
-Date:   Sat, 06 Aug 2022 13:31:24 +0200
+Date:   Sat, 06 Aug 2022 13:31:26 +0200
 From:   Alexander Baehr <abaehr@osadl.org>
 To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/2] Add support for parallel port devices Netmos 9900 and Asix 99100
+Subject: [PATCH 2/2] Add parport support for Asix device 99100
+References: <20220806113124.608017725@osadl.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-Virus-Scanned: clamav-milter 0.103.6 at mailgate
 X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Support for the established parallel port devices Netmos 9900 and Asix 99100 
-was lacking. This patch queue adds support for them and was successfullly 
-tested on the two devices.
+For some reason, Asix decided to produce a parallel port that is fully
+compatible with Netmos device 9900, but named it 99100. It obviously has
+another vendor ID, but the device ID is the same. This patch adds the 
+required settings and was successfully tested with the Asix device. 
 
-Signed-off-by: Alexander Baehr <abaehr@osadl.org>  
+Signed-off-by: Alexander Baehr <abaehr@osadl.org>
+---
+ drivers/parport/parport_pc.c |    4 ++++
+ include/linux/pci_ids.h      |    3 +++
+ 2 files changed, 7 insertions(+)
+
+Index: linux/drivers/parport/parport_pc.c
+===================================================================
+--- linux.orig/drivers/parport/parport_pc.c
++++ linux/drivers/parport/parport_pc.c
+@@ -2612,6 +2612,7 @@ enum parport_pc_pci_cards {
+ 	netmos_9815,
+ 	netmos_9901,
+ 	netmos_9865,
++	asix_ax99100,
+ 	quatech_sppxp100,
+ 	wch_ch382l,
+ };
+@@ -2766,6 +2767,9 @@ static const struct pci_device_id parpor
+ 	  0xA000, 0x1000, 0, 0, netmos_9865 },
+ 	{ PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9865,
+ 	  0xA000, 0x2000, 0, 0, netmos_9865 },
++	/* Asix AX99100 Parallel port PCIExpressCard */
++	{ PCI_VENDOR_ID_ASIX, PCI_DEVICE_ID_AX99100,
++	  0xA000, 0x2000, 0, 0, netmos_9900 },
+ 	/* Quatech SPPXP-100 Parallel port PCI ExpressCard */
+ 	{ PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_SPPXP_100,
+ 	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, quatech_sppxp100 },
+Index: linux/include/linux/pci_ids.h
+===================================================================
+--- linux.orig/include/linux/pci_ids.h
++++ linux/include/linux/pci_ids.h
+@@ -3108,4 +3108,7 @@
+ 
+ #define PCI_VENDOR_ID_NCUBE		0x10ff
+ 
++#define PCI_VENDOR_ID_ASIX		0x125b
++#define PCI_DEVICE_ID_AX99100		0x9100
++
+ #endif /* _LINUX_PCI_IDS_H */
 
