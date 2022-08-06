@@ -2,148 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 224F8C19F29
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 03:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E5D9C19F29
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 04:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241470AbiHFDxt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 23:53:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
+        id S241607AbiHFEDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 00:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231191AbiHFDxs (ORCPT
+        with ESMTP id S241461AbiHFEDF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 23:53:48 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA491409F;
-        Fri,  5 Aug 2022 20:53:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659758026; x=1691294026;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=EOrwo1+w2rYt40oWYg7x/pWgKGfaH9b92Nt/uY+i8tA=;
-  b=Xw+ycoQwGTg32EQO2VtRJPJJKhRtLeZq9Gw44IV0faylS1PystKP9+fY
-   mLOpiAixN2PTU6/Pswu6F0Gq/SckK2AVoEttexSvlIb4guB5jarkp1DQm
-   RiFvfhAgwsvnV35e0FWu79apcmv/HdUhYyeFErCpXczTzexP2HstoOHgn
-   ChhFWElpR3nbLgncRina45IkaAkwfIshAc7mtFljiRtkjQqAET0ad2OCP
-   mDX7RdIlwJpGsXzo1nku8MEPycjARYuWH5b6+Uq39oUMH3qSukrQK+nBi
-   MKEX+9KeCAALwEBFovJDKFjMxl1uBfhCptGN+qxjer3whIz/F0Wn9FHRI
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="270110861"
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="270110861"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2022 20:53:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="746063365"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 05 Aug 2022 20:53:42 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oKAsg-000Jzj-0A;
-        Sat, 06 Aug 2022 03:53:42 +0000
-Date:   Sat, 6 Aug 2022 11:53:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alistair Francis <alistair@alistair23.me>,
-        linux-input@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, shawnguo@kernel.org, alistair23@gmail.com,
-        robh+dt@kernel.org, linus.walleij@linaro.org,
-        s.hauer@pengutronix.de, andreas@kemnade.info,
-        krzysztof.kozlowski+dt@linaro.org, rydberg@bitmath.org,
-        dmitry.torokhov@gmail.com,
-        Alistair Francis <alistair@alistair23.me>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        =?iso-8859-1?Q?Myl=E8ne?= Josserand 
-        <mylene.josserand@bootlin.com>, Peter Geis <pgwipeout@gmail.com>
-Subject: Re: [PATCH v8 1/4] Input: Add driver for Cypress Generation 5
- touchscreen
-Message-ID: <202208061128.pfj2DRWO-lkp@intel.com>
-References: <20220802125827.34509-2-alistair@alistair23.me>
+        Sat, 6 Aug 2022 00:03:05 -0400
+Received: from out28-74.mail.aliyun.com (out28-74.mail.aliyun.com [115.124.28.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 643A214014;
+        Fri,  5 Aug 2022 21:03:00 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.08715575|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.154924-0.00444291-0.840633;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047201;MF=michael@allwinnertech.com;NM=1;PH=DS;RN=6;RT=6;SR=0;TI=SMTPD_---.OnDAFCd_1659758542;
+Received: from 192.168.220.136(mailfrom:michael@allwinnertech.com fp:SMTPD_---.OnDAFCd_1659758542)
+          by smtp.aliyun-inc.com;
+          Sat, 06 Aug 2022 12:02:25 +0800
+Message-ID: <ff062259-3c94-ddd2-4376-53b4cbd25e7d@allwinnertech.com>
+Date:   Sat, 6 Aug 2022 12:02:22 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220802125827.34509-2-alistair@alistair23.me>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] ext4: fix error when itable blocks is greater than
+ s_itb_per_group
+Content-Language: en-US
+To:     Theodore Ts'o <tytso@mit.edu>, Lukas Czerner <lczerner@redhat.com>
+Cc:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        allwinner-opensource-support@allwinnertech.com
+References: <20220802021029.16046-1-michael@allwinnertech.com>
+ <20220803071859.elywnni2yfol4bea@fedora> <Yussl4uRWAAO3TtT@mit.edu>
+From:   Michael Wu <michael@allwinnertech.com>
+In-Reply-To: <Yussl4uRWAAO3TtT@mit.edu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alistair,
+On 8/4/2022 10:19 AM, Theodore Ts'o wrote:
+> On Wed, Aug 03, 2022 at 09:18:59AM +0200, Lukas Czerner wrote:
+>>
+>> Hi Michael,
+>>
+>> mke2fs is making sure that we completely fill the inote table blocks.
+>> This is a corrupted image and so AFAICT ext4 is doing the right thing
+>> here. There does not seem to be a problem to fix, unless you can somehow
+>> trick mke2fs to make a file system like this.
+> 
+> Several years ago, android was shipping a bogus/busted
+> reimeplementation of mke2fs, reportedly because a certain founder of
+> Android (cough, Andy Rubin, cough) was alergic to the GPL.  ("The
+> problem with GPL in embedded systems [such as smartphones and tablets]
+> is that it's viral...")  This bogus reimplementation would create file
+> systems where the number of inodes per block group was a multiple of 4
+> instead of 8.  But, it was under the BSD license, so it was all good!   :-/
+> 
+> This bogus reimplementation of mkfs would, 50% of the time, create
+> busted file systems which couldn't be fixed, if they got corrupted, by
+> e2fsck.  This is because e2fsprogs' allocation bitmap code assumes
+> that you can back the bitarray into a single contiguous memory block
+> --- and this doesn't work if the number of inodes per block group is
+> not a multiple of 8.  If the file system got corrupted, the only
+> recourse was to wipe the user partition and the user would lose any
+> data that wasn't backed up to the cloud.
+> 
+> This has since been fixed for quite some time, but if there is some
+> low-end Android manufacturer is using an ancient version of AOSP, this
+> could be happening even in 2022 --- but that doesn't mean we need to
+> support such broken file systems.  As far as I'm concerned the only
+> way to make valid Android ext4 system images is the combination of
+> mke2fs and e2fsdroid, which is what modern versions of AOSP do.
+> 
+>      	       	     	     	    	     	- Ted
 
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on dtor-input/next]
-[also build test WARNING on shawnguo/for-next linus/master v5.19 next-20220805]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Alistair-Francis/Add-support-for-the-Cypress-cyttsp5/20220802-210032
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git next
-config: um-allmodconfig (https://download.01.org/0day-ci/archive/20220806/202208061128.pfj2DRWO-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/9c372983ef0b8eb7ad48c025a156f80943269af7
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Alistair-Francis/Add-support-for-the-Cypress-cyttsp5/20220802-210032
-        git checkout 9c372983ef0b8eb7ad48c025a156f80943269af7
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/input/touchscreen/cyttsp5.c: In function 'cyttsp5_handle_irq':
->> drivers/input/touchscreen/cyttsp5.c:254:31: warning: array subscript 'int[0]' is partly outside array bounds of 'u8[1]' {aka 'unsigned char[1]'} [-Warray-bounds]
-     254 |         for (nbyte = 0, *axis = 0; nbyte < size; nbyte++)
-         |                         ~~~~~~^~~
-   drivers/input/touchscreen/cyttsp5.c:333:12: note: while referencing 'num_cur_tch'
-     333 |         u8 num_cur_tch;
-         |            ^~~~~~~~~~~
-   drivers/input/touchscreen/cyttsp5.c:257:15: warning: array subscript 'int[0]' is partly outside array bounds of 'u8[1]' {aka 'unsigned char[1]'} [-Warray-bounds]
-     257 |         *axis &= max - 1;
-         |               ^~
-   drivers/input/touchscreen/cyttsp5.c:333:12: note: while referencing 'num_cur_tch'
-     333 |         u8 num_cur_tch;
-         |            ^~~~~~~~~~~
-   drivers/input/touchscreen/cyttsp5.c:257:15: warning: array subscript 'int[0]' is partly outside array bounds of 'u8[1]' {aka 'unsigned char[1]'} [-Warray-bounds]
-     257 |         *axis &= max - 1;
-         |         ~~~~~~^~~~~~~~~~
-   drivers/input/touchscreen/cyttsp5.c:333:12: note: while referencing 'num_cur_tch'
-     333 |         u8 num_cur_tch;
-         |            ^~~~~~~~~~~
-   drivers/input/touchscreen/cyttsp5.c:255:23: warning: array subscript 'int[0]' is partly outside array bounds of 'u8[1]' {aka 'unsigned char[1]'} [-Warray-bounds]
-     255 |                 *axis += ((xy_data[nbyte] >> bofs) << (nbyte * 8));
-         |                       ^~
-   drivers/input/touchscreen/cyttsp5.c:333:12: note: while referencing 'num_cur_tch'
-     333 |         u8 num_cur_tch;
-         |            ^~~~~~~~~~~
-   drivers/input/touchscreen/cyttsp5.c:255:23: warning: array subscript 'int[0]' is partly outside array bounds of 'u8[1]' {aka 'unsigned char[1]'} [-Warray-bounds]
-     255 |                 *axis += ((xy_data[nbyte] >> bofs) << (nbyte * 8));
-         |                 ~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/input/touchscreen/cyttsp5.c:333:12: note: while referencing 'num_cur_tch'
-     333 |         u8 num_cur_tch;
-         |            ^~~~~~~~~~~
-
-
-vim +254 drivers/input/touchscreen/cyttsp5.c
-
-   248	
-   249	static void cyttsp5_get_touch_axis(int *axis, int size, int max, u8 *xy_data,
-   250					   int bofs)
-   251	{
-   252		int nbyte;
-   253	
- > 254		for (nbyte = 0, *axis = 0; nbyte < size; nbyte++)
-   255			*axis += ((xy_data[nbyte] >> bofs) << (nbyte * 8));
-   256	
-   257		*axis &= max - 1;
-   258	}
-   259	
+Dear Ted & Lukas,
+Thanks for your clarification. I did several tests, turned outs Ted was 
+right. I'm clear now.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards,
+Michael Wu
