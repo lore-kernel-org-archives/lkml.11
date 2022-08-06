@@ -2,91 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8779EC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 12:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13661C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 12:40:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232850AbiHFM3W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 08:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45382 "EHLO
+        id S231901AbiHFMk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 08:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232659AbiHFM2d (ORCPT
+        with ESMTP id S229853AbiHFMky (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 08:28:33 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2E1140C5
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 05:28:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659788885; x=1691324885;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=IlWP1RVxeGf8P5QVffwpRcNTbvB6eKDRV4QlSHfeCwE=;
-  b=ZbJyFyYDDTmKqHw+K5rvW/ZeFFUtoWYnYir+MC69d9FgreRphgwijMHQ
-   scVdB3plgVOUlvui1ynWsuIhyzkbo6DpSqaCPMxQ6+l1P1e5yKIzUDtqw
-   ErDXdnebdiMCB0+ynKvI2IdwYEjeAV3CkkbqoEFGhH3vBOCwZ2kbVtMSP
-   QnqMCCwpzLpEy16/34Vv1A+uRjCv+pZW6C4H2WgWXq0R/dosnFsemL/H5
-   REcTd91Yrt6gliG55cdpHLlCpWMAty6dV2tVnHJUW/CEi9uRw2X+n06y9
-   v5I2IxFuSeIDwGFM+ELwBFBCZgDopfwq8SvqgoXKGjM+sZqT/Ln9SWVkU
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="289121924"
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="289121924"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 05:28:05 -0700
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="632329170"
-Received: from twinkler-lnx.jer.intel.com ([10.12.87.143])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 05:28:02 -0700
-From:   Tomas Winkler <tomas.winkler@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Tomas Winkler <tomas.winkler@intel.com>,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Vitaly Lubart <vitaly.lubart@intel.com>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-Subject: [PATCH v7 15/15] HAX: drm/i915: force INTEL_MEI_GSC on for CI
-Date:   Sat,  6 Aug 2022 15:26:36 +0300
-Message-Id: <20220806122636.43068-16-tomas.winkler@intel.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220806122636.43068-1-tomas.winkler@intel.com>
-References: <20220806122636.43068-1-tomas.winkler@intel.com>
+        Sat, 6 Aug 2022 08:40:54 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD66637C;
+        Sat,  6 Aug 2022 05:40:52 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id bh13so4785906pgb.4;
+        Sat, 06 Aug 2022 05:40:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=o6pt3V1ha9yMo8oPh0RhSV7A5lQkFUBOGwSJxIjKq5Y=;
+        b=K3zZNGyQzBOJGo9GHJ77B64dvtlpK4HGVReHiflBNDRpOjaH5sqOdA8CSpHY5CKTyf
+         jMxciE0uAHt180KJ/Y+huKoZL4LmZDsa6WkKOyCwoxB/ThJX4uVJEg7ZTShFI/az0Ar2
+         z7gP6VTnSFHOO3nyj7PfGi5h2pn3jkcI30MOA4gJBLa6ZPkeSr1jNi+ni+/957EXpVKE
+         8cMH0A3oIzRK5Ii74+i2xFTbbdfg/VV4lJGKX03EHlP6Q0ikAumdp8EVEn0EXa//V+ro
+         7vXPHclNzVW+zRBDjtu+d19HsGrRLP2TD974QnRupiahEXDmXn0SLRi8PGivCy1jVQMg
+         wXwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=o6pt3V1ha9yMo8oPh0RhSV7A5lQkFUBOGwSJxIjKq5Y=;
+        b=MuBhcaN1sy6pV/Eqib90wu6mq4X9exrknzIt6r/5Lboiv/kWeTUoRcoyQwzic31Lrt
+         +hRxKMynQUo2hhRN/6CmIG6Q97xtJnLfdhkSOCy+zhFgryoJjiNATBV5PhpOI/y/J7Ye
+         5n+FvHt3dfM0oH/Nyb+IVKk8dKxsM+kQ0TcjziQig4ZbZTRhpcoBh1pgYI/MPxec4A4e
+         iNAKydSf1obiV6qHyXlNqWhlnd9zQ3ZOATd/Iz4JL9+/vQFSUU0GrIly5DKUDuUEaj2K
+         TDjGcvflPA8yKlCSFvtRQ1QJul0OJ6/b0+bHp/3kjTpmC8XRNxmvNWOW4CAmn7hx9C2K
+         8fxw==
+X-Gm-Message-State: ACgBeo3sRzCO6lBRQ0AuiwzbcMO4UVNsNYzN068b67bvwKA1jAT2fWWl
+        JrbkAnNyrVe+HlHRTN1MmHA=
+X-Google-Smtp-Source: AA6agR4HVXRr5ozE4MZULCJYLmm+yzEtIzOb6rNsc6/YEix1fRqJBoSHmvvrRwFlh1pZPSou+4rtrw==
+X-Received: by 2002:a63:d555:0:b0:41b:ca49:54c3 with SMTP id v21-20020a63d555000000b0041bca4954c3mr9091265pgi.360.1659789652285;
+        Sat, 06 Aug 2022 05:40:52 -0700 (PDT)
+Received: from debian.me (subs02-180-214-232-10.three.co.id. [180.214.232.10])
+        by smtp.gmail.com with ESMTPSA id r19-20020a634413000000b0040c9df2b060sm3072702pga.30.2022.08.06.05.40.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Aug 2022 05:40:51 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 80D7A103B77; Sat,  6 Aug 2022 19:40:46 +0700 (WIB)
+Date:   Sat, 6 Aug 2022 19:40:46 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Jim Cromie <jim.cromie@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, jbaron@akamai.com,
+        gregkh@linuxfoundation.org, dri-devel@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org, intel-gvt-dev@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, daniel.vetter@ffwll.ch,
+        seanpaul@chromium.org, robdclark@gmail.com,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH v5 19/33] doc-dyndbg: edit dynamic-debug-howto for
+ brevity, audience
+Message-ID: <Yu5hTr6qcLwiPRNp@debian.me>
+References: <20220805215355.3509287-1-jim.cromie@gmail.com>
+ <20220805215355.3509287-20-jim.cromie@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha384;
+        protocol="application/pgp-signature"; boundary="zCnbKQzWNc0slIHJ"
+Content-Disposition: inline
+In-Reply-To: <20220805215355.3509287-20-jim.cromie@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
 
-After the new config option is merged we'll enable it by default in the
-CI config, but for now just force it on via the i915 Kconfig so we can
-get pre-merge CI results for it.
+--zCnbKQzWNc0slIHJ
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
----
- drivers/gpu/drm/i915/Kconfig.debug | 1 +
- 1 file changed, 1 insertion(+)
+On Fri, Aug 05, 2022 at 03:53:41PM -0600, Jim Cromie wrote:
+> Rework/modernize docs:
+>=20
+>  - use /proc/dynamic_debug/control in examples
+>    its *always* there (when dyndbg is config'd), even when <debugfs> is n=
+ot.
+>    drop <debugfs> talk, its a distraction here.
+>=20
+>  - alias ddcmd=3D'echo $* > /proc/dynamic_debug/control
+>    focus on args: declutter, hide boilerplate, make pwd independent.
+>=20
+>  - swap sections: Viewing before Controlling. control file as Catalog.
+>=20
+>  - focus on use by a system administrator
+>    add an alias to make examples more readable
+>    drop grep-101 lessons, admins know this.
+>=20
+>  - use init/main.c as 1st example, thread it thru doc where useful.
+>    everybodys kernel boots, runs these.
+>=20
+>  - add *prdbg* api section
+>    to the bottom of the file, its for developers more than admins.
+>    move list of api functions there.
+>=20
+>  - simplify - drop extra words, phrases, sentences.
+>=20
+>  - add "decorator" flags line to unify "prefix", trim fmlt descriptions
+>=20
+> CC: linux-doc@vger.kernel.org
+> Signed-off-by: Jim Cromie <jim.cromie@gmail.com>
+>=20
 
-diff --git a/drivers/gpu/drm/i915/Kconfig.debug b/drivers/gpu/drm/i915/Kconfig.debug
-index e7fd3e76f8a2..be4ef485d6c1 100644
---- a/drivers/gpu/drm/i915/Kconfig.debug
-+++ b/drivers/gpu/drm/i915/Kconfig.debug
-@@ -48,6 +48,7 @@ config DRM_I915_DEBUG
- 	select DRM_I915_DEBUG_RUNTIME_PM
- 	select DRM_I915_SW_FENCE_DEBUG_OBJECTS
- 	select DRM_I915_SELFTEST
-+	select INTEL_MEI_GSC
- 	select BROKEN # for prototype uAPI
- 	default n
- 	help
--- 
-2.37.1
+The documentation LGTM (no new warnings).
 
+Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+
+--=20
+An old man doll... just what I always wanted! - Clara
+
+--zCnbKQzWNc0slIHJ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iJUEABMJAB0WIQTsebsWCPCpxY9T92n/R0PGQ3AzwAUCYu5hNQAKCRD/R0PGQ3Az
+wGuzAYDy/O8VqIX4dB6ItFwNHJm1rs7Qg4OuYgYbKFvhP69MPdWx64MR4soFNSUx
+y/x/+HABgNTyMUR8QKMtJnT6K443IFX7iqf6bs05/IbT4PqLQjZXkpc+PQBWALvU
+6LjFercp5g==
+=Aeer
+-----END PGP SIGNATURE-----
+
+--zCnbKQzWNc0slIHJ--
