@@ -2,127 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAC0C00140
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 01:43:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D76AC00140
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 02:00:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241563AbiHFBnj convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 21:43:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53644 "EHLO
+        id S241351AbiHFCA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 22:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237456AbiHFBni (ORCPT
+        with ESMTP id S241414AbiHFCAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 21:43:38 -0400
-Received: from relay.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3CA11471
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 18:43:36 -0700 (PDT)
-Received: from omf13.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay05.hostedemail.com (Postfix) with ESMTP id 8EF7A406F2;
-        Sat,  6 Aug 2022 01:43:34 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf13.hostedemail.com (Postfix) with ESMTPA id C544920010;
-        Sat,  6 Aug 2022 01:43:32 +0000 (UTC)
-Message-ID: <12695fa86c0e3e062077b5e11a66234d9404e4a2.camel@perches.com>
-Subject: Re: [GIT PULL] MM updates for 5.20-rc1
-From:   Joe Perches <joe@perches.com>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Kent Overstreet <kent.overstreet@gmail.com>,
-        mm-commits@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Dave Chinner <dchinner@redhat.com>
-Date:   Fri, 05 Aug 2022 18:43:32 -0700
-In-Reply-To: <20220805170752.d609551360017d60903e5e75@linux-foundation.org>
-References: <20220803133541.18b82ec9344ed0e8b975fe5b@linux-foundation.org>
-         <CAHk-=wiOSXvk=70tpR9E1tvDmCf8s-81bT+92aE-iKocxdTsyw@mail.gmail.com>
-         <Yu2wDNcOYE0RdkA3@P9FQF9L96D.corp.robot.car>
-         <20220805170752.d609551360017d60903e5e75@linux-foundation.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Fri, 5 Aug 2022 22:00:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 872CD112A;
+        Fri,  5 Aug 2022 19:00:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A34A96154A;
+        Sat,  6 Aug 2022 02:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 031ADC43143;
+        Sat,  6 Aug 2022 02:00:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659751216;
+        bh=ZIxiHkFiEIUrY1ILj4Xwfj7+I0APQsa+pmZOV1AKuRU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tCQRPOizblryM+diXpiTdUpOH6j6QyQidmXpBNsVdfEHETKGkhEAGlF2sufZA/nic
+         kAEar22dwZILK6yyMoEwqo9ZZisNxHxjfQ7hTjH+mwZ9OstznRGEYl9BlSsJ8+LD30
+         ThpYHzN8QMI8qz1sIoHW/J01i5YejvlgD+QPVLM3T3jeUcwUhkCDGmk1wy7F0RAn/L
+         AX3ogwGjGsUbLUdOfpMYg+DzqFs264gbh/I6yxQM1hv13q3W3S3axYWhNcHqs5F0fk
+         rWCFJlW6YsSsDeLxJPvHU3l61LyxPw7O+9BRxTMoJik6cpQEHLjy8IGKr1fqVZ2zcb
+         A30sJlnUhozjQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D57D9C43145;
+        Sat,  6 Aug 2022 02:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-Stat-Signature: qyrp8argzkghi98fkgmfsdzcootm5dgb
-X-Rspamd-Server: rspamout08
-X-Rspamd-Queue-Id: C544920010
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/PQT5mEc4qSatyOMKaUxBPL8ydPsKALW0=
-X-HE-Tag: 1659750212-509346
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] bnxt_en: Remove duplicated include bnxt_devlink.c
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165975121586.22545.9937072590593832868.git-patchwork-notify@kernel.org>
+Date:   Sat, 06 Aug 2022 02:00:15 +0000
+References: <20220804003722.54088-1-yang.lee@linux.alibaba.com>
+In-Reply-To: <20220804003722.54088-1-yang.lee@linux.alibaba.com>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     michael.chan@broadcom.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        abaci@linux.alibaba.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-08-05 at 17:07 -0700, Andrew Morton wrote:
-> On Fri, 5 Aug 2022 17:04:28 -0700 Roman Gushchin <roman.gushchin@linux.dev> wrote:
-> 
-> > On Fri, Aug 05, 2022 at 04:32:34PM -0700, Linus Torvalds wrote:
-> > > On Wed, Aug 3, 2022 at 1:35 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> > > > 
-> > > > - memcg debug/visibility work from Roman Gushchin
-> > > 
-> > > Well, not just memcg.
-> > > 
-> > > There's that new CONFIG_SHRINKER_DEBUG too.
-> > > 
-> > > Which looks like yet another "people add Kconfig options incorrectly".
-> > > 
-> > > We don't make new features "default y" unless there's some truly
-> > > pressing reason for it (ie "99.9% of all people will want this" or "we
-> > > used to always compile this in, now it's optional").
-> > 
-> > Hi Linus!
-> > 
-> > It actually was 'default n' in one of the earlier version of the patchset
-> > and has been switched to 'default y' based on the following feedback from
-> > Dave Chinner (https://lore.kernel.org/lkml/YmiWK56bOHyrr64u@rh/):
-> > 
-> >     No. The argument that "if we turn it off there's no overhead" means
-> >     one of two things:
-> > 
-> >     1. nobody turns it on and it never gets tested and so bitrots and is
-> >     useless, or
-> >     2. distro's all turn it on because some tool they ship or customer
-> >     they ship to wants it.
-> > 
-> >     Either way, hiding it behind a config option is not an acceptible
-> >     solution for mering poorly thought out infrastructure.
-> > 
-> > Personally I think that the feature is not that useful for the majority
-> > of users (this is why default was n), but it's not adding much of the
-> > overhead, so I had no strong reasons to oppose Dave.
-> > Cc'ing him just in case.
-> > 
-> 
-> We should have changelogged these considerations.
-> 
-> I've asked Joe if checkpatch can get a "default y" detector, to draw
-> attention to this in the future.
+Hello:
 
-Perhaps:
----
- scripts/checkpatch.pl | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-index bf7c5abeefaad..1abec0cd217e6 100755
---- a/scripts/checkpatch.pl
-+++ b/scripts/checkpatch.pl
-@@ -3523,6 +3523,19 @@ sub process {
- 			}
- 		}
- 
-+# check new Kconfig entries for default=y
-+# Only applies when adding the entry originally and if the entry is not
-+# conditional on anything like default y if <foo>
-+		if ($realfile =~ /Kconfig/ &&
-+		    !$file &&
-+		    $line =~ /\+\s*default\s+y\s*$/i) {
-+			if (WARN("KCONFIG_DEFAULT_Y",
-+				 "Kconfig entries should generally not be default y\n" . $herecurr) &&
-+			    $fix) {
-+				$fixed[$fixlinenr] =~ s/default(\s+)y/default${1}n/;
-+			}
-+		}
-+
- # check MAINTAINERS entries
- 		if ($realfile =~ /^MAINTAINERS$/) {
- # check MAINTAINERS entries for the right form
+On Thu,  4 Aug 2022 08:37:22 +0800 you wrote:
+> bnxt_ethtool.h is included twice in bnxt_devlink.c,
+> remove one of them.
+> 
+> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=1817
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] bnxt_en: Remove duplicated include bnxt_devlink.c
+    https://git.kernel.org/netdev/net/c/07977a8a9e54
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
