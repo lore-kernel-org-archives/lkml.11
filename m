@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 291ADC19F2D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63A73C3F6B0
 	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 19:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232417AbiHFTz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 15:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37772 "EHLO
+        id S233016AbiHFT4B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 15:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiHFTzz (ORCPT
+        with ESMTP id S232426AbiHFTz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 15:55:55 -0400
+        Sat, 6 Aug 2022 15:55:57 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A7F261E
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 12:55:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1CF96437
+        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 12:55:56 -0700 (PDT)
 Received: from dslb-188-097-043-167.188.097.pools.vodafone-ip.de ([188.97.43.167] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1oKPtk-0004Tu-QR; Sat, 06 Aug 2022 21:55:48 +0200
+        id 1oKPtn-0004Tu-6C; Sat, 06 Aug 2022 21:55:51 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,44 +28,77 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Pavel Skripkin <paskripkin@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 00/13] staging: r8188eu: simplify endpoint configuration
-Date:   Sat,  6 Aug 2022 21:55:27 +0200
-Message-Id: <20220806195540.777390-1-martin@kaiser.cx>
+Subject: [PATCH 02/13] staging: r8188eu: process HalUsbSetQueuePipeMapping8188EUsb's return value
+Date:   Sat,  6 Aug 2022 21:55:29 +0200
+Message-Id: <20220806195540.777390-3-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220806195540.777390-1-martin@kaiser.cx>
+References: <20220806195540.777390-1-martin@kaiser.cx>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series contains cleanups for rtl8188eu_interface_configure and the
-functions that it calls. I tried to fix the error handling and to
-summarize small functions and common code.
+At the moment, HalUsbSetQueuePipeMapping8188EUsb returns an error status
+to rtl8188eu_interface_configure, where this status is discarded.
 
-Martin Kaiser (13):
-  staging: r8188eu: Hal_MappingOutPipe should return an int
-  staging: r8188eu: process HalUsbSetQueuePipeMapping8188EUsb's return
-    value
-  staging: r8188eu: merge two small functions
-  staging: r8188eu: move endpoint init functions to usb_halinit.c
-  staging: r8188eu: summarize endpoint-related settings
-  staging: r8188eu: remove OutEpNumber
-  staging: r8188eu: remove comments about endpoint mapping
-  staging: r8188eu: summarize common Queue2Pipe settings
-  staging: r8188eu: simplify three_out_pipe
-  staging: r8188eu: simplify two_out_pipe
-  staging: r8188eu: remove _InitNormalChipOneOutEpPriority
-  staging: r8188eu: we always use HQ and NQ for two endpoints
-  staging: r8188eu: simplify _InitNormalChipTwoOutEpPriority
+Pass the error status from rtl8188eu_interface_configure to
+rtw_usb_if1_init and handle it there.
 
- drivers/staging/r8188eu/hal/hal_com.c         | 110 -------------
- drivers/staging/r8188eu/hal/usb_halinit.c     | 152 ++++++++----------
- drivers/staging/r8188eu/include/hal_com.h     |   2 -
- drivers/staging/r8188eu/include/hal_intf.h    |   2 +-
- .../staging/r8188eu/include/rtl8188e_hal.h    |   1 -
- drivers/staging/r8188eu/os_dep/usb_intf.c     |   4 +-
- 6 files changed, 75 insertions(+), 196 deletions(-)
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ drivers/staging/r8188eu/hal/usb_halinit.c  | 4 ++--
+ drivers/staging/r8188eu/include/hal_intf.h | 2 +-
+ drivers/staging/r8188eu/os_dep/usb_intf.c  | 4 +++-
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
+index ba068e6fd9fb..839841f90d29 100644
+--- a/drivers/staging/r8188eu/hal/usb_halinit.c
++++ b/drivers/staging/r8188eu/hal/usb_halinit.c
+@@ -42,11 +42,11 @@ static int HalUsbSetQueuePipeMapping8188EUsb(struct adapter *adapt, u8 NumOutPip
+ 	return Hal_MappingOutPipe(adapt, NumOutPipe);
+ }
+ 
+-void rtl8188eu_interface_configure(struct adapter *adapt)
++int rtl8188eu_interface_configure(struct adapter *adapt)
+ {
+ 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(adapt);
+ 
+-	HalUsbSetQueuePipeMapping8188EUsb(adapt, pdvobjpriv->RtNumOutPipes);
++	return HalUsbSetQueuePipeMapping8188EUsb(adapt, pdvobjpriv->RtNumOutPipes);
+ }
+ 
+ u32 rtl8188eu_InitPowerOn(struct adapter *adapt)
+diff --git a/drivers/staging/r8188eu/include/hal_intf.h b/drivers/staging/r8188eu/include/hal_intf.h
+index 3ed5b7e031cd..fd8e792958ce 100644
+--- a/drivers/staging/r8188eu/include/hal_intf.h
++++ b/drivers/staging/r8188eu/include/hal_intf.h
+@@ -10,7 +10,7 @@
+ 
+ typedef s32 (*c2h_id_filter)(u8 id);
+ 
+-void rtl8188eu_interface_configure(struct adapter *adapt);
++int rtl8188eu_interface_configure(struct adapter *adapt);
+ int ReadAdapterInfo8188EU(struct adapter *Adapter);
+ void rtl8188eu_init_default_value(struct adapter *adapt);
+ void rtl8188e_SetHalODMVar(struct adapter *Adapter, void *pValue1, bool bSet);
+diff --git a/drivers/staging/r8188eu/os_dep/usb_intf.c b/drivers/staging/r8188eu/os_dep/usb_intf.c
+index db91f72dd40f..2b330104a55d 100644
+--- a/drivers/staging/r8188eu/os_dep/usb_intf.c
++++ b/drivers/staging/r8188eu/os_dep/usb_intf.c
+@@ -330,7 +330,9 @@ static int rtw_usb_if1_init(struct dvobj_priv *dvobj, struct usb_interface *pusb
+ 	rtl8188e_read_chip_version(padapter);
+ 
+ 	/* step usb endpoint mapping */
+-	rtl8188eu_interface_configure(padapter);
++	ret = rtl8188eu_interface_configure(padapter);
++	if (ret)
++		goto handle_dualmac;
+ 
+ 	/* step read efuse/eeprom data and get mac_addr */
+ 	ret = ReadAdapterInfo8188EU(padapter);
 -- 
 2.30.2
 
