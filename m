@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7466EC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 19:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B105C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 19:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233194AbiHFT4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 15:56:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37928 "EHLO
+        id S229456AbiHFT4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 15:56:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232995AbiHFT4B (ORCPT
+        with ESMTP id S233038AbiHFT4C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 15:56:01 -0400
+        Sat, 6 Aug 2022 15:56:02 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21516583
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 12:56:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9915965B3
+        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 12:56:01 -0700 (PDT)
 Received: from dslb-188-097-043-167.188.097.pools.vodafone-ip.de ([188.97.43.167] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1oKPto-0004Tu-1F; Sat, 06 Aug 2022 21:55:52 +0200
+        id 1oKPtr-0004Tu-KV; Sat, 06 Aug 2022 21:55:55 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,9 +28,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Pavel Skripkin <paskripkin@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 03/13] staging: r8188eu: merge two small functions
-Date:   Sat,  6 Aug 2022 21:55:30 +0200
-Message-Id: <20220806195540.777390-4-martin@kaiser.cx>
+Subject: [PATCH 07/13] staging: r8188eu: remove comments about endpoint mapping
+Date:   Sat,  6 Aug 2022 21:55:34 +0200
+Message-Id: <20220806195540.777390-8-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220806195540.777390-1-martin@kaiser.cx>
 References: <20220806195540.777390-1-martin@kaiser.cx>
@@ -40,39 +40,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All that rtl8188eu_interface_configure does is call
-HalUsbSetQueuePipeMapping8188EUsb. We can merge the two functions.
+Remove the comments in two_out_pipe and three_out_pipe that show the
+mappings. They simply repeat the settings in the code and provide no
+additional information. Keep the info which RtOutPipe is high, normal
+or low.
+
+Without the removed comments, it'll be easier to summarize and reorganize
+the code.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/hal/usb_halinit.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ drivers/staging/r8188eu/hal/usb_halinit.c | 24 ++++++-----------------
+ 1 file changed, 6 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
-index 839841f90d29..ed0faf4fd51d 100644
+index 664028c14141..e561c92f1dc9 100644
 --- a/drivers/staging/r8188eu/hal/usb_halinit.c
 +++ b/drivers/staging/r8188eu/hal/usb_halinit.c
-@@ -35,18 +35,12 @@ static void _ConfigNormalChipOutEP_8188E(struct adapter *adapt, u8 NumOutPipe)
- 	}
- }
- 
--static int HalUsbSetQueuePipeMapping8188EUsb(struct adapter *adapt, u8 NumOutPipe)
--{
--
--	_ConfigNormalChipOutEP_8188E(adapt, NumOutPipe);
--	return Hal_MappingOutPipe(adapt, NumOutPipe);
--}
--
- int rtl8188eu_interface_configure(struct adapter *adapt)
+@@ -32,11 +32,9 @@ static void two_out_pipe(struct adapter *adapter, bool wifi_cfg)
  {
- 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(adapt);
+ 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(adapter);
  
--	return HalUsbSetQueuePipeMapping8188EUsb(adapt, pdvobjpriv->RtNumOutPipes);
-+	_ConfigNormalChipOutEP_8188E(adapt, pdvobjpriv->RtNumOutPipes);
-+	return Hal_MappingOutPipe(adapt, pdvobjpriv->RtNumOutPipes);
- }
+-	if (wifi_cfg) { /* WMM */
+-		/* BK, BE, VI, VO, BCN,	CMD, MGT, HIGH, HCCA */
+-		/*  0,  1,  0,  1,   0,   0,   0,    0,    0}; */
+-		/* 0:H, 1:L */
++	/* 0:H, 1:L */
  
- u32 rtl8188eu_InitPowerOn(struct adapter *adapt)
++	if (wifi_cfg) {
+ 		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[1];/* VO */
+ 		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[0];/* VI */
+ 		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[1];/* BE */
+@@ -47,11 +45,7 @@ static void two_out_pipe(struct adapter *adapter, bool wifi_cfg)
+ 		pdvobjpriv->Queue2Pipe[6] = pdvobjpriv->RtOutPipe[0];/* HIGH */
+ 		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0];/* TXCMD */
+ 
+-	} else {/* typical setting */
+-		/* BK, BE, VI, VO, BCN,	CMD, MGT, HIGH, HCCA */
+-		/*  1,	1,  0,  0,   0,   0,   0,    0,    0}; */
+-		/* 0:H, 1:L */
+-
++	} else {
+ 		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[0];/* VO */
+ 		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[0];/* VI */
+ 		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[1];/* BE */
+@@ -68,11 +62,9 @@ static void three_out_pipe(struct adapter *adapter, bool wifi_cfg)
+ {
+ 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(adapter);
+ 
+-	if (wifi_cfg) {/* for WMM */
+-		/* BK, BE, VI, VO, BCN,	CMD, MGT, HIGH, HCCA */
+-		/*  1,	2,  1,  0,   0,   0,   0,    0,    0}; */
+-		/* 0:H, 1:N, 2:L */
++	/* 0:H, 1:N, 2:L */
+ 
++	if (wifi_cfg) {
+ 		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[0];/* VO */
+ 		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[1];/* VI */
+ 		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[2];/* BE */
+@@ -83,11 +75,7 @@ static void three_out_pipe(struct adapter *adapter, bool wifi_cfg)
+ 		pdvobjpriv->Queue2Pipe[6] = pdvobjpriv->RtOutPipe[0];/* HIGH */
+ 		pdvobjpriv->Queue2Pipe[7] = pdvobjpriv->RtOutPipe[0];/* TXCMD */
+ 
+-	} else {/* typical setting */
+-		/* BK, BE, VI, VO, BCN,	CMD, MGT, HIGH, HCCA */
+-		/*  2,  2,  1,  0,   0,   0,   0,    0,    0}; */
+-		/* 0:H, 1:N, 2:L */
+-
++	} else {
+ 		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[0];/* VO */
+ 		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[1];/* VI */
+ 		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[2];/* BE */
 -- 
 2.30.2
 
