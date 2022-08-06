@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C880EC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 19:56:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D04C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 19:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233681AbiHFT4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 15:56:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37956 "EHLO
+        id S232571AbiHFT4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 15:56:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233064AbiHFT4C (ORCPT
+        with ESMTP id S233200AbiHFT4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 15:56:02 -0400
+        Sat, 6 Aug 2022 15:56:06 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A6165F8
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 12:56:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6625CBC3C
+        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 12:56:03 -0700 (PDT)
 Received: from dslb-188-097-043-167.188.097.pools.vodafone-ip.de ([188.97.43.167] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1oKPtq-0004Tu-QA; Sat, 06 Aug 2022 21:55:54 +0200
+        id 1oKPtu-0004Tu-53; Sat, 06 Aug 2022 21:55:58 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,9 +28,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Pavel Skripkin <paskripkin@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 06/13] staging: r8188eu: remove OutEpNumber
-Date:   Sat,  6 Aug 2022 21:55:33 +0200
-Message-Id: <20220806195540.777390-7-martin@kaiser.cx>
+Subject: [PATCH 10/13] staging: r8188eu: simplify two_out_pipe
+Date:   Sat,  6 Aug 2022 21:55:37 +0200
+Message-Id: <20220806195540.777390-11-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220806195540.777390-1-martin@kaiser.cx>
 References: <20220806195540.777390-1-martin@kaiser.cx>
@@ -40,63 +40,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the OutEpNumber component of struct hal_data_8188e.
-RtNumOutPipes in struct dvobj_priv stores the same info.
-
-Update the only place where OutEpNumber is read.
+Simplify the two_out_pipe function. Move common settings out of the
+if clause.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/hal/usb_halinit.c      | 7 ++-----
- drivers/staging/r8188eu/include/rtl8188e_hal.h | 1 -
- 2 files changed, 2 insertions(+), 6 deletions(-)
+ drivers/staging/r8188eu/hal/usb_halinit.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
-index 603108a5d794..664028c14141 100644
+index 044e608bf6e2..f3314bed9285 100644
 --- a/drivers/staging/r8188eu/hal/usb_halinit.c
 +++ b/drivers/staging/r8188eu/hal/usb_halinit.c
-@@ -110,17 +110,14 @@ int rtl8188eu_interface_configure(struct adapter *adapt)
- 	switch (pdvobjpriv->RtNumOutPipes) {
- 	case 3:
- 		haldata->OutEpQueueSel = TX_SELE_HQ | TX_SELE_LQ | TX_SELE_NQ;
--		haldata->OutEpNumber = 3;
- 		three_out_pipe(adapt, wifi_cfg);
- 		break;
- 	case 2:
- 		haldata->OutEpQueueSel = TX_SELE_HQ | TX_SELE_NQ;
--		haldata->OutEpNumber = 2;
- 		two_out_pipe(adapt, wifi_cfg);
- 		break;
- 	case 1:
- 		haldata->OutEpQueueSel = TX_SELE_HQ;
--		haldata->OutEpNumber = 1;
- 		one_out_pipe(adapt);
- 		break;
- 	default:
-@@ -358,9 +355,9 @@ static void _InitNormalChipThreeOutEpPriority(struct adapter *Adapter)
+@@ -29,15 +29,14 @@ static void two_out_pipe(struct adapter *adapter, bool wifi_cfg)
  
- static void _InitQueuePriority(struct adapter *Adapter)
- {
--	struct hal_data_8188e *haldata = &Adapter->haldata;
-+	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(Adapter);
+ 	/* 0:H, 1:L */
  
--	switch (haldata->OutEpNumber) {
-+	switch (pdvobjpriv->RtNumOutPipes) {
- 	case 1:
- 		_InitNormalChipOneOutEpPriority(Adapter);
- 		break;
-diff --git a/drivers/staging/r8188eu/include/rtl8188e_hal.h b/drivers/staging/r8188eu/include/rtl8188e_hal.h
-index fdc187f4deaa..ff0a4ce19dde 100644
---- a/drivers/staging/r8188eu/include/rtl8188e_hal.h
-+++ b/drivers/staging/r8188eu/include/rtl8188e_hal.h
-@@ -150,7 +150,6 @@ struct hal_data_8188e {
- 	u8	TRxAntDivType;
- 
- 	u8	OutEpQueueSel;
--	u8	OutEpNumber;
- 
- 	struct P2P_PS_Offload_t	p2p_ps_offload;
- 
++	pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[0];/* VI */
++	pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[1];/* BE */
++
+ 	if (wifi_cfg) {
+ 		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[1];/* VO */
+-		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[0];/* VI */
+-		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[1];/* BE */
+ 		pdvobjpriv->Queue2Pipe[3] = pdvobjpriv->RtOutPipe[0];/* BK */
+ 	} else {
+ 		pdvobjpriv->Queue2Pipe[0] = pdvobjpriv->RtOutPipe[0];/* VO */
+-		pdvobjpriv->Queue2Pipe[1] = pdvobjpriv->RtOutPipe[0];/* VI */
+-		pdvobjpriv->Queue2Pipe[2] = pdvobjpriv->RtOutPipe[1];/* BE */
+ 		pdvobjpriv->Queue2Pipe[3] = pdvobjpriv->RtOutPipe[1];/* BK */
+ 	}
+ }
 -- 
 2.30.2
 
