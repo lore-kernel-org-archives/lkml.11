@@ -2,130 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4D3C25B0C
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 16:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CAF1C25B06
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 16:32:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233255AbiHFQ3Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 12:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50798 "EHLO
+        id S233315AbiHFQcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 12:32:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231512AbiHFQ3P (ORCPT
+        with ESMTP id S229780AbiHFQcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 12:29:15 -0400
-Received: from www381.your-server.de (www381.your-server.de [78.46.137.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63D911804;
-        Sat,  6 Aug 2022 09:29:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=0/EWJspkALZrTjeOIOA2+pvDgmwguZHERdtDusPdfjA=; b=FuwoneNfT65l3UvNLYJXO78yv4
-        T5Z0WHKuNAyln87RP6k8H9XmNnEI89215lp4xzYGGKvcUuqRH4JfaZvdhTdLNlRKBMDKbg9tc8wiR
-        GrECcTEx10AW1zG9vD7qnaFMjmWTXk+1Cz/XFSMHOXKnYkkekq6sGuZS/9GBtbzs0gP6i5ZCICvRH
-        FkEbcN1n4tACbwsmm7IYZUkfaoCdWgeOLEKLlGDHBhWLzsklmmyZJ4fCyaA7i92OOctaPA8dkEQxm
-        uQr318HnuhMYM6tFsyR5onGhzFvuH94zbNp+Q/EOCBTDTxjVOwZKzVgaESBruD9MPlIDbHSFpsnIh
-        LFhCo/CA==;
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <lars@metafoo.de>)
-        id 1oKMfo-0004JB-1N; Sat, 06 Aug 2022 18:29:12 +0200
-Received: from [2001:a61:2aaa:fe01:9e5c:8eff:fe01:8578]
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1oKMfn-000IWg-TF; Sat, 06 Aug 2022 18:29:11 +0200
-Message-ID: <c28e5dfa-9ce8-a60e-a72a-1c733711ccca@metafoo.de>
-Date:   Sat, 6 Aug 2022 18:29:11 +0200
+        Sat, 6 Aug 2022 12:32:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E029FD22;
+        Sat,  6 Aug 2022 09:32:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA45C61192;
+        Sat,  6 Aug 2022 16:32:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F00EDC433C1;
+        Sat,  6 Aug 2022 16:32:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659803566;
+        bh=nExtxcU67wWQEEy3txkAlZxXlPijgKhaUiJHYPpUROI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=P2WctJ1Lb1oLCpqQKx2wa6a1Xy4t5fVBNZOujhC/kiNzq3TrmwKiRiczzAN0y3j32
+         gSt9eXNYOvRBPzdY4drngIApYb8RSfOOJocp2zJEpTzzL06l4ycVNjBTC9HzLcQCh6
+         bSp/AZBTx8w8Ddst9SWUH/Hzz4y555e0eWKo9ij4wiwbIXZQMDtV0UVwg+yXqekaH6
+         6kcSkkFaZn2/3Sudr1t4BYhqtzXRaYgC2CzAI8YxFr8D5BPHejWhdyN6x3D739ORWv
+         HSMwEUaHVPqwd9/B9vQgJiaZfB3VDUId1H6wvA74wG9S+jDnW08+qJOum++5WIvg+o
+         cCMy07rIiWGSw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oKMjg-0003QW-Gq; Sat, 06 Aug 2022 18:33:13 +0200
+Date:   Sat, 6 Aug 2022 18:33:12 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
+        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 8/9] usb: dwc3: qcom: fix wakeup implementation
+Message-ID: <Yu6XyIZT9XU2Qs4l@hovoldconsulting.com>
+References: <20220804151001.23612-1-johan+linaro@kernel.org>
+ <20220804151001.23612-9-johan+linaro@kernel.org>
+ <20220806145719.GG14384@thinkpad>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 1/2] iio: temperature: mlx90632 Add supply regulator to
- sensor
-Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>, Crt Mori <cmo@melexis.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220802103022.423328-1-cmo@melexis.com>
- <20220806171345.45cf1228@jic23-huawei>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-In-Reply-To: <20220806171345.45cf1228@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26619/Sat Aug  6 09:53:47 2022)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220806145719.GG14384@thinkpad>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/6/22 18:15, Jonathan Cameron wrote:
-> On Tue,  2 Aug 2022 12:30:22 +0200
-> Crt Mori <cmo@melexis.com> wrote:
->
->> Provide possibility to toggle power supply to the sensor so that user
->> can optimize their setup and not have the sensor constantly powered.
->>
->> Signed-off-by: Crt Mori <cmo@melexis.com>
->> ---
->>   drivers/iio/temperature/mlx90632.c | 52 ++++++++++++++++++++++++++++++
->>   1 file changed, 52 insertions(+)
->>
->> diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
->> index 7ee7ff8047a4..e6e5e649a9f9 100644
->> --- a/drivers/iio/temperature/mlx90632.c
->> +++ b/drivers/iio/temperature/mlx90632.c
->> @@ -18,6 +18,7 @@
->>   #include <linux/math64.h>
->>   #include <linux/pm_runtime.h>
->>   #include <linux/regmap.h>
->> +#include <linux/regulator/consumer.h>
->>   
->>   #include <linux/iio/iio.h>
->>   #include <linux/iio/sysfs.h>
->> @@ -128,6 +129,7 @@
->>    *        calculations
->>    * @object_ambient_temperature: Ambient temperature at object (might differ of
->>    *                              the ambient temperature of sensor.
->> + * @regulator: Regulator of the device
->>    */
->>   struct mlx90632_data {
->>   	struct i2c_client *client;
->> @@ -136,6 +138,7 @@ struct mlx90632_data {
->>   	u16 emissivity;
->>   	u8 mtyp;
->>   	u32 object_ambient_temperature;
->> +	struct regulator *regulator;
->>   };
->>   
->>   static const struct regmap_range mlx90632_volatile_reg_range[] = {
->> @@ -841,6 +844,37 @@ static int mlx90632_wakeup(struct mlx90632_data *data)
->>   	return mlx90632_pwr_continuous(data->regmap);
->>   }
->>   
->> +static void mlx90632_disable_regulator(void *_data)
->> +{
->> +	struct mlx90632_data *data = _data;
->> +	int ret;
->> +
->> +	ret = regulator_disable(data->regulator);
->> +	if (ret < 0)
->> +		dev_err(regmap_get_device(data->regmap),
->> +			"Failed to disable power regulator: %d\n", ret);
->> +}
->> +
->> +static int mlx90632_enable_regulator(struct mlx90632_data *data)
->> +{
->> +	int ret;
->> +
->> +	ret = regulator_set_voltage(data->regulator, 3200000, 3600000);
->> +	if (ret < 0) {
-> Hmm. This can be problematic, as a valid option is for the a stub regulator to
-> have been returned.  Mostly for device where it is common for them to be wired
-> to fixed regulators, we just assume the firmware set the voltage correctly.
-> Ideally it provides a fixed (or controllable) regulator to make that clear.
+On Sat, Aug 06, 2022 at 08:27:19PM +0530, Manivannan Sadhasivam wrote:
+> On Thu, Aug 04, 2022 at 05:10:00PM +0200, Johan Hovold wrote:
+> > It is the Qualcomm glue wakeup interrupts that may be able to wake the
+> > system from suspend and this can now be described in the devicetree.
+> > 
+> > Move the wakeup-source property handling over from the core driver and
+> > instead propagate the capability setting to the core device during
+> > probe.
 
-Just to add to what Jonathan said. For configurable regulators the 
-allowed voltage values should be provided in the devicetree and the 
-regulator framework will set it automatically. See the 
-regulator-min-microvolt and regulator-max-microvolt DT properties.
+> The "wakeup-source" property is still defined in the DWC binding, so other
+> platform glue drivers are free to assume that wakeup capability is handled by
+> the DWC driver.
 
+No, just because the binding says that the hardware supports something
+doesn't mean it's implemented. And in this case it isn't.
+
+There's no core support for wakeup and this is just used to determine
+the PHY power state during suspend (see my reply to Matthias).
+
+But this is also why I initially suggested reverting the binding change
+until some platform actually turns out to need it.
+ 
+> > This is needed as there is currently no way for the core driver to query
+> > the wakeup setting of the glue device, but it is the core driver that
+> > manages the PHY power state during suspend.
+> > 
+> > Also don't leave the PHYs enabled when system wakeup has been disabled
+> > through sysfs.
+> > 
+> 
+> Can you please elaborate on how this is handled in the patch?
+
+Generally device_can_wakeup() should not be used to make policy
+decisions (e.g. whether to power of the PHYs) as this should be
+configurable through sysfs which is honoured by device_may_wakeup().
+
+But I'll revisit this in a couple of weeks. We should probably just
+revert the patch that made the PHY power state depend on
+device_can_wakeup() as it apparently isn't needed for wakeup at all.
+
+> > Fixes: 649f5c842ba3 ("usb: dwc3: core: Host wake up support from system suspend")
+> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> > ---
+> >  drivers/usb/dwc3/core.c      | 5 ++---
+> >  drivers/usb/dwc3/dwc3-qcom.c | 6 +++++-
+> >  2 files changed, 7 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+> > index 16d1f328775f..8c8e32651473 100644
+> > --- a/drivers/usb/dwc3/core.c
+> > +++ b/drivers/usb/dwc3/core.c
+> > @@ -1822,7 +1822,6 @@ static int dwc3_probe(struct platform_device *pdev)
+> >  
+> >  	platform_set_drvdata(pdev, dwc);
+> >  	dwc3_cache_hwparams(dwc);
+> > -	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
+> >  
+> >  	spin_lock_init(&dwc->lock);
+> >  	mutex_init(&dwc->mutex);
+> > @@ -1984,7 +1983,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+> >  		dwc3_core_exit(dwc);
+> >  		break;
+> >  	case DWC3_GCTL_PRTCAP_HOST:
+> > -		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
+> > +		if (!PMSG_IS_AUTO(msg) && !device_may_wakeup(dwc->dev)) {
+> >  			dwc3_core_exit(dwc);
+> >  			break;
+> >  		}
+> > @@ -2045,7 +2044,7 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
+> >  		spin_unlock_irqrestore(&dwc->lock, flags);
+> >  		break;
+> >  	case DWC3_GCTL_PRTCAP_HOST:
+> > -		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
+> > +		if (!PMSG_IS_AUTO(msg) && !device_may_wakeup(dwc->dev)) {
+> >  			ret = dwc3_core_init_for_resume(dwc);
+> >  			if (ret)
+> >  				return ret;
+> > diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
+> > index 6ae0b7fc4e2c..b05f67d206d2 100644
+> > --- a/drivers/usb/dwc3/dwc3-qcom.c
+> > +++ b/drivers/usb/dwc3/dwc3-qcom.c
+> > @@ -786,6 +786,7 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
+> >  	struct resource		*res, *parent_res = NULL;
+> >  	int			ret, i;
+> >  	bool			ignore_pipe_clk;
+> > +	bool			wakeup_source;
+> >  
+> >  	qcom = devm_kzalloc(&pdev->dev, sizeof(*qcom), GFP_KERNEL);
+> >  	if (!qcom)
+> > @@ -901,7 +902,10 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
+> >  	if (ret)
+> >  		goto interconnect_exit;
+> >  
+> > -	device_init_wakeup(&pdev->dev, 1);
+> > +	wakeup_source = of_property_read_bool(dev->of_node, "wakeup-source");
+> > +	device_init_wakeup(&pdev->dev, wakeup_source);
+> > +	device_init_wakeup(&qcom->dwc3->dev, wakeup_source);
+> > +
+> >  	qcom->is_suspended = false;
+> >  	pm_runtime_set_active(dev);
+> >  	pm_runtime_enable(dev);
+> > -- 
+> > 2.35.1
+
+Johan
