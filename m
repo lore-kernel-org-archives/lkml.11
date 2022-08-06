@@ -2,128 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C462CC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 18:48:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F51C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 18:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231831AbiHFSsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 14:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35194 "EHLO
+        id S232240AbiHFSuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 14:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiHFSsJ (ORCPT
+        with ESMTP id S231622AbiHFSuO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 14:48:09 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E82BEE35
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 11:48:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659811688; x=1691347688;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Okje35o8zphIxjWYc1UTy0Cy9NZrbkQKNfTcQc3CgoY=;
-  b=PGQLa/IsXSIK4Lr+gP1mRfeF+xLuiAaeKSchgLBRSjvIbVPc65Eui9fl
-   ByYG9qQQ+izDc6PICCcSJj9zch9neo1Uo2CqJpNXg8LnaNELlj6FEXoNk
-   sF00EjE0ln8bhj6UNEhk4YxSviBQFKIRmBk1Cd15ZE/MW3n3fixcRYdek
-   KRjNgvLC6HXOGKcjSSj9zPsOzshbGpTQ0wHbdYVZ6UwkqLujenHgwtbBJ
-   Y+Wfej/0njG3vNzi2qASxUaR14F7PH8pVcEug+51m6NvCWQHTdGLpN8mc
-   fNN08QdPerVtRqoUxyB9frwlwcS+QlKGeK+owJumDvTD+g1CDu0D30A0L
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="270771153"
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="270771153"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 11:48:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="579856691"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 06 Aug 2022 11:48:05 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oKOqC-000Kaj-2o;
-        Sat, 06 Aug 2022 18:48:04 +0000
-Date:   Sun, 7 Aug 2022 02:47:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Huacai Chen <chenhuacai@loongson.cn>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Marc Zyngier <maz@kernel.org>,
-        Jianmin Lv <lvjianmin@loongson.cn>
-Subject: drivers/irqchip/irq-loongson-pch-lpc.c:151:48: warning: 'struct
- acpi_madt_lpc_pic' declared inside parameter list will not be visible
- outside of this definition or declaration
-Message-ID: <202208070241.PSOaN69Y-lkp@intel.com>
+        Sat, 6 Aug 2022 14:50:14 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A79EB1;
+        Sat,  6 Aug 2022 11:50:13 -0700 (PDT)
+Date:   Sat, 06 Aug 2022 18:50:08 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1659811810;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ekJuun2JIKiWZ64hgvYRQtolLrVyhjiUSxg+2zROszc=;
+        b=tafUY8rhIxCLvwtBCZKmjxiyuqvAohyfbKPmlaRg85qgduKeKkKeDkoOW2tYUy7cvNswPx
+        myWetY3Yg17xYxB2TKYohqamCzAsOi0uN2zggntVzATDF6v1g+o1jq80YhkPu7XrpT43kE
+        p/u6ED7SNI8UKS2w1cgxcDUv5OkUABps5H+bfuQ9aqEs1a4I4duuRtWNTpHAsk2HXxAlCC
+        yU1GJ4/yIbTbN+VFqoaCz0qmR2joV66U73R+EREBZwFsy6EnCdjAWY0u+HIDO3iThm5pKD
+        xnOhzXEDNXotUnHPMiYjEyAiWX72J4b07gGhir6n4seN71WikBc7gJmu1PLqyQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1659811810;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ekJuun2JIKiWZ64hgvYRQtolLrVyhjiUSxg+2zROszc=;
+        b=voOo7D/DjemJCfPTKZPDhnQdTflVp2+hZ5X6ge/zwknqHt0f49bHJWvOxO2p+1gMGswObC
+        vsPt1wZ+38P8nQAg==
+From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/mm] x86/mm: Rename set_memory_present() to set_memory_p()
+Cc:     Borislav Petkov <bp@suse.de>, Ingo Molnar <mingo@kernel.org>,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220805140702.31538-1-bp@alien8.de>
+References: <20220805140702.31538-1-bp@alien8.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Message-ID: <165981180896.15455.6141778315507945390.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   6614a3c3164a5df2b54abb0b3559f51041cf705b
-commit: ee73f14ee9eb7e1a04051b303b56130c4dd6e048 irqchip: Add Loongson PCH LPC controller support
-date:   2 weeks ago
-config: mips-randconfig-r014-20220806 (https://download.01.org/0day-ci/archive/20220807/202208070241.PSOaN69Y-lkp@intel.com/config)
-compiler: mips64el-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ee73f14ee9eb7e1a04051b303b56130c4dd6e048
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout ee73f14ee9eb7e1a04051b303b56130c4dd6e048
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/irqchip/
+The following commit has been merged into the x86/mm branch of tip:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Commit-ID:     86af8230ce138e0423f43f6b104f3fa050aced6d
+Gitweb:        https://git.kernel.org/tip/86af8230ce138e0423f43f6b104f3fa050aced6d
+Author:        Borislav Petkov <bp@suse.de>
+AuthorDate:    Fri, 05 Aug 2022 16:07:02 +02:00
+Committer:     Ingo Molnar <mingo@kernel.org>
+CommitterDate: Sat, 06 Aug 2022 20:46:13 +02:00
 
-All warnings (new ones prefixed by >>):
+x86/mm: Rename set_memory_present() to set_memory_p()
 
->> drivers/irqchip/irq-loongson-pch-lpc.c:151:48: warning: 'struct acpi_madt_lpc_pic' declared inside parameter list will not be visible outside of this definition or declaration
-     151 |                                         struct acpi_madt_lpc_pic *acpi_pchlpc)
-         |                                                ^~~~~~~~~~~~~~~~~
->> drivers/irqchip/irq-loongson-pch-lpc.c:150:12: warning: no previous prototype for 'pch_lpc_acpi_init' [-Wmissing-prototypes]
-     150 | int __init pch_lpc_acpi_init(struct irq_domain *parent,
-         |            ^~~~~~~~~~~~~~~~~
-   In file included from include/linux/io.h:13,
-                    from arch/mips/include/asm/mips-cps.h:11,
-                    from arch/mips/include/asm/smp-ops.h:16,
-                    from arch/mips/include/asm/smp.h:21,
-                    from include/linux/smp.h:113,
-                    from include/linux/percpu.h:7,
-                    from include/linux/context_tracking_state.h:5,
-                    from include/linux/hardirq.h:5,
-                    from include/linux/interrupt.h:11,
-                    from drivers/irqchip/irq-loongson-pch-lpc.c:10:
-   drivers/irqchip/irq-loongson-pch-lpc.c: In function 'pch_lpc_acpi_init':
-   drivers/irqchip/irq-loongson-pch-lpc.c:164:41: error: invalid use of undefined type 'struct acpi_madt_lpc_pic'
-     164 |         priv->base = ioremap(acpi_pchlpc->address, acpi_pchlpc->size);
-         |                                         ^~
-   arch/mips/include/asm/io.h:180:23: note: in definition of macro 'ioremap'
-     180 |         ioremap_prot((offset), (size), _CACHE_UNCACHED)
-         |                       ^~~~~~
-   drivers/irqchip/irq-loongson-pch-lpc.c:164:63: error: invalid use of undefined type 'struct acpi_madt_lpc_pic'
-     164 |         priv->base = ioremap(acpi_pchlpc->address, acpi_pchlpc->size);
-         |                                                               ^~
-   arch/mips/include/asm/io.h:180:33: note: in definition of macro 'ioremap'
-     180 |         ioremap_prot((offset), (size), _CACHE_UNCACHED)
-         |                                 ^~~~
-   drivers/irqchip/irq-loongson-pch-lpc.c:188:38: error: invalid use of undefined type 'struct acpi_madt_lpc_pic'
-     188 |         fwspec.param[0] = acpi_pchlpc->cascade + GSI_MIN_PCH_IRQ;
-         |                                      ^~
-   drivers/irqchip/irq-loongson-pch-lpc.c:188:50: error: 'GSI_MIN_PCH_IRQ' undeclared (first use in this function)
-     188 |         fwspec.param[0] = acpi_pchlpc->cascade + GSI_MIN_PCH_IRQ;
-         |                                                  ^~~~~~~~~~~~~~~
-   drivers/irqchip/irq-loongson-pch-lpc.c:188:50: note: each undeclared identifier is reported only once for each function it appears in
+Have it adhere to the naming convention for those helpers.
 
+No functional changes.
 
-vim +151 drivers/irqchip/irq-loongson-pch-lpc.c
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/20220805140702.31538-1-bp@alien8.de
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+---
+ arch/x86/mm/pat/set_memory.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-   149	
- > 150	int __init pch_lpc_acpi_init(struct irq_domain *parent,
- > 151						struct acpi_madt_lpc_pic *acpi_pchlpc)
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index 1abd543..6a9043b 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -1944,7 +1944,7 @@ int set_mce_nospec(unsigned long pfn)
+ 	return rc;
+ }
+ 
+-static int set_memory_present(unsigned long *addr, int numpages)
++static int set_memory_p(unsigned long *addr, int numpages)
+ {
+ 	return change_page_attr_set(addr, numpages, __pgprot(_PAGE_PRESENT), 0);
+ }
+@@ -1954,7 +1954,7 @@ int clear_mce_nospec(unsigned long pfn)
+ {
+ 	unsigned long addr = (unsigned long) pfn_to_kaddr(pfn);
+ 
+-	return set_memory_present(&addr, 1);
++	return set_memory_p(&addr, 1);
+ }
+ EXPORT_SYMBOL_GPL(clear_mce_nospec);
+ #endif /* CONFIG_X86_64 */
