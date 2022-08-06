@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07199C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 11:14:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC59FC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 11:14:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238417AbiHFLOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 07:14:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35638 "EHLO
+        id S241744AbiHFLOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 07:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbiHFLOP (ORCPT
+        with ESMTP id S230011AbiHFLOP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 6 Aug 2022 07:14:15 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF4D11815
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9841180F
         for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 04:14:14 -0700 (PDT)
 Received: from dslb-188-097-043-167.188.097.pools.vodafone-ip.de ([188.97.43.167] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1oKHku-0001FX-7C; Sat, 06 Aug 2022 13:14:08 +0200
+        id 1oKHks-0001FX-6V; Sat, 06 Aug 2022 13:14:06 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,54 +28,36 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Pavel Skripkin <paskripkin@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH v2 2/5] staging: r8188eu: read status_code from struct ieee80211_mgmt
-Date:   Sat,  6 Aug 2022 13:13:49 +0200
-Message-Id: <20220806111352.690650-3-martin@kaiser.cx>
+Subject: [PATCH v2 0/5] staging: r8188eu: use struct ieee80211_mgmt in OnAssocRsp
+Date:   Sat,  6 Aug 2022 13:13:47 +0200
+Message-Id: <20220806111352.690650-1-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220806111352.690650-1-martin@kaiser.cx>
+In-Reply-To: <20220724153917.138848-1-martin@kaiser.cx>
 References: <20220724153917.138848-1-martin@kaiser.cx>
- <20220806111352.690650-1-martin@kaiser.cx>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Read the status code of the association response message from struct
-ieee80211_mgmt. This should be easier to understand and to review than
-calculating the offset manually.
+Use a struct ieee80211_mgmt in OnAssocRsp to read elements of the
+association response message. This should be easier than parsing the
+message manually.
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
----
 v2:
- - rewrite the commit message
+ - rewrite the commit messages to say to more clearly why (in my opinion)
+   the patches change the code for the better
 
- drivers/staging/r8188eu/core/rtw_mlme_ext.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+Martin Kaiser (5):
+  staging: r8188eu: replace a get_da call
+  staging: r8188eu: read status_code from struct ieee80211_mgmt
+  staging: r8188eu: read capability info from struct ieee80211_mgmt
+  staging: r8188eu: read aid from struct ieee80211_mgmt
+  staging: r8188eu: simplify the calculation of ie start offset
 
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-index f5f718488929..53444cb1dba9 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
-@@ -1323,7 +1323,6 @@ unsigned int OnAssocRsp(struct adapter *padapter, struct recv_frame *precv_frame
- 	struct ieee80211_mgmt *mgmt = (struct ieee80211_mgmt *)precv_frame->rx_data;
- 	uint i;
- 	int res;
--	unsigned short	status;
- 	struct ndis_802_11_var_ie *pIE;
- 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
- 	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
-@@ -1343,9 +1342,7 @@ unsigned int OnAssocRsp(struct adapter *padapter, struct recv_frame *precv_frame
- 
- 	_cancel_timer_ex(&pmlmeext->link_timer);
- 
--	/* status */
--	status = le16_to_cpu(*(__le16 *)(pframe + WLAN_HDR_A3_LEN + 2));
--	if (status > 0) {
-+	if (le16_to_cpu(mgmt->u.assoc_resp.status_code) > 0) {
- 		pmlmeinfo->state = WIFI_FW_NULL_STATE;
- 		res = -4;
- 		goto report_assoc_result;
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
+
 -- 
 2.30.2
 
