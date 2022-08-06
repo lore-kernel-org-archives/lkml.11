@@ -2,196 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F0FC00140
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 02:37:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B147C25B07
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 02:37:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241732AbiHFChL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 22:37:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49908 "EHLO
+        id S241743AbiHFChn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 22:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241607AbiHFCg4 (ORCPT
+        with ESMTP id S241760AbiHFCh1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 22:36:56 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00BF87B7BB;
-        Fri,  5 Aug 2022 19:36:53 -0700 (PDT)
-Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M063F0jgdz1M8Zr;
-        Sat,  6 Aug 2022 10:33:45 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 6 Aug 2022 10:36:50 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 6 Aug
- 2022 10:36:50 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
-CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wangzhou1@hisilicon.com>, <liulongfang@huawei.com>,
-        <yekai13@huawei.com>
-Subject: [PATCH v7 1/3] uacce: supports device isolation feature
-Date:   Sat, 6 Aug 2022 10:29:41 +0800
-Message-ID: <20220806022943.47292-2-yekai13@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220806022943.47292-1-yekai13@huawei.com>
-References: <20220806022943.47292-1-yekai13@huawei.com>
+        Fri, 5 Aug 2022 22:37:27 -0400
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3BD57D79F;
+        Fri,  5 Aug 2022 19:37:20 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 90A6A3200258;
+        Fri,  5 Aug 2022 22:37:16 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Fri, 05 Aug 2022 22:37:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        tom-fitzhenry.me.uk; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1659753436; x=1659839836; bh=J9ezvZ0JQJ
+        O1dlJa837b0h4jTt/Hm/8CN8x0Zq+RNAU=; b=WSZ/yw6DPDwosQZySxLcFrjyk+
+        kxZjH2XICwKYkFX0ctlMfqdyj26hNrW31YtgHXizkF6s7BG6kHvHjvNeW2wAuRRD
+        Tr/lFQRRTva3Zb0Vb33a4GPTcMZcJKQUCIQYmEYHckXoDsS+MRsnhXLkPlg4UnNI
+        Pc5W9lZtrnMPrZ/UKea/bIkQGI7k39MY1ddMTjEL3f8AwAPHjcNgk5jUldR7xv7U
+        N/tyxy3KB8upkEh1/Lv/qNv628MIARS8Y+qZhpieXdmCDHfc5Pzfm7ZV2XOwjl2C
+        7ZzEG5XgWjL4ZGcBMN74c/1w1U48h9n4Kd1IEWT6mAyCT+ws1y6WLnHOthFA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659753436; x=
+        1659839836; bh=J9ezvZ0JQJO1dlJa837b0h4jTt/Hm/8CN8x0Zq+RNAU=; b=e
+        gsWMca+5cPdJrEDfZ0xJxrp6qNDLiCWBffbmp4sFvXMmOYtgd2VgYVbS+bYoFWv1
+        op5CI4pux6HweZSHL286N1uvA3TMKiFMBN1md5UGiRDxO2vghXzrq8oTgyav1Two
+        Byi12Omr0sGfUiGF6adw41+Gufsfp5mQVN0y0PmTwkvOJZGKua2DJapgJYpgPz6x
+        ranh3u3NUTmu5D+UrO+d5laOdt36iHxkBL860pOXnJcOlkgNd11dwjwJ5wqsoxsj
+        kU2u3TpceTyuLdmfRu044KRn0vt+WXLoIrmZhNOW3ROhbMxpQ6R6ux8JlVcVrCWv
+        Eq0Y74QyrNVhvRtBEG1ng==
+X-ME-Sender: <xms:29PtYp2lRbPuku9hB3T-GEiYsjzaaKOntivDIUuyJMFxw7g9U_bdtg>
+    <xme:29PtYgGuJAKNfBsU5lfNx5c5S5fJYFHuq_qPlIFGbu0iLiMoXBGckXTSBbwKwjQpf
+    VF4-d7JKvq5a6ndzw>
+X-ME-Received: <xmr:29PtYp5UPxxqPmDbfpHqOtjaz0H6j9seo5uvXiBJhojVRQSsvB4_FanMCPPzBFV4Y0OlkME91X3kUxgLqY2MuK5L>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefvddgieduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefkffggfgfvvehfhffujggtgfesth
+    ejredttdefjeenucfhrhhomhepvfhomhcuhfhithiihhgvnhhrhicuoehtohhmsehtohhm
+    qdhfihhtiihhvghnrhihrdhmvgdruhhkqeenucggtffrrghtthgvrhhnpeetudelveejvd
+    ffjeevvdelvdffhefgueefgedtffevgeevudfgieegleeikeetudenucevlhhushhtvghr
+    ufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehtohhmsehtohhmqdhfihhtii
+    hhvghnrhihrdhmvgdruhhk
+X-ME-Proxy: <xmx:29PtYm1niDcVEXwJEQRnR63eQLB1iSITm9RPck6poEGsrkAnp5xypQ>
+    <xmx:29PtYsG7v0zu8fSbN0JgDqBVBZ70LcXxm-NKsqHr7Hn3KIDfRq5qow>
+    <xmx:29PtYn_zJOU_cnitYdQD1SU0dBZwgoslUmyxcFtLdPCXk4QusCWxZA>
+    <xmx:3NPtYgFacL4aJRTiYAfH8lIFBZMeqfbQWjN3r2iyhja_H7Y31i0f3w>
+Feedback-ID: iefc945ae:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 5 Aug 2022 22:37:11 -0400 (EDT)
+Message-ID: <9a168a20-1fd1-5d73-1d33-bd2f054d60d7@tom-fitzhenry.me.uk>
+Date:   Sat, 6 Aug 2022 12:37:08 +1000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.3
+To:     Caleb Connolly <kc@postmarketos.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, heiko@sntech.de
+Cc:     megi@xff.cz, martijn@brixit.nl, ayufan@ayufan.eu,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220805234411.303055-1-tom@tom-fitzhenry.me.uk>
+ <20220805234411.303055-4-tom@tom-fitzhenry.me.uk>
+ <f9cbc047-f30f-e711-3213-56fcbb7bbc8a@postmarketos.org>
+Content-Language: en-US
+From:   Tom Fitzhenry <tom@tom-fitzhenry.me.uk>
+Subject: Re: [PATCH v2 3/3] arm64: dts: rockchip: Add initial support for
+ Pine64 PinePhone Pro
+In-Reply-To: <f9cbc047-f30f-e711-3213-56fcbb7bbc8a@postmarketos.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UACCE adds the hardware error isolation API. Users can configure
-the isolation frequency by this sysfs node. UACCE reports the device
-isolate state to the user space. If the AER error frequency exceeds
-the value of setting for a certain period of time, the device will be
-isolated.
+On 6/8/22 12:10, Caleb Connolly wrote:
+> I was surprised to see this series, and this patch especially.
+> An almost ready to submit version of this patch with considerably more 
+> functionality has been sat around for a while but unfortunately never 
+> sent [1].
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
----
- drivers/misc/uacce/uacce.c | 58 ++++++++++++++++++++++++++++++++++++++
- include/linux/uacce.h      | 11 ++++++++
- 2 files changed, 69 insertions(+)
+Firstly, thank you for your review!
 
-diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-index 281c54003edc..41f454c89cd1 100644
---- a/drivers/misc/uacce/uacce.c
-+++ b/drivers/misc/uacce/uacce.c
-@@ -7,6 +7,8 @@
- #include <linux/slab.h>
- #include <linux/uacce.h>
- 
-+#define MAX_ERR_ISOLATE_COUNT		65535
-+
- static struct class *uacce_class;
- static dev_t uacce_devt;
- static DEFINE_MUTEX(uacce_mutex);
-@@ -339,12 +341,57 @@ static ssize_t region_dus_size_show(struct device *dev,
- 		       uacce->qf_pg_num[UACCE_QFRT_DUS] << PAGE_SHIFT);
- }
- 
-+static ssize_t isolate_show(struct device *dev,
-+			    struct device_attribute *attr, char *buf)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+
-+	if (!uacce->ops->get_isolate_state)
-+		return -ENODEV;
-+
-+	return sysfs_emit(buf, "%d\n", uacce->ops->get_isolate_state(uacce));
-+}
-+
-+static ssize_t isolate_strategy_show(struct device *dev,
-+				     struct device_attribute *attr, char *buf)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+	u32 val;
-+
-+	val = uacce->ops->isolate_strategy_read(uacce);
-+	if (val > MAX_ERR_ISOLATE_COUNT)
-+		return -EINVAL;
-+
-+	return sysfs_emit(buf, "%u\n", val);
-+}
-+
-+static ssize_t isolate_strategy_store(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf, size_t count)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+	unsigned long val;
-+	int ret;
-+
-+	if (kstrtoul(buf, 0, &val) < 0)
-+		return -EINVAL;
-+
-+	if (val > MAX_ERR_ISOLATE_COUNT)
-+		return -EINVAL;
-+
-+	ret = uacce->ops->isolate_strategy_write(uacce, val);
-+
-+	return ret ? ret : count;
-+}
-+
- static DEVICE_ATTR_RO(api);
- static DEVICE_ATTR_RO(flags);
- static DEVICE_ATTR_RO(available_instances);
- static DEVICE_ATTR_RO(algorithms);
- static DEVICE_ATTR_RO(region_mmio_size);
- static DEVICE_ATTR_RO(region_dus_size);
-+static DEVICE_ATTR_RO(isolate);
-+static DEVICE_ATTR_RW(isolate_strategy);
- 
- static struct attribute *uacce_dev_attrs[] = {
- 	&dev_attr_api.attr,
-@@ -353,6 +400,8 @@ static struct attribute *uacce_dev_attrs[] = {
- 	&dev_attr_algorithms.attr,
- 	&dev_attr_region_mmio_size.attr,
- 	&dev_attr_region_dus_size.attr,
-+	&dev_attr_isolate.attr,
-+	&dev_attr_isolate_strategy.attr,
- 	NULL,
- };
- 
-@@ -368,6 +417,15 @@ static umode_t uacce_dev_is_visible(struct kobject *kobj,
- 	    (!uacce->qf_pg_num[UACCE_QFRT_DUS])))
- 		return 0;
- 
-+	if (attr == &dev_attr_isolate_strategy.attr &&
-+	    (!uacce->ops->isolate_strategy_read ||
-+	     !uacce->ops->isolate_strategy_write))
-+		return 0;
-+
-+	if (attr == &dev_attr_isolate.attr &&
-+	    !uacce->ops->get_isolate_state)
-+		return 0;
-+
- 	return attr->mode;
- }
- 
-diff --git a/include/linux/uacce.h b/include/linux/uacce.h
-index 48e319f40275..69e8f238d80c 100644
---- a/include/linux/uacce.h
-+++ b/include/linux/uacce.h
-@@ -30,6 +30,9 @@ struct uacce_qfile_region {
-  * @is_q_updated: check whether the task is finished
-  * @mmap: mmap addresses of queue to user space
-  * @ioctl: ioctl for user space users of the queue
-+ * @get_isolate_state: get the device state after set the isolate strategy
-+ * @isolate_strategy_write: stored the isolate strategy to the device
-+ * @isolate_strategy_read: read the isolate strategy value from the device
-  */
- struct uacce_ops {
- 	int (*get_available_instances)(struct uacce_device *uacce);
-@@ -43,6 +46,9 @@ struct uacce_ops {
- 		    struct uacce_qfile_region *qfr);
- 	long (*ioctl)(struct uacce_queue *q, unsigned int cmd,
- 		      unsigned long arg);
-+	enum uacce_dev_state (*get_isolate_state)(struct uacce_device *uacce);
-+	int (*isolate_strategy_write)(struct uacce_device *uacce, u32 freq);
-+	u32 (*isolate_strategy_read)(struct uacce_device *uacce);
- };
- 
- /**
-@@ -57,6 +63,11 @@ struct uacce_interface {
- 	const struct uacce_ops *ops;
- };
- 
-+enum uacce_dev_state {
-+	UACCE_DEV_NORMAL,
-+	UACCE_DEV_ISOLATE,
-+};
-+
- enum uacce_q_state {
- 	UACCE_Q_ZOMBIE = 0,
- 	UACCE_Q_INIT,
--- 
-2.33.0
+I'm not sure why that other patch series has never been submitted. It 
+was prepared 3 months ago (unbeknownst to me, at the time of v1), but 
+since then has not been submitted.
 
+I would feel uncomfortable submitting that patch series, since I am not 
+familiar with parts of the full DT. In time I intend to be, but for now 
+I think we'd benefit from having a base DT mainlined, on top of which we 
+can iterate and parallelise.
+
+> According to the link below (and my own knowledge of PPP development) 
+> Kamil is the original author of this patch, both Kamil and Martijn 
+> created the initial version of the devicetree. Given that you're using 
+> their work as a base, Kamil's authorship should be respected in the 
+> patch you submit.
+
+I agree authorship is important, and thus Kamil, Martijn and Megi are 
+listed as Co-developed-by in this patch.
+
+> Their original patch [2] contained SoBs from them and Martijn, those are 
+> both missing below. Both of their signed-off-by tags should be added 
+> before this patch hits the mailing list, and the same for Ondrej. The 
+> order also seems wrong (Ondrej should be last before you).
+
+Yes, this patch's acceptance is blocked until all Co-developed-by 
+authors (Kamil, Martjin, Megi) provide their Signed-off-by to this patch.
+
+> Support for the volume keys, accelerometer, magnetometer, GPIO LEDs, 
+> touchscreen, modem codec and audio support are all missing here, but 
+> they're included in the patches you referenced. In their current state 
+> (see Martijn's commit [1] or my 5.19 rebase [3]) the DT for these 
+> components has been worked on by several people, tested by the larger 
+> user community, and are already supported in mainline. It seems strange 
+> not to include them and just leads to a bunch of extra busywork to add 
+> them back later. It's easy enough to drop any of these nodes during 
+> review if they become an issue.
+
+To keep this patch series light and easy-to-review, I'd be keen to keep 
+it as small as possible for now. This DT is >18 months old out-of-tree 
+(across multiple repos), so I think this minimal DT being mainlined is 
+an improvement over the status quo.
+
+The existing work that the community has done will still be useful, 
+albeit in future patch series. This DT just allows that future work to 
+be done iteratively, and in parallel.
+
+> With that being said, I've left some feedback below, with it addressed 
+> and the authorship/SoB situation sorted out:
+> 
+> Reviewed-by: Caleb Connolly <kc@postmarketos.org>
+
+Thank you for your comments, I appreciate your review! I will ensure v3 
+addresses those.
