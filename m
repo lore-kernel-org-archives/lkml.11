@@ -2,106 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79488C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 19:21:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46276C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 19:23:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232479AbiHFTVT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 15:21:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49688 "EHLO
+        id S232659AbiHFTXZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 15:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231543AbiHFTVR (ORCPT
+        with ESMTP id S231311AbiHFTXY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 15:21:17 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA43EDFAE
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 12:21:16 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id o22so7006416edc.10
-        for <linux-kernel@vger.kernel.org>; Sat, 06 Aug 2022 12:21:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=IvpqiVM93kaLEdGHsKbOaagoigi2QS2lVi4vBRtwFwM=;
-        b=kju+zoyF8aMauoVlb/IZeP8P1G+8El13hlduY6HY9vBD2EdzRAc+bEdKko5pVbLeaH
-         sFWy2yP3A7/mtu8ZIqeXE44zs/IttARZZ7hPh9aYrINrVrAuo8IWFTrCSslby4IJpLMy
-         wlZitDY+fRtIeV2xbzTtsOZyJloA+93LchxWMKR87bokFnSJGH52bjvhC9WkhBhmqOsX
-         iis803iyOvUiJaZ908JkcfMcpgqLA72IEexo59LaJjvGEqmnDUDoCvpia2b7x8H7Q7FR
-         CbxWDZgYgvdHteGCEgQ3XxeX52iGSqfZRdIq3A2Hz9x91h05M3Rhk9X2fRizQM1+BouN
-         mZjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :mime-version:content-disposition;
-        bh=IvpqiVM93kaLEdGHsKbOaagoigi2QS2lVi4vBRtwFwM=;
-        b=NZ55uC0OwMT4esQfoSrthB3UFsbz/Dxn/4QeV5mX3gZllRZGkn9jot1NhTWmDp/WQ+
-         iDRGkO2xvRrs0xEKIntSxZe4phAWRbJbp6zk1UYEriKP6QzZ7rcfi21VJIvR5uXcj2Nt
-         S/vAsFNu+qveoGP1oTGsK298CXPRFtI5myspfNqFU4uphDtxhngmYkbY/d49mzC6/6qI
-         72C31ss5vGDPC9OZKje+bzkXLcHZhW80T7LK8ehB5c46PQNVLI33kFjEOdT4HY/Gz4C5
-         lzpl8zEfrqda7khVKFGFWcl83Vw6T7rGTe0jBzVp/4ghDxltgWokN7LPZr0n6u3ClM5a
-         MgmA==
-X-Gm-Message-State: ACgBeo3SE3PlzGJ40l0K6b60OGhQLhCpYZ733z9n8ya62Ea6e34MyqbZ
-        pq4qVvMpEJUij+6CMRYm04Q=
-X-Google-Smtp-Source: AA6agR7Xk85UUvzalMHSrzxcmpT47uZAoGwYz7fLq45GsMHp/So49R1qGrfkswy7/uk//+bRN/Doyg==
-X-Received: by 2002:a05:6402:248d:b0:437:dd4c:e70e with SMTP id q13-20020a056402248d00b00437dd4ce70emr11445160eda.75.1659813675278;
-        Sat, 06 Aug 2022 12:21:15 -0700 (PDT)
-Received: from gmail.com (195-38-112-141.pool.digikabel.hu. [195.38.112.141])
-        by smtp.gmail.com with ESMTPSA id dm13-20020a05640222cd00b0043cb1a83c9fsm1898166edb.71.2022.08.06.12.21.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Aug 2022 12:21:14 -0700 (PDT)
-Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
-Date:   Sat, 6 Aug 2022 21:21:12 +0200
-From:   Ingo Molnar <mingo@kernel.org>
+        Sat, 6 Aug 2022 15:23:24 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138A1DFB2
+        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 12:23:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8034ECE0A52
+        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 19:23:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E734AC433C1;
+        Sat,  6 Aug 2022 19:23:18 +0000 (UTC)
+Date:   Sat, 6 Aug 2022 15:23:17 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
 To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: [GIT PULL] scheduler fixes
-Message-ID: <Yu6/KNcTRFCHIcW2@gmail.com>
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andreas Schwab <schwab@suse.de>,
+        jianchunfu <jianchunfu@cmss.chinamobile.com>
+Subject: Re: [GIT PULL] rtla: Updates for 5.20/6.0
+Message-ID: <20220806152317.2f2e59c4@gandalf.local.home>
+In-Reply-To: <CAHk-=wiiu13cO3NR5Ub3oW+V3iJoNwq67QM2Un7xcfNak8UdcA@mail.gmail.com>
+References: <20220803104936.7df810fd@gandalf.local.home>
+        <CAHk-=wh+e1qcCnEYJ3JRDVLNCYbJ=0u+Ts5bOYZnY3mX_k-hFA@mail.gmail.com>
+        <20220805124701.4b44195d@gandalf.local.home>
+        <12638499-5079-95b0-7861-fb06ef3d2522@kernel.org>
+        <CAHk-=wj3zXDnXUHb-EKAkk74GUixO8ojUZMt-rkTsXSxALpi_g@mail.gmail.com>
+        <20220806142203.3c133322@gandalf.local.home>
+        <CAHk-=wiTRbL22B=-SJ0fwqpiXZnGe2LGPs8DjToUk=ezKsKVjg@mail.gmail.com>
+        <20220806145159.686794d8@gandalf.local.home>
+        <CAHk-=wiiu13cO3NR5Ub3oW+V3iJoNwq67QM2Un7xcfNak8UdcA@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus,
+On Sat, 6 Aug 2022 12:05:52 -0700
+Linus Torvalds <torvalds@linux-foundation.org> wrote:
 
-Please pull the latest sched/urgent git tree from:
+> It looks very 90s to me. "cowsay" and all that..
+> 
+> But it's not like I care deeply about the retro look.
 
-   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched-urgent-2022-08-06
+I thought it would bring back some nostalgia. ;-)
 
-   # HEAD: 751d4cbc43879229dbc124afefe240b70fd29a85 sched/core: Do not requeue task on CPU excluded from cpus_mask
+As I'm pretty much the same age as you, it's probably why I tend to like it.
 
-Various fixes: a deadline scheduler fix, a migration fix, a Sparse fix and a comment fix.
-
- Thanks,
-
-	Ingo
-
------------------->
-Ben Dooks (1):
-      sched/rt: Fix Sparse warnings due to undefined rt.c declarations
-
-Ingo Molnar (1):
-      exit: Fix typo in comment: s/sub-theads/sub-threads
-
-Mel Gorman (1):
-      sched/core: Do not requeue task on CPU excluded from cpus_mask
-
-Waiman Long (1):
-      sched, cpuset: Fix dl_cpu_busy() panic due to empty cs->cpus_allowed
-
-
- include/linux/sched.h  |  2 +-
- kernel/cgroup/cpuset.c |  2 +-
- kernel/exit.c          |  2 +-
- kernel/sched/core.c    | 16 +++++++++++-----
- kernel/sched/sched.h   |  7 ++++---
- 5 files changed, 18 insertions(+), 11 deletions(-)
+-- Steve
