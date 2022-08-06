@@ -2,781 +2,279 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A5BC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 16:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F25A9C25B0C
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 16:35:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233766AbiHFQfB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 12:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54130 "EHLO
+        id S231608AbiHFQfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 12:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233784AbiHFQew (ORCPT
+        with ESMTP id S232240AbiHFQfM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 12:34:52 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB5C12D09;
-        Sat,  6 Aug 2022 09:34:48 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id h138so3959620iof.12;
-        Sat, 06 Aug 2022 09:34:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Gfq1n/wuYgapIwbivtKUtRCvzAKVIdhDjqRnf46x0Zc=;
-        b=Vas8N6w1SplzilUVraZNJ7Gn2whSKVUI+4nwDcCg8hlUFVGmzTMTMXtRz1xzVqHnsX
-         JTh5rMQSDl8MW1SNjE2Kn+cf8IC/CaDMfV+9VlsH6TTQesN3ruC7OkSOA2vZgU8UZXuR
-         9rCgjwW5jwKCQlDwFSAIDGj0n/b53tkc6tOGSqxGknbj7sQHnGH6Eg9XEO6SQqCG0dhf
-         xT8gk/pyo696iUt1k+8qsJ/KWXKGgEonmSDRy0+fLH2TH7y030aVu0ZNz+49s1ZMv6WZ
-         2GBwwRs2m8Y3L4Z1wSZIUNmNRolfskSk17NvQIcEFvFvtVRHqM0jhDIpC4lA2k6BPT3m
-         UBFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Gfq1n/wuYgapIwbivtKUtRCvzAKVIdhDjqRnf46x0Zc=;
-        b=pxY/VIh932TCNEwcdKKHGAPtesgJpc8MJwdRJOXSCO69G2+qAE/IKel/+lp4jXpMXT
-         yh0vflZn1XjeLDI/kj65/hGIlOaLaxncpjmvT3lUo0yxvRofAW0Zj85o6t7oDrmXexza
-         zDsZ2rcedrfSowsX4+TtlnwoIK5a7F2kmznHDgWZOcVgAZ+TH2cicmkfjh4awDYwzYrm
-         qtR43rv8iX0mtY8jF8DrbmE9jYuUdJAAmGubWRJzYOFZxtWH271YyyFDQU8ZJfy+TWKg
-         CtBqhCVCwrWOeIoTTyl26lRt3Y/goFp4WMXHZKs/EMQeVLz+/pYCM9YWqWJrKLcjOKLk
-         GrhA==
-X-Gm-Message-State: ACgBeo1c9E38W0QNvP2N6mwcsy9aqdKV58wOQpB4dONb9vK40hr9366j
-        n193vrsfEHVDEtRRGISBZvYJrRh9irvWFaP5
-X-Google-Smtp-Source: AA6agR5VHPa/gp2mHXXeXdVPZoY2As+2KWqxdCYnLrSVe7XS5PAFDuNNeELshvUvAg17WEQIzkBjnQ==
-X-Received: by 2002:a05:6638:3f16:b0:33f:52fb:3e28 with SMTP id ck22-20020a0566383f1600b0033f52fb3e28mr5128085jab.46.1659803688166;
-        Sat, 06 Aug 2022 09:34:48 -0700 (PDT)
-Received: from nergzd-desktop.localdomain (tor-exit-50.for-privacy.net. [185.220.101.50])
-        by smtp.gmail.com with ESMTPSA id a20-20020a056e020e1400b002de6fa0d0c0sm2908009ilk.63.2022.08.06.09.34.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Aug 2022 09:34:47 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Helge Deller <deller@gmx.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Michal Suchanek <msuchanek@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Wei Ming Chen <jj251510319013@gmail.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Tony Lindgren <tony@atomide.com>, linux-doc@vger.kernel.org,
-        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH v2 3/3] efi: earlycon: Add support for generic framebuffers and move to console subsystem
-Date:   Sat,  6 Aug 2022 19:32:24 +0300
-Message-Id: <20220806163255.10404-4-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220806163255.10404-1-markuss.broks@gmail.com>
-References: <20220806163255.10404-1-markuss.broks@gmail.com>
+        Sat, 6 Aug 2022 12:35:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C260B11451;
+        Sat,  6 Aug 2022 09:35:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5619FB80022;
+        Sat,  6 Aug 2022 16:35:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB396C433C1;
+        Sat,  6 Aug 2022 16:34:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659803700;
+        bh=o8ku1LqIPLZoCVCueo/vZQPcVuxTpLrbLUtyhua2psY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dDvgefIh3DrPi/2OYdCMYrIc1MOnrOKDVvKOauR0rkF2KjcYF00UK7eDd0Xr2Tta+
+         he0PoK8PZvIBlsJu3b3IS5ds3rahVgPaP6oOXs7r4ucGv4CghJ6sKxSGQ2Unbq6V/D
+         bh9tXgl8fVX7P1Lf00ak85FAlNoTkSRUAJgf43DMjikkX7LFnCKGbZj8kcOMxuggzC
+         GyIhIRdtBnqhG7Y62Hi8bKjiWSxHBGDHWarqJ8QGuropwEV3b6wYlKzODeY0TtXm6W
+         QYXIjUNy7KK/495Kn3J8ylYO6JRwzHw3fhcs7p4JMX2xtcYbwO3NbNHAHJ95LhiI9U
+         rh2igynmiAenw==
+Date:   Sat, 6 Aug 2022 17:45:20 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Julien Panis <jpanis@baylibre.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        lars@metafoo.de, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mranostay@ti.com, William Breathitt Gray <william.gray@linaro.org>
+Subject: Re: [PATCH v3 2/2] iio: time: capture-tiecap: capture driver
+ support for ECAP
+Message-ID: <20220806174520.0d27476e@jic23-huawei>
+In-Reply-To: <11b7436b-5c31-671e-ba77-435fe8e3b767@baylibre.com>
+References: <20220728175124.468461-1-jpanis@baylibre.com>
+        <20220728175124.468461-3-jpanis@baylibre.com>
+        <20220731164116.30e91f34@jic23-huawei>
+        <11b7436b-5c31-671e-ba77-435fe8e3b767@baylibre.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add early console support for generic linear framebuffer devices.
-This driver supports probing from cmdline early parameters
-or from the device-tree using information in simple-framebuffer node.
-The EFI functionality should be retained in whole.
-The driver was disabled on ARM because of a bug in early_ioremap
-implementation on ARM and on IA64 because of lack of early_memremap_prot.
+On Mon, 1 Aug 2022 16:08:02 +0200
+Julien Panis <jpanis@baylibre.com> wrote:
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- .../admin-guide/kernel-parameters.txt         |  12 +-
- MAINTAINERS                                   |   5 +
- drivers/firmware/efi/Kconfig                  |   7 +-
- drivers/firmware/efi/Makefile                 |   1 -
- drivers/firmware/efi/earlycon.c               | 246 --------------
- drivers/video/console/Kconfig                 |  11 +
- drivers/video/console/Makefile                |   1 +
- drivers/video/console/earlycon.c              | 305 ++++++++++++++++++
- 8 files changed, 332 insertions(+), 256 deletions(-)
- delete mode 100644 drivers/firmware/efi/earlycon.c
- create mode 100644 drivers/video/console/earlycon.c
+> On 31/07/2022 17:41, Jonathan Cameron wrote:
+> > On Thu, 28 Jul 2022 19:51:24 +0200
+> > Julien Panis <jpanis@baylibre.com> wrote:
+> >  
+> >> ECAP hardware on AM62x SoC supports capture feature. It can be used
+> >> to timestamp events (falling/rising edges) detected on signal input pin.
+> >>
+> >> This commit adds capture driver support for ECAP hardware on AM62x SoC.
+> >>
+> >> In the ECAP hardware, capture pin can also be configured to be in
+> >> PWM mode. Current implementation only supports capture operating mode.
+> >> Hardware also supports timebase sync between multiple instances, but
+> >> this driver supports simple independent capture functionality.
+> >>
+> >> Signed-off-by: Julien Panis <jpanis@baylibre.com>  
+> > Hi Julien,
+> >
+> > So this isn't the first ecap driver we've had proposed, but the previous
+> > one was a few years ago and never reached v2.
+> > https://lore.kernel.org/all/20200818153614.6438-1-dts86@cornell.edu/
+> >
+> > Honestly I can't remember much about it, but maybe the discussion around
+> > that will be worth a reread.  
+> 
+> Hi Jonathan, thank you for your review.
+> 
+> I read the discussion about previous attempt, before submitting this 
+> patch. There were
+> interesting comments indeed.
+> 
+> But in this previous attempt, only one-shot pulses were handled 
+> (moreover, global IRQ flag
+> was not cleared, so I'm not sure that IRQ could be raised more than once).
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 8090130b544b0701237a7b657a29c83c000a60f4..bccb1ac8978eb5cf7e2bb20834b1881b27040666 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1281,12 +1281,9 @@
- 			specified address. The serial port must already be
- 			setup and configured. Options are not yet supported.
- 
--		efifb,[options]
-+		efifb
- 			Start an early, unaccelerated console on the EFI
--			memory mapped framebuffer (if available). On cache
--			coherent non-x86 systems that use system memory for
--			the framebuffer, pass the 'ram' option so that it is
--			mapped with the correct attributes.
-+			memory mapped framebuffer (if available).
- 
- 		linflex,<addr>
- 			Use early console provided by Freescale LINFlexD UART
-@@ -1294,6 +1291,11 @@
- 			address must be provided, and the serial port must
- 			already be setup and configured.
- 
-+		simplefb,<addr>,<width>x<height>x<bpp>
-+			Use early console with simple framebuffer that is
-+			pre-initialized by firmware. A valid base address,
-+			width, height and pixel size must be provided.
-+
- 	earlyprintk=	[X86,SH,ARM,M68k,S390]
- 			earlyprintk=vga
- 			earlyprintk=sclp
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1fc9ead83d2aa3e60ccc4cfa8ee16df09ef579bf..af8b8e289483b6a264d477145061bd0e0ba34a25 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7033,6 +7033,11 @@ Q:	http://patchwork.linuxtv.org/project/linux-media/list/
- T:	git git://linuxtv.org/anttip/media_tree.git
- F:	drivers/media/tuners/e4000*
- 
-+EARLY CONSOLE FRAMEBUFFER DRIVER
-+M:	Markuss Broks <markuss.broks@gmail.com>
-+S:	Maintained
-+F:	drivers/video/console/earlycon.c
-+
- EARTH_PT1 MEDIA DRIVER
- M:	Akihiro Tsukada <tskd08@gmail.com>
- L:	linux-media@vger.kernel.org
-diff --git a/drivers/firmware/efi/Kconfig b/drivers/firmware/efi/Kconfig
-index 7aa4717cdcac46f91dd202f868c463388eb02735..ea76ccfb9bcd8ba44ddca06052eaa442ed6c30f7 100644
---- a/drivers/firmware/efi/Kconfig
-+++ b/drivers/firmware/efi/Kconfig
-@@ -259,10 +259,9 @@ config EFI_DISABLE_PCI_DMA
- 	  may be used to override this option.
- 
- config EFI_EARLYCON
--	def_bool y
--	depends on SERIAL_EARLYCON && !ARM && !IA64
--	select FONT_SUPPORT
--	select ARCH_USE_MEMREMAP_PROT
-+	bool "EFI early console support"
-+	select FB_EARLYCON
-+	default y
- 
- config EFI_CUSTOM_SSDT_OVERLAYS
- 	bool "Load custom ACPI SSDT overlay from an EFI variable"
-diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
-index c02ff25dd47707090a2ab86ee4f330e467f878f5..64eea61fbb43d76ec2d5416d467dfbb9aa21bda0 100644
---- a/drivers/firmware/efi/Makefile
-+++ b/drivers/firmware/efi/Makefile
-@@ -44,6 +44,5 @@ obj-$(CONFIG_ARM64)			+= $(arm-obj-y)
- riscv-obj-$(CONFIG_EFI)			:= efi-init.o riscv-runtime.o
- obj-$(CONFIG_RISCV)			+= $(riscv-obj-y)
- obj-$(CONFIG_EFI_CAPSULE_LOADER)	+= capsule-loader.o
--obj-$(CONFIG_EFI_EARLYCON)		+= earlycon.o
- obj-$(CONFIG_UEFI_CPER_ARM)		+= cper-arm.o
- obj-$(CONFIG_UEFI_CPER_X86)		+= cper-x86.o
-diff --git a/drivers/firmware/efi/earlycon.c b/drivers/firmware/efi/earlycon.c
-deleted file mode 100644
-index a52236e11e5f73ddea5bb1f42ca2ca7c42425dab..0000000000000000000000000000000000000000
---- a/drivers/firmware/efi/earlycon.c
-+++ /dev/null
-@@ -1,246 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/*
-- * Copyright (C) 2013 Intel Corporation; author Matt Fleming
-- */
--
--#include <linux/console.h>
--#include <linux/efi.h>
--#include <linux/font.h>
--#include <linux/io.h>
--#include <linux/kernel.h>
--#include <linux/serial_core.h>
--#include <linux/screen_info.h>
--
--#include <asm/early_ioremap.h>
--
--static const struct console *earlycon_console __initdata;
--static const struct font_desc *font;
--static u32 efi_x, efi_y;
--static u64 fb_base;
--static bool fb_wb;
--static void *efi_fb;
--
--/*
-- * EFI earlycon needs to use early_memremap() to map the framebuffer.
-- * But early_memremap() is not usable for 'earlycon=efifb keep_bootcon',
-- * memremap() should be used instead. memremap() will be available after
-- * paging_init() which is earlier than initcall callbacks. Thus adding this
-- * early initcall function early_efi_map_fb() to map the whole EFI framebuffer.
-- */
--static int __init efi_earlycon_remap_fb(void)
--{
--	/* bail if there is no bootconsole or it has been disabled already */
--	if (!earlycon_console || !(earlycon_console->flags & CON_ENABLED))
--		return 0;
--
--	efi_fb = memremap(fb_base, screen_info.lfb_size,
--			  fb_wb ? MEMREMAP_WB : MEMREMAP_WC);
--
--	return efi_fb ? 0 : -ENOMEM;
--}
--early_initcall(efi_earlycon_remap_fb);
--
--static int __init efi_earlycon_unmap_fb(void)
--{
--	/* unmap the bootconsole fb unless keep_bootcon has left it enabled */
--	if (efi_fb && !(earlycon_console->flags & CON_ENABLED))
--		memunmap(efi_fb);
--	return 0;
--}
--late_initcall(efi_earlycon_unmap_fb);
--
--static __ref void *efi_earlycon_map(unsigned long start, unsigned long len)
--{
--	pgprot_t fb_prot;
--
--	if (efi_fb)
--		return efi_fb + start;
--
--	fb_prot = fb_wb ? PAGE_KERNEL : pgprot_writecombine(PAGE_KERNEL);
--	return early_memremap_prot(fb_base + start, len, pgprot_val(fb_prot));
--}
--
--static __ref void efi_earlycon_unmap(void *addr, unsigned long len)
--{
--	if (efi_fb)
--		return;
--
--	early_memunmap(addr, len);
--}
--
--static void efi_earlycon_clear_scanline(unsigned int y)
--{
--	unsigned long *dst;
--	u16 len;
--
--	len = screen_info.lfb_linelength;
--	dst = efi_earlycon_map(y*len, len);
--	if (!dst)
--		return;
--
--	memset(dst, 0, len);
--	efi_earlycon_unmap(dst, len);
--}
--
--static void efi_earlycon_scroll_up(void)
--{
--	unsigned long *dst, *src;
--	u16 len;
--	u32 i, height;
--
--	len = screen_info.lfb_linelength;
--	height = screen_info.lfb_height;
--
--	for (i = 0; i < height - font->height; i++) {
--		dst = efi_earlycon_map(i*len, len);
--		if (!dst)
--			return;
--
--		src = efi_earlycon_map((i + font->height) * len, len);
--		if (!src) {
--			efi_earlycon_unmap(dst, len);
--			return;
--		}
--
--		memmove(dst, src, len);
--
--		efi_earlycon_unmap(src, len);
--		efi_earlycon_unmap(dst, len);
--	}
--}
--
--static void efi_earlycon_write_char(u32 *dst, unsigned char c, unsigned int h)
--{
--	const u32 color_black = 0x00000000;
--	const u32 color_white = 0x00ffffff;
--	const u8 *src;
--	int m, n, bytes;
--	u8 x;
--
--	bytes = BITS_TO_BYTES(font->width);
--	src = font->data + c * font->height * bytes + h * bytes;
--
--	for (m = 0; m < font->width; m++) {
--		n = m % 8;
--		x = *(src + m / 8);
--		if ((x >> (7 - n)) & 1)
--			*dst = color_white;
--		else
--			*dst = color_black;
--		dst++;
--	}
--}
--
--static void
--efi_earlycon_write(struct console *con, const char *str, unsigned int num)
--{
--	struct screen_info *si;
--	unsigned int len;
--	const char *s;
--	void *dst;
--
--	si = &screen_info;
--	len = si->lfb_linelength;
--
--	while (num) {
--		unsigned int linemax;
--		unsigned int h, count = 0;
--
--		for (s = str; *s && *s != '\n'; s++) {
--			if (count == num)
--				break;
--			count++;
--		}
--
--		linemax = (si->lfb_width - efi_x) / font->width;
--		if (count > linemax)
--			count = linemax;
--
--		for (h = 0; h < font->height; h++) {
--			unsigned int n, x;
--
--			dst = efi_earlycon_map((efi_y + h) * len, len);
--			if (!dst)
--				return;
--
--			s = str;
--			n = count;
--			x = efi_x;
--
--			while (n-- > 0) {
--				efi_earlycon_write_char(dst + x*4, *s, h);
--				x += font->width;
--				s++;
--			}
--
--			efi_earlycon_unmap(dst, len);
--		}
--
--		num -= count;
--		efi_x += count * font->width;
--		str += count;
--
--		if (num > 0 && *s == '\n') {
--			efi_x = 0;
--			efi_y += font->height;
--			str++;
--			num--;
--		}
--
--		if (efi_x + font->width > si->lfb_width) {
--			efi_x = 0;
--			efi_y += font->height;
--		}
--
--		if (efi_y + font->height > si->lfb_height) {
--			u32 i;
--
--			efi_y -= font->height;
--			efi_earlycon_scroll_up();
--
--			for (i = 0; i < font->height; i++)
--				efi_earlycon_clear_scanline(efi_y + i);
--		}
--	}
--}
--
--static int __init efi_earlycon_setup(struct earlycon_device *device,
--				     const char *opt)
--{
--	struct screen_info *si;
--	u16 xres, yres;
--	u32 i;
--
--	if (screen_info.orig_video_isVGA != VIDEO_TYPE_EFI)
--		return -ENODEV;
--
--	fb_base = screen_info.lfb_base;
--	if (screen_info.capabilities & VIDEO_CAPABILITY_64BIT_BASE)
--		fb_base |= (u64)screen_info.ext_lfb_base << 32;
--
--	fb_wb = opt && !strcmp(opt, "ram");
--
--	si = &screen_info;
--	xres = si->lfb_width;
--	yres = si->lfb_height;
--
--	/*
--	 * efi_earlycon_write_char() implicitly assumes a framebuffer with
--	 * 32 bits per pixel.
--	 */
--	if (si->lfb_depth != 32)
--		return -ENODEV;
--
--	font = get_default_font(xres, yres, -1, -1);
--	if (!font)
--		return -ENODEV;
--
--	efi_y = rounddown(yres, font->height) - font->height;
--	for (i = 0; i < (yres - efi_y) / font->height; i++)
--		efi_earlycon_scroll_up();
--
--	device->con->write = efi_earlycon_write;
--	earlycon_console = device->con;
--	return 0;
--}
--EARLYCON_DECLARE(efifb, efi_earlycon_setup);
-diff --git a/drivers/video/console/Kconfig b/drivers/video/console/Kconfig
-index 40c50fa2dd70c33a1549141b15e6cba721352d2d..8052507e058fce37f5a51058e58ae2eb10d9669a 100644
---- a/drivers/video/console/Kconfig
-+++ b/drivers/video/console/Kconfig
-@@ -69,6 +69,17 @@ config DUMMY_CONSOLE_ROWS
- 	  monitor.
- 	  Select 25 if you use a 640x480 resolution by default.
- 
-+config FB_EARLYCON
-+	bool "Generic framebuffer early console"
-+	depends on SERIAL_EARLYCON && !ARM && !IA64
-+	select FONT_SUPPORT
-+	select ARCH_USE_MEMREMAP_PROT
-+	help
-+	  Say Y here if you want early console support for firmware established
-+	  linear framebuffer. Unless you are using EFI framebuffer, you need to
-+	  specify framebuffer geometry and address in device-tree or in kernel
-+	  command line.
-+
- config FRAMEBUFFER_CONSOLE
- 	bool "Framebuffer Console support"
- 	depends on FB && !UML
-diff --git a/drivers/video/console/Makefile b/drivers/video/console/Makefile
-index db07b784bd2ccdcbffde933926ed5cee2bbbc7d4..7818faee587fc9c40b429617cfa224c0ccbc557c 100644
---- a/drivers/video/console/Makefile
-+++ b/drivers/video/console/Makefile
-@@ -9,4 +9,5 @@ obj-$(CONFIG_STI_CONSOLE)         += sticon.o sticore.o
- obj-$(CONFIG_VGA_CONSOLE)         += vgacon.o
- obj-$(CONFIG_MDA_CONSOLE)         += mdacon.o
- 
-+obj-$(CONFIG_FB_EARLYCON)         += earlycon.o
- obj-$(CONFIG_FB_STI)              += sticore.o
-diff --git a/drivers/video/console/earlycon.c b/drivers/video/console/earlycon.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..54436587e3db90034652dcc144669dca91b863d5
---- /dev/null
-+++ b/drivers/video/console/earlycon.c
-@@ -0,0 +1,305 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2013 Intel Corporation; author Matt Fleming
-+ * Copyright (C) 2022 Markuss Broks <markuss.broks@gmail.com>
-+ */
-+
-+#include <asm/early_ioremap.h>
-+#include <linux/console.h>
-+#include <linux/efi.h>
-+#include <linux/font.h>
-+#include <linux/io.h>
-+#include <linux/kernel.h>
-+#include <linux/mm.h>
-+#include <linux/of.h>
-+#include <linux/of_fdt.h>
-+#include <linux/serial_core.h>
-+#include <linux/screen_info.h>
-+
-+struct fb_earlycon {
-+	u32 x, y, curr_x, curr_y, depth, stride;
-+	size_t size;
-+	phys_addr_t phys_base;
-+	void __iomem *virt_base;
-+};
-+
-+static const struct console *earlycon_console __initconst;
-+static struct fb_earlycon info;
-+static const struct font_desc *font;
-+
-+static int __init simplefb_earlycon_remap_fb(void)
-+{
-+	unsigned long mapping;
-+	/* bail if there is no bootconsole or it has been disabled already */
-+	if (!earlycon_console || !(earlycon_console->flags & CON_ENABLED))
-+		return 0;
-+
-+	if (region_intersects(info.phys_base, info.size,
-+			      IORESOURCE_SYSTEM_RAM, IORES_DESC_NONE) == REGION_INTERSECTS)		
-+		mapping = MEMREMAP_WB;
-+	else
-+		mapping = MEMREMAP_WC;
-+
-+	info.virt_base = memremap(info.phys_base, info.size, mapping);
-+
-+	return info.virt_base ? 0 : -ENOMEM;
-+}
-+early_initcall(simplefb_earlycon_remap_fb);
-+
-+static int __init simplefb_earlycon_unmap_fb(void)
-+{
-+	/* unmap the bootconsole fb unless keep_bootcon has left it enabled */
-+	if (info.virt_base && !(earlycon_console->flags & CON_ENABLED))
-+		memunmap(info.virt_base);
-+	return 0;
-+}
-+late_initcall(simplefb_earlycon_unmap_fb);
-+
-+static __ref void *simplefb_earlycon_map(unsigned long start, unsigned long len)
-+{
-+	pgprot_t fb_prot;
-+
-+	if (info.virt_base)
-+		return info.virt_base + start;
-+
-+	fb_prot = PAGE_KERNEL;
-+	return early_memremap_prot(info.phys_base + start, len, pgprot_val(fb_prot));
-+}
-+
-+static __ref void simplefb_earlycon_unmap(void *addr, unsigned long len)
-+{
-+	if (info.virt_base)
-+		return;
-+
-+	early_memunmap(addr, len);
-+}
-+
-+static void simplefb_earlycon_clear_scanline(unsigned int y)
-+{
-+	unsigned long *dst;
-+	u16 len;
-+
-+	len = info.stride;
-+	dst = simplefb_earlycon_map(y * len, len);
-+	if (!dst)
-+		return;
-+
-+	memset(dst, 0, len);
-+	simplefb_earlycon_unmap(dst, len);
-+}
-+
-+static void simplefb_earlycon_scroll_up(void)
-+{
-+	unsigned long *dst, *src;
-+	u16 len;
-+	u32 i, height;
-+
-+	len = info.stride;
-+	height = info.y;
-+
-+	for (i = 0; i < height - font->height; i++) {
-+		dst = simplefb_earlycon_map(i * len, len);
-+		if (!dst)
-+			return;
-+
-+		src = simplefb_earlycon_map((i + font->height) * len, len);
-+		if (!src) {
-+			simplefb_earlycon_unmap(dst, len);
-+			return;
-+		}
-+
-+		memmove(dst, src, len);
-+
-+		simplefb_earlycon_unmap(src, len);
-+		simplefb_earlycon_unmap(dst, len);
-+	}
-+}
-+
-+static void simplefb_earlycon_write_char(u8 *dst, unsigned char c, unsigned int h)
-+{
-+	const u8 *src;
-+	int m, n, bytes;
-+	u8 x;
-+
-+	bytes = BITS_TO_BYTES(font->width);
-+	src = font->data + c * font->height * bytes + h * bytes;
-+
-+	for (m = 0; m < font->width; m++) {
-+		n = m % 8;
-+		x = *(src + m / 8);
-+		if ((x >> (7 - n)) & 1)
-+			memset(dst, 0xff, (info.depth / 8));
-+		else
-+			memset(dst, 0, (info.depth / 8));
-+		dst += (info.depth / 8);
-+	}
-+}
-+
-+static void
-+simplefb_earlycon_write(struct console *con, const char *str, unsigned int num)
-+{
-+	unsigned int len;
-+	const char *s;
-+	void *dst;
-+
-+	len = info.stride;
-+
-+	while (num) {
-+		unsigned int linemax;
-+		unsigned int h, count = 0;
-+
-+		for (s = str; *s && *s != '\n'; s++) {
-+			if (count == num)
-+				break;
-+			count++;
-+		}
-+
-+		linemax = (info.x - info.curr_x) / font->width;
-+		if (count > linemax)
-+			count = linemax;
-+
-+		for (h = 0; h < font->height; h++) {
-+			unsigned int n, x;
-+
-+			dst = simplefb_earlycon_map((info.curr_y + h) * len, len);
-+			if (!dst)
-+				return;
-+
-+			s = str;
-+			n = count;
-+			x = info.curr_x;
-+
-+			while (n-- > 0) {
-+				simplefb_earlycon_write_char(dst + (x * 4), *s, h);
-+				x += font->width;
-+				s++;
-+			}
-+
-+			simplefb_earlycon_unmap(dst, len);
-+		}
-+
-+		num -= count;
-+		info.curr_x += count * font->width;
-+		str += count;
-+
-+		if (num > 0 && *s == '\n') {
-+			info.curr_x = 0;
-+			info.curr_y += font->height;
-+			str++;
-+			num--;
-+		}
-+
-+		if (info.curr_x + font->width > info.x) {
-+			info.curr_x = 0;
-+			info.curr_y += font->height;
-+		}
-+
-+		if (info.curr_y + font->height > info.y) {
-+			u32 i;
-+
-+			info.curr_y -= font->height;
-+			simplefb_earlycon_scroll_up();
-+
-+			for (i = 0; i < font->height; i++)
-+				simplefb_earlycon_clear_scanline(info.curr_y + i);
-+		}
-+	}
-+}
-+
-+static int __init simplefb_earlycon_setup_common(struct earlycon_device *device,
-+						 const char *opt)
-+{
-+	int i;
-+
-+	info.size = info.x * info.y * (info.depth / 8);
-+
-+	font = get_default_font(info.x, info.y, -1, -1);
-+	if (!font)
-+		return -ENODEV;
-+
-+	info.curr_y = rounddown(info.y, font->height) - font->height;
-+	for (i = 0; i < (info.y - info.curr_y) / font->height; i++)
-+		simplefb_earlycon_scroll_up();
-+
-+	device->con->write = simplefb_earlycon_write;
-+	earlycon_console = device->con;
-+	return 0;
-+}
-+
-+static int __init simplefb_earlycon_setup(struct earlycon_device *device,
-+					  const char *opt)
-+{
-+	struct uart_port *port = &device->port;
-+	int ret;
-+
-+	if (!port->mapbase)
-+		return -ENODEV;
-+
-+	info.phys_base = port->mapbase;
-+
-+	ret = sscanf(device->options, "%ux%ux%u", &info.x, &info.y, &info.depth);
-+	if (ret != 3)
-+		return -ENODEV;
-+
-+	info.stride = info.x * (info.depth / 8);
-+
-+	return simplefb_earlycon_setup_common(device, opt);
-+}
-+
-+EARLYCON_DECLARE(simplefb, simplefb_earlycon_setup);
-+
-+#ifdef CONFIG_EFI_EARLYCON
-+static int __init simplefb_earlycon_setup_efi(struct earlycon_device *device,
-+					      const char *opt)
-+{
-+	if (screen_info.orig_video_isVGA != VIDEO_TYPE_EFI)
-+		return -ENODEV;
-+
-+	info.phys_base = screen_info.lfb_base;
-+	if (screen_info.capabilities & VIDEO_CAPABILITY_64BIT_BASE)
-+		info.phys_base |= (u64)screen_info.ext_lfb_base << 32;
-+
-+	info.x = screen_info.lfb_width;
-+	info.y = screen_info.lfb_height;
-+	info.depth = screen_info.lfb_depth;
-+	info.stride = screen_info.lfb_linelength;
-+
-+	return simplefb_earlycon_setup_common(device, opt);
-+}
-+
-+EARLYCON_DECLARE(efifb, simplefb_earlycon_setup_efi);
-+#endif
-+
-+#ifdef CONFIG_OF_EARLY_FLATTREE
-+static int __init simplefb_earlycon_setup_of(struct earlycon_device *device,
-+					     const char *opt)
-+{
-+	struct uart_port *port = &device->port;
-+	const __be32 *val;
-+
-+	if (!port->mapbase)
-+		return -ENODEV;
-+
-+	info.phys_base = port->mapbase;
-+
-+	val = of_get_flat_dt_prop(device->offset, "width", NULL);
-+	if (!val)
-+		return -ENODEV;
-+	info.x = be32_to_cpu(*val);
-+
-+	val = of_get_flat_dt_prop(device->offset, "height", NULL);
-+	if (!val)
-+		return -ENODEV;
-+	info.y = be32_to_cpu(*val);
-+
-+	val = of_get_flat_dt_prop(device->offset, "stride", NULL);
-+	if (!val)
-+		return -ENODEV;
-+	info.stride = be32_to_cpu(*val);
-+	info.depth = (info.stride / info.x) * 8;
-+
-+	return simplefb_earlycon_setup_common(device, opt);
-+}
-+
-+OF_EARLYCON_DECLARE(simplefb, "simple-framebuffer", simplefb_earlycon_setup_of);
-+#endif
--- 
-2.37.0
+:)
+
+> 
+> However, ECAP can be used to make time measurements for any type of 
+> "square waveform".
+> That's why I tried to make this event mode configurable. Besides, using 
+> a continuous mode allows
+> handling much more signal types (not only single pulses).
+
+Makes sense.
+
+> 
+> >
+> > The use of ABI here is unusual. So I'd definitely like to see some documentation
+> > probably as a file in the main kernel documentation to explain what the interface
+> > is an how that relates to what is being captured.  
+> 
+> OK, I will add some userspace documentation.
+> 
+> >
+> > First thing to note here is the channel type of IIO_INDEX is now not actually
+> > used any more because we moved all the relevant drivers over to the counter
+> > subsystem (and we failed to mark it deprecated).  
+> 
+> I evaluated this counter subsystem before starting development. Counting 
+> events is not "a priori"
+> the goal when using ECAP.
+> 
+> Nevertheless, maybe "counter_push_event" function could do the job. If I 
+> use counter API :
+> # Option 1 : CAP1/2/3/4 registers could be seen as 4 channels of the 
+> same counter...
+> but there are not channels, there are just sequential timestamps 
+> actually. So I'm afraid this leads
+> to misunderstanding for the user.
+> Moreover, the user will have to read several entries (counts 1/2/3/4) to 
+> gather timestamps from
+> the same input signal, which is not very convenient.
+> # Option 2 : Either CAP 1/2/3/4 events could be gathered in a single 
+> channel...but then it will not
+> be possible to configure their polarity (rising/falling edge) 
+> individually (unless I did
+> not understand well counter framework documentation).
+> 
+> So, even with counter framework, it will lead to some diverted use of 
+> the framwork, since ECAP
+> is a very specific hardware that do not fit 100% counter philosophy.
+> 
+> I admit that ECAP do not fit 100% IIO philosophy either.
+
+Understood.  +CC William to see if we can form a consensus on how
+at least which subsystem to hammer this into :)
+
+> 
+> Maybe misc API would be more relevant actually. Any opinion about it 
+> will be welcome. :-)
+
+It's possible we'll fall back to misc, but if at all possible it would
+be better to make whatever extensions are necessary to a subsystem so that
+other similar devices end up with a home in the long run.
+
+Key here is definitely documentation!
+
+> 
+> >
+> > Anyhow, I've reviewed below, but need docs to discuss this in depth.  In particular
+> > the mix of buffers and events interfaces is unlikely to be an acceptable path
+> > forwards.  
+> 
+> OK, I will consider alternatives.
+> 
+> >
+> > Jonathan
+A quick process comment.  If you agree with something in a review
+no need to say that. Just delete the relevant code block from your reply.
+Only need to discuss the other stuff!   Reviewers read a lot of email
+so cutting down the volume makes them less grumpy :)
+
+> >  
+> >> + * struct ecap_iio_data - IIO device data
+> >> + * @ev_idx:  event index (0 to 3 for CAP1 to CAP4)  
+> > That's a long way from standard ABI.  
+> 
+> OK, I will consider alternatives.
+
+We might to make new ABI though.   Need to discuss that against
+a description rather than finding it buried deep in code.
+One possibility is that we have an events only IIO device
+as perhaps this fits better int he events interface (the
+timestamp part is problematic though).
+> 
+> >  
+> >> + * @ev_time: falling/rising edge timestamp
+> >> + *
+
+...
+
+...
+
+> >> +static irqreturn_t ecap_iio_isr(int irq, void *dev_id)
+> >> +{
+> >> +	struct iio_dev *indio_dev = dev_id;
+> >> +	struct ecap_iio_dev *ecap_dev = iio_priv(indio_dev);
+> >> +	struct ecap_iio_data *ecap_data = &ecap_dev->data;
+> >> +	unsigned int clr = 0;
+> >> +	unsigned int flg;
+> >> +	unsigned int cap_time;
+> >> +	int i;
+> >> +
+> >> +	regmap_read(ecap_dev->regmap, ECAP_ECINT_EN_FLG_REG, &flg);
+> >> +
+> >> +	for (i = 0 ; i < ECAP_NB_CEVT ; i++) {
+> >> +		if (flg & ECAP_CEVT_FLG_BIT(i)) {
+> >> +			if (i < ECAP_NB_CAP) {
+> >> +				/*
+> >> +				 * Input signal edge detected
+> >> +				 * time_ns = 10^9 * time_cycles / clk_rate
+> >> +				 */
+> >> +				ecap_data->ev_idx = i;
+> >> +				regmap_read(ecap_dev->regmap, ECAP_CAP_REG(i), &cap_time);
+> >> +				ecap_data->ev_time = cap_time * NSEC_PER_SEC;
+> >> +				do_div(ecap_data->ev_time, ecap_dev->clk_rate);  
+> > Is there any attempt to align that timestamp with the iio clock used for software timestamps?  
+> 
+> No, this is not my goal. I just need to log hardware timestamp.
+> But I am not sure that I fully understand what you mean (?).
+
+IIO timestamps are meant to be useful for aligning multiple data sources. As such, where
+we have hardware timestamps we normally attempt to apply a calibration to them so that they
+map into the time base of the clocks used for IIO software timestamps.
+
+If that's not possible then we need to think how to indicate to userspace that these
+particular timestamps have a different meaning.
+
+> 
+> >> +			} else {
+> >> +				/* Counter overflow */
+> >> +				ecap_data->ev_idx = ECAP_OVF_VAL;
+> >> +				ecap_data->ev_time = 0;  
+> > Don't push it if you've lost data.  
+> 
+> This is not a lost data.
+
+> That was intentional (equivalent in counter subsystem would be 
+> COUNTER_EVENT_OVERFLOW).
+> For a long duration signal, user will be aware that counter overflow 
+> occurred (this can avoid misleading
+> consecutive timestamp interpretations).
+Handle that in software.  I assume the hardware is sensible enough to provide
+a mechanism to notify you about a single overflow? (so that you don't get a
+double overflow without knowing about it?)
+
+If so, use a software counter of larger size and have that not overflow.
+Typically a 64 bit counter will do fine for this for much longer than the
+device is likely to be running (unless this thing has very high clock rates).
+
+> Do you confirm that I should not push it ? Or maybe just explaining this 
+> overflow better ?
+
+It's not something userspace should ever need to know about.  We have
+he equivalent for Performance Monitoring Units (drivers/perf)
+There devices generally provide an overflow interrupt to allow us to
+keep track of how many overflows have occurred and hence out a timestamp
+that doesn't overflow often enough to matter.
+
+> 
+> >  
+> >> +			}
+> >> +			iio_push_to_buffers(indio_dev, ecap_data);
+> >> +
+> >> +			clr |= ECAP_CEVT_CLR_BIT(i);
+> >> +		}
+> >> +	}
+> >> +
+> >> +	clr |= ECAP_INT_CLR_BIT;
+> >> +	regmap_update_bits(ecap_dev->regmap, ECAP_ECINT_CLR_FRC_REG, ECAP_CEVT_CLR_MASK, clr);
+> >> +
+> >> +	return IRQ_HANDLED;
+> >> +}
+
+
+Thanks,
+
+Jonathan
+
 
