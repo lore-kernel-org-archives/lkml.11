@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D76AC00140
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89987C19F2D
 	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 02:00:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241351AbiHFCA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 22:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32838 "EHLO
+        id S241652AbiHFCAb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 22:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241414AbiHFCAW (ORCPT
+        with ESMTP id S241596AbiHFCAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 5 Aug 2022 22:00:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 872CD112A;
-        Fri,  5 Aug 2022 19:00:18 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC345F59;
+        Fri,  5 Aug 2022 19:00:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A34A96154A;
-        Sat,  6 Aug 2022 02:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 031ADC43143;
-        Sat,  6 Aug 2022 02:00:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5DD83B82B03;
+        Sat,  6 Aug 2022 02:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E3EC3C4347C;
+        Sat,  6 Aug 2022 02:00:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1659751216;
-        bh=ZIxiHkFiEIUrY1ILj4Xwfj7+I0APQsa+pmZOV1AKuRU=;
+        bh=86mZJ+nMM5Cyh2OyQ/06wcGAfFxbTlsvFCZrJRFt/Ik=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tCQRPOizblryM+diXpiTdUpOH6j6QyQidmXpBNsVdfEHETKGkhEAGlF2sufZA/nic
-         kAEar22dwZILK6yyMoEwqo9ZZisNxHxjfQ7hTjH+mwZ9OstznRGEYl9BlSsJ8+LD30
-         ThpYHzN8QMI8qz1sIoHW/J01i5YejvlgD+QPVLM3T3jeUcwUhkCDGmk1wy7F0RAn/L
-         AX3ogwGjGsUbLUdOfpMYg+DzqFs264gbh/I6yxQM1hv13q3W3S3axYWhNcHqs5F0fk
-         rWCFJlW6YsSsDeLxJPvHU3l61LyxPw7O+9BRxTMoJik6cpQEHLjy8IGKr1fqVZ2zcb
-         A30sJlnUhozjQ==
+        b=pok0Wae6JkFda1WsLE64WXBhdbcHJcclALA2UOUkkTr1Jb1kFzgh94o/bfXl5rrAD
+         YBks03UETYRZSXC3rX9MtwueylbsJmU5p/9xkXUCtbVFxrZY6U+6IfcABvWrbt3/WS
+         lr0q3+cKNN2QJLJyL84v7E77QJ0F5wMlAyMOggGOSGD1ym26FJr3GrmBhQsTvJVS9w
+         EOS6j0vAczxx7+6Nop17o5Uo1H4cGMpqJF+7W8vyXs+vYtIWMkZMVke3PyaA5RT68X
+         t6pBQFdQXX/XfHCDAajcYHrf1Y06KzTvM3q9WW5j/Nw+eBaOg73htzvcrMU45CHHaq
+         7PmUe9jKxcuaQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D57D9C43145;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CA60BC43146;
         Sat,  6 Aug 2022 02:00:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] bnxt_en: Remove duplicated include bnxt_devlink.c
+Subject: Re: [net PATCH v3] octeontx2-pf: Fix NIX_AF_TL3_TL2X_LINKX_CFG register
+ configuration
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165975121586.22545.9937072590593832868.git-patchwork-notify@kernel.org>
+Message-Id: <165975121582.22545.7917773898664631780.git-patchwork-notify@kernel.org>
 Date:   Sat, 06 Aug 2022 02:00:15 +0000
-References: <20220804003722.54088-1-yang.lee@linux.alibaba.com>
-In-Reply-To: <20220804003722.54088-1-yang.lee@linux.alibaba.com>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     michael.chan@broadcom.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        abaci@linux.alibaba.com
+References: <20220802142813.25031-1-naveenm@marvell.com>
+In-Reply-To: <20220802142813.25031-1-naveenm@marvell.com>
+To:     Naveen Mamindlapalli <naveenm@marvell.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sgoutham@marvell.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -58,19 +58,19 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu,  4 Aug 2022 08:37:22 +0800 you wrote:
-> bnxt_ethtool.h is included twice in bnxt_devlink.c,
-> remove one of them.
-> 
-> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=1817
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+On Tue, 2 Aug 2022 19:58:13 +0530 you wrote:
+> For packets scheduled to RPM and LBK, NIX_AF_PSE_CHANNEL_LEVEL[BP_LEVEL]
+> selects the TL3 or TL2 scheduling level as the one used for link/channel
+> selection and backpressure. For each scheduling queue at the selected
+> level: Setting NIX_AF_TL3_TL2(0..255)_LINK(0..12)_CFG[ENA] = 1 allows
+> the TL3/TL2 queue to schedule packets to a specified RPM or LBK link
+> and channel.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] bnxt_en: Remove duplicated include bnxt_devlink.c
-    https://git.kernel.org/netdev/net/c/07977a8a9e54
+  - [net,v3] octeontx2-pf: Fix NIX_AF_TL3_TL2X_LINKX_CFG register configuration
+    https://git.kernel.org/netdev/net/c/13c9f4dc102f
 
 You are awesome, thank you!
 -- 
