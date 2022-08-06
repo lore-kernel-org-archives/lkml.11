@@ -2,97 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD601C25B07
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 14:52:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C72D8C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 14:57:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231938AbiHFOv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 10:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
+        id S232161AbiHFO5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 10:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230211AbiHFOv5 (ORCPT
+        with ESMTP id S230114AbiHFO5a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 10:51:57 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10FC4101CB
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 07:51:55 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id p8so4952997plq.13
-        for <linux-kernel@vger.kernel.org>; Sat, 06 Aug 2022 07:51:55 -0700 (PDT)
+        Sat, 6 Aug 2022 10:57:30 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EAEDFBB
+        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 07:57:29 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id w14so4974556plp.9
+        for <linux-kernel@vger.kernel.org>; Sat, 06 Aug 2022 07:57:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=ZHZGZq6h+lUo2eCrK9NN33tawRm/nou4eWvVvyVV5/g=;
-        b=IBJCY8eQMmxSsTRzXC8fUR9mMTETadx7Dc7FFAwqZFyNrLd21rO/zwCCeRr3O4SsXU
-         rRPG0BDeoL5+W0aNiX5rhkC+XKA8YS4/LZr5KxNs/6ngYmStUJPywy459UgvTwoTUCq8
-         K3YDkmWP3h8cTknXLO8Ns0Sc9LPkFzKLyVYxZqRQtXVBBOdEegG5EtUs2PLPAUlPbRZy
-         5FYEtkqxHT7QPWyUy3n7AsLfsjhjEI6FeqD2b1IUy4RmvjgaXdSnj8Vy/MWW4nJaITNY
-         V3gfPD17xAHYLTAZ/0ihbLyddkJmNk7nChXr9zWbZf8dEOgL04rXZMclXiHMrHn50kB9
-         8lWQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Zp8ScE6+c88OFj3/AkcT1uLw5Dnq1hTT03Wi6C4EzHM=;
+        b=fHnoxmmpFeHcvoV1HH6LKTm8AASI2wIP6w2rlIGDoV0OLs+0N4DGfvoQx2xWXRkaaY
+         e7QKqzwuDF7MGltZD8M474UUSqQSpPE8SA8A2pnnbhF2h5M8hWrUYEXqKKtJ+k5pbGnI
+         oikkwgDdzYHTRRgYf/33zivy58FYZm1BLG5HyD0tuMOmQGvvTh2+ava1FURY6Wy3c60P
+         HXld4bjhrX/CwMCTRLWFIHtgYxhj7uzZrLYQcsR9yWzLKjM9HwddTrm+z3ZlnAPy/+au
+         dLiVJhWQGDZJO6NJ7Ddg3s042qpDjiRmrh9BleeTsoGPfqmQpV8928ymFG8HDuPH4Nxc
+         7Emw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=ZHZGZq6h+lUo2eCrK9NN33tawRm/nou4eWvVvyVV5/g=;
-        b=zpL54+KuA0JOiEY3nxgdja5w1o7KfXEoG7ui6lagZapWloTQZ0zbbaVp3FzCT7cRUv
-         SsTS4rjMgEx4EnKuTyjR7Jo+L7TUJOW1Ma07tHzMkcPUWP5NSOEXJtWeGpA/wbficcmA
-         7oWUsIFaJJ6JxuGjFxDjgmyXgQmmc49+h1NED6PE8n+uu6eNAbo3zGGYu99iFSC9hxUn
-         JqAso7F66o+CWf29PNs572H/gYiqDyZszfFCrI5lRnV5REiNaMEoRZbwz+x50fiRkKlh
-         9EIcIO9fpXzXbeLOIFe9ekY+gXAAuRD2vLj7Tj8kEOb3TbPdD6uz9UeET4ZQeqb2if3e
-         At4Q==
-X-Gm-Message-State: ACgBeo1Vxx6iXgzXHlHmmKuxa3wVdM1mXg4lp6+PhpYpZs3takFEUJ+p
-        Uv4+Dnt5DQMloEP9vBxCZLWDag==
-X-Google-Smtp-Source: AA6agR5tB1lfDWW5CK6g4gZATc2POoUrGVodj3DAFSvqGlbMXd9oczcdSfywNEA6LKlI4avxeOne+w==
-X-Received: by 2002:a17:902:bd08:b0:16d:4230:cb45 with SMTP id p8-20020a170902bd0800b0016d4230cb45mr11344547pls.59.1659797514464;
-        Sat, 06 Aug 2022 07:51:54 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id o187-20020a625ac4000000b0052ef9556f47sm1527411pfb.40.2022.08.06.07.51.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 06 Aug 2022 07:51:53 -0700 (PDT)
-Message-ID: <026c2c04-aec2-0a8c-ed96-f31ae0918b2e@kernel.dk>
-Date:   Sat, 6 Aug 2022 08:51:52 -0600
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Zp8ScE6+c88OFj3/AkcT1uLw5Dnq1hTT03Wi6C4EzHM=;
+        b=nlIsfF++Qyi8Dzp9U9LiMMpmIc2HNikEct/nRMviGTiYejkCflVdN6Z1Z7oQLUljTb
+         SQAPJa1mciWkNn4Im8yzqHYdFsiHZDObs/TYLVJrCBfAwC6RoIza6i0Sr97pAW2DLadr
+         WlXNH/vXg4bFI56VCHN4JK8LEDQojGFGRPbJypqfU4sLmJhYwzsw72RhuH5TdSSddJOC
+         eGalhzgGW836nWybTpyYNg4w4LX2B8MimekXsY53c5XRrmVxiWTg6YnSc16r5cb2SWIO
+         0HO61k3v03tYIgaNPVHLHnHhwYJ+pkAiYvWUl6O9ZuqOaEC8pxpBOreDRMcNNBonT5Vn
+         ATUg==
+X-Gm-Message-State: ACgBeo0BLguaRaOboy66SMfFfAVWWWCC4tQ3HMbtS0ShRqmCeFP3HhYN
+        aO9TOW/4HufG7+mEyDOG9ZDc
+X-Google-Smtp-Source: AA6agR4EEvWRlq/QQqKTal9guvRl28ZShkyfmd7akMs1njO/0hmq2B4MFXAaWfp3TkOQHhrWkOdaZA==
+X-Received: by 2002:a17:902:ec90:b0:16e:d8d8:c2db with SMTP id x16-20020a170902ec9000b0016ed8d8c2dbmr11377058plg.69.1659797848472;
+        Sat, 06 Aug 2022 07:57:28 -0700 (PDT)
+Received: from thinkpad ([117.202.188.20])
+        by smtp.gmail.com with ESMTPSA id o8-20020a1709026b0800b0016e2309bcf1sm5139998plk.13.2022.08.06.07.57.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Aug 2022 07:57:28 -0700 (PDT)
+Date:   Sat, 6 Aug 2022 20:27:19 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Johan Hovold <johan+linaro@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
+        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 8/9] usb: dwc3: qcom: fix wakeup implementation
+Message-ID: <20220806145719.GG14384@thinkpad>
+References: <20220804151001.23612-1-johan+linaro@kernel.org>
+ <20220804151001.23612-9-johan+linaro@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH RESEND 1/1] loop: introduce LO_FLAGS_NODEALLOC
-Content-Language: en-US
-To:     Zhang Boyang <zhangboyang.id@gmail.com>,
-        Christoph Hellwig <hch@lst.de>, linux-block@vger.kernel.org
-Cc:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Jan Kara <jack@suse.cz>, Ming Lei <ming.lei@redhat.com>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org
-References: <20220806114943.8754-1-zhangboyang.id@gmail.com>
- <20220806114943.8754-2-zhangboyang.id@gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20220806114943.8754-2-zhangboyang.id@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220804151001.23612-9-johan+linaro@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/6/22 5:49 AM, Zhang Boyang wrote:
-> Previously, for file-backed loop devices, REQ_OP_DISCARD and
-> REQ_OP_WRITE_ZEROES (without REQ_NOUNMAP) are implemented using
-> fallocate(FALLOC_FL_PUNCH_HOLE), which will cause the underlying file to
-> be sparse and disk space freed. The users have no choice to prevent this
-> this from happening.
+On Thu, Aug 04, 2022 at 05:10:00PM +0200, Johan Hovold wrote:
+> It is the Qualcomm glue wakeup interrupts that may be able to wake the
+> system from suspend and this can now be described in the devicetree.
 > 
-> This patch introduces LO_FLAGS_NODEALLOC. With this flag set,
-> REQ_OP_DISCARD and REQ_OP_WRITE_ZEROES are forced to use
-> fallocate(FALLOC_FL_ZERO_RANGE). The disk space of underlying file is
-> kept allocated. This is useful if users, for example, want to use a
-> preallocated file as the backing file.
+> Move the wakeup-source property handling over from the core driver and
+> instead propagate the capability setting to the core device during
+> probe.
+> 
 
-Just in terms of readability, I would prefer if NO_DEALLOC is used
-consistently rather than NODEALLOC. The latter reads more like
-node-alloc to me.
+The "wakeup-source" property is still defined in the DWC binding, so other
+platform glue drivers are free to assume that wakeup capability is handled by
+the DWC driver.
+
+> This is needed as there is currently no way for the core driver to query
+> the wakeup setting of the glue device, but it is the core driver that
+> manages the PHY power state during suspend.
+> 
+> Also don't leave the PHYs enabled when system wakeup has been disabled
+> through sysfs.
+> 
+
+Can you please elaborate on how this is handled in the patch?
+
+Thanks,
+Mani
+
+> Fixes: 649f5c842ba3 ("usb: dwc3: core: Host wake up support from system suspend")
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> ---
+>  drivers/usb/dwc3/core.c      | 5 ++---
+>  drivers/usb/dwc3/dwc3-qcom.c | 6 +++++-
+>  2 files changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+> index 16d1f328775f..8c8e32651473 100644
+> --- a/drivers/usb/dwc3/core.c
+> +++ b/drivers/usb/dwc3/core.c
+> @@ -1822,7 +1822,6 @@ static int dwc3_probe(struct platform_device *pdev)
+>  
+>  	platform_set_drvdata(pdev, dwc);
+>  	dwc3_cache_hwparams(dwc);
+> -	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
+>  
+>  	spin_lock_init(&dwc->lock);
+>  	mutex_init(&dwc->mutex);
+> @@ -1984,7 +1983,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+>  		dwc3_core_exit(dwc);
+>  		break;
+>  	case DWC3_GCTL_PRTCAP_HOST:
+> -		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
+> +		if (!PMSG_IS_AUTO(msg) && !device_may_wakeup(dwc->dev)) {
+>  			dwc3_core_exit(dwc);
+>  			break;
+>  		}
+> @@ -2045,7 +2044,7 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
+>  		spin_unlock_irqrestore(&dwc->lock, flags);
+>  		break;
+>  	case DWC3_GCTL_PRTCAP_HOST:
+> -		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
+> +		if (!PMSG_IS_AUTO(msg) && !device_may_wakeup(dwc->dev)) {
+>  			ret = dwc3_core_init_for_resume(dwc);
+>  			if (ret)
+>  				return ret;
+> diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
+> index 6ae0b7fc4e2c..b05f67d206d2 100644
+> --- a/drivers/usb/dwc3/dwc3-qcom.c
+> +++ b/drivers/usb/dwc3/dwc3-qcom.c
+> @@ -786,6 +786,7 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
+>  	struct resource		*res, *parent_res = NULL;
+>  	int			ret, i;
+>  	bool			ignore_pipe_clk;
+> +	bool			wakeup_source;
+>  
+>  	qcom = devm_kzalloc(&pdev->dev, sizeof(*qcom), GFP_KERNEL);
+>  	if (!qcom)
+> @@ -901,7 +902,10 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		goto interconnect_exit;
+>  
+> -	device_init_wakeup(&pdev->dev, 1);
+> +	wakeup_source = of_property_read_bool(dev->of_node, "wakeup-source");
+> +	device_init_wakeup(&pdev->dev, wakeup_source);
+> +	device_init_wakeup(&qcom->dwc3->dev, wakeup_source);
+> +
+>  	qcom->is_suspended = false;
+>  	pm_runtime_set_active(dev);
+>  	pm_runtime_enable(dev);
+> -- 
+> 2.35.1
+> 
 
 -- 
-Jens Axboe
-
+மணிவண்ணன் சதாசிவம்
