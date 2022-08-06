@@ -2,116 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D5EC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 14:09:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53BC8C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 14:14:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231582AbiHFOJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 10:09:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34130 "EHLO
+        id S231288AbiHFOOF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 10:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231272AbiHFOJA (ORCPT
+        with ESMTP id S229983AbiHFOOD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 10:09:00 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC69111A1B
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 07:08:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659794939; x=1691330939;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Wy9tQj2vVx6PdmRmRCDoXdkzsYBBuX6j+8FMZufhnWg=;
-  b=UdZfXoK/FsIS3KpWEcHb+XS8B7irsFZXnJAUFjI0JJJdNVkE4X7AE96M
-   KWhmcngMYuwGlob2+zbRoRf7DWZiF9PkmESLc5Qmvj6HTXZSuuedL88wJ
-   DUw3T1s/ZmtZJEAQTcSS9ZZTdTwvH5oFmvuFj87bS4iNLeQzxtB+cojXk
-   6MdlSl+m7CxEBkNsGOQqOjW4Aoed5EZau6HSrd3dPyfMf2uaSeR4RzX7T
-   GCWdrnpZSaTI9vuiisZ5q5QqTaysCyymwRalvPLM57SlODpGXj2JdrEWM
-   SX6Hvl91Onv0mvMeyCJ4+mSi0Az7Fo6oBdL0qZGGfL6poQe+dp5fJRjkW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="289126975"
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="289126975"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 07:08:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="579820314"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 06 Aug 2022 07:08:58 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oKKU5-000KQB-1h;
-        Sat, 06 Aug 2022 14:08:57 +0000
-Date:   Sat, 6 Aug 2022 22:08:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Janne Grunau <j@jannau.net>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Hector Martin <marcan@marcan.st>
-Subject: [asahilinux:bits/090-spi-hid 11/21]
- drivers/hid/spi-hid/spi-hid-apple-core.c:259:22: warning: no previous
- prototype for 'spihid_get_data'
-Message-ID: <202208062244.g28920ao-lkp@intel.com>
+        Sat, 6 Aug 2022 10:14:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA79311A22;
+        Sat,  6 Aug 2022 07:14:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4692761045;
+        Sat,  6 Aug 2022 14:14:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2994C433C1;
+        Sat,  6 Aug 2022 14:13:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659795241;
+        bh=TcspVgJMCYgRJe1eMgJY0EQUSYj1o9t3RcgqBFaD6jM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=E7HEm/cxP5ga25D9GTx/My1OddhV+gPSXfH+W3eQVgvrbODGwJzexiZDm6N5Kko/f
+         Z/MXzV1bm2Ls0ps/zf82Cp4Vv04LNzyKlB26JVREqMJ5+RqDOx0NDmrle4rjhkn0uX
+         d975ui65x8MuEfkUD/WzuURxnUlHBsGOAaF5UpGc65zwRFaKA7ezax1DQRfxiPBfiG
+         NU7OX9GyLJISqj6Iopd3mhmvsgAqad4+NgYBsKFFHs6mP0kp5Qz6OYsy7r26J0cOf1
+         9G1t+ke+oeCw1F/GpD+CWomewHuvRJSatpJF2YALZmnIwU0klyBWq7U4EHhG7g+/Vp
+         cBxH7bjBGcpAA==
+Date:   Sat, 6 Aug 2022 15:24:19 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Marijn Suijten <marijn.suijten@somainline.org>
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 2/5] iio: adc: qcom-spmi-adc5: Add missing
+ VCOIN/GPIO[134] channels
+Message-ID: <20220806152419.15a578be@jic23-huawei>
+In-Reply-To: <20220805135729.1037079-3-marijn.suijten@somainline.org>
+References: <20220805135729.1037079-1-marijn.suijten@somainline.org>
+        <20220805135729.1037079-3-marijn.suijten@somainline.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux bits/090-spi-hid
-head:   740efddf69b264d6439f9cf124d36acab812dd39
-commit: 80d39405629267931171cbca14121b266e8d9152 [11/21] WIP: HID: transport: spi: add Apple SPI transport
-config: parisc64-allyesconfig (https://download.01.org/0day-ci/archive/20220806/202208062244.g28920ao-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/AsahiLinux/linux/commit/80d39405629267931171cbca14121b266e8d9152
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux bits/090-spi-hid
-        git checkout 80d39405629267931171cbca14121b266e8d9152
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash drivers/hid/ drivers/net/ethernet/aquantia/atlantic/ sound/soc/codecs/
+On Fri,  5 Aug 2022 15:57:26 +0200
+Marijn Suijten <marijn.suijten@somainline.org> wrote:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> These channels are specified in downstream kernels [1] and actively used
+> by e.g. the Sony Seine platform on the SM6125 SoC.  Note that GPIO2
+> isn't used on this platform and, while the definition downstream is
+> identical to the other GPIOx_100K_PU definitions, has been omitted for
+> lack of proper testing.
+> 
+> [1]: https://source.codeaurora.org/quic/la/kernel/msm-4.14/tree/drivers/iio/adc/qcom-spmi-adc5.c?h=LA.UM.7.11.r1-05200-NICOBAR.0#n688
+> 
+> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Applied to the togreg branch of iio.git.  Note that I'll only push it out as testing
+for now as I plan to rebase after rc1 is available.
 
-All warnings (new ones prefixed by >>):
+Thanks,
 
->> drivers/hid/spi-hid/spi-hid-apple-core.c:259:22: warning: no previous prototype for 'spihid_get_data' [-Wmissing-prototypes]
-     259 | struct spihid_apple *spihid_get_data(struct spihid_interface *idev)
-         |                      ^~~~~~~~~~~~~~~
---
->> drivers/hid/spi-hid/spi-hid-apple-of.c:24:5: warning: no previous prototype for 'spihid_apple_of_power_on' [-Wmissing-prototypes]
-      24 | int spihid_apple_of_power_on(struct spihid_apple_ops *ops)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/hid/spi-hid/spi-hid-apple-of.c:40:5: warning: no previous prototype for 'spihid_apple_of_power_off' [-Wmissing-prototypes]
-      40 | int spihid_apple_of_power_off(struct spihid_apple_ops *ops)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/hid/spi-hid/spi-hid-apple-of.c:50:5: warning: no previous prototype for 'spihid_apple_of_enable_irq' [-Wmissing-prototypes]
-      50 | int spihid_apple_of_enable_irq(struct spihid_apple_ops *ops)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/hid/spi-hid/spi-hid-apple-of.c:59:5: warning: no previous prototype for 'spihid_apple_of_disable_irq' [-Wmissing-prototypes]
-      59 | int spihid_apple_of_disable_irq(struct spihid_apple_ops *ops)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+Jonathan
 
+> ---
+>  drivers/iio/adc/qcom-spmi-adc5.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
+> index 87438d1e5c0b..0dc4fe612433 100644
+> --- a/drivers/iio/adc/qcom-spmi-adc5.c
+> +++ b/drivers/iio/adc/qcom-spmi-adc5.c
+> @@ -526,6 +526,8 @@ static const struct adc5_channels adc5_chans_pmic[ADC5_MAX_CHANNEL] = {
+>  					SCALE_HW_CALIB_DEFAULT)
+>  	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 1,
+>  					SCALE_HW_CALIB_DEFAULT)
+> +	[ADC5_VCOIN]		= ADC5_CHAN_VOLT("vcoin", 1,
+> +					SCALE_HW_CALIB_DEFAULT)
+>  	[ADC5_DIE_TEMP]		= ADC5_CHAN_TEMP("die_temp", 0,
+>  					SCALE_HW_CALIB_PMIC_THERM)
+>  	[ADC5_USB_IN_I]		= ADC5_CHAN_VOLT("usb_in_i_uv", 0,
+> @@ -549,6 +551,12 @@ static const struct adc5_channels adc5_chans_pmic[ADC5_MAX_CHANNEL] = {
+>  					SCALE_HW_CALIB_THERM_100K_PULLUP)
+>  	[ADC5_AMUX_THM2]	= ADC5_CHAN_TEMP("amux_thm2", 0,
+>  					SCALE_HW_CALIB_PM5_SMB_TEMP)
+> +	[ADC5_GPIO1_100K_PU]	= ADC5_CHAN_TEMP("gpio1_100k_pu", 0,
+> +					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> +	[ADC5_GPIO3_100K_PU]	= ADC5_CHAN_TEMP("gpio3_100k_pu", 0,
+> +					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> +	[ADC5_GPIO4_100K_PU]	= ADC5_CHAN_TEMP("gpio4_100k_pu", 0,
+> +					SCALE_HW_CALIB_THERM_100K_PULLUP)
+>  };
+>  
+>  static const struct adc5_channels adc7_chans_pmic[ADC5_MAX_CHANNEL] = {
 
-vim +/spihid_get_data +259 drivers/hid/spi-hid/spi-hid-apple-core.c
-
-   258	
- > 259	struct spihid_apple *spihid_get_data(struct spihid_interface *idev)
-   260	{
-   261		switch (idev->id) {
-   262		case SPIHID_DEVICE_ID_KBD:
-   263			return container_of(idev, struct spihid_apple, kbd);
-   264		case SPIHID_DEVICE_ID_TP:
-   265			return container_of(idev, struct spihid_apple, tp);
-   266		default:
-   267			return NULL;
-   268		}
-   269	}
-   270	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
