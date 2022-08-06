@@ -2,187 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4B99C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 12:24:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 054BBC19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 12:26:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231856AbiHFMY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 08:24:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41250 "EHLO
+        id S230085AbiHFMZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 08:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231371AbiHFMYK (ORCPT
+        with ESMTP id S229927AbiHFMZ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 08:24:10 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E661056F;
-        Sat,  6 Aug 2022 05:24:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1659788631;
-        bh=lELR8WYbBOTLMAY/ROaaXRuZyiwAFpzcRRcD1yGmR+U=;
-        h=X-UI-Sender-Class:From:To:Subject:Date:In-Reply-To:References;
-        b=WyehE8w1Jhfb7cmxf4r8c8mKj31OCf5NW+Kp+QP2am6/6DhXUOSZw6s6+iTRK7i2Y
-         rKVfEXTH4O+4nNKfRWQgZAkHpLLJBZgCFcKMPhi/WxHeQTnOnEkSIkhhZTq3wwtXE/
-         mm6hPmTT8zmbcf70eNsaPwtINlweqRt9dNU09GSQ=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from p100.fritz.box ([92.116.170.46]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MyKDe-1nUe3m3znY-00ygrT; Sat, 06
- Aug 2022 14:23:51 +0200
-From:   Helge Deller <deller@gmx.de>
-To:     linux-s390@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        x86@kernel.org, linux-arm-kernel@lists.infradead.org,
-        Josh Triplett <josh@joshtriplett.org>,
-        linux-fsdevel@vger.kernel.org
-Subject: [PATCH v2 2/3] lib/dump_stack: Add dump_stack_print_cmdline() and wire up in dump_stack_print_info()
-Date:   Sat,  6 Aug 2022 14:23:47 +0200
-Message-Id: <20220806122348.82584-3-deller@gmx.de>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220806122348.82584-1-deller@gmx.de>
-References: <20220806122348.82584-1-deller@gmx.de>
+        Sat, 6 Aug 2022 08:25:57 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 464152613
+        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 05:25:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659788757; x=1691324757;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=g7psvbIbxejckfZseovXpRiOXtpRWvckpSLypWUTg7M=;
+  b=Gd6OaO8X+d4dHPhEeO+X2nR2g1UfLJq/I5C0Jpb3nHPhqew8ra0aSzcs
+   i1uc+5WZj4LHXwIdi2FcJKC8k97qBpjkMZKkDGXdg5Ans5tV4E47qf42f
+   RRNFUUFGJ8J1RuvUHHf6oGNzLzD+bR4QRT8ZW7qGilx7xJubGGZniwTNZ
+   ET4R6KjAFXw0GyczSppEb5o8upFmgkBHKzmOnjyms2SQyYkf0z3NKRPpI
+   0KVp/sqUl7HZsNWsXq+P24XeaCCpWYUiDPnpnw9rTbA0z3On3mguKh0bU
+   S5AXIqwulKKLsiZI75ZgQBbCMRg+JMPuR49O9g2BZYy/co7pRmnrDIhVi
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="376658333"
+X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
+   d="scan'208";a="376658333"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 05:25:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
+   d="scan'208";a="636786267"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 06 Aug 2022 05:25:55 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oKIsN-000KLx-0P;
+        Sat, 06 Aug 2022 12:25:55 +0000
+Date:   Sat, 6 Aug 2022 20:25:08 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andi Kleen <ak@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Subject: [intel-tdx:guest-hardening-rebased 16/23]
+ arch/x86/coco/tdx/tdx.c:531:15: warning: no previous prototype for
+ 'tdx_mmio_readq'
+Message-ID: <202208062038.xHmGD2TI-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:BialK5Gr6LY7i1wCJNhco7oXVVXlstreH3iQsxuzTtOakZOQe2F
- vaS/im2YcOCpaEPRnRhbwznsplhtoaQSv9+CnR8fhlHCyatnsnlA0W+ZsXyuLT3WuOa8/1s
- Je6ndthUB5LhqHBWmvC9Bs0YLneOfnYNLV77EF8VVLuieKytfZKrNg70+qqTKD8YXHgCVzQ
- /Op2Ok+TusjWlOroTn0dQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Mu3f6I4mzLw=:zjKIeXJ7YvUUYkQQndV98C
- Jh5XEN7sYnVdh0dFdTGaM76btoqfgn2XjywmBvgmEuoGYsto9NV1HO/07crZkwtG8F3E/yPy2
- b9JAfz1g80530g/AjEY+kX8TiKcjzd9QdOW01q7pneoQnGaJY9h5uQkhb/G7AfnxNMmSBIk21
- fVB7DH81TvX8qREv7VDmcyWuGfewc2QbC8d81QCAhTmcbh7YJ931dTpJI1Sff22C189bHjCWV
- YlKx4AoqQQhuBIRPCFdvLOyYkZU75uoAuazvgJ/wOICxwa4oa/6T9y5uyMfh7ufvPZ1yHm6c9
- c0kWsMFxsOypWGkLoW1ZnWd4oSPIjrD5MjsTWTjomvmyZOgTMEfVcJxxMXe3FLLIREdMrHn3h
- MUjr1gzWU0OBlasW44SSQzyG84YKxU3lXUX2DZKOSO1G30Zs3U/mD2wcC5xvNxGeTnxnzIkq8
- kBY2RwHKXnqpIlA9PXU69KLch3Tnq25AaM68d/sQQkYsc5w2aoxulLfejsz83mmCetq2b2T9k
- tNDG+teYLYWzdP/FR8QLuiqw0QX5TIzbN/f/AzOXeBdsM4MvEei414633RtoxCARM6NlKqqqg
- WrrbgTYmQUUc/+1CZwwMO2wx6FjdmTQI/icTMNWZ24LoP+QjHutOGOXwStlUkGaA3k6cDPeNQ
- tGLvuCkUQ6wkjm8yWx68N9HgeBEJ5XAJKZYcNx8/7GyqMb0TMaGjn3GuHPeyXtoHva73OnczO
- dwnyH6lDuZIi7aE7cw8t5vyknR0dY+GpHCVlRJPG2ahT9/pJ2y1tvkclwry2Q9ikFzRV8h9hI
- ylQSq+WsMHDugXffWmv5wBPznBOlx2rLyckCUoJxpNhXf1Lpl/iLbTEHwcYgRXAuTJxkDqbvn
- xA7eCe8GI2Joh0+2BMUgtSKu1XfhCHqcC5zelbtBbVeDy5PhRQeEdy4rzboIJY858SUbhW4hd
- v9L+dcswOxIb0oqxLDTt/mbcoN8sCX2AT3rZhm5cPExW8CZ9ySXty/4T1m8y+wXqvidb1V+NU
- ZNTqb++QElDkvaqYPdVPEIykOMOFxhJoq60pwhPvyQWxpsJ+VdeRkkGeKcHPnvNig4OdOYE4n
- xrTh+fgGdUpSiwelgs2BCsT+uZSzLwxcWMD7hETBr1lt8oOULoacU/zYg==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the function dump_stack_print_cmdline() which can be used by arch
-code to print the command line of the current processs.  This function
-is useful in arch code when dumping information for a faulting process.
+tree:   https://github.com/intel/tdx.git guest-hardening-rebased
+head:   c170462888e1dab8e3e80c1c6e3708dd473ad1ed
+commit: 733588efac52121a59664e2dbd04edfdd9fdb580 [16/23] x86/tdx: Enable direct iomap MMIO optimizations
+config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220806/202208062038.xHmGD2TI-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel/tdx/commit/733588efac52121a59664e2dbd04edfdd9fdb580
+        git remote add intel-tdx https://github.com/intel/tdx.git
+        git fetch --no-tags intel-tdx guest-hardening-rebased
+        git checkout 733588efac52121a59664e2dbd04edfdd9fdb580
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/coco/tdx/
 
-Wire this function up in the dump_stack_print_info() function to include
-the dumping of the command line for architectures which use
-dump_stack_print_info().
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-As an example, with this patch a failing glibc testcase (which uses
-ld.so.1 as starting program) up to now reported just "ld.so.1" failing:
+All warnings (new ones prefixed by >>):
 
- do_page_fault() command=3D'ld.so.1' type=3D15 address=3D0x565921d8 in lib=
-c.so[f7339000+1bb000]
- trap #15: Data TLB miss fault, vm_start =3D 0x0001a000, vm_end =3D 0x0001=
-b000
+   arch/x86/coco/tdx/tdx.c:298:14: warning: no previous prototype for 'tdx_write_msr' [-Wmissing-prototypes]
+     298 | void notrace tdx_write_msr(unsigned int msr, u32 low, u32 high)
+         |              ^~~~~~~~~~~~~
+>> arch/x86/coco/tdx/tdx.c:531:15: warning: no previous prototype for 'tdx_mmio_readq' [-Wmissing-prototypes]
+     531 | unsigned long tdx_mmio_readq(void __iomem* addr)
+         |               ^~~~~~~~~~~~~~
 
-and now it reports in addition:
 
- ld.so.1[1151] cmdline: /home/gnu/glibc/objdir/elf/ld.so.1 --library-path =
-/home/gnu/glibc/objdir:/home/gnu/glibc/objdir/math:/home/gnu/
-    /home/gnu/glibc/objdir/malloc/tst-safe-linking-malloc-hugetlb1
+vim +/tdx_mmio_readq +531 arch/x86/coco/tdx/tdx.c
 
-Josh Triplett noted that dumping such command line parameters into
-syslog may theoretically lead to information disclosure.
-That's why this patch checks the value of the kptr_restrict sysctl
-variable and will not print any information if kptr_restrict=3D=3D2, and
-will not show the program parameters if kptr_restrict=3D=3D1.
+   530	
+ > 531	unsigned long tdx_mmio_readq(void __iomem* addr)
+   532	{
+   533		unsigned long val;
+   534	
+   535		if (tdx_virt_mmio(8, false, (unsigned long)addr, &val))
+   536			return 0xffffffffffffffff;
+   537		return val;
+   538	}
+   539	
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-=2D--
- include/linux/printk.h |  5 +++++
- lib/dump_stack.c       | 34 ++++++++++++++++++++++++++++++++++
- 2 files changed, 39 insertions(+)
-
-diff --git a/include/linux/printk.h b/include/linux/printk.h
-index cf7d666ab1f8..5290a32a197d 100644
-=2D-- a/include/linux/printk.h
-+++ b/include/linux/printk.h
-@@ -191,6 +191,7 @@ u32 log_buf_len_get(void);
- void log_buf_vmcoreinfo_setup(void);
- void __init setup_log_buf(int early);
- __printf(1, 2) void dump_stack_set_arch_desc(const char *fmt, ...);
-+void dump_stack_print_cmdline(const char *log_lvl);
- void dump_stack_print_info(const char *log_lvl);
- void show_regs_print_info(const char *log_lvl);
- extern asmlinkage void dump_stack_lvl(const char *log_lvl) __cold;
-@@ -262,6 +263,10 @@ static inline __printf(1, 2) void dump_stack_set_arch=
-_desc(const char *fmt, ...)
- {
- }
-
-+static inline void dump_stack_print_cmdline(const char *log_lvl)
-+{
-+}
-+
- static inline void dump_stack_print_info(const char *log_lvl)
- {
- }
-diff --git a/lib/dump_stack.c b/lib/dump_stack.c
-index 83471e81501a..38ef1067c7eb 100644
-=2D-- a/lib/dump_stack.c
-+++ b/lib/dump_stack.c
-@@ -14,6 +14,7 @@
- #include <linux/kexec.h>
- #include <linux/utsname.h>
- #include <linux/stop_machine.h>
-+#include <linux/proc_fs.h>
-
- static char dump_stack_arch_desc_str[128];
-
-@@ -45,6 +46,37 @@ void __init dump_stack_set_arch_desc(const char *fmt, .=
-..)
- #define BUILD_ID_VAL ""
- #endif
-
-+/**
-+ * dump_stack_print_cmdline - print the command line of current process
-+ * @log_lvl: log level
-+ */
-+void dump_stack_print_cmdline(const char *log_lvl)
-+{
-+	char cmdline[256];
-+
-+	if (kptr_restrict >=3D 2)
-+		return; /* never show command line */
-+
-+	/* get command line */
-+	get_task_cmdline_kernel(current, cmdline, sizeof(cmdline));
-+
-+	if (kptr_restrict =3D=3D 1) {
-+		char *p;
-+
-+		/* if restricted show program path only */
-+		p =3D strchr(cmdline, ' ');
-+		if (p) {
-+			*p =3D 0;
-+			strlcat(cmdline,
-+				" ... [parameters hidden due to kptr_restrict]",
-+				sizeof(cmdline));
-+		}
-+	}
-+
-+	printk("%s%s[%d] cmdline: %s\n", log_lvl, current->comm,
-+		current->pid, cmdline);
-+}
-+
- /**
-  * dump_stack_print_info - print generic debug info for dump_stack()
-  * @log_lvl: log level
-@@ -62,6 +94,8 @@ void dump_stack_print_info(const char *log_lvl)
- 	       (int)strcspn(init_utsname()->version, " "),
- 	       init_utsname()->version, BUILD_ID_VAL);
-
-+	dump_stack_print_cmdline(log_lvl);
-+
- 	if (dump_stack_arch_desc_str[0] !=3D '\0')
- 		printk("%sHardware name: %s\n",
- 		       log_lvl, dump_stack_arch_desc_str);
-=2D-
-2.37.1
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
