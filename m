@@ -2,67 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 953B9C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 18:20:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5EC6C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 18:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241963AbiHFSUJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 14:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47006 "EHLO
+        id S241983AbiHFSUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 14:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233884AbiHFSTj (ORCPT
+        with ESMTP id S233260AbiHFSTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 14:19:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A6AE0C5
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 11:19:39 -0700 (PDT)
+        Sat, 6 Aug 2022 14:19:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC5EAE0C7;
+        Sat,  6 Aug 2022 11:19:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4C6C61161
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 18:19:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FA71C43141;
-        Sat,  6 Aug 2022 18:19:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659809978;
-        bh=ln/S5g2mIY4cQHqdAxg2fEFur99jYiy6v9QQ/+ckCYU=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=l9qURp2BYifrWLTcupPrX7msEAINM/xDJ9OqYz0enuD1A/sO5MOTEevsc4CE15tnD
-         vn67sENfJOI+RzEt8c49ZzRLyrCerK0SydrfP1Lxd6JZ3BbMWud7gFISX5Eo6jP1Kp
-         e+p+GH+HEeRWU4jybSTGTeZdXbJIU1JrPfoJCKmNXlPfNAGbZw14pjbFini3i/aNI6
-         7mRyKXTeM53m6+JuMuo1M53C9nx8QoB+2qqtFXfpR6/9KSff1zlGZ/axFRvU072unf
-         T5PrqhZMfY5r3tcF18GCR0UWPIPH429SvvNP+W+1RTFV2dorDTvmlBgAsY5YrjPvIa
-         wvDaXAEKmgK2Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F10C4C43140;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 391D0CE090A;
+        Sat,  6 Aug 2022 18:19:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 75E7EC433C1;
         Sat,  6 Aug 2022 18:19:37 +0000 (UTC)
-Subject: Re: [GIT PULL] sound updates for 6.0-rc1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659809977;
+        bh=23hV1FvTFoQPJG82yincXoFnJtqM68n3qlr/PH7oADY=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=ILANQsuLLMucXnRB/iHWGiNaBVoLWXbAkknVcD2cGJLIYlriMmpWFtqhay/j6XAwm
+         755/K0yQhh1B34uySCHuMiVnDXP+AOhAe+TrGSj+e1pnkdsajuKBsbe35fg9Kp6xv4
+         wwLuXNE/7SlgerUnXenEDiJDFvPDKXBfjOvrf5lG6BHHL4xZrpricm9hDGh49UhYWG
+         oqxY8UiocFUG1LZi0Zxvv2oQ/qetgEsGg9rPAet7tbrODXGb2r3+BwKBvuts4mqA+h
+         pXmFjny/BwAkUvNVC48xE9yUNNEHzCv4YcyCPMdOyLwsOPG9BWfgDa44Agaztw4Zcl
+         3peTp+KosojjA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 630E3C43140;
+        Sat,  6 Aug 2022 18:19:37 +0000 (UTC)
+Subject: Re: [GIT PULL] tpmdd updates for v5.20
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <87czdf2lfo.wl-tiwai@suse.de>
-References: <87czdf2lfo.wl-tiwai@suse.de>
+In-Reply-To: <20220803210228.158993-1-jarkko@kernel.org>
+References: <20220803210228.158993-1-jarkko@kernel.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <87czdf2lfo.wl-tiwai@suse.de>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-6.0-rc1
-X-PR-Tracked-Commit-Id: 24df5428ef9d1ca1edd54eca7eb667110f2dfae3
+X-PR-Tracked-Message-Id: <20220803210228.158993-1-jarkko@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/ tags/tpmdd-next-v5.20
+X-PR-Tracked-Commit-Id: 863ed94c589fcd1984f4e3080f069d30508044bb
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 668c3c237f5ddc2889879b08f26d2374231f3287
-Message-Id: <165980997798.27284.7400203168250001711.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: f20c95b46b8fa3ad34b3ea2e134337f88591468b
+Message-Id: <165980997740.27284.17376485647055486721.pr-tracker-bot@kernel.org>
 Date:   Sat, 06 Aug 2022 18:19:37 +0000
-To:     Takashi Iwai <tiwai@suse.de>
+To:     Jarkko Sakkinen <jarkko@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        David Howells <dhowells@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 05 Aug 2022 09:34:19 +0200:
+The pull request you sent on Thu,  4 Aug 2022 00:02:28 +0300:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-6.0-rc1
+> git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/ tags/tpmdd-next-v5.20
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/668c3c237f5ddc2889879b08f26d2374231f3287
+https://git.kernel.org/torvalds/c/f20c95b46b8fa3ad34b3ea2e134337f88591468b
 
 Thank you!
 
