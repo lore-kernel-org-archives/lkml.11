@@ -2,97 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE4F5C00140
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 02:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10F8DC25B08
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 03:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241559AbiHFC5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 5 Aug 2022 22:57:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59744 "EHLO
+        id S238624AbiHFDcq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 5 Aug 2022 23:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238055AbiHFC5U (ORCPT
+        with ESMTP id S235716AbiHFDcm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 5 Aug 2022 22:57:20 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D1212D0C
-        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 19:57:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=S9YS6jdP8Hamx4Jny4WehGdZWztSJB+1gXBrm2yiZQI=; b=WNjslUijwH3x3RVJeuzxGvpFhJ
-        +j1N47886zHF0fAnNcvuZ0LlqTxgPJU5BDHnYsn7xcdJz+p2G9dU6TgWkxDT5YnUFONqSHhH3diEt
-        QQyWed16nEn7ca3uLLCRGLje8215w/ByabmDviHl80NirjKBFtN5AJVA8WcLZw2KyeQqKl/w1I+ED
-        2G6v71O9K6c6N2I5+FNYhDYwT8X8/zCL3it+AJfUXP1EyvwdTMG8Tbna5+cHm9CO63tnomtizd4cb
-        Om4mHY2CyS72GnjVwNUDoPq0JIxg+znsXk6Yg4XhpjC40j2UFiSJkZ5xYlv1UKcHRmnOXQCzn12WE
-        OGtOYcmw==;
-Received: from [2601:1c0:6280:3f0::a6b3] (helo=casper.infradead.org)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oK9zw-00BmIt-Pp; Sat, 06 Aug 2022 02:57:09 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Qin Jian <qinjian@cqplus1.com>,
-        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] ARM: sunplus: fix serial console kconfig and build problems
-Date:   Fri,  5 Aug 2022 19:57:05 -0700
-Message-Id: <20220806025705.7759-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.37.1
+        Fri, 5 Aug 2022 23:32:42 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B9719C11
+        for <linux-kernel@vger.kernel.org>; Fri,  5 Aug 2022 20:32:40 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id s5-20020a17090a13c500b001f4da9ffe5fso9829636pjf.5
+        for <linux-kernel@vger.kernel.org>; Fri, 05 Aug 2022 20:32:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tg4NqtSjU5XuVyDQiVNzVWf9P9SeByvm1yWNtEyxPVc=;
+        b=fxgTY/Vjxw5wi7/JasXkvEFil2jV0OHHXJTvu2o7ec0Ho6BHNtW+E2EUsOKbf0bttA
+         hmVmRa5NUSZJMpdRKaGH2Rk5vj36TkQs6xoJEiD++Nj2s6hW/eQPIVkJZEVyz6c+Ze+M
+         pVz8+6bBZTB0xFcOiaCGFwyCk9CBMoMlFo+1CFkPBSplf8B49bKcjwH+yRjVqiiqfZ3N
+         l8yU/zQPdi0+2k44KYpvDxE66e27tn5oB25bEyks/5lGKfwxVcirgK7Alz6KXt6p/qvd
+         uOVFc4nkhY5wXmkrqyiT4IGmxeqyBgcJBQfOkYpB3Z+vbRYKTOUWmu+rZsTXRGeCMaTn
+         OFKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tg4NqtSjU5XuVyDQiVNzVWf9P9SeByvm1yWNtEyxPVc=;
+        b=kwS7vFQE/ADSJvSQGK2kMZmg21ebbaHxgEA6+k2JOFKE1TP2xoRDiILvE5spiCI+De
+         mPa8vZ779tWETZfytG/P3msjpCzXoyLYVBHY/JS31DaaDZVDI+wsH0imOKlWh+FPC50T
+         1n9aB1FCXoOwK0hYgLcUimwnAZjl4L9e42Atk9+gNJmLV+M+nZJCAl+fCVpjIFI4paio
+         itGFpTqt5RrG9PQQI/+qed0qgFlk7Q88kXpPb1RJSeWE3g2JI9riNzZZP8fe8khuPnGw
+         Q1IzSkCdgnX5fo+pHKI0jqFlp/vR+Jp/4TeRTPdY8DelXIz2Q+TrbvMG23dPAQfRjbao
+         zOIQ==
+X-Gm-Message-State: ACgBeo2NRw1A7H/pUMnavFOVKs+8Lmz4Drk7Bize1SmgBKf3VbUNFJrZ
+        1txA22iIpeQGKMIxyGTvOfVG4Q==
+X-Google-Smtp-Source: AA6agR4M3DVrnATT7rSwbZDjb+owoi+595hWPep9TEfDL344GrMNcwwVGwVkUrASwgeEH9UqbNQ0Wg==
+X-Received: by 2002:a17:902:d2c3:b0:16e:ea56:7840 with SMTP id n3-20020a170902d2c300b0016eea567840mr9535113plc.142.1659756759202;
+        Fri, 05 Aug 2022 20:32:39 -0700 (PDT)
+Received: from localhost (ec2-18-144-7-244.us-west-1.compute.amazonaws.com. [18.144.7.244])
+        by smtp.gmail.com with ESMTPSA id y2-20020aa793c2000000b0052d27ccea39sm3986012pff.19.2022.08.05.20.32.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Aug 2022 20:32:38 -0700 (PDT)
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Cc:     Leo Yan <leo.yan@linaro.org>
+Subject: [PATCH v2] perf test: Introduce script for data symbol testing
+Date:   Sat,  6 Aug 2022 11:32:34 +0800
+Message-Id: <20220806033234.121781-1-leo.yan@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix kconfig dependency warnings and subsequent build errors:
+This commit introduces a shell script for data symbol testing.
 
-WARNING: unmet direct dependencies detected for SERIAL_SUNPLUS
-  Depends on [n]: TTY [=n] && HAS_IOMEM [=y] && (ARCH_SUNPLUS [=y] || COMPILE_TEST [=n])
-  Selected by [y]:
-  - SOC_SP7021 [=y] && ARCH_SUNPLUS [=y]
+The testing is designed a data structure with 64-byte alignment, it has
+two fields "data1" and "data2", and other fields are reserved.
 
-WARNING: unmet direct dependencies detected for SERIAL_SUNPLUS_CONSOLE
-  Depends on [n]: TTY [=n] && HAS_IOMEM [=y] && SERIAL_SUNPLUS [=y]
-  Selected by [y]:
-  - SOC_SP7021 [=y] && ARCH_SUNPLUS [=y]
+Using "perf mem" command, we can record and report memory samples for a
+self-contained workload with 1 second duration.  If have no any memory
+sample for the data structure "buf1", it reports failure;  and by
+checking the offset in structure "buf1", if any memory accessing is not
+for "data1" and "data2" fields, it means wrong data symbol parsing and
+returns failure.
 
-(samples, not all:)
-drivers/tty/serial/sunplus-uart.c:342: undefined reference to `uart_get_baud_rate'
-arm-linux-gnueabi-ld: drivers/tty/serial/sunplus-uart.c:379: undefined reference to `uart_update_timeout'
-drivers/tty/serial/sunplus-uart.c:526: undefined reference to `uart_console_write'
-arm-linux-gnueabi-ld: drivers/tty/serial/sunplus-uart.c:274: undefined reference to `tty_flip_buffer_push'
-arm-linux-gnueabi-ld: drivers/tty/serial/sunplus-uart.o:(.data+0xa8): undefined reference to `uart_console_device'
-drivers/tty/serial/sunplus-uart.c:720: undefined reference to `uart_register_driver'
-arm-linux-gnueabi-ld: drivers/tty/serial/sunplus-uart.c:726: undefined reference to `uart_unregister_driver'
-drivers/tty/serial/sunplus-uart.c:551: undefined reference to `uart_parse_options'
-arm-linux-gnueabi-ld: drivers/tty/serial/sunplus-uart.c:553: undefined reference to `uart_set_options'
-
-This is the same technique that is used 2 times in
-arch/arm/mach-versatile/Kconfig.
-
-Fixes: 0aa94eea8d95 ("ARM: sunplus: Add initial support for Sunplus SP7021 SoC")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Qin Jian <qinjian@cqplus1.com>
-Cc: Necip Fazil Yildiran <fazilyildiran@gmail.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-arm-kernel@lists.infradead.org
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
 ---
- arch/arm/mach-sunplus/Kconfig |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/arm/mach-sunplus/Kconfig
-+++ b/arch/arm/mach-sunplus/Kconfig
-@@ -18,8 +18,8 @@ config SOC_SP7021
- 	select ARM_PSCI
- 	select PINCTRL
- 	select PINCTRL_SPPCTL
--	select SERIAL_SUNPLUS
--	select SERIAL_SUNPLUS_CONSOLE
-+	select SERIAL_SUNPLUS if TTY
-+	select SERIAL_SUNPLUS_CONSOLE if TTY
- 	help
- 	  Support for Sunplus SP7021 SoC. It is based on ARM 4-core
- 	  Cortex-A7 with various peripherals (e.g.: I2C, SPI, SDIO,
+Changes from v1:
+- Removed "killall" since the test has no child process (Ian);
+- Used "char" instead of "long" in the buf structure.
+
+ tools/perf/tests/shell/test_data_symbol.sh | 92 ++++++++++++++++++++++
+ 1 file changed, 92 insertions(+)
+ create mode 100755 tools/perf/tests/shell/test_data_symbol.sh
+
+diff --git a/tools/perf/tests/shell/test_data_symbol.sh b/tools/perf/tests/shell/test_data_symbol.sh
+new file mode 100755
+index 000000000000..d007513ecfbe
+--- /dev/null
++++ b/tools/perf/tests/shell/test_data_symbol.sh
+@@ -0,0 +1,92 @@
++#!/bin/bash
++# Test data symbol
++
++# SPDX-License-Identifier: GPL-2.0
++# Leo Yan <leo.yan@linaro.org>, 2022
++
++skip_if_no_mem_event() {
++	perf mem record -e list 2>&1 | egrep -q 'available' && return 0
++	return 2
++}
++
++skip_if_no_mem_event || exit 2
++
++# skip if there's no compiler
++if ! [ -x "$(command -v cc)" ]; then
++	echo "skip: no compiler, install gcc"
++	exit 2
++fi
++
++TEST_PROGRAM_SOURCE=$(mktemp /tmp/__perf_test.program.XXXXX.c)
++TEST_PROGRAM=$(mktemp /tmp/__perf_test.program.XXXXX)
++PERF_DATA=$(mktemp /tmp/__perf_test.perf.data.XXXXX)
++
++check_result() {
++	# The memory report format is as below:
++	#    99.92%  ...  [.] buf1+0x38  ...
++	result=$(perf mem report -i ${PERF_DATA} --stdio 2>&1 | egrep "buf1" | \
++		awk '{ for (i = 1; i <= NF; i++) { if ($i ~ /^buf1/) { print $i; break; } } }')
++
++	# Testing is failed if has no any sample for "buf1"
++	[ -z "$result" ] && return 1
++
++	while IFS= read -r line; do
++		# The "data1" and "data2" fields in structure "buf1" have
++		# offset "0x0" and "0x38", returns failure if detect any
++		# other offset value.
++		if [ "$line" != "buf1+0x0" ] && [ "$line" != "buf1+0x38" ]; then
++			return 1
++		fi
++	done <<< "$result"
++
++	return 0
++}
++
++cleanup_files()
++{
++	echo "Cleaning up files..."
++	rm -f ${PERF_DATA}
++	rm -f ${TEST_PROGRAM_SOURCE}
++	rm -f ${TEST_PROGRAM}
++}
++
++trap cleanup_files exit term int
++
++# compile test program
++cat << EOF > $TEST_PROGRAM_SOURCE
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++
++typedef struct _buf {
++	char data1;
++	char reserved[55];
++	char data2;
++} buf __attribute__((aligned(64)));
++
++static buf buf1;
++
++int main() {
++	int i;
++	for (;;) {
++		buf1.data1++;
++		buf1.data2 += buf1.data1;
++	}
++	return 0;
++}
++EOF
++
++echo "Compiling test program..."
++cc $TEST_PROGRAM_SOURCE -o $TEST_PROGRAM || exit 1
++
++echo "Recording workload..."
++perf mem record --all-user -o ${PERF_DATA} -- $TEST_PROGRAM &
++PERFPID=$!
++
++sleep 1
++
++kill $PERFPID
++wait $PERFPID
++
++check_result
++exit $?
+-- 
+2.25.1
+
