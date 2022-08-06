@@ -2,199 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAC8C25B07
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 14:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E019BC25B07
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 14:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231902AbiHFOd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 10:33:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
+        id S231276AbiHFOe6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 10:34:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231322AbiHFOd4 (ORCPT
+        with ESMTP id S231296AbiHFOey (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 10:33:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202C0DF4B;
-        Sat,  6 Aug 2022 07:33:55 -0700 (PDT)
+        Sat, 6 Aug 2022 10:34:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3497311A28;
+        Sat,  6 Aug 2022 07:34:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1F7F61083;
-        Sat,  6 Aug 2022 14:33:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BE48C433C1;
-        Sat,  6 Aug 2022 14:33:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDC95B8047E;
+        Sat,  6 Aug 2022 14:34:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F2C5C433D6;
+        Sat,  6 Aug 2022 14:34:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659796434;
-        bh=9fiTg8lNS3hGnstVONUZi+Slu960suCrCuosPk+E2AU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=S8e5yiA1cR3Zawf/MhHO7jIauSbmWf66F6USk1BCRwR5BtpVeBzqv4bM0e5vfE5YY
-         MZwLHxqSG1Tqmh/Qnxe8WRgimUcsabbspvOxjXnvhe0WHlyk7Qwf4nHFQJl7U81Knx
-         g+XdXx4quEhLjbi/TZ8JtB2Io/Bd/qzKGvLD65qPPPTkyiRp3o21/hR8rbgTS7TJC/
-         Wx9Glu+jqJWWO2RV/O8H0ElvVaEKl0eg+l8OyTU/8tIeaPH5POgbx0Zlct+sRshMdz
-         n8KeCNQLruMU509tXoZH+4CBlZDSeN1RwsQqgE4uhfne9KWpb7lWTcCXPvbo9hywuf
-         yhcHxp7Plj7MQ==
-Date:   Sat, 6 Aug 2022 15:44:12 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jason Gerecke <killertofu@gmail.com>
-Cc:     linux-i2c@vger.kernel.org, linux-iio <linux-iio@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Wolfram Sang <wsa-dev@sang-engineering.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ping Cheng <pinglinux@gmail.com>,
-        "Tobita, Tatsunosuke" <tatsunosuke.tobita@wacom.com>,
-        Jason Gerecke <jason.gerecke@wacom.com>,
-        Ping Cheng <ping.cheng@wacom.com>
-Subject: Re: [PATCH v2] i2c: Use u8 type in i2c transfer calls
-Message-ID: <20220806154412.581a4f83@jic23-huawei>
-In-Reply-To: <20220803145937.698603-1-jason.gerecke@wacom.com>
-References: <20220718153448.173652-1-jason.gerecke@wacom.com>
-        <20220803145937.698603-1-jason.gerecke@wacom.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1659796490;
+        bh=AhYiIWPnTRlaUDS/vZCjq5TqXn2f3QFoArzUU29QEUs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eNB6fQqT5MNjaMAbJuyqpQainl+7tJva/dlj6asR4fCfCRtWmMLF75hedwfO04MPi
+         SPZ1B5m94OuVDgYau+aijbNcvFZV3bZXFyqkWPZGhIkBTQ40DrYSm0P54QMVyKoQ9T
+         qazWakgcHICQADGjVye7cMzR2TRGEKIjH8nttApyhRTfNUjMld6L/COSlDuf806Es9
+         QhuFw86EG1sXPru2WOc9IaP+6TMkweTuQXQMq7u783rSDiM79cUgnWFEjI8900X7Uk
+         eIFWPoAZagGdNtojBlXDF1TnrC6R3x/r9Rqo/ONSLL3pjGyEPYBkuZwDz3PG6EDXs+
+         cAT2z7Vev5wmQ==
+Date:   Sat, 6 Aug 2022 15:34:44 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Stefan Hajnoczi <shajnocz@redhat.com>
+Cc:     Stefano Garzarella <sgarzare@redhat.com>, mst@redhat.com,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        torvalds@linux-foundation.org, ascull@google.com, maz@kernel.org,
+        keirf@google.com, jiyong@google.com, kernel-team@android.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org
+Subject: Re: IOTLB support for vhost/vsock breaks crosvm on Android
+Message-ID: <20220806143443.GA30658@willie-the-truck>
+References: <20220805181105.GA29848@willie-the-truck>
+ <20220806074828.zwzgn5gj47gjx5og@sgarzare-redhat>
+ <20220806094239.GA30268@willie-the-truck>
+ <CAD60JZMbbkwFHqCm_iCrOrKgRLBUMkDQfuJ=Q1T-sZt59eTBrw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAD60JZMbbkwFHqCm_iCrOrKgRLBUMkDQfuJ=Q1T-sZt59eTBrw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  3 Aug 2022 07:59:37 -0700
-Jason Gerecke <killertofu@gmail.com> wrote:
-
-> The 'i2c_transfer_buffer_flags' function (and related inlines) defines its
-> 'buf' argument to be of type 'char*'. This is a poor choice of type given
-> that most callers actually pass a 'u8*' and that the function itself ends
-> up just storing the variable to a 'u8*'-typed member of 'struct i2c_msg'
-> anyway.
+On Sat, Aug 06, 2022 at 06:52:15AM -0400, Stefan Hajnoczi wrote:
+> On Sat, Aug 6, 2022 at 5:50 AM Will Deacon <will@kernel.org> wrote:
+> > On Sat, Aug 06, 2022 at 09:48:28AM +0200, Stefano Garzarella wrote:
+> > > On Fri, Aug 05, 2022 at 07:11:06PM +0100, Will Deacon wrote:
+> > > If the VMM implements the translation feature, it is right in my opinion
+> > > that it does not enable the feature for the vhost device. Otherwise, if it
+> > > wants the vhost device to do the translation, enable the feature and send
+> > > the IOTLB messages to set the translation.
+> > >
+> > > QEMU for example masks features when not required or supported.
+> > > crosvm should negotiate only the features it supports.
+> > >
+> > > @Michael and @Jason can correct me, but if a vhost device negotiates
+> > > VIRTIO_F_ACCESS_PLATFORM, then it expects the VMM to send IOTLB messages to
+> > > set the translation.
+> >
+> > As above, the issue is that vhost now unconditionally advertises this in
+> > VHOST_GET_FEATURES and so a VMM with no knowledge of IOTLB can end up
+> > enabling it by accident.
 > 
-> Changing the type of the 'buf' argument to 'u8*' vastly reduces the number
-> of (admittedly usually-silent) Wpointer-sign warnings that are generated
-> as the types get needlessly juggled back and forth.
-> 
-> At the same time, update the max1363 driver to match the new interface so
-> we don't introduce a new Wincompatible-function-pointer-types warning.
-> 
-> Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
-> Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
+> Unconditionally exposing all vhost feature bits to the guest is
+> incorrect. The emulator must filter out only the feature bits that it
+> supports.
 
-With the minor stuff Andy raised tidied up I'm fine with this change.
+I've evidently done a bad job of explaining this, sorry.
 
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+crosvm _does_ filter the feature bits which it passes to vhost. It takes the
+feature set which it has negotiated with the guest and then takes the
+intersection of this set with the set of features which vhost advertises.
+The result is what is passed to VHOST_SET_FEATURES. I included the rust
+for this in my initial mail, but in C it might look something like:
 
-I'd forgotten all about the oddities of the max1363 :) That brings
-back some memories!
+	u64 features = negotiate_features_with_guest(dev);
 
-Jonathan
+	ioctl(vhost_fd, VHOST_GET_FEATURES, &vhost_features);
+	vhost_features &= features;	/* Mask out unsupported features */
+	ioctl(vhost_fd, VHOST_SET_FEATURES, &vhost_features);
 
+The problem is that crosvm has negotiated VIRTIO_F_ACCESS_PLATFORM with
+the guest so that restricted DMA is used for the virtio devices. With
+e13a6915a03f, VIRTIO_F_ACCESS_PLATFORM is now advertised by
+VHOST_GET_FEATURES and so IOTLB is enabled by the sequence above.
 
-> ---
-> Changes in v2:
->   - Added modifications to the max1363 driver required to avoid warnings
-> 
->  drivers/i2c/i2c-core-base.c |  2 +-
->  drivers/iio/adc/max1363.c   |  8 ++++----
->  include/linux/i2c.h         | 14 +++++++-------
->  3 files changed, 12 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
-> index 10f35f942066a..2925507e8626d 100644
-> --- a/drivers/i2c/i2c-core-base.c
-> +++ b/drivers/i2c/i2c-core-base.c
-> @@ -2184,7 +2184,7 @@ EXPORT_SYMBOL(i2c_transfer);
->   *
->   * Returns negative errno, or else the number of bytes transferred.
->   */
-> -int i2c_transfer_buffer_flags(const struct i2c_client *client, char *buf,
-> +int i2c_transfer_buffer_flags(const struct i2c_client *client, u8 *buf,
->  			      int count, u16 flags)
->  {
->  	int ret;
-> diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-> index eef55ed4814a6..ebe6eb99583da 100644
-> --- a/drivers/iio/adc/max1363.c
-> +++ b/drivers/iio/adc/max1363.c
-> @@ -184,9 +184,9 @@ struct max1363_state {
->  	struct regulator		*vref;
->  	u32				vref_uv;
->  	int				(*send)(const struct i2c_client *client,
-> -						const char *buf, int count);
-> +						const u8 *buf, int count);
->  	int				(*recv)(const struct i2c_client *client,
-> -						char *buf, int count);
-> +						u8 *buf, int count);
->  };
->  
->  #define MAX1363_MODE_SINGLE(_num, _mask) {				\
-> @@ -312,7 +312,7 @@ static const struct max1363_mode
->  	return NULL;
->  }
->  
-> -static int max1363_smbus_send(const struct i2c_client *client, const char *buf,
-> +static int max1363_smbus_send(const struct i2c_client *client, const u8 *buf,
->  		int count)
->  {
->  	int i, err;
-> @@ -323,7 +323,7 @@ static int max1363_smbus_send(const struct i2c_client *client, const char *buf,
->  	return err ? err : count;
->  }
->  
-> -static int max1363_smbus_recv(const struct i2c_client *client, char *buf,
-> +static int max1363_smbus_recv(const struct i2c_client *client, u8 *buf,
->  		int count)
->  {
->  	int i, ret;
-> diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-> index 8eab5017bff30..3a94385f4642c 100644
-> --- a/include/linux/i2c.h
-> +++ b/include/linux/i2c.h
-> @@ -64,7 +64,7 @@ const char *i2c_freq_mode_string(u32 bus_freq_hz);
->   * @count must be less than 64k since msg.len is u16.
->   */
->  int i2c_transfer_buffer_flags(const struct i2c_client *client,
-> -			      char *buf, int count, u16 flags);
-> +			      u8 *buf, int count, u16 flags);
->  
->  /**
->   * i2c_master_recv - issue a single I2C message in master receive mode
-> @@ -75,7 +75,7 @@ int i2c_transfer_buffer_flags(const struct i2c_client *client,
->   * Returns negative errno, or else the number of bytes read.
->   */
->  static inline int i2c_master_recv(const struct i2c_client *client,
-> -				  char *buf, int count)
-> +				  u8 *buf, int count)
->  {
->  	return i2c_transfer_buffer_flags(client, buf, count, I2C_M_RD);
->  };
-> @@ -90,7 +90,7 @@ static inline int i2c_master_recv(const struct i2c_client *client,
->   * Returns negative errno, or else the number of bytes read.
->   */
->  static inline int i2c_master_recv_dmasafe(const struct i2c_client *client,
-> -					  char *buf, int count)
-> +					  u8 *buf, int count)
->  {
->  	return i2c_transfer_buffer_flags(client, buf, count,
->  					 I2C_M_RD | I2C_M_DMA_SAFE);
-> @@ -105,9 +105,9 @@ static inline int i2c_master_recv_dmasafe(const struct i2c_client *client,
->   * Returns negative errno, or else the number of bytes written.
->   */
->  static inline int i2c_master_send(const struct i2c_client *client,
-> -				  const char *buf, int count)
-> +				  const u8 *buf, int count)
->  {
-> -	return i2c_transfer_buffer_flags(client, (char *)buf, count, 0);
-> +	return i2c_transfer_buffer_flags(client, (u8 *)buf, count, 0);
->  };
->  
->  /**
-> @@ -120,9 +120,9 @@ static inline int i2c_master_send(const struct i2c_client *client,
->   * Returns negative errno, or else the number of bytes written.
->   */
->  static inline int i2c_master_send_dmasafe(const struct i2c_client *client,
-> -					  const char *buf, int count)
-> +					  const u8 *buf, int count)
->  {
-> -	return i2c_transfer_buffer_flags(client, (char *)buf, count,
-> +	return i2c_transfer_buffer_flags(client, (u8 *)buf, count,
->  					 I2C_M_DMA_SAFE);
->  };
->  
+> For example, see QEMU's vhost-net device's vhost feature bit allowlist:
+> https://gitlab.com/qemu-project/qemu/-/blob/master/hw/net/vhost_net.c#L40
 
+I agree that changing crosvm to use an allowlist would fix the problem,
+I'm just questioning whether we should be changing userspace at all to
+resolve this issue.
+
+> The reason why the emulator (crosvm/QEMU/etc) must filter out feature
+> bits is that vhost devices are full VIRTIO devices. They are a subset
+> of a VIRTIO device and the emulator is responsible for the rest of the
+> device. Some features will require both vhost and emulator support.
+> Therefore it is incorrect to expect the device to work correctly if
+> the vhost feature bits are passed through to the guest.
+
+I think crosvm is trying to cater for this by masking out the features
+it doesn't know about.
+
+Will
