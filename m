@@ -2,117 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 541BDC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 16:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 918D9C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 16:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233219AbiHFQ5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 12:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38686 "EHLO
+        id S233572AbiHFQ5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 12:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232304AbiHFQ5K (ORCPT
+        with ESMTP id S233100AbiHFQ5M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 12:57:10 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5693EDED5
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 09:57:09 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id s5-20020a17090a13c500b001f4da9ffe5fso10878863pjf.5
-        for <linux-kernel@vger.kernel.org>; Sat, 06 Aug 2022 09:57:09 -0700 (PDT)
+        Sat, 6 Aug 2022 12:57:12 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB437DEDB;
+        Sat,  6 Aug 2022 09:57:11 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id cr9so717490qtb.13;
+        Sat, 06 Aug 2022 09:57:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=fwvVz3ZPNf1Ua4BJXgNnz062mWeBDEEWiBC/4i632uM=;
-        b=UsaZP4n5lbS6AHNXgKun6rTZN8kjhea9TnD0P67vH9gDHbXki2lnEsUYE2K1/Ux3m3
-         BnWL54UmBE1wEPnemy4ctmQnnDO4beGdpauxnBajSw73ffFFlw3FdgNgJq8rAYtxS0/y
-         xbTs96mDVrFm/79NGdbI/eIIXKp6jQmMgASHwnEN4a/0agRvl96so3mozh7naw3Cb2YR
-         EH/EAI6dacd12OZsTiyBDjomRBdmeiBxOAa/7yWrT9fq0sescPGyDOTzGl2r9dFoPXi9
-         bEsjMlFtZN5Ilwg/F94rXqyLFP1HusK7C9il9PCgS0a9j37AH+88lgurWqHgmOW8/bzb
-         DJzQ==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=wj6684H6Kpz2ZtSUodC0U0fU86f1YKlziRI4r3cW+HI=;
+        b=BtpSlh2x5s/SOJglV0bbuGknHlFtC17/SdHTJmS3uZdZurl45R2Le81dNFTaKIU6Od
+         NXfBR45JX5zUQEBNwnkmNwVGrnem8k97ff2spSUq73FY6s+kv8gM/Ru8ze2xYNcDLMWt
+         NsPHERX877627zE1v4BgU9NYY4jNndt7MBzqQ3NF4LA5pe/aFNJhYrfB/2iSJN3dvZ2k
+         T3Xo23bCjCQu8n82clu06hLqSSDFmUayNmcBvRq7fAN2NcRPJulq530HBdfcA9SdaNbJ
+         Cy/0MQvzHjcYAQFuGtPP1miEIcsPS2jiffpfEm4jbpjIbITcbE9I9CO0LGfjyuVWFsBk
+         ls7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=fwvVz3ZPNf1Ua4BJXgNnz062mWeBDEEWiBC/4i632uM=;
-        b=m1EqK/dLsy66kIHTAOPdOYxxdAO67YLJk65Zd0j049QGIWOhbP3EEhHHnzoLcd7xjt
-         Rbtqe15CfRVAlAQ/Tx3Sq+BhT6jbN5DeYKpk0jixe0KVn4jyI253sQ1f7wfQBtaL65+A
-         TCGo4VhnDz79jmuv+SVwIERyE93WmwJBdtq4IsBwCj5LKtRNnkL7Y4V2Es/HoP9nKSLA
-         u9Eg8QDUk3D4vcWPBXf0fk3YD2J2zmWDqGYc3kWzkWpZzdJ/cwzMZ4WieJJkb/v+5FBm
-         eNuHh4qHgF/DzRdAzN3yAJzq71CFmsb8DXyAm3soiDaUGkwoGxxLZh0ITSwJmLYZ3e1J
-         Qspg==
-X-Gm-Message-State: ACgBeo07JizoLEGQM4/zTiQJsHNbuH7OFrG1uTv49FNfFaPB129oHXI3
-        Dw2zsRYaQJMsbxQ4j6F/eu5h
-X-Google-Smtp-Source: AA6agR7ESBRGzNpxO609+Ee4UmCGERmwQkH+j7vG0fhAMAiaSiTEYGdTGwaX0tq8g8QMbFbuN5eeTw==
-X-Received: by 2002:a17:903:1111:b0:16a:acf4:e951 with SMTP id n17-20020a170903111100b0016aacf4e951mr11525532plh.72.1659805028962;
-        Sat, 06 Aug 2022 09:57:08 -0700 (PDT)
-Received: from thinkpad ([117.202.188.20])
-        by smtp.gmail.com with ESMTPSA id g17-20020aa79f11000000b0052d3899f8c3sm5320852pfr.36.2022.08.06.09.57.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Aug 2022 09:57:08 -0700 (PDT)
-Date:   Sat, 6 Aug 2022 22:27:03 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Johan Hovold <johan+linaro@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/7] arm64: dts: qcom: sc8280xp-crd: mark HID wakeup
- sources
-Message-ID: <20220806165703.GP14384@thinkpad>
-References: <20220805092317.4985-1-johan+linaro@kernel.org>
- <20220805092317.4985-4-johan+linaro@kernel.org>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=wj6684H6Kpz2ZtSUodC0U0fU86f1YKlziRI4r3cW+HI=;
+        b=VfX65Zu63iQ7E9F23P24qG523c+WtDDPbQnoW2SoGKpoBYaKJw4D2cOVPdj2cVYlt3
+         lXNCjPFoDAZv9gFbXjJUJqSiq7N24oKWdZVtzHqKcpa750/l3H4e6hWfJvnI497O7O3y
+         xkCA38F28LIth5eWNpp7Hr8T2Vc3PghzK8lCBMosCZ1REqb0U4HikcxsiqT2Tg9tsnXE
+         /uwqm2qsiYOCnqnkg94ANEmKiUF+ET44u8VtvWN/VhIm81zV3QE8uEszt7CY5QSZ5aHL
+         u2tNWIuJgDj4s5GBLTJh0V2SwS37FUkz3ExcMJa8ijRzIVzXYGDMMtpipJhzalQOArww
+         nj/g==
+X-Gm-Message-State: ACgBeo3Ao7pgaoosVqe4qHqZwc3WacBLDQIotTiXuvpMvfPzicp5ttfr
+        h3BmfI8bTPjlN84eaxu0JUhC4aHgcDqsziWR+v4=
+X-Google-Smtp-Source: AA6agR61xEI/w29pHlhpS9FZx9xdp0DX1Dk2bnjIJClh7I1yqul0PbHxwiEEgwD3NG9K2UtdJlDmFS2nsKEkKIZ0lIs=
+X-Received: by 2002:ac8:5784:0:b0:31f:24e:93f5 with SMTP id
+ v4-20020ac85784000000b0031f024e93f5mr10304276qta.429.1659805030863; Sat, 06
+ Aug 2022 09:57:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220805092317.4985-4-johan+linaro@kernel.org>
+References: <20220806163255.10404-1-markuss.broks@gmail.com> <20220806163255.10404-2-markuss.broks@gmail.com>
+In-Reply-To: <20220806163255.10404-2-markuss.broks@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sat, 6 Aug 2022 18:56:34 +0200
+Message-ID: <CAHp75VfizQY3kw3qk0des42uAwnYmv94aWQC+fVq_QQJGp-QYQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] drivers: serial: earlycon: Correct argument name
+To:     Markuss Broks <markuss.broks@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Helge Deller <deller@gmx.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Linux Documentation List <linux-doc@vger.kernel.org>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Rob Herring <robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 05, 2022 at 11:23:13AM +0200, Johan Hovold wrote:
-> The touchpad and keyboard can wake the system from suspend so declare
-> them as wakeup sources.
-> 
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+On Sat, Aug 6, 2022 at 6:37 PM Markuss Broks <markuss.broks@gmail.com> wrote:
+>
+> The "node" argument is actually an offset, and it's also
+> an "int", and not "unsigned long". Correct the of_setup_earlycon
+> function.
 
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Suggested-by: Greg KH?
 
-Thanks,
-Mani
-
-> ---
->  arch/arm64/boot/dts/qcom/sc8280xp-crd.dts | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
-> index ae8be1b743ce..fea7d8273ccd 100644
-> --- a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
-> @@ -237,6 +237,8 @@ touchpad@15 {
->  
->  		pinctrl-names = "default";
->  		pinctrl-0 = <&tpad_default>;
-> +
-> +		wakeup-source;
->  	};
->  
->  	keyboard@68 {
-> @@ -249,6 +251,8 @@ keyboard@68 {
->  
->  		pinctrl-names = "default";
->  		pinctrl-0 = <&kybd_default>;
-> +
-> +		wakeup-source;
->  	};
->  };
->  
-> -- 
-> 2.35.1
-> 
+> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
 
 -- 
-மணிவண்ணன் சதாசிவம்
+With Best Regards,
+Andy Shevchenko
