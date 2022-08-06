@@ -2,165 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F3CAC25B06
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 20:07:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91219C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 20:09:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233562AbiHFUH5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 16:07:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45986 "EHLO
+        id S233634AbiHFUJN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 16:09:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233295AbiHFUHw (ORCPT
+        with ESMTP id S233180AbiHFUJL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 16:07:52 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA344E035;
-        Sat,  6 Aug 2022 13:07:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1659816462;
-        bh=JttCySagazOt1SPXCXmT9G72op/evmxRiYdJphWoCNE=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=JPPs5R97yZLhiCJoHhnWY3uIOMYdlnAKnWpVXOwCdRQkE/RP3H1dwCmBW3WD76/0s
-         +wyEyFl3JlRhKbYqq5Cu4OwrWUY1T35LyesAEogLq5L2JhLltJKipdnDqigHzl5scI
-         pZou6A3zUAYz7U345WsuQH8WhCcHZ2zsXNkXXsPY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from ls3530 ([92.116.170.46]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MRTNF-1o6LkJ0ZeP-00NVC9; Sat, 06
- Aug 2022 22:07:42 +0200
-Date:   Sat, 6 Aug 2022 22:06:49 +0200
-From:   Helge Deller <deller@gmx.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
-        Uwe =?iso-8859-15?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [GIT PULL] fbdev updates & fixes for v5.20-rc1
-Message-ID: <Yu7J2Yj6UyAiE2Ne@ls3530>
+        Sat, 6 Aug 2022 16:09:11 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9D1EE13
+        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 13:09:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659816550; x=1691352550;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KEwOTVoG7ZqDsSp59wGjwyZ1q5J+EUIIvPZliqYQesE=;
+  b=DIrFFoc94bLEJt3u76akuUVaykaMg6q7jxS+Ycs9BD2J0JqA8b4HbhDT
+   9/6LxaUUGj4Eh6Hss85SLpnkR6jaPvOu2dzlobTiw7lhWrapUv0yDyiWa
+   d7l8ufeKhDJPieQG/DlbcE8to83SeJJlAc+zePHhhvKzq9MMkvOlU+QAt
+   Nb7W/GK5ufJ40cVOhmgIPrxXkE+wwQrD1+xurLY21XDutD1+N11UdD5kv
+   1nrHE+GE8kdGEiHhmTc3M4KVpb7jN0uZQ8j7jwsThpfAfzQlez1/n01cO
+   8DdgWxDtyucz3sYM6S8b7nEsUH+MzNdYJiRYAH6ZGPQ0TgEjIO9CiP6eU
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="352113804"
+X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
+   d="scan'208";a="352113804"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 13:09:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
+   d="scan'208";a="672044144"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 06 Aug 2022 13:09:07 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oKQ6c-000KeD-2z;
+        Sat, 06 Aug 2022 20:09:06 +0000
+Date:   Sun, 7 Aug 2022 04:08:56 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>
+Subject: [jsarha:topic/chromeos-4.19-s0ix 6418/9999]
+ drivers/input/keyreset.c:119:5: warning: no previous prototype for function
+ 'keyreset_remove'
+Message-ID: <202208070416.jdFdsESN-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:7s9Da4UCIDfa/Q9sjHw2hJhx20+r87Q8QQJKmc8kJezq0A+t6L2
- EtdvQlNtQkcIh+Th10pNNuPWrQDCtlSJdB/mdgrZHT+PSsRjnzEc8wk17NINIeahY90FMj6
- Tpv4tJUTVHpPVRG1gZsfilGKJWCN3aEm1WcRbwLMd89Fix1ccaPcNKem31BohLWQj8suudC
- Y5+b8pD/7A+iX0Q6bU6lA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:9j0S/gy0o4w=:Q2TIczuQTWp3wJpyKPSxFN
- kduprlC31bdB30wYEBQ7NBx6S8/Lqcf/CjdjhOtxHNCR9mc45M95GSsu7ohhei7w+CzQV4lbg
- heiA/Ed1R9bYx3NqIusvKxW8SzFlPqkwRtpwpA52TNGgJJqBFFvHeAmMvbNiwK4vgEhq7/HpC
- wqIfq26V/4WqVuAspdXJyZZcJANkrwiyoLReT/9OMRvboEh01i/9r7qgxFSPkBwfAmCBpaC2Z
- CyI7mrHU5saTdnifqDpwnY1W5MsU3y/xDcCTS09AQRph6xBnCCwnHlO50TkaRxuUFwFBPvNXj
- yZBaI0vX3uEhBAF5gv2sG74j4Z4Yx0xm1jQiI5Iy/mqRA+w8rdXhffQSgOKnqcAVzhwcP4Uz7
- r7egN7oqMCiiwqSX9nW1ICK1EkvbNCqumFa/XOMeXzZkfN/YcL9barfQOnHQ5ZjGHDi6Jy6mF
- NuxEjoJERfCgeRSDmbK0m3Jy9pjj0wzc+oXyZrqIjp5fBHnMu5BvHotNLItJi1afRN3Dpa7dv
- bDWL3m8JeDjsLmfs1YDo3K9i1lYKplyXArW/8BclwNNb5H2LCwgjUqOnW2k9mTSLYeo8t3lbM
- xakuQdjVrHEMwpdHznpo9pGlgf/CmC0OqyOxrtTzqShCinlkIQa+wZcZgVb31dKmG7mgo9HYH
- TbjEBjx/ZHPU6qzw7eqMh+t/0kGVnaYtG4+hyqhSuIKN+10B+Yr3qgrSySMU+4lnCZfBHyKJF
- PK4EV6x/0NHe8Oj0AM2FL++fGbbYnKUhU20XPdwg1eLJrQvhNDZhwKOqlWLH7H5Pc9EqPt7UU
- cYaUIelZHwQPDUAPFpqTPYHp7wRPFW9jqizY+URsvgCkbBbM+ZWCzPfLb1Y9ftn/v6QHgnDEP
- djCgl8RvgzBtbAgco6G3GpZvrdDjVjAzVin2sINp32y5OXxc0M4qwZN7WqTHSoRLWCWpzVAAa
- gQgow8lvZ/o+4ErllCG0xUIc3jTD4+jgJoSYsK0wJ6emEUaoN6d4N6kNlG2qTjw0tKJNiJBrF
- 0iSOw9MiDzZDoS5btqXKOP5+5VXvYm0o66UYpIj7yjpez9ZOBSrwLjsVFn5XcmKEf3PvNLQGW
- 16qc+m9uvre66w5aXAlBAqn+jX7wW6nd3AmwRYavsFmIZlOH0Ub5FAPfg==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit ff6992735ade75aae3e35d16b17da1008d753d2=
-8:
+Hi Masahiro,
 
-  Linux 5.19-rc7 (2022-07-17 13:30:22 -0700)
+FYI, the error/warning still remains.
 
-are available in the Git repository at:
+tree:   https://github.com/jsarha/linux topic/chromeos-4.19-s0ix
+head:   430bdaa0a8c38697780f45a148964d71951df11f
+commit: 4fae0a1dc645742f2ecd6238813b2d30d4fb31cd [6418/9999] UPSTREAM: kbuild: add some extra warning flags unconditionally
+config: mips-randconfig-r012-20220807 (https://download.01.org/0day-ci/archive/20220807/202208070416.jdFdsESN-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mipsel-linux-gnu
+        # https://github.com/jsarha/linux/commit/4fae0a1dc645742f2ecd6238813b2d30d4fb31cd
+        git remote add jsarha https://github.com/jsarha/linux
+        git fetch --no-tags jsarha topic/chromeos-4.19-s0ix
+        git checkout 4fae0a1dc645742f2ecd6238813b2d30d4fb31cd
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash M=drivers/input
 
-  http://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git ta=
-gs/for-5.20/fbdev-1
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-for you to fetch changes up to 6ba592fa014f21f35a8ee8da4ca7b95a018f13e8:
+All warnings (new ones prefixed by >>):
 
-  video: fbdev: s3fb: Check the size of screen before memset_io() (2022-08=
--05 18:44:59 +0200)
+   In file included from drivers/input/keyreset.c:23:
+   In file included from include/linux/syscalls.h:85:
+   In file included from include/trace/syscall.h:7:
+   In file included from include/linux/trace_events.h:7:
+   In file included from include/linux/trace_seq.h:5:
+   include/linux/seq_buf.h:35:12: warning: assigning to 'char *' from 'unsigned char *' converts between pointers to integer types where one is of the unique plain 'char' type and the other is not [-Wpointer-sign]
+           s->buffer = buf;
+                     ^ ~~~
+>> drivers/input/keyreset.c:119:5: warning: no previous prototype for function 'keyreset_remove' [-Wmissing-prototypes]
+   int keyreset_remove(struct platform_device *pdev)
+       ^
+   drivers/input/keyreset.c:119:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int keyreset_remove(struct platform_device *pdev)
+   ^
+   static 
+   2 warnings generated.
+   Assembler messages:
+   Fatal error: invalid -march= option: `mips32'
+   clang-16: error: assembler command failed with exit code 1 (use -v to see invocation)
+--
+>> drivers/input/keycombo.c:234:5: warning: no previous prototype for function 'keycombo_remove' [-Wmissing-prototypes]
+   int keycombo_remove(struct platform_device *pdev)
+       ^
+   drivers/input/keycombo.c:234:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int keycombo_remove(struct platform_device *pdev)
+   ^
+   static 
+   1 warning generated.
+   Assembler messages:
+   Fatal error: invalid -march= option: `mips32'
+   clang-16: error: assembler command failed with exit code 1 (use -v to see invocation)
 
-=2D---------------------------------------------------------------
-fbdev fixes and updates for kernel v5.20-rc1
 
-The two major changes in this patchset corrects VGA modes, color
-handling and various other smaller fixes in the Atari framebuffer (by
-Geert Uytterhoeven), and devm_* conversion, platform data fixes and
-header cleanups in the imxfb driver (by Uwe Kleine-K=F6nig).
+vim +/keyreset_remove +119 drivers/input/keyreset.c
 
-Other small patches clean up code in sa1100fb, cirrusfb and omapfb,
-fix a refcount leak in amba-clcd (by Liang He), and adds parameter
-checks to arkfb, i740fb, vt8623fb and s3fb (by Zheyu Ma).
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21  @23  #include <linux/syscalls.h>
+5f2afc82f504df Daniel Rosenberg 2014-05-07   24  #include <linux/keycombo.h>
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   25  
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   26  struct keyreset_state {
+5f2afc82f504df Daniel Rosenberg 2014-05-07   27  	int restart_requested;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   28  	int (*reset_fn)(void);
+5f2afc82f504df Daniel Rosenberg 2014-05-07   29  	struct platform_device *pdev_child;
+595f7ba388d32f Daniel Rosenberg 2014-06-27   30  	struct work_struct restart_work;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   31  };
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   32  
+595f7ba388d32f Daniel Rosenberg 2014-06-27   33  static void do_restart(struct work_struct *unused)
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   34  {
+9a6baccec822de Eric Ernst       2016-09-02   35  	orderly_reboot();
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   36  }
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   37  
+5f2afc82f504df Daniel Rosenberg 2014-05-07   38  static void do_reset_fn(void *priv)
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   39  {
+5f2afc82f504df Daniel Rosenberg 2014-05-07   40  	struct keyreset_state *state = priv;
+5f2afc82f504df Daniel Rosenberg 2014-05-07   41  	if (state->restart_requested)
+5f2afc82f504df Daniel Rosenberg 2014-05-07   42  		panic("keyboard reset failed, %d", state->restart_requested);
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   43  	if (state->reset_fn) {
+5f2afc82f504df Daniel Rosenberg 2014-05-07   44  		state->restart_requested = state->reset_fn();
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   45  	} else {
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   46  		pr_info("keyboard reset\n");
+595f7ba388d32f Daniel Rosenberg 2014-06-27   47  		schedule_work(&state->restart_work);
+5f2afc82f504df Daniel Rosenberg 2014-05-07   48  		state->restart_requested = 1;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   49  	}
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   50  }
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   51  
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   52  static int keyreset_probe(struct platform_device *pdev)
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   53  {
+5f2afc82f504df Daniel Rosenberg 2014-05-07   54  	int ret = -ENOMEM;
+5f2afc82f504df Daniel Rosenberg 2014-05-07   55  	struct keycombo_platform_data *pdata_child;
+5f2afc82f504df Daniel Rosenberg 2014-05-07   56  	struct keyreset_platform_data *pdata = pdev->dev.platform_data;
+5f2afc82f504df Daniel Rosenberg 2014-05-07   57  	int up_size = 0, down_size = 0, size;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   58  	int key, *keyp;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   59  	struct keyreset_state *state;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   60  
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   61  	if (!pdata)
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   62  		return -EINVAL;
+5f2afc82f504df Daniel Rosenberg 2014-05-07   63  	state = devm_kzalloc(&pdev->dev, sizeof(*state), GFP_KERNEL);
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   64  	if (!state)
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   65  		return -ENOMEM;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   66  
+5f2afc82f504df Daniel Rosenberg 2014-05-07   67  	state->pdev_child = platform_device_alloc(KEYCOMBO_NAME,
+5f2afc82f504df Daniel Rosenberg 2014-05-07   68  							PLATFORM_DEVID_AUTO);
+5f2afc82f504df Daniel Rosenberg 2014-05-07   69  	if (!state->pdev_child)
+5f2afc82f504df Daniel Rosenberg 2014-05-07   70  		return -ENOMEM;
+5f2afc82f504df Daniel Rosenberg 2014-05-07   71  	state->pdev_child->dev.parent = &pdev->dev;
+595f7ba388d32f Daniel Rosenberg 2014-06-27   72  	INIT_WORK(&state->restart_work, do_restart);
+5f2afc82f504df Daniel Rosenberg 2014-05-07   73  
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   74  	keyp = pdata->keys_down;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   75  	while ((key = *keyp++)) {
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   76  		if (key >= KEY_MAX)
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   77  			continue;
+5f2afc82f504df Daniel Rosenberg 2014-05-07   78  		down_size++;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   79  	}
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   80  	if (pdata->keys_up) {
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   81  		keyp = pdata->keys_up;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   82  		while ((key = *keyp++)) {
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   83  			if (key >= KEY_MAX)
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21   84  				continue;
+5f2afc82f504df Daniel Rosenberg 2014-05-07   85  			up_size++;
+5f2afc82f504df Daniel Rosenberg 2014-05-07   86  		}
+5f2afc82f504df Daniel Rosenberg 2014-05-07   87  	}
+5f2afc82f504df Daniel Rosenberg 2014-05-07   88  	size = sizeof(struct keycombo_platform_data)
+5f2afc82f504df Daniel Rosenberg 2014-05-07   89  			+ sizeof(int) * (down_size + 1);
+5f2afc82f504df Daniel Rosenberg 2014-05-07   90  	pdata_child = devm_kzalloc(&pdev->dev, size, GFP_KERNEL);
+5f2afc82f504df Daniel Rosenberg 2014-05-07   91  	if (!pdata_child)
+5f2afc82f504df Daniel Rosenberg 2014-05-07   92  		goto error;
+5f2afc82f504df Daniel Rosenberg 2014-05-07   93  	memcpy(pdata_child->keys_down, pdata->keys_down,
+5f2afc82f504df Daniel Rosenberg 2014-05-07   94  						sizeof(int) * down_size);
+5f2afc82f504df Daniel Rosenberg 2014-05-07   95  	if (up_size > 0) {
+5f2afc82f504df Daniel Rosenberg 2014-05-07   96  		pdata_child->keys_up = devm_kzalloc(&pdev->dev, up_size + 1,
+5f2afc82f504df Daniel Rosenberg 2014-05-07   97  								GFP_KERNEL);
+5f2afc82f504df Daniel Rosenberg 2014-05-07   98  		if (!pdata_child->keys_up)
+5f2afc82f504df Daniel Rosenberg 2014-05-07   99  			goto error;
+5f2afc82f504df Daniel Rosenberg 2014-05-07  100  		memcpy(pdata_child->keys_up, pdata->keys_up,
+5f2afc82f504df Daniel Rosenberg 2014-05-07  101  							sizeof(int) * up_size);
+5f2afc82f504df Daniel Rosenberg 2014-05-07  102  		if (!pdata_child->keys_up)
+5f2afc82f504df Daniel Rosenberg 2014-05-07  103  			goto error;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21  104  	}
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21  105  	state->reset_fn = pdata->reset_fn;
+5f2afc82f504df Daniel Rosenberg 2014-05-07  106  	pdata_child->key_down_fn = do_reset_fn;
+5f2afc82f504df Daniel Rosenberg 2014-05-07  107  	pdata_child->priv = state;
+5f2afc82f504df Daniel Rosenberg 2014-05-07  108  	pdata_child->key_down_delay = pdata->key_down_delay;
+5f2afc82f504df Daniel Rosenberg 2014-05-07  109  	ret = platform_device_add_data(state->pdev_child, pdata_child, size);
+5f2afc82f504df Daniel Rosenberg 2014-05-07  110  	if (ret)
+5f2afc82f504df Daniel Rosenberg 2014-05-07  111  		goto error;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21  112  	platform_set_drvdata(pdev, state);
+5f2afc82f504df Daniel Rosenberg 2014-05-07  113  	return platform_device_add(state->pdev_child);
+5f2afc82f504df Daniel Rosenberg 2014-05-07  114  error:
+5f2afc82f504df Daniel Rosenberg 2014-05-07  115  	platform_device_put(state->pdev_child);
+5f2afc82f504df Daniel Rosenberg 2014-05-07  116  	return ret;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21  117  }
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21  118  
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21 @119  int keyreset_remove(struct platform_device *pdev)
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21  120  {
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21  121  	struct keyreset_state *state = platform_get_drvdata(pdev);
+5f2afc82f504df Daniel Rosenberg 2014-05-07  122  	platform_device_put(state->pdev_child);
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21  123  	return 0;
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21  124  }
+fa50e390aa4e9f Arve Hjønnevåg   2008-11-21  125  
 
-=2D---------------------------------------------------------------
-Geert Uytterhoeven (14):
-      video: fbdev: amiga: Simplify amifb_pan_display()
-      video: fbdev: sa1100fb: Remove unused sa1100fb_setup()
-      video: fbdev: cirrusfb: Make cirrusfb_zorro_unregister() static
-      video: fbdev: Make *fb_setup() and *fb_init() static
-      video: fbdev: atari: Simplify atafb_pan_display()
-      video: fbdev: atari: Remove bogus FB_VMODE_YWRAP flags
-      video: fbdev: atari: Fix inverse handling
-      video: fbdev: atari: Fix ext_setcolreg()
-      video: fbdev: atari: Remove unneeded casts from void *
-      video: fbdev: atari: Remove unneeded casts to void *
-      video: fbdev: atari: Fix TT High video mode vertical refresh
-      video: fbdev: atari: Fix VGA modes
-      video: fbdev: atari: Remove unused definitions and variables
-      video: fbdev: atari: Remove backward bug-compatibility
+:::::: The code at line 119 was first introduced by commit
+:::::: fa50e390aa4e9f5596734b01f927e5dca1f19843 ANDROID: input: keyreset: Add keyreset driver.
 
-Helge Deller (1):
-      video: fbdev: omapfb: Unexport omap*_update_window_async()
+:::::: TO: Arve Hjønnevåg <arve@android.com>
+:::::: CC: Guenter Roeck <groeck@chromium.org>
 
-Liang He (1):
-      video: fbdev: amba-clcd: Fix refcount leak bugs
-
-Rustam Subkhankulov (1):
-      video: fbdev: sis: fix typos in SiS_GetModeID()
-
-Uwe Kleine-K=F6nig (4):
-      video: fbdev: imxfb: Drop platform data support
-      video: fbdev: imxfb: Drop unused symbols from header
-      video: fbdev: imxfb: Fold <linux/platform_data/video-imxfb.h> into o=
-nly user
-      video: fbdev: imxfb: Convert request_mem_region + ioremap to devm_io=
-remap_resource
-
-Yang Yingliang (1):
-      video: fbdev: imxfb: fix return value check in imxfb_probe()
-
-Zheyu Ma (5):
-      video: fbdev: arkfb: Fix a divide-by-zero bug in ark_set_pixclock()
-      video: fbdev: i740fb: Check the argument of i740_calc_vclk()
-      video: fbdev: vt8623fb: Check the size of screen before memset_io()
-      video: fbdev: arkfb: Check the size of screen before memset_io()
-      video: fbdev: s3fb: Check the size of screen before memset_io()
-
- Documentation/m68k/kernel-options.rst     |   4 +-
- MAINTAINERS                               |   1 -
- drivers/video/fbdev/68328fb.c             |   7 +-
- drivers/video/fbdev/amba-clcd.c           |  24 ++++--
- drivers/video/fbdev/amifb.c               |  15 +---
- drivers/video/fbdev/arkfb.c               |   9 +-
- drivers/video/fbdev/atafb.c               | 103 +++++++----------------
- drivers/video/fbdev/cirrusfb.c            |   2 +-
- drivers/video/fbdev/dnfb.c                |   2 +-
- drivers/video/fbdev/fm2fb.c               |   4 +-
- drivers/video/fbdev/hpfb.c                |   4 +-
- drivers/video/fbdev/i740fb.c              |   9 +-
- drivers/video/fbdev/imxfb.c               | 134 +++++++++++--------------=
------
- drivers/video/fbdev/omap/hwa742.c         |   3 +-
- drivers/video/fbdev/omap/omapfb.h         |   9 --
- drivers/video/fbdev/omap/omapfb_main.c    |   3 +-
- drivers/video/fbdev/q40fb.c               |   2 +-
- drivers/video/fbdev/s3fb.c                |   2 +
- drivers/video/fbdev/sa1100fb.c            |  41 ---------
- drivers/video/fbdev/sis/init.c            |   4 +-
- drivers/video/fbdev/skeletonfb.c          |   6 +-
- drivers/video/fbdev/valkyriefb.c          |  10 +--
- drivers/video/fbdev/vt8623fb.c            |   2 +
- include/linux/platform_data/video-imxfb.h |  70 ----------------
- 24 files changed, 136 insertions(+), 334 deletions(-)
- delete mode 100644 include/linux/platform_data/video-imxfb.h
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
