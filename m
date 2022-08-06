@@ -2,176 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C83A5C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 15:25:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEBFFC25B08
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 15:26:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232866AbiHFPZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 11:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46786 "EHLO
+        id S232809AbiHFP0w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 11:26:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232636AbiHFPZZ (ORCPT
+        with ESMTP id S231479AbiHFP0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 11:25:25 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51A89FC2;
-        Sat,  6 Aug 2022 08:25:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659799524; x=1691335524;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=T/RhLZ5ogPkiHbWiY0hUVl7ToaXbUI2YnBdA5OdIpAg=;
-  b=Q1N9RxhVcE657AZn261qFXphRXI+Ng1+kwrJ3dktoup6t5WMFkOKnI3L
-   2sqoucURJDCjZvRZSk7u3UJq1Ns+D7OioQkhnwBk1tw/GIt1cJ7zwLCzA
-   oSc+9KxeZvMp15ej1jpVFrjsNu2xdXbq2fpxXtxws5Y7MpvuwBd3H2ici
-   vhzu/X7LPa0eqJfgsOZCZJNJTTjq8HRGjMOvlSOPfU2aOfc5TPvpa+KU0
-   LKdvIsZ0NrGGflryuVjCVsObc703eRFfVhGlstoEWg1z5tkRalK79BAbJ
-   20huNHhP72DtsGFeH2WVAP2Gb9NHHoO036sg4MXuQINeqEeNYi8KVaSub
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="291149402"
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="291149402"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 08:25:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="636811018"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 06 Aug 2022 08:25:20 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id F063017D8; Sat,  6 Aug 2022 18:25:31 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Guenter Roeck <linux@roeck-us.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-hwmon@vger.kernel.org
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Subject: [PATCH v1 2/3] pwm: core: Get rid of unused devm_of_pwm_get()
-Date:   Sat,  6 Aug 2022 18:25:16 +0300
-Message-Id: <20220806152517.78159-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220806152517.78159-1-andriy.shevchenko@linux.intel.com>
-References: <20220806152517.78159-1-andriy.shevchenko@linux.intel.com>
+        Sat, 6 Aug 2022 11:26:50 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A3BBFD2B;
+        Sat,  6 Aug 2022 08:26:49 -0700 (PDT)
+Received: from [192.168.10.23] (unknown [39.46.64.186])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: usama.anjum)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 2DBC66601B6F;
+        Sat,  6 Aug 2022 16:26:42 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1659799607;
+        bh=HdwNEzS966/lk5zR+dVV1aaOS5MuoSUELdjHQTmX1ck=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=HDDak1UXe3vv3h6kbHJQw7nwZjtGvmIT5Eswp61Mt56xLYkr35C+q+Rxh6u6G/emW
+         M+MX2oNqsYx//x0KRiMj6Y5LMa9eWduO6ou/m2yP1QodLjmPMEedsmwlZxCIeidodn
+         q8IC1H462Z/ZmRDBNSbwcpTV1D1+lNaao+Ffoqj/pPqOOF2HG0zJXAXYcCL6CMF5pG
+         J/1ln4sQOyT1cAfYtvrG73OTbkjpmInT9pkughxsjq6wk4SQ2rR+dqmjSUJKl+cQHG
+         Kbhkoo0M61HxjGHIKuV60hsv9Wmu7xVLA0B3LI2xVuZbETd7FhktzCbV5CtcBRTkUX
+         E6ALLlo/Nz/wQ==
+Message-ID: <55c8de7e-a6e8-fc79-794d-53536ad7a65d@collabora.com>
+Date:   Sat, 6 Aug 2022 20:26:38 +0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc:     usama.anjum@collabora.com, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [PATCH v2] selftests/net: Refactor xfrm_fill_key() to use array
+ of structs
+Content-Language: en-US
+To:     Gautam Menghani <gautammenghani201@gmail.com>,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, shuah@kernel.org
+References: <20220803032312.3939-1-gautammenghani201@gmail.com>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <20220803032312.3939-1-gautammenghani201@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The devm_of_pwm_get() has recently lost its single user, drop
-the dead API as well.
+On 8/3/22 8:23 AM, Gautam Menghani wrote:
+> A TODO in net/ipsec.c asks to refactor the code in xfrm_fill_key() to
+> use set/map to avoid manually comparing each algorithm with the "name" 
+> parameter passed to the function as an argument. This patch refactors 
+> the code to create an array of structs where each struct contains the 
+> algorithm name and its corresponding key length.
+> 
+> Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+> ---
+> changes in v2:
+> 1. Fix the compilation warnings for struct and variable declaration
+> 
+>  tools/testing/selftests/net/ipsec.c | 108 +++++++++++++---------------
+>  1 file changed, 49 insertions(+), 59 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/net/ipsec.c b/tools/testing/selftests/net/ipsec.c
+> index cc10c10c5ed9..4a0eeb5b71d2 100644
+> --- a/tools/testing/selftests/net/ipsec.c
+> +++ b/tools/testing/selftests/net/ipsec.c
+> @@ -58,6 +58,8 @@
+>  #define VETH_FMT	"ktst-%d"
+>  #define VETH_LEN	12
+>  
+> +#define XFRM_ALGO_NR_KEYS 29
+> +
+>  static int nsfd_parent	= -1;
+>  static int nsfd_childa	= -1;
+>  static int nsfd_childb	= -1;
+> @@ -75,6 +77,46 @@ const unsigned int ping_timeout		= 300;
+>  const unsigned int ping_count		= 100;
+>  const unsigned int ping_success		= 80;
+>  
+> +struct xfrm_key_entry {
+> +	char algo_name[35];
+> +	int key_len;
+> +};
+> +
+> +struct xfrm_key_entry xfrm_key_entries[XFRM_ALGO_NR_KEYS];
+There seems no need to fill up xfrm_key_entries at run time. Please fill
+them at compile time.
 
-Note, the new code should use either plain pwm_get() or managed
-devm_pwm_get() or devm_fwnode_pwm_get() APIs.
+struct xfrm_key_entry xfrm_key_entries[] = {
+	{"digest_null", 0},
+	{"ecb(cipher_null)", 0},
+	...
+};
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- .../driver-api/driver-model/devres.rst        |  1 -
- Documentation/driver-api/pwm.rst              |  3 +-
- drivers/pwm/core.c                            | 30 -------------------
- include/linux/pwm.h                           | 10 -------
- 4 files changed, 1 insertion(+), 43 deletions(-)
+> +
+> +static void init_xfrm_algo_keys(void)
+> +{
+> +	xfrm_key_entries[0] = (struct xfrm_key_entry) {"digest_null", 0};
+> +	xfrm_key_entries[1] = (struct xfrm_key_entry) {"ecb(cipher_null)", 0};
+> +	xfrm_key_entries[2] = (struct xfrm_key_entry) {"cbc(des)", 64};
+> +	xfrm_key_entries[3] = (struct xfrm_key_entry) {"hmac(md5)", 128};
+> +	xfrm_key_entries[4] = (struct xfrm_key_entry) {"cmac(aes)", 128};
+> +	xfrm_key_entries[5] = (struct xfrm_key_entry) {"xcbc(aes)", 128};
+> +	xfrm_key_entries[6] = (struct xfrm_key_entry) {"cbc(cast5)", 128};
+> +	xfrm_key_entries[7] = (struct xfrm_key_entry) {"cbc(serpent)", 128};
+> +	xfrm_key_entries[8] = (struct xfrm_key_entry) {"hmac(sha1)", 160};
+> +	xfrm_key_entries[9] = (struct xfrm_key_entry) {"hmac(rmd160)", 160};
+> +	xfrm_key_entries[10] = (struct xfrm_key_entry) {"cbc(des3_ede)", 192};
+> +	xfrm_key_entries[11] = (struct xfrm_key_entry) {"hmac(sha256)", 256};
+> +	xfrm_key_entries[12] = (struct xfrm_key_entry) {"cbc(aes)", 256};
+> +	xfrm_key_entries[13] = (struct xfrm_key_entry) {"cbc(camellia)", 256};
+> +	xfrm_key_entries[14] = (struct xfrm_key_entry) {"cbc(twofish)", 256};
+> +	xfrm_key_entries[15] = (struct xfrm_key_entry) {"rfc3686(ctr(aes))", 288};
+> +	xfrm_key_entries[16] = (struct xfrm_key_entry) {"hmac(sha384)", 384};
+> +	xfrm_key_entries[17] = (struct xfrm_key_entry) {"cbc(blowfish)", 448};
+> +	xfrm_key_entries[18] = (struct xfrm_key_entry) {"hmac(sha512)", 512};
+> +	xfrm_key_entries[19] = (struct xfrm_key_entry) {"rfc4106(gcm(aes))-128", 160};
+> +	xfrm_key_entries[20] = (struct xfrm_key_entry) {"rfc4543(gcm(aes))-128", 160};
+> +	xfrm_key_entries[21] = (struct xfrm_key_entry) {"rfc4309(ccm(aes))-128", 152};
+> +	xfrm_key_entries[22] = (struct xfrm_key_entry) {"rfc4106(gcm(aes))-192", 224};
+> +	xfrm_key_entries[23] = (struct xfrm_key_entry) {"rfc4543(gcm(aes))-192", 224};
+> +	xfrm_key_entries[24] = (struct xfrm_key_entry) {"rfc4309(ccm(aes))-192", 216};
+> +	xfrm_key_entries[25] = (struct xfrm_key_entry) {"rfc4106(gcm(aes))-256", 288};
+> +	xfrm_key_entries[26] = (struct xfrm_key_entry) {"rfc4543(gcm(aes))-256", 288};
+> +	xfrm_key_entries[27] = (struct xfrm_key_entry) {"rfc4309(ccm(aes))-256", 280};
+> +	xfrm_key_entries[28] = (struct xfrm_key_entry) {"rfc7539(chacha20,poly1305)-128", 0};
+> +}
 
-diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
-index aeb3b2d7cc54..e431f1d746b6 100644
---- a/Documentation/driver-api/driver-model/devres.rst
-+++ b/Documentation/driver-api/driver-model/devres.rst
-@@ -410,7 +410,6 @@ POWER
- 
- PWM
-   devm_pwm_get()
--  devm_of_pwm_get()
-   devm_fwnode_pwm_get()
- 
- REGULATOR
-diff --git a/Documentation/driver-api/pwm.rst b/Documentation/driver-api/pwm.rst
-index fd26c3d895b6..8c71a2055d27 100644
---- a/Documentation/driver-api/pwm.rst
-+++ b/Documentation/driver-api/pwm.rst
-@@ -40,8 +40,7 @@ after usage with pwm_free().
- 
- New users should use the pwm_get() function and pass to it the consumer
- device or a consumer name. pwm_put() is used to free the PWM device. Managed
--variants of the getter, devm_pwm_get(), devm_of_pwm_get(),
--devm_fwnode_pwm_get(), also exist.
-+variants of the getter, devm_pwm_get() and devm_fwnode_pwm_get(), also exist.
- 
- After being requested, a PWM has to be configured using::
- 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 0e042410f6b9..dc1b7263a0b0 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -1070,36 +1070,6 @@ struct pwm_device *devm_pwm_get(struct device *dev, const char *con_id)
- }
- EXPORT_SYMBOL_GPL(devm_pwm_get);
- 
--/**
-- * devm_of_pwm_get() - resource managed of_pwm_get()
-- * @dev: device for PWM consumer
-- * @np: device node to get the PWM from
-- * @con_id: consumer name
-- *
-- * This function performs like of_pwm_get() but the acquired PWM device will
-- * automatically be released on driver detach.
-- *
-- * Returns: A pointer to the requested PWM device or an ERR_PTR()-encoded
-- * error code on failure.
-- */
--struct pwm_device *devm_of_pwm_get(struct device *dev, struct device_node *np,
--				   const char *con_id)
--{
--	struct pwm_device *pwm;
--	int ret;
--
--	pwm = of_pwm_get(dev, np, con_id);
--	if (IS_ERR(pwm))
--		return pwm;
--
--	ret = devm_add_action_or_reset(dev, devm_pwm_release, pwm);
--	if (ret)
--		return ERR_PTR(ret);
--
--	return pwm;
--}
--EXPORT_SYMBOL_GPL(devm_of_pwm_get);
--
- /**
-  * devm_fwnode_pwm_get() - request a resource managed PWM from firmware node
-  * @dev: device for PWM consumer
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index 9429930c5566..572ba92e4206 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -408,8 +408,6 @@ struct pwm_device *of_pwm_get(struct device *dev, struct device_node *np,
- void pwm_put(struct pwm_device *pwm);
- 
- struct pwm_device *devm_pwm_get(struct device *dev, const char *con_id);
--struct pwm_device *devm_of_pwm_get(struct device *dev, struct device_node *np,
--				   const char *con_id);
- struct pwm_device *devm_fwnode_pwm_get(struct device *dev,
- 				       struct fwnode_handle *fwnode,
- 				       const char *con_id);
-@@ -517,14 +515,6 @@ static inline struct pwm_device *devm_pwm_get(struct device *dev,
- 	return ERR_PTR(-ENODEV);
- }
- 
--static inline struct pwm_device *devm_of_pwm_get(struct device *dev,
--						 struct device_node *np,
--						 const char *con_id)
--{
--	might_sleep();
--	return ERR_PTR(-ENODEV);
--}
--
- static inline struct pwm_device *
- devm_fwnode_pwm_get(struct device *dev, struct fwnode_handle *fwnode,
- 		    const char *con_id)
 -- 
-2.35.1
-
+Muhammad Usama Anjum
