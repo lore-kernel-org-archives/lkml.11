@@ -2,266 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 503D8C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 16:33:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C0D9C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 16:34:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229780AbiHFQdK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 12:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52718 "EHLO
+        id S232967AbiHFQeF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 12:34:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233397AbiHFQdG (ORCPT
+        with ESMTP id S231597AbiHFQeC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 12:33:06 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE853FD22
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 09:33:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659803584; x=1691339584;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=nDDFgsQSuZ6QBnUHbXm4VzzkeRn1Fpt+27ObtEcY8jk=;
-  b=V53AzZz+GF8isVmSae+983vzQua8u08dKJ09bomBZx4VuvDOpDbBK38q
-   7z05K11mybb75LWR4RmP9BDOtSSo5Nvl32XiZcSQWoYaE+Wb2ux/eHvFF
-   yBR55uLy+QQNzJv+j35z+q3BOMZm8kl8TAbFNXPWDskJIr1v3koqkRyE7
-   eSfx11WRLzjs7p0eFvaFiXGCKcZJGMrgCKdGvXlOcNsES2htEwZTrs9NA
-   81rvo2ihOYrzE/RfiJWpo+iF/DFTi6eMTBcqtjRGXrQq8pFv7R8NBgzVP
-   YyzQO3exe1ivngaQlax+OJ0y8So3Lu9cYN6uBusf8Y+o2XrvNt0N879Lo
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="270152568"
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="270152568"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 09:33:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="693309149"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 06 Aug 2022 09:33:03 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oKMjW-000KWZ-2c;
-        Sat, 06 Aug 2022 16:33:02 +0000
-Date:   Sun, 7 Aug 2022 00:32:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hector Martin <marcan@marcan.st>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [asahilinux:bits/090-spi-hid 17/21]
- drivers/hid/dockchannel-hid/dockchannel-hid.c:569:37: warning: format '%ld'
- expects argument of type 'long int', but argument 3 has type 'size_t' {aka
- 'unsigned int'}
-Message-ID: <202208070010.KglsBSww-lkp@intel.com>
+        Sat, 6 Aug 2022 12:34:02 -0400
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A37FD22;
+        Sat,  6 Aug 2022 09:34:01 -0700 (PDT)
+Received: by mail-il1-x131.google.com with SMTP id p10so2739313ile.5;
+        Sat, 06 Aug 2022 09:34:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=CrJZA7OyrjgVNT2yluOnXy9DkAQBVd94845d/Gv6tLM=;
+        b=BBnD1fZYV9L2qmB93O8uuBM7b56i/6rpHB39Gt4NkxShp0AsrpWMBGl/hy/vBshktb
+         uqT7gsS2icCt8SfpYN2cW6sPvBtB/02bOxI5UVcvvsI/8/XBDUx7U4iufh68Zr1Vyx0U
+         XvNmYYOCkUDsh5TTrbb9bEEjDI+H/1OLOc0H1OlLUGHf9BtWfGLsiDMZMr/jTUTb0gmn
+         yGOy1qm7kpSH4/DUDZ1T6G81Bd6zON/uxEygpVzX3b1VL4aJi8ob277QNJZpYb1V0xo0
+         pf/bRHA4vutnBu8e7AerEFWX2zS+hrsbt2OeIkRRfDjTTVllZumPKga35ZYUcjwZIZp7
+         aOig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=CrJZA7OyrjgVNT2yluOnXy9DkAQBVd94845d/Gv6tLM=;
+        b=T2GHP5MRfLr/qE5C7SU/xy2qZFIasNgxb7LXrXD7mcjc9ZyBrToCFeaUQh0sCly0GN
+         cL9PaZMEjtq7yUP0Pm8yPUZ0xZ0LNG4AUSWO0ONYLuE09boHpVwUc0wld0HrMXphkbQY
+         oqqp7KwSbDikmqAHqYb5P9GTjx7wW4DrtSqU2XX60u8GaMPoAdNArnApZZAnOqohndM9
+         SCzL4Jj+VfNALd5JmFOLimNXQOGlr8wrfw+cvpHnFe4Cm/r5l+cDhbZNqnozKWFKIk0K
+         ah3IekXYCuyqX1GztM2Js5j8qHuXR57+Ja/QfzdABjuy1SFf4R9Bhl7sUyPIHPvRud+6
+         TDpw==
+X-Gm-Message-State: ACgBeo0JRZBxxgvYtl24KQtKUpDLZJv9ZIQCGDPKK3V8wCEi1ZLS26kC
+        NEYUTGslHJv+bKmYUeNSuJkGCa921DUb4hEU
+X-Google-Smtp-Source: AA6agR4ik2yLjyl4JGzH05jPebblOZOGEbVYo9YxyJpbB8q+HpxUbT/8PJmzG5GbANnhrZXBdyKDhQ==
+X-Received: by 2002:a05:6e02:1a61:b0:2e0:c417:4cb0 with SMTP id w1-20020a056e021a6100b002e0c4174cb0mr1025014ilv.186.1659803640515;
+        Sat, 06 Aug 2022 09:34:00 -0700 (PDT)
+Received: from nergzd-desktop.localdomain (tor-exit-50.for-privacy.net. [185.220.101.50])
+        by smtp.gmail.com with ESMTPSA id a20-20020a056e020e1400b002de6fa0d0c0sm2908009ilk.63.2022.08.06.09.33.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Aug 2022 09:34:00 -0700 (PDT)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Helge Deller <deller@gmx.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Tony Lindgren <tony@atomide.com>, linux-doc@vger.kernel.org,
+        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH v2 0/3] Add generic framebuffer support to EFI earlycon driver
+Date:   Sat,  6 Aug 2022 19:32:21 +0300
+Message-Id: <20220806163255.10404-1-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux bits/090-spi-hid
-head:   740efddf69b264d6439f9cf124d36acab812dd39
-commit: 55af457be82d0853857bab148c649a328aa58ffa [17/21] hid: Add Apple DockChannel HID transport driver
-config: parisc64-allyesconfig (https://download.01.org/0day-ci/archive/20220807/202208070010.KglsBSww-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/AsahiLinux/linux/commit/55af457be82d0853857bab148c649a328aa58ffa
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux bits/090-spi-hid
-        git checkout 55af457be82d0853857bab148c649a328aa58ffa
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash drivers/hid/dockchannel-hid/ drivers/net/ethernet/aquantia/atlantic/ sound/soc/codecs/
+Make the EFI earlycon driver be suitable for any linear framebuffers.
+This should be helpful for early porting of boards with no other means of
+output, like smartphones/tablets. There seems to be an issue with early_ioremap
+function on ARM32, but I am unable to find the exact cause. It appears the mappings
+returned by it are somehow incorrect, thus the driver is disabled on ARM. EFI early
+console was disabled on IA64 previously because of missing early_memremap_prot,
+and this is inherited to this driver.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+This patch also changes behavior on EFI systems, by selecting the mapping type
+based on if the framebuffer region intersects with system RAM. If it does, it's
+common sense that it should be in RAM as a whole, and so the system RAM mapping is
+used. It was tested to be working on my PC (Intel Z490 platform), as well as several
+ARM64 boards (Samsung Galaxy S9 (Exynos), iPad Air 2, Xiaomi Mi Pad 4, ...).
 
-All warnings (new ones prefixed by >>):
-
-   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dchid_cmd':
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:303:28: error: implicit declaration of function 'FIELD_PREP' [-Werror=implicit-function-declaration]
-     303 |         iface->out_flags = FIELD_PREP(FLAGS_GROUP, type) | FIELD_PREP(FLAGS_REQ, req);
-         |                            ^~~~~~~~~~
-   In file included from include/linux/device.h:15,
-                    from drivers/hid/dockchannel-hid/dockchannel-hid.c:10:
-   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dchid_handle_ready':
->> drivers/hid/dockchannel-hid/dockchannel-hid.c:569:37: warning: format '%ld' expects argument of type 'long int', but argument 3 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
-     569 |                 dev_err(dchid->dev, "Bad length for ready message: %ld\n", length);
-         |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ^~~
-   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
-     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                        ^~~~~~~
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:569:17: note: in expansion of macro 'dev_err'
-     569 |                 dev_err(dchid->dev, "Bad length for ready message: %ld\n", length);
-         |                 ^~~~~~~
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:569:70: note: format string is defined here
-     569 |                 dev_err(dchid->dev, "Bad length for ready message: %ld\n", length);
-         |                                                                    ~~^
-         |                                                                      |
-         |                                                                      long int
-         |                                                                    %d
-   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dchid_packet_work':
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:825:20: error: implicit declaration of function 'FIELD_GET'; did you mean 'FOLL_GET'? [-Werror=implicit-function-declaration]
-     825 |         int type = FIELD_GET(FLAGS_GROUP, shdr->flags);
-         |                    ^~~~~~~~~
-         |                    FOLL_GET
->> drivers/hid/dockchannel-hid/dockchannel-hid.c:829:37: warning: format '%ld' expects argument of type 'long int', but argument 4 has type 'unsigned int' [-Wformat=]
-     829 |                 dev_err(dchid->dev, "Bad sub header length (%d > %ld)\n",
-         |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ^~~
-   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
-     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                        ^~~~~~~
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:829:17: note: in expansion of macro 'dev_err'
-     829 |                 dev_err(dchid->dev, "Bad sub header length (%d > %ld)\n",
-         |                 ^~~~~~~
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:829:68: note: format string is defined here
-     829 |                 dev_err(dchid->dev, "Bad sub header length (%d > %ld)\n",
-         |                                                                  ~~^
-         |                                                                    |
-         |                                                                    long int
-         |                                                                  %d
-   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dchid_handle_ack':
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:855:44: warning: format '%ld' expects argument of type 'long int', but argument 4 has type 'unsigned int' [-Wformat=]
-     855 |                 dev_err(iface->dchid->dev, "Bad sub header length (%d > %ld)\n",
-         |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
-     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
-         |                              ^~~
-   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
-     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                                                        ^~~~~~~
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:855:17: note: in expansion of macro 'dev_err'
-     855 |                 dev_err(iface->dchid->dev, "Bad sub header length (%d > %ld)\n",
-         |                 ^~~~~~~
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:855:75: note: format string is defined here
-     855 |                 dev_err(iface->dchid->dev, "Bad sub header length (%d > %ld)\n",
-         |                                                                         ~~^
-         |                                                                           |
-         |                                                                           long int
-         |                                                                         %d
-   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dockchannel_hid_probe':
-   drivers/hid/dockchannel-hid/dockchannel-hid.c:975:14: warning: variable 'defer' set but not used [-Wunused-but-set-variable]
-     975 |         bool defer = false;
-         |              ^~~~~
-   cc1: some warnings being treated as errors
+Markuss Broks (2):
+  drivers: serial: earlycon: Pass device-tree node
+  efi: earlycon: Add support for generic framebuffers and move to fbdev
+    subsystem
 
 
-vim +569 drivers/hid/dockchannel-hid/dockchannel-hid.c
+v1 -> v2:
 
-   558	
-   559	static void dchid_handle_ready(struct dockchannel_hid *dchid, void *data, size_t length)
-   560	{
-   561		struct hid_device *hid;
-   562		struct dchid_iface *iface;
-   563		int ret;
-   564		u8 *pkt = data;
-   565		u8 index;
-   566		int i;
-   567	
-   568		if (length < 2) {
- > 569			dev_err(dchid->dev, "Bad length for ready message: %ld\n", length);
-   570			return;
-   571		}
-   572	
-   573		index = pkt[1];
-   574	
-   575		if (index >= MAX_INTERFACES) {
-   576			dev_err(dchid->dev, "Got ready notification for bad iface %d\n", index);
-   577			return;
-   578		}
-   579	
-   580		iface = dchid->ifaces[index];
-   581		if (!iface) {
-   582			dev_err(dchid->dev, "Got ready notification for unknown iface %d\n", index);
-   583			return;
-   584		}
-   585	
-   586		if (iface->hid) {
-   587			dev_warn(iface->dchid->dev, "Interface %s already ready!\n",
-   588				 iface->name);
-   589			return;
-   590		}
-   591	
-   592		/* When STM is ready, grab global device info */
-   593		if (!strcmp(iface->name, "stm")) {
-   594			ret = dchid_get_report_cmd(iface, STM_REPORT_ID, &dchid->device_id,
-   595						   sizeof(dchid->device_id));
-   596			if (ret < sizeof(dchid->device_id)) {
-   597				dev_warn(iface->dchid->dev, "Failed to get device ID from STM!\n");
-   598				/* Fake it and keep going. Things might still work... */
-   599				memset(&dchid->device_id, 0, sizeof(dchid->device_id));
-   600				dchid->device_id.vendor_id = HOST_VENDOR_ID_APPLE;
-   601			}
-   602			ret = dchid_get_report_cmd(iface, STM_REPORT_SERIAL, dchid->serial,
-   603						   sizeof(dchid->serial) - 1);
-   604			if (ret < 0) {
-   605				dev_warn(iface->dchid->dev, "Failed to get serial from STM!\n");
-   606				dchid->serial[0] = 0;
-   607			}
-   608	
-   609			dchid->id_ready = true;
-   610			for (i = 0; i < MAX_INTERFACES; i++)
-   611				if (dchid->ifaces[i] && dchid->ifaces[i]->deferred)
-   612					dchid_init_interface(dchid->ifaces[i]);
-   613	
-   614		}
-   615	
-   616		hid = hid_allocate_device();
-   617		if (IS_ERR(hid))
-   618			return;
-   619	
-   620		snprintf(hid->name, sizeof(hid->name), "Apple MTP %s", iface->name);
-   621		snprintf(hid->phys, sizeof(hid->phys), "%s.%d (%s)",
-   622			 dev_name(iface->dchid->dev), iface->index, iface->name);
-   623		strscpy(hid->uniq, dchid->serial, sizeof(hid->uniq));
-   624	
-   625		hid->ll_driver = &dchid_ll;
-   626		hid->bus = BUS_HOST;
-   627		hid->vendor = dchid->device_id.vendor_id;
-   628		hid->product = dchid->device_id.product_id;
-   629		hid->version = dchid->device_id.version_number;
-   630		hid->type = HID_TYPE_OTHER;
-   631		if (!strcmp(iface->name, "multi-touch")) {
-   632			hid->type = HID_TYPE_SPI_MOUSE;
-   633		} else if (!strcmp(iface->name, "keyboard")) {
-   634			hid->type = HID_TYPE_SPI_KEYBOARD;
-   635	
-   636			/* These country codes match what earlier Apple HID keyboards did */
-   637			switch (dchid->device_id.keyboard_type) {
-   638			case KEYBOARD_TYPE_ANSI:
-   639				hid->country = 33; // US-English
-   640				break;
-   641	
-   642			case KEYBOARD_TYPE_ISO:
-   643				hid->country = 13; // ISO
-   644				break;
-   645	
-   646			case KEYBOARD_TYPE_JIS:
-   647				hid->country = 15; // Japan
-   648				break;
-   649			}
-   650		}
-   651	
-   652		hid->dev.parent = iface->dchid->dev;
-   653		hid->driver_data = iface;
-   654	
-   655		ret = hid_add_device(hid);
-   656		if (ret < 0) {
-   657			hid_destroy_device(hid);
-   658			dev_warn(iface->dchid->dev, "Failed to register hid device %s", iface->name);
-   659			return;
-   660		}
-   661	
-   662		iface->hid = hid;
-   663	}
-   664	
+- a new patch correcting serial/earlycon.c argument name to "offset" instead
+  of "node"
+- move IA64 exclusion from EFI earlycon Kconfig to earlycon driver Kconfig
+  (IA64 has no early_memremap_prot)
+- move driver from fbdev to console subsystem
+- select EFI earlycon by default
+- fetch stride manually from device-tree, as on some devices it seems stride
+  doesn't match the horizontal resolution * bpp.
+- use saner format (e.g. 1920x1080x32 instead of 1920,1080,32).
+
+ .../admin-guide/kernel-parameters.txt         |  12 +-
+ MAINTAINERS                                   |   5 +
+ drivers/firmware/efi/Kconfig                  |   6 +-
+ drivers/firmware/efi/Makefile                 |   1 -
+ drivers/firmware/efi/earlycon.c               | 246 --------------
+ drivers/tty/serial/earlycon.c                 |   3 +
+ drivers/video/fbdev/Kconfig                   |  11 +
+ drivers/video/fbdev/Makefile                  |   1 +
+ drivers/video/fbdev/earlycon.c                | 301 ++++++++++++++++++
+ include/linux/serial_core.h                   |   1 +
+ 10 files changed, 331 insertions(+), 256 deletions(-)
+ delete mode 100644 drivers/firmware/efi/earlycon.c
+ create mode 100644 drivers/video/fbdev/earlycon.c
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.0
+
