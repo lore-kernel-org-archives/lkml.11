@@ -2,154 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CECCFC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 21:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85901C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 21:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233631AbiHFVGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 17:06:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47274 "EHLO
+        id S233936AbiHFVXo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 17:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231855AbiHFVGK (ORCPT
+        with ESMTP id S233672AbiHFVXa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 17:06:10 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12AF912D08
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 14:06:10 -0700 (PDT)
+        Sat, 6 Aug 2022 17:23:30 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EDA7F593;
+        Sat,  6 Aug 2022 14:23:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659819970; x=1691355970;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=fDNpRk/0cZ06Wzhp+L+xgu8a/KnLjTQuWvHPvOgh03I=;
-  b=T0DdsAwAnseVA3cNa2Xtq5UJQRuO+q59YIZ9vavmV4jbTOgPUUKdsqaO
-   2KSCMR4TGZtsVJo11bGtfm5igfxGjHFfnUCqQ/QckTkfq22X6BB/rRy+s
-   B2F37o6JvvXUmk/nFDVr6lVZMMIK4KWIpprRxfFhYUz9a2HZ8pBUqaBw+
-   zAfEUuooeXVm83LfYja6YXtySg0HGWn9XQ/3Ew4p0n5mwXZahlqWFWeW0
-   fw9l6Boc6qRIQad3obHM8NyJkFQWejo4MIKYCAjw3sqivoqvjNqIvh2Ie
-   3/VXbMeas+CsqdMxK0ovxC0BDSgB5mwK2SH4aIDULV3rohxVeSMMEC7uw
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="316291666"
+  t=1659821007; x=1691357007;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=B9uL+ecQZ0NAOtCcVBdGiNsDhlGKvi4c2/vcVVL4eBU=;
+  b=IXeUEGn9lD+N93qv5GNEq3TlSg8huf4PMJ/fj9KkBPLhDyTZlSB8Ny8z
+   4dC2B37GOZ49l80mmpOyS893RtPERVVh7KC8BU1iMW7bNSmugoCfk8ZLr
+   adyB1FLFe+/HDC/7QsCwnQWU+TTH5gFGM+hLv3eJbnGW3r8sZOTbBk9V7
+   Z8oN3v65XNCqoGFQHyHuXG3TO8HGZD27f8nZxR6C1E4Kn3qxthVrqgdN2
+   KPyoDdiVadFHoIZObxR2vOzgxP/xL0yaSAvCXup/cqpUZMvIgyZEAW/Uf
+   JKKLEqmJ0PDjzsLmv74Sa/xgMXr1Pk2zI3qmfSSiK00CSmyrqpAomVPfW
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="270166039"
 X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="316291666"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 14:06:09 -0700
+   d="scan'208";a="270166039"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 14:23:26 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="632402667"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 06 Aug 2022 14:06:08 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oKQzn-000Kft-2P;
-        Sat, 06 Aug 2022 21:06:07 +0000
-Date:   Sun, 07 Aug 2022 05:05:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:timers/urgent] BUILD SUCCESS
- 221f9d9cdf429df8c3843b4291f4f412fde11543
-Message-ID: <62eed790.gK8pES+kKLDHuWHr%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+   d="scan'208";a="636859733"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga001.jf.intel.com with ESMTP; 06 Aug 2022 14:23:25 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 8E0ED1AA; Sun,  7 Aug 2022 00:23:36 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v1 2/4] pwm: sysfs: Return directly from the for-loop in PM callbacks
+Date:   Sun,  7 Aug 2022 00:23:29 +0300
+Message-Id: <20220806212331.40086-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220806212331.40086-1-andriy.shevchenko@linux.intel.com>
+References: <20220806212331.40086-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers/urgent
-branch HEAD: 221f9d9cdf429df8c3843b4291f4f412fde11543  posix-timers: Make do_clock_gettime() static
+There is no need to assign ret to 0 and then break the loop just
+for returning the error to the caller. Instead, return directly
+from the for-loop, and 0 otherwise.
 
-elapsed time: 717m
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/pwm/sysfs.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-configs tested: 78
-configs skipped: 2
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-um                             i386_defconfig
-um                           x86_64_defconfig
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                                defconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a011
-riscv                randconfig-r042-20220805
-i386                          randconfig-a005
-s390                 randconfig-r044-20220805
-arc                  randconfig-r043-20220805
-x86_64                        randconfig-a015
-x86_64                        randconfig-a013
-x86_64                              defconfig
-i386                             allyesconfig
-x86_64                               rhel-8.3
-i386                          randconfig-a014
-x86_64                           allyesconfig
-i386                          randconfig-a012
-i386                          randconfig-a016
-m68k                             allmodconfig
-arc                              allyesconfig
-arm                                 defconfig
-x86_64                           rhel-8.3-kvm
-alpha                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-m68k                             allyesconfig
-x86_64                           rhel-8.3-syz
-x86_64                          rhel-8.3-func
-mips                             allyesconfig
-x86_64                         rhel-8.3-kunit
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-arm                          pxa3xx_defconfig
-arm                              allyesconfig
-arm64                            allyesconfig
-arm                      footbridge_defconfig
-ia64                             allmodconfig
-arm                        realview_defconfig
-arc                               allnoconfig
-powerpc                   currituck_defconfig
-alpha                             allnoconfig
-riscv                             allnoconfig
-csky                              allnoconfig
-m68k                        mvme16x_defconfig
-powerpc                    klondike_defconfig
-powerpc                        cell_defconfig
-s390                          debug_defconfig
-arm                        clps711x_defconfig
-sh                          landisk_defconfig
-mips                      maltasmvp_defconfig
-arm                             ezx_defconfig
-powerpc                         ps3_defconfig
-
-clang tested configs:
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-i386                          randconfig-a002
-x86_64                        randconfig-a005
-x86_64                        randconfig-a012
-hexagon              randconfig-r045-20220805
-hexagon              randconfig-r041-20220805
-i386                          randconfig-a004
-x86_64                        randconfig-a016
-x86_64                        randconfig-a014
-i386                          randconfig-a006
-i386                          randconfig-a013
-i386                          randconfig-a011
-i386                          randconfig-a015
-powerpc                 xes_mpc85xx_defconfig
-mips                      maltaaprp_defconfig
-mips                          ath25_defconfig
-arm                         bcm2835_defconfig
-powerpc                   lite5200b_defconfig
-arm                       imx_v4_v5_defconfig
-powerpc                 mpc832x_mds_defconfig
-powerpc                  mpc885_ads_defconfig
-
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index c21b6046067b..1543fe07765b 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -413,7 +413,7 @@ static int pwm_class_resume_npwm(struct device *parent, unsigned int npwm)
+ {
+ 	struct pwm_chip *chip = dev_get_drvdata(parent);
+ 	unsigned int i;
+-	int ret = 0;
++	int ret;
+ 
+ 	for (i = 0; i < npwm; i++) {
+ 		struct pwm_device *pwm = &chip->pwms[i];
+@@ -427,17 +427,17 @@ static int pwm_class_resume_npwm(struct device *parent, unsigned int npwm)
+ 		state.enabled = export->suspend.enabled;
+ 		ret = pwm_class_apply_state(export, pwm, &state);
+ 		if (ret < 0)
+-			break;
++			return ret;
+ 	}
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ static int pwm_class_suspend(struct device *parent)
+ {
+ 	struct pwm_chip *chip = dev_get_drvdata(parent);
+ 	unsigned int i;
+-	int ret = 0;
++	int ret;
+ 
+ 	for (i = 0; i < chip->npwm; i++) {
+ 		struct pwm_device *pwm = &chip->pwms[i];
+@@ -457,11 +457,11 @@ static int pwm_class_suspend(struct device *parent)
+ 			 * this suspend function.
+ 			 */
+ 			pwm_class_resume_npwm(parent, i);
+-			break;
++			return ret;
+ 		}
+ 	}
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ static int pwm_class_resume(struct device *parent)
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
