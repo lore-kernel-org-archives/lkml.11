@@ -2,73 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5EC6C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 18:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF7EC19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 18:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241983AbiHFSUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 14:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47280 "EHLO
+        id S241940AbiHFSUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 14:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233260AbiHFSTl (ORCPT
+        with ESMTP id S241901AbiHFSTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 14:19:41 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC5EAE0C7;
-        Sat,  6 Aug 2022 11:19:40 -0700 (PDT)
+        Sat, 6 Aug 2022 14:19:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18210E0DD
+        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 11:19:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 391D0CE090A;
-        Sat,  6 Aug 2022 18:19:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 75E7EC433C1;
-        Sat,  6 Aug 2022 18:19:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C37E8B80834
+        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 18:19:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 82743C43145;
+        Sat,  6 Aug 2022 18:19:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659809977;
-        bh=23hV1FvTFoQPJG82yincXoFnJtqM68n3qlr/PH7oADY=;
+        s=k20201202; t=1659809978;
+        bh=8BpY/QQLQbdPv0gkRb0Z+RxdTvnAGx2By5cH68aKaXo=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ILANQsuLLMucXnRB/iHWGiNaBVoLWXbAkknVcD2cGJLIYlriMmpWFtqhay/j6XAwm
-         755/K0yQhh1B34uySCHuMiVnDXP+AOhAe+TrGSj+e1pnkdsajuKBsbe35fg9Kp6xv4
-         wwLuXNE/7SlgerUnXenEDiJDFvPDKXBfjOvrf5lG6BHHL4xZrpricm9hDGh49UhYWG
-         oqxY8UiocFUG1LZi0Zxvv2oQ/qetgEsGg9rPAet7tbrODXGb2r3+BwKBvuts4mqA+h
-         pXmFjny/BwAkUvNVC48xE9yUNNEHzCv4YcyCPMdOyLwsOPG9BWfgDa44Agaztw4Zcl
-         3peTp+KosojjA==
+        b=O9orUsnD8+fOE6AaKvpIDjecexC/bLaU6qgILDeJWRFqgOQwAvFyXmEM7OpxYFBpF
+         rNYqevZMyqs9c257yn2MYZVrGDRHsJHO7P4gp7CiUXLlA6EZlnCJABMW+GDPmC/Up4
+         buaFfQbIaJySk973GodX+u5EOZHxn+ykjKvSg72CD+5YjEyauFNluyq8TxqT+DQy9w
+         y1JGnbSWYRQcd/3Cep2jM1dZQf1TcbTyTU41aHzrEGExWcGZM1cD2p4dpeLFWc7Khi
+         CJx7JVydUjcuKk4T3oce7ZidDXY2cnLm4uamuud+I7O0H8yiaPy7CSPPCf2P6ETULT
+         b1WrE9EbAl4Rw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 630E3C43140;
-        Sat,  6 Aug 2022 18:19:37 +0000 (UTC)
-Subject: Re: [GIT PULL] tpmdd updates for v5.20
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 719CEC43143;
+        Sat,  6 Aug 2022 18:19:38 +0000 (UTC)
+Subject: Re: [git pull] IOMMU Updates for Linux v5.20
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220803210228.158993-1-jarkko@kernel.org>
-References: <20220803210228.158993-1-jarkko@kernel.org>
+In-Reply-To: <YuzlAT7RW1U36+ap@8bytes.org>
+References: <YuzlAT7RW1U36+ap@8bytes.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220803210228.158993-1-jarkko@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/ tags/tpmdd-next-v5.20
-X-PR-Tracked-Commit-Id: 863ed94c589fcd1984f4e3080f069d30508044bb
+X-PR-Tracked-Message-Id: <YuzlAT7RW1U36+ap@8bytes.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v5.20-or-v6.0
+X-PR-Tracked-Commit-Id: c10100a416c16b598bf5155e759307b34dac0d7d
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: f20c95b46b8fa3ad34b3ea2e134337f88591468b
-Message-Id: <165980997740.27284.17376485647055486721.pr-tracker-bot@kernel.org>
-Date:   Sat, 06 Aug 2022 18:19:37 +0000
-To:     Jarkko Sakkinen <jarkko@kernel.org>
+X-PR-Merge-Commit-Id: 1d239c1eb873c7d6c6cbc80d68330c939fd86136
+Message-Id: <165980997846.27284.3824257141690673878.pr-tracker-bot@kernel.org>
+Date:   Sat, 06 Aug 2022 18:19:38 +0000
+To:     Joerg Roedel <joro@8bytes.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        David Howells <dhowells@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu,  4 Aug 2022 00:02:28 +0300:
+The pull request you sent on Fri, 5 Aug 2022 11:38:09 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/ tags/tpmdd-next-v5.20
+> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v5.20-or-v6.0
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/f20c95b46b8fa3ad34b3ea2e134337f88591468b
+https://git.kernel.org/torvalds/c/1d239c1eb873c7d6c6cbc80d68330c939fd86136
 
 Thank you!
 
