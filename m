@@ -2,279 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F25A9C25B0C
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 16:35:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77883C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 16:36:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231608AbiHFQfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 12:35:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54834 "EHLO
+        id S232647AbiHFQf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 12:35:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232240AbiHFQfM (ORCPT
+        with ESMTP id S234454AbiHFQfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 12:35:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C260B11451;
-        Sat,  6 Aug 2022 09:35:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5619FB80022;
-        Sat,  6 Aug 2022 16:35:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB396C433C1;
-        Sat,  6 Aug 2022 16:34:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659803700;
-        bh=o8ku1LqIPLZoCVCueo/vZQPcVuxTpLrbLUtyhua2psY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dDvgefIh3DrPi/2OYdCMYrIc1MOnrOKDVvKOauR0rkF2KjcYF00UK7eDd0Xr2Tta+
-         he0PoK8PZvIBlsJu3b3IS5ds3rahVgPaP6oOXs7r4ucGv4CghJ6sKxSGQ2Unbq6V/D
-         bh9tXgl8fVX7P1Lf00ak85FAlNoTkSRUAJgf43DMjikkX7LFnCKGbZj8kcOMxuggzC
-         GyIhIRdtBnqhG7Y62Hi8bKjiWSxHBGDHWarqJ8QGuropwEV3b6wYlKzODeY0TtXm6W
-         QYXIjUNy7KK/495Kn3J8ylYO6JRwzHw3fhcs7p4JMX2xtcYbwO3NbNHAHJ95LhiI9U
-         rh2igynmiAenw==
-Date:   Sat, 6 Aug 2022 17:45:20 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Julien Panis <jpanis@baylibre.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        lars@metafoo.de, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mranostay@ti.com, William Breathitt Gray <william.gray@linaro.org>
-Subject: Re: [PATCH v3 2/2] iio: time: capture-tiecap: capture driver
- support for ECAP
-Message-ID: <20220806174520.0d27476e@jic23-huawei>
-In-Reply-To: <11b7436b-5c31-671e-ba77-435fe8e3b767@baylibre.com>
-References: <20220728175124.468461-1-jpanis@baylibre.com>
-        <20220728175124.468461-3-jpanis@baylibre.com>
-        <20220731164116.30e91f34@jic23-huawei>
-        <11b7436b-5c31-671e-ba77-435fe8e3b767@baylibre.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 6 Aug 2022 12:35:48 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B995712D0B;
+        Sat,  6 Aug 2022 09:35:45 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id u133so4720954pfc.10;
+        Sat, 06 Aug 2022 09:35:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=I0MU4Yqf6GJfvNh1a7lGlSBJCwiX3GsCyGqFjRLdNTE=;
+        b=qEXwC38Kxjlp61BqU5cdP6Pp94sySiOvCrkPvWDGwED4MKUr/r8eZfE1VPVsGou9cE
+         +hhULhAP4akru4Ht0XEeVgu4h5afOsATovYrArheWBS90ICePr/EpgeZHSgyDqJPPJLq
+         W63bvL+5jgTg1wDxxI1cBYGn/TAwC7jgJLFbffRsm08xqC6KWNdTJIsg14x6qzmpSFV4
+         M4SSvb/d+FDxrmStTS9aKjL7aVYJ2uHsQc3p9E/GGnOFODnmILW/v82ZOT4lNa4JKJ+q
+         ynVl4eXQWzVOK8o66mryswb+G8mazYbO/bKMCqyXoU6YJ6ZoENMFGkEC9k1yqAviAogx
+         icZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=I0MU4Yqf6GJfvNh1a7lGlSBJCwiX3GsCyGqFjRLdNTE=;
+        b=s7WrePC09GhcpA8Xy+HeLyeeUZ/RzJIyDNzsETTP7S/xDOGWO58CjS3r2FXSADqWNJ
+         BJPCN0lIU2PxKTgBHUphYIOHwNPGWKIyg+Gbadr+1iMaPZyTwu2RboMefavl/VNKXyOp
+         19egdqbgfjJskXHIONri3oWpGuEksds9+30L7S6tJmyJf0rcgauZmIGFv7ArYeOxLeaq
+         pkiSY3VfkiyL+lZ4F9nifGuyK/uU7dBNFjBCssL3zu8IQuitxtckDNw418qtk3hkT6jP
+         jZFbVkvCP+iOnyZOcHl6nDOn9l1vyqP3WD/SJ91AI2Ye9q6WgM+KcBTCPj7kLhyKqz/p
+         XTQg==
+X-Gm-Message-State: ACgBeo3szHGhIGGx+DxpAfMtaUnmF9+8IWJj6/3dL4wvFVtawE0XKr3r
+        smHDuqNLgjk+JTRrnY5Yi9L2FcY5ubvr0w==
+X-Google-Smtp-Source: AA6agR7QhxIrA6dpIBNy6uyYbIDiyydJWjQv0EjduWoduOD7tMAIJKmBDxq4VdlpyqyguThMc1y3dw==
+X-Received: by 2002:a63:69c7:0:b0:41c:590a:62dc with SMTP id e190-20020a6369c7000000b0041c590a62dcmr9387979pgc.388.1659803744962;
+        Sat, 06 Aug 2022 09:35:44 -0700 (PDT)
+Received: from biggie.. ([103.230.148.189])
+        by smtp.gmail.com with ESMTPSA id b7-20020a170902d50700b0016f057b88c9sm5283301plg.26.2022.08.06.09.35.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Aug 2022 09:35:44 -0700 (PDT)
+From:   Gautam Menghani <gautammenghani201@gmail.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, shuah@kernel.org
+Cc:     Gautam Menghani <gautammenghani201@gmail.com>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: [PATCH v3] selftests/net: Refactor xfrm_fill_key() to use array of structs
+Date:   Sat,  6 Aug 2022 22:05:30 +0530
+Message-Id: <20220806163530.70182-1-gautammenghani201@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <55c8de7e-a6e8-fc79-794d-53536ad7a65d@collabora.com>
+References: <55c8de7e-a6e8-fc79-794d-53536ad7a65d@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 1 Aug 2022 16:08:02 +0200
-Julien Panis <jpanis@baylibre.com> wrote:
+A TODO in net/ipsec.c asks to refactor the code in xfrm_fill_key() to
+use set/map to avoid manually comparing each algorithm with the "name" 
+parameter passed to the function as an argument. This patch refactors 
+the code to create an array of structs where each struct contains the 
+algorithm name and its corresponding key length.
 
-> On 31/07/2022 17:41, Jonathan Cameron wrote:
-> > On Thu, 28 Jul 2022 19:51:24 +0200
-> > Julien Panis <jpanis@baylibre.com> wrote:
-> >  
-> >> ECAP hardware on AM62x SoC supports capture feature. It can be used
-> >> to timestamp events (falling/rising edges) detected on signal input pin.
-> >>
-> >> This commit adds capture driver support for ECAP hardware on AM62x SoC.
-> >>
-> >> In the ECAP hardware, capture pin can also be configured to be in
-> >> PWM mode. Current implementation only supports capture operating mode.
-> >> Hardware also supports timebase sync between multiple instances, but
-> >> this driver supports simple independent capture functionality.
-> >>
-> >> Signed-off-by: Julien Panis <jpanis@baylibre.com>  
-> > Hi Julien,
-> >
-> > So this isn't the first ecap driver we've had proposed, but the previous
-> > one was a few years ago and never reached v2.
-> > https://lore.kernel.org/all/20200818153614.6438-1-dts86@cornell.edu/
-> >
-> > Honestly I can't remember much about it, but maybe the discussion around
-> > that will be worth a reread.  
-> 
-> Hi Jonathan, thank you for your review.
-> 
-> I read the discussion about previous attempt, before submitting this 
-> patch. There were
-> interesting comments indeed.
-> 
-> But in this previous attempt, only one-shot pulses were handled 
-> (moreover, global IRQ flag
-> was not cleared, so I'm not sure that IRQ could be raised more than once).
+Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+---
+changes in v3:
+1. Initialize the struct array of algorithms->keys at compile time
 
-:)
+changes in v2:
+1. Fix the compilation warnings for struct and variable declaration
 
-> 
-> However, ECAP can be used to make time measurements for any type of 
-> "square waveform".
-> That's why I tried to make this event mode configurable. Besides, using 
-> a continuous mode allows
-> handling much more signal types (not only single pulses).
+ tools/testing/selftests/net/ipsec.c | 104 ++++++++++++----------------
+ 1 file changed, 45 insertions(+), 59 deletions(-)
 
-Makes sense.
-
-> 
-> >
-> > The use of ABI here is unusual. So I'd definitely like to see some documentation
-> > probably as a file in the main kernel documentation to explain what the interface
-> > is an how that relates to what is being captured.  
-> 
-> OK, I will add some userspace documentation.
-> 
-> >
-> > First thing to note here is the channel type of IIO_INDEX is now not actually
-> > used any more because we moved all the relevant drivers over to the counter
-> > subsystem (and we failed to mark it deprecated).  
-> 
-> I evaluated this counter subsystem before starting development. Counting 
-> events is not "a priori"
-> the goal when using ECAP.
-> 
-> Nevertheless, maybe "counter_push_event" function could do the job. If I 
-> use counter API :
-> # Option 1 : CAP1/2/3/4 registers could be seen as 4 channels of the 
-> same counter...
-> but there are not channels, there are just sequential timestamps 
-> actually. So I'm afraid this leads
-> to misunderstanding for the user.
-> Moreover, the user will have to read several entries (counts 1/2/3/4) to 
-> gather timestamps from
-> the same input signal, which is not very convenient.
-> # Option 2 : Either CAP 1/2/3/4 events could be gathered in a single 
-> channel...but then it will not
-> be possible to configure their polarity (rising/falling edge) 
-> individually (unless I did
-> not understand well counter framework documentation).
-> 
-> So, even with counter framework, it will lead to some diverted use of 
-> the framwork, since ECAP
-> is a very specific hardware that do not fit 100% counter philosophy.
-> 
-> I admit that ECAP do not fit 100% IIO philosophy either.
-
-Understood.  +CC William to see if we can form a consensus on how
-at least which subsystem to hammer this into :)
-
-> 
-> Maybe misc API would be more relevant actually. Any opinion about it 
-> will be welcome. :-)
-
-It's possible we'll fall back to misc, but if at all possible it would
-be better to make whatever extensions are necessary to a subsystem so that
-other similar devices end up with a home in the long run.
-
-Key here is definitely documentation!
-
-> 
-> >
-> > Anyhow, I've reviewed below, but need docs to discuss this in depth.  In particular
-> > the mix of buffers and events interfaces is unlikely to be an acceptable path
-> > forwards.  
-> 
-> OK, I will consider alternatives.
-> 
-> >
-> > Jonathan
-A quick process comment.  If you agree with something in a review
-no need to say that. Just delete the relevant code block from your reply.
-Only need to discuss the other stuff!   Reviewers read a lot of email
-so cutting down the volume makes them less grumpy :)
-
-> >  
-> >> + * struct ecap_iio_data - IIO device data
-> >> + * @ev_idx:  event index (0 to 3 for CAP1 to CAP4)  
-> > That's a long way from standard ABI.  
-> 
-> OK, I will consider alternatives.
-
-We might to make new ABI though.   Need to discuss that against
-a description rather than finding it buried deep in code.
-One possibility is that we have an events only IIO device
-as perhaps this fits better int he events interface (the
-timestamp part is problematic though).
-> 
-> >  
-> >> + * @ev_time: falling/rising edge timestamp
-> >> + *
-
-...
-
-...
-
-> >> +static irqreturn_t ecap_iio_isr(int irq, void *dev_id)
-> >> +{
-> >> +	struct iio_dev *indio_dev = dev_id;
-> >> +	struct ecap_iio_dev *ecap_dev = iio_priv(indio_dev);
-> >> +	struct ecap_iio_data *ecap_data = &ecap_dev->data;
-> >> +	unsigned int clr = 0;
-> >> +	unsigned int flg;
-> >> +	unsigned int cap_time;
-> >> +	int i;
-> >> +
-> >> +	regmap_read(ecap_dev->regmap, ECAP_ECINT_EN_FLG_REG, &flg);
-> >> +
-> >> +	for (i = 0 ; i < ECAP_NB_CEVT ; i++) {
-> >> +		if (flg & ECAP_CEVT_FLG_BIT(i)) {
-> >> +			if (i < ECAP_NB_CAP) {
-> >> +				/*
-> >> +				 * Input signal edge detected
-> >> +				 * time_ns = 10^9 * time_cycles / clk_rate
-> >> +				 */
-> >> +				ecap_data->ev_idx = i;
-> >> +				regmap_read(ecap_dev->regmap, ECAP_CAP_REG(i), &cap_time);
-> >> +				ecap_data->ev_time = cap_time * NSEC_PER_SEC;
-> >> +				do_div(ecap_data->ev_time, ecap_dev->clk_rate);  
-> > Is there any attempt to align that timestamp with the iio clock used for software timestamps?  
-> 
-> No, this is not my goal. I just need to log hardware timestamp.
-> But I am not sure that I fully understand what you mean (?).
-
-IIO timestamps are meant to be useful for aligning multiple data sources. As such, where
-we have hardware timestamps we normally attempt to apply a calibration to them so that they
-map into the time base of the clocks used for IIO software timestamps.
-
-If that's not possible then we need to think how to indicate to userspace that these
-particular timestamps have a different meaning.
-
-> 
-> >> +			} else {
-> >> +				/* Counter overflow */
-> >> +				ecap_data->ev_idx = ECAP_OVF_VAL;
-> >> +				ecap_data->ev_time = 0;  
-> > Don't push it if you've lost data.  
-> 
-> This is not a lost data.
-
-> That was intentional (equivalent in counter subsystem would be 
-> COUNTER_EVENT_OVERFLOW).
-> For a long duration signal, user will be aware that counter overflow 
-> occurred (this can avoid misleading
-> consecutive timestamp interpretations).
-Handle that in software.  I assume the hardware is sensible enough to provide
-a mechanism to notify you about a single overflow? (so that you don't get a
-double overflow without knowing about it?)
-
-If so, use a software counter of larger size and have that not overflow.
-Typically a 64 bit counter will do fine for this for much longer than the
-device is likely to be running (unless this thing has very high clock rates).
-
-> Do you confirm that I should not push it ? Or maybe just explaining this 
-> overflow better ?
-
-It's not something userspace should ever need to know about.  We have
-he equivalent for Performance Monitoring Units (drivers/perf)
-There devices generally provide an overflow interrupt to allow us to
-keep track of how many overflows have occurred and hence out a timestamp
-that doesn't overflow often enough to matter.
-
-> 
-> >  
-> >> +			}
-> >> +			iio_push_to_buffers(indio_dev, ecap_data);
-> >> +
-> >> +			clr |= ECAP_CEVT_CLR_BIT(i);
-> >> +		}
-> >> +	}
-> >> +
-> >> +	clr |= ECAP_INT_CLR_BIT;
-> >> +	regmap_update_bits(ecap_dev->regmap, ECAP_ECINT_CLR_FRC_REG, ECAP_CEVT_CLR_MASK, clr);
-> >> +
-> >> +	return IRQ_HANDLED;
-> >> +}
-
-
-Thanks,
-
-Jonathan
-
+diff --git a/tools/testing/selftests/net/ipsec.c b/tools/testing/selftests/net/ipsec.c
+index cc10c10c5ed9..9a8229abfa02 100644
+--- a/tools/testing/selftests/net/ipsec.c
++++ b/tools/testing/selftests/net/ipsec.c
+@@ -58,6 +58,8 @@
+ #define VETH_FMT	"ktst-%d"
+ #define VETH_LEN	12
+ 
++#define XFRM_ALGO_NR_KEYS 29
++
+ static int nsfd_parent	= -1;
+ static int nsfd_childa	= -1;
+ static int nsfd_childb	= -1;
+@@ -75,6 +77,43 @@ const unsigned int ping_timeout		= 300;
+ const unsigned int ping_count		= 100;
+ const unsigned int ping_success		= 80;
+ 
++struct xfrm_key_entry {
++	char algo_name[35];
++	int key_len;
++};
++
++struct xfrm_key_entry xfrm_key_entries[] = {
++	{"digest_null", 0},
++	{"ecb(cipher_null)", 0},
++	{"cbc(des)", 64},
++	{"hmac(md5)", 128},
++	{"cmac(aes)", 128},
++	{"xcbc(aes)", 128},
++	{"cbc(cast5)", 128},
++	{"cbc(serpent)", 128},
++	{"hmac(sha1)", 160},
++	{"hmac(rmd160)", 160},
++	{"cbc(des3_ede)", 192},
++	{"hmac(sha256)", 256},
++	{"cbc(aes)", 256},
++	{"cbc(camellia)", 256},
++	{"cbc(twofish)", 256},
++	{"rfc3686(ctr(aes))", 288},
++	{"hmac(sha384)", 384},
++	{"cbc(blowfish)", 448},
++	{"hmac(sha512)", 512},
++	{"rfc4106(gcm(aes))-128", 160},
++	{"rfc4543(gcm(aes))-128", 160},
++	{"rfc4309(ccm(aes))-128", 152},
++	{"rfc4106(gcm(aes))-192", 224},
++	{"rfc4543(gcm(aes))-192", 224},
++	{"rfc4309(ccm(aes))-192", 216},
++	{"rfc4106(gcm(aes))-256", 288},
++	{"rfc4543(gcm(aes))-256", 288},
++	{"rfc4309(ccm(aes))-256", 280},
++	{"rfc7539(chacha20,poly1305)-128", 0}
++};
++
+ static void randomize_buffer(void *buf, size_t buflen)
+ {
+ 	int *p = (int *)buf;
+@@ -767,65 +806,12 @@ static int do_ping(int cmd_fd, char *buf, size_t buf_len, struct in_addr from,
+ static int xfrm_fill_key(char *name, char *buf,
+ 		size_t buf_len, unsigned int *key_len)
+ {
+-	/* TODO: use set/map instead */
+-	if (strncmp(name, "digest_null", ALGO_LEN) == 0)
+-		*key_len = 0;
+-	else if (strncmp(name, "ecb(cipher_null)", ALGO_LEN) == 0)
+-		*key_len = 0;
+-	else if (strncmp(name, "cbc(des)", ALGO_LEN) == 0)
+-		*key_len = 64;
+-	else if (strncmp(name, "hmac(md5)", ALGO_LEN) == 0)
+-		*key_len = 128;
+-	else if (strncmp(name, "cmac(aes)", ALGO_LEN) == 0)
+-		*key_len = 128;
+-	else if (strncmp(name, "xcbc(aes)", ALGO_LEN) == 0)
+-		*key_len = 128;
+-	else if (strncmp(name, "cbc(cast5)", ALGO_LEN) == 0)
+-		*key_len = 128;
+-	else if (strncmp(name, "cbc(serpent)", ALGO_LEN) == 0)
+-		*key_len = 128;
+-	else if (strncmp(name, "hmac(sha1)", ALGO_LEN) == 0)
+-		*key_len = 160;
+-	else if (strncmp(name, "hmac(rmd160)", ALGO_LEN) == 0)
+-		*key_len = 160;
+-	else if (strncmp(name, "cbc(des3_ede)", ALGO_LEN) == 0)
+-		*key_len = 192;
+-	else if (strncmp(name, "hmac(sha256)", ALGO_LEN) == 0)
+-		*key_len = 256;
+-	else if (strncmp(name, "cbc(aes)", ALGO_LEN) == 0)
+-		*key_len = 256;
+-	else if (strncmp(name, "cbc(camellia)", ALGO_LEN) == 0)
+-		*key_len = 256;
+-	else if (strncmp(name, "cbc(twofish)", ALGO_LEN) == 0)
+-		*key_len = 256;
+-	else if (strncmp(name, "rfc3686(ctr(aes))", ALGO_LEN) == 0)
+-		*key_len = 288;
+-	else if (strncmp(name, "hmac(sha384)", ALGO_LEN) == 0)
+-		*key_len = 384;
+-	else if (strncmp(name, "cbc(blowfish)", ALGO_LEN) == 0)
+-		*key_len = 448;
+-	else if (strncmp(name, "hmac(sha512)", ALGO_LEN) == 0)
+-		*key_len = 512;
+-	else if (strncmp(name, "rfc4106(gcm(aes))-128", ALGO_LEN) == 0)
+-		*key_len = 160;
+-	else if (strncmp(name, "rfc4543(gcm(aes))-128", ALGO_LEN) == 0)
+-		*key_len = 160;
+-	else if (strncmp(name, "rfc4309(ccm(aes))-128", ALGO_LEN) == 0)
+-		*key_len = 152;
+-	else if (strncmp(name, "rfc4106(gcm(aes))-192", ALGO_LEN) == 0)
+-		*key_len = 224;
+-	else if (strncmp(name, "rfc4543(gcm(aes))-192", ALGO_LEN) == 0)
+-		*key_len = 224;
+-	else if (strncmp(name, "rfc4309(ccm(aes))-192", ALGO_LEN) == 0)
+-		*key_len = 216;
+-	else if (strncmp(name, "rfc4106(gcm(aes))-256", ALGO_LEN) == 0)
+-		*key_len = 288;
+-	else if (strncmp(name, "rfc4543(gcm(aes))-256", ALGO_LEN) == 0)
+-		*key_len = 288;
+-	else if (strncmp(name, "rfc4309(ccm(aes))-256", ALGO_LEN) == 0)
+-		*key_len = 280;
+-	else if (strncmp(name, "rfc7539(chacha20,poly1305)-128", ALGO_LEN) == 0)
+-		*key_len = 0;
++	int i;
++
++	for (i = 0; i < XFRM_ALGO_NR_KEYS; i++) {
++		if (strncmp(name, xfrm_key_entries[i].algo_name, ALGO_LEN) == 0)
++			*key_len = xfrm_key_entries[i].key_len;
++	}
+ 
+ 	if (*key_len > buf_len) {
+ 		printk("Can't pack a key - too big for buffer");
+-- 
+2.34.1
 
