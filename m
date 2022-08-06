@@ -2,92 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 027E1C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 14:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 557E0C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 14:33:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231572AbiHFOcU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 10:32:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47170 "EHLO
+        id S231829AbiHFOdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 10:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229853AbiHFOcS (ORCPT
+        with ESMTP id S231772AbiHFOdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 10:32:18 -0400
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D6BFCDF43;
-        Sat,  6 Aug 2022 07:32:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=io15jxipwkxp8dnmKQ
-        w0UQoEYG0T27HzvS5H04/lWlA=; b=h+R+2Yg4qw9b3KWTETWmceCkMhBzCnoN9F
-        cGCKHNvFMLsZOTPF7Etoxo86gHbFWEEHSN6tFhybBWBsCswzqjS5QvpIN2DLTFtZ
-        RI86nWWRDsN1gHndU8wqXFfo8N3HdDYvaSUb4Q/5947Rg3rvewmgt6Y9e63zNexP
-        4Wsd/QoDE=
-Received: from user-virtual-machine.localdomain (unknown [124.133.191.247])
-        by smtp4 (Coremail) with SMTP id HNxpCgDXZ94be+5icYDGTQ--.25852S4;
-        Sat, 06 Aug 2022 22:31:19 +0800 (CST)
-From:   Jialiang Wang <wangjialiang0806@163.com>
-To:     simon.horman@corigine.com, kuba@kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, niejianglei2021@163.com,
-        wangjialiang0806@163.com
-Cc:     oss-drivers@corigine.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] nfp: fix use-after-free in area_cache_get()
-Date:   Sat,  6 Aug 2022 22:30:43 +0800
-Message-Id: <20220806143043.106787-1-wangjialiang0806@163.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: HNxpCgDXZ94be+5icYDGTQ--.25852S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7uw1Utw1kKryrGr1fWF4rZrb_yoW8Ar1UpF
-        WrJ3yFkr48XrsrXw4DJayxX34rCa9xtFyrW345Cw4rua4avr13JF1xKr45ZF4DurW8Jayx
-        AFyjqa4fGrs8J3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jwDGrUUUUU=
-X-Originating-IP: [124.133.191.247]
-X-CM-SenderInfo: pzdqwy5ldoxtdqjqmiqw6rljoofrz/1tbivxdVzlWB0wjmhAAAse
+        Sat, 6 Aug 2022 10:33:22 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5267E0CE
+        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 07:33:20 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id q9-20020a17090a2dc900b001f58bcaca95so3897839pjm.3
+        for <linux-kernel@vger.kernel.org>; Sat, 06 Aug 2022 07:33:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=hZsvYReDneXNRGD9Ri34paDQng4soD5qGv+2z4J+I+w=;
+        b=BdBZ4Li3Y94+2gVjZ+pujBDNmGjjbCDMKXkFvYwiTEb8Ix5BRMQdNPuQ1P5WpuVGvo
+         T+le9Aa3wkjezzc0VqshtWfp/4eGgMu5P9NNyT4ZbEs9yXueWZB1lN1sNXQfJpoQ8+DW
+         pzwBzVsdOYf+gjRfbjNVV/jqoMmq6d1Rnsevf5FE7PDVIrHoMrume6P+gyY/1o5lzitr
+         rkOcHK7xrr6sOrTP5LxKKkepkeSpc6OLDEs2pNETIMP+Z0gFDqkcz3z9hhTfeFiTuzHN
+         KJBXn38JJu+tu1+RL02y8qxRzMIgWtRJ4GpOtWnue/5E/ZGyZH6J9rJpZRQRdbG49ybj
+         /7Jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=hZsvYReDneXNRGD9Ri34paDQng4soD5qGv+2z4J+I+w=;
+        b=tAivCS8LaGgGhZchjtJTryKN2CHFi/9LLi2YyiNAbhztKF98jo/JZ77RPPdXyjci2A
+         6FXQ+nkni19/ADgWUgTphWw6m6nSgvYSG/faCJDgOXY02sVvuSyuOYaonvvwlDnKNR0D
+         PMWc8CfvEwnie/IdUEONrHf3OVc83eg3nBT6MD2KChbQKNbxQCViOcLZItehzfAyjeXw
+         9UGxOFXU5rL6eHGn15cpQUF2rBTOwQKbP9ZnwYIxUsgwRIIWBtur3qdJ/jMQ9iPL/9uC
+         LUEuR8sLioJ1+d0eW8ONB1NzwRFEx+zfhi0QWjLiBmHzJtiPC98AWIXK5vT6Gx5EhMB7
+         S7oQ==
+X-Gm-Message-State: ACgBeo20dPc5TguCQAFLk7UeEF6h2EvX6DWyiA0T73mNd1c/YghhtCy6
+        Sepyx9g8Pru3KmvGP7B0EpSf
+X-Google-Smtp-Source: AA6agR7biwjrZH3fe7nViG6ekyA+bwZh0nAc43cXMOLRCFfNZu4KhPzA4sp8F60devRIaLBglDCOug==
+X-Received: by 2002:a17:902:e94f:b0:16d:847b:3343 with SMTP id b15-20020a170902e94f00b0016d847b3343mr11470880pll.103.1659796400131;
+        Sat, 06 Aug 2022 07:33:20 -0700 (PDT)
+Received: from thinkpad ([117.202.188.20])
+        by smtp.gmail.com with ESMTPSA id 134-20020a62198c000000b0052ab764fa78sm5048238pfz.185.2022.08.06.07.33.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Aug 2022 07:33:19 -0700 (PDT)
+Date:   Sat, 6 Aug 2022 20:03:11 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Johan Hovold <johan+linaro@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
+        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v2 4/9] usb: dwc3: qcom: fix use-after-free on runtime-PM
+ wakeup
+Message-ID: <20220806143311.GE14384@thinkpad>
+References: <20220804151001.23612-1-johan+linaro@kernel.org>
+ <20220804151001.23612-5-johan+linaro@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220804151001.23612-5-johan+linaro@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-area_cache_get() calls cpp->op->area_init() and uses cache->area by
- nfp_cpp_area_priv(area), but in
- nfp_cpp_area_release()->nfp_cpp_area_put()->__release_cpp_area() we
- already freed the cache->area.
+On Thu, Aug 04, 2022 at 05:09:56PM +0200, Johan Hovold wrote:
+> The Qualcomm dwc3 runtime-PM implementation checks the xhci
+> platform-device pointer in the wakeup-interrupt handler to determine
+> whether the controller is in host mode and if so triggers a resume.
+> 
+> After a role switch in OTG mode the xhci platform-device would have been
+> freed and the next wakeup from runtime suspend would access the freed
+> memory.
+> 
+> Note that role switching is executed from a freezable workqueue, which
+> guarantees that the pointer is stable during suspend.
+> 
+> Also note that runtime PM has been broken since commit 2664deb09306
+> ("usb: dwc3: qcom: Honor wakeup enabled/disabled state"), which
+> incidentally also prevents this issue from being triggered.
+> 
+> Fixes: a4333c3a6ba9 ("usb: dwc3: Add Qualcomm DWC3 glue driver")
+> Cc: stable@vger.kernel.org      # 4.18
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 
-To avoid the use-after-free, reallocate a piece of memory for the
- cache->area by nfp_cpp_area_alloc().
+It'd be good to mention the introduction of dwc3_qcom_is_host() function.
+Initially I thought it is used in a single place, but going through the rest of
+the patches reveals that it is used later on.
 
-Note: This vulnerability is triggerable by providing emulated device
- equipped with specified configuration.
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-BUG: KASAN: use-after-free in nfp6000_area_init+0x74/0x1d0 [nfp]
-Write of size 4 at addr ffff888005b490a0 by task insmod/226
-Call Trace:
-  <TASK>
-  dump_stack_lvl+0x33/0x46
-  print_report.cold.12+0xb2/0x6b7
-  ? nfp6000_area_init+0x74/0x1d0 [nfp]
-  kasan_report+0xa5/0x120
-  ? nfp6000_area_init+0x74/0x1d0 [nfp]
-  nfp6000_area_init+0x74/0x1d0 [nfp]
-  area_cache_get.constprop.8+0x2da/0x360 [nfp]
+Thanks,
+Mani
 
-Signed-off-by: Jialiang Wang <wangjialiang0806@163.com>
----
- drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c | 4 ++++
- 1 file changed, 4 insertions(+)
+> ---
+> 
+> Changes in v2
+>  - new patch
+> 
+>  drivers/usb/dwc3/dwc3-qcom.c | 14 +++++++++++++-
+>  drivers/usb/dwc3/host.c      |  1 +
+>  2 files changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
+> index e9364141661b..6884026b9fad 100644
+> --- a/drivers/usb/dwc3/dwc3-qcom.c
+> +++ b/drivers/usb/dwc3/dwc3-qcom.c
+> @@ -298,6 +298,14 @@ static void dwc3_qcom_interconnect_exit(struct dwc3_qcom *qcom)
+>  	icc_put(qcom->icc_path_apps);
+>  }
+>  
+> +/* Only usable in contexts where the role can not change. */
+> +static bool dwc3_qcom_is_host(struct dwc3_qcom *qcom)
+> +{
+> +	struct dwc3 *dwc = platform_get_drvdata(qcom->dwc3);
+> +
+> +	return dwc->xhci;
+> +}
+> +
+>  static enum usb_device_speed dwc3_qcom_read_usb2_speed(struct dwc3_qcom *qcom)
+>  {
+>  	struct dwc3 *dwc = platform_get_drvdata(qcom->dwc3);
+> @@ -460,7 +468,11 @@ static irqreturn_t qcom_dwc3_resume_irq(int irq, void *data)
+>  	if (qcom->pm_suspended)
+>  		return IRQ_HANDLED;
+>  
+> -	if (dwc->xhci)
+> +	/*
+> +	 * This is safe as role switching is done from a freezable workqueue
+> +	 * and the wakeup interrupts are disabled as part of resume.
+> +	 */
+> +	if (dwc3_qcom_is_host(qcom))
+>  		pm_runtime_resume(&dwc->xhci->dev);
+>  
+>  	return IRQ_HANDLED;
+> diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
+> index f56c30cf151e..f6f13e7f1ba1 100644
+> --- a/drivers/usb/dwc3/host.c
+> +++ b/drivers/usb/dwc3/host.c
+> @@ -135,4 +135,5 @@ int dwc3_host_init(struct dwc3 *dwc)
+>  void dwc3_host_exit(struct dwc3 *dwc)
+>  {
+>  	platform_device_unregister(dwc->xhci);
+> +	dwc->xhci = NULL;
+>  }
+> -- 
+> 2.35.1
+> 
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
-index 34c0d2ddf9ef..99091f24d2ba 100644
---- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_cppcore.c
-@@ -871,6 +871,10 @@ area_cache_get(struct nfp_cpp *cpp, u32 id,
- 		nfp_cpp_area_release(cache->area);
- 		cache->id = 0;
- 		cache->addr = 0;
-+		cache->area = nfp_cpp_area_alloc(cpp,
-+						 NFP_CPP_ID(7,
-+						 NFP_CPP_ACTION_RW, 0),
-+						 0, cache->size);
- 	}
- 
- 	/* Adjust the start address to be cache size aligned */
 -- 
-2.17.1
-
+மணிவண்ணன் சதாசிவம்
