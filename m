@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E0F2C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 19:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7466EC19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 19:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232530AbiHFT4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 15:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37888 "EHLO
+        id S233194AbiHFT4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 15:56:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232932AbiHFT4A (ORCPT
+        with ESMTP id S232995AbiHFT4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 15:56:00 -0400
+        Sat, 6 Aug 2022 15:56:01 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7850A6437
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 12:55:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21516583
+        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 12:56:00 -0700 (PDT)
 Received: from dslb-188-097-043-167.188.097.pools.vodafone-ip.de ([188.97.43.167] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1oKPtp-0004Tu-Rb; Sat, 06 Aug 2022 21:55:53 +0200
+        id 1oKPto-0004Tu-1F; Sat, 06 Aug 2022 21:55:52 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,9 +28,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Pavel Skripkin <paskripkin@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 05/13] staging: r8188eu: summarize endpoint-related settings
-Date:   Sat,  6 Aug 2022 21:55:32 +0200
-Message-Id: <20220806195540.777390-6-martin@kaiser.cx>
+Subject: [PATCH 03/13] staging: r8188eu: merge two small functions
+Date:   Sat,  6 Aug 2022 21:55:30 +0200
+Message-Id: <20220806195540.777390-4-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220806195540.777390-1-martin@kaiser.cx>
 References: <20220806195540.777390-1-martin@kaiser.cx>
@@ -40,99 +40,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-rtl8188eu_interface_configure calls _ConfigNormalChipOutEP_8188E and
-Hal_MappingOutPipe.
-
-Both of these functions make some settings based on the number of
-out endpoints on the 8188eu chip. We can merge both of them into
-rtl8188eu_interface_configure and summarize the common code.
+All that rtl8188eu_interface_configure does is call
+HalUsbSetQueuePipeMapping8188EUsb. We can merge the two functions.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/hal/usb_halinit.c | 55 +++++++----------------
- 1 file changed, 17 insertions(+), 38 deletions(-)
+ drivers/staging/r8188eu/hal/usb_halinit.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
-index 8be93c44c903..603108a5d794 100644
+index 839841f90d29..ed0faf4fd51d 100644
 --- a/drivers/staging/r8188eu/hal/usb_halinit.c
 +++ b/drivers/staging/r8188eu/hal/usb_halinit.c
-@@ -13,28 +13,6 @@
- #include "../include/usb_osintf.h"
- #include "../include/HalPwrSeqCmd.h"
- 
--static void _ConfigNormalChipOutEP_8188E(struct adapter *adapt, u8 NumOutPipe)
--{
--	struct hal_data_8188e *haldata = &adapt->haldata;
--
--	switch (NumOutPipe) {
--	case	3:
--		haldata->OutEpQueueSel = TX_SELE_HQ | TX_SELE_LQ | TX_SELE_NQ;
--		haldata->OutEpNumber = 3;
--		break;
--	case	2:
--		haldata->OutEpQueueSel = TX_SELE_HQ | TX_SELE_NQ;
--		haldata->OutEpNumber = 2;
--		break;
--	case	1:
--		haldata->OutEpQueueSel = TX_SELE_HQ;
--		haldata->OutEpNumber = 1;
--		break;
--	default:
--		break;
--	}
--}
--
- static void one_out_pipe(struct adapter *adapter)
- {
- 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(adapter);
-@@ -122,33 +100,34 @@ static void three_out_pipe(struct adapter *adapter, bool wifi_cfg)
+@@ -35,18 +35,12 @@ static void _ConfigNormalChipOutEP_8188E(struct adapter *adapt, u8 NumOutPipe)
  	}
  }
  
--static int Hal_MappingOutPipe(struct adapter *adapter, u8 numoutpipe)
-+int rtl8188eu_interface_configure(struct adapter *adapt)
- {
--	struct registry_priv *pregistrypriv = &adapter->registrypriv;
-+	struct registry_priv *pregistrypriv = &adapt->registrypriv;
-+	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(adapt);
-+	struct hal_data_8188e *haldata = &adapt->haldata;
- 	bool wifi_cfg = pregistrypriv->wifi_spec;
- 
--	switch (numoutpipe) {
--	case 2:
--		two_out_pipe(adapter, wifi_cfg);
--		break;
-+	switch (pdvobjpriv->RtNumOutPipes) {
- 	case 3:
--		three_out_pipe(adapter, wifi_cfg);
-+		haldata->OutEpQueueSel = TX_SELE_HQ | TX_SELE_LQ | TX_SELE_NQ;
-+		haldata->OutEpNumber = 3;
-+		three_out_pipe(adapt, wifi_cfg);
-+		break;
-+	case 2:
-+		haldata->OutEpQueueSel = TX_SELE_HQ | TX_SELE_NQ;
-+		haldata->OutEpNumber = 2;
-+		two_out_pipe(adapt, wifi_cfg);
- 		break;
- 	case 1:
--		one_out_pipe(adapter);
-+		haldata->OutEpQueueSel = TX_SELE_HQ;
-+		haldata->OutEpNumber = 1;
-+		one_out_pipe(adapt);
- 		break;
- 	default:
- 		return -ENXIO;
- 	}
--	return 0;
--}
- 
--int rtl8188eu_interface_configure(struct adapter *adapt)
+-static int HalUsbSetQueuePipeMapping8188EUsb(struct adapter *adapt, u8 NumOutPipe)
 -{
--	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(adapt);
 -
--	_ConfigNormalChipOutEP_8188E(adapt, pdvobjpriv->RtNumOutPipes);
--	return Hal_MappingOutPipe(adapt, pdvobjpriv->RtNumOutPipes);
-+	return 0;
+-	_ConfigNormalChipOutEP_8188E(adapt, NumOutPipe);
+-	return Hal_MappingOutPipe(adapt, NumOutPipe);
+-}
+-
+ int rtl8188eu_interface_configure(struct adapter *adapt)
+ {
+ 	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(adapt);
+ 
+-	return HalUsbSetQueuePipeMapping8188EUsb(adapt, pdvobjpriv->RtNumOutPipes);
++	_ConfigNormalChipOutEP_8188E(adapt, pdvobjpriv->RtNumOutPipes);
++	return Hal_MappingOutPipe(adapt, pdvobjpriv->RtNumOutPipes);
  }
  
  u32 rtl8188eu_InitPowerOn(struct adapter *adapt)
