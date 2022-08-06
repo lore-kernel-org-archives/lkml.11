@@ -2,255 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A8CC25B06
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 08:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0896C25B0C
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 08:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241526AbiHFIM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 04:12:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59984 "EHLO
+        id S241653AbiHFIRr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 04:17:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238561AbiHFIMx (ORCPT
+        with ESMTP id S229647AbiHFIRp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 04:12:53 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29218F5A7
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 01:12:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659773572; x=1691309572;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=3Ll/gAfsTwa9SdzQjZAvEcsmVCT3Jwcc3rbcT/XYFVg=;
-  b=TycOPK22wkyBvZMpNVidqFU6kTqN5IFedK60H3d/Id+FeDcHCJ9oCB3Z
-   jMUwDonPOLWAdbh9RE5nsMGt7PRDR3WFrivhHYbWcIX2/YydnDC0uZqQF
-   vwFdYUOuW/PzTUMCKZNyjnrv2Nr1otYxbGJv5vY117nYUtrn+VMaA4myZ
-   AZEVdGGvh9d9H8DDJv8CQlE/hHNGPqvt0bLcclV3W3H74YtfK1sTrxLJG
-   jjA+tVSEjdvHyzkHpVKJmkvM/r0oM2y8EDfMTbAZGMp6+sF7Bg8ZzYXsG
-   4w2pEpgUICuCI7izX4hil/UINcMxCvKWRyKlhiANgfTLCWd8eMkzcCNpC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10430"; a="316247138"
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="316247138"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2022 01:12:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,217,1654585200"; 
-   d="scan'208";a="579766794"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 06 Aug 2022 01:12:50 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oKEvR-000KBl-0t;
-        Sat, 06 Aug 2022 08:12:49 +0000
-Date:   Sat, 6 Aug 2022 16:11:54 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Deepak Kumar Singh <quic_deesin@quicinc.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: drivers/soc/qcom/smem.c:1056:16: sparse: sparse: incorrect type in
- argument 1 (different address spaces)
-Message-ID: <202208061650.N2weAVAH-lkp@intel.com>
+        Sat, 6 Aug 2022 04:17:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C04E13F86
+        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 01:17:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659773863;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QUhhyhwWziHPf4owDIioKjw2klBpNCGgWh43vGMAw90=;
+        b=BBa5UUBoTzCGZvCIjvPW7kP2dE/dAg/tM17ZabRf00hDc9u0JNb9NsVL+8MDZI2ujLTsrS
+        34bmNz+YklS6CyuKoD9AY/3Z+p1XugkHnNxRvAMJLCyh6U5eSiK51b0RfEoOhTS2QuUV3a
+        rLxBqKDyZtNp0+9TeeyvRGKju7uOcGA=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-518-5c_aF9d4ODG1VXfCo0nG_g-1; Sat, 06 Aug 2022 04:17:42 -0400
+X-MC-Unique: 5c_aF9d4ODG1VXfCo0nG_g-1
+Received: by mail-qk1-f197.google.com with SMTP id de4-20020a05620a370400b006a9711bd9f8so3772282qkb.9
+        for <linux-kernel@vger.kernel.org>; Sat, 06 Aug 2022 01:17:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=QUhhyhwWziHPf4owDIioKjw2klBpNCGgWh43vGMAw90=;
+        b=l/P01yi/D1cYFmyIpZiCmsIGZ0bMHPy0jIXmGyNfpB6ypbOor6VllBJ6u4FTIORAh0
+         99m7LeI+BZdgSjFF4QztdGY9gh9tEDF6qFJvZ22eV8VC9nDQDfATbkY3DijJsiA21wBg
+         1uYFjWhc2Npjl5Jb5k1xyZ4jRJDxmQagwoAoPDnoGAvdxB/ejCMpnaD7zhuUcsCwvAmL
+         A7jnGhVqhGnJJPg+WMaOLdrkjD0SiUH0c+2+MV2Ad4MHCqgxsuo2yU3W0kE5uYKhNU9Z
+         AurhkE93sZVFzZcJLx0OWumFSZLTna8FUWL2Aw3lfGvBoNq9qBW1Z0vVXdKSMoFh4w1u
+         XHSA==
+X-Gm-Message-State: ACgBeo12rzF9SB8TjBU/Ydwe3J/y1YR4MPfDdOjSeEvxRQvasmja/qBP
+        FFB1bxDnHBkDUfE/XP+fpftJmdNE4o4hFQaFkD1x3LZmOrWo8uQONjeCshxpAmqFryEafbOjnvA
+        Bav1GdwA4JmziWgJX5WpU+oWY
+X-Received: by 2002:a05:622a:d5:b0:31e:eb65:e832 with SMTP id p21-20020a05622a00d500b0031eeb65e832mr9059528qtw.92.1659773862204;
+        Sat, 06 Aug 2022 01:17:42 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7tYxINyBqtVppCff7bDw/5gEb1ZvpfEu6NMMMRX3xBGvdOSDUK2l2oCDIf8Yd83eFnoOADtA==
+X-Received: by 2002:a05:622a:d5:b0:31e:eb65:e832 with SMTP id p21-20020a05622a00d500b0031eeb65e832mr9059511qtw.92.1659773861963;
+        Sat, 06 Aug 2022 01:17:41 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
+        by smtp.gmail.com with ESMTPSA id u4-20020a05620a430400b006b5988b2ca8sm4658290qko.40.2022.08.06.01.17.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Aug 2022 01:17:40 -0700 (PDT)
+Date:   Sat, 6 Aug 2022 10:17:32 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>, mst@redhat.com,
+        jasowang@redhat.com
+Cc:     Will Deacon <will@kernel.org>, stefanha@redhat.com,
+        ascull@google.com, maz@kernel.org, keirf@google.com,
+        jiyong@google.com, kernel-team@android.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org
+Subject: Re: IOTLB support for vhost/vsock breaks crosvm on Android
+Message-ID: <20220806081732.a553jsoe2sfwghjg@sgarzare-redhat>
+References: <20220805181105.GA29848@willie-the-truck>
+ <CAHk-=wip-Lju3ZdNwknS6ouyw+nKXeRSnhqVyNo8WSEdk-BfGw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
+In-Reply-To: <CAHk-=wip-Lju3ZdNwknS6ouyw+nKXeRSnhqVyNo8WSEdk-BfGw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   6614a3c3164a5df2b54abb0b3559f51041cf705b
-commit: 20bb6c9de1b7e13f11d2ffe73686f4449c426807 soc: qcom: smem: map only partitions used by local HOST
-date:   4 months ago
-config: sh-randconfig-s033-20220806 (https://download.01.org/0day-ci/archive/20220806/202208061650.N2weAVAH-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=20bb6c9de1b7e13f11d2ffe73686f4449c426807
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 20bb6c9de1b7e13f11d2ffe73686f4449c426807
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sh SHELL=/bin/bash drivers/soc/qcom/
+Hi Linus,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On Fri, Aug 05, 2022 at 03:57:08PM -0700, Linus Torvalds wrote:
+>On Fri, Aug 5, 2022 at 11:11 AM Will Deacon <will@kernel.org> wrote:
+>>
+>> [tl;dr a change from ~18 months ago breaks Android userspace and I don't
+>>  know what to do about it]
+>
+>Augh.
+>
+>I had hoped that android being "closer" to upstream would have meant
+>that somebody actually tests android with upstream kernels. People
+>occasionally talk about it, but apparently it's not actually done.
+>
+>Or maybe it's done onl;y with a very limited android user space.
+>
+>The whole "we notice that something that happened 18 months ago broke
+>our environment" is kind of broken.
+>
+>> After some digging, we narrowed this change in behaviour down to
+>> e13a6915a03f ("vhost/vsock: add IOTLB API support") and further digging
+>> reveals that the infamous VIRTIO_F_ACCESS_PLATFORM feature flag is to
+>> blame. Indeed, our tests once again pass if we revert that patch (there's
+>> a trivial conflict with the later addition of VIRTIO_VSOCK_F_SEQPACKET
+>> but otherwise it reverts cleanly).
+>
+>I have to say, this smells for *so* many reasons.
+>
+>Why is "IOMMU support" called "VIRTIO_F_ACCESS_PLATFORM"?
+>
+>That seems insane, but seems fundamental in that commit e13a6915a03f
+>("vhost/vsock: add IOTLB API support")
+>
+>This code
+>
+>        if ((features & (1ULL << VIRTIO_F_ACCESS_PLATFORM))) {
+>                if (vhost_init_device_iotlb(&vsock->dev, true))
+>                        goto err;
+>        }
+>
+>just makes me go "What?"  It makes no sense. Why isn't that feature
+>called something-something-IOTLB?
 
-sparse warnings: (new ones prefixed by >>)
-   drivers/soc/qcom/smem.c:422:16: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct smem_header *header @@     got void [noderef] __iomem *virt_base @@
-   drivers/soc/qcom/smem.c:422:16: sparse:     expected struct smem_header *header
-   drivers/soc/qcom/smem.c:422:16: sparse:     got void [noderef] __iomem *virt_base
-   drivers/soc/qcom/smem.c:507:16: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct smem_header *header @@     got void [noderef] __iomem *virt_base @@
-   drivers/soc/qcom/smem.c:507:16: sparse:     expected struct smem_header *header
-   drivers/soc/qcom/smem.c:507:16: sparse:     got void [noderef] __iomem *virt_base
-   drivers/soc/qcom/smem.c:520:50: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected void * @@     got void [noderef] __iomem * @@
-   drivers/soc/qcom/smem.c:520:50: sparse:     expected void *
-   drivers/soc/qcom/smem.c:520:50: sparse:     got void [noderef] __iomem *
-   drivers/soc/qcom/smem.c:648:22: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct smem_partition_header *phdr @@     got void [noderef] __iomem *virt_base @@
-   drivers/soc/qcom/smem.c:648:22: sparse:     expected struct smem_partition_header *phdr
-   drivers/soc/qcom/smem.c:648:22: sparse:     got void [noderef] __iomem *virt_base
-   drivers/soc/qcom/smem.c:653:22: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct smem_partition_header *phdr @@     got void [noderef] __iomem *virt_base @@
-   drivers/soc/qcom/smem.c:653:22: sparse:     expected struct smem_partition_header *phdr
-   drivers/soc/qcom/smem.c:653:22: sparse:     got void [noderef] __iomem *virt_base
-   drivers/soc/qcom/smem.c:657:24: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct smem_header *header @@     got void [noderef] __iomem *virt_base @@
-   drivers/soc/qcom/smem.c:657:24: sparse:     expected struct smem_header *header
-   drivers/soc/qcom/smem.c:657:24: sparse:     got void [noderef] __iomem *virt_base
-   drivers/soc/qcom/smem.c:667:30: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/soc/qcom/smem.c:667:30: sparse:    void *
-   drivers/soc/qcom/smem.c:667:30: sparse:    void [noderef] __iomem *
-   drivers/soc/qcom/smem.c:688:36: sparse: sparse: subtraction of different types can't work (different address spaces)
-   drivers/soc/qcom/smem.c:697:28: sparse: sparse: subtraction of different types can't work (different address spaces)
-   drivers/soc/qcom/smem.c:706:36: sparse: sparse: subtraction of different types can't work (different address spaces)
-   drivers/soc/qcom/smem.c:721:16: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct smem_header *header @@     got void [noderef] __iomem *virt_base @@
-   drivers/soc/qcom/smem.c:721:16: sparse:     expected struct smem_header *header
-   drivers/soc/qcom/smem.c:721:16: sparse:     got void [noderef] __iomem *virt_base
-   drivers/soc/qcom/smem.c:754:57: sparse: sparse: restricted __le32 degrades to integer
-   drivers/soc/qcom/smem.c:775:16: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct smem_partition_header *header @@     got void [noderef] __iomem * @@
-   drivers/soc/qcom/smem.c:775:16: sparse:     expected struct smem_partition_header *header
-   drivers/soc/qcom/smem.c:775:16: sparse:     got void [noderef] __iomem *
-   drivers/soc/qcom/smem.c:926:22: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct smem_ptable *ptable @@     got void [noderef] __iomem * @@
-   drivers/soc/qcom/smem.c:926:22: sparse:     expected struct smem_ptable *ptable
-   drivers/soc/qcom/smem.c:926:22: sparse:     got void [noderef] __iomem *
-   drivers/soc/qcom/smem.c:1035:16: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct smem_header *header @@     got void [noderef] __iomem *virt_base @@
-   drivers/soc/qcom/smem.c:1035:16: sparse:     expected struct smem_header *header
-   drivers/soc/qcom/smem.c:1035:16: sparse:     got void [noderef] __iomem *virt_base
->> drivers/soc/qcom/smem.c:1056:16: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *ptr @@     got restricted __le32 * @@
-   drivers/soc/qcom/smem.c:1056:16: sparse:     expected void const volatile [noderef] __iomem *ptr
-   drivers/soc/qcom/smem.c:1056:16: sparse:     got restricted __le32 *
-   drivers/soc/qcom/smem.c:1056:52: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *ptr @@     got restricted __le32 * @@
-   drivers/soc/qcom/smem.c:1056:52: sparse:     expected void const volatile [noderef] __iomem *ptr
-   drivers/soc/qcom/smem.c:1056:52: sparse:     got restricted __le32 *
+I honestly don't know the reason for the name but 
+VIRTIO_F_ACCESS_PLATFORM comes from the virtio specification:
+   https://docs.oasis-open.org/virtio/virtio/v1.2/cs01/virtio-v1.2-cs01.html#x1-6600006
 
-vim +1056 drivers/soc/qcom/smem.c
+   VIRTIO_F_ACCESS_PLATFORM(33)
+      This feature indicates that the device can be used on a platform
+      where device access to data in memory is limited and/or translated.
+      E.g. this is the case if the device can be located behind an IOMMU
+      that translates bus addresses from the device into physical
+      addresses in memory, if the device can be limited to only access
+      certain memory addresses or if special commands such as a cache
+      flush can be needed to synchronise data in memory with the device.
+      Whether accesses are actually limited or translated is described by
+      platform-specific means. If this feature bit is set to 0, then the
+      device has same access to memory addresses supplied to it as the
+      driver has. In particular, the device will always use physical
+      addresses matching addresses used by the driver (typically meaning
+      physical addresses used by the CPU) and not translated further, and
+      can access any address supplied to it by the driver. When clear,
+      this overrides any platform-specific description of whether device
+      access is limited or translated in any way, e.g. whether an IOMMU
+      may be present.
 
-   973	
-   974	static int qcom_smem_probe(struct platform_device *pdev)
-   975	{
-   976		struct smem_header *header;
-   977		struct reserved_mem *rmem;
-   978		struct qcom_smem *smem;
-   979		unsigned long flags;
-   980		size_t array_size;
-   981		int num_regions;
-   982		int hwlock_id;
-   983		u32 version;
-   984		u32 size;
-   985		int ret;
-   986		int i;
-   987	
-   988		num_regions = 1;
-   989		if (of_find_property(pdev->dev.of_node, "qcom,rpm-msg-ram", NULL))
-   990			num_regions++;
-   991	
-   992		array_size = num_regions * sizeof(struct smem_region);
-   993		smem = devm_kzalloc(&pdev->dev, sizeof(*smem) + array_size, GFP_KERNEL);
-   994		if (!smem)
-   995			return -ENOMEM;
-   996	
-   997		smem->dev = &pdev->dev;
-   998		smem->num_regions = num_regions;
-   999	
-  1000		rmem = of_reserved_mem_lookup(pdev->dev.of_node);
-  1001		if (rmem) {
-  1002			smem->regions[0].aux_base = rmem->base;
-  1003			smem->regions[0].size = rmem->size;
-  1004		} else {
-  1005			/*
-  1006			 * Fall back to the memory-region reference, if we're not a
-  1007			 * reserved-memory node.
-  1008			 */
-  1009			ret = qcom_smem_resolve_mem(smem, "memory-region", &smem->regions[0]);
-  1010			if (ret)
-  1011				return ret;
-  1012		}
-  1013	
-  1014		if (num_regions > 1) {
-  1015			ret = qcom_smem_resolve_mem(smem, "qcom,rpm-msg-ram", &smem->regions[1]);
-  1016			if (ret)
-  1017				return ret;
-  1018		}
-  1019	
-  1020	
-  1021		ret = qcom_smem_map_toc(smem, &smem->regions[0]);
-  1022		if (ret)
-  1023			return ret;
-  1024	
-  1025		for (i = 1; i < num_regions; i++) {
-  1026			smem->regions[i].virt_base = devm_ioremap_wc(&pdev->dev,
-  1027								     smem->regions[i].aux_base,
-  1028								     smem->regions[i].size);
-  1029			if (!smem->regions[i].virt_base) {
-  1030				dev_err(&pdev->dev, "failed to remap %pa\n", &smem->regions[i].aux_base);
-  1031				return -ENOMEM;
-  1032			}
-  1033		}
-  1034	
-  1035		header = smem->regions[0].virt_base;
-  1036		if (le32_to_cpu(header->initialized) != 1 ||
-  1037		    le32_to_cpu(header->reserved)) {
-  1038			dev_err(&pdev->dev, "SMEM is not initialized by SBL\n");
-  1039			return -EINVAL;
-  1040		}
-  1041	
-  1042		hwlock_id = of_hwspin_lock_get_id(pdev->dev.of_node, 0);
-  1043		if (hwlock_id < 0) {
-  1044			if (hwlock_id != -EPROBE_DEFER)
-  1045				dev_err(&pdev->dev, "failed to retrieve hwlock\n");
-  1046			return hwlock_id;
-  1047		}
-  1048	
-  1049		smem->hwlock = hwspin_lock_request_specific(hwlock_id);
-  1050		if (!smem->hwlock)
-  1051			return -ENXIO;
-  1052	
-  1053		ret = hwspin_lock_timeout_irqsave(smem->hwlock, HWSPINLOCK_TIMEOUT, &flags);
-  1054		if (ret)
-  1055			return ret;
-> 1056		size = readl_relaxed(&header->available) + readl_relaxed(&header->free_offset);
-  1057		hwspin_unlock_irqrestore(smem->hwlock, &flags);
-  1058	
-  1059		version = qcom_smem_get_sbl_version(smem);
-  1060		/*
-  1061		 * smem header mapping is required only in heap version scheme, so unmap
-  1062		 * it here. It will be remapped in qcom_smem_map_global() when whole
-  1063		 * partition is mapped again.
-  1064		 */
-  1065		devm_iounmap(smem->dev, smem->regions[0].virt_base);
-  1066		switch (version >> 16) {
-  1067		case SMEM_GLOBAL_PART_VERSION:
-  1068			ret = qcom_smem_set_global_partition(smem);
-  1069			if (ret < 0)
-  1070				return ret;
-  1071			smem->item_count = qcom_smem_get_item_count(smem);
-  1072			break;
-  1073		case SMEM_GLOBAL_HEAP_VERSION:
-  1074			qcom_smem_map_global(smem, size);
-  1075			smem->item_count = SMEM_ITEM_COUNT;
-  1076			break;
-  1077		default:
-  1078			dev_err(&pdev->dev, "Unsupported SMEM version 0x%x\n", version);
-  1079			return -EINVAL;
-  1080		}
-  1081	
-  1082		BUILD_BUG_ON(SMEM_HOST_APPS >= SMEM_HOST_COUNT);
-  1083		ret = qcom_smem_enumerate_partitions(smem, SMEM_HOST_APPS);
-  1084		if (ret < 0 && ret != -ENOENT)
-  1085			return ret;
-  1086	
-  1087		__smem = smem;
-  1088	
-  1089		smem->socinfo = platform_device_register_data(&pdev->dev, "qcom-socinfo",
-  1090							      PLATFORM_DEVID_NONE, NULL,
-  1091							      0);
-  1092		if (IS_ERR(smem->socinfo))
-  1093			dev_dbg(&pdev->dev, "failed to register socinfo device\n");
-  1094	
-  1095		return 0;
-  1096	}
-  1097	
+>
+>Can we please just split that flag into two, and have that odd
+>"platform access" be one bit, and the "enable iommu" be an entirely
+>different bit?
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+IIUC the problem here is that the VMM does the translation and then for 
+the device there is actually no need to translate, so this feature 
+should not be negotiated by crosvm and vhost-vsock, but just between 
+guest's driver and crosvm.
+
+Perhaps the confusion is that we use VIRTIO_F_ACCESS_PLATFORM both 
+between guest and VMM and between VMM and vhost device.
+
+In fact, prior to commit e13a6915a03f ("vhost/vsock: add IOTLB API 
+support"), vhost-vsock did not work when a VMM (e.g., QEMU) tried to 
+negotiate translation with the device: 
+https://bugzilla.redhat.com/show_bug.cgi?id=1894101
+
+The simplest solution is that crosvm doesn't negotiate 
+VIRTIO_F_ACCESS_PLATFORM with the vhost-vsock device if it doesn't want 
+to use translation and send messages to set it.
+
+In fact before commit e13a6915a03f ("vhost/vsock: add IOTLB API 
+support") this feature was not exposed by the vhost-vsock device, so it 
+was never negotiated. Now crosvm is enabling a new feature (not masking 
+guest-negotiated features) so I don't think it's a break in user space, 
+if the user space enable it.
+
+I tried to explain what I understood when I made the change, Michael and 
+Jason surely can add more information.
+
+Thanks,
+Stefano
+
