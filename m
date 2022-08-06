@@ -2,191 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C3ADC19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 17:11:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75941C19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 17:21:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233790AbiHFRLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 13:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46450 "EHLO
+        id S232308AbiHFRVc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 13:21:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiHFRK6 (ORCPT
+        with ESMTP id S229868AbiHFRV2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 13:10:58 -0400
-X-Greylist: delayed 397 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 06 Aug 2022 10:10:55 PDT
-Received: from vps.xff.cz (vps.xff.cz [195.181.215.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CF6F5A2;
-        Sat,  6 Aug 2022 10:10:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xff.cz; s=mail;
-        t=1659805455; bh=q4ABFkCbSH96OqX58TPcyYOM49oSlhTNadDmH/B85F4=;
-        h=Date:From:To:Cc:Subject:X-My-GPG-KeyId:References:From;
-        b=sEFTyfKX9sQOeJMwWcvpgLUSFDljZ4ZPhLANt4SFBBEQqj87NkeVwlM3T2HiBtHRN
-         po+JJ1bGn0sgZJQRCbb5JiPM/DLzfsYWlZODKmrZsfDwGNABshy/90xETXAstplq2T
-         9kDvdPATIMER9wVtfGZYYGAaLhO76/wzTIj9Sm/Q=
-Date:   Sat, 6 Aug 2022 19:04:14 +0200
-From:   =?utf-8?Q?Ond=C5=99ej?= Jirman <megi@xff.cz>
-To:     Caleb Connolly <kc@postmarketos.org>
-Cc:     Tom Fitzhenry <tom@tom-fitzhenry.me.uk>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, heiko@sntech.de,
-        martijn@brixit.nl, ayufan@ayufan.eu, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] arm64: dts: rockchip: Add initial support for
- Pine64 PinePhone Pro
-Message-ID: <20220806170414.qogs4ad2mooluxie@core>
-Mail-Followup-To: =?utf-8?Q?Ond=C5=99ej?= Jirman <megi@xff.cz>,
-        Caleb Connolly <kc@postmarketos.org>,
-        Tom Fitzhenry <tom@tom-fitzhenry.me.uk>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, heiko@sntech.de,
-        martijn@brixit.nl, ayufan@ayufan.eu, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-X-My-GPG-KeyId: EBFBDDE11FB918D44D1F56C1F9F0A873BE9777ED
- <https://xff.cz/key.txt>
-References: <20220805234411.303055-1-tom@tom-fitzhenry.me.uk>
- <20220805234411.303055-4-tom@tom-fitzhenry.me.uk>
- <f9cbc047-f30f-e711-3213-56fcbb7bbc8a@postmarketos.org>
- <9a168a20-1fd1-5d73-1d33-bd2f054d60d7@tom-fitzhenry.me.uk>
- <eb4327d0-b31b-b6ea-e0d3-d5cff3508f39@postmarketos.org>
+        Sat, 6 Aug 2022 13:21:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171F7642C;
+        Sat,  6 Aug 2022 10:21:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CCACAB8077B;
+        Sat,  6 Aug 2022 17:21:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21097C433D6;
+        Sat,  6 Aug 2022 17:21:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659806485;
+        bh=xCBMuqsZV7iPHwJALXb/Dt7nFrNqloBL28h2XN5yuAo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=K6OisMtIuqpniraC55aPNLVoVLc4BYz2XdoQ2jnIEDAsk1DVbShma8vPN1Wz4L6A5
+         1QgaqUdGpnrlVhFbPt5cm9uMpz0zLHygBJsEvBvyh8y02k7KFA4YDYFtWU0R0tVNJY
+         tw3SMDQ31SEMmNbuD/HaV/O6d0KJYVUA+xC7tjCeiPAhoJeVkYvd5/9be/gWRB0wRb
+         HVpD2aHHj7MlQdpsXv/v/q2AhEPyDpVvjd2D5tuxRcPdUSoVm+olAto6HMeWg46jVN
+         WZOPJx6OlklC8Ywij6mT8Fmg356Wly5z5KCrYTzQMxHYmWLxquTDZiVXeeQe6DFs7E
+         QqN7vpK/gICYg==
+Date:   Sat, 6 Aug 2022 18:31:32 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lucas Stankus <lucas.p.stankus@gmail.com>,
+        Puranjay Mohan <puranjay12@gmail.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Tomislav Denis <tomislav.denis@avl.com>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Ricardo Ribalda <ribalda@kernel.org>,
+        Dragos Bogdan <dragos.bogdan@analog.com>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Joachim Eastwood <manabian@gmail.com>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        Sean Nyekjaer <sean@geanix.com>,
+        Beniamin Bia <beniamin.bia@analog.com>,
+        Patrick Vasseur <patrick.vasseur@c-s.fr>,
+        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
+        Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Philippe Reynes <tremyfr@yahoo.fr>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Alexandru Lazar <alazar@startmail.com>,
+        Oskar Andero <oskar.andero@gmail.com>,
+        =?UTF-8?B?TcOlcnRlbg==?= Lindahl <martenli@axis.com>,
+        Bogdan Pricop <bogdan.pricop@emutex.com>,
+        Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Dan Murphy <dmurphy@ti.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Phil Reid <preid@electromag.com.au>,
+        Michael Welling <mwelling@ieee.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        Robert Jones <rjones@gateworks.com>,
+        Chris Coffey <cmc@babblebit.net>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Sankar Velliangiri <navin@linumiz.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        broonie@kernel.org
+Subject: Re: [PATCH v2 02/10] dt-bindings: iio: accel: use
+ spi-peripheral-props.yaml
+Message-ID: <20220806183132.77b383cd@jic23-huawei>
+In-Reply-To: <89ea12c2-d4ef-490d-ff28-27b636adb05f@linaro.org>
+References: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
+        <20220727164646.387541-3-krzysztof.kozlowski@linaro.org>
+        <20220731164943.320babe4@jic23-huawei>
+        <20220803212926.GA2639296-robh@kernel.org>
+        <89ea12c2-d4ef-490d-ff28-27b636adb05f@linaro.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <eb4327d0-b31b-b6ea-e0d3-d5cff3508f39@postmarketos.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Caleb and Tom,
+On Thu, 4 Aug 2022 09:27:37 +0200
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
-more below.
-
-On Sat, Aug 06, 2022 at 03:58:17PM +0100, Caleb Connolly wrote:
-> On 06/08/2022 03:37, Tom Fitzhenry wrote:
-> > On 6/8/22 12:10, Caleb Connolly wrote:
-> > > According to the link below (and my own knowledge of PPP
-> > > development) Kamil is the original author of this patch, both Kamil
-> > > and Martijn created the initial version of the devicetree. Given
-> > > that you're using their work as a base, Kamil's authorship should be
-> > > respected in the patch you submit.
+> On 03/08/2022 23:29, Rob Herring wrote:
+> >>> I wonder if spi-3wire is device specific (not controller) and should be
+> >>> rather explicitly mentioned by device schema. Just like spi-cpol/cpha.  
+> >>
+> >> I think it is, but Mark is expert on this.  
 > > 
-> > I agree authorship is important, and thus Kamil, Martijn and Megi are
-> > listed as Co-developed-by in this patch.
-> To be clear, by authorship I mean literally the author of the patch, the
-> previous patch in this series was created by Samuel and you left his
-> authorship intact - it has "From: Samuel Dionne-Riel
-> <samuel@dionne-riel.com>" at the top, so when a maintainer picks it up and
-> it ends up in Linux, anyone looking at it will see that he was the author of
-> the patch.
+> > I would say yes as it's the device with a single data line.  
 > 
-> This patch is from you, there is no From: tag overriding it, and the
-> diffstat in your cover letter shows you as the author. Whilst you have
-> obviously made some heavy changes to this patch, it isn't your original work
-> as you state yourself in the commit message. Authorship should be attributed
-> to Kamil as they are the author of the earliest version of this patch we
-> have.
+> I will move it to device schema, just like cpol/cpha, and send a v3.
+> After the merge window.
+Works for me. I'll wait for v3 then.
+
+
+
+> 
+> >   
+> >> In general I'm waiting on Mark's opinion on the whole idea!  
 > > 
-> > > Their original patch [2] contained SoBs from them and Martijn, those
-> > > are both missing below. Both of their signed-off-by tags should be
-> > > added before this patch hits the mailing list, and the same for
-> > > Ondrej. The order also seems wrong (Ondrej should be last before
-> > > you).
-> > 
-> > Yes, this patch's acceptance is blocked until all Co-developed-by
-> > authors (Kamil, Martjin, Megi) provide their Signed-off-by to this
-> > patch.
-> You should obtain SoBs from Co-developers /before/ sending this patch
-> upstream, this indicates that everyone is on board and that the patch has
-> some sensible history. The mailing list isn't the place to ask your
-> co-developers to sign off a patch after you've made extensive changes to it.
+> > The prerequisite changes (except for spi-3-wire) are already queued up 
+> > by Mark as are changes for other subsystems.  
 
-Looks like there's some confusion here, that I may have added to at some
-point by a bit of patch squashing, and some SoB tag creativity. ;)
+Ah. Got it.
 
-Let me try to clear it up a bit, since it's my squashed patch this discussion
-and this submission is based around. Patch [2] you're linking to is not an
-original patch by Martijn or Kamil.
+Thanks for driving this through.
 
-It's just a squashed bunch of patches that I took from a secret repo that Kamil
-shared with me once upon a time, so that I can help with kernel development and
-camera support for Pinephone Pro about a year ago, when it was still a secret
-thing.
-
-*AFAIK*, original patches in the secret repo were never published by authors,
-but only through my squashed patch from my kernel tree. All the prior work seems
-to be either in unlisted git repos, or in login gated git repos.
-
-So hereby I give my Signed-off-by: Ondrej Jriman <megi@xff.cz> for the patch
-[2] this submission by Tom was developed from, stating that to the best of my
-knowledge:
-
-1) Original author is Martijn Braam and "Fuzhou Rockchip Electronics Co., Ltd".
-   Kamil Trzciński extended the Martijn's original DT with some things that are
-   mostly stripped off in this submission, other than a few oneliners and the
-   gpio power key node. I also have maybe one or two lines in this submission.
-2) Original work was published under MIT or GPL2.0+
-3) Original work is missing copyright header from Rockchip and any SoB on the
-   patches. I have added the SoB for Martijn/Kamil myself without asking them.
-   Sorry for that. And I guess this is the source of some confusion here, too.
-
-That should cover the requirement b) of "Developer’s Certificate of Origin 1.1"
-which should be all that's necessary.
-
-So now that we have all the needed SoB for the base patch, and Tom already has
-SoB for his modifications, all the Co-developed-by are in place, and copyright
-notices from original authors are untouched in the code, except for Rockchip,
-the way forward should be to re-add missing:
-
-  Copyright (c) 2021 Fuzhou Rockchip Electronics Co., Ltd
-
-to the code and add my SoB to the commit message. That should make the
-provenance of this code clear and properly accounted for.
-
-SoB from Martijn would be nice to have, just to reassure about the Rockchip
-copyright, which I assume authored the Android factory kernel code/DT. But I'm
-presonally quite sure this code is MIT/GPL2.0+, regardless.
-
-------
-
-If you want more details, then here is the original patch series from the secret
-repo: https://megous.com/git/linux/log/?h=ayufan-secret/pinephone-pro
-
-Martijn's original patch as taken over by Kamil is
-https://megous.com/git/linux/commit/?h=ayufan-secret/pinephone-pro&id=9f1a4867c21a9fa88177bd0903bdc1d82e213310
-It has Martijn's copyright and is published under GPL2.0+ OR MIT. This is the
-earliest available code this all is based on.
-
-It will sure have some history, too, given that almost all of rk818 node content
-matches the decompiled Android factory image's device tree to the
-T and that's like 50% of the code in this submission. :) That's where my guess
-that the original patch is missing Rockchip's copyright is comming from.
-
-Android DT was never published in code form for all I know. I guess that's what
-we get for requiring DT be licensed under MIT license. Some Rockchip engineer
-likely wrote half of this submission. Rockchip copyright is thus probably
-missing from the patch. Decompiled DT here: https://megous.com/dl/tmp/01_dtbdump_rockchip,android.dts
-
-Kamil seems to have these changes in this submission:
-
-https://megous.com/git/linux/commit/?h=ayufan-secret/pinephone-pro&id=30976b1d8b7c7958474bd54fc86db79ba11d7a17
-https://megous.com/git/linux/commit/?h=ayufan-secret/pinephone-pro&id=28b33d187f6b8dd672115e69a19d8d9a6725c834
-https://megous.com/git/linux/commit/?h=ayufan-secret/pinephone-pro&id=083d7b514a7ac0e97a18bf4012259f4d9fa37733
-https://megous.com/git/linux/commit/?h=ayufan-secret/pinephone-pro&id=bbc9ca6051500baf28296908d92286ff1c4087e0
-(just the power key part)
-
-kind regards,
-	Ondrej
-
-
-> I missed the following points in my original email:
+Jonathan
 > 
-> Please read the documentation on modifying patches [1] as it applies here,
-> and add a comment before your SoB explaining your changes, something like
 > 
-> [tom: strip down to minimal booting DT for initial support]
-
-These rules are for subsystem maintainers. At least it says so on top.
-
-> This way the history of the patch is preserved properly for anyone looking
-> back at it in the future. In a similar vein, replace the external git links
-> with links to exact commits so they don't degrade over time.
+> Best regards,
+> Krzysztof
 
