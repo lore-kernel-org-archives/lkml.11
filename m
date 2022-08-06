@@ -2,95 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A698C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 12:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B8BC19F2D
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 12:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230286AbiHFMGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 08:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33512 "EHLO
+        id S230440AbiHFMPd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 08:15:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231296AbiHFMFt (ORCPT
+        with ESMTP id S231694AbiHFMP0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 08:05:49 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9572B14083
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 05:05:47 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id d16so4727837pll.11
-        for <linux-kernel@vger.kernel.org>; Sat, 06 Aug 2022 05:05:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=B0kDW3n73/YJtEBYuBAaHlkDVhHbuG8uEXjeR76NRXQ=;
-        b=HOwD30nidxj8TRJDvMEt7DZGPmPNIskaCEBYf1vaxK0PzNO2rKRfzG+oRA6qxPhcEg
-         5TC2eJOwOeOMvsNkH6tzSx7/9oc01PLAmMwADbzOXdlNneii9Of5+K8RSI8HmgZx+vY5
-         3OwTdPgX1+T6KF8ezLYrYhzwvJbUJ2Yqvs6+70IuTU3ZEMRy9IzczEPZs0YQjuLsLN+P
-         GISNPGjyj2EjJ69BVyurbVefNQJPXvk/wVvx93nFVf0x6vLTyPJ4JmF8l7DdPOHDQ7nY
-         kz3i+iFswlPHCSJqkg1iBmYwv0zo3+Ny62myGSTCwTbWhXyF7/MJqHh/xIk2yCZ1yfqj
-         d2jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=B0kDW3n73/YJtEBYuBAaHlkDVhHbuG8uEXjeR76NRXQ=;
-        b=7soO+3fWtI92wzM0AvcOlaBVgt4GeqkO7kI4RAsHm1ph45ivzHcJd6Es2IF34nr3vV
-         89a/F3aJaahWFEna2LCShrQMxRYX93/0hEklMZA+ghWvEJMumGuRFnoTTaiQn7mCsOZh
-         IQHW2/yes7fIth8XqX5NTDJDDPYRtmJfIm/Q2w7U1mmAcSnKDHr0GjKZHZdsg7LuUFA/
-         ZQaOYWhOIACxKY4zHGtJLwe0BCkkKoeXq1/6zTGsZO4HRekbZ188YmHguit5Fz0sxPTt
-         9dwTuop/MQ6xTLUC/TElSXt2lppDaOSJvslsmqQ1gAYmx1a5ZkyVHK7ZrDEIzfOAVwwS
-         auWw==
-X-Gm-Message-State: ACgBeo26qVAcGVx/jhuJWpOoKXnoRD5ip+T+XuZoJI9c+fzu6xM5PVAc
-        dvTdUGQhsCvivtaIV8u/6MFswQ==
-X-Google-Smtp-Source: AA6agR53D0SuL1XIiR+rmxRcrxKX+bO+Lb2m0Cq+adYY3x4InNWOF1SlBkF/3RyQ8MzUoqWY7Rk0fA==
-X-Received: by 2002:a17:90b:3892:b0:1f5:8be1:d8a0 with SMTP id mu18-20020a17090b389200b001f58be1d8a0mr7396598pjb.162.1659787547075;
-        Sat, 06 Aug 2022 05:05:47 -0700 (PDT)
-Received: from C02G87K0MD6R.bytedance.net ([139.177.225.228])
-        by smtp.gmail.com with ESMTPSA id t4-20020a63eb04000000b003db7de758besm3035003pgh.5.2022.08.06.05.05.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Aug 2022 05:05:45 -0700 (PDT)
-From:   Hao Jia <jiahao.os@bytedance.com>
-To:     mingo@redhat.com, peterz@infradead.org, mingo@kernel.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, vschneid@redhat.com
-Cc:     linux-kernel@vger.kernel.org, Hao Jia <jiahao.os@bytedance.com>
-Subject: [PATCH 3/3] sched/psi: Remove redundant cgroup_psi() when !CONFIG_CGROUPS
-Date:   Sat,  6 Aug 2022 20:05:10 +0800
-Message-Id: <20220806120510.96131-4-jiahao.os@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220806120510.96131-1-jiahao.os@bytedance.com>
-References: <20220806120510.96131-1-jiahao.os@bytedance.com>
+        Sat, 6 Aug 2022 08:15:26 -0400
+Received: from mta-01.yadro.com (mta-02.yadro.com [89.207.88.252])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B32B877;
+        Sat,  6 Aug 2022 05:15:21 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mta-01.yadro.com (Postfix) with ESMTP id 20C3141273;
+        Sat,  6 Aug 2022 12:15:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
+        in-reply-to:content-disposition:content-type:content-type
+        :mime-version:references:message-id:subject:subject:from:from
+        :date:date:received:received:received:received; s=mta-01; t=
+        1659788118; x=1661602519; bh=19EybQC+1gn5CR7Z0N2mdrVXzygyocg/h0i
+        6NwEVs8A=; b=CAdNJIFsxV9D3u+0W7WT+pmyZb1P3mUNea56rbZ+zN37JS14K1p
+        TUF6XFY7zY/aSp3hmQzRcHZU2Te1PbeEabbapFEORYNF5zF6f+csiUlsA3nd24fA
+        KpdPr0mJAFosVf5tVK47+RUigUOtOFlBu0S56kmtVToXaZ9IPvp/eHLs=
+X-Virus-Scanned: amavisd-new at yadro.com
+Received: from mta-01.yadro.com ([127.0.0.1])
+        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id cJHOOhsCYjML; Sat,  6 Aug 2022 15:15:18 +0300 (MSK)
+Received: from T-EXCH-01.corp.yadro.com (t-exch-01.corp.yadro.com [172.17.10.101])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mta-01.yadro.com (Postfix) with ESMTPS id A558841252;
+        Sat,  6 Aug 2022 15:15:14 +0300 (MSK)
+Received: from T-EXCH-09.corp.yadro.com (172.17.11.59) by
+ T-EXCH-01.corp.yadro.com (172.17.10.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.669.32; Sat, 6 Aug 2022 15:15:14 +0300
+Received: from yadro.com (10.178.119.167) by T-EXCH-09.corp.yadro.com
+ (172.17.11.59) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.1118.9; Sat, 6 Aug 2022
+ 15:15:13 +0300
+Date:   Sat, 6 Aug 2022 15:15:12 +0300
+From:   Konstantin Shelekhin <k.shelekhin@yadro.com>
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+CC:     <ojeda@kernel.org>, <alex.gaynor@gmail.com>, <ark.email@gmail.com>,
+        <bjorn3_gh@protonmail.com>, <bobo1239@web.de>,
+        <bonifaido@gmail.com>, <boqun.feng@gmail.com>,
+        <davidgow@google.com>, <dev@niklasmohrin.de>,
+        <dsosnowski@dsosnowski.pl>, <foxhlchen@gmail.com>,
+        <gary@garyguo.net>, <geofft@ldpreload.com>,
+        <gregkh@linuxfoundation.org>, <jarkko@kernel.org>,
+        <john.m.baublitz@gmail.com>, <leseulartichaut@gmail.com>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <m.falkowski@samsung.com>, <me@kloenk.de>, <milan@mdaverde.com>,
+        <mjmouse9999@gmail.com>, <patches@lists.linux.dev>,
+        <rust-for-linux@vger.kernel.org>, <thesven73@gmail.com>,
+        <torvalds@linux-foundation.org>, <viktor@v-gar.de>,
+        <wedsonaf@google.com>, Andreas Hindborg <andreas.hindborg@wdc.com>
+Subject: Re: [PATCH v9 12/27] rust: add `kernel` crate
+Message-ID: <Yu5bUK4/70SanMss@yadro.com>
+References: <20220805154231.31257-13-ojeda@kernel.org>
+ <Yu5Bex9zU6KJpcEm@yadro.com>
+ <CANiq72=3j2NM2kS8iw14G6MnGirb0=O6XQyCsY9vVgsZ1DfLaQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CANiq72=3j2NM2kS8iw14G6MnGirb0=O6XQyCsY9vVgsZ1DfLaQ@mail.gmail.com>
+X-Originating-IP: [10.178.119.167]
+X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
+ T-EXCH-09.corp.yadro.com (172.17.11.59)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cgroup_psi() is only called under CONFIG_CGROUPS.
-We don't need cgroup_psi() when !CONFIG_CGROUPS,
-so we can remove it in this case.
+On Sat, Aug 06, 2022 at 01:22:52PM +0200, Miguel Ojeda wrote:
+> > I sense possible problems here. It's common for a kernel code to pass
+> > flags during memory allocations.
+> 
+> Yes, of course. We will support this, but how exactly it will look
+> like, to what extent upstream Rust's `alloc` could support our use
+> cases, etc. has been on discussion for a long time.
+> 
+> For instance, see https://github.com/Rust-for-Linux/linux/pull/815 for
+> a potential extension trait approach with no allocator carried on the
+> type that Andreas wrote after a discussion in the last informal call:
+> 
+>     let a = Box::try_new_atomic(101)?;
 
-Signed-off-by: Hao Jia <jiahao.os@bytedance.com>
----
- include/linux/cgroup.h | 5 -----
- 1 file changed, 5 deletions(-)
+IMO it's just easier to always pass flags like this:
 
-diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
-index ed53bfe7c46c..ac5d0515680e 100644
---- a/include/linux/cgroup.h
-+++ b/include/linux/cgroup.h
-@@ -734,11 +734,6 @@ static inline struct cgroup *cgroup_parent(struct cgroup *cgrp)
- 	return NULL;
- }
- 
--static inline struct psi_group *cgroup_psi(struct cgroup *cgrp)
--{
--	return NULL;
--}
--
- static inline bool cgroup_psi_enabled(void)
- {
- 	return false;
--- 
-2.32.0
+  let a = Box::try_new(GFP_KERNEL | GFP_DMA, 101)?;
 
+But if allocate_with_flags() will be somehow present in the API that's
+just what we need.
+
+P.S. Thanks for a quick reply!
