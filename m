@@ -2,118 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20577C25B07
-	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 14:22:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E77CC25B07
+	for <linux-kernel@archiver.kernel.org>; Sat,  6 Aug 2022 14:24:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231773AbiHFOWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 10:22:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42560 "EHLO
+        id S231575AbiHFOYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 10:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbiHFOWE (ORCPT
+        with ESMTP id S229945AbiHFOYl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 10:22:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18BBF11A24;
-        Sat,  6 Aug 2022 07:22:04 -0700 (PDT)
+        Sat, 6 Aug 2022 10:24:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F2912609;
+        Sat,  6 Aug 2022 07:24:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6D0BB8069B;
-        Sat,  6 Aug 2022 14:22:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DF4BC433C1;
-        Sat,  6 Aug 2022 14:21:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1099261058;
+        Sat,  6 Aug 2022 14:24:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4671EC433D6;
+        Sat,  6 Aug 2022 14:24:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659795721;
-        bh=HkNJnYcSEBuJ4YsCeTCaPqJ4cCK2gNOMXnFH8NjrmH0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Qy1WpG6PIF54IANVnlB+23sKM3kIajnUro+RKcUEVUV1gEXILZDV31FoOoCDcXvTc
-         tp/AOvvbzBjMt5Rl+WO3nmvS2QyQoEK11FjVAoU5u/LjB9hm1eB2SD/4FD9FFdu9A9
-         SOw6I58b3/lSO6Qf9qmdgUI1Q+FCYiTxLtIz8gFc/mgTkoGUrBuZHLK3hGTK2EybY1
-         TvU33TpKC105ejP1MXT5mRh/B6QTa3EmTtNdXZz5Ok1eErivLSQ0FaD5JMrrvrEwtM
-         G65nAu0r2mPOJKsp89T5+aWtZ71njz/uuclqwTBOxB3w2rju9HFrJxWIASRInsMwzt
-         FE6iY6YnZzcrw==
-Date:   Sat, 6 Aug 2022 15:32:21 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: iio: gyroscope: bosch,bmg160: correct
- number of pins
-Message-ID: <20220806153221.1a90bd28@jic23-huawei>
-In-Reply-To: <20220805075503.16983-1-krzysztof.kozlowski@linaro.org>
-References: <20220805075503.16983-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1659795879;
+        bh=BFbPwwKn7jJpZYRVtHC7w5Hhe/UhTItT3pE+vqWA25Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Fl035q6bzqpJ7mBg5IjhuOpFf/GOS2QvcxMx92Ex3orRX7ELIa83oTSgwK9uo0D6F
+         4gpli9O+zLwuuhhiRjrF6t2NHmda9+h3dPPQZ52I94ntrDpXuuxXTf+buYJIzQ1VI4
+         /bveeUZhQrwUuB3FtV80nBSL1oSv9ZbfFdikC/x+NKqo/c/Q9HIrHCowmzJ5RAgGJW
+         cCSgr25JdjfF0AKaGqANYjhJKdMoY84BkbZOk4jCMvgvU9bEJ9nC58eIXGSwk8t1gN
+         /BLunE5LBx9NbynTwxYblmKW7M246Ciz44VgnUHgYmOHmFl5s476d/B8VnNQUlbmy8
+         Lx9J/oPeSQH0Q==
+Date:   Sat, 6 Aug 2022 10:24:38 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Jann Horn <jannh@google.com>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH MANUALSEL 5.18 1/6] KVM: x86: do not report a vCPU as
+ preempted outside instruction boundaries
+Message-ID: <Yu55ptmZrehGHKTl@sashalap>
+References: <20220614021116.1101331-1-sashal@kernel.org>
+ <YrI25yOy7WMqr+x3@sashalap>
+ <e7468f00-5d1a-5d9d-ae14-060cdf0f9558@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <e7468f00-5d1a-5d9d-ae14-060cdf0f9558@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri,  5 Aug 2022 09:55:03 +0200
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+On Wed, Aug 03, 2022 at 06:50:25PM +0200, Paolo Bonzini wrote:
+>On 6/21/22 23:23, Sasha Levin wrote:
+>>Paolo, ping?
+>
+>Sorry I missed the whole bunch of MANUALSEL patches.
+>
+>Acked-by: Paolo Bonzini <pbonzini@redhat.com>
+>
+>for all six.
 
-> BMG160 has two interrupt pins to which interrupts can be freely mapped.
-> Correct the schema to express such case and fix warnings like:
-> 
->   qcom/msm8916-alcatel-idol347.dtb: gyroscope@68: interrupts: [[97, 1], [98, 1]] is too long
-> 
-> However the basic issue still persists - the interrupts should come in a
-> defined order.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> Changes since v1:
-> 1. Accept also INT2 as one interrupt (Jonathan).
+Thanks Paolo! I'll queue up these and the missing ones as pointed out by
+Jann.
 
-This doesn't work. If we are going to support either interrupt, at the very least
-we need to require interrupt-names if the first one isn't INT1.  So your fix
-is right but not enough.
-
-Driver may ignore interrupt-names for now (would be good to have a sanity check in driver
-though so the driver explicitly checks for INT2 and doesn't use the interrupt if
-it is INT2 - support for that being for a future 'feature' addition).
-
-A hacky solution would be to require the first one to always be INT1 but that
-gives us no (backwards compatible) path forwards if someone does have a board
-where only INT2 is wired.
-
-So minimum change I think will be to provide interrupt-names allowing any of
-INT1 (default if not specified)
-INT1, INT2
-INT2
-
-and your fix below.
-
+-- 
 Thanks,
-
-Jonathan
-
-
-
-> ---
->  .../devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml         | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-> index b6bbc312a7cf..1414ba9977c1 100644
-> --- a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-> +++ b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-> @@ -24,8 +24,10 @@ properties:
->  
->    interrupts:
->      minItems: 1
-> +    maxItems: 2
->      description:
->        Should be configured with type IRQ_TYPE_EDGE_RISING.
-> +      If two interrupts are provided, expected order is INT1 and INT2.
->  
->  required:
->    - compatible
-
+Sasha
