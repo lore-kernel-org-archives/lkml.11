@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE65CC2BB9D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B04FBC2BB45
 	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242640AbiHGWLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:11:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52334 "EHLO
+        id S242593AbiHGWLj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241927AbiHGWHh (ORCPT
+        with ESMTP id S241922AbiHGWHe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 18:07:37 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE91BCAA;
-        Sun,  7 Aug 2022 15:03:26 -0700 (PDT)
+        Sun, 7 Aug 2022 18:07:34 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DE0BC95;
+        Sun,  7 Aug 2022 15:03:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659909806; x=1691445806;
+  t=1659909804; x=1691445804;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=KjjdkEbtaTHZidy0zddkmh0o0n7UOg1kw17gRohVf1w=;
-  b=R3jhY7S/hGBhNuEW/EhHC1mHxi+RsEmOWbUdJPulUsEO7daPAP099DwG
-   ucc1jyodCHJ/Ik+UOdDwLAlyVev2nVzyC4+L3lZEN5XV9aVALFx7qA2+6
-   YpwT7meUTeucTjJqHbwUjzvE/ztjmx+Qwy9U2nfEgysov3S8HNCBHFLSj
-   lfN+euFiYZRa5cdkFVdcWl+8i/ohLHmvEQAvUcGZSXBWd+WOLb7GRlqMJ
-   E5Gq2o77d7lhxQCTPwBs53ZTJkN8GuzjW0Pg26yvQM7wEplR6jdrbar2K
-   2k8WMRlUevdm2EbLsAM4THk1KQ9FE2NxaqQ91IlOnAxfaLy6yJkgX4loY
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270240412"
+  bh=yaD3PvxIxKOnDWjz/hWKnKRcGz9zJ8gFng/fJPcKbfc=;
+  b=bMCIvRWpzG5PVL01r0Iy5SlcvRcvxTMnRKzw3Wtfb0MTNpAmlEFvRs//
+   hVlfSLnVhlN436+K6xoxQ+bg8NX6jLO65yUnGaGswrGDHvApMh4e36u6n
+   VJyNRlr+Cw5azcMBcAILFIU6kaNbu63t7ATPRg1HFTr88TKcWiCwqzoV4
+   IhQsiCwq6Jf57G0q5c+rMD7YMNzqWCkkGrxHSLEoqwKPc38tPuY1QGekX
+   zLxXEXL+/gLN/UWOdnlMGlnpVXv7NA3P4B7zSdrdPvBP/4BMN+NDKMNVW
+   9Umz3cHL7gbzhGj+ylM9nxJttDjeqD+s4mpw8IKZ7CSSg1tyXWcje19Sc
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="289224173"
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="270240412"
+   d="scan'208";a="289224173"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:44 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:40 -0700
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="663682758"
+   d="scan'208";a="663682676"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:44 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:39 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [PATCH v8 095/103] KVM: TDX: Handle TDX PV rdmsr/wrmsr hypercall
-Date:   Sun,  7 Aug 2022 15:02:20 -0700
-Message-Id: <ce183d47a93012c46472b32077e80dc8b56c88ed.1659854791.git.isaku.yamahata@intel.com>
+Subject: [PATCH v8 070/103] KVM: TDX: complete interrupts after tdexit
+Date:   Sun,  7 Aug 2022 15:01:55 -0700
+Message-Id: <ca3c6f55e36df176c39798360ac28e57ec8a1da9.1659854790.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854790.git.isaku.yamahata@intel.com>
 References: <cover.1659854790.git.isaku.yamahata@intel.com>
@@ -57,71 +57,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Wire up TDX PV rdmsr/wrmsr hypercall to the KVM backend function.
+This corresponds to VMX __vmx_complete_interrupts().  Because TDX
+virtualize vAPIC, KVM only needs to care NMI injection.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/vmx/tdx.c | 39 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+ arch/x86/kvm/vmx/tdx.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 341c29385544..fdd0609bd01b 100644
+index 0aa52bf1c281..2c5fda9e213e 100644
 --- a/arch/x86/kvm/vmx/tdx.c
 +++ b/arch/x86/kvm/vmx/tdx.c
-@@ -1157,6 +1157,41 @@ static int tdx_emulate_mmio(struct kvm_vcpu *vcpu)
- 	return 1;
+@@ -580,6 +580,14 @@ void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+ 	vcpu->kvm->vm_bugged = true;
  }
  
-+static int tdx_emulate_rdmsr(struct kvm_vcpu *vcpu)
++static void tdx_complete_interrupts(struct kvm_vcpu *vcpu)
 +{
-+	u32 index = tdvmcall_a0_read(vcpu);
-+	u64 data;
-+
-+	if (!kvm_msr_allowed(vcpu, index, KVM_MSR_FILTER_READ) ||
-+	    kvm_get_msr(vcpu, index, &data)) {
-+		trace_kvm_msr_read_ex(index);
-+		tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_INVALID_OPERAND);
-+		return 1;
-+	}
-+	trace_kvm_msr_read(index, data);
-+
-+	tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
-+	tdvmcall_set_return_val(vcpu, data);
-+	return 1;
++	/* Avoid costly SEAMCALL if no nmi was injected */
++	if (vcpu->arch.nmi_injected)
++		vcpu->arch.nmi_injected = td_management_read8(to_tdx(vcpu),
++							      TD_VCPU_PEND_NMI);
 +}
 +
-+static int tdx_emulate_wrmsr(struct kvm_vcpu *vcpu)
-+{
-+	u32 index = tdvmcall_a0_read(vcpu);
-+	u64 data = tdvmcall_a1_read(vcpu);
+ struct tdx_uret_msr {
+ 	u32 msr;
+ 	unsigned int slot;
+@@ -648,6 +656,8 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
+ 	vcpu->arch.regs_avail &= ~VMX_REGS_LAZY_LOAD_SET;
+ 	trace_kvm_exit(vcpu, KVM_ISA_VMX);
+ 
++	tdx_complete_interrupts(vcpu);
 +
-+	if (!kvm_msr_allowed(vcpu, index, KVM_MSR_FILTER_READ) ||
-+	    kvm_set_msr(vcpu, index, data)) {
-+		trace_kvm_msr_write_ex(index, data);
-+		tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_INVALID_OPERAND);
-+		return 1;
-+	}
-+
-+	trace_kvm_msr_write(index, data);
-+	tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
-+	return 1;
-+}
-+
- static int handle_tdvmcall(struct kvm_vcpu *vcpu)
- {
- 	if (tdvmcall_exit_type(vcpu))
-@@ -1171,6 +1206,10 @@ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
- 		return tdx_emulate_io(vcpu);
- 	case EXIT_REASON_EPT_VIOLATION:
- 		return tdx_emulate_mmio(vcpu);
-+	case EXIT_REASON_MSR_READ:
-+		return tdx_emulate_rdmsr(vcpu);
-+	case EXIT_REASON_MSR_WRITE:
-+		return tdx_emulate_wrmsr(vcpu);
- 	default:
- 		break;
- 	}
+ 	return EXIT_FASTPATH_NONE;
+ }
+ 
 -- 
 2.25.1
 
