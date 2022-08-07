@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B90C1C25B08
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C03FBC25B0C
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242355AbiHGWcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35668 "EHLO
+        id S242367AbiHGWcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242170AbiHGWbh (ORCPT
+        with ESMTP id S242186AbiHGWbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 18:31:37 -0400
+        Sun, 7 Aug 2022 18:31:38 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B851418358;
-        Sun,  7 Aug 2022 15:18:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635E41834B;
+        Sun,  7 Aug 2022 15:18:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659910729; x=1691446729;
+  t=1659910730; x=1691446730;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=L/qfCpkL6EjBOusAo/hpTfWMeNJV7Hjj/edqAUVoBdg=;
-  b=YFkXUarfKXKWHj3nnQLW8cQV1Jd5TqHao395tT1OM6R6+jIMAUAwHeYl
-   eY/Bol7UcHIcGtpTTclA9KH6aDPjBBCJ3t+LNEb7AL7Uqpr8CJ3l1V2EA
-   QNu87MLuXvtWCqo60QFkjFh3sN46igbh/rMnJ7KenrGgNd0BWDGjc58Cy
-   /QJw7v7udxmItSX88dGB3EbVUBE/uTvIuah9Lx58UQDIR5SVWHxtn1Ct7
-   1ULHh16FqFPp5G34Tr89J030Fzqh+pN/7t8RiyNrEY4/kVHtPcr76Z1W/
-   VHtWjt7HISYGiTes17oYf+ohCdwy6/pKUdD2fPPd0C49kVrHQ2JVfScuv
+  bh=EtDHJys8JQbAqNtz2Ir/5m2Mw+AMu1zQswdGXIEagW4=;
+  b=h89AAWd7LSMSc2gBjrHLWeCVKydKofK/HdkiDACZbnmqd3QYSwP37x1D
+   g7DsRYh7HNBs+bMK4eYsd6i5su7Oz+0bk2g2NBU67HiCLhWg4mTzEFfPk
+   A5hlWSpGcfTjaWhrqLIGdC66raTNjXftTRPXEhs1l/MeGDkvLrcutmh4N
+   PuIaq2ifllQhKdELsHMmqWi+Tih8dneod2z9yQujdQa6vQB+c6dPbgVBO
+   FELvA1qg4hYhoixaJ3PwrfD3HGoUYIBzCTgJJ7FXy1L1Y7PNUQ2XPD+LG
+   QZyZyCT/orki2k/BUCQ7swXWsuBx2WrbpCISM0AE+PX1Z8NsOo6qQoXBw
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270852830"
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270852832"
 X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
-   d="scan'208";a="270852830"
+   d="scan'208";a="270852832"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:18:48 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:18:49 -0700
 X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
-   d="scan'208";a="632642302"
+   d="scan'208";a="632642309"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:18:48 -0700
 From:   isaku.yamahata@intel.com
@@ -43,9 +43,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH 02/13] KVM: TDP_MMU: Go to next level if smaller private mapping exists
-Date:   Sun,  7 Aug 2022 15:18:35 -0700
-Message-Id: <da3c956a2f3bee0bdbbc8650f140823c8a646ffd.1659854957.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH 04/13] KVM: TDX: Pass KVM page level to tdh_mem_page_add() and tdh_mem_page_aug()
+Date:   Sun,  7 Aug 2022 15:18:37 -0700
+Message-Id: <86bb6025f375587aae50a59c347fb16ea28efcd6.1659854957.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854957.git.isaku.yamahata@intel.com>
 References: <cover.1659854957.git.isaku.yamahata@intel.com>
@@ -57,30 +57,104 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Xiaoyao Li <xiaoyao.li@intel.com>
 
-Cannot map a private page as large page if any smaller mapping exists.
+Level info is needed in tdh_clflush_page() to generate the correct page
+size.
 
-It has to wait for all the not-mapped smaller page to be mapped and
-promote it to larger mapping.
+Besides, explicitly pass level info to SEAMCALL instead of assuming
+it's zero. It works naturally when 2MB support lands.
 
 Signed-off-by: Xiaoyao Li <xiaoyao.li@intel.com>
+Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/kvm/vmx/tdx.c     |  7 ++++---
+ arch/x86/kvm/vmx/tdx_ops.h | 21 ++++++++++++++-------
+ 2 files changed, 18 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index f2461deba2dc..faf278e0c740 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1322,7 +1322,8 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
- 	}
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index 2d34f0b41b26..b717d50ee4d3 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -1443,6 +1443,7 @@ static void tdx_unpin_pfn(struct kvm *kvm, kvm_pfn_t pfn)
+ static void __tdx_sept_set_private_spte(struct kvm *kvm, gfn_t gfn,
+ 					enum pg_level level, kvm_pfn_t pfn)
+ {
++	int tdx_level = pg_level_to_tdx_sept_level(level);
+ 	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
+ 	hpa_t hpa = pfn_to_hpa(pfn);
+ 	gpa_t gpa = gfn_to_gpa(gfn);
+@@ -1463,7 +1464,7 @@ static void __tdx_sept_set_private_spte(struct kvm *kvm, gfn_t gfn,
+ 		if (KVM_BUG_ON(level != PG_LEVEL_4K, kvm))
+ 			return;
  
- 	tdp_mmu_for_each_pte(iter, mmu, is_private, raw_gfn, raw_gfn + 1) {
--		if (fault->nx_huge_page_workaround_enabled)
-+		if (fault->nx_huge_page_workaround_enabled ||
-+		    kvm_gfn_shared_mask(vcpu->kvm))
- 			disallowed_hugepage_adjust(fault, iter.old_spte, iter.level);
+-		err = tdh_mem_page_aug(kvm_tdx->tdr.pa, gpa, hpa, &out);
++		err = tdh_mem_page_aug(kvm_tdx->tdr.pa, gpa, tdx_level, hpa, &out);
+ 		if (KVM_BUG_ON(err, kvm)) {
+ 			pr_tdx_error(TDH_MEM_PAGE_AUG, err, &out);
+ 			tdx_unpin_pfn(kvm, pfn);
+@@ -1491,12 +1492,12 @@ static void __tdx_sept_set_private_spte(struct kvm *kvm, gfn_t gfn,
  
- 		if (iter.level == fault->goal_level)
+ 	source_pa = kvm_tdx->source_pa & ~KVM_TDX_MEASURE_MEMORY_REGION;
+ 
+-	err = tdh_mem_page_add(kvm_tdx->tdr.pa, gpa, hpa, source_pa, &out);
++	err = tdh_mem_page_add(kvm_tdx->tdr.pa, gpa, tdx_level, hpa, source_pa, &out);
+ 	if (KVM_BUG_ON(err, kvm)) {
+ 		pr_tdx_error(TDH_MEM_PAGE_ADD, err, &out);
+ 		tdx_unpin_pfn(kvm, pfn);
+ 	} else if ((kvm_tdx->source_pa & KVM_TDX_MEASURE_MEMORY_REGION))
+-		tdx_measure_page(kvm_tdx, gpa);
++		tdx_measure_page(kvm_tdx, gpa); /* TODO: handle page size > 4KB */
+ 
+ 	kvm_tdx->source_pa = INVALID_PAGE;
+ }
+diff --git a/arch/x86/kvm/vmx/tdx_ops.h b/arch/x86/kvm/vmx/tdx_ops.h
+index 9accf2fe04ae..da662aa46cd9 100644
+--- a/arch/x86/kvm/vmx/tdx_ops.h
++++ b/arch/x86/kvm/vmx/tdx_ops.h
+@@ -19,6 +19,11 @@
+ 
+ void pr_tdx_error(u64 op, u64 error_code, const struct tdx_module_output *out);
+ 
++static inline enum pg_level tdx_sept_level_to_pg_level(int tdx_level)
++{
++       return tdx_level + 1;
++}
++
+ static inline void tdx_clflush_page(hpa_t addr, enum pg_level level)
+ {
+ 	clflush_cache_range(__va(addr), KVM_HPAGE_SIZE(level));
+@@ -50,11 +55,12 @@ static inline u64 tdh_mng_addcx(hpa_t tdr, hpa_t addr)
+ 	return __seamcall(TDH_MNG_ADDCX, addr, tdr, 0, 0, NULL);
+ }
+ 
+-static inline u64 tdh_mem_page_add(hpa_t tdr, gpa_t gpa, hpa_t hpa, hpa_t source,
+-				   struct tdx_module_output *out)
++static inline u64 tdh_mem_page_add(hpa_t tdr, gpa_t gpa, int level, hpa_t hpa,
++				   hpa_t source, struct tdx_module_output *out)
+ {
+-	tdx_clflush_page(hpa, PG_LEVEL_4K);
+-	return seamcall_sept_retry(TDH_MEM_PAGE_ADD, gpa, tdr, hpa, source, out);
++	tdx_clflush_page(hpa, tdx_sept_level_to_pg_level(level));
++	return seamcall_sept_retry(TDH_MEM_PAGE_ADD, gpa | level, tdr, hpa,
++				   source, out);
+ }
+ 
+ static inline u64 tdh_mem_sept_add(hpa_t tdr, gpa_t gpa, int level, hpa_t page,
+@@ -84,11 +90,12 @@ static inline u64 tdh_mem_page_relocate(hpa_t tdr, gpa_t gpa, hpa_t hpa,
+ 	return __seamcall(TDH_MEM_PAGE_RELOCATE, gpa, tdr, hpa, 0, out);
+ }
+ 
+-static inline u64 tdh_mem_page_aug(hpa_t tdr, gpa_t gpa, hpa_t hpa,
++static inline u64 tdh_mem_page_aug(hpa_t tdr, gpa_t gpa, int level, hpa_t hpa,
+ 				   struct tdx_module_output *out)
+ {
+-	tdx_clflush_page(hpa, PG_LEVEL_4K);
+-	return seamcall_sept_retry(TDH_MEM_PAGE_AUG, gpa, tdr, hpa, 0, out);
++	tdx_clflush_page(hpa, tdx_sept_level_to_pg_level(level));
++	return seamcall_sept_retry(TDH_MEM_PAGE_AUG, gpa | level, tdr, hpa, 0,
++				   out);
+ }
+ 
+ static inline u64 tdh_mem_range_block(hpa_t tdr, gpa_t gpa, int level,
 -- 
 2.25.1
 
