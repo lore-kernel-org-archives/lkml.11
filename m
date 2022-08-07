@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BA6C25B0C
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:09:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8964C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242132AbiHGWJ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48942 "EHLO
+        id S242140AbiHGWJa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:09:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237072AbiHGWFM (ORCPT
+        with ESMTP id S237078AbiHGWFM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 7 Aug 2022 18:05:12 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9C29B7DA;
-        Sun,  7 Aug 2022 15:03:01 -0700 (PDT)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65DB8B7DF;
+        Sun,  7 Aug 2022 15:03:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659909781; x=1691445781;
+  t=1659909783; x=1691445783;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=lKCVk5eYfArj0BKao6F/kBoR6PoZK+1iJmdh6WDEfmI=;
-  b=hEMpLkhDCkZMW5BYXalAMfLy7FuKFNQxQxC75mM7p/tNDUmp7FgnYJOY
-   FaMdwizye2t87oUgcIaTBQopBv+V6vR8qdG79zFlgnAzsRH6bvnhvU6xw
-   OQDjP8p9WGpDyJpn6wnxShTXx5aEB+vFMkQnuURP88pxIroiF9nOcJO4D
-   CIa8inXxCWe+iDoEVuYJaWo0NqixO/yygovHdMP1iIqL5I30c/ZJArr44
-   ZlBkUXuQ7IK88/9wsp28keKE8X7HVbsIRHl03wQQ1ngJVLIVSx8+oY9uu
-   CfEpZDzo4cDrH86zGk4XxFLRN1O85X3h8jFu8HSYbLhV1FpGZjNj7tNjA
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="289224127"
+  bh=2IKpMD/5mOlSohbGo23im3gthlxB9WFfnDJ1NWi5/PI=;
+  b=U4ttQ2OkO8Ljj7iwXr17+YoBaOe5YBrQ76OuHWQLQkhrj7OrBjJto/bE
+   LfS9ZY0tR9nEH1thzdBFIefURo3xOb8yAjsyDzvf5AErYP7QK5gCwA8FR
+   QXdO8ocpWgALiFaIzCFeGyddU+dgJgtFJjnhUIMVOA9NUT2n+7lXseLNR
+   taWjO0hQZ9wPZDmLC8mLZfTLs2Zfr51K0wHnR5aG4AqXIP9tn4ISVUbIG
+   bQlIHXfUZwAwhGxwsOUYZ/HfXpwtWVeayyltbel1Tws2n/KSL27yE5YFc
+   La3zXw4v/+TPg/QIctaRHQB4UjYlIRIY99YXj+D7Y9pnNfygNt2cZnYxA
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270240385"
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="289224127"
+   d="scan'208";a="270240385"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:35 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:42 -0700
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="663682570"
+   d="scan'208";a="663682715"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:35 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:42 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [PATCH v8 040/103] KVM: x86/mmu: Require TDP MMU for TDX
-Date:   Sun,  7 Aug 2022 15:01:25 -0700
-Message-Id: <38ed5eb0302a4b7e47844e2546694da8093927d0.1659854790.git.isaku.yamahata@intel.com>
+Subject: [PATCH v8 082/103] KVM: x86: Split core of hypercall emulation to helper function
+Date:   Sun,  7 Aug 2022 15:02:07 -0700
+Message-Id: <3a91ab66dfef4c23faa13b50e0296630d562e95d.1659854791.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854790.git.isaku.yamahata@intel.com>
 References: <cover.1659854790.git.isaku.yamahata@intel.com>
@@ -55,34 +55,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isaku Yamahata <isaku.yamahata@intel.com>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-Require the TDP MMU for guest TDs, the so called "shadow" MMU does not
-support mapping guest private memory, i.e. does not support Secure-EPT.
+By necessity, TDX will use a different register ABI for hypercalls.
+Break out the core functionality so that it may be reused for TDX.
 
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/kvm_host.h |  4 +++
+ arch/x86/kvm/x86.c              | 54 ++++++++++++++++++++-------------
+ 2 files changed, 37 insertions(+), 21 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index ce69535754ff..823c1ef807eb 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -18,8 +18,12 @@ int kvm_mmu_init_tdp_mmu(struct kvm *kvm)
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index ef04220527b2..df0b98e09cc9 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1995,6 +1995,10 @@ static inline void kvm_clear_apicv_inhibit(struct kvm *kvm,
+ 	kvm_set_or_clear_apicv_inhibit(kvm, reason, false);
+ }
+ 
++unsigned long __kvm_emulate_hypercall(struct kvm_vcpu *vcpu, unsigned long nr,
++				      unsigned long a0, unsigned long a1,
++				      unsigned long a2, unsigned long a3,
++				      int op_64_bit);
+ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu);
+ 
+ int kvm_mmu_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa, u64 error_code,
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index bc3b657e9795..01a320dd20ab 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -9495,26 +9495,15 @@ static int complete_hypercall_exit(struct kvm_vcpu *vcpu)
+ 	return kvm_skip_emulated_instruction(vcpu);
+ }
+ 
+-int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
++unsigned long __kvm_emulate_hypercall(struct kvm_vcpu *vcpu, unsigned long nr,
++				      unsigned long a0, unsigned long a1,
++				      unsigned long a2, unsigned long a3,
++				      int op_64_bit)
  {
- 	struct workqueue_struct *wq;
+-	unsigned long nr, a0, a1, a2, a3, ret;
+-	int op_64_bit;
+-
+-	if (kvm_xen_hypercall_enabled(vcpu->kvm))
+-		return kvm_xen_hypercall(vcpu);
+-
+-	if (kvm_hv_hypercall_enabled(vcpu))
+-		return kvm_hv_hypercall(vcpu);
+-
+-	nr = kvm_rax_read(vcpu);
+-	a0 = kvm_rbx_read(vcpu);
+-	a1 = kvm_rcx_read(vcpu);
+-	a2 = kvm_rdx_read(vcpu);
+-	a3 = kvm_rsi_read(vcpu);
++	unsigned long ret;
  
-+	/*
-+	 * Because only the TDP MMU supports TDX, require the TDP MMU for guest
-+	 * TDs.
-+	 */
- 	if (!tdp_enabled || !READ_ONCE(tdp_mmu_enabled))
--		return 0;
-+		return kvm->arch.vm_type == KVM_X86_TDX_VM ? -EOPNOTSUPP : 0;
+ 	trace_kvm_hypercall(nr, a0, a1, a2, a3);
  
- 	wq = alloc_workqueue("kvm", WQ_UNBOUND|WQ_MEM_RECLAIM|WQ_CPU_INTENSIVE, 0);
- 	if (!wq)
+-	op_64_bit = is_64_bit_hypercall(vcpu);
+ 	if (!op_64_bit) {
+ 		nr &= 0xFFFFFFFF;
+ 		a0 &= 0xFFFFFFFF;
+@@ -9523,11 +9512,6 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
+ 		a3 &= 0xFFFFFFFF;
+ 	}
+ 
+-	if (static_call(kvm_x86_get_cpl)(vcpu) != 0) {
+-		ret = -KVM_EPERM;
+-		goto out;
+-	}
+-
+ 	ret = -KVM_ENOSYS;
+ 
+ 	switch (nr) {
+@@ -9586,6 +9570,34 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
+ 		ret = -KVM_ENOSYS;
+ 		break;
+ 	}
++	return ret;
++}
++EXPORT_SYMBOL_GPL(__kvm_emulate_hypercall);
++
++int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
++{
++	unsigned long nr, a0, a1, a2, a3, ret;
++	int op_64_bit;
++
++	if (kvm_xen_hypercall_enabled(vcpu->kvm))
++		return kvm_xen_hypercall(vcpu);
++
++	if (kvm_hv_hypercall_enabled(vcpu))
++		return kvm_hv_hypercall(vcpu);
++
++	nr = kvm_rax_read(vcpu);
++	a0 = kvm_rbx_read(vcpu);
++	a1 = kvm_rcx_read(vcpu);
++	a2 = kvm_rdx_read(vcpu);
++	a3 = kvm_rsi_read(vcpu);
++	op_64_bit = is_64_bit_hypercall(vcpu);
++
++	if (static_call(kvm_x86_get_cpl)(vcpu) != 0) {
++		ret = -KVM_EPERM;
++		goto out;
++	}
++
++	ret = __kvm_emulate_hypercall(vcpu, nr, a0, a1, a2, a3, op_64_bit);
+ out:
+ 	if (!op_64_bit)
+ 		ret = (u32)ret;
 -- 
 2.25.1
 
