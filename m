@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EEFC19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 163E4C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242014AbiHGWJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51920 "EHLO
+        id S242035AbiHGWKE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237279AbiHGWFd (ORCPT
+        with ESMTP id S237806AbiHGWGG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 18:05:33 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893D1B844;
-        Sun,  7 Aug 2022 15:03:05 -0700 (PDT)
+        Sun, 7 Aug 2022 18:06:06 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA45655A;
+        Sun,  7 Aug 2022 15:03:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659909785; x=1691445785;
+  t=1659909786; x=1691445786;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GBF+xOjTA3mVUQSjRby6WluXWt/inVrZKLs+1UFcCIY=;
-  b=KbGJIyZpKjWy6AKdCIgYM7lLTKYjERHEBcmz3f3p6LoCHmTKy9jV/iBS
-   p6XfhO0d6qCzcDGFKTvaucuxio/ZC6qzAk0InRu30DcBiOAkcF7f6kdfV
-   WjfTQS9a/q++a1E0yBHKcicFe1JSYaIgWz/L27miR31ZgmpewcODovLOa
-   jUhdTqaehpWfIILJCwARmrPcm3Mm2LhvPWJK4/93t234AmdbI/drZcGUO
-   L0xJ4DXZwuDxh/ZekoR+mrsD/RK1K1YQphM7fkECm7ebPxzqWiCXv8Wfg
-   ehTH9lAewUChtT+E5uzexzArkGCdQVi0cs3B1y2feZGPPw2WoyvKWBo21
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270240389"
+  bh=lc7XJO42kPPBN4Yl9/1JjwIpgvNFDxbyUSh96eiLKic=;
+  b=MaBvExBYEfcZd+SqwURt3ZU0XnRzvj0WI+iw8jESJ6Fa7acySLMU9oxQ
+   EAkaiouTt3QYP2irR8GzzAV4aUFTR5tu5+LmlVCB9KQYSFk9OMR/MzUGc
+   gw+jDh/+/xpNAyOyL1MLUQgDu6gDlP5mhNbTw5zx6jVFWrcKNRYENaOdT
+   jLSx0J0Xdi+cklhLQLrePvt4BqsemHHM4/PMwTY5KPdojj4pMHxpFVkjQ
+   y9Ypwr7UldjFFjKFmGJ4BWKBdFPgDdF0hIwhJ2Qz6Hj30mfgpZuyhYE6V
+   RTVpYW2CHLACkW2+WxAjQbBtq5XehtkYu7cBQFBHAjNwLdty6Q6U0HVHR
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="289224133"
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="270240389"
+   d="scan'208";a="289224133"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:42 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:35 -0700
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="663682721"
+   d="scan'208";a="663682579"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:42 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:35 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [PATCH v8 084/103] KVM: TDX: Retry seamcall when TDX_OPERAND_BUSY with operand SEPT
-Date:   Sun,  7 Aug 2022 15:02:09 -0700
-Message-Id: <78cbcb3e9c76569958e3d60ced26e55cac29e69b.1659854791.git.isaku.yamahata@intel.com>
+Subject: [PATCH v8 043/103] KVM: x86/tdp_mmu: Don't zap private pages for unsupported cases
+Date:   Sun,  7 Aug 2022 15:01:28 -0700
+Message-Id: <ab836de4ae6e0afc5a0baeebcfb3e6a417373fda.1659854790.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854790.git.isaku.yamahata@intel.com>
 References: <cover.1659854790.git.isaku.yamahata@intel.com>
@@ -55,145 +55,221 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuan Yao <yuan.yao@intel.com>
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-TDX module internally uses locks to protect internal resources.  It tries
-to acquire the locks.  If it fails to obtain the lock, it returns
-TDX_OPERAND_BUSY error without spin because its execution time limitation.
+TDX supports only write-back(WB) memory type for private memory
+architecturally so that (virtualized) memory type change doesn't make sense
+for private memory.  Also currently, page migration isn't supported for TDX
+yet. (TDX architecturally supports page migration. it's KVM and kernel
+implementation issue.)
 
-TDX SEAMCALL API reference describes what resources are used.  It's known
-which TDX SEAMCALL can cause contention with which resources.  VMM can
-avoid contention inside the TDX module by avoiding contentious TDX SEAMCALL
-with, for example, spinlock.  Because OS knows better its process
-scheduling and its scalability, a lock at OS/VMM layer would work better
-than simply retrying TDX SEAMCALLs.
+Regarding memory type change (mtrr virtualization and lapic page mapping
+change), pages are zapped by kvm_zap_gfn_range().  On the next KVM page
+fault, the SPTE entry with a new memory type for the page is populated.
+Regarding page migration, pages are zapped by the mmu notifier. On the next
+KVM page fault, the new migrated page is populated.  Don't zap private
+pages on unmapping for those two cases.
 
-TDH.MEM.* API except for TDH.MEM.TRACK operates on a secure EPT tree and
-the TDX module internally tries to acquire the lock of the secure EPT tree.
-They return TDX_OPERAND_BUSY | TDX_OPERAND_ID_SEPT in case of failure to
-get the lock.  TDX KVM uses kvm_tdx::seamcall_lock spinlock at OS/VMM layer
-to avoid contention inside the TDX module.
+When deleting/moving a KVM memory slot, zap private pages. Typically
+tearing down VM.  Don't invalidate private page tables. i.e. zap only leaf
+SPTEs for KVM mmu that has a shared bit mask. The existing
+kvm_tdp_mmu_invalidate_all_roots() depends on role.invalid with read-lock
+of mmu_lock so that other vcpu can operate on KVM mmu concurrently.  It
+marks the root page table invalid and zaps SPTEs of the root page
+tables. The TDX module doesn't allow to unlink a protected root page table
+from the hardware and then allocate a new one for it. i.e. replacing a
+protected root page table.  Instead, zap only leaf SPTEs for KVM mmu with a
+shared bit mask set.
 
-TDH.VP.ENTER is an exception with zero-step attack mitigation.  Normally
-TDH.VP.ENTER uses only TD vcpu resources and it doesn't cause contention.
-When a zero-step attack is suspected, it obtains a secure EPT tree lock and
-tracks the GPAs causing a secure EPT fault.  Thus TDG.VP.ENTER may result
-in TDX_OPERAND_BUSY | TDX_OPERAND_ID_SEPT.  Also TDH.MEM.* SEAMCALLs may
-result in TDX_OPERAN_BUSY | TDX_OPERAND_ID_SEPT because TDH.VP.ENTER is not
-protected with seamcall_lock.
-
-Retry TDX TDH.MEM.* API and TDH.VP.ENTER on the error because the error is
-a rare event caused by zero-step attack mitigation and spinlock can not be
-used for TDH.VP.ENTER due to indefinite time execution.
-
-Signed-off-by: Yuan Yao <yuan.yao@intel.com>
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/tdx.c     |  4 ++++
- arch/x86/kvm/vmx/tdx_ops.h | 36 ++++++++++++++++++++++++++++++------
- 2 files changed, 34 insertions(+), 6 deletions(-)
+ arch/x86/kvm/mmu/mmu.c     | 58 ++++++++++++++++++++++++++++++++++++--
+ arch/x86/kvm/mmu/tdp_mmu.c | 24 ++++++++++++----
+ arch/x86/kvm/mmu/tdp_mmu.h |  5 ++--
+ 3 files changed, 77 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 44f3047b5e5c..fc0895f1fe75 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -1188,6 +1188,10 @@ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
- {
- 	union tdx_exit_reason exit_reason = to_tdx(vcpu)->exit_reason;
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index aa0819905874..1d8f1349e925 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -1589,7 +1589,12 @@ bool kvm_unmap_gfn_range(struct kvm *kvm, struct kvm_gfn_range *range)
+ 		flush = kvm_handle_gfn_range(kvm, range, kvm_zap_rmap);
  
-+	/* See the comment of tdh_sept_seamcall(). */
-+	if (unlikely(exit_reason.full == (TDX_OPERAND_BUSY | TDX_OPERAND_ID_SEPT)))
-+		return 1;
-+
- 	if (unlikely(exit_reason.non_recoverable || exit_reason.error)) {
- 		if (exit_reason.basic == EXIT_REASON_TRIPLE_FAULT)
- 			return tdx_handle_triple_fault(vcpu);
-diff --git a/arch/x86/kvm/vmx/tdx_ops.h b/arch/x86/kvm/vmx/tdx_ops.h
-index 8cc2f01c509b..a50bc1445cc2 100644
---- a/arch/x86/kvm/vmx/tdx_ops.h
-+++ b/arch/x86/kvm/vmx/tdx_ops.h
-@@ -18,6 +18,26 @@
+ 	if (is_tdp_mmu_enabled(kvm))
+-		flush = kvm_tdp_mmu_unmap_gfn_range(kvm, range, flush);
++		/*
++		 * kvm_unmap_gfn_range() is called via mmu notifier.
++		 * For now page migration for private page isn't supported yet,
++		 * don't zap private pages.
++		 */
++		flush = kvm_tdp_mmu_unmap_gfn_range(kvm, range, flush, false);
  
- void pr_tdx_error(u64 op, u64 error_code, const struct tdx_module_output *out);
+ 	return flush;
+ }
+@@ -6039,11 +6044,48 @@ static bool kvm_has_zapped_obsolete_pages(struct kvm *kvm)
+ 	return unlikely(!list_empty_careful(&kvm->arch.zapped_obsolete_pages));
+ }
  
-+/*
-+ * Although seamcal_lock protects seamcall to avoid contention inside the TDX
-+ * module, it doesn't protect TDH.VP.ENTER.  With zero-step attack mitigation,
-+ * TDH.VP.ENTER may rarely acquire SEPT lock and release it when zero-step
-+ * attack is suspected.  It results in TDX_OPERAND_BUSY | TDX_OPERAND_ID_SEPT
-+ * with TDH.MEM.* operation.  (TDH.MEM.TRACK is an exception.)  Because such
-+ * error is rare event, just retry on those TDH.MEM operations and TDH.VP.ENTER.
-+ */
-+static inline u64 seamcall_sept_retry(u64 op, u64 rcx, u64 rdx, u64 r8, u64 r9,
-+				      struct tdx_module_output *out)
++static void kvm_mmu_zap_memslot(struct kvm *kvm, struct kvm_memory_slot *slot)
 +{
-+	u64 ret;
++	bool flush = false;
 +
-+	do {
-+		ret = __seamcall(op, rcx, rdx, r8, r9, out);
-+	} while (unlikely(ret == (TDX_OPERAND_BUSY | TDX_OPERAND_ID_SEPT)));
++	write_lock(&kvm->mmu_lock);
 +
-+	return ret;
++	/*
++	 * Zapping non-leaf SPTEs, a.k.a. not-last SPTEs, isn't required, worst
++	 * case scenario we'll have unused shadow pages lying around until they
++	 * are recycled due to age or when the VM is destroyed.
++	 */
++	if (is_tdp_mmu_enabled(kvm)) {
++		struct kvm_gfn_range range = {
++		      .slot = slot,
++		      .start = slot->base_gfn,
++		      .end = slot->base_gfn + slot->npages,
++		      .may_block = false,
++		};
++
++		/*
++		 * this handles both private gfn and shared gfn.
++		 * All private page should be zapped on memslot deletion.
++		 */
++		flush = kvm_tdp_mmu_unmap_gfn_range(kvm, &range, flush, true);
++	} else {
++		flush = slot_handle_level(kvm, slot, __kvm_zap_rmap, PG_LEVEL_4K,
++					  KVM_MAX_HUGEPAGE_LEVEL, true);
++	}
++	if (flush)
++		kvm_flush_remote_tlbs(kvm);
++
++	write_unlock(&kvm->mmu_lock);
 +}
 +
- static inline u64 tdh_mng_addcx(hpa_t tdr, hpa_t addr)
+ static void kvm_mmu_invalidate_zap_pages_in_memslot(struct kvm *kvm,
+ 			struct kvm_memory_slot *slot,
+ 			struct kvm_page_track_notifier_node *node)
  {
- 	clflush_cache_range(__va(addr), PAGE_SIZE);
-@@ -28,14 +48,15 @@ static inline u64 tdh_mem_page_add(hpa_t tdr, gpa_t gpa, hpa_t hpa, hpa_t source
- 				   struct tdx_module_output *out)
- {
- 	clflush_cache_range(__va(hpa), PAGE_SIZE);
--	return __seamcall(TDH_MEM_PAGE_ADD, gpa, tdr, hpa, source, out);
-+	return seamcall_sept_retry(TDH_MEM_PAGE_ADD, gpa, tdr, hpa, source, out);
+-	kvm_mmu_zap_all_fast(kvm);
++	if (kvm_gfn_shared_mask(kvm))
++		kvm_mmu_zap_memslot(kvm, slot);
++	else
++		kvm_mmu_zap_all_fast(kvm);
  }
  
- static inline u64 tdh_mem_sept_add(hpa_t tdr, gpa_t gpa, int level, hpa_t page,
- 				   struct tdx_module_output *out)
+ int kvm_mmu_init_vm(struct kvm *kvm)
+@@ -6145,8 +6187,18 @@ void kvm_zap_gfn_range(struct kvm *kvm, gfn_t gfn_start, gfn_t gfn_end)
+ 
+ 	if (is_tdp_mmu_enabled(kvm)) {
+ 		for (i = 0; i < KVM_ADDRESS_SPACE_NUM; i++)
++			/*
++			 * zap_private = false. Zap only shared pages.
++			 *
++			 * kvm_zap_gfn_range() is used when PAT memory type was
++			 * changed.  Later on the next kvm page fault, populate
++			 * it with updated spte entry.
++			 * Because only WB is supported for private pages, don't
++			 * care of private pages.
++			 */
+ 			flush = kvm_tdp_mmu_zap_leafs(kvm, i, gfn_start,
+-						      gfn_end, true, flush);
++						      gfn_end, true, flush,
++						      false);
+ 	}
+ 
+ 	if (flush)
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index 3f5b019f9774..6a680e0a9260 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -938,7 +938,8 @@ bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
+  * operation can cause a soft lockup.
+  */
+ static bool tdp_mmu_zap_leafs(struct kvm *kvm, struct kvm_mmu_page *root,
+-			      gfn_t start, gfn_t end, bool can_yield, bool flush)
++			      gfn_t start, gfn_t end, bool can_yield, bool flush,
++			      bool zap_private)
  {
- 	clflush_cache_range(__va(page), PAGE_SIZE);
--	return __seamcall(TDH_MEM_SEPT_ADD, gpa | level, tdr, page, 0, out);
-+	return seamcall_sept_retry(TDH_MEM_SEPT_ADD, gpa | level, tdr, page, 0,
-+				   out);
+ 	struct tdp_iter iter;
+ 
+@@ -946,6 +947,10 @@ static bool tdp_mmu_zap_leafs(struct kvm *kvm, struct kvm_mmu_page *root,
+ 
+ 	lockdep_assert_held_write(&kvm->mmu_lock);
+ 
++	WARN_ON_ONCE(zap_private && !is_private_sp(root));
++	if (!zap_private && is_private_sp(root))
++		return false;
++
+ 	rcu_read_lock();
+ 
+ 	for_each_tdp_pte_min_level(iter, root, PG_LEVEL_4K, start, end) {
+@@ -978,12 +983,13 @@ static bool tdp_mmu_zap_leafs(struct kvm *kvm, struct kvm_mmu_page *root,
+  * more SPTEs were zapped since the MMU lock was last acquired.
+  */
+ bool kvm_tdp_mmu_zap_leafs(struct kvm *kvm, int as_id, gfn_t start, gfn_t end,
+-			   bool can_yield, bool flush)
++			   bool can_yield, bool flush, bool zap_private)
+ {
+ 	struct kvm_mmu_page *root;
+ 
+ 	for_each_tdp_mmu_root_yield_safe(kvm, root, as_id)
+-		flush = tdp_mmu_zap_leafs(kvm, root, start, end, can_yield, flush);
++		flush = tdp_mmu_zap_leafs(kvm, root, start, end, can_yield, flush,
++					  zap_private && is_private_sp(root));
+ 
+ 	return flush;
+ }
+@@ -1043,6 +1049,12 @@ void kvm_tdp_mmu_invalidate_all_roots(struct kvm *kvm)
+ 
+ 	lockdep_assert_held_write(&kvm->mmu_lock);
+ 	list_for_each_entry(root, &kvm->arch.tdp_mmu_roots, link) {
++		/*
++		 * Skip private root since private page table
++		 * is only torn down when VM is destroyed.
++		 */
++		if (is_private_sp(root))
++			continue;
+ 		if (!root->role.invalid &&
+ 		    !WARN_ON_ONCE(!kvm_tdp_mmu_get_root(root))) {
+ 			root->role.invalid = true;
+@@ -1234,11 +1246,13 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+ 	return ret;
  }
  
- static inline u64 tdh_mem_sept_remove(hpa_t tdr, gpa_t gpa, int level,
-@@ -61,13 +82,14 @@ static inline u64 tdh_mem_page_aug(hpa_t tdr, gpa_t gpa, hpa_t hpa,
- 				   struct tdx_module_output *out)
++/* Used by mmu notifier via kvm_unmap_gfn_range() */
+ bool kvm_tdp_mmu_unmap_gfn_range(struct kvm *kvm, struct kvm_gfn_range *range,
+-				 bool flush)
++				 bool flush, bool zap_private)
  {
- 	clflush_cache_range(__va(hpa), PAGE_SIZE);
--	return __seamcall(TDH_MEM_PAGE_AUG, gpa, tdr, hpa, 0, out);
-+	return seamcall_sept_retry(TDH_MEM_PAGE_AUG, gpa, tdr, hpa, 0, out);
+ 	return kvm_tdp_mmu_zap_leafs(kvm, range->slot->as_id, range->start,
+-				     range->end, range->may_block, flush);
++				     range->end, range->may_block, flush,
++				     zap_private);
  }
  
- static inline u64 tdh_mem_range_block(hpa_t tdr, gpa_t gpa, int level,
- 				      struct tdx_module_output *out)
- {
--	return __seamcall(TDH_MEM_RANGE_BLOCK, gpa | level, tdr, 0, 0, out);
-+	return seamcall_sept_retry(TDH_MEM_RANGE_BLOCK, gpa | level, tdr, 0, 0,
-+				   out);
- }
+ typedef bool (*tdp_handler_t)(struct kvm *kvm, struct tdp_iter *iter,
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.h b/arch/x86/kvm/mmu/tdp_mmu.h
+index c163f7cc23ca..c98c7df449a8 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.h
++++ b/arch/x86/kvm/mmu/tdp_mmu.h
+@@ -16,7 +16,8 @@ void kvm_tdp_mmu_put_root(struct kvm *kvm, struct kvm_mmu_page *root,
+ 			  bool shared);
  
- static inline u64 tdh_mng_key_config(hpa_t tdr)
-@@ -149,7 +171,8 @@ static inline u64 tdh_phymem_page_reclaim(hpa_t page,
- static inline u64 tdh_mem_page_remove(hpa_t tdr, gpa_t gpa, int level,
- 				      struct tdx_module_output *out)
- {
--	return __seamcall(TDH_MEM_PAGE_REMOVE, gpa | level, tdr, 0, 0, out);
-+	return seamcall_sept_retry(TDH_MEM_PAGE_REMOVE, gpa | level, tdr, 0, 0,
-+				   out);
- }
+ bool kvm_tdp_mmu_zap_leafs(struct kvm *kvm, int as_id, gfn_t start,
+-				 gfn_t end, bool can_yield, bool flush);
++			   gfn_t end, bool can_yield, bool flush,
++			   bool zap_private);
+ bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp);
+ void kvm_tdp_mmu_zap_all(struct kvm *kvm);
+ void kvm_tdp_mmu_invalidate_all_roots(struct kvm *kvm);
+@@ -25,7 +26,7 @@ void kvm_tdp_mmu_zap_invalidated_roots(struct kvm *kvm);
+ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault);
  
- static inline u64 tdh_sys_lp_shutdown(void)
-@@ -165,7 +188,8 @@ static inline u64 tdh_mem_track(hpa_t tdr)
- static inline u64 tdh_mem_range_unblock(hpa_t tdr, gpa_t gpa, int level,
- 					struct tdx_module_output *out)
- {
--	return __seamcall(TDH_MEM_RANGE_UNBLOCK, gpa | level, tdr, 0, 0, out);
-+	return seamcall_sept_retry(TDH_MEM_RANGE_UNBLOCK, gpa | level, tdr, 0, 0,
-+				   out);
- }
- 
- static inline u64 tdh_phymem_cache_wb(bool resume)
+ bool kvm_tdp_mmu_unmap_gfn_range(struct kvm *kvm, struct kvm_gfn_range *range,
+-				 bool flush);
++				 bool flush, bool zap_private);
+ bool kvm_tdp_mmu_age_gfn_range(struct kvm *kvm, struct kvm_gfn_range *range);
+ bool kvm_tdp_mmu_test_age_gfn(struct kvm *kvm, struct kvm_gfn_range *range);
+ bool kvm_tdp_mmu_set_spte_gfn(struct kvm *kvm, struct kvm_gfn_range *range);
 -- 
 2.25.1
 
