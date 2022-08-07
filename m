@@ -2,122 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22992C25B0C
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 15:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F1BC25B0C
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 15:31:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232330AbiHGPSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 11:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36836 "EHLO
+        id S233157AbiHGPb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 11:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiHGPSk (ORCPT
+        with ESMTP id S229531AbiHGPb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 11:18:40 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D148762E9
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 08:18:39 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id q9-20020a17090a2dc900b001f58bcaca95so5534636pjm.3
-        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 08:18:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=f4puBzIh+2fwMzCLxOTv6T0TgB7OLw32VLd1/PfG9h4=;
-        b=Xo2bBbXbHiiU45ogFCXtsMLy4vyVdoXrSALkxLIL+3dE/LtOUa6Ifp5Ctwh3TQHJCX
-         jL5nJg6qehl6itnqY1KuVzmnSlb7HJDZRpxIRRHI7nTklnpOFiV9Sa2R/hNi9vfJsEL/
-         1J7zK+6WrLXpoHAjP3/G0yEAhn+WOm2KkLc87ZVr59KZUnxfJxqCS52Np87/LYMWPWzL
-         KFqU7VnykHsbf/9Or0FhVNNIYKo0Qsu+JiWwb8+9mC4DsQrAEWfo3Z33RWtg2a0h+8lW
-         pUzpNQ7VefZsF8awcIpIsUZxvUAQjHSec9wPUKDXVh4LDJUOdsUuB1GSYtloQfaJxd8k
-         fsBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=f4puBzIh+2fwMzCLxOTv6T0TgB7OLw32VLd1/PfG9h4=;
-        b=xe8O6BlyAZQuXTsmTpltTAqZNhPD0gQapFCrowPxmSB2M31mbkcu74B5112e+eJdMz
-         MX28WlROsPYtDoN0xLyBn9vgpLTJ7bT3pvtUpaX2dkPscnkNMvjNQzn3BnFehNaCu85O
-         U6GIgfCNRKm3JpSHIhOy2vMuNcuuuw7gLAF9Y3JPtGmaCrtUVwzpq5P6o99rrNhzUnfb
-         em6DdgC8hrNkvN2uMRwKyy+jWaoFUJe66UZBQZ00lnfnwvBIuigpGyF7anC541O2ZXMA
-         ekT5daAglYSOKNDyHhKObwbB4sPqZ32tqEFPrGr6BWCTBL1gQvZvs7JzAbfFevt9otLx
-         1GTw==
-X-Gm-Message-State: ACgBeo0lpm8BB7hXXClSRjrwD88SYqjjdwEhLh+IaUzbET/CUnjM2A3o
-        GiDnYfrJ81JT6Y2F1wY6ya78NO+EKl1bHM4SQmE=
-X-Google-Smtp-Source: AA6agR4PFCXFKZrCtmfoK84ZXQbSdSPehRwO/1j1O+1rs8YRj/5TQLKlQPdqQjGJOlFULLPiVfyceQ==
-X-Received: by 2002:a17:90a:ead3:b0:1f3:366d:5005 with SMTP id ev19-20020a17090aead300b001f3366d5005mr25537234pjb.1.1659885519228;
-        Sun, 07 Aug 2022 08:18:39 -0700 (PDT)
-Received: from localhost.localdomain ([113.88.93.147])
-        by smtp.gmail.com with ESMTPSA id b2-20020a170902d50200b0016b90620910sm6867626plg.71.2022.08.07.08.18.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Aug 2022 08:18:38 -0700 (PDT)
-From:   Puyou Lu <puyou.lu@gmail.com>
-Cc:     Puyou Lu <puyou.lu@gmail.com>, Petr Mladek <pmladek@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Phil Auld <pauld@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        John Ogness <john.ogness@linutronix.de>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Xiaoming Ni <nixiaoming@huawei.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] watchdog: enable watchdog only when watchdog_thresh != 0
-Date:   Sun,  7 Aug 2022 23:17:55 +0800
-Message-Id: <20220807151757.18466-1-puyou.lu@gmail.com>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+        Sun, 7 Aug 2022 11:31:27 -0400
+Received: from mail-40136.proton.ch (mail-40136.proton.ch [185.70.40.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF52063FA;
+        Sun,  7 Aug 2022 08:31:22 -0700 (PDT)
+Date:   Sun, 07 Aug 2022 15:31:17 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=connolly.tech;
+        s=protonmail; t=1659886279; x=1660145479;
+        bh=YHlXS1js2a8lbYFdeBlkI7exi/3zmStUxGjeZdRforw=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
+         Feedback-ID:Message-ID;
+        b=T52PhAI9tffZwaFkL5rQPfkf5ZKVzDLfVkbq2M+fh2xQLVX89r1mlhPgq9qDexrMk
+         zyPoATlrq50HNVfQ4/sSYXpA4Sg0kq0XPpsCmSW5Poo1tSqxc1AK7Eo1Sqbotp1xH9
+         o0yDM7gOXq05wwTsiCztwlPifRp3v3EuFSUpTJrQ=
+To:     Robin Reckmann <robin.reckmann@googlemail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?utf-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+From:   Caleb Connolly <caleb@connolly.tech>
+Cc:     Robin Reckmann <robin.reckmann@gmail.com>,
+        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
+Reply-To: Caleb Connolly <caleb@connolly.tech>
+Subject: Re: [PATCH] i2c: qcom-geni: Fix GPI DMA buffer sync-back
+Message-ID: <653e93e7-6bdc-3498-7719-f3a7860dd245@connolly.tech>
+In-Reply-To: <20220807140455.409417-1-robin.reckmann@gmail.com>
+References: <20220807140455.409417-1-robin.reckmann@gmail.com>
+Feedback-ID: 10753939:user:proton
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We can simplify the check of watchdog_thresh, as watchdog_thresh
-shouldn't be zero for both nmi and soft watchdog.
 
-Signed-off-by: Puyou Lu <puyou.lu@gmail.com>
----
- kernel/watchdog.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-index 8e61f21e7e33..bed1fe7ecaea 100644
---- a/kernel/watchdog.c
-+++ b/kernel/watchdog.c
-@@ -144,7 +144,7 @@ void __weak watchdog_nmi_start(void) { }
- static void lockup_detector_update_enable(void)
- {
- 	watchdog_enabled = 0;
--	if (!watchdog_user_enabled)
-+	if (!(watchdog_user_enabled && watchdog_thresh))
- 		return;
- 	if (nmi_watchdog_available && nmi_watchdog_user_enabled)
- 		watchdog_enabled |= NMI_WATCHDOG_ENABLED;
-@@ -306,7 +306,7 @@ static int is_softlockup(unsigned long touch_ts,
- 			 unsigned long period_ts,
- 			 unsigned long now)
- {
--	if ((watchdog_enabled & SOFT_WATCHDOG_ENABLED) && watchdog_thresh){
-+	if (watchdog_enabled & SOFT_WATCHDOG_ENABLED) {
- 		/* Warn about unreasonable delays. */
- 		if (time_after(now, period_ts + get_softlockup_thresh()))
- 			return now - touch_ts;
-@@ -543,9 +543,10 @@ static void __lockup_detector_reconfigure(void)
- 	watchdog_nmi_stop();
- 
- 	softlockup_stop_all();
-+
- 	set_sample_period();
- 	lockup_detector_update_enable();
--	if (watchdog_enabled && watchdog_thresh)
-+	if (watchdog_enabled & SOFT_WATCHDOG_ENABLED)
- 		softlockup_start_all();
- 
- 	watchdog_nmi_start();
-@@ -575,8 +576,7 @@ static __init void lockup_detector_setup(void)
- 	 */
- 	lockup_detector_update_enable();
- 
--	if (!IS_ENABLED(CONFIG_SYSCTL) &&
--	    !(watchdog_enabled && watchdog_thresh))
-+	if (!IS_ENABLED(CONFIG_SYSCTL) && !watchdog_enabled)
- 		return;
- 
- 	mutex_lock(&watchdog_mutex);
--- 
-2.17.1
+On 07/08/2022 15:04, Robin Reckmann wrote:
+> Fix i2c transfers using GPI DMA mode for all message types that do not se=
+t
+> the I2C_M_DMA_SAFE flag (e.g. SMBus "read byte").
+>
+> In this case a bounce buffer is returned by i2c_get_dma_safe_msg_buf(),
+> and it has to synced back to the message after the transfer is done.
+>
+> Add missing assignment of dma buffer in geni_i2c_gpi().
+>
+> Set xferred in i2c_put_dma_safe_msg_buf() to true in case of no error to
+> ensure the sync-back of this dma buffer to the message.
+Thanks for sending this, it fixes GPI DMA on the PocoPhone F1 and Pixel 3!
+>
+> Signed-off-by: Robin Reckmann <robin.reckmann@gmail.com>Reviewed-by: Cale=
+b Connolly <caleb@connolly.tech>
+> ---
+>   drivers/i2c/busses/i2c-qcom-geni.c | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-=
+qcom-geni.c
+> index 6ac402ea58fb..d3541e94794e 100644
+> --- a/drivers/i2c/busses/i2c-qcom-geni.c
+> +++ b/drivers/i2c/busses/i2c-qcom-geni.c
+> @@ -484,12 +484,12 @@ static void geni_i2c_gpi_unmap(struct geni_i2c_dev =
+*gi2c, struct i2c_msg *msg,
+>   {
+>   =09if (tx_buf) {
+>   =09=09dma_unmap_single(gi2c->se.dev->parent, tx_addr, msg->len, DMA_TO_=
+DEVICE);
+> -=09=09i2c_put_dma_safe_msg_buf(tx_buf, msg, false);
+> +=09=09i2c_put_dma_safe_msg_buf(tx_buf, msg, !gi2c->err);
+>   =09}
+>
+>   =09if (rx_buf) {
+>   =09=09dma_unmap_single(gi2c->se.dev->parent, rx_addr, msg->len, DMA_FRO=
+M_DEVICE);
+> -=09=09i2c_put_dma_safe_msg_buf(rx_buf, msg, false);
+> +=09=09i2c_put_dma_safe_msg_buf(rx_buf, msg, !gi2c->err);
+>   =09}
+>   }
+>
+> @@ -553,6 +553,7 @@ static int geni_i2c_gpi(struct geni_i2c_dev *gi2c, st=
+ruct i2c_msg *msg,
+>   =09desc->callback_param =3D gi2c;
+>
+>   =09dmaengine_submit(desc);
+> +=09*buf =3D dma_buf;
+>   =09*dma_addr_p =3D addr;
+>
+>   =09return 0;
+> --
+> 2.25.1
+>
+
+--
+Kind Regards,
+Caleb
 
