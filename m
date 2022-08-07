@@ -2,153 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B69CC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 13:17:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16194C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 13:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234239AbiHGNO6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 09:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39240 "EHLO
+        id S233212AbiHGNRi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 09:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232691AbiHGNO4 (ORCPT
+        with ESMTP id S232691AbiHGNRd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 09:14:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 16F0464F4
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 06:14:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659878092;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xE1ql9r1WlnpphQLIhOk9A5gTFrWDcEvErV3HfUz44Q=;
-        b=GoYHbnsC85pX43NXb6iH/rxLeJG0PycIu4I4Mzrzc/I99vvmNYcyLbl2Wmlo68yEK6BvSs
-        pnmWlcu8jRl4cx2U7Tzlr4WzYTxdhoZrq3DpPVP1t1Ftue72DAUKGPJSWpDwuCUPnv50gn
-        nj3u7jE0LK05DRfpPtYhy8hIGSEU7i0=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-486-E7SY9LaJMkqLFOf6PAyjaw-1; Sun, 07 Aug 2022 09:14:51 -0400
-X-MC-Unique: E7SY9LaJMkqLFOf6PAyjaw-1
-Received: by mail-wm1-f72.google.com with SMTP id r10-20020a05600c284a00b003a2ff6c9d6aso6930546wmb.4
-        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 06:14:51 -0700 (PDT)
+        Sun, 7 Aug 2022 09:17:33 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D89B63F6;
+        Sun,  7 Aug 2022 06:17:30 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id s11so8442656edd.13;
+        Sun, 07 Aug 2022 06:17:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zfLHI7kFYa9QqzX7jm3Dg9uXF+tlKoVCc88jlw3/8KQ=;
+        b=oVLItqJws2allNf5cNYLRsBjpe4cMJxw3wyvlDesdNvOtva6JdH5tYs8uRlvw4kbJf
+         f29NtFqbkJAaD9UsgZjDLKxdWapHtuAln4azG0nl8ztNN1gkZ8kIw+8rFK29tU9eBmz6
+         W8oo8bG35OMlBkaYqz0LxIdR8eKBp1LXSJWux1OL7okrr5raclBeI/kQUSHMsQ0KQScC
+         0Jv6XvjOwhq9YbNcxMbRCNxe4zCaVjMu5XtDrub+b+YzvtttjbLuLrAZOZ7PzqBUZdWK
+         XKzdmUTV36KAp0XdGGBlKH25zyd8llkWxncXcdz/E+s2Nnve4UaWm4Qh7AnnjwyEei2J
+         cKbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=xE1ql9r1WlnpphQLIhOk9A5gTFrWDcEvErV3HfUz44Q=;
-        b=KfhybFdqCDKP5vTtM6eVmiFETlM+mqQJvxxbc42NPWxOzRqPOnO56P5vbY0R27s3UN
-         2WKX2RebKmdjlr53tKeyGScj6kTjFP0Yze/NMawTQGdvhXUjENAdhTvy3SzEHyKH83M3
-         BOjJjZXF/RXYW0EVZQ59FIoTndELQ5tMpmQ3Gs0MiZilJ0c64S+hsvrGNJI7m0XFUt2i
-         xm/4tG2Eug2/C2d1VqZV3/lyxEp3kNH32EVUF6bF+LOvJ+6m01xQTp3Fx+mC5GCbOqat
-         SMvvx/UakbRx0+CFb5mKJFnygrSH3lZXD/Uz0nWruNbttVJQofBtM4yN3OBLEXfJHNzZ
-         Z/8A==
-X-Gm-Message-State: ACgBeo3oRV66C0hhYx3ivPV4VYGkpuvZPsfx2DmP/+xVf46jQCzESr9L
-        l0QTfSI6Th6Z9cI1UBpu1Ms3cyJG1o4NjqG0CJ57r1nbEO4+uYJ+iQoNZW6skMMz+P84iZ+x06H
-        ZjPt5j5y0W2W0lItwdzxNiww9
-X-Received: by 2002:a7b:cb55:0:b0:3a5:41a:829c with SMTP id v21-20020a7bcb55000000b003a5041a829cmr12476232wmj.153.1659878090317;
-        Sun, 07 Aug 2022 06:14:50 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7XPmSXHx0uphBUati04hlAT8Kv454CdlO9eCJMcNZrnnQufGNHHbsrZu1If3gI3BrvRzX2yQ==
-X-Received: by 2002:a7b:cb55:0:b0:3a5:41a:829c with SMTP id v21-20020a7bcb55000000b003a5041a829cmr12476216wmj.153.1659878090075;
-        Sun, 07 Aug 2022 06:14:50 -0700 (PDT)
-Received: from redhat.com ([2.52.21.123])
-        by smtp.gmail.com with ESMTPSA id ba5-20020a0560001c0500b0021efc75914esm9570153wrb.79.2022.08.07.06.14.46
+        h=x-gm-message-state:message-id:date:from:to:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zfLHI7kFYa9QqzX7jm3Dg9uXF+tlKoVCc88jlw3/8KQ=;
+        b=6dOywnvAyO+cW3sGENnyAhTLs4G1s1PEzXugQyqPnsoCUn8xVPigjVveA5b+1etVkd
+         RHBKhTLOsUTMBpCgk0fHos5lH9D2+1EdewQPOgXBahfWat4U45snyXU/RDCnBECr62+o
+         aWL8NSYVjYDtC67Dndmyvcejuy3rcUk7eDkw6P5Bvgs7wOyjQg2s/6X98n+OELV4vFmM
+         tWKStA7MH0V44T3Max3lX/5D4nmnGWH2Et1/RoRgSrZku9ufLsTgAPuZj4mEe5bo+mUR
+         PPYvUQqSBgtYICSgsOKiDzGXlB4k123/g/fjIJlna34pA7DObSqfoBSiDHQ/VjBpAMdK
+         QmoQ==
+X-Gm-Message-State: ACgBeo3OgVxoHKEbzA7JujCK4nUEitLh33cpzqhiwQ3+oUvsQqs4NfmQ
+        mzxiwkVJO+YGAw2QayFXpM4=
+X-Google-Smtp-Source: AA6agR4onaAEfG8SYXpc3i+szZ7HPi7aOmntQ9idJByRZWNmdzi8I27IsQWkDZ0PFTl66W32C/s4qQ==
+X-Received: by 2002:a05:6402:378a:b0:431:6d8d:9023 with SMTP id et10-20020a056402378a00b004316d8d9023mr14512494edb.98.1659878248925;
+        Sun, 07 Aug 2022 06:17:28 -0700 (PDT)
+Received: from Ansuel-xps. (host-87-20-249-30.retail.telecomitalia.it. [87.20.249.30])
+        by smtp.gmail.com with ESMTPSA id a4-20020a1709063a4400b006fe8c831632sm3786523ejf.73.2022.08.07.06.17.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Aug 2022 06:14:49 -0700 (PDT)
-Date:   Sun, 7 Aug 2022 09:14:43 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Will Deacon <will@kernel.org>
-Cc:     stefanha@redhat.com, jasowang@redhat.com,
-        torvalds@linux-foundation.org, ascull@google.com, maz@kernel.org,
-        keirf@google.com, jiyong@google.com, kernel-team@android.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org
-Subject: Re: IOTLB support for vhost/vsock breaks crosvm on Android
-Message-ID: <20220807042408-mutt-send-email-mst@kernel.org>
-References: <20220805181105.GA29848@willie-the-truck>
+        Sun, 07 Aug 2022 06:17:28 -0700 (PDT)
+Message-ID: <62efbb68.170a0220.88a00.8207@mx.google.com>
+X-Google-Original-Message-ID: <Yu+3UG8OqWPaHB55@Ansuel-xps.>
+Date:   Sun, 7 Aug 2022 15:00:00 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] ARM: dts: qcom: ipq8064: add v2 dtsi variant
+References: <20220718161826.4943-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220805181105.GA29848@willie-the-truck>
+In-Reply-To: <20220718161826.4943-1-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Will, thanks very much for the analysis and the writeup!
+On Mon, Jul 18, 2022 at 06:18:24PM +0200, Christian Marangi wrote:
+> Add ipq8064-v2.0 dtsi variant that differ from original ipq8064 SoC for
+> some additional pcie, sata and usb configuration values, additional
+> reserved memory and serial output.
+> 
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 
-On Fri, Aug 05, 2022 at 07:11:06PM +0100, Will Deacon wrote:
-> So how should we fix this? One possibility is for us to hack crosvm to
-> clear the VIRTIO_F_ACCESS_PLATFORM flag when setting the vhost features,
-> but others here have reasonably pointed out that they didn't expect a
-> kernel change to break userspace. On the flip side, the offending commit
-> in the kernel isn't exactly new (it's from the end of 2020!) and so it's
-> likely that others (e.g. QEMU) are using this feature.
+Any news for this?
 
-Exactly, that's the problem.
-
-vhost is reusing the virtio bits and it's only natural that
-what you are doing would happen.
-
-To be precise, this is what we expected people to do (and what QEMU does):
-
-
-#define QEMU_VHOST_FEATURES ((1 << VIRTIO_F_VERSION_1) |
-			     (1 << VIRTIO_NET_F_RX_MRG) | .... )
-
-VHOST_GET_FEATURES(... &host_features);
-host_features &= QEMU_VHOST_FEATURES
-VHOST_SET_FEATURES(host_features & guest_features)
-
-
-Here QEMU_VHOST_FEATURES are the bits userspace knows about.
-
-Our assumption was that whatever userspace enables, it
-knows what the effect on vhost is going to be.
-
-But yes, I understand absolutely how someone would instead just use the
-guest features. It is unfortunate that we did not catch this in time.
-
-
-In hindsight, we should have just created vhost level macros
-instead of reusing virtio ones. Would address the concern
-about naming: PLATFORM_ACCESS makes sense for the
-guest since there it means "whatever access rules platform has",
-but for vhost a better name would be VHOST_F_IOTLB.
-We should have also taken greater pains to document what
-we expect userspace to do. I remember now how I thought about something
-like this but after coding this up in QEMU I forgot to document this :(
-Also, I suspect given the history the GET/SET features ioctl and burned
-wrt extending it and we have to use a new when we add new features.
-All this we can do going forward.
-
-
-But what can we do about the specific issue?
-I am not 100% sure since as Will points out, QEMU and other
-userspace already rely on the current behaviour.
-
-Looking at QEMU specifically, it always sends some translations at
-startup, this in order to handle device rings.
-
-So, *maybe* we can get away with assuming that if no IOTLB ioctl was
-ever invoked then this userspace does not know about IOTLB and
-translation should ignore IOTLB completely.
-
-I am a bit nervous about breaking some *other* userspace which actually
-wants device to be blocked from accessing memory until IOTLB
-has been setup. If we get it wrong we are making guest
-and possibly even host vulnerable.
-And of course just revering is not an option either since there
-are now whole stacks depending on the feature.
-
-Will I'd like your input on whether you feel a hack in the kernel
-is justified here.
-
-Also yes, I think it's a good idea to change crosvm anyway.  While the
-work around I describe might make sense upstream I don't think it's a
-reasonable thing to do in stable kernels.
-I think I'll prepare a patch documenting the legal vhost features
-as a 1st step even though crosvm is rust so it's not importing
-the header directly, right?
+> ---
+>  .../boot/dts/qcom-ipq8064-v2.0-smb208.dtsi    | 37 ++++++++++
+>  arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi      | 69 +++++++++++++++++++
+>  2 files changed, 106 insertions(+)
+>  create mode 100644 arch/arm/boot/dts/qcom-ipq8064-v2.0-smb208.dtsi
+>  create mode 100644 arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi
+> 
+> diff --git a/arch/arm/boot/dts/qcom-ipq8064-v2.0-smb208.dtsi b/arch/arm/boot/dts/qcom-ipq8064-v2.0-smb208.dtsi
+> new file mode 100644
+> index 000000000000..0442580b22de
+> --- /dev/null
+> +++ b/arch/arm/boot/dts/qcom-ipq8064-v2.0-smb208.dtsi
+> @@ -0,0 +1,37 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include "qcom-ipq8064-v2.0.dtsi"
+> +
+> +&rpm {
+> +	smb208_regulators: regulators {
+> +		compatible = "qcom,rpm-smb208-regulators";
+> +
+> +		smb208_s1a: s1a {
+> +			regulator-min-microvolt = <1050000>;
+> +			regulator-max-microvolt = <1150000>;
+> +
+> +			qcom,switch-mode-frequency = <1200000>;
+> +		};
+> +
+> +		smb208_s1b: s1b {
+> +			regulator-min-microvolt = <1050000>;
+> +			regulator-max-microvolt = <1150000>;
+> +
+> +			qcom,switch-mode-frequency = <1200000>;
+> +		};
+> +
+> +		smb208_s2a: s2a {
+> +			regulator-min-microvolt = < 800000>;
+> +			regulator-max-microvolt = <1250000>;
+> +
+> +			qcom,switch-mode-frequency = <1200000>;
+> +		};
+> +
+> +		smb208_s2b: s2b {
+> +			regulator-min-microvolt = < 800000>;
+> +			regulator-max-microvolt = <1250000>;
+> +
+> +			qcom,switch-mode-frequency = <1200000>;
+> +		};
+> +	};
+> +};
+> diff --git a/arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi b/arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi
+> new file mode 100644
+> index 000000000000..2f117d576daf
+> --- /dev/null
+> +++ b/arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi
+> @@ -0,0 +1,69 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include "qcom-ipq8064.dtsi"
+> +
+> +/ {
+> +	model = "Qualcomm Technologies, Inc. IPQ8064-v2.0";
+> +
+> +	aliases {
+> +		serial0 = &gsbi4_serial;
+> +	};
+> +
+> +	chosen {
+> +		stdout-path = "serial0:115200n8";
+> +	};
+> +
+> +	reserved-memory {
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +		ranges;
+> +
+> +		rsvd@41200000 {
+> +			reg = <0x41200000 0x300000>;
+> +			no-map;
+> +		};
+> +	};
+> +};
+> +
+> +&gsbi4 {
+> +	qcom,mode = <GSBI_PROT_I2C_UART>;
+> +	status = "okay";
+> +
+> +	serial@16340000 {
+> +		status = "okay";
+> +	};
+> +	/*
+> +	 * The i2c device on gsbi4 should not be enabled.
+> +	 * On ipq806x designs gsbi4 i2c is meant for exclusive
+> +	 * RPM usage. Turning this on in kernel manifests as
+> +	 * i2c failure for the RPM.
+> +	 */
+> +};
+> +
+> +&pcie0 {
+> +	compatible = "qcom,pcie-ipq8064-v2";
+> +};
+> +
+> +&pcie1 {
+> +	compatible = "qcom,pcie-ipq8064-v2";
+> +};
+> +
+> +&pcie2 {
+> +	compatible = "qcom,pcie-ipq8064-v2";
+> +};
+> +
+> +&sata {
+> +	ports-implemented = <0x1>;
+> +};
+> +
+> +&ss_phy_0 {
+> +	qcom,rx-eq = <2>;
+> +	qcom,tx-deamp_3_5db = <32>;
+> +	qcom,mpll = <5>;
+> +};
+> +
+> +&ss_phy_1 {
+> +	qcom,rx-eq = <2>;
+> +	qcom,tx-deamp_3_5db = <32>;
+> +	qcom,mpll = <5>;
+> +};
+> -- 
+> 2.36.1
+> 
 
 -- 
-MST
-
+	Ansuel
