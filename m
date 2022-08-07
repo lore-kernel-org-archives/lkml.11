@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCA71C25B08
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:03:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E7BC25B0C
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:03:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235112AbiHGWDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:03:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48226 "EHLO
+        id S235418AbiHGWDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:03:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbiHGWCd (ORCPT
+        with ESMTP id S231160AbiHGWCe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 18:02:33 -0400
+        Sun, 7 Aug 2022 18:02:34 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB03764C1;
-        Sun,  7 Aug 2022 15:02:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5F4647F;
+        Sun,  7 Aug 2022 15:02:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659909751; x=1691445751;
+  t=1659909753; x=1691445753;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=L/E3prfFAd3mh2EWOafX6Z1uUyfm+Mru5mtpr0R7wFI=;
-  b=A6RbgVwt2RRnSBJvJCbSigckxwHKGDypX8qyM/dMp1eNQMrSkOqSFsOr
-   aXwUP0FPQyJZ6flp9HaLHva+XLe+tAhglUM14CkCNAwQMkOvA7Kpf1Pk3
-   RLD4d65QZp4TLx6xCWObv8qA1wDs88ibvTF/TUXzzEkV3dWg3c+IeWXYw
-   hTKp38D2O+JphJwXOgpH+NjPdYDyLKB5hR9N+BD4iMYmScBEuTstpFrbU
-   9C0AHq8O8blG2TVvdDEj4TSD+cBl6jnwh6y6Q5c+sttwV2m8fQTEBtBYq
-   VbM9D3c5InGsEYBxzkFkbMK4gZ0lJXPMNxSLENQ7Er3ggL3upv46LpZL5
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="289224049"
+  bh=7MxpqLV2Zgr3tAyO4PmMc14M84zbQglI/rfO0pOBxDM=;
+  b=VLD9vShHBreObNg6s4wLBocdfiVU5b/jKnGLjUWoo0JChQySrFHEV5Me
+   a3bYo392SB0CdpeMbGTg7PVW4G5J/Dl1cv8oOMcPfmq26VDb0hZxfdkbk
+   oSu1sQFMGDSMIyGdixDKnmVZKeLGSYHhx1eN5QtnrcmKOSo7LeHdcwH6b
+   fYHSpdVK8aKP2VTC0kXJ/ofDf65+ZEvpWa9OLNqBngMjL0YnAG+MhCKYq
+   3GQTK+x/f00tOf5uvCj6ov3LqTJyUCy9Q895ftjiSWB2NGXOdB6i1lfTM
+   DtvyeD9YjzjRqQZkRYAwnBlhBDzxg+T0PhvQpoY1Me9mWXDhKslL6+U5J
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="289224055"
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="289224049"
+   d="scan'208";a="289224055"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:29 -0700
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="663682451"
+   d="scan'208";a="663682460"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:29 -0700
 From:   isaku.yamahata@intel.com
@@ -43,9 +43,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [PATCH v8 005/103] KVM: x86: Refactor KVM VMX module init/exit functions
-Date:   Sun,  7 Aug 2022 15:00:50 -0700
-Message-Id: <a62c894bbbf3850dead5cdd2ac601b4e107d4b68.1659854790.git.isaku.yamahata@intel.com>
+Subject: [PATCH v8 008/103] x86/virt/tdx: Add a helper function to return system wide info about TDX module
+Date:   Sun,  7 Aug 2022 15:00:53 -0700
+Message-Id: <27ed4f21b23b9679919f2941ed50a4a55a76c3ad.1659854790.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854790.git.isaku.yamahata@intel.com>
 References: <cover.1659854790.git.isaku.yamahata@intel.com>
@@ -57,262 +57,197 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Currently, KVM VMX module initialization/exit functions are a single
-function each.  Refactor KVM VMX module initialization functions into KVM
-common part and VMX part so that TDX specific part can be added cleanly.
-Opportunistically refactor module exit function as well.
-
-The current module initialization flow is, 1.) calculate the sizes of VMX
-kvm structure and VMX vcpu structure, 2.) hyper-v specific initialization
-3.) report those sizes to the KVM common layer and KVM common
-initialization, and 4.) VMX specific system-wide initialization.
-
-Refactor the KVM VMX module initialization function into functions with a
-wrapper function to separate VMX logic in vmx.c from a file, main.c, common
-among VMX and TDX.  We have a wrapper function, "vt_init() {vmx kvm/vcpu
-size calculation; hv_vp_assist_page_init(); kvm_init(); vmx_init(); }" in
-main.c, and hv_vp_assist_page_init() and vmx_init() in vmx.c.
-hv_vp_assist_page_init() initializes hyper-v specific assist pages,
-kvm_init() does system-wide initialization of the KVM common layer, and
-vmx_init() does system-wide VMX initialization.
-
-The KVM architecture common layer allocates struct kvm with reported size
-for architecture-specific code.  The KVM VMX module defines its structure
-as struct vmx_kvm { struct kvm; VMX specific members;} and uses it as
-struct vmx kvm.  Similar for vcpu structure. TDX KVM patches will define
-TDX specific kvm and vcpu structures, add tdx_pre_kvm_init() to report the
-sizes of them to the KVM common layer.
-
-The current module exit function is also a single function, a combination
-of VMX specific logic and common KVM logic.  Refactor it into VMX specific
-logic and KVM common logic.  This is just refactoring to keep the VMX
-specific logic in vmx.c from main.c.
+TDX KVM needs system-wide information about the TDX module, struct
+tdsysinfo_struct.  Add a helper function tdx_get_sysinfo() to return it
+instead of KVM getting it with various error checks.  Move out the struct
+definition about it to common place arch/x86/include/asm/tdx.h.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/main.c    |  38 +++++++++++++
- arch/x86/kvm/vmx/vmx.c     | 106 ++++++++++++++++++-------------------
- arch/x86/kvm/vmx/x86_ops.h |   6 +++
- 3 files changed, 95 insertions(+), 55 deletions(-)
+ arch/x86/include/asm/tdx.h  | 55 +++++++++++++++++++++++++++++++++++++
+ arch/x86/virt/vmx/tdx/tdx.c | 20 +++++++++++---
+ arch/x86/virt/vmx/tdx/tdx.h | 52 -----------------------------------
+ 3 files changed, 71 insertions(+), 56 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
-index 636768f5b985..381e1ab760de 100644
---- a/arch/x86/kvm/vmx/main.c
-+++ b/arch/x86/kvm/vmx/main.c
-@@ -153,3 +153,41 @@ struct kvm_x86_init_ops vt_init_ops __initdata = {
- 	.runtime_ops = &vt_x86_ops,
- 	.pmu_ops = &intel_pmu_ops,
- };
-+
-+static int __init vt_init(void)
-+{
-+	unsigned int vcpu_size, vcpu_align;
-+	int r;
-+
-+	vt_x86_ops.vm_size = sizeof(struct kvm_vmx);
-+	vcpu_size = sizeof(struct vcpu_vmx);
-+	vcpu_align = __alignof__(struct vcpu_vmx);
-+
-+	hv_vp_assist_page_init();
-+	vmx_init_early();
-+
-+	r = kvm_init(&vt_init_ops, vcpu_size, vcpu_align, THIS_MODULE);
-+	if (r)
-+		goto err_vmx_post_exit;
-+
-+	r = vmx_init();
-+	if (r)
-+		goto err_kvm_exit;
-+
-+	return 0;
-+
-+err_kvm_exit:
-+	kvm_exit();
-+err_vmx_post_exit:
-+	hv_vp_assist_page_exit();
-+	return r;
-+}
-+module_init(vt_init);
-+
-+static void vt_exit(void)
-+{
-+	vmx_exit();
-+	kvm_exit();
-+	hv_vp_assist_page_exit();
-+}
-+module_exit(vt_exit);
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 6a259c5a2352..466d9eab6d2e 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -8242,15 +8242,45 @@ static void vmx_cleanup_l1d_flush(void)
- 	l1tf_vmx_mitigation = VMENTER_L1D_FLUSH_AUTO;
- }
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index 801f6e10b2db..dfea0dd71bc1 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -89,11 +89,66 @@ static inline long tdx_kvm_hypercall(unsigned int nr, unsigned long p1,
+ #endif /* CONFIG_INTEL_TDX_GUEST && CONFIG_KVM_GUEST */
  
--static void vmx_exit(void)
-+void __init hv_vp_assist_page_init(void)
- {
--#ifdef CONFIG_KEXEC_CORE
--	RCU_INIT_POINTER(crash_vmclear_loaded_vmcss, NULL);
--	synchronize_rcu();
--#endif
-+#if IS_ENABLED(CONFIG_HYPERV)
+ #ifdef CONFIG_INTEL_TDX_HOST
++struct tdx_cpuid_config {
++	u32	leaf;
++	u32	sub_leaf;
++	u32	eax;
++	u32	ebx;
++	u32	ecx;
++	u32	edx;
++} __packed;
++
++#define TDSYSINFO_STRUCT_SIZE		1024
++#define TDSYSINFO_STRUCT_ALIGNMENT	1024
++
++struct tdsysinfo_struct {
++	/* TDX-SEAM Module Info */
++	u32	attributes;
++	u32	vendor_id;
++	u32	build_date;
++	u16	build_num;
++	u16	minor_version;
++	u16	major_version;
++	u8	reserved0[14];
++	/* Memory Info */
++	u16	max_tdmrs;
++	u16	max_reserved_per_tdmr;
++	u16	pamt_entry_size;
++	u8	reserved1[10];
++	/* Control Struct Info */
++	u16	tdcs_base_size;
++	u8	reserved2[2];
++	u16	tdvps_base_size;
++	u8	tdvps_xfam_dependent_size;
++	u8	reserved3[9];
++	/* TD Capabilities */
++	u64	attributes_fixed0;
++	u64	attributes_fixed1;
++	u64	xfam_fixed0;
++	u64	xfam_fixed1;
++	u8	reserved4[32];
++	u32	num_cpuid_config;
 +	/*
-+	 * Enlightened VMCS usage should be recommended and the host needs
-+	 * to support eVMCS v1 or above. We can also disable eVMCS support
-+	 * with module parameter.
++	 * The actual number of CPUID_CONFIG depends on above
++	 * 'num_cpuid_config'.  The size of 'struct tdsysinfo_struct'
++	 * is 1024B defined by TDX architecture.  Use a union with
++	 * specific padding to make 'sizeof(struct tdsysinfo_struct)'
++	 * equal to 1024.
 +	 */
-+	if (enlightened_vmcs &&
-+	    ms_hyperv.hints & HV_X64_ENLIGHTENED_VMCS_RECOMMENDED &&
-+	    (ms_hyperv.nested_features & HV_X64_ENLIGHTENED_VMCS_VERSION) >=
-+	    KVM_EVMCS_VERSION) {
-+		int cpu;
++	union {
++		struct tdx_cpuid_config	cpuid_configs[0];
++		u8			reserved5[892];
++	};
++} __packed __aligned(TDSYSINFO_STRUCT_ALIGNMENT);
 +
-+		/* Check that we have assist pages on all online CPUs */
-+		for_each_online_cpu(cpu) {
-+			if (!hv_get_vp_assist_page(cpu)) {
-+				enlightened_vmcs = false;
-+				break;
-+			}
-+		}
+ bool platform_tdx_enabled(void);
+ int tdx_init(void);
++const struct tdsysinfo_struct *tdx_get_sysinfo(void);
+ #else	/* !CONFIG_INTEL_TDX_HOST */
+ static inline bool platform_tdx_enabled(void) { return false; }
+ static inline int tdx_init(void)  { return -ENODEV; }
++struct tdsysinfo_struct;
++static inline const struct tdsysinfo_struct *tdx_get_sysinfo(void) { return NULL; }
+ #endif	/* CONFIG_INTEL_TDX_HOST */
  
--	kvm_exit();
-+		if (enlightened_vmcs) {
-+			pr_info("KVM: vmx: using Hyper-V Enlightened VMCS\n");
-+			static_branch_enable(&enable_evmcs);
-+		}
-+
-+		if (ms_hyperv.nested_features & HV_X64_NESTED_DIRECT_FLUSH)
-+			vt_x86_ops.enable_direct_tlbflush
-+				= hv_enable_direct_tlbflush;
- 
-+	} else {
-+		enlightened_vmcs = false;
-+	}
-+#endif
-+}
-+
-+void hv_vp_assist_page_exit(void)
-+{
- #if IS_ENABLED(CONFIG_HYPERV)
- 	if (static_branch_unlikely(&enable_evmcs)) {
- 		int cpu;
-@@ -8274,17 +8304,13 @@ static void vmx_exit(void)
- 		static_branch_disable(&enable_evmcs);
- 	}
- #endif
--	vmx_cleanup_l1d_flush();
--
--	allow_smaller_maxphyaddr = false;
- }
--module_exit(vmx_exit);
- 
- /*
-  * Early initialization before kvm_init() so that vmx_hardware_enable/disable()
-  * can work.
-  */
--static void __init vmx_init_early(void)
-+void __init vmx_init_early(void)
- {
- 	int cpu;
- 
-@@ -8297,49 +8323,10 @@ static void __init vmx_init_early(void)
- 		INIT_LIST_HEAD(&per_cpu(loaded_vmcss_on_cpu, cpu));
- }
- 
--static int __init vmx_init(void)
-+int __init vmx_init(void)
- {
- 	int r, cpu;
- 
--#if IS_ENABLED(CONFIG_HYPERV)
--	/*
--	 * Enlightened VMCS usage should be recommended and the host needs
--	 * to support eVMCS v1 or above. We can also disable eVMCS support
--	 * with module parameter.
--	 */
--	if (enlightened_vmcs &&
--	    ms_hyperv.hints & HV_X64_ENLIGHTENED_VMCS_RECOMMENDED &&
--	    (ms_hyperv.nested_features & HV_X64_ENLIGHTENED_VMCS_VERSION) >=
--	    KVM_EVMCS_VERSION) {
--
--		/* Check that we have assist pages on all online CPUs */
--		for_each_online_cpu(cpu) {
--			if (!hv_get_vp_assist_page(cpu)) {
--				enlightened_vmcs = false;
--				break;
--			}
--		}
--
--		if (enlightened_vmcs) {
--			pr_info("KVM: vmx: using Hyper-V Enlightened VMCS\n");
--			static_branch_enable(&enable_evmcs);
--		}
--
--		if (ms_hyperv.nested_features & HV_X64_NESTED_DIRECT_FLUSH)
--			vt_x86_ops.enable_direct_tlbflush
--				= hv_enable_direct_tlbflush;
--
--	} else {
--		enlightened_vmcs = false;
--	}
--#endif
--
--	vmx_init_early();
--	r = kvm_init(&vt_init_ops, sizeof(struct vcpu_vmx),
--		__alignof__(struct vcpu_vmx), THIS_MODULE);
--	if (r)
--		return r;
--
- 	/*
- 	 * Must be called after kvm_init() so enable_ept is properly set
- 	 * up. Hand the parameter mitigation value in which was stored in
-@@ -8348,10 +8335,8 @@ static int __init vmx_init(void)
- 	 * mitigation mode.
- 	 */
- 	r = vmx_setup_l1d_flush(vmentry_l1d_flush_param);
--	if (r) {
--		vmx_exit();
-+	if (r)
- 		return r;
--	}
- 
- 	vmx_setup_fb_clear_ctrl();
- 
-@@ -8374,4 +8359,15 @@ static int __init vmx_init(void)
- 
+ #endif /* !__ASSEMBLY__ */
+diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+index 787b26de8f53..b9567a2217df 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.c
++++ b/arch/x86/virt/vmx/tdx/tdx.c
+@@ -354,9 +354,9 @@ static int check_cmrs(struct cmr_info *cmr_array, int *actual_cmr_num)
  	return 0;
  }
--module_init(vmx_init);
-+
-+void vmx_exit(void)
+ 
+-static int tdx_get_sysinfo(struct tdsysinfo_struct *tdsysinfo,
+-			   struct cmr_info *cmr_array,
+-			   int *actual_cmr_num)
++static int __tdx_get_sysinfo(struct tdsysinfo_struct *tdsysinfo,
++			     struct cmr_info *cmr_array,
++			     int *actual_cmr_num)
+ {
+ 	struct tdx_module_output out;
+ 	u64 ret;
+@@ -383,6 +383,18 @@ static int tdx_get_sysinfo(struct tdsysinfo_struct *tdsysinfo,
+ 	return check_cmrs(cmr_array, actual_cmr_num);
+ }
+ 
++const struct tdsysinfo_struct *tdx_get_sysinfo(void)
 +{
-+#ifdef CONFIG_KEXEC_CORE
-+	RCU_INIT_POINTER(crash_vmclear_loaded_vmcss, NULL);
-+	synchronize_rcu();
-+#endif
++       const struct tdsysinfo_struct *r = NULL;
 +
-+	vmx_cleanup_l1d_flush();
-+
-+	allow_smaller_maxphyaddr = false;
++       mutex_lock(&tdx_module_lock);
++       if (tdx_module_status == TDX_MODULE_INITIALIZED)
++	       r = &tdx_sysinfo;
++       mutex_unlock(&tdx_module_lock);
++       return r;
 +}
-diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
-index 85da24ecb25f..90a8c6824833 100644
---- a/arch/x86/kvm/vmx/x86_ops.h
-+++ b/arch/x86/kvm/vmx/x86_ops.h
-@@ -8,6 +8,12 @@
- 
- #include "x86.h"
- 
-+void __init hv_vp_assist_page_init(void);
-+void hv_vp_assist_page_exit(void);
-+void __init vmx_init_early(void);
-+int __init vmx_init(void);
-+void vmx_exit(void);
++EXPORT_SYMBOL_GPL(tdx_get_sysinfo);
 +
- __init int vmx_cpu_has_kvm_support(void);
- __init int vmx_disabled_by_bios(void);
- __init int vmx_hardware_setup(void);
+ /*
+  * Skip the memory region below 1MB.  Return true if the entire
+  * region is skipped.  Otherwise, the updated range is returned.
+@@ -1106,7 +1118,7 @@ static int init_tdx_module(void)
+ 	if (ret)
+ 		goto out;
+ 
+-	ret = tdx_get_sysinfo(&tdx_sysinfo, tdx_cmr_array, &tdx_cmr_num);
++	ret = __tdx_get_sysinfo(&tdx_sysinfo, tdx_cmr_array, &tdx_cmr_num);
+ 	if (ret)
+ 		goto out;
+ 
+diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
+index e0309558be13..c08e4ee2d0bf 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.h
++++ b/arch/x86/virt/vmx/tdx/tdx.h
+@@ -65,58 +65,6 @@ struct cmr_info {
+ #define MAX_CMRS			32
+ #define CMR_INFO_ARRAY_ALIGNMENT	512
+ 
+-struct cpuid_config {
+-	u32	leaf;
+-	u32	sub_leaf;
+-	u32	eax;
+-	u32	ebx;
+-	u32	ecx;
+-	u32	edx;
+-} __packed;
+-
+-#define TDSYSINFO_STRUCT_SIZE		1024
+-#define TDSYSINFO_STRUCT_ALIGNMENT	1024
+-
+-struct tdsysinfo_struct {
+-	/* TDX-SEAM Module Info */
+-	u32	attributes;
+-	u32	vendor_id;
+-	u32	build_date;
+-	u16	build_num;
+-	u16	minor_version;
+-	u16	major_version;
+-	u8	reserved0[14];
+-	/* Memory Info */
+-	u16	max_tdmrs;
+-	u16	max_reserved_per_tdmr;
+-	u16	pamt_entry_size;
+-	u8	reserved1[10];
+-	/* Control Struct Info */
+-	u16	tdcs_base_size;
+-	u8	reserved2[2];
+-	u16	tdvps_base_size;
+-	u8	tdvps_xfam_dependent_size;
+-	u8	reserved3[9];
+-	/* TD Capabilities */
+-	u64	attributes_fixed0;
+-	u64	attributes_fixed1;
+-	u64	xfam_fixed0;
+-	u64	xfam_fixed1;
+-	u8	reserved4[32];
+-	u32	num_cpuid_config;
+-	/*
+-	 * The actual number of CPUID_CONFIG depends on above
+-	 * 'num_cpuid_config'.  The size of 'struct tdsysinfo_struct'
+-	 * is 1024B defined by TDX architecture.  Use a union with
+-	 * specific padding to make 'sizeof(struct tdsysinfo_struct)'
+-	 * equal to 1024.
+-	 */
+-	union {
+-		struct cpuid_config	cpuid_configs[0];
+-		u8			reserved5[892];
+-	};
+-} __packed __aligned(TDSYSINFO_STRUCT_ALIGNMENT);
+-
+ struct tdmr_reserved_area {
+ 	u64 offset;
+ 	u64 size;
 -- 
 2.25.1
 
