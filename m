@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 027ADC19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:09:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EEFC19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242180AbiHGWJu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:09:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50488 "EHLO
+        id S242014AbiHGWJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235914AbiHGWF2 (ORCPT
+        with ESMTP id S237279AbiHGWFd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 18:05:28 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233B0B7FD;
+        Sun, 7 Aug 2022 18:05:33 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893D1B844;
         Sun,  7 Aug 2022 15:03:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1659909785; x=1691445785;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=5kAnkpkjcRspqdYMa8HioFwizUIffcIP7r8EHfKDbGQ=;
-  b=GtPIksdJlDsJ9X5g6LQgpf1kJUyvioa6cvOY0QNF2mS2eznQdcebVzPF
-   +zCIbsFmQCVYUenvTnWaxEvnkCyI66e1qnOi9eZYcOTBgQfpPe5+wc2G+
-   7k7kKrbywEluj4+q0/SA6HtWWkHTmx67EB0hPppKRj/B+sP5AcvQQ6D8F
-   OYF3cxHd0OCXU/6lTo+/j8frs2ij7N47vcu3fzFdzfSRudzAtJpJ+zbQg
-   pDVfNly9uEoo4OS3XlrqJOnhrZNPQaqSNRdqi+OsSm7IJqzzNpLKq1w+k
-   wk1bybk4mUlyK3F2/NcYTsZPQn4mzDctC/WFLylLeACC9edDTydsv71Jv
+  bh=GBF+xOjTA3mVUQSjRby6WluXWt/inVrZKLs+1UFcCIY=;
+  b=KbGJIyZpKjWy6AKdCIgYM7lLTKYjERHEBcmz3f3p6LoCHmTKy9jV/iBS
+   p6XfhO0d6qCzcDGFKTvaucuxio/ZC6qzAk0InRu30DcBiOAkcF7f6kdfV
+   WjfTQS9a/q++a1E0yBHKcicFe1JSYaIgWz/L27miR31ZgmpewcODovLOa
+   jUhdTqaehpWfIILJCwARmrPcm3Mm2LhvPWJK4/93t234AmdbI/drZcGUO
+   L0xJ4DXZwuDxh/ZekoR+mrsD/RK1K1YQphM7fkECm7ebPxzqWiCXv8Wfg
+   ehTH9lAewUChtT+E5uzexzArkGCdQVi0cs3B1y2feZGPPw2WoyvKWBo21
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="291695709"
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270240389"
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="291695709"
+   d="scan'208";a="270240389"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:39 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:42 -0700
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="663682666"
+   d="scan'208";a="663682721"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:39 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:42 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [PATCH v8 067/103] KVM: x86: Allow to update cached values in kvm_user_return_msrs w/o wrmsr
-Date:   Sun,  7 Aug 2022 15:01:52 -0700
-Message-Id: <82fbf6421a1b59839e7dd5e2285547a0f6943350.1659854790.git.isaku.yamahata@intel.com>
+Subject: [PATCH v8 084/103] KVM: TDX: Retry seamcall when TDX_OPERAND_BUSY with operand SEPT
+Date:   Sun,  7 Aug 2022 15:02:09 -0700
+Message-Id: <78cbcb3e9c76569958e3d60ced26e55cac29e69b.1659854791.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854790.git.isaku.yamahata@intel.com>
 References: <cover.1659854790.git.isaku.yamahata@intel.com>
@@ -55,90 +55,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Gao <chao.gao@intel.com>
+From: Yuan Yao <yuan.yao@intel.com>
 
-Several MSRs are constant and only used in userspace(ring 3).  But VMs may
-have different values.  KVM uses kvm_set_user_return_msr() to switch to
-guest's values and leverages user return notifier to restore them when the
-kernel is to return to userspace.  To eliminate unnecessary wrmsr, KVM also
-caches the value it wrote to an MSR last time.
+TDX module internally uses locks to protect internal resources.  It tries
+to acquire the locks.  If it fails to obtain the lock, it returns
+TDX_OPERAND_BUSY error without spin because its execution time limitation.
 
-TDX module unconditionally resets some of these MSRs to architectural INIT
-state on TD exit.  It makes the cached values in kvm_user_return_msrs are
-inconsistent with values in hardware.  This inconsistency needs to be
-fixed.  Otherwise, it may mislead kvm_on_user_return() to skip restoring
-some MSRs to the host's values.  kvm_set_user_return_msr() can help correct
-this case, but it is not optimal as it always does a wrmsr.  So, introduce
-a variation of kvm_set_user_return_msr() to update cached values and skip
-that wrmsr.
+TDX SEAMCALL API reference describes what resources are used.  It's known
+which TDX SEAMCALL can cause contention with which resources.  VMM can
+avoid contention inside the TDX module by avoiding contentious TDX SEAMCALL
+with, for example, spinlock.  Because OS knows better its process
+scheduling and its scalability, a lock at OS/VMM layer would work better
+than simply retrying TDX SEAMCALLs.
 
-Signed-off-by: Chao Gao <chao.gao@intel.com>
+TDH.MEM.* API except for TDH.MEM.TRACK operates on a secure EPT tree and
+the TDX module internally tries to acquire the lock of the secure EPT tree.
+They return TDX_OPERAND_BUSY | TDX_OPERAND_ID_SEPT in case of failure to
+get the lock.  TDX KVM uses kvm_tdx::seamcall_lock spinlock at OS/VMM layer
+to avoid contention inside the TDX module.
+
+TDH.VP.ENTER is an exception with zero-step attack mitigation.  Normally
+TDH.VP.ENTER uses only TD vcpu resources and it doesn't cause contention.
+When a zero-step attack is suspected, it obtains a secure EPT tree lock and
+tracks the GPAs causing a secure EPT fault.  Thus TDG.VP.ENTER may result
+in TDX_OPERAND_BUSY | TDX_OPERAND_ID_SEPT.  Also TDH.MEM.* SEAMCALLs may
+result in TDX_OPERAN_BUSY | TDX_OPERAND_ID_SEPT because TDH.VP.ENTER is not
+protected with seamcall_lock.
+
+Retry TDX TDH.MEM.* API and TDH.VP.ENTER on the error because the error is
+a rare event caused by zero-step attack mitigation and spinlock can not be
+used for TDH.VP.ENTER due to indefinite time execution.
+
+Signed-off-by: Yuan Yao <yuan.yao@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/kvm_host.h |  1 +
- arch/x86/kvm/x86.c              | 25 ++++++++++++++++++++-----
- 2 files changed, 21 insertions(+), 5 deletions(-)
+ arch/x86/kvm/vmx/tdx.c     |  4 ++++
+ arch/x86/kvm/vmx/tdx_ops.h | 36 ++++++++++++++++++++++++++++++------
+ 2 files changed, 34 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index df672d80f64e..f32613dd7491 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -2072,6 +2072,7 @@ int kvm_pv_send_ipi(struct kvm *kvm, unsigned long ipi_bitmap_low,
- int kvm_add_user_return_msr(u32 msr);
- int kvm_find_user_return_msr(u32 msr);
- int kvm_set_user_return_msr(unsigned index, u64 val, u64 mask);
-+void kvm_user_return_update_cache(unsigned int index, u64 val);
- 
- static inline bool kvm_is_supported_user_return_msr(u32 msr)
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index 44f3047b5e5c..fc0895f1fe75 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -1188,6 +1188,10 @@ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
  {
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index ea7c32e259d6..b1438fb6dd96 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -425,6 +425,15 @@ static void kvm_user_return_msr_cpu_online(void)
- 	}
- }
+ 	union tdx_exit_reason exit_reason = to_tdx(vcpu)->exit_reason;
  
-+static void kvm_user_return_register_notifier(struct kvm_user_return_msrs *msrs)
++	/* See the comment of tdh_sept_seamcall(). */
++	if (unlikely(exit_reason.full == (TDX_OPERAND_BUSY | TDX_OPERAND_ID_SEPT)))
++		return 1;
++
+ 	if (unlikely(exit_reason.non_recoverable || exit_reason.error)) {
+ 		if (exit_reason.basic == EXIT_REASON_TRIPLE_FAULT)
+ 			return tdx_handle_triple_fault(vcpu);
+diff --git a/arch/x86/kvm/vmx/tdx_ops.h b/arch/x86/kvm/vmx/tdx_ops.h
+index 8cc2f01c509b..a50bc1445cc2 100644
+--- a/arch/x86/kvm/vmx/tdx_ops.h
++++ b/arch/x86/kvm/vmx/tdx_ops.h
+@@ -18,6 +18,26 @@
+ 
+ void pr_tdx_error(u64 op, u64 error_code, const struct tdx_module_output *out);
+ 
++/*
++ * Although seamcal_lock protects seamcall to avoid contention inside the TDX
++ * module, it doesn't protect TDH.VP.ENTER.  With zero-step attack mitigation,
++ * TDH.VP.ENTER may rarely acquire SEPT lock and release it when zero-step
++ * attack is suspected.  It results in TDX_OPERAND_BUSY | TDX_OPERAND_ID_SEPT
++ * with TDH.MEM.* operation.  (TDH.MEM.TRACK is an exception.)  Because such
++ * error is rare event, just retry on those TDH.MEM operations and TDH.VP.ENTER.
++ */
++static inline u64 seamcall_sept_retry(u64 op, u64 rcx, u64 rdx, u64 r8, u64 r9,
++				      struct tdx_module_output *out)
 +{
-+	if (!msrs->registered) {
-+		msrs->urn.on_user_return = kvm_on_user_return;
-+		user_return_notifier_register(&msrs->urn);
-+		msrs->registered = true;
-+	}
++	u64 ret;
++
++	do {
++		ret = __seamcall(op, rcx, rdx, r8, r9, out);
++	} while (unlikely(ret == (TDX_OPERAND_BUSY | TDX_OPERAND_ID_SEPT)));
++
++	return ret;
 +}
 +
- int kvm_set_user_return_msr(unsigned slot, u64 value, u64 mask)
+ static inline u64 tdh_mng_addcx(hpa_t tdr, hpa_t addr)
  {
- 	unsigned int cpu = smp_processor_id();
-@@ -439,15 +448,21 @@ int kvm_set_user_return_msr(unsigned slot, u64 value, u64 mask)
- 		return 1;
- 
- 	msrs->values[slot].curr = value;
--	if (!msrs->registered) {
--		msrs->urn.on_user_return = kvm_on_user_return;
--		user_return_notifier_register(&msrs->urn);
--		msrs->registered = true;
--	}
-+	kvm_user_return_register_notifier(msrs);
- 	return 0;
+ 	clflush_cache_range(__va(addr), PAGE_SIZE);
+@@ -28,14 +48,15 @@ static inline u64 tdh_mem_page_add(hpa_t tdr, gpa_t gpa, hpa_t hpa, hpa_t source
+ 				   struct tdx_module_output *out)
+ {
+ 	clflush_cache_range(__va(hpa), PAGE_SIZE);
+-	return __seamcall(TDH_MEM_PAGE_ADD, gpa, tdr, hpa, source, out);
++	return seamcall_sept_retry(TDH_MEM_PAGE_ADD, gpa, tdr, hpa, source, out);
  }
- EXPORT_SYMBOL_GPL(kvm_set_user_return_msr);
  
-+/* Update the cache, "curr", and register the notifier */
-+void kvm_user_return_update_cache(unsigned int slot, u64 value)
-+{
-+	struct kvm_user_return_msrs *msrs = this_cpu_ptr(user_return_msrs);
-+
-+	msrs->values[slot].curr = value;
-+	kvm_user_return_register_notifier(msrs);
-+}
-+EXPORT_SYMBOL_GPL(kvm_user_return_update_cache);
-+
- static void drop_user_return_notifiers(void)
+ static inline u64 tdh_mem_sept_add(hpa_t tdr, gpa_t gpa, int level, hpa_t page,
+ 				   struct tdx_module_output *out)
  {
- 	unsigned int cpu = smp_processor_id();
+ 	clflush_cache_range(__va(page), PAGE_SIZE);
+-	return __seamcall(TDH_MEM_SEPT_ADD, gpa | level, tdr, page, 0, out);
++	return seamcall_sept_retry(TDH_MEM_SEPT_ADD, gpa | level, tdr, page, 0,
++				   out);
+ }
+ 
+ static inline u64 tdh_mem_sept_remove(hpa_t tdr, gpa_t gpa, int level,
+@@ -61,13 +82,14 @@ static inline u64 tdh_mem_page_aug(hpa_t tdr, gpa_t gpa, hpa_t hpa,
+ 				   struct tdx_module_output *out)
+ {
+ 	clflush_cache_range(__va(hpa), PAGE_SIZE);
+-	return __seamcall(TDH_MEM_PAGE_AUG, gpa, tdr, hpa, 0, out);
++	return seamcall_sept_retry(TDH_MEM_PAGE_AUG, gpa, tdr, hpa, 0, out);
+ }
+ 
+ static inline u64 tdh_mem_range_block(hpa_t tdr, gpa_t gpa, int level,
+ 				      struct tdx_module_output *out)
+ {
+-	return __seamcall(TDH_MEM_RANGE_BLOCK, gpa | level, tdr, 0, 0, out);
++	return seamcall_sept_retry(TDH_MEM_RANGE_BLOCK, gpa | level, tdr, 0, 0,
++				   out);
+ }
+ 
+ static inline u64 tdh_mng_key_config(hpa_t tdr)
+@@ -149,7 +171,8 @@ static inline u64 tdh_phymem_page_reclaim(hpa_t page,
+ static inline u64 tdh_mem_page_remove(hpa_t tdr, gpa_t gpa, int level,
+ 				      struct tdx_module_output *out)
+ {
+-	return __seamcall(TDH_MEM_PAGE_REMOVE, gpa | level, tdr, 0, 0, out);
++	return seamcall_sept_retry(TDH_MEM_PAGE_REMOVE, gpa | level, tdr, 0, 0,
++				   out);
+ }
+ 
+ static inline u64 tdh_sys_lp_shutdown(void)
+@@ -165,7 +188,8 @@ static inline u64 tdh_mem_track(hpa_t tdr)
+ static inline u64 tdh_mem_range_unblock(hpa_t tdr, gpa_t gpa, int level,
+ 					struct tdx_module_output *out)
+ {
+-	return __seamcall(TDH_MEM_RANGE_UNBLOCK, gpa | level, tdr, 0, 0, out);
++	return seamcall_sept_retry(TDH_MEM_RANGE_UNBLOCK, gpa | level, tdr, 0, 0,
++				   out);
+ }
+ 
+ static inline u64 tdh_phymem_cache_wb(bool resume)
 -- 
 2.25.1
 
