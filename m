@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A095DC19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68081C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233557AbiHGWcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35548 "EHLO
+        id S242412AbiHGWc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:32:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242221AbiHGWbj (ORCPT
+        with ESMTP id S242248AbiHGWbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 7 Aug 2022 18:31:39 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3297D18362;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11E918366;
         Sun,  7 Aug 2022 15:18:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1659910731; x=1691446731;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=CC+oCHJCHlL6/p6anZ5hH11kfUqGKD9/J/qtkJCwbqE=;
-  b=F2cVsO3mNoGfp5SZA9ucssD6/NYTc5U63IcUpGWCwMICiQhlvriUK1Wu
-   cFQ+4lRzl4O4TZM6sfhtt/cImlf+eovs/hg/AAARjKQbspf/IEXUqFHl0
-   gWTL5uvXoUOwRj0YLeTkwKNCCPkinwrswlHHnRV7VHEOpLcCmRsvG3RiF
-   jvfWjwapYKGuqtb2gehLFAokjKSzH/dJKm4dEU/Zj19ciXdtO6lRNuEsu
-   P0QyvxLy4aOX3zWd7QphXQs9iFN39bu3PAbqLF1viN1jk3Tz0I+9ClDmb
-   +hD1hRu43g4RnaFJ3aQRHnXkFhvRo5VMGFdkbmt9GGgMxufYMo8QqufqV
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270852835"
+  bh=CTJMM/0shdwoQoSS4boE1AzzhW200V6Zj+VgeNun5mA=;
+  b=jyNA2pZNncajIgyYQeUPduTNK0nfWSQ4mnTHY003iPtqMyQNZnNaqhlP
+   ABBqzK91oJnhcYdIarVdBa4l0IGNk1qQGAIP/SNvMDH2jZ86h62gUopGL
+   SLU272way44NuiwBj5t1kUObMInpq9rM/G0N9jA83Rl5/DjYBdCM/wDaI
+   dW0+hvqfNHe++lIhRymz+lwFPE159azq+DvhnkgZjEQ653nW4t6+GAwe3
+   gtJ+hEXD7zZxchfZrgHFHpvk2ji5PkI1/Bh8ReFMYSVsgoSFSFJQfPKBO
+   m9xuZLWeRj8QlnUvRd9SDzZxPFYfi2QGNGESWndi92v/yAA05xZKy5cgo
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270852837"
 X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
-   d="scan'208";a="270852835"
+   d="scan'208";a="270852837"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:18:50 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:18:51 -0700
 X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
-   d="scan'208";a="632642321"
+   d="scan'208";a="632642330"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:18:50 -0700
 From:   isaku.yamahata@intel.com
@@ -43,9 +43,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH 07/13] KVM: TDX: Update tdx_sept_{set,drop}_private_spte() to support large page
-Date:   Sun,  7 Aug 2022 15:18:40 -0700
-Message-Id: <f1999fbf083e6c3f86a2d9a634c0a1e30c9c70df.1659854957.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH 09/13] KVM: TDX: Pin pages via get_page() right before ADD/AUG'ed to TDs
+Date:   Sun,  7 Aug 2022 15:18:42 -0700
+Message-Id: <8fa629b2c53c0578ed4025770190e6f960558b9c.1659854957.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854957.git.isaku.yamahata@intel.com>
 References: <cover.1659854957.git.isaku.yamahata@intel.com>
@@ -57,101 +57,94 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Xiaoyao Li <xiaoyao.li@intel.com>
 
-Allow large page level AUG and REMOVE for TDX pages.
+When kvm_faultin_pfn(), it doesn't have the info regarding which page level
+will the gfn be mapped at. Hence it doesn't know to pin a 4K page or a
+2M page.
+
+Move the guest private pages pinning logic right before
+TDH_MEM_PAGE_ADD/AUG() since at that time it knows the page level info.
 
 Signed-off-by: Xiaoyao Li <xiaoyao.li@intel.com>
-Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/tdx.c | 46 +++++++++++++++++++++---------------------
- 1 file changed, 23 insertions(+), 23 deletions(-)
+ arch/x86/kvm/vmx/tdx.c | 28 +++++++++++++++++++---------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
 diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 0b9f9075e1ea..cdd421fb5024 100644
+index 81d88b1e63ac..2fdf3aa70c57 100644
 --- a/arch/x86/kvm/vmx/tdx.c
 +++ b/arch/x86/kvm/vmx/tdx.c
-@@ -1458,20 +1458,18 @@ static void __tdx_sept_set_private_spte(struct kvm *kvm, gfn_t gfn,
- 	struct tdx_module_output out;
- 	hpa_t source_pa;
- 	u64 err;
+@@ -1440,12 +1440,22 @@ static void tdx_measure_page(struct kvm_tdx *kvm_tdx, hpa_t gpa, int size)
+ 	}
+ }
+ 
+-static void tdx_unpin_pfn(struct kvm *kvm, kvm_pfn_t pfn)
++static void tdx_unpin(struct kvm *kvm, gfn_t gfn, kvm_pfn_t pfn,
++		      enum pg_level level)
+ {
+-	struct page *page = pfn_to_page(pfn);
++	struct kvm_memory_slot *slot = gfn_to_memslot(kvm, gfn);
 +	int i;
++
++	for (i = 0; i < KVM_PAGES_PER_HPAGE(level); i++) {
++		struct page *page = pfn_to_page(pfn + i);
  
- 	if (WARN_ON_ONCE(is_error_noslot_pfn(pfn) ||
- 			 !kvm_pfn_to_refcounted_page(pfn)))
- 		return;
- 
- 	/* To prevent page migration, do nothing on mmu notifier. */
--	get_page(pfn_to_page(pfn));
-+	for (i = 0; i < KVM_PAGES_PER_HPAGE(level); i++)
-+		get_page(pfn_to_page(pfn + i));
- 
- 	/* Build-time faults are induced and handled via TDH_MEM_PAGE_ADD. */
- 	if (likely(is_td_finalized(kvm_tdx))) {
--		/* TODO: handle large pages. */
--		if (KVM_BUG_ON(level != PG_LEVEL_4K, kvm))
--			return;
--
- 		err = tdh_mem_page_aug(kvm_tdx->tdr.pa, gpa, tdx_level, hpa, &out);
- 		if (KVM_BUG_ON(err, kvm)) {
- 			pr_tdx_error(TDH_MEM_PAGE_AUG, err, &out);
-@@ -1530,38 +1528,40 @@ static void tdx_sept_drop_private_spte(
- 	hpa_t hpa_with_hkid;
- 	struct tdx_module_output out;
- 	u64 err = 0;
-+	int i;
- 
--	/* TODO: handle large pages. */
--	if (KVM_BUG_ON(level != PG_LEVEL_4K, kvm))
--		return;
--
--	spin_lock(&kvm_tdx->seamcall_lock);
- 	if (is_hkid_assigned(kvm_tdx)) {
-+		spin_lock(&kvm_tdx->seamcall_lock);
- 		err = tdh_mem_page_remove(kvm_tdx->tdr.pa, gpa, tdx_level, &out);
-+		spin_unlock(&kvm_tdx->seamcall_lock);
- 		if (KVM_BUG_ON(err, kvm)) {
- 			pr_tdx_error(TDH_MEM_PAGE_REMOVE, err, &out);
--			goto unlock;
-+			return;
- 		}
- 
--		hpa_with_hkid = set_hkid_to_hpa(hpa, (u16)kvm_tdx->hkid);
--		err = tdh_phymem_page_wbinvd(hpa_with_hkid);
--		if (WARN_ON_ONCE(err)) {
--			pr_tdx_error(TDH_PHYMEM_PAGE_WBINVD, err, NULL);
--			goto unlock;
-+		for (i = 0; i < KVM_PAGES_PER_HPAGE(level); i++) {
-+			hpa_with_hkid = set_hkid_to_hpa(hpa, (u16)kvm_tdx->hkid);
-+			spin_lock(&kvm_tdx->seamcall_lock);
-+			err = tdh_phymem_page_wbinvd(hpa_with_hkid);
-+			spin_unlock(&kvm_tdx->seamcall_lock);
-+			if (WARN_ON_ONCE(err))
-+				pr_tdx_error(TDH_PHYMEM_PAGE_WBINVD, err, NULL);
-+			else
-+				tdx_unpin(kvm, gfn + i, pfn + i);
-+			hpa += PAGE_SIZE;
- 		}
--	} else
-+	} else {
- 		/*
- 		 * The HKID assigned to this TD was already freed and cache
- 		 * was already flushed. We don't have to flush again.
- 		 */
-+		spin_lock(&kvm_tdx->seamcall_lock);
- 		err = tdx_reclaim_page((unsigned long)__va(hpa), hpa, level,
- 				       false, 0);
--
--unlock:
--	spin_unlock(&kvm_tdx->seamcall_lock);
--
--	if (!err)
--		tdx_unpin_pfn(kvm, pfn);
-+		spin_unlock(&kvm_tdx->seamcall_lock);
-+		if (!err)
-+			tdx_unpin(kvm, gfn, pfn);
+-	put_page(page);
+-	WARN_ON(!page_count(page) && to_kvm_tdx(kvm)->hkid > 0);
++		put_page(page);
++		WARN_ON(!page_count(page) && to_kvm_tdx(kvm)->hkid > 0);
++	}
++	if (kvm_slot_can_be_private(slot)) {
++		/* Private slot case */
++		return;
 +	}
  }
  
- static int tdx_sept_link_private_sp(struct kvm *kvm, gfn_t gfn,
+ static void __tdx_sept_set_private_spte(struct kvm *kvm, gfn_t gfn,
+@@ -1473,7 +1483,7 @@ static void __tdx_sept_set_private_spte(struct kvm *kvm, gfn_t gfn,
+ 		err = tdh_mem_page_aug(kvm_tdx->tdr.pa, gpa, tdx_level, hpa, &out);
+ 		if (KVM_BUG_ON(err, kvm)) {
+ 			pr_tdx_error(TDH_MEM_PAGE_AUG, err, &out);
+-			tdx_unpin_pfn(kvm, pfn);
++			tdx_unpin(kvm, gfn, pfn, level);
+ 		}
+ 		return;
+ 	}
+@@ -1492,7 +1502,7 @@ static void __tdx_sept_set_private_spte(struct kvm *kvm, gfn_t gfn,
+ 	 * always uses vcpu 0's page table and protected by vcpu->mutex).
+ 	 */
+ 	if (KVM_BUG_ON(kvm_tdx->source_pa == INVALID_PAGE, kvm)) {
+-		tdx_unpin_pfn(kvm, pfn);
++		tdx_unpin(kvm, gfn, pfn, level);
+ 		return;
+ 	}
+ 
+@@ -1501,7 +1511,7 @@ static void __tdx_sept_set_private_spte(struct kvm *kvm, gfn_t gfn,
+ 	err = tdh_mem_page_add(kvm_tdx->tdr.pa, gpa, tdx_level, hpa, source_pa, &out);
+ 	if (KVM_BUG_ON(err, kvm)) {
+ 		pr_tdx_error(TDH_MEM_PAGE_ADD, err, &out);
+-		tdx_unpin_pfn(kvm, pfn);
++		tdx_unpin(kvm, gfn, pfn, level);
+ 	} else if ((kvm_tdx->source_pa & KVM_TDX_MEASURE_MEMORY_REGION))
+ 		tdx_measure_page(kvm_tdx, gpa, KVM_HPAGE_SIZE(level));
+ 
+@@ -1547,7 +1557,7 @@ static void tdx_sept_drop_private_spte(
+ 			if (WARN_ON_ONCE(err))
+ 				pr_tdx_error(TDH_PHYMEM_PAGE_WBINVD, err, NULL);
+ 			else
+-				tdx_unpin(kvm, gfn + i, pfn + i);
++				tdx_unpin(kvm, gfn + i, pfn + i, PG_LEVEL_4K);
+ 			hpa += PAGE_SIZE;
+ 		}
+ 	} else {
+@@ -1560,7 +1570,7 @@ static void tdx_sept_drop_private_spte(
+ 				       false, 0);
+ 		spin_unlock(&kvm_tdx->seamcall_lock);
+ 		if (!err)
+-			tdx_unpin(kvm, gfn, pfn);
++			tdx_unpin(kvm, gfn, pfn, level);
+ 	}
+ }
+ 
 -- 
 2.25.1
 
