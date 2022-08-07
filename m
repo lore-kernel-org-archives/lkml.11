@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B851C25B08
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:07:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46CAAC19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:07:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235913AbiHGWHU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49536 "EHLO
+        id S241901AbiHGWHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:07:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235132AbiHGWDJ (ORCPT
+        with ESMTP id S235206AbiHGWDJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 7 Aug 2022 18:03:09 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 577BD9FFB;
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C56A18A;
         Sun,  7 Aug 2022 15:02:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1659909763; x=1691445763;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=sBVEBvsiXpGhRktIyqHD6URD/GZwHPTPIZHkhUKR5DE=;
-  b=ORspSPGbZz1FyXEChPqEFgpwbESEWxdLLOQtfqFWyXPu7b3Fxb6QETLS
-   zkkCx/RgEsn72C4TneqZ1tMbIl7+wfeA3yW95DAD3hmbbo5e9lkLosOyS
-   ek89LZwvbDiCgkt+heqvQdtFoHG0e5lKpBvbI+3ag49tzbbwUdhEqESN8
-   sHVUQQJ+GSzSZTB7j5geYGJoemARCmnI2R1SBnaqXtwbpU2e03t6Cek6y
-   tW1Xy6QWsAP98wA3XOR6B4D1JtX5/TnXDILRTsZVEu6ADyhLTC8HzKPi0
-   qR7JU71xm8wLnUmVZLrthKnQfdWf9GvtvZdJXBDP+gXwGyUCTXbUxZsra
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="354465753"
+  bh=rWTnsxMrIzKafHc5a68BzRinBeuJZkWqHiP4eLXCUc4=;
+  b=Qb01WdUUZud5KYF0QZSjwuKXSc4cm6dEIb1Pd6JCvWGJ+GttJnNrwipG
+   jTYRpg4wm1ssR2YLy+48cA3MxQ0tvxlb5BDbrna5UrRdowf/XU0O028Jp
+   h3aa51lE0GxWjsABrnomqhn4EBiDALnt1mlQr2fXEiYJMDymAycxFd8L/
+   nLGDSSxP7X0yYPs1s0AXdz8ptYMgvjnBIDGkdXFplvxJ1XxRBeXSaJSHm
+   5ukDEAtkOiU7LgouGh4oncDzrWLpJVrSkeKt48+HEHo3KTAQeE5iKmuSc
+   p9LhBKO1fOuFbJrAPSigF+1HuJ8E+Xz3yFmnPCxv1aTfjbHiizIpYbv6a
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="289224107"
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="354465753"
+   d="scan'208";a="289224107"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:38 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:33 -0700
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="663682645"
+   d="scan'208";a="663682535"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:38 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:33 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [PATCH v8 061/103] KVM: TDX: Finalize VM initialization
-Date:   Sun,  7 Aug 2022 15:01:46 -0700
-Message-Id: <b2e5d0871155f7f742ac3eb33f8948058b3b18bd.1659854790.git.isaku.yamahata@intel.com>
+Subject: [PATCH v8 031/103] [MARKER] The start of TDX KVM patch series: KVM TDP refactoring for TDX
+Date:   Sun,  7 Aug 2022 15:01:16 -0700
+Message-Id: <31684648718205720d32cca97163d2bf1e352c50.1659854790.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854790.git.isaku.yamahata@intel.com>
 References: <cover.1659854790.git.isaku.yamahata@intel.com>
@@ -57,85 +57,28 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-To protect the initial contents of the guest TD, the TDX module measures
-the guest TD during the build process as SHA-384 measurement.  The
-measurement of the guest TD contents needs to be completed to make the
-guest TD ready to run.
-
-Add a new subcommand, KVM_TDX_FINALIZE_VM, for VM-scoped
-KVM_MEMORY_ENCRYPT_OP to finalize the measurement and mark the TDX VM ready
-to run.
+This empty commit is to mark the start of patch series of KVM TDP
+refactoring for TDX.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/include/uapi/asm/kvm.h       |  1 +
- arch/x86/kvm/vmx/tdx.c                | 21 +++++++++++++++++++++
- tools/arch/x86/include/uapi/asm/kvm.h |  1 +
- 3 files changed, 23 insertions(+)
+ Documentation/virt/kvm/intel-tdx-layer-status.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
-index 787644687586..bee5957a583a 100644
---- a/arch/x86/include/uapi/asm/kvm.h
-+++ b/arch/x86/include/uapi/asm/kvm.h
-@@ -541,6 +541,7 @@ enum kvm_tdx_cmd_id {
- 	KVM_TDX_INIT_VM,
- 	KVM_TDX_INIT_VCPU,
- 	KVM_TDX_INIT_MEM_REGION,
-+	KVM_TDX_FINALIZE_VM,
+diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+index 6e3f71ab6b59..df003d2ed89e 100644
+--- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
++++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+@@ -24,7 +24,7 @@ Patch Layer status
+ * TD vcpu enter/exit:                   Not yet
+ * TD vcpu interrupts/exit/hypercall:    Not yet
  
- 	KVM_TDX_CMD_NR_MAX,
- };
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 7970a2cfa909..8400388b8ddf 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -1221,6 +1221,24 @@ static int tdx_init_mem_region(struct kvm *kvm, struct kvm_tdx_cmd *cmd)
- 	return ret;
- }
- 
-+static int tdx_td_finalizemr(struct kvm *kvm)
-+{
-+	struct kvm_tdx *kvm_tdx = to_kvm_tdx(kvm);
-+	u64 err;
-+
-+	if (!is_td_initialized(kvm) || is_td_finalized(kvm_tdx))
-+		return -EINVAL;
-+
-+	err = tdh_mr_finalize(kvm_tdx->tdr.pa);
-+	if (WARN_ON_ONCE(err)) {
-+		pr_tdx_error(TDH_MR_FINALIZE, err, NULL);
-+		return -EIO;
-+	}
-+
-+	kvm_tdx->finalized = true;
-+	return 0;
-+}
-+
- int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
- {
- 	struct kvm_tdx_cmd tdx_cmd;
-@@ -1240,6 +1258,9 @@ int tdx_vm_ioctl(struct kvm *kvm, void __user *argp)
- 	case KVM_TDX_INIT_MEM_REGION:
- 		r = tdx_init_mem_region(kvm, &tdx_cmd);
- 		break;
-+	case KVM_TDX_FINALIZE_VM:
-+		r = tdx_td_finalizemr(kvm);
-+		break;
- 	default:
- 		r = -EINVAL;
- 		goto out;
-diff --git a/tools/arch/x86/include/uapi/asm/kvm.h b/tools/arch/x86/include/uapi/asm/kvm.h
-index f6d6da7515bf..2eb46f5dcc0a 100644
---- a/tools/arch/x86/include/uapi/asm/kvm.h
-+++ b/tools/arch/x86/include/uapi/asm/kvm.h
-@@ -535,6 +535,7 @@ enum kvm_tdx_cmd_id {
- 	KVM_TDX_INIT_VM,
- 	KVM_TDX_INIT_VCPU,
- 	KVM_TDX_INIT_MEM_REGION,
-+	KVM_TDX_FINALIZE_VM,
- 
- 	KVM_TDX_CMD_NR_MAX,
- };
+-* KVM MMU GPA shared bits:              Applying
+-* KVM TDP refactoring for TDX:          Not yet
++* KVM MMU GPA shared bits:              Applied
++* KVM TDP refactoring for TDX:          Applying
+ * KVM TDP MMU hooks:                    Not yet
+ * KVM TDP MMU MapGPA:                   Not yet
 -- 
 2.25.1
 
