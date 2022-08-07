@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F5A7C19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:05:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B60C25B0C
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:06:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237480AbiHGWFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:05:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48872 "EHLO
+        id S237646AbiHGWF5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234424AbiHGWCu (ORCPT
+        with ESMTP id S234471AbiHGWCu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 7 Aug 2022 18:02:50 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A930659C;
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFFB7767F;
         Sun,  7 Aug 2022 15:02:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1659909759; x=1691445759;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=paWoV8vUP0AomUkaEVAHF3tFMPkBIX0/rPM1U6g0wYs=;
-  b=DqscltnqfqDn91TBWFBJAyHCH591tkw4q7wItC6cMAix5g/AY6eM9rQt
-   Nbj93HUK8TWtz7Zm8J6TVBcZZYA14ifGHmOlw6Bi2WEO6nUxDf0THBv89
-   bPc7jI+IxxyJuPxe2PZYabDvrZB47WzHsAoVGa5+b6UaUHZ7HebWZcuNW
-   dd4KInyf/XU91TrpqX4DnhJZeXD7+ftKcM7WXQn4E7NJcUOIfDbH71Svs
-   Yo5IJdwMb+6xoB7vdxa93wEFpnJJhP8hP/3LJi5yoU/4Ff4CrJFfXtC88
-   hiRi34y3VVZIVfHc71rTDGiYu0K5PLKJ1r+HNuwUgaVlw6eUQNNlrCT3W
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="354465750"
+  bh=dq/4kTxFog2mJ+pfF6ngUCSHtSzKcfcxTCggESSMMVA=;
+  b=gINeLL3u51MSpWhe7Qhaowzx/3otQHqX1IyZUmzDf3Gt+QYQvzdPsvf0
+   HMql4kNw46XgOlmrPk+Eqj+lG1qJyFKcBNsGzjv70Ftt8SFGkJoE9hUaz
+   +F2jTl5b7sfbksoZs7p5REW+paYgYcOQ1hQiNKtefEcBY8ysiCK5KnSbo
+   Oe7f1061QOThvO5HhayxU++r9cpGOAcC/iDPa0JOYT+mHEywj2MeqVG38
+   OVJiyiNukDBN2x0eEcHSGTi4FAt3FGZq6YGTNFNbcrUw0hwER3oCePoYM
+   neBFvanenggIoNL+MzywvQYyPfgsv2EyjcBkRTiXiPMd8xxKii5jwF9j7
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="289224095"
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="354465750"
+   d="scan'208";a="289224095"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:38 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:32 -0700
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="663682628"
+   d="scan'208";a="663682515"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:37 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:32 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [PATCH v8 056/103] KVM: x86/mmu: Let vcpu re-try when faulting page type conflict
-Date:   Sun,  7 Aug 2022 15:01:41 -0700
-Message-Id: <c88b7037e410dea368496319a8427f8924a7585f.1659854790.git.isaku.yamahata@intel.com>
+Subject: [PATCH v8 025/103] [MARKER] The start of TDX KVM patch series: TD vcpu creation/destruction
+Date:   Sun,  7 Aug 2022 15:01:10 -0700
+Message-Id: <69d4162bf3fca6a598e526774e523ba104864dc0.1659854790.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854790.git.isaku.yamahata@intel.com>
 References: <cover.1659854790.git.isaku.yamahata@intel.com>
@@ -55,33 +55,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoyao Li <xiaoyao.li@intel.com>
+From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-When it gets a private page fault on a shared page, or vice verse, let
-vcpu retry and vcpu will keep faulting until other vcpu maps the gpa to
-matched page type.
+This empty commit is to mark the start of patch series of TD vcpu
+creation/destruction.
 
-Signed-off-by: Xiaoyao Li <xiaoyao.li@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ Documentation/virt/kvm/intel-tdx-layer-status.rst | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 27deaf44ee80..c9c27945ed44 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4230,6 +4230,10 @@ static int kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
- 			return RET_PF_EMULATE;
- 	}
+diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+index 5e0deaebf843..3e8efde3e3f3 100644
+--- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
++++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+@@ -9,15 +9,15 @@ Layer status
+ What qemu can do
+ ----------------
+ - TDX VM TYPE is exposed to Qemu.
+-- Qemu can try to create VM of TDX VM type and then fails.
++- Qemu can create/destroy guest of TDX vm type.
  
-+	if (kvm_gfn_shared_mask(vcpu->kvm) &&
-+	    (kvm_mem_is_private(vcpu->kvm, fault->gfn) != fault->is_private))
-+		return RET_PF_RETRY;
-+
- 	async = false;
- 	fault->pfn = __gfn_to_pfn_memslot(slot, fault->gfn, false, &async,
- 					  fault->write, &fault->map_writable,
+ Patch Layer status
+ ------------------
+   Patch layer                          Status
+ * TDX, VMX coexistence:                 Applied
+ * TDX architectural definitions:        Applied
+-* TD VM creation/destruction:           Applying
+-* TD vcpu creation/destruction:         Not yet
++* TD VM creation/destruction:           Applied
++* TD vcpu creation/destruction:         Applying
+ * TDX EPT violation:                    Not yet
+ * TD finalization:                      Not yet
+ * TD vcpu enter/exit:                   Not yet
 -- 
 2.25.1
 
