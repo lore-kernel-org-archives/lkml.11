@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D1DCC19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 18:16:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 358EEC19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 18:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235180AbiHGSQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 14:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53600 "EHLO
+        id S235596AbiHGSQZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 14:16:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232313AbiHGSPy (ORCPT
+        with ESMTP id S232960AbiHGSPy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 7 Aug 2022 14:15:54 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D3D64D9
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 11:15:51 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id tl27so12921465ejc.1
-        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 11:15:51 -0700 (PDT)
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FAC6544
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 11:15:53 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id j8so12844993ejx.9
+        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 11:15:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CLsK8zyKuvk6BZGE5Y5TZ/KuheYdgzde52aWp1HCe2w=;
-        b=MpOFy8JsXjXRXS7sUnFo5CZ6bZkjGKKDTIi4APUpbGeKaADxOHoOC3kaMh13qO8QG7
-         Fc04oiFT8VcUOVpUSZZm4XEBZOQxiSJ9dhJElra03xtqLCfZj8OURZ+aGlb69XDWqR7T
-         bGpKfmZpB5zrHswcxdEZ5Si3eGRsvpoECsLtZLCWAgKuqgIkF2CphDgijfApwdCr65i/
-         5RLwNyJJsLEn2gydgKY91VESc7vWBtKgxei1NII27BcXRXry0PAr7iLXEjhoLBc3p6An
-         CqnBeicTShzFJ5vVnZPcd6aC6pLwaUj2DwqmmGJLuHtDuuMNsW+AJBOrX+0DO2EEq6iA
-         19qA==
+        bh=jVLvkERwu7NE7/vOFxkPdswTEThZ3FDfNhElponhDZA=;
+        b=TvLuaoGXQuyXyXbs3bOgtscD7X36Y91pWCdezxKHi8NHJY22bcgohfFJvLJTW591Zo
+         yuhJUCiVINg/yPPnwQPsUuGt0yWia4tk6MWfo+9Cg8VCIq+LkTCXZdQLg1VxCHf2fVxx
+         vPc4YKv6EVUGlaJAjmlLuOXffIX9IqDQbJqhzxfEynOvGH1xdf8zS+Mn69XI1igjb6eZ
+         aHyaFdFwpqOXYkrlylB0MmGopPBCjsKH01zhEWr07kLxYZn+y+/uYO2zfpC14sGvqsXH
+         2UcMx5ATose+CNgqDcWojmpb3uXiBjF4RhVk2aozDCgLmdUN2poDrYDZbt2wkhXSlr+k
+         Ta7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CLsK8zyKuvk6BZGE5Y5TZ/KuheYdgzde52aWp1HCe2w=;
-        b=yrmsk+/N0Qbfykv0m2jWoxF7EYi8B/aowEekPZNxr2T4QxfA15LI1tWbhv63uXqFmE
-         tcychbXYaTo2weamUSi3X6xYgRr9btO8t4AsSjFNbLYveVUnWkekTYkBsgJ9gUBjEvdi
-         YKkOZBwqzIpnGDwelZnNlRv0LJsmSpguGEqeMrQADIc2B0Mt7/mwibPVxzCXRhLfPunY
-         gaigYiPlNYjmEv5sZ07ZeIObVrm4jHh5oMH35xui41CxoUdnZBSeiBf5+7eQ5sPkhEsv
-         1Qwpwr2LWODuLn94hX4ZnBb0m9iR1yh44ooJeCb+ES4773iEOh+BkLTlNg84KaalDuvw
-         XAQw==
-X-Gm-Message-State: ACgBeo2W4QFLL1ZeMlwSGIEgSBiWgiYXmG1UKoaS1LT7pqDm7QBcmWn4
-        R5fiMdiFNjPNo894OsmGddQ=
-X-Google-Smtp-Source: AA6agR6/OjEybgEzJ3bZozk1S++gsbuswCKK5JOUkRVcNEwOYtezdZ1ebHHrHAzuDdrYtS9ms0uwYw==
-X-Received: by 2002:a17:907:6e88:b0:730:e16e:b760 with SMTP id sh8-20020a1709076e8800b00730e16eb760mr10353049ejc.5.1659896150263;
-        Sun, 07 Aug 2022 11:15:50 -0700 (PDT)
+        bh=jVLvkERwu7NE7/vOFxkPdswTEThZ3FDfNhElponhDZA=;
+        b=A61N01I+hmLUw1XF/Uqqya89eWd+Fea8GwCIBmvjUQ1jKMAssdk7AyOmCpmRu+2NRk
+         Grrbh1PXD/xyeNq5b6n1DQji4T3If9+SHL3uqO0yCtTYxO9qndLzj7V7DYVB9HCG87jH
+         R54ODBEhvsy5pL+j37Y+l7ElhiYI9i8U3soP1Deyt4Pbl20Qx2LU4W1poKAkKM7GsC/+
+         Y891m43ngaGmUvhd7FQWuistciYIj6yc/ZFkk2gbpItZTgwCV/uVJUz/kzBuMHKRwnSr
+         yQeajUOXq43f5Zk5OTb/KEHAxc1lgpr0O5iUhI4swK50CfKs2ylXnciWdFpBTJ9xq3dL
+         wUqg==
+X-Gm-Message-State: ACgBeo0vpC9nwkAwiLoq/6p+0rYTvMKoo15fFYp3iPw5WQlD4R3zLHIg
+        33SwF7pN5qnxTxk8PD2osRg=
+X-Google-Smtp-Source: AA6agR44R3Z8fQXwRs1p2O4uI8VRWxLh1iUyUr39Gg9EWl3gNUmzQYmdWD6ZGqKbvsI4j6oH/nhWaQ==
+X-Received: by 2002:a17:906:c781:b0:726:c967:8d1b with SMTP id cw1-20020a170906c78100b00726c9678d1bmr11526693ejb.54.1659896151815;
+        Sun, 07 Aug 2022 11:15:51 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5abb84.dynamic.kabel-deutschland.de. [95.90.187.132])
-        by smtp.gmail.com with ESMTPSA id b7-20020a17090630c700b0072b92daef1csm4157441ejb.146.2022.08.07.11.15.49
+        by smtp.gmail.com with ESMTPSA id b7-20020a17090630c700b0072b92daef1csm4157441ejb.146.2022.08.07.11.15.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Aug 2022 11:15:50 -0700 (PDT)
+        Sun, 07 Aug 2022 11:15:51 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 2/5] staging: r8188eu: merge rtw_os_recvbuf_resource_alloc() into rtw_recv.c
-Date:   Sun,  7 Aug 2022 20:15:35 +0200
-Message-Id: <20220807181538.8499-3-straube.linux@gmail.com>
+Subject: [PATCH 4/5] staging: r8188eu: make rtw_recv_indicatepkt() static
+Date:   Sun,  7 Aug 2022 20:15:37 +0200
+Message-Id: <20220807181538.8499-5-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220807181538.8499-1-straube.linux@gmail.com>
 References: <20220807181538.8499-1-straube.linux@gmail.com>
@@ -65,77 +65,210 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Merge the functionality of the function rtw_os_recvbuf_resource_alloc()
-into rtl8188eu_init_recv_priv(). Merging the functionality instead of
-just making the function static improves readability and we have one
-function less to care about when converting the uses of _FAIL/_SUCCESS
-to normal kernel error code logic.
+The function rtw_recv_indicatepkt() is only used in rtw_recv.c.
+Make it static.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_recv.c      |  8 ++++++--
- drivers/staging/r8188eu/include/recv_osdep.h |  2 --
- drivers/staging/r8188eu/os_dep/recv_linux.c  | 14 --------------
- 3 files changed, 6 insertions(+), 18 deletions(-)
+ drivers/staging/r8188eu/core/rtw_recv.c      | 79 +++++++++++++++++++
+ drivers/staging/r8188eu/include/recv_osdep.h |  1 -
+ drivers/staging/r8188eu/os_dep/recv_linux.c  | 81 --------------------
+ 3 files changed, 79 insertions(+), 82 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-index 7a97c090f297..5de4e13b4b17 100644
+index 8f2b131eb767..ee3817c3e1fd 100644
 --- a/drivers/staging/r8188eu/core/rtw_recv.c
 +++ b/drivers/staging/r8188eu/core/rtw_recv.c
-@@ -62,9 +62,13 @@ static int rtl8188eu_init_recv_priv(struct adapter *padapter)
- 	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
+@@ -1579,6 +1579,85 @@ static bool enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl, s
+ 	return true;
+ }
  
- 	for (i = 0; i < NR_RECVBUFF; i++) {
--		res = rtw_os_recvbuf_resource_alloc(padapter, precvbuf);
--		if (res == _FAIL)
-+		precvbuf->pskb = NULL;
-+		precvbuf->reuse = false;
-+		precvbuf->purb = usb_alloc_urb(0, GFP_KERNEL);
-+		if (!precvbuf->purb) {
-+			res = _FAIL;
- 			break;
++static int rtw_recv_indicatepkt(struct adapter *padapter, struct recv_frame *precv_frame)
++{
++	struct recv_priv *precvpriv;
++	struct __queue *pfree_recv_queue;
++	struct sk_buff *skb;
++	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
++
++	precvpriv = &padapter->recvpriv;
++	pfree_recv_queue = &precvpriv->free_recv_queue;
++
++	skb = precv_frame->pkt;
++	if (!skb)
++		goto _recv_indicatepkt_drop;
++
++	skb->data = precv_frame->rx_data;
++
++	skb_set_tail_pointer(skb, precv_frame->len);
++
++	skb->len = precv_frame->len;
++
++	if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
++		struct sk_buff *pskb2 = NULL;
++		struct sta_info *psta = NULL;
++		struct sta_priv *pstapriv = &padapter->stapriv;
++		struct rx_pkt_attrib *pattrib = &precv_frame->attrib;
++		bool bmcast = is_multicast_ether_addr(pattrib->dst);
++
++		if (memcmp(pattrib->dst, myid(&padapter->eeprompriv), ETH_ALEN)) {
++			if (bmcast) {
++				psta = rtw_get_bcmc_stainfo(padapter);
++				pskb2 = skb_clone(skb, GFP_ATOMIC);
++			} else {
++				psta = rtw_get_stainfo(pstapriv, pattrib->dst);
++			}
++
++			if (psta) {
++				struct net_device *pnetdev;
++
++				pnetdev = (struct net_device *)padapter->pnetdev;
++				skb->dev = pnetdev;
++				skb_set_queue_mapping(skb, rtw_recv_select_queue(skb));
++
++				rtw_xmit_entry(skb, pnetdev);
++
++				if (bmcast)
++					skb = pskb2;
++				else
++					goto _recv_indicatepkt_end;
++			}
 +		}
- 		precvbuf->adapter = padapter;
- 		precvbuf++;
- 	}
++	}
++
++	rcu_read_lock();
++	rcu_dereference(padapter->pnetdev->rx_handler_data);
++	rcu_read_unlock();
++
++	skb->ip_summed = CHECKSUM_NONE;
++	skb->dev = padapter->pnetdev;
++	skb->protocol = eth_type_trans(skb, padapter->pnetdev);
++
++	netif_rx(skb);
++
++_recv_indicatepkt_end:
++
++	/*  pointers to NULL before rtw_free_recvframe() */
++	precv_frame->pkt = NULL;
++
++	rtw_free_recvframe(precv_frame, pfree_recv_queue);
++
++	return _SUCCESS;
++
++_recv_indicatepkt_drop:
++
++	/* enqueue back to free_recv_queue */
++	rtw_free_recvframe(precv_frame, pfree_recv_queue);
++
++	return _FAIL;
++}
++
+ static bool recv_indicatepkts_in_order(struct adapter *padapter, struct recv_reorder_ctrl *preorder_ctrl, int bforced)
+ {
+ 	struct list_head *phead, *plist;
 diff --git a/drivers/staging/r8188eu/include/recv_osdep.h b/drivers/staging/r8188eu/include/recv_osdep.h
-index b9dc32c20cfd..51dc287f263c 100644
+index 135fbb24fcbb..e824bfac067e 100644
 --- a/drivers/staging/r8188eu/include/recv_osdep.h
 +++ b/drivers/staging/r8188eu/include/recv_osdep.h
-@@ -19,8 +19,6 @@ void rtw_handle_tkip_mic_err(struct adapter *padapter, u8 bgroup);
- int rtw_init_recv_priv(struct recv_priv *precvpriv, struct adapter *padapter);
- void rtw_free_recv_priv(struct recv_priv *precvpriv);
+@@ -11,7 +11,6 @@ int _rtw_init_recv_priv(struct recv_priv *precvpriv, struct adapter *padapter);
+ void _rtw_free_recv_priv(struct recv_priv *precvpriv);
  
--int rtw_os_recvbuf_resource_alloc(struct adapter *adapt, struct recv_buf *buf);
--
- void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl);
- int _netdev_open(struct net_device *pnetdev);
- int netdev_open(struct net_device *pnetdev);
+ s32  rtw_recv_entry(struct recv_frame *precv_frame);
+-int rtw_recv_indicatepkt(struct adapter *adapter, struct recv_frame *recv_frame);
+ void rtw_recv_returnpacket(struct  net_device *cnxt, struct sk_buff *retpkt);
+ 
+ int rtw_init_recv_priv(struct recv_priv *precvpriv, struct adapter *padapter);
 diff --git a/drivers/staging/r8188eu/os_dep/recv_linux.c b/drivers/staging/r8188eu/os_dep/recv_linux.c
-index abdb42ab649b..c180f0e4dd3c 100644
+index 08dfe4482b8e..ccf23e7fc4ab 100644
 --- a/drivers/staging/r8188eu/os_dep/recv_linux.c
 +++ b/drivers/staging/r8188eu/os_dep/recv_linux.c
-@@ -12,20 +12,6 @@
+@@ -12,87 +12,6 @@
  #include "../include/osdep_intf.h"
  #include "../include/usb_ops.h"
  
--/* alloc os related resource in struct recv_buf */
--int rtw_os_recvbuf_resource_alloc(struct adapter *padapter,
--		struct recv_buf *precvbuf)
+-int rtw_recv_indicatepkt(struct adapter *padapter,
+-			 struct recv_frame *precv_frame)
 -{
--	int res = _SUCCESS;
+-	struct recv_priv *precvpriv;
+-	struct __queue *pfree_recv_queue;
+-	struct sk_buff *skb;
+-	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 -
--	precvbuf->purb = usb_alloc_urb(0, GFP_KERNEL);
--	if (!precvbuf->purb)
--		res = _FAIL;
--	precvbuf->pskb = NULL;
--	precvbuf->reuse = false;
--	return res;
+-	precvpriv = &padapter->recvpriv;
+-	pfree_recv_queue = &precvpriv->free_recv_queue;
+-
+-	skb = precv_frame->pkt;
+-	if (!skb)
+-		goto _recv_indicatepkt_drop;
+-
+-	skb->data = precv_frame->rx_data;
+-
+-	skb_set_tail_pointer(skb, precv_frame->len);
+-
+-	skb->len = precv_frame->len;
+-
+-	if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
+-		struct sk_buff *pskb2 = NULL;
+-		struct sta_info *psta = NULL;
+-		struct sta_priv *pstapriv = &padapter->stapriv;
+-		struct rx_pkt_attrib *pattrib = &precv_frame->attrib;
+-		bool bmcast = is_multicast_ether_addr(pattrib->dst);
+-
+-		if (memcmp(pattrib->dst, myid(&padapter->eeprompriv),
+-				 ETH_ALEN)) {
+-			if (bmcast) {
+-				psta = rtw_get_bcmc_stainfo(padapter);
+-				pskb2 = skb_clone(skb, GFP_ATOMIC);
+-			} else {
+-				psta = rtw_get_stainfo(pstapriv, pattrib->dst);
+-			}
+-
+-			if (psta) {
+-				struct net_device *pnetdev;
+-
+-				pnetdev = (struct net_device *)padapter->pnetdev;
+-				skb->dev = pnetdev;
+-				skb_set_queue_mapping(skb, rtw_recv_select_queue(skb));
+-
+-				rtw_xmit_entry(skb, pnetdev);
+-
+-				if (bmcast)
+-					skb = pskb2;
+-				else
+-					goto _recv_indicatepkt_end;
+-			}
+-		}
+-	}
+-
+-	rcu_read_lock();
+-	rcu_dereference(padapter->pnetdev->rx_handler_data);
+-	rcu_read_unlock();
+-
+-	skb->ip_summed = CHECKSUM_NONE;
+-	skb->dev = padapter->pnetdev;
+-	skb->protocol = eth_type_trans(skb, padapter->pnetdev);
+-
+-	netif_rx(skb);
+-
+-_recv_indicatepkt_end:
+-
+-	/*  pointers to NULL before rtw_free_recvframe() */
+-	precv_frame->pkt = NULL;
+-
+-	rtw_free_recvframe(precv_frame, pfree_recv_queue);
+-
+-	return _SUCCESS;
+-
+-_recv_indicatepkt_drop:
+-
+-	 /* enqueue back to free_recv_queue */
+-		rtw_free_recvframe(precv_frame, pfree_recv_queue);
+-
+-	 return _FAIL;
 -}
 -
- void rtw_handle_tkip_mic_err(struct adapter *padapter, u8 bgroup)
+ static void _rtw_reordering_ctrl_timeout_handler(struct timer_list *t)
  {
- 	union iwreq_data wrqu;
+ 	struct recv_reorder_ctrl *preorder_ctrl;
 -- 
 2.37.1
 
