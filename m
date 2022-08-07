@@ -2,116 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D87DC19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 14:08:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3730AC19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 14:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233618AbiHGOIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 10:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60614 "EHLO
+        id S234000AbiHGOIV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 10:08:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbiHGOID (ORCPT
+        with ESMTP id S233849AbiHGOIT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 10:08:03 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 652A26242;
-        Sun,  7 Aug 2022 07:08:02 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id h21-20020a17090aa89500b001f31a61b91dso12241980pjq.4;
-        Sun, 07 Aug 2022 07:08:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=XLqwqki/k3C7u8+512qwgIHUnUs9SX352ijc2YXNmyo=;
-        b=Q6xwZS1QliChNp80WlGV80Ap4InNEJovH7Jy6o6SyJqeKRTZRjMzkQ3IaPqKN2/oiZ
-         NtIAzyBUPcur0U6Xz4C9RG4n0q8AJqXw/cF/QfxjZHZoGBd9SgdQA5Iw8lhzSntBZqrP
-         trc8/tdrb9kWrd5SUOg1jIRAjwr6eqEp1/cygeAXtANwXaFIvfkmRrCR7qgsQmfMB9xH
-         G9vstMwrj5hlGa82r3NTggYwm/lDsATHEeoI5tsXVuKEC/I38L+Kba2mf7+EC4gg+eKc
-         ugdIX4n+oVUzK0ikxT2vKpwzX8EzglcNFVeQimDSL8nlmN9qXSFFrOlOhGRBZ5XSBTRg
-         9DgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=XLqwqki/k3C7u8+512qwgIHUnUs9SX352ijc2YXNmyo=;
-        b=kFs2LrQ+hP0qQiGqpWL4RVaPisQsXQLVJq8RcHcMKE5cE3PBZENQPpaGaEOnkQMWz9
-         oVDMsV+VsuzrnZpgUIWx8jcp9r261OuT9+2dwtH2vUKn1HgZTNKKxZ0Vi5DcQJv4XfSh
-         +HYW6FdinR2G1IV/9qSz7UMWEI928iEio8qZ5RS3HOcCp5KKuSC0nhnOUfsO2U9fGPAj
-         oHTxBf6MJwxcPkk1f6e8fkIIzb8/9fY8deMRZmOzwyZsg08JN6yrsBU8Yav0530qFkYT
-         mpuH1dORLtsy4+r9Q9labHpbg7etJT8gez2QEwIwssFlN8mNIJA0Dy6crQu4pw3b/Bra
-         mAyA==
-X-Gm-Message-State: ACgBeo1ChR6j6uFJq/yI1n1kUlYTrYQY1nb4zj+Ly0Na92ez2YNQKElc
-        Y2C0sgfliHk6YYO+LyWcKN0=
-X-Google-Smtp-Source: AA6agR74Eu/frAH1DDF2DIi5PzdZPd93fll6q/Qkq8cKR83I4ccQyUB0Hz/ey+pGN/+akI8HnQZPDg==
-X-Received: by 2002:a17:902:c406:b0:16e:df76:5267 with SMTP id k6-20020a170902c40600b0016edf765267mr14922969plk.8.1659881281763;
-        Sun, 07 Aug 2022 07:08:01 -0700 (PDT)
-Received: from localhost.localdomain ([2409:11:2360:3e00:d7d3:6cf6:2642:4646])
-        by smtp.gmail.com with ESMTPSA id o14-20020a635d4e000000b0041d322b3bf6sm2761133pgm.77.2022.08.07.07.07.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Aug 2022 07:08:01 -0700 (PDT)
-From:   Robin Reckmann <robin.reckmann@googlemail.com>
-X-Google-Original-From: Robin Reckmann <robin.reckmann@gmail.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     Robin Reckmann <robin.reckmann@gmail.com>,
-        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
-Subject: [PATCH] i2c: qcom-geni: Fix GPI DMA buffer sync-back
-Date:   Sun,  7 Aug 2022 23:04:54 +0900
-Message-Id: <20220807140455.409417-1-robin.reckmann@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 7 Aug 2022 10:08:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5519A460;
+        Sun,  7 Aug 2022 07:08:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DDE360EE7;
+        Sun,  7 Aug 2022 14:08:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BAE0C433D7;
+        Sun,  7 Aug 2022 14:08:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659881297;
+        bh=vQJxMRNWo4+kR/062cQxsou4ml9ZapoIw81lPoLiEuw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=e6de5Q3lpUx9P8TwlLfMtthooVNj6Uj2FuTy+WGn/b4PfsSxC/pldx7Zmo1Lg7PCc
+         fCcSsiztTZTtW7sJ2Ne1nwPiLvtChtyXpzM1dGS7JP2/VpqEwo3vT9QB5JXkSmKDml
+         nqJu2hS4hX+LtsmxBsCDCFZIL5mWjfDnOWIGabckVSGMvvvXt30kh+J3ymWt7/xrTV
+         obFa4Njfq5WPwr+NkVrVishM3AGBjVTSFFoK/V7P5VIXFltzE3YdrnknB1xH3f9v+e
+         ffy+cly0aYgHFMeSZXrkJE4kPbBfUfw7MtDGUbM0T53tc2fN3XKQqeXmEYUKh9N+11
+         YRRSsbnIOEHDQ==
+Date:   Sun, 7 Aug 2022 15:18:36 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Kevin Tsai <ktsai@capellamicro.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: light: cm3605: Fix an error handling path in
+ cm3605_probe()
+Message-ID: <20220807151836.5300af2b@jic23-huawei>
+In-Reply-To: <0e186de2c125b3e17476ebf9c54eae4a5d66f994.1659854238.git.christophe.jaillet@wanadoo.fr>
+References: <0e186de2c125b3e17476ebf9c54eae4a5d66f994.1659854238.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix i2c transfers using GPI DMA mode for all message types that do not set
-the I2C_M_DMA_SAFE flag (e.g. SMBus "read byte").
+On Sun,  7 Aug 2022 08:37:43 +0200
+Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
 
-In this case a bounce buffer is returned by i2c_get_dma_safe_msg_buf(),
-and it has to synced back to the message after the transfer is done.
+> The commit in Fixes also introduced a new error handling path which should
+> goto the existing error handling path.
+> Otherwise some resources leak.
+> 
+> Fixes: 0d31d91e6145 ("iio: light: cm3605: Make use of the helper function dev_err_probe()")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+oops. 
 
-Add missing assignment of dma buffer in geni_i2c_gpi().
+Applied to the fixes-togreg branch of iio.git.
 
-Set xferred in i2c_put_dma_safe_msg_buf() to true in case of no error to
-ensure the sync-back of this dma buffer to the message.
+I've just move that branch forwards to current char-misc-linus which includes
+Greg's pull requests for this cycle via Linus' tree, but may well
+rebase on rc1 once that's available.
 
-Signed-off-by: Robin Reckmann <robin.reckmann@gmail.com>
----
- drivers/i2c/busses/i2c-qcom-geni.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Thanks,
 
-diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-qcom-geni.c
-index 6ac402ea58fb..d3541e94794e 100644
---- a/drivers/i2c/busses/i2c-qcom-geni.c
-+++ b/drivers/i2c/busses/i2c-qcom-geni.c
-@@ -484,12 +484,12 @@ static void geni_i2c_gpi_unmap(struct geni_i2c_dev *gi2c, struct i2c_msg *msg,
- {
- 	if (tx_buf) {
- 		dma_unmap_single(gi2c->se.dev->parent, tx_addr, msg->len, DMA_TO_DEVICE);
--		i2c_put_dma_safe_msg_buf(tx_buf, msg, false);
-+		i2c_put_dma_safe_msg_buf(tx_buf, msg, !gi2c->err);
- 	}
- 
- 	if (rx_buf) {
- 		dma_unmap_single(gi2c->se.dev->parent, rx_addr, msg->len, DMA_FROM_DEVICE);
--		i2c_put_dma_safe_msg_buf(rx_buf, msg, false);
-+		i2c_put_dma_safe_msg_buf(rx_buf, msg, !gi2c->err);
- 	}
- }
- 
-@@ -553,6 +553,7 @@ static int geni_i2c_gpi(struct geni_i2c_dev *gi2c, struct i2c_msg *msg,
- 	desc->callback_param = gi2c;
- 
- 	dmaengine_submit(desc);
-+	*buf = dma_buf;
- 	*dma_addr_p = addr;
- 
- 	return 0;
--- 
-2.25.1
+Jonathan
+
+> ---
+>  drivers/iio/light/cm3605.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/light/cm3605.c b/drivers/iio/light/cm3605.c
+> index c721b69d5095..0b30db77f78b 100644
+> --- a/drivers/iio/light/cm3605.c
+> +++ b/drivers/iio/light/cm3605.c
+> @@ -226,8 +226,10 @@ static int cm3605_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	irq = platform_get_irq(pdev, 0);
+> -	if (irq < 0)
+> -		return dev_err_probe(dev, irq, "failed to get irq\n");
+> +	if (irq < 0) {
+> +		ret = dev_err_probe(dev, irq, "failed to get irq\n");
+> +		goto out_disable_aset;
+> +	}
+>  
+>  	ret = devm_request_threaded_irq(dev, irq, cm3605_prox_irq,
+>  					NULL, 0, "cm3605", indio_dev);
 
