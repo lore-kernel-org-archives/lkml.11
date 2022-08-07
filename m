@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC88C19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 18:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BAAFC19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 18:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235357AbiHGSQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 14:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53548 "EHLO
+        id S235427AbiHGSQQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 14:16:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234996AbiHGSPw (ORCPT
+        with ESMTP id S235069AbiHGSPx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 14:15:52 -0400
+        Sun, 7 Aug 2022 14:15:53 -0400
 Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63626474
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 11:15:50 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id y13so12815702ejp.13
-        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 11:15:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7285C6545
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 11:15:52 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id m4so12905612ejr.3
+        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 11:15:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=P1gpPfsIodgVIm9G1P/vlOiWdjuJeR0qp5ZcVhGWLIY=;
-        b=ilNRWUIP5/wjwpue37LpskO1atBfOqpfrMJvdwKfooYdaBha//xLc5rvf7cQYQ+55n
-         tmKQm1lri9ijUzyhz9tSQMTbYZxntl+clNUotA4ihpNwFpaevpTXRNpgCSqfMpxJc/v/
-         /kjMuy6ntVq8HeMy3rZixPWUrXHIxA6np/KlHucaoyd9QqhOUG7Bxq7FNuGuZQhUC0vF
-         oI4NcrDNayFYmEAlvJx2vfTvfPAHionobX2EpI8F67A92silFUHaPNGYrRuBjMmAAMAP
-         EH1HjErNwCKfHbzj/KCaeKqtFP4GKYqPwQy07foy0VebrWWuwKgazjXTBj6Vjh2caFR8
-         3pdw==
+        bh=4cI0C+edHqjQmmO/rArIoU+PLyf7AYRNI0KFouoRxco=;
+        b=IlfguZNw5DsBKd9GOuXRcdMC7d9SV4iqU8oonFayH7IONPciQZHwTvQ6U20Srh6qrJ
+         CBUVrWEI7CKWO2bUYVI9BFWA3sNVHNPuFXUOJf3NHFTIr9V14yO431vmfzpXb9rPYBiz
+         Gue4DSMa+YgGZCdFHPy7TJscjag8Kzx0F4F+L0SIIjSTb2vRkqR6IJCPy9e4xeTNYpwA
+         cAWXEZolY09u+DzHn9/xcki2HXsZ1zV8tZPLMrL3WjehP+RIxiFo5kigyLGxzqrXihVT
+         z3WzUg1j4fe7ZPh9Vx2XZZE1pwjoUiAWh6qBI6x9j/v3W/K9oX7yf6eeasnkojvxgl/5
+         KAZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=P1gpPfsIodgVIm9G1P/vlOiWdjuJeR0qp5ZcVhGWLIY=;
-        b=bqgZc1u6QW7Q4/9H376QAn1+s7S+MQz4VmzXwdzEVw6DWfVyoOosQr98Ae8PXsAOPw
-         8IkuZXvKqvpqBbM+PQKCFtmYRN/3Vm0O0EACRDf0jsM8JMvyUEkdPb7jp8H6NqAJevLK
-         HEZ0gwBVVQQSZialseiBMreFvkrofKtu/w0/YC0sboovLi/CFUpfP9pTyHMLRZxNTrJx
-         l9U6Z6eX/U6GmgsNrpX6racn4mQiR46ZDbCoybPQlpsyyAV+G0vMDvJI+fO3EHpEjzno
-         ErGMlsSiO5a2HSyIYt/bGxKTKlcuaLrbyHoERp9amYLhLNlCVyzlchBxzHRGLYPuL4RS
-         FgZQ==
-X-Gm-Message-State: ACgBeo243aGjPPiaeFuIsW9Tb/U8B5/5Wi405kTiFz6F1QaCxBNmr39a
-        G/UFI0oqQi3Y0g8isT0eoWM=
-X-Google-Smtp-Source: AA6agR5wlbk8paOgeHLrs/Tr+hb1rk+jzDakLxQCMn+54H/5X/x8IIyjFumMB5cDJjCjbYZHLui3DQ==
-X-Received: by 2002:a17:907:7d91:b0:72b:4d74:f4f6 with SMTP id oz17-20020a1709077d9100b0072b4d74f4f6mr11228474ejc.314.1659896149366;
-        Sun, 07 Aug 2022 11:15:49 -0700 (PDT)
+        bh=4cI0C+edHqjQmmO/rArIoU+PLyf7AYRNI0KFouoRxco=;
+        b=HB0ap3y7xB415/gVJqJJSQz5BtVElzmnQGGlnGaLObe99u07+BZtRkzipoBtY6Xd+6
+         XJoXM5p2EHZCBzfrOo19Nm/DTNEqvk5v1Wtqz5Pdl5XgZU0J6QvnatUGQNIioSbkxK/E
+         y8yGVenRMX8AcsrT9iCJU8CBNY5lRcqrcmUyNwHpyF027CSdcMo9Ytqa1y6ea7YB41nV
+         ZmUZ0ULLF9jd+OwKUjz4MgorS/e5gfa41Krkmyz+ntqU47PXHI4OTBLMKJyjOWF3wtqG
+         i3CCeRICR+cg4bkSRdmg/4a7vyocjW4ZwEPYT8amC1Wv9FkHApRLsTLu51i1scgXdviO
+         wY1A==
+X-Gm-Message-State: ACgBeo2XHtWiAUULl/7+nSMTZ4DCLLq9KoY6I9Bp0T3+Esuzvcv/Zss+
+        9YmpmRD5zx2eHXMaQsvsHDE=
+X-Google-Smtp-Source: AA6agR5fa5mdkH83cIh2tWtL6RDyjFhuXdTLQnxKV+zSOJHJFHFkOKTz9VflpshhYcnDb6xlUPX82A==
+X-Received: by 2002:a17:907:7388:b0:731:e57:dea3 with SMTP id er8-20020a170907738800b007310e57dea3mr7244985ejc.640.1659896151018;
+        Sun, 07 Aug 2022 11:15:51 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5abb84.dynamic.kabel-deutschland.de. [95.90.187.132])
-        by smtp.gmail.com with ESMTPSA id b7-20020a17090630c700b0072b92daef1csm4157441ejb.146.2022.08.07.11.15.48
+        by smtp.gmail.com with ESMTPSA id b7-20020a17090630c700b0072b92daef1csm4157441ejb.146.2022.08.07.11.15.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Aug 2022 11:15:49 -0700 (PDT)
+        Sun, 07 Aug 2022 11:15:50 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 1/5] staging: r8188eu: merge rtw_os_recvbuf_resource_free() into rtw_recv.c
-Date:   Sun,  7 Aug 2022 20:15:34 +0200
-Message-Id: <20220807181538.8499-2-straube.linux@gmail.com>
+Subject: [PATCH 3/5] staging: r8188eu: make rtw_handle_tkip_mic_err() static
+Date:   Sun,  7 Aug 2022 20:15:36 +0200
+Message-Id: <20220807181538.8499-4-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220807181538.8499-1-straube.linux@gmail.com>
 References: <20220807181538.8499-1-straube.linux@gmail.com>
@@ -65,62 +65,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function rtw_os_recvbuf_resource_free() is just a wrapper around
-usb_free_urb(). Call usb_free_urb() directly in
-rtl8188eu_free_recv_priv() and remove rtw_os_recvbuf_resource_free()
-to simplify the driver code.
+The function rtw_handle_tkip_mic_err() is only used in rtw_recv.c.
+Make it static.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_recv.c      | 2 +-
- drivers/staging/r8188eu/include/recv_osdep.h | 1 -
- drivers/staging/r8188eu/os_dep/recv_linux.c  | 8 --------
- 3 files changed, 1 insertion(+), 10 deletions(-)
+ drivers/staging/r8188eu/core/rtw_recv.c      | 36 ++++++++++++++++++++
+ drivers/staging/r8188eu/include/recv_osdep.h |  2 --
+ drivers/staging/r8188eu/os_dep/recv_linux.c  | 36 --------------------
+ 3 files changed, 36 insertions(+), 38 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-index 2d4baca804e9..7a97c090f297 100644
+index 5de4e13b4b17..8f2b131eb767 100644
 --- a/drivers/staging/r8188eu/core/rtw_recv.c
 +++ b/drivers/staging/r8188eu/core/rtw_recv.c
-@@ -159,7 +159,7 @@ static void rtl8188eu_free_recv_priv(struct adapter *padapter)
- 	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
- 
- 	for (i = 0; i < NR_RECVBUFF; i++) {
--		rtw_os_recvbuf_resource_free(padapter, precvbuf);
-+		usb_free_urb(precvbuf->purb);
- 		precvbuf++;
- 	}
- 
-diff --git a/drivers/staging/r8188eu/include/recv_osdep.h b/drivers/staging/r8188eu/include/recv_osdep.h
-index ca8a613508fd..b9dc32c20cfd 100644
---- a/drivers/staging/r8188eu/include/recv_osdep.h
-+++ b/drivers/staging/r8188eu/include/recv_osdep.h
-@@ -20,7 +20,6 @@ int rtw_init_recv_priv(struct recv_priv *precvpriv, struct adapter *padapter);
- void rtw_free_recv_priv(struct recv_priv *precvpriv);
- 
- int rtw_os_recvbuf_resource_alloc(struct adapter *adapt, struct recv_buf *buf);
--int rtw_os_recvbuf_resource_free(struct adapter *adapt, struct recv_buf *buf);
- 
- void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl);
- int _netdev_open(struct net_device *pnetdev);
-diff --git a/drivers/staging/r8188eu/os_dep/recv_linux.c b/drivers/staging/r8188eu/os_dep/recv_linux.c
-index 1e14b6d49795..abdb42ab649b 100644
---- a/drivers/staging/r8188eu/os_dep/recv_linux.c
-+++ b/drivers/staging/r8188eu/os_dep/recv_linux.c
-@@ -26,14 +26,6 @@ int rtw_os_recvbuf_resource_alloc(struct adapter *padapter,
- 	return res;
+@@ -327,6 +327,42 @@ u32 rtw_free_uc_swdec_pending_queue(struct adapter *adapter)
+ 	return cnt;
  }
  
--/* free os related resource in struct recv_buf */
--int rtw_os_recvbuf_resource_free(struct adapter *padapter,
--				 struct recv_buf *precvbuf)
++static void rtw_handle_tkip_mic_err(struct adapter *padapter, u8 bgroup)
++{
++	union iwreq_data wrqu;
++	struct iw_michaelmicfailure ev;
++	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
++	struct security_priv *psecuritypriv = &padapter->securitypriv;
++	u32 cur_time = 0;
++
++	if (psecuritypriv->last_mic_err_time == 0) {
++		psecuritypriv->last_mic_err_time = jiffies;
++	} else {
++		cur_time = jiffies;
++
++		if (cur_time - psecuritypriv->last_mic_err_time < 60 * HZ) {
++			psecuritypriv->btkip_countermeasure = true;
++			psecuritypriv->last_mic_err_time = 0;
++			psecuritypriv->btkip_countermeasure_time = cur_time;
++		} else {
++			psecuritypriv->last_mic_err_time = jiffies;
++		}
++	}
++
++	memset(&ev, 0x00, sizeof(ev));
++	if (bgroup)
++		ev.flags |= IW_MICFAILURE_GROUP;
++	else
++		ev.flags |= IW_MICFAILURE_PAIRWISE;
++
++	ev.src_addr.sa_family = ARPHRD_ETHER;
++	memcpy(ev.src_addr.sa_data, &pmlmepriv->assoc_bssid[0], ETH_ALEN);
++	memset(&wrqu, 0x00, sizeof(wrqu));
++	wrqu.data.length = sizeof(ev);
++	wireless_send_event(padapter->pnetdev, IWEVMICHAELMICFAILURE,
++			    &wrqu, (char *)&ev);
++}
++
+ static int recvframe_chkmic(struct adapter *adapter,  struct recv_frame *precvframe)
+ {
+ 	int	i, res = _SUCCESS;
+diff --git a/drivers/staging/r8188eu/include/recv_osdep.h b/drivers/staging/r8188eu/include/recv_osdep.h
+index 51dc287f263c..135fbb24fcbb 100644
+--- a/drivers/staging/r8188eu/include/recv_osdep.h
++++ b/drivers/staging/r8188eu/include/recv_osdep.h
+@@ -14,8 +14,6 @@ s32  rtw_recv_entry(struct recv_frame *precv_frame);
+ int rtw_recv_indicatepkt(struct adapter *adapter, struct recv_frame *recv_frame);
+ void rtw_recv_returnpacket(struct  net_device *cnxt, struct sk_buff *retpkt);
+ 
+-void rtw_handle_tkip_mic_err(struct adapter *padapter, u8 bgroup);
+-
+ int rtw_init_recv_priv(struct recv_priv *precvpriv, struct adapter *padapter);
+ void rtw_free_recv_priv(struct recv_priv *precvpriv);
+ 
+diff --git a/drivers/staging/r8188eu/os_dep/recv_linux.c b/drivers/staging/r8188eu/os_dep/recv_linux.c
+index c180f0e4dd3c..08dfe4482b8e 100644
+--- a/drivers/staging/r8188eu/os_dep/recv_linux.c
++++ b/drivers/staging/r8188eu/os_dep/recv_linux.c
+@@ -12,42 +12,6 @@
+ #include "../include/osdep_intf.h"
+ #include "../include/usb_ops.h"
+ 
+-void rtw_handle_tkip_mic_err(struct adapter *padapter, u8 bgroup)
 -{
--	usb_free_urb(precvbuf->purb);
--	return _SUCCESS;
+-	union iwreq_data wrqu;
+-	struct iw_michaelmicfailure    ev;
+-	struct mlme_priv *pmlmepriv  = &padapter->mlmepriv;
+-	struct security_priv	*psecuritypriv = &padapter->securitypriv;
+-	u32 cur_time = 0;
+-
+-	if (psecuritypriv->last_mic_err_time == 0) {
+-		psecuritypriv->last_mic_err_time = jiffies;
+-	} else {
+-		cur_time = jiffies;
+-
+-		if (cur_time - psecuritypriv->last_mic_err_time < 60 * HZ) {
+-			psecuritypriv->btkip_countermeasure = true;
+-			psecuritypriv->last_mic_err_time = 0;
+-			psecuritypriv->btkip_countermeasure_time = cur_time;
+-		} else {
+-			psecuritypriv->last_mic_err_time = jiffies;
+-		}
+-	}
+-
+-	memset(&ev, 0x00, sizeof(ev));
+-	if (bgroup)
+-		ev.flags |= IW_MICFAILURE_GROUP;
+-	else
+-		ev.flags |= IW_MICFAILURE_PAIRWISE;
+-
+-	ev.src_addr.sa_family = ARPHRD_ETHER;
+-	memcpy(ev.src_addr.sa_data, &pmlmepriv->assoc_bssid[0], ETH_ALEN);
+-	memset(&wrqu, 0x00, sizeof(wrqu));
+-	wrqu.data.length = sizeof(ev);
+-	wireless_send_event(padapter->pnetdev, IWEVMICHAELMICFAILURE,
+-			    &wrqu, (char *)&ev);
 -}
 -
- void rtw_handle_tkip_mic_err(struct adapter *padapter, u8 bgroup)
+ int rtw_recv_indicatepkt(struct adapter *padapter,
+ 			 struct recv_frame *precv_frame)
  {
- 	union iwreq_data wrqu;
 -- 
 2.37.1
 
