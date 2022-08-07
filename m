@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8964C19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:09:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A903BC25B08
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:09:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242140AbiHGWJa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:09:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50012 "EHLO
+        id S242153AbiHGWJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:09:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237078AbiHGWFM (ORCPT
+        with ESMTP id S237082AbiHGWFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 18:05:12 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65DB8B7DF;
+        Sun, 7 Aug 2022 18:05:13 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F05B7E2;
         Sun,  7 Aug 2022 15:03:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1659909783; x=1691445783;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2IKpMD/5mOlSohbGo23im3gthlxB9WFfnDJ1NWi5/PI=;
-  b=U4ttQ2OkO8Ljj7iwXr17+YoBaOe5YBrQ76OuHWQLQkhrj7OrBjJto/bE
-   LfS9ZY0tR9nEH1thzdBFIefURo3xOb8yAjsyDzvf5AErYP7QK5gCwA8FR
-   QXdO8ocpWgALiFaIzCFeGyddU+dgJgtFJjnhUIMVOA9NUT2n+7lXseLNR
-   taWjO0hQZ9wPZDmLC8mLZfTLs2Zfr51K0wHnR5aG4AqXIP9tn4ISVUbIG
-   bQlIHXfUZwAwhGxwsOUYZ/HfXpwtWVeayyltbel1Tws2n/KSL27yE5YFc
-   La3zXw4v/+TPg/QIctaRHQB4UjYlIRIY99YXj+D7Y9pnNfygNt2cZnYxA
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270240385"
+  bh=3mCcOnOxdxaooSM4412HI3d2SaV1+FV9yeoqdGQdcwU=;
+  b=BoJENkoqVJEykH1KDDd9fp/MRd966xYZnjTe1KSuJtX2QTRAfhNRyLRy
+   F868JkSlNA6w8dz/CARUCuhA31sp8pagIZ3co6WCgUpiclp7BXkXS56IL
+   cC5/TvIW9MtPuMS6DMl2MygdK62LxnIJYhr6eZdZubBdEwQbP23NmVBuN
+   pqqIVlUqW27S89phUkacw4BoO6B7xE86fkVBy7jxyIYvJmALero+RPPPj
+   dn/CkDCnKcA4Bt8ASYK9sFCoXuiB2RbxwPuymtO+GWd1KQyChogiRP+6x
+   YZPzZF1Jh7DTWFmhrLVbl/vRvToqbpjBOa1g9TdohM3dLGUGPs4hoV8bJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="289224129"
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="270240385"
+   d="scan'208";a="289224129"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:42 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:35 -0700
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="663682715"
+   d="scan'208";a="663682573"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:42 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:35 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [PATCH v8 082/103] KVM: x86: Split core of hypercall emulation to helper function
-Date:   Sun,  7 Aug 2022 15:02:07 -0700
-Message-Id: <3a91ab66dfef4c23faa13b50e0296630d562e95d.1659854791.git.isaku.yamahata@intel.com>
+Subject: [PATCH v8 041/103] KVM: x86/mmu: Add a new is_private member for union kvm_mmu_page_role
+Date:   Sun,  7 Aug 2022 15:01:26 -0700
+Message-Id: <621bbca9e03f1350e393657da3f27f295b57a490.1659854790.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854790.git.isaku.yamahata@intel.com>
 References: <cover.1659854790.git.isaku.yamahata@intel.com>
@@ -55,116 +55,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-By necessity, TDX will use a different register ABI for hypercalls.
-Break out the core functionality so that it may be reused for TDX.
+Because TDX support introduces private mapping, add a new member in union
+kvm_mmu_page_role with access functions to check the member.
 
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/include/asm/kvm_host.h |  4 +++
- arch/x86/kvm/x86.c              | 54 ++++++++++++++++++++-------------
- 2 files changed, 37 insertions(+), 21 deletions(-)
+ arch/x86/include/asm/kvm_host.h | 27 +++++++++++++++++++++++++++
+ arch/x86/kvm/mmu/mmu_internal.h | 11 +++++++++++
+ 2 files changed, 38 insertions(+)
 
 diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index ef04220527b2..df0b98e09cc9 100644
+index e07294fc2219..25835b8c4c12 100644
 --- a/arch/x86/include/asm/kvm_host.h
 +++ b/arch/x86/include/asm/kvm_host.h
-@@ -1995,6 +1995,10 @@ static inline void kvm_clear_apicv_inhibit(struct kvm *kvm,
- 	kvm_set_or_clear_apicv_inhibit(kvm, reason, false);
- }
+@@ -334,7 +334,12 @@ union kvm_mmu_page_role {
+ 		unsigned ad_disabled:1;
+ 		unsigned guest_mode:1;
+ 		unsigned passthrough:1;
++#ifdef CONFIG_KVM_MMU_PRIVATE
++		unsigned is_private:1;
++		unsigned :4;
++#else
+ 		unsigned :5;
++#endif
  
-+unsigned long __kvm_emulate_hypercall(struct kvm_vcpu *vcpu, unsigned long nr,
-+				      unsigned long a0, unsigned long a1,
-+				      unsigned long a2, unsigned long a3,
-+				      int op_64_bit);
- int kvm_emulate_hypercall(struct kvm_vcpu *vcpu);
+ 		/*
+ 		 * This is left at the top of the word so that
+@@ -346,6 +351,28 @@ union kvm_mmu_page_role {
+ 	};
+ };
  
- int kvm_mmu_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa, u64 error_code,
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index bc3b657e9795..01a320dd20ab 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -9495,26 +9495,15 @@ static int complete_hypercall_exit(struct kvm_vcpu *vcpu)
- 	return kvm_skip_emulated_instruction(vcpu);
- }
- 
--int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
-+unsigned long __kvm_emulate_hypercall(struct kvm_vcpu *vcpu, unsigned long nr,
-+				      unsigned long a0, unsigned long a1,
-+				      unsigned long a2, unsigned long a3,
-+				      int op_64_bit)
- {
--	unsigned long nr, a0, a1, a2, a3, ret;
--	int op_64_bit;
--
--	if (kvm_xen_hypercall_enabled(vcpu->kvm))
--		return kvm_xen_hypercall(vcpu);
--
--	if (kvm_hv_hypercall_enabled(vcpu))
--		return kvm_hv_hypercall(vcpu);
--
--	nr = kvm_rax_read(vcpu);
--	a0 = kvm_rbx_read(vcpu);
--	a1 = kvm_rcx_read(vcpu);
--	a2 = kvm_rdx_read(vcpu);
--	a3 = kvm_rsi_read(vcpu);
-+	unsigned long ret;
- 
- 	trace_kvm_hypercall(nr, a0, a1, a2, a3);
- 
--	op_64_bit = is_64_bit_hypercall(vcpu);
- 	if (!op_64_bit) {
- 		nr &= 0xFFFFFFFF;
- 		a0 &= 0xFFFFFFFF;
-@@ -9523,11 +9512,6 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
- 		a3 &= 0xFFFFFFFF;
- 	}
- 
--	if (static_call(kvm_x86_get_cpl)(vcpu) != 0) {
--		ret = -KVM_EPERM;
--		goto out;
--	}
--
- 	ret = -KVM_ENOSYS;
- 
- 	switch (nr) {
-@@ -9586,6 +9570,34 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
- 		ret = -KVM_ENOSYS;
- 		break;
- 	}
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(__kvm_emulate_hypercall);
-+
-+int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
++#ifdef CONFIG_KVM_MMU_PRIVATE
++static inline bool kvm_mmu_page_role_is_private(union kvm_mmu_page_role role)
 +{
-+	unsigned long nr, a0, a1, a2, a3, ret;
-+	int op_64_bit;
++	return !!role.is_private;
++}
 +
-+	if (kvm_xen_hypercall_enabled(vcpu->kvm))
-+		return kvm_xen_hypercall(vcpu);
++static inline void kvm_mmu_page_role_set_private(union kvm_mmu_page_role *role)
++{
++	role->is_private = 1;
++}
++#else
++static inline bool kvm_mmu_page_role_is_private(union kvm_mmu_page_role role)
++{
++	return false;
++}
 +
-+	if (kvm_hv_hypercall_enabled(vcpu))
-+		return kvm_hv_hypercall(vcpu);
++static inline void kvm_mmu_page_role_set_private(union kvm_mmu_page_role *role)
++{
++	WARN_ON(1);
++}
++#endif
 +
-+	nr = kvm_rax_read(vcpu);
-+	a0 = kvm_rbx_read(vcpu);
-+	a1 = kvm_rcx_read(vcpu);
-+	a2 = kvm_rdx_read(vcpu);
-+	a3 = kvm_rsi_read(vcpu);
-+	op_64_bit = is_64_bit_hypercall(vcpu);
+ /*
+  * kvm_mmu_extended_role complements kvm_mmu_page_role, tracking properties
+  * relevant to the current MMU configuration.   When loading CR0, CR4, or EFER,
+diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
+index e1b2e84c16b5..c9446e4e16e3 100644
+--- a/arch/x86/kvm/mmu/mmu_internal.h
++++ b/arch/x86/kvm/mmu/mmu_internal.h
+@@ -142,6 +142,17 @@ static inline int kvm_mmu_page_as_id(struct kvm_mmu_page *sp)
+ 	return kvm_mmu_role_as_id(sp->role);
+ }
+ 
++static inline bool is_private_sp(const struct kvm_mmu_page *sp)
++{
++	return kvm_mmu_page_role_is_private(sp->role);
++}
 +
-+	if (static_call(kvm_x86_get_cpl)(vcpu) != 0) {
-+		ret = -KVM_EPERM;
-+		goto out;
-+	}
++static inline bool is_private_sptep(u64 *sptep)
++{
++	WARN_ON(!sptep);
++	return is_private_sp(sptep_to_sp(sptep));
++}
 +
-+	ret = __kvm_emulate_hypercall(vcpu, nr, a0, a1, a2, a3, op_64_bit);
- out:
- 	if (!op_64_bit)
- 		ret = (u32)ret;
+ static inline bool kvm_mmu_page_ad_need_write_protect(struct kvm_mmu_page *sp)
+ {
+ 	/*
 -- 
 2.25.1
 
