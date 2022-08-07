@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F8EDC19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D1CC19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:32:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242441AbiHGWcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
+        id S236307AbiHGWcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:32:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242290AbiHGWbk (ORCPT
+        with ESMTP id S242183AbiHGWbl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 18:31:40 -0400
+        Sun, 7 Aug 2022 18:31:41 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAAA91836E;
-        Sun,  7 Aug 2022 15:18:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40AF518372;
+        Sun,  7 Aug 2022 15:18:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659910732; x=1691446732;
+  t=1659910733; x=1691446733;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=vpSLndbfs6RqeobMkXPOe0+TrlAhD95ZYYobrsGmqRk=;
-  b=gn8LeKaOUkE35m8TWsHu8qzlPVV0wTswctvdWp6KiB5FBonCZs/YOSve
-   TzsKPBauYKqi5JnwL8Qkuj+nQR3S5SPUt3ieqcKVIcdQRWzFLzsYrefDn
-   TmqxTwg0newHLHfYE5q5eRwxhoAzFt3af7ncpWODibqaGVXpKflpIRDMQ
-   AxEVeucARptk38FZBeTxs/Pmmt+SyBH5GmNbsjLSHuNhdkDCVI32nPULm
-   PrY0WYvp+6l2hZ1kpNEGfg+VNEffAqklGl034eljytNXG6aZvKVHih6aB
-   Na/kgwRe7STn/BNB1I+VpdDjy7VJNxkunJUYwv3otA4AKy3dIqC3x+aVy
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270852841"
+  bh=YtV3gUfgaWbloXUiDdmU0LoSOosfztMOPHvLdoD+at8=;
+  b=V6cKMrCaICq9HmZpFICxUm22nFRq70Me1RMcgSer606kjiOIVq5Tvm+5
+   Au9OiKzoFrPm9diK7KX+Y+954ujIwttv/hjm8BlQoazm9EHCrqXnhqTE8
+   gy+QX3A2Y1hALNJFyxxhT6uD2cCaJFq8PXOdGUzme51nxHgC01febvsRj
+   tIMBBuKFQtVs+y0YeK018arMu/BfQZVCZVsHNNYplzOtiX2HHm0Am8MWB
+   I7PKcjndgE5FJzZuNM1DEuypJnySCUt3FMevgbZQ0zLLL+84VFZUq3R93
+   4LYYtP6YaIumAaO/9prCa9C02uW40Gtgg5MQ/b5fpHGfuIXLHJDnAP+Gj
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270852843"
 X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
-   d="scan'208";a="270852841"
+   d="scan'208";a="270852843"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:18:52 -0700
 X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
-   d="scan'208";a="632642339"
+   d="scan'208";a="632642348"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:18:51 -0700
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:18:52 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [RFC PATCH 11/13] KVM: TDP_MMU: Split the large page when zap leaf
-Date:   Sun,  7 Aug 2022 15:18:44 -0700
-Message-Id: <c72d561d715bebdc4f402291dbd610e5a737567a.1659854957.git.isaku.yamahata@intel.com>
+Subject: [RFC PATCH 13/13] KVM: x86: remove struct kvm_arch.tdp_max_page_level
+Date:   Sun,  7 Aug 2022 15:18:46 -0700
+Message-Id: <1469a0a4aabcaf51f67ed4b4e25155267e07bfd1.1659854957.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854957.git.isaku.yamahata@intel.com>
 References: <cover.1659854957.git.isaku.yamahata@intel.com>
@@ -57,67 +57,69 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Xiaoyao Li <xiaoyao.li@intel.com>
 
-When TDX enabled, a large page cannot be zapped if it contains mixed
-pages. In this case, it has to split the large page.
+Now that everything is there to support large page for TD guest.  Remove
+tdp_max_page_level from struct kvm_arch that limits the page size.
 
 Signed-off-by: Xiaoyao Li <xiaoyao.li@intel.com>
+Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c | 28 ++++++++++++++++++++++++++--
- 1 file changed, 26 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/kvm_host.h | 1 -
+ arch/x86/kvm/mmu/mmu.c          | 1 -
+ arch/x86/kvm/mmu/mmu_internal.h | 2 +-
+ arch/x86/kvm/vmx/tdx.c          | 3 ---
+ 4 files changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index faf278e0c740..e5d31242677a 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1033,6 +1033,14 @@ bool kvm_tdp_mmu_zap_sp(struct kvm *kvm, struct kvm_mmu_page *sp)
- 	return true;
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index a6bfcabcbbd7..80f2bc3fbf0c 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1190,7 +1190,6 @@ struct kvm_arch {
+ 	unsigned long n_requested_mmu_pages;
+ 	unsigned long n_max_mmu_pages;
+ 	unsigned int indirect_shadow_pages;
+-	int tdp_max_page_level;
+ 	u8 mmu_valid_gen;
+ 	struct hlist_head mmu_page_hash[KVM_NUM_MMU_PAGES];
+ 	struct list_head active_mmu_pages;
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index ba21503fa46f..0cbd52c476d7 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -6232,7 +6232,6 @@ int kvm_mmu_init_vm(struct kvm *kvm)
+ 	kvm->arch.split_desc_cache.kmem_cache = pte_list_desc_cache;
+ 	kvm->arch.split_desc_cache.gfp_zero = __GFP_ZERO;
+ 
+-	kvm->arch.tdp_max_page_level = KVM_MAX_HUGEPAGE_LEVEL;
+ 	return 0;
  }
  
-+
-+static struct kvm_mmu_page *tdp_mmu_alloc_sp_for_split(struct kvm *kvm,
-+						       struct tdp_iter *iter,
-+						       bool shared);
-+
-+static int tdp_mmu_split_huge_page(struct kvm *kvm, struct tdp_iter *iter,
-+				   struct kvm_mmu_page *sp, bool shared);
-+
- /*
-  * If can_yield is true, will release the MMU lock and reschedule if the
-  * scheduler needs the CPU or there is contention on the MMU lock. If this
-@@ -1075,6 +1083,24 @@ static bool tdp_mmu_zap_leafs(struct kvm *kvm, struct kvm_mmu_page *root,
- 		    !is_last_spte(iter.old_spte, iter.level))
- 			continue;
+diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
+index e5d5fea29bfa..82b220c4d1bd 100644
+--- a/arch/x86/kvm/mmu/mmu_internal.h
++++ b/arch/x86/kvm/mmu/mmu_internal.h
+@@ -395,7 +395,7 @@ static inline int kvm_mmu_do_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 			is_nx_huge_page_enabled(vcpu->kvm),
+ 		.is_private = kvm_is_private_gpa(vcpu->kvm, cr2_or_gpa),
  
-+		if (kvm_gfn_shared_mask(kvm) && is_large_pte(iter.old_spte)) {
-+			gfn_t gfn = iter.gfn & ~kvm_gfn_shared_mask(kvm);
-+			gfn_t mask = KVM_PAGES_PER_HPAGE(iter.level) - 1;
-+			struct kvm_memory_slot *slot;
-+			struct kvm_mmu_page *sp;
-+
-+			slot = gfn_to_memslot(kvm, gfn);
-+			if (kvm_mem_attr_is_mixed(slot, gfn, iter.level) ||
-+			    (gfn & mask) < start ||
-+			    end < (gfn & mask) + KVM_PAGES_PER_HPAGE(iter.level)) {
-+				sp = tdp_mmu_alloc_sp_for_split(kvm, &iter, false);
-+				WARN_ON(!sp);
-+
-+				tdp_mmu_split_huge_page(kvm, &iter, sp, false);
-+				continue;
-+			}
-+		}
-+
- 		tdp_mmu_set_spte(kvm, &iter, SHADOW_NONPRESENT_VALUE);
- 		flush = true;
- 	}
-@@ -1642,8 +1668,6 @@ static struct kvm_mmu_page *tdp_mmu_alloc_sp_for_split(struct kvm *kvm,
+-		.max_level = vcpu->kvm->arch.tdp_max_page_level,
++		.max_level = KVM_MAX_HUGEPAGE_LEVEL,
+ 		.req_level = PG_LEVEL_4K,
+ 		.goal_level = PG_LEVEL_4K,
+ 	};
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index a340caeb9c62..72f21f5f78af 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -460,9 +460,6 @@ int tdx_vm_init(struct kvm *kvm)
+ 	 */
+ 	kvm_mmu_set_mmio_spte_mask(kvm, 0, VMX_EPT_RWX_MASK);
  
- 	WARN_ON(kvm_mmu_page_role_is_private(role) !=
- 		is_private_sptep(iter->sptep));
--	/* TODO: Large page isn't supported for private SPTE yet. */
--	WARN_ON(kvm_mmu_page_role_is_private(role));
+-	/* TODO: Enable 2mb and 1gb large page support. */
+-	kvm->arch.tdp_max_page_level = PG_LEVEL_4K;
+-
+ 	/* vCPUs can't be created until after KVM_TDX_INIT_VM. */
+ 	kvm->max_vcpus = 0;
  
- 	/*
- 	 * Since we are allocating while under the MMU lock we have to be
 -- 
 2.25.1
 
