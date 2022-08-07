@@ -2,81 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C842C19F2D
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 00:50:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E31BC19F2D
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 00:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234765AbiHGAuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 6 Aug 2022 20:50:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48366 "EHLO
+        id S233578AbiHGAu0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 6 Aug 2022 20:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234321AbiHGAuF (ORCPT
+        with ESMTP id S234658AbiHGAuM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 6 Aug 2022 20:50:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91F9C10FCB
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 17:50:04 -0700 (PDT)
+        Sat, 6 Aug 2022 20:50:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B5FA0;
+        Sat,  6 Aug 2022 17:50:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0759A60C95
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 00:50:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5D332C433D7;
-        Sun,  7 Aug 2022 00:50:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4297360CEE;
+        Sun,  7 Aug 2022 00:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 10598C433B5;
+        Sun,  7 Aug 2022 00:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659833403;
-        bh=hVQ401EV5DbrpwNtv/SO3dfFf4K1qKd46UE2Ic9n8Z0=;
+        s=k20201202; t=1659833411;
+        bh=86gdex+fUoDkvlLaQDim3x6WVXmrAW4Eob2xLKUi4ww=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=fnxAOE5dIsFgWMvMC8OkaPwoSZS3Z24N4U/vOdGxhczLzui2AOBL3AY+tki2ApaFe
-         DVIJWG6F/+LvrDge/3YD/iTafn/QfUlrMojCUM68VCEJdIebgoopnqblcivYSwyqBs
-         k/nj9u486RQjBrcqABaBSCLptoZpyREU4kqtv6h5CEPdIgXF4OeMus+lVRYVn4h/EX
-         +pgXqKKE9R1mgw1mMUhRpEVjiicv/hmRY+eoF01FSYbkV8iTuraE55Yd7watUs0y/w
-         pe09fsHtzFIwcs30mxATjynPwt+N9EON68QvYPx3ZSqpAjgZgf/sTaziXYN0VgQmFY
-         Clpvv8HY/f7ug==
+        b=M7ovEBU11VvCyilmAwqqRDuYGTyWd7EpvXliLSK56F4jb/w2xdjGUOxyRHKdA6RnR
+         0yx884gvVmr0uHmonFnlDCQjBJcEPKh6NOMJkwQd9pRE1kh685qBkZ01A1J6481Zxz
+         dlzaeN77bwAvWU+uJ4b9AcWYGvN2q60Qkq21sJBV+fiK9pkwuqKVAR9sZUyZfKtE/k
+         o7Y6rfqcAeqAo1WhIxHC/SLDrU4RHpTvmGD+5AjoL7ycnCIPBeCeywd41Ts02YjAJP
+         xSQDYfBno3azKhVUNCLlNTZlSjDZkg5DNERy9kqyKzJLsTbixw3JA+p703e4mLLbaq
+         MVAZvWgZkXvJQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 43D39C43140;
-        Sun,  7 Aug 2022 00:50:03 +0000 (UTC)
-Subject: Re: [GIT PULL] Please pull powerpc/linux.git powerpc-6.0-1 tag
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F18F2C43140;
+        Sun,  7 Aug 2022 00:50:10 +0000 (UTC)
+Subject: Re: [GIT PULL] s390 updates for 5.20 merge window
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <877d3lan4c.fsf@mpe.ellerman.id.au>
-References: <877d3lan4c.fsf@mpe.ellerman.id.au>
-X-PR-Tracked-List-Id: Linux on PowerPC Developers Mail List <linuxppc-dev.lists.ozlabs.org>
-X-PR-Tracked-Message-Id: <877d3lan4c.fsf@mpe.ellerman.id.au>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git tags/powerpc-6.0-1
-X-PR-Tracked-Commit-Id: 4cfa6ff24a9744ba484521c38bea613134fbfcb3
+In-Reply-To: <Yu4uUqpvcXGfGpy8@tuxmaker.boeblingen.de.ibm.com>
+References: <Yu4uUqpvcXGfGpy8@tuxmaker.boeblingen.de.ibm.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Yu4uUqpvcXGfGpy8@tuxmaker.boeblingen.de.ibm.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git work.iov_iter
+X-PR-Tracked-Commit-Id: 953503751a426413ea8aee2299ae3ee971b70d9b
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: cae4199f9319f42534ee2e2e4aadf183b9bb7f73
-Message-Id: <165983340325.27609.11042525073896478174.pr-tracker-bot@kernel.org>
-Date:   Sun, 07 Aug 2022 00:50:03 +0000
-To:     mpe@ellerman.id.au
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>, Jason@zx2c4.com,
-        aik@ozlabs.ru, linmq006@gmail.com, wangborong@cdjrlc.com,
-        viresh.kumar@linaro.org, rashmica@linux.ibm.com,
-        bagasdotme@gmail.com, rashmica.g@gmail.com, ldufour@linux.ibm.com,
-        baihaowen@meizu.com, xiujianfeng@huawei.com, deller@gmx.de,
-        nayna@linux.ibm.com, rppt@linux.ibm.com, jiangjian@cdjrlc.com,
-        joel@jms.id.au, muriloo@linux.ibm.com, masahiroy@kernel.org,
-        linux@roeck-us.net, ajd@linux.ibm.com, arnd@arndb.de,
-        kjain@linux.ibm.com, u.kleine-koenig@pengutronix.de,
-        npiggin@gmail.com, oss@buserror.net,
-        chris.packham@alliedtelesis.co.nz, mkl@pengutronix.de,
-        andriy.shevchenko@linux.intel.com, hbathini@linux.ibm.com,
-        atrajeev@linux.vnet.ibm.com, zhouzhouyi@gmail.com,
-        farosas@linux.ibm.com, pali@kernel.org, cheloha@linux.ibm.com,
-        linux-kernel@vger.kernel.org, wsa@kernel.org, broonie@kernel.org,
-        juerg.haefliger@canonical.com, maddy@linux.ibm.com,
-        sohu0106@126.com, linuxppc-dev@lists.ozlabs.org,
-        damien.lemoal@opensource.wdc.com
+X-PR-Merge-Commit-Id: 24cb958695724ffb4488ef4f65892c0767bcd2f2
+Message-Id: <165983341098.27609.12940403492622309959.pr-tracker-bot@kernel.org>
+Date:   Sun, 07 Aug 2022 00:50:10 +0000
+To:     Alexander Gordeev <agordeev@linux.ibm.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sat, 06 Aug 2022 16:42:59 +1000:
+The pull request you sent on Sat, 6 Aug 2022 11:03:14 +0200:
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git tags/powerpc-6.0-1
+> git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git work.iov_iter
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/cae4199f9319f42534ee2e2e4aadf183b9bb7f73
+https://git.kernel.org/torvalds/c/24cb958695724ffb4488ef4f65892c0767bcd2f2
 
 Thank you!
 
