@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99EBAC19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:03:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC7AC19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236015AbiHGWDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48268 "EHLO
+        id S236099AbiHGWDy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231814AbiHGWCf (ORCPT
+        with ESMTP id S232269AbiHGWCg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 18:02:35 -0400
+        Sun, 7 Aug 2022 18:02:36 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8562D64C5;
-        Sun,  7 Aug 2022 15:02:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C586540;
+        Sun,  7 Aug 2022 15:02:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659909754; x=1691445754;
+  t=1659909755; x=1691445755;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Wk7ogtc5Ub+4u4KfteyYsotpfo7mJ/YCVxSbhwLcn7s=;
-  b=GhR7JlXnJ1FCF7hHTpbUIfN2d5xewWwBT4vfBZcanCoBsSbcxZXy7a5c
-   6/kMX0yS9QRMdq8sDOjRMIgwzTS9hgs1jK7WS97SwzIWYJZ5JHUIU7E9F
-   ugAq2//WxC3cTN488+dnX2ba5OIzslHaHeMEatVRQOITnBgdUBYV0dtdH
-   YJJKXxzKfeiNOerSYBypk8mfXPIkrvXJ1q8yrJPnV5vVbzQY2SAyrz1yP
-   IP/aPB2RG3M5xhdvMFEHOPPYuM41K3lb0Bbaiz6/F1U3bekNg2P6VV23X
-   x32zLddVlZuvUjMj2Ue/pocyjtSamJNezcXCCAbQnpGZ94/ktwU2f0LJb
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="289224063"
+  bh=5Wv/IPFVTRe4jyjKqgjJvRX4XujCf32I2mYt7uAyjxc=;
+  b=Ed6Zcd2kkZXWi3PARy9Yqs7o/VLRLqojaDzmK1dg9hM3O3YVGRE8sL8Z
+   VrC6+heH1/Qm9vQp6xiZ9R4f0YvszzTMTuiq0GnOrzsOOmMjnXaRc/966
+   YCtqR69cP/A0zAxsr+UPctSeyYC/OoyczhdgsBkywmBQPomxfvTA8eTsj
+   KgYCOMLvTRp09gn3uXpBDFKHl5ItKhRtuFVrQ7Go0OmVRc4GwMVEwlYLj
+   e45mVrsERniCAIaMTEGAg6b7hr/llXOPOWNWzZysq7/vk5+sYhB9nzhNt
+   mFA8BIYuVDfKePRuugsjdOKOd+SGcqS2WVJfbUfao1tpvnt1H/RuNUydJ
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="289224073"
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="289224063"
+   d="scan'208";a="289224073"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:30 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:31 -0700
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="663682472"
+   d="scan'208";a="663682486"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:30 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:31 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [PATCH v8 012/103] [MARKER] The start of TDX KVM patch series: TDX architectural definitions
-Date:   Sun,  7 Aug 2022 15:00:57 -0700
-Message-Id: <71bc25e6024c3a6a8a2ea11f316cec00cd8204f9.1659854790.git.isaku.yamahata@intel.com>
+Subject: [PATCH v8 016/103] KVM: TDX: Add helper functions to print TDX SEAMCALL error
+Date:   Sun,  7 Aug 2022 15:01:01 -0700
+Message-Id: <3ae0de7da9fbfab79768a2ad70379991502c6691.1659854790.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854790.git.isaku.yamahata@intel.com>
 References: <cover.1659854790.git.isaku.yamahata@intel.com>
@@ -57,50 +57,78 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-This empty commit is to mark the start of patch series of TDX architectural
-definitions.
+Add helper functions to print out errors from the TDX module in a uniform
+manner.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- .../virt/kvm/intel-tdx-layer-status.rst       | 29 +++++++++++++++++++
- 1 file changed, 29 insertions(+)
- create mode 100644 Documentation/virt/kvm/intel-tdx-layer-status.rst
+ arch/x86/kvm/Makefile        |  2 +-
+ arch/x86/kvm/vmx/tdx_error.c | 22 ++++++++++++++++++++++
+ arch/x86/kvm/vmx/tdx_ops.h   |  3 +++
+ 3 files changed, 26 insertions(+), 1 deletion(-)
+ create mode 100644 arch/x86/kvm/vmx/tdx_error.c
 
-diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+diff --git a/arch/x86/kvm/Makefile b/arch/x86/kvm/Makefile
+index e2c05195cb95..f1ad445df505 100644
+--- a/arch/x86/kvm/Makefile
++++ b/arch/x86/kvm/Makefile
+@@ -24,7 +24,7 @@ kvm-$(CONFIG_KVM_XEN)	+= xen.o
+ kvm-intel-y		+= vmx/vmx.o vmx/vmenter.o vmx/pmu_intel.o vmx/vmcs12.o \
+ 			   vmx/evmcs.o vmx/nested.o vmx/posted_intr.o vmx/main.o
+ kvm-intel-$(CONFIG_X86_SGX_KVM)	+= vmx/sgx.o
+-kvm-intel-$(CONFIG_INTEL_TDX_HOST)	+= vmx/tdx.o
++kvm-intel-$(CONFIG_INTEL_TDX_HOST)	+= vmx/tdx.o vmx/tdx_error.o
+ 
+ kvm-amd-y		+= svm/svm.o svm/vmenter.o svm/pmu.o svm/nested.o svm/avic.o svm/sev.o
+ 
+diff --git a/arch/x86/kvm/vmx/tdx_error.c b/arch/x86/kvm/vmx/tdx_error.c
 new file mode 100644
-index 000000000000..b7a14bc73853
+index 000000000000..61ed855d1188
 --- /dev/null
-+++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
-@@ -0,0 +1,29 @@
-+.. SPDX-License-Identifier: GPL-2.0
++++ b/arch/x86/kvm/vmx/tdx_error.c
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: GPL-2.0
++/* functions to record TDX SEAMCALL error */
 +
-+===================================
-+Intel Trust Dodmain Extensions(TDX)
-+===================================
++#include <linux/kernel.h>
++#include <linux/bug.h>
 +
-+Layer status
-+============
-+What qemu can do
-+----------------
-+- TDX VM TYPE is exposed to Qemu.
-+- Qemu can try to create VM of TDX VM type and then fails.
++#include "tdx_ops.h"
 +
-+Patch Layer status
-+------------------
-+  Patch layer                          Status
-+* TDX, VMX coexistence:                 Applied
-+* TDX architectural definitions:        Applying
-+* TD VM creation/destruction:           Not yet
-+* TD vcpu creation/destruction:         Not yet
-+* TDX EPT violation:                    Not yet
-+* TD finalization:                      Not yet
-+* TD vcpu enter/exit:                   Not yet
-+* TD vcpu interrupts/exit/hypercall:    Not yet
++void pr_tdx_error(u64 op, u64 error_code, const struct tdx_module_output *out)
++{
++	if (!out) {
++		pr_err_ratelimited("SEAMCALL[%lld] failed: 0x%llx\n",
++				op, error_code);
++		return;
++	}
 +
-+* KVM MMU GPA shared bits:              Not yet
-+* KVM TDP refactoring for TDX:          Not yet
-+* KVM TDP MMU hooks:                    Not yet
-+* KVM TDP MMU MapGPA:                   Not yet
++	pr_err_ratelimited(
++		"SEAMCALL[%lld] failed: 0x%llx "
++		"RCX 0x%llx, RDX 0x%llx, R8 0x%llx, R9 0x%llx, R10 0x%llx, R11 0x%llx\n",
++		op, error_code,
++		out->rcx, out->rdx, out->r8, out->r9, out->r10, out->r11);
++}
+diff --git a/arch/x86/kvm/vmx/tdx_ops.h b/arch/x86/kvm/vmx/tdx_ops.h
+index 85adbf49c277..8cc2f01c509b 100644
+--- a/arch/x86/kvm/vmx/tdx_ops.h
++++ b/arch/x86/kvm/vmx/tdx_ops.h
+@@ -9,12 +9,15 @@
+ #include <asm/cacheflush.h>
+ #include <asm/asm.h>
+ #include <asm/kvm_host.h>
++#include <asm/tdx.h>
+ 
+ #include "tdx_errno.h"
+ #include "tdx_arch.h"
+ 
+ #ifdef CONFIG_INTEL_TDX_HOST
+ 
++void pr_tdx_error(u64 op, u64 error_code, const struct tdx_module_output *out);
++
+ static inline u64 tdh_mng_addcx(hpa_t tdr, hpa_t addr)
+ {
+ 	clflush_cache_range(__va(addr), PAGE_SIZE);
 -- 
 2.25.1
 
