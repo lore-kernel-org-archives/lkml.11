@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3A55C19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:10:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA9A3C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:10:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242217AbiHGWKS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:10:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50424 "EHLO
+        id S242225AbiHGWKX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:10:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237096AbiHGWFN (ORCPT
+        with ESMTP id S236664AbiHGWG2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 18:05:13 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BD2B7E5;
-        Sun,  7 Aug 2022 15:03:03 -0700 (PDT)
+        Sun, 7 Aug 2022 18:06:28 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCBBB868;
+        Sun,  7 Aug 2022 15:03:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659909783; x=1691445783;
+  t=1659909790; x=1691445790;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=6A6aJOCU7GH1tjBE8WcWgFQ4nrzXq4R0KwyJQAB37bs=;
-  b=aL7xK+nOZpsiLnb/3FxmbwFqo4z/xYYPguiNPvORRctkAHA7aONaI9DC
-   m9W1vTJviCQze8UMDiaoSg6NGtmXr+t64Nc3PSknkJ2juXVPOdz3NH+u/
-   VHV/ylbqxxQqy1eE9x3dr8bXEZwQJ2Jt5gBlVTPaynEt4xbyfz2j8JQGY
-   3pPkd5Lm4aUa2u/Yt5V6DwYJITBlKkIWqs9DkJWrDXiuMMBXTQ7rIV/qK
-   VWgiNmMUq+Hwkf12zOp69hZd8sMj0/wqoujpECWmpw/15tMlELsyOKlWH
-   OgQRFLrLrUCJV4R+w/jKVAo/y1/wQPO7ii+ZH/CptI+7ETSMzQIlTww4w
+  bh=D6t5pLPUMBytGj5rDoELbZ9+ccEcgQC+41JNIsYt4Wg=;
+  b=PRVT/D2PTdSk1Zms1HkfvtixyufJQ1sZF5BJHdLAMEfY2umdwkR/1JIi
+   knMIan7d4AeB61ELefG619h448DJ+xvkvhcBLVVNjUZs98qXHDtaltC5E
+   6SeR6+iRfMnmJKaNHi+iuAXKaNG8Qrh3klzCk2RRvoEbpawx2dDhSr9Y+
+   DBjc972plfqrWbwD7QjTrkocF65B5c57MNGrymhv1Uby1a5HAW+KN+gO8
+   jUCwmqbQef+GNc3MFboL/yOXlQ4bE/ItY57owJdiC56sZnpZ0X78ZsILT
+   brDTaiy/75BePfxlwX8lvNiszw2wYqn9A9M1yVIPrupdA7T9uNPYNXIHM
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="291695708"
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270240394"
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="291695708"
+   d="scan'208";a="270240394"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:39 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:42 -0700
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="663682663"
+   d="scan'208";a="663682728"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:39 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:42 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [PATCH v8 066/103] KVM: TDX: restore host xsave state when exit from the guest TD
-Date:   Sun,  7 Aug 2022 15:01:51 -0700
-Message-Id: <b2ccac9460d412f9325fa0b3b2395315e4fd6a22.1659854790.git.isaku.yamahata@intel.com>
+Subject: [PATCH v8 086/103] KVM: TDX: handle ept violation/misconfig exit
+Date:   Sun,  7 Aug 2022 15:02:11 -0700
+Message-Id: <b47a2788a960f754ad8addadc13e03ccadc3f500.1659854791.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854790.git.isaku.yamahata@intel.com>
 References: <cover.1659854790.git.isaku.yamahata@intel.com>
@@ -57,57 +57,81 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-On exiting from the guest TD, xsave state is clobbered.  Restore xsave
-state on TD exit.
+On EPT violation, call a common function, __vmx_handle_ept_violation() to
+trigger x86 MMU code.  On EPT misconfiguration, exit to ring 3 with
+KVM_EXIT_UNKNOWN.  because EPT misconfiguration can't happen as MMIO is
+trigged by TDG.VP.VMCALL. No point to set a misconfiguration value for the
+fast path.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/vmx/tdx.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ arch/x86/kvm/vmx/tdx.c | 46 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
 diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 482e85337997..0cf9ef4a1d2a 100644
+index 53dce2b601dc..de618935fe01 100644
 --- a/arch/x86/kvm/vmx/tdx.c
 +++ b/arch/x86/kvm/vmx/tdx.c
-@@ -2,6 +2,7 @@
- #include <linux/cpu.h>
- #include <linux/mmu_context.h>
- 
-+#include <asm/fpu/xcr.h>
- #include <asm/tdx.h>
- 
- #include "capabilities.h"
-@@ -579,6 +580,22 @@ void tdx_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
- 	vcpu->kvm->vm_bugged = true;
+@@ -1184,6 +1184,48 @@ void tdx_deliver_interrupt(struct kvm_lapic *apic, int delivery_mode,
+ 	__vmx_deliver_posted_interrupt(vcpu, &tdx->pi_desc, vector);
  }
  
-+static void tdx_restore_host_xsave_state(struct kvm_vcpu *vcpu)
++static int tdx_handle_ept_violation(struct kvm_vcpu *vcpu)
 +{
-+	struct kvm_tdx *kvm_tdx = to_kvm_tdx(vcpu->kvm);
++	unsigned long exit_qual;
 +
-+	if (static_cpu_has(X86_FEATURE_XSAVE) &&
-+	    host_xcr0 != (kvm_tdx->xfam & kvm_caps.supported_xcr0))
-+		xsetbv(XCR_XFEATURE_ENABLED_MASK, host_xcr0);
-+	if (static_cpu_has(X86_FEATURE_XSAVES) &&
-+	    /* PT can be exposed to TD guest regardless of KVM's XSS support */
-+	    host_xss != (kvm_tdx->xfam & (kvm_caps.supported_xss | XFEATURE_MASK_PT)))
-+		wrmsrl(MSR_IA32_XSS, host_xss);
-+	if (static_cpu_has(X86_FEATURE_PKU) &&
-+	    (kvm_tdx->xfam & XFEATURE_MASK_PKRU))
-+		write_pkru(vcpu->arch.host_pkru);
++	if (kvm_is_private_gpa(vcpu->kvm, tdexit_gpa(vcpu))) {
++		/*
++		 * Always treat SEPT violations as write faults.  Ignore the
++		 * EXIT_QUALIFICATION reported by TDX-SEAM for SEPT violations.
++		 * TD private pages are always RWX in the SEPT tables,
++		 * i.e. they're always mapped writable.  Just as importantly,
++		 * treating SEPT violations as write faults is necessary to
++		 * avoid COW allocations, which will cause TDAUGPAGE failures
++		 * due to aliasing a single HPA to multiple GPAs.
++		 */
++#define TDX_SEPT_VIOLATION_EXIT_QUAL	EPT_VIOLATION_ACC_WRITE
++		exit_qual = TDX_SEPT_VIOLATION_EXIT_QUAL;
++	} else {
++		exit_qual = tdexit_exit_qual(vcpu);;
++		if (exit_qual & EPT_VIOLATION_ACC_INSTR) {
++			pr_warn("kvm: TDX instr fetch to shared GPA = 0x%lx @ RIP = 0x%lx\n",
++				tdexit_gpa(vcpu), kvm_rip_read(vcpu));
++			vcpu->run->exit_reason = KVM_EXIT_EXCEPTION;
++			vcpu->run->ex.exception = PF_VECTOR;
++			vcpu->run->ex.error_code = exit_qual;
++			return 0;
++		}
++	}
++
++	trace_kvm_page_fault(tdexit_gpa(vcpu), exit_qual);
++	return __vmx_handle_ept_violation(vcpu, tdexit_gpa(vcpu), exit_qual);
 +}
 +
- u64 __tdx_vcpu_run(hpa_t tdvpr, void *regs, u32 regs_mask);
++static int tdx_handle_ept_misconfig(struct kvm_vcpu *vcpu)
++{
++	WARN_ON(1);
++
++	vcpu->run->exit_reason = KVM_EXIT_UNKNOWN;
++	vcpu->run->hw.hardware_exit_reason = EXIT_REASON_EPT_MISCONFIG;
++
++	return 0;
++}
++
+ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
+ {
+ 	union tdx_exit_reason exit_reason = to_tdx(vcpu)->exit_reason;
+@@ -1206,6 +1248,10 @@ int tdx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t fastpath)
+ 	WARN_ON_ONCE(fastpath != EXIT_FASTPATH_NONE);
  
- static noinstr void tdx_vcpu_enter_exit(struct kvm_vcpu *vcpu,
-@@ -602,6 +619,7 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
- 
- 	tdx_vcpu_enter_exit(vcpu, tdx);
- 
-+	tdx_restore_host_xsave_state(vcpu);
- 	tdx->host_state_need_restore = true;
- 
- 	vcpu->arch.regs_avail &= ~VMX_REGS_LAZY_LOAD_SET;
+ 	switch (exit_reason.basic) {
++	case EXIT_REASON_EPT_VIOLATION:
++		return tdx_handle_ept_violation(vcpu);
++	case EXIT_REASON_EPT_MISCONFIG:
++		return tdx_handle_ept_misconfig(vcpu);
+ 	case EXIT_REASON_OTHER_SMI:
+ 		/*
+ 		 * If reach here, it's not a Machine Check System Management
 -- 
 2.25.1
 
