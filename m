@@ -2,138 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B41C282E7
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 13:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6D96C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 13:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234298AbiHGNRr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 09:17:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40846 "EHLO
+        id S234348AbiHGN1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 09:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234304AbiHGNRn (ORCPT
+        with ESMTP id S231571AbiHGN1M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 09:17:43 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60BFE6577;
-        Sun,  7 Aug 2022 06:17:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659878260; x=1691414260;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cBxHBx3Qi0IAdNsBY4fZkCLfNUBPQ+PwsaBkaNTmSX8=;
-  b=AceiR5CYq4EkSuYjUoLDreqEJUOzbCi3778Q+yIUZqiCKrnHlHISFcU2
-   46vtPsoHp/XK79pBBv5sKbCvWv0KcZgiYf3Mn96mhsX1ZzLn45SZaj4PE
-   h8sJUG+6bUemwDVXIRJthiMEJ9bQybuRCC4lphSGVKRTBqJv3C59WZOW6
-   wxIBkh2uuapZgOOratztTNpnZjd1MXsQecGjuqkg5UtEfiOKF9Uz6LfR5
-   SCnHppwZ/O3XWULaUO6oWCLNyzt0A1fRa/qzZrbDO45KzcGvoOxAxICEy
-   jnSHjmpOxvBW6Imd4Pd+w6kxjijvGiS0jOTEYX8OFPkx6hUgqNau8wH7S
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="354436929"
-X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="354436929"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 06:17:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="707129955"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 07 Aug 2022 06:17:33 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oKg9s-000LJq-2a;
-        Sun, 07 Aug 2022 13:17:32 +0000
-Date:   Sun, 7 Aug 2022 21:16:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Markuss Broks <markuss.broks@gmail.com>,
-        linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Helge Deller <deller@gmx.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Michal Suchanek <msuchanek@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Wei Ming Chen <jj251510319013@gmail.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Tony Lindgren <tony@atomide.com>, linux-doc@vger.kernel.org,
-        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH v2 3/3] efi: earlycon: Add support for generic
- framebuffers and move to console subsystem
-Message-ID: <202208072145.yWoGkrW1-lkp@intel.com>
-References: <20220806163255.10404-4-markuss.broks@gmail.com>
+        Sun, 7 Aug 2022 09:27:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C273DA1AA
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 06:27:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659878830;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kWN2+XtBy7D+eIoeR0CwA7v9KmusYi195gp46RwIqnc=;
+        b=gQgXaS/7yJ2D1IWEwJNyNpQH9K5d42xv5JQv+9PeCqZhYLovQMYBcvJxR6DkS4IU8ULpU5
+        63RYA+G/9J/dh4YkvPD6yizaXJd9XToFqfP9DB4oP8HoyDl0AkaTcPFhuLwDI/DJ5L3AJx
+        QyiTclOMGs7Qiz1mp3aRfN9QSfWiDRM=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-492-4cJXRiB5PYGJyQ-l7JkbmQ-1; Sun, 07 Aug 2022 09:27:09 -0400
+X-MC-Unique: 4cJXRiB5PYGJyQ-l7JkbmQ-1
+Received: by mail-wm1-f72.google.com with SMTP id r10-20020a05600c284a00b003a2ff6c9d6aso6942317wmb.4
+        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 06:27:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=kWN2+XtBy7D+eIoeR0CwA7v9KmusYi195gp46RwIqnc=;
+        b=zxGsRkIUq3dvo3SnLZoN/Yo/smtt7+Fjec2tmhVMUJkIBCClE+mMIwl9qoYKZ526lf
+         Fm/94p+kyiYVY1KalOLZ5AfCSaCJblWuZJipRvM5rg6hazPI2MayDRWoNuRAilxjYAdI
+         GwomcCXRZCUr2UjaG7Dc618/JSCUaO8FaYldcpBryR3PHmhpy22bWU2u6xkGvDkgJY6i
+         +JwxdwYW5UeYPfhXe6emkNXBqkdLmaPpNKjLQq82qZWZwm/KdqCRaAIxexUlk+eRMedU
+         htbRLFGOSMKlhPd0u2FqJFimhDRpHxe0S5EY/JmRaAAdZUDfNwH3r3itTJxhz5g6KJyV
+         RD7w==
+X-Gm-Message-State: ACgBeo0o9zopBO+Rk7PxgjBGvdBnuW3Oxq4LdcWxZhYgZMpax4rYt9mu
+        UcEy9BcPPPO7q7JpnCqDf7HZZjVDiusu80N5/JErBBJdbi2DR5YmkBHyekw/EVNYzHEHpA46EKb
+        FjXHgcqvZUwWMZIncK4H92MT+
+X-Received: by 2002:a5d:4e52:0:b0:21f:15aa:1174 with SMTP id r18-20020a5d4e52000000b0021f15aa1174mr8959076wrt.106.1659878828292;
+        Sun, 07 Aug 2022 06:27:08 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4PyGIbZ+3Zk1aEnQjWqF7U3soahzcZWTwqegYNF9JB2kgqFNme3tS807SILWNR3wTzZIMDGg==
+X-Received: by 2002:a5d:4e52:0:b0:21f:15aa:1174 with SMTP id r18-20020a5d4e52000000b0021f15aa1174mr8959067wrt.106.1659878828086;
+        Sun, 07 Aug 2022 06:27:08 -0700 (PDT)
+Received: from redhat.com ([2.52.21.123])
+        by smtp.gmail.com with ESMTPSA id d14-20020adfe84e000000b0021badf3cb26sm10887722wrn.63.2022.08.07.06.27.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Aug 2022 06:27:07 -0700 (PDT)
+Date:   Sun, 7 Aug 2022 09:27:03 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Will Deacon <will@kernel.org>, stefanha@redhat.com,
+        jasowang@redhat.com, ascull@google.com, maz@kernel.org,
+        keirf@google.com, jiyong@google.com, kernel-team@android.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: Re: IOTLB support for vhost/vsock breaks crosvm on Android
+Message-ID: <20220807091455-mutt-send-email-mst@kernel.org>
+References: <20220805181105.GA29848@willie-the-truck>
+ <CAHk-=wip-Lju3ZdNwknS6ouyw+nKXeRSnhqVyNo8WSEdk-BfGw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220806163255.10404-4-markuss.broks@gmail.com>
+In-Reply-To: <CAHk-=wip-Lju3ZdNwknS6ouyw+nKXeRSnhqVyNo8WSEdk-BfGw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Markuss,
+On Fri, Aug 05, 2022 at 03:57:08PM -0700, Linus Torvalds wrote:
+> And hey, it's possible that the bit encoding is *so* incestuous that
+> it's really hard to split it into two. But it really sounds to me like
+> somebody mindlessly re-used a feature bit for a *completely* different
+> thing. Why?
+> 
+> Why have feature bits at all, when you then re-use the same bit for
+> two different features? It kind of seems to defeat the whole purpose.
 
-I love your patch! Yet something to improve:
+What can I say? Hindsight is 20/20. The two things are
+*related* in that IOTLB in vhost is a way for userspace
+(the platform) to limit device access to guest memory.
+So we reused the feature bits (it's not the only one,
+just the one we changed most recently).
+It bothered me a bit but everyone seemed happy and
+was able to refer to virtio spec for documentation so there
+was less documentation to write for Linux.
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on efi/next staging/staging-testing usb/usb-testing linus/master v5.19 next-20220805]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Markuss-Broks/Add-generic-framebuffer-support-to-EFI-earlycon-driver/20220807-003646
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20220807/202208072145.yWoGkrW1-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/97dfc2aa69b065de769a191352afe2099c52fedb
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Markuss-Broks/Add-generic-framebuffer-support-to-EFI-earlycon-driver/20220807-003646
-        git checkout 97dfc2aa69b065de769a191352afe2099c52fedb
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/video/console/earlycon.c:7:10: fatal error: asm/early_ioremap.h: No such file or directory
-       7 | #include <asm/early_ioremap.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
-
-
-vim +7 drivers/video/console/earlycon.c
-
-   > 7	#include <asm/early_ioremap.h>
-     8	#include <linux/console.h>
-     9	#include <linux/efi.h>
-    10	#include <linux/font.h>
-    11	#include <linux/io.h>
-    12	#include <linux/kernel.h>
-    13	#include <linux/mm.h>
-    14	#include <linux/of.h>
-    15	#include <linux/of_fdt.h>
-    16	#include <linux/serial_core.h>
-    17	#include <linux/screen_info.h>
-    18	
+It's not that it's hard to split it generally, it's just that
+it's been there like this for a while so it's hard to change
+now - we need to find a way that does not break existing userspace.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+MST
+
