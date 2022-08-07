@@ -2,124 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D8CC19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 13:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08399C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 13:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234353AbiHGNr4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 09:47:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52540 "EHLO
+        id S234354AbiHGNzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 09:55:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234322AbiHGNry (ORCPT
+        with ESMTP id S233945AbiHGNzA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 09:47:54 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30925A458
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 06:47:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659880073; x=1691416073;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=77FBl3vUx49zjQlv3n6/4RN63oc5IH0eL4s0Jvvhj8Y=;
-  b=hPGi83YuDz4lllnDqBEPKP0sbdjtggGaXBtEBd/EvOxWIlmU4zS647BA
-   7aeQVaRxzZ8XK12/A1sUSpOR5+eU7WF++BUZj0jDuYMQiwW3zeYC6oyJf
-   WmF8LlmEk2+kXJp9i+VD7P1NqtF6e4auwtBNMFl0/rbMsZRUiF6IlL+jI
-   +xr81YEWDbxZNLTgJBiRHriq8IeBKuJQ0dOEsraScHg9LPKM5O9uGoKb6
-   6L6KXugvdS0D404qGy5ppTvebwmzQ/A+ZKx247yLXXReq6dT5EzzSTOYn
-   XM0/iFXsO9mx6BG6rsG6/yDdMOqkzSNsziZU01RauuktgiWZ3dKUF1+aD
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="354438638"
-X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="354438638"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 06:47:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="554620105"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 07 Aug 2022 06:47:33 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oKgcv-000LKn-0b;
-        Sun, 07 Aug 2022 13:47:33 +0000
-Date:   Sun, 7 Aug 2022 21:47:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Qi Zheng <zhengqi.arch@bytedance.com>, will@kernel.org,
-        arnd@arndb.de, catalin.marinas@arm.com, mark.rutland@arm.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Qi Zheng <zhengqi.arch@bytedance.com>
-Subject: Re: [PATCH v2] arm64: run softirqs on the per-CPU IRQ stack
-Message-ID: <202208072125.pTMPctXF-lkp@intel.com>
-References: <20220802065325.39740-1-zhengqi.arch@bytedance.com>
+        Sun, 7 Aug 2022 09:55:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE9DA29F
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 06:54:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8434960EE0
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 13:54:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E89CAC433D6;
+        Sun,  7 Aug 2022 13:54:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659880497;
+        bh=XAa6xTO9WJhBAO+dvlr3NlPbzNmmj0s2OlhemfvVMs8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=XTQXwJnhEz+M+JGTI/9k6Lg8QB82R1w04hwtjQ3rfqx3Otbwqy6Rfb1W87qoi4/Rm
+         JJcgvHriMENU0eBw9W1umFHAi2BnUdeS6lzI0ogV9toaA2Kzvz8hFYJN1twRGqYc57
+         XIsbUKNpZlS7EIJfSdTb94FeOhV3Ke1bAf+ZPyaNMBzEfoQo3FiHrga/pJ/ygCD886
+         IEYa9ii7zIO3zzX5V8KqtYMjNLXp2KmoinTvN7VFOh06P5UTkLM0kz/egW9IxziwZE
+         uwchp+whQdpWLgwXxGV/LIrMFxcWdfpHvNxjmV8Vdg0A+afyQ/Dh0su9OsixQ+4rGs
+         GMcodSZ5qGOeQ==
+From:   Oded Gabbay <ogabbay@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     farah kassabri <fkassabri@habana.ai>
+Subject: [PATCH 1/6] habanalabs/gaudi2: change device f/w security check
+Date:   Sun,  7 Aug 2022 16:54:47 +0300
+Message-Id: <20220807135452.1219894-1-ogabbay@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220802065325.39740-1-zhengqi.arch@bytedance.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Qi,
+From: farah kassabri <fkassabri@habana.ai>
 
-Thank you for the patch! Perhaps something to improve:
+On Gaudi2 the f/w always configures the PCIe iATU and allows access to
+scratchpad registers. Therefore, we can know if the f/w is secured
+by reading a status bit from the f/w registers.
 
-[auto build test WARNING on soc/for-next]
-[also build test WARNING on v5.19]
-[cannot apply to arm64/for-next/core linus/master next-20220805]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Signed-off-by: farah kassabri <fkassabri@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+---
+ drivers/misc/habanalabs/common/firmware_if.c |  2 ++
+ drivers/misc/habanalabs/gaudi2/gaudi2.c      | 21 ++++++--------------
+ 2 files changed, 8 insertions(+), 15 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Qi-Zheng/arm64-run-softirqs-on-the-per-CPU-IRQ-stack/20220802-145547
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
-config: arm64-randconfig-r032-20220801 (https://download.01.org/0day-ci/archive/20220807/202208072125.pTMPctXF-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/34ac9375ce5e75127084159f724fcb2208c022a3
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Qi-Zheng/arm64-run-softirqs-on-the-per-CPU-IRQ-stack/20220802-145547
-        git checkout 34ac9375ce5e75127084159f724fcb2208c022a3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/arm64/kernel/irq.c:81:6: warning: no previous prototype for function 'do_softirq_own_stack' [-Wmissing-prototypes]
-   void do_softirq_own_stack(void)
-        ^
-   arch/arm64/kernel/irq.c:81:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void do_softirq_own_stack(void)
-   ^
-   static 
-   arch/arm64/kernel/irq.c:120:13: warning: no previous prototype for function 'init_IRQ' [-Wmissing-prototypes]
-   void __init init_IRQ(void)
-               ^
-   arch/arm64/kernel/irq.c:120:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void __init init_IRQ(void)
-   ^
-   static 
-   2 warnings generated.
-
-
-vim +/do_softirq_own_stack +81 arch/arm64/kernel/irq.c
-
-    80	
-  > 81	void do_softirq_own_stack(void)
-    82	{
-    83		call_on_irq_stack(NULL, ____do_softirq);
-    84	}
-    85	#endif
-    86	
-
+diff --git a/drivers/misc/habanalabs/common/firmware_if.c b/drivers/misc/habanalabs/common/firmware_if.c
+index 58c1eff16df6..cbcb9442bdca 100644
+--- a/drivers/misc/habanalabs/common/firmware_if.c
++++ b/drivers/misc/habanalabs/common/firmware_if.c
+@@ -1476,6 +1476,8 @@ static void hl_fw_preboot_update_state(struct hl_device *hdev)
+ 	 */
+ 	prop->hard_reset_done_by_fw = !!(cpu_boot_dev_sts0 & CPU_BOOT_DEV_STS0_FW_HARD_RST_EN);
+ 
++	prop->fw_security_enabled = !!(cpu_boot_dev_sts0 & CPU_BOOT_DEV_STS0_SECURITY_EN);
++
+ 	dev_dbg(hdev->dev, "Firmware preboot boot device status0 %#x\n",
+ 							cpu_boot_dev_sts0);
+ 
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2.c b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+index 68ab407fa6ba..9ccde0258eca 100644
+--- a/drivers/misc/habanalabs/gaudi2/gaudi2.c
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+@@ -2493,7 +2493,6 @@ static int gaudi2_early_init(struct hl_device *hdev)
+ 	struct asic_fixed_properties *prop = &hdev->asic_prop;
+ 	struct pci_dev *pdev = hdev->pdev;
+ 	resource_size_t pci_bar_size;
+-	u32 fw_boot_status;
+ 	int rc;
+ 
+ 	rc = gaudi2_set_fixed_properties(hdev);
+@@ -2521,22 +2520,14 @@ static int gaudi2_early_init(struct hl_device *hdev)
+ 	prop->dram_pci_bar_size = pci_resource_len(pdev, DRAM_BAR_ID);
+ 	hdev->dram_pci_bar_start = pci_resource_start(pdev, DRAM_BAR_ID);
+ 
+-	/* If FW security is enabled at this point it means no access to ELBI */
+-	if (hdev->asic_prop.fw_security_enabled) {
+-		hdev->asic_prop.iatu_done_by_fw = true;
+-		goto pci_init;
+-	}
+-
+-	rc = hl_pci_elbi_read(hdev, CFG_BASE + mmCPU_BOOT_DEV_STS0, &fw_boot_status);
+-	if (rc)
+-		goto free_queue_props;
+-
+-	/* Check whether FW is configuring iATU */
+-	if ((fw_boot_status & CPU_BOOT_DEV_STS0_ENABLED) &&
+-			(fw_boot_status & CPU_BOOT_DEV_STS0_FW_IATU_CONF_EN))
++	/*
++	 * Only in pldm driver config iATU
++	 */
++	if (hdev->pldm)
++		hdev->asic_prop.iatu_done_by_fw = false;
++	else
+ 		hdev->asic_prop.iatu_done_by_fw = true;
+ 
+-pci_init:
+ 	rc = hl_pci_init(hdev);
+ 	if (rc)
+ 		goto free_queue_props;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
