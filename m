@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE1DAC25B08
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D0EAC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242274AbiHGWKu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:10:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50000 "EHLO
+        id S242353AbiHGWLB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:11:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236992AbiHGWHK (ORCPT
+        with ESMTP id S241873AbiHGWHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 18:07:10 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79733BC04;
-        Sun,  7 Aug 2022 15:03:15 -0700 (PDT)
+        Sun, 7 Aug 2022 18:07:16 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B28BC1F;
+        Sun,  7 Aug 2022 15:03:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659909795; x=1691445795;
+  t=1659909798; x=1691445798;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=eMuxnVZWvb8JA13vz4K/7auQXS6AE18TTeNRdKOvB6E=;
-  b=C4ogyc+DYwuzyV29kPio1pVf5SunGzqYnQpROSvWallJpagRzw8GvvaD
-   Y1srn5Z2dpWlEwCxxW4awew0AygZN4brFkq70TvZ6lZVen5br4WrDFYq7
-   sYXCaITdGixxiMXY7UdL7LiUUo8RLDWV6ReUVkAx4oFDFG93dPV7vJoz8
-   yVokBh9DGsiZfFs55/+VAOUWs81yWEzCceWL9XsptdBvk0IHX0kBRXn11
-   QPZjg6OF7W1EtwUua2Xeb0wpv9MBE6pRf/zk/vh5gRca/lDldnUjmRFsE
-   NPYP/8sJYegeIYU6ftHFItxzG7G42ER3umJdM2uM1WDKjW/tJNVeNQVL7
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="289224140"
+  bh=dvY2QnLjVWunU4LZDJI5aPV8I0z/fE/3rogtYgCrynw=;
+  b=BoLRWhlxEXmQZ4CG3u3X3dPfelVi5HJIDloNSBy9PshRUBxtArrtFLbo
+   3Mj9/F6ckc7gNZ3xkK7ICJ3aXA6pCSZf8x/pYWKFyHboW1D1C1ThFphWF
+   UaF4l/mNHmPnH/JvKkjdbtZ7kNPysuLjxV8jcUsobtN9LzRq80GX7vsY3
+   XpoObOXOOYJO0Y6eWVNWPPzgzl/WB80xVzDM02cxz/jGc//PH4k1K+Wwy
+   s7Sivr4dToOzeKq4aa0hKsNESW/vCU4VeJj//weiE37pG7PXlw6Hp15Bt
+   FxdD7Q3bpKOekgi5xAjEPuzH0PDLAMFo3h476x4D5lZ12DuftryJgudIV
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270240402"
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="289224140"
+   d="scan'208";a="270240402"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:36 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:43 -0700
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="663682591"
+   d="scan'208";a="663682740"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:36 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:43 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [PATCH v8 046/103] KVM: x86/mmu: Disallow dirty logging for x86 TDX
-Date:   Sun,  7 Aug 2022 15:01:31 -0700
-Message-Id: <e44af3e75cde88c828bce875062dee7ab82960a6.1659854790.git.isaku.yamahata@intel.com>
+Subject: [PATCH v8 090/103] KVM: TDX: Handle TDX PV CPUID hypercall
+Date:   Sun,  7 Aug 2022 15:02:15 -0700
+Message-Id: <6d9a5ec5e267162383160ff7f6889ea8ce906257.1659854791.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854790.git.isaku.yamahata@intel.com>
 References: <cover.1659854790.git.isaku.yamahata@intel.com>
@@ -57,80 +57,52 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-TDX doesn't support dirty logging.  Report dirty logging isn't supported so
-that device model, for example qemu, can properly handle it.
+Wire up TDX PV CPUID hypercall to the KVM backend function.
 
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/x86.c       |  5 +++++
- include/linux/kvm_host.h |  1 +
- virt/kvm/kvm_main.c      | 15 ++++++++++++---
- 3 files changed, 18 insertions(+), 3 deletions(-)
+ arch/x86/kvm/vmx/tdx.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 702012f56502..972262ddda5d 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -13356,6 +13356,11 @@ int kvm_sev_es_string_io(struct kvm_vcpu *vcpu, unsigned int size,
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index 849bae37246a..93c4ef209a73 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -934,12 +934,34 @@ static int tdx_emulate_vmcall(struct kvm_vcpu *vcpu)
+ 	return 1;
  }
- EXPORT_SYMBOL_GPL(kvm_sev_es_string_io);
  
-+bool kvm_arch_dirty_log_supported(struct kvm *kvm)
++static int tdx_emulate_cpuid(struct kvm_vcpu *vcpu)
 +{
-+	return kvm->arch.vm_type != KVM_X86_TDX_VM;
++	u32 eax, ebx, ecx, edx;
++
++	/* EAX and ECX for cpuid is stored in R12 and R13. */
++	eax = tdvmcall_a0_read(vcpu);
++	ecx = tdvmcall_a1_read(vcpu);
++
++	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
++
++	tdvmcall_a0_write(vcpu, eax);
++	tdvmcall_a1_write(vcpu, ebx);
++	tdvmcall_a2_write(vcpu, ecx);
++	tdvmcall_a3_write(vcpu, edx);
++
++	tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
++
++	return 1;
 +}
 +
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_entry);
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_exit);
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_fast_mmio);
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 63d4e3ce3e53..025251806e70 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -1448,6 +1448,7 @@ bool kvm_arch_dy_has_pending_interrupt(struct kvm_vcpu *vcpu);
- int kvm_arch_post_init_vm(struct kvm *kvm);
- void kvm_arch_pre_destroy_vm(struct kvm *kvm);
- int kvm_arch_create_vm_debugfs(struct kvm *kvm);
-+bool kvm_arch_dirty_log_supported(struct kvm *kvm);
- 
- #ifndef __KVM_HAVE_ARCH_VM_ALLOC
- /*
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index c44e5d7d418f..3cc29fdba562 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -1511,9 +1511,18 @@ static void kvm_replace_memslot(struct kvm *kvm,
- 	}
- }
- 
--static int check_memory_region_flags(const struct kvm_userspace_memory_region *mem)
-+bool __weak kvm_arch_dirty_log_supported(struct kvm *kvm)
+ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
  {
--	u32 valid_flags = KVM_MEM_LOG_DIRTY_PAGES;
-+	return true;
-+}
-+
-+static int check_memory_region_flags(struct kvm *kvm,
-+				     const struct kvm_userspace_memory_region *mem)
-+{
-+	u32 valid_flags = 0;
-+
-+	if (kvm_arch_dirty_log_supported(kvm))
-+		valid_flags |= KVM_MEM_LOG_DIRTY_PAGES;
+ 	if (tdvmcall_exit_type(vcpu))
+ 		return tdx_emulate_vmcall(vcpu);
  
- #ifdef __KVM_HAVE_READONLY_MEM
- 	valid_flags |= KVM_MEM_READONLY;
-@@ -1915,7 +1924,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
- 	int as_id, id;
- 	int r;
- 
--	r = check_memory_region_flags(mem);
-+	r = check_memory_region_flags(kvm, mem);
- 	if (r)
- 		return r;
- 
+ 	switch (tdvmcall_leaf(vcpu)) {
++	case EXIT_REASON_CPUID:
++		return tdx_emulate_cpuid(vcpu);
+ 	default:
+ 		break;
+ 	}
 -- 
 2.25.1
 
