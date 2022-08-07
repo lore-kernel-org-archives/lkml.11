@@ -2,154 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E52E2C19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 16:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EE1BC19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 16:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234597AbiHGQB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 12:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55426 "EHLO
+        id S234539AbiHGQDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 12:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234539AbiHGQBs (ORCPT
+        with ESMTP id S234222AbiHGQDF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 12:01:48 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C04A18C
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 09:01:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659888103; x=1691424103;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gZTz/m4Se/2AOgpCCgOVve4JFAbqZFfTfh9rCmBWmeI=;
-  b=ZcQTzt7SFtwHbzvc4IyC1uAs39z+qAVilw0ri98YS767bDIRRER90sup
-   VPyK9Y/HnGtKkGU+WLQsVd4xPjKRzznOKxdWBX3dDLX/hDpUyzJNumc1a
-   JUC90Baf18B/j/9sfRxssrYYjdVZ5V0sbc1WNrMrtPu8Jcfsf8gL/ff4k
-   II8Zchayn0iwlW07kZ8Pp1rzlpRYzo32OQqZIRuhMYmPHNh7QN5ajTqL/
-   Jzce5hTqnOje5I4eaR/dY0KbseXZGwQiAAwgAEB+XdRxPO05z5xknzLLo
-   zNYot6JqEDdjoGQDsRM4GxJR9uM1CUPwT5PZIoluReIQ+24S3Ck1/0N1Q
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="291222696"
-X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="291222696"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 09:01:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="672204094"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 07 Aug 2022 09:01:40 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oKiih-000LQX-19;
-        Sun, 07 Aug 2022 16:01:39 +0000
-Date:   Mon, 8 Aug 2022 00:00:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Paul Cercueil <paul@crapouillou.net>,
-        Lee Jones <lee.jones@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Paul Cercueil <paul@crapouillou.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 25/28] mfd: stmfx: Remove #ifdef guards for PM related
- functions
-Message-ID: <202208072317.F5f2MGx5-lkp@intel.com>
-References: <20220807145247.46107-26-paul@crapouillou.net>
+        Sun, 7 Aug 2022 12:03:05 -0400
+Received: from bg5.exmail.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4D464EA;
+        Sun,  7 Aug 2022 09:03:03 -0700 (PDT)
+X-QQ-mid: bizesmtp83t1659888167tbvqfw97
+Received: from localhost.localdomain ( [182.148.15.41])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 08 Aug 2022 00:02:43 +0800 (CST)
+X-QQ-SSF: 0100000000000040B000000A0000000
+X-QQ-FEAT: AmBEVSWWrMca1Gv19HfFCsafPdV2RRaBAFQrEm5BmZmWHz0Cjx1IMB3HjWkSP
+        2p5HUAJcBG5VRbOM2AI1vf3WiTaxFWZ2yDncZcF/hhV87IgGIAVXTaPFOvSlCiEBASlg3nO
+        Xwue8NDPacJW4sMlqI+an7lNTK4gAZ9lHmrVjgrwG5PykXTPtjkj8bGj2NgIMxpou1pMNDT
+        Izt/6ibwmUevmzfZjZ/Ztu4a2dEkYGjb9vGHIW4CPnwNzFlgSkZDRRlwiPbPYrx3+MywlDN
+        lSh91wti9XdIb3eR6uc+nY6q3JOYNQ0umBo0iOIvlu/GqsBWc52PmJD1vmD+TKHnb+5CCPU
+        O3UOW+Jzt2KxCb/G6F4ant/C0LIsg==
+X-QQ-GoodBg: 0
+From:   shaomin Deng <dengshaomin@cdjrlc.com>
+To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        shaomin Deng <dengshaomin@cdjrlc.com>
+Subject: [PATCH] perf scripting python: Delete repeated word in comments
+Date:   Sun,  7 Aug 2022 12:02:39 -0400
+Message-Id: <20220807160239.474-1-dengshaomin@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220807145247.46107-26-paul@crapouillou.net>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
+Delete the repeated word "into" in comments.
 
-I love your patch! Yet something to improve:
+Signed-off-by: shaomin Deng <dengshaomin@cdjrlc.com>
+---
+ tools/perf/util/scripting-engines/trace-event-python.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[auto build test ERROR on v5.19]
-[cannot apply to lee-mfd/for-mfd-next linus/master next-20220805]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Paul-Cercueil/mfd-Remove-ifdef-guards-for-PM-functions/20220807-225947
-base:    3d7cb6b04c3f3115719235cc6866b10326de34cd
-config: openrisc-randconfig-r015-20220807 (https://download.01.org/0day-ci/archive/20220807/202208072317.F5f2MGx5-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/5a39bd52d549e3f3be743fb336dd710eac75055d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Paul-Cercueil/mfd-Remove-ifdef-guards-for-PM-functions/20220807-225947
-        git checkout 5a39bd52d549e3f3be743fb336dd710eac75055d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/mfd/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/mfd/stmfx.c: In function 'stmfx_suspend':
->> drivers/mfd/stmfx.c:485:37: error: 'struct stmfx' has no member named 'bkp_sysctrl'
-     485 |                               &stmfx->bkp_sysctrl, sizeof(stmfx->bkp_sysctrl));
-         |                                     ^~
-   drivers/mfd/stmfx.c:485:64: error: 'struct stmfx' has no member named 'bkp_sysctrl'
-     485 |                               &stmfx->bkp_sysctrl, sizeof(stmfx->bkp_sysctrl));
-         |                                                                ^~
->> drivers/mfd/stmfx.c:490:37: error: 'struct stmfx' has no member named 'bkp_irqoutpin'
-     490 |                               &stmfx->bkp_irqoutpin,
-         |                                     ^~
-   drivers/mfd/stmfx.c:491:43: error: 'struct stmfx' has no member named 'bkp_irqoutpin'
-     491 |                               sizeof(stmfx->bkp_irqoutpin));
-         |                                           ^~
-   drivers/mfd/stmfx.c: In function 'stmfx_resume':
-   drivers/mfd/stmfx.c:525:38: error: 'struct stmfx' has no member named 'bkp_sysctrl'
-     525 |                                &stmfx->bkp_sysctrl, sizeof(stmfx->bkp_sysctrl));
-         |                                      ^~
-   drivers/mfd/stmfx.c:525:65: error: 'struct stmfx' has no member named 'bkp_sysctrl'
-     525 |                                &stmfx->bkp_sysctrl, sizeof(stmfx->bkp_sysctrl));
-         |                                                                 ^~
-   drivers/mfd/stmfx.c:530:38: error: 'struct stmfx' has no member named 'bkp_irqoutpin'
-     530 |                                &stmfx->bkp_irqoutpin,
-         |                                      ^~
-   drivers/mfd/stmfx.c:531:44: error: 'struct stmfx' has no member named 'bkp_irqoutpin'
-     531 |                                sizeof(stmfx->bkp_irqoutpin));
-         |                                            ^~
-
-
-vim +485 drivers/mfd/stmfx.c
-
-06252ade915665 Amelie Delaunay 2019-05-09  478  
-06252ade915665 Amelie Delaunay 2019-05-09  479  static int stmfx_suspend(struct device *dev)
-06252ade915665 Amelie Delaunay 2019-05-09  480  {
-06252ade915665 Amelie Delaunay 2019-05-09  481  	struct stmfx *stmfx = dev_get_drvdata(dev);
-06252ade915665 Amelie Delaunay 2019-05-09  482  	int ret;
-06252ade915665 Amelie Delaunay 2019-05-09  483  
-06252ade915665 Amelie Delaunay 2019-05-09  484  	ret = regmap_raw_read(stmfx->map, STMFX_REG_SYS_CTRL,
-06252ade915665 Amelie Delaunay 2019-05-09 @485  			      &stmfx->bkp_sysctrl, sizeof(stmfx->bkp_sysctrl));
-06252ade915665 Amelie Delaunay 2019-05-09  486  	if (ret)
-06252ade915665 Amelie Delaunay 2019-05-09  487  		return ret;
-06252ade915665 Amelie Delaunay 2019-05-09  488  
-06252ade915665 Amelie Delaunay 2019-05-09  489  	ret = regmap_raw_read(stmfx->map, STMFX_REG_IRQ_OUT_PIN,
-06252ade915665 Amelie Delaunay 2019-05-09 @490  			      &stmfx->bkp_irqoutpin,
-06252ade915665 Amelie Delaunay 2019-05-09  491  			      sizeof(stmfx->bkp_irqoutpin));
-06252ade915665 Amelie Delaunay 2019-05-09  492  	if (ret)
-06252ade915665 Amelie Delaunay 2019-05-09  493  		return ret;
-06252ade915665 Amelie Delaunay 2019-05-09  494  
-97eda5dcc2cde5 Amelie Delaunay 2020-04-22  495  	disable_irq(stmfx->irq);
-97eda5dcc2cde5 Amelie Delaunay 2020-04-22  496  
-06252ade915665 Amelie Delaunay 2019-05-09  497  	if (stmfx->vdd)
-06252ade915665 Amelie Delaunay 2019-05-09  498  		return regulator_disable(stmfx->vdd);
-06252ade915665 Amelie Delaunay 2019-05-09  499  
-06252ade915665 Amelie Delaunay 2019-05-09  500  	return 0;
-06252ade915665 Amelie Delaunay 2019-05-09  501  }
-06252ade915665 Amelie Delaunay 2019-05-09  502  
-
+diff --git a/tools/perf/util/scripting-engines/trace-event-python.c b/tools/perf/util/scripting-engines/trace-event-python.c
+index adba01b7d9dd..107aeccbae30 100644
+--- a/tools/perf/util/scripting-engines/trace-event-python.c
++++ b/tools/perf/util/scripting-engines/trace-event-python.c
+@@ -131,7 +131,7 @@ static void handler_call_die(const char *handler_name)
+ }
+ 
+ /*
+- * Insert val into into the dictionary and decrement the reference counter.
++ * Insert val into the dictionary and decrement the reference counter.
+  * This is necessary for dictionaries since PyDict_SetItemString() does not
+  * steal a reference, as opposed to PyTuple_SetItem().
+  */
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
+
