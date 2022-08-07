@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1964BC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:06:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A1EFC19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:06:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238521AbiHGWGR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:06:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
+        id S239027AbiHGWGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234670AbiHGWCv (ORCPT
+        with ESMTP id S234725AbiHGWCv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 7 Aug 2022 18:02:51 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B14309596;
-        Sun,  7 Aug 2022 15:02:40 -0700 (PDT)
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC13095AA;
+        Sun,  7 Aug 2022 15:02:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659909760; x=1691445760;
+  t=1659909761; x=1691445761;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=lrdUUyGY5FAg5aF/ecsuvlLc8QeY6sIVMwfcSyZ3SOI=;
-  b=MiYcV/gU5AQLzo/yKcYEF+qVZOSXc4hvNBlI85gj6JBtDppbZEhvwZJ6
-   uunAzxOQwUB5aSDTBub4DMlEMcT0k3mDz8v3q5Fg5lLh0ciQidqfSUDHr
-   TkXVJUfavo/E2o99LYPU4wed7up8CMWLV8nPpn2qKGTJB85jskPjZdoyw
-   CmTI7/AdsgV00IaXBCL6QcMsrBSzrqB2c/uomchM7tN4ceZC/DI/w7lJE
-   j0LIyftvqvrUrMJvy6oHW0MM3Ls/9z7LNuvnWT/pLCcIecNU0XRIV628U
-   RZ+iETDSZJrgL87ocBBq2hjc2IzU7SHGwM4vERfkC4wEQwYfBm2lGMK8u
+  bh=GrRrgKMz4riAK/ebZ/sI81D2KhEbTTaxZ+pXBobqoJ4=;
+  b=D1cqebC+IP8/Rm8NqXFyGvaXG8gxVQfdt67PuKB55E9XQWu0bAsWCB7G
+   bbyDDcNHA7D5hxiPfpdilnz7qertNOPIX4A7vhzJP5DLce5jekXAxc5Mp
+   Sc4WC7cPhSy3N0s+MgNpV4HwV9Su9au5mOgTCz5gc9to+sLMOj2HRSxTR
+   BpZk80dIlesdXuYNJraOP0XbNq457EsBMdFwHMzE2NylulxmIZJHIfnzS
+   e+4bE832pHY9pf0UfKG3Jxf8QXKYKZDHW0+DTupbvzfP0MjObg1bj5QGb
+   sLk6f5Wp4H6Qgxfzjdf47U5Lp/XMmLnPVsS5tHvtg0i4JMnjzXjnFIhyg
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270240359"
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="289224101"
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="270240359"
+   d="scan'208";a="289224101"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:40 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:33 -0700
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="663682679"
+   d="scan'208";a="663682526"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:40 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:33 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [PATCH v8 071/103] KVM: TDX: restore debug store when TD exit
-Date:   Sun,  7 Aug 2022 15:01:56 -0700
-Message-Id: <bcaa0958cd0e31a49539f9187c2e9ca32b040e53.1659854790.git.isaku.yamahata@intel.com>
+Subject: [PATCH v8 028/103] [MARKER] The start of TDX KVM patch series: KVM MMU GPA shared bits
+Date:   Sun,  7 Aug 2022 15:01:13 -0700
+Message-Id: <8405d7e7de2cd545ad5ccc2e170ac6e044fbf8f4.1659854790.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854790.git.isaku.yamahata@intel.com>
 References: <cover.1659854790.git.isaku.yamahata@intel.com>
@@ -57,36 +57,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Because debug store is clobbered, restore it on TD exit.
+This empty commit is to mark the start of patch series of KVM MMU GPA
+shared bits.
 
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/events/intel/ds.c | 1 +
- arch/x86/kvm/vmx/tdx.c     | 1 +
- 2 files changed, 2 insertions(+)
+ Documentation/virt/kvm/intel-tdx-layer-status.rst | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
-index 376cc3d66094..cdba4227ad3b 100644
---- a/arch/x86/events/intel/ds.c
-+++ b/arch/x86/events/intel/ds.c
-@@ -2256,3 +2256,4 @@ void perf_restore_debug_store(void)
+diff --git a/Documentation/virt/kvm/intel-tdx-layer-status.rst b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+index 3e8efde3e3f3..6e3f71ab6b59 100644
+--- a/Documentation/virt/kvm/intel-tdx-layer-status.rst
++++ b/Documentation/virt/kvm/intel-tdx-layer-status.rst
+@@ -10,6 +10,7 @@ What qemu can do
+ ----------------
+ - TDX VM TYPE is exposed to Qemu.
+ - Qemu can create/destroy guest of TDX vm type.
++- Qemu can create/destroy vcpu of TDX vm type.
  
- 	wrmsrl(MSR_IA32_DS_AREA, (unsigned long)ds);
- }
-+EXPORT_SYMBOL_GPL(perf_restore_debug_store);
-diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
-index 2c5fda9e213e..2354889df571 100644
---- a/arch/x86/kvm/vmx/tdx.c
-+++ b/arch/x86/kvm/vmx/tdx.c
-@@ -650,6 +650,7 @@ fastpath_t tdx_vcpu_run(struct kvm_vcpu *vcpu)
- 	tdx_vcpu_enter_exit(vcpu, tdx);
+ Patch Layer status
+ ------------------
+@@ -17,13 +18,13 @@ Patch Layer status
+ * TDX, VMX coexistence:                 Applied
+ * TDX architectural definitions:        Applied
+ * TD VM creation/destruction:           Applied
+-* TD vcpu creation/destruction:         Applying
++* TD vcpu creation/destruction:         Applied
+ * TDX EPT violation:                    Not yet
+ * TD finalization:                      Not yet
+ * TD vcpu enter/exit:                   Not yet
+ * TD vcpu interrupts/exit/hypercall:    Not yet
  
- 	tdx_user_return_update_cache();
-+	perf_restore_debug_store();
- 	tdx_restore_host_xsave_state(vcpu);
- 	tdx->host_state_need_restore = true;
- 
+-* KVM MMU GPA shared bits:              Not yet
++* KVM MMU GPA shared bits:              Applying
+ * KVM TDP refactoring for TDX:          Not yet
+ * KVM TDP MMU hooks:                    Not yet
+ * KVM TDP MMU MapGPA:                   Not yet
 -- 
 2.25.1
 
