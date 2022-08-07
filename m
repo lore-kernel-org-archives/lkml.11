@@ -2,92 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB73C19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B89EAC19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242325AbiHGWOZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:14:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43852 "EHLO
+        id S230182AbiHGWXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:23:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243368AbiHGWNd (ORCPT
+        with ESMTP id S234943AbiHGWXT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 18:13:33 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C4C912AD5;
-        Sun,  7 Aug 2022 15:05:48 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4M1Czy4Xjxz4xGS;
-        Mon,  8 Aug 2022 08:04:46 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1659909886;
-        bh=JXky3o1+FjUra+eLP3JqUfPG/Fy+qTINfM0OKoNf1Ug=;
-        h=Date:From:To:Cc:Subject:From;
-        b=srOrBgszybYA/Qn9NsHKMl08BISpMwii4uU2uDOPvHamEkeyARSIf4VYizCZhaFvW
-         QMKX7ZdXspNQjGriacR7VWRrsnxJqouzIuOV22IIlxdkO1TZsAxshUtjdTI7BRDvdM
-         cvKMeYYJsgMY6cRL4twVoOjaI+ojQvKsjR5vq2HLHcqfcKHP78Q1BlPMfidrFkH4xR
-         CPRj7FkcnXf/lr6UwVzmN1RhHCXKyj/+fPe2kj+p+OIAID8XJKxLf3sxMBODf2xDbk
-         3ElhsA+2hFQnUxQgaNGxrsHyxh2TfNaxYMv6dErVmcnnxWhYZfPkg8w1U2xd8mr38Y
-         KO8mhuflSBxwQ==
-Date:   Mon, 8 Aug 2022 07:19:41 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Peter Xu <peterx@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the mm-hotfixes tree
-Message-ID: <20220808071941.4e18e748@canb.auug.org.au>
+        Sun, 7 Aug 2022 18:23:19 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151FB1FCFF;
+        Sun,  7 Aug 2022 15:10:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=x4+1SyuBnrsfLH3HBApRgaK+TGzqaCKJHHZnZyL8QS8=; b=nu/cBWDS99rOTqn80qBNQjT8uK
+        XOac2xWsTFDD6kBvHa9wYsprv1AqpHPZKL4PmsfGHE5hCfXSv/H8H2/teaAbY+TDBirmg9n1wxjOt
+        6PdTk8pOpKx963XwOBtwXdCEF/4LB6zLW4LEWT29np7gUmbCZy5XsE18f0XwWGyFjka9nVaKLAyQf
+        lXghFir0KRS6W6jQBOwRu9XqavxA58iXNUINdo/muia/uZRyQ/jEiLzO/wZ7k6yCQaJcLxf4tza4y
+        3XHJG3eJKKEptiHDJTINiY8H4vKwk/7gtGxgrVrM8Yrj1kw6eopKjPQ5+wOImhQoVfu8+W6IO3HKs
+        uBNZ2e8g==;
+Received: from [2601:1c0:6280:3f0::a6b3] (helo=casper.infradead.org)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oKoSq-00DL2b-E7; Sun, 07 Aug 2022 22:09:40 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv@lists.infradead.org, linux-api@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+Subject: [PATCH v2] kernel/sys_ni: add compat entry for fadvise64_64
+Date:   Sun,  7 Aug 2022 15:09:34 -0700
+Message-Id: <20220807220934.5689-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/KCuy/W_yhQf8pfFX3A8OAez";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/KCuy/W_yhQf8pfFX3A8OAez
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+When CONFIG_ADVISE_SYSCALLS is not set/enabled and CONFIG_COMPAT is
+set/enabled, the riscv compat_syscall_table references
+'compat_sys_fadvise64_64', which is not defined:
 
-Hi all,
+riscv64-linux-ld: arch/riscv/kernel/compat_syscall_table.o:(.rodata+0x6f8):
+undefined reference to `compat_sys_fadvise64_64'
 
-In commit
+Add 'fadvise64_64' to kernel/sys_ni.c as a conditional COMPAT function
+so that when CONFIG_ADVISE_SYSCALLS is not set, there is a fallback
+function available.
 
-  b2f4c6e29531 ("mm/smaps: don't access young/dirty bit if pte unpresent")
+Fixes: d3ac21cacc24 ("mm: Support compiling out madvise and fadvise")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Suggested-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Josh Triplett <josh@joshtriplett.org>
+Cc: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Albert Ou <aou@eecs.berkeley.edu>
+Cc: linux-riscv@lists.infradead.org
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-api@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-mm@kvack.org
+---
+v2: patch kernel/sys_ni.c (for any arch) instead of arch/riscv's
+    unistd.h (Arnd)
 
-Fixes tag
+ kernel/sys_ni.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-  Fixes: b1d4d9e0cbd0 ("proc/smaps: carefully handle migration entries", 20=
-12-05-31)
-
-has these problem(s):
-
-  - Subject has leading but no trailing quotes
-  - Subject does not match target commit subject
-    Just use
-	git log -1 --format=3D'Fixes: %h ("%s")'
-
-Please do not include the date part - it adds nothing.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/KCuy/W_yhQf8pfFX3A8OAez
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLwLG0ACgkQAVBC80lX
-0Gy4igf9EcW3ux9Z6rZRSibgzAQW06g4hC2oHPL2kuSoC72/rDKKtXKSmbJ3WOWA
-G80drdXKSvZYkaBKE8bI5fvGl52zM+/8Z7EMVlxBhCNcnt26inagyNkGqLfZ8fw9
-dXkIpSd8XI32mrZTaWt0snMqt93pOiJMHbdHPQe4GwFihFXlG5fJTIjZDMxz/HoT
-6TeMxZQsjGwMjugqbpa6VID441D/Za8yIXI2aukfZB84Dc8XWdNgQrF29NeVCHBE
-xUiWVQETEItOg+DlfqyVBbv+D0cnLWYNeh8/wBHYFu7t2S+EaRu1GR+AJPfI59Np
-oTGzboPpC0y6/v4tqqv2lj31ZS2GrA==
-=cmHN
------END PGP SIGNATURE-----
-
---Sig_/KCuy/W_yhQf8pfFX3A8OAez--
+--- a/kernel/sys_ni.c
++++ b/kernel/sys_ni.c
+@@ -277,6 +277,7 @@ COND_SYSCALL(landlock_restrict_self);
+ 
+ /* mm/fadvise.c */
+ COND_SYSCALL(fadvise64_64);
++COND_SYSCALL_COMPAT(fadvise64_64);
+ 
+ /* mm/, CONFIG_MMU only */
+ COND_SYSCALL(swapon);
