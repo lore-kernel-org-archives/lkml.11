@@ -2,89 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B26C19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 15:12:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1114AC19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 15:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234706AbiHGPMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 11:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
+        id S234766AbiHGPT3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 11:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234222AbiHGPMe (ORCPT
+        with ESMTP id S229531AbiHGPT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 11:12:34 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1D66380;
-        Sun,  7 Aug 2022 08:12:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1659885113;
-        bh=A11bNpBA3/cowX4o1+e+twknnCZZvuX0J6fpcjIBQLo=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=cfhgfC0xXY7hMun2DEHOLcLTzB+K+AtBSZ/euu0OIGLYzKseZj5AuZRp/WUKCWDUN
-         mav5cgb7QXJnNNYAXr6/bAmEvVImsZGmM3Dx2RPP9jbGaXGKBLfd1e4WkEve1HzzL4
-         0B8Yq9EJ0/WxgBQa4yIZ/8vYvTSOuPvq7AWbwN3k=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.146.22]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MgvvJ-1nmBbI0Vo5-00hLGD; Sun, 07
- Aug 2022 17:11:53 +0200
-Message-ID: <16c2a025-0295-4b45-daa5-aae1ca7fefc9@gmx.de>
-Date:   Sun, 7 Aug 2022 17:11:00 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 1/3] proc: Add get_task_cmdline_kernel() function
-Content-Language: en-US
-To:     kernel test robot <lkp@intel.com>, linux-arch@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org
-References: <20220801152016.36498-2-deller@gmx.de>
- <202208072219.zrLROtui-lkp@intel.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <202208072219.zrLROtui-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:QUNoXCDz8SHSFzuPasLDc9Q2EdFXCHoxpiyYAgIfPBfOR5oYoui
- AV/561SjmS5SfPzDjoTe6EVVV40GkLpohs2a1LV0c0LiYNsZ7mG12ZPDxaPN/Oix5edli3i
- 3rXru7X6r1Iqkwi63hSwgg7OCZJm+ujxUPoe4tf5Z/Em/h7ITKn+aQc4Rbnj8D3ncQmy3i0
- qMw3ejGpmPartBhA0Hc3w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:6IIX8zzv6DU=:Z8wJXja0Hx9SbyFVm+CVHE
- +L+NNIV2AqOepaj7g3ZImQ8Y6dxffhaRb983P7UtTI2y9cIxmYADgxhR+KIZ1RPGzgkdQeGgD
- Cip2xJ/hRYaZL8T3Xyg0isu8Hvs/zcu8W+lwqavxexlu0D/2Bs1zqouA2nA7/l9EspQKa7YMM
- qa2psgLZ3ZsYpTabi37CiKjzM/LbjOBT+Cx69VwMIJyPhpje+0YNLxm6YMd6YWQTXCdI7bpOs
- pWD9sD32MmzSiGkr0SZFfDy8aIpqXZ750afUZ7FGTaiyW8Hpz+vdFPyEn4+iEJZDCK5LIlvJ4
- zCfBLH9xDbdg70Do/gx539sELb/e9GCWfpS1SdS5nRX1u8gQVsJkmti06ykLClejtOyb73wNv
- m5yqMnDIJtQIhNJbheU8tSCciSvXa3K2kRCUyKvsxYEPkBF0Xv3xjK4cFvqotZvdR1TAQVPVs
- uyAIR14p5O1UVp8QzNewpoiMIvMk4X0eTI20w5u3MMdvMbl4kwFFln3E4+qWc1owPgO75Vhlg
- WrCVhr94f84VjK+EbRSU10yU6t9WoJJCS59FUaJ+wXMtkV70jaEsHS41Rq05KHgIUS5TxGVfL
- pBdmKGJyR3jm67CItujxWvn3mInE5LX754UumnCqe4Y0Uwad/hf5IMOspmKWN0imkT+4h9gvR
- /fKhL5tNl//sSGL5N/xA8PE9/q7zfMelSironC9gHvcuzhR2EUcN32MoBwk9LEgjRaUc1kipL
- Zxyc7QED8Y83mu8RmOnsQXRf5SssHjaRHF+BrE9SVzjIKgE/SIODW68helOviu+VHPbJNDuNC
- to/657k0WFBZw7ZIILQgfRDaakWIaWhwndgzr5gEG6ie84mD3GsIuilbQUWeev8YTMdUTNvIQ
- QnqGVIyO9Wpz3V2K+Kb9f8QiQHTKKc5+7h/+ABAgCIh5PLSXzfm481i3gJBH7msxMuU2b2WEP
- T9x7Kf77lkPOeXIqrL0otBjpKa+p3e/5/2333seF9DSFHmzUF8Mzf2nBGjA40u0aA1isGE8A6
- tjYaZBCkOWtc4hgdE2Qkdz5rNPKQbCF/PK5/Zz+gD4lTAofiJSF7gQC1ByKReT99SbgGkW39F
- 0kMSszF2tYlatzAi3S2omMdZv5QnD5C1p6d
+        Sun, 7 Aug 2022 11:19:26 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F816330
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 08:19:25 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id pm17so6725304pjb.3
+        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 08:19:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc;
+        bh=zyNvPVLyDDezqApjjesRSa+r/dJCUOj2kajhngA3cEY=;
+        b=U1bLegysO3V+UCL2Q54RveB3Zmszqfc0p7d8TnVIoFVUi56Vpez2mRTa+v2j+P5y3u
+         FDZpSlP3cwxlPCGK69D0zHt6FXMbXB1PQp15Df8Uy4GhQcv60ccRun3Bp37q7O88QV+O
+         3MxWO2/INsFhAMJe4D8xLEKIOzhZAmAR0mw4ytUgrYosb8RVbtKvE0e/DF1J2ssMvIwf
+         40V2n4VkFTNKNdrCZvykHqZYbQtNBGJQhT4cZTTp9lWLV2doNl0ICHk7qtrEClPnZBHu
+         QiTFR9WdpGOuF48Heck1Wa+tbhR3oRHPMxZcsachgwtZrW6s+zprqb415HNH9Rs4tXgN
+         RrrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=zyNvPVLyDDezqApjjesRSa+r/dJCUOj2kajhngA3cEY=;
+        b=o4OkWl7K1edzKIcekukO45TOeyYVa1FPRG4CaLMD1YjctatcoBDyQ/VjjyAEuz3W5z
+         OSktUljtHHhtt+HqzMf+kO3JBopgL/oTOdg0lXXbJcy5qLHNtXLBFkv/uVbkrF/hhYx4
+         87EvW++W7FeRk0W3gBLbv2hDEmut2+I5fc4TZcXjlGS6jRi9r8FH3dT8UMB6xKEUaevW
+         bNUZ6m783mMmiQbfjXPJLAQ54fXw20ebCcs14hn118+dB/86Bo85CEAf/3okhU5vE9Ol
+         gKfHfs0RHeKEwr0I6eeLdfbzaFeElB7VVdrn98RNNb1igollPTJq0NRrOJyZuu1O0H4P
+         lHOQ==
+X-Gm-Message-State: ACgBeo0oNoeopWSJBbdUitk+txfzd9R4CNcu21B5viLmr+vV8bz0zAZj
+        MAEvg2NJ0H+elzMafe/iHA0=
+X-Google-Smtp-Source: AA6agR7NaNGx7oh8UfVl/gJPXMF8S/ck7dQr+6sm2ZO2jLPtgn/jhzjqKke4TQ/u+C49TpqkTp7n4A==
+X-Received: by 2002:a17:903:2015:b0:16e:db59:f65d with SMTP id s21-20020a170903201500b0016edb59f65dmr15152394pla.106.1659885565459;
+        Sun, 07 Aug 2022 08:19:25 -0700 (PDT)
+Received: from localhost.localdomain ([113.88.93.147])
+        by smtp.gmail.com with ESMTPSA id t188-20020a6281c5000000b0052acb753b8bsm6692577pfd.158.2022.08.07.08.19.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Aug 2022 08:19:24 -0700 (PDT)
+From:   Puyou Lu <puyou.lu@gmail.com>
+Cc:     Puyou Lu <puyou.lu@gmail.com>, Petr Mladek <pmladek@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Xiaoming Ni <nixiaoming@huawei.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Laurent Dufour <ldufour@linux.ibm.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] watchdog: don't enable watchdog if user disabled it
+Date:   Sun,  7 Aug 2022 23:18:44 +0800
+Message-Id: <20220807151845.18597-1-puyou.lu@gmail.com>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/7/22 16:28, kernel test robot wrote:
-> Hi Helge,
->
-> I love your patch! Perhaps something to improve:
->
-> [auto build test WARNING on tip/x86/mm]
-> [also build test WARNING on linus/master]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch#_base_tree_information]
-> [...]
->    include/linux/proc_fs.h:222:72: warning: omitting the parameter name =
-in a function definition is a C2x extension [-Wc2x-extensions]
->    static inline void get_task_cmdline_kernel(struct task_struct *, char=
- *, size_t) { }
->                                                                         =
-  ^
-Will fix.
+Take a check of watchdog_enabled before reconfigure/enable watchdog.
 
-Thanks!
-Helge
+Signed-off-by: Puyou Lu <puyou.lu@gmail.com>
+---
+ kernel/watchdog.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/kernel/watchdog.c b/kernel/watchdog.c
+index bed1fe7ecaea..791765c9bece 100644
+--- a/kernel/watchdog.c
++++ b/kernel/watchdog.c
+@@ -454,6 +454,9 @@ static void watchdog_enable(unsigned int cpu)
+ 
+ 	WARN_ON_ONCE(cpu != smp_processor_id());
+ 
++	if (!watchdog_enabled)
++		return;
++
+ 	init_completion(done);
+ 	complete(done);
+ 
+@@ -546,6 +549,10 @@ static void __lockup_detector_reconfigure(void)
+ 
+ 	set_sample_period();
+ 	lockup_detector_update_enable();
++
++	if (!watchdog_enabled)
++		return;
++
+ 	if (watchdog_enabled & SOFT_WATCHDOG_ENABLED)
+ 		softlockup_start_all();
+ 
+@@ -591,6 +598,10 @@ static void __lockup_detector_reconfigure(void)
+ 	cpus_read_lock();
+ 	watchdog_nmi_stop();
+ 	lockup_detector_update_enable();
++
++	if (!watchdog_enabled)
++		return;
++
+ 	watchdog_nmi_start();
+ 	cpus_read_unlock();
+ }
+-- 
+2.17.1
+
