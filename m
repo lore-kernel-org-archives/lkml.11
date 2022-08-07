@@ -2,73 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B145C19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 06:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D9FC25B07
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 06:58:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232439AbiHGG4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 02:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55918 "EHLO
+        id S231955AbiHGG6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 02:58:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233393AbiHGG4r (ORCPT
+        with ESMTP id S231191AbiHGG6H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 02:56:47 -0400
-Received: from smtp.smtpout.orange.fr (smtp09.smtpout.orange.fr [80.12.242.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5173DB1FE
-        for <linux-kernel@vger.kernel.org>; Sat,  6 Aug 2022 23:56:46 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id KaDHoLSshSMw7KaDHo0n89; Sun, 07 Aug 2022 08:56:44 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 07 Aug 2022 08:56:44 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org
-Subject: [PATCH] mmc: meson-gx: Fix an error handling path in meson_mmc_probe()
-Date:   Sun,  7 Aug 2022 08:56:38 +0200
-Message-Id: <be4b863bacf323521ba3a02efdc4fca9cdedd1a6.1659855351.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Sun, 7 Aug 2022 02:58:07 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF619FE6;
+        Sat,  6 Aug 2022 23:58:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 13A03CE0A4D;
+        Sun,  7 Aug 2022 06:58:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F015C433D6;
+        Sun,  7 Aug 2022 06:58:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659855483;
+        bh=XdPD/hTZLSeGJ/2XPd6cihsbI9pncKW8h0z0JEzGYNM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UeWQp+fwgRPLG5XVLIbdeP548dY5u+e0Fetj3U78s11+MEx1EjxHDM3UPx2PaaWzG
+         NI7/YE1LFKtgvDQOEVIurT4bM+ZK7XydIB8MKFO7UROGzxTFTxI791dqyHdbg3rxUT
+         4Kk3GXSS84zuLHWztvKUqzJgxKldyWB8xSV8i2/o=
+Date:   Sun, 7 Aug 2022 08:57:59 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Kernel Janitors <kernel-janitors@vger.kernel.org>
+Subject: Re: Question: dev_err_probe() vs Printk Index
+Message-ID: <Yu9id1O98e6or1qm@kroah.com>
+References: <3eacc364-90b7-7a5d-c936-1ed993428ef6@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3eacc364-90b7-7a5d-c936-1ed993428ef6@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit in Fixes has introduced a new error handling which should goto
-the existing error handling path.
-Otherwise some resources leak.
+On Sat, Aug 06, 2022 at 10:53:16AM +0200, Christophe JAILLET wrote:
+> Hi,
+> 
+> When a driver is using dev_err(), part of it is inlined and it:
+>    - takes advantage of dev_fmt()  [1]
+>    - implements Printk Index       [2]
+> 
+> Printk Index works with some __builtin_constant_p() magic in it.
+> In case of a use in a probe, 99.99% of the time the log level and the format
+> will be constant and the logic for Printk Index will be put in place.
+> 
+> 
+> In case dev_err_probe(), the format will be an argument passed to the
+> function and will not be constant, so nothing will be generated in the
+> 'printk'_index section.
+> 
+> 
+> In case dev_err_probe(), a potential dev_fmt() defined in the drivers' file
+> can't be taken into consideration.
+> (trusting my grep, we never use in files that define dev_fmt() in the .c
+> file. I've not checked if it is true via #include "<something.h>")
+> 
+> 
+> Even if I've read [3], I don't fully understand the real need of this Printk
+> Index mechanism (at least for my own needs :))
+> 
+> 
+> My questions are:
+>    - is my analysis right?
+>    - is the lack of these 2 functionalities (dev_fmt and Printk Index)
+> expected, when dev_err_probe() is used?
+>    - if not, is it a issue?
+>    - should it be at least documented?
 
-Fixes: 19c6beaa064c ("mmc: meson-gx: add device reset")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/mmc/host/meson-gx-mmc.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+The printk index stuff is odd, and always seemed like a "check box"
+option that some people wanted for a niche enterprise market.  It's up
+to them to keep that working well if they really need it, driver authors
+should not worry about this.
 
-diff --git a/drivers/mmc/host/meson-gx-mmc.c b/drivers/mmc/host/meson-gx-mmc.c
-index 2f08d442e557..fc462995cf94 100644
---- a/drivers/mmc/host/meson-gx-mmc.c
-+++ b/drivers/mmc/host/meson-gx-mmc.c
-@@ -1172,8 +1172,10 @@ static int meson_mmc_probe(struct platform_device *pdev)
- 	}
- 
- 	ret = device_reset_optional(&pdev->dev);
--	if (ret)
--		return dev_err_probe(&pdev->dev, ret, "device reset failed\n");
-+	if (ret) {
-+		dev_err_probe(&pdev->dev, ret, "device reset failed\n");
-+		goto free_host;
-+	}
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	host->regs = devm_ioremap_resource(&pdev->dev, res);
--- 
-2.34.1
+thanks,
 
+greg k-h
