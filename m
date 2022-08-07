@@ -2,56 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D87BC25B0C
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 08:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 521ACC25B0C
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 08:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232622AbiHGI3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 04:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39244 "EHLO
+        id S233988AbiHGI3f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 04:29:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230334AbiHGI3a (ORCPT
+        with ESMTP id S229570AbiHGI3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 7 Aug 2022 04:29:30 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731C2BF68
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D756BC3A
         for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 01:29:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1659860969; x=1691396969;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Zldi7ioVam3SXWkUXMr6S5cw/9YD9h1FQKzs/lHLIFg=;
-  b=YQu/ZQ3uk/LFzI+C0Cr2RN1kcnbcusc/1FboKtLkAPa0BPw8gkgF6flT
-   NvvUVdFBXtjh4OKV+GwtwZ3D91hKvIxjjdSLV6upEAdcsF8Ij9CGZ2pRF
-   9RAuuxOqznTwde14RWqXNZUf1AlImEURx+eno4abWeOPe2TNhLtZsKSaU
-   dtk90ZgJBBEaD8bNbdhGfdaHtL8wCGegyyOKt/d1Hjf4grRi40YegxSqP
-   v1fGX2Yiz0mmNPSl3/tYPRGGXWPvVkP1Dw6rqeNmWeZIZMKPnLF1Fbc+c
-   R1LqBnB8GWNUQ7HjaEqaSc6L4sQraZ4igksJuEJ9591aS5YlcFfTGsQeF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="273469597"
+  bh=jhs/4HQpgEECO1zoH2jpvSGy5xuBWQgxs4vDl/E5W8Y=;
+  b=OQEBCICQ3ToBbFt5sz/e4qg6wfvHr+eWqQUVEtditmZrPlyUFJ+x+yJn
+   k5Ptire+22RXO2lYpQWUbj6X80THKaHgyE1RrY/B8IIBCN2A5FTg+KAOE
+   nhLyPCdodBxR4A2CATAr+QT9m9p86aHpuCqqSq72JIG8KX/mc3dOlhhgI
+   a0ZMHRHOoTGsVP2bwqOdS0tqnrSiSOxg1FpRvkp7iFDw3SMNxOU91YGn/
+   QNeHTTU5/hYe+RO8YESiAsKiVwS/ITwBKAQIsi9JaEg3y3sLtQXyh0fSU
+   e8bPjRK1Kja+H0JC+o0LPGUdahat4OgiVevDKXOtIFN2C14sb6IcsRQxD
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10431"; a="291650739"
 X-IronPort-AV: E=Sophos;i="5.93,219,1654585200"; 
-   d="scan'208";a="273469597"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 01:29:28 -0700
+   d="scan'208";a="291650739"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 01:29:28 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,219,1654585200"; 
-   d="scan'208";a="746301907"
+   d="scan'208";a="693431170"
 Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 07 Aug 2022 01:29:26 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 07 Aug 2022 01:29:26 -0700
 Received: from kbuild by e0eace57cfef with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oKbf4-000L9f-0N;
+        id 1oKbf4-000L9d-0J;
         Sun, 07 Aug 2022 08:29:26 +0000
-Date:   Sun, 7 Aug 2022 16:29:02 +0800
+Date:   Sun, 7 Aug 2022 16:29:05 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     studentxswpy@163.com, jaegeuk@kernel.org, chao@kernel.org,
         linux-f2fs-devel@lists.sourceforge.net,
         linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Xie Shaowen <studentxswpy@163.com>,
+Cc:     kbuild-all@lists.01.org, Xie Shaowen <studentxswpy@163.com>,
         Hacash Robot <hacashRobot@santino.com>
 Subject: Re: [PATCH -next] f2fs: Replace kmalloc() with f2fs_kmalloc
-Message-ID: <202208071605.XXehjTqy-lkp@intel.com>
+Message-ID: <202208071655.jHZ9QodB-lkp@intel.com>
 References: <20220801092202.3134668-1-studentxswpy@163.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -63,40 +62,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi,
 
-Thank you for the patch! Yet something to improve:
+Thank you for the patch! Perhaps something to improve:
 
-[auto build test ERROR on next-20220728]
+[auto build test WARNING on next-20220728]
 
 url:    https://github.com/intel-lab-lkp/linux/commits/studentxswpy-163-com/f2fs-Replace-kmalloc-with-f2fs_kmalloc/20220801-172502
 base:    7c5e07b73ff3011c9b82d4a3286a3362b951ad2b
-config: x86_64-randconfig-a002-20220801 (https://download.01.org/0day-ci/archive/20220807/202208071605.XXehjTqy-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220807/202208071655.jHZ9QodB-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
 reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
         # https://github.com/intel-lab-lkp/linux/commit/ca9f7259448a8dc0a2c4a1ae0a34a8109df4d6e1
         git remote add linux-review https://github.com/intel-lab-lkp/linux
         git fetch --no-tags linux-review studentxswpy-163-com/f2fs-Replace-kmalloc-with-f2fs_kmalloc/20220801-172502
         git checkout ca9f7259448a8dc0a2c4a1ae0a34a8109df4d6e1
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/f2fs/
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/f2fs/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
->> fs/f2fs/dir.c:235:61: error: too few arguments to function call, expected 3, have 2
-                   decrypted_name.name = f2fs_kmalloc(de_name_len, GFP_KERNEL);
-                                         ~~~~~~~~~~~~                        ^
-   fs/f2fs/f2fs.h:3316:21: note: 'f2fs_kmalloc' declared here
-   static inline void *f2fs_kmalloc(struct f2fs_sb_info *sbi,
-                       ^
-   1 error generated.
+   fs/f2fs/dir.c: In function 'f2fs_match_ci_name':
+>> fs/f2fs/dir.c:235:52: warning: passing argument 1 of 'f2fs_kmalloc' makes pointer from integer without a cast [-Wint-conversion]
+     235 |                 decrypted_name.name = f2fs_kmalloc(de_name_len, GFP_KERNEL);
+         |                                                    ^~~~~~~~~~~
+         |                                                    |
+         |                                                    u32 {aka unsigned int}
+   In file included from fs/f2fs/dir.c:13:
+   fs/f2fs/f2fs.h:3316:55: note: expected 'struct f2fs_sb_info *' but argument is of type 'u32' {aka 'unsigned int'}
+    3316 | static inline void *f2fs_kmalloc(struct f2fs_sb_info *sbi,
+         |                                  ~~~~~~~~~~~~~~~~~~~~~^~~
+   fs/f2fs/dir.c:235:39: error: too few arguments to function 'f2fs_kmalloc'
+     235 |                 decrypted_name.name = f2fs_kmalloc(de_name_len, GFP_KERNEL);
+         |                                       ^~~~~~~~~~~~
+   In file included from fs/f2fs/dir.c:13:
+   fs/f2fs/f2fs.h:3316:21: note: declared here
+    3316 | static inline void *f2fs_kmalloc(struct f2fs_sb_info *sbi,
+         |                     ^~~~~~~~~~~~
 
 
-vim +235 fs/f2fs/dir.c
+vim +/f2fs_kmalloc +235 fs/f2fs/dir.c
 
    211	
    212	#if IS_ENABLED(CONFIG_UNICODE)
