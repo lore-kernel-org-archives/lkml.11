@@ -2,259 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7030AC19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 17:27:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB45EC19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 17:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233908AbiHGR1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 13:27:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58490 "EHLO
+        id S234182AbiHGR2Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 13:28:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiHGR1Y (ORCPT
+        with ESMTP id S229501AbiHGR2V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 13:27:24 -0400
-Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5D1962F9
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 10:27:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1659893217; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=Wt7C8ix+QRV6we4kN1ZQuJsSrgALXHX4sHyiolawn7o+v5HxpQJRxz/XqmZ6WKLmuTOEnjvG6BzRtpr2EWHND+VySfEItTgR8hcFWmQF1qBXuZJv8j6IoMTqfLqIaMi7r/65TO2+4g71KTwnDSCq5oCLsHowdX8GfbpYklFY8h8=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1659893217; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=SF+cmst0YOvBtGZlGtIWLCtrRFNybghg8Ky1cN9EEMk=; 
-        b=DdY6O9/Qe7/0V6lgiBzS9h7KQJ2w52C5Ky6uAklGxgVkyBd3BbKfy+aUu440C0orc4EjICkjwYhMF1ZeGiRplD6fZkFuQDpA8ChWXJhS6PPX2DUrbNAh7KsHxMsC3xBgp56N/QTZAGp5UxzbrjNe4CpFsvCxYMAUcujFtyzDPlw=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=icenowy.me;
-        spf=pass  smtp.mailfrom=uwu@icenowy.me;
-        dmarc=pass header.from=<uwu@icenowy.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659893217;
-        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
-        h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:MIME-Version:Message-Id:Reply-To;
-        bh=SF+cmst0YOvBtGZlGtIWLCtrRFNybghg8Ky1cN9EEMk=;
-        b=EI6EyIm+M/8fkDBs0Rp4imo9ZbY2/YqfJYIzgez6HzyAPo1NRKjW2Sw+9z6vxwaw
-        BAmuNK41GObVSgFu5zLDvQsY3yWBhvBAzfkrqTtcpjR/2aVBKCYzfwmSD4yq1VntpvH
-        JHbu/0YT/QVACPCfot0gvCJx+e6qvta5qsEr5lFg=
-Received: from edelgard.icenowy.me (112.94.101.161 [112.94.101.161]) by mx.zohomail.com
-        with SMTPS id 1659893215924553.4813978923066; Sun, 7 Aug 2022 10:26:55 -0700 (PDT)
-Message-ID: <3346b62c3cd7e07766457c9140849a31d6d8775c.camel@icenowy.me>
-Subject: Re: [PATCH 2/2] ASoC: Intel: Skylake: try to get NHLT blob with PCM
- params as fallback
-From:   Icenowy Zheng <uwu@icenowy.me>
-To:     Cezary Rojewski <cezary.rojewski@intel.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Date:   Mon, 08 Aug 2022 01:26:48 +0800
-In-Reply-To: <4208aece-0aea-ba86-9a00-9e217546e1dd@intel.com>
-References: <20220725111002.143765-1-uwu@icenowy.me>
-         <20220725111002.143765-2-uwu@icenowy.me>
-         <4208aece-0aea-ba86-9a00-9e217546e1dd@intel.com>
-Organization: Anthon Open-Source Community
-Content-Type: multipart/mixed; boundary="=-DU22i17Cl0BwIAc7P92o"
-User-Agent: Evolution 3.40.4 
+        Sun, 7 Aug 2022 13:28:21 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70B165AD;
+        Sun,  7 Aug 2022 10:28:20 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id 73so6695964pgb.9;
+        Sun, 07 Aug 2022 10:28:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=ZJhnbeU/GvYa0IAiEAp6tG7y6menKqdJgmF8uzlqIXg=;
+        b=QJmE3T0AUf+gj4ikYTJmoZ4wqLm45pXQh4UMz4UUkXt/MHZdmNb7OwV2VnOTEmoWLt
+         EUc9sGNiOEqEtuFaM+pn5T32aqC2Al7TtStQ179/gd3nc7rU5w4SqOd4kL2WcYd2Iq2L
+         4pC6+Dz8iFUIL7Kl8ik7TNv8sdUVs5Eqelih54ysr6UZasi2uUgkJVZhHW/Vk7D3onzb
+         2vmQKPGljSDIwF/+ZnCG4qEccuEN9xvOvWU46dGQ8hEUOZDLn236QechAHllPKf6/9Wb
+         PYn3qUnigzDZ/wp53DobUCt8cNW7J273qZ4ZQo45Y04H2vEaCkZvbHIJ6SGf/X3/LQHJ
+         R5Kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=ZJhnbeU/GvYa0IAiEAp6tG7y6menKqdJgmF8uzlqIXg=;
+        b=RXT2JdI0QExS4T6zm7ZWiB41dX+r9AdsRxuU+Myx67l6txFL1OLHC6tr7psTjrSA4b
+         CItaNjxep1CCni7Qbd83CK6N92PjGM12LB2yy8iPI9pgucQzIcmxCfIZZt2+n2kUX0aW
+         FVzGHX/l53j9n0eVapeAk40a3fJt3g1f5aTWsscjgcuaO4pIsLmVisS+T2Xxb1sWxWUz
+         UJeGH83kXU0dgQmhqiwMcHCuAjIoYSOW372JQlHD4oga1OMrh6KkUj+XGEp7j6OLvcMi
+         qI0IelUfQYtPfvXVIINuNJt7kVWGX7qmUai1VsazgS3weFPQXx98BCWrUrNn5z1K9KOK
+         i7wQ==
+X-Gm-Message-State: ACgBeo3wmWOGWsublsYrAI0ZPq+XOKtNpLccuBBlohlQPzDGyu1LQVuU
+        pglUVzpG8e1qU/jAWiTlnhs=
+X-Google-Smtp-Source: AA6agR4wTkoPcJGp7v5ElZPSy1YnAtPx3OfKJrSsY02bNgK+zah7M12CtEsvAlutyby3I73eVXn9lg==
+X-Received: by 2002:a05:6a00:244a:b0:52b:e9a8:cb14 with SMTP id d10-20020a056a00244a00b0052be9a8cb14mr15249067pfj.32.1659893297948;
+        Sun, 07 Aug 2022 10:28:17 -0700 (PDT)
+Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
+        by smtp.gmail.com with ESMTPSA id i2-20020a626d02000000b0052c4b3e6f6asm7037208pfc.97.2022.08.07.10.28.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Aug 2022 10:28:16 -0700 (PDT)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
+        Rob Clark <robdclark@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] drm/msm: Add fault-injection support
+Date:   Sun,  7 Aug 2022 10:28:48 -0700
+Message-Id: <20220807172848.2432845-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-X-Zoho-Virus-Status: 1
-X-ZohoMailClient: External
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Rob Clark <robdclark@chromium.org>
 
---=-DU22i17Cl0BwIAc7P92o
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Intended as a way to trigger error paths in mesa.
 
-5ZyoIDIwMjItMDgtMDLmmJ/mnJ/kuoznmoQgMTI6MzAgKzAyMDDvvIxDZXphcnkgUm9qZXdza2nl
-hpnpgZPvvJoKPiBPbiAyMDIyLTA3LTI1IDE6MTAgUE0sIEljZW5vd3kgWmhlbmcgd3JvdGU6Cj4g
-PiBTd2l0Y2hpbmcgdG8gdXNlIHBpcGVsaW5lIHBhcmFtZXRlcnMgdG8gZ2V0IE5ITFQgYmxvYiBi
-cmVha3MgYXVkaW8KPiA+IG9uCj4gPiBIUCBDaHJvbWVib29rIDEzIEcxIChhdCBsZWFzdCB3aXRo
-IE1yQ2hyb21lQm94IGZpcm13YXJlKS4KPiA+IAo+ID4gRml4IHRoaXMgYnkgcmV0cnlpbmcgdG8g
-Z2V0IE5ITFQgYmxvYiB3aXRoIFBDTSBwYXJhbWV0ZXJzICh3aGljaCBpcwo+ID4gdGhlCj4gPiBv
-bGQgYmVoYXZpb3IpIGlmIHBpcGVsaW5lIHBhcmFtZXRlcnMgZmFpbC4KPiA+IAo+ID4gRml4ZXM6
-IDg3YjI2NTI2MDA0NiAoIkFTb0M6IEludGVsOiBTa3lsYWtlOiBTZWxlY3QgcHJvcGVyIGZvcm1h
-dAo+ID4gZm9yIE5ITFQgYmxvYiIpCj4gPiBTaWduZWQtb2ZmLWJ5OiBJY2Vub3d5IFpoZW5nIDx1
-d3VAaWNlbm93eS5tZT4KPiAKPiBIZWxsbywKPiAKPiAKPiBDb3VsZCB5b3Ugc2hhcmUgdGhlIE5I
-TFQgZmlsZSBmcm9tIHlvdXIgcGxhdGZvcm0gcGx1cyB0aGUgZm9ybWF0IHVzZWQKPiBieSAKPiB0
-aGUgY3Jhcy91c2Vyc3BhY2UgdG9vbD8gRGlkIHlvdSB0cnkgcGxheWluZyBvdmVyIHNpbXBsZSBh
-cGxheSB0b29sCj4gaW5zdGVhZD8KCkkgdHJpZWQgNDgwMDBIeiAyY2ggMzJiaXQgd2l0aCBzcGVh
-a2VyLXRlc3QuCgpBdHRhY2hlZCBpcyAvc3lzL2Zpcm13YXJlL2FjcGkvdGFibGVzL05ITFQuCgo+
-IAo+IAo+ID4gwqAgc291bmQvc29jL2ludGVsL3NreWxha2Uvc2tsLXRvcG9sb2d5LmMgfCAxMSAr
-KysrKysrKysrKwo+ID4gwqAgMSBmaWxlIGNoYW5nZWQsIDExIGluc2VydGlvbnMoKykKPiA+IAo+
-ID4gZGlmZiAtLWdpdCBhL3NvdW5kL3NvYy9pbnRlbC9za3lsYWtlL3NrbC10b3BvbG9neS5jCj4g
-PiBiL3NvdW5kL3NvYy9pbnRlbC9za3lsYWtlL3NrbC10b3BvbG9neS5jCj4gPiBpbmRleCAxOTk5
-NGVjOGJiYTEuLjNkNWEzZWUxYzgyYyAxMDA2NDQKPiA+IC0tLSBhL3NvdW5kL3NvYy9pbnRlbC9z
-a3lsYWtlL3NrbC10b3BvbG9neS5jCj4gPiArKysgYi9zb3VuZC9zb2MvaW50ZWwvc2t5bGFrZS9z
-a2wtdG9wb2xvZ3kuYwo+ID4gQEAgLTE4NTgsNiArMTg1OCwxNSBAQCBzdGF0aWMgaW50Cj4gPiBz
-a2xfdHBsZ19iZV9maWxsX3BpcGVfcGFyYW1zKHN0cnVjdCBzbmRfc29jX2RhaSAqZGFpLAo+ID4g
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBwaXBlX2ZtdC0+YnBzLCBwYXJhbXMtCj4gPiA+c19jb250
-LAo+ID4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBwaXBlX2ZtdC0+Y2hhbm5lbHMsCj4gPiBwaXBl
-X2ZtdC0+ZnJlcSwKPiA+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcGlwZS0+ZGlyZWN0aW9uLCBk
-ZXZfdHlwZSk7Cj4gPiArwqDCoMKgwqDCoMKgwqBpZiAoIWNmZykgewo+ID4gK8KgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoC8qIFJldHJ5IHdpdGggUENNIHBhcmFtZXRlcnMsIGFzIHRoZSBv
-bGQgYmVoYXZpb3IKPiA+ICovCj4gCj4gRHJvcCB0aGUgIm9sZCBiZWhhdmlvciIgLSBtb3N0IG9m
-IHRoZSByZWFkZXJzIGFyZSBub3QgYXdhcmUgb2Ygd2hhdAo+IHRoYXQgCj4gYWN0dWFsbHkgbWVh
-bnMuCj4gCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY2ZnID0gaW50ZWxfbmhs
-dF9nZXRfZW5kcG9pbnRfYmxvYihkYWktPmRldiwgc2tsLQo+ID4gPm5obHQsCj4gPiArwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoG1jb25maWctPnZidXNfaWQsCj4gPiBsaW5r
-X3R5cGUsCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHBhcmFtcy0+
-c19mbXQsCj4gPiBwYXJhbXMtPnNfY29udCwKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgcGFyYW1zLT5jaCwgcGFyYW1zLQo+ID4gPnNfZnJlcSwKPiA+ICvCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcGFyYW1zLT5zdHJlYW0sCj4gPiBkZXZfdHlw
-ZSk7Cj4gPiArwqDCoMKgwqDCoMKgwqB9Cj4gPiArCj4gPiDCoMKgwqDCoMKgwqDCoMKgaWYgKGNm
-Zykgewo+ID4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBtY29uZmlnLT5mb3JtYXRz
-X2NvbmZpZ1tTS0xfUEFSQU1fSU5JVF0uY2Fwc19zaXplID0KPiA+IGNmZy0+c2l6ZTsKPiA+IMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgbWNvbmZpZy0+Zm9ybWF0c19jb25maWdbU0tM
-X1BBUkFNX0lOSVRdLmNhcHMgPSAodTMyCj4gPiAqKSZjZmctPmNhcHM7Cj4gPiBAQCAtMTg2Niw2
-ICsxODc1LDggQEAgc3RhdGljIGludAo+ID4gc2tsX3RwbGdfYmVfZmlsbF9waXBlX3BhcmFtcyhz
-dHJ1Y3Qgc25kX3NvY19kYWkgKmRhaSwKPiA+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoG1jb25maWctPnZidXNfaWQsIGxpbmtfdHlwZSwgcGFyYW1zLQo+
-ID4gPnN0cmVhbSwKPiA+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoHBpcGVfZm10LT5jaGFubmVscywgcGlwZV9mbXQtPmZyZXEsCj4gPiDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBwaXBlX2ZtdC0+YnBzKTsKPiA+
-ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBkZXZfZXJyKGRhaS0+ZGV2LCAiUENNOiBj
-aCAlZCwgZnJlcSAlZCwgZm10ICVkXG4iLAo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqBwYXJhbXMtPmNoLCBwYXJhbXMtPnNfZnJlcSwgcGFyYW1zLT5z
-X2ZtdCk7Cj4gPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHJldHVybiAtRUlOVkFM
-Owo+ID4gwqDCoMKgwqDCoMKgwqDCoH0KPiA+IMKgIAoK
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+ drivers/gpu/drm/msm/msm_debugfs.c |  8 ++++++++
+ drivers/gpu/drm/msm/msm_drv.c     | 15 +++++++++++++++
+ drivers/gpu/drm/msm/msm_drv.h     |  7 +++++++
+ 3 files changed, 30 insertions(+)
 
-
---=-DU22i17Cl0BwIAc7P92o
-Content-Type: application/octet-stream; name="NHLT"
-Content-Disposition: attachment; filename="NHLT"
-Content-Transfer-Encoding: base64
-
-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
-wskAAPK9AADidwAAvAkAAKuSDwAPNg8ADBEPAIwxDwBlkQ8AUBcAAJGdAACQ/AAAbhYBACXgAACJ
-ZQAAx8YPAOovDwCszA4A+rsOAKkGDwAlnA8ALFYAAKkCAQAncQEALIABAN0mAQAreAAApp4PAPDR
-DgCFSA4AiykOAGWCDgCkQg8AcT8AAIw9AQBX/wEAelMCAJ4gAgBzawEAzlUAAEkXDwBC8Q0AKyEN
-AD7UDAAiHw0AD/sNAI5IDwDV1gAAxW0CAETYAwDV7AQAAZMFAO3EBQBvjQUAhQMFAI1EBACCbgMA
-XZsCAC3eAQARQgEAycoAAFt2AAA4PwAASh4AAJMMAAA7BAAA+QAAANb/DwAXAgAAWwIAAIMDAAAH
-BQAA4gYAABYJAAChCwAAew4AAJoRAADsFAAAWRgAAMcbAAAVHwAAHSIAALokAADDJgAAECgAAH4o
-AADsJwAAQCYAAGwjAABqHwAAQBoAAAIUAADTDAAA4gQAAGv8DwC38w8AF+sPAOLiDwBz2w8AJtUP
-AE/QDwA6zQ8AJ8wPAELNDwCl0A8AT9YPACjeDwD95w8AgvMPAE8AAADrDQAAyBsAAE4pAADdNQAA
-2EAAAKdJAADETwAAvlIAAEJSAAAeTgAASkYAAOU6AAA7LAAAwRoAABQHAAD08Q8AO9wPANbGDwDA
-sg8A7KAPAEeSDwChhw8ArYEPAOyADwCxhQ8ADZAPANqfDwCqtA8A2s0PAITqDwCWCQAA0SkAAOBJ
-AABVaAAAz4MAAPSaAACRrAAAnrcAAFW7AAAytwAAC6sAAAOXAACfewAAslkAAGcyAAApBwAApNkP
-AKirDwAkfw8AAlYPACMyDwA8FQ8AzwAPAAr2DgDJ9Q4AeQAPAB4WDwBFNg8ADWAPACWSDwDeyg8A
-MwgAAOFHAAB3hwAAc8QAAFb8AADALAEAiFMBANRuAQArfQEAh30BAGBvAQC5UgEAGigBAJXwAAC9
-rQAAlmEAAIcOAABHtw8AwF4PAPwHDwAFtg4Ay2sOAA8sDgBE+Q0AftUNAF/CDQAKwQ0AGtINAJz1
-DQAUKw4AfHEOAFXHDgCtKg8AOpkPAGQQAABjjQAATw0BAD+NAQBXCgIA5YECAG7xAgDBVgMABbAD
-AMP7AwDqOAQA0mYEAD+FBABXlAQAoZQEAPSGBABzbAQAekYEAJEWBABh3gMAoZ8DAAtcAwBOFQMA
-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
-AAD/DwAAAAAAAA==
-
-
---=-DU22i17Cl0BwIAc7P92o--
+diff --git a/drivers/gpu/drm/msm/msm_debugfs.c b/drivers/gpu/drm/msm/msm_debugfs.c
+index ea2a20699cb4..a515ddcec007 100644
+--- a/drivers/gpu/drm/msm/msm_debugfs.c
++++ b/drivers/gpu/drm/msm/msm_debugfs.c
+@@ -7,6 +7,7 @@
+ #ifdef CONFIG_DEBUG_FS
+ 
+ #include <linux/debugfs.h>
++#include <linux/fault-inject.h>
+ 
+ #include <drm/drm_debugfs.h>
+ #include <drm/drm_file.h>
+@@ -325,6 +326,13 @@ void msm_debugfs_init(struct drm_minor *minor)
+ 
+ 	if (priv->kms && priv->kms->funcs->debugfs_init)
+ 		priv->kms->funcs->debugfs_init(priv->kms, minor);
++
++#ifdef CONFIG_FAULT_INJECTION
++	fault_create_debugfs_attr("fail_gem_alloc", minor->debugfs_root,
++				  &fail_gem_alloc);
++	fault_create_debugfs_attr("fail_gem_iova", minor->debugfs_root,
++				  &fail_gem_iova);
++#endif
+ }
+ #endif
+ 
+diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+index 4979aa8187ec..6b1b483ddd59 100644
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -6,6 +6,7 @@
+  */
+ 
+ #include <linux/dma-mapping.h>
++#include <linux/fault-inject.h>
+ #include <linux/kthread.h>
+ #include <linux/sched/mm.h>
+ #include <linux/uaccess.h>
+@@ -78,6 +79,11 @@ static bool modeset = true;
+ MODULE_PARM_DESC(modeset, "Use kernel modesetting [KMS] (1=on (default), 0=disable)");
+ module_param(modeset, bool, 0600);
+ 
++#ifdef CONFIG_FAULT_INJECTION
++DECLARE_FAULT_ATTR(fail_gem_alloc);
++DECLARE_FAULT_ATTR(fail_gem_iova);
++#endif
++
+ static irqreturn_t msm_irq(int irq, void *arg)
+ {
+ 	struct drm_device *dev = arg;
+@@ -701,6 +707,9 @@ static int msm_ioctl_gem_new(struct drm_device *dev, void *data,
+ 		flags |= MSM_BO_WC;
+ 	}
+ 
++	if (should_fail(&fail_gem_alloc, args->size))
++		return -ENOMEM;
++
+ 	return msm_gem_new_handle(dev, file, args->size,
+ 			args->flags, &args->handle, NULL);
+ }
+@@ -762,6 +771,9 @@ static int msm_ioctl_gem_info_iova(struct drm_device *dev,
+ 	if (!priv->gpu)
+ 		return -EINVAL;
+ 
++	if (should_fail(&fail_gem_iova, obj->size))
++		return -ENOMEM;
++
+ 	/*
+ 	 * Don't pin the memory here - just get an address so that userspace can
+ 	 * be productive
+@@ -783,6 +795,9 @@ static int msm_ioctl_gem_info_set_iova(struct drm_device *dev,
+ 	if (priv->gpu->aspace == ctx->aspace)
+ 		return -EOPNOTSUPP;
+ 
++	if (should_fail(&fail_gem_iova, obj->size))
++		return -ENOMEM;
++
+ 	return msm_gem_set_iova(obj, ctx->aspace, iova);
+ }
+ 
+diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
+index b4ace34ec889..e830f9609f2d 100644
+--- a/drivers/gpu/drm/msm/msm_drv.h
++++ b/drivers/gpu/drm/msm/msm_drv.h
+@@ -34,6 +34,13 @@
+ #include <drm/msm_drm.h>
+ #include <drm/drm_gem.h>
+ 
++#ifdef CONFIG_FAULT_INJECTION
++extern struct fault_attr fail_gem_alloc;
++extern struct fault_attr fail_gem_iova;
++#else
++#  define should_fail(attr, size) 0
++#endif
++
+ struct msm_kms;
+ struct msm_gpu;
+ struct msm_mmu;
+-- 
+2.36.1
 
