@@ -2,184 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F6E4C19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 12:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E07C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 13:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234155AbiHGM4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 08:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60960 "EHLO
+        id S234215AbiHGNIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 09:08:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232330AbiHGM4f (ORCPT
+        with ESMTP id S229760AbiHGNI2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 08:56:35 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABFCB633A
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 05:56:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659876994; x=1691412994;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=hYax+sxEohYijJXRfwl2jHwWkJNzilv1fN42/HJShVQ=;
-  b=cloyIfkhqw959aLACjtQY1FKg1ySHGtnrTPMmTUlCENqq0qceCGm9q6M
-   hZ1gMP3YmXLiG2N3B7yTjljufbkDgUBdJZDw2W0S77IDpt1sszRoVW3B3
-   uemuAT6HZv4vCMJ03CjFCxBSq0rCFMhlHZ2y/caXfR+n3qt0GV5F4HCSx
-   ZAVFmWQURzd6/+AYaWgTvavLHBXl2BTiK4J/MEZLg27ZgTgSrtvYo1RbF
-   uWVap4qc8EqT84CPmWF5YfVdWbOMLachF9mmmdFH2/1HirvOz/INsZttU
-   RTVypQzeja2AJRWmTiFQlkU9BZEoNHHK4I1FHSi5iL45FWNnbP8vscvkT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="316338729"
-X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="316338729"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 05:56:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="931732131"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 07 Aug 2022 05:56:32 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oKfpY-000LIy-11;
-        Sun, 07 Aug 2022 12:56:32 +0000
-Date:   Sun, 7 Aug 2022 20:56:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: drivers/edac/thunderx_edac.c:438:25: sparse: sparse: incorrect type
- in argument 1 (different address spaces)
-Message-ID: <202208072036.aILldUBV-lkp@intel.com>
+        Sun, 7 Aug 2022 09:08:28 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90D0632B
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 06:08:25 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id z2-20020a056e02088200b002dc4022c15fso4942741ils.11
+        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 06:08:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=vnV7cRg3Tne8wd1q+sHQ0TMC7i9eytqxDhJim1J4PTk=;
+        b=Y/66lldPOtUANfRfbG54IetUwkJ3PJaxWs6auGNwN90bxjW899xMHA04LIOu7c3VTp
+         4f2DSueab7j4kzsj+HTLI2aaoZ91ygLVRVHm4p5HWXQPnTlZAYc2/CrYbGH/MnJevGz0
+         0dl+3WH8HB6T12w/3iD5Utv19tDIt0hW+fxYneez6CgmvVT2tSxmxwJANex3HNf0RFuD
+         CfsXz7zCb/cmHPrlwy98BV1xA2T9lqDyeQP9EPArPjZTe9uXl+lkQcC4iTUGryL4yM8W
+         dtemJjioLFvCr5S3IbbuY/Stbe+7NUgvX75fKR3YKqx3aD0uRNVlUrhH4iRi3Z4BDJth
+         vRSA==
+X-Gm-Message-State: ACgBeo3O059VuFG2pBs662uHEmbYPcLJxV4afYDetC6mV/00mFL9pGM3
+        PzwKQmBVSVG4ZGNuukLTs0n00f0rwk+ut1neAHiDLS7avlSS
+X-Google-Smtp-Source: AA6agR6whLfcV4UNv9AyPfLUwXg8drboA+u/W1C+Ck6IN9btxeb1lHo5HZoxcp8lDr2MnbD/siGrvT+zeI+92sxDdRM/szahmWZE
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-Received: by 2002:a05:6638:1694:b0:342:f3b4:1518 with SMTP id
+ f20-20020a056638169400b00342f3b41518mr1186838jat.0.1659877705062; Sun, 07 Aug
+ 2022 06:08:25 -0700 (PDT)
+Date:   Sun, 07 Aug 2022 06:08:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fb20b605e5a66457@google.com>
+Subject: [syzbot] possible deadlock in ext4_xattr_get
+From:   syzbot <syzbot+62120febbd1ee3c3c860@syzkaller.appspotmail.com>
+To:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tytso@mit.edu
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   1612c382ffbdf1f673caec76502b1c00e6d35363
-commit: f68f2ff91512c199ec24883001245912afc17873 fortify: Detect struct member overflows in memcpy() at compile-time
-date:   6 months ago
-config: arm64-randconfig-s052-20220804 (https://download.01.org/0day-ci/archive/20220807/202208072036.aILldUBV-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f68f2ff91512c199ec24883001245912afc17873
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout f68f2ff91512c199ec24883001245912afc17873
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/edac/
+Hello,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+syzbot found the following issue on:
 
-sparse warnings: (new ones prefixed by >>)
-   drivers/edac/thunderx_edac.c:428:14: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void [noderef] __iomem *addr @@     got void * @@
-   drivers/edac/thunderx_edac.c:428:14: sparse:     expected void [noderef] __iomem *addr
-   drivers/edac/thunderx_edac.c:428:14: sparse:     got void *
->> drivers/edac/thunderx_edac.c:438:25: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/edac/thunderx_edac.c:438:25: sparse:     expected void const *
-   drivers/edac/thunderx_edac.c:438:25: sparse:     got void [noderef] __iomem *
->> drivers/edac/thunderx_edac.c:438:25: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/edac/thunderx_edac.c:438:25: sparse:     expected void const *
-   drivers/edac/thunderx_edac.c:438:25: sparse:     got void [noderef] __iomem *
-   drivers/edac/thunderx_edac.c:438:25: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __iomem * @@
-   drivers/edac/thunderx_edac.c:438:25: sparse:     expected void const *
-   drivers/edac/thunderx_edac.c:438:25: sparse:     got void [noderef] __iomem *
-   drivers/edac/thunderx_edac.c:760:20: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void *l2c_ioaddr @@     got void [noderef] __iomem * @@
-   drivers/edac/thunderx_edac.c:760:20: sparse:     expected void *l2c_ioaddr
-   drivers/edac/thunderx_edac.c:760:20: sparse:     got void [noderef] __iomem *
-   drivers/edac/thunderx_edac.c:767:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got void *l2c_ioaddr @@
-   drivers/edac/thunderx_edac.c:767:28: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/edac/thunderx_edac.c:767:28: sparse:     got void *l2c_ioaddr
-   drivers/edac/thunderx_edac.c:767:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got void *l2c_ioaddr @@
-   drivers/edac/thunderx_edac.c:767:28: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/edac/thunderx_edac.c:767:28: sparse:     got void *l2c_ioaddr
-   drivers/edac/thunderx_edac.c:767:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got void *l2c_ioaddr @@
-   drivers/edac/thunderx_edac.c:767:28: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/edac/thunderx_edac.c:767:28: sparse:     got void *l2c_ioaddr
-   drivers/edac/thunderx_edac.c:767:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got void *l2c_ioaddr @@
-   drivers/edac/thunderx_edac.c:767:28: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/edac/thunderx_edac.c:767:28: sparse:     got void *l2c_ioaddr
-   drivers/edac/thunderx_edac.c:767:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got void *l2c_ioaddr @@
-   drivers/edac/thunderx_edac.c:767:28: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/edac/thunderx_edac.c:767:28: sparse:     got void *l2c_ioaddr
-   drivers/edac/thunderx_edac.c:767:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got void *l2c_ioaddr @@
-   drivers/edac/thunderx_edac.c:767:28: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/edac/thunderx_edac.c:767:28: sparse:     got void *l2c_ioaddr
-   drivers/edac/thunderx_edac.c:767:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got void *l2c_ioaddr @@
-   drivers/edac/thunderx_edac.c:767:28: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/edac/thunderx_edac.c:767:28: sparse:     got void *l2c_ioaddr
-   drivers/edac/thunderx_edac.c:767:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got void *l2c_ioaddr @@
-   drivers/edac/thunderx_edac.c:767:28: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/edac/thunderx_edac.c:767:28: sparse:     got void *l2c_ioaddr
-   drivers/edac/thunderx_edac.c:767:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got void *l2c_ioaddr @@
-   drivers/edac/thunderx_edac.c:767:28: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/edac/thunderx_edac.c:767:28: sparse:     got void *l2c_ioaddr
-   drivers/edac/thunderx_edac.c:767:28: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __iomem *addr @@     got void *l2c_ioaddr @@
-   drivers/edac/thunderx_edac.c:767:28: sparse:     expected void const volatile [noderef] __iomem *addr
-   drivers/edac/thunderx_edac.c:767:28: sparse:     got void *l2c_ioaddr
-   drivers/edac/thunderx_edac.c:769:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got void *l2c_ioaddr @@
-   drivers/edac/thunderx_edac.c:769:17: sparse:     expected void volatile [noderef] __iomem *addr
-   drivers/edac/thunderx_edac.c:769:17: sparse:     got void *l2c_ioaddr
+HEAD commit:    cb71b93c2dc3 Add linux-next specific files for 20220628
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=10bdcf3c080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
+dashboard link: https://syzkaller.appspot.com/bug?extid=62120febbd1ee3c3c860
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10256c61080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11f3c832080000
 
-vim +438 drivers/edac/thunderx_edac.c
+Bisection is inconclusive: the issue happens on the oldest tested release.
 
-41003396f932d7f Sergey Temerkhanov 2017-03-24  405  
-41003396f932d7f Sergey Temerkhanov 2017-03-24  406  static ssize_t thunderx_lmc_inject_ecc_write(struct file *file,
-41003396f932d7f Sergey Temerkhanov 2017-03-24  407  					     const char __user *data,
-41003396f932d7f Sergey Temerkhanov 2017-03-24  408  					     size_t count, loff_t *ppos)
-41003396f932d7f Sergey Temerkhanov 2017-03-24  409  {
-41003396f932d7f Sergey Temerkhanov 2017-03-24  410  	struct thunderx_lmc *lmc = file->private_data;
-41003396f932d7f Sergey Temerkhanov 2017-03-24  411  	unsigned int cline_size = cache_line_size();
-6663484b4e2d98f Kees Cook          2018-06-29  412  	u8 *tmp;
-41003396f932d7f Sergey Temerkhanov 2017-03-24  413  	void __iomem *addr;
-41003396f932d7f Sergey Temerkhanov 2017-03-24  414  	unsigned int offs, timeout = 100000;
-41003396f932d7f Sergey Temerkhanov 2017-03-24  415  
-41003396f932d7f Sergey Temerkhanov 2017-03-24  416  	atomic_set(&lmc->ecc_int, 0);
-41003396f932d7f Sergey Temerkhanov 2017-03-24  417  
-41003396f932d7f Sergey Temerkhanov 2017-03-24  418  	lmc->mem = alloc_pages_node(lmc->node, GFP_KERNEL, 0);
-41003396f932d7f Sergey Temerkhanov 2017-03-24  419  	if (!lmc->mem)
-41003396f932d7f Sergey Temerkhanov 2017-03-24  420  		return -ENOMEM;
-41003396f932d7f Sergey Temerkhanov 2017-03-24  421  
-6663484b4e2d98f Kees Cook          2018-06-29  422  	tmp = kmalloc(cline_size, GFP_KERNEL);
-6663484b4e2d98f Kees Cook          2018-06-29  423  	if (!tmp) {
-6663484b4e2d98f Kees Cook          2018-06-29  424  		__free_pages(lmc->mem, 0);
-6663484b4e2d98f Kees Cook          2018-06-29  425  		return -ENOMEM;
-6663484b4e2d98f Kees Cook          2018-06-29  426  	}
-6663484b4e2d98f Kees Cook          2018-06-29  427  
-41003396f932d7f Sergey Temerkhanov 2017-03-24  428  	addr = page_address(lmc->mem);
-41003396f932d7f Sergey Temerkhanov 2017-03-24  429  
-41003396f932d7f Sergey Temerkhanov 2017-03-24  430  	while (!atomic_read(&lmc->ecc_int) && timeout--) {
-41003396f932d7f Sergey Temerkhanov 2017-03-24  431  		stop_machine(inject_ecc_fn, lmc, NULL);
-41003396f932d7f Sergey Temerkhanov 2017-03-24  432  
-6663484b4e2d98f Kees Cook          2018-06-29  433  		for (offs = 0; offs < PAGE_SIZE; offs += cline_size) {
-41003396f932d7f Sergey Temerkhanov 2017-03-24  434  			/*
-41003396f932d7f Sergey Temerkhanov 2017-03-24  435  			 * Do a load from the previously rigged location
-41003396f932d7f Sergey Temerkhanov 2017-03-24  436  			 * This should generate an error interrupt.
-41003396f932d7f Sergey Temerkhanov 2017-03-24  437  			 */
-41003396f932d7f Sergey Temerkhanov 2017-03-24 @438  			memcpy(tmp, addr + offs, cline_size);
-41003396f932d7f Sergey Temerkhanov 2017-03-24  439  			asm volatile("dsb ld\n");
-41003396f932d7f Sergey Temerkhanov 2017-03-24  440  		}
-41003396f932d7f Sergey Temerkhanov 2017-03-24  441  	}
-41003396f932d7f Sergey Temerkhanov 2017-03-24  442  
-6663484b4e2d98f Kees Cook          2018-06-29  443  	kfree(tmp);
-41003396f932d7f Sergey Temerkhanov 2017-03-24  444  	__free_pages(lmc->mem, 0);
-41003396f932d7f Sergey Temerkhanov 2017-03-24  445  
-41003396f932d7f Sergey Temerkhanov 2017-03-24  446  	return count;
-41003396f932d7f Sergey Temerkhanov 2017-03-24  447  }
-41003396f932d7f Sergey Temerkhanov 2017-03-24  448  
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12420fe2080000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=11420fe2080000
+console output: https://syzkaller.appspot.com/x/log.txt?x=16420fe2080000
 
-:::::: The code at line 438 was first introduced by commit
-:::::: 41003396f932d7f027725c7acebb6a7caa41dc3e EDAC, thunderx: Add Cavium ThunderX EDAC driver
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+62120febbd1ee3c3c860@syzkaller.appspotmail.com
 
-:::::: TO: Sergey Temerkhanov <s.temerkhanov@gmail.com>
-:::::: CC: Borislav Petkov <bp@suse.de>
+loop0: detected capacity change from 0 to 512
+EXT4-fs (loop0): mounted filesystem without journal. Quota mode: none.
+======================================================
+WARNING: possible circular locking dependency detected
+5.19.0-rc4-next-20220628-syzkaller #0 Not tainted
+------------------------------------------------------
+syz-executor246/3601 is trying to acquire lock:
+ffff888075af28e8 (&ei->xattr_sem){++++}-{3:3}, at: ext4_xattr_get+0x14e/0xa10 fs/ext4/xattr.c:650
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+but task is already holding lock:
+ffff888075af2c20 (&ea_inode->i_rwsem#9/1){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:761 [inline]
+ffff888075af2c20 (&ea_inode->i_rwsem#9/1){+.+.}-{3:3}, at: chown_common+0x364/0x710 fs/open.c:727
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #1 (&ea_inode->i_rwsem#9/1){+.+.}-{3:3}:
+       down_write+0x90/0x150 kernel/locking/rwsem.c:1542
+       inode_lock include/linux/fs.h:761 [inline]
+       ext4_xattr_inode_create fs/ext4/xattr.c:1445 [inline]
+       ext4_xattr_inode_lookup_create fs/ext4/xattr.c:1528 [inline]
+       ext4_xattr_set_entry+0x2ab3/0x3850 fs/ext4/xattr.c:1656
+       ext4_xattr_ibody_set+0x78/0x2b0 fs/ext4/xattr.c:2209
+       ext4_xattr_set_handle+0x964/0x1500 fs/ext4/xattr.c:2366
+       ext4_xattr_set+0x13a/0x340 fs/ext4/xattr.c:2479
+       __vfs_setxattr+0x115/0x180 fs/xattr.c:182
+       __vfs_setxattr_noperm+0x125/0x5f0 fs/xattr.c:216
+       __vfs_setxattr_locked+0x1cf/0x260 fs/xattr.c:277
+       vfs_setxattr+0x13f/0x330 fs/xattr.c:303
+       setxattr+0x146/0x160 fs/xattr.c:611
+       path_setxattr+0x197/0x1c0 fs/xattr.c:630
+       __do_sys_setxattr fs/xattr.c:646 [inline]
+       __se_sys_setxattr fs/xattr.c:642 [inline]
+       __x64_sys_setxattr+0xc0/0x160 fs/xattr.c:642
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+-> #0 (&ei->xattr_sem){++++}-{3:3}:
+       check_prev_add kernel/locking/lockdep.c:3095 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+       validate_chain kernel/locking/lockdep.c:3829 [inline]
+       __lock_acquire+0x2abe/0x5660 kernel/locking/lockdep.c:5053
+       lock_acquire kernel/locking/lockdep.c:5665 [inline]
+       lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5630
+       down_read+0x98/0x440 kernel/locking/rwsem.c:1489
+       ext4_xattr_get+0x14e/0xa10 fs/ext4/xattr.c:650
+       __vfs_getxattr+0xd9/0x140 fs/xattr.c:401
+       cap_inode_need_killpriv+0x3c/0x60 security/commoncap.c:301
+       security_inode_need_killpriv+0x40/0x90 security/security.c:1420
+       notify_change+0x6e7/0x1440 fs/attr.c:351
+       chown_common+0x61b/0x710 fs/open.c:734
+       do_fchownat+0x126/0x1e0 fs/open.c:765
+       __do_sys_fchownat fs/open.c:780 [inline]
+       __se_sys_fchownat fs/open.c:777 [inline]
+       __x64_sys_fchownat+0xba/0x150 fs/open.c:777
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+other info that might help us debug this:
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&ea_inode->i_rwsem#9/1);
+                               lock(&ei->xattr_sem);
+                               lock(&ea_inode->i_rwsem#9/1);
+  lock(&ei->xattr_sem);
+
+ *** DEADLOCK ***
+
+2 locks held by syz-executor246/3601:
+ #0: ffff88801d65e460 (sb_writers#4){.+.+}-{0:0}, at: do_fchownat+0x101/0x1e0 fs/open.c:762
+ #1: ffff888075af2c20 (&ea_inode->i_rwsem#9/1){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:761 [inline]
+ #1: ffff888075af2c20 (&ea_inode->i_rwsem#9/1){+.+.}-{3:3}, at: chown_common+0x364/0x710 fs/open.c:727
+
+stack backtrace:
+CPU: 0 PID: 3601 Comm: syz-executor246 Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2175
+ check_prev_add kernel/locking/lockdep.c:3095 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+ validate_chain kernel/locking/lockdep.c:3829 [inline]
+ __lock_acquire+0x2abe/0x5660 kernel/locking/lockdep.c:5053
+ lock_acquire kernel/locking/lockdep.c:5665 [inline]
+ lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5630
+ down_read+0x98/0x440 kernel/locking/rwsem.c:1489
+ ext4_xattr_get+0x14e/0xa10 fs/ext4/xattr.c:650
+ __vfs_getxattr+0xd9/0x140 fs/xattr.c:401
+ cap_inode_need_killpriv+0x3c/0x60 security/commoncap.c:301
+ security_inode_need_killpriv+0x40/0x90 security/security.c:1420
+ notify_change+0x6e7/0x1440 fs/attr.c:351
+ chown_common+0x61b/0x710 fs/open.c:734
+ do_fchownat+0x126/0x1e0 fs/open.c:765
+ __do_sys_fchownat fs/open.c:780 [inline]
+ __se_sys_fchownat fs/open.c:777 [inline]
+ __x64_sys_fchownat+0xba/0x150 fs/open.c:777
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7ff813f7d0e9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc815d6a78 EFLAGS: 00000246 ORIG_RAX: 0000000000000104
+RAX: ffffffffffffffda RBX: 
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
