@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BBF9C19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC7A7C19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 22:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236966AbiHGWGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 18:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49362 "EHLO
+        id S241763AbiHGWGw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 18:06:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235007AbiHGWDE (ORCPT
+        with ESMTP id S234368AbiHGWDI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 18:03:04 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2219FF5;
+        Sun, 7 Aug 2022 18:03:08 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F9A9FF2;
         Sun,  7 Aug 2022 15:02:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1659909763; x=1691445763;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8LP0DSlhNllsHxUGI5PiVoLspYIH9nx4tPzL+cKLV9g=;
-  b=FArodm45NZKZCTCZi8dJlex/HHJkrrA5NBXMoAXBvsMXrem3xu0zw4At
-   rjWgsDOWqOkdrh1IaJ78TTaADcOuaQZ0t8Iezz38Ofp5ZlmBMkSaZ0kaa
-   QgOrk8CvaSsm7pQnLGd0emwdfM4Ot9Dc65sYL4RHEhr2yhAOzu+awoSYH
-   r4dGUbc7qWzvhsumIWSCDsLOeRxX/3T0eZpGyfrBJVKAwjGHq8Tgr3zj2
-   WB5X8IgTGgM8EBNDthkSTlhHaTx++GSIE7HBPXu1hpjvytaObyOT4i+MS
-   XmhiSKIjVdbu6SQ75Ls+OFuiHU5vSm8+E4ANcv0RIJFjM8+oVsNlqGKoY
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="291695697"
+  bh=hInWa0hvzVtq8ZH0DigJE2CfzqDdW61tq1L8sB9nfsE=;
+  b=c85WX6LJ36NW6en7yBAFGIMEmkr4sSwZ3USl7YW2o0O4NtBy0murzpeP
+   MFXq57X8dRXwXqt4zRRhOMwuD+BQ04I0uDpTAlCTqEbsb/d3OJAHp6Rgo
+   XD8+AmT+bdwj2vv0rbtC7nukBonlLYsWdJjzBsj1gmnR49uEwdib7S8ya
+   t4dSlWkJaSXpOzADGLmyL8plg/LsCsoXMva2cq8dpGbT4hyH9GSrNVVh3
+   TCRdXPRBzL6WYGUSOvwW6Vj8XkiD5bzzCUWSgz9fLesFvWb6TeTv98ezm
+   w+Of8ozPtlsgs37JonbHr4HfU4SWUqacsakjVNACsB06Jt4DfFrfLe7uD
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270240363"
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="291695697"
+   d="scan'208";a="270240363"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:38 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:40 -0700
 X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="663682625"
+   d="scan'208";a="663682686"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:37 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 15:02:40 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
         Sean Christopherson <seanjc@google.com>,
         Sagi Shahar <sagis@google.com>
-Subject: [PATCH v8 055/103] KVM: Add functions to track whether GFN is private or shared
-Date:   Sun,  7 Aug 2022 15:01:40 -0700
-Message-Id: <255c9a699e38112b106c4f3305a5f03d7390799b.1659854790.git.isaku.yamahata@intel.com>
+Subject: [PATCH v8 073/103] KVM: x86: Add a switch_db_regs flag to handle TDX's auto-switched behavior
+Date:   Sun,  7 Aug 2022 15:01:58 -0700
+Message-Id: <97dd69e850fd10b67333436e79e2ef05fc6da69b.1659854790.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1659854790.git.isaku.yamahata@intel.com>
 References: <cover.1659854790.git.isaku.yamahata@intel.com>
@@ -57,152 +57,93 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-TDX KVM support needs to track whether GFN is private or shared.  Introduce
-CONFIG_HAVE_KVM_PRIVATE_MEM_ATTR to add functions to track whether GFN is
-private or shared.  Use xarray to track it for memory efficiency in normal
-usage.
+Add a flag, KVM_DEBUGREG_AUTO_SWITCHED_GUEST, to skip saving/restoring DRs
+irrespective of any other flags.  TDX-SEAM unconditionally saves and
+restores guest DRs and reset to architectural INIT state on TD exit.
+So, KVM needs to save host DRs before TD enter without restoring guest DRs
+and restore host DRs after TD exit.
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
+Opportunistically convert the KVM_DEBUGREG_* definitions to use BIT().
+
+Reported-by: Xiaoyao Li <xiaoyao.li@intel.com>
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Co-developed-by: Chao Gao <chao.gao@intel.com>
+Signed-off-by: Chao Gao <chao.gao@intel.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/Kconfig     |  1 +
- include/linux/kvm_host.h | 16 ++++++++++++
- virt/kvm/Kconfig         |  3 +++
- virt/kvm/kvm_main.c      | 55 ++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 75 insertions(+)
+ arch/x86/include/asm/kvm_host.h |  9 +++++++--
+ arch/x86/kvm/vmx/tdx.c          |  1 +
+ arch/x86/kvm/x86.c              | 11 ++++++++---
+ 3 files changed, 16 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
-index 5a59abc83179..a77830a3f371 100644
---- a/arch/x86/kvm/Kconfig
-+++ b/arch/x86/kvm/Kconfig
-@@ -48,6 +48,7 @@ config KVM
- 	select SRCU
- 	select INTERVAL_TREE
- 	select HAVE_KVM_PM_NOTIFIER if PM
-+	select HAVE_KVM_PRIVATE_MEM_ATTR if KVM_MMU_PRIVATE
- 	help
- 	  Support hosting fully virtualized guest machines using hardware
- 	  virtualization extensions.  You will need a fairly recent
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 025251806e70..7bc84ed44e43 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -786,8 +786,24 @@ struct kvm {
- 	struct notifier_block pm_notifier;
- #endif
- 	char stats_id[KVM_STATS_NAME_SIZE];
-+#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM_ATTR
-+	struct xarray mem_attr_array;
-+#endif
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index f32613dd7491..75218f7d15ac 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -582,8 +582,13 @@ struct kvm_pmu {
+ struct kvm_pmu_ops;
+ 
+ enum {
+-	KVM_DEBUGREG_BP_ENABLED = 1,
+-	KVM_DEBUGREG_WONT_EXIT = 2,
++	KVM_DEBUGREG_BP_ENABLED		= BIT(0),
++	KVM_DEBUGREG_WONT_EXIT		= BIT(1),
++	/*
++	 * Guest debug registers are saved/restored by hardware on exit from
++	 * or enter guest. KVM needn't switch them.
++	 */
++	KVM_DEBUGREG_AUTO_SWITCH	= BIT(2),
  };
  
-+#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM_ATTR
-+#define KVM_MEM_ATTR_SHARED    0x1
-+#define KVM_MEM_ATTR_PRIVATE   0x2
-+
-+/* memory attr on [start, end) */
-+int kvm_vm_reserve_mem_attr(struct kvm *kvm, gfn_t start, gfn_t end);
-+int kvm_vm_set_mem_attr(struct kvm *kvm, int attr, gfn_t start, gfn_t end);
-+static inline bool kvm_mem_is_private(struct kvm *kvm, gfn_t gfn)
-+{
-+	return !xa_load(&kvm->mem_attr_array, gfn);
-+}
-+#endif
-+
- #define kvm_err(fmt, ...) \
- 	pr_err("kvm [%i]: " fmt, task_pid_nr(current), ## __VA_ARGS__)
- #define kvm_info(fmt, ...) \
-diff --git a/virt/kvm/Kconfig b/virt/kvm/Kconfig
-index a8c5c9f06b3c..bef6fc63f99f 100644
---- a/virt/kvm/Kconfig
-+++ b/virt/kvm/Kconfig
-@@ -72,3 +72,6 @@ config KVM_XFER_TO_GUEST_WORK
+ struct kvm_mtrr_range {
+diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+index 7849260a252d..12fe6d0eab36 100644
+--- a/arch/x86/kvm/vmx/tdx.c
++++ b/arch/x86/kvm/vmx/tdx.c
+@@ -532,6 +532,7 @@ int tdx_vcpu_create(struct kvm_vcpu *vcpu)
  
- config HAVE_KVM_PM_NOTIFIER
-        bool
-+
-+config HAVE_KVM_PRIVATE_MEM_ATTR
-+       bool
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 3cc29fdba562..e182161baf00 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -917,6 +917,55 @@ static int kvm_init_mmu_notifier(struct kvm *kvm)
+ 	vcpu->arch.efer = EFER_SCE | EFER_LME | EFER_LMA | EFER_NX;
  
- #endif /* CONFIG_MMU_NOTIFIER && KVM_ARCH_WANT_MMU_NOTIFIER */
++	vcpu->arch.switch_db_regs = KVM_DEBUGREG_AUTO_SWITCH;
+ 	vcpu->arch.cr0_guest_owned_bits = -1ul;
+ 	vcpu->arch.cr4_guest_owned_bits = -1ul;
  
-+#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM_ATTR
-+/*
-+ * Reserve memory for [start, end) so that the next set oepration won't fail
-+ * with -ENOMEM.
-+ */
-+int kvm_vm_reserve_mem_attr(struct kvm *kvm, gfn_t start, gfn_t end)
-+{
-+	int r = 0;
-+	gfn_t gfn;
-+
-+	xa_lock(&kvm->mem_attr_array);
-+	for (gfn = start; gfn < end; gfn++) {
-+		r = __xa_insert(&kvm->mem_attr_array, gfn, NULL, GFP_KERNEL_ACCOUNT);
-+		if (r == -EBUSY)
-+			r = 0;
-+		if (r)
-+			break;
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index b1438fb6dd96..bc3b657e9795 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -10509,7 +10509,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 	if (vcpu->arch.guest_fpu.xfd_err)
+ 		wrmsrl(MSR_IA32_XFD_ERR, vcpu->arch.guest_fpu.xfd_err);
+ 
+-	if (unlikely(vcpu->arch.switch_db_regs)) {
++	if (unlikely(vcpu->arch.switch_db_regs & ~KVM_DEBUGREG_AUTO_SWITCH)) {
+ 		set_debugreg(0, 7);
+ 		set_debugreg(vcpu->arch.eff_db[0], 0);
+ 		set_debugreg(vcpu->arch.eff_db[1], 1);
+@@ -10552,6 +10552,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 	 */
+ 	if (unlikely(vcpu->arch.switch_db_regs & KVM_DEBUGREG_WONT_EXIT)) {
+ 		WARN_ON(vcpu->guest_debug & KVM_GUESTDBG_USE_HW_BP);
++		WARN_ON(vcpu->arch.switch_db_regs & KVM_DEBUGREG_AUTO_SWITCH);
+ 		static_call(kvm_x86_sync_dirty_debug_regs)(vcpu);
+ 		kvm_update_dr0123(vcpu);
+ 		kvm_update_dr7(vcpu);
+@@ -10564,8 +10565,12 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 	 * care about the messed up debug address registers. But if
+ 	 * we have some of them active, restore the old state.
+ 	 */
+-	if (hw_breakpoint_active())
+-		hw_breakpoint_restore();
++	if (hw_breakpoint_active()) {
++		if (!(vcpu->arch.switch_db_regs & KVM_DEBUGREG_AUTO_SWITCH))
++			hw_breakpoint_restore();
++		else
++			set_debugreg(__this_cpu_read(cpu_dr7), 7);
 +	}
-+	xa_unlock(&kvm->mem_attr_array);
-+
-+	return r;
-+}
-+EXPORT_SYMBOL_GPL(kvm_vm_reserve_mem_attr);
-+
-+/* Set memory attr for [start, end) */
-+int kvm_vm_set_mem_attr(struct kvm *kvm, int attr, gfn_t start, gfn_t end)
-+{
-+	void *entry;
-+
-+	/* By default, the entry is private. */
-+	switch (attr) {
-+	case KVM_MEM_ATTR_PRIVATE:
-+		entry = NULL;
-+		break;
-+	case KVM_MEM_ATTR_SHARED:
-+		entry = xa_mk_value(KVM_MEM_ATTR_SHARED);
-+		break;
-+	default:
-+		WARN_ON_ONCE(1);
-+		return -EINVAL;
-+	}
-+
-+	WARN_ON(start >= end);
-+	return xa_err(xa_store_range(&kvm->mem_attr_array, start, end - 1,
-+				     entry, GFP_KERNEL_ACCOUNT));
-+}
-+EXPORT_SYMBOL_GPL(kvm_vm_set_mem_attr);
-+#endif /* CONFIG_HAVE_KVM_PRIVATE_MEM_ATTR */
-+
- #ifdef CONFIG_HAVE_KVM_PM_NOTIFIER
- static int kvm_pm_notifier_call(struct notifier_block *bl,
- 				unsigned long state,
-@@ -1141,6 +1190,9 @@ static struct kvm *kvm_create_vm(unsigned long type)
- 	spin_lock_init(&kvm->mn_invalidate_lock);
- 	rcuwait_init(&kvm->mn_memslots_update_rcuwait);
- 	xa_init(&kvm->vcpu_array);
-+#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM_ATTR
-+	xa_init(&kvm->mem_attr_array);
-+#endif
  
- 	INIT_LIST_HEAD(&kvm->gpc_list);
- 	spin_lock_init(&kvm->gpc_lock);
-@@ -1308,6 +1360,9 @@ static void kvm_destroy_vm(struct kvm *kvm)
- 		kvm_free_memslots(kvm, &kvm->__memslots[i][0]);
- 		kvm_free_memslots(kvm, &kvm->__memslots[i][1]);
- 	}
-+#ifdef CONFIG_HAVE_KVM_PRIVATE_MEM_ATTR
-+	xa_destroy(&kvm->mem_attr_array);
-+#endif
- 	cleanup_srcu_struct(&kvm->irq_srcu);
- 	cleanup_srcu_struct(&kvm->srcu);
- 	kvm_arch_free_vm(kvm);
+ 	vcpu->arch.last_vmentry_cpu = vcpu->cpu;
+ 	vcpu->arch.last_guest_tsc = kvm_read_l1_tsc(vcpu, rdtsc());
 -- 
 2.25.1
 
