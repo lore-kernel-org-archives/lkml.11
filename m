@@ -2,153 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD2AC19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 18:16:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E51BAC19F2A
+	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 18:16:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234432AbiHGSQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 14:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53512 "EHLO
+        id S234968AbiHGSQG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 14:16:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234777AbiHGSPt (ORCPT
+        with ESMTP id S234987AbiHGSPw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 14:15:49 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5236964D9
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 11:15:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659896148; x=1691432148;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SzlJQkY7FhUA15heqPBSFMQ71M01/eJ0bitLZcONHA0=;
-  b=K9wDDw9Obkisr4ETK2zPSoRZIcOjVDFpV6DpZFnc/vJ8OW/bic0p8I/O
-   /dJoAHfrRjuY7zWQauaIC3EJuYDcNwrARu1Cc7UbdzVSTyCNdGQ7z022q
-   NGvdRdVq3PCyZCidV/ecskyxasEHaItX92M2M6i5hStExAkDmpLcLHHoF
-   vMZNXUOr8PAJw54YQN0w1pEm+hO3wXsWPVEFszo1KrcJHPkMAFp4oD9SB
-   /hY1O/cxrR99gJS9DwTPMorGS9Ou5G8lzhTkN+TkFIVZclN6OvRydAv3x
-   lQapAhtUXU7OBTR4Y0MwmGH+IIMzBv5A6HGNY9X8xyzl4vGkgYdreZuiy
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="288019381"
-X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="288019381"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 11:15:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,220,1654585200"; 
-   d="scan'208";a="849836383"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 07 Aug 2022 11:15:46 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oKkoT-000LY1-15;
-        Sun, 07 Aug 2022 18:15:45 +0000
-Date:   Mon, 8 Aug 2022 02:15:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Paul Cercueil <paul@crapouillou.net>,
-        Lee Jones <lee.jones@linaro.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 25/28] mfd: stmfx: Remove #ifdef guards for PM related
- functions
-Message-ID: <202208080225.Hm01SP8r-lkp@intel.com>
-References: <20220807145247.46107-26-paul@crapouillou.net>
+        Sun, 7 Aug 2022 14:15:52 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9EE64F3
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 11:15:49 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id gk3so12859256ejb.8
+        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 11:15:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yiw906G5oy9MybCFLcFF/KhsSArim48rj625F4hCIBw=;
+        b=p3T2spBWrVd9RZkJEA9beebMLqaXSJOAp/4nW+3POhPPApnhuuZBzqQLlmCzVFuoaU
+         w5DQO/6b29O4sq52ZV26LcyyJGpzFte7zwFHSCzsbRJYSqHK9SfrkwfXRxdJ/Eq1sRnw
+         NW2Yz586T/kBIfpFEyMAXXzKrac1hK9soVuxVhnEtI/vRsg2K94ry5gFSIsTheuO1LGB
+         YKNyQUwbFEhZXyKk60XD7QrRl8Rx3SKRBzRMHy7qUUz0Z4kTjhFkMrld4lwnzjX4FgcC
+         lQw/Z7XbjGpbErEq+tlkAzf4gQYoaboG6JgIY8RvAiU3CuhYp2Ezve8ke2d4YOtAegko
+         RwIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yiw906G5oy9MybCFLcFF/KhsSArim48rj625F4hCIBw=;
+        b=WmoAk1+psyKt6YnRVU82AWq0vEpiHFwQKGBUJOYZJgqCL0A3HzStlDl5E4IybpXx5M
+         d25Zjd3LQZJ6grep9e/xP31N96DNY4L1pSLKEwMkj+He22+dUxQPfuezY4n01DiDTlPt
+         TflLoSA5/DUui1gaN9ZcQ8zYGN8WvsPvpd/JalbJOs8gky5fHaROwlYW0QVob2+kKRIv
+         8jc2IyG+jntXlCNrlUpYhW42P8G6TtD83vnTLV9+cAg1HyNPqmOANVjyyLW8KJNJpAzU
+         4q+pjbkc8eih3YhKoCRbqxgYEiwmHZx7mj4A+udYTgm8ssIM01cXyKLBzjubAJ7LzNhC
+         PHMg==
+X-Gm-Message-State: ACgBeo28EX5fhIXMeX7G+ADDT3P4bn/iVGYVnD73XxNVBBp9n3cn/8P8
+        stva3Poy7T/eQEzcxFIfoz0=
+X-Google-Smtp-Source: AA6agR4NDOfW0brTJs4BFgA+vaBmECmiB9nN6VPef+TyVO6RqyDvw3eTh+FhGO0lmKa7XvebAJ8R5Q==
+X-Received: by 2002:a17:907:a0c6:b0:730:f081:6e8e with SMTP id hw6-20020a170907a0c600b00730f0816e8emr8696123ejc.479.1659896148185;
+        Sun, 07 Aug 2022 11:15:48 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abb84.dynamic.kabel-deutschland.de. [95.90.187.132])
+        by smtp.gmail.com with ESMTPSA id b7-20020a17090630c700b0072b92daef1csm4157441ejb.146.2022.08.07.11.15.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Aug 2022 11:15:47 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH 0/5] staging: r8188eu: remove os_dep/recv_linux.c
+Date:   Sun,  7 Aug 2022 20:15:33 +0200
+Message-Id: <20220807181538.8499-1-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220807145247.46107-26-paul@crapouillou.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
+This series moves the functions and/or their functionality from
+os_dep/recv_linux.c to the relevant parts of the driver. In most
+cases it's just making the functions static. This allows us to
+remove os_dep/recv_linux.c.
 
-I love your patch! Yet something to improve:
+Tested on x86_64 with Inter-Tech DMG-02.
 
-[auto build test ERROR on v5.19]
-[cannot apply to lee-mfd/for-mfd-next linus/master next-20220805]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Michael Straube (5):
+  staging: r8188eu: merge rtw_os_recvbuf_resource_free() into rtw_recv.c
+  staging: r8188eu: merge rtw_os_recvbuf_resource_alloc() into
+    rtw_recv.c
+  staging: r8188eu: make rtw_handle_tkip_mic_err() static
+  staging: r8188eu: make rtw_recv_indicatepkt() static
+  staging: r8188eu: make rtw_init_recv_timer() static
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Paul-Cercueil/mfd-Remove-ifdef-guards-for-PM-functions/20220807-225947
-base:    3d7cb6b04c3f3115719235cc6866b10326de34cd
-config: hexagon-randconfig-r013-20220807 (https://download.01.org/0day-ci/archive/20220808/202208080225.Hm01SP8r-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/5a39bd52d549e3f3be743fb336dd710eac75055d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Paul-Cercueil/mfd-Remove-ifdef-guards-for-PM-functions/20220807-225947
-        git checkout 5a39bd52d549e3f3be743fb336dd710eac75055d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/mfd/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/mfd/stmfx.c:485:18: error: no member named 'bkp_sysctrl' in 'struct stmfx'
-                                 &stmfx->bkp_sysctrl, sizeof(stmfx->bkp_sysctrl));
-                                  ~~~~~  ^
-   drivers/mfd/stmfx.c:485:45: error: no member named 'bkp_sysctrl' in 'struct stmfx'
-                                 &stmfx->bkp_sysctrl, sizeof(stmfx->bkp_sysctrl));
-                                                             ~~~~~  ^
->> drivers/mfd/stmfx.c:490:18: error: no member named 'bkp_irqoutpin' in 'struct stmfx'
-                                 &stmfx->bkp_irqoutpin,
-                                  ~~~~~  ^
-   drivers/mfd/stmfx.c:491:24: error: no member named 'bkp_irqoutpin' in 'struct stmfx'
-                                 sizeof(stmfx->bkp_irqoutpin));
-                                        ~~~~~  ^
-   drivers/mfd/stmfx.c:525:19: error: no member named 'bkp_sysctrl' in 'struct stmfx'
-                                  &stmfx->bkp_sysctrl, sizeof(stmfx->bkp_sysctrl));
-                                   ~~~~~  ^
-   drivers/mfd/stmfx.c:525:46: error: no member named 'bkp_sysctrl' in 'struct stmfx'
-                                  &stmfx->bkp_sysctrl, sizeof(stmfx->bkp_sysctrl));
-                                                              ~~~~~  ^
-   drivers/mfd/stmfx.c:530:19: error: no member named 'bkp_irqoutpin' in 'struct stmfx'
-                                  &stmfx->bkp_irqoutpin,
-                                   ~~~~~  ^
-   drivers/mfd/stmfx.c:531:25: error: no member named 'bkp_irqoutpin' in 'struct stmfx'
-                                  sizeof(stmfx->bkp_irqoutpin));
-                                         ~~~~~  ^
-   8 errors generated.
-
-
-vim +485 drivers/mfd/stmfx.c
-
-06252ade915665 Amelie Delaunay 2019-05-09  478  
-06252ade915665 Amelie Delaunay 2019-05-09  479  static int stmfx_suspend(struct device *dev)
-06252ade915665 Amelie Delaunay 2019-05-09  480  {
-06252ade915665 Amelie Delaunay 2019-05-09  481  	struct stmfx *stmfx = dev_get_drvdata(dev);
-06252ade915665 Amelie Delaunay 2019-05-09  482  	int ret;
-06252ade915665 Amelie Delaunay 2019-05-09  483  
-06252ade915665 Amelie Delaunay 2019-05-09  484  	ret = regmap_raw_read(stmfx->map, STMFX_REG_SYS_CTRL,
-06252ade915665 Amelie Delaunay 2019-05-09 @485  			      &stmfx->bkp_sysctrl, sizeof(stmfx->bkp_sysctrl));
-06252ade915665 Amelie Delaunay 2019-05-09  486  	if (ret)
-06252ade915665 Amelie Delaunay 2019-05-09  487  		return ret;
-06252ade915665 Amelie Delaunay 2019-05-09  488  
-06252ade915665 Amelie Delaunay 2019-05-09  489  	ret = regmap_raw_read(stmfx->map, STMFX_REG_IRQ_OUT_PIN,
-06252ade915665 Amelie Delaunay 2019-05-09 @490  			      &stmfx->bkp_irqoutpin,
-06252ade915665 Amelie Delaunay 2019-05-09  491  			      sizeof(stmfx->bkp_irqoutpin));
-06252ade915665 Amelie Delaunay 2019-05-09  492  	if (ret)
-06252ade915665 Amelie Delaunay 2019-05-09  493  		return ret;
-06252ade915665 Amelie Delaunay 2019-05-09  494  
-97eda5dcc2cde5 Amelie Delaunay 2020-04-22  495  	disable_irq(stmfx->irq);
-97eda5dcc2cde5 Amelie Delaunay 2020-04-22  496  
-06252ade915665 Amelie Delaunay 2019-05-09  497  	if (stmfx->vdd)
-06252ade915665 Amelie Delaunay 2019-05-09  498  		return regulator_disable(stmfx->vdd);
-06252ade915665 Amelie Delaunay 2019-05-09  499  
-06252ade915665 Amelie Delaunay 2019-05-09  500  	return 0;
-06252ade915665 Amelie Delaunay 2019-05-09  501  }
-06252ade915665 Amelie Delaunay 2019-05-09  502  
+ drivers/staging/r8188eu/Makefile             |   1 -
+ drivers/staging/r8188eu/core/rtw_recv.c      | 125 +++++++++++++-
+ drivers/staging/r8188eu/core/rtw_sta_mgt.c   |  13 ++
+ drivers/staging/r8188eu/include/recv_osdep.h |   7 -
+ drivers/staging/r8188eu/os_dep/recv_linux.c  | 165 -------------------
+ 5 files changed, 135 insertions(+), 176 deletions(-)
+ delete mode 100644 drivers/staging/r8188eu/os_dep/recv_linux.c
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.1
+
