@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90F37C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 07:16:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56F0BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 07:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241664AbiHHHQD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 03:16:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54982 "EHLO
+        id S241755AbiHHHQH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 03:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237603AbiHHHOz (ORCPT
+        with ESMTP id S236959AbiHHHPJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 03:14:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8FF9FC5;
-        Mon,  8 Aug 2022 00:14:43 -0700 (PDT)
+        Mon, 8 Aug 2022 03:15:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C2F112A9F;
+        Mon,  8 Aug 2022 00:14:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84398B80DCF;
-        Mon,  8 Aug 2022 07:14:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44801C433D7;
-        Mon,  8 Aug 2022 07:14:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC73860D24;
+        Mon,  8 Aug 2022 07:14:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB243C433D6;
+        Mon,  8 Aug 2022 07:14:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659942881;
-        bh=5VBNACFhtl+dfvQZEMTzFThf7ylgX+7g/Yydm6EJovs=;
+        s=k20201202; t=1659942893;
+        bh=m7BB6dE2TLg0BfE1G3bhADCM2Cpp+bpUD503eZJTSow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CtrfPxx/xVpdB9R30rfocfphFAEMUx3nf+KX3iZblbbX5nMZgnf3kBX9q/T8x3+Du
-         7iSWsHWQCRLLSy5lzm41xxYNUAKpeHhGgnSKMyf2ktQ36tR98vW8EODRofQt7+ixkB
-         XtS5zw4A/y1B/Iac3AG9JoTgyww0b+BoRxWhYEMbmKTZLUSw2cqYgK/sQ2z/VBK4Og
-         ov2XnFQWLvq86LR8ySmjFTzWyqJ4davEhT3pTtMoyXdb+muPsw/yi9CXumjf1/Jo4i
-         nECo2Gl1ZBlS5XwPCS5AGjQVQarW+bQrWstZiMiGTKQTqKuNgM3ahOF1BHvcSYZc5O
-         LukfVJ+avrWIg==
+        b=LFLyADkxN57udyvW/wSHNAj4DiqaQ2FY56CZ1wParcPOZHb/kjXXLdhhlK08AW+W2
+         HKxgDweL8jQvu0EUGxHdTQJxYflSB8E1Vz/mKRScGy5JXhkLkTbXjwbbMRnfxBMo3o
+         TgPH/0bfzn8hdLwOnwcLLAtDRoFsizdejk5yz7NKLTHWdwHfViQN8fj3swkHzM/Zfr
+         YgJvWX8dHlZVp1hU+bDhIZECL1tv1PiMLyeX1CjdQOQRZduy92a/j3k7UUccxer3my
+         ywTCOtqmibJ5uKZSobJ/uCSzV/Wot6TqaVGAjb2MWe4PuG96L33SQcEXRZBfyFlTuF
+         y9YmF8pdVFMQQ==
 From:   guoren@kernel.org
 To:     palmer@rivosinc.com, heiko@sntech.de, hch@infradead.org,
         arnd@arndb.de, peterz@infradead.org, will@kernel.org,
@@ -39,10 +39,12 @@ To:     palmer@rivosinc.com, heiko@sntech.de, hch@infradead.org,
         conor.dooley@microchip.com
 Cc:     linux-csky@vger.kernel.org, linux-arch@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        Guo Ren <guoren@linux.alibaba.com>, Guo Ren <guoren@kernel.org>
-Subject: [PATCH V9 11/15] riscv: Add qspinlock support
-Date:   Mon,  8 Aug 2022 03:13:14 -0400
-Message-Id: <20220808071318.3335746-12-guoren@kernel.org>
+        Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>, Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
+Subject: [PATCH V9 13/15] openrisc: cmpxchg: Cleanup unnecessary codes
+Date:   Mon,  8 Aug 2022 03:13:16 -0400
+Message-Id: <20220808071318.3335746-14-guoren@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220808071318.3335746-1-guoren@kernel.org>
 References: <20220808071318.3335746-1-guoren@kernel.org>
@@ -54,116 +56,211 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Guo Ren <guoren@linux.alibaba.com>
 
-Enable qspinlock by the requirements mentioned in a8ad07e5240c9
-("asm-generic: qspinlock: Indicate the use of mixed-size atomics").
+Remove cmpxchg_small and xchg_small, because it's unnecessary now, and
+they break the forward guarantee for atomic operations.
 
- - RISC-V atomic_*_release()/atomic_*_acquire() are implemented with
-   own relaxed version plus acquire/release_fence for RCsc
-   synchronization.
-
- - RISC-V LR/SC pairs could provide a strong/weak forward guarantee
-   that depends on micro-architecture. And RISC-V ISA spec has given
-   out several limitations to let hardware support strict forward
-   guarantee (RISC-V User ISA - 8.3 Eventual Success of
-   Store-Conditional Instructions). Some riscv cores such as BOOMv3
-   & XiangShan could provide strict & strong forward guarantee (The
-   cache line would be kept in an exclusive state for Backoff cycles,
-   and only this core's interrupt could break the LR/SC pair).
-
- - RISC-V provides cheap atomic_fetch_or_acquire() with RCsc.
-
- - RISC-V only provides relaxed xchg16 to support qspinlock.
+Also Remove unnecessary __HAVE_ARCH_CMPXCHG.
 
 Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
 Signed-off-by: Guo Ren <guoren@kernel.org>
+Cc: Stafford Horne <shorne@gmail.com>
+Cc: Jonas Bonn <jonas@southpole.se>
+Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
 ---
- arch/riscv/Kconfig               | 16 ++++++++++++++++
- arch/riscv/include/asm/Kbuild    |  2 ++
- arch/riscv/include/asm/cmpxchg.h | 24 ++++++++++++++++++++++++
- 3 files changed, 42 insertions(+)
+ arch/openrisc/include/asm/cmpxchg.h | 167 +++++++++-------------------
+ 1 file changed, 50 insertions(+), 117 deletions(-)
 
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index c3ca23bc6352..8b36a4307d03 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -359,6 +359,22 @@ config NODES_SHIFT
- 	  Specify the maximum number of NUMA Nodes available on the target
- 	  system.  Increases memory reserved to accommodate various tables.
+diff --git a/arch/openrisc/include/asm/cmpxchg.h b/arch/openrisc/include/asm/cmpxchg.h
+index 79fd16162ccb..df83b33b5882 100644
+--- a/arch/openrisc/include/asm/cmpxchg.h
++++ b/arch/openrisc/include/asm/cmpxchg.h
+@@ -20,10 +20,8 @@
+ #include  <linux/compiler.h>
+ #include  <linux/types.h>
  
-+choice
-+	prompt "RISC-V spinlock type"
-+	default RISCV_TICKET_SPINLOCKS
-+
-+config RISCV_TICKET_SPINLOCKS
-+	bool "Using ticket spinlock"
-+
-+config RISCV_QUEUED_SPINLOCKS
-+	bool "Using queued spinlock"
-+	depends on SMP && MMU
-+	select ARCH_USE_QUEUED_SPINLOCKS
-+	help
-+	  Make sure your micro arch LL/SC has a strong forward progress guarantee.
-+	  Otherwise, stay at ticket-lock.
-+endchoice
-+
- config RISCV_ALTERNATIVE
- 	bool
- 	depends on !XIP_KERNEL
-diff --git a/arch/riscv/include/asm/Kbuild b/arch/riscv/include/asm/Kbuild
-index 504f8b7e72d4..2cce98c7b653 100644
---- a/arch/riscv/include/asm/Kbuild
-+++ b/arch/riscv/include/asm/Kbuild
-@@ -2,7 +2,9 @@
- generic-y += early_ioremap.h
- generic-y += flat.h
- generic-y += kvm_para.h
-+generic-y += mcs_spinlock.h
- generic-y += parport.h
-+generic-y += qspinlock.h
- generic-y += spinlock.h
- generic-y += spinlock_types.h
- generic-y += qrwlock.h
-diff --git a/arch/riscv/include/asm/cmpxchg.h b/arch/riscv/include/asm/cmpxchg.h
-index 4b5fa25f4336..2ba88057db52 100644
---- a/arch/riscv/include/asm/cmpxchg.h
-+++ b/arch/riscv/include/asm/cmpxchg.h
-@@ -11,12 +11,36 @@
- #include <asm/barrier.h>
- #include <asm/fence.h>
+-#define __HAVE_ARCH_CMPXCHG 1
+-
+-static inline unsigned long cmpxchg_u32(volatile void *ptr,
+-		unsigned long old, unsigned long new)
++/* cmpxchg */
++static inline u32 cmpxchg32(volatile void *ptr, u32 old, u32 new)
+ {
+ 	__asm__ __volatile__(
+ 		"1:	l.lwa %0, 0(%1)		\n"
+@@ -41,8 +39,33 @@ static inline unsigned long cmpxchg_u32(volatile void *ptr,
+ 	return old;
+ }
  
-+static inline ulong __xchg16_relaxed(ulong new, void *ptr)
-+{
-+	ulong ret, tmp;
-+	ulong shif = ((ulong)ptr & 2) ? 16 : 0;
-+	ulong mask = 0xffff << shif;
-+	ulong *__ptr = (ulong *)((ulong)ptr & ~2);
-+
-+	__asm__ __volatile__ (
-+		"0:	lr.w %0, %2\n"
-+		"	and  %1, %0, %z3\n"
-+		"	or   %1, %1, %z4\n"
-+		"	sc.w %1, %1, %2\n"
-+		"	bnez %1, 0b\n"
-+		: "=&r" (ret), "=&r" (tmp), "+A" (*__ptr)
-+		: "rJ" (~mask), "rJ" (new << shif)
-+		: "memory");
-+
-+	return (ulong)((ret & mask) >> shif);
-+}
-+
- #define __xchg_relaxed(ptr, new, size)					\
- ({									\
- 	__typeof__(ptr) __ptr = (ptr);					\
- 	__typeof__(new) __new = (new);					\
- 	__typeof__(*(ptr)) __ret;					\
- 	switch (size) {							\
-+	case 2:	{							\
+-static inline unsigned long xchg_u32(volatile void *ptr,
+-		unsigned long val)
++#define __cmpxchg(ptr, old, new, size)					\
++({									\
++	__typeof__(ptr) __ptr = (ptr);					\
++	__typeof__(*(ptr)) __old = (old);				\
++	__typeof__(*(ptr)) __new = (new);				\
++	__typeof__(*(ptr)) __ret;					\
++	switch (size) {							\
++	case 4:								\
 +		__ret = (__typeof__(*(ptr)))				\
-+			__xchg16_relaxed((ulong)__new, __ptr);		\
-+		break;}							\
- 	case 4:								\
- 		__asm__ __volatile__ (					\
- 			"	amoswap.w %0, %2, %1\n"			\
++			cmpxchg32(__ptr, (u32)__old, (u32)__new);	\
++		break;							\
++	default:							\
++		BUILD_BUG();						\
++	}								\
++	__ret;								\
++})
++
++#define arch_cmpxchg(ptr, o, n)						\
++({									\
++	__typeof__(*(ptr)) _o_ = (o);					\
++	__typeof__(*(ptr)) _n_ = (n);					\
++	(__typeof__(*(ptr))) __cmpxchg((ptr),				\
++				       _o_, _n_, sizeof(*(ptr)));	\
++})
++
++/* xchg */
++static inline u32 xchg32(volatile void *ptr, u32 val)
+ {
+ 	__asm__ __volatile__(
+ 		"1:	l.lwa %0, 0(%1)		\n"
+@@ -56,116 +79,26 @@ static inline unsigned long xchg_u32(volatile void *ptr,
+ 	return val;
+ }
+ 
+-static inline u32 cmpxchg_small(volatile void *ptr, u32 old, u32 new,
+-				int size)
+-{
+-	int off = (unsigned long)ptr % sizeof(u32);
+-	volatile u32 *p = ptr - off;
+-#ifdef __BIG_ENDIAN
+-	int bitoff = (sizeof(u32) - size - off) * BITS_PER_BYTE;
+-#else
+-	int bitoff = off * BITS_PER_BYTE;
+-#endif
+-	u32 bitmask = ((0x1 << size * BITS_PER_BYTE) - 1) << bitoff;
+-	u32 load32, old32, new32;
+-	u32 ret;
+-
+-	load32 = READ_ONCE(*p);
+-
+-	while (true) {
+-		ret = (load32 & bitmask) >> bitoff;
+-		if (old != ret)
+-			return ret;
+-
+-		old32 = (load32 & ~bitmask) | (old << bitoff);
+-		new32 = (load32 & ~bitmask) | (new << bitoff);
+-
+-		/* Do 32 bit cmpxchg */
+-		load32 = cmpxchg_u32(p, old32, new32);
+-		if (load32 == old32)
+-			return old;
+-	}
+-}
+-
+-/* xchg */
+-
+-static inline u32 xchg_small(volatile void *ptr, u32 x, int size)
+-{
+-	int off = (unsigned long)ptr % sizeof(u32);
+-	volatile u32 *p = ptr - off;
+-#ifdef __BIG_ENDIAN
+-	int bitoff = (sizeof(u32) - size - off) * BITS_PER_BYTE;
+-#else
+-	int bitoff = off * BITS_PER_BYTE;
+-#endif
+-	u32 bitmask = ((0x1 << size * BITS_PER_BYTE) - 1) << bitoff;
+-	u32 oldv, newv;
+-	u32 ret;
+-
+-	do {
+-		oldv = READ_ONCE(*p);
+-		ret = (oldv & bitmask) >> bitoff;
+-		newv = (oldv & ~bitmask) | (x << bitoff);
+-	} while (cmpxchg_u32(p, oldv, newv) != oldv);
+-
+-	return ret;
+-}
+-
+-/*
+- * This function doesn't exist, so you'll get a linker error
+- * if something tries to do an invalid cmpxchg().
+- */
+-extern unsigned long __cmpxchg_called_with_bad_pointer(void)
+-	__compiletime_error("Bad argument size for cmpxchg");
+-
+-static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
+-		unsigned long new, int size)
+-{
+-	switch (size) {
+-	case 1:
+-	case 2:
+-		return cmpxchg_small(ptr, old, new, size);
+-	case 4:
+-		return cmpxchg_u32(ptr, old, new);
+-	default:
+-		return __cmpxchg_called_with_bad_pointer();
+-	}
+-}
+-
+-#define arch_cmpxchg(ptr, o, n)						\
+-	({								\
+-		(__typeof__(*(ptr))) __cmpxchg((ptr),			\
+-					       (unsigned long)(o),	\
+-					       (unsigned long)(n),	\
+-					       sizeof(*(ptr)));		\
+-	})
+-
+-/*
+- * This function doesn't exist, so you'll get a linker error if
+- * something tries to do an invalidly-sized xchg().
+- */
+-extern unsigned long __xchg_called_with_bad_pointer(void)
+-	__compiletime_error("Bad argument size for xchg");
+-
+-static inline unsigned long __xchg(volatile void *ptr, unsigned long with,
+-		int size)
+-{
+-	switch (size) {
+-	case 1:
+-	case 2:
+-		return xchg_small(ptr, with, size);
+-	case 4:
+-		return xchg_u32(ptr, with);
+-	default:
+-		return __xchg_called_with_bad_pointer();
+-	}
+-}
+-
+-#define arch_xchg(ptr, with) 						\
+-	({								\
+-		(__typeof__(*(ptr))) __xchg((ptr),			\
+-					    (unsigned long)(with),	\
+-					    sizeof(*(ptr)));		\
+-	})
++#define __xchg(ptr, new, size)						\
++({									\
++	__typeof__(ptr) __ptr = (ptr);					\
++	__typeof__(new) __new = (new);					\
++	__typeof__(*(ptr)) __ret;					\
++	switch (size) {							\
++	case 4:								\
++		__ret = (__typeof__(*(ptr)))				\
++			xchg32(__ptr, (u32)__new);			\
++		break;							\
++	default:							\
++		BUILD_BUG();						\
++	}								\
++	__ret;								\
++})
++
++#define arch_xchg(ptr, x)						\
++({									\
++	__typeof__(*(ptr)) _x_ = (x);					\
++	(__typeof__(*(ptr))) __xchg((ptr), _x_, sizeof(*(ptr)));	\
++})
+ 
+ #endif /* __ASM_OPENRISC_CMPXCHG_H */
 -- 
 2.36.1
 
