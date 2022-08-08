@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA5FC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 23:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 172E7C25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 23:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244678AbiHHX4K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 19:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42698 "EHLO
+        id S244707AbiHHX4b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 19:56:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244704AbiHHXzs (ORCPT
+        with ESMTP id S244721AbiHHXzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 19:55:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A67EE1C93D
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 16:55:10 -0700 (PDT)
+        Mon, 8 Aug 2022 19:55:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93BC92646
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 16:55:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660002909;
+        s=mimecast20190719; t=1660002915;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vBInKitIiV+8c9sLPLzyfLjIfh6Jj93fxgg09D0fLnY=;
-        b=Ot1FnOvzucF+8wCM6ps1JE5rHb3gLrGGsSgqwZyGfOA6WkPJjQ4xO6Caw3bHqbhTiOY3vI
-        aBJSHK0R1kDZrozsffgVxhq487dE3F7RseQB2fvuGn0N388NowlvsRPm9o7WDur6cQdkfT
-        TkiW4V6T98V9Z5JfoTo5AorxlwdeDbw=
+        bh=m2leLlKnhht5Zd1Jvvd0vHV196LjRIIKrLG7rDDvvSk=;
+        b=MKsMECs/dWUfhuy+C4L0XsJnpdFYPZjQZ5aj9V6hersJuByhQVbesVRDDCSSFI6e7Y086N
+        6VyDNrt5l0h5IlKNVAOeHwDzL/RdlHTk87uOPRO0x6Jgt8YEHGk94YxKFFv3b7L/Sq9N+t
+        KORixTE8PHFjv7+O1UtPI/8DRJoVJiY=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-343-pVoeeUluMPWM40_tFRGhgQ-1; Mon, 08 Aug 2022 19:55:07 -0400
-X-MC-Unique: pVoeeUluMPWM40_tFRGhgQ-1
+ us-mta-584-ViECr-QnNtKXqpg0guHCpg-1; Mon, 08 Aug 2022 19:55:11 -0400
+X-MC-Unique: ViECr-QnNtKXqpg0guHCpg-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D243F293248A;
-        Mon,  8 Aug 2022 23:55:05 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 366EF3C0CD5A;
+        Mon,  8 Aug 2022 23:55:11 +0000 (UTC)
 Received: from emerald.lyude.net (unknown [10.22.17.154])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8465BC15BA1;
-        Mon,  8 Aug 2022 23:55:04 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9BA89C15BA1;
+        Mon,  8 Aug 2022 23:55:10 +0000 (UTC)
 From:   Lyude Paul <lyude@redhat.com>
 To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
         amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org
@@ -47,37 +47,14 @@ Cc:     Wayne Lin <Wayne.Lin@amd.com>,
         Jani Nikula <jani.nikula@intel.com>,
         Imre Deak <imre.deak@intel.com>,
         Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sean Paul <sean@poorly.run>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Roman Li <roman.li@amd.com>, Jude Shih <shenshih@amd.com>,
         Thomas Zimmermann <tzimmermann@suse.de>,
         Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        Uma Shankar <uma.shankar@intel.com>,
-        Manasi Navare <manasi.d.navare@intel.com>,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        Dave Airlie <airlied@redhat.com>,
-        Fernando Ramos <greenfoo@u92.eu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sean Paul <seanpaul@chromium.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
         linux-kernel@vger.kernel.org (open list)
-Subject: [RFC v2 13/18] drm/display/dp_mst: Add helpers for serializing SST <-> MST transitions
-Date:   Mon,  8 Aug 2022 19:51:58 -0400
-Message-Id: <20220808235203.123892-14-lyude@redhat.com>
+Subject: [RFC v2 15/18] drm/display/dp_mst: Skip releasing payloads if last connected port isn't connected
+Date:   Mon,  8 Aug 2022 19:52:00 -0400
+Message-Id: <20220808235203.123892-16-lyude@redhat.com>
 In-Reply-To: <20220808235203.123892-1-lyude@redhat.com>
 References: <20220808235203.123892-1-lyude@redhat.com>
 MIME-Version: 1.0
@@ -88,23 +65,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There's another kind of situation where we could potentially race with
-nonblocking modesets and MST, especially if we were to only use the locking
-provided by atomic modesetting:
+In the past, we've ran into strange issues regarding errors in response to
+trying to destroy payloads after a port has been unplugged. We fixed this
+back in:
 
-* Display 1 begins as enabled on DP-1 in SST mode
-* Display 1 switches to MST mode, exposes one sink in MST mode
-* Userspace does non-blocking modeset to disable the SST display
-* Userspace does non-blocking modeset to enable the MST display with a
-  different CRTC, but the SST display hasn't been fully taken down yet
-* Execution order between the last two commits isn't guaranteed since they
-  share no drm resources
+This is intended to replace the workaround that was added here:
 
-We can fix this however, by ensuring that we always pull in the atomic
-topology state whenever a connector capable of driving an MST display
-performs its atomic check - and then tracking CRTC commits happening on the
-SST connector in the MST topology state. So, let's add some simple helpers
-for doing that and hook them up in various drivers.
+commit 3769e4c0af5b ("drm/dp_mst: Avoid to mess up payload table by ports in stale topology")
+
+which was intended fix to some of the payload leaks that were observed
+before, where we would attempt to determine if the port was still connected
+to the topology before updating payloads using
+drm_dp_mst_port_downstream_of_branch. This wasn't a particularly good
+solution, since one of the points of still having port and mstb validation
+is to avoid sending messages to newly disconnected branches wherever
+possible - thus the required use of drm_dp_mst_port_downstream_of_branch
+would indicate something may be wrong with said validation.
+
+It seems like it may have just been races and luck that made
+drm_dp_mst_port_downstream_of_branch work however, as while I was trying to
+figure out the true cause of this issue when removing the legacy MST code -
+I discovered an important excerpt in section 2.14.2.3.3.6 of the DP 2.0
+specs:
+
+"BAD_PARAM - This reply is transmitted when a Message Transaction parameter
+is in error; for example, the next port number is invalid or /no device is
+connected/ to the port associated with the port number."
+
+Sure enough - removing the calls to drm_dp_mst_port_downstream_of_branch()
+and instead checking the ->ddps field of the parent port to see whether we
+should release a given payload or not seems to totally fix the issue. This
+does actually make sense to me, as it seems the implication is that given a
+topology where an MSTB is removed, the payload for the MST parent's port
+will be released automatically if that port is also marked as disconnected.
+However, if there's another parent in the chain after that which is
+connected - payloads must be released there with an ALLOCATE_PAYLOAD
+message.
+
+So, let's do that!
 
 Signed-off-by: Lyude Paul <lyude@redhat.com>
 Cc: Wayne Lin <Wayne.Lin@amd.com>
@@ -116,202 +114,133 @@ Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
 Cc: Sean Paul <sean@poorly.run>
 Acked-by: Jani Nikula <jani.nikula@intel.com>
 ---
- .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |  7 +++
- drivers/gpu/drm/display/drm_dp_mst_topology.c | 59 +++++++++++++++++++
- drivers/gpu/drm/i915/display/intel_dp.c       |  9 +++
- drivers/gpu/drm/nouveau/dispnv50/disp.c       |  2 +-
- drivers/gpu/drm/nouveau/dispnv50/disp.h       |  2 +
- drivers/gpu/drm/nouveau/nouveau_connector.c   | 14 +++++
- include/drm/display/drm_dp_mst_helper.h       |  2 +
- 7 files changed, 94 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/display/drm_dp_mst_topology.c | 51 +++++++------------
+ 1 file changed, 17 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 1739710003a4..51732bd603a9 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -6318,10 +6318,17 @@ amdgpu_dm_connector_atomic_check(struct drm_connector *conn,
- 		drm_atomic_get_old_connector_state(state, conn);
- 	struct drm_crtc *crtc = new_con_state->crtc;
- 	struct drm_crtc_state *new_crtc_state;
-+	struct amdgpu_dm_connector *aconn = to_amdgpu_dm_connector(conn);
- 	int ret;
- 
- 	trace_amdgpu_dm_connector_atomic_check(new_con_state);
- 
-+	if (conn->connector_type == DRM_MODE_CONNECTOR_DisplayPort) {
-+		ret = drm_dp_mst_root_conn_atomic_check(new_con_state, &aconn->mst_mgr);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	if (!crtc)
- 		return 0;
- 
 diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-index 2f7c43f88d74..97e8f8a83ed4 100644
+index a5460cadf2c8..e9cf09a4b2a4 100644
 --- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
 +++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
-@@ -4597,6 +4597,65 @@ void drm_dp_mst_atomic_wait_for_dependencies(struct drm_atomic_state *state)
- }
- EXPORT_SYMBOL(drm_dp_mst_atomic_wait_for_dependencies);
- 
-+/**
-+ * drm_dp_mst_root_conn_atomic_check() - Serialize CRTC commits on MST-capable connectors operating
-+ * in SST mode
-+ * @new_conn_state: The new connector state of the &drm_connector
-+ * @mgr: The MST topology manager for the &drm_connector
-+ *
-+ * Since MST uses fake &drm_encoder structs, the generic atomic modesetting code isn't able to
-+ * serialize non-blocking commits happening on the real DP connector of an MST topology switching
-+ * into/away from MST mode - as the CRTC on the real DP connector and the CRTCs on the connector's
-+ * MST topology will never share the same &drm_encoder.
-+ *
-+ * This function takes care of this serialization issue, by checking a root MST connector's atomic
-+ * state to determine if it is about to have a modeset - and then pulling in the MST topology state
-+ * if so, along with adding any relevant CRTCs to &drm_dp_mst_topology_state.pending_crtc_mask.
-+ *
-+ * Drivers implementing MST must call this function from the
-+ * &drm_connector_helper_funcs.atomic_check hook of any physical DP &drm_connector capable of
-+ * driving MST sinks.
-+ *
-+ * Returns:
-+ * 0 on success, negative error code otherwise
-+ */
-+int drm_dp_mst_root_conn_atomic_check(struct drm_connector_state *new_conn_state,
-+				      struct drm_dp_mst_topology_mgr *mgr)
-+{
-+	struct drm_atomic_state *state = new_conn_state->state;
-+	struct drm_connector_state *old_conn_state =
-+		drm_atomic_get_old_connector_state(state, new_conn_state->connector);
-+	struct drm_crtc_state *crtc_state;
-+	struct drm_dp_mst_topology_state *mst_state = NULL;
-+
-+	if (new_conn_state->crtc) {
-+		crtc_state = drm_atomic_get_new_crtc_state(state, new_conn_state->crtc);
-+		if (crtc_state && drm_atomic_crtc_needs_modeset(crtc_state)) {
-+			mst_state = drm_atomic_get_mst_topology_state(state, mgr);
-+			if (IS_ERR(mst_state))
-+				return PTR_ERR(mst_state);
-+
-+			mst_state->pending_crtc_mask |= drm_crtc_mask(new_conn_state->crtc);
-+		}
-+	}
-+
-+	if (old_conn_state->crtc) {
-+		crtc_state = drm_atomic_get_new_crtc_state(state, old_conn_state->crtc);
-+		if (crtc_state && drm_atomic_crtc_needs_modeset(crtc_state)) {
-+			if (!mst_state) {
-+				mst_state = drm_atomic_get_mst_topology_state(state, mgr);
-+				if (IS_ERR(mst_state))
-+					return PTR_ERR(mst_state);
-+			}
-+
-+			mst_state->pending_crtc_mask |= drm_crtc_mask(old_conn_state->crtc);
-+		}
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(drm_dp_mst_root_conn_atomic_check);
-+
- /**
-  * drm_dp_mst_update_slots() - updates the slot info depending on the DP ecoding format
-  * @mst_state: mst_state to update
-diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
-index 32292c0be2bd..fdb731e13e28 100644
---- a/drivers/gpu/drm/i915/display/intel_dp.c
-+++ b/drivers/gpu/drm/i915/display/intel_dp.c
-@@ -4992,12 +4992,21 @@ static int intel_dp_connector_atomic_check(struct drm_connector *conn,
+@@ -3128,7 +3128,7 @@ static struct drm_dp_mst_port *drm_dp_get_last_connected_port_to_mstb(struct drm
+ static struct drm_dp_mst_branch *
+ drm_dp_get_last_connected_port_and_mstb(struct drm_dp_mst_topology_mgr *mgr,
+ 					struct drm_dp_mst_branch *mstb,
+-					int *port_num)
++					struct drm_dp_mst_port **last_port)
  {
- 	struct drm_i915_private *dev_priv = to_i915(conn->dev);
- 	struct intel_atomic_state *state = to_intel_atomic_state(_state);
-+	struct drm_connector_state *conn_state = drm_atomic_get_new_connector_state(_state, conn);
-+	struct intel_connector *intel_conn = to_intel_connector(conn);
-+	struct intel_dp *intel_dp = enc_to_intel_dp(intel_conn->encoder);
- 	int ret;
+ 	struct drm_dp_mst_branch *rmstb = NULL;
+ 	struct drm_dp_mst_port *found_port;
+@@ -3144,7 +3144,8 @@ drm_dp_get_last_connected_port_and_mstb(struct drm_dp_mst_topology_mgr *mgr,
  
- 	ret = intel_digital_connector_atomic_check(conn, &state->base);
- 	if (ret)
- 		return ret;
- 
-+	if (HAS_DP_MST(dev_priv) && !intel_dp_is_edp(intel_dp)) {
-+		ret = drm_dp_mst_root_conn_atomic_check(conn_state, &intel_dp->mst_mgr);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	/*
- 	 * We don't enable port sync on BDW due to missing w/as and
- 	 * due to not having adjusted the modeset sequence appropriately.
-diff --git a/drivers/gpu/drm/nouveau/dispnv50/disp.c b/drivers/gpu/drm/nouveau/dispnv50/disp.c
-index 24807aa9da5f..7e9a0b50bb42 100644
---- a/drivers/gpu/drm/nouveau/dispnv50/disp.c
-+++ b/drivers/gpu/drm/nouveau/dispnv50/disp.c
-@@ -1813,7 +1813,7 @@ nv50_sor_func = {
- 	.destroy = nv50_sor_destroy,
- };
- 
--static bool nv50_has_mst(struct nouveau_drm *drm)
-+bool nv50_has_mst(struct nouveau_drm *drm)
+ 		if (drm_dp_mst_topology_try_get_mstb(found_port->parent)) {
+ 			rmstb = found_port->parent;
+-			*port_num = found_port->port_num;
++			*last_port = found_port;
++			drm_dp_mst_get_port_malloc(found_port);
+ 		} else {
+ 			/* Search again, starting from this parent */
+ 			mstb = found_port->parent;
+@@ -3161,7 +3162,7 @@ static int drm_dp_payload_send_msg(struct drm_dp_mst_topology_mgr *mgr,
+ 				   int pbn)
  {
- 	struct nvkm_bios *bios = nvxx_bios(&drm->client.device);
- 	u32 data;
-diff --git a/drivers/gpu/drm/nouveau/dispnv50/disp.h b/drivers/gpu/drm/nouveau/dispnv50/disp.h
-index 38dec11e7dda..9d66c9c726c3 100644
---- a/drivers/gpu/drm/nouveau/dispnv50/disp.h
-+++ b/drivers/gpu/drm/nouveau/dispnv50/disp.h
-@@ -106,6 +106,8 @@ void nv50_dmac_destroy(struct nv50_dmac *);
-  */
- struct nouveau_encoder *nv50_real_outp(struct drm_encoder *encoder);
+ 	struct drm_dp_sideband_msg_tx *txmsg;
+-	struct drm_dp_mst_branch *mstb;
++	struct drm_dp_mst_branch *mstb = NULL;
+ 	int ret, port_num;
+ 	u8 sinks[DRM_DP_MAX_SDP_STREAMS];
+ 	int i;
+@@ -3169,12 +3170,22 @@ static int drm_dp_payload_send_msg(struct drm_dp_mst_topology_mgr *mgr,
+ 	port_num = port->port_num;
+ 	mstb = drm_dp_mst_topology_get_mstb_validated(mgr, port->parent);
+ 	if (!mstb) {
+-		mstb = drm_dp_get_last_connected_port_and_mstb(mgr,
+-							       port->parent,
+-							       &port_num);
++		struct drm_dp_mst_port *rport = NULL;
++		bool ddps;
  
-+bool nv50_has_mst(struct nouveau_drm *drm);
++		mstb = drm_dp_get_last_connected_port_and_mstb(mgr, port->parent, &rport);
+ 		if (!mstb)
+ 			return -EINVAL;
 +
- u32 *evo_wait(struct nv50_dmac *, int nr);
- void evo_kick(u32 *, struct nv50_dmac *);
- 
-diff --git a/drivers/gpu/drm/nouveau/nouveau_connector.c b/drivers/gpu/drm/nouveau/nouveau_connector.c
-index bdaec3427f14..6c412c1c1221 100644
---- a/drivers/gpu/drm/nouveau/nouveau_connector.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_connector.c
-@@ -1105,11 +1105,25 @@ nouveau_connector_best_encoder(struct drm_connector *connector)
- 	return NULL;
- }
- 
-+static int
-+nouveau_connector_atomic_check(struct drm_connector *connector, struct drm_atomic_state *state)
-+{
-+	struct nouveau_connector *nv_conn = nouveau_connector(connector);
-+	struct drm_connector_state *conn_state =
-+		drm_atomic_get_new_connector_state(state, connector);
++		ddps = rport->ddps;
++		port_num = rport->port_num;
++		drm_dp_mst_put_port_malloc(rport);
 +
-+	if (!nv_conn->dp_encoder || !nv50_has_mst(nouveau_drm(connector->dev)))
-+		return 0;
-+
-+	return drm_dp_mst_root_conn_atomic_check(conn_state, &nv_conn->dp_encoder->dp.mstm->mgr);
-+}
-+
- static const struct drm_connector_helper_funcs
- nouveau_connector_helper_funcs = {
- 	.get_modes = nouveau_connector_get_modes,
- 	.mode_valid = nouveau_connector_mode_valid,
- 	.best_encoder = nouveau_connector_best_encoder,
-+	.atomic_check = nouveau_connector_atomic_check,
- };
++		/* If the port is currently marked as disconnected, don't send a payload message */
++		if (!ddps) {
++			ret = -EINVAL;
++			goto fail_put;
++		}
+ 	}
  
- static const struct drm_connector_funcs
-diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
-index 0ef7d0e6cf0c..b9c361b242ea 100644
---- a/include/drm/display/drm_dp_mst_helper.h
-+++ b/include/drm/display/drm_dp_mst_helper.h
-@@ -911,6 +911,8 @@ int drm_dp_send_query_stream_enc_status(struct drm_dp_mst_topology_mgr *mgr,
- 		struct drm_dp_mst_port *port,
- 		struct drm_dp_query_stream_enc_status_ack_reply *status);
- int __must_check drm_dp_mst_atomic_check(struct drm_atomic_state *state);
-+int __must_check drm_dp_mst_root_conn_atomic_check(struct drm_connector_state *new_conn_state,
-+						   struct drm_dp_mst_topology_mgr *mgr);
+ 	txmsg = kzalloc(sizeof(*txmsg), GFP_KERNEL);
+@@ -3375,7 +3386,6 @@ int drm_dp_update_payload_part1(struct drm_dp_mst_topology_mgr *mgr, int start_s
+ 	struct drm_dp_mst_port *port;
+ 	int i, j;
+ 	int cur_slots = start_slot;
+-	bool skip;
  
- void drm_dp_mst_get_port_malloc(struct drm_dp_mst_port *port);
- void drm_dp_mst_put_port_malloc(struct drm_dp_mst_port *port);
+ 	mutex_lock(&mgr->payload_lock);
+ 	for (i = 0; i < mgr->max_payloads; i++) {
+@@ -3390,16 +3400,6 @@ int drm_dp_update_payload_part1(struct drm_dp_mst_topology_mgr *mgr, int start_s
+ 			port = container_of(vcpi, struct drm_dp_mst_port,
+ 					    vcpi);
+ 
+-			mutex_lock(&mgr->lock);
+-			skip = !drm_dp_mst_port_downstream_of_branch(port, mgr->mst_primary);
+-			mutex_unlock(&mgr->lock);
+-
+-			if (skip) {
+-				drm_dbg_kms(mgr->dev,
+-					    "Virtual channel %d is not in current topology\n",
+-					    i);
+-				continue;
+-			}
+ 			/* Validated ports don't matter if we're releasing
+ 			 * VCPI
+ 			 */
+@@ -3500,7 +3500,6 @@ int drm_dp_update_payload_part2(struct drm_dp_mst_topology_mgr *mgr)
+ 	struct drm_dp_mst_port *port;
+ 	int i;
+ 	int ret = 0;
+-	bool skip;
+ 
+ 	mutex_lock(&mgr->payload_lock);
+ 	for (i = 0; i < mgr->max_payloads; i++) {
+@@ -3510,13 +3509,6 @@ int drm_dp_update_payload_part2(struct drm_dp_mst_topology_mgr *mgr)
+ 
+ 		port = container_of(mgr->proposed_vcpis[i], struct drm_dp_mst_port, vcpi);
+ 
+-		mutex_lock(&mgr->lock);
+-		skip = !drm_dp_mst_port_downstream_of_branch(port, mgr->mst_primary);
+-		mutex_unlock(&mgr->lock);
+-
+-		if (skip)
+-			continue;
+-
+ 		drm_dbg_kms(mgr->dev, "payload %d %d\n", i, mgr->payloads[i].payload_state);
+ 		if (mgr->payloads[i].payload_state == DP_PAYLOAD_LOCAL) {
+ 			ret = drm_dp_create_payload_step2(mgr, port, mgr->proposed_vcpis[i]->vcpi, &mgr->payloads[i]);
+@@ -4769,18 +4761,9 @@ EXPORT_SYMBOL(drm_dp_mst_reset_vcpi_slots);
+ void drm_dp_mst_deallocate_vcpi(struct drm_dp_mst_topology_mgr *mgr,
+ 				struct drm_dp_mst_port *port)
+ {
+-	bool skip;
+-
+ 	if (!port->vcpi.vcpi)
+ 		return;
+ 
+-	mutex_lock(&mgr->lock);
+-	skip = !drm_dp_mst_port_downstream_of_branch(port, mgr->mst_primary);
+-	mutex_unlock(&mgr->lock);
+-
+-	if (skip)
+-		return;
+-
+ 	drm_dp_mst_put_payload_id(mgr, port->vcpi.vcpi);
+ 	port->vcpi.num_slots = 0;
+ 	port->vcpi.pbn = 0;
 -- 
 2.37.1
 
