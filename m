@@ -2,261 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D74CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 07:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 337CAC25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 07:43:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241879AbiHHHl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 03:41:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47546 "EHLO
+        id S241712AbiHHHnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 03:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241931AbiHHHl1 (ORCPT
+        with ESMTP id S235975AbiHHHnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 03:41:27 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1F0BE11;
-        Mon,  8 Aug 2022 00:41:25 -0700 (PDT)
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2787B2LA020824;
-        Mon, 8 Aug 2022 09:41:03 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=GlozL1vLY4kK858hLrkdzOGPuNMB0JMjdartUozN5bQ=;
- b=4A5ZaykBkiGTTgCaM1VBF5CHEzTxaBbcm98mSxhKXeAFuzvYD0dFkDGKM+col0sAJr8l
- RB9gFJJcDqHk7+bcR/S1qmMgiHEnZftIcm6kUG8kjwzC3KPzuI3NoQ79bmTtDffxm0Zd
- 6oy2zDVqUiwxYoVMQIvG8NBBMo3yTYr21fnJ10HoOxoYUJut9hx7Fs38E0tetAVOtiQ+
- UlKPYy56C1OH4PDsL9+cV7swoGDqc81Q/8uolI3OUTKQOOvC+BAMp2TJdrsPIql7Yhdq
- KRLDf+qrQukEh7yeoe0OzPmkUFRUM0dkyP42MoT38H7LQcUb7gG+ibpAwIGa2a3zcbvi Uw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hsdea156q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 08 Aug 2022 09:41:03 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 133FD100039;
-        Mon,  8 Aug 2022 09:41:00 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7E9B12171DF;
-        Mon,  8 Aug 2022 09:41:00 +0200 (CEST)
-Received: from localhost (10.75.127.119) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 8 Aug
- 2022 09:40:59 +0200
-From:   <patrice.chotard@foss.st.com>
-To:     Mark Brown <broonie@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
-CC:     <linux-spi@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
-        <patrice.chotard@foss.st.com>, <devicetree@vger.kernel.org>
-Subject: [PATCH 2/3] spi: stm32_qspi: Add transfer_one_message() spi callback
-Date:   Mon, 8 Aug 2022 09:40:50 +0200
-Message-ID: <20220808074051.44736-3-patrice.chotard@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220808074051.44736-1-patrice.chotard@foss.st.com>
-References: <20220808074051.44736-1-patrice.chotard@foss.st.com>
+        Mon, 8 Aug 2022 03:43:22 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D83CA188
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 00:43:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659944601; x=1691480601;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=4t6SeN7/XT2pFdBjQy0fi/TXZap4WFnfdIgGKE3qzmw=;
+  b=K918MRwdgwUlxJre5FWrTHgIpabPj10U6uywgTj9tJQZjqjGCmHxwjWm
+   shXND25Y6EAXtk5hzmuJLoi7YU/kvwnwUbMhk617tiRUegeLXfl9Am5WA
+   556zq2Q5cQ0OngvOPF8mHUHEgMC8/q4zeOcBZrgD4CTeLSxj7X4EvZ9fb
+   n4ModmOZaFtqRz1baC/D2L0VndB7N2AIOYrxOU/yjYbtzCKrEh7Ijt/Wa
+   Q2jMrmAv6shTn0FelCgkbBb56Kk1Kiv/RcxGX0tgEqcHTQ3vosyydd4Xa
+   JBEd3C3rd1WXTpps2TDUcFRAnOurqZJcnKEs0bCH2WKi7lRkk0cKfBEVm
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="277459351"
+X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
+   d="scan'208";a="277459351"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 00:43:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
+   d="scan'208";a="580239387"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 08 Aug 2022 00:43:17 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oKxPw-000M59-2q;
+        Mon, 08 Aug 2022 07:43:16 +0000
+Date:   Mon, 8 Aug 2022 15:42:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Manisha Chinthapally <manisha.chinthapally@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mchinth:sep_socwatch_linux_5_16 1/1]
+ drivers/platform/x86/socperf/socperfdrv.c:1637:17: sparse: sparse: incorrect
+ type in initializer (incompatible argument 2 (different address spaces))
+Message-ID: <202208081533.vgDU1Isu-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.119]
-X-ClientProxiedBy: GPXDAG2NODE6.st.com (10.75.127.70) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-08_05,2022-08-05_01,2022-06-22_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrice Chotard <patrice.chotard@foss.st.com>
+tree:   https://github.com/mchinth/linux sep_socwatch_linux_5_16
+head:   4cbfca15a262729ae8557758b49226fe4769f582
+commit: 4cbfca15a262729ae8557758b49226fe4769f582 [1/1] Platform/x86 Updated SEP/SOCPERF drivers to latest version
+config: i386-randconfig-s003 (https://download.01.org/0day-ci/archive/20220808/202208081533.vgDU1Isu-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/mchinth/linux/commit/4cbfca15a262729ae8557758b49226fe4769f582
+        git remote add mchinth https://github.com/mchinth/linux
+        git fetch --no-tags mchinth sep_socwatch_linux_5_16
+        git checkout 4cbfca15a262729ae8557758b49226fe4769f582
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash
 
-Add transfer_one_message() spi callback in order to use the QSPI interface
-as a communication channel using up to 8 qspi lines (QSPI configured
-in dual flash mode).
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
----
- drivers/spi/spi-stm32-qspi.c | 111 ++++++++++++++++++++++++++++++++---
- 1 file changed, 104 insertions(+), 7 deletions(-)
+sparse warnings: (new ones prefixed by >>)
+   drivers/platform/x86/socperf/socperfdrv.c:208:13: sparse: sparse: function 'SOCPERF_Read_Data3' with external linkage has definition
+   drivers/platform/x86/socperf/socperfdrv.c:1175:13: sparse: sparse: function 'lwpmudrv_Stop_Mem' with external linkage has definition
+   drivers/platform/x86/socperf/socperfdrv.c:1392:22: sparse: sparse: function 'socperf_Service_IOCTL' with external linkage has definition
+   drivers/platform/x86/socperf/socperfdrv.c:1516:13: sparse: sparse: function 'socperf_Device_Control' with external linkage has definition
+   drivers/platform/x86/socperf/socperfdrv.c:1602:12: sparse: sparse: function 'SOCPERF_Abnormal_Terminate' with external linkage has definition
+   drivers/platform/x86/socperf/socperfdrv.c:104:22: sparse: sparse: symbol 'socperf_drv_version' was not declared. Should it be static?
+   drivers/platform/x86/socperf/socperfdrv.c:105:5: sparse: sparse: symbol 'read_unc_ctr_info' was not declared. Should it be static?
+   drivers/platform/x86/socperf/socperfdrv.c:106:10: sparse: sparse: symbol 'dispatch_uncore' was not declared. Should it be static?
+   drivers/platform/x86/socperf/socperfdrv.c:108:14: sparse: sparse: symbol 'socperf_global_ec' was not declared. Should it be static?
+   drivers/platform/x86/socperf/socperfdrv.c:109:14: sparse: sparse: symbol 'socperf_abnormal_terminate' was not declared. Should it be static?
+   drivers/platform/x86/socperf/socperfdrv.c:110:11: sparse: sparse: symbol 'socperf_control' was not declared. Should it be static?
+   drivers/platform/x86/socperf/socperfdrv.c:114:8: sparse: sparse: symbol 'socperf_pcb_size' was not declared. Should it be static?
+   drivers/platform/x86/socperf/socperfdrv.c:246:18: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile [noderef] __user *ptr @@     got unsigned int [usertype] * @@
+   drivers/platform/x86/socperf/socperfdrv.c:246:18: sparse:     expected void const volatile [noderef] __user *ptr
+   drivers/platform/x86/socperf/socperfdrv.c:246:18: sparse:     got unsigned int [usertype] *
+   drivers/platform/x86/socperf/socperfdrv.c:246:18: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected void [noderef] __user *__ptr_pu @@     got unsigned int [usertype] * @@
+   drivers/platform/x86/socperf/socperfdrv.c:246:18: sparse:     expected void [noderef] __user *__ptr_pu
+   drivers/platform/x86/socperf/socperfdrv.c:246:18: sparse:     got unsigned int [usertype] *
+   drivers/platform/x86/socperf/socperfdrv.c:328:37: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got void *[usertype] buf_drv_to_usr @@
+   drivers/platform/x86/socperf/socperfdrv.c:328:37: sparse:     expected void const [noderef] __user *from
+   drivers/platform/x86/socperf/socperfdrv.c:328:37: sparse:     got void *[usertype] buf_drv_to_usr
+   drivers/platform/x86/socperf/socperfdrv.c:407:62: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got void *[usertype] buf_drv_to_usr @@
+   drivers/platform/x86/socperf/socperfdrv.c:407:62: sparse:     expected void const [noderef] __user *from
+   drivers/platform/x86/socperf/socperfdrv.c:407:62: sparse:     got void *[usertype] buf_drv_to_usr
+   drivers/platform/x86/socperf/socperfdrv.c:559:63: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got char *[usertype] buf_usr_to_drv @@
+   drivers/platform/x86/socperf/socperfdrv.c:559:63: sparse:     expected void const [noderef] __user *from
+   drivers/platform/x86/socperf/socperfdrv.c:559:63: sparse:     got char *[usertype] buf_usr_to_drv
+   drivers/platform/x86/socperf/socperfdrv.c:641:39: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got char *[usertype] buf_usr_to_drv @@
+   drivers/platform/x86/socperf/socperfdrv.c:641:39: sparse:     expected void const [noderef] __user *from
+   drivers/platform/x86/socperf/socperfdrv.c:641:39: sparse:     got char *[usertype] buf_usr_to_drv
+   drivers/platform/x86/socperf/socperfdrv.c:742:64: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got char *[usertype] buf_usr_to_drv @@
+   drivers/platform/x86/socperf/socperfdrv.c:742:64: sparse:     expected void const [noderef] __user *from
+   drivers/platform/x86/socperf/socperfdrv.c:742:64: sparse:     got char *[usertype] buf_usr_to_drv
+   drivers/platform/x86/socperf/socperfdrv.c:1043:43: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got unsigned int [usertype] * @@
+   drivers/platform/x86/socperf/socperfdrv.c:1043:43: sparse:     expected void const [noderef] __user *from
+   drivers/platform/x86/socperf/socperfdrv.c:1043:43: sparse:     got unsigned int [usertype] *
+   drivers/platform/x86/socperf/socperfdrv.c:1066:29: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got char *[usertype] buf_drv_to_usr @@
+   drivers/platform/x86/socperf/socperfdrv.c:1066:29: sparse:     expected void [noderef] __user *to
+   drivers/platform/x86/socperf/socperfdrv.c:1066:29: sparse:     got char *[usertype] buf_drv_to_usr
+   drivers/platform/x86/socperf/socperfdrv.c:1089:28: sparse: sparse: Using plain integer as NULL pointer
+   drivers/platform/x86/socperf/socperfdrv.c:1100:29: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got char *[usertype] buf_drv_to_usr @@
+   drivers/platform/x86/socperf/socperfdrv.c:1100:29: sparse:     expected void [noderef] __user *to
+   drivers/platform/x86/socperf/socperfdrv.c:1100:29: sparse:     got char *[usertype] buf_drv_to_usr
+   drivers/platform/x86/socperf/socperfdrv.c:1135:45: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got unsigned long long [usertype] * @@
+   drivers/platform/x86/socperf/socperfdrv.c:1135:45: sparse:     expected void const [noderef] __user *from
+   drivers/platform/x86/socperf/socperfdrv.c:1135:45: sparse:     got unsigned long long [usertype] *
+   drivers/platform/x86/socperf/socperfdrv.c:1154:29: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got char *[usertype] buf_drv_to_usr @@
+   drivers/platform/x86/socperf/socperfdrv.c:1154:29: sparse:     expected void [noderef] __user *to
+   drivers/platform/x86/socperf/socperfdrv.c:1154:29: sparse:     got char *[usertype] buf_drv_to_usr
+   drivers/platform/x86/socperf/socperfdrv.c:1175:13: sparse: sparse: symbol 'lwpmudrv_Stop_Mem' was not declared. Should it be static?
+   drivers/platform/x86/socperf/socperfdrv.c:1286:54: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got char *[usertype] buf_usr_to_drv @@
+   drivers/platform/x86/socperf/socperfdrv.c:1286:54: sparse:     expected void const [noderef] __user *from
+   drivers/platform/x86/socperf/socperfdrv.c:1286:54: sparse:     got char *[usertype] buf_usr_to_drv
+   drivers/platform/x86/socperf/socperfdrv.c:1310:30: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got char *[usertype] buf_drv_to_usr @@
+   drivers/platform/x86/socperf/socperfdrv.c:1310:30: sparse:     expected void [noderef] __user *to
+   drivers/platform/x86/socperf/socperfdrv.c:1310:30: sparse:     got char *[usertype] buf_drv_to_usr
+   drivers/platform/x86/socperf/socperfdrv.c:1348:26: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got char *buf @@
+   drivers/platform/x86/socperf/socperfdrv.c:1348:26: sparse:     expected void [noderef] __user *to
+   drivers/platform/x86/socperf/socperfdrv.c:1348:26: sparse:     got char *buf
+   drivers/platform/x86/socperf/socperfdrv.c:1368:76: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got char const * @@
+   drivers/platform/x86/socperf/socperfdrv.c:1368:76: sparse:     expected void const [noderef] __user *from
+   drivers/platform/x86/socperf/socperfdrv.c:1368:76: sparse:     got char const *
+   drivers/platform/x86/socperf/socperfdrv.c:1392:22: sparse: sparse: symbol 'socperf_Service_IOCTL' was not declared. Should it be static?
+   drivers/platform/x86/socperf/socperfdrv.c:1537:55: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got struct IOCTL_ARGS_NODE_S [usertype] *[usertype] @@
+   drivers/platform/x86/socperf/socperfdrv.c:1537:55: sparse:     expected void const [noderef] __user *from
+   drivers/platform/x86/socperf/socperfdrv.c:1537:55: sparse:     got struct IOCTL_ARGS_NODE_S [usertype] *[usertype]
+   drivers/platform/x86/socperf/socperfdrv.c:1516:13: sparse: sparse: symbol 'socperf_Device_Control' was not declared. Should it be static?
+   drivers/platform/x86/socperf/socperfdrv.c:1602:12: sparse: sparse: symbol 'SOCPERF_Abnormal_Terminate' was not declared. Should it be static?
+>> drivers/platform/x86/socperf/socperfdrv.c:1637:17: sparse: sparse: incorrect type in initializer (incompatible argument 2 (different address spaces)) @@     expected int ( *read )( ... ) @@     got int ( * )( ... ) @@
+   drivers/platform/x86/socperf/socperfdrv.c:1637:17: sparse:     expected int ( *read )( ... )
+   drivers/platform/x86/socperf/socperfdrv.c:1637:17: sparse:     got int ( * )( ... )
+>> drivers/platform/x86/socperf/socperfdrv.c:1638:18: sparse: sparse: incorrect type in initializer (incompatible argument 2 (different address spaces)) @@     expected int ( *write )( ... ) @@     got int ( * )( ... ) @@
+   drivers/platform/x86/socperf/socperfdrv.c:1638:18: sparse:     expected int ( *write )( ... )
+   drivers/platform/x86/socperf/socperfdrv.c:1638:18: sparse:     got int ( * )( ... )
 
-diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
-index f3fe92300639..7f2cdcbaf853 100644
---- a/drivers/spi/spi-stm32-qspi.c
-+++ b/drivers/spi/spi-stm32-qspi.c
-@@ -15,6 +15,7 @@
- #include <linux/mutex.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/of_gpio.h>
- #include <linux/pinctrl/consumer.h>
- #include <linux/pm_runtime.h>
- #include <linux/platform_device.h>
-@@ -355,10 +356,10 @@ static int stm32_qspi_get_mode(u8 buswidth)
- 	return buswidth;
- }
- 
--static int stm32_qspi_send(struct spi_mem *mem, const struct spi_mem_op *op)
-+static int stm32_qspi_send(struct spi_device *spi, const struct spi_mem_op *op)
- {
--	struct stm32_qspi *qspi = spi_controller_get_devdata(mem->spi->master);
--	struct stm32_qspi_flash *flash = &qspi->flash[mem->spi->chip_select];
-+	struct stm32_qspi *qspi = spi_controller_get_devdata(spi->master);
-+	struct stm32_qspi_flash *flash = &qspi->flash[spi->chip_select];
- 	u32 ccr, cr;
- 	int timeout, err = 0, err_poll_status = 0;
- 
-@@ -465,7 +466,7 @@ static int stm32_qspi_poll_status(struct spi_mem *mem, const struct spi_mem_op *
- 	qspi->fmode = CCR_FMODE_APM;
- 	qspi->status_timeout = timeout_ms;
- 
--	ret = stm32_qspi_send(mem, op);
-+	ret = stm32_qspi_send(mem->spi, op);
- 	mutex_unlock(&qspi->lock);
- 
- 	pm_runtime_mark_last_busy(qspi->dev);
-@@ -489,7 +490,7 @@ static int stm32_qspi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
- 	else
- 		qspi->fmode = CCR_FMODE_INDW;
- 
--	ret = stm32_qspi_send(mem, op);
-+	ret = stm32_qspi_send(mem->spi, op);
- 	mutex_unlock(&qspi->lock);
- 
- 	pm_runtime_mark_last_busy(qspi->dev);
-@@ -545,7 +546,7 @@ static ssize_t stm32_qspi_dirmap_read(struct spi_mem_dirmap_desc *desc,
- 	else
- 		qspi->fmode = CCR_FMODE_INDR;
- 
--	ret = stm32_qspi_send(desc->mem, &op);
-+	ret = stm32_qspi_send(desc->mem->spi, &op);
- 	mutex_unlock(&qspi->lock);
- 
- 	pm_runtime_mark_last_busy(qspi->dev);
-@@ -554,6 +555,90 @@ static ssize_t stm32_qspi_dirmap_read(struct spi_mem_dirmap_desc *desc,
- 	return ret ?: len;
- }
- 
-+static int stm32_qspi_transfer_one_message(struct spi_controller *ctrl,
-+					   struct spi_message *msg)
-+{
-+	struct stm32_qspi *qspi = spi_controller_get_devdata(ctrl);
-+	struct spi_transfer *transfer;
-+	struct spi_device *spi = msg->spi;
-+	struct spi_mem_op op;
-+	int ret;
-+
-+	if (!spi->cs_gpiod)
-+		return -EOPNOTSUPP;
-+
-+	ret = pm_runtime_get_sync(qspi->dev);
-+	if (ret < 0) {
-+		pm_runtime_put_noidle(qspi->dev);
-+		return ret;
-+	}
-+
-+	mutex_lock(&qspi->lock);
-+
-+	gpiod_set_value_cansleep(spi->cs_gpiod, true);
-+
-+	list_for_each_entry(transfer, &msg->transfers, transfer_list) {
-+		u8 dummy_bytes = 0;
-+
-+		memset(&op, 0, sizeof(op));
-+
-+		dev_dbg(qspi->dev, "tx_buf:%p tx_nbits:%d rx_buf:%p rx_nbits:%d len:%d dummy_data:%d\n",
-+			transfer->tx_buf, transfer->tx_nbits,
-+			transfer->rx_buf, transfer->rx_nbits,
-+			transfer->len, transfer->dummy_data);
-+
-+		/*
-+		 * QSPI hardware supports dummy bytes transfer.
-+		 * If current transfer is dummy byte, merge it with the next
-+		 * transfer in order to take into account QSPI block constraint
-+		 */
-+		if (transfer->dummy_data) {
-+			op.dummy.buswidth = transfer->tx_nbits;
-+			op.dummy.nbytes = transfer->len;
-+			dummy_bytes = transfer->len;
-+
-+			/* if happens, means that message is not correctly built */
-+			if (list_is_last(&transfer->transfer_list, &msg->transfers))
-+				goto end_of_transfer;
-+
-+			transfer = list_next_entry(transfer, transfer_list);
-+		}
-+
-+		op.data.nbytes = transfer->len;
-+
-+		if (transfer->rx_buf) {
-+			qspi->fmode = CCR_FMODE_INDR;
-+			op.data.buswidth = transfer->rx_nbits;
-+			op.data.dir = SPI_MEM_DATA_IN;
-+			op.data.buf.in = transfer->rx_buf;
-+		} else {
-+			qspi->fmode = CCR_FMODE_INDW;
-+			op.data.buswidth = transfer->tx_nbits;
-+			op.data.dir = SPI_MEM_DATA_OUT;
-+			op.data.buf.out = transfer->tx_buf;
-+		}
-+
-+		ret = stm32_qspi_send(spi, &op);
-+		if (ret)
-+			goto end_of_transfer;
-+
-+		msg->actual_length += transfer->len + dummy_bytes;
-+	}
-+
-+end_of_transfer:
-+	gpiod_set_value_cansleep(spi->cs_gpiod, false);
-+
-+	mutex_unlock(&qspi->lock);
-+
-+	pm_runtime_mark_last_busy(qspi->dev);
-+	pm_runtime_put_autosuspend(qspi->dev);
-+
-+	msg->status = ret;
-+	spi_finalize_current_message(ctrl);
-+
-+	return ret;
-+}
-+
- static int stm32_qspi_setup(struct spi_device *spi)
- {
- 	struct spi_controller *ctrl = spi->master;
-@@ -579,7 +664,7 @@ static int stm32_qspi_setup(struct spi_device *spi)
- 	flash->presc = presc;
- 
- 	mutex_lock(&qspi->lock);
--	qspi->cr_reg = CR_APMS | 3 << CR_FTHRES_SHIFT | CR_SSHIFT | CR_EN;
-+	qspi->cr_reg |= CR_APMS | 3 << CR_FTHRES_SHIFT | CR_SSHIFT | CR_EN;
- 	writel_relaxed(qspi->cr_reg, qspi->io_base + QSPI_CR);
- 
- 	/* set dcr fsize to max address */
-@@ -741,11 +826,23 @@ static int stm32_qspi_probe(struct platform_device *pdev)
- 
- 	mutex_init(&qspi->lock);
- 
-+	/*
-+	 * Dual flash mode is only enable in case "st,dual-flash" and
-+	 * "cs-gpios" properties are found in DT
-+	 */
-+	if (of_property_read_bool(dev->of_node, "st,dual-flash") &&
-+	    of_gpio_named_count(dev->of_node, "cs-gpios")) {
-+		qspi->cr_reg = CR_DFM;
-+		dev_dbg(dev, "Dual flash mode enable");
-+	}
-+
- 	ctrl->mode_bits = SPI_RX_DUAL | SPI_RX_QUAD
- 		| SPI_TX_DUAL | SPI_TX_QUAD;
- 	ctrl->setup = stm32_qspi_setup;
- 	ctrl->bus_num = -1;
- 	ctrl->mem_ops = &stm32_qspi_mem_ops;
-+	ctrl->use_gpio_descriptors = true;
-+	ctrl->transfer_one_message = stm32_qspi_transfer_one_message;
- 	ctrl->num_chipselect = STM32_QSPI_MAX_NORCHIP;
- 	ctrl->dev.of_node = dev->of_node;
- 
+vim +1637 drivers/platform/x86/socperf/socperfdrv.c
+
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1619  
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1620  /*****************************************************************************************
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1621   *
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1622   *   Driver Entry / Exit functions that will be called on when the driver is loaded and
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1623   *   unloaded
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1624   *
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1625   ****************************************************************************************/
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1626  
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1627  /*
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1628   * Structure that declares the usual file access functions
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1629   * First one is for lwpmu_c, the control functions
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1630   */
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1631  static struct file_operations socperf_Fops = {
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1632  	.owner = THIS_MODULE,
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1633  	IOCTL_OP = socperf_Device_Control,
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1634  #if defined(CONFIG_COMPAT) && defined(DRV_EM64T)
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1635  	.compat_ioctl = socperf_Device_Control_Compat,
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1636  #endif
+f57492d07625ddd Manisha Chinthapally 2019-05-01 @1637  	.read = socperf_Read,
+f57492d07625ddd Manisha Chinthapally 2019-05-01 @1638  	.write = socperf_Write,
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1639  	.open = socperf_Open,
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1640  	.release = NULL,
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1641  	.llseek = NULL,
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1642  };
+f57492d07625ddd Manisha Chinthapally 2019-05-01  1643  
+
+:::::: The code at line 1637 was first introduced by commit
+:::::: f57492d07625dddac7920eccdb5be08c55ee16fa platform/x86: SOCPERF3 support for sep & socwatch
+
+:::::: TO: Manisha Chinthapally <manisha.chinthapally@intel.com>
+:::::: CC: Faycal Benmlih <faycal.benmlih@intel.com>
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
