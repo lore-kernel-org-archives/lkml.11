@@ -2,96 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBD45C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5360C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243525AbiHHOtW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 10:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41006 "EHLO
+        id S235719AbiHHOtf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 10:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235719AbiHHOtS (ORCPT
+        with ESMTP id S243175AbiHHOta (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 10:49:18 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD061DE80
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 07:49:16 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id qn6so5225559ejc.11
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 07:49:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=sGGMDrvq70fK3xNBUxx3zSxTGxbNUsun6AK0mtlXrck=;
-        b=aNeNHYUnGAERLnnsoWYIWNZLsBb+XskAb+Zbzep5u56gCqHprwCZpAhjmoxi0eGCt3
-         ENCGw+eikSwJrImaEpmJpnt4dXgTf5WdEsQDkixIVfLWK3xndLG9hJyfN5tlBSXsjS8b
-         iSl4IzQlwipS4OiUW+qYCtv4IWP6ti/mpxM7E=
+        Mon, 8 Aug 2022 10:49:30 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7225DDE82
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 07:49:25 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id g22-20020a056602249600b0067caba4f24bso4689574ioe.4
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 07:49:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=sGGMDrvq70fK3xNBUxx3zSxTGxbNUsun6AK0mtlXrck=;
-        b=vSCbb9VItAc83QUlHKX9OHatMoVYwn67+X3kIEf2cYKBA4YCh4heczlgwcJL8lnwqe
-         uK+er9TVQBP9JdSHh7rrvcO08EHRISVUcaTc8Z4t93oOlClxpNQHzTPNa5S8pI9l6rT9
-         fyE07cP9Ix3j+hfeZONP4loTDJqPS0q/4zKpbxTi56rdZK5tJBZzFBxYzPGY4nJqVz2w
-         ADUHfZwT8G0HTGFVMUGz8lblIwcrFLEN7VNcbuiQftMOVIWR2ytkkJfbLSd2/+AwjORF
-         JyXILOwqghdqhj19cfxEb/Kr/f+7MXGX6ELJHCWJcS9bz5z9IIyMRPFcBfL6PTCIFvqM
-         wRww==
-X-Gm-Message-State: ACgBeo06du3hYG03+0JF7rKNZF3z8B+t1/k7Bmhezm8gio9bzO2f1lEg
-        /jslNO3yypRpsbwBrA9ZSPL7Uv+ams5ZjlZA
-X-Google-Smtp-Source: AA6agR6jQaWXG9eZz8/DZHgoUjMUPgrfbVBBuzgv3/Ydsz9/4JFbONYBGkvI6Fa6u3CqXhGCVfcVdg==
-X-Received: by 2002:a17:907:2cd5:b0:731:6a6b:209b with SMTP id hg21-20020a1709072cd500b007316a6b209bmr2488640ejc.315.1659970155030;
-        Mon, 08 Aug 2022 07:49:15 -0700 (PDT)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id a1-20020a50ff01000000b0043a5bcf80a2sm4689987edu.60.2022.08.08.07.49.13
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Aug 2022 07:49:15 -0700 (PDT)
-Received: by mail-wr1-f47.google.com with SMTP id l22so11181967wrz.7
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 07:49:13 -0700 (PDT)
-X-Received: by 2002:adf:f90d:0:b0:20c:de32:4d35 with SMTP id
- b13-20020adff90d000000b0020cde324d35mr11636287wrr.583.1659970153270; Mon, 08
- Aug 2022 07:49:13 -0700 (PDT)
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=am3sHbEwW+ZWO2QgZi3pU3wZ+Quj0eC3MzjWRkHQ6Zw=;
+        b=Wjnu6INgzIOwQwCF/AHZW9kav6gtDPA9Ir1/PHu/Li08+++ChC7V4K8jBM5o3FI4V8
+         ihEdKyNt0LDdjYXRXWgz4ixqn303CJMOWSXnhkB6fKTrIqjGIFlRY2chky7POR1Z4Gg8
+         oDEol/jac4kh2zepijpAbNns/jHAC7Rh2vFjMbqiFEtWd1tKPTTCG1GpYuTQwwvq2kgH
+         /SDnDyT6Ci2pWr0BIeJv03rQUse9ygfEqAo8IXbigj8BWfMM4+PC1XjseFUg3DfXa4Cp
+         Izu6OWN5EYON4aDtKpxIrv577QYXrgdXoYVGwAOp5OOKf3rSZ9G/cB2vUsX/6AvAPmWM
+         fSUQ==
+X-Gm-Message-State: ACgBeo3At/pYjFPezpvBxPDqTv7FKKI/B20l4vDMJ3mwWNEQHrjwi6QV
+        irXyzhM2L4/bWuEZnOcA5Yd0z2PqDwpsgwA1aMnn0WMDO3+F
+X-Google-Smtp-Source: AA6agR57SUCwZPjlt/ykE1w5W61DzIBVRbHPqe1OzVPcw0pu2eqwWWJpnO2AtXkS2XMtlAAz1Q13hl38I3vDvcPqk/1SFiBtljja
 MIME-Version: 1.0
-References: <1659608930-4370-1-git-send-email-quic_kalyant@quicinc.com>
- <CAA8EJpoAN4CVMKNouh3pPtX-5rnBeL3_T60M5cNhirNEmNeEkQ@mail.gmail.com> <BN0PR02MB8142FFB573A4D05B0560A13996639@BN0PR02MB8142.namprd02.prod.outlook.com>
-In-Reply-To: <BN0PR02MB8142FFB573A4D05B0560A13996639@BN0PR02MB8142.namprd02.prod.outlook.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 8 Aug 2022 07:49:01 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=U4cddyPxg2D5KP9ew2i=AQOSn=Jz_OmuZ0BrZCu2+MLA@mail.gmail.com>
-Message-ID: <CAD=FV=U4cddyPxg2D5KP9ew2i=AQOSn=Jz_OmuZ0BrZCu2+MLA@mail.gmail.com>
-Subject: Re: [v1] drm/msm/disp/dpu1: add support for hierarchical flush for
- dspp in sc7280
-To:     Kalyan Thota <kalyant@qti.qualcomm.com>
-Cc:     "dmitry.baryshkov@linaro.org" <dmitry.baryshkov@linaro.org>,
-        "Kalyan Thota (QUIC)" <quic_kalyant@quicinc.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-        "freedreno@lists.freedesktop.org" <freedreno@lists.freedesktop.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "robdclark@gmail.com" <robdclark@gmail.com>,
-        "swboyd@chromium.org" <swboyd@chromium.org>,
-        "Vinod Polimera (QUIC)" <quic_vpolimer@quicinc.com>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>
+X-Received: by 2002:a02:6d24:0:b0:33f:7beb:6b1 with SMTP id
+ m36-20020a026d24000000b0033f7beb06b1mr8062952jac.86.1659970164413; Mon, 08
+ Aug 2022 07:49:24 -0700 (PDT)
+Date:   Mon, 08 Aug 2022 07:49:24 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fcdce705e5bbebfa@google.com>
+Subject: [syzbot] WARNING in hrtimer_init
+From:   syzbot <syzbot+fd406bb2745861bd67e8@syzkaller.appspotmail.com>
+To:     dwmw@amazon.co.uk, joao.m.martins@oracle.com,
+        linux-kernel@vger.kernel.org, pbonzini@redhat.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hello,
 
-On Mon, Aug 8, 2022 at 3:44 AM Kalyan Thota <kalyant@qti.qualcomm.com> wrote:
->
-> >I'd like to land at least patches 6-8 from [1] next cycle. They clean up the CTL
-> >interface. Could you please rebase your patch on top of them?
-> >
->
-> Sure I'll wait for the series to rebase. @Doug can you comment if this is okay and this patch is not needed immediately ?
->
-> >[1] https://patchwork.freedesktop.org/series/99909/
+syzbot found the following issue on:
 
-I don't personally see a problem basing them atop a cleanup. If the
-patches Dmitry points at are targeted for the next cycle then that
-seems like a pretty reasonable timeframe to me.
+HEAD commit:    200e340f2196 Merge tag 'pull-work.dcache' of git://git.ker..
+git tree:       upstream
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=102f0876080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=1b664fba5e66c4bf
+dashboard link: https://syzkaller.appspot.com/bug?extid=fd406bb2745861bd67e8
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10d9918e080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=118d9951080000
 
--Doug
+The issue was bisected to:
+
+commit 536395260582be7443b0b35b0bbb89ffe3947f62
+Author: Joao Martins <joao.m.martins@oracle.com>
+Date:   Thu Mar 3 15:41:22 2022 +0000
+
+    KVM: x86/xen: handle PV timers oneshot mode
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14713d46080000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=16713d46080000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12713d46080000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+fd406bb2745861bd67e8@syzkaller.appspotmail.com
+Fixes: 536395260582 ("KVM: x86/xen: handle PV timers oneshot mode")
+
+L1TF CPU bug present and SMT on, data leak possible. See CVE-2018-3646 and https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/l1tf.html for details.
+------------[ cut here ]------------
+ODEBUG: init active (active state 0) object type: hrtimer hint: xen_timer_callback+0x0/0xb0 include/linux/rcupdate.h:281
+WARNING: CPU: 1 PID: 3601 at lib/debugobjects.c:505 debug_print_object lib/debugobjects.c:502 [inline]
+WARNING: CPU: 1 PID: 3601 at lib/debugobjects.c:505 __debug_object_init+0xae3/0x1860 lib/debugobjects.c:590
+Modules linked in:
+CPU: 1 PID: 3601 Comm: syz-executor171 Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:debug_print_object lib/debugobjects.c:502 [inline]
+RIP: 0010:__debug_object_init+0xae3/0x1860 lib/debugobjects.c:590
+Code: 89 ff e8 40 6e a5 fd 4d 8b 07 48 c7 c7 60 b0 e9 8a 48 c7 c6 c0 ae e9 8a 48 89 da 44 89 f1 4c 8b 4c 24 18 31 c0 e8 2d d6 1a fd <0f> 0b 4c 8b 64 24 48 ff 05 4c 7f ce 09 48 8b 9c 24 b0 00 00 00 48
+RSP: 0018:ffffc900030df3a0 EFLAGS: 00010246
+RAX: 1a852b5f5a7fcb00 RBX: ffffffff8ae9b1c0 RCX: ffff888027671d80
+RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000000000000000
+RBP: ffffc900030df588 R08: ffffffff816c1ccd R09: fffff5200061bdf1
+R10: fffff5200061bdf1 R11: 1ffff9200061bdf0 R12: ffff88802733af2c
+R13: dffffc0000000000 R14: 0000000000000000 R15: ffffffff8a8f8840
+FS:  0000555556fce300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055e1f0266048 CR3: 000000001fc5d000 CR4: 00000000003526e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ debug_hrtimer_init kernel/time/hrtimer.c:414 [inline]
+ debug_init kernel/time/hrtimer.c:468 [inline]
+ hrtimer_init+0x20/0x40 kernel/time/hrtimer.c:1592
+ kvm_xen_init_timer arch/x86/kvm/xen.c:168 [inline]
+ kvm_xen_vcpu_set_attr+0x82c/0x11a0 arch/x86/kvm/xen.c:716
+ kvm_arch_vcpu_ioctl+0x1651/0x2680 arch/x86/kvm/x86.c:5715
+ kvm_vcpu_ioctl+0x6d5/0xcf0 arch/x86/kvm/../../../virt/kvm/kvm_main.c:4104
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl+0xfb/0x170 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7fc97e717e99
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffe56856698 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fc97e717e99
+RDX: 0000000020000000 RSI: 000000004048aecb RDI: 0000000000000007
+RBP: 00007fc97e6dbdb0 R08: 0000000000000012 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007fc97e6dbe40
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
