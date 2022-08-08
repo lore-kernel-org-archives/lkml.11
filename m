@@ -2,240 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 324C0C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 03:12:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35698C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 03:26:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236131AbiHHDMU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 23:12:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54368 "EHLO
+        id S236442AbiHHD0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 23:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234723AbiHHDMG (ORCPT
+        with ESMTP id S236116AbiHHD0F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 23:12:06 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11038DE8E;
-        Sun,  7 Aug 2022 20:11:47 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 730325C00EC;
-        Sun,  7 Aug 2022 23:11:46 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Sun, 07 Aug 2022 23:11:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ljones.dev; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1659928306; x=1660014706; bh=rb
-        q+GR1KjHrdFBIltGS8U+6Pe1Bj1GnwkA90Taje7+0=; b=lQunEgi4l1RjirM1a/
-        1/aYxZbjILHeJTAiHipaxLis7nbwTNJtbID5eGnD++XOJXlCg//cfBFOIzfXrpGH
-        Pq5LDbpwVZxYkmrmzwGdeg0TXhld6kUp5yitShaNPjwgr39P81y/xfvBihaY8PzE
-        mz3SoIt1ZoN9mawephY7bqhnIpDvS5Dy0sN6bZih4hdMrEdaiFtKw+ZLGEVVEei0
-        ULlrsPpr5Fw1Xmo4V/cH3jDsfzkFCZz3BM+6THOZsCp/p88wny8Jr6mRTei+ffhS
-        6IxBPE7KeId3RzINUDdTR2bTCl0J3SWnapf1k7VhAaLDwGY8cVAlQlPUzIDJp915
-        Uy7g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1659928306; x=1660014706; bh=rbq+GR1KjHrdF
-        BIltGS8U+6Pe1Bj1GnwkA90Taje7+0=; b=yUjU73D2hlCsuP0yhmlC4FOu7RJwV
-        eo9/JdUq/BrpwgxKyRCDj7B0bfqQhn0Ut5Nfu8FL/d5bby7G7PmaCqyNY4NIDUz3
-        OLI3Vm7t//TDJa1lNW6mWaW4fm7Wf31nPSMfMGY3vTeMWoU655/4uL6yymwD4hQd
-        Iy+Bzjx3yGMw822DpxTyXL7V4s76uTMpRyAHaLomzfzw3wOhcY2KyKO0IZzbbRku
-        8dazX6gLy9iZ/kQiZ7og2Wx1phm4VeE6OLOwyBUOZsvdmku/wrWxAo2jskQZRf3d
-        BY5jIFMjBsRLD3KPe6jC9Uc2I1dEndQrmadv+PmvHJOJQnsktWINNquWw==
-X-ME-Sender: <xms:8n7wYuu-RvbtU7Sbvh9ZX_cnRTOiheRfOtMnuKnfLtWZYOytyDJ3PA>
-    <xme:8n7wYjeIQH6l-A1_zFWzZz7A5ppktgxjTlUevDv6N82OSRCOqJPFJeUuCVx8RHHHJ
-    Zt8Nv5Siy1sOez7OQI>
-X-ME-Received: <xmr:8n7wYpzB7_d5sW_Tk72nzh82pIvD0NhbXGoHm55zEhJ0xzlGN05vC18KDOuC>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefjedgieehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffojghfggfgsedtke
-    ertdertddtnecuhfhrohhmpedfnfhukhgvucffrdculfhonhgvshdfuceolhhukhgvsehl
-    jhhonhgvshdruggvvheqnecuggftrfgrthhtvghrnhepgfetfedugfetudeuheetjefhue
-    fggfelleetvdevtefhueeujeefvdegleevhefgnecuvehluhhsthgvrhfuihiivgeptden
-    ucfrrghrrghmpehmrghilhhfrhhomheplhhukhgvsehljhhonhgvshdruggvvh
-X-ME-Proxy: <xmx:8n7wYpMDuwGJreot3gOe8cUXVibvSiK6-5a3M5YSBEgwKs8S5t5vQA>
-    <xmx:8n7wYu9bnsPVQMuwg-PIOXScOuSVmLfbchP60mCxMUFYNGD-yIXKkQ>
-    <xmx:8n7wYhV7QBRqabacPXesxa-H7VU8zZ1QOzx_UREGPXoX0eHMsnXlMQ>
-    <xmx:8n7wYgJY2QncdfkNUvHIOUvqhCnxYBXQXV96GtxpwG4444Ccd6c1Fg>
-Feedback-ID: i5ec1447f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 7 Aug 2022 23:11:44 -0400 (EDT)
-From:   "Luke D. Jones" <luke@ljones.dev>
-To:     hdegoede@redhat.com
-Cc:     markgross@kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-kernel@vger.kernel.org, "Luke D. Jones" <luke@ljones.dev>
-Subject: [PATCH v2 2/2] asus-wmi: Add support for ROG X13 tablet mode
-Date:   Mon,  8 Aug 2022 15:11:32 +1200
-Message-Id: <20220808031132.10075-3-luke@ljones.dev>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220808031132.10075-1-luke@ljones.dev>
-References: <20220808031132.10075-1-luke@ljones.dev>
+        Sun, 7 Aug 2022 23:26:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 14770FD01
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 20:26:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659929163;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=i/5BnEPTRt6rS3Pj2Ddzn8CoW9Kgy2sGXbJADgHzxAY=;
+        b=ejLGOXcoqtGo/Jj2Fva7CtPynsEx4+wBtsR9f9W76WINDC7ly2ujLrODUCQ7yVyTWIkO8g
+        BkEum496BJ5xMvTQobXWTQmwpHLMhp6TGYDda5KTGpaGM4MzgBsVkufVvQiXoBF6ZXhnMQ
+        B4L+9zGB57+Gf911HUJ6Bz+0vGXZoxE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-232-eQ--1pkLO5-dLCOb0V4QhQ-1; Sun, 07 Aug 2022 23:25:51 -0400
+X-MC-Unique: eQ--1pkLO5-dLCOb0V4QhQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 16D2F80A0BF;
+        Mon,  8 Aug 2022 03:25:50 +0000 (UTC)
+Received: from localhost (ovpn-12-221.pek2.redhat.com [10.72.12.221])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6610994561;
+        Mon,  8 Aug 2022 03:25:48 +0000 (UTC)
+Date:   Mon, 8 Aug 2022 11:25:45 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Eric DeVolder <eric.devolder@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        kexec@lists.infradead.org, ebiederm@xmission.com,
+        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
+        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
+        sourabhjain@linux.ibm.com, konrad.wilk@oracle.com,
+        boris.ostrovsky@oracle.com
+Subject: Re: [PATCH v10 1/8] crash: introduce arch/*/asm/crash.h
+Message-ID: <YvCCOY+mRshu1tHi@MiWiFi-R3L-srv>
+References: <20220721181747.1640-1-eric.devolder@oracle.com>
+ <20220721181747.1640-2-eric.devolder@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721181747.1640-2-eric.devolder@oracle.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add quirk for ASUS ROG X13 Flow 2-in-1 to enable tablet mode with
-lid flip (all screen rotations).
+Hi Eric,
 
-Signed-off-by: Luke D. Jones <luke@ljones.dev>
----
- drivers/platform/x86/asus-nb-wmi.c         | 17 +++++++++-
- drivers/platform/x86/asus-wmi.c            | 36 ++++++++++++++++++++++
- drivers/platform/x86/asus-wmi.h            |  1 +
- include/linux/platform_data/x86/asus-wmi.h |  1 +
- 4 files changed, 54 insertions(+), 1 deletion(-)
+On 07/21/22 at 02:17pm, Eric DeVolder wrote:
+> The use of __weak is being eliminated within kexec sources.
+> The technique uses macros mapped onto inline functions in
+> order to replace __weak.
+> 
+> This patchset was using __weak and so in order to replace
+> __weak, this patch introduces arch/*/asm/crash.h, patterned
+> after how kexec is moving away from __weak and to the macro
+> definitions.
 
-diff --git a/drivers/platform/x86/asus-nb-wmi.c b/drivers/platform/x86/asus-nb-wmi.c
-index 3a93e056c4e1..4aeaac92296f 100644
---- a/drivers/platform/x86/asus-nb-wmi.c
-+++ b/drivers/platform/x86/asus-nb-wmi.c
-@@ -123,6 +123,11 @@ static struct quirk_entry quirk_asus_use_lid_flip_devid = {
- 	.tablet_switch_mode = asus_wmi_lid_flip_devid,
- };
- 
-+static struct quirk_entry quirk_asus_tablet_mode = {
-+	.wmi_backlight_set_devstate = true,
-+	.tablet_switch_mode = asus_wmi_lid_flip_rog_devid,
-+};
-+
- static int dmi_matched(const struct dmi_system_id *dmi)
- {
- 	pr_info("Identified laptop model '%s'\n", dmi->ident);
-@@ -471,6 +476,15 @@ static const struct dmi_system_id asus_quirks[] = {
- 		},
- 		.driver_data = &quirk_asus_use_lid_flip_devid,
- 	},
-+	{
-+		.callback = dmi_matched,
-+		.ident = "ASUS ROG FLOW X13",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "GV301Q"),
-+		},
-+		.driver_data = &quirk_asus_tablet_mode,
-+	},
- 	{},
- };
- 
-@@ -574,7 +588,8 @@ static const struct key_entry asus_nb_wmi_keymap[] = {
- 	{ KE_KEY, 0xC4, { KEY_KBDILLUMUP } },
- 	{ KE_KEY, 0xC5, { KEY_KBDILLUMDOWN } },
- 	{ KE_IGNORE, 0xC6, },  /* Ambient Light Sensor notification */
--	{ KE_KEY, 0xFA, { KEY_PROG2 } },           /* Lid flip action */
-+	{ KE_KEY, 0xFA, { KEY_PROG2 } }, /* Lid flip action */
-+	{ KE_KEY, 0xBD, { KEY_PROG2 } }, /* Lid flip action on ROG xflow laptops */
- 	{ KE_END, 0},
- };
- 
-diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
-index a32e99205697..51610bd6b1c4 100644
---- a/drivers/platform/x86/asus-wmi.c
-+++ b/drivers/platform/x86/asus-wmi.c
-@@ -68,6 +68,7 @@ module_param(fnlock_default, bool, 0444);
- #define NOTIFY_KBD_FBM			0x99
- #define NOTIFY_KBD_TTP			0xae
- #define NOTIFY_LID_FLIP			0xfa
-+#define NOTIFY_LID_FLIP_ROG		0xbd
- 
- #define ASUS_WMI_FNLOCK_BIOS_DISABLED	BIT(0)
- 
-@@ -529,6 +530,19 @@ static int asus_wmi_input_init(struct asus_wmi *asus)
- 			pr_err("Error checking for lid-flip: %d\n", result);
- 		}
- 		break;
-+	case asus_wmi_lid_flip_rog_devid:
-+		result = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_LID_FLIP_ROG);
-+		if (result < 0)
-+			asus->driver->quirks->tablet_switch_mode = asus_wmi_no_tablet_switch;
-+		if (result >= 0) {
-+			input_set_capability(asus->inputdev, EV_SW, SW_TABLET_MODE);
-+			input_report_switch(asus->inputdev, SW_TABLET_MODE, result);
-+		} else if (result == -ENODEV) {
-+			pr_err("This device has lid-flip-rog quirk but got ENODEV checking it. This is a bug.");
-+		} else {
-+			pr_err("Error checking for lid-flip: %d\n", result);
-+		}
-+		break;
- 	}
- 
- 	err = input_register_device(asus->inputdev);
-@@ -562,6 +576,16 @@ static void lid_flip_tablet_mode_get_state(struct asus_wmi *asus)
- 	}
- }
- 
-+static void lid_flip_rog_tablet_mode_get_state(struct asus_wmi *asus)
-+{
-+	int result = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_LID_FLIP_ROG);
-+
-+	if (result >= 0) {
-+		input_report_switch(asus->inputdev, SW_TABLET_MODE, result);
-+		input_sync(asus->inputdev);
-+	}
-+}
-+
- /* dGPU ********************************************************************/
- static int dgpu_disable_check_present(struct asus_wmi *asus)
- {
-@@ -3106,6 +3130,12 @@ static void asus_wmi_handle_event_code(int code, struct asus_wmi *asus)
- 			return;
- 		}
- 		break;
-+	case asus_wmi_lid_flip_rog_devid:
-+		if (code == NOTIFY_LID_FLIP_ROG) {
-+			lid_flip_rog_tablet_mode_get_state(asus);
-+			return;
-+		}
-+		break;
- 	}
- 
- 	if (asus->fan_boost_mode_available && code == NOTIFY_KBD_FBM) {
-@@ -3747,6 +3777,9 @@ static int asus_hotk_resume(struct device *device)
- 	case asus_wmi_lid_flip_devid:
- 		lid_flip_tablet_mode_get_state(asus);
- 		break;
-+	case asus_wmi_lid_flip_rog_devid:
-+		lid_flip_rog_tablet_mode_get_state(asus);
-+		break;
- 	}
- 
- 	return 0;
-@@ -3795,6 +3828,9 @@ static int asus_hotk_restore(struct device *device)
- 	case asus_wmi_lid_flip_devid:
- 		lid_flip_tablet_mode_get_state(asus);
- 		break;
-+	case asus_wmi_lid_flip_rog_devid:
-+		lid_flip_rog_tablet_mode_get_state(asus);
-+		break;
- 	}
- 
- 	return 0;
-diff --git a/drivers/platform/x86/asus-wmi.h b/drivers/platform/x86/asus-wmi.h
-index 413920bad0c6..0187f13d2414 100644
---- a/drivers/platform/x86/asus-wmi.h
-+++ b/drivers/platform/x86/asus-wmi.h
-@@ -29,6 +29,7 @@ enum asus_wmi_tablet_switch_mode {
- 	asus_wmi_no_tablet_switch,
- 	asus_wmi_kbd_dock_devid,
- 	asus_wmi_lid_flip_devid,
-+	asus_wmi_lid_flip_rog_devid,
- };
- 
- struct quirk_entry {
-diff --git a/include/linux/platform_data/x86/asus-wmi.h b/include/linux/platform_data/x86/asus-wmi.h
-index a571b47ff362..d54458431600 100644
---- a/include/linux/platform_data/x86/asus-wmi.h
-+++ b/include/linux/platform_data/x86/asus-wmi.h
-@@ -64,6 +64,7 @@
- #define ASUS_WMI_DEVID_PANEL_OD		0x00050019
- #define ASUS_WMI_DEVID_CAMERA		0x00060013
- #define ASUS_WMI_DEVID_LID_FLIP		0x00060062
-+#define ASUS_WMI_DEVID_LID_FLIP_ROG	0x00060077
- 
- /* Storage */
- #define ASUS_WMI_DEVID_CARDREADER	0x00080013
--- 
-2.37.1
+Are you going to replace __weak in kexec of arll ARCHes? I don't see
+your point why all these empty header files are introduced. Wondering
+what's impacted if not adding these empty files?
+
+> 
+> No functionality changed, yet.
+> 
+> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
+> ---
+>  arch/arm/include/asm/crash.h     | 5 +++++
+>  arch/arm64/include/asm/crash.h   | 5 +++++
+>  arch/ia64/include/asm/crash.h    | 5 +++++
+>  arch/m68k/include/asm/crash.h    | 5 +++++
+>  arch/mips/include/asm/crash.h    | 5 +++++
+>  arch/parisc/include/asm/crash.h  | 5 +++++
+>  arch/powerpc/include/asm/crash.h | 5 +++++
+>  arch/riscv/include/asm/crash.h   | 5 +++++
+>  arch/s390/include/asm/crash.h    | 5 +++++
+>  arch/sh/include/asm/crash.h      | 5 +++++
+>  include/linux/crash_core.h       | 2 ++
+>  11 files changed, 52 insertions(+)
+>  create mode 100644 arch/arm/include/asm/crash.h
+>  create mode 100644 arch/arm64/include/asm/crash.h
+>  create mode 100644 arch/ia64/include/asm/crash.h
+>  create mode 100644 arch/m68k/include/asm/crash.h
+>  create mode 100644 arch/mips/include/asm/crash.h
+>  create mode 100644 arch/parisc/include/asm/crash.h
+>  create mode 100644 arch/powerpc/include/asm/crash.h
+>  create mode 100644 arch/riscv/include/asm/crash.h
+>  create mode 100644 arch/s390/include/asm/crash.h
+>  create mode 100644 arch/sh/include/asm/crash.h
+> 
+> diff --git a/arch/arm/include/asm/crash.h b/arch/arm/include/asm/crash.h
+> new file mode 100644
+> index 000000000000..385646957d60
+> --- /dev/null
+> +++ b/arch/arm/include/asm/crash.h
+> @@ -0,0 +1,5 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _ASM_ARM_CRASH_H
+> +#define _ASM_ARM_CRASH_H
+> +
+> +#endif /* _ASM_ARM_CRASH_H */
+> diff --git a/arch/arm64/include/asm/crash.h b/arch/arm64/include/asm/crash.h
+> new file mode 100644
+> index 000000000000..ec8870c1ea49
+> --- /dev/null
+> +++ b/arch/arm64/include/asm/crash.h
+> @@ -0,0 +1,5 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _ASM_ARM64_CRASH_H
+> +#define _ASM_ARM64_CRASH_H
+> +
+> +#endif /* _ASM_ARM64_CRASH_H */
+> diff --git a/arch/ia64/include/asm/crash.h b/arch/ia64/include/asm/crash.h
+> new file mode 100644
+> index 000000000000..02a457cccda3
+> --- /dev/null
+> +++ b/arch/ia64/include/asm/crash.h
+> @@ -0,0 +1,5 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _ASM_IA64_CRASH_H
+> +#define _ASM_IA64_CRASH_H
+> +
+> +#endif /* _ASM_IA64_CRASH_H */
+> diff --git a/arch/m68k/include/asm/crash.h b/arch/m68k/include/asm/crash.h
+> new file mode 100644
+> index 000000000000..ba6e412a1267
+> --- /dev/null
+> +++ b/arch/m68k/include/asm/crash.h
+> @@ -0,0 +1,5 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _ASM_M68K_CRASH_H
+> +#define _ASM_M68K_CRASH_H
+> +
+> +#endif /* _ASM_M68K_CRASH_H */
+> diff --git a/arch/mips/include/asm/crash.h b/arch/mips/include/asm/crash.h
+> new file mode 100644
+> index 000000000000..35872522c574
+> --- /dev/null
+> +++ b/arch/mips/include/asm/crash.h
+> @@ -0,0 +1,5 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _ASM_MIPS_CRASH_H
+> +#define _ASM_MIPS_CRASH_H
+> +
+> +#endif /* _ASM_MIPS_CRASH_H */
+> diff --git a/arch/parisc/include/asm/crash.h b/arch/parisc/include/asm/crash.h
+> new file mode 100644
+> index 000000000000..96833b727179
+> --- /dev/null
+> +++ b/arch/parisc/include/asm/crash.h
+> @@ -0,0 +1,5 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _ASM_PARISC_CRASH_H
+> +#define _ASM_PARISC_CRASH_H
+> +
+> +#endif /* _ASM_PARISC_CRASH_H */
+> diff --git a/arch/powerpc/include/asm/crash.h b/arch/powerpc/include/asm/crash.h
+> new file mode 100644
+> index 000000000000..40ce71e56ac1
+> --- /dev/null
+> +++ b/arch/powerpc/include/asm/crash.h
+> @@ -0,0 +1,5 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _ASM_POWERPC_CRASH_H
+> +#define _ASM_POWERPC_CRASH_H
+> +
+> +#endif /* _ASM_POWERPC_CRASH_H */
+> diff --git a/arch/riscv/include/asm/crash.h b/arch/riscv/include/asm/crash.h
+> new file mode 100644
+> index 000000000000..24f3aea99707
+> --- /dev/null
+> +++ b/arch/riscv/include/asm/crash.h
+> @@ -0,0 +1,5 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _ASM_RISCV_CRASH_H
+> +#define _ASM_RISCV_CRASH_H
+> +
+> +#endif /* _ASM_RISCV_CRASH_H */
+> diff --git a/arch/s390/include/asm/crash.h b/arch/s390/include/asm/crash.h
+> new file mode 100644
+> index 000000000000..0db16ad4c75f
+> --- /dev/null
+> +++ b/arch/s390/include/asm/crash.h
+> @@ -0,0 +1,5 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _ASM_S390_CRASH_H
+> +#define _ASM_S390_CRASH_H
+> +
+> +#endif /* _ASM_S390_CRASH_H */
+> diff --git a/arch/sh/include/asm/crash.h b/arch/sh/include/asm/crash.h
+> new file mode 100644
+> index 000000000000..f54e12f88cae
+> --- /dev/null
+> +++ b/arch/sh/include/asm/crash.h
+> @@ -0,0 +1,5 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _ASM_SH_CRASH_H
+> +#define _ASM_SH_CRASH_H
+> +
+> +#endif /* _ASM_SH_CRASH_H */
+> diff --git a/include/linux/crash_core.h b/include/linux/crash_core.h
+> index de62a722431e..cb0f1916fbf5 100644
+> --- a/include/linux/crash_core.h
+> +++ b/include/linux/crash_core.h
+> @@ -6,6 +6,8 @@
+>  #include <linux/elfcore.h>
+>  #include <linux/elf.h>
+>  
+> +#include <asm/crash.h>
+> +
+>  #define CRASH_CORE_NOTE_NAME	   "CORE"
+>  #define CRASH_CORE_NOTE_HEAD_BYTES ALIGN(sizeof(struct elf_note), 4)
+>  #define CRASH_CORE_NOTE_NAME_BYTES ALIGN(sizeof(CRASH_CORE_NOTE_NAME), 4)
+> -- 
+> 2.31.1
+> 
 
