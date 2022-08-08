@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6064C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:58:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 440CCC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243844AbiHHB6g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:58:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46530 "EHLO
+        id S243852AbiHHB6j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243787AbiHHB4C (ORCPT
+        with ESMTP id S243803AbiHHB4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:56:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A713DE96;
-        Sun,  7 Aug 2022 18:39:30 -0700 (PDT)
+        Sun, 7 Aug 2022 21:56:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1CC9F5B2;
+        Sun,  7 Aug 2022 18:39:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F9F060DF5;
-        Mon,  8 Aug 2022 01:39:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72FB1C433C1;
-        Mon,  8 Aug 2022 01:39:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8975DB80DDF;
+        Mon,  8 Aug 2022 01:39:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F1EFC43470;
+        Mon,  8 Aug 2022 01:39:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922769;
-        bh=lbKVmNTQHzD/D9RIbMqNx7yfQ14pRzUpwGfrnqjtuak=;
+        s=k20201202; t=1659922773;
+        bh=MYOMFbptAUcIePjYdRyu8OSVn7/0hfV7tcqXeEefLR0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uPCGiSWOvq3Vh8sNn2sOTtGJWKAIO/FJHc9VI+/LhKUw+RZ93nA0O/8g8Zeg/Cyn4
-         d/uwK59jWQKNZYACALiOZtNK9EJKfMGs0f1MGTP3DEcLvcilMz6mnSWwtWRltQad+l
-         9GPCAYFiyiMxZBZBDINLO9uHUqOnKGSWSbS/PFwQcJPbmuIEJ8q8zIEjefRxCrq5nY
-         Y6TrXgZYukUYtHh4zZDjrMXvrRLx1Q90gqAQgEtOpKnZWoeglMc0W1DyrFZUntZGIj
-         fcN1eCWXO74gEHSDZXcBDHe20OpWq9nsERiaWoDnFYPxbMWJZU4sLbOzhSCQ5Hs7sv
-         2bjTlrVn1gqDw==
+        b=kv0PsA4B0De6RSarwKziDzfkwMGKnty1r1w4DEI6MVFOzm2sXU26FX6/lL4K6uq9E
+         RXwy0Nh7lFZMDqkNZNN4UV8Gh1/C9OwjWnqxQBe1H+YzdC9IUvQwTp9TeYz7SVqtjs
+         5rCb6OguR76GkzQ8Sl2DyVy3wDukR9ywpmclqqkdMuSS4YnTdt4LcB1YyauFDGhDX/
+         TcGFAuKd9+zcMMX14QaEni81Xjgjk/g5CJdpMt0t9iW0F7GPtDviCJI9YOQIkxxq/w
+         gXhe3B7msj7AdAHGzUfACCOlgtBbpGdhSXMA06A0BmBXxU97KNxsC6QGKMji2BrMlk
+         rr3zIzAGSOreA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 08/16] ARM: dts: imx6ul: fix qspi node compatible
-Date:   Sun,  7 Aug 2022 21:39:05 -0400
-Message-Id: <20220808013914.316709-8-sashal@kernel.org>
+Cc:     Manyi Li <limanyi@uniontech.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 11/16] ACPI: PM: save NVS memory for Lenovo G40-45
+Date:   Sun,  7 Aug 2022 21:39:08 -0400
+Message-Id: <20220808013914.316709-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013914.316709-1-sashal@kernel.org>
 References: <20220808013914.316709-1-sashal@kernel.org>
@@ -53,40 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Manyi Li <limanyi@uniontech.com>
 
-[ Upstream commit 0c6cf86e1ab433b2d421880fdd9c6e954f404948 ]
+[ Upstream commit 4b7ef7b05afcde44142225c184bf43a0cd9e2178 ]
 
-imx6ul is not compatible to imx6sx, both have different erratas.
-Fixes the dt_binding_check warning:
-spi@21e0000: compatible: 'oneOf' conditional failed, one must be fixed:
-['fsl,imx6ul-qspi', 'fsl,imx6sx-qspi'] is too long
-Additional items are not allowed ('fsl,imx6sx-qspi' was unexpected)
-'fsl,imx6ul-qspi' is not one of ['fsl,ls1043a-qspi']
-'fsl,imx6ul-qspi' is not one of ['fsl,imx8mq-qspi']
-'fsl,ls1021a-qspi' was expected
-'fsl,imx7d-qspi' was expected
+[821d6f0359b0614792ab8e2fb93b503e25a65079] is to make machines
+produced from 2012 to now not saving NVS region to accelerate S3.
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+But, Lenovo G40-45, a platform released in 2015, still needs NVS memory
+saving during S3. A quirk is introduced for this platform.
+
+Signed-off-by: Manyi Li <limanyi@uniontech.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6ul.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/sleep.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index d91baa74e608..334638ff5075 100644
---- a/arch/arm/boot/dts/imx6ul.dtsi
-+++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -953,7 +953,7 @@ lcdif: lcdif@21c8000 {
- 			qspi: qspi@21e0000 {
- 				#address-cells = <1>;
- 				#size-cells = <0>;
--				compatible = "fsl,imx6ul-qspi", "fsl,imx6sx-qspi";
-+				compatible = "fsl,imx6ul-qspi";
- 				reg = <0x021e0000 0x4000>, <0x60000000 0x10000000>;
- 				reg-names = "QuadSPI", "QuadSPI-memory";
- 				interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
+diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
+index 847db3edcb5b..a3b4ac97793f 100644
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -359,6 +359,14 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "80E3"),
+ 		},
+ 	},
++	{
++	.callback = init_nvs_save_s3,
++	.ident = "Lenovo G40-45",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		DMI_MATCH(DMI_PRODUCT_NAME, "80E1"),
++		},
++	},
+ 	/*
+ 	 * https://bugzilla.kernel.org/show_bug.cgi?id=196907
+ 	 * Some Dell XPS13 9360 cannot do suspend-to-idle using the Low Power
 -- 
 2.35.1
 
