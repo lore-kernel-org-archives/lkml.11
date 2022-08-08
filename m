@@ -2,50 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA8FEC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 00:15:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9010CC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 00:15:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231784AbiHHAP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 20:15:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53062 "EHLO
+        id S232183AbiHHAP4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 20:15:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229845AbiHHAPW (ORCPT
+        with ESMTP id S229845AbiHHAPx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 20:15:22 -0400
-X-Greylist: delayed 450 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 07 Aug 2022 17:15:21 PDT
-Received: from a2nlsmtp01-04.prod.iad2.secureserver.net (a2nlsmtp01-04.prod.iad2.secureserver.net [198.71.225.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8492BC5
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 17:15:20 -0700 (PDT)
-Received: from localhost ([107.180.111.10])
-        by : HOSTING RELAY : with ESMTP
-        id KqICoj6pF44O5KqICorS7e; Sun, 07 Aug 2022 17:06:48 -0700
-X-CMAE-Analysis: v=2.4 cv=eNzWMFl1 c=1 sm=1 tr=0 ts=62f05398
- a=bvHmtXPGvXTrlUyCcF/rXg==:117 a=bvHmtXPGvXTrlUyCcF/rXg==:17
- a=IkcTkHD0fZMA:10 a=96GJKQGblXAA:10 a=puQWGBksFvoA:10 a=VwQbUJbxAAAA:8
- a=qKyDFbK-AAAA:20 a=pV3qHrSJAAAA:8 a=wyPX-5B1doE6IoNFPhoA:9 a=QEXdDO2ut3YA:10
- a=AjGcO6oz07-iQ99wixmX:22 a=2e3XP9BoFkH5S4n2KVXp:22
-X-SECURESERVER-ACCT: mwp4111359
-To:     linux-kernel@vger.kernel.org
-Subject: =?us-ascii?Q?Heather_Kingry__"A_QUICK_AND_EFFECTIVE_WAY_TO_G?=  =?us-ascii?Q?ET_RICH"?=
-Date:   Mon, 8 Aug 2022 00:06:48 +0000
-From:   CharlesSed <wordpress@heatherkingry.com>
-Reply-To: linux-kernel@vger.kernel.org
-Message-ID: <lM1Zh5zFTOrDF6ZI3hZaWOe0moauYiGuXipL2Fhn2c@scrawlcommunications.com>
-X-Mailer: PHPMailer 6.6.0 (https://github.com/PHPMailer/PHPMailer)
+        Sun, 7 Aug 2022 20:15:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9184D6354;
+        Sun,  7 Aug 2022 17:15:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3688FB80DD7;
+        Mon,  8 Aug 2022 00:15:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BA4AC433D6;
+        Mon,  8 Aug 2022 00:15:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659917746;
+        bh=3IYKf9Y1/2t5807EFG4T9FnXkEiD9rmOH2bt8Xr/fB8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Y5x9TDm+mTFxTwlxOr93RLVmgmvoiOZYvoxFP+78DF7it8BWlB2xKnWhcQ2BUUHSp
+         xvj9dKBac+OrMMZyg4A8/F5l2TmKJfm/WIr8YAv6ZjGu4NyDi7PhhU1Whg2Btq6bHQ
+         wLQ+ua/jqJb6BpCLQXnKlz4XY9pRd+xaVfUTdB0mGdQf8115kOMO3Ci48JOQdRh6oo
+         u26c+1SSrRntFfhTWEeAjLyYe5oX1TLq3gA9/7+ewuOpT/Xn1Y5x3GS7NVKGxQGrwb
+         /7UL2VkFpYhvadVLJi912kLbLJp5Gj3bMfshx++m43651encj3MIz+1Zqe6b+0z4a8
+         lDMFsD1e9ASPQ==
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Tom Lendacky <thomas.lendacky@amd.com>,
+        Jarkko Sakkinen <jarkko@profian.com>,
+        Harald Hoyer <harald@profian.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        John Allen <john.allen@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org (open list:AMD CRYPTOGRAPHIC COPROCESSOR
+        (CCP) DRIVER - SE...), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] crypto: ccp: Add a quirk to firmware update
+Date:   Mon,  8 Aug 2022 03:15:37 +0300
+Message-Id: <20220808001537.6479-1-jarkko@kernel.org>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-CMAE-Envelope: MS4xfFqXht+eeBBHkVt5iAwxeOqIGiDXF9O7X8C2yvUQdkCK5zPLxOj8Y+XHFgVus1jNigtfljcZiN7rrJm5DE80aMvZSDQNj/bGkhbTRna9Gndvq693wGTn
- 8520yaO/MkkqQyuATB+3ztK5Jik3RZkZVaqzOpPCLbJI5zcD+pPq4Nsp/Bev3vBd5yblsPkK90z9aq3Cil//PKDqS3Kq3YGhNEE=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: CharlesSed <linux-kernel@vger.kernel.org>
-Subject: A QUICK AND EFFECTIVE WAY TO GET RICH
+From: Jarkko Sakkinen <jarkko@profian.com>
 
-Message Body:
-CRYPTOCURRENCY WILL MAKE YOU A BILLIONAIRE https://telegra.ph/Cryptocurrency-makes-people-millionaires-at-15-people-per-hour---Page-762556-08-02
+A quirk for fixing the committed TCB version, when upgrading from earlier
+firmware version than 1.33.01. This is a known issue, and the documented
+workaround is to load the firmware twice.
 
+The issue realizes in a machine where the upgrade is done from firmware
+reporting having SEV API version 1.49, and requires the following
+workaround:
+
+sudo modprobe -r kvm_amd
+sudo modprobe -r ccp
+sudo modprobe ccp
+sudo modprobe kvm_amd
+
+Implement this workaround inside kernel by checking whether the API
+version is less than 1.50, and if so, download the firmware twice.
+This addresses the TCB version issue.
+
+Link: https://lore.kernel.org/all/de02389f-249d-f565-1136-4af3655fab2a@profian.com/
+Reported-by: Harald Hoyer <harald@profian.com>
+Signed-off-by: Jarkko Sakkinen <jarkko@profian.com>
+---
+ drivers/crypto/ccp/sev-dev.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
+index 799b476fc3e8..8ae26c5c64f6 100644
+--- a/drivers/crypto/ccp/sev-dev.c
++++ b/drivers/crypto/ccp/sev-dev.c
+@@ -742,6 +742,11 @@ static int sev_update_firmware(struct device *dev)
+ 	struct page *p;
+ 	u64 data_size;
+ 
++	if (!sev_version_greater_or_equal(0, 15)) {
++		dev_dbg(dev, "DOWNLOAD_FIRMWARE not supported\n");
++		return -1;
++	}
++
+ 	if (sev_get_firmware(dev, &firmware) == -ENOENT) {
+ 		dev_dbg(dev, "No SEV firmware file present\n");
+ 		return -1;
+@@ -774,6 +779,14 @@ static int sev_update_firmware(struct device *dev)
+ 	data->len = firmware->size;
+ 
+ 	ret = sev_do_cmd(SEV_CMD_DOWNLOAD_FIRMWARE, data, &error);
++
++	/*
++	 * A quirk for fixing the committed TCB version, when upgrading from
++	 * earlier firmware version than 1.33.01.
++	 */
++	if (!ret && !sev_version_greater_or_equal(1, 50))
++		ret = sev_do_cmd(SEV_CMD_DOWNLOAD_FIRMWARE, data, &error);
++
+ 	if (ret)
+ 		dev_dbg(dev, "Failed to update SEV firmware: %#x\n", error);
+ 	else
+@@ -1283,8 +1296,7 @@ void sev_pci_init(void)
+ 	if (sev_get_api_version())
+ 		goto err;
+ 
+-	if (sev_version_greater_or_equal(0, 15) &&
+-	    sev_update_firmware(sev->dev) == 0)
++	if (sev_update_firmware(sev->dev) == 0)
+ 		sev_get_api_version();
+ 
+ 	/* If an init_ex_path is provided rely on INIT_EX for PSP initialization
 -- 
-This e-mail was sent from a contact form on Heather Kingry  (https://scrawlcommunications.com)
+2.37.1
 
