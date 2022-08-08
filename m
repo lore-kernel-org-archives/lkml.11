@@ -2,88 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E875C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 05:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC075C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 05:54:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235667AbiHHFxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 01:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41792 "EHLO
+        id S235777AbiHHFyb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 01:54:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233627AbiHHFxe (ORCPT
+        with ESMTP id S233627AbiHHFy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 01:53:34 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FFD510A5
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 22:53:31 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id v10so5225465ljh.9
-        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 22:53:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=3vnVtVwupQ8WazaZ/AL9IwhCzJFASSPI0qjJVJcoGaM=;
-        b=yjIPdxk6jpZlmk7BoHMOCo62Yfn7cAnV3oiwVY3HUfDPv5VzvqYi8VIzM8o/nd2yTd
-         JGC4Rd9g+lOBYGQLkLwp+HPpTahAEcOI1n4S1S7/FX3n+YNGqiw5ZY63vKeDJFeQA2iw
-         0ipNhEaWG4MQYKCjoegvDEeN96f4Z9A11EFwLh1DOb7OQCxdN/7baNPv1L/jGpzyRILF
-         CgHTpW/RYHmgOo5av9P8c4m+YxAVSzWU7n8Uglf2RLPWdFTA1lOHDRSK69Xl8aCip7/h
-         u1t7RerPTHjToAaK9V2cYkzc1kRG9Br4c/u9dpjazwR5mIO/mVuIo/6XTmr++gOVp95w
-         3/Mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3vnVtVwupQ8WazaZ/AL9IwhCzJFASSPI0qjJVJcoGaM=;
-        b=jAVw2EjqVCSyLeNpsPOtbTgckKO/umUavWzLkaDwthIQdWBnLBdDGdrcj/2u4orOTD
-         ZRmeGhM5/uPRUlfgMvsGpj/nm3V33fEpT5UdgJI32gCZtjpr6TXkQDnrqjp1Zsvs+hBj
-         nH13q1+Q4eKf3KMRkuM3/E3h1uNudKWSD7aXuktejUNxWIE52X2vNJyt4AfWm29eUcR/
-         Hqoh7MkXHQmpQ4eDR/BjCcersz490zDUMy4OynQ1ViAVe8apO6h+wBBvFrP4UlgPFW2U
-         d95BaoJv/DDHLk46vb2ITTUlFRcDmo3jQuLb0sHw7z2l6NEz5dQ0qTy/NoBU5Ec6YGQS
-         iuzA==
-X-Gm-Message-State: ACgBeo1z4QEa+8UEyiVYf5vwn7hxdjAXzdSuAt67CVB/UCvz9OUD4IwA
-        g87m4dV56KRSXsAasuLJxMtUvQ==
-X-Google-Smtp-Source: AA6agR6Ns2dWP270jXtxfSHr7jqQAWAB2geMsLB2/0u9dfxx6EWGcJLF7DNwM6LljpdVPznto5Rl0g==
-X-Received: by 2002:a05:651c:179f:b0:25d:ba24:2e16 with SMTP id bn31-20020a05651c179f00b0025dba242e16mr5080138ljb.422.1659938009749;
-        Sun, 07 Aug 2022 22:53:29 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id j16-20020ac25510000000b0048af3154456sm1306679lfk.146.2022.08.07.22.53.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Aug 2022 22:53:29 -0700 (PDT)
-Message-ID: <5e61f334-4712-a41c-e270-d4cef6397112@linaro.org>
-Date:   Mon, 8 Aug 2022 08:53:26 +0300
+        Mon, 8 Aug 2022 01:54:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21A11002;
+        Sun,  7 Aug 2022 22:54:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D443B80DD4;
+        Mon,  8 Aug 2022 05:54:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75FD7C433C1;
+        Mon,  8 Aug 2022 05:54:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659938064;
+        bh=fdGOCwmBEK9CWaxIAUwPDifSkxj7PaxAllZU82W3Ry4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QDZCAORd+CDcOLkVaf1UPrSE3hL4ymPfTAuq2qSfODI7WxCqUcSnMbh3DtyhlFmJv
+         7SevWPkePl6NqhsK3RYndm1t2fn+fbAom30UPqa0cR2amyetfoRRWdGx3CXGiYHDZt
+         Of7afz3KYKWFNMpBPluGeh5layWLYJjc5TrLg/hYiVSPzaKx/phIj8DYFxCEetS+oo
+         VPrPWivn++E8p3/wtNdfSWjzbrNpsPym6oOUjOxkAaODCg0y8DOZiS8eb0oXiG0/zS
+         mkb3Gcc7zQP6MSKndbsDnnz9oUxVJbMYhXXwdUWBULqeM/HcNnDV8ZG1umR+7Q9Piu
+         gsv6IZjnMR64A==
+Date:   Mon, 8 Aug 2022 07:54:16 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Robin Reckmann <robin.reckmann@googlemail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Robin Reckmann <robin.reckmann@gmail.com>,
+        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
+Subject: Re: [PATCH] i2c: qcom-geni: Fix GPI DMA buffer sync-back
+Message-ID: <YvClCC4ArBEjQJl9@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Robin Reckmann <robin.reckmann@googlemail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Robin Reckmann <robin.reckmann@gmail.com>,
+        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
+References: <20220807140455.409417-1-robin.reckmann@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] spi: s3c64xx: correct dma_chan pointer initialization
-Content-Language: en-US
-To:     Chanho Park <chanho61.park@samsung.com>,
-        Andi Shyti <andi@etezian.org>, Mark Brown <broonie@kernel.org>
-Cc:     Alim Akhtar <alim.akhtar@samsung.com>,
-        Adithya K V <adithya.kv@samsung.com>,
-        kernel test robot <lkp@intel.com>, linux-spi@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <CGME20220808004253epcas2p3937171a6f89a765d67d5cc7b55afb89a@epcas2p3.samsung.com>
- <20220808004851.25122-1-chanho61.park@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220808004851.25122-1-chanho61.park@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="XD4kyBoxfGtTDMuX"
+Content-Disposition: inline
+In-Reply-To: <20220807140455.409417-1-robin.reckmann@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/08/2022 02:48, Chanho Park wrote:
-> Use NULL for dma channel pointer initialization instead of plain integer.
-> 
-> sparse warnings: (new ones prefixed by >>)
->>> drivers/spi/spi-s3c64xx.c:387:34: sparse: sparse: Using plain integer as NULL pointer
->    drivers/spi/spi-s3c64xx.c:388:34: sparse: sparse: Using plain integer as NULL pointer
-> 
+
+--XD4kyBoxfGtTDMuX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sun, Aug 07, 2022 at 11:04:54PM +0900, Robin Reckmann wrote:
+> Fix i2c transfers using GPI DMA mode for all message types that do not set
+> the I2C_M_DMA_SAFE flag (e.g. SMBus "read byte").
+>=20
+> In this case a bounce buffer is returned by i2c_get_dma_safe_msg_buf(),
+> and it has to synced back to the message after the transfer is done.
+>=20
+> Add missing assignment of dma buffer in geni_i2c_gpi().
+>=20
+> Set xferred in i2c_put_dma_safe_msg_buf() to true in case of no error to
+> ensure the sync-back of this dma buffer to the message.
+>=20
+> Signed-off-by: Robin Reckmann <robin.reckmann@gmail.com>
+
+Thank you! What would be a Fixes tag for this?
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+--XD4kyBoxfGtTDMuX
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-Best regards,
-Krzysztof
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmLwpQQACgkQFA3kzBSg
+KbYMhRAArxGcGhOSEP/LoXFsoUt62gmN7SUbYALnShNEsiAAsIyfcDokRbSxVfPk
+hoe7hFLjoEL+ZcARfiqvYWGbTpX6dlFx3TUdkkVkL6oyCJ/YcfvgFat7FwV0cNyP
+ce2soTTDV0gDRecDLRald5RA50fdPcvcUpEhrwJDb/2JjffKXhJs4rlCOfHVUNXt
+QbVwJVj54xgMeCmLrN6FsR14lTzQ5m+CnbHeDJCrKPFIxAIVIWwXvSU6lhucNYCo
+lFn0Q4ZDdOnBEy2miNvvdPT0BEKxplT4SgJpD3zGjxGnFSIbO0w8kdZLvfioCrA0
+s5gQxVZpHxtLtKtQruAgX8r2+JW1zSSxG8aicdX9QgNABybcYfHV4tH/CJikDLMb
+VTPc8qi0HtPLMnBribfmECcHaeLzEe38gtb7aGDUG4z8wXZgePXRGfnqLtCDGykg
+4Vomw99Ugc/1+XwwrpUr0JLBYqVPXq2veOsirnGo0OR3iJGajMZw4y9Tlct9AQZZ
+IL7lfPhTlO2WS2rVfURyOXZCUg1/tax/RgDfzFvjJesvy9+hpZ/pq9Csl+k1b+GZ
+8lbslOpKD0bM/WLDWYbrel6IH/openjxQ7M5UNusGNAnEmZPpm5QMfxsa3tjQEm7
+Tv2AXDVrVjdsK4dpcqarPjowL/IJ2I8CntN4+KefRLE0ZOhthtU=
+=HpON
+-----END PGP SIGNATURE-----
+
+--XD4kyBoxfGtTDMuX--
