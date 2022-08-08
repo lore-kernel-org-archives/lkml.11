@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F5DBC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30789C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244078AbiHHCno (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 22:43:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32800 "EHLO
+        id S244162AbiHHCns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 22:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242501AbiHHClm (ORCPT
+        with ESMTP id S242448AbiHHCll (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 22:41:42 -0400
+        Sun, 7 Aug 2022 22:41:41 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C4F21A0
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B15A21AF
         for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 19:41:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=UmntpirdSpPRuDoceI03X6/H8+qGMeNpl5xMH8+vOYo=; b=nTWvwNKF5as3dgMXOWCJrpx3Fi
-        LPq5lpmrm8Yn724a1WBVo92EyBBZ/ME8vpJ3A3GsA5BDXM76k2T73dUBd+sXvq5V066XUn0fnBbB+
-        7vWo10sN9nBWKMCr2UdWp5GT9ElOBk/xNkcC+62Nrd4sydCGYYlMzHNHDees/RcPMYldiMkeCJfmw
-        KeBjNeBlPfeCYMuP7e5/hiIOp4sh6gJNXNXoHm+5h0M54wyfEoiI1CEIxMK9nJHMqeyNeKOpiIUiy
-        T9n5FaEEtJQb6W86rjJHGrL1VJIZpXS0YJvbYxoMJkXd8fyOQl/kGH1nZkJUTvqD0KDGQylNqLzGl
-        W0SpSVRA==;
+        bh=D8UCvE42MAR+ZYM3si/CNIX4RG/qDGM3KKoxlZUxilc=; b=XsNu7EIebpiESnQvtSefLjOIGa
+        kCD4DfmYmuM4c2J31kJyTvxn2hyJAs2HXeldH7iCoMzDtc75hUDC04RxzX3hOeOy1jiHV1J9Q7Ety
+        SgHZgeZEQ5fuOcgHqujimflQFHSsT4ANiLhtwr00tCSIXfz9+F4Ol6ItThzVvAI0K4wrxY18G+qp0
+        DAlyD+Eyo9DZCHkpB/YXjUw94f0tQ4HBlNrUCD1iKyrHMFL/spSkA/1mKtdpJyhWjjZ/nGZvo/SM7
+        7KMuL4sFJ9TyPqTx0l1xLGv8q0nN95rwOX17SZ2urvmHZGPJipPVUr7HyiV1M5+xYE1a1+nZLxrNG
+        zEL8rIrQ==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oKshx-00DVRv-UI; Mon, 08 Aug 2022 02:41:33 +0000
+        id 1oKshx-00DVRr-P6; Mon, 08 Aug 2022 02:41:33 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-kernel@vger.kernel.org, pmladek@suse.com,
         Kent Overstreet <kent.overstreet@gmail.com>
 Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH v5 16/32] vsprintf: Refactor mac_address_string()
-Date:   Mon,  8 Aug 2022 03:41:12 +0100
-Message-Id: <20220808024128.3219082-17-willy@infradead.org>
+Subject: [PATCH v5 14/32] vsprintf: Refactor fourcc_string()
+Date:   Mon,  8 Aug 2022 03:41:10 +0100
+Message-Id: <20220808024128.3219082-15-willy@infradead.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220808024128.3219082-1-willy@infradead.org>
 References: <20220808024128.3219082-1-willy@infradead.org>
@@ -46,8 +46,8 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 From: Kent Overstreet <kent.overstreet@gmail.com>
 
  - We're attempting to consolidate printf_spec and format string
-   handling in the top level ptr_vprintf(), this changes
-mac_address_string() to not take printf_spec
+   handling in the top level vpr_buf(), this changes fourcc_string() to
+   not take printf_spec
 
  - With the new printbuf helpers there's no need to use a separate stack
    allocated buffer, so this patch deletes it.
@@ -56,61 +56,70 @@ Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
 Cc: Petr Mladek <pmladek@suse.com>
 Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 ---
- lib/vsprintf.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+ lib/vsprintf.c | 27 ++++++++++++---------------
+ 1 file changed, 12 insertions(+), 15 deletions(-)
 
 diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 076e2d23be47..2042c17f571e 100644
+index 2c5f10bc59e2..f47f10659737 100644
 --- a/lib/vsprintf.c
 +++ b/lib/vsprintf.c
-@@ -1236,15 +1236,13 @@ void bitmap_list_string(struct printbuf *out, unsigned long *bitmap,
+@@ -1701,17 +1701,15 @@ void netdev_bits(struct printbuf *out, const void *addr,
  
  static noinline_for_stack
- void mac_address_string(struct printbuf *out, u8 *addr,
--			struct printf_spec spec, const char *fmt)
-+			const char *fmt)
+ void fourcc_string(struct printbuf *out, const u32 *fourcc,
+-		   struct printf_spec spec, const char *fmt)
++		   const char *fmt)
  {
--	char mac_addr[sizeof("xx:xx:xx:xx:xx:xx")];
--	char *p = mac_addr;
- 	int i;
- 	char separator;
- 	bool reversed = false;
+-	char output_buf[sizeof("0123 little-endian (0x01234567)")];
+-	struct printbuf output = PRINTBUF_EXTERN(output_buf, sizeof(output_buf));
+ 	unsigned int i;
+ 	u32 orig, val;
  
--	if (check_pointer_spec(out, addr, spec))
-+	if (check_pointer(out, addr))
+ 	if (fmt[1] != 'c' || fmt[2] != 'c')
+-		return error_string_spec(out, "(%p4?)", spec);
++		return error_string(out, "(%p4?)");
+ 
+-	if (check_pointer_spec(out, fourcc, spec))
++	if (check_pointer(out, fourcc))
  		return;
  
- 	switch (fmt[1]) {
-@@ -1263,16 +1261,13 @@ void mac_address_string(struct printbuf *out, u8 *addr,
+ 	orig = get_unaligned(fourcc);
+@@ -1721,18 +1719,16 @@ void fourcc_string(struct printbuf *out, const u32 *fourcc,
+ 		unsigned char c = val >> (i * 8);
  
- 	for (i = 0; i < 6; i++) {
- 		if (reversed)
--			p = hex_byte_pack(p, addr[5 - i]);
-+			prt_hex_byte(out, addr[5 - i]);
- 		else
--			p = hex_byte_pack(p, addr[i]);
-+			prt_hex_byte(out, addr[i]);
- 
- 		if (fmt[0] == 'M' && i != 5)
--			*p++ = separator;
-+			prt_char(out, separator);
+ 		/* Print non-control ASCII characters as-is, dot otherwise */
+-		prt_char(&output, isascii(c) && isprint(c) ? c : '.');
++		prt_char(out, isascii(c) && isprint(c) ? c : '.');
  	}
--	*p = '\0';
+ 
+-	prt_char(&output, ' ');
+-	prt_str(&output, orig & BIT(31) ? "big-endian" : "little-endian");
 -
--	string_nocheck(out, mac_addr, spec);
+-	prt_char(&output, ' ');
+-	prt_char(&output, '(');
+-	special_hex_number(&output, orig, sizeof(u32));
+-	prt_char(&output, ')');
++	prt_char(out, ' ');
++	prt_str(out, orig & BIT(31) ? "big-endian" : "little-endian");
+ 
+-	string_spec(out, output_buf, spec);
++	prt_char(out, ' ');
++	prt_char(out, '(');
++	special_hex_number(out, orig, sizeof(u32));
++	prt_char(out, ')');
  }
  
  static noinline_for_stack
-@@ -2267,7 +2262,8 @@ void pointer(struct printbuf *out, const char *fmt,
- 	case 'm':			/* Contiguous: 000102030405 */
- 					/* [mM]F (FDDI) */
- 					/* [mM]R (Reverse order; Bluetooth) */
--		return mac_address_string(out, ptr, spec, fmt);
-+		mac_address_string(out, ptr, fmt);
+@@ -2336,7 +2332,8 @@ void pointer(struct printbuf *out, const char *fmt,
+ 		netdev_bits(out, ptr, fmt);
+ 		return do_width_precision(out, prev_pos, spec);
+ 	case '4':
+-		return fourcc_string(out, ptr, spec, fmt);
++		fourcc_string(out, ptr, fmt);
 +		return do_width_precision(out, prev_pos, spec);
- 	case 'I':			/* Formatted IP supported
- 					 * 4:	1.2.3.4
- 					 * 6:	0001:0203:...:0708
+ 	case 'a':
+ 		address_val(out, ptr, fmt);
+ 		return do_width_precision(out, prev_pos, spec);
 -- 
 2.35.1
 
