@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8ACEC25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E92C28B2B
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243634AbiHHB5Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37898 "EHLO
+        id S243673AbiHHB5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:57:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242970AbiHHByI (ORCPT
+        with ESMTP id S243454AbiHHBzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:54:08 -0400
+        Sun, 7 Aug 2022 21:55:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FE31B782;
-        Sun,  7 Aug 2022 18:39:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F11E1BE97;
+        Sun,  7 Aug 2022 18:39:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 63D7160DF5;
-        Mon,  8 Aug 2022 01:39:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03FABC433D6;
-        Mon,  8 Aug 2022 01:38:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12A5760E89;
+        Mon,  8 Aug 2022 01:39:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E1F8C433D7;
+        Mon,  8 Aug 2022 01:39:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922740;
-        bh=Ye9QrPC+cA+Mfgpb7t5m+ycVZGaN0oJIi8Pw6ohK8Gw=;
+        s=k20201202; t=1659922745;
+        bh=hDlEM4d9HLVjMgmnjDUPrcujB7QyITqOhNqevX9Fxf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bpyfoTPQ4TYNrvOXRbk9eEThEQyg0yZH+6+Zp6ZI2/LPuYZqJrBflE9yUwhPRd8LI
-         61mzSTcCLRrNHE1G9MjQPQT1DoLPZf8ZskYWcjuGxUwF7lGcD5hU+75SYJbvBbmMMd
-         lKCR67EZugzyp6TrJ/RtYpvXhNcjYMlXtYqm2dKKbTwP74IPf19URKHHqO3zeH5uP/
-         etWv2lcG1+i76SJ8wwyseL/t7Ych692eclF+EKRhm5uYkD2lygNR6Ajl+nVDKNqAZz
-         ueYraUt3o258DVqgFss7BPOy6bM3FyHJj6iNL1QknR3833Kzg7ovnMGjhm046WpRz8
-         sTYHAuW48t+CQ==
+        b=naRoJl08x3qweR2HX+VnzCwKLMZCUD8xTivJPMrMPcgFOTXvA4w2VStj/KEE3PGUA
+         +liPBtUIO51X+wnpVj0B/Cm2GYjfoYX40NUU0b+0+AsJaT3tWNwOU57DN8nD73pYQs
+         pLGwX1xuBhewo/9WnrM2ksuG+Qr66Hy6aAW45ci/I2NXIS3JSI7sLqvX0SSN8zXcp+
+         +Oz2Llyl0jUhq14C4X7LjaXK0arCJcmwkNt3P8FfgqyuRAFKMhr/kyfrFNSq2ZnT5K
+         +3J9ANp4MK2SiARGEGen9k12kRXEq0OixFlwt1KM1gUc4Nu48DB4bmjTiZvSndW5IR
+         8ikEjAEQyfMZg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Manyi Li <limanyi@uniontech.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 16/23] ACPI: PM: save NVS memory for Lenovo G40-45
-Date:   Sun,  7 Aug 2022 21:38:23 -0400
-Message-Id: <20220808013832.316381-16-sashal@kernel.org>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, wens@csie.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.4 19/23] arm64: dts: allwinner: a64: orangepi-win: Fix LED node name
+Date:   Sun,  7 Aug 2022 21:38:26 -0400
+Message-Id: <20220808013832.316381-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013832.316381-1-sashal@kernel.org>
 References: <20220808013832.316381-1-sashal@kernel.org>
@@ -52,42 +54,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manyi Li <limanyi@uniontech.com>
+From: Samuel Holland <samuel@sholland.org>
 
-[ Upstream commit 4b7ef7b05afcde44142225c184bf43a0cd9e2178 ]
+[ Upstream commit b8eb2df19fbf97aa1e950cf491232c2e3bef8357 ]
 
-[821d6f0359b0614792ab8e2fb93b503e25a65079] is to make machines
-produced from 2012 to now not saving NVS region to accelerate S3.
+"status" does not match any pattern in the gpio-leds binding. Rename the
+node to the preferred pattern. This fixes a `make dtbs_check` error.
 
-But, Lenovo G40-45, a platform released in 2015, still needs NVS memory
-saving during S3. A quirk is introduced for this platform.
-
-Signed-off-by: Manyi Li <limanyi@uniontech.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20220702132816.46456-1-samuel@sholland.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/sleep.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
-index 34966128293b..b9d203569ac1 100644
---- a/drivers/acpi/sleep.c
-+++ b/drivers/acpi/sleep.c
-@@ -361,6 +361,14 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
- 		DMI_MATCH(DMI_PRODUCT_NAME, "80E3"),
- 		},
- 	},
-+	{
-+	.callback = init_nvs_save_s3,
-+	.ident = "Lenovo G40-45",
-+	.matches = {
-+		DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+		DMI_MATCH(DMI_PRODUCT_NAME, "80E1"),
-+		},
-+	},
- 	/*
- 	 * ThinkPad X1 Tablet(2016) cannot do suspend-to-idle using
- 	 * the Low Power S0 Idle firmware interface (see
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
+index a0db02504b69..963a7c505e30 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
+@@ -78,7 +78,7 @@ hdmi_con_in: endpoint {
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+-		status {
++		led-0 {
+ 			label = "orangepi:green:status";
+ 			gpios = <&pio 7 11 GPIO_ACTIVE_HIGH>; /* PH11 */
+ 		};
 -- 
 2.35.1
 
