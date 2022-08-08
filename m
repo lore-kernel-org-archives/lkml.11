@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9291CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 22:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D107AC25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 22:43:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244519AbiHHWnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 18:43:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36290 "EHLO
+        id S244579AbiHHWnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 18:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244526AbiHHWnC (ORCPT
+        with ESMTP id S244524AbiHHWnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 18:43:02 -0400
+        Mon, 8 Aug 2022 18:43:01 -0400
 Received: from hutie.ust.cz (hutie.ust.cz [185.8.165.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3285167E8
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 15:43:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E95167CE
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 15:42:58 -0700 (PDT)
 From:   =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
-        t=1659998578; bh=aQrCd+ijZmlO1Kgsm6C6rwa65AVL97zN0C3e6zixLi4=;
+        t=1659998576; bh=J/tXOc4gJzf4l3jN3HeF5qZ43cNwfPnYOJyQtAI7qR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=DiIM2ZSDHO+5xRGl9iDX/udWRADomI2tu+BybuCkpI19KgpSGU89WsAHxovyXE0Ah
-         g+ErzsGRNeNXpTMl1lmrKQso5rqM8P0AzrKMDWTXjucDNpQ3aYJGEOGUUW2j+r85Gr
-         fzgKJ/0j82AmKlTVa5mrjzO13NgdfuWy2cxdpivY=
+        b=qHtMZstZ+im9Tfkqo6RtXCTnaYPeWqHfIhZArUb3vR6AaWKeuDy6mw6jXjyTv2qAI
+         947CKL3D/YP4OLwjmEqMzD8zcInZe06fHZRhLLM0Se905oQp+ftgMfetgW5p5ybByp
+         UP8DfAxVl2QgrzFNksYAl21P9WuD37doi1B1z0vU=
 To:     =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
@@ -32,9 +32,9 @@ To:     =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
         Philipp Zabel <p.zabel@pengutronix.de>
 Cc:     asahi@lists.linux.dev, alsa-devel@alsa-project.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] ASoC: apple: mca: Add locks on foreign cluster access
-Date:   Tue,  9 Aug 2022 00:41:53 +0200
-Message-Id: <20220808224153.3634-4-povik+lin@cutebit.org>
+Subject: [PATCH 1/3] dt-bindings: sound: Add Apple MCA I2S transceiver
+Date:   Tue,  9 Aug 2022 00:41:51 +0200
+Message-Id: <20220808224153.3634-2-povik+lin@cutebit.org>
 In-Reply-To: <20220808224153.3634-1-povik+lin@cutebit.org>
 References: <20220808224153.3634-1-povik+lin@cutebit.org>
 MIME-Version: 1.0
@@ -44,118 +44,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In DAI ops, accesses to the native cluster (of the DAI), and to data of
-clusters related to it by a DPCM frontend-backend link, should have
-been synchronized by the 'pcm_mutex' lock at ASoC level.
-
-What is not covered are the 'port_driver' accesses on foreign clusters
-to which the current cluster has no a priori relation, so fill in
-locking for that. (This should only matter in bizarre configurations of
-sharing one MCA peripheral between ASoC cards.)
+Add binding schema for MCA I2S transceiver found on Apple M1 and other
+chips.
 
 Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
 ---
- sound/soc/apple/mca.c | 27 ++++++++++++++++++++++++---
- 1 file changed, 24 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/sound/apple,mca.yaml  | 109 ++++++++++++++++++
+ 1 file changed, 109 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/sound/apple,mca.yaml
 
-diff --git a/sound/soc/apple/mca.c b/sound/soc/apple/mca.c
-index ab41fd1a2444..1e2464e89d1c 100644
---- a/sound/soc/apple/mca.c
-+++ b/sound/soc/apple/mca.c
-@@ -159,6 +159,9 @@ struct mca_data {
- 	struct reset_control *rstc;
- 	struct device_link *pd_link;
- 
-+	/* Mutex for accessing port_driver of foreign clusters */
-+	struct mutex port_mutex;
+diff --git a/Documentation/devicetree/bindings/sound/apple,mca.yaml b/Documentation/devicetree/bindings/sound/apple,mca.yaml
+new file mode 100644
+index 000000000000..f64119c5d8d1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/sound/apple,mca.yaml
+@@ -0,0 +1,109 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/sound/apple,mca.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- 	int nclusters;
- 	struct mca_cluster clusters[];
- };
-@@ -297,16 +300,21 @@ static bool mca_fe_clocks_in_use(struct mca_cluster *cl)
- 	struct mca_cluster *be_cl;
- 	int stream, i;
- 
-+	mutex_lock(&mca->port_mutex);
- 	for (i = 0; i < mca->nclusters; i++) {
- 		be_cl = &mca->clusters[i];
- 
- 		if (be_cl->port_driver != cl->no)
- 			continue;
- 
--		for_each_pcm_streams(stream)
--			if (be_cl->clocks_in_use[stream])
-+		for_each_pcm_streams(stream) {
-+			if (be_cl->clocks_in_use[stream]) {
-+				mutex_unlock(&mca->port_mutex);
- 				return true;
-+			}
-+		}
- 	}
-+	mutex_unlock(&mca->port_mutex);
- 	return false;
- }
- 
-@@ -331,8 +339,10 @@ static int mca_be_prepare(struct snd_pcm_substream *substream,
- 	 */
- 	if (!mca_fe_clocks_in_use(fe_cl)) {
- 		ret = mca_fe_enable_clocks(fe_cl);
--		if (ret < 0)
-+		if (ret < 0) {
-+			mutex_unlock(&mca->port_mutex);
- 			return ret;
-+		}
- 	}
- 
- 	cl->clocks_in_use[substream->stream] = true;
-@@ -350,6 +360,11 @@ static int mca_be_hw_free(struct snd_pcm_substream *substream,
- 	if (cl->port_driver < 0)
- 		return -EINVAL;
- 
-+	/*
-+	 * We are operating on a foreign cluster here, but since we
-+	 * belong to the same PCM, accesses should have been
-+	 * synchronized at ASoC level.
-+	 */
- 	fe_cl = &mca->clusters[cl->port_driver];
- 	if (!mca_fe_clocks_in_use(fe_cl))
- 		return 0; /* Nothing to do */
-@@ -722,7 +737,9 @@ static int mca_be_startup(struct snd_pcm_substream *substream,
- 		       cl->base + REG_PORT_CLOCK_SEL);
- 	writel_relaxed(PORT_DATA_SEL_TXA(fe_cl->no),
- 		       cl->base + REG_PORT_DATA_SEL);
-+	mutex_lock(&mca->port_mutex);
- 	cl->port_driver = fe_cl->no;
-+	mutex_unlock(&mca->port_mutex);
- 	cl->port_started[substream->stream] = true;
- 
- 	return 0;
-@@ -732,6 +749,7 @@ static void mca_be_shutdown(struct snd_pcm_substream *substream,
- 			    struct snd_soc_dai *dai)
- {
- 	struct mca_cluster *cl = mca_dai_to_cluster(dai);
-+	struct mca_data *mca = cl->host;
- 
- 	cl->port_started[substream->stream] = false;
- 
-@@ -742,7 +760,9 @@ static void mca_be_shutdown(struct snd_pcm_substream *substream,
- 		 */
- 		writel_relaxed(0, cl->base + REG_PORT_ENABLES);
- 		writel_relaxed(0, cl->base + REG_PORT_DATA_SEL);
-+		mutex_lock(&mca->port_mutex);
- 		cl->port_driver = -1;
-+		mutex_unlock(&mca->port_mutex);
- 	}
- }
- 
-@@ -963,6 +983,7 @@ static int apple_mca_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	mca->dev = &pdev->dev;
- 	mca->nclusters = nclusters;
-+	mutex_init(&mca->port_mutex);
- 	platform_set_drvdata(pdev, mca);
- 	clusters = mca->clusters;
- 
++title: Apple MCA I2S transceiver
++
++description: |
++  MCA is an I2S transceiver peripheral found on M1 and other Apple chips. It is
++  composed of a number of identical clusters which can operate independently
++  or in an interlinked fashion. Up to 6 clusters have been seen on an MCA.
++
++maintainers:
++  - Martin Povišer <povik+lin@cutebit.org>
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - apple,t8103-mca
++          - apple,t6000-mca
++      - const: apple,mca
++
++  reg:
++    items:
++      - description: Register region of the MCA clusters proper
++      - description: Register region of the DMA glue and its FIFOs
++
++  interrupts:
++    minItems: 4
++    maxItems: 6
++    description:
++      One interrupt per each cluster
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++  dmas:
++    minItems: 16
++    maxItems: 24
++    description:
++      DMA channels corresponding to the SERDES units in the peripheral. They are
++      listed in groups of four per cluster, and within the group they are given
++      as associated to the TXA, RXA, TXB, RXB units.
++
++  dma-names:
++    minItems: 16
++    maxItems: 24
++    items:
++      pattern: '^(tx|rx)[0-5][ab]$'
++    description: |
++      Names for the DMA channels: 'tx'/'rx', then cluster number, then 'a'/'b'
++      based on the associated SERDES unit.
++
++  clocks:
++    minItems: 4
++    maxItems: 6
++    description:
++      Clusters' input reference clock.
++
++  resets:
++    maxItems: 1
++
++  power-domains:
++    minItems: 5
++    maxItems: 7
++    description:
++      First a general power domain for register access, then the power
++      domains of individual clusters for their operation.
++
++  "#sound-dai-cells":
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - dmas
++  - dma-names
++  - clocks
++  - power-domains
++  - '#sound-dai-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    mca: mca@9b600000 {
++      compatible = "apple,t6000-mca", "apple,mca";
++      reg = <0x9b600000 0x10000>,
++            <0x9b200000 0x20000>;
++
++      clocks = <&nco 0>, <&nco 1>, <&nco 2>, <&nco 3>;
++      power-domains = <&ps_audio_p>, <&ps_mca0>, <&ps_mca1>,
++                      <&ps_mca2>, <&ps_mca3>;
++      dmas = <&admac 0>, <&admac 1>, <&admac 2>, <&admac 3>,
++             <&admac 4>, <&admac 5>, <&admac 6>, <&admac 7>,
++             <&admac 8>, <&admac 9>, <&admac 10>, <&admac 11>,
++             <&admac 12>, <&admac 13>, <&admac 14>, <&admac 15>;
++      dma-names = "tx0a", "rx0a", "tx0b", "rx0b",
++                  "tx1a", "rx1a", "tx1b", "rx1b",
++                  "tx2a", "rx2a", "tx2b", "rx2b",
++                  "tx3a", "rx3a", "tx3b", "rx3b";
++
++      #sound-dai-cells = <1>;
++    };
 -- 
 2.33.0
 
