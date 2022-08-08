@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC2FC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 18:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99BDFC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 18:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244539AbiHHSnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 14:43:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38024 "EHLO
+        id S244302AbiHHSnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 14:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244484AbiHHSmd (ORCPT
+        with ESMTP id S244485AbiHHSmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 8 Aug 2022 14:42:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F472653;
-        Mon,  8 Aug 2022 11:42:09 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400C9644B
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 11:42:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1253FB81058;
-        Mon,  8 Aug 2022 18:42:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B7452C433B5;
-        Mon,  8 Aug 2022 18:42:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D184A61269
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 18:42:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 43CC1C433D7;
+        Mon,  8 Aug 2022 18:42:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659984126;
-        bh=IcKbQrEu8fvCNUssOuYB2qG3dSNG44WeXb5EOxESOXo=;
+        s=k20201202; t=1659984129;
+        bh=nDBZ7+jqRiC7ltkTNVo9XxgU9CuLvcDeNwP2VctjY/k=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ckHnJveum2Ldsm5QWQhqpuo+/b6Nh0AT/z3NysNuoRtBvZlkT2Uklcj3t5XO2/59L
-         rzcEfAXG44fg5GnAk2pxgNF7cFKZ/kDNTCkY1aGYjqBnCI2ekRFNye8rdG38H4K29z
-         PMtfsps1PYtqU/7QD3MRVzY7o75SokmkGWCj27Cb2v64sk1XFsh8Q0h7MqARo0UJ0c
-         pGxj2ISfqsn5AoV1mIaMRyZBmpvR6ySkxFoOMnmS3XoAjyw2IiFVIezSS5+/RLRrzN
-         qVcT/rUnGjn7Z++/TfLCNTjzFcgLd/4GPuta+3JTP3rMzw65QMOp3fzwfubgEAqkWQ
-         CE36fyfei0E6w==
+        b=hJ86FNABNKYawXYbmVACymxPmU5kHIsFThtH+9i/XCToRF720ti7C6Ii4XBgvJqmn
+         z8DVh3GfC2PPQp3w4n6FuXvIbJsnVaqpAO6LPyXNUC35CAcx4XS0y8B/2Q5nuWNRp3
+         oma8qY5OI33ZUzC9JyOF2Vn9I9n1BaQ6CAAIHTk/JZpLEoI6xYJ5kcgfGAFbG1IO7K
+         /qlBmD/C0/1eeFYDea7PQi69KsPYHFZ8cKEHxoOS11jEn6A2Fmm/oGEFAuagnQwbUV
+         pygDXq6crCTQcPCPEDKDj42oZbogo8IFxhqHaHakwZCseHIs0XtHhIaZtXOW2nKFV7
+         Y5g8nupU1Nbcw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A6D3DC43140;
-        Mon,  8 Aug 2022 18:42:06 +0000 (UTC)
-Subject: Re: [GIT PULL] LEDs changes for v5.20-rc1
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 243C3C43143;
+        Mon,  8 Aug 2022 18:42:09 +0000 (UTC)
+Subject: Re: [GIT PULL] exfat update for 5.20-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220808135201.GA22949@duo.ucw.cz>
-References: <20220808135201.GA22949@duo.ucw.cz>
-X-PR-Tracked-List-Id: <linux-leds.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220808135201.GA22949@duo.ucw.cz>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/ tags/leds-5.20-rc1
-X-PR-Tracked-Commit-Id: 38ba0bb291aacd92d8eaa4a1aa8b63ce4286e797
+In-Reply-To: <CAKYAXd_tBecDJSiJF0LLRzkC5UfwzXVU+mvcBn-7+e1mzbgagQ@mail.gmail.com>
+References: <CAKYAXd_tBecDJSiJF0LLRzkC5UfwzXVU+mvcBn-7+e1mzbgagQ@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAKYAXd_tBecDJSiJF0LLRzkC5UfwzXVU+mvcBn-7+e1mzbgagQ@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/linkinjeon/exfat.git tags/exfat-for-5.20-rc1
+X-PR-Tracked-Commit-Id: df13a3477635414f243d53344bb4b510385e994d
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: c8a684e2e110376c58f0bfa30fb3855d1e319670
-Message-Id: <165998412667.757.10353759158812252195.pr-tracker-bot@kernel.org>
-Date:   Mon, 08 Aug 2022 18:42:06 +0000
-To:     Pavel Machek <pavel@ucw.cz>
+X-PR-Merge-Commit-Id: f72fb74b8218f9aebfcc691b7e9bb641920dbc13
+Message-Id: <165998412914.757.13811333358933697594.pr-tracker-bot@kernel.org>
+Date:   Mon, 08 Aug 2022 18:42:09 +0000
+To:     Namjae Jeon <linkinjeon@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        jacek.anaszewski@gmail.com, linux-leds@vger.kernel.org
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Sungjong Seo <sj1557.seo@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 8 Aug 2022 15:52:01 +0200:
+The pull request you sent on Mon, 8 Aug 2022 21:16:25 +0900:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/ tags/leds-5.20-rc1
+> git://git.kernel.org/pub/scm/linux/kernel/git/linkinjeon/exfat.git tags/exfat-for-5.20-rc1
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/c8a684e2e110376c58f0bfa30fb3855d1e319670
+https://git.kernel.org/torvalds/c/f72fb74b8218f9aebfcc691b7e9bb641920dbc13
 
 Thank you!
 
