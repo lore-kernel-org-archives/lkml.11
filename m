@@ -2,231 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF048C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:47:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A413FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:48:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243177AbiHHOrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 10:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39286 "EHLO
+        id S243306AbiHHOsg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 10:48:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234954AbiHHOrI (ORCPT
+        with ESMTP id S234954AbiHHOs3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 10:47:08 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F125BB851
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 07:47:06 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id j1so11202579wrw.1
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 07:47:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc;
-        bh=LZVAaOQcgm//Tca/hldBYEABmqrBI/5UJwrd1QzDx7M=;
-        b=s+vdPeXQ4kcWMgnjJcPA0ThaClExPbPbYQTdBSbB6pSt8dn7I74TO48JQM/HbYahxG
-         qxkJTGr48OdV2dCy7ZhVxw3bitAVZnipHDFbPLowNNyl0c2GdmYKUjhq7sJkG3tQow/Z
-         lIIqLUuUlubs3mF7+AgiJ5ceBldV2JYwsM2EzWBWDJucKiTLLyfMpYal2PDtki+ZCPL+
-         vDaLph18dfwxDvTGa3Z5VRWJsyS8pJoWQqnqgdO9P79BuQwTUSqkWSwLzwuu1NXcID1L
-         QOme00HxQ+iwrI97Q5Ar12Q94u9GHd3MeUYqZAhKbM7MhifauwWygTm4fAwe5zFfh24o
-         iGRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=LZVAaOQcgm//Tca/hldBYEABmqrBI/5UJwrd1QzDx7M=;
-        b=e5tMcGfKu2QklAxMEK6E74m3jbjLRl4g+yDPn5O41kymtXiB3SOwHxFTi6QdrVBJGO
-         78T4KYFgedLZ6fPK5243oCh9i1UczpmUFCRGphop1IPOeHUh3T2WmWtEohq0fLKk3Yxv
-         GV8mQIb+5oqAWvZf2qww+ZTw1R5eyG94MO2nrKHOlr6APobTsR7Ws48z/Ds+Dp57m9sq
-         zCS3RRei8GSpgz0tciEwMw27S4WPFh9vUu0+ic8Tf34yphq42k8nu7xFtunjdrAROmnF
-         eLg8QSynfIcjtTicUZ+yroAA7mDBDdcROlecxE+IaKnIl3Oefpx6fs+ryGYhUWqm+FxN
-         7dow==
-X-Gm-Message-State: ACgBeo1G3TIdZwQc3r1dd/7JTkV8lny6cinIvaDAT4AN/e80XnjhkfEe
-        mZ7hjtB8G6GjKrXQ9uPVeyRilyjNzVOh8Q==
-X-Google-Smtp-Source: AA6agR5F3kkZcPrL4wQy82jkM65atD2sIrKuNGzpvnBzphC/qyfm91PM4S+RiaIPb+RPs6cEHXlgaA==
-X-Received: by 2002:a5d:5957:0:b0:220:6004:18c2 with SMTP id e23-20020a5d5957000000b00220600418c2mr11688108wri.568.1659970025434;
-        Mon, 08 Aug 2022 07:47:05 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id u8-20020a7bc048000000b003a50924f1c0sm13640544wmc.18.2022.08.08.07.47.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 07:47:04 -0700 (PDT)
-Date:   Mon, 8 Aug 2022 15:47:03 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Richard Fitzgerald <rf@opensource.cirrus.com>
-Cc:     Paul Cercueil <paul@crapouillou.net>, linux-kernel@vger.kernel.org,
-        patches@opensource.cirrus.com, Lee Jones <lee@kernel.org>
-Subject: Re: [PATCH 20/28] mfd: arizona: Remove #ifdef guards for PM related
- functions
-Message-ID: <YvEh53o4I3Q6+zho@google.com>
-References: <20220807145247.46107-1-paul@crapouillou.net>
- <20220807145247.46107-21-paul@crapouillou.net>
- <94394206-a018-27b0-5a21-97976fc4a3bc@opensource.cirrus.com>
- <T2KAGR.KY35O6CZFRQ83@crapouillou.net>
- <2c5c063b-da58-1f6f-5422-1ada3dabb90a@opensource.cirrus.com>
- <ANMAGR.U803VAFDNZVL@crapouillou.net>
- <a27df713-31e6-a0d5-7004-80f3f7d952e6@opensource.cirrus.com>
+        Mon, 8 Aug 2022 10:48:29 -0400
+Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77099B851
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 07:48:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1659970107; x=1691506107;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=F1+Sxy+1lBVaSJWXdDtSLWjWhaVqQLanyKvcu0Jexr8=;
+  b=BW0msI/kjS3C1Oggp+Esk8m9anSBwyDFEB6OZT1RCuwrTwhNHKxJBKM1
+   nPnBhNVxI+IyIsaYjwy/lBeD83gNZRUbXu7F6aK0N4CWiVH3SEk/Kz4ED
+   wLiiHdLlP+pnrZ2FhNpemXt+NLqMv5Up/fGrhAJ2giWjFefNTSKrkI6fQ
+   zj9k+NPPamA60TnezNtDNLtXBxM6nOhjC2FSfTNHXd/VXLGH8zF396zjy
+   5KjpHmNZE9RE1V8nH2jlSaWzt3YdByyll+QCFZB5jMX+EwdNVgRPBDGLK
+   GX9H4P5MP9tx+ZK21l8DwT8Wl3ExaylIbuO3VYJwcghlb/gObKfytdJEp
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,222,1654531200"; 
+   d="scan'208";a="213140724"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 08 Aug 2022 22:48:25 +0800
+IronPort-SDR: 4qXkGcfVKs7Ls3vWyQICFFHPGK0VjEL60ti+0NH/KHS6CQJxBDTrNfNU8h/ZIRAVRIzJfpLdH5
+ y5EJHWnIUtA46LUSdGnuWYYyEt3nevFV3ZYZZaprl2DGFP+ezmxKPVt9LVR4pG+QuucIpKKNIC
+ uTKc72uP0VHK08QMOApycrJfdOMZIGppkmueMmCmQc2TV4SWnTpT30nMQVX41QGqSeIAJVkX12
+ X0TxaOVl+tPxsTo2Ig/sR6NBRUswDgjv1mbEgs87r4KMOhDN8Ufdld1ivHaSIdLBbI8qcBIGqX
+ cfPyO1EvEwYLsysEfmxC7SXz
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 08 Aug 2022 07:09:23 -0700
+IronPort-SDR: kW/I4/Jr2m+Itf847fh+DJrvK8Ka1cpStxrnSPtLHHXTkyu7aCOV3Z0JicuMWCqDNyFOwtKcaq
+ J42/4EqYkBBoS9z3kG2pzbx/kHGeJXoEnaLG+qNuMau3DknuTkGWOyN+7pLti1Zu2/jkxjbMSL
+ x5MEzqhbeowMZR9acp2BgnX+5nxsFwzFOr1uQvQTUmQnO7f51OUosEWNVZYFe2oaDdjY+e09P8
+ rahusEEU+TM5elpGuNkfTX8Z3iOYg2/GgBhGXq00qNnLrbNUwGKL8Nx8tMSRwEaW6rYL+1uFKR
+ Dmg=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 08 Aug 2022 07:48:26 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4M1fG14bKsz1RwqM
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 07:48:25 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1659970104; x=1662562105; bh=F1+Sxy+1lBVaSJWXdDtSLWjWhaVqQLanyKv
+        cu0Jexr8=; b=W0863VK2Phuve7uXHL+nSiCCSldHWYV+RNQ2dKUW7RWPRAy2eDM
+        NbRWuCdfFFwenN+cwk4Z8fy0qdA8mJpOBy7SxzB8KtAColW2pwJU2fF0ZruDGYsO
+        2waeYmYmmiAZ6WZEAYU5rWHD4DoQClmLD3lnTcWGsSwKbtUzsU3krv49Ltu25sWJ
+        lsBgDFtz+r2vNOub3fDEVOaqmj2v+VALCbhyHrVxs2t/gvxc6C+a4ZVb7gc7I2rF
+        jeG4Goz7ITrI7vfHG1Y0sQOxyOpXguRI0D/v0wnPoUFQjwlvLmcFV71BG4j+CA8p
+        7ea6eOVNl6XlO08AVh1++P/8TSSGbY3sUmA==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id M0nBofMVXxut for <linux-kernel@vger.kernel.org>;
+        Mon,  8 Aug 2022 07:48:24 -0700 (PDT)
+Received: from [10.225.89.57] (gns5353.ad.shared [10.225.89.57])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4M1fFz0RlZz1RtVk;
+        Mon,  8 Aug 2022 07:48:22 -0700 (PDT)
+Message-ID: <affa6eee-3b7c-105a-8f4a-35f1ed81f0cd@opensource.wdc.com>
+Date:   Mon, 8 Aug 2022 07:48:21 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <a27df713-31e6-a0d5-7004-80f3f7d952e6@opensource.cirrus.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.12.0
+Subject: Re: fs/zonefs/./trace.h:22:1: sparse: sparse: cast to restricted
+ blk_opf_t
+Content-Language: en-US
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        Johannes Thumshirn <jth@kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>
+References: <202208061533.YBqXyzHm-lkp@intel.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <202208061533.YBqXyzHm-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 08 Aug 2022, Richard Fitzgerald wrote:
+On 2022/08/06 1:00, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   6614a3c3164a5df2b54abb0b3559f51041cf705b
+> commit: e46b5970496705127f9ae494c66e0242773097e8 fs/zonefs: Use the enum req_op type for tracing request operations
+> date:   3 weeks ago
+> config: arm64-randconfig-s052-20220804 (https://download.01.org/0day-ci/archive/20220806/202208061533.YBqXyzHm-lkp@intel.com/config)
+> compiler: aarch64-linux-gcc (GCC) 12.1.0
+> reproduce:
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # apt-get install sparse
+>         # sparse version: v0.6.4-39-gce1a6720-dirty
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e46b5970496705127f9ae494c66e0242773097e8
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout e46b5970496705127f9ae494c66e0242773097e8
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash fs/zonefs/
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> sparse warnings: (new ones prefixed by >>)
+>    fs/zonefs/super.c: note: in included file (through include/trace/trace_events.h, include/trace/define_trace.h, fs/zonefs/trace.h):
+>>> fs/zonefs/./trace.h:22:1: sparse: sparse: cast to restricted blk_opf_t
+>>> fs/zonefs/./trace.h:22:1: sparse: sparse: cast to restricted blk_opf_t
+>>> fs/zonefs/./trace.h:22:1: sparse: sparse: restricted blk_opf_t degrades to integer
+>>> fs/zonefs/./trace.h:22:1: sparse: sparse: restricted blk_opf_t degrades to integer
+>    fs/zonefs/super.c: note: in included file (through arch/arm64/include/asm/smp.h, include/linux/smp.h, arch/arm64/include/asm/arch_timer.h, ...):
+>    arch/arm64/include/asm/percpu.h:127:1: sparse: sparse: cast truncates bits from constant value (ffffffff becomes ff)
+>    arch/arm64/include/asm/percpu.h:127:1: sparse: sparse: cast truncates bits from constant value (ffffffff becomes ffff)
+>    arch/arm64/include/asm/percpu.h:127:1: sparse: sparse: cast truncates bits from constant value (ffffffff becomes ff)
+>    arch/arm64/include/asm/percpu.h:127:1: sparse: sparse: cast truncates bits from constant value (ffffffff becomes ffff)
+> 
+> vim +22 fs/zonefs/./trace.h
+> 
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  21  
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27 @22  TRACE_EVENT(zonefs_zone_mgmt,
+> ff07a02e9e8e64 Bart Van Assche    2022-07-14  23  	    TP_PROTO(struct inode *inode, enum req_op op),
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  24  	    TP_ARGS(inode, op),
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  25  	    TP_STRUCT__entry(
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  26  			     __field(dev_t, dev)
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  27  			     __field(ino_t, ino)
+> e46b5970496705 Bart Van Assche    2022-07-14  28  			     __field(enum req_op, op)
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  29  			     __field(sector_t, sector)
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  30  			     __field(sector_t, nr_sectors)
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  31  	    ),
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  32  	    TP_fast_assign(
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  33  			   __entry->dev = inode->i_sb->s_dev;
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  34  			   __entry->ino = inode->i_ino;
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  35  			   __entry->op = op;
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  36  			   __entry->sector = ZONEFS_I(inode)->i_zsector;
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  37  			   __entry->nr_sectors =
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  38  				   ZONEFS_I(inode)->i_zone_size >> SECTOR_SHIFT;
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  39  	    ),
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  40  	    TP_printk("bdev=(%d,%d), ino=%lu op=%s, sector=%llu, nr_sectors=%llu",
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  41  		      show_dev(__entry->dev), (unsigned long)__entry->ino,
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  42  		      blk_op_str(__entry->op), __entry->sector,
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  43  		      __entry->nr_sectors
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  44  	    )
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  45  );
+> 62ab1aadcccd03 Johannes Thumshirn 2021-01-27  46  
 
-> On 08/08/2022 12:01, Paul Cercueil wrote:
-> >=20
-> >=20
-> > Le lun., ao=FBt 8 2022 at 11:43:31 +0100, Richard Fitzgerald
-> > <rf@opensource.cirrus.com> a =E9crit :
-> > > On 08/08/2022 11:06, Paul Cercueil wrote:
-> > > > Hi Richard,
-> > > >=20
-> > > > Le lun., ao=FBt 8 2022 at 10:53:54 +0100, Richard Fitzgerald
-> > > > =7F<rf@opensource.cirrus.com> a =E9crit :
-> > > > > On 07/08/2022 15:52, Paul Cercueil wrote:
-> > > > > > Only export the arizona_pm_ops if CONFIG_PM is set, but leave t=
-he
-> > > > > > suspend/resume functions (and related code) outside #ifdef guar=
-ds.
-> > > > > >=20
-> > > > > > If CONFIG_PM is not set, the arizona_pm_ops will be defined as
-> > > > > > "static __maybe_unused", and the structure plus all the callbac=
-ks will
-> > > > > > be automatically dropped by the compiler.
-> > > > > >=20
-> > > > > > The advantage is then that these functions are now always compi=
-led
-> > > > > > independently of any Kconfig option, and thanks to that bugs and
-> > > > > > regressions are easier to catch.
-> > > > > >=20
-> > > > > > Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> > > > > > Cc: patches@opensource.cirrus.com
-> > > > > > ---
-> > > > > > =A0 drivers/mfd/arizona-core.c | 21 +++++++++++----------
-> > > > > > =A0 drivers/mfd/arizona-i2c.c=A0 |=A0 2 +-
-> > > > > > =A0 drivers/mfd/arizona-spi.c=A0 |=A0 2 +-
-> > > > > > =A0 3 files changed, 13 insertions(+), 12 deletions(-)
-> > > > > >=20
-> > > > > > diff --git a/drivers/mfd/arizona-core.c b/drivers/mfd/arizona-c=
-ore.c
-> > > > > > index cbf1dd90b70d..c1acc9521f83 100644
-> > > > > > --- a/drivers/mfd/arizona-core.c
-> > > > > > +++ b/drivers/mfd/arizona-core.c
-> > > > > > @@ -480,7 +480,6 @@ static int
-> > > > > > wm5102_clear_write_sequencer(struct =7F=7F=7Farizona *arizona)
-> > > > > > =A0=A0=A0=A0=A0 return 0;
-> > > > > > =A0 }
-> > > > > > =A0 =7F-#ifdef CONFIG_PM
-> > > > > > =A0 static int arizona_isolate_dcvdd(struct arizona *arizona)
-> > > > >=20
-> > > > > __maybe_unused?
-> > > >=20
-> > > > No need. The symbols are always referenced.
-> > > >=20
-> > > > > > =A0 {
-> > > > > > =A0=A0=A0=A0=A0 int ret;
-> > > > > > @@ -742,9 +741,7 @@ static int
-> > > > > > arizona_runtime_suspend(struct device =7F=7F=7F*dev)
-> > > > >=20
-> > > > > __maybe_unused?
-> > > > >=20
-> > > > > > =A0 =7F=A0=A0=A0=A0=A0 return 0;
-> > > > > > =A0 }
-> > > > > > -#endif
-> > > > > > =A0 =7F-#ifdef CONFIG_PM_SLEEP
-> > > > > > =A0 static int arizona_suspend(struct device *dev)
-> > > > >=20
-> > > > > __maybe_unused?
-> > > > >=20
-> > > > > > =A0 {
-> > > > > > =A0=A0=A0=A0=A0 struct arizona *arizona =3D dev_get_drvdata(dev=
-);
-> > > > > > @@ -784,17 +781,21 @@ static int arizona_resume(struct device *=
-dev)
-> > > > >=20
-> > > > > __maybe_unused?
-> > > > >=20
-> > > > > > =A0 =7F=A0=A0=A0=A0=A0 return 0;
-> > > > > > =A0 }
-> > > > > > -#endif
-> > > > > > =A0 =7F+#ifndef CONFIG_PM
-> > > > > > +static __maybe_unused
-> > > > > > +#endif
-> > > > >=20
-> > > > > No need to ifdef a __maybe_unused.
-> > > >=20
-> > > > Yes, it is needed, because the symbol is conditionally exported. If
-> > >=20
-> > > Why conditionally export it?
-> > >=20
-> > > > !CONFIG_PM, we want the compiler to discard the dev_pm_ops
-> > > =A0and all the
-> > > > callbacks, hence the "static __maybe_unused". That's the same
-> > > > trick used > in _EXPORT_DEV_PM_OPS().
-> > > >=20
-> > > > (note that this patch is broken as it does not change the struct
-> > > > name, =7Fin the !PM case, which causes conflicts with the .h. I'll
-> > > > fix in v2)
-> > > >=20
-> > > > > > =A0 const struct dev_pm_ops arizona_pm_ops =3D {
-> > > > > > -=A0=A0=A0 SET_RUNTIME_PM_OPS(arizona_runtime_suspend,
-> > > > > > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 arizona_runtime_res=
-ume,
-> > > > > > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 NULL)
-> > > > > > -=A0=A0=A0 SET_SYSTEM_SLEEP_PM_OPS(arizona_suspend, arizona_res=
-ume)
-> > > > > > -=A0=A0=A0 SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(arizona_suspend_noirq,
-> > > > > > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0 arizona_resume_noirq)
-> > > > > > +=A0=A0=A0 RUNTIME_PM_OPS(arizona_runtime_suspend,
-> > > > > > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 arizona_runtime_res=
-ume,
-> > > > > > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 NULL)
-> > > > > > +=A0=A0=A0 SYSTEM_SLEEP_PM_OPS(arizona_suspend, arizona_resume)
-> > > > > > +=A0=A0=A0 NOIRQ_SYSTEM_SLEEP_PM_OPS(arizona_suspend_noirq,
-> > > > > > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 arizona_re=
-sume_noirq)
-> > > > > > =A0 };
-> > > > > > +#ifdef CONFIG_PM
-> > > > > > =A0 EXPORT_SYMBOL_GPL(arizona_pm_ops);
-> > > > > > +#endif
-> > > > >=20
-> > > > > This ifdeffing is ugly. Why must the structure only be exported if
-> > > > > CONFIG_PM is set?
-> > > >=20
-> > > > So that all the PM code is garbage-collected by the compiler if
-> > > > !CONFIG_PM.
-> > >=20
-> > > The functions will be dropped if they are not referenced. That doesn't
-> > > answer why the struct must not be exported.
-> > >=20
-> > > What is the aim of omitting the struct export?
-> >=20
-> > The functions are always referenced by the dev_pm_ops structure.
-> > Omitting the struct export means that the struct can now be a "static
-> > __maybe_unused" symbol in the !CONFIG_PM case, and everything related to
-> > PM will be automatically removed by the compiler.
-> >=20
-> > Otherwise, the symbol is exported as usual. The symbol being
-> > conditionally exported is not a problem - the struct is always
-> > referenced (as it should be) using the pm_sleep_ptr() or pm_ptr()
-> > macros.
-> >=20
-> > This is basically what EXPORT_SIMPLE_DEV_PM_OPS() does by the way.
-> >=20
-> > Cheers,
-> > -Paul
-> >=20
-> Ok,
-> Well ultimately it's up to Lee as the maintainer of the MFD subsystem.
->=20
-> But the open-coded #ifdef around "static __maybe_unused" is ugly, so if
-> this is going to be a common pattern a new macro would be nice.
+Bart,
 
-I like to avoid #ifery in C files wherever possible.
+Are you going to send a patch to fix this or do you want me to do it ?
 
---=20
-DEPRECATED: Please use lee@kernel.org
+> 
+> :::::: The code at line 22 was first introduced by commit
+> :::::: 62ab1aadcccd037a7ced4ed99b4d46d2b4190183 zonefs: add tracepoints for file operations
+> 
+> :::::: TO: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+> :::::: CC: Damien Le Moal <damien.lemoal@wdc.com>
+> 
+
+
+-- 
+Damien Le Moal
+Western Digital Research
