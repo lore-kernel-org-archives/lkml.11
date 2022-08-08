@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B34F0C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:32:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 113C5C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241936AbiHHBcU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:32:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57800 "EHLO
+        id S241897AbiHHBca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241999AbiHHBcG (ORCPT
+        with ESMTP id S242006AbiHHBcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:32:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB201BC9B;
-        Sun,  7 Aug 2022 18:31:58 -0700 (PDT)
+        Sun, 7 Aug 2022 21:32:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE91BCB8;
+        Sun,  7 Aug 2022 18:32:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64327B80E05;
-        Mon,  8 Aug 2022 01:31:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5CDEC433D7;
-        Mon,  8 Aug 2022 01:31:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3190A60DE0;
+        Mon,  8 Aug 2022 01:32:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82E90C43141;
+        Mon,  8 Aug 2022 01:31:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922316;
-        bh=VnNBqVs1pLaOy6COvbcSfRz66B+e9FtCkBJlFPM059I=;
+        s=k20201202; t=1659922320;
+        bh=Cy0VXR0/pBUrCrS9LsefsGH8QEVj0tWVRheqGk50Gvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nj+JGsKSd9CAImc48stiY0oESQmtJp8l8t4zKQ0230yToVgb7vj81UZFLkXWPiVQF
-         yP8sstbTrzr7zDahw4mH5pkBsCKblvwTy6i0dVRFLWBrji6SdxIhS7T/HcjX4AerZq
-         9SjL3vveuM9ri3oOLGEGeHpVzxMIhDRtjNxEEWO3CQoctRKGXrafKTJR6RhbJi67Zs
-         rXNAcViNIyTuLvk034+LHhysptabz8Zdw5UJHstDU821vkdre79OGw/u5/AVN9jL2c
-         oyQPp6yYnrKI8SgvGD6aCkFLWEAUaG95EWOUO4Nh4SUuMgVDjl9aZzjP/byQ+qbxLU
-         v4g41b+YF6iZA==
+        b=RR9VxMZ14ZkgCfB1sghpr8lgUyDR0E7JHBGPa6cVegge8YheLffM0qRI09AK4jUeZ
+         DvFqIq51AhFEyLK8cVoO+6QRzlRP9ciXj4wPPL5LgUZfUvbbBNlb041eGoJTuq0zNB
+         OvUUWXXLg8/WSWvn3X0EQ20LGH5zRXINJ1/io0IoX19Tx2RSee03TMdzPuJc3HPbtz
+         A3VmK2xwoGKNt01fMTTwRhOv9R5EpB8ozfmDHo4XTOH9/XUtZQeJKrJCREC6JzHkXp
+         5kJE94l23C4LuJ1xA0VD53SkE8ramDeOtffW5FU2Oy6kivYQVRzbE4bGB0wfX+32NB
+         6g5Sqn/lni8Pw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Francis Laniel <flaniel@linux.microsoft.com>,
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
         Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        catalin.marinas@arm.com, broonie@kernel.org, keescook@chromium.org,
-        christophe.leroy@csgroup.eu, mark.rutland@arm.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.19 08/58] arm64: Do not forget syscall when starting a new thread.
-Date:   Sun,  7 Aug 2022 21:30:26 -0400
-Message-Id: <20220808013118.313965-8-sashal@kernel.org>
+        kasan-dev@googlegroups.com, linux-mm@kvack.org
+Subject: [PATCH AUTOSEL 5.19 10/58] mm: kasan: Ensure the tags are visible before the tag in page->flags
+Date:   Sun,  7 Aug 2022 21:30:28 -0400
+Message-Id: <20220808013118.313965-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013118.313965-1-sashal@kernel.org>
 References: <20220808013118.313965-1-sashal@kernel.org>
@@ -53,38 +54,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Francis Laniel <flaniel@linux.microsoft.com>
+From: Catalin Marinas <catalin.marinas@arm.com>
 
-[ Upstream commit de6921856f99c11d3986c6702d851e1328d4f7f6 ]
+[ Upstream commit ed0a6d1d973e9763989b44913ae1bd2a5d5d5777 ]
 
-Enable tracing of the execve*() system calls with the
-syscalls:sys_exit_execve tracepoint by removing the call to
-forget_syscall() when starting a new thread and preserving the value of
-regs->syscallno across exec.
+__kasan_unpoison_pages() colours the memory with a random tag and stores
+it in page->flags in order to re-create the tagged pointer via
+page_to_virt() later. When the tag from the page->flags is read, ensure
+that the in-memory tags are already visible by re-ordering the
+page_kasan_tag_set() after kasan_unpoison(). The former already has
+barriers in place through try_cmpxchg(). On the reader side, the order
+is ensured by the address dependency between page->flags and the memory
+access.
 
-Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
-Link: https://lore.kernel.org/r/20220608162447.666494-2-flaniel@linux.microsoft.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
+Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
+Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
+Reviewed-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
+Link: https://lore.kernel.org/r/20220610152141.2148929-2-catalin.marinas@arm.com
 Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/processor.h | 3 ++-
+ mm/kasan/common.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
-index 9e58749db21d..86eb0bfe3b38 100644
---- a/arch/arm64/include/asm/processor.h
-+++ b/arch/arm64/include/asm/processor.h
-@@ -272,8 +272,9 @@ void tls_preserve_current_state(void);
+diff --git a/mm/kasan/common.c b/mm/kasan/common.c
+index c40c0e7b3b5f..78be2beb7453 100644
+--- a/mm/kasan/common.c
++++ b/mm/kasan/common.c
+@@ -108,9 +108,10 @@ void __kasan_unpoison_pages(struct page *page, unsigned int order, bool init)
+ 		return;
  
- static inline void start_thread_common(struct pt_regs *regs, unsigned long pc)
- {
-+	s32 previous_syscall = regs->syscallno;
- 	memset(regs, 0, sizeof(*regs));
--	forget_syscall(regs);
-+	regs->syscallno = previous_syscall;
- 	regs->pc = pc;
+ 	tag = kasan_random_tag();
++	kasan_unpoison(set_tag(page_address(page), tag),
++		       PAGE_SIZE << order, init);
+ 	for (i = 0; i < (1 << order); i++)
+ 		page_kasan_tag_set(page + i, tag);
+-	kasan_unpoison(page_address(page), PAGE_SIZE << order, init);
+ }
  
- 	if (system_uses_irq_prio_masking())
+ void __kasan_poison_pages(struct page *page, unsigned int order, bool init)
 -- 
 2.35.1
 
