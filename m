@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F7EC25B07
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:56:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE07C25B0F
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:57:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243771AbiHHBz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
+        id S244103AbiHHB46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243477AbiHHBxq (ORCPT
+        with ESMTP id S243449AbiHHBx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:53:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 700B41AF07;
-        Sun,  7 Aug 2022 18:38:58 -0700 (PDT)
+        Sun, 7 Aug 2022 21:53:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E51F1AF28;
+        Sun,  7 Aug 2022 18:39:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6CA4B80E19;
-        Mon,  8 Aug 2022 01:38:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78024C4347C;
-        Mon,  8 Aug 2022 01:38:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2140C60EBD;
+        Mon,  8 Aug 2022 01:39:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5F07C433D7;
+        Mon,  8 Aug 2022 01:38:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922735;
-        bh=dC24PONPXJI+F/BPqCWosKhiOcyMNYHehVSeuBh/PS4=;
+        s=k20201202; t=1659922739;
+        bh=kCut2OdKbgOGp5VoixaQirlOjNEkb9rjzVzvP+yhMXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ua06QKFtZBnxmA8aQi+TPxBBmdcYNvZE0ULBVAM4lN2GJG/2xY6/eRG7zqXkuw3aX
-         OB6ctfZuqLC9zyn0Dx/8veDmW5UU1zZCPS/QdbXqcl0J1w+Rf9LgZC/t7ZhtM0uehR
-         hpJ4J09Pz4flFye3EXX82iX8qWPYaOmVnPSWnlDD2lQ1xX8AW8vaZ2AwE5kR4wnMsK
-         XJjTRw/Nw8OteOV+02WkJvmO3zSQrOLO7QxA6d1tlbqC1T76XNtIgr+w+DZuqR2S00
-         iRkFqqqQW9vyErGOPMjrX82qPVdwSx0B2QnAhaTjLu5ouBHomC6Ci4EXvzkJETlo2C
-         10dEHK7jtIlhw==
+        b=ns8PNVg+IHQDIKvDI0hrQLaMhCqi8mEYhpnxUvap5gLdqZNYUvcOCk/Wf2TFJ57Gy
+         VSmsQ7yTgld6PEP4PPMg94EqQgqWroj6ADYryXk3AZaWn0CVg1w7ABG389uJI+Q21e
+         HwhiU+9FzVn/oPGdmKUsGuWDuujwIWJZzx8Q79ByAv41qo9jlxCP1jkc2mt9ilqyIj
+         9CN+9uXOYxuf2mKtodFvCc5K0+AOCuLHE2LGqpqa1VTO/GV2i1TOofVtH0RuJZMDT3
+         D9VSrqiQofbGMoM3ps9cRV2RPlQ6Ohi6z4tKyiW/5cNepVjzgMd1NKpOylVV2MxCmq
+         vm7xio2ZkwaAg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 12/23] ARM: dts: imx6ul: fix qspi node compatible
-Date:   Sun,  7 Aug 2022 21:38:19 -0400
-Message-Id: <20220808013832.316381-12-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 15/23] ACPI: EC: Remove duplicate ThinkPad X1 Carbon 6th entry from DMI quirks
+Date:   Sun,  7 Aug 2022 21:38:22 -0400
+Message-Id: <20220808013832.316381-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013832.316381-1-sashal@kernel.org>
 References: <20220808013832.316381-1-sashal@kernel.org>
@@ -53,40 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 0c6cf86e1ab433b2d421880fdd9c6e954f404948 ]
+[ Upstream commit 0dd6db359e5f206cbf1dd1fd40dd211588cd2725 ]
 
-imx6ul is not compatible to imx6sx, both have different erratas.
-Fixes the dt_binding_check warning:
-spi@21e0000: compatible: 'oneOf' conditional failed, one must be fixed:
-['fsl,imx6ul-qspi', 'fsl,imx6sx-qspi'] is too long
-Additional items are not allowed ('fsl,imx6sx-qspi' was unexpected)
-'fsl,imx6ul-qspi' is not one of ['fsl,ls1043a-qspi']
-'fsl,imx6ul-qspi' is not one of ['fsl,imx8mq-qspi']
-'fsl,ls1021a-qspi' was expected
-'fsl,imx7d-qspi' was expected
+Somehow the "ThinkPad X1 Carbon 6th" entry ended up twice in the
+struct dmi_system_id acpi_ec_no_wakeup[] array. Remove one of
+the entries.
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6ul.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/ec.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index 58671c6e9f31..ae0722b93b9d 100644
---- a/arch/arm/boot/dts/imx6ul.dtsi
-+++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -997,7 +997,7 @@ pxp: pxp@21cc000 {
- 			qspi: spi@21e0000 {
- 				#address-cells = <1>;
- 				#size-cells = <0>;
--				compatible = "fsl,imx6ul-qspi", "fsl,imx6sx-qspi";
-+				compatible = "fsl,imx6ul-qspi";
- 				reg = <0x021e0000 0x4000>, <0x60000000 0x10000000>;
- 				reg-names = "QuadSPI", "QuadSPI-memory";
- 				interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
+diff --git a/drivers/acpi/ec.c b/drivers/acpi/ec.c
+index e5b92958c299..defc5796b508 100644
+--- a/drivers/acpi/ec.c
++++ b/drivers/acpi/ec.c
+@@ -2118,13 +2118,6 @@ static const struct dmi_system_id acpi_ec_no_wakeup[] = {
+ 			DMI_MATCH(DMI_PRODUCT_FAMILY, "Thinkpad X1 Carbon 6th"),
+ 		},
+ 	},
+-	{
+-		.ident = "ThinkPad X1 Carbon 6th",
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+-			DMI_MATCH(DMI_PRODUCT_FAMILY, "ThinkPad X1 Carbon 6th"),
+-		},
+-	},
+ 	{
+ 		.ident = "ThinkPad X1 Yoga 3rd",
+ 		.matches = {
 -- 
 2.35.1
 
