@@ -2,141 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F476C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:47:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54981C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242995AbiHHBrW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:47:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53918 "EHLO
+        id S243034AbiHHBrZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243133AbiHHBqH (ORCPT
+        with ESMTP id S243181AbiHHBqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:46:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECFDD140C9;
-        Sun,  7 Aug 2022 18:36:26 -0700 (PDT)
+        Sun, 7 Aug 2022 21:46:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BFBE13F52;
+        Sun,  7 Aug 2022 18:36:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B942ECE0F71;
-        Mon,  8 Aug 2022 01:36:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07CE9C433B5;
-        Mon,  8 Aug 2022 01:36:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 628FF60E74;
+        Mon,  8 Aug 2022 01:36:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9345C433C1;
+        Mon,  8 Aug 2022 01:36:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922582;
-        bh=UsJ1W9RjJSWVKtc1ccZK/Q+wChESlZoqtnuUpz+5rhc=;
+        s=k20201202; t=1659922591;
+        bh=ZxWz0hJH7CGyQ5XHjdFME7AxasqVLcjVOdfkOBfdryI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iInn1SY/xFMdQk+4PEQuHykt0ekH11tN4P7C8c04KOP3AMp0nWSeYTRS2RcaGgXjY
-         V2qxPJYW/1VjxQU1lVSlm01xo4YD3/rzLuhGCQ1oZwvLDUPTTYPdv1FplnccNFTHi8
-         3HsKNtM44HsYuGyaXBlIV63/eX+KrmzibnW1IoCc72VfDSD8TlznpSvl1FoHaiSHso
-         FG9GooJqzxid8syBcRnuNaR5k3pIMyyMwgK8MulO7MyRarZwvrPc4H+N8sMrp60WfN
-         YJZQiiNG3d5LzHTgwo+3SvviOKYRuWCXueHU+xhNT8qs4yvipIKG+eskoVM3s7pvUE
-         SW+j1/6W4SkVQ==
+        b=tnwWA9+BgkzKZUHIQriyp3Y6c2D+7hV11RNmCwkO5Ns80cgU9PvAoBc+KmMkNAjSP
+         H4fen64uHAko5CtrlTcTFwuXtioL9TlNFlzBRyaeJe2jzPryXuEM7t6y/ngF08CxOw
+         9Py5RB2vJe6zt5pdeuewfXGXUDDKRvUYi2KHzwUZKYeMlDzEPOxrr5tSpV7i2K4QVX
+         5TtMYv0LUfrxHJTvW7Fn+oZoIU0ghesmHB87PGX6ETiVYMAnxtXRAQf1W1SB14WcsT
+         QxH28pv2bLnuYNkfbALjBTQPZ8QnUTeVHvKQlC4BvRg0QQQM37Vb9Un8mOpBtm+2kK
+         TBOUwWvZ2K0PQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?haibinzhang=20=28=E5=BC=A0=E6=B5=B7=E6=96=8C=29?= 
-        <haibinzhang@tencent.com>, hewenliang <hewenliang4@huawei.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        ardb@kernel.org, mark.rutland@arm.com,
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Sasha Levin <sashal@kernel.org>, pasha.tatashin@soleen.com,
+        keescook@chromium.org, wangxiang@cdjrlc.com, broonie@kernel.org,
+        mark.rutland@arm.com, tongtiangen@huawei.com,
+        wangkefeng.wang@huawei.com, luis.machado@linaro.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 07/45] arm64: fix oops in concurrently setting insn_emulation sysctls
-Date:   Sun,  7 Aug 2022 21:35:11 -0400
-Message-Id: <20220808013551.315446-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 09/45] arm64: kasan: Revert "arm64: mte: reset the page tag in page->flags"
+Date:   Sun,  7 Aug 2022 21:35:13 -0400
+Message-Id: <20220808013551.315446-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013551.315446-1-sashal@kernel.org>
 References: <20220808013551.315446-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: haibinzhang (张海斌) <haibinzhang@tencent.com>
+From: Catalin Marinas <catalin.marinas@arm.com>
 
-[ Upstream commit af483947d472eccb79e42059276c4deed76f99a6 ]
+[ Upstream commit 20794545c14692094a882d2221c251c4573e6adf ]
 
-emulation_proc_handler() changes table->data for proc_dointvec_minmax
-and can generate the following Oops if called concurrently with itself:
+This reverts commit e5b8d9218951e59df986f627ec93569a0d22149b.
 
- | Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
- | Internal error: Oops: 96000006 [#1] SMP
- | Call trace:
- | update_insn_emulation_mode+0xc0/0x148
- | emulation_proc_handler+0x64/0xb8
- | proc_sys_call_handler+0x9c/0xf8
- | proc_sys_write+0x18/0x20
- | __vfs_write+0x20/0x48
- | vfs_write+0xe4/0x1d0
- | ksys_write+0x70/0xf8
- | __arm64_sys_write+0x20/0x28
- | el0_svc_common.constprop.0+0x7c/0x1c0
- | el0_svc_handler+0x2c/0xa0
- | el0_svc+0x8/0x200
+Pages mapped in user-space with PROT_MTE have the allocation tags either
+zeroed or copied/restored to some user values. In order for the kernel
+to access such pages via page_address(), resetting the tag in
+page->flags was necessary. This tag resetting was deferred to
+set_pte_at() -> mte_sync_page_tags() but it can race with another CPU
+reading the flags (via page_to_virt()):
 
-To fix this issue, keep the table->data as &insn->current_mode and
-use container_of() to retrieve the insn pointer. Another mutex is
-used to protect against the current_mode update but not for retrieving
-insn_emulation as table->data is no longer changing.
+P0 (mte_sync_page_tags):	P1 (memcpy from virt_to_page):
+				  Rflags!=0xff
+  Wflags=0xff
+  DMB (doesn't help)
+  Wtags=0
+				  Rtags=0   // fault
 
-Co-developed-by: hewenliang <hewenliang4@huawei.com>
-Signed-off-by: hewenliang <hewenliang4@huawei.com>
-Signed-off-by: Haibin Zhang <haibinzhang@tencent.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Link: https://lore.kernel.org/r/20220128090324.2727688-1-hewenliang4@huawei.com
-Link: https://lore.kernel.org/r/9A004C03-250B-46C5-BF39-782D7551B00E@tencent.com
+Since now the post_alloc_hook() function resets the page->flags tag when
+unpoisoning is skipped for user pages (including the __GFP_ZEROTAGS
+case), revert the arm64 commit calling page_kasan_tag_reset().
+
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
+Cc: Andrey Konovalov <andreyknvl@gmail.com>
+Cc: Peter Collingbourne <pcc@google.com>
+Reviewed-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
+Acked-by: Andrey Konovalov <andreyknvl@gmail.com>
+Link: https://lore.kernel.org/r/20220610152141.2148929-5-catalin.marinas@arm.com
 Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/armv8_deprecated.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/arm64/kernel/hibernate.c | 5 -----
+ arch/arm64/kernel/mte.c       | 9 ---------
+ arch/arm64/mm/copypage.c      | 9 ---------
+ arch/arm64/mm/mteswap.c       | 9 ---------
+ 4 files changed, 32 deletions(-)
 
-diff --git a/arch/arm64/kernel/armv8_deprecated.c b/arch/arm64/kernel/armv8_deprecated.c
-index 0e86e8b9cedd..c5da9d1e954a 100644
---- a/arch/arm64/kernel/armv8_deprecated.c
-+++ b/arch/arm64/kernel/armv8_deprecated.c
-@@ -59,6 +59,7 @@ struct insn_emulation {
- static LIST_HEAD(insn_emulation);
- static int nr_insn_emulated __initdata;
- static DEFINE_RAW_SPINLOCK(insn_emulation_lock);
-+static DEFINE_MUTEX(insn_emulation_mutex);
+diff --git a/arch/arm64/kernel/hibernate.c b/arch/arm64/kernel/hibernate.c
+index 46a0b4d6e251..db93ce2b0113 100644
+--- a/arch/arm64/kernel/hibernate.c
++++ b/arch/arm64/kernel/hibernate.c
+@@ -326,11 +326,6 @@ static void swsusp_mte_restore_tags(void)
+ 		unsigned long pfn = xa_state.xa_index;
+ 		struct page *page = pfn_to_online_page(pfn);
  
- static void register_emulation_hooks(struct insn_emulation_ops *ops)
- {
-@@ -207,10 +208,10 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
- 				  loff_t *ppos)
- {
- 	int ret = 0;
--	struct insn_emulation *insn = (struct insn_emulation *) table->data;
-+	struct insn_emulation *insn = container_of(table->data, struct insn_emulation, current_mode);
- 	enum insn_emulation_mode prev_mode = insn->current_mode;
+-		/*
+-		 * It is not required to invoke page_kasan_tag_reset(page)
+-		 * at this point since the tags stored in page->flags are
+-		 * already restored.
+-		 */
+ 		mte_restore_page_tags(page_address(page), tags);
  
--	table->data = &insn->current_mode;
-+	mutex_lock(&insn_emulation_mutex);
- 	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
+ 		mte_free_tag_storage(tags);
+diff --git a/arch/arm64/kernel/mte.c b/arch/arm64/kernel/mte.c
+index 7c1c82c8115c..10207e3e5ae2 100644
+--- a/arch/arm64/kernel/mte.c
++++ b/arch/arm64/kernel/mte.c
+@@ -44,15 +44,6 @@ static void mte_sync_page_tags(struct page *page, pte_t old_pte,
+ 	if (!pte_is_tagged)
+ 		return;
  
- 	if (ret || !write || prev_mode == insn->current_mode)
-@@ -223,7 +224,7 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
- 		update_insn_emulation_mode(insn, INSN_UNDEF);
- 	}
- ret:
--	table->data = insn;
-+	mutex_unlock(&insn_emulation_mutex);
- 	return ret;
+-	page_kasan_tag_reset(page);
+-	/*
+-	 * We need smp_wmb() in between setting the flags and clearing the
+-	 * tags because if another thread reads page->flags and builds a
+-	 * tagged address out of it, there is an actual dependency to the
+-	 * memory access, but on the current thread we do not guarantee that
+-	 * the new page->flags are visible before the tags were updated.
+-	 */
+-	smp_wmb();
+ 	mte_clear_page_tags(page_address(page));
  }
  
-@@ -247,7 +248,7 @@ static void __init register_insn_emulation_sysctl(void)
- 		sysctl->maxlen = sizeof(int);
+diff --git a/arch/arm64/mm/copypage.c b/arch/arm64/mm/copypage.c
+index 0dea80bf6de4..24913271e898 100644
+--- a/arch/arm64/mm/copypage.c
++++ b/arch/arm64/mm/copypage.c
+@@ -23,15 +23,6 @@ void copy_highpage(struct page *to, struct page *from)
  
- 		sysctl->procname = insn->ops->name;
--		sysctl->data = insn;
-+		sysctl->data = &insn->current_mode;
- 		sysctl->extra1 = &insn->min;
- 		sysctl->extra2 = &insn->max;
- 		sysctl->proc_handler = emulation_proc_handler;
+ 	if (system_supports_mte() && test_bit(PG_mte_tagged, &from->flags)) {
+ 		set_bit(PG_mte_tagged, &to->flags);
+-		page_kasan_tag_reset(to);
+-		/*
+-		 * We need smp_wmb() in between setting the flags and clearing the
+-		 * tags because if another thread reads page->flags and builds a
+-		 * tagged address out of it, there is an actual dependency to the
+-		 * memory access, but on the current thread we do not guarantee that
+-		 * the new page->flags are visible before the tags were updated.
+-		 */
+-		smp_wmb();
+ 		mte_copy_page_tags(kto, kfrom);
+ 	}
+ }
+diff --git a/arch/arm64/mm/mteswap.c b/arch/arm64/mm/mteswap.c
+index 7c4ef56265ee..c52c1847079c 100644
+--- a/arch/arm64/mm/mteswap.c
++++ b/arch/arm64/mm/mteswap.c
+@@ -53,15 +53,6 @@ bool mte_restore_tags(swp_entry_t entry, struct page *page)
+ 	if (!tags)
+ 		return false;
+ 
+-	page_kasan_tag_reset(page);
+-	/*
+-	 * We need smp_wmb() in between setting the flags and clearing the
+-	 * tags because if another thread reads page->flags and builds a
+-	 * tagged address out of it, there is an actual dependency to the
+-	 * memory access, but on the current thread we do not guarantee that
+-	 * the new page->flags are visible before the tags were updated.
+-	 */
+-	smp_wmb();
+ 	mte_restore_page_tags(page_address(page), tags);
+ 
+ 	return true;
 -- 
 2.35.1
 
