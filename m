@@ -2,68 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB9AC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 00:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C050C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 00:50:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236207AbiHHAsK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 20:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40124 "EHLO
+        id S230242AbiHHAuK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 20:50:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235657AbiHHAsH (ORCPT
+        with ESMTP id S235456AbiHHAuI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 20:48:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D38CAE78
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 17:48:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 584C0B80DB6
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 00:48:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1D42BC433C1;
-        Mon,  8 Aug 2022 00:48:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659919684;
-        bh=oFtJBYHyufMfsrJZDbsdjBqH9pIBlezZMqSdWpoU90Y=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=lI2xwRxHuj3K3G5KoqoXjg/upcX7vQX/mO8kY3w6PYXPVpPsj5EFgtwRpXZ21itav
-         XWcG8zo03mm9XBYzvmazp0jwHoiprIKNM+EgaMXKZWHKOIOzFVpaO8nKh55nifaIwm
-         MFYhHOxS15BlUu5J54ZMGRDBgI58ArhNC6iT7+p0aGnCRNa1K+8VVuhqkjNo/PRXOw
-         49Y6ZxTnJS4z1tKFt3cEtZDQ9U3PYcVsuPva6PjylnVzPIMywKhpze6spSSzkCWPJB
-         aGRzbktBBp1B+Ioj7EsPB20fup3Zttvcy+sUgBOHOZZUiFXxY7XnxKhCS+BJKDupcU
-         JbL9OUcBXzejw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0DAA2C43140;
-        Mon,  8 Aug 2022 00:48:04 +0000 (UTC)
+        Sun, 7 Aug 2022 20:50:08 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600DDAE78
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 17:50:07 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id k26so13852137ejx.5
+        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 17:50:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=El0w/hoMnzSDGmU5ibq9FY56geqHKQRee2RsPSw/7eQ=;
+        b=QTviwmgkNUM25+yyvspcdnCRYWB8gHVlkTZCk0NUatTKsxl4CSLP+CyjDf9urgUtYR
+         gf6KN1x/0Cj/wVY4CYxS4ZUx/dOpRGVnKs6kIa24azs6dGm2xGfb353JAOVh199XZvy/
+         jsK6k0KK2d6JOuMOERPP7hvjO5KNW9O3lD9TA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=El0w/hoMnzSDGmU5ibq9FY56geqHKQRee2RsPSw/7eQ=;
+        b=l0f/K/1WrlhEvIp+Dk3mozGnn5h29n2rGUUiuY1acGvy+61SjYUHXlUfIwraBixLGk
+         YHiom6msA7cOcdDZKM0k5b87AjQsgVLcycJGOpJLbx9goLbIsJbeNcjFLWvxVCVSjZTZ
+         wtRYa0hZGaA2WICpfSIpAbZxjyrjRfSAdEq50L/oOeXrHpQDdif5JQ789jz26B1sWnXO
+         oIVQrlmxNFm7ZAf2wfQA42dScM6XQqRLNIWrVZpd6laPDoxNbecZJ2R9Uc5FVK4MAdiA
+         ykUHtpQmqyJM4RucrMzR+jEOQpJeprlXo2BgkytElXci7xZX8QvhdjDPT7qxIPv1nqHQ
+         tgEQ==
+X-Gm-Message-State: ACgBeo2QPPcA9J/BFnBs2ffQXqycpA9vnUXUxuRqWOVKE6ChgAhFAAlS
+        L8t+36zzu6Uzcok0TwuynMlRppiuqZdcf5Y6
+X-Google-Smtp-Source: AA6agR71th2T4fjXQJ3ODMI7lTNwdPuPGdYDyPB2JPbA6e2dQVJjRoiDGeQm1F8ieA490SSpDv6RBw==
+X-Received: by 2002:a17:907:1361:b0:730:8f59:6434 with SMTP id yo1-20020a170907136100b007308f596434mr12419815ejb.745.1659919805641;
+        Sun, 07 Aug 2022 17:50:05 -0700 (PDT)
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
+        by smtp.gmail.com with ESMTPSA id w3-20020a1709067c8300b0073093b588besm4403888ejo.170.2022.08.07.17.50.04
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 07 Aug 2022 17:50:05 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id z12so9195051wrs.9
+        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 17:50:04 -0700 (PDT)
+X-Received: by 2002:a05:6000:178d:b0:222:c7ad:2d9a with SMTP id
+ e13-20020a056000178d00b00222c7ad2d9amr2821440wrg.274.1659919803908; Sun, 07
+ Aug 2022 17:50:03 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220805022940.1637978-1-yury.norov@gmail.com> <87edxtaol6.fsf@mpe.ellerman.id.au>
+In-Reply-To: <87edxtaol6.fsf@mpe.ellerman.id.au>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 7 Aug 2022 17:49:47 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whsgbpbVC_+V-dxuPbQCPV1eFQG00TrQvJcjYAXVHdswA@mail.gmail.com>
+Message-ID: <CAHk-=whsgbpbVC_+V-dxuPbQCPV1eFQG00TrQvJcjYAXVHdswA@mail.gmail.com>
 Subject: Re: [GIT PULL] Bitmap patches for v6.0-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220805022940.1637978-1-yury.norov@gmail.com>
-References: <20220805022940.1637978-1-yury.norov@gmail.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220805022940.1637978-1-yury.norov@gmail.com>
-X-PR-Tracked-Remote: https://github.com/norov/linux.git/ tags/bitmap-6.0-rc1
-X-PR-Tracked-Commit-Id: 36d4b36b69590fed99356a4426c940a253a93800
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 1ab9250751ee91b0ca7bee887894fccfd44ff26a
-Message-Id: <165991968404.10077.6220067519297859381.pr-tracker-bot@kernel.org>
-Date:   Mon, 08 Aug 2022 00:48:04 +0000
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, Yury Norov <yury.norov@gmail.com>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Yury Norov <yury.norov@gmail.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu,  4 Aug 2022 19:29:40 -0700:
+On Fri, Aug 5, 2022 at 11:11 PM Michael Ellerman <mpe@ellerman.id.au> wrote:
+>
+> This pull request has a conflict with the random tree in some powerpc
+> code.
 
-> https://github.com/norov/linux.git/ tags/bitmap-6.0-rc1
+I noticed.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/1ab9250751ee91b0ca7bee887894fccfd44ff26a
+And I tried to do a cross-compile, but with my update to F36 the
+powerpc64 cross-tools seems to be very broken. I get lots of strange
+errors like
 
-Thank you!
+    Cannot find symbol for section 11: .text.kgdb_arch_pc.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+and I have no idea why.  I used to have a working cross-build
+environment at one point, but now it just gives me lots of errors.
+
+The gcc plugin situation also seems broken, and I assume it's just
+more of the same breakage.
+
+End result: I tried to make sense of the merge conflicts as best I
+could, but I might have completely screwed it up and wasn't really
+able to even do a test build of it.
+
+           Linus
