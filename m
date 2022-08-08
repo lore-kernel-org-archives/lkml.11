@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC4B9C25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:50:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE52C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:52:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234236AbiHHBub (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38502 "EHLO
+        id S243250AbiHHBuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243217AbiHHBte (ORCPT
+        with ESMTP id S243080AbiHHBti (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:49:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D51F18391;
-        Sun,  7 Aug 2022 18:37:31 -0700 (PDT)
+        Sun, 7 Aug 2022 21:49:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF0E18355;
+        Sun,  7 Aug 2022 18:37:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F16B3B80DDF;
-        Mon,  8 Aug 2022 01:37:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7122FC4347C;
-        Mon,  8 Aug 2022 01:37:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAF45B80DCF;
+        Mon,  8 Aug 2022 01:37:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 655CCC433C1;
+        Mon,  8 Aug 2022 01:37:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922638;
-        bh=CRl5thBS3ZKwFT58v02G+ypacOiiUGNgiHmYuAwki8E=;
+        s=k20201202; t=1659922643;
+        bh=gQm1GOy4uLgvoCwWW/Up8QpHprwb0rVnwltmn9hY3LI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D+mjygdB5IXRF79KhoNObHGgIGRGuFctlD8ztKWWKwfh5G8lbfg+/IFkLMoXo3ZBs
-         0wL98Q4HYZ5qKkp9WeTPRpBO+lVmuMMCsxjxyaWRZXtnx8Tc4R6Z7d88pEiIKi53aU
-         y1qPwLdB8jWqMfLlJLKWg2uymoBsk2kF9+5x2b4cswrbxhdaF0i0mkjPc0STZPJXXu
-         o63ykdFRpbnNmPUhvVhX1Gr/zkCkfg/EqEzSI6HTqx8GB8rpEZcKoP543cdqxS9QOa
-         IWcV4O+KOWxJky1e8VZU1JJZwC4GoiAKZ9DUzKEoPrm7wnQNEL+SN2SEIGj/49BDS4
-         IdTKmk7qbmQDQ==
+        b=vGUiRLk0VSyE+C8iaoMgwCi3q/Xi6G2zUDQE/q0g+Sd+z5Gp3QbjApf7hbueZyrFe
+         DhRlh3kg0nvng2iHXCRNWxcb767dp8omLYtgmP+r7KDXAlJ0uFFT+Bot6wGb9yBw6u
+         w7neH9TEMb9Z2IC9/7V4d0Yq8wWku8WGcmfSGhqsmSbMjNEFxNHFR5vemifrhtOWKl
+         mlvxxWO2l479FoJkhz6ECMMjWWlOC5fS/INnkNDzq6CRMDesmaPOuU4TpPOv0DsW4w
+         RZvyD3YPR+2O9fXcqjCxl822/f1f+FD5/mfAs7kgl7Kye2IK/L/yJTYFDGHJUKefzw
+         KkbEm0e7QudPQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 36/45] arm64: dts: allwinner: a64: orangepi-win: Fix LED node name
-Date:   Sun,  7 Aug 2022 21:35:40 -0400
-Message-Id: <20220808013551.315446-36-sashal@kernel.org>
+Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, arnd@arndb.de, linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 38/45] firmware: tegra: Fix error check return value of debugfs_create_file()
+Date:   Sun,  7 Aug 2022 21:35:42 -0400
+Message-Id: <20220808013551.315446-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013551.315446-1-sashal@kernel.org>
 References: <20220808013551.315446-1-sashal@kernel.org>
@@ -54,35 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit b8eb2df19fbf97aa1e950cf491232c2e3bef8357 ]
+[ Upstream commit afcdb8e55c91c6ff0700ab272fd0f74e899ab884 ]
 
-"status" does not match any pattern in the gpio-leds binding. Rename the
-node to the preferred pattern. This fixes a `make dtbs_check` error.
+If an error occurs, debugfs_create_file() will return ERR_PTR(-ERROR),
+so use IS_ERR() to check it.
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Link: https://lore.kernel.org/r/20220702132816.46456-1-samuel@sholland.org
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/firmware/tegra/bpmp-debugfs.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
-index 097a5511523a..09eee653d5ca 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-orangepi-win.dts
-@@ -40,7 +40,7 @@ hdmi_con_in: endpoint {
- 	leds {
- 		compatible = "gpio-leds";
+diff --git a/drivers/firmware/tegra/bpmp-debugfs.c b/drivers/firmware/tegra/bpmp-debugfs.c
+index 3e9fa4b54358..1ed881a567d5 100644
+--- a/drivers/firmware/tegra/bpmp-debugfs.c
++++ b/drivers/firmware/tegra/bpmp-debugfs.c
+@@ -465,7 +465,7 @@ static int bpmp_populate_debugfs_inband(struct tegra_bpmp *bpmp,
+ 			mode |= attrs & DEBUGFS_S_IWUSR ? 0200 : 0;
+ 			dentry = debugfs_create_file(name, mode, parent, bpmp,
+ 						     &bpmp_debug_fops);
+-			if (!dentry) {
++			if (IS_ERR(dentry)) {
+ 				err = -ENOMEM;
+ 				goto out;
+ 			}
+@@ -716,7 +716,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
  
--		status {
-+		led-0 {
- 			label = "orangepi:green:status";
- 			gpios = <&pio 7 11 GPIO_ACTIVE_HIGH>; /* PH11 */
- 		};
+ 		if (t & DEBUGFS_S_ISDIR) {
+ 			dentry = debugfs_create_dir(name, parent);
+-			if (!dentry)
++			if (IS_ERR(dentry))
+ 				return -ENOMEM;
+ 			err = bpmp_populate_dir(bpmp, seqbuf, dentry, depth+1);
+ 			if (err < 0)
+@@ -729,7 +729,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
+ 			dentry = debugfs_create_file(name, mode,
+ 						     parent, bpmp,
+ 						     &debugfs_fops);
+-			if (!dentry)
++			if (IS_ERR(dentry))
+ 				return -ENOMEM;
+ 		}
+ 	}
+@@ -779,11 +779,11 @@ int tegra_bpmp_init_debugfs(struct tegra_bpmp *bpmp)
+ 		return 0;
+ 
+ 	root = debugfs_create_dir("bpmp", NULL);
+-	if (!root)
++	if (IS_ERR(root))
+ 		return -ENOMEM;
+ 
+ 	bpmp->debugfs_mirror = debugfs_create_dir("debug", root);
+-	if (!bpmp->debugfs_mirror) {
++	if (IS_ERR(bpmp->debugfs_mirror)) {
+ 		err = -ENOMEM;
+ 		goto out;
+ 	}
 -- 
 2.35.1
 
