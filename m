@@ -2,49 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E305C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF9F3C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242825AbiHHBov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:44:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43158 "EHLO
+        id S242890AbiHHBo4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:44:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242613AbiHHBmL (ORCPT
+        with ESMTP id S242660AbiHHBmN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:42:11 -0400
+        Sun, 7 Aug 2022 21:42:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F02D313EA4;
-        Sun,  7 Aug 2022 18:35:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B85C2DF4F;
+        Sun,  7 Aug 2022 18:35:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69A9C60DFD;
-        Mon,  8 Aug 2022 01:35:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEE81C433C1;
-        Mon,  8 Aug 2022 01:35:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 110E760DDA;
+        Mon,  8 Aug 2022 01:35:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA338C433C1;
+        Mon,  8 Aug 2022 01:35:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922533;
-        bh=698Flm7SpQJiRiiikVpbc456D/RJv3Ovb7vU4f/tM+Y=;
+        s=k20201202; t=1659922537;
+        bh=4pNbcfBY7sSXixtKDEXaS8TRXL9OvdOoDNaQXO+z7ao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aGH7O3wwr5NfNN1OtNQTQMYTHk27xjMOjTxh3ZQL2ThqGDGcx6wcQExT24p6V5O44
-         cTJNjQ1YKiPAlXx2a2nrS2HkqS6ga5r3Ea4HhjFoXj7QASqU2cXi3HoMdOp3smiG/e
-         kGAceR1VwGKX8Fps6dpzAN/oqoTehMIiCJ3RJboyRLTJVKBbzty0EitWmmxYbfGiP6
-         brQE9pJxh5lDN0P26fi3JXD3wtSiUlpRkAGCof90X7VeM65OZH2aOheMTaWPEux6Ei
-         E+FwG0ppJuIZN4ReG7ynsXybqWU30cHVkL+3lBizl5p5OE+/Hl2xo5W1in4DBOQjmI
-         5gnMIWmWrQLWw==
+        b=ISo10w3sRgYREwcPlH8P2SE0j6fbTA3RSHvibahwwoaDwwaPGcRQe8uYojR+5smbE
+         nUWYMQLprxlu1BkmBknae2RjE6JafS2HhCv7dUocl/7QLxJu0rZSW6BtFtXk7wGzRx
+         vCOb4fzcFSULpI2c/0E41xFPyjL6zBCT9O8YiR7E3jT5GSvLyzcRQ/4epJ+Pq7M0P9
+         pC6jIzOLykBHghEW1Hxy+Cj//Kuz/pe13dLQMn5/+ABCkCXCm6sAlcnozzicaWvNEZ
+         nSQ+H/zSZW+aNnvea61+ZnfUXfHYmniydAh6vThjGmhqIfJbYdWmyVLMGDuYD4ksqW
+         dCv/GzfEZqpnQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, thierry.reding@gmail.com,
-        jonathanh@nvidia.com, arnd@arndb.de, linux-tegra@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 45/53] firmware: tegra: Fix error check return value of debugfs_create_file()
-Date:   Sun,  7 Aug 2022 21:33:40 -0400
-Message-Id: <20220808013350.314757-45-sashal@kernel.org>
+Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>, jdelvare@suse.com,
+        linux-hwmon@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 48/53] hwmon: (sht15) Fix wrong assumptions in device remove callback
+Date:   Sun,  7 Aug 2022 21:33:43 -0400
+Message-Id: <20220808013350.314757-48-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013350.314757-1-sashal@kernel.org>
 References: <20220808013350.314757-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,66 +54,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit afcdb8e55c91c6ff0700ab272fd0f74e899ab884 ]
+[ Upstream commit 7d4edccc9bbfe1dcdff641343f7b0c6763fbe774 ]
 
-If an error occurs, debugfs_create_file() will return ERR_PTR(-ERROR),
-so use IS_ERR() to check it.
+Taking a lock at the beginning of .remove() doesn't prevent new readers.
+With the existing approach it can happen, that a read occurs just when
+the lock was taken blocking the reader until the lock is released at the
+end of the remove callback which then accessed *data that is already
+freed then.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+To actually fix this problem the hwmon core needs some adaption. Until
+this is implemented take the optimistic approach of assuming that all
+readers are gone after hwmon_device_unregister() and
+sysfs_remove_group() as most other drivers do. (And once the core
+implements that, taking the lock would deadlock.)
+
+So drop the lock, move the reset to after device unregistration to keep
+the device in a workable state until it's deregistered. Also add a error
+message in case the reset fails and return 0 anyhow. (Returning an error
+code, doesn't stop the platform device unregistration and only results
+in a little helpful error message before the devm cleanup handlers are
+called.)
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Link: https://lore.kernel.org/r/20220725194344.150098-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/tegra/bpmp-debugfs.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/hwmon/sht15.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/firmware/tegra/bpmp-debugfs.c b/drivers/firmware/tegra/bpmp-debugfs.c
-index fd89899aeeed..0c440afd5224 100644
---- a/drivers/firmware/tegra/bpmp-debugfs.c
-+++ b/drivers/firmware/tegra/bpmp-debugfs.c
-@@ -474,7 +474,7 @@ static int bpmp_populate_debugfs_inband(struct tegra_bpmp *bpmp,
- 			mode |= attrs & DEBUGFS_S_IWUSR ? 0200 : 0;
- 			dentry = debugfs_create_file(name, mode, parent, bpmp,
- 						     &bpmp_debug_fops);
--			if (!dentry) {
-+			if (IS_ERR(dentry)) {
- 				err = -ENOMEM;
- 				goto out;
- 			}
-@@ -725,7 +725,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
+diff --git a/drivers/hwmon/sht15.c b/drivers/hwmon/sht15.c
+index 7f4a63959730..ae4d14257a11 100644
+--- a/drivers/hwmon/sht15.c
++++ b/drivers/hwmon/sht15.c
+@@ -1020,25 +1020,20 @@ static int sht15_probe(struct platform_device *pdev)
+ static int sht15_remove(struct platform_device *pdev)
+ {
+ 	struct sht15_data *data = platform_get_drvdata(pdev);
++	int ret;
  
- 		if (t & DEBUGFS_S_ISDIR) {
- 			dentry = debugfs_create_dir(name, parent);
--			if (!dentry)
-+			if (IS_ERR(dentry))
- 				return -ENOMEM;
- 			err = bpmp_populate_dir(bpmp, seqbuf, dentry, depth+1);
- 			if (err < 0)
-@@ -738,7 +738,7 @@ static int bpmp_populate_dir(struct tegra_bpmp *bpmp, struct seqbuf *seqbuf,
- 			dentry = debugfs_create_file(name, mode,
- 						     parent, bpmp,
- 						     &debugfs_fops);
--			if (!dentry)
-+			if (IS_ERR(dentry))
- 				return -ENOMEM;
- 		}
+-	/*
+-	 * Make sure any reads from the device are done and
+-	 * prevent new ones beginning
+-	 */
+-	mutex_lock(&data->read_lock);
+-	if (sht15_soft_reset(data)) {
+-		mutex_unlock(&data->read_lock);
+-		return -EFAULT;
+-	}
+ 	hwmon_device_unregister(data->hwmon_dev);
+ 	sysfs_remove_group(&pdev->dev.kobj, &sht15_attr_group);
++
++	ret = sht15_soft_reset(data);
++	if (ret)
++		dev_err(&pdev->dev, "Failed to reset device (%pe)\n", ERR_PTR(ret));
++
+ 	if (!IS_ERR(data->reg)) {
+ 		regulator_unregister_notifier(data->reg, &data->nb);
+ 		regulator_disable(data->reg);
  	}
-@@ -788,11 +788,11 @@ int tegra_bpmp_init_debugfs(struct tegra_bpmp *bpmp)
- 		return 0;
  
- 	root = debugfs_create_dir("bpmp", NULL);
--	if (!root)
-+	if (IS_ERR(root))
- 		return -ENOMEM;
+-	mutex_unlock(&data->read_lock);
+-
+ 	return 0;
+ }
  
- 	bpmp->debugfs_mirror = debugfs_create_dir("debug", root);
--	if (!bpmp->debugfs_mirror) {
-+	if (IS_ERR(bpmp->debugfs_mirror)) {
- 		err = -ENOMEM;
- 		goto out;
- 	}
 -- 
 2.35.1
 
