@@ -2,233 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35698C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 03:26:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16410C25B07
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 03:26:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236442AbiHHD0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 23:26:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60580 "EHLO
+        id S236895AbiHHD0N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 23:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236116AbiHHD0F (ORCPT
+        with ESMTP id S231905AbiHHD0I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 23:26:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 14770FD01
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 20:26:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659929163;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=i/5BnEPTRt6rS3Pj2Ddzn8CoW9Kgy2sGXbJADgHzxAY=;
-        b=ejLGOXcoqtGo/Jj2Fva7CtPynsEx4+wBtsR9f9W76WINDC7ly2ujLrODUCQ7yVyTWIkO8g
-        BkEum496BJ5xMvTQobXWTQmwpHLMhp6TGYDda5KTGpaGM4MzgBsVkufVvQiXoBF6ZXhnMQ
-        B4L+9zGB57+Gf911HUJ6Bz+0vGXZoxE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-232-eQ--1pkLO5-dLCOb0V4QhQ-1; Sun, 07 Aug 2022 23:25:51 -0400
-X-MC-Unique: eQ--1pkLO5-dLCOb0V4QhQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 16D2F80A0BF;
-        Mon,  8 Aug 2022 03:25:50 +0000 (UTC)
-Received: from localhost (ovpn-12-221.pek2.redhat.com [10.72.12.221])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6610994561;
-        Mon,  8 Aug 2022 03:25:48 +0000 (UTC)
-Date:   Mon, 8 Aug 2022 11:25:45 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Eric DeVolder <eric.devolder@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
-        sourabhjain@linux.ibm.com, konrad.wilk@oracle.com,
-        boris.ostrovsky@oracle.com
-Subject: Re: [PATCH v10 1/8] crash: introduce arch/*/asm/crash.h
-Message-ID: <YvCCOY+mRshu1tHi@MiWiFi-R3L-srv>
-References: <20220721181747.1640-1-eric.devolder@oracle.com>
- <20220721181747.1640-2-eric.devolder@oracle.com>
+        Sun, 7 Aug 2022 23:26:08 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40394DFE5;
+        Sun,  7 Aug 2022 20:26:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659929167; x=1691465167;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bOeEbQASG8qYDkYJbxcsIUMSn9m3cJLEwP0JygTYejw=;
+  b=RZeFJKwcGDqZsZwhWgouJVIv2SLE4VaAQSBNXHLRYXo274EET15TAUxW
+   rR8RgdMBddin1WBjHWHQl1a/0MQrXqvCcXIn56OwO2UDvSnSww/ey1AHO
+   25jMLGrzcg+0oYqYAx4KIFBHZHCI7b54lEIok4H0ejPi1gNHYPVAS2BZR
+   T/varMc9QP3Ny83CUN6zZ+wR2zuF3wOqtpjlVMcRSmPysWz0xML1XD1/B
+   ISa8mXsa2Nk7acph52tkEQTBxQtjZkabb4ehGJkH2jNcoaasi0m38GKDL
+   Uxauo/nXoVrk0JpoCWcBm9Zo/h66XL7lZFsWosUq0hCmVdGnBlzlE5ZOg
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="376786101"
+X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
+   d="scan'208";a="376786101"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 20:26:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
+   d="scan'208";a="931870261"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 07 Aug 2022 20:26:04 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oKtP1-000Lqj-1H;
+        Mon, 08 Aug 2022 03:26:03 +0000
+Date:   Mon, 8 Aug 2022 11:25:23 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Li Jinlin <lijinlin3@huawei.com>, lduncan@suse.com,
+        cleech@redhat.com, michael.christie@oracle.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, mark.mielke@gmail.com
+Cc:     kbuild-all@lists.01.org, open-iscsi@googlegroups.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linfeilong@huawei.com, liuzhiqiang26@huawei.com
+Subject: Re: [PATCH] scsi: iscsi: iscsi_tcp: Fix null-ptr-deref while calling
+ getpeername()
+Message-ID: <202208081109.mO6WgY4E-lkp@intel.com>
+References: <20220802101939.3972556-1-lijinlin3@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220721181747.1640-2-eric.devolder@oracle.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+In-Reply-To: <20220802101939.3972556-1-lijinlin3@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Eric,
+Hi Li,
 
-On 07/21/22 at 02:17pm, Eric DeVolder wrote:
-> The use of __weak is being eliminated within kexec sources.
-> The technique uses macros mapped onto inline functions in
-> order to replace __weak.
-> 
-> This patchset was using __weak and so in order to replace
-> __weak, this patch introduces arch/*/asm/crash.h, patterned
-> after how kexec is moving away from __weak and to the macro
-> definitions.
+Thank you for the patch! Perhaps something to improve:
 
-Are you going to replace __weak in kexec of arll ARCHes? I don't see
-your point why all these empty header files are introduced. Wondering
-what's impacted if not adding these empty files?
+[auto build test WARNING on mkp-scsi/for-next]
+[also build test WARNING on jejb-scsi/for-next linus/master v5.19]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-> 
-> No functionality changed, yet.
-> 
-> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
-> ---
->  arch/arm/include/asm/crash.h     | 5 +++++
->  arch/arm64/include/asm/crash.h   | 5 +++++
->  arch/ia64/include/asm/crash.h    | 5 +++++
->  arch/m68k/include/asm/crash.h    | 5 +++++
->  arch/mips/include/asm/crash.h    | 5 +++++
->  arch/parisc/include/asm/crash.h  | 5 +++++
->  arch/powerpc/include/asm/crash.h | 5 +++++
->  arch/riscv/include/asm/crash.h   | 5 +++++
->  arch/s390/include/asm/crash.h    | 5 +++++
->  arch/sh/include/asm/crash.h      | 5 +++++
->  include/linux/crash_core.h       | 2 ++
->  11 files changed, 52 insertions(+)
->  create mode 100644 arch/arm/include/asm/crash.h
->  create mode 100644 arch/arm64/include/asm/crash.h
->  create mode 100644 arch/ia64/include/asm/crash.h
->  create mode 100644 arch/m68k/include/asm/crash.h
->  create mode 100644 arch/mips/include/asm/crash.h
->  create mode 100644 arch/parisc/include/asm/crash.h
->  create mode 100644 arch/powerpc/include/asm/crash.h
->  create mode 100644 arch/riscv/include/asm/crash.h
->  create mode 100644 arch/s390/include/asm/crash.h
->  create mode 100644 arch/sh/include/asm/crash.h
-> 
-> diff --git a/arch/arm/include/asm/crash.h b/arch/arm/include/asm/crash.h
-> new file mode 100644
-> index 000000000000..385646957d60
-> --- /dev/null
-> +++ b/arch/arm/include/asm/crash.h
-> @@ -0,0 +1,5 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ASM_ARM_CRASH_H
-> +#define _ASM_ARM_CRASH_H
-> +
-> +#endif /* _ASM_ARM_CRASH_H */
-> diff --git a/arch/arm64/include/asm/crash.h b/arch/arm64/include/asm/crash.h
-> new file mode 100644
-> index 000000000000..ec8870c1ea49
-> --- /dev/null
-> +++ b/arch/arm64/include/asm/crash.h
-> @@ -0,0 +1,5 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ASM_ARM64_CRASH_H
-> +#define _ASM_ARM64_CRASH_H
-> +
-> +#endif /* _ASM_ARM64_CRASH_H */
-> diff --git a/arch/ia64/include/asm/crash.h b/arch/ia64/include/asm/crash.h
-> new file mode 100644
-> index 000000000000..02a457cccda3
-> --- /dev/null
-> +++ b/arch/ia64/include/asm/crash.h
-> @@ -0,0 +1,5 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ASM_IA64_CRASH_H
-> +#define _ASM_IA64_CRASH_H
-> +
-> +#endif /* _ASM_IA64_CRASH_H */
-> diff --git a/arch/m68k/include/asm/crash.h b/arch/m68k/include/asm/crash.h
-> new file mode 100644
-> index 000000000000..ba6e412a1267
-> --- /dev/null
-> +++ b/arch/m68k/include/asm/crash.h
-> @@ -0,0 +1,5 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ASM_M68K_CRASH_H
-> +#define _ASM_M68K_CRASH_H
-> +
-> +#endif /* _ASM_M68K_CRASH_H */
-> diff --git a/arch/mips/include/asm/crash.h b/arch/mips/include/asm/crash.h
-> new file mode 100644
-> index 000000000000..35872522c574
-> --- /dev/null
-> +++ b/arch/mips/include/asm/crash.h
-> @@ -0,0 +1,5 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ASM_MIPS_CRASH_H
-> +#define _ASM_MIPS_CRASH_H
-> +
-> +#endif /* _ASM_MIPS_CRASH_H */
-> diff --git a/arch/parisc/include/asm/crash.h b/arch/parisc/include/asm/crash.h
-> new file mode 100644
-> index 000000000000..96833b727179
-> --- /dev/null
-> +++ b/arch/parisc/include/asm/crash.h
-> @@ -0,0 +1,5 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ASM_PARISC_CRASH_H
-> +#define _ASM_PARISC_CRASH_H
-> +
-> +#endif /* _ASM_PARISC_CRASH_H */
-> diff --git a/arch/powerpc/include/asm/crash.h b/arch/powerpc/include/asm/crash.h
-> new file mode 100644
-> index 000000000000..40ce71e56ac1
-> --- /dev/null
-> +++ b/arch/powerpc/include/asm/crash.h
-> @@ -0,0 +1,5 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ASM_POWERPC_CRASH_H
-> +#define _ASM_POWERPC_CRASH_H
-> +
-> +#endif /* _ASM_POWERPC_CRASH_H */
-> diff --git a/arch/riscv/include/asm/crash.h b/arch/riscv/include/asm/crash.h
-> new file mode 100644
-> index 000000000000..24f3aea99707
-> --- /dev/null
-> +++ b/arch/riscv/include/asm/crash.h
-> @@ -0,0 +1,5 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ASM_RISCV_CRASH_H
-> +#define _ASM_RISCV_CRASH_H
-> +
-> +#endif /* _ASM_RISCV_CRASH_H */
-> diff --git a/arch/s390/include/asm/crash.h b/arch/s390/include/asm/crash.h
-> new file mode 100644
-> index 000000000000..0db16ad4c75f
-> --- /dev/null
-> +++ b/arch/s390/include/asm/crash.h
-> @@ -0,0 +1,5 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ASM_S390_CRASH_H
-> +#define _ASM_S390_CRASH_H
-> +
-> +#endif /* _ASM_S390_CRASH_H */
-> diff --git a/arch/sh/include/asm/crash.h b/arch/sh/include/asm/crash.h
-> new file mode 100644
-> index 000000000000..f54e12f88cae
-> --- /dev/null
-> +++ b/arch/sh/include/asm/crash.h
-> @@ -0,0 +1,5 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ASM_SH_CRASH_H
-> +#define _ASM_SH_CRASH_H
-> +
-> +#endif /* _ASM_SH_CRASH_H */
-> diff --git a/include/linux/crash_core.h b/include/linux/crash_core.h
-> index de62a722431e..cb0f1916fbf5 100644
-> --- a/include/linux/crash_core.h
-> +++ b/include/linux/crash_core.h
-> @@ -6,6 +6,8 @@
->  #include <linux/elfcore.h>
->  #include <linux/elf.h>
->  
-> +#include <asm/crash.h>
-> +
->  #define CRASH_CORE_NOTE_NAME	   "CORE"
->  #define CRASH_CORE_NOTE_HEAD_BYTES ALIGN(sizeof(struct elf_note), 4)
->  #define CRASH_CORE_NOTE_NAME_BYTES ALIGN(sizeof(CRASH_CORE_NOTE_NAME), 4)
-> -- 
-> 2.31.1
-> 
+url:    https://github.com/intel-lab-lkp/linux/commits/Li-Jinlin/scsi-iscsi-iscsi_tcp-Fix-null-ptr-deref-while-calling-getpeername/20220802-173945
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/mkp/scsi.git for-next
+config: powerpc-randconfig-s051-20220801 (https://download.01.org/0day-ci/archive/20220808/202208081109.mO6WgY4E-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/ccc367df3fdba07b24eeda721ca928cce50f40d2
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Li-Jinlin/scsi-iscsi-iscsi_tcp-Fix-null-ptr-deref-while-calling-getpeername/20220802-173945
+        git checkout ccc367df3fdba07b24eeda721ca928cce50f40d2
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/scsi/
 
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+sparse warnings: (new ones prefixed by >>)
+>> drivers/scsi/iscsi_tcp.c:798:26: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int fd @@     got struct file *file @@
+   drivers/scsi/iscsi_tcp.c:798:26: sparse:     expected unsigned int fd
+   drivers/scsi/iscsi_tcp.c:798:26: sparse:     got struct file *file
+   drivers/scsi/iscsi_tcp.c:852:26: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int fd @@     got struct file *file @@
+   drivers/scsi/iscsi_tcp.c:852:26: sparse:     expected unsigned int fd
+   drivers/scsi/iscsi_tcp.c:852:26: sparse:     got struct file *file
+
+vim +798 drivers/scsi/iscsi_tcp.c
+
+   777	
+   778	static int iscsi_sw_tcp_conn_get_param(struct iscsi_cls_conn *cls_conn,
+   779					       enum iscsi_param param, char *buf)
+   780	{
+   781		struct iscsi_conn *conn = cls_conn->dd_data;
+   782		struct iscsi_tcp_conn *tcp_conn = conn->dd_data;
+   783		struct iscsi_sw_tcp_conn *tcp_sw_conn = tcp_conn->dd_data;
+   784		struct sockaddr_in6 addr;
+   785		struct socket *sock;
+   786		int rc;
+   787	
+   788		switch(param) {
+   789		case ISCSI_PARAM_CONN_PORT:
+   790		case ISCSI_PARAM_CONN_ADDRESS:
+   791		case ISCSI_PARAM_LOCAL_PORT:
+   792			spin_lock_bh(&conn->session->frwd_lock);
+   793			if (!tcp_sw_conn || !tcp_sw_conn->sock) {
+   794				spin_unlock_bh(&conn->session->frwd_lock);
+   795				return -ENOTCONN;
+   796			}
+   797			sock = tcp_sw_conn->sock;
+ > 798			fget(sock->file);
+   799			spin_unlock_bh(&conn->session->frwd_lock);
+   800	
+   801			if (param == ISCSI_PARAM_LOCAL_PORT)
+   802				rc = kernel_getsockname(sock,
+   803							(struct sockaddr *)&addr);
+   804			else
+   805				rc = kernel_getpeername(sock,
+   806							(struct sockaddr *)&addr);
+   807			spin_lock_bh(&conn->session->frwd_lock);
+   808			sockfd_put(sock);
+   809			spin_unlock_bh(&conn->session->frwd_lock);
+   810			if (rc < 0)
+   811				return rc;
+   812	
+   813			return iscsi_conn_get_addr_param((struct sockaddr_storage *)
+   814							 &addr, param, buf);
+   815		default:
+   816			return iscsi_conn_get_param(cls_conn, param, buf);
+   817		}
+   818	
+   819		return 0;
+   820	}
+   821	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
