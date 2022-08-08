@@ -2,68 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73FD6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D94C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:49:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243271AbiHHPsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 11:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
+        id S243735AbiHHPtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 11:49:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235458AbiHHPsr (ORCPT
+        with ESMTP id S243580AbiHHPtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 11:48:47 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8902E14D07;
-        Mon,  8 Aug 2022 08:48:45 -0700 (PDT)
-X-QQ-mid: bizesmtp69t1659973718tufk74ui
-Received: from localhost.localdomain ( [182.148.14.53])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 08 Aug 2022 23:48:31 +0800 (CST)
-X-QQ-SSF: 0100000000200050B000B00A0000000
-X-QQ-FEAT: DRnj/z+SqacO8eHiFBAHCHio+vGP2G+OUCJBlKWS63gGAVtAWWNqwrJ9s6OhL
-        bAoFZKGRvlXw3xUteR+d/HTYHB8m+9rGBpJbuVhO+e2PHaROjDa9CH4nZGmqz/98mApm0N1
-        lWtWB/hialoaXSkFO8SbLzmR00WJfUvRoC60YeXlLvwicNwyv9f6nKlKkOjWX4Gx2r1M31q
-        jkaec0etYliPVFLfWu4AK76qipJfzS5t8/YEa+pEAN7I9uXCL+92suUbYGk78FpCyHDfsxp
-        ua8FiwU88LfvjWde0rOhrNyhHcbT78d0BHxMbbyuZRIeUIpkeVBCvZts9n86OvO34hXvHCB
-        ZDPAZvBbxMJ++P7BH+upjbuPjAKS+AY+h4kkmw3he/a4C6Ie3Gz5crLRE3R6cAhh8j+1vqt
-        2ojEHK+tbA8=
-X-QQ-GoodBg: 0
-From:   shaomin Deng <dengshaomin@cdjrlc.com>
-To:     linux@roeck-us.net, heikki.krogerus@linux.intel.com
-Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, shaomin Deng <dengshaomin@cdjrlc.com>
-Subject: [PATCH] usb: typec: Remove repeated word in comments
-Date:   Mon,  8 Aug 2022 11:48:30 -0400
-Message-Id: <20220808154830.10965-1-dengshaomin@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 8 Aug 2022 11:49:04 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40A3F15701;
+        Mon,  8 Aug 2022 08:49:04 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id d7so8883946pgc.13;
+        Mon, 08 Aug 2022 08:49:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:from:to:cc;
+        bh=+NP/N0HwgYcfN4UPczUY+PGLtARnpcj8slx8KQukuLI=;
+        b=Tep/Z/+BFJQew58xNEyUtktTIRZIk/HwrGRV8ANywkcnFgO9VKF217y6DMiB01z9G7
+         o5WamWmzZUU6MDQxm5BrOoPSFuLRslCtDNxCEibAIi6Jxko4ZEGiNhv86oBQX767fnxd
+         Igd2k/nm3Y6o4lNsFjOxxUR2b6HaNRm3AeIcwALU/oUEhEn44458rwOfhE6gJGWP/DZx
+         Q7DqJt6wQPMS/I3tY9rxnjfxq2YD6dzgOBJm+nC61SV4N3dAIdN9nAsXf/ElHDZBjdrh
+         beUFx4Ub3oldHN4++fvSb3oTqCt2vHU2yQ+gTl9NRRjm4ngGmKK7sbuuu0WEMrq4NjLr
+         GB+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:x-gm-message-state:from:to:cc;
+        bh=+NP/N0HwgYcfN4UPczUY+PGLtARnpcj8slx8KQukuLI=;
+        b=0GV8kF9jBDmvbop25CaIzdY1TBVlm9vBSeFcbCY+jDqbbMl9P0I+BGRo5Typ10VNf6
+         vEaJXw/tYj+lMdJwVmBmbvz5cVBGVWcIS33R7fWGp+558HmOqb9zWh86CHFZvHd6rMMV
+         12aGFVQ/PBBkK/HQv1QDNWj7L46WPZIu/BonmplI0uNQTEzi8a3cYkbJJXYfwKrkYJL1
+         9jFVqzKCmM+OlKoqM1QMZz+J3iXMaDhOy6U8tr4+s4BbXWm1gDJ8OmRneL0cg1KyU8W/
+         CDT/khrGAo9VrTUO96o2m7WK5zX8/OvI3whxUZJ+MZHP0R2gi7Kv1ACeEW5eNQHZXi7m
+         zI7Q==
+X-Gm-Message-State: ACgBeo3/fRatEG3SWBA5pxAvFU87fGfvfBN2/E6hfpTlEadUoIxp2m2n
+        6MOc7jSv7ISzPdK8iWrjmr0=
+X-Google-Smtp-Source: AA6agR7M/RDbrjBh3l4F2fsZrE2NDUtRkmRoJ2pWCjualnC33PiKbuaQG3wg+QxKonMWpCkV7enQog==
+X-Received: by 2002:a05:6a00:4393:b0:52f:3603:e62f with SMTP id bt19-20020a056a00439300b0052f3603e62fmr6109095pfb.23.1659973743771;
+        Mon, 08 Aug 2022 08:49:03 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 6-20020a621506000000b0052d24402e52sm8793676pfv.79.2022.08.08.08.49.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Aug 2022 08:49:02 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <965b4295-6b39-cd77-ab76-47102ab5046e@roeck-us.net>
+Date:   Mon, 8 Aug 2022 08:49:01 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] watchdog: Remove redundant word in comments
+Content-Language: en-US
+To:     shaomin Deng <dengshaomin@cdjrlc.com>, wim@linux-watchdog.org
+Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220808153956.8374-1-dengshaomin@cdjrlc.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220808153956.8374-1-dengshaomin@cdjrlc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the repeated word "to" in comments.
+On 8/8/22 08:39, shaomin Deng wrote:
+> There is a rebundant word "we" in comments, so remove it.
+> 
+> Signed-off-by: shaomin Deng <dengshaomin@cdjrlc.com>
 
-Signed-off-by: shaomin Deng <dengshaomin@cdjrlc.com>
----
- drivers/usb/typec/tcpm/tcpm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I really wish there was a rule against such cosmetic changes. People
+don't realize how much maintainer time is involved in reviewing and
+applying that stuff.
 
-diff --git a/drivers/usb/typec/tcpm/tcpm.c b/drivers/usb/typec/tcpm/tcpm.c
-index e1126a6c8e46..ea5a917c51b1 100644
---- a/drivers/usb/typec/tcpm/tcpm.c
-+++ b/drivers/usb/typec/tcpm/tcpm.c
-@@ -4520,7 +4520,7 @@ static void run_state_machine(struct tcpm_port *port)
- 		 * The specification suggests that dual mode ports in sink
- 		 * mode should transition to state PE_SRC_Transition_to_default.
- 		 * See USB power delivery specification chapter 8.3.3.6.1.3.
--		 * This would mean to to
-+		 * This would mean to
- 		 * - turn off VCONN, reset power supply
- 		 * - request hardware reset
- 		 * - turn on VCONN
--- 
-2.35.1
+Oh well.
+
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+
+> ---
+>   drivers/watchdog/eurotechwdt.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/watchdog/eurotechwdt.c b/drivers/watchdog/eurotechwdt.c
+> index ce682942662c..e26609ad4c17 100644
+> --- a/drivers/watchdog/eurotechwdt.c
+> +++ b/drivers/watchdog/eurotechwdt.c
+> @@ -192,7 +192,7 @@ static void eurwdt_ping(void)
+>    * @ppos: pointer to the position to write. No seeks allowed
+>    *
+>    * A write to a watchdog device is defined as a keepalive signal. Any
+> - * write of data will do, as we we don't define content meaning.
+> + * write of data will do, as we don't define content meaning.
+>    */
+>   
+>   static ssize_t eurwdt_write(struct file *file, const char __user *buf,
 
