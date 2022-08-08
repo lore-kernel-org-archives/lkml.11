@@ -2,140 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E3F7C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:32:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64929C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242024AbiHHBcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58310 "EHLO
+        id S242128AbiHHBcq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242010AbiHHBcI (ORCPT
+        with ESMTP id S242036AbiHHBcK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:32:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89EBBE02;
-        Sun,  7 Aug 2022 18:32:01 -0700 (PDT)
+        Sun, 7 Aug 2022 21:32:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E865A1A2;
+        Sun,  7 Aug 2022 18:32:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56B6CB80E0A;
-        Mon,  8 Aug 2022 01:32:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 068C8C433D6;
-        Mon,  8 Aug 2022 01:31:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE0BCB80E0A;
+        Mon,  8 Aug 2022 01:32:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92420C433D6;
+        Mon,  8 Aug 2022 01:32:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922319;
-        bh=8SMpDs+qLkU3eSZtrCGgQx5CHK2Yl0vTWXKJJG+w0B0=;
+        s=k20201202; t=1659922324;
+        bh=zR12wUi8RY0WfdWWtyBQpmxoI/kb8IcDNKjQXmqjbSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I5M7NlO5podRWWw+UDTFXQlMyOYwAe60eTWpEZ8enckPwFs5cFzoXT3VsvpvEqgE9
-         rqyatQNyooKfyaI2T9GwzjTIyibAjcvSTJgkrGPB929uH7uAiMKYdQ1XAA7xNpR0CY
-         UMxCpOOqk8LPu8N3KbvhCq7EuNMTQYA9bwPk+lRT2IJiN55FGvMPIaprB6odgbeBUu
-         0TaAaYJ5ypy9cLfcEFu576kTMZ+tTyKU+byueU41BCt2fMy8wSHTRBU135i7rvNxu8
-         u9drh0Uif52cJtjkQxQ4VRzelGOiVtRIzwT1rsUJY1QIVTbfj26jPL7U01g23lI6YO
-         cBYltVyrCNIdQ==
+        b=mhMalInAR0Oewih73p7i3b/pMR06z+3JDRxC5qewGmpsoLIAzFdg1XRDs4l3yIGXW
+         E9uMx3BrVLAHVRe5Rg+t8bMxWKnJTRQ72ExYL8oQivF64MWU+bp/iJVacUrmylUrSG
+         PyA9kqJRYzpdt5+D7Yw79jM+sOWou/lgdoU1pFTVIrENfezOLTjzKdHu8+sZ1xNZT5
+         MA44gevD41Ca231aY9Lc7lq2tlKhwew3W4xja4mXDfyU2t+XfwAvb5jyq4jQsJiFMb
+         JU2x5RGl2/Ww7ZQY/yqhSUH0/1XS8KMo/uf1C6OAPmpBLc01O8d82mDy0NDgkYP+XC
+         DxJLCXlHsF78Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?haibinzhang=20=28=E5=BC=A0=E6=B5=B7=E6=96=8C=29?= 
-        <haibinzhang@tencent.com>, hewenliang <hewenliang4@huawei.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
         Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        mark.rutland@arm.com, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.19 09/58] arm64: fix oops in concurrently setting insn_emulation sysctls
-Date:   Sun,  7 Aug 2022 21:30:27 -0400
-Message-Id: <20220808013118.313965-9-sashal@kernel.org>
+        mark.rutland@arm.com, broonie@kernel.org, ebiederm@xmission.com,
+        zhengqi.arch@bytedance.com, alexandru.elisei@arm.com,
+        peterx@redhat.com, linux-arm-kernel@lists.infradead.org,
+        linux-mm@kvack.org
+Subject: [PATCH AUTOSEL 5.19 11/58] mm: kasan: Skip unpoisoning of user pages
+Date:   Sun,  7 Aug 2022 21:30:29 -0400
+Message-Id: <20220808013118.313965-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013118.313965-1-sashal@kernel.org>
 References: <20220808013118.313965-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: haibinzhang (张海斌) <haibinzhang@tencent.com>
+From: Catalin Marinas <catalin.marinas@arm.com>
 
-[ Upstream commit af483947d472eccb79e42059276c4deed76f99a6 ]
+[ Upstream commit 70c248aca9e7efa85a6664d5ab56c17c326c958f ]
 
-emulation_proc_handler() changes table->data for proc_dointvec_minmax
-and can generate the following Oops if called concurrently with itself:
+Commit c275c5c6d50a ("kasan: disable freed user page poisoning with HW
+tags") added __GFP_SKIP_KASAN_POISON to GFP_HIGHUSER_MOVABLE. A similar
+argument can be made about unpoisoning, so also add
+__GFP_SKIP_KASAN_UNPOISON to user pages. To ensure the user page is
+still accessible via page_address() without a kasan fault, reset the
+page->flags tag.
 
- | Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
- | Internal error: Oops: 96000006 [#1] SMP
- | Call trace:
- | update_insn_emulation_mode+0xc0/0x148
- | emulation_proc_handler+0x64/0xb8
- | proc_sys_call_handler+0x9c/0xf8
- | proc_sys_write+0x18/0x20
- | __vfs_write+0x20/0x48
- | vfs_write+0xe4/0x1d0
- | ksys_write+0x70/0xf8
- | __arm64_sys_write+0x20/0x28
- | el0_svc_common.constprop.0+0x7c/0x1c0
- | el0_svc_handler+0x2c/0xa0
- | el0_svc+0x8/0x200
+With the above changes, there is no need for the arm64
+tag_clear_highpage() to reset the page->flags tag.
 
-To fix this issue, keep the table->data as &insn->current_mode and
-use container_of() to retrieve the insn pointer. Another mutex is
-used to protect against the current_mode update but not for retrieving
-insn_emulation as table->data is no longer changing.
-
-Co-developed-by: hewenliang <hewenliang4@huawei.com>
-Signed-off-by: hewenliang <hewenliang4@huawei.com>
-Signed-off-by: Haibin Zhang <haibinzhang@tencent.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Link: https://lore.kernel.org/r/20220128090324.2727688-1-hewenliang4@huawei.com
-Link: https://lore.kernel.org/r/9A004C03-250B-46C5-BF39-782D7551B00E@tencent.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
+Cc: Andrey Konovalov <andreyknvl@gmail.com>
+Cc: Peter Collingbourne <pcc@google.com>
+Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
+Reviewed-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
+Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
+Link: https://lore.kernel.org/r/20220610152141.2148929-3-catalin.marinas@arm.com
 Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/armv8_deprecated.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/arm64/mm/fault.c | 1 -
+ include/linux/gfp.h   | 2 +-
+ mm/page_alloc.c       | 7 +++++--
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/kernel/armv8_deprecated.c b/arch/arm64/kernel/armv8_deprecated.c
-index 6875a16b09d2..fb0e7c7b2e20 100644
---- a/arch/arm64/kernel/armv8_deprecated.c
-+++ b/arch/arm64/kernel/armv8_deprecated.c
-@@ -59,6 +59,7 @@ struct insn_emulation {
- static LIST_HEAD(insn_emulation);
- static int nr_insn_emulated __initdata;
- static DEFINE_RAW_SPINLOCK(insn_emulation_lock);
-+static DEFINE_MUTEX(insn_emulation_mutex);
- 
- static void register_emulation_hooks(struct insn_emulation_ops *ops)
+diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
+index c5e11768e5c1..cdf3ffa0c223 100644
+--- a/arch/arm64/mm/fault.c
++++ b/arch/arm64/mm/fault.c
+@@ -927,6 +927,5 @@ struct page *alloc_zeroed_user_highpage_movable(struct vm_area_struct *vma,
+ void tag_clear_highpage(struct page *page)
  {
-@@ -207,10 +208,10 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
- 				  loff_t *ppos)
- {
- 	int ret = 0;
--	struct insn_emulation *insn = (struct insn_emulation *) table->data;
-+	struct insn_emulation *insn = container_of(table->data, struct insn_emulation, current_mode);
- 	enum insn_emulation_mode prev_mode = insn->current_mode;
- 
--	table->data = &insn->current_mode;
-+	mutex_lock(&insn_emulation_mutex);
- 	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
- 
- 	if (ret || !write || prev_mode == insn->current_mode)
-@@ -223,7 +224,7 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
- 		update_insn_emulation_mode(insn, INSN_UNDEF);
- 	}
- ret:
--	table->data = insn;
-+	mutex_unlock(&insn_emulation_mutex);
- 	return ret;
+ 	mte_zero_clear_page_tags(page_address(page));
+-	page_kasan_tag_reset(page);
+ 	set_bit(PG_mte_tagged, &page->flags);
  }
+diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+index 2d2ccae933c2..0ace7759acd2 100644
+--- a/include/linux/gfp.h
++++ b/include/linux/gfp.h
+@@ -348,7 +348,7 @@ struct vm_area_struct;
+ #define GFP_DMA32	__GFP_DMA32
+ #define GFP_HIGHUSER	(GFP_USER | __GFP_HIGHMEM)
+ #define GFP_HIGHUSER_MOVABLE	(GFP_HIGHUSER | __GFP_MOVABLE | \
+-			 __GFP_SKIP_KASAN_POISON)
++			 __GFP_SKIP_KASAN_POISON | __GFP_SKIP_KASAN_UNPOISON)
+ #define GFP_TRANSHUGE_LIGHT	((GFP_HIGHUSER_MOVABLE | __GFP_COMP | \
+ 			 __GFP_NOMEMALLOC | __GFP_NOWARN) & ~__GFP_RECLAIM)
+ #define GFP_TRANSHUGE	(GFP_TRANSHUGE_LIGHT | __GFP_DIRECT_RECLAIM)
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index b5b14b78c4fd..4d5c30dc757f 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -2397,6 +2397,7 @@ inline void post_alloc_hook(struct page *page, unsigned int order,
+ 	bool init = !want_init_on_free() && want_init_on_alloc(gfp_flags) &&
+ 			!should_skip_init(gfp_flags);
+ 	bool init_tags = init && (gfp_flags & __GFP_ZEROTAGS);
++	int i;
  
-@@ -247,7 +248,7 @@ static void __init register_insn_emulation_sysctl(void)
- 		sysctl->maxlen = sizeof(int);
- 
- 		sysctl->procname = insn->ops->name;
--		sysctl->data = insn;
-+		sysctl->data = &insn->current_mode;
- 		sysctl->extra1 = &insn->min;
- 		sysctl->extra2 = &insn->max;
- 		sysctl->proc_handler = emulation_proc_handler;
+ 	set_page_private(page, 0);
+ 	set_page_refcounted(page);
+@@ -2422,8 +2423,6 @@ inline void post_alloc_hook(struct page *page, unsigned int order,
+ 	 * should be initialized as well).
+ 	 */
+ 	if (init_tags) {
+-		int i;
+-
+ 		/* Initialize both memory and tags. */
+ 		for (i = 0; i != 1 << order; ++i)
+ 			tag_clear_highpage(page + i);
+@@ -2438,6 +2437,10 @@ inline void post_alloc_hook(struct page *page, unsigned int order,
+ 		/* Note that memory is already initialized by KASAN. */
+ 		if (kasan_has_integrated_init())
+ 			init = false;
++	} else {
++		/* Ensure page_address() dereferencing does not fault. */
++		for (i = 0; i != 1 << order; ++i)
++			page_kasan_tag_reset(page + i);
+ 	}
+ 	/* If memory is still not initialized, do it now. */
+ 	if (init)
 -- 
 2.35.1
 
