@@ -2,113 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9359DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 18:00:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D45E8C25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 18:03:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235925AbiHHSAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 14:00:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36338 "EHLO
+        id S236263AbiHHSDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 14:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235278AbiHHSAC (ORCPT
+        with ESMTP id S231966AbiHHSDO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 14:00:02 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE4017A9A
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:59:59 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id t2-20020a17090a4e4200b001f21572f3a4so9918737pjl.0
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 10:59:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:from:to:cc;
-        bh=hxCHtD0gO8RvEjmMgvObKSgjhrVeOCskJfVgBY9P5Ys=;
-        b=Po5YVO9LkStuglGPnIeU9tH1rUzpcRyw97vPaRamsdd1v2/Pgp9I+Jml094y16Mxk/
-         +AHELcEaO50YPB4vRLMBP8rYzcvn93Sj4smgBuPV7//N2pcoOQSp75UOHGACTW+mfGOu
-         1NU8Ol0wM+seyb3tMto2MguuaNUPUptyEsz1Vz9Grueo0hNFzE4+GvGRfpYTId1PH9Mq
-         5PyryyPu7j1sH1+mEdy8vNibt1N7syRUJPtjrHC8rg/rtenGx1oI4UqIhtMEH0yyc26G
-         fXjbsY2uIMSEyt3nr+FI+F0R1z8s8oaw+bpDQUmi18+8towG7PuakbowRC3a1qyIHa4Q
-         ywWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:sender:x-gm-message-state:from:to:cc;
-        bh=hxCHtD0gO8RvEjmMgvObKSgjhrVeOCskJfVgBY9P5Ys=;
-        b=FS9y2eCuwbD9cHrN2/dJy2GiMuD1tpkrersmzwgxcSYS8wUjnxGKBgcFgigmH2fF3A
-         CCbGygjkceO2FrGXWEjV86uiU4U96asWLtjaly/JjgAEQW/gt731SP+OUAECbUwTiSHP
-         1ugIb9EVPqyPWgCgV3yzy74vwwZ/HRZ//0ptIk28iyfaD4HXapqWuT24jDEEg8oiQyS0
-         euQ8/H4XntsflQ3cpyJB2wvQXyfJIpDuPTyl0Cmy2i458UYdvr29c3nezfiVhzEN50EX
-         H9lAvCNb/TK79qvzpmaj3Wi3H7CRCvbM90fW9NJyVTbMi+mEWGv3gv3dJzOi0bUcux8t
-         M6eA==
-X-Gm-Message-State: ACgBeo1T9T9HPFcpRYS2r261TTDduSOrCtAtSw3qRvA0jnjtWrHxIw+w
-        td8528cld4r4WoBIuGupozo=
-X-Google-Smtp-Source: AA6agR52Hgyr/dKBRgfulVzs791jG32bTrE+okm/YW2FDnflpQiZQwA2EqLUVsSSTo5b3qsSBWAMyg==
-X-Received: by 2002:a17:902:ccc9:b0:16c:f878:163 with SMTP id z9-20020a170902ccc900b0016cf8780163mr19195293ple.170.1659981598507;
-        Mon, 08 Aug 2022 10:59:58 -0700 (PDT)
-Received: from balhae.hsd1.ca.comcast.net ([2601:647:6780:1040:4d4b:1a9e:22cf:3f7e])
-        by smtp.gmail.com with ESMTPSA id f9-20020a170902684900b00170a6722c79sm3112587pln.247.2022.08.08.10.59.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 10:59:58 -0700 (PDT)
-Sender: Namhyung Kim <namhyung@gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>
-Cc:     Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH] locking: Add __lockfunc to slow path functions
-Date:   Mon,  8 Aug 2022 10:59:56 -0700
-Message-Id: <20220808175956.592707-1-namhyung@kernel.org>
-X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
+        Mon, 8 Aug 2022 14:03:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4E5BBD;
+        Mon,  8 Aug 2022 11:03:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE616611EF;
+        Mon,  8 Aug 2022 18:03:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 365DEC433C1;
+        Mon,  8 Aug 2022 18:03:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659981792;
+        bh=65sBpdeLVb6QH1HyalM98f/AiWjqmRtsN2+ZoQO/wvI=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=brc6ntRPOx118YrEWYQOgW1pl0eItMiVZwpCo9NVKpYRImJ77yNjGIeoKtMa9FZgW
+         P51rbUCiKydOkxTlGsXU+9SdKNixdYABofJ9DfTmwGc/nP3M+Tk4A+7YVCDU7vcdvQ
+         +0eG7FNhhXmPkzCg1Kbe0KVgl6IYCzqfWhBviSVXjD1j+hIOSKmzKeZMyKAPqO9TmG
+         6GI0MjP8GKZ2GsFGas8/IucZRWWOVU7Hn1HJiWCSgUlZwpPTVf532R9AO8Ygi3TSqg
+         Bi2RdIaDR/TnTywft5vcvSic4DTW3pJ5kKdcgEGbuBUlG+bvATJndVsOHVKpH7fBQe
+         pKeo6qQl01Dig==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id C3E145C128A; Mon,  8 Aug 2022 11:03:11 -0700 (PDT)
+Date:   Mon, 8 Aug 2022 11:03:11 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Zqiang <qiang1.zhang@intel.com>
+Cc:     frederic@kernel.org, quic_neeraju@quicinc.com, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] rcu: Reduce the frequency of triggering irq-work for
+ strict grace period
+Message-ID: <20220808180311.GG2125313@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220808022626.12825-1-qiang1.zhang@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220808022626.12825-1-qiang1.zhang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So that we can skip the functions in the perf lock contention and other
-places like /proc/PID/wchan.
+On Mon, Aug 08, 2022 at 10:26:26AM +0800, Zqiang wrote:
+> For kernel built with PREEMPT_RCU=y and RCU_STRICT_GRACE_PERIOD=y,
+> currently, the irq-work will be triggered by high frequency to make
+> the scheduler re-evaluate and call hooks to check whether there are
+> qs need to report when exit RCU read critical section in irq-disbaled
+> context. however if there is no gp in progress, the irq-work trigger
+> is meaningless.
+> 
+> This commit reduced irq-work trigger frequency by check whether the
+> current CPU is not experiencing qs or there is task that blocks
+> the current grace period for RCU_STRICT_GRACE_PERIOD=y kernel.
+> 
+> The test results are as follows:
+> 
+> echo rcu_preempt_deferred_qs_handler > /sys/kernel/debug/tracing/set_ftrace_filter
+> echo 1 > /sys/kernel/debug/tracing/function_profile_enabled
+> insmod rcutorture.ko
+> sleep 20
+> rmmod rcutorture.ko
+> echo 0 > /sys/kernel/debug/tracing/function_profile_enabled
+> echo > /sys/kernel/debug/tracing/set_ftrace_filter
+> 
+> head /sys/kernel/debug/tracing/trace_stat/function*
+> 
+> original:
+> 
+> ==> /sys/kernel/debug/tracing/trace_stat/function0 <==
+>   Function                               Hit    Time            Avg             s^2
+>   --------                               ---    ----            ---             ---
+>   rcu_preempt_deferred_qs_handle      838746    182650.3 us     0.217 us        0.004 us
+> 
+> ==> /sys/kernel/debug/tracing/trace_stat/function1 <==
+>   Function                               Hit    Time            Avg             s^2
+>   --------                               ---    ----            ---             ---
+>   rcu_preempt_deferred_qs_handle      841768    191138.6 us     0.227 us        0.024 us
+> 
+> ==> /sys/kernel/debug/tracing/trace_stat/function2 <==
+>   Function                               Hit    Time            Avg             s^2
+>   --------                               ---    ----            ---             ---
+>   rcu_preempt_deferred_qs_handle      828243    180455.6 us     0.217 us        0.004 us
+> 
+> ==> /sys/kernel/debug/tracing/trace_stat/function3 <==
+>   Function                               Hit    Time            Avg             s^2
+>   --------                               ---    ----            ---             ---
+>   rcu_preempt_deferred_qs_handle      810258    189158.1 us     0.233 us        0.023 us
+> 
+> apply patch:
+> 
+> ==> /sys/kernel/debug/tracing/trace_stat/function0 <==
+>   Function                               Hit    Time            Avg             s^2
+>   --------                               ---    ----            ---             ---
+>   rcu_preempt_deferred_qs_handle      302373    67434.95 us     0.223 us        0.001 us
+> 
+> ==> /sys/kernel/debug/tracing/trace_stat/function1 <==
+>   Function                               Hit    Time            Avg             s^2
+>   --------                               ---    ----            ---             ---
+>   rcu_preempt_deferred_qs_handle      307174    68398.34 us     0.222 us        0.002 us
+> 
+> ==> /sys/kernel/debug/tracing/trace_stat/function2 <==
+>   Function                               Hit    Time            Avg             s^2
+>   --------                               ---    ----            ---             ---
+>   rcu_preempt_deferred_qs_handle      250910    56157.42 us     0.223 us        0.002 us
+> 
+> ==> /sys/kernel/debug/tracing/trace_stat/function3 <==
+>   Function                               Hit    Time            Avg             s^2
+>   --------                               ---    ----            ---             ---
+>   rcu_preempt_deferred_qs_handle      279902    62644.64 us     0.223 us        0.003 us
+> 
+> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
 
-Signed-off-by: Namhyung Kim <namhyung@kernel.org>
----
- kernel/locking/qrwlock.c   | 4 ++--
- kernel/locking/qspinlock.c | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+Looks good, queued for testing and review, thank you!
 
-diff --git a/kernel/locking/qrwlock.c b/kernel/locking/qrwlock.c
-index 2e1600906c9f..d2ef312a8611 100644
---- a/kernel/locking/qrwlock.c
-+++ b/kernel/locking/qrwlock.c
-@@ -18,7 +18,7 @@
-  * queued_read_lock_slowpath - acquire read lock of a queued rwlock
-  * @lock: Pointer to queued rwlock structure
-  */
--void queued_read_lock_slowpath(struct qrwlock *lock)
-+void __lockfunc queued_read_lock_slowpath(struct qrwlock *lock)
- {
- 	/*
- 	 * Readers come here when they cannot get the lock without waiting
-@@ -63,7 +63,7 @@ EXPORT_SYMBOL(queued_read_lock_slowpath);
-  * queued_write_lock_slowpath - acquire write lock of a queued rwlock
-  * @lock : Pointer to queued rwlock structure
-  */
--void queued_write_lock_slowpath(struct qrwlock *lock)
-+void __lockfunc queued_write_lock_slowpath(struct qrwlock *lock)
- {
- 	int cnts;
+Please check the version shown below for the usual wordsmithing.
+
+							Thanx, Paul
+
+------------------------------------------------------------------------
+
+commit 1e5aa3d5d53a6b38718510cce2b91a8199303891
+Author: Zqiang <qiang1.zhang@intel.com>
+Date:   Mon Aug 8 10:26:26 2022 +0800
+
+    rcu: Avoid triggering strict-GP irq-work when RCU is idle
+    
+    Kernels built with PREEMPT_RCU=y and RCU_STRICT_GRACE_PERIOD=y trigger
+    irq-work from rcu_read_unlock(), and the resulting irq-work handler
+    invokes rcu_preempt_deferred_qs_handle().  The point of this triggering
+    is to force grace periods to end quickly in order to give tools like KASAN
+    a better chance of detecting RCU usage bugs such as leaking RCU-protected
+    pointers out of an RCU read-side critical section.
+    
+    However, this irq-work triggering is unconditional.  This works, but
+    there is no point in doing this irq-work unless the current grace period
+    is waiting on the running CPU or task, which is not the common case.
+    After all, in the common case there are many rcu_read_unlock() calls
+    per CPU per grace period.
+    
+    This commit therefore triggers the irq-work only when the current grace
+    period is waiting on the running CPU or task.
+    
+    This change was tested as follows on a four-CPU system:
+    
+            echo rcu_preempt_deferred_qs_handler > /sys/kernel/debug/tracing/set_ftrace_filter
+            echo 1 > /sys/kernel/debug/tracing/function_profile_enabled
+            insmod rcutorture.ko
+            sleep 20
+            rmmod rcutorture.ko
+            echo 0 > /sys/kernel/debug/tracing/function_profile_enabled
+            echo > /sys/kernel/debug/tracing/set_ftrace_filter
+    
+    This procedure produces results in this per-CPU set of files:
+    
+            /sys/kernel/debug/tracing/trace_stat/function*
+    
+    Sample output from one of these files is as follows:
+    
+      Function                               Hit    Time            Avg             s^2
+      --------                               ---    ----            ---             ---
+      rcu_preempt_deferred_qs_handle      838746    182650.3 us     0.217 us        0.004 us
+    
+    The baseline sum of the "Hit" values (the number of calls to this
+    function) was 3,319,015.  With this commit, that sum was 1,140,359,
+    for a 2.9x reduction.  The worst-case variance across the CPUs was less
+    than 25%, so this large effect size is statistically significant.
+    
+    The raw data is available in the Link: URL.
+    
+    Link: https://lore.kernel.org/all/20220808022626.12825-1-qiang1.zhang@intel.com/
+    Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+
+diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+index b76076014e126..1514909cf905f 100644
+--- a/kernel/rcu/tree_plugin.h
++++ b/kernel/rcu/tree_plugin.h
+@@ -641,7 +641,8 @@ static void rcu_read_unlock_special(struct task_struct *t)
  
-diff --git a/kernel/locking/qspinlock.c b/kernel/locking/qspinlock.c
-index 65a9a10caa6f..2b23378775fe 100644
---- a/kernel/locking/qspinlock.c
-+++ b/kernel/locking/qspinlock.c
-@@ -313,7 +313,7 @@ static __always_inline u32  __pv_wait_head_or_lock(struct qspinlock *lock,
-  * contended             :    (*,x,y) +--> (*,0,0) ---> (*,0,1) -'  :
-  *   queue               :         ^--'                             :
-  */
--void queued_spin_lock_slowpath(struct qspinlock *lock, u32 val)
-+void __lockfunc queued_spin_lock_slowpath(struct qspinlock *lock, u32 val)
- {
- 	struct mcs_spinlock *prev, *next, *node;
- 	u32 old, tail;
--- 
-2.37.1.559.g78731f0fdb-goog
-
+ 		expboost = (t->rcu_blocked_node && READ_ONCE(t->rcu_blocked_node->exp_tasks)) ||
+ 			   (rdp->grpmask & READ_ONCE(rnp->expmask)) ||
+-			   IS_ENABLED(CONFIG_RCU_STRICT_GRACE_PERIOD) ||
++			   (IS_ENABLED(CONFIG_RCU_STRICT_GRACE_PERIOD) &&
++			   ((rdp->grpmask & READ_ONCE(rnp->qsmask)) || t->rcu_blocked_node)) ||
+ 			   (IS_ENABLED(CONFIG_RCU_BOOST) && irqs_were_disabled &&
+ 			    t->rcu_blocked_node);
+ 		// Need to defer quiescent state until everything is enabled.
