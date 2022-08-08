@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4558C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 07:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BECACC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 07:35:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235630AbiHHHfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 03:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40522 "EHLO
+        id S237136AbiHHHfj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 03:35:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236385AbiHHHeu (ORCPT
+        with ESMTP id S236369AbiHHHfZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 03:34:50 -0400
+        Mon, 8 Aug 2022 03:35:25 -0400
 Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCBA9FC0
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 00:34:45 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id l18-20020a6bd112000000b0067cb64ad9b2so4203397iob.20
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 00:34:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC3B26C
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 00:35:23 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id l18-20020a6bd112000000b0067cb64ad9b2so4203979iob.20
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 00:35:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=to:from:subject:message-id:date:mime-version:x-gm-message-state
          :from:to:cc;
-        bh=zpsbBD4155/6dz+chyrHqgaLxy0qAIiarEFW4D779nM=;
-        b=1hFNMwIQoxQOroSYiA5iDUCNrJm9mE6XLeolIcjiaFECnVTjehpiPK0ePAoL3F6g5w
-         cFO/vdHnSv/easm4ay2I4gxA6n1edxOX5xGlWSb/HuZeyDXyVJrkcXm3+Cn5lu7h3hXC
-         VJOYNGAcps/j7XQB3nHH+BGnqUwbhcLeRLec7qSwt/hKL/NML59zCHyi2BqA3TQjZSq+
-         ZGKVbE26QnX60hP8rZK3/9uurDk/ZhhxuyKEDYeQEC51+oBYe4iRStC0qL5mMAK/55uS
-         BBbk+Z8PeKHwyFivwLSCe6roALoO5TLbXKYfu7S2GsRiD7hlwZChA8mcl1W3HdM8hO8b
-         B1BQ==
-X-Gm-Message-State: ACgBeo3zZd3ROwTCEkPP6ZL5CEYIPyiEjGgaptNTHn+mwEyKogYmeY0o
-        bH2IqGKdWzq18ICplGnn/iwE58LDy4D4FA5cTOrCeC8MHIfr
-X-Google-Smtp-Source: AA6agR7nMkSMyNpJJK8l8fojBKIV1PkV4ZRHDAqjMwicCWU9a854soNmLRbhsxnA7oCRsG7tqVuSRNSPPteEPj6l48xyl54EbnhK
+        bh=/xpnSNBx6YcejWp6D7piTFVv5HNYrOIvM8dSmc0S6BA=;
+        b=s2CDj9N9zt5If+JuugfUO/59mOKos/MObXZU+5FrnhF/XX1+XqPTZKYrPx3nbeX/ib
+         0Ee12txvnycIF0cLc6zMHj0p86EP1w7XfUd5e4t2EejUkWQQLhHamL79a5/T6lmmkz6I
+         yStY858ED2vlKWx9SC1QM4tI1a4lP3dAToGD0IpwHWmccZBla5KmtdzUlm5JwdAz2zYZ
+         ERqo6xUe5bVR39Bh6WamEAFPN1+TgN9uli3+I43Mu8RMfveHFxU6OdS+o/qnTSIJJj+a
+         XHl6eCHUFnG74k/ZS1lFW5eN+CkaRYfwGH2v4go8q3/Xy8XEvgkMI7IOAondK5gnaskq
+         q/Cw==
+X-Gm-Message-State: ACgBeo1vBe+p3i8JqOEVyvfjJvUFNDCFJa4M9jrgKZ8WkIhAX5VbQkaW
+        IugGhRnryksjJh5thxYzTQTl+Z85Bqk8NxdCIeOWuEHEbfAa
+X-Google-Smtp-Source: AA6agR5fu4lsLaBnQwWnoY06kfc+nwWMuw3HtpNnYavBhsec2hJvZv+x5XgXZSwZ84Ay5BoU/RIN6dj4CGs+gJsvHwuPTYeXYlgT
 MIME-Version: 1.0
-X-Received: by 2002:a92:c501:0:b0:2de:69e6:4143 with SMTP id
- r1-20020a92c501000000b002de69e64143mr8089401ilg.262.1659944085037; Mon, 08
- Aug 2022 00:34:45 -0700 (PDT)
-Date:   Mon, 08 Aug 2022 00:34:45 -0700
+X-Received: by 2002:a02:664a:0:b0:33f:5310:35e1 with SMTP id
+ l10-20020a02664a000000b0033f531035e1mr7630284jaf.214.1659944122896; Mon, 08
+ Aug 2022 00:35:22 -0700 (PDT)
+Date:   Mon, 08 Aug 2022 00:35:22 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000892a3005e5b5d96c@google.com>
-Subject: [syzbot] possible deadlock in jbd2_journal_lock_updates
-From:   syzbot <syzbot+79e6bbabf3ce17357969@syzkaller.appspotmail.com>
-To:     jack@suse.com, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tytso@mit.edu
+Message-ID: <000000000000cad57405e5b5dbb7@google.com>
+Subject: [syzbot] possible deadlock in p9_req_put
+From:   syzbot <syzbot+50f7e8d06c3768dd97f3@syzkaller.appspotmail.com>
+To:     asmadeus@codewreck.org, davem@davemloft.net, edumazet@google.com,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -55,163 +57,77 @@ syzbot found the following issue on:
 
 HEAD commit:    ca688bff68bc Add linux-next specific files for 20220808
 git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1228affe080000
+console output: https://syzkaller.appspot.com/x/log.txt?x=104c8666080000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=4c20e006003cdecb
-dashboard link: https://syzkaller.appspot.com/bug?extid=79e6bbabf3ce17357969
+dashboard link: https://syzkaller.appspot.com/bug?extid=50f7e8d06c3768dd97f3
 compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
 Unfortunately, I don't have any reproducer for this issue yet.
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+79e6bbabf3ce17357969@syzkaller.appspotmail.com
+Reported-by: syzbot+50f7e8d06c3768dd97f3@syzkaller.appspotmail.com
 
-======================================================
-WARNING: possible circular locking dependency detected
+============================================
+WARNING: possible recursive locking detected
 5.19.0-next-20220808-syzkaller #0 Not tainted
-------------------------------------------------------
-syz-executor.2/10446 is trying to acquire lock:
-ffff88807feb0170 (&journal->j_barrier){+.+.}-{3:3}, at: jbd2_journal_lock_updates+0x15e/0x310 fs/jbd2/transaction.c:904
+--------------------------------------------
+kworker/0:5/3683 is trying to acquire lock:
+ffff888026be2c18 (&clnt->lock){+.+.}-{2:2}, at: p9_tag_remove net/9p/client.c:367 [inline]
+ffff888026be2c18 (&clnt->lock){+.+.}-{2:2}, at: p9_req_put net/9p/client.c:375 [inline]
+ffff888026be2c18 (&clnt->lock){+.+.}-{2:2}, at: p9_req_put+0xc6/0x250 net/9p/client.c:372
 
 but task is already holding lock:
-ffff88807ff5ebd8 (&sbi->s_writepages_rwsem){++++}-{0:0}, at: ext4_change_inode_journal_flag+0x178/0x530 fs/ext4/inode.c:6013
-
-which lock already depends on the new lock.
-
-
-the existing dependency chain (in reverse order) is:
-
--> #3 (&sbi->s_writepages_rwsem){++++}-{0:0}:
-       percpu_down_write+0x4d/0x440 kernel/locking/percpu-rwsem.c:221
-       ext4_ind_migrate+0x237/0x840 fs/ext4/migrate.c:624
-       ext4_ioctl_setflags fs/ext4/ioctl.c:694 [inline]
-       ext4_fileattr_set+0x14b8/0x1930 fs/ext4/ioctl.c:1001
-       vfs_fileattr_set+0x7f5/0xbe0 fs/ioctl.c:696
-       ioctl_fssetxattr fs/ioctl.c:758 [inline]
-       do_vfs_ioctl+0xe62/0x15c0 fs/ioctl.c:845
-       __do_sys_ioctl fs/ioctl.c:868 [inline]
-       __se_sys_ioctl fs/ioctl.c:856 [inline]
-       __x64_sys_ioctl+0x108/0x200 fs/ioctl.c:856
-       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-       entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
--> #2 (&sb->s_type->i_mutex_key#8){++++}-{3:3}:
-       down_read+0x98/0x450 kernel/locking/rwsem.c:1499
-       inode_lock_shared include/linux/fs.h:771 [inline]
-       ext4_bmap+0x4e/0x460 fs/ext4/inode.c:3157
-       bmap+0xaa/0x120 fs/inode.c:1799
-       jbd2_journal_bmap+0xa8/0x180 fs/jbd2/journal.c:971
-       __jbd2_journal_erase fs/jbd2/journal.c:1784 [inline]
-       jbd2_journal_flush+0x84f/0xc00 fs/jbd2/journal.c:2490
-       ext4_ioctl_checkpoint fs/ext4/ioctl.c:1082 [inline]
-       __ext4_ioctl+0x28fd/0x4ab0 fs/ext4/ioctl.c:1586
-       vfs_ioctl fs/ioctl.c:51 [inline]
-       __do_sys_ioctl fs/ioctl.c:870 [inline]
-       __se_sys_ioctl fs/ioctl.c:856 [inline]
-       __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
-       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-       entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
--> #1 (&journal->j_checkpoint_mutex){+.+.}-{3:3}:
-       __mutex_lock_common kernel/locking/mutex.c:603 [inline]
-       mutex_lock_io_nested+0x13f/0x1190 kernel/locking/mutex.c:833
-       jbd2_journal_flush+0x19a/0xc00 fs/jbd2/journal.c:2462
-       ext4_ioctl_checkpoint fs/ext4/ioctl.c:1082 [inline]
-       __ext4_ioctl+0x28fd/0x4ab0 fs/ext4/ioctl.c:1586
-       vfs_ioctl fs/ioctl.c:51 [inline]
-       __do_sys_ioctl fs/ioctl.c:870 [inline]
-       __se_sys_ioctl fs/ioctl.c:856 [inline]
-       __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
-       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-       entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
--> #0 (&journal->j_barrier){+.+.}-{3:3}:
-       check_prev_add kernel/locking/lockdep.c:3095 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3214 [inline]
-       validate_chain kernel/locking/lockdep.c:3829 [inline]
-       __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
-       lock_acquire kernel/locking/lockdep.c:5666 [inline]
-       lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
-       __mutex_lock_common kernel/locking/mutex.c:603 [inline]
-       __mutex_lock+0x12f/0x1350 kernel/locking/mutex.c:747
-       jbd2_journal_lock_updates+0x15e/0x310 fs/jbd2/transaction.c:904
-       ext4_change_inode_journal_flag+0x180/0x530 fs/ext4/inode.c:6014
-       ext4_ioctl_setflags fs/ext4/ioctl.c:685 [inline]
-       ext4_fileattr_set+0xddf/0x1930 fs/ext4/ioctl.c:1001
-       vfs_fileattr_set+0x7f5/0xbe0 fs/ioctl.c:696
-       ioctl_fssetxattr fs/ioctl.c:758 [inline]
-       do_vfs_ioctl+0xe62/0x15c0 fs/ioctl.c:845
-       __do_sys_ioctl fs/ioctl.c:868 [inline]
-       __se_sys_ioctl fs/ioctl.c:856 [inline]
-       __x64_sys_ioctl+0x108/0x200 fs/ioctl.c:856
-       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-       entry_SYSCALL_64_after_hwframe+0x63/0xcd
+ffff888026be2c18 (&clnt->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:349 [inline]
+ffff888026be2c18 (&clnt->lock){+.+.}-{2:2}, at: p9_conn_cancel+0xaa/0x970 net/9p/trans_fd.c:192
 
 other info that might help us debug this:
-
-Chain exists of:
-  &journal->j_barrier --> &sb->s_type->i_mutex_key#8 --> &sbi->s_writepages_rwsem
-
  Possible unsafe locking scenario:
 
-       CPU0                    CPU1
-       ----                    ----
-  lock(&sbi->s_writepages_rwsem);
-                               lock(&sb->s_type->i_mutex_key#8);
-                               lock(&sbi->s_writepages_rwsem);
-  lock(&journal->j_barrier);
+       CPU0
+       ----
+  lock(&clnt->lock);
+  lock(&clnt->lock);
 
  *** DEADLOCK ***
 
-4 locks held by syz-executor.2/10446:
- #0: ffff88807ff5c460 (sb_writers#4){.+.+}-{0:0}, at: ioctl_setflags fs/ioctl.c:725 [inline]
- #0: ffff88807ff5c460 (sb_writers#4){.+.+}-{0:0}, at: do_vfs_ioctl+0xe27/0x15c0 fs/ioctl.c:839
- #1: ffff88802b44de48 (&sb->s_type->i_mutex_key#8){++++}-{3:3}, at: inode_lock include/linux/fs.h:761 [inline]
- #1: ffff88802b44de48 (&sb->s_type->i_mutex_key#8){++++}-{3:3}, at: vfs_fileattr_set+0x148/0xbe0 fs/ioctl.c:681
- #2: ffff88802b44dfe8 (mapping.invalidate_lock){++++}-{3:3}, at: filemap_invalidate_lock include/linux/fs.h:806 [inline]
- #2: ffff88802b44dfe8 (mapping.invalidate_lock){++++}-{3:3}, at: ext4_change_inode_journal_flag+0x11f/0x530 fs/ext4/inode.c:6005
- #3: ffff88807ff5ebd8 (&sbi->s_writepages_rwsem){++++}-{0:0}, at: ext4_change_inode_journal_flag+0x178/0x530 fs/ext4/inode.c:6013
+ May be due to missing lock nesting notation
+
+3 locks held by kworker/0:5/3683:
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
+ #1: ffffc90005167da8 ((work_completion)(&m->rq)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
+ #2: ffff888026be2c18 (&clnt->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:349 [inline]
+ #2: ffff888026be2c18 (&clnt->lock){+.+.}-{2:2}, at: p9_conn_cancel+0xaa/0x970 net/9p/trans_fd.c:192
 
 stack backtrace:
-CPU: 0 PID: 10446 Comm: syz-executor.2 Not tainted 5.19.0-next-20220808-syzkaller #0
+CPU: 0 PID: 3683 Comm: kworker/0:5 Not tainted 5.19.0-next-20220808-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+Workqueue: events p9_read_work
 Call Trace:
  <TASK>
  __dump_stack lib/dump_stack.c:88 [inline]
  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2175
- check_prev_add kernel/locking/lockdep.c:3095 [inline]
- check_prevs_add kernel/locking/lockdep.c:3214 [inline]
- validate_chain kernel/locking/lockdep.c:3829 [inline]
- __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
+ print_deadlock_bug kernel/locking/lockdep.c:2988 [inline]
+ check_deadlock kernel/locking/lockdep.c:3031 [inline]
+ validate_chain kernel/locking/lockdep.c:3816 [inline]
+ __lock_acquire.cold+0x116/0x3a7 kernel/locking/lockdep.c:5053
  lock_acquire kernel/locking/lockdep.c:5666 [inline]
  lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
- __mutex_lock_common kernel/locking/mutex.c:603 [inline]
- __mutex_lock+0x12f/0x1350 kernel/locking/mutex.c:747
- jbd2_journal_lock_updates+0x15e/0x310 fs/jbd2/transaction.c:904
- ext4_change_inode_journal_flag+0x180/0x530 fs/ext4/inode.c:6014
- ext4_ioctl_setflags fs/ext4/ioctl.c:685 [inline]
- ext4_fileattr_set+0xddf/0x1930 fs/ext4/ioctl.c:1001
- vfs_fileattr_set+0x7f5/0xbe0 fs/ioctl.c:696
- ioctl_fssetxattr fs/ioctl.c:758 [inline]
- do_vfs_ioctl+0xe62/0x15c0 fs/ioctl.c:845
- __do_sys_ioctl fs/ioctl.c:868 [inline]
- __se_sys_ioctl fs/ioctl.c:856 [inline]
- __x64_sys_ioctl+0x108/0x200 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f2195489279
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f219651b168 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f219559bf80 RCX: 00007f2195489279
-RDX: 0000000020000380 RSI: 0000000040086602 RDI: 0000000000000003
-RBP: 00007f21954e3189 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffd08022a2f R14: 00007f219651b300 R15: 0000000000022000
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+ _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
+ p9_tag_remove net/9p/client.c:367 [inline]
+ p9_req_put net/9p/client.c:375 [inline]
+ p9_req_put+0xc6/0x250 net/9p/client.c:372
+ p9_conn_cancel+0x640/0x970 net/9p/trans_fd.c:213
+ p9_read_work+0x514/0x10c0 net/9p/trans_fd.c:403
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
  </TASK>
 
 
