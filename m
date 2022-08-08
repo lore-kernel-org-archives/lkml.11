@@ -2,81 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3617C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA1DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:40:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243580AbiHHRiq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 13:38:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41374 "EHLO
+        id S243948AbiHHRkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 13:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236070AbiHHRio (ORCPT
+        with ESMTP id S243544AbiHHRkG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 13:38:44 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3D615FC8
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:38:43 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b98cb329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98cb:329c:23ff:fea6:a903])
+        Mon, 8 Aug 2022 13:40:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A45D175A3;
+        Mon,  8 Aug 2022 10:40:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 320AF1EC0380;
-        Mon,  8 Aug 2022 19:38:38 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1659980318;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=QkI3RA/HMmgr+FifC1RD9i6yt0XDfg84AsVGBhRwcU4=;
-        b=UT7H5W6W3k8Hl1lrakgDducomkCaf+Lk5qbTLDbQhLAKFLrFxRKOI1vDSeA3LLo1xkIZ2A
-        2LbtU03Rpj1AV1aTxz3wSHb7DU3xWSfznugeYtbqpFJrGxzI36P3/P5VFhrgmLuik5RP62
-        X7DSfuVpB2iER8xPv5R636sVRhl96Ko=
-Date:   Mon, 8 Aug 2022 19:38:37 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Ira Weiny <ira.weiny@intel.com>
-Cc:     Rik van Riel <riel@surriel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [RFC PATCH 1/5] entry: Pass pt_regs to
- irqentry_exit_cond_resched()
-Message-ID: <YvFKHaRdOkg5RHtv@zn.tnic>
-References: <20220805173009.3128098-1-ira.weiny@intel.com>
- <20220805173009.3128098-2-ira.weiny@intel.com>
- <YvDnkALyHl77R/Ug@zn.tnic>
- <YvFJGxU0k492npYT@iweiny-desk3>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YvFJGxU0k492npYT@iweiny-desk3>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33823B81034;
+        Mon,  8 Aug 2022 17:40:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F0F82C433C1;
+        Mon,  8 Aug 2022 17:40:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659980403;
+        bh=ZiyMce+HmPzQbMEKleA07B/gt6XYTFjrIkvunG1psfE=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=gavaLQgV4qiuTctu2Cg3kIPbljsIXw5ak4cSF3Ve55gcPLNqq4FtxjgEhW7L+Sv6G
+         zppj+4CPRnjQCF5jkD3MhFwdqR84rgUPDQsgYVc5XfJ3akX25pViUW69sYtd4y5MOW
+         4oSpIi8CbEKq2yewLsOsezxfIQke+4zkrQiA28LNFrKVPfWssSExDHa8jfvpa7majq
+         rRMzdXgrNIUnar/huCtih5373wr+5qgzjXQJi9WgqQqLI8OOBmkeR3Ks9hZrcOGOS8
+         b75duMLMMkldhlWfFKt8AGvWfMGqp3lR+BWPduY/IOvxpVyJNQjJ+sYeNNBIxJVSo9
+         mFxBetKYAtBkA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D3F00C43140;
+        Mon,  8 Aug 2022 17:40:02 +0000 (UTC)
+Subject: Re: [GIT PULL] Hyper-V next patches
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220807204433.k4lcpmfbradclnnq@liuwe-devbox-debian-v2>
+References: <20220807204433.k4lcpmfbradclnnq@liuwe-devbox-debian-v2>
+X-PR-Tracked-List-Id: <linux-hyperv.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220807204433.k4lcpmfbradclnnq@liuwe-devbox-debian-v2>
+X-PR-Tracked-Remote: ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git tags/hyperv-next-signed-20220807
+X-PR-Tracked-Commit-Id: d180e0a1be6cea2b7436fadbd1c96aecdf3c46c7
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: df7a456e7d1d7511b2c373dc1099cecfea093858
+Message-Id: <165998040283.21911.6675000001362296677.pr-tracker-bot@kernel.org>
+Date:   Mon, 08 Aug 2022 17:40:02 +0000
+To:     Wei Liu <wei.liu@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Wei Liu <wei.liu@kernel.org>,
+        Linux Kernel List <linux-kernel@vger.kernel.org>,
+        Linux on Hyper-V List <linux-hyperv@vger.kernel.org>,
+        kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+        sthemmin@microsoft.com, Michael Kelley <mikelley@microsoft.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 08, 2022 at 10:34:19AM -0700, Ira Weiny wrote:
-> I thought about that but generally have been steered away from using bool
-> arguments like this.
+The pull request you sent on Sun, 7 Aug 2022 20:44:33 +0000:
 
-The reason being?
+> ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git tags/hyperv-next-signed-20220807
 
-> Looking this over I think this may be a reasonable use of a flag like
-> that.
->
-> I'm not sure if this series is going to land given the discussion of
-> performance.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/df7a456e7d1d7511b2c373dc1099cecfea093858
 
-Well, the only way to talk performance is to have something to measure
-it with. But let me finish going through the rest of your set first.
-
-> Would this clean up be welcome on its own?  I'm willing to respin
-> this patch and submit if so.
-
-Depends on who steered you away from the bool thing and why?
-
-:-)
-
-Thx.
+Thank you!
 
 -- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
