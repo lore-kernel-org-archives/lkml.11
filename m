@@ -2,227 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D8FBC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 18:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B7FC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 18:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244100AbiHHSlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 14:41:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37062 "EHLO
+        id S244320AbiHHSm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 14:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243986AbiHHSkw (ORCPT
+        with ESMTP id S244409AbiHHSmI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 14:40:52 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04234F42;
-        Mon,  8 Aug 2022 11:40:51 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id a18-20020a05600c349200b003a30de68697so6253897wmq.0;
-        Mon, 08 Aug 2022 11:40:50 -0700 (PDT)
+        Mon, 8 Aug 2022 14:42:08 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27C71929D
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 11:41:39 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id h125so11308759oif.8
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 11:41:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gmT8KtUmsn+TaNIBb1OePApL9TIbtpSFIIniLRWsTsQ=;
-        b=euZGMJ56bzca6GT2+XUmhz+rlUCLuVvBEDXsASbLE0UCyN1gG1sDuJK6Kh+t9trtdO
-         gN4Te70FMFeLUopNloTbd6AGeEnzJeCJnybUwr1Rtj0tBR3A/bK9AxoXIIHYUsCKFDsV
-         gtSRz8dZhm+9p81hRQ+kvELE73eTs2sTaVXaSnOOz8b0viSlBN8I2G8EXURZBbcE0Z/p
-         UskrB0oqxPDLMSG2uUKCbY2Ax1fkBI6OOwnXuu06t9wbLoPKjI72UkxNJoMc54YQ3yoB
-         wuSvidt03X3nz1StjnyaEq5/6HzqLJTFeuwspCHhUfJ7ERlJLrxYflu/dzhgw5BMR9pY
-         xuMw==
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=+jov4sDK8fqguLcdGEtCS3PX7Z+/XUaiZu5mjGAoBwc=;
+        b=jQh0ZktlrsGJDfa5sjbq2FHvzf4mdvXfFgJm/+h4G+SV2anYSa8bfoSW0x4cZ+a3Aw
+         l0RRwnm4nakH4bXp8NL0oOLZJ9X2/pY+yndrdlsPeLyxZh/ViMnKFbDOXVx/nMOZ3cKv
+         ceY+U9j3d8UqgTT7Mwyo4gRiFfM9J+QRO6t5Cg1dbWKXaphwir4V2MbeP/89G33WRA+N
+         gelXSFx7JFODRcl3YrPC8cGsN7ItGYTyrXZ575oNF0+odf1LDKxLLKGQ4X6GPFW3SZHF
+         m/3Y2Lopfg0cwERPa5gJWPnQOWwBWBvQIG6zrBuR4751Tjv+mDN+PExBB8PTuQP+jw75
+         MChA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gmT8KtUmsn+TaNIBb1OePApL9TIbtpSFIIniLRWsTsQ=;
-        b=i46XZhcryG9y4bMfFPoG58OT3v+qkxzwAwVRLmpiynTaxjDaLqepMElrxI5jPD8JEE
-         m1hGYnP7k4+Iu/ddo2QYvqjsS0MXBRQ1rOY8WF53ip6kenrs6plPHy+IjcAsgXZfG7a2
-         VX2DulNwuVgHcw1C9fbog+R7lMhOJkXQBSv28kF291ETBLUSVam7qQ6ATRjr8vEo+mUT
-         J/tNUQEGDfUWCQYzU7zkfmtO2t6GScExcKf9DoeehtoAvnenq4i9N+FbNO/JHXrSEngJ
-         Z7sFCUW7Dv3enFrwlHFciZHfu2EHQ1IrgUb9OfkNIk8kWsTuXvO98n2PWUwG8dfbTJi3
-         M6aw==
-X-Gm-Message-State: ACgBeo16e1mNSL0z3nC0Ktv0S3SbJOZwygRBysqp97BDgAp7Jwe/tW6a
-        5xoVQID/Jto+CG355EQcCzk=
-X-Google-Smtp-Source: AA6agR7jRfp0fGLQgEVqnMlQqqAoJHeztuk0nD64Kk/TD0TtyvcMEVirkAcNBQhuoaqivuvoXoB27g==
-X-Received: by 2002:a05:600c:2314:b0:3a5:180:a9f8 with SMTP id 20-20020a05600c231400b003a50180a9f8mr13298501wmo.163.1659984049091;
-        Mon, 08 Aug 2022 11:40:49 -0700 (PDT)
-Received: from Ansuel-xps. (host-87-20-249-30.retail.telecomitalia.it. [87.20.249.30])
-        by smtp.gmail.com with ESMTPSA id a18-20020a05600c349200b003a35ec4bf4fsm14607270wmq.20.2022.08.08.11.40.47
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=+jov4sDK8fqguLcdGEtCS3PX7Z+/XUaiZu5mjGAoBwc=;
+        b=CRY+LH40ZsiRQNuTWES272Ow3jIKUGL+kIVpGamvynBd5Vb1rhm9cybPPfLFGh3wRz
+         bB+wtRZpZS75Su7CM9v+RCZf+vBwE4govUl5FaIpxHg/R8hZmR9m1jo3fr/AA3MqkePS
+         NXTN0j8boxmb8zjnJTSFOqLxwVIGpWHx+AwsW/8nsyVIW0dSo0x/253AUb8RM++OiQgx
+         9HvkQlEHaJ4Ud3M3N4RwHO3lh2MlMOBKQ63kIa+AlViJpwEW9hDJnquLyre4hAyWAPdU
+         SiBXVX2EocWQ1Swy1RPvOpMCw6eSkfrbDQHVdFG7NzfcdisAGY5MOZ2RAeiLglEhQWv3
+         vwfw==
+X-Gm-Message-State: ACgBeo2GN84qq/5fWg89z36cOPEIbUFFhhP4y4gQz8ah6vogA8ba9Eea
+        YB5fT17qoOJThfOfgIcOOYnS1g==
+X-Google-Smtp-Source: AA6agR5bJmLFgnGWaH7lWQ9cZrofG2bX3oeGvmJg+5K1A0TzfoRbCFeR6iE+6t9h5yKMa98pNuVKGQ==
+X-Received: by 2002:a05:6808:2114:b0:343:665:d54e with SMTP id r20-20020a056808211400b003430665d54emr1187227oiw.71.1659984099106;
+        Mon, 08 Aug 2022 11:41:39 -0700 (PDT)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id y12-20020a4a650c000000b00440ed1f8c45sm2295292ooc.43.2022.08.08.11.41.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 11:40:48 -0700 (PDT)
-Message-ID: <62f158b0.050a0220.9281c.1da3@mx.google.com>
-X-Google-Original-Message-ID: <YvERLlqp6o9pa4Mh@Ansuel-xps.>
-Date:   Mon, 8 Aug 2022 15:35:42 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] ARM: dts: qcom: ipq8064: add v2 dtsi variant
-References: <20220718161826.4943-1-ansuelsmth@gmail.com>
- <62efbb68.170a0220.88a00.8207@mx.google.com>
- <3515103e-8663-1df9-a184-a383cc0d6aa9@somainline.org>
+        Mon, 08 Aug 2022 11:41:38 -0700 (PDT)
+Date:   Mon, 8 Aug 2022 11:44:18 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
+        robh@kernel.org, pavel@ucw.cz, devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Subject: Re: [PATCH] dt-bindings: leds: Describe optional 'reg' property used
+ for Qualcomm LPG nodes
+Message-ID: <YvFZgr1RRq6tYaVC@ripper>
+References: <20220721195502.1525214-1-bhupesh.sharma@linaro.org>
+ <CAA8EJppGS38aP7gyd1c3kNgraAVJDoqUef2cDfZpu2aL_iwW0g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3515103e-8663-1df9-a184-a383cc0d6aa9@somainline.org>
+In-Reply-To: <CAA8EJppGS38aP7gyd1c3kNgraAVJDoqUef2cDfZpu2aL_iwW0g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 08, 2022 at 12:55:36PM +0200, Konrad Dybcio wrote:
+On Thu 21 Jul 13:19 PDT 2022, Dmitry Baryshkov wrote:
+
+> On Thu, 21 Jul 2022 at 22:55, Bhupesh Sharma <bhupesh.sharma@linaro.org> wrote:
+> >
+> > As Bjorn noted in [1], it is useful to describe the optional
+> > 'reg' property for Qualcomm LPG nodes as it is used in
+> > some Qualcomm dts files.
+> 
+> I don't think this is correct. LPG block maps to several regions, so
+> using just one of them in reg doesn't look correct.
+> 
+
+I agree, but I also like the uniformity of having unit addresses for the
+devices on the spmi buses.
+
+> > This fixes the following 'make dtbs_check' error reported for
+> > pm8350c & sc8280xp pwm nodes:
+> >
+> > arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb:
+> >  pwm@e800: 'reg' does not match any of the regexes:
+> >  '^led@[0-9a-f]$', 'pinctrl-[0-9]+'
+> 
+> I'd prefer to follow the existing schema and to drop the region from
+> those files.
+> 
+
+I'm fine either way, but we have more of these nodes, so I would like to
+hear from the DT maintainers on the direction to take. All nodes on the
+spmi bus has an (at least one) address, so it would be accurate to state
+this in the node.
+
+It does however not seem like devicetree@, nor Krzysztof is Cc'ed on
+this patch, so I've added them...
+
+Regards,
+Bjorn
+
+> >
+> > [1]. https://lore.kernel.org/linux-arm-msm/Ytg3tIaL5h5b9ewH@builder.lan/
+> >
+> > Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > Cc: robh@kernel.org
+> > Cc: pavel@ucw.cz
+> > Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> > ---
+> >  Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+> > index fe336fa16518..f394ab7a757b 100644
+> > --- a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+> > +++ b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
+> > @@ -27,6 +27,9 @@ properties:
+> >        - qcom,pmi8994-lpg
+> >        - qcom,pmi8998-lpg
+> >
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> >    "#pwm-cells":
+> >      const: 2
+> >
+> > --
+> > 2.35.3
+> >
 > 
 > 
-> On 7.08.2022 15:00, Christian Marangi wrote:
-> > On Mon, Jul 18, 2022 at 06:18:24PM +0200, Christian Marangi wrote:
-> >> Add ipq8064-v2.0 dtsi variant that differ from original ipq8064 SoC for
-> >> some additional pcie, sata and usb configuration values, additional
-> >> reserved memory and serial output.
-> >>
-> >> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > 
-> > Any news for this?Unless Qualcomm naming was different back then, you should simply merge
-> all of these changes into ipq8064.dtsi, as v1 is often the pre-production,
-> internal chip revision and only the last one (or the last and second-last)
-> are shipped in production devices.
->
-
-Mhh, this is not the case, there are dev board based on v1 and we also
-have some device based on v1 (that have some difference for pci and usb)
-One example is a Netgear r7500 where we have 2 revision one based on
-ipq8064-v1.0 and one based on ipq8064-v2.0.
-
-> > 
-> >> ---
-> >>  .../boot/dts/qcom-ipq8064-v2.0-smb208.dtsi    | 37 ++++++++++
-> >>  arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi      | 69 +++++++++++++++++++
-> >>  2 files changed, 106 insertions(+)
-> >>  create mode 100644 arch/arm/boot/dts/qcom-ipq8064-v2.0-smb208.dtsi
-> >>  create mode 100644 arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi
-> >>
-> >> diff --git a/arch/arm/boot/dts/qcom-ipq8064-v2.0-smb208.dtsi b/arch/arm/boot/dts/qcom-ipq8064-v2.0-smb208.dtsi
-> >> new file mode 100644
-> >> index 000000000000..0442580b22de
-> >> --- /dev/null
-> >> +++ b/arch/arm/boot/dts/qcom-ipq8064-v2.0-smb208.dtsi
-> >> @@ -0,0 +1,37 @@
-> >> +// SPDX-License-Identifier: GPL-2.0
-> >> +
-> >> +#include "qcom-ipq8064-v2.0.dtsi"
-> >> +
-> >> +&rpm {
-> >> +	smb208_regulators: regulators {
-> >> +		compatible = "qcom,rpm-smb208-regulators";
-> >> +
-> >> +		smb208_s1a: s1a {
-> >> +			regulator-min-microvolt = <1050000>;
-> >> +			regulator-max-microvolt = <1150000>;
-> >> +
-> >> +			qcom,switch-mode-frequency = <1200000>;
-> >> +		};
-> >> +
-> >> +		smb208_s1b: s1b {
-> >> +			regulator-min-microvolt = <1050000>;
-> >> +			regulator-max-microvolt = <1150000>;
-> >> +
-> >> +			qcom,switch-mode-frequency = <1200000>;
-> >> +		};
-> >> +
-> >> +		smb208_s2a: s2a {
-> >> +			regulator-min-microvolt = < 800000>;
-> >> +			regulator-max-microvolt = <1250000>;
-> >> +
-> >> +			qcom,switch-mode-frequency = <1200000>;
-> >> +		};
-> >> +
-> >> +		smb208_s2b: s2b {
-> >> +			regulator-min-microvolt = < 800000>;
-> >> +			regulator-max-microvolt = <1250000>;
-> >> +
-> >> +			qcom,switch-mode-frequency = <1200000>;
-> >> +		};
-> >> +	};
-> >> +};
-> >> diff --git a/arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi b/arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi
-> >> new file mode 100644
-> >> index 000000000000..2f117d576daf
-> >> --- /dev/null
-> >> +++ b/arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi
-> >> @@ -0,0 +1,69 @@
-> >> +// SPDX-License-Identifier: GPL-2.0
-> >> +
-> >> +#include "qcom-ipq8064.dtsi"
-> >> +
-> >> +/ {
-> >> +	model = "Qualcomm Technologies, Inc. IPQ8064-v2.0";
-> >> +
-> >> +	aliases {
-> >> +		serial0 = &gsbi4_serial;
-> >> +	};
-> >> +
-> >> +	chosen {
-> >> +		stdout-path = "serial0:115200n8";
-> >> +	};
-> >> +
-> >> +	reserved-memory {
-> >> +		#address-cells = <1>;
-> >> +		#size-cells = <1>;
-> >> +		ranges;
-> >> +
-> >> +		rsvd@41200000 {
-> >> +			reg = <0x41200000 0x300000>;
-> >> +			no-map;
-> >> +		};
-> >> +	};
-> >> +};
-> >> +
-> >> +&gsbi4 {
-> >> +	qcom,mode = <GSBI_PROT_I2C_UART>;
-> >> +	status = "okay";
-> >> +
-> >> +	serial@16340000 {
-> >> +		status = "okay";
-> >> +	};
-> >> +	/*
-> >> +	 * The i2c device on gsbi4 should not be enabled.
-> >> +	 * On ipq806x designs gsbi4 i2c is meant for exclusive
-> >> +	 * RPM usage. Turning this on in kernel manifests as
-> >> +	 * i2c failure for the RPM.
-> >> +	 */
-> >> +};
-> >> +
-> >> +&pcie0 {
-> >> +	compatible = "qcom,pcie-ipq8064-v2";
-> >> +};
-> >> +
-> >> +&pcie1 {
-> >> +	compatible = "qcom,pcie-ipq8064-v2";
-> >> +};
-> >> +
-> >> +&pcie2 {
-> >> +	compatible = "qcom,pcie-ipq8064-v2";
-> >> +};
-> >> +
-> >> +&sata {
-> >> +	ports-implemented = <0x1>;
-> >> +};
-> >> +
-> >> +&ss_phy_0 {
-> >> +	qcom,rx-eq = <2>;
-> >> +	qcom,tx-deamp_3_5db = <32>;
-> >> +	qcom,mpll = <5>;
-> >> +};
-> >> +
-> >> +&ss_phy_1 {
-> >> +	qcom,rx-eq = <2>;
-> >> +	qcom,tx-deamp_3_5db = <32>;
-> >> +	qcom,mpll = <5>;
-> >> +};
-> >> -- 
-> >> 2.36.1
-> >>
-> > 
-
--- 
-	Ansuel
+> -- 
+> With best wishes
+> Dmitry
