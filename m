@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19020C25B0C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38834C25B0D
 	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243681AbiHHBzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37786 "EHLO
+        id S243733AbiHHBzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:55:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243244AbiHHBwJ (ORCPT
+        with ESMTP id S243428AbiHHBxK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:52:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8CD1A82A;
-        Sun,  7 Aug 2022 18:38:53 -0700 (PDT)
+        Sun, 7 Aug 2022 21:53:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F190C1ADAD;
+        Sun,  7 Aug 2022 18:38:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 44125CE0F71;
-        Mon,  8 Aug 2022 01:38:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9549DC433C1;
-        Mon,  8 Aug 2022 01:38:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DEC7B80E15;
+        Mon,  8 Aug 2022 01:38:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 099FBC433C1;
+        Mon,  8 Aug 2022 01:38:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922729;
-        bh=rlZoPdOOJ0HA2H9/i8phZ/Z4JXOvD+sXUYV96nhCgFY=;
+        s=k20201202; t=1659922734;
+        bh=WcmIH+a533U14dlH39GJ7KubRDRkt0POYB71uaAxXzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nMp897A0Fnb8Joflar587lw03OniaOA93GhKV2OBJ6X6LUU6vg/0gT1j4Y/y1VIz4
-         NTI2m0F7B1zxLnIvaRVrSMN5RgluOxSX+FuJCb83N0teIXclICa+RhERpkmX2usi2b
-         du5M36IvE8pjXcUbG06V5iK+bC7zJHmxlrns4nbBOTWY2MLfg7GC8AJlAGXFvyDRzq
-         mY2oV4SmSAGK4qWiroFQFpzJ64DExIwN8MD4LPuOjd/sWrTjatyrGkbEw1xTEyT5Ty
-         OIjL/qqyN9pKh3LWqXGGWziga+RjnMNM5TtCpKNoA6ViZmaIRGJurxFfOG0M0cG7I4
-         3BX1gF12Zm1UA==
+        b=EMphOm63u5k8E9xf5V3LM/VFXPts7XCAfEaIlgWZk8Aa7FNLZV+/eMNFAd/HCcgYN
+         GBaAYRCtl339aHo9+Xk+3Pto+EgEyr8CHbmZBoE2o3Yy2hE8YccRUG/CLieKKCs0h+
+         8FiTXbgUCMJo1sgzZSlyFGton0iQQqPAfiBWlCzBRK458V4QiNCT3O6qU+3myuB7Gm
+         GOoXBudrZ/r2ig5gFCl5hNvKRRy3ocagr+m4kn2ieo2fops+7lQQoE3BFqfMh+M1JH
+         WeUUeBzcDjLFrbKaAlwy1QpmbrLt1+MPLENAcfEIRsR0k4QEVpHDyMG3NztqwVc3Z7
+         vwECy3VD6zG5A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
@@ -39,9 +39,9 @@ Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
         Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 08/23] ARM: dts: imx6ul: add missing properties for sram
-Date:   Sun,  7 Aug 2022 21:38:15 -0400
-Message-Id: <20220808013832.316381-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 11/23] ARM: dts: imx6ul: fix lcdif node compatible
+Date:   Sun,  7 Aug 2022 21:38:18 -0400
+Message-Id: <20220808013832.316381-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013832.316381-1-sashal@kernel.org>
 References: <20220808013832.316381-1-sashal@kernel.org>
@@ -55,35 +55,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit 5655699cf5cff9f4c4ee703792156bdd05d1addf ]
+[ Upstream commit 1a884d17ca324531634cce82e9f64c0302bdf7de ]
 
-All 3 properties are required by sram.yaml. Fixes the dtbs_check
-warning:
-sram@900000: '#address-cells' is a required property
-sram@900000: '#size-cells' is a required property
-sram@900000: 'ranges' is a required property
+In yaml binding "fsl,imx6ul-lcdif" is listed as compatible to imx6sx-lcdif,
+but not imx28-lcdif. Change the list accordingly. Fixes the
+dt_binding_check warning:
+lcdif@21c8000: compatible: 'oneOf' conditional failed, one must be fixed:
+['fsl,imx6ul-lcdif', 'fsl,imx28-lcdif'] is too long
+Additional items are not allowed ('fsl,imx28-lcdif' was unexpected)
+'fsl,imx6ul-lcdif' is not one of ['fsl,imx23-lcdif', 'fsl,imx28-lcdif',
+'fsl,imx6sx-lcdif']
+'fsl,imx6sx-lcdif' was expected
 
 Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
 Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6ul.dtsi | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/boot/dts/imx6ul.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index f008036e9294..630643013bdc 100644
+index 3fd02e10170a..58671c6e9f31 100644
 --- a/arch/arm/boot/dts/imx6ul.dtsi
 +++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -157,6 +157,9 @@ soc {
- 		ocram: sram@900000 {
- 			compatible = "mmio-sram";
- 			reg = <0x00900000 0x20000>;
-+			ranges = <0 0x00900000 0x20000>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
- 		};
+@@ -976,7 +976,7 @@ csi: csi@21c4000 {
+ 			};
  
- 		intc: interrupt-controller@a01000 {
+ 			lcdif: lcdif@21c8000 {
+-				compatible = "fsl,imx6ul-lcdif", "fsl,imx28-lcdif";
++				compatible = "fsl,imx6ul-lcdif", "fsl,imx6sx-lcdif";
+ 				reg = <0x021c8000 0x4000>;
+ 				interrupts = <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&clks IMX6UL_CLK_LCDIF_PIX>,
 -- 
 2.35.1
 
