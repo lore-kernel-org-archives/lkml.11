@@ -2,94 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F510C25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 20:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C02CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 20:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244334AbiHHU2H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 16:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48000 "EHLO
+        id S244342AbiHHUbZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 16:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243815AbiHHU2D (ORCPT
+        with ESMTP id S235732AbiHHUbW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 16:28:03 -0400
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857E11A824;
-        Mon,  8 Aug 2022 13:28:02 -0700 (PDT)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-10edfa2d57dso11872536fac.0;
-        Mon, 08 Aug 2022 13:28:02 -0700 (PDT)
+        Mon, 8 Aug 2022 16:31:22 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8E2101CF
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 13:31:21 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id a11so5332021wmq.3
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 13:31:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=LZFfaWPD18Mwn/Qf0FVZj2x1xhwBuquEIxoxBMUtgQA=;
-        b=kE0qc3AisgkyAVOsp0+1WD3dlNS4GeQRZ7j67HMm+hPcipeVb7jpkSQKROx9XIPzE+
-         cDqDz67Ndri+iJTuRM7ShjG3zfASAYpmwv1hKFOyFH7ogOwW4fDLC3uTyEp/clOFUqyt
-         L7EWk5GhOO/G9SOmxlvsj15iJzytGdYDtyMgaLDXJaYR4+d60YeAnaADYjo4391WH1TZ
-         TkPh+QssbFJvu9qJBeNC6r72nR2E2dNBrBSXvHeRvCpvzxDPblTg5S+Dl9sFZSy5Tlyz
-         fcU/4Zprem1uXevmQVApTrpMEc4K9/AIIDJ0nH2UCQ7o8e+x7Mo5uAyJ2m6j8dfYUzTQ
-         xA4Q==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=MubSuBJ55Yor4lGrHEqbMJ79aaqMV5qcbEpjGX8/hEg=;
+        b=o5NvaAIlqMRDnCT7EydZylzFd6imx21dOgzQpWut83+uDBbcaWKujB0WWLNa48Hsza
+         Hhm2SYBpbSdXx00g5K7J5oOwfuKX7CeYf1I/j3irJzBJluNNPu9fml+recqWh9YDBUsD
+         r+beYwBV6Z5vxuh2o1IvGl+Sp1OzoOnd81njbUlNVck3vJ77Ij9Ioct6Q2gzwed0Q67f
+         h+1l5+9RPmBGA/BUMRFbKBQ6F/KRK2VhQO/0nOSLXgq41ItYtMDd7GLQtd5tra7A+W4x
+         haky8V7B1rbLz/FrnwJh9lLvI5fND5ge2dI9WVORhF9zntlNciJQWhaBDlluv7Aubq6u
+         Qr9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=LZFfaWPD18Mwn/Qf0FVZj2x1xhwBuquEIxoxBMUtgQA=;
-        b=k6HXqSpAIXi8ENCajDr4Hjt0fCqKiInlVk3zcbv3wtumEJ/CCNmkyw6cxQKGwavPG6
-         FOZI2DMf+Jf9WmA+y3v8HvzrW5rdMSrSh600v44vXoAP89xUOKvTEPj92iyoS96gkhuq
-         ly7X8j8qtNSCKIR5RkWOa5H52Kjj/VDyFpSXVtv70J7r3Ieqg2JGWJew4z2H33dT2dzq
-         ZTZks8bNCF0wUtIYKZFabTlF+M4X3H6T2hyXqeUZZ6TL8IW9+kXdOMILP/FELtDlgvC6
-         jpq9MvX2whE+dd60z1rBzu3Ab70krYTpAFqYt6qph1Scv1dnlriNQ/fx3kXKYd9rF6oo
-         9DQA==
-X-Gm-Message-State: ACgBeo0xCVSd2SqbBbq1AD9susMrhvL3tJ+8ADq+hVS/ShHFoHk/DbYb
-        tS6MZQx46TlH/IK69CQSn7hoHpCv9IQEtGds5J8=
-X-Google-Smtp-Source: AA6agR6ye6dw5us5WT0+i8bbYGiBw3rPYmeCiduhNj8+D7R0kKFXxfpvP6A/HaBoK/SMUCs/fyAulvTxgOOgk/NFJjU=
-X-Received: by 2002:a05:6870:9193:b0:10d:130e:e57c with SMTP id
- b19-20020a056870919300b0010d130ee57cmr12444363oaf.286.1659990481767; Mon, 08
- Aug 2022 13:28:01 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=MubSuBJ55Yor4lGrHEqbMJ79aaqMV5qcbEpjGX8/hEg=;
+        b=IAPGcGsmaU3PbpNeLL5BJP9hSIO7kLSLIw1pLSK2UDMnbfff8Lz7YNgN0h0pf0U99m
+         ZaMP9A0LBuKS64LOPkL9b3fJb/8PxhrWi/LXL5VubGHif4uuemmJPnl2u8mM/O2dIn2u
+         ZOyC5znNd3QYAnGhuq5e7oncyjp1eTdF7yrRtj6GqXYG1iIC1MutQW1tfmG1wxB7PPD0
+         qZ/lW2riKmDgDuS/m+e2TdWpax1R7uey4ykUvnZAg0eiJV3slC4DRuaZKo7uGX/LDgIG
+         SFJKHxpeQNXMVHykjAYbcGT1loUAuOKpBUKzIQJGgoxb2tYBRY8HmofkbiwAQdyPpALN
+         EkdA==
+X-Gm-Message-State: ACgBeo3xDC4lp9a5ZMFLs4bt8r9mkQQL51cL8O/PUUODKzNRPY2C/0XO
+        gD2IrTknTG/hEnM07YvMpfQTHw==
+X-Google-Smtp-Source: AA6agR797Y47l7dV9X/bio/z/588billFLDJlV1CmWbYaylTxUUtSCvRDQAGIjpm17+tJE5SSe8oOg==
+X-Received: by 2002:a05:600c:3b02:b0:3a5:2460:f059 with SMTP id m2-20020a05600c3b0200b003a52460f059mr8907497wms.129.1659990680315;
+        Mon, 08 Aug 2022 13:31:20 -0700 (PDT)
+Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
+        by smtp.googlemail.com with ESMTPSA id q21-20020a1cf315000000b003a317ee3036sm14262576wmq.2.2022.08.08.13.31.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Aug 2022 13:31:19 -0700 (PDT)
+Message-ID: <bbd09ad6-db85-5981-a5c1-1dabca1f1b66@linaro.org>
+Date:   Mon, 8 Aug 2022 22:31:17 +0200
 MIME-Version: 1.0
-References: <20220805103605.23096-1-yuji2.ishikawa@toshiba.co.jp>
-In-Reply-To: <20220805103605.23096-1-yuji2.ishikawa@toshiba.co.jp>
-From:   Oded Gabbay <oded.gabbay@gmail.com>
-Date:   Mon, 8 Aug 2022 23:27:34 +0300
-Message-ID: <CAFCwf10PL+kO5YcaBTmA1N34tSF18NJ0GLJoJ0L2VG5GuV-6XQ@mail.gmail.com>
-Subject: Re: FYI: misc: visconti: Toshiba Visconti DSP accelerator driver sample
-To:     Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
-Cc:     Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <linux-arm-kernel@lists.infradead.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 2/4] thermal/of: Return -ENODEV instead of -EINVAL if
+ registration fails
+Content-Language: en-US
+To:     Guenter Roeck <linux@roeck-us.net>, rafael@kernel.org
+Cc:     michael@walle.cc, dan.carpenter@oracle.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>
+References: <20220808180915.446053-1-daniel.lezcano@linaro.org>
+ <20220808180915.446053-2-daniel.lezcano@linaro.org>
+ <f8008f05-4e4d-e21f-2e40-e234930ee86e@roeck-us.net>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <f8008f05-4e4d-e21f-2e40-e234930ee86e@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 5, 2022 at 1:41 PM Yuji Ishikawa
-<yuji2.ishikawa@toshiba.co.jp> wrote:
->
-> Hello Odded
->
-> This is a sample (wip) driver for a DSP found on Toshiba Visconti SoC.
-> The DSP typically accepts some images, apply an algorithm on them and yields resulting one.
-> Therefore (image-in, image-out), they say this driver should be classified to media driver category.
-> However, it can handle various data format (wider than v4l2 officially supports)
-> if userland provide firmware (=algorithm) for its own.
->
-> Yes, this rough implementation is the first step only our staff could go.
-> I'm not for sure whether we could carry out experiments earlier if we chose to use existing frameworks,
-> instead of writing our own routine for handling DMA-BUFs and interrupts.
-> I hope this post will help your case-study.
->
-> Regards
->         Yuji Ishikawa
->
-Thanks Yuji.
+On 08/08/2022 20:35, Guenter Roeck wrote:
+> On 8/8/22 11:09, Daniel Lezcano wrote:
+>> The previous version of the OF code was returning -ENODEV if no
+>> thermal zones description was found or if the lookup of the sensor in
+>> the thermal zones was not found.
+>>
+>> The backend drivers are expecting this return value as an information
+>> about skipping the sensor initialization and considered as normal.
+>>
+>> Fix the return value by replacing -EINVAL by -ENODEV
+>>
+>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+>> ---
+>>   drivers/thermal/thermal_of.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/thermal/thermal_of.c b/drivers/thermal/thermal_of.c
+>> index 368eb58e97cf..4210c18ef7b2 100644
+>> --- a/drivers/thermal/thermal_of.c
+>> +++ b/drivers/thermal/thermal_of.c
+>> @@ -329,7 +329,7 @@ static struct device_node 
+>> *of_thermal_zone_find(struct device_node *sensor, int
+>>       np = of_find_node_by_name(NULL, "thermal-zones");
+>>       if (!np) {
+>>           pr_err("Unable to find thermal zones description\n");
+> 
+> I really don't like that error message: People will see it (and complain)
+> whenever a sensor registers and there is no thermal zone, even though that
+> is perfectly normal (see description above).
+> 
 
-I've gone over the IOCTLs and they seem fairly straightforward. I
-think that we will be able to accommodate at least part of them in the
-common code of an accel subsystem.
-Oded
+I agree, I'll change the message to:
+
+	pr_info("No thermal zones description\n");
+
+sounds good ?
+
+>> -        return ERR_PTR(-EINVAL);
+>> +        return ERR_PTR(-ENODEV);
+>>       }
+>>       /*
+>> @@ -368,7 +368,7 @@ static struct device_node 
+>> *of_thermal_zone_find(struct device_node *sensor, int
+>>               }
+>>           }
+>>       }
+>> -    tz = ERR_PTR(-EINVAL);
+>> +    tz = ERR_PTR(-ENODEV);
+>>   out:
+>>       of_node_put(np);
+>>       return tz;
+> 
+
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
