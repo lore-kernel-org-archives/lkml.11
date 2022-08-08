@@ -2,68 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C604C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:21:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA3BC25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243615AbiHHOVj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 10:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
+        id S243560AbiHHOXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 10:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243487AbiHHOVX (ORCPT
+        with ESMTP id S243487AbiHHOXI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 10:21:23 -0400
-Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085DBFD1C
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 07:21:19 -0700 (PDT)
-From:   =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
-        t=1659968029; bh=Fm6Vba/6+QU/ozbeHX3SBdqTd1u/vXS5xt2ra8/hbQA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=i9JupiQV2QeN9T4EKz8VtX70/98gICqnMnKLpeKAgrbZX41+oFiF15k+2I+keXcwp
-         0qvNxH5gkC1WByC6ghMhR9U+d7FhzocQnl7u07xBz0pepFYu/9xuf2p1nLd696073/
-         MPrvpBye7PmZYdCJuZqxTYKDEtvRxgn6aHCu/bqU=
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Cc:     =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Stephen Kitt <steve@sk2.org>,
-        Frank Shi <shifu0704@thundersoft.com>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        asahi@lists.linux.dev
-Subject: [PATCH 2/4] ASoC: tas2770: Allow mono streams
-Date:   Mon,  8 Aug 2022 16:12:44 +0200
-Message-Id: <20220808141246.5749-3-povik+lin@cutebit.org>
-In-Reply-To: <20220808141246.5749-1-povik+lin@cutebit.org>
-References: <20220808141246.5749-1-povik+lin@cutebit.org>
+        Mon, 8 Aug 2022 10:23:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 092AC101FF;
+        Mon,  8 Aug 2022 07:23:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 962DB60E08;
+        Mon,  8 Aug 2022 14:23:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D918C433C1;
+        Mon,  8 Aug 2022 14:23:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659968587;
+        bh=Oi083GUnRL2Ooq6SehAATCVZjiwIxg1ihlElGrqV/kY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fS5d5P8DoCknCPMWDBgZRxF7c3MRFWL9LW/t1k7j0KHMl3+oucSQufcfPlImfBoZq
+         wR9uKymToHc7ayoPJ0zjPdWGWJtwcvUymn2aDpnzhI8WqD5oi/pORfM9AGS4GLEDHW
+         KHfcC+wT7Usxv050rb+VZwyVWlzDzD24ghgWKfdM=
+Date:   Mon, 8 Aug 2022 16:23:04 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Kim Phillips <kim.phillips@amd.com>
+Cc:     mingo@kernel.org, andrew.cooper3@citrix.com, bp@alien8.de,
+        bp@suse.de, bpf@vger.kernel.org, jpoimboe@redhat.com,
+        linux-kernel@vger.kernel.org, peterz@infradead.org,
+        thomas.lendacky@amd.com, x86@kernel.org
+Subject: Re: [PATCH v3] x86/bugs: Enable STIBP for IBPB mitigated RetBleed
+Message-ID: <YvEcSGxAh9qbOxPH@kroah.com>
+References: <Yu66YlFzd4VRZq6/@gmail.com>
+ <20220808141702.10439-1-kim.phillips@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220808141702.10439-1-kim.phillips@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The part is a mono speaker amp, but it can do downmix and switch between
-left and right channel, so the right channel range is 1 to 2.
+On Mon, Aug 08, 2022 at 09:17:02AM -0500, Kim Phillips wrote:
+> AMD's "Technical Guidance for Mitigating Branch Type Confusion,
+> Rev. 1.0 2022-07-12" whitepaper, under section 6.1.2 "IBPB On
+> Privileged Mode Entry / SMT Safety" says:
+> 
+> "Similar to the Jmp2Ret mitigation, if the code on the sibling thread
+> cannot be trusted, software should set STIBP to 1 or disable SMT to
+> ensure SMT safety when using this mitigation."
+> 
+> So, like already being done for retbleed=unret, the also for
+> retbleed=ibpb, force STIBP on machines that have it, and report
+> its SMT vulnerability status accordingly.
+> 
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=206537
+> Fixes: 3ebc17006888 ("x86/bugs: Add retbleed=ibpb")
+> Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+> ---
+> v3:  "unret and ibpb mitigations" -> "UNRET and IBPB mitigations" (Mingo)
+> v2:  Justify and explain STIBP's role with IBPB (Boris)
+> 
+>  .../admin-guide/kernel-parameters.txt         | 20 ++++++++++++++-----
+>  arch/x86/kernel/cpu/bugs.c                    | 10 ++++++----
+>  2 files changed, 21 insertions(+), 9 deletions(-)
 
-Fixes: 1a476abc723e ("tas2770: add tas2770 smart PA kernel driver")
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
----
- sound/soc/codecs/tas2770.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Any specific reason you don't want this also backported to the stable
+kernel branches that have the other retbleed fixes in them?
 
-diff --git a/sound/soc/codecs/tas2770.c b/sound/soc/codecs/tas2770.c
-index 10b64d5ba756..db446db88df5 100644
---- a/sound/soc/codecs/tas2770.c
-+++ b/sound/soc/codecs/tas2770.c
-@@ -507,7 +507,7 @@ static struct snd_soc_dai_driver tas2770_dai_driver[] = {
- 		.id = 0,
- 		.playback = {
- 			.stream_name    = "ASI1 Playback",
--			.channels_min   = 2,
-+			.channels_min   = 1,
- 			.channels_max   = 2,
- 			.rates      = TAS2770_RATES,
- 			.formats    = TAS2770_FORMATS,
--- 
-2.33.0
+thanks,
 
+greg k-h
