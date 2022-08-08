@@ -2,82 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA79C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:34:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0146AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:35:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243718AbiHHPeq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 11:34:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43758 "EHLO
+        id S243737AbiHHPfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 11:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237965AbiHHPel (ORCPT
+        with ESMTP id S243601AbiHHPfU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 11:34:41 -0400
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24FCD1402F
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 08:34:41 -0700 (PDT)
-Received: by mail-qt1-x835.google.com with SMTP id u12so6789065qtk.0
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 08:34:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=pkIOxRI75elKX84Ltag3sPcyywVqagQ5FUb/B/7UN30=;
-        b=WSRRlHsAuStjpJC5+Mc4iDw+d5oIPnDM1crNQHyAdHNEKCztvm8kECq5eNh60fhSdg
-         GWQk6a1Sl3dMo+LGkQRoJ4gL4SUnQEv0/JTXMCw3LDbxPtJmf7Wu8N6RDh0Z9ALhN93o
-         +S33OtHuFKJf2LOynn86DJuutjIp2Fi47Sr+J6ynEVGTISmZPYa9A0CLk5QDoA+/91YH
-         WD+wLKD7qfficsrzIkgS5SNQikEhukOgyTCumxzP/8GTivml+FvLNW//V4jswNotkN3O
-         aWRd8Jk+FWNMfltepao+fLhgPwoyO2BQCXadbnVbny7RynzbM4Q783xiSvtBZKGsP676
-         7wUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=pkIOxRI75elKX84Ltag3sPcyywVqagQ5FUb/B/7UN30=;
-        b=zJ4rpIIlhYj1OQjX7jgOj6Etd3Qh49C4Ai/NXodTOHEm/ZsfU1A52YNQbu8yiT7QoV
-         5fc5fIDwP0MXpeK+T5wyPZfgCQ8+1FJ8Qgvw2D1dapEkFF3O5FgEDtm9NYJlmm3jVgn/
-         vIIjB1GDzUQVADcz4sDinaEo/quF5NyE120ktKpPZFvZhlB8o3gZDmMYHrZ0JxuQvVQi
-         SNuuxi7qvu8INDasAcKeM5qsGj8O4gkZ4oLxcoY45o7hDCM7D8IdUVBAkkL3AKOePsQQ
-         uOy4qlUiyPO58GEpQbHT7qaSeuz/zes5aVlImqpLubMfRYq4QFHzhidVyuNVqDk0Qzma
-         PO8Q==
-X-Gm-Message-State: ACgBeo136k5QOEccheNnfsiPkatS5H3RS+uR4OPStNjr7ifxAE7EAj3J
-        hft0O6qEe+GQGGyYoPequl/VTyCtxJprPp1gWgI=
-X-Google-Smtp-Source: AA6agR7Hc2NGGQ7d/HSoy2lOC9JETTDgfvJLnyRUEOVYhnKVZ8aPlkhwIMxcZmG0nGXbmv7Wh2AzY6wCFaeJvV4T8Q0=
-X-Received: by 2002:a05:622a:48f:b0:343:463:351a with SMTP id
- p15-20020a05622a048f00b003430463351amr1035780qtx.61.1659972880250; Mon, 08
- Aug 2022 08:34:40 -0700 (PDT)
+        Mon, 8 Aug 2022 11:35:20 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5D7E6F;
+        Mon,  8 Aug 2022 08:35:17 -0700 (PDT)
+X-QQ-mid: bizesmtp85t1659972903t2p774qw
+Received: from localhost.localdomain ( [182.148.14.53])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 08 Aug 2022 23:34:55 +0800 (CST)
+X-QQ-SSF: 0100000000200050B000B00A0000000
+X-QQ-FEAT: +ynUkgUhZJmsNTJJ6yUxxh0wvTEWS2SSLFe934YzFSqBPPwtlzaIYwRfw+rdy
+        W7IGy+7s8OwZpC49FKTViEfr5t+Pe2xRj9r/O221D15z1OaUtUkVvfWk6vLYR4GF7wW4HIc
+        lRpEF5f4t/dHNi5lTOGQI29cSMWhicqs6OIe2YQ+P56tcL7JivuzPhLnOZicP40vwwIH6Je
+        d8Iy9kB65A7rD6iH/6Js8KZOvwWplGRS8S4MsxTFivnJS2efupqQt1jPW8+vKbAHFuyCDtg
+        QrP2IabR7Doy6a1sATvk24sym9dh0mSQ3nMdJBtEyexE+QuYP0Uar6+f3nFLxh3I3XHk+0I
+        3q6szO80MjkOOT1urPue7XK1MydbhCr71DsqEhYNL+96+1cnf+fYppXegvcj8zX3LOwUuRT
+X-QQ-GoodBg: 0
+From:   shaomin Deng <dengshaomin@cdjrlc.com>
+To:     a.zummo@towertech.it, alexandre.belloni@bootlin.com
+Cc:     linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        shaomin Deng <dengshaomin@cdjrlc.com>
+Subject: [PATCH] rtc: Fix typo in interface.c
+Date:   Mon,  8 Aug 2022 11:34:54 -0400
+Message-Id: <20220808153454.6844-1-dengshaomin@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220718122328.8287-1-andriy.shevchenko@linux.intel.com> <YvEqFguuc4JMijJk@google.com>
-In-Reply-To: <YvEqFguuc4JMijJk@google.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 8 Aug 2022 17:34:03 +0200
-Message-ID: <CAHp75Vea6r1845S2PsqD6xaYfxQ1BUCnBvHuTOV0vZ9qFME5Kg@mail.gmail.com>
-Subject: Re: [RESEND][PATCH v1 1/9] mfd: intel_soc_pmic_crc: Use devm_regmap_add_irq_chip()
-To:     Lee Jones <lee@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andy@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 5:22 PM Lee Jones <lee.jones@linaro.org> wrote:
-> On Mon, 18 Jul 2022, Andy Shevchenko wrote:
->
-> > Use devm_regmap_add_irq_chip() to simplify the code.
-> >
-> > While at it, replace -1 magic parameter by PLATFORM_DEVID_NONE when
-> > calling mfd_add_devices().
-> >
-> > Note, the mfd_add_devices() left in non-devm variant here due to
-> > potentially increased churn while wrapping pwm_remove_table().
+Delete repeated word "best" in comments.
 
-> Doesn't apply, please rebase the set (probably on -next).
+Signed-off-by: shaomin Deng <dengshaomin@cdjrlc.com>
+---
+ drivers/rtc/interface.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-It was a wrong series, and I guess the latest one is this:
-https://lore.kernel.org/lkml/20220801114211.36267-1-andriy.shevchenko@linux.intel.com/
-
+diff --git a/drivers/rtc/interface.c b/drivers/rtc/interface.c
+index 9edd662c69ac..7c30cb3c764d 100644
+--- a/drivers/rtc/interface.c
++++ b/drivers/rtc/interface.c
+@@ -256,7 +256,7 @@ int __rtc_read_alarm(struct rtc_device *rtc, struct rtc_wkalrm *alarm)
+ 	 *
+ 	 * This could all instead be done in the lower level driver,
+ 	 * but since more than one lower level RTC implementation needs it,
+-	 * then it's probably best best to do it here instead of there..
++	 * then it's probably best to do it here instead of there..
+ 	 */
+ 
+ 	/* Get the "before" timestamp */
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.1
+
