@@ -2,81 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7078C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE9A0C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:15:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237718AbiHHQNu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 12:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45678 "EHLO
+        id S243849AbiHHQPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 12:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243936AbiHHQNq (ORCPT
+        with ESMTP id S230398AbiHHQPO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 12:13:46 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D8C95B6;
-        Mon,  8 Aug 2022 09:13:45 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id f14so6848603qkm.0;
-        Mon, 08 Aug 2022 09:13:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=RydAc2h1TG1DNQLkGPwhdBQh+OZCJYVbtJqYkQv0eqs=;
-        b=lTkujjumqQiRClqVK/7uGOiLol86GKygEm7KB1YnzNtAjcVvg83b5dzIp7yVeX0LD1
-         82rfY6UjfYtUeuyeCr4SbTPsrPixb8+3ki0ohTwe3JwooIUb31lZ2PAatCLuaZWZxakJ
-         zfUD/2tXgv+WMlBL3tLAJr2aZ2n5K8lHFz8FwdUoTnzOSHwLpLV5oIiNrUj+Z6Z4G/Dj
-         2zDjqHI37fsD8r9si8ndG3ZJMblQ7DZmAX/ldd9s5UbLICJFpfN6Oswa2s8wz65f5EY0
-         +edsSU/tbEs84GXgFMpsYzcEYK96H59D4l4m574cLmQ/7BmvEIJDQDZTW5NUjIUIHUe0
-         uW+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=RydAc2h1TG1DNQLkGPwhdBQh+OZCJYVbtJqYkQv0eqs=;
-        b=AopuPEz9FnLVZUyN3+J8hXL1Kd9j+tTctgh2B9lYjceIzRaEHFg5NOi1WOAfDGZFXZ
-         Wy0zg4kK7W8u0ccpFEAayCyrVRV4ylJUp3i5nqo9AiADCeBpjstoZlYGU64UfLoEPV+d
-         aviDcw8+PAZkPFRWXSec7jEnG6LRQQIpWLSlJijXdQ0VOBv6xyDHsd8giFliaJOZmV57
-         GVK7jutebH7mNx++qxgLZ/xUCkPPwcwhU1TTjinKO7rfYKq08C2LxrSaJHqrW7q0+EVz
-         0gMeSfbf35di57AcLuULOzt46EFicTRxe1kO2JxcbMB5IKmy+zX1N1zZ5+1A1P1kWBD1
-         jY/Q==
-X-Gm-Message-State: ACgBeo0yMjJtMfORNtCN5fco1ZIGEKZvoODDUKvp6GWNRVzsZEtzSar2
-        gzhJ2G1MbxhNihsqUBODC2es7AlO91U5vyT0RpY=
-X-Google-Smtp-Source: AA6agR7XtKMvsHc14GyMFRB4LH96lb/VxXn/pAY+PTjrqAEQKF7Ovqn1Zp8MAOxfO+fUECjMl1ixyoSN8+RNZ1QRrNs=
-X-Received: by 2002:a05:620a:254d:b0:6ab:84b8:25eb with SMTP id
- s13-20020a05620a254d00b006ab84b825ebmr14564064qko.383.1659975224727; Mon, 08
- Aug 2022 09:13:44 -0700 (PDT)
+        Mon, 8 Aug 2022 12:15:14 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622FE126;
+        Mon,  8 Aug 2022 09:15:12 -0700 (PDT)
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1oL5Oz-0002Rw-Hu; Mon, 08 Aug 2022 18:14:49 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1oL5Oz-000OuE-0M; Mon, 08 Aug 2022 18:14:49 +0200
+Subject: Re: [PATCH 4/4] build: Switch to new openssl API for test-libcrypto
+To:     Roberto Sassu <roberto.sassu@huawei.com>, quentin@isovalent.com,
+        ast@kernel.org, andrii@kernel.org, martin.lau@linux.dev,
+        song@kernel.org, john.fastabend@gmail.com, kpsingh@kernel.org,
+        sdf@google.com, peterz@infradead.org, mingo@redhat.com,
+        acme@kernel.org, terrelln@fb.com, nathan@kernel.org,
+        ndesaulniers@google.com
+Cc:     bpf@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        llvm@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220719170555.2576993-1-roberto.sassu@huawei.com>
+ <20220719170555.2576993-4-roberto.sassu@huawei.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5f867295-10d2-0085-d1dc-051f56e7136a@iogearbox.net>
+Date:   Mon, 8 Aug 2022 18:14:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20220808030420.8633-1-luke@ljones.dev> <20220808030420.8633-6-luke@ljones.dev>
-In-Reply-To: <20220808030420.8633-6-luke@ljones.dev>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 8 Aug 2022 18:13:08 +0200
-Message-ID: <CAHp75VdgGgp2H906sQjhauzEGLp8Mr-2Hj9hKdkF9MPeOOCbLQ@mail.gmail.com>
-Subject: Re: [PATCH v2 5/6] asus-wmi: Convert all attr-show to use sysfs_emit
-To:     "Luke D. Jones" <luke@ljones.dev>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220719170555.2576993-4-roberto.sassu@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26621/Mon Aug  8 09:52:38 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 5:08 AM Luke D. Jones <luke@ljones.dev> wrote:
->
-> This changes all *_show attributes in asus-wmi.c to use sysfs_emit
+Hi Arnaldo,
 
-We refer to functions as func().
+On 7/19/22 7:05 PM, Roberto Sassu wrote:
+> Switch to new EVP API for detecting libcrypto, as Fedora 36 returns an
+> error when it encounters the deprecated function MD5_Init() and the others.
+> The error would be interpreted as missing libcrypto, while in reality it is
+> not.
+> 
+> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
 
-> instead of the older method of writing to the output buffer manually.
+Given rest of the tooling fixes from Andres Freund went via perf tree and the
+below is perf related as well, I presume you'll pick this up, too?
 
-...
+   [0] https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/log/?h=perf/core
 
-> -       return sprintf(buf, "%d\n", value < 0 ? -1 : value*100);
-> +       return sysfs_emit(buf, "%d\n", value < 0 ? -1 : value*100);
+>   tools/build/feature/test-libcrypto.c | 15 +++++++++++----
+>   1 file changed, 11 insertions(+), 4 deletions(-)
+> 
+> diff --git a/tools/build/feature/test-libcrypto.c b/tools/build/feature/test-libcrypto.c
+> index a98174e0569c..bc34a5bbb504 100644
+> --- a/tools/build/feature/test-libcrypto.c
+> +++ b/tools/build/feature/test-libcrypto.c
+> @@ -1,16 +1,23 @@
+>   // SPDX-License-Identifier: GPL-2.0
+> +#include <openssl/evp.h>
+>   #include <openssl/sha.h>
+>   #include <openssl/md5.h>
+>   
+>   int main(void)
+>   {
+> -	MD5_CTX context;
+> +	EVP_MD_CTX *mdctx;
+>   	unsigned char md[MD5_DIGEST_LENGTH + SHA_DIGEST_LENGTH];
+>   	unsigned char dat[] = "12345";
+> +	unsigned int digest_len;
+>   
+> -	MD5_Init(&context);
+> -	MD5_Update(&context, &dat[0], sizeof(dat));
+> -	MD5_Final(&md[0], &context);
+> +	mdctx = EVP_MD_CTX_new();
+> +	if (!mdctx)
+> +		return 0;
+> +
+> +	EVP_DigestInit_ex(mdctx, EVP_md5(), NULL);
+> +	EVP_DigestUpdate(mdctx, &dat[0], sizeof(dat));
+> +	EVP_DigestFinal_ex(mdctx, &md[0], &digest_len);
+> +	EVP_MD_CTX_free(mdctx);
+>   
+>   	SHA1(&dat[0], sizeof(dat), &md[0]);
+>   
+> 
 
-While at it, put spaces around *: 'value * 100'.
-
--- 
-With Best Regards,
-Andy Shevchenko
