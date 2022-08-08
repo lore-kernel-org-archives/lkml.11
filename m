@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E29C25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E52AC25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243324AbiHHBwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38622 "EHLO
+        id S243348AbiHHBwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:52:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243280AbiHHBu2 (ORCPT
+        with ESMTP id S243222AbiHHBu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:50:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B386186F1;
-        Sun,  7 Aug 2022 18:37:39 -0700 (PDT)
+        Sun, 7 Aug 2022 21:50:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50765DFDF;
+        Sun,  7 Aug 2022 18:37:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2AE8B80E0F;
-        Mon,  8 Aug 2022 01:37:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DAD1C43470;
-        Mon,  8 Aug 2022 01:37:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2FAEBCE0F8E;
+        Mon,  8 Aug 2022 01:37:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A3E9C4347C;
+        Mon,  8 Aug 2022 01:37:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922646;
-        bh=4pNbcfBY7sSXixtKDEXaS8TRXL9OvdOoDNaQXO+z7ao=;
+        s=k20201202; t=1659922657;
+        bh=b9PPvqIUFkRcJBxTYmFhQqFfT0RTP2TTSTI7ENwS18Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LAO69gcvTHrDDgCxma32yzXotSjVXmuo9IP/Pukxx/CAh4ACOco2rYy5pmWqZvCcP
-         M6d5W5tOdKyOakqvsQefp1xO7LBeWV5NLs3TBFDRs9dkfngpQx14CKIh8IlGFEiaW8
-         NsmHhKtKH17hDNuA3VtG3FlGyYaBclPpYQxGG56CZE7u92uDFcu8BOmHg0Leg+97Md
-         eszwjbE1pfLUfptBj1FOt+GzVcfePmoe+CW2YstcC1CUIT0MpWdiV+OijTUfYKtviu
-         PBTwPfeLS4XUoQLHfl1AEKphYJVM70kxoRY6AXNXLZ9hdEwsHLiwqYd2WjLV10v7CN
-         Ki85UFMN6IRug==
+        b=u1m47u3DT9ibmUaIg45jzkvJkwhoTi+LkbU3WCTkKLho1Mrz5VcelzqfN894vwYE6
+         lbCFKr06rW4MTNTrXwEgwDM5vXHvt3EOsO/9WB8hm9rkhifNTd0HhYE1EamcVSGIxg
+         arLS3Zz2+lUTv7dOOhOfE8rSpH+GwpmU8o5TgcxbuTXXC1K36sskydneZd+zPOoo/y
+         /nQBCjSpBFpoqMv9Vyxl0NS/TlCcp7noQI/Lr2dYhs7bILp9TSu7fi0I5EJNnSkqrh
+         mDi7UC9mZnflC4iWxgBOK76p22jKTjmrG4hESpEVAP/IKZ3kXLA40+ZVSSvSPlIKmC
+         fBMGri6yX/dYA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>, jdelvare@suse.com,
-        linux-hwmon@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 40/45] hwmon: (sht15) Fix wrong assumptions in device remove callback
-Date:   Sun,  7 Aug 2022 21:35:44 -0400
-Message-Id: <20220808013551.315446-40-sashal@kernel.org>
+Cc:     Pavel Begunkov <asml.silence@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, imagedong@tencent.com,
+        luiz.von.dentz@intel.com, vasily.averin@linux.dev,
+        jk@codeconstruct.com.au, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 44/45] skbuff: don't mix ubuf_info from different sources
+Date:   Sun,  7 Aug 2022 21:35:48 -0400
+Message-Id: <20220808013551.315446-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013551.315446-1-sashal@kernel.org>
 References: <20220808013551.315446-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,73 +54,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-[ Upstream commit 7d4edccc9bbfe1dcdff641343f7b0c6763fbe774 ]
+[ Upstream commit 1b4b2b09d4fb451029b112f17d34792e0277aeb2 ]
 
-Taking a lock at the beginning of .remove() doesn't prevent new readers.
-With the existing approach it can happen, that a read occurs just when
-the lock was taken blocking the reader until the lock is released at the
-end of the remove callback which then accessed *data that is already
-freed then.
+We should not append MSG_ZEROCOPY requests to skbuff with non
+MSG_ZEROCOPY ubuf_info, they might be not compatible.
 
-To actually fix this problem the hwmon core needs some adaption. Until
-this is implemented take the optimistic approach of assuming that all
-readers are gone after hwmon_device_unregister() and
-sysfs_remove_group() as most other drivers do. (And once the core
-implements that, taking the lock would deadlock.)
-
-So drop the lock, move the reset to after device unregistration to keep
-the device in a workable state until it's deregistered. Also add a error
-message in case the reset fails and return 0 anyhow. (Returning an error
-code, doesn't stop the platform device unregistration and only results
-in a little helpful error message before the devm cleanup handlers are
-called.)
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Link: https://lore.kernel.org/r/20220725194344.150098-1-u.kleine-koenig@pengutronix.de
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/sht15.c | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ net/core/skbuff.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/hwmon/sht15.c b/drivers/hwmon/sht15.c
-index 7f4a63959730..ae4d14257a11 100644
---- a/drivers/hwmon/sht15.c
-+++ b/drivers/hwmon/sht15.c
-@@ -1020,25 +1020,20 @@ static int sht15_probe(struct platform_device *pdev)
- static int sht15_remove(struct platform_device *pdev)
- {
- 	struct sht15_data *data = platform_get_drvdata(pdev);
-+	int ret;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 5ebef94e14dc..891db074981e 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1213,6 +1213,10 @@ struct ubuf_info *msg_zerocopy_realloc(struct sock *sk, size_t size,
+ 		const u32 byte_limit = 1 << 19;		/* limit to a few TSO */
+ 		u32 bytelen, next;
  
--	/*
--	 * Make sure any reads from the device are done and
--	 * prevent new ones beginning
--	 */
--	mutex_lock(&data->read_lock);
--	if (sht15_soft_reset(data)) {
--		mutex_unlock(&data->read_lock);
--		return -EFAULT;
--	}
- 	hwmon_device_unregister(data->hwmon_dev);
- 	sysfs_remove_group(&pdev->dev.kobj, &sht15_attr_group);
++		/* there might be non MSG_ZEROCOPY users */
++		if (uarg->callback != msg_zerocopy_callback)
++			return NULL;
 +
-+	ret = sht15_soft_reset(data);
-+	if (ret)
-+		dev_err(&pdev->dev, "Failed to reset device (%pe)\n", ERR_PTR(ret));
-+
- 	if (!IS_ERR(data->reg)) {
- 		regulator_unregister_notifier(data->reg, &data->nb);
- 		regulator_disable(data->reg);
- 	}
- 
--	mutex_unlock(&data->read_lock);
--
- 	return 0;
- }
- 
+ 		/* realloc only when socket is locked (TCP, UDP cork),
+ 		 * so uarg->len and sk_zckey access is serialized
+ 		 */
 -- 
 2.35.1
 
