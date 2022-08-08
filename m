@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F00CC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:49:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ADFFC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243258AbiHHBtv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:49:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54870 "EHLO
+        id S243264AbiHHBtz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243096AbiHHBsr (ORCPT
+        with ESMTP id S243154AbiHHBtK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:48:47 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B68C17AA4;
-        Sun,  7 Aug 2022 18:37:22 -0700 (PDT)
+        Sun, 7 Aug 2022 21:49:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72FD017E00;
+        Sun,  7 Aug 2022 18:37:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8001CCE0FE0;
-        Mon,  8 Aug 2022 01:37:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA769C433B5;
-        Mon,  8 Aug 2022 01:37:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0557E60E65;
+        Mon,  8 Aug 2022 01:37:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95DFFC43470;
+        Mon,  8 Aug 2022 01:37:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922637;
-        bh=meU/262F3qzi4iV+Hx8Xe4mEqCplycf9UmRCcP/BRvo=;
+        s=k20201202; t=1659922632;
+        bh=K5ZHDwywZf6sEzoMUCgypmRbTxPVUltpevV5pX0h7J4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TztZ4HjZxCgMRWeXKXSErnVUl6Y5xIq3Z7jE8NH/JnRdW5f5agC5FKqDCF/EEVSuT
-         wVo2jp0+xkJe7irQmEOARU1QT90uC9cn6UicV0POZL5C7bXYE06Eg42VCtha3A8xXk
-         oQvWycgs58C8XhoLhHHk+OgRVBBaX9rgZ4fnysLTYc6KZ3mtCEYBf74mYqnRWTuMEG
-         mkwfvNPwTFCo8wNtcqxNbtjbmxzZKnVgI4ExZhMXo1/YGcUl3Z4Dvv7MWTYlDSCRlb
-         mX/zZ5vUMCvNIwELkabszlUIQWI6rgnhrq78Kbqpcs9bIMl17+PwL0EfUrzj85uG3X
-         Y3A0Nzy4iTbkA==
+        b=QE79Wda8IxWlGvERMcueJIQ4pz9yAVKgeDUspynQluWZ3NakZbQ5mmknClwh3WTIU
+         MGtrWclElXr/kHTNdLFFtpIm4gckJRBPsZTA/DjUrX6kk9awVXCehDs8bkqR7a1RAv
+         okblRV34kmXp3Ms+Q6aEFyOAPn8pnzBZmRL/+l0rGtDB0Oa8ObVhNsav8sNH1oVRpg
+         BMK0QkzRzTM0wB+62RjwZiuScCV7BetoJIgqfQhBbWvtyA6vEA00ZvcKUAd+kHYz46
+         bAqWNcMfEkg1fqabJeD2ZgRnmXAcdN40Gi/+xrnyH9niLw+aQ4Crdl3iQNlkKJBqsL
+         N0mZPzYXMp10g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 35/45] arm64: dts: qcom: ipq8074: fix NAND node name
-Date:   Sun,  7 Aug 2022 21:35:39 -0400
-Message-Id: <20220808013551.315446-35-sashal@kernel.org>
+Cc:     Manyi Li <limanyi@uniontech.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 32/45] ACPI: PM: save NVS memory for Lenovo G40-45
+Date:   Sun,  7 Aug 2022 21:35:36 -0400
+Message-Id: <20220808013551.315446-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013551.315446-1-sashal@kernel.org>
 References: <20220808013551.315446-1-sashal@kernel.org>
@@ -54,35 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Manyi Li <limanyi@uniontech.com>
 
-[ Upstream commit b39961659ffc3c3a9e3d0d43b0476547b5f35d49 ]
+[ Upstream commit 4b7ef7b05afcde44142225c184bf43a0cd9e2178 ]
 
-Per schema it should be nand-controller@79b0000 instead of nand@79b0000.
-Fix it to match nand-controller.yaml requirements.
+[821d6f0359b0614792ab8e2fb93b503e25a65079] is to make machines
+produced from 2012 to now not saving NVS region to accelerate S3.
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220621120642.518575-1-robimarko@gmail.com
+But, Lenovo G40-45, a platform released in 2015, still needs NVS memory
+saving during S3. A quirk is introduced for this platform.
+
+Signed-off-by: Manyi Li <limanyi@uniontech.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/ipq8074.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/sleep.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-index fea415302408..6b9ac0550490 100644
---- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -437,7 +437,7 @@ qpic_bam: dma-controller@7984000 {
- 			status = "disabled";
- 		};
- 
--		qpic_nand: nand@79b0000 {
-+		qpic_nand: nand-controller@79b0000 {
- 			compatible = "qcom,ipq8074-nand";
- 			reg = <0x079b0000 0x10000>;
- 			#address-cells = <1>;
+diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
+index 07515139141e..d7194047d256 100644
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -361,6 +361,14 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "80E3"),
+ 		},
+ 	},
++	{
++	.callback = init_nvs_save_s3,
++	.ident = "Lenovo G40-45",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++		DMI_MATCH(DMI_PRODUCT_NAME, "80E1"),
++		},
++	},
+ 	/*
+ 	 * ThinkPad X1 Tablet(2016) cannot do suspend-to-idle using
+ 	 * the Low Power S0 Idle firmware interface (see
 -- 
 2.35.1
 
