@@ -2,37 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5097C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED755C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:47:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243805AbiHHRrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 13:47:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47794 "EHLO
+        id S243668AbiHHRrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 13:47:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244435AbiHHRpw (ORCPT
+        with ESMTP id S243879AbiHHRqH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 13:45:52 -0400
+        Mon, 8 Aug 2022 13:46:07 -0400
 Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7754632A
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:45:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B5917A9D
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:45:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
         s=mail; t=1659980507; h=from:from:sender:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=HDKUPQO6lE4XXrIyfPTsCACfjenryJXx0aNwhM3B1z8=;
-        b=ofXL2XyM1YnEPxL4Tn2Kp+ah1vDQm0TuFFRRNwMJB3P1LstbD0oVoCMgQQa9jsfIwVpvE7
-        7DvpmE2YZBlzyIoD51O9AOUV5kV7ZgbYKmrJuJ49c9yNU6XNXy1r7nyGPfMb/pyuLZ3sHp
-        cUiacYZYA42tfC3H9FrHg9jW7HdR6bE=
+        bh=MyfIVzDAtyS9hNaCn1YQzhz/dCI8btmYd/18EkdPbzo=;
+        b=0qjLM33ZN78rAyxl5Ult69Aag/DNLTqw1GpoeCuiYoyOQG6qKJh2ww5gStMaysCI8iAD5w
+        zWRuQMDH5GvdAxxsWR2AviEyWynKFP460/0GLI3aXYkl/uV5UgqJdD4tJ7tOREWpwDFPuL
+        xa1ixTyhbCVNKRNxi9Zeh85ScXqb3fI=
 From:   Paul Cercueil <paul@crapouillou.net>
 To:     Lee Jones <lee.jones@linaro.org>
 Cc:     linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>
-Subject: [PATCH v2 25/30] mfd: sprd-sc27xx: Remove #ifdef guards for PM related functions
-Date:   Mon,  8 Aug 2022 19:41:02 +0200
-Message-Id: <20220808174107.38676-26-paul@crapouillou.net>
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2 27/30] mfd: stmpe: Remove #ifdef guards for PM related functions
+Date:   Mon,  8 Aug 2022 19:41:04 +0200
+Message-Id: <20220808174107.38676-28-paul@crapouillou.net>
 In-Reply-To: <20220808174107.38676-1-paul@crapouillou.net>
 References: <20220808174107.38676-1-paul@crapouillou.net>
 MIME-Version: 1.0
@@ -41,7 +42,7 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros
+Use the new EXPORT_GPL_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros
 to handle the .suspend/.resume callbacks.
 
 These macros allow the suspend and resume functions to be automatically
@@ -54,46 +55,72 @@ regressions are subsequently easier to catch.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
-Cc: Orson Zhai <orsonzhai@gmail.com>
-Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc: Chunyan Zhang <zhang.lyra@gmail.com>
 
- drivers/mfd/sprd-sc27xx-spi.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+V2: remove duplicated "const".
 
-diff --git a/drivers/mfd/sprd-sc27xx-spi.c b/drivers/mfd/sprd-sc27xx-spi.c
-index d05a47c5187f..ea68d73e5d1c 100644
---- a/drivers/mfd/sprd-sc27xx-spi.c
-+++ b/drivers/mfd/sprd-sc27xx-spi.c
-@@ -215,7 +215,6 @@ static int sprd_pmic_probe(struct spi_device *spi)
- 	return 0;
- }
- 
--#ifdef CONFIG_PM_SLEEP
- static int sprd_pmic_suspend(struct device *dev)
- {
- 	struct sprd_pmic *ddata = dev_get_drvdata(dev);
-@@ -235,9 +234,9 @@ static int sprd_pmic_resume(struct device *dev)
- 
- 	return 0;
- }
--#endif
- 
--static SIMPLE_DEV_PM_OPS(sprd_pmic_pm_ops, sprd_pmic_suspend, sprd_pmic_resume);
-+static DEFINE_SIMPLE_DEV_PM_OPS(sprd_pmic_pm_ops,
-+				sprd_pmic_suspend, sprd_pmic_resume);
- 
- static const struct of_device_id sprd_pmic_match[] = {
- 	{ .compatible = "sprd,sc2730", .data = &sc2730_data },
-@@ -257,7 +256,7 @@ static struct spi_driver sprd_pmic_driver = {
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+
+ drivers/mfd/stmpe-i2c.c | 4 +---
+ drivers/mfd/stmpe-spi.c | 4 +---
+ drivers/mfd/stmpe.c     | 8 ++------
+ 3 files changed, 4 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/mfd/stmpe-i2c.c b/drivers/mfd/stmpe-i2c.c
+index d3eedf3d607e..bf094cc9f9de 100644
+--- a/drivers/mfd/stmpe-i2c.c
++++ b/drivers/mfd/stmpe-i2c.c
+@@ -116,9 +116,7 @@ MODULE_DEVICE_TABLE(i2c, stmpe_i2c_id);
+ static struct i2c_driver stmpe_i2c_driver = {
  	.driver = {
- 		.name = "sc27xx-pmic",
- 		.of_match_table = sprd_pmic_match,
--		.pm = &sprd_pmic_pm_ops,
-+		.pm = pm_sleep_ptr(&sprd_pmic_pm_ops),
+ 		.name = "stmpe-i2c",
+-#ifdef CONFIG_PM
+-		.pm = &stmpe_dev_pm_ops,
+-#endif
++		.pm = pm_sleep_ptr(&stmpe_dev_pm_ops),
+ 		.of_match_table = stmpe_of_match,
  	},
- 	.probe = sprd_pmic_probe,
- 	.id_table = sprd_pmic_spi_ids,
+ 	.probe		= stmpe_i2c_probe,
+diff --git a/drivers/mfd/stmpe-spi.c b/drivers/mfd/stmpe-spi.c
+index ad8055a0e286..e9cbf33502b3 100644
+--- a/drivers/mfd/stmpe-spi.c
++++ b/drivers/mfd/stmpe-spi.c
+@@ -135,9 +135,7 @@ static struct spi_driver stmpe_spi_driver = {
+ 	.driver = {
+ 		.name	= "stmpe-spi",
+ 		.of_match_table = of_match_ptr(stmpe_spi_of_match),
+-#ifdef CONFIG_PM
+-		.pm	= &stmpe_dev_pm_ops,
+-#endif
++		.pm	= pm_sleep_ptr(&stmpe_dev_pm_ops),
+ 	},
+ 	.probe		= stmpe_spi_probe,
+ 	.remove		= stmpe_spi_remove,
+diff --git a/drivers/mfd/stmpe.c b/drivers/mfd/stmpe.c
+index aeb9ea55f97d..89ffd5a7fab8 100644
+--- a/drivers/mfd/stmpe.c
++++ b/drivers/mfd/stmpe.c
+@@ -1508,7 +1508,6 @@ void stmpe_remove(struct stmpe *stmpe)
+ 	mfd_remove_devices(stmpe->dev);
+ }
+ 
+-#ifdef CONFIG_PM
+ static int stmpe_suspend(struct device *dev)
+ {
+ 	struct stmpe *stmpe = dev_get_drvdata(dev);
+@@ -1529,8 +1528,5 @@ static int stmpe_resume(struct device *dev)
+ 	return 0;
+ }
+ 
+-const struct dev_pm_ops stmpe_dev_pm_ops = {
+-	.suspend	= stmpe_suspend,
+-	.resume		= stmpe_resume,
+-};
+-#endif
++EXPORT_GPL_SIMPLE_DEV_PM_OPS(stmpe_dev_pm_ops,
++			     stmpe_suspend, stmpe_resume);
 -- 
 2.35.1
 
