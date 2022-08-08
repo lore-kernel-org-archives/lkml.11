@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7AC9C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:43:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07561C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:44:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242882AbiHHBny (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43196 "EHLO
+        id S242881AbiHHBn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242984AbiHHBl2 (ORCPT
+        with ESMTP id S243022AbiHHBln (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:41:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E4E38AF;
-        Sun,  7 Aug 2022 18:35:15 -0700 (PDT)
+        Sun, 7 Aug 2022 21:41:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73EA65F6B;
+        Sun,  7 Aug 2022 18:35:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE78FB80881;
-        Mon,  8 Aug 2022 01:35:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7073C433D6;
-        Mon,  8 Aug 2022 01:35:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87EE060DEE;
+        Mon,  8 Aug 2022 01:35:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10C67C433D7;
+        Mon,  8 Aug 2022 01:35:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922512;
-        bh=XCWAe+TX+STk2CgGyIQqKEwSwuQ88kPWq1dpJ9MZDvc=;
+        s=k20201202; t=1659922516;
+        bh=Shks8rDUt6fwvZCiVNN+z/KX40yACmnhgAaxaywLQ9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pn/jx3J32tbdfkmCBGKDtpmv8236A87rYlic/csf8r9mcWfwurB3Eck6/xZK9CFmh
-         L5LDFBbHPH9m+C59zKUlgl65/oONIz7r3k1Tl/9xs9kGb6V3dBUFlH7AkHCssKUq/D
-         4lhG/fTPYrZDluRfSRNeBg7Kbp0XCLSVUo5T3H+rQwtR14yM2MXHqD7YVxzj8mdOZn
-         p+8sQbLeyltCcY7GhmRC79gaV+EJJtWLlhzPdvne4M8FlxHr9sOE7cHGbF9K6jY7Nv
-         S2LbPut8GSUrhXcTdkVPQK+4FovX0F6dPl0AOvuKMu1B4NKoOWV43FQja9sm4/+Wnd
-         KxH9QGMqVfJQA==
+        b=Xg+vKAacO5Qf9WCSHPn5gCH7j6dsXsyhhppfYpLnJKptUDq4SE1HcrjNHo3cWsPBD
+         ZusJ2JpRThV2bhjCzzWatZg+VkKDhYGQSOnWQ6nW1yg8BRkMOhRefgRCj8dvJVNNB4
+         6bs2txyTeaG+H1KmElYoVKoNpLZXcscP2qc2u9/oGJcevQN7t++h6v2pLB0iIQgkGq
+         D9nQ0yFnyo39mr2iYs+OD5Ps2GZnXaq8c2GBIT2kwIzIb77INGwc24y3tCIHITd9bP
+         VpLS0xwPS6TNhSwfblu7J4uuQz7cO6bh1l2lHOAEKf27SFBCebedNkHjYCC1OlfGgy
+         7fWa1fgGa8MkA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 31/53] ARM: dts: ux500: Fix Gavini accelerometer mounting matrix
-Date:   Sun,  7 Aug 2022 21:33:26 -0400
-Message-Id: <20220808013350.314757-31-sashal@kernel.org>
+Cc:     Guo Mengqi <guomengqi3@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, masahisa.kojima@linaro.org,
+        jaswinder.singh@linaro.org, linux-spi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 33/53] spi: synquacer: Add missing clk_disable_unprepare()
+Date:   Sun,  7 Aug 2022 21:33:28 -0400
+Message-Id: <20220808013350.314757-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013350.314757-1-sashal@kernel.org>
 References: <20220808013350.314757-1-sashal@kernel.org>
@@ -52,35 +52,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Guo Mengqi <guomengqi3@huawei.com>
 
-[ Upstream commit e24c75f02a81d6ddac0072cbd7a03e799c19d558 ]
+[ Upstream commit 917e43de2a56d9b82576f1cc94748261f1988458 ]
 
-This was fixed wrong so fix it. Now verified by using
-iio-sensor-proxy monitor-sensor test program.
+Add missing clk_disable_unprepare() in synquacer_spi_resume().
 
-Link: https://lore.kernel.org/r/20220611205138.491513-1-linus.walleij@linaro.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Guo Mengqi <guomengqi3@huawei.com>
+Link: https://lore.kernel.org/r/20220624005614.49434-1-guomengqi3@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/ste-ux500-samsung-gavini.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/spi/spi-synquacer.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/ste-ux500-samsung-gavini.dts b/arch/arm/boot/dts/ste-ux500-samsung-gavini.dts
-index fd170974765f..149838b5f9c1 100644
---- a/arch/arm/boot/dts/ste-ux500-samsung-gavini.dts
-+++ b/arch/arm/boot/dts/ste-ux500-samsung-gavini.dts
-@@ -523,8 +523,8 @@ i2c-gate {
- 					accelerometer@18 {
- 						compatible = "bosch,bma222e";
- 						reg = <0x18>;
--						mount-matrix = "0", "1", "0",
--							       "-1", "0", "0",
-+						mount-matrix = "0", "-1", "0",
-+							       "1", "0", "0",
- 							       "0", "0", "1";
- 						vddio-supply = <&ab8500_ldo_aux2_reg>; // 1.8V
- 						vdd-supply = <&ab8500_ldo_aux1_reg>; // 3V
+diff --git a/drivers/spi/spi-synquacer.c b/drivers/spi/spi-synquacer.c
+index ea706d9629cb..47cbe73137c2 100644
+--- a/drivers/spi/spi-synquacer.c
++++ b/drivers/spi/spi-synquacer.c
+@@ -783,6 +783,7 @@ static int __maybe_unused synquacer_spi_resume(struct device *dev)
+ 
+ 		ret = synquacer_spi_enable(master);
+ 		if (ret) {
++			clk_disable_unprepare(sspi->clk);
+ 			dev_err(dev, "failed to enable spi (%d)\n", ret);
+ 			return ret;
+ 		}
 -- 
 2.35.1
 
