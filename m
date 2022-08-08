@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B54DBC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B00DC25B07
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242332AbiHHBe6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58338 "EHLO
+        id S242248AbiHHBfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242178AbiHHBdj (ORCPT
+        with ESMTP id S242101AbiHHBeE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:33:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27639AE60;
-        Sun,  7 Aug 2022 18:32:49 -0700 (PDT)
+        Sun, 7 Aug 2022 21:34:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 747D0DEFD;
+        Sun,  7 Aug 2022 18:32:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C41C8B80E0A;
-        Mon,  8 Aug 2022 01:32:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69D1CC4347C;
-        Mon,  8 Aug 2022 01:32:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5817C60DDA;
+        Mon,  8 Aug 2022 01:32:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB9C1C43141;
+        Mon,  8 Aug 2022 01:32:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922366;
-        bh=kOSR+0U1mUJKjfVnIM3iHP1kjHk8W/lX2Xo52qIYRy8=;
+        s=k20201202; t=1659922372;
+        bh=vqJjCMDqvWGP/37g/8tBgDb5TlWKENjQTGDkXK8Ik5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HrUamjtnECl6kSJKcTdw3DdpiI7MNh+0mv93nJajBhxcRdBVWpCfvYlQlck87sFtc
-         QPsRNhD+0oFJ4XvwI8pLNbV3YIrU1+M2uMl1QFKu9i9qchj1tI6JpYQ9L0p2GRk6Pm
-         GVCF71e3HFxjSFyzw+B2ybANFy9R8KRzpXeT1IbcHms6+1EMZUOkIXA428h8pRsTWU
-         nenLfuWGvCppjVbxm+tnUfz30xlaTjjjEuimgPBa5AKQLDVWcySCdjLD7FdhIxIo9v
-         3929kFxln31EDelP93rL8n6NtmcRIbIfziY/WmjciwuEuqL46aAeGEB4NCBlyzeEJG
-         LgUsE8vSSARUw==
+        b=LQtJYAkW3eMX7CWdUJ5rG3Z5l5m5JsRChSMMbxPT/9wah5IScimR4KvV5T9HbaRkM
+         03KZxfksjX2UUgQZx4T7qIZ6w1xxMgsKKnc5acHNoxF+Spaj0FjbxenXeYJqbpxRvY
+         Q0gmsiB32eukdsPujYbWgy8Bso0eCLd8xq/m5zw2GRPDE4nloHH1u/StXNh8okoCSX
+         UvBCiCUcdttzFoPH2bxzehU7sFyt0ZbpoEcPK12MVnc3Oi5Ysb4DKcYXRBqYb/ujdP
+         R4hVCY5fR9jVo42t8b9H8iiMAg+7MSrZyAHRJmbpBcnvXlyfalL34LojppVy8YOgrg
+         TkQWpxehbcnZQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Shawn Guo <shawnguo@kernel.org>,
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.19 27/58] ARM: dts: imx6ul: fix lcdif node compatible
-Date:   Sun,  7 Aug 2022 21:30:45 -0400
-Message-Id: <20220808013118.313965-27-sashal@kernel.org>
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 30/58] ARM: dts: ux500: Fix Janice accelerometer mounting matrix
+Date:   Sun,  7 Aug 2022 21:30:48 -0400
+Message-Id: <20220808013118.313965-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013118.313965-1-sashal@kernel.org>
 References: <20220808013118.313965-1-sashal@kernel.org>
@@ -53,40 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-[ Upstream commit 1a884d17ca324531634cce82e9f64c0302bdf7de ]
+[ Upstream commit 013fda41c03e6bcb3dc416669187b609e9e5fdbc ]
 
-In yaml binding "fsl,imx6ul-lcdif" is listed as compatible to imx6sx-lcdif,
-but not imx28-lcdif. Change the list accordingly. Fixes the
-dt_binding_check warning:
-lcdif@21c8000: compatible: 'oneOf' conditional failed, one must be fixed:
-['fsl,imx6ul-lcdif', 'fsl,imx28-lcdif'] is too long
-Additional items are not allowed ('fsl,imx28-lcdif' was unexpected)
-'fsl,imx6ul-lcdif' is not one of ['fsl,imx23-lcdif', 'fsl,imx28-lcdif',
-'fsl,imx6sx-lcdif']
-'fsl,imx6sx-lcdif' was expected
+This was fixed wrong so fix it again. Now verified by using
+iio-sensor-proxy monitor-sensor test program.
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Link: https://lore.kernel.org/r/20220609083516.329281-1-linus.walleij@linaro.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6ul.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/ste-ux500-samsung-janice.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index 367657a9a99f..bc6548058d8c 100644
---- a/arch/arm/boot/dts/imx6ul.dtsi
-+++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -1008,7 +1008,7 @@ csi: csi@21c4000 {
- 			};
- 
- 			lcdif: lcdif@21c8000 {
--				compatible = "fsl,imx6ul-lcdif", "fsl,imx28-lcdif";
-+				compatible = "fsl,imx6ul-lcdif", "fsl,imx6sx-lcdif";
- 				reg = <0x021c8000 0x4000>;
- 				interrupts = <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
- 				clocks = <&clks IMX6UL_CLK_LCDIF_PIX>,
+diff --git a/arch/arm/boot/dts/ste-ux500-samsung-janice.dts b/arch/arm/boot/dts/ste-ux500-samsung-janice.dts
+index e6d4fd0eb5f4..ed5c79c3d04b 100644
+--- a/arch/arm/boot/dts/ste-ux500-samsung-janice.dts
++++ b/arch/arm/boot/dts/ste-ux500-samsung-janice.dts
+@@ -633,8 +633,8 @@ i2c-gate {
+ 					accelerometer@8 {
+ 						compatible = "bosch,bma222";
+ 						reg = <0x08>;
+-						mount-matrix = "0", "1", "0",
+-							       "-1", "0", "0",
++						mount-matrix = "0", "-1", "0",
++							       "1", "0", "0",
+ 							       "0", "0", "1";
+ 						vddio-supply = <&ab8500_ldo_aux2_reg>; // 1.8V
+ 						vdd-supply = <&ab8500_ldo_aux1_reg>; // 3V
 -- 
 2.35.1
 
