@@ -2,68 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D995C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 18:43:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96ED6C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 18:43:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244589AbiHHSnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 14:43:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38064 "EHLO
+        id S244092AbiHHSnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 14:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244487AbiHHSmd (ORCPT
+        with ESMTP id S244504AbiHHSmn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 14:42:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D615E2701;
-        Mon,  8 Aug 2022 11:42:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D63DB8105C;
-        Mon,  8 Aug 2022 18:42:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 477BAC43470;
-        Mon,  8 Aug 2022 18:42:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659984127;
-        bh=KeIN5c5eJicTt4ZSqt38/T8RFk02LjWpJQlaqnhmTXw=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=mtXPrdwpAre9stBP9ex1j75nAfFaDxoWkMTbGlzqEQLp4qwr3bQ5XQGLi808oXVAD
-         nfFfb4U0PSIzmZVYsGuIvcjG2Oqtgkl/06mY7TzYb8ymjmwIftT89/qqfA+4Px10Xb
-         mZYW8xO6idIaDBkoCvd2phM1xJEaw9VyjNFS5p8qQm9Thn0zWG6wtMhj6gIQU89mPh
-         PwOg/bkXPGYumkxyXh2G4qKi4HA+ToNaMiCPCR0gIN31LcB97+Xxv57zeBNkPcogO1
-         e55kiYUSp342yiCUiqAi0qAWgEYWfIzJglvS1saeBfKP798uMZT4cSJuElk1zlxnbZ
-         1gXiuvOLz85AA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 36B0EC43140;
-        Mon,  8 Aug 2022 18:42:07 +0000 (UTC)
-Subject: Re: [GIT PULL] fuse update for 6.0
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YvEDEKQSOaDaFiWb@miu.piliscsaba.redhat.com>
-References: <YvEDEKQSOaDaFiWb@miu.piliscsaba.redhat.com>
-X-PR-Tracked-List-Id: <linux-fsdevel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YvEDEKQSOaDaFiWb@miu.piliscsaba.redhat.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/mszeredi/fuse.git tags/fuse-update-6.0
-X-PR-Tracked-Commit-Id: 247861c325c2e4f5ad3c2f9a77ab9d85d15cbcfc
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 2bd5d41e0e9d8e423a0bd446ee174584c8a495fe
-Message-Id: <165998412721.757.16076021346842560131.pr-tracker-bot@kernel.org>
-Date:   Mon, 08 Aug 2022 18:42:07 +0000
-To:     Miklos Szeredi <miklos@szeredi.hu>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+        Mon, 8 Aug 2022 14:42:43 -0400
+Received: from matoro.tk (unknown [IPv6:2600:1700:4b10:9d80::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475762BD6;
+        Mon,  8 Aug 2022 11:42:27 -0700 (PDT)
+DKIM-Signature: a=rsa-sha256; bh=waso6o/gLxP4dp0Ks9iZGKqqKBgpprYF0f4RtQrgunc=;
+ c=relaxed/relaxed; d=matoro.tk;
+ h=Subject:Subject:Sender:To:To:Cc:Cc:From:From:Date:Date:MIME-Version:MIME-Version:Content-Type:Content-Type:Content-Transfer-Encoding:Content-Transfer-Encoding:Reply-To:In-Reply-To:In-Reply-To:Message-Id:Message-Id:References:References:Autocrypt:Openpgp;
+ i=@matoro.tk; s=20220801; t=1659984140; v=1; x=1660416140;
+ b=tS3+PeZ4x7UIaxySNasrF1pt1JK67oV1k+KCwDmj0FfmR+DyxGPbcI2X7WphaJre39bKKqwz
+ JHHhwd6oLizdTJV6NgyrpczO3SD7XlTVqVcnL6cgqepe3shMYX7p62lg0YJ6woTbii34nsJDrD5
+ eOQoNKpWsC53wCBzs6RWIliLnoZmrzDF3JWHVVJDnFd8fcDROSqJysd8cEFjOeQbsIfBr4UHFBo
+ LIQy4Rrjwa83VBWrL5SQaq0DqHvDe/Ljgv3Fmr5cHjFz38Ijno+QJLZKzG49ext/5lgxMr5AteD
+ bBy4oL/zOHYQqabEVQRyF+3ckZnlOKc3Nt9lK0PCScNiCt6vE7LmS1AFo4TOTbcC8GCyJ1mOe14
+ VmlPBMQGYi704VFuiifiMn3fuqXfLG/U0ibbkiv+VbNlq+vnrPV4vjOgRCpxukWJRM+uqWw0fju
+ qFWmXfnvr2a7HOd3mDkz82Jj0hGCt0ES+LIDJLNXT8XTHqr6I+0gT/QFTQepnTUSJGzNyga1vR7
+ jhNBDKOx0VrX50J+vk9fA/Y6/LWH4b0FxNTTEbGYOpnU/xx8XgzcCC7CAH97X/9xFvExnep1m1R
+ Db3PJZUJz6muhm1tsfdIvwbp0q3k3TOos2YGryFxa8NKfJudNsdYTachK2NbyBSBwpZHWAFH/+b
+ SAD76p7mvNE=
+Received: by matoro.tk (envelope-sender
+ <matoro_mailinglist_kernel@matoro.tk>) with ESMTPS id d390d774; Mon, 08 Aug
+ 2022 14:42:20 -0400
+MIME-Version: 1.0
+Date:   Mon, 08 Aug 2022 14:42:20 -0400
+From:   matoro <matoro_mailinglist_kernel@matoro.tk>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nicolas Schier <nicolas@fjasle.eu>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-modules <linux-modules@vger.kernel.org>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Sami Tolvanen <samitolvanen@google.com>
+Subject: Re: [PATCH v6 00/10] kbuild: yet another series of cleanups (modpost,
+ LTO, MODULE_REL_CRCS, export.h)
+In-Reply-To: <CAK7LNATa1fdwQsuC3LOkzhr1SaR6ipJqe1b0fAC1pk3LX9wDhA@mail.gmail.com>
+References: <20220513113930.10488-1-masahiroy@kernel.org>
+ <CAK7LNAQvneCi11myLpkikuXh=i5PLtTaLe0nGpDZXgv_Q1L0Ow@mail.gmail.com>
+ <2c496d24174e63b27ec047f383df6700@matoro.tk>
+ <CAK7LNASWKhj0tZK6jA1PsYje+idTjzdbYa9avyGeakVScj843A@mail.gmail.com>
+ <38a9853e59db8946999316ce3a6b4621@matoro.tk>
+ <CAK7LNATa1fdwQsuC3LOkzhr1SaR6ipJqe1b0fAC1pk3LX9wDhA@mail.gmail.com>
+Message-ID: <d4f30a7313f1ff43d0c919fc556f08fe@matoro.tk>
+X-Sender: matoro_mailinglist_kernel@matoro.tk
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 8 Aug 2022 14:35:28 +0200:
+That patch doesn't apply to the v5.19 stable tag, so I just manually 
+edited and it worked perfect!  Thank you!!
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/mszeredi/fuse.git tags/fuse-update-6.0
+Sorry I didn't mention that warning - I did see it, but it still showed 
+up even on the old kernel, so I thought it was irrelevant.  Much 
+appreciated!
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/2bd5d41e0e9d8e423a0bd446ee174584c8a495fe
+-------- Original Message --------
+Subject: Re: [PATCH v6 00/10] kbuild: yet another series of cleanups 
+(modpost, LTO, MODULE_REL_CRCS, export.h)
+Date: 2022-08-08 13:36
+ From: Masahiro Yamada <masahiroy@kernel.org>
+To: matoro <matoro_mailinglist_kernel@matoro.tk>
 
-Thank you!
+On Mon, Aug 8, 2022 at 10:27 PM matoro
+<matoro_mailinglist_kernel@matoro.tk> wrote:
+> 
+> I have real hardware for all these arches in my collection.  I use it
+> for testing the latest kernel and toolchains on as many of the
+> less-popular arches as possible, exactly to find issues like this one 
+> :)
+> 
+> Specifically we support all of these in Gentoo.  To double-check this
+> wasn't a config issue, I asked another user who also runs sparc to try
+> building 5.19 with his config (not copying mine), and he observed the
+> same problem.  You can reach us in #gentoo-sparc on Libera.
+> 
+> As for testing, I make all this hardware available on an as-needed
+> basis.  So if you can't or don't want to fiddle with qemu, just let me
+> know (email or IRC, same username on Libera), and I will get you direct
+> access to my hardware.  Thanks!!
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+
+I found the root cause.
+
+When I build the sparc kernel, I see a warning
+
+WARNING: modpost: EXPORT symbol "_mcount" [vmlinux] version generation
+failed, symbol will not be versioned.
+
+
+Then, modpost missed to write out the entry.
+
+With the following patch, you will be able to load the module.
+
+I will send a patch with a proper commit log tomorrow. I need some sleep 
+now.
+
+
+
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 29474cee10b1..337bd36a890a 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -2206,13 +2206,11 @@ static void add_exported_symbols(struct buffer
+*buf, struct module *mod)
+         /* record CRCs for exported symbols */
+         buf_printf(buf, "\n");
+         list_for_each_entry(sym, &mod->exported_symbols, list) {
+-               if (!sym->crc_valid) {
++               if (!sym->crc_valid)
+                         warn("EXPORT symbol \"%s\" [%s%s] version
+generation failed, symbol will not be versioned.\n"
+                              "Is \"%s\" prototyped in
+<asm/asm-prototypes.h>?\n",
+                              sym->name, mod->name, mod->is_vmlinux ? "" 
+: ".ko",
+                              sym->name);
+-                       continue;
+-               }
+
+                 buf_printf(buf, "SYMBOL_CRC(%s, 0x%08x, \"%s\");\n",
+                            sym->name, sym->crc, sym->is_gpl_only ? 
+"_gpl" : "");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
