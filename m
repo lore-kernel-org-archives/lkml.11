@@ -2,145 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF7BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 08:08:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF56EC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 08:10:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242069AbiHHIIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 04:08:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37872 "EHLO
+        id S241925AbiHHIKv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 04:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238580AbiHHIIX (ORCPT
+        with ESMTP id S242052AbiHHIKk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 04:08:23 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF2D13F72
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 01:07:55 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id b6so4375479wmq.5
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 01:07:55 -0700 (PDT)
+        Mon, 8 Aug 2022 04:10:40 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3052711A3F
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 01:10:38 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id 202so1150125pgc.8
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 01:10:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:from:to:cc;
-        bh=NNnX/w4KR5toGD9RgVndtRcxDMqXeRdCj55KEFs2Hv8=;
-        b=mUVHiWqRa9/+fNjcjlhL3ZIVdEv+oiML2EZseUm4nq22f0fGCfCizZKJnvt3pe2gEO
-         L9DQwRjKxKbH/F31ON/1nqMgQnqCtUZYz5NgPAVTWXW187S7lE7Rqb3FSTq39cEs85wW
-         RXIuIXUXvJgNMS/Ji53LQNsRUsLHg1/qGI6RTN4+cjH9KK9M/X+t4nU5gnbNAvCePLvr
-         +5vPjLCDlLCHx5+JRJe6e1zBxsWXhz2yIFhv2wjNNYGmyD4w+dDajqfrSWuXSjvZnffb
-         vvYLzSOsf6TYpLhack8JnD81N3TGvSrAO/wkYwqIsmHdv6KNakq6M0BS65t9BZ2Mm9hz
-         i2+w==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=61wTd6iB1lutkPoWBA+yNb5GJiX4LQ0YZJHDvzEfwJo=;
+        b=rYf8fWuSN/mCGpRIDR8FhDoVZlKtDJhkYAdROcl+ijtu5VN5vqTbOkZjPrVMf53rBi
+         ul4xuoXnAnwGC3tG+B1tgq1xqO09Ku/8U6W5mxyEc0w4kQfJ5CvE1qXCH7vCDUnFh5JV
+         u/GaONj0Ji6aVghQWWK3hK/iD2oerRnBt5Y/kKZr3nUlgVb8CSOkFyeNDtfMKR9QV5fj
+         DUZJdY5wUdhTIoZRChlmjDMU7aWZILR8bnv8lBoxFuu9qebl7/nicPEEauKAURUbEXTh
+         BYQTzw7BCZkFzoasBXZpzJ6seOYy+Tr8D+MUQZTgIsl8/cTP4ynXniJth6hVrCv0Tgii
+         x78A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=NNnX/w4KR5toGD9RgVndtRcxDMqXeRdCj55KEFs2Hv8=;
-        b=MSljmDwJXonH7JS+fZ/WJp3B3nA/DQ3TomWkTt7GHmJLPvUEvlZOyYm9SvKKIhToBY
-         Xx73ban69yIbGZHBgSZv+O42IUpANMKhAiJb4Gcz+yARFuSmLcwAUadInScviS1BYC4W
-         ZmrQFcv25STlgVvi/MadM5/sXJ1ucxkFfeTkWuL9cD5XNgU4PtdwLz9ax0f5pLYAFGFO
-         5F3TuxL3vuiL1QoG8u5cYiFsOL1RVgPGldubyUsolXZBCClSZKIroPx5GEoDMV5Wv0tm
-         QZLoEAHI8Rx2f3FBx8TPw2iVmYQU0HMesIwyzdWHzGmlUoRNXQUnJiqgfT54qKf4TRm9
-         u5zg==
-X-Gm-Message-State: ACgBeo23EUvyLLv+xrVJb5S0u/y9L4sLc8Tr2ydQp2cc3AljPftDK2u3
-        WoFr6kVI1AQKNdAEd46ZfEAa1Q==
-X-Google-Smtp-Source: AA6agR49AonvRm2M3vcHwa+yWIj4oRnXBmIYvyOUu0KWLI8WrqrV6s1eZRCopBH5PdEBUUx2tgBr1g==
-X-Received: by 2002:a05:600c:35ca:b0:3a3:253b:708b with SMTP id r10-20020a05600c35ca00b003a3253b708bmr16975646wmq.86.1659946074166;
-        Mon, 08 Aug 2022 01:07:54 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:982:cbb0:1832:7d81:d0f6:dc4b? ([2a01:e0a:982:cbb0:1832:7d81:d0f6:dc4b])
-        by smtp.gmail.com with ESMTPSA id w9-20020a5d6089000000b002205b786ab3sm10767511wrt.14.2022.08.08.01.07.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Aug 2022 01:07:53 -0700 (PDT)
-Message-ID: <bd18d0ea-10b9-4fc6-3f3e-ace336bd796f@baylibre.com>
-Date:   Mon, 8 Aug 2022 10:07:52 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=61wTd6iB1lutkPoWBA+yNb5GJiX4LQ0YZJHDvzEfwJo=;
+        b=bXrxTf+VYvsfr+1OSysTospIZ0q1bhbgM1HiPS2YuI76vtOvMh0SWu4oBGM3Y4nWaV
+         92BULO5L1bUnVYGuTRWdQCYnzyKUc2URxOLtSCql+FZ1H1xMfXFww4hHs8tXEUC1bA/8
+         mqc4zw08Qhyr/+k9ZjsZ3Mj5OPd+5ayMNQWfDSazcWQNxkSxZuT4wXSuUlOvBOhTOxPn
+         6NGxEXfmro1oLIxxcnzreJ322JSLi9Vg/B3wMmwWOGaRcQv4Zuq1m4rsyIQdUrcKtfFf
+         ISGqreYIXUPETAurnel+FvnaAIu9HZqA+FKEzvyh8XTMB14xZwjMMAacbxU9pL/plIIq
+         822w==
+X-Gm-Message-State: ACgBeo2idcl6BXaQP8Vjy2PBogSM10Ol6AOxgkhKU68VCI/mys37tbO4
+        vNVRrF/rkwfhcalIxRyRMhxK
+X-Google-Smtp-Source: AA6agR7erfXbt9N0hJC1f6BSSrFufGw7URJVj+V609D1DFTG1vKqT9PN+25+gpi+NpxGg3Eu6DkF6Q==
+X-Received: by 2002:a65:6b8a:0:b0:3db:7dc5:fec2 with SMTP id d10-20020a656b8a000000b003db7dc5fec2mr14133518pgw.223.1659946237660;
+        Mon, 08 Aug 2022 01:10:37 -0700 (PDT)
+Received: from thinkpad ([117.193.212.254])
+        by smtp.gmail.com with ESMTPSA id bd15-20020a656e0f000000b0041d2966a0cdsm4303833pgb.23.2022.08.08.01.10.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 01:10:37 -0700 (PDT)
+Date:   Mon, 8 Aug 2022 13:40:31 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Johan Hovold <johan+linaro@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] arm64: dts: qcom: sc8280xp: disallow regulator mode
+ switches
+Message-ID: <20220808081031.GC7601@thinkpad>
+References: <20220803121942.30236-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v5 13/33] thermal/drivers/amlogic: Switch to new of API
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linexp.org>,
-        daniel.lezcano@linaro.org, rafael@kernel.org
-Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, khilman@baylibre.com,
-        abailon@baylibre.com, lukasz.luba@arm.com, broonie@kernel.org,
-        damien.lemoal@opensource.wdc.com, heiko@sntech.de,
-        hayashi.kunihiko@socionext.com, mhiramat@kernel.org,
-        talel@amazon.com, thierry.reding@gmail.com, digetx@gmail.com,
-        jonathanh@nvidia.com, anarsoul@gmail.com, tiny.windzz@gmail.com,
-        baolin.wang7@gmail.com, f.fainelli@gmail.com,
-        bjorn.andersson@linaro.org, mcoquelin.stm32@gmail.com,
-        glaroque@baylibre.com, miquel.raynal@bootlin.com,
-        shawnguo@kernel.org, niklas.soderlund@ragnatech.se,
-        matthias.bgg@gmail.com, j-keerthy@ti.com,
-        Amit Kucheria <amitk@kernel.org>,
-        "open list:THERMAL DRIVER FOR AMLOGIC SOCS" 
-        <linux-amlogic@lists.infradead.org>
-References: <20220804224349.1926752-1-daniel.lezcano@linexp.org>
- <20220804224349.1926752-14-daniel.lezcano@linexp.org>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <20220804224349.1926752-14-daniel.lezcano@linexp.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220803121942.30236-1-johan+linaro@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/08/2022 00:43, Daniel Lezcano wrote:
-> The thermal OF code has a new API allowing to migrate the OF
-> initialization to a simpler approach. The ops are no longer device
-> tree specific and are the generic ones provided by the core code.
+On Wed, Aug 03, 2022 at 02:19:39PM +0200, Johan Hovold wrote:
+> A recent change in a USB/DP PHY driver that started specifying regulator
+> loads caused the regulators that were also shared with the PCIe and USB
+> PHYs to be put in low-power mode, something which broke PCIe and USB on
+> sa8295p-adp.
 > 
-> Convert the ops to the thermal_zone_device_ops format and use the new
-> API to register the thermal zone with these generic ops.
+> As was discussed in the following thread:
 > 
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
-> ---
->   drivers/thermal/amlogic_thermal.c | 16 ++++++++--------
->   1 file changed, 8 insertions(+), 8 deletions(-)
+> 	https://lore.kernel.org/all/YtkrDcjTGhpaU1e0@hovoldconsulting.com
 > 
-> diff --git a/drivers/thermal/amlogic_thermal.c b/drivers/thermal/amlogic_thermal.c
-> index e61b91d14ad1..d30cb791e63c 100644
-> --- a/drivers/thermal/amlogic_thermal.c
-> +++ b/drivers/thermal/amlogic_thermal.c
-> @@ -179,12 +179,12 @@ static int amlogic_thermal_disable(struct amlogic_thermal *data)
->   	return 0;
->   }
->   
-> -static int amlogic_thermal_get_temp(void *data, int *temp)
-> +static int amlogic_thermal_get_temp(struct thermal_zone_device *tz, int *temp)
->   {
->   	unsigned int tval;
-> -	struct amlogic_thermal *pdata = data;
-> +	struct amlogic_thermal *pdata = tz->devdata;
->   
-> -	if (!data)
-> +	if (!pdata)
->   		return -EINVAL;
->   
->   	regmap_read(pdata->regmap, TSENSOR_STAT0, &tval);
-> @@ -195,7 +195,7 @@ static int amlogic_thermal_get_temp(void *data, int *temp)
->   	return 0;
->   }
->   
-> -static const struct thermal_zone_of_device_ops amlogic_thermal_ops = {
-> +static const struct thermal_zone_device_ops amlogic_thermal_ops = {
->   	.get_temp	= amlogic_thermal_get_temp,
->   };
->   
-> @@ -276,10 +276,10 @@ static int amlogic_thermal_probe(struct platform_device *pdev)
->   		return PTR_ERR(pdata->sec_ao_map);
->   	}
->   
-> -	pdata->tzd = devm_thermal_zone_of_sensor_register(&pdev->dev,
-> -							  0,
-> -							  pdata,
-> -							  &amlogic_thermal_ops);
-> +	pdata->tzd = devm_thermal_of_zone_register(&pdev->dev,
-> +						   0,
-> +						   pdata,
-> +						   &amlogic_thermal_ops);
->   	if (IS_ERR(pdata->tzd)) {
->   		ret = PTR_ERR(pdata->tzd);
->   		dev_err(dev, "Failed to register tsensor: %d\n", ret);
+> regulators should generally not be allowed to switch to low-power mode
+> unless some of the consumers can actually support an idle mode.
+> 
+> This series disables mode-switching for all regulators on sc8280xp-crd,
+> sc8280xp-lenovo-thinkpad-x13s and sa8295p-adp except for the ones used
+> by the UFS controllers which do support an idle mode.
+> 
 
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+For the series,
+
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+Thanks,
+Mani
+
+> Johan
+> 
+> 
+> Johan Hovold (3):
+>   arm64: dts: qcom: sc8280xp-crd: disallow regulator mode switches
+>   arm64: dts: qcom: sc8280xp-lenovo-thinkpad-x13s: disallow regulator
+>     mode switches
+>   arm64: dts: qcom: sa8295p-adp: disallow regulator mode switches
+> 
+>  arch/arm64/boot/dts/qcom/sa8295p-adp.dts              | 11 -----------
+>  arch/arm64/boot/dts/qcom/sc8280xp-crd.dts             |  9 ---------
+>  .../boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts   | 10 ----------
+>  3 files changed, 30 deletions(-)
+> 
+> -- 
+> 2.35.1
+> 
+
+-- 
+மணிவண்ணன் சதாசிவம்
