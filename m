@@ -2,112 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BEFEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 12:05:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E0AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 12:05:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235610AbiHHMF3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 08:05:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
+        id S242340AbiHHMFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 08:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235833AbiHHMF1 (ORCPT
+        with ESMTP id S237650AbiHHMF2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 08:05:27 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752331164
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 05:05:24 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 278BgGCY018224;
-        Mon, 8 Aug 2022 12:05:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=wVFGi029TLkR264XcZHJMDZLRJkyCLzwFQ4DcnksObU=;
- b=jdhSCn36aQ+0FSsrNf3ISe9WoK7/+PEJRTJ6+OXD16DMZRXBrnkoOMkHF0D1ZHemndoi
- NFx8L0G/Q6XII/hqHLzbxHp/vRDwLgPIvuaES7SodkOIOMGPVKu8NGuYcjZjktuTr969
- 2CQ6TqtqnQLmrd96wZupNf/hKPuP+v7C1y0QnaKy/M1aI08VKkxLtgqUFnkqwVKdqvfO
- Rx6QqShe59BI8WtC+eD31Wvt6xvIbgYyVbKexajsaAeYs3PEZXs9e7Kiktjiap9d2jyK
- 4eQ5ef425patBHHfAO8EY7WrS0T510P+aXAKw5SieOotGOtSR3V/plwEZUinmKq399uR XA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hu1ue8npu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 08 Aug 2022 12:05:06 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 278BvTem033926;
-        Mon, 8 Aug 2022 12:05:05 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hu1ue8nn7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 08 Aug 2022 12:05:05 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 278Bd3RC006783;
-        Mon, 8 Aug 2022 11:49:58 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3hsfx8t4aw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 08 Aug 2022 11:49:57 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 278BoCGG35062132
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 8 Aug 2022 11:50:12 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C02CF11C04C;
-        Mon,  8 Aug 2022 11:49:55 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C0E0011C04A;
-        Mon,  8 Aug 2022 11:49:51 +0000 (GMT)
-Received: from li-c3569c4c-1ef8-11b2-a85c-ee139cda3133.ibm.com.com (unknown [9.43.59.85])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  8 Aug 2022 11:49:51 +0000 (GMT)
-From:   Sathvika Vasireddy <sv@linux.ibm.com>
-To:     linuxppc-dev@lists.ozlabs.org
-Cc:     jpoimboe@redhat.com, peterz@infradead.org,
-        linux-kernel@vger.kernel.org, aik@ozlabs.ru, mpe@ellerman.id.au,
-        mingo@redhat.com, christophe.leroy@csgroup.eu, rostedt@goodmis.org,
-        mbenes@suse.cz, npiggin@gmail.com, chenzhongjin@huawei.com,
-        linux-arm-kernel@lists.infradead.org,
-        naveen.n.rao@linux.vnet.ibm.com, sv@linux.ibm.com
-Subject: [PATCH 07/16] powerpc: Skip objtool from running on VDSO files
-Date:   Mon,  8 Aug 2022 17:18:59 +0530
-Message-Id: <20220808114908.240813-8-sv@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220808114908.240813-1-sv@linux.ibm.com>
-References: <20220808114908.240813-1-sv@linux.ibm.com>
+        Mon, 8 Aug 2022 08:05:28 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E3A1176
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 05:05:26 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id n185so4678299wmn.4
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 05:05:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=melexis.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4za0UHhtOzS/+cksvATUbwHsHuuZed1iD70qbguxMDM=;
+        b=PneoR3vZf4ScDSFvZfyJdeVBNlyzN26XM/BWbF45+Dt4vng2UlSUEy4+eQ6dfnfKV6
+         NvSRf9qrd54r1jIWyCaXKiVI0Wo6rKEKICRvmi6x2aZUwrzrSnmB9yg8hp9FU7BtsK7F
+         jhGy373jJqTg7hMxwEo0OswEzZ51eGqGAevPd7KyEpCHexrwah7BRWBXc33wsNkldZyp
+         aPAqBlwC4MUoZha/MzfQ0e2nO7WLKUpoKzQ+3+1fIFTbHeFPQ8OOaQXDzqd3SqrSxsJ9
+         7URY0jLN6qoYXhBpXrs/DSzbAzDp/CAoAlYro74/CTWcNgQQLlLen1/hNRTYA5oLZp7+
+         oT4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4za0UHhtOzS/+cksvATUbwHsHuuZed1iD70qbguxMDM=;
+        b=P5UvRLbv9Z+LMHdd+BgJlIdg0E15LASEPGQEOYdxK75vmUNVbbMuwE5yOb6FukGlNd
+         h9tUJ0QzJCVaayY6l2tiF5QgH7iokZuiMnKxgtxj9K+gyaaQpLjBhnHPmnUGlBozXswy
+         l5ehNmy0F4T0Lsgk9KA+7R4t1s6+bUOKN1rIZtxdLeHdM+4eG6emTKpQR48FLcOavxO1
+         /62p9ZP5vKGJLDXsQXLb6+/CQC3qLBwb1Yx/9/oqkf3iITrNIf+dIZNT85I6fbcMyilU
+         O2NrMZJyw+yRIGfE7EOt2vIJ1L3ul3jr6ylk6IRdQFOH8m6Aho0w791uLzCMDsyC4N6z
+         4HCQ==
+X-Gm-Message-State: ACgBeo30+webkpADopRXOBDj9e7K49dkBqLN/kCK0XeVCVdh5qOx+MNS
+        t6bzBJViGMrRPpRJNZ1kdkXYb7EMP7iKew==
+X-Google-Smtp-Source: AA6agR5BLOyhCxqNHO8QEcjCixT3fG1P9ls+0kC02DYZHRzSOE9hOQbr6tEKLPufPeGYNsI47YRRjg==
+X-Received: by 2002:a05:600c:5118:b0:3a5:37bf:6c21 with SMTP id o24-20020a05600c511800b003a537bf6c21mr4701418wms.135.1659960324712;
+        Mon, 08 Aug 2022 05:05:24 -0700 (PDT)
+Received: from localhost.localdomain (ptr-4xh0y3vuv1059rd6h4r.18120a2.ip6.access.telenet.be. [2a02:1810:a44c:8f00:cd22:c517:e143:e53b])
+        by smtp.gmail.com with ESMTPSA id d1-20020a5d6441000000b0021eb309c97dsm11087303wrw.25.2022.08.08.05.05.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 05:05:24 -0700 (PDT)
+From:   Crt Mori <cmo@melexis.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Crt Mori <cmo@melexis.com>
+Subject: [PATCH v2 1/2] iio: temperature: mlx90632 Add supply regulator to sensor
+Date:   Mon,  8 Aug 2022 14:05:18 +0200
+Message-Id: <20220808120518.1543260-1-cmo@melexis.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: CFLCCOxPx1eHtQMUUYS1_iowwQk2TtjZ
-X-Proofpoint-GUID: 8_m7ahHyhFqM15TEYn_upH7-IgdbyZd2
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-08_08,2022-08-05_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 phishscore=0 impostorscore=0 bulkscore=0 priorityscore=1501
- adultscore=0 suspectscore=0 spamscore=0 mlxlogscore=991 clxscore=1015
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2208080057
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Do not run objtool on VDSO files, by using
-OBJECT_FILES_NON_STANDARD
+Provide possibility to toggle power supply to the sensor so that user
+can optimize their setup and not have the sensor constantly powered.
 
-Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Sathvika Vasireddy <sv@linux.ibm.com>
+Signed-off-by: Crt Mori <cmo@melexis.com>
 ---
- arch/powerpc/kernel/vdso/Makefile | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/temperature/mlx90632.c | 63 +++++++++++++++++++++++++++---
+ 1 file changed, 58 insertions(+), 5 deletions(-)
 
-diff --git a/arch/powerpc/kernel/vdso/Makefile b/arch/powerpc/kernel/vdso/Makefile
-index 096b0bf1335f..a49a0d6a1c53 100644
---- a/arch/powerpc/kernel/vdso/Makefile
-+++ b/arch/powerpc/kernel/vdso/Makefile
-@@ -102,3 +102,5 @@ quiet_cmd_vdso64ld_and_check = VDSO64L $@
-       cmd_vdso64ld_and_check = $(VDSOCC) $(c_flags) $(CC64FLAGS) -o $@ -Wl,-T$(filter %.lds,$^) $(filter %.o,$^) ; $(cmd_vdso_check)
- quiet_cmd_vdso64as = VDSO64A $@
-       cmd_vdso64as = $(VDSOCC) $(a_flags) $(CC64FLAGS) $(AS64FLAGS) -c -o $@ $<
+diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
+index 7ee7ff8047a4..238d639df385 100644
+--- a/drivers/iio/temperature/mlx90632.c
++++ b/drivers/iio/temperature/mlx90632.c
+@@ -18,6 +18,7 @@
+ #include <linux/math64.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -128,6 +129,7 @@
+  *        calculations
+  * @object_ambient_temperature: Ambient temperature at object (might differ of
+  *                              the ambient temperature of sensor.
++ * @regulator: Regulator of the device
+  */
+ struct mlx90632_data {
+ 	struct i2c_client *client;
+@@ -136,6 +138,7 @@ struct mlx90632_data {
+ 	u16 emissivity;
+ 	u8 mtyp;
+ 	u32 object_ambient_temperature;
++	struct regulator *regulator;
+ };
+ 
+ static const struct regmap_range mlx90632_volatile_reg_range[] = {
+@@ -207,6 +210,15 @@ static s32 mlx90632_pwr_continuous(struct regmap *regmap)
+ 				  MLX90632_PWR_STATUS_CONTINUOUS);
+ }
+ 
++/**
++ * mlx90632_reset_delay() - Give the mlx90632 some time to reset properly
++ * If this is not done, the following I2C command(s) will not be accepted.
++ */
++static void mlx90632_reset_delay(void)
++{
++	usleep_range(150, 200);
++}
 +
-+OBJECT_FILES_NON_STANDARD := y
+ /**
+  * mlx90632_perform_measurement() - Trigger and retrieve current measurement cycle
+  * @data: pointer to mlx90632_data object containing regmap information
+@@ -248,11 +260,7 @@ static int mlx90632_set_meas_type(struct regmap *regmap, u8 type)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	/*
+-	 * Give the mlx90632 some time to reset properly before sending a new I2C command
+-	 * if this is not done, the following I2C command(s) will not be accepted.
+-	 */
+-	usleep_range(150, 200);
++	mlx90632_reset_delay();
+ 
+ 	ret = regmap_write_bits(regmap, MLX90632_REG_CONTROL,
+ 				 (MLX90632_CFG_MTYP_MASK | MLX90632_CFG_PWR_MASK),
+@@ -841,6 +849,32 @@ static int mlx90632_wakeup(struct mlx90632_data *data)
+ 	return mlx90632_pwr_continuous(data->regmap);
+ }
+ 
++static void mlx90632_disable_regulator(void *_data)
++{
++	struct mlx90632_data *data = _data;
++	int ret;
++
++	ret = regulator_disable(data->regulator);
++	if (ret < 0)
++		dev_err(regmap_get_device(data->regmap),
++			"Failed to disable power regulator: %d\n", ret);
++}
++
++static int mlx90632_enable_regulator(struct mlx90632_data *data)
++{
++	int ret;
++
++	ret = regulator_enable(data->regulator);
++	if (ret < 0) {
++		dev_err(regmap_get_device(data->regmap), "Failed to enable power regulator!\n");
++		return ret;
++	}
++
++	mlx90632_reset_delay();
++
++	return ret;
++}
++
+ static int mlx90632_probe(struct i2c_client *client,
+ 			  const struct i2c_device_id *id)
+ {
+@@ -876,6 +910,25 @@ static int mlx90632_probe(struct i2c_client *client,
+ 	indio_dev->channels = mlx90632_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(mlx90632_channels);
+ 
++	mlx90632->regulator = devm_regulator_get(&client->dev, "vdd");
++	if (IS_ERR(mlx90632->regulator))
++		return dev_err_probe(&client->dev,
++				     PTR_ERR(mlx90632->regulator),
++				     "failed to get vdd regulator");
++
++	ret = mlx90632_enable_regulator(mlx90632);
++	if (ret < 0)
++		return ret;
++
++	ret = devm_add_action_or_reset(&client->dev,
++				       mlx90632_disable_regulator,
++				       mlx90632);
++	if (ret < 0) {
++		dev_err(&client->dev, "Failed to setup regulator cleanup action %d\n",
++			ret);
++		return ret;
++	}
++
+ 	ret = mlx90632_wakeup(mlx90632);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "Wakeup failed: %d\n", ret);
 -- 
-2.31.1
+2.34.1
 
