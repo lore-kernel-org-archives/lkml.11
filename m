@@ -2,119 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5480DC25B0C
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:09:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92218C25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243881AbiHHQJZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 12:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41326 "EHLO
+        id S243892AbiHHQKL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 12:10:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243316AbiHHQJW (ORCPT
+        with ESMTP id S243316AbiHHQKJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 12:09:22 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2D615A2B;
-        Mon,  8 Aug 2022 09:09:20 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 278BeAh0022290;
-        Mon, 8 Aug 2022 18:09:01 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=rf79dk1iiMXWP3qcuM7pMgLmAweJ/wxrLQJ66XbRxFc=;
- b=S2UxETO7/2Zq2pKp71n5vrL2HZpPfqQtHZk65AhuEGIwmyT7zOZDvtmnYmuRniEw3U3M
- FhTZBIZIPBSGifuI8x7CAB30JJO7mqVd71fRol9RINJMxO4jyAbKuX+quXmakdX1Tt1D
- xT4Qm5T9Bk+tbHzZj+duojwrPeRvOBWSyipcuaQdhiHnV9pDQ0CrldPt0K+S707iDioq
- kofTBdJ1PJsLr4a1nuoiUiRT+RWbiI1xInSs1IehGeyRCsBnvsO+FD30cx1rRFWT0nqA
- lPOsnEvldrlkdjZdgAtpMp9hTdhYQAY7J9dc9vJiQTDd2jWLNks56bGKnQOBjpGX19yG rg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hsfn0ames-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 08 Aug 2022 18:09:01 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C6A5E10002A;
-        Mon,  8 Aug 2022 18:09:00 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id B18B3257AB8;
-        Mon,  8 Aug 2022 18:09:00 +0200 (CEST)
-Received: from [10.201.21.72] (10.75.127.46) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 8 Aug
- 2022 18:09:00 +0200
-Message-ID: <79fd7e19-ceef-14fb-5a83-603740735f8f@foss.st.com>
-Date:   Mon, 8 Aug 2022 18:08:59 +0200
+        Mon, 8 Aug 2022 12:10:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12F641580D
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 09:10:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659975007;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=k2rVxCQ9cERJ9mXQXAN4OFCiUy0IwjBElfQJb084200=;
+        b=gIRvVmFUqMn4qjjeB1KIItfSGTqGU6XpId1sIIeqNcCh9OIMq7fsePZ2uM2Q/xB43VwTJt
+        HMZAGAzYkEJaORFdznC7Oy01rNUHscFpR41xwMdS1vPD1sWqU+f8g+UgpqkvWdIOiZ3p5N
+        4XPq9VIFC7Le2WmQ0ENDrGCgVTi4DSM=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-526-H0QaD-jlPIad752LSb2Rhw-1; Mon, 08 Aug 2022 12:10:06 -0400
+X-MC-Unique: H0QaD-jlPIad752LSb2Rhw-1
+Received: by mail-il1-f199.google.com with SMTP id f5-20020a056e020b4500b002df180f0997so6926951ilu.21
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 09:10:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=k2rVxCQ9cERJ9mXQXAN4OFCiUy0IwjBElfQJb084200=;
+        b=KR89qEJZ1wOK4N0GqYGBe3jD1fRgeMJLZgbwo8jeLDyQ0mUUt1jdUAD2+IXfdNTXgq
+         XFyHn5PZtzBEVcTRmHbCaUKQYzHCZJHyrg4qB8W/oHwwedkVZXoM3pB/TR/EdzUreeHx
+         vCAwIdZgMwRVLrNrzguO8pp7R8vaxEbT/WOAwHNf1oZ9Yxo+UM7HJl3BjUXE+SoxFX0i
+         1ZcwY05yhiiu8nJZi/AD9ib9Mrb/qSvUq82AEPL5oLgorCe/JPr0dJU/PH3FEhLbO7S2
+         3gJLbVcZ5LfrI75CdpxDGsuEXtbYl/CQNwn3Bap81naaaMbhGZCQIma5PT0BzgJD0Auq
+         gKug==
+X-Gm-Message-State: ACgBeo2uvBn4OMBr6+uCQGDEg0g4Hhd/jKMevqVbImWOTdNYE8MpiwJq
+        WjEkZQrt5Kp6b2Fe1MEDIZQCcv4IECm/7RfjaNSE3b4zo4YnLq0gScNbIJRZDUj7MWyCK0U2qQV
+        GMmjKHrUIi9wvMufyJVOjo6yj
+X-Received: by 2002:a05:6e02:1c8d:b0:2df:72a9:ffcc with SMTP id w13-20020a056e021c8d00b002df72a9ffccmr8511695ill.189.1659975005366;
+        Mon, 08 Aug 2022 09:10:05 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7M1kTZV0NW8ZsPJx7vif6CuH8zsDVFp6bLmx9V6FX7OFY7lFm4pqiWPcbvha02rSsJfqTNtg==
+X-Received: by 2002:a05:6e02:1c8d:b0:2df:72a9:ffcc with SMTP id w13-20020a056e021c8d00b002df72a9ffccmr8511686ill.189.1659975005142;
+        Mon, 08 Aug 2022 09:10:05 -0700 (PDT)
+Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
+        by smtp.gmail.com with ESMTPSA id n16-20020a056602341000b00684f4b808ffsm13634ioz.39.2022.08.08.09.10.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 09:10:04 -0700 (PDT)
+Date:   Mon, 8 Aug 2022 12:10:02 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Peter Feiner <pfeiner@google.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] mm/hugetlb: fix hugetlb not supporting
+ write-notify
+Message-ID: <YvE1WsGKkGjyx1FU@xz-m1.local>
+References: <20220805110329.80540-1-david@redhat.com>
+ <20220805110329.80540-2-david@redhat.com>
+ <Yu1eCsMqa641zj5C@xz-m1.local>
+ <Yu1gHnpKRZBhSTZB@monkey>
+ <c2a3b903-099c-4b79-6923-8b288d404c51@redhat.com>
+ <Yu1ie559zt8VvDc1@monkey>
+ <73050e64-e40f-0c94-be96-316d1e8d5f3b@redhat.com>
+ <Yu2CI4wGLHCjMSWm@monkey>
+ <Yu2kK6s8m8NLDjuV@xz-m1.local>
+ <Yu2o5DUncFywbPFS@monkey>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/3] dt-bindings: spi: stm32: Add st,dual-flash property
- in st,stm32-qspi.yaml
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
-CC:     <linux-spi@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
-        <devicetree@vger.kernel.org>
-References: <20220808074051.44736-1-patrice.chotard@foss.st.com>
- <20220808074051.44736-2-patrice.chotard@foss.st.com>
- <9ad4b4a8-988e-f185-f80c-6f15f341ce8c@linaro.org>
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-In-Reply-To: <9ad4b4a8-988e-f185-f80c-6f15f341ce8c@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-08_10,2022-08-08_01,2022-06-22_01
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yu2o5DUncFywbPFS@monkey>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzystof
-
-On 8/8/22 11:01, Krzysztof Kozlowski wrote:
-> On 08/08/2022 10:40, patrice.chotard@foss.st.com wrote:
->> From: Patrice Chotard <patrice.chotard@foss.st.com>
->>
->> Add new property st,dual-flash which allows to use the QSPI interface as a
->> communication channel using up to 8 qspi line.
->> This mode can only be used if cs-gpios property is defined.
->>
->> Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
->> ---
->>  Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml | 8 ++++++++
->>  1 file changed, 8 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml b/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml
->> index 6ec6f556182f..5e4f9109799e 100644
->> --- a/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml
->> +++ b/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml
->> @@ -46,6 +46,14 @@ properties:
->>        - const: tx
->>        - const: rx
->>  
->> +  st,dual-flash:
->> +    type: boolean
->> +    description:
->> +      Allows to use 8 data lines in case cs-gpios property is defined.
+On Fri, Aug 05, 2022 at 04:33:56PM -0700, Mike Kravetz wrote:
+> It looks like vma_soft_dirty_enabled is recent and not in any stable
+> trees (or even 5.19).
 > 
-> It's named dual-flash, but what if you want to use QSPI to connect for
-> example to FPGA?
+> Yes, I did start working on hugetlb softdirty support in the past.
+> https://lore.kernel.org/lkml/20210211000322.159437-1-mike.kravetz@oracle.com/
 > 
-> Also how is this related to parallel-memories property?
+> Unfortunately, it got preempted by other things.  I will try to move it up
+> the priority list.
 
-I called it "dual-flash" simply because it enable the dual flash feature of the QSPI block (bit CR_DFM : Dual Flash Mode)
-which allows to use the 8 lines simultaneously of our dual QSPI block.
+Thanks, Mike.
 
-Best regards
-Patrice
+It'll also makes sense to forbid it if it may take time to finish, so we
+don't need to push ourselves.
 
+-- 
+Peter Xu
 
-> 
-> Best regards,
-> Krzysztof
