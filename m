@@ -2,67 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44374C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 18:43:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC2FC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 18:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244479AbiHHSnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 14:43:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
+        id S244539AbiHHSnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 14:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244477AbiHHSmc (ORCPT
+        with ESMTP id S244484AbiHHSmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 14:42:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409F910F3
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 11:42:07 -0700 (PDT)
+        Mon, 8 Aug 2022 14:42:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F472653;
+        Mon,  8 Aug 2022 11:42:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D049B61262
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 18:42:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3CED8C433D6;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1253FB81058;
+        Mon,  8 Aug 2022 18:42:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B7452C433B5;
         Mon,  8 Aug 2022 18:42:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1659984126;
-        bh=ePxumCSBfFzGSnKGc9mgQ/zezFfiqvOGFsKicTWV8Ic=;
+        bh=IcKbQrEu8fvCNUssOuYB2qG3dSNG44WeXb5EOxESOXo=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=AMyAeDcykGtM1NcmUiPwmEX5CCuGudJG9qroNNxL1OV6+d9fc8PWnCtp/9bxALejA
-         jTuM0cgyBfz65O9LsYRCHbeoO8kb2OD+ZeKw1wGWNRBSqGXt8F/6RnC6mpw95ZJBFM
-         LOdZKVXuG33ZT9yg23H7qfhqzqZ89pITjMlhymeWhkLXXsc87v+3agAa1bqj39Covp
-         t/P+8OhMl06NYVkg5lidPZ9ks283XnfDV763UvYgnuwOjQZpmycF4xajJzmbXlUlE2
-         qahHTKBsAAskwxoeId5my77OGo107QhcbKL7St6PSgH3SbqeYwZR8l8SaxBbVavJjJ
-         tgpsGQwUCMIkg==
+        b=ckHnJveum2Ldsm5QWQhqpuo+/b6Nh0AT/z3NysNuoRtBvZlkT2Uklcj3t5XO2/59L
+         rzcEfAXG44fg5GnAk2pxgNF7cFKZ/kDNTCkY1aGYjqBnCI2ekRFNye8rdG38H4K29z
+         PMtfsps1PYtqU/7QD3MRVzY7o75SokmkGWCj27Cb2v64sk1XFsh8Q0h7MqARo0UJ0c
+         pGxj2ISfqsn5AoV1mIaMRyZBmpvR6ySkxFoOMnmS3XoAjyw2IiFVIezSS5+/RLRrzN
+         qVcT/rUnGjn7Z++/TfLCNTjzFcgLd/4GPuta+3JTP3rMzw65QMOp3fzwfubgEAqkWQ
+         CE36fyfei0E6w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2079AC43142;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A6D3DC43140;
         Mon,  8 Aug 2022 18:42:06 +0000 (UTC)
-Subject: Re: [f2fs-dev] [GIT PULL] f2fs for 6.0
+Subject: Re: [GIT PULL] LEDs changes for v5.20-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YvE6fO1r0znOdr60@google.com>
-References: <YvE6fO1r0znOdr60@google.com>
-X-PR-Tracked-List-Id: <linux-f2fs-devel.lists.sourceforge.net>
-X-PR-Tracked-Message-Id: <YvE6fO1r0znOdr60@google.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs.git tags/f2fs-for-6.0
-X-PR-Tracked-Commit-Id: 01fc4b9a6ed8eacb64e5609bab7ac963e1c7e486
+In-Reply-To: <20220808135201.GA22949@duo.ucw.cz>
+References: <20220808135201.GA22949@duo.ucw.cz>
+X-PR-Tracked-List-Id: <linux-leds.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220808135201.GA22949@duo.ucw.cz>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/ tags/leds-5.20-rc1
+X-PR-Tracked-Commit-Id: 38ba0bb291aacd92d8eaa4a1aa8b63ce4286e797
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 1daf117f1d6b5056e27353fa289ef1bbcb619e8d
-Message-Id: <165998412611.757.4082441541287492652.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: c8a684e2e110376c58f0bfa30fb3855d1e319670
+Message-Id: <165998412667.757.10353759158812252195.pr-tracker-bot@kernel.org>
 Date:   Mon, 08 Aug 2022 18:42:06 +0000
-To:     Jaegeuk Kim <jaegeuk@kernel.org>
+To:     Pavel Machek <pavel@ucw.cz>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>
+        kernel list <linux-kernel@vger.kernel.org>,
+        jacek.anaszewski@gmail.com, linux-leds@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 8 Aug 2022 09:31:56 -0700:
+The pull request you sent on Mon, 8 Aug 2022 15:52:01 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs.git tags/f2fs-for-6.0
+> git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/ tags/leds-5.20-rc1
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/1daf117f1d6b5056e27353fa289ef1bbcb619e8d
+https://git.kernel.org/torvalds/c/c8a684e2e110376c58f0bfa30fb3855d1e319670
 
 Thank you!
 
