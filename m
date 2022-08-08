@@ -2,95 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8E11C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F28A1C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:44:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244311AbiHHRoB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 13:44:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47744 "EHLO
+        id S244339AbiHHRoJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 13:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244315AbiHHRna (ORCPT
+        with ESMTP id S244343AbiHHRnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 13:43:30 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2DABBCA
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:43:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1659980503; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DbwQc0Ju19xD2mWEaWAqDllFKFW7biQlR2zUxZczCrM=;
-        b=G9DCQXebRw8jJ0alZ2d+6uTEOO0b3CzWVkoP+3R1hF5Gj57g+7nP+63NlGzKN5LhjtciYK
-        Lguq/EZR4+mnjzyHyKBoRBaE4OweRVERJa3hIvcTm3SSyb7cFZYJHK+W6jjITiTxVVZltN
-        gtf4Y1VMmTG/YRTD6ThaMviH5LyZAfg=
-From:   Paul Cercueil <paul@crapouillou.net>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v2 12/30] mfd: intel_soc_pmic: Remove #ifdef guards for PM related functions
-Date:   Mon,  8 Aug 2022 19:40:49 +0200
-Message-Id: <20220808174107.38676-13-paul@crapouillou.net>
-In-Reply-To: <20220808174107.38676-1-paul@crapouillou.net>
-References: <20220808174107.38676-1-paul@crapouillou.net>
+        Mon, 8 Aug 2022 13:43:35 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC355B51
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:43:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659980614; x=1691516614;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=eZHz5AZts8pa+4dAgLDzj+RDlAzwOdbJVrXvXp0Rcms=;
+  b=WfL43eYuI3KWCs5hUgkt+oYHtcri+hAusIikoE4nQd7hW7eQOSV/U/zl
+   aIj4HPf0AZ1kGVWpxjrcZBReISUp5iIsiBfAdgZ1Y4jN0XKJTwkPTv8/j
+   Lc8A/t04jO9AthfJItzKuBXslRCm/SGsRnuXtpv//wIjYE5qFdp8pJReS
+   OJl/amiW7l6A4OouBVNwKyvdOdpiIaPD+lftPTIiY7L2TdGb+NRbHbFR/
+   vWXh11Gn+wx6fE/wPL+hGAo9KkOqKEgW+EdVB5bPz5y8vp95zOsPsKEb0
+   EPKjnFYoj5yJ/0bkIZVFHHv5IoLhT9S/aWTrtiId5wMb3RIJNM+connEI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="273703180"
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="273703180"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 10:43:34 -0700
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="604452861"
+Received: from sankarka-mobl1.amr.corp.intel.com (HELO [10.212.251.15]) ([10.212.251.15])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 10:43:34 -0700
+Message-ID: <b929e415-def2-b47b-fd1e-57877a98c2ad@intel.com>
+Date:   Mon, 8 Aug 2022 10:43:35 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH 1/5] entry: Pass pt_regs to
+ irqentry_exit_cond_resched()
+Content-Language: en-US
+To:     Borislav Petkov <bp@alien8.de>, Ira Weiny <ira.weiny@intel.com>
+Cc:     Rik van Riel <riel@surriel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com
+References: <20220805173009.3128098-1-ira.weiny@intel.com>
+ <20220805173009.3128098-2-ira.weiny@intel.com> <YvDnkALyHl77R/Ug@zn.tnic>
+ <YvFJGxU0k492npYT@iweiny-desk3> <YvFKHaRdOkg5RHtv@zn.tnic>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <YvFKHaRdOkg5RHtv@zn.tnic>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros
-to handle the .suspend/.resume callbacks.
+On 8/8/22 10:38, Borislav Petkov wrote:
+> On Mon, Aug 08, 2022 at 10:34:19AM -0700, Ira Weiny wrote:
+>> I thought about that but generally have been steered away from using bool
+>> arguments like this.
+> The reason being?
 
-These macros allow the suspend and resume functions to be automatically
-dropped by the compiler when CONFIG_SUSPEND is disabled, without having
-to use #ifdef guards.
+Might have been me.  Function calls that look like this:
 
-This has the advantage of always compiling these functions in,
-independently of any Kconfig option. Thanks to that, bugs and other
-regressions are subsequently easier to catch.
+	foo(&ptr, false, true, false, true, 1, 0);
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
-Cc: Andy Shevchenko <andy@kernel.org>
+are incomprehensible.  A true/false is effectively a magic number here
+and you have to go looking at the code implementing 'foo()' or at least
+the declaration hoping that the variable names help (if the declaration
+has variable names).
 
- drivers/mfd/intel_soc_pmic_core.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+I think I've encouraged Ira to do something like this instead:
 
-diff --git a/drivers/mfd/intel_soc_pmic_core.c b/drivers/mfd/intel_soc_pmic_core.c
-index 5e8c94e008ed..96303aa87bc1 100644
---- a/drivers/mfd/intel_soc_pmic_core.c
-+++ b/drivers/mfd/intel_soc_pmic_core.c
-@@ -104,7 +104,6 @@ static void intel_soc_pmic_shutdown(struct i2c_client *i2c)
- 	return;
- }
- 
--#if defined(CONFIG_PM_SLEEP)
- static int intel_soc_pmic_suspend(struct device *dev)
- {
- 	struct intel_soc_pmic *pmic = dev_get_drvdata(dev);
-@@ -122,10 +121,9 @@ static int intel_soc_pmic_resume(struct device *dev)
- 
- 	return 0;
- }
--#endif
- 
--static SIMPLE_DEV_PM_OPS(intel_soc_pmic_pm_ops, intel_soc_pmic_suspend,
--			 intel_soc_pmic_resume);
-+static DEFINE_SIMPLE_DEV_PM_OPS(intel_soc_pmic_pm_ops, intel_soc_pmic_suspend,
-+				intel_soc_pmic_resume);
- 
- static const struct i2c_device_id intel_soc_pmic_i2c_id[] = {
- 	{ }
-@@ -143,7 +141,7 @@ MODULE_DEVICE_TABLE(acpi, intel_soc_pmic_acpi_match);
- static struct i2c_driver intel_soc_pmic_i2c_driver = {
- 	.driver = {
- 		.name = "intel_soc_pmic_i2c",
--		.pm = &intel_soc_pmic_pm_ops,
-+		.pm = pm_sleep_ptr(&intel_soc_pmic_pm_ops),
- 		.acpi_match_table = ACPI_PTR(intel_soc_pmic_acpi_match),
- 	},
- 	.probe = intel_soc_pmic_i2c_probe,
--- 
-2.35.1
+enum foo_mode {
+	MODE_BAR,
+	MODE_BAZ
+}
 
+where the call ends up looking like:
+
+	foo(&ptr, MODE_BAR);
+
+which is much more self-documenting.
