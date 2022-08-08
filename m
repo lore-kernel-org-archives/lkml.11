@@ -2,116 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4815C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:45:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDCA8C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243233AbiHHPpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 11:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50514 "EHLO
+        id S242800AbiHHPpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 11:45:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238062AbiHHPpF (ORCPT
+        with ESMTP id S238062AbiHHPpN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 11:45:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4981E8
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 08:45:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AE7C61012
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 15:45:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98397C43145
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 15:45:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659973503;
-        bh=0+M//WFj4QufhDanyiSvlllCgJP3lcJFBIdND72VH8c=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=FhbrpMMaW2VUB25O64jvPFojr9qmr2z94jzXHOwlQcZjFoOeD+MqjEAnArO/n1t4v
-         3e69NiO/Rw3splQ8Vi6UGj4ihHsI/STjI4gQ4tiNRgENmj/aDlU2hw0Py6Xb4HsRPM
-         AMFoPYG9njomAJGUXzxlgvy5s+HP6+xorvEPjhWNLoLO1EAHl2b2nrEk5XweEf5XmQ
-         MOh42c1f9tfg5dUf/0H9aiKilYkN+zRoHI2F3RU2x1QgBwERXyhA7AWr2kW89Mp2KV
-         EQ0pQwlqVJwr4zQ9HjC2JHvhw5uKq7O0/UbNgchFQQvnU4FZ/OiMxaPQZoTeAAQ5jy
-         lB8X0UGSzZTcA==
-Received: by mail-ua1-f42.google.com with SMTP id b4so3646065uaw.11
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 08:45:03 -0700 (PDT)
-X-Gm-Message-State: ACgBeo3ZBMeKovryMfQIi+raIPrNY6psBB9xhrmZMQIvIvp7aUhBbP9j
-        UMLE095btxtHL1s/oxagZPH8gqeoHK4m0YxLAw==
-X-Google-Smtp-Source: AA6agR6mVFjC5VBa80Aifh09hljy1mvccPoQFLhpS0jUnBD7z5E4KFhe92+/ImOsfK5s/YfuXt9X9tMfwqH2jC4zR10=
-X-Received: by 2002:ab0:2505:0:b0:384:cc62:9a75 with SMTP id
- j5-20020ab02505000000b00384cc629a75mr7586379uan.36.1659973502267; Mon, 08 Aug
- 2022 08:45:02 -0700 (PDT)
+        Mon, 8 Aug 2022 11:45:13 -0400
+Received: from bg5.exmail.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B5FA1E8;
+        Mon,  8 Aug 2022 08:45:09 -0700 (PDT)
+X-QQ-mid: bizesmtp69t1659973505t2w49uas
+Received: from localhost.localdomain ( [182.148.14.53])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 08 Aug 2022 23:44:58 +0800 (CST)
+X-QQ-SSF: 0100000000200050B000B00A0000000
+X-QQ-FEAT: mRz6/7wsmIhlzHKj0YPyARWgDoZt8mu1HzJB+5kNjN9Ou3AYISo7wgJWT1MdI
+        Wcl8IuhSuTsWf0QjurwFBjPrX5Ijlraq9DQ4oI4Bz4XURd4ddaXrRhrNURQX2zyotdkIvij
+        JMYI9PJl70AXkfKMVw0ogD1YRLEqP0umjtSqNFFxx0QCQy82sv8HSwecwVPhh/YFeu1fp91
+        HO4Wq4Zz7Sm3R4GcpyrrcrwskJK3XBaZ2Oe2ZQd5nXEgvvyfZTxHfMZzefVb4f+ae71Ltvk
+        kLaau2XQXtVOKfJpUirAFHANHMCxVJuKWmoiz6rQ0mjuuF7a18+StTb6cMGwFO3RCuGcwoJ
+        ZmYts4Vas/fsHX+ms4QMwuSMSWQ0QF2p60WrUEVmvkcvYe0YEtM4jUMcB957mCA+LQmFXeC
+        dN05ITftGVE=
+X-QQ-GoodBg: 0
+From:   shaomin Deng <dengshaomin@cdjrlc.com>
+To:     wim@linux-watchdog.org, linux@roeck-us.net
+Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
+        shaomin Deng <dengshaomin@cdjrlc.com>
+Subject: [PATCH] watchdog: Fix typo in comments
+Date:   Mon,  8 Aug 2022 11:44:57 -0400
+Message-Id: <20220808154457.9879-1-dengshaomin@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220721181747.1640-1-eric.devolder@oracle.com>
- <20220721181747.1640-2-eric.devolder@oracle.com> <YvCCOY+mRshu1tHi@MiWiFi-R3L-srv>
- <52d40562-ee6f-bb89-6d21-2d6baf67053d@oracle.com>
-In-Reply-To: <52d40562-ee6f-bb89-6d21-2d6baf67053d@oracle.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 8 Aug 2022 09:44:51 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLXGSPzCDUD6sD-CsziPw0PWxSTocNfxnwOGR_-ALos9w@mail.gmail.com>
-Message-ID: <CAL_JsqLXGSPzCDUD6sD-CsziPw0PWxSTocNfxnwOGR_-ALos9w@mail.gmail.com>
-Subject: Re: [PATCH v10 1/8] crash: introduce arch/*/asm/crash.h
-To:     Eric DeVolder <eric.devolder@oracle.com>
-Cc:     Baoquan He <bhe@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        X86 ML <x86@kernel.org>, kexec@lists.infradead.org,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Dave Young <dyoung@redhat.com>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
-        Thomas Lendacky <thomas.lendacky@amd.com>, efault@gmx.de,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        sourabhjain@linux.ibm.com,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 9:19 AM Eric DeVolder <eric.devolder@oracle.com> wrote:
->
->
->
-> On 8/7/22 22:25, Baoquan He wrote:
-> > Hi Eric,
-> >
-> > On 07/21/22 at 02:17pm, Eric DeVolder wrote:
-> >> The use of __weak is being eliminated within kexec sources.
-> >> The technique uses macros mapped onto inline functions in
-> >> order to replace __weak.
-> >>
-> >> This patchset was using __weak and so in order to replace
-> >> __weak, this patch introduces arch/*/asm/crash.h, patterned
-> >> after how kexec is moving away from __weak and to the macro
-> >> definitions.
-> >
-> > Are you going to replace __weak in kexec of arll ARCHes? I don't see
-> > your point why all these empty header files are introduced. Wondering
-> > what's impacted if not adding these empty files?
->
-> Hi Baoquan,
-> In this patchset, to file include/linux/crash_core.h I added the line #include <asm/crash.h>.
-> I patterned this after how include/linux/kexec.h does #include <asm/kexec.h>.
->
-> For kexec, the items that were __weak are refactored into corresponding asm/kexec.h.
->
-> I followed suit for crash __weak items. File crash_core.h now #include's asm/crash.h and
-> so that file needs to be present for every arch, else build failures ensue. It turns out
-> x86_64 already had this file.
->
-> At this time, I was not planning on converting the other arch's __weak to asm/crash.h, but at least
-> with these empty files, the infrastructure is in place for when that does occur.
+Delete the repeated word "we" in comments.
 
-asm-generic is the right location for default asm headers. I'm not
-really sure you even need them as you mainly seem to be using the
-header to enable a feature. That's normally done by the arch selecting
-a kconfig option. But as Borislav previously pointed out, you don't
-need a new option here if the arch must provide support when kexec and
-hotplug are enabled/supported.
+Signed-off-by: shaomin Deng <dengshaomin@cdjrlc.com>
+---
+ drivers/watchdog/pc87413_wdt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Rob
+diff --git a/drivers/watchdog/pc87413_wdt.c b/drivers/watchdog/pc87413_wdt.c
+index 9f9a340427fc..14f37b3b903f 100644
+--- a/drivers/watchdog/pc87413_wdt.c
++++ b/drivers/watchdog/pc87413_wdt.c
+@@ -333,7 +333,7 @@ static int pc87413_status(void)
+  *	@ppos: pointer to the position to write. No seeks allowed
+  *
+  *	A write to a watchdog device is defined as a keepalive signal. Any
+- *	write of data will do, as we we don't define content meaning.
++ *	write of data will do, as we don't define content meaning.
+  */
+ 
+ static ssize_t pc87413_write(struct file *file, const char __user *data,
+-- 
+2.35.1
+
