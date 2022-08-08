@@ -2,169 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A923BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 09:16:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E968C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 09:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242284AbiHHJQh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 05:16:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
+        id S242261AbiHHJRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 05:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242249AbiHHJQa (ORCPT
+        with ESMTP id S242218AbiHHJRO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 05:16:30 -0400
-Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C753F591
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 02:16:28 -0700 (PDT)
-Received: by mail-vs1-xe32.google.com with SMTP id 129so8194077vsq.8
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 02:16:28 -0700 (PDT)
+        Mon, 8 Aug 2022 05:17:14 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7C613F4E
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 02:17:12 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id w15so9175889ljw.1
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 02:17:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=pVNlseyL7MIacDBBSW8JnWAP1QTyQz+R1GjPvPmG8Bw=;
-        b=YIXYJCJMwuU+4vsbJmfAaSj88sdp8YjyaZSak599F+GyyQbhkJ2ZvsXU/qoOc0DEVJ
-         /PQFVLbyPB/IdCF68/XCHpyEs9qlO/FfL33C1tA0PQJ0KeRiwhLdYdtedNpWu9I306Uz
-         tRatyBhEx2GN8YngVH/bs9fKNmRjrx2zF9Yx+rq4PBo2dzhtbExJsGnQ9pdnngk2uI83
-         VSGn3oj7ATuTiKXL5xSHTIE2eTHoUxFdl92kiPIJYvYU1nBQUK+P+uQUS9AHXfU7XWNe
-         XVGdt9K1WzA+jelz9sH+1jULfLxjGXBtulblNPqgI0IathIxYnT3lI70xx1nYg8bDauu
-         bhnA==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=pMpurfdUFUXUf7fmwUQBIqLSWGdQDW67AVZBUmy36+k=;
+        b=r1xUYo+L0qxJxm9/dIt6wup1Dpe9Iqw3qDUSVLixLXaD9QnyWNaW4VNjsbYKbLWG3m
+         +q1yNGFsnSUXflkalaqeWqEBgelbQNnpDPmaAoi6GLIcxwMfzVjgTYfmavGrl2i/pnW0
+         ikrVqDzQ6vhUgeAjf9nvoPt6MqZeO8D5UKUItp34rlp2tWDJ7uRwbcWQAyK3Gw1Ftg1+
+         6m+ezM2bRgBygZCRf5C2hNWtlDJkRL4OmClSWoOZTINDNnx7jHSWBdwCoZID2laakvdC
+         d/yOvWPt7cwGbIwrby0E5TYRWXuW7NizeqFUpc2Xv0iV9pkmO0bEquvydNBKJAcXp9XD
+         qG5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=pVNlseyL7MIacDBBSW8JnWAP1QTyQz+R1GjPvPmG8Bw=;
-        b=bJxCN2m2G4qXW2YLKnWNYMYmy8PVq49xo/Vo4ECSZYcyD7QAJoqnIZw7TJHA3T8V2c
-         6tLq7MDbJIp/ZSb9mwJMpoEcUgAcwNraPYSEHRnT5SQsYitgVVNuK7JssO0Ec+obKjaL
-         n8eZHN2t571G5qbpkDqwg8/dYXaQy6kGQvwxYADbRe8NfGliaUgiOLfLty5WMoZ+E5B3
-         RrACheqKPgZDEURVdmWs/I3pp/Frr7ekaVEBd3mv8t3b0/kkH7FKv91N9FLNyDRtq/SR
-         9mWR3/77yhVR1GRSCJm/vyNm3Nm+eN+PHtlnkVukkyafPFAyDFZg12/vHpnV+xHupBoo
-         3bOg==
-X-Gm-Message-State: ACgBeo2GJWc5ElcUiuM+tXrRuUAcA5Usy1UdyWaVVt4bna4wQJybugEp
-        iL2nYA+GD7s7M0QvO40X4dlGzQybTDbACvCdklS63N+8Dx84nQ==
-X-Google-Smtp-Source: AA6agR42DN6xTbW3KHlNtPkw/s40Y9swtTBffE8ev10F1noVMVv7NSce5+uCbTtho0gGCau8nLjMWuRQ+NOkfLUOc+o=
-X-Received: by 2002:a67:e288:0:b0:388:b41d:1654 with SMTP id
- g8-20020a67e288000000b00388b41d1654mr1425130vsf.70.1659950187247; Mon, 08 Aug
- 2022 02:16:27 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pMpurfdUFUXUf7fmwUQBIqLSWGdQDW67AVZBUmy36+k=;
+        b=nLp4kJy9w5VmUZWY4WOQOyXgISjucq9yYPSp4GN1riDMqBFLtGOedS9n/XZM2sW37a
+         u7AqyM4pSSDRjSIUZVOkXqYP5HtrzoO41CCnmQGVsqmB6R+ohJVcdr5XAPqgBnqvI1Ja
+         XZEvTRLz+B1MpSTrvjVFTqrav82180xllNxxth1rTyB8UCAlSnMQbQSVRAIwbQ7kwfAy
+         KrNxtMQZ7M/xJutFfLla6E0/GR2Lfk0jvwNpy4C1VLjTTKsm0WC2LdwJIKiO7fsSc9XJ
+         NCv5AJB0YOJUKdPUDaLHwgC/cVH6h06RREF9HBSe3UIsx2PNKVZwhVsPnb/6dkQwUsdL
+         IECw==
+X-Gm-Message-State: ACgBeo2vr66YeUDUk0Au5zfefotdGRzhr32Fy4TP5+K8EYNX58satnu9
+        cRprPJ5P3I9nWNJlUjSqxTrUqA==
+X-Google-Smtp-Source: AA6agR75FWgUDhN/Zq3dwh05o1Z/nJwA53vV5D3Tos8WHvDReDd8edBsXQCUqvN2Ob/upYWd966uvQ==
+X-Received: by 2002:a2e:8404:0:b0:250:cde7:e9e3 with SMTP id z4-20020a2e8404000000b00250cde7e9e3mr5291223ljg.289.1659950230860;
+        Mon, 08 Aug 2022 02:17:10 -0700 (PDT)
+Received: from [192.168.1.39] ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id s13-20020a056512314d00b00477c0365b20sm1353560lfi.188.2022.08.08.02.17.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Aug 2022 02:17:09 -0700 (PDT)
+Message-ID: <4cef00b4-c184-ae78-3709-5ed520ca3375@linaro.org>
+Date:   Mon, 8 Aug 2022 12:17:06 +0300
 MIME-Version: 1.0
-References: <20220808085359.3351574-1-chenhuacai@loongson.cn> <61d4525e971206082096fd86525f1fcc@kernel.org>
-In-Reply-To: <61d4525e971206082096fd86525f1fcc@kernel.org>
-From:   Huacai Chen <chenhuacai@gmail.com>
-Date:   Mon, 8 Aug 2022 17:16:16 +0800
-Message-ID: <CAAhV-H7Vu8j0U05ZJBzVQ3PnRd6Rpyt7Nbt-6_f4iCj=zNymnw@mail.gmail.com>
-Subject: Re: [PATCH] irqchip/loongson-pch-pic: Move find_pch_pic() into CONFIG_ACPI
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 3/5] arm64: dts: qcom: Add PM6125 PMIC
+Content-Language: en-US
+To:     Marijn Suijten <marijn.suijten@somainline.org>,
+        phone-devel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+References: <20220805135729.1037079-1-marijn.suijten@somainline.org>
+ <20220805135729.1037079-4-marijn.suijten@somainline.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220805135729.1037079-4-marijn.suijten@somainline.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Marc,
+On 05/08/2022 16:57, Marijn Suijten wrote:
+> This PMIC is commonly used on boards with an SM6125 SoC and looks very
+> similar in layout to the PM6150.
+> 
+> Downstream declares more nodes to be available, but these have been
+> omitted from this patch: the pwm/lpg block is unused on my reference
+> device making it impossible to test/validate, and the spmi-clkdiv does
+> not have a single device-tree binding using this driver yet, hence
+> inclusion is better postponed until ie. audio which uses these clocks is
+> brought up.
+> 
 
-On Mon, Aug 8, 2022 at 5:05 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> On 2022-08-08 09:53, Huacai Chen wrote:
-> > MIPS doesn't declare find_pch_pic(), which makes a build warning:
-> >
-> >>> drivers/irqchip/irq-loongson-pch-pic.c:51:5: warning: no previous
-> >>> prototype for function 'find_pch_pic' [-Wmissing-prototypes]
-> >    int find_pch_pic(u32 gsi)
-> >        ^
-> >    drivers/irqchip/irq-loongson-pch-pic.c:51:1: note: declare 'static'
-> > if the function is not intended to be used outside of this translation
-> > unit
-> >    int find_pch_pic(u32 gsi)
-> >    ^
-> >    static
-> >    1 warning generated.
-> >
-> > Move find_pch_pic() into CONFIG_ACPI which only used by LoongArch to
-> > fix
-> > the warning.
-> >
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
-> > ---
-> >  drivers/irqchip/irq-loongson-pch-pic.c | 38 +++++++++++++-------------
-> >  1 file changed, 19 insertions(+), 19 deletions(-)
-> >
-> > diff --git a/drivers/irqchip/irq-loongson-pch-pic.c
-> > b/drivers/irqchip/irq-loongson-pch-pic.c
-> > index b6f1392964b1..b987b6517d59 100644
-> > --- a/drivers/irqchip/irq-loongson-pch-pic.c
-> > +++ b/drivers/irqchip/irq-loongson-pch-pic.c
-> > @@ -48,25 +48,6 @@ static struct pch_pic *pch_pic_priv[MAX_IO_PICS];
-> >
-> >  struct fwnode_handle *pch_pic_handle[MAX_IO_PICS];
-> >
-> > -int find_pch_pic(u32 gsi)
-> > -{
-> > -     int i;
-> > -
-> > -     /* Find the PCH_PIC that manages this GSI. */
-> > -     for (i = 0; i < MAX_IO_PICS; i++) {
-> > -             struct pch_pic *priv = pch_pic_priv[i];
-> > -
-> > -             if (!priv)
-> > -                     return -1;
-> > -
-> > -             if (gsi >= priv->gsi_base && gsi < (priv->gsi_base +
-> > priv->vec_count))
-> > -                     return i;
-> > -     }
-> > -
-> > -     pr_err("ERROR: Unable to locate PCH_PIC for GSI %d\n", gsi);
-> > -     return -1;
-> > -}
-> > -
-> >  static void pch_pic_bitset(struct pch_pic *priv, int offset, int bit)
-> >  {
-> >       u32 reg;
-> > @@ -325,6 +306,25 @@ IRQCHIP_DECLARE(pch_pic, "loongson,pch-pic-1.0",
-> > pch_pic_of_init);
-> >  #endif
-> >
-> >  #ifdef CONFIG_ACPI
-> > +int find_pch_pic(u32 gsi)
-> > +{
-> > +     int i;
-> > +
-> > +     /* Find the PCH_PIC that manages this GSI. */
-> > +     for (i = 0; i < MAX_IO_PICS; i++) {
-> > +             struct pch_pic *priv = pch_pic_priv[i];
-> > +
-> > +             if (!priv)
-> > +                     return -1;
-> > +
-> > +             if (gsi >= priv->gsi_base && gsi < (priv->gsi_base +
-> > priv->vec_count))
-> > +                     return i;
-> > +     }
-> > +
-> > +     pr_err("ERROR: Unable to locate PCH_PIC for GSI %d\n", gsi);
-> > +     return -1;
-> > +}
-> > +
-> >  static int __init
-> >  pch_lpc_parse_madt(union acpi_subtable_headers *header,
-> >                      const unsigned long end)
->
-> While you're fixing this, can you also please fix this:
->
-> $ git grep find_pch_pic
-> arch/loongarch/include/asm/irq.h:extern int find_pch_pic(u32 gsi);
-> arch/loongarch/include/asm/irq.h:int find_pch_pic(u32 gsi);
-OK, I will send V2 for that, thanks.
+Thank you for your patch. There is something to discuss/improve.
 
-Huacai
->
-> Thanks,
->
->          M.
-> --
-> Jazz is not dead. It just smells funny...
+> +
+> +			xo-therm@4c {
+> +				reg = <ADC5_XO_THERM_100K_PU>;
+> +				qcom,pre-scaling = <1 1>;
+> +				qcom,hw-settle-time = <200>;
+> +				qcom,ratiometric;
+> +			};
+> +		};
+> +
+> +		pm6125_adc_tm: adc-tm@3500 {
+
+Generic node names, so either this is adc or thermal-sensor. Looks like
+thermal-sensor.
+
+> +			compatible = "qcom,spmi-adc-tm5";
+> +			reg = <0x3500>;
+> +			interrupts = <0x0 0x35 0x0 IRQ_TYPE_EDGE_RISING>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +			#thermal-sensor-cells = <1>;
+> +			status = "disabled";
+> +		};
+> +
+> +		pm6125_rtc: rtc@6000 {
+> +			compatible = "qcom,pm8941-rtc";
+> +			reg = <0x6000>, <0x6100>;
+> +			reg-names = "rtc", "alarm";
+> +			interrupts = <0x0 0x61 0x1 IRQ_TYPE_EDGE_RISING>;
+> +			status = "disabled";
+> +		};
+> +
+> +		pm6125_gpio: gpios@c000 {
+
+s/gpios/gpio/
+
+> +			compatible = "qcom,pm6125-gpio", "qcom,spmi-gpio";
+> +			reg = <0xc000>;
+> +			gpio-controller;
+> +			gpio-ranges = <&pm6125_gpio 0 0 9>;
+> +			#gpio-cells = <2>;
+> +			interrupt-controller;
+> +			#interrupt-cells = <2>;
+> +		};
+> +	};
+> +
+> +	pmic@1 {
+> +		compatible = "qcom,pm6125", "qcom,spmi-pmic";
+> +		reg = <0x1 SPMI_USID>;
+> +	};
+> +};
+
+
+Best regards,
+Krzysztof
