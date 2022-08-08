@@ -2,64 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9138FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 04:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D70C5C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 04:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233407AbiHHERb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 00:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56636 "EHLO
+        id S233328AbiHHEV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 00:21:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231720AbiHHER3 (ORCPT
+        with ESMTP id S231720AbiHHEVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 00:17:29 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F2311A05
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 21:17:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=A4RtxbAqeBnUIxMXF4XlPWBMt/xyvevjMbPuIHGM/1c=; b=PkVGVmd1YUw8qnNn52lXdq7Pjy
-        4Mv6h6473hhsT9Dp/H5PVVUbH9SxopjTg3xfQGYZouZsv2qxRWUpMeJgQv0PdaZPWdi0JgEhktN18
-        1V6qLiFSlWPzOPX2FfNFGYtmpGDSFBgceHTJRvaRyZ3qrhBNK9dliAoLn4nWt4a+8I04AOxkZVydg
-        25jLyp6QRTi9aRCS4iaeX07jBzdNyT0i+NDtEw5xCKPGE08C3KuOjPziFJz6kZqgfIqyMyTUuC82X
-        xvKwfjBxnqsBV3HUTlAnSXV3CrtOlBkWUd6vIxBxNJ+ecP0K/wV0WicY17XTV6R2ba/BerzZea6LW
-        6HFPnUUw==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1oKuCi-002LOS-Dq;
-        Mon, 08 Aug 2022 04:17:24 +0000
-Date:   Mon, 8 Aug 2022 05:17:24 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, pmladek@suse.com,
-        Kent Overstreet <kent.overstreet@gmail.com>
-Subject: Re: [PATCH v5 29/32] d_path: prt_path()
-Message-ID: <YvCOVGdlGqRVlZwL@ZenIV>
-References: <20220808024128.3219082-1-willy@infradead.org>
- <20220808024128.3219082-30-willy@infradead.org>
+        Mon, 8 Aug 2022 00:21:25 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66385B1CB
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 21:21:24 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4M1NLV5jykz4x1J;
+        Mon,  8 Aug 2022 14:21:22 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1659932483;
+        bh=3LvqyDOrzDOSiQKTVH1+ZHRlUn2RfICwbDETaZllK60=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SygUvfld9Q8kIO7eSyqpNM/QXOzDdRcVVhoHyma39rzdD19oBb4ZTPOofWUmFiNMe
+         SyMx27ulk+ayo1jp+g8mdDzfCsDJsOazufyg03fNMtxCEZNELQxLY7whW4Jx+CJ6Dz
+         S0Wxa0vTn7TThrGT2SN4nyoran5XV6VvPuvPa4QgdiRvFypjRR1oQtzZAvCgS365P/
+         jp7KwWjQjRWm0in5XDJWTMtajVeEj/rgEd9Ngd7EnXoL1oaCe6vLpvrP0LCrKQm8uo
+         s4iq5mxrgiK69WwqDh0p1XWS+vv8FrmzWKZ3sO5CWW1dhl/zVjWD7iN83n57wIu7V6
+         aYmc+klrH95Mw==
+Date:   Mon, 8 Aug 2022 14:21:21 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Yury Norov <yury.norov@gmail.com>, linux-kernel@vger.kernel.org
+Subject: Re: [GIT PULL] Bitmap patches for v6.0-rc1
+Message-ID: <20220808142121.6d62a431@canb.auug.org.au>
+In-Reply-To: <CAHk-=wjbFrPfKA5DOnPXvn_0hTmSw2oTXPKxtDoC5v12McW2DQ@mail.gmail.com>
+References: <20220805022940.1637978-1-yury.norov@gmail.com>
+        <165991968404.10077.6220067519297859381.pr-tracker-bot@kernel.org>
+        <CAHk-=wjbFrPfKA5DOnPXvn_0hTmSw2oTXPKxtDoC5v12McW2DQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220808024128.3219082-30-willy@infradead.org>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Type: multipart/signed; boundary="Sig_/EbV7=aXdO4+ZCHhh9PJlfz9";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 08, 2022 at 03:41:25AM +0100, Matthew Wilcox (Oracle) wrote:
-> From: Kent Overstreet <kent.overstreet@gmail.com>
-> 
-> This implements a new printbuf version of d_path()/mangle_path(), which
-> will replace the seq_buf version.
-> 
-> Part of what we're trying to do with printbufs is standardizing a
-> calling convention so they don't have to live in lib/vsprintf.c, and can
-> instead with the code for the types they're printing - so this patch
-> adds prt_path() to d_path.c, another patch will switch vsprintf.c to use
-> it.
+--Sig_/EbV7=aXdO4+ZCHhh9PJlfz9
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-To use it for *what*?  If you mean replacing %pd with it - forget about that.
-Not going to happen.
+Hi Linus,
 
-There's a hard requirement for printk - it should be safe to call in any
-locking environment.  d_path() isn't, and that's impossible to avoid.
+On Sun, 7 Aug 2022 17:57:35 -0700 Linus Torvalds <torvalds@linux-foundation=
+.org> wrote:
+>
+> But hopefully people never noticed, because nobody sane is looking at
+> my tree on a Sunday evening.
+
+Well, for some of us it is Monday already :-)  I did not notice though.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/EbV7=aXdO4+ZCHhh9PJlfz9
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLwj0EACgkQAVBC80lX
+0GxGMggAmZ8cLAztLtAQMTx1susTnOVLO0c/ViSAKbpwJFXRNLHuu5RdC/59EIbZ
+YmC+IvecMD1HC1EEOuMZ791p4hJZ7rkmiJpinbovyLZJus+388nz3NgJwDhHUWf6
+YklH5tBh/PE+ZQL4smjonz8JsoZziQ+MAA6HVSWQROuodewqnqlp7Xf/ZwoTV4vu
+FDAuu8Il1hX1Vzz3jzr74sXA902opTiwNPSyDpYMDqYB71UvW8ByHy5VALkY+Y6o
+MOamys3X4Q24qEB7RVhuebZLBS6PJJ0m2LB+x5h07nicWCGo4q+JZluF1PnzAT6+
+LkKHwTntkOylJhSY2/sMzr8zkvH18w==
+=k4e6
+-----END PGP SIGNATURE-----
+
+--Sig_/EbV7=aXdO4+ZCHhh9PJlfz9--
