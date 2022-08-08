@@ -2,131 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF944C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:14:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B60C4C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238323AbiHHOO2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 10:14:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
+        id S243262AbiHHOQF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 10:16:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231898AbiHHOOZ (ORCPT
+        with ESMTP id S243191AbiHHOPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 10:14:25 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B8EB4B8
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 07:14:24 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id c5-20020a5ea805000000b00684468c5005so3791185ioa.15
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 07:14:24 -0700 (PDT)
+        Mon, 8 Aug 2022 10:15:43 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA43D82
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 07:15:42 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id s5-20020a17090a13c500b001f4da9ffe5fso14690867pjf.5
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 07:15:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kylehuey.com; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=pG2ctVJXo4i6wIZyM4i+Ghh/SkIZeHnSqWmH/J73kw8=;
+        b=i8sQzDFJxieaZCTqiKpLCFMcNqzUHDOyA/vmoIry52AIjdnuvgIIIOvvlCNhnNfatA
+         L1UnXotKwRIMEQzg6nZV63Dn1djXASTnou8zHkDWnS01Ibt2jCOdOLjtqGVpWL7DIkNM
+         ncU1jmQd8cVh7R9WNPQDd+U+8tdk8VGTrpqL3HEtWHWQJPaK5b6drxtryK50bglJzZyt
+         3lGqKOcUKvtuWm66RlMLRgnDs7eLeSbKOU9rOedrsIGeIUiysmF33pylYH3rmlQ2ILt4
+         ObvJHyQdSVOWOECriVn3XpPYy4tca/mfeWFYLnvV4zuV/qK7JtuHDvJmAc5ZAQjaIFEZ
+         NQeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=JbxttqbDHdfUzYooNKEfPwjaG5YKBPoGxF8SI8GnlAo=;
-        b=t0sKAJI46KjpMhdpSWdDaBvE50A64bl8aLzHC1hTdG/cvwDgLRxC/x+ujdG5gbXqjs
-         1SZ6nhU4OT0BtCXLpxPU6pdL8K9fpqjkzK8E2psE+Nw0kzTSDL6iykeA8OC19npHV7p3
-         b/NBGldpG8zbxce5znNPdGDxC9zgSG6QpWFtosgUkY7IVILjuN1Hq6u1ughiRTwO8MxU
-         KxAV1UbH2rPxwdNiPhOAhDJg7zkUxq6ZY8n5bSMnw2ZLLcyx2aNOgXbqyaM19pdw8yp1
-         e91V+trcgBveNgEWhyKtMTuLhiLRYgG5C51veZ5hhN9xytdaOeaKb/cP1t5mjXTe3OeI
-         GcHg==
-X-Gm-Message-State: ACgBeo0Hs8ZNo/ai9PSZHNrV3X/oJWKjRqiAneD0acurDPhpM76Gfxg6
-        jbWLW7tiytzwivn6XzaKm0Hg8Wefswm9iSReMn2dumR387h4
-X-Google-Smtp-Source: AA6agR5g0KpuQOyObZUkfCjHm/y5cz64ijRFmojwXbbmyIAIPgevNyi2viWTAmjmlWlOpT1XbciZ1k0dMqDKrjw6SkJscr0hfjhn
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=pG2ctVJXo4i6wIZyM4i+Ghh/SkIZeHnSqWmH/J73kw8=;
+        b=nI6L8xapxl/4nB487SMLmMTF55nxyAkBn9IVmPQHzAJb6ZGfJSnqzZWOtvfpr7vGg2
+         lJPq5rl+WSAi+Ej/AMep+nO2RETdNrIfDhC3toR8TJr5Df+8MhG81hcBFi9Al5vCdIYP
+         iqQgMQNg9ekuzi+Lwv2XTSR/5Kz0KQ+8B1Tt2phFXGMMoxAn94UrBqvpM1Y7sFe++adX
+         8r2r+IJ7RoHxiDLe4B0HAAdqTQomH5RVLKOclLUJxDAAlqnlnQvPJ4MIb+d+lxfDpQrm
+         +MNKvHPRt4kELL620i7zHPSM1EapoaLdU0xTuyxXDrO0m75g1Y416Bc6I/ucx0OasfkC
+         qsCw==
+X-Gm-Message-State: ACgBeo2afcOB58rdrLCTFq9+DHSM1CedaMRb/3NOcTaNXxFuJ8Kt/mhC
+        mB7xdAolJ3MRc1SbAzq3M59w7w==
+X-Google-Smtp-Source: AA6agR6OFDGCCYGm5yHn9DjQ4qQFexr/TGf+qoDuw2FHA1wa/C5koEX7nKBtA8GC21ShSl8MJjDlNQ==
+X-Received: by 2002:a17:902:f688:b0:16f:28:ea27 with SMTP id l8-20020a170902f68800b0016f0028ea27mr18424504plg.151.1659968142316;
+        Mon, 08 Aug 2022 07:15:42 -0700 (PDT)
+Received: from minbar.home.kylehuey.com (c-71-198-251-229.hsd1.ca.comcast.net. [71.198.251.229])
+        by smtp.gmail.com with ESMTPSA id l7-20020a170902f68700b0016eede528b4sm8967357plg.61.2022.08.08.07.15.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 07:15:42 -0700 (PDT)
+From:   Kyle Huey <me@kylehuey.com>
+X-Google-Original-From: Kyle Huey <khuey@kylehuey.com>
+To:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>
+Cc:     Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Robert O'Callahan <robert@ocallahan.org>,
+        David Manouchehri <david.manouchehri@riseup.net>,
+        Kyle Huey <me@kylehuey.com>
+Subject: [PATCH v5 2/2] selftests/vm/pkeys: Add a regression test for setting PKRU through ptrace
+Date:   Mon,  8 Aug 2022 07:15:38 -0700
+Message-Id: <20220808141538.102394-2-khuey@kylehuey.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220808141538.102394-1-khuey@kylehuey.com>
+References: <20220808141538.102394-1-khuey@kylehuey.com>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:a70f:0:b0:684:d596:b7e7 with SMTP id
- b15-20020a5ea70f000000b00684d596b7e7mr1192526iod.84.1659968063797; Mon, 08
- Aug 2022 07:14:23 -0700 (PDT)
-Date:   Mon, 08 Aug 2022 07:14:23 -0700
-In-Reply-To: <000000000000cad57405e5b5dbb7@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c7ff6a05e5bb6ec8@google.com>
-Subject: Re: [syzbot] possible deadlock in p9_req_put
-From:   syzbot <syzbot+50f7e8d06c3768dd97f3@syzkaller.appspotmail.com>
-To:     asmadeus@codewreck.org, davem@davemloft.net, edumazet@google.com,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
-        v9fs-developer@lists.sourceforge.net
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+From: Kyle Huey <me@kylehuey.com>
 
-HEAD commit:    ca688bff68bc Add linux-next specific files for 20220808
-git tree:       linux-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=1408148e080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4c20e006003cdecb
-dashboard link: https://syzkaller.appspot.com/bug?extid=50f7e8d06c3768dd97f3
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11f6ea66080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1640de8e080000
+This tests PTRACE_SETREGSET with NT_X86_XSTATE modifying PKRU directly and
+removing the PKRU bit from XSTATE_BV.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+50f7e8d06c3768dd97f3@syzkaller.appspotmail.com
+Signed-off-by: Kyle Huey <me@kylehuey.com>
+---
+ tools/testing/selftests/vm/pkey-x86.h        |  12 ++
+ tools/testing/selftests/vm/protection_keys.c | 131 ++++++++++++++++++-
+ 2 files changed, 141 insertions(+), 2 deletions(-)
 
-============================================
-WARNING: possible recursive locking detected
-5.19.0-next-20220808-syzkaller #0 Not tainted
---------------------------------------------
-kworker/1:2/1590 is trying to acquire lock:
-ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_tag_remove net/9p/client.c:367 [inline]
-ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_req_put net/9p/client.c:375 [inline]
-ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_req_put+0xc6/0x250 net/9p/client.c:372
-
-but task is already holding lock:
-ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:349 [inline]
-ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_conn_cancel+0xaa/0x970 net/9p/trans_fd.c:192
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&clnt->lock);
-  lock(&clnt->lock);
-
- *** DEADLOCK ***
-
- May be due to missing lock nesting notation
-
-3 locks held by kworker/1:2/1590:
- #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc90006357da8 (p9_poll_work){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:349 [inline]
- #2: ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_conn_cancel+0xaa/0x970 net/9p/trans_fd.c:192
-
-stack backtrace:
-CPU: 1 PID: 1590 Comm: kworker/1:2 Not tainted 5.19.0-next-20220808-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-Workqueue: events p9_poll_workfn
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_deadlock_bug kernel/locking/lockdep.c:2988 [inline]
- check_deadlock kernel/locking/lockdep.c:3031 [inline]
- validate_chain kernel/locking/lockdep.c:3816 [inline]
- __lock_acquire.cold+0x116/0x3a7 kernel/locking/lockdep.c:5053
- lock_acquire kernel/locking/lockdep.c:5666 [inline]
- lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
- _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
- p9_tag_remove net/9p/client.c:367 [inline]
- p9_req_put net/9p/client.c:375 [inline]
- p9_req_put+0xc6/0x250 net/9p/client.c:372
- p9_conn_cancel+0x640/0x970 net/9p/trans_fd.c:213
- p9_poll_mux net/9p/trans_fd.c:627 [inline]
- p9_poll_workfn+0x25d/0x4e0 net/9p/trans_fd.c:1147
- process_one_work+0x991/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e4/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
+diff --git a/tools/testing/selftests/vm/pkey-x86.h b/tools/testing/selftests/vm/pkey-x86.h
+index b078ce9c6d2a..72c14cd3ddc7 100644
+--- a/tools/testing/selftests/vm/pkey-x86.h
++++ b/tools/testing/selftests/vm/pkey-x86.h
+@@ -104,6 +104,18 @@ static inline int cpu_has_pkeys(void)
+ 	return 1;
+ }
+ 
++static inline int cpu_max_xsave_size(void)
++{
++	unsigned long XSTATE_CPUID = 0xd;
++	unsigned int eax;
++	unsigned int ebx;
++	unsigned int ecx;
++	unsigned int edx;
++
++	__cpuid_count(XSTATE_CPUID, 0, eax, ebx, ecx, edx);
++	return ecx;
++}
++
+ static inline u32 pkey_bit_position(int pkey)
+ {
+ 	return pkey * PKEY_BITS_PER_PKEY;
+diff --git a/tools/testing/selftests/vm/protection_keys.c b/tools/testing/selftests/vm/protection_keys.c
+index 291bc1e07842..95f403a0c46d 100644
+--- a/tools/testing/selftests/vm/protection_keys.c
++++ b/tools/testing/selftests/vm/protection_keys.c
+@@ -18,12 +18,13 @@
+  *	do a plain mprotect() to a mprotect_pkey() area and make sure the pkey sticks
+  *
+  * Compile like this:
+- *	gcc      -o protection_keys    -O2 -g -std=gnu99 -pthread -Wall protection_keys.c -lrt -ldl -lm
+- *	gcc -m32 -o protection_keys_32 -O2 -g -std=gnu99 -pthread -Wall protection_keys.c -lrt -ldl -lm
++ *	gcc -mxsave      -o protection_keys    -O2 -g -std=gnu99 -pthread -Wall protection_keys.c -lrt -ldl -lm
++ *	gcc -mxsave -m32 -o protection_keys_32 -O2 -g -std=gnu99 -pthread -Wall protection_keys.c -lrt -ldl -lm
+  */
+ #define _GNU_SOURCE
+ #define __SANE_USERSPACE_TYPES__
+ #include <errno.h>
++#include <linux/elf.h>
+ #include <linux/futex.h>
+ #include <time.h>
+ #include <sys/time.h>
+@@ -1550,6 +1551,129 @@ void test_implicit_mprotect_exec_only_memory(int *ptr, u16 pkey)
+ 	do_not_expect_pkey_fault("plain read on recently PROT_EXEC area");
+ }
+ 
++#if defined(__i386__) || defined(__x86_64__)
++void test_ptrace_modifies_pkru(int *ptr, u16 pkey)
++{
++	u32 new_pkru;
++	pid_t child;
++	int status, ret;
++	int pkey_offset = pkey_reg_xstate_offset();
++	size_t xsave_size = cpu_max_xsave_size();
++	void *xsave;
++	u32 *pkey_register;
++	u64 *xstate_bv;
++	struct iovec iov;
++
++	new_pkru = ~read_pkey_reg();
++	/* Don't make PROT_EXEC mappings inaccessible */
++	new_pkru &= ~3;
++
++	child = fork();
++	pkey_assert(child >= 0);
++	dprintf3("[%d] fork() ret: %d\n", getpid(), child);
++	if (!child) {
++		ptrace(PTRACE_TRACEME, 0, 0, 0);
++		/* Stop and allow the tracer to modify PKRU directly */
++		raise(SIGSTOP);
++
++		/*
++		 * need __read_pkey_reg() version so we do not do shadow_pkey_reg
++		 * checking
++		 */
++		if (__read_pkey_reg() != new_pkru)
++			exit(1);
++
++		/* Stop and allow the tracer to clear XSTATE_BV for PKRU */
++		raise(SIGSTOP);
++
++		if (__read_pkey_reg() != 0)
++			exit(1);
++
++		/* Stop and allow the tracer to examine PKRU */
++		raise(SIGSTOP);
++
++		exit(0);
++	}
++
++	pkey_assert(child == waitpid(child, &status, 0));
++	dprintf3("[%d] waitpid(%d) status: %x\n", getpid(), child, status);
++	pkey_assert(WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP);
++
++	xsave = (void *)malloc(xsave_size);
++	pkey_assert(xsave > 0);
++
++	/* Modify the PKRU register directly */
++	iov.iov_base = xsave;
++	iov.iov_len = xsave_size;
++	ret = ptrace(PTRACE_GETREGSET, child, (void *)NT_X86_XSTATE, &iov);
++	pkey_assert(ret == 0);
++
++	pkey_register = (u32 *)(xsave + pkey_offset);
++	pkey_assert(*pkey_register == read_pkey_reg());
++
++	*pkey_register = new_pkru;
++
++	ret = ptrace(PTRACE_SETREGSET, child, (void *)NT_X86_XSTATE, &iov);
++	pkey_assert(ret == 0);
++
++	/* Test that the modification is visible in ptrace before any execution */
++	memset(xsave, 0xCC, xsave_size);
++	ret = ptrace(PTRACE_GETREGSET, child, (void *)NT_X86_XSTATE, &iov);
++	pkey_assert(ret == 0);
++	pkey_assert(*pkey_register == new_pkru);
++
++	/* Execute the tracee */
++	ret = ptrace(PTRACE_CONT, child, 0, 0);
++	pkey_assert(ret == 0);
++
++	/* Test that the tracee saw the PKRU value change */
++	pkey_assert(child == waitpid(child, &status, 0));
++	dprintf3("[%d] waitpid(%d) status: %x\n", getpid(), child, status);
++	pkey_assert(WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP);
++
++	/* Test that the modification is visible in ptrace after execution */
++	memset(xsave, 0xCC, xsave_size);
++	ret = ptrace(PTRACE_GETREGSET, child, (void *)NT_X86_XSTATE, &iov);
++	pkey_assert(ret == 0);
++	pkey_assert(*pkey_register == new_pkru);
++
++	/* Clear the PKRU bit from XSTATE_BV */
++	xstate_bv = (u64 *)(xsave + 512);
++	*xstate_bv &= ~(1 << 9);
++
++	ret = ptrace(PTRACE_SETREGSET, child, (void *)NT_X86_XSTATE, &iov);
++	pkey_assert(ret == 0);
++
++	/* Test that the modification is visible in ptrace before any execution */
++	memset(xsave, 0xCC, xsave_size);
++	ret = ptrace(PTRACE_GETREGSET, child, (void *)NT_X86_XSTATE, &iov);
++	pkey_assert(ret == 0);
++	pkey_assert(*pkey_register == 0);
++
++	ret = ptrace(PTRACE_CONT, child, 0, 0);
++	pkey_assert(ret == 0);
++
++	/* Test that the tracee saw the PKRU value go to 0 */
++	pkey_assert(child == waitpid(child, &status, 0));
++	dprintf3("[%d] waitpid(%d) status: %x\n", getpid(), child, status);
++	pkey_assert(WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP);
++
++	/* Test that the modification is visible in ptrace after execution */
++	memset(xsave, 0xCC, xsave_size);
++	ret = ptrace(PTRACE_GETREGSET, child, (void *)NT_X86_XSTATE, &iov);
++	pkey_assert(ret == 0);
++	pkey_assert(*pkey_register == 0);
++
++	ret = ptrace(PTRACE_CONT, child, 0, 0);
++	pkey_assert(ret == 0);
++	pkey_assert(child == waitpid(child, &status, 0));
++	dprintf3("[%d] waitpid(%d) status: %x\n", getpid(), child, status);
++	pkey_assert(WIFEXITED(status));
++	pkey_assert(WEXITSTATUS(status) == 0);
++	free(xsave);
++}
++#endif
++
+ void test_mprotect_pkey_on_unsupported_cpu(int *ptr, u16 pkey)
+ {
+ 	int size = PAGE_SIZE;
+@@ -1585,6 +1709,9 @@ void (*pkey_tests[])(int *ptr, u16 pkey) = {
+ 	test_pkey_syscalls_bad_args,
+ 	test_pkey_alloc_exhaust,
+ 	test_pkey_alloc_free_attach_pkey0,
++#if defined(__i386__) || defined(__x86_64__)
++	test_ptrace_modifies_pkru,
++#endif
+ };
+ 
+ void run_tests_once(void)
+-- 
+2.37.1
 
