@@ -2,139 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC45C25B06
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 06:11:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E01C25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 06:14:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235906AbiHHGK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 02:10:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
+        id S235023AbiHHGOf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 02:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235635AbiHHGKz (ORCPT
+        with ESMTP id S230520AbiHHGOd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 02:10:55 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A27FF6B
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 23:10:53 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id c17so11209925lfb.3
-        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 23:10:53 -0700 (PDT)
+        Mon, 8 Aug 2022 02:14:33 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4640DB4D
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 23:14:32 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id c17so11218810lfb.3
+        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 23:14:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=wQfInqVDyxqVG5C13rWBro0aA//4RjtNZX26phCzOCg=;
-        b=dnnC9snpDbi18J/u4pSVxhGxMYDpdbZz14ZCDgcyjG11iPN/rVxDyJhg25HXWUsntj
-         SIc+6L+u+fXOHv/VCG1Ij6dg3UMnCfkcAW+UocZgviycPrQG+UJQa059ye7omqwvYw6q
-         EauTzTzJIwcUnQLbVvru+0lEnLY7uxo5vPptJnXc/2lla23vK/et1QbXY9CxQlqLmRxy
-         rkn72PL0RwiWSok8AWDcAkq0IqaVvVmIqj8YY1SFAp6l8k/LOGL7p7d9IrS9Kiaowr8k
-         UBkoWuG5U4IQ7ql9psREvQbEBmLkJfzZVyJVQJgthzgvtkIzgQf9fe+T+Gzu+f1vMJii
-         Sl+g==
+        bh=ompPcRph5SE2OcXFEkgWpzfcSKSgmCD4nTXnvDSGRVQ=;
+        b=TaGrVBJes0/24VTEqZsfwl5xn/6YdzpvB/VFk7wDHgZBZCAXJv3dPYovHNi28fUwj7
+         ySl+kIzkV5PcFebmdnCKE0BuUmAGA6ODFQj5b916U0+FmlkHoPgxog8bMqAm2L63oVPP
+         loitqUG9ShBRalABJifTs9mnABU4/4D2H2fZCnWYnUDYkzN5bCiVuOs+SGBQSuKxEi7T
+         RorieaqgkeFpJcjYzuqzeOb1/UxxqFG1eDgYy4FeYrBKetIMpi8DgM1wq9nHk1ahbLpe
+         PGJMatMmmRqjc5EEa4+wM79vPea+ty42i2VaXe+XqdUueZQE1jWynDaJ+GRrqMJhwSpa
+         Zh7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=wQfInqVDyxqVG5C13rWBro0aA//4RjtNZX26phCzOCg=;
-        b=DwjU/PCwrFX43ZtdyTilkEE7k+W8rAZwPaQMwqefUSP1kp0W3ijBzfVZpwsPhCVIKO
-         2Hv+W80p8u0aOjhX+T9xFtANLMQ6vQwPkgpzLXOoOIEYFYiIcXWhtZg61ZMFbebSM8eC
-         zNIvtXcIGaBTjgJ4yQxOcYj4LchiLWuoprfT3IvKdp0giZlCytPhMwN0Y9lCYuVGeThB
-         t/j0w2kV+TDDl/BePgRXS2+MlZsddYagJCTyC9ZejPRL16vF0k/sn7V+NfMfXzQ0aCcD
-         fQ2F+qF4l+6mAo9CVgfJisQpTXjXYxMstQZSaFVf6kFYv/bXPwhvU/iQxI1/8JYzbq0k
-         8YDA==
-X-Gm-Message-State: ACgBeo3R3qnWr/Ew//HL9ZjfiYnIomqFMzgl1xZe+w/TDXk/5DJfBgUM
-        ZaIkc0EbUPPcR0VcZEvr0GjJgw==
-X-Google-Smtp-Source: AA6agR4wxblE7wmXxnJtomwWW2k06ZH6qeKPqb4cmlNN5BRCf/W/3Brvbv4kQj37sV6BcZ6dV85RUw==
-X-Received: by 2002:a05:6512:3c9:b0:48b:447:6788 with SMTP id w9-20020a05651203c900b0048b04476788mr5575307lfp.333.1659939051520;
-        Sun, 07 Aug 2022 23:10:51 -0700 (PDT)
+        bh=ompPcRph5SE2OcXFEkgWpzfcSKSgmCD4nTXnvDSGRVQ=;
+        b=kmfcuPE5kbWWKzNvu8vMOvpFKdh1xV62VI1HVb8nYS1Rwp+a2G5uQHEIDx//SkpC6/
+         P7bKrudPKqhsfPhA+0eXzNiQTmJFny0aUZC/ZoB5wtl0kBM6fQdHex7oyLKtVssgpJNb
+         cHY8JDyidP0Q8x6eIqXhv3qVoPd7jInfgUwBa3aT+OKox4jx57COSsT/DESOLZ8crH+u
+         xGcSBAuS22Oyiuc4Rr9M16Uclu04yqb1g0WSdIBeN8uiDCqe4n+KhPk1ObKC5szfIHX9
+         RWtOGhgJWqa8W1GfLjryig5KqruPdZUUYFPhUwgivFcP12w4JwlV1yJMw2a3+eqRItGg
+         DEEQ==
+X-Gm-Message-State: ACgBeo0y0vDpt3SzwqgbwVYZRQqbz3o5gikV7fSGbCZFqhQnvqxR2wFQ
+        oaaakMLeyv6Oe4eUj1+V/y4VpqyB+XKcrW7D
+X-Google-Smtp-Source: AA6agR7Z/MOhjFXYhQRjYiTUo4lEsDfla2XkL+FYEksAUOVz/UdD8SVoCa6se2b2K6jZ//oPCmuuTA==
+X-Received: by 2002:ac2:5c02:0:b0:48b:29ed:6e1e with SMTP id r2-20020ac25c02000000b0048b29ed6e1emr5620328lfp.560.1659939270651;
+        Sun, 07 Aug 2022 23:14:30 -0700 (PDT)
 Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id bq4-20020a056512150400b0048b06a8c472sm1306569lfb.25.2022.08.07.23.10.50
+        by smtp.gmail.com with ESMTPSA id c6-20020a056512324600b0048b2245519asm1310057lfr.192.2022.08.07.23.14.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Aug 2022 23:10:51 -0700 (PDT)
-Message-ID: <8ee994fc-c5a5-804f-16b7-3502f25b5a53@linaro.org>
-Date:   Mon, 8 Aug 2022 09:10:50 +0300
+        Sun, 07 Aug 2022 23:14:30 -0700 (PDT)
+Message-ID: <a02bd793-e2a4-6a46-4ab5-9bb8c5533df1@linaro.org>
+Date:   Mon, 8 Aug 2022 09:14:28 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH] arm64: dts: qcom: sagit: add initial device tree for
- sagit
+Subject: Re: [PATCH v4 3/4] arm64: dts: meson: Add DDR PMU node
 Content-Language: en-US
-To:     Dzmitry Sankouski <dsankouski@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
+To:     Jiucheng Xu <jiucheng.xu@amlogic.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220617122007.2307726-1-dsankouski@gmail.com>
- <19048e65-40e8-2f12-daac-d72669ab32c5@linaro.org>
- <CABTCjFBb1A9+FT6dcid7Fh-+68eh4u2CMUp+-YiQCGUJRCAgnA@mail.gmail.com>
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chris Healy <cphealy@gmail.com>
+References: <20220805071426.2598818-1-jiucheng.xu@amlogic.com>
+ <20220805071426.2598818-3-jiucheng.xu@amlogic.com>
+ <e963157e-5ff0-f0c1-2299-50528cf291c3@linaro.org>
+ <0fac4541-0d05-1076-487b-86a7b92da71e@amlogic.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CABTCjFBb1A9+FT6dcid7Fh-+68eh4u2CMUp+-YiQCGUJRCAgnA@mail.gmail.com>
+In-Reply-To: <0fac4541-0d05-1076-487b-86a7b92da71e@amlogic.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05/08/2022 16:06, Dzmitry Sankouski wrote:
-> сб, 18 июн. 2022 г. в 04:54, Krzysztof Kozlowski <
-> krzysztof.kozlowski@linaro.org>:
-> 
->> On 17/06/2022 05:20, Dzmitry Sankouski wrote:
->>> New device support - Xiaomi Mi6 phone
->>>
->>> What works:
->>> - storage
->>> - wlan
->>> - touchscreen
->>>
->>> Signed-off-by: Dzmitry Sankouski <dsankouski@gmail.com>
->>> ---
->>>  arch/arm64/boot/dts/qcom/Makefile             |   1 +
->>>  .../boot/dts/qcom/msm8998-xiaomi-sagit.dts    |  12 +
->>>  .../boot/dts/qcom/msm8998-xiaomi-sagit.dtsi   | 628 ++++++++++++++++++
->>>  3 files changed, 641 insertions(+)
->>>  create mode 100644 arch/arm64/boot/dts/qcom/msm8998-xiaomi-sagit.dts
->>>  create mode 100644 arch/arm64/boot/dts/qcom/msm8998-xiaomi-sagit.dtsi
->>>
->>> diff --git a/arch/arm64/boot/dts/qcom/Makefile
->> b/arch/arm64/boot/dts/qcom/Makefile
->>> index 2f8aec2cc6db..aa50843dbe12 100644
->>> --- a/arch/arm64/boot/dts/qcom/Makefile
->>> +++ b/arch/arm64/boot/dts/qcom/Makefile
->>> @@ -48,6 +48,7 @@ dtb-$(CONFIG_ARCH_QCOM)     +=
->> msm8998-oneplus-dumpling.dtb
->>>  dtb-$(CONFIG_ARCH_QCOM)      += msm8998-sony-xperia-yoshino-lilac.dtb
->>>  dtb-$(CONFIG_ARCH_QCOM)      += msm8998-sony-xperia-yoshino-maple.dtb
->>>  dtb-$(CONFIG_ARCH_QCOM)      += msm8998-sony-xperia-yoshino-poplar.dtb
->>> +dtb-$(CONFIG_ARCH_QCOM)      += msm8998-xiaomi-sagit.dtb
->>>  dtb-$(CONFIG_ARCH_QCOM)      += qcs404-evb-1000.dtb
->>>  dtb-$(CONFIG_ARCH_QCOM)      += qcs404-evb-4000.dtb
->>>  dtb-$(CONFIG_ARCH_QCOM)      += qrb5165-rb5.dtb
->>> diff --git a/arch/arm64/boot/dts/qcom/msm8998-xiaomi-sagit.dts
->> b/arch/arm64/boot/dts/qcom/msm8998-xiaomi-sagit.dts
->>> new file mode 100644
->>> index 000000000000..0791615ec5da
->>> --- /dev/null
->>> +++ b/arch/arm64/boot/dts/qcom/msm8998-xiaomi-sagit.dts
->>> @@ -0,0 +1,12 @@
->>> +// SPDX-License-Identifier: GPL-2.0
->>> +/* Copyright (c) 2016, The Linux Foundation. All rights reserved. */
->>> +
->>> +/dts-v1/;
->>> +
->>> +#include "msm8998-xiaomi-sagit.dtsi"
->>> +
->>> +/ {
->>> +     model = "Xiaomi Mi 6";
->>> +     compatible = "xiaomi,sagit", "qcom,msm8998";
->>
->> You need to document the compatible.
->>
-> You mean a document file with all msm8998 boards compatible properties
-> info, like for example, stm did in
-> Documentation/devicetree/bindings/arm/stm32/stm32.yaml ?
+On 05/08/2022 11:57, Jiucheng Xu wrote:
+>>> +&ddr_pmu {
+>>> +	compatible = "amlogic,g12a-ddr-pmu";
+>>> +};
+>> Adding nodes at the end causes conflicts. They should be added in some
+>> order...
+> Is alphabetical order okay?
 
-I mean, add it to existing bindings with Qualcomm board compatibles.
+Yes.
+
 
 Best regards,
 Krzysztof
