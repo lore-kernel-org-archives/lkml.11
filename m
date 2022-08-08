@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19AA8C25B07
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:47:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D93DDC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243110AbiHHBrv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:47:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54204 "EHLO
+        id S243111AbiHHBr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243268AbiHHBqf (ORCPT
+        with ESMTP id S243302AbiHHBql (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:46:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EDCBF63;
-        Sun,  7 Aug 2022 18:36:43 -0700 (PDT)
+        Sun, 7 Aug 2022 21:46:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BAD15801;
+        Sun,  7 Aug 2022 18:36:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EDB35B80E0F;
-        Mon,  8 Aug 2022 01:36:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68C21C43142;
-        Mon,  8 Aug 2022 01:36:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3206D60DF8;
+        Mon,  8 Aug 2022 01:36:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B493C433C1;
+        Mon,  8 Aug 2022 01:36:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922600;
-        bh=wDVeU0NrJ+0WBjSj7dJSjcsNF5d0IKAhPrVBHSPgEOI=;
+        s=k20201202; t=1659922605;
+        bh=tlYfuCCunAyT5uz5g0QWhNMt3m8wdPVPvDnImF6KnSk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s+TjxVcDJlpOQRo5ZEAaIA14HG22zB2NGh3GjGHhWEXH9UJOIQte+bXqhYf5h9fok
-         +wh6Wf0XFGrBmCGfeToTc5tT+UVCuEO14UaAMT50hkjYmux8UZNny+z+V1o4e8a7sG
-         a8OLDbzz4D1a4BYaP9a9ya6yjmPQcFqh+mQLxyyoHABBKGbacr/160tCBb0JZmOKL6
-         96X6lHvAfQKpjnFW75tFU0sbRUqi4rqFibFi0VnhoJS6fkplhFBslVciJrDaOr03uS
-         u/INAOHFCUF6mTIGo//x9lDzPB+y+gE5Lp5Xp8kFqac1/4OeohNqXLJgjmHYVXrabd
-         X89iwJmQgeCKA==
+        b=MzrUEGU2/+8/HOdmwqgXvY85CDiLp0q/qHkcxAsH0gk9p+/esl4kp+2ZZx3Thmuxw
+         TLLNHhco4QNUxLC/dlsAM2kZurvouuZ5+BjPaKRO+7SrLE0nSsDvN8p7JMmVWJG/EF
+         LBQAbYNGShO+WOfreWy7ADjI72Dvyol/kO6pryo7dJw96NGDvNPMBWiLGmObKkd/KH
+         SegLzK7l4gld8K4L9LKUYF5A28TYClafntDnOh4MkWcmz9X+2kKT715Upe2ej9VOk2
+         28eeexPJEg4G30L3YTae8jv4v74PB2nqHlZkprPVJiSv6Za1d42Nq98OkMJYa+6yED
+         VrYsoOF+BvWwA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Samuel Holland <samuel@sholland.org>,
-        kernel test robot <lkp@intel.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de, tsbogend@alpha.franken.de,
-        fancer.lancer@gmail.com, linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 13/45] irqchip/mips-gic: Only register IPI domain when SMP is enabled
-Date:   Sun,  7 Aug 2022 21:35:17 -0400
-Message-Id: <20220808013551.315446-13-sashal@kernel.org>
+Cc:     John Keeping <john@metanate.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org
+Subject: [PATCH AUTOSEL 5.15 15/45] sched/core: Always flush pending blk_plug
+Date:   Sun,  7 Aug 2022 21:35:19 -0400
+Message-Id: <20220808013551.315446-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013551.315446-1-sashal@kernel.org>
 References: <20220808013551.315446-1-sashal@kernel.org>
@@ -53,179 +53,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: John Keeping <john@metanate.com>
 
-[ Upstream commit 8190cc572981f2f13b6ffc26c7cfa7899e5d3ccc ]
+[ Upstream commit 401e4963bf45c800e3e9ea0d3a0289d738005fd4 ]
 
-The MIPS GIC irqchip driver may be selected in a uniprocessor
-configuration, but it unconditionally registers an IPI domain.
+With CONFIG_PREEMPT_RT, it is possible to hit a deadlock between two
+normal priority tasks (SCHED_OTHER, nice level zero):
 
-Limit the part of the driver dealing with IPIs to only be compiled when
-GENERIC_IRQ_IPI is enabled, which corresponds to an SMP configuration.
+	INFO: task kworker/u8:0:8 blocked for more than 491 seconds.
+	      Not tainted 5.15.49-rt46 #1
+	"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+	task:kworker/u8:0    state:D stack:    0 pid:    8 ppid:     2 flags:0x00000000
+	Workqueue: writeback wb_workfn (flush-7:0)
+	[<c08a3a10>] (__schedule) from [<c08a3d84>] (schedule+0xdc/0x134)
+	[<c08a3d84>] (schedule) from [<c08a65a0>] (rt_mutex_slowlock_block.constprop.0+0xb8/0x174)
+	[<c08a65a0>] (rt_mutex_slowlock_block.constprop.0) from [<c08a6708>]
+	+(rt_mutex_slowlock.constprop.0+0xac/0x174)
+	[<c08a6708>] (rt_mutex_slowlock.constprop.0) from [<c0374d60>] (fat_write_inode+0x34/0x54)
+	[<c0374d60>] (fat_write_inode) from [<c0297304>] (__writeback_single_inode+0x354/0x3ec)
+	[<c0297304>] (__writeback_single_inode) from [<c0297998>] (writeback_sb_inodes+0x250/0x45c)
+	[<c0297998>] (writeback_sb_inodes) from [<c0297c20>] (__writeback_inodes_wb+0x7c/0xb8)
+	[<c0297c20>] (__writeback_inodes_wb) from [<c0297f24>] (wb_writeback+0x2c8/0x2e4)
+	[<c0297f24>] (wb_writeback) from [<c0298c40>] (wb_workfn+0x1a4/0x3e4)
+	[<c0298c40>] (wb_workfn) from [<c0138ab8>] (process_one_work+0x1fc/0x32c)
+	[<c0138ab8>] (process_one_work) from [<c0139120>] (worker_thread+0x22c/0x2d8)
+	[<c0139120>] (worker_thread) from [<c013e6e0>] (kthread+0x16c/0x178)
+	[<c013e6e0>] (kthread) from [<c01000fc>] (ret_from_fork+0x14/0x38)
+	Exception stack(0xc10e3fb0 to 0xc10e3ff8)
+	3fa0:                                     00000000 00000000 00000000 00000000
+	3fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+	3fe0: 00000000 00000000 00000000 00000000 00000013 00000000
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220701200056.46555-2-samuel@sholland.org
+	INFO: task tar:2083 blocked for more than 491 seconds.
+	      Not tainted 5.15.49-rt46 #1
+	"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+	task:tar             state:D stack:    0 pid: 2083 ppid:  2082 flags:0x00000000
+	[<c08a3a10>] (__schedule) from [<c08a3d84>] (schedule+0xdc/0x134)
+	[<c08a3d84>] (schedule) from [<c08a41b0>] (io_schedule+0x14/0x24)
+	[<c08a41b0>] (io_schedule) from [<c08a455c>] (bit_wait_io+0xc/0x30)
+	[<c08a455c>] (bit_wait_io) from [<c08a441c>] (__wait_on_bit_lock+0x54/0xa8)
+	[<c08a441c>] (__wait_on_bit_lock) from [<c08a44f4>] (out_of_line_wait_on_bit_lock+0x84/0xb0)
+	[<c08a44f4>] (out_of_line_wait_on_bit_lock) from [<c0371fb0>] (fat_mirror_bhs+0xa0/0x144)
+	[<c0371fb0>] (fat_mirror_bhs) from [<c0372a68>] (fat_alloc_clusters+0x138/0x2a4)
+	[<c0372a68>] (fat_alloc_clusters) from [<c0370b14>] (fat_alloc_new_dir+0x34/0x250)
+	[<c0370b14>] (fat_alloc_new_dir) from [<c03787c0>] (vfat_mkdir+0x58/0x148)
+	[<c03787c0>] (vfat_mkdir) from [<c0277b60>] (vfs_mkdir+0x68/0x98)
+	[<c0277b60>] (vfs_mkdir) from [<c027b484>] (do_mkdirat+0xb0/0xec)
+	[<c027b484>] (do_mkdirat) from [<c0100060>] (ret_fast_syscall+0x0/0x1c)
+	Exception stack(0xc2e1bfa8 to 0xc2e1bff0)
+	bfa0:                   01ee42f0 01ee4208 01ee42f0 000041ed 00000000 00004000
+	bfc0: 01ee42f0 01ee4208 00000000 00000027 01ee4302 00000004 000dcb00 01ee4190
+	bfe0: 000dc368 bed11924 0006d4b0 b6ebddfc
+
+Here the kworker is waiting on msdos_sb_info::s_lock which is held by
+tar which is in turn waiting for a buffer which is locked waiting to be
+flushed, but this operation is plugged in the kworker.
+
+The lock is a normal struct mutex, so tsk_is_pi_blocked() will always
+return false on !RT and thus the behaviour changes for RT.
+
+It seems that the intent here is to skip blk_flush_plug() in the case
+where a non-preemptible lock (such as a spinlock) has been converted to
+a rtmutex on RT, which is the case covered by the SM_RTLOCK_WAIT
+schedule flag.  But sched_submit_work() is only called from schedule()
+which is never called in this scenario, so the check can simply be
+deleted.
+
+Looking at the history of the -rt patchset, in fact this change was
+present from v5.9.1-rt20 until being dropped in v5.13-rt1 as it was part
+of a larger patch [1] most of which was replaced by commit b4bfa3fcfe3b
+("sched/core: Rework the __schedule() preempt argument").
+
+As described in [1]:
+
+   The schedule process must distinguish between blocking on a regular
+   sleeping lock (rwsem and mutex) and a RT-only sleeping lock (spinlock
+   and rwlock):
+   - rwsem and mutex must flush block requests (blk_schedule_flush_plug())
+     even if blocked on a lock. This can not deadlock because this also
+     happens for non-RT.
+     There should be a warning if the scheduling point is within a RCU read
+     section.
+
+   - spinlock and rwlock must not flush block requests. This will deadlock
+     if the callback attempts to acquire a lock which is already acquired.
+     Similarly to being preempted, there should be no warning if the
+     scheduling point is within a RCU read section.
+
+and with the tsk_is_pi_blocked() in the scheduler path, we hit the first
+issue.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git/tree/patches/0022-locking-rtmutex-Use-custom-scheduling-function-for-s.patch?h=linux-5.10.y-rt-patches
+
+Signed-off-by: John Keeping <john@metanate.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Link: https://lkml.kernel.org/r/20220708162702.1758865-1-john@metanate.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/Kconfig        |  3 +-
- drivers/irqchip/irq-mips-gic.c | 80 +++++++++++++++++++++++-----------
- 2 files changed, 56 insertions(+), 27 deletions(-)
+ include/linux/sched/rt.h | 8 --------
+ kernel/sched/core.c      | 8 ++++++--
+ 2 files changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index aca7b595c4c7..8f9c52873338 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -304,7 +304,8 @@ config KEYSTONE_IRQ
- 
- config MIPS_GIC
- 	bool
--	select GENERIC_IRQ_IPI
-+	select GENERIC_IRQ_IPI if SMP
-+	select IRQ_DOMAIN_HIERARCHY
- 	select MIPS_CM
- 
- config INGENIC_IRQ
-diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
-index 54c7092cc61d..f03f47ffea1e 100644
---- a/drivers/irqchip/irq-mips-gic.c
-+++ b/drivers/irqchip/irq-mips-gic.c
-@@ -51,13 +51,15 @@ static DEFINE_PER_CPU_READ_MOSTLY(unsigned long[GIC_MAX_LONGS], pcpu_masks);
- 
- static DEFINE_SPINLOCK(gic_lock);
- static struct irq_domain *gic_irq_domain;
--static struct irq_domain *gic_ipi_domain;
- static int gic_shared_intrs;
- static unsigned int gic_cpu_pin;
- static unsigned int timer_cpu_pin;
- static struct irq_chip gic_level_irq_controller, gic_edge_irq_controller;
-+
-+#ifdef CONFIG_GENERIC_IRQ_IPI
- static DECLARE_BITMAP(ipi_resrv, GIC_MAX_INTRS);
- static DECLARE_BITMAP(ipi_available, GIC_MAX_INTRS);
-+#endif /* CONFIG_GENERIC_IRQ_IPI */
- 
- static struct gic_all_vpes_chip_data {
- 	u32	map;
-@@ -460,9 +462,11 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int virq,
- 	u32 map;
- 
- 	if (hwirq >= GIC_SHARED_HWIRQ_BASE) {
-+#ifdef CONFIG_GENERIC_IRQ_IPI
- 		/* verify that shared irqs don't conflict with an IPI irq */
- 		if (test_bit(GIC_HWIRQ_TO_SHARED(hwirq), ipi_resrv))
- 			return -EBUSY;
-+#endif /* CONFIG_GENERIC_IRQ_IPI */
- 
- 		err = irq_domain_set_hwirq_and_chip(d, virq, hwirq,
- 						    &gic_level_irq_controller,
-@@ -551,6 +555,8 @@ static const struct irq_domain_ops gic_irq_domain_ops = {
- 	.map = gic_irq_domain_map,
- };
- 
-+#ifdef CONFIG_GENERIC_IRQ_IPI
-+
- static int gic_ipi_domain_xlate(struct irq_domain *d, struct device_node *ctrlr,
- 				const u32 *intspec, unsigned int intsize,
- 				irq_hw_number_t *out_hwirq,
-@@ -654,6 +660,48 @@ static const struct irq_domain_ops gic_ipi_domain_ops = {
- 	.match = gic_ipi_domain_match,
- };
- 
-+static int gic_register_ipi_domain(struct device_node *node)
-+{
-+	struct irq_domain *gic_ipi_domain;
-+	unsigned int v[2], num_ipis;
-+
-+	gic_ipi_domain = irq_domain_add_hierarchy(gic_irq_domain,
-+						  IRQ_DOMAIN_FLAG_IPI_PER_CPU,
-+						  GIC_NUM_LOCAL_INTRS + gic_shared_intrs,
-+						  node, &gic_ipi_domain_ops, NULL);
-+	if (!gic_ipi_domain) {
-+		pr_err("Failed to add IPI domain");
-+		return -ENXIO;
-+	}
-+
-+	irq_domain_update_bus_token(gic_ipi_domain, DOMAIN_BUS_IPI);
-+
-+	if (node &&
-+	    !of_property_read_u32_array(node, "mti,reserved-ipi-vectors", v, 2)) {
-+		bitmap_set(ipi_resrv, v[0], v[1]);
-+	} else {
-+		/*
-+		 * Reserve 2 interrupts per possible CPU/VP for use as IPIs,
-+		 * meeting the requirements of arch/mips SMP.
-+		 */
-+		num_ipis = 2 * num_possible_cpus();
-+		bitmap_set(ipi_resrv, gic_shared_intrs - num_ipis, num_ipis);
-+	}
-+
-+	bitmap_copy(ipi_available, ipi_resrv, GIC_MAX_INTRS);
-+
-+	return 0;
-+}
-+
-+#else /* !CONFIG_GENERIC_IRQ_IPI */
-+
-+static inline int gic_register_ipi_domain(struct device_node *node)
-+{
-+	return 0;
-+}
-+
-+#endif /* !CONFIG_GENERIC_IRQ_IPI */
-+
- static int gic_cpu_startup(unsigned int cpu)
+diff --git a/include/linux/sched/rt.h b/include/linux/sched/rt.h
+index e5af028c08b4..994c25640e15 100644
+--- a/include/linux/sched/rt.h
++++ b/include/linux/sched/rt.h
+@@ -39,20 +39,12 @@ static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *p)
+ }
+ extern void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task);
+ extern void rt_mutex_adjust_pi(struct task_struct *p);
+-static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
+-{
+-	return tsk->pi_blocked_on != NULL;
+-}
+ #else
+ static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *task)
  {
- 	/* Enable or disable EIC */
-@@ -672,11 +720,12 @@ static int gic_cpu_startup(unsigned int cpu)
- static int __init gic_of_init(struct device_node *node,
- 			      struct device_node *parent)
- {
--	unsigned int cpu_vec, i, gicconfig, v[2], num_ipis;
-+	unsigned int cpu_vec, i, gicconfig;
- 	unsigned long reserved;
- 	phys_addr_t gic_base;
- 	struct resource res;
- 	size_t gic_len;
-+	int ret;
+ 	return NULL;
+ }
+ # define rt_mutex_adjust_pi(p)		do { } while (0)
+-static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
+-{
+-	return false;
+-}
+ #endif
  
- 	/* Find the first available CPU vector. */
- 	i = 0;
-@@ -765,30 +814,9 @@ static int __init gic_of_init(struct device_node *node,
- 		return -ENXIO;
+ extern void normalize_rt_tasks(void);
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index b89ca5c83143..012c037da58a 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6379,8 +6379,12 @@ static inline void sched_submit_work(struct task_struct *tsk)
+ 		preempt_enable_no_resched();
  	}
  
--	gic_ipi_domain = irq_domain_add_hierarchy(gic_irq_domain,
--						  IRQ_DOMAIN_FLAG_IPI_PER_CPU,
--						  GIC_NUM_LOCAL_INTRS + gic_shared_intrs,
--						  node, &gic_ipi_domain_ops, NULL);
--	if (!gic_ipi_domain) {
--		pr_err("Failed to add IPI domain");
--		return -ENXIO;
--	}
--
--	irq_domain_update_bus_token(gic_ipi_domain, DOMAIN_BUS_IPI);
--
--	if (node &&
--	    !of_property_read_u32_array(node, "mti,reserved-ipi-vectors", v, 2)) {
--		bitmap_set(ipi_resrv, v[0], v[1]);
--	} else {
--		/*
--		 * Reserve 2 interrupts per possible CPU/VP for use as IPIs,
--		 * meeting the requirements of arch/mips SMP.
--		 */
--		num_ipis = 2 * num_possible_cpus();
--		bitmap_set(ipi_resrv, gic_shared_intrs - num_ipis, num_ipis);
--	}
--
--	bitmap_copy(ipi_available, ipi_resrv, GIC_MAX_INTRS);
-+	ret = gic_register_ipi_domain(node);
-+	if (ret)
-+		return ret;
+-	if (tsk_is_pi_blocked(tsk))
+-		return;
++	/*
++	 * spinlock and rwlock must not flush block requests.  This will
++	 * deadlock if the callback attempts to acquire a lock which is
++	 * already acquired.
++	 */
++	SCHED_WARN_ON(current->__state & TASK_RTLOCK_WAIT);
  
- 	board_bind_eic_interrupt = &gic_bind_eic_interrupt;
- 
+ 	/*
+ 	 * If we are going to sleep and we have plugged IO queued,
 -- 
 2.35.1
 
