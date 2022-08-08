@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E674C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C39A9C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243919AbiHHB7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52312 "EHLO
+        id S243638AbiHHB7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243858AbiHHB4V (ORCPT
+        with ESMTP id S243879AbiHHB43 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:56:21 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35CA1C931;
-        Sun,  7 Aug 2022 18:39:49 -0700 (PDT)
+        Sun, 7 Aug 2022 21:56:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11EE01C93E;
+        Sun,  7 Aug 2022 18:39:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4DC3BCE0AFC;
-        Mon,  8 Aug 2022 01:39:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E7DEC433D7;
-        Mon,  8 Aug 2022 01:39:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88E6460EC2;
+        Mon,  8 Aug 2022 01:39:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EBB0C433B5;
+        Mon,  8 Aug 2022 01:39:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922786;
-        bh=NtEwKMZ/Nfx57WqXVp8dLzBoBoDtiLiAqK5M3OVyZj0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=MUznuMGYRNQThP3HO4Yduan1lYui/V62XK9JnEkHmi2kQxW4k5cc+uBkjXhQnB5Y4
-         0MFgzu5OmnFz4FS+Dknyc2p/madM45fEOw8rQ/g5qprMJa1pLWBD4F+Tq7RvZVdbGe
-         f23ZvgRat8NBrbNfsj74RhfxIOFD0KkCdGEC6IHMULfkDbQgnYuKnsdWpi15wZxapR
-         8ZhXKNFCSS7ozpg64BgZBFBZaAgwJfbsgpTb7+GEi788FYwyJmVtxKCuPoOlCoT+FY
-         U01y/jZYSRliIKQ8IdxsPS/Bd5E1+N80vJMc+kYYTE/K5OQ+CFyoTtN/jIsaCEVrpq
-         CNo28V5eb+ctg==
+        s=k20201202; t=1659922792;
+        bh=KAH9CtYQ7V3naadWU1SjFlH5I6IWKEV/i6WuneECtvU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HvfwMg96CCtdkHOzZR3YDCXCX3DnwC2Dtltj1qLHNZ7rLjoJG1IJUHblOHCCKVhBl
+         Q8igKJpARXg76CQ6Rgme6SZVmo3SimX4dYI+I8FOepi6+e+i6bMrj2HecirhVQKl4C
+         V5Duv87DknEQ4rfRwzoArvd7F89oQ0LACXveL5hg2Y9Bwhymfi5rZ9q5EtT0LA40Dt
+         Vu/INrsR0xIS71rPlz66TTMAVP+X76VuG9eGNI0vjOqlCGTquq6jIqMILB3qYzwT8s
+         DeA9gpTSl1GJ1/dVSLPnL7aUYTFlBNdONnX7W1iN8b0dbsTQnNWfESGzzM5dfilj+W
+         Xwqui7H+evKhQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Francis Laniel <flaniel@linux.microsoft.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        catalin.marinas@arm.com, broonie@kernel.org, keescook@chromium.org,
-        rmk+kernel@armlinux.org.uk, mark.rutland@arm.com,
-        christophe.leroy@csgroup.eu, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 01/12] arm64: Do not forget syscall when starting a new thread.
-Date:   Sun,  7 Aug 2022 21:39:31 -0400
-Message-Id: <20220808013943.316907-1-sashal@kernel.org>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        kernel test robot <lkp@intel.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de
+Subject: [PATCH AUTOSEL 4.14 04/12] genirq: GENERIC_IRQ_IPI depends on SMP
+Date:   Sun,  7 Aug 2022 21:39:34 -0400
+Message-Id: <20220808013943.316907-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220808013943.316907-1-sashal@kernel.org>
+References: <20220808013943.316907-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,38 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Francis Laniel <flaniel@linux.microsoft.com>
+From: Samuel Holland <samuel@sholland.org>
 
-[ Upstream commit de6921856f99c11d3986c6702d851e1328d4f7f6 ]
+[ Upstream commit 0f5209fee90b4544c58b4278d944425292789967 ]
 
-Enable tracing of the execve*() system calls with the
-syscalls:sys_exit_execve tracepoint by removing the call to
-forget_syscall() when starting a new thread and preserving the value of
-regs->syscallno across exec.
+The generic IPI code depends on the IRQ affinity mask being allocated
+and initialized. This will not be the case if SMP is disabled. Fix up
+the remaining driver that selected GENERIC_IRQ_IPI in a non-SMP config.
 
-Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
-Link: https://lore.kernel.org/r/20220608162447.666494-2-flaniel@linux.microsoft.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220701200056.46555-3-samuel@sholland.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/processor.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/irqchip/Kconfig | 2 +-
+ kernel/irq/Kconfig      | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
-index 9eb95ab19924..8767f9d4ebc6 100644
---- a/arch/arm64/include/asm/processor.h
-+++ b/arch/arm64/include/asm/processor.h
-@@ -143,8 +143,9 @@ void tls_preserve_current_state(void);
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 9d8a1dd2e2c2..602602d7017b 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -138,7 +138,7 @@ config IMGPDC_IRQ
+ config IRQ_MIPS_CPU
+ 	bool
+ 	select GENERIC_IRQ_CHIP
+-	select GENERIC_IRQ_IPI if SYS_SUPPORTS_MULTITHREADING
++	select GENERIC_IRQ_IPI if SMP && SYS_SUPPORTS_MULTITHREADING
+ 	select IRQ_DOMAIN
+ 	select IRQ_DOMAIN_HIERARCHY if GENERIC_IRQ_IPI
+ 	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
+diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
+index 779d858da2b3..94fb3ad9e275 100644
+--- a/kernel/irq/Kconfig
++++ b/kernel/irq/Kconfig
+@@ -80,6 +80,7 @@ config IRQ_FASTEOI_HIERARCHY_HANDLERS
+ # Generic IRQ IPI support
+ config GENERIC_IRQ_IPI
+ 	bool
++	depends on SMP
+ 	select IRQ_DOMAIN_HIERARCHY
  
- static inline void start_thread_common(struct pt_regs *regs, unsigned long pc)
- {
-+	s32 previous_syscall = regs->syscallno;
- 	memset(regs, 0, sizeof(*regs));
--	forget_syscall(regs);
-+	regs->syscallno = previous_syscall;
- 	regs->pc = pc;
- }
- 
+ # Generic MSI interrupt support
 -- 
 2.35.1
 
