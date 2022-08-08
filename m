@@ -2,210 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29EC7C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D24B9C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243341AbiHHO5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 10:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47222 "EHLO
+        id S243536AbiHHO5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 10:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243012AbiHHO5c (ORCPT
+        with ESMTP id S243428AbiHHO5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 10:57:32 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475BDB1F6
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 07:57:30 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id 13so7362465plo.12
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 07:57:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=xgqexFqNfWEI+vjZmxBXO3+TInw86fqMbwNyn542u8I=;
-        b=P3gxdnZNWJdVmBjp4eV03crxJ18dSpDU/aLVgSbmNM8Tupilkpyzu9uSGyQJs/k16w
-         7yMoHrtB0VmXA3bdSgMkiunX/fbjRrMyKFw7FEdIE3G0I47i2zXvAZm79w178CxSd0cy
-         91D9oFeZVqd4Lpmkg3qnSsRoB+bVB3BGiFsS+A7RTdSES/aGB8WGz0pToofcFE9dEjF6
-         sxtl35HMxEjK0HgDMAKmcHsKKyuCWXSAgwoBF6GrhfhozGCK2kf4953g5pSGIJp9+fTP
-         JCey2ob3ENOfDyZMOeFhwRrm10o82aTsEO/RGkF5xaNGAwfWJ3YJD4X731/HYbWaUK/o
-         BfiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xgqexFqNfWEI+vjZmxBXO3+TInw86fqMbwNyn542u8I=;
-        b=dnaaCOi4QJgOt2T7ULr5Copl1Yk2mNEMnmd6lniOZl/OycozVgwUD68NJRGKJykGEN
-         OdPvTev0Q+jU5FhJb9JqkdrbafWPRSW2OFXHTQbohN0FHW+7XslQqpY/fCc2886eAZej
-         F8Al7guCWMb1EMECRU0o/FBfU3MBLbHpK71PhQJVX0bl5zp4AKr5II4Nr9ybI9EhtYol
-         18OiGHY3QNKwBvHIclQkDXIeBRdoykLdglAP29Lh6DuygMVhiKTXbag9bla1RjFwg2BT
-         od+hBnRlIogF0B5o+YP354fw3dUOtky8CBo4JgBsF/iWZtA/+OvCd7F1L3BklmZpgz+d
-         4IJA==
-X-Gm-Message-State: ACgBeo36+fdj8FHL6Yi1yuYEsaDMnYO2+oATkQ4YrdO712/RTpgyw7TW
-        u4YUzUlZC/NiW/2S0P0QrglYvg==
-X-Google-Smtp-Source: AA6agR4BUfTZhyPXZwWUu79DD/Wzc9VniGVmZerobhOxABOMPLIfM6QawSyrqLdAHep8X0F4GWk8og==
-X-Received: by 2002:a17:90a:a401:b0:1f2:19a0:2874 with SMTP id y1-20020a17090aa40100b001f219a02874mr29683232pjp.146.1659970649774;
-        Mon, 08 Aug 2022 07:57:29 -0700 (PDT)
-Received: from [10.254.250.112] ([139.177.225.240])
-        by smtp.gmail.com with ESMTPSA id u13-20020a170902e80d00b0016cb873fe6fsm8926179plg.183.2022.08.08.07.57.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Aug 2022 07:57:29 -0700 (PDT)
-Message-ID: <616ed01f-3c4d-6c50-f5b7-096676dd9d1f@bytedance.com>
-Date:   Mon, 8 Aug 2022 22:57:24 +0800
+        Mon, 8 Aug 2022 10:57:36 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7434211C26
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 07:57:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659970654; x=1691506654;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=RqWLLHXdKq7i3jEZDCWPo2WblS5wC3PZ6h5tyOrVLyQ=;
+  b=UiuO/XnqNLMdIWjXlxmA9GKV+SM1/jLVckdm2zMs+eNM7LVsO4iDnGqH
+   LN6JZ10mtS/MkIamTkzRID1yOOV0QnWBNVBCEBJ4Ck49TO/4Ro0DBPu1A
+   ZPoQGnyK1EZhqW1DFJg2wYsibL+8QWh1f+23NXmtg/xT42NAIJK+9busm
+   iJPAp2eCqD6P4nLk8jmEbuh6p08hD2qdFfyGTDwJp0Hfl87RFklgR7QSr
+   m67nsXyM+Ru4dKNm8/Nrh6FOzcEq/2pguv0St1cDEJalta6mwSZvb7Igy
+   gaTVQ81eI/pBWqPRJzwrwRwor8r+8RjLlSurvBr5k7HL9k7+TSigNSYwn
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="270996886"
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="270996886"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 07:57:34 -0700
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="663980492"
+Received: from ziqianlu-desk2.sh.intel.com ([10.238.2.76])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 07:57:32 -0700
+From:   Aaron Lu <aaron.lu@intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>
+Cc:     Song Liu <song@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: [RFC PATCH 1/4] x86/mm/cpa: restore global bit when page is present
+Date:   Mon,  8 Aug 2022 22:56:46 +0800
+Message-Id: <20220808145649.2261258-2-aaron.lu@intel.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220808145649.2261258-1-aaron.lu@intel.com>
+References: <20220808145649.2261258-1-aaron.lu@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.1.0
-Subject: Re: [PATCH v4 7/9] sched/fair: allow changing cgroup of new forked
- task
-Content-Language: en-US
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, vschneid@redhat.com
-Cc:     linux-kernel@vger.kernel.org
-References: <20220808125745.22566-1-zhouchengming@bytedance.com>
- <20220808125745.22566-8-zhouchengming@bytedance.com>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <20220808125745.22566-8-zhouchengming@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/8 20:57, Chengming Zhou wrote:
-> commit 7dc603c9028e ("sched/fair: Fix PELT integrity for new tasks")
-> introduce a TASK_NEW state and an unnessary limitation that would fail
-> when changing cgroup of new forked task.
-> 
-> Because at that time, we can't handle task_change_group_fair() for new
-> forked fair task which hasn't been woken up by wake_up_new_task(),
-> which will cause detach on an unattached task sched_avg problem.
-> 
-> This patch delete this unnessary limitation by adding check before do
-> detach or attach in task_change_group_fair().
-> 
-> So cpu_cgrp_subsys.can_attach() has nothing to do for fair tasks,
-> only define it in #ifdef CONFIG_RT_GROUP_SCHED.
-> 
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-> ---
->  include/linux/sched.h |  5 ++---
->  kernel/sched/core.c   | 30 +++++++-----------------------
->  kernel/sched/fair.c   |  7 +++++++
->  3 files changed, 16 insertions(+), 26 deletions(-)
-> 
-> diff --git a/include/linux/sched.h b/include/linux/sched.h
-> index 88b8817b827d..b504e55bbf7a 100644
-> --- a/include/linux/sched.h
-> +++ b/include/linux/sched.h
-> @@ -95,10 +95,9 @@ struct task_group;
->  #define TASK_WAKEKILL			0x0100
->  #define TASK_WAKING			0x0200
->  #define TASK_NOLOAD			0x0400
-> -#define TASK_NEW			0x0800
->  /* RT specific auxilliary flag to mark RT lock waiters */
-> -#define TASK_RTLOCK_WAIT		0x1000
-> -#define TASK_STATE_MAX			0x2000
-> +#define TASK_RTLOCK_WAIT		0x0800
-> +#define TASK_STATE_MAX			0x1000
->  
->  /* Convenience macros for the sake of set_current_state: */
->  #define TASK_KILLABLE			(TASK_WAKEKILL | TASK_UNINTERRUPTIBLE)
-> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> index e74e79f783af..d5faa1700bd7 100644
-> --- a/kernel/sched/core.c
-> +++ b/kernel/sched/core.c
-> @@ -4500,11 +4500,11 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
->  {
->  	__sched_fork(clone_flags, p);
->  	/*
-> -	 * We mark the process as NEW here. This guarantees that
-> +	 * We mark the process as running here. This guarantees that
->  	 * nobody will actually run it, and a signal or other external
->  	 * event cannot wake it up and insert it on the runqueue either.
->  	 */
-> -	p->__state = TASK_NEW;
-> +	p->__state = TASK_RUNNING;
->  
->  	/*
->  	 * Make sure we do not leak PI boosting priority to the child.
-> @@ -4622,7 +4622,6 @@ void wake_up_new_task(struct task_struct *p)
->  	struct rq *rq;
->  
->  	raw_spin_lock_irqsave(&p->pi_lock, rf.flags);
-> -	WRITE_ONCE(p->__state, TASK_RUNNING);
->  #ifdef CONFIG_SMP
->  	/*
->  	 * Fork balancing, do it here and not earlier because:
-> @@ -10238,36 +10237,19 @@ static void cpu_cgroup_css_free(struct cgroup_subsys_state *css)
->  	sched_unregister_group(tg);
->  }
->  
-> +#ifdef CONFIG_RT_GROUP_SCHED
->  static int cpu_cgroup_can_attach(struct cgroup_taskset *tset)
->  {
->  	struct task_struct *task;
->  	struct cgroup_subsys_state *css;
-> -	int ret = 0;
->  
->  	cgroup_taskset_for_each(task, css, tset) {
-> -#ifdef CONFIG_RT_GROUP_SCHED
->  		if (!sched_rt_can_attach(css_tg(css), task))
->  			return -EINVAL;
-> -#endif
-> -		/*
-> -		 * Serialize against wake_up_new_task() such that if it's
-> -		 * running, we're sure to observe its full state.
-> -		 */
-> -		raw_spin_lock_irq(&task->pi_lock);
-> -		/*
-> -		 * Avoid calling sched_move_task() before wake_up_new_task()
-> -		 * has happened. This would lead to problems with PELT, due to
-> -		 * move wanting to detach+attach while we're not attached yet.
-> -		 */
-> -		if (READ_ONCE(task->__state) == TASK_NEW)
-> -			ret = -EINVAL;
-> -		raw_spin_unlock_irq(&task->pi_lock);
-> -
-> -		if (ret)
-> -			break;
->  	}
-> -	return ret;
-> +	return 0;
->  }
-> +#endif
->  
->  static void cpu_cgroup_attach(struct cgroup_taskset *tset)
->  {
-> @@ -11103,7 +11085,9 @@ struct cgroup_subsys cpu_cgrp_subsys = {
->  	.css_released	= cpu_cgroup_css_released,
->  	.css_free	= cpu_cgroup_css_free,
->  	.css_extra_stat_show = cpu_extra_stat_show,
-> +#ifdef CONFIG_RT_GROUP_SCHED
->  	.can_attach	= cpu_cgroup_can_attach,
-> +#endif
->  	.attach		= cpu_cgroup_attach,
->  	.legacy_cftypes	= cpu_legacy_files,
->  	.dfl_cftypes	= cpu_files,
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 4bc76d95a99d..90aba33a3780 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -11669,6 +11669,13 @@ void init_cfs_rq(struct cfs_rq *cfs_rq)
->  #ifdef CONFIG_FAIR_GROUP_SCHED
->  static void task_change_group_fair(struct task_struct *p)
->  {
-> +	/*
-> +	 * We couldn't detach or attach a forked task which
-> +	 * hasn't been woken up by wake_up_new_task().
-> +	 */
-> +	if (!p->on_rq && !se->sum_exec_runtime)
+For configs that don't have PTI enabled or cpus that don't need
+meltdown mitigation, current kernel can lose GLOBAL bit after a page
+goes through a cycle of present -> not present -> present.
 
-should be: if (!p->on_rq && !p->se.sum_exec_runtime)
-sorry for my carelessness...
+It happened like this(__vunmap() does this in vm_remove_mappings()):
+original page protection: 0x8000000000000163 (NX/G/D/A/RW/P)
+set_memory_np(page, 1):   0x8000000000000062 (NX/D/A/RW) lose G and P
+set_memory_p(pagem 1):    0x8000000000000063 (NX/D/A/RW/P) restored P
 
+In the end, this page's protection no longer has Global bit set and this
+would create problem for this merge small mapping feature.
 
-> +		return;
-> +
->  	detach_task_cfs_rq(p);
->  
->  #ifdef CONFIG_SMP
+For this reason, restore Global bit for systems that do not have PTI
+enabled if page is present.
+
+(pgprot_clear_protnone_bits() deserves a better name if this patch is
+acceptible but first, I would like to get some feedback if this is the
+right way to solve this so I didn't bother with the name yet)
+
+Signed-off-by: Aaron Lu <aaron.lu@intel.com>
+---
+ arch/x86/mm/pat/set_memory.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index 1abd5438f126..33657a54670a 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -758,6 +758,8 @@ static pgprot_t pgprot_clear_protnone_bits(pgprot_t prot)
+ 	 */
+ 	if (!(pgprot_val(prot) & _PAGE_PRESENT))
+ 		pgprot_val(prot) &= ~_PAGE_GLOBAL;
++	else
++		pgprot_val(prot) |= _PAGE_GLOBAL & __default_kernel_pte_mask;
+ 
+ 	return prot;
+ }
+-- 
+2.37.1
+
