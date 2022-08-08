@@ -2,107 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5187DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 12:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7192C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 12:53:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242806AbiHHMxl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 08:53:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38212 "EHLO
+        id S243028AbiHHMxs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 08:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242986AbiHHMxa (ORCPT
+        with ESMTP id S243000AbiHHMxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 08:53:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A20DF05;
-        Mon,  8 Aug 2022 05:53:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57D68611B1;
+        Mon, 8 Aug 2022 08:53:40 -0400
+Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7CA5DF01;
+        Mon,  8 Aug 2022 05:53:36 -0700 (PDT)
+Received: from fews2.riseup.net (fews2-pn.riseup.net [10.0.1.84])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx1.riseup.net (Postfix) with ESMTPS id 4M1bjW5PYtzDqQG;
+        Mon,  8 Aug 2022 12:53:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1659963216; bh=U4GvU20X6mdBO30uDR0KLgTrv00KgR/cH3SlGLXeMv4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=A2rhWZsSGy5xUS4ayXE56EghPU3wkhlpz5Uq85N8BUbqDilIc46WqtpwCtKfklUb8
+         K8/FqKWk/07EmbzyK17zQS5WOfjh3sUbrlK0U9loi1Lptd1zRx5x+iH3Iyy7UrCfUH
+         JUhTUyWe4ldPY2NwchzeMtCafYQ09QjxUhxbf+K0=
+X-Riseup-User-ID: DC7701674319CA9BCE1527D75CCC791AFB38971416B4F499334B6E272D8D9C5D
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews2.riseup.net (Postfix) with ESMTPSA id 4M1bjQ29jLz20cj;
         Mon,  8 Aug 2022 12:53:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A0DBC433C1;
-        Mon,  8 Aug 2022 12:53:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659963208;
-        bh=BmIftkQ0BzMbYotXaR2i1XOZ3mRUNcoQMmDFYPC3egk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=it47u2D7EoHexGB/oK8cSgI70d1TB6ZsbijH1HlcDoPkhIJDbi0ft6HozazrLV81w
-         PAwjUsSiUuMqF/Fu2EPsUdMsFK4GmXI5j4sCJLUI4trb62OR1aBXgBX5LUlNDgEkB1
-         FDBbBETMuJBrldDoLXN+4tunfy3AM0TNyhf+Dw2pTpWjhrcW0fqVa6eMyNeu0yB7mr
-         uTLM9VwEIX0weCL1hUyqJpdREBd7+AvuvN4sxoisIJm6mJ/f7TlYDDWa9fOXuQllLB
-         WRx9XgVp2uPb/S1ho98dr1kGk+zna+Ign4CWeMco0eQ4jYOPLvztVdU90pTOM6Yloc
-         dRzNXRM+Hjoug==
-From:   Will Deacon <will@kernel.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Peter Collingbourne <pcc@google.com>, stable@vger.kernel.org,
-        Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH][for-stable] arm64: set UXN on swapper page tables
-Date:   Mon,  8 Aug 2022 13:53:21 +0100
-Message-Id: <20220808125321.32598-1-will@kernel.org>
-X-Mailer: git-send-email 2.20.1
+From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+To:     Brendan Higgins <brendanhiggins@google.com>, davidgow@google.com,
+        Daniel Latypov <dlatypov@google.com>, airlied@linux.ie,
+        daniel@ffwll.ch, davem@davemloft.net, kuba@kernel.org,
+        jose.exposito89@gmail.com, javierm@redhat.com
+Cc:     andrealmeid@riseup.net, melissa.srw@gmail.com,
+        siqueirajordao@riseup.net, Isabella Basso <isabbasso@riseup.net>,
+        magalilemes00@gmail.com, tales.aparecida@gmail.com,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+Subject: [PATCH v4 2/3] kunit: Add KUnit memory block assertions to the example_all_expect_macros_test
+Date:   Mon,  8 Aug 2022 09:52:36 -0300
+Message-Id: <20220808125237.277126-3-mairacanal@riseup.net>
+In-Reply-To: <20220808125237.277126-1-mairacanal@riseup.net>
+References: <20220808125237.277126-1-mairacanal@riseup.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Collingbourne <pcc@google.com>
+Augment the example_all_expect_macros_test with the KUNIT_EXPECT_MEMEQ
+and KUNIT_EXPECT_MEMNEQ macros by creating a test with memory block
+assertions.
 
-[ This issue was fixed upstream by accident in c3cee924bd85 ("arm64:
-  head: cover entire kernel image in initial ID map") as part of a
-  large refactoring of the arm64 boot flow. This simple fix is therefore
-  preferred for -stable backporting ]
-
-On a system that implements FEAT_EPAN, read/write access to the idmap
-is denied because UXN is not set on the swapper PTEs. As a result,
-idmap_kpti_install_ng_mappings panics the kernel when accessing
-__idmap_kpti_flag. Fix it by setting UXN on these PTEs.
-
-Fixes: 18107f8a2df6 ("arm64: Support execute-only permissions with Enhanced PAN")
-Cc: <stable@vger.kernel.org> # 5.15
-Link: https://linux-review.googlesource.com/id/Ic452fa4b4f74753e54f71e61027e7222a0fae1b1
-Signed-off-by: Peter Collingbourne <pcc@google.com>
-Acked-by: Will Deacon <will@kernel.org>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Link: https://lore.kernel.org/r/20220719234909.1398992-1-pcc@google.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Maíra Canal <mairacanal@riseup.net>
+Reviewed-by: Daniel Latypov <dlatypov@google.com>
 ---
- arch/arm64/include/asm/kernel-pgtable.h | 4 ++--
- arch/arm64/kernel/head.S                | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ lib/kunit/kunit-example-test.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/arch/arm64/include/asm/kernel-pgtable.h b/arch/arm64/include/asm/kernel-pgtable.h
-index 96dc0f7da258..a971d462f531 100644
---- a/arch/arm64/include/asm/kernel-pgtable.h
-+++ b/arch/arm64/include/asm/kernel-pgtable.h
-@@ -103,8 +103,8 @@
- /*
-  * Initial memory map attributes.
+diff --git a/lib/kunit/kunit-example-test.c b/lib/kunit/kunit-example-test.c
+index f8fe582c9e36..66cc4e2365ec 100644
+--- a/lib/kunit/kunit-example-test.c
++++ b/lib/kunit/kunit-example-test.c
+@@ -86,6 +86,9 @@ static void example_mark_skipped_test(struct kunit *test)
   */
--#define SWAPPER_PTE_FLAGS	(PTE_TYPE_PAGE | PTE_AF | PTE_SHARED)
--#define SWAPPER_PMD_FLAGS	(PMD_TYPE_SECT | PMD_SECT_AF | PMD_SECT_S)
-+#define SWAPPER_PTE_FLAGS	(PTE_TYPE_PAGE | PTE_AF | PTE_SHARED | PTE_UXN)
-+#define SWAPPER_PMD_FLAGS	(PMD_TYPE_SECT | PMD_SECT_AF | PMD_SECT_S | PMD_SECT_UXN)
+ static void example_all_expect_macros_test(struct kunit *test)
+ {
++	const u32 array1[] = { 0x0F, 0xFF };
++	const u32 array2[] = { 0x1F, 0xFF };
++
+ 	/* Boolean assertions */
+ 	KUNIT_EXPECT_TRUE(test, true);
+ 	KUNIT_EXPECT_FALSE(test, false);
+@@ -109,6 +112,10 @@ static void example_all_expect_macros_test(struct kunit *test)
+ 	KUNIT_EXPECT_STREQ(test, "hi", "hi");
+ 	KUNIT_EXPECT_STRNEQ(test, "hi", "bye");
  
- #if ARM64_KERNEL_USES_PMD_MAPS
- #define SWAPPER_MM_MMUFLAGS	(PMD_ATTRINDX(MT_NORMAL) | SWAPPER_PMD_FLAGS)
-diff --git a/arch/arm64/kernel/head.S b/arch/arm64/kernel/head.S
-index 6a98f1a38c29..8a93a0a7489b 100644
---- a/arch/arm64/kernel/head.S
-+++ b/arch/arm64/kernel/head.S
-@@ -285,7 +285,7 @@ SYM_FUNC_START_LOCAL(__create_page_tables)
- 	subs	x1, x1, #64
- 	b.ne	1b
- 
--	mov	x7, SWAPPER_MM_MMUFLAGS
-+	mov_q	x7, SWAPPER_MM_MMUFLAGS
- 
++	/* Memory block assertions */
++	KUNIT_EXPECT_MEMEQ(test, array1, array1, sizeof(array1));
++	KUNIT_EXPECT_MEMNEQ(test, array1, array2, sizeof(array1));
++
  	/*
- 	 * Create the identity mapping.
+ 	 * There are also ASSERT variants of all of the above that abort test
+ 	 * execution if they fail. Useful for memory allocations, etc.
 -- 
-2.37.1.559.g78731f0fdb-goog
+2.37.1
 
