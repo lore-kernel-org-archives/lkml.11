@@ -2,92 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C70EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40CD4C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:10:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243904AbiHHQKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 12:10:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
+        id S243933AbiHHQKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 12:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243879AbiHHQKJ (ORCPT
+        with ESMTP id S243901AbiHHQKP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 12:10:09 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5403115828;
-        Mon,  8 Aug 2022 09:10:08 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 278CCwwb015734;
-        Mon, 8 Aug 2022 18:09:54 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=x3NJSzf6vrhocflx9JNFnZ5iqH3k6ZuksvSVGkGyX08=;
- b=y9wNcQLrVxBALNMpBmPsn1Swn8u4UKcjgIZO8rq+dlbKG4dS7jSnOn8jT6O5Nd7DSWGC
- 5dCBiXbE0t7/gaP2aLvfEL9knkoxhoV+Bx09RGv00qCIsy7dWOiY5OMp50FzxpXT0KJJ
- tLpw2eczpsce1N5N53DCiyivH99Qpb7PEwX4z0HHjPf+Dmsu9AH/CIiTF3bEPD/SkYi0
- kuUSD6cnKJ7YlAtBFHk7ZcKNTqqFJMqebzksxNNJE1RHxDHX9mFvywwFhDnDeW763G6J
- WlelOpEwfi0XxOLnfcb3lraF07+uZbs5Tdxga3lpmXJ2Xd53tr62K9Nv+CEYSxZU7QFk aA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hsf6gkm81-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 08 Aug 2022 18:09:54 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 541EA10002A;
-        Mon,  8 Aug 2022 18:09:53 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 4F2DA257ABB;
-        Mon,  8 Aug 2022 18:09:53 +0200 (CEST)
-Received: from [10.201.21.72] (10.75.127.118) by SHFDAG1NODE1.st.com
- (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 8 Aug
- 2022 18:09:52 +0200
-Message-ID: <bbe8f91e-35f4-fe80-4b6e-25d21a6547fc@foss.st.com>
-Date:   Mon, 8 Aug 2022 18:09:51 +0200
+        Mon, 8 Aug 2022 12:10:15 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A19CEC
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 09:10:14 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id q30so11398528wra.11
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 09:10:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=NG+r9AjGL139a34yJmXvgbFxyH32eTYxP//6rqaoDOY=;
+        b=htyt6ts7nCnklVexoA5lDY36NmDcxk/eePySQAVgOtL0p5hRnpunAf05OIlaUt3nVn
+         4vQgjbONmqJyEFQ/fMWTMEVvyrCmOsEr6SnXqYjuwXvIHtRD8uaJhU7oiltoGzs7wGNl
+         Q33yuKMPs98NA19cIqMBgPlCMOppnHiND/H9hvYwIxqGSlkQ//Tb3mf0UBM/9FetD1yB
+         jn084q4yK4pTnrK8igtPuK3VcwrwycvI1UOWg8z8ty773ni9lDhESnZCxGPKS82xRSMV
+         /mEcVIX4F0IYGXrchLWAGGD2uJXwnhQTgbhe8jzD5NhkMsFigo8HyCO2MHjnO3rWAr+M
+         Z+4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=NG+r9AjGL139a34yJmXvgbFxyH32eTYxP//6rqaoDOY=;
+        b=JBo5/MLzzIfQ9v/7JQ3B1vF1PL3SvuTH5ZXUXlHv2D2vBSinAx7AB+p/v4+9mL+BEJ
+         7g74yplXHYX9+PAVayjhuGNfCF5pg4o1//ZO59QQZtaP02VX3oOdriwOGjBsKtFEI5XV
+         zq4FTGZtIiLtAp1NWY58HDo7TKPm84/Fx5NWsO1E1VaJRvLcjUi6wX4GmfMTDuq5xMkl
+         hlwFJAjqlTSU7pm2U3H1PMWgI88z5HjDT3t86DqxXSus6ituZkP57NVu7/WrzYFlxqQ/
+         s83EWl+WGrRm5vl4bZysGv9nQ4zLx8doxrAblG5JzZOSUfBIuSt6KFwJstl9c5WJrRpu
+         Asow==
+X-Gm-Message-State: ACgBeo1gvJQLfaApQjZXI8anMRLk7BuXGWHJohWwVPz9+U94uRPzkJef
+        gms2pfGkRCiVMhRSk+XwN5MQdiH0KEoeYg==
+X-Google-Smtp-Source: AA6agR5pyyi+7oUtV2sxBIV+mAVXJiyka2gUlqUEiOOJiqeOac1BhROX79JxAYxxsJIp3qhkhNYPhg==
+X-Received: by 2002:a5d:598f:0:b0:220:8005:7def with SMTP id n15-20020a5d598f000000b0022080057defmr12262580wri.435.1659975012916;
+        Mon, 08 Aug 2022 09:10:12 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id z11-20020a5d44cb000000b00220688d445esm13782586wrr.117.2022.08.08.09.10.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 09:10:11 -0700 (PDT)
+Date:   Mon, 8 Aug 2022 17:10:09 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Hans de Goede <hdegoede@redhat.com>, linux-kernel@vger.kernel.org,
+        Lee Jones <lee@kernel.org>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v3 02/10] mfd: intel_soc_pmic_crc: Merge Intel PMIC core
+ to crc
+Message-ID: <YvE1YWuNwOqLtOdH@google.com>
+References: <20220801114211.36267-1-andriy.shevchenko@linux.intel.com>
+ <20220801114211.36267-2-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 2/3] spi: stm32_qspi: Add transfer_one_message() spi
- callback
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-CC:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-spi@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
-        <devicetree@vger.kernel.org>
-References: <20220808074051.44736-1-patrice.chotard@foss.st.com>
- <20220808074051.44736-3-patrice.chotard@foss.st.com>
- <YvEP15/7KmQGyPgL@sirena.org.uk>
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-In-Reply-To: <YvEP15/7KmQGyPgL@sirena.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.118]
-X-ClientProxiedBy: GPXDAG2NODE4.st.com (10.75.127.68) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-08_10,2022-08-08_01,2022-06-22_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220801114211.36267-2-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mark
+On Mon, 01 Aug 2022, Andy Shevchenko wrote:
 
-On 8/8/22 15:29, Mark Brown wrote:
-> On Mon, Aug 08, 2022 at 09:40:50AM +0200, patrice.chotard@foss.st.com wrote:
+> The core part is misleading since its only purpose to serve Crystal Cove PMIC,
+> although for couple of different platforms. Merge core part into crc one.
 > 
->> +	ret = pm_runtime_get_sync(qspi->dev);
->> +	if (ret < 0) {
->> +		pm_runtime_put_noidle(qspi->dev);
->> +		return ret;
->> +	}
+> Advantages among others are:
+> - speed up a compilation and build
+> - decreasing the code base
+> - reducing noise in the namespace by making some data static and const
 > 
-> Use the core runtime PM, there should be no need to open code.
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Tested-by: Hans de Goede <hdegoede@redhat.com>
+> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+> ---
+> 
+> v3: removed not used file (Christophe)
+> v2: added tags and rebased on top of new patch 1
+> 
+>  drivers/mfd/Makefile              |   3 +-
+>  drivers/mfd/intel_soc_pmic_core.c | 161 -----------------------------
+>  drivers/mfd/intel_soc_pmic_core.h |  25 -----
+>  drivers/mfd/intel_soc_pmic_crc.c  | 163 ++++++++++++++++++++++++++++--
+>  4 files changed, 158 insertions(+), 194 deletions(-)
+>  delete mode 100644 drivers/mfd/intel_soc_pmic_core.c
+>  delete mode 100644 drivers/mfd/intel_soc_pmic_core.h
 
-Right, i will use pm_runtime_resume_and_get() instead.
+Applied, thanks.
 
-Thanks
-Patrice
+-- 
+DEPRECATED: Please use lee@kernel.org
