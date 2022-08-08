@@ -2,143 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44C1DC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 07:37:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC3BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 07:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235494AbiHHHg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 03:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42652 "EHLO
+        id S237892AbiHHHhF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 03:37:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236388AbiHHHgh (ORCPT
+        with ESMTP id S237875AbiHHHgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 03:36:37 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB3013E17
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 00:36:28 -0700 (PDT)
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2786w9hn008922;
-        Mon, 8 Aug 2022 07:36:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id; s=qcppdkim1;
- bh=+XCm5jSg8FjQE5YqGwyyuso1tjrDjKrNMsCGsTXDJYg=;
- b=QivNZyWXfiqOkkNawU/c/GqjSwl4uGNEuQ2yxfSl+82wvQFLzvfOMrFfLufCt3ERXdcn
- DEkzU2CSnYm/AUAQjr4x4vV1tweGZtfvcFkrvybETGN/UCA2F4IuhuoaTMzZ44ebwCq9
- OmqoMnLzn53jzz3+rSQ+GESajO4N/wLidZTV5tkklwaQ3EPZusOo5cMFt+UQyOQ+I3Dw
- n0CGysi5AilNEUHYVDHwF6P94VSc0u1omRuDvPMX2e4E9Teb+YdO3xViXwRH5LUUy2Gg
- HAMicT9yTCzIkniYkmqXB/xiGIElFMlhyA4wjH6dcVoKv35HhT241pG38Y4j8QejqE3x jA== 
-Received: from aptaippmta01.qualcomm.com (tpe-colo-wan-fw-bordernet.qualcomm.com [103.229.16.4])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hsfaejyhn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 08 Aug 2022 07:36:14 +0000
-Received: from pps.filterd (APTAIPPMTA01.qualcomm.com [127.0.0.1])
-        by APTAIPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 2787aBpM021915;
-        Mon, 8 Aug 2022 07:36:11 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by APTAIPPMTA01.qualcomm.com (PPS) with ESMTP id 3hshcpntf1-1;
-        Mon, 08 Aug 2022 07:36:11 +0000
-Received: from APTAIPPMTA01.qualcomm.com (APTAIPPMTA01.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2787aBH4021910;
-        Mon, 8 Aug 2022 07:36:11 GMT
-Received: from maow2-gv.ap.qualcomm.com (maow2-gv.qualcomm.com [10.232.193.133])
-        by APTAIPPMTA01.qualcomm.com (PPS) with ESMTP id 2787aAmw021896;
-        Mon, 08 Aug 2022 07:36:11 +0000
-Received: by maow2-gv.ap.qualcomm.com (Postfix, from userid 399080)
-        id 5B49A21029A6; Mon,  8 Aug 2022 15:36:08 +0800 (CST)
-From:   Kassey Li <quic_yingangl@quicinc.com>
-To:     akpm@linux-foundation.org, vbabka@kernel.org
-Cc:     Kassey Li <quic_yingangl@quicinc.com>, minchan@kernel.org,
-        iamjoonsoo.kim@lge.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: [PATCH v4] mm/page_owner.c: add llseek for page_owner
-Date:   Mon,  8 Aug 2022 15:36:06 +0800
-Message-Id: <20220808073606.29666-1-quic_yingangl@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: NZXkGcpFxdd2u-O0Gb_QsAw1zV5mxBhd
-X-Proofpoint-ORIG-GUID: NZXkGcpFxdd2u-O0Gb_QsAw1zV5mxBhd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-08_05,2022-08-05_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- spamscore=0 lowpriorityscore=0 priorityscore=1501 suspectscore=0
- adultscore=0 malwarescore=0 mlxlogscore=758 bulkscore=0 impostorscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2208080038
+        Mon, 8 Aug 2022 03:36:45 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DD313E0B;
+        Mon,  8 Aug 2022 00:36:32 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id z17so9869200wrq.4;
+        Mon, 08 Aug 2022 00:36:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=uYRvhWIir+9vFNPEGPmYjeZmzQyaVDNo9OS1sri7zLc=;
+        b=WqAfVIb7d+vMtao0BB28J6WxkgIjKclg9mdmpH5aZx3Kbx2WGVsa8sbi0/oJHTe7RS
+         ApmPnAvfGYjJlkNxBXhdVEM0wlG7ch+K35lQwnEn+r+MsgfkPJpi7xVqvppnyhBWL1ws
+         KzespaNbR2z1GqSzTEbqjpDv7bFBYewsqNLmN910NtK+FjjBoNRohCqOEd5A2Au/RYVz
+         Q5LnmtJuRlMezVJQZlaAykFyJ8fmcHCMAxLGDkoQt9bkDLTmfwN9Mpj0xRS2gEyX7rbi
+         vDtU0QoxEvO/iX9tcwwaeLM+1iD3hXz+cVirs51necmmWb6EoMAyFHW45Cf1GMmvrOEn
+         BGfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=uYRvhWIir+9vFNPEGPmYjeZmzQyaVDNo9OS1sri7zLc=;
+        b=yegv6PWwiQCZSvslnKnE1qwa8UkxztdShwsr6DRJBJSKEWXirmSnrBC/JUbLWRJXQS
+         Pai9jMByGrbsb7avcsrWD2ICBL0giZAx1ZROIrwUHohIrUJf0mGei2wXSuJ2aXsn+LkU
+         +esS/oJJwkts7BDGavlzixTeguCA7GamzvaU+0T7s0vdbogG0zvNksOKy0WHZRM4iZJK
+         Nnkd5JCBLsSRzztYS43cECp9ObW0zWUjzZ4DHumrzfBIkBTtGOg2KB5zYGJMDs++w6vf
+         OSNmiakQeEi+8LHjKLdyQKZQP0Bsd/jrfftrcP8xxxsQyBS6wqREVjkRHASGpJB3xyPx
+         LzbQ==
+X-Gm-Message-State: ACgBeo2HbPVmv2P1ixMIVkPUGqmuuDEY9AuEU+scvruji+VDyWvi50gN
+        +G8PPTNWNckZoYlHH+K7Kic=
+X-Google-Smtp-Source: AA6agR4gUjE6BeupG0r1l4Gy97xRsQ+e6XUf2b5okBU3JGXpFjzcvbfvD/oMHaQUm3CDBEMc3EXE1Q==
+X-Received: by 2002:adf:d4c2:0:b0:21e:ddf3:8b14 with SMTP id w2-20020adfd4c2000000b0021eddf38b14mr10932162wrk.355.1659944191138;
+        Mon, 08 Aug 2022 00:36:31 -0700 (PDT)
+Received: from localhost.localdomain ([105.235.133.111])
+        by smtp.gmail.com with ESMTPSA id cc11-20020a5d5c0b000000b002205ffe88edsm8333364wrb.31.2022.08.08.00.36.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 00:36:30 -0700 (PDT)
+From:   Yassine Oudjana <yassine.oudjana@gmail.com>
+X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
+To:     Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
+        Yassine Oudjana <yassine.oudjana@gmail.com>,
+        Alejandro Tafalla <atafalla@dnyon.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 5/8] arm64: dts: qcom: msm8996-xiaomi-*: Enable SMBCHG
+Date:   Mon,  8 Aug 2022 08:34:56 +0100
+Message-Id: <20220808073459.396278-6-y.oudjana@protonmail.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220808073459.396278-1-y.oudjana@protonmail.com>
+References: <20220808073459.396278-1-y.oudjana@protonmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is usage to dump a given cma region page_owner
-instead of all page's.
+From: Yassine Oudjana <y.oudjana@protonmail.com>
 
-This change allows to specify a ppos as start_pfn
-by fseek.
+Enable pmi8994_smbchg, and set usb-psy-name in dwc3 to point
+to its USB charge path supply, allowing it to configure
+the input current limit when plugged into a SDP.
 
-Any invalid ppos will be skipped, so it did not
-broken the origin dump feature.
-
-Suggested-by: Vlastimil Babka (SUSE) <vbabka@kernel.org>
-Signed-off-by: Kassey Li <quic_yingangl@quicinc.com>
+Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
 ---
- mm/page_owner.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/qcom/msm8996-xiaomi-common.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/mm/page_owner.c b/mm/page_owner.c
-index e4c6f3f1695b..231b1877af99 100644
---- a/mm/page_owner.c
-+++ b/mm/page_owner.c
-@@ -497,8 +497,8 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
- 		return -EINVAL;
- 
- 	page = NULL;
--	pfn = min_low_pfn + *ppos;
- 
-+	pfn = *ppos;
- 	/* Find a valid PFN or the start of a MAX_ORDER_NR_PAGES area */
- 	while (!pfn_valid(pfn) && (pfn & (MAX_ORDER_NR_PAGES - 1)) != 0)
- 		pfn++;
-@@ -561,7 +561,7 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
- 			continue;
- 
- 		/* Record the next PFN to read in the file offset */
--		*ppos = (pfn - min_low_pfn) + 1;
-+		*ppos = pfn + 1;
- 
- 		return print_page_owner(buf, count, pfn, page,
- 				page_owner, handle);
-@@ -570,6 +570,21 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
- 	return 0;
- }
- 
-+static loff_t llseek_page_owner(struct file *file, loff_t offset, int whence)
-+{
-+	loff_t retval = 0;
-+	switch (whence) {
-+		case SEEK_CUR:
-+		case SEEK_SET:
-+			file->f_pos = offset;
-+			break;
-+		default:
-+			retval = -ENXIO;
-+	}
-+
-+	return retval;
-+}
-+
- static void init_pages_in_zone(pg_data_t *pgdat, struct zone *zone)
- {
- 	unsigned long pfn = zone->zone_start_pfn;
-@@ -660,6 +675,7 @@ static void init_early_allocated_pages(void)
- 
- static const struct file_operations proc_page_owner_operations = {
- 	.read		= read_page_owner,
-+	.llseek 	= llseek_page_owner,
+diff --git a/arch/arm64/boot/dts/qcom/msm8996-xiaomi-common.dtsi b/arch/arm64/boot/dts/qcom/msm8996-xiaomi-common.dtsi
+index 022ecbcd965a..a18c9a9baacf 100644
+--- a/arch/arm64/boot/dts/qcom/msm8996-xiaomi-common.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8996-xiaomi-common.dtsi
+@@ -304,6 +304,12 @@ &pm8994_resin {
+ 	linux,code = <KEY_VOLUMEDOWN>;
  };
  
- static int __init pageowner_init(void)
++&pmi8994_smbchg {
++	status = "okay";
++
++	monitored-battery = <&battery>;
++};
++
+ &slpi_pil {
+ 	status = "okay";
+ 
+@@ -324,6 +330,8 @@ &usb3_dwc3 {
+ 	phys = <&hsusb_phy1>;
+ 	phy-names = "usb2-phy";
+ 
++	usb-psy-name = "qcom-smbchg-usb";
++
+ 	maximum-speed = "high-speed";
+ 	snps,is-utmi-l1-suspend;
+ 	snps,usb2-gadget-lpm-disable;
 -- 
-2.17.1
+2.37.1
 
