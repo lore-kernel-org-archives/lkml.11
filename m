@@ -2,108 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63453C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 08:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF7BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 08:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242247AbiHHIHv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 04:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
+        id S242069AbiHHIIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 04:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242148AbiHHIH2 (ORCPT
+        with ESMTP id S238580AbiHHIIX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 04:07:28 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B87E0AB
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 01:07:09 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oKxmW-0001rc-Jk; Mon, 08 Aug 2022 10:06:36 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id CCFD4C45CB;
-        Mon,  8 Aug 2022 08:06:34 +0000 (UTC)
-Date:   Mon, 8 Aug 2022 10:06:32 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Fedor Pchelkin <pchelkin@ispras.ru>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        ldv-project@linuxtesting.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: Re: [PATCH v2] can: j1939: Replace WARN_ON_ONCE with
- netdev_warn_once() in j1939_sk_queue_activate_next_locked()
-Message-ID: <20220808080632.vyl3zcchyyuwmpvn@pengutronix.de>
-References: <20220729142634.GD10850@pengutronix.de>
- <20220729143655.1108297-1-pchelkin@ispras.ru>
+        Mon, 8 Aug 2022 04:08:23 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF2D13F72
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 01:07:55 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id b6so4375479wmq.5
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 01:07:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:from:to:cc;
+        bh=NNnX/w4KR5toGD9RgVndtRcxDMqXeRdCj55KEFs2Hv8=;
+        b=mUVHiWqRa9/+fNjcjlhL3ZIVdEv+oiML2EZseUm4nq22f0fGCfCizZKJnvt3pe2gEO
+         L9DQwRjKxKbH/F31ON/1nqMgQnqCtUZYz5NgPAVTWXW187S7lE7Rqb3FSTq39cEs85wW
+         RXIuIXUXvJgNMS/Ji53LQNsRUsLHg1/qGI6RTN4+cjH9KK9M/X+t4nU5gnbNAvCePLvr
+         +5vPjLCDlLCHx5+JRJe6e1zBxsWXhz2yIFhv2wjNNYGmyD4w+dDajqfrSWuXSjvZnffb
+         vvYLzSOsf6TYpLhack8JnD81N3TGvSrAO/wkYwqIsmHdv6KNakq6M0BS65t9BZ2Mm9hz
+         i2+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=NNnX/w4KR5toGD9RgVndtRcxDMqXeRdCj55KEFs2Hv8=;
+        b=MSljmDwJXonH7JS+fZ/WJp3B3nA/DQ3TomWkTt7GHmJLPvUEvlZOyYm9SvKKIhToBY
+         Xx73ban69yIbGZHBgSZv+O42IUpANMKhAiJb4Gcz+yARFuSmLcwAUadInScviS1BYC4W
+         ZmrQFcv25STlgVvi/MadM5/sXJ1ucxkFfeTkWuL9cD5XNgU4PtdwLz9ax0f5pLYAFGFO
+         5F3TuxL3vuiL1QoG8u5cYiFsOL1RVgPGldubyUsolXZBCClSZKIroPx5GEoDMV5Wv0tm
+         QZLoEAHI8Rx2f3FBx8TPw2iVmYQU0HMesIwyzdWHzGmlUoRNXQUnJiqgfT54qKf4TRm9
+         u5zg==
+X-Gm-Message-State: ACgBeo23EUvyLLv+xrVJb5S0u/y9L4sLc8Tr2ydQp2cc3AljPftDK2u3
+        WoFr6kVI1AQKNdAEd46ZfEAa1Q==
+X-Google-Smtp-Source: AA6agR49AonvRm2M3vcHwa+yWIj4oRnXBmIYvyOUu0KWLI8WrqrV6s1eZRCopBH5PdEBUUx2tgBr1g==
+X-Received: by 2002:a05:600c:35ca:b0:3a3:253b:708b with SMTP id r10-20020a05600c35ca00b003a3253b708bmr16975646wmq.86.1659946074166;
+        Mon, 08 Aug 2022 01:07:54 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:982:cbb0:1832:7d81:d0f6:dc4b? ([2a01:e0a:982:cbb0:1832:7d81:d0f6:dc4b])
+        by smtp.gmail.com with ESMTPSA id w9-20020a5d6089000000b002205b786ab3sm10767511wrt.14.2022.08.08.01.07.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Aug 2022 01:07:53 -0700 (PDT)
+Message-ID: <bd18d0ea-10b9-4fc6-3f3e-ace336bd796f@baylibre.com>
+Date:   Mon, 8 Aug 2022 10:07:52 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vreaklujen3bcdlb"
-Content-Disposition: inline
-In-Reply-To: <20220729143655.1108297-1-pchelkin@ispras.ru>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v5 13/33] thermal/drivers/amlogic: Switch to new of API
+Content-Language: en-US
+To:     Daniel Lezcano <daniel.lezcano@linexp.org>,
+        daniel.lezcano@linaro.org, rafael@kernel.org
+Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, khilman@baylibre.com,
+        abailon@baylibre.com, lukasz.luba@arm.com, broonie@kernel.org,
+        damien.lemoal@opensource.wdc.com, heiko@sntech.de,
+        hayashi.kunihiko@socionext.com, mhiramat@kernel.org,
+        talel@amazon.com, thierry.reding@gmail.com, digetx@gmail.com,
+        jonathanh@nvidia.com, anarsoul@gmail.com, tiny.windzz@gmail.com,
+        baolin.wang7@gmail.com, f.fainelli@gmail.com,
+        bjorn.andersson@linaro.org, mcoquelin.stm32@gmail.com,
+        glaroque@baylibre.com, miquel.raynal@bootlin.com,
+        shawnguo@kernel.org, niklas.soderlund@ragnatech.se,
+        matthias.bgg@gmail.com, j-keerthy@ti.com,
+        Amit Kucheria <amitk@kernel.org>,
+        "open list:THERMAL DRIVER FOR AMLOGIC SOCS" 
+        <linux-amlogic@lists.infradead.org>
+References: <20220804224349.1926752-1-daniel.lezcano@linexp.org>
+ <20220804224349.1926752-14-daniel.lezcano@linexp.org>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <20220804224349.1926752-14-daniel.lezcano@linexp.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 05/08/2022 00:43, Daniel Lezcano wrote:
+> The thermal OF code has a new API allowing to migrate the OF
+> initialization to a simpler approach. The ops are no longer device
+> tree specific and are the generic ones provided by the core code.
+> 
+> Convert the ops to the thermal_zone_device_ops format and use the new
+> API to register the thermal zone with these generic ops.
+> 
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
+> ---
+>   drivers/thermal/amlogic_thermal.c | 16 ++++++++--------
+>   1 file changed, 8 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/thermal/amlogic_thermal.c b/drivers/thermal/amlogic_thermal.c
+> index e61b91d14ad1..d30cb791e63c 100644
+> --- a/drivers/thermal/amlogic_thermal.c
+> +++ b/drivers/thermal/amlogic_thermal.c
+> @@ -179,12 +179,12 @@ static int amlogic_thermal_disable(struct amlogic_thermal *data)
+>   	return 0;
+>   }
+>   
+> -static int amlogic_thermal_get_temp(void *data, int *temp)
+> +static int amlogic_thermal_get_temp(struct thermal_zone_device *tz, int *temp)
+>   {
+>   	unsigned int tval;
+> -	struct amlogic_thermal *pdata = data;
+> +	struct amlogic_thermal *pdata = tz->devdata;
+>   
+> -	if (!data)
+> +	if (!pdata)
+>   		return -EINVAL;
+>   
+>   	regmap_read(pdata->regmap, TSENSOR_STAT0, &tval);
+> @@ -195,7 +195,7 @@ static int amlogic_thermal_get_temp(void *data, int *temp)
+>   	return 0;
+>   }
+>   
+> -static const struct thermal_zone_of_device_ops amlogic_thermal_ops = {
+> +static const struct thermal_zone_device_ops amlogic_thermal_ops = {
+>   	.get_temp	= amlogic_thermal_get_temp,
+>   };
+>   
+> @@ -276,10 +276,10 @@ static int amlogic_thermal_probe(struct platform_device *pdev)
+>   		return PTR_ERR(pdata->sec_ao_map);
+>   	}
+>   
+> -	pdata->tzd = devm_thermal_zone_of_sensor_register(&pdev->dev,
+> -							  0,
+> -							  pdata,
+> -							  &amlogic_thermal_ops);
+> +	pdata->tzd = devm_thermal_of_zone_register(&pdev->dev,
+> +						   0,
+> +						   pdata,
+> +						   &amlogic_thermal_ops);
+>   	if (IS_ERR(pdata->tzd)) {
+>   		ret = PTR_ERR(pdata->tzd);
+>   		dev_err(dev, "Failed to register tsensor: %d\n", ret);
 
---vreaklujen3bcdlb
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 29.07.2022 17:36:55, Fedor Pchelkin wrote:
-> We should warn user-space that it is doing something wrong when trying to
-> activate sessions with identical parameters but WARN_ON_ONCE macro can not
-> be used here as it serves a different purpose.
->=20
-> So it would be good to replace it with netdev_warn_once() message.
->=20
-> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
->=20
-> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-> Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
-
-Nitpick: You should add your S-o-b below every other tag line.
-
-Added to linux-can with fixed indention.
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---vreaklujen3bcdlb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLwxAYACgkQrX5LkNig
-012K0Af8D7wJmhikOyLYznZKn3Xobpfdif03hgTMbZKUK699it7FpxPLKtpz0glA
-DELYBddvKZ4yLmQftWG4LaFSxNSOW+NRitUqdtTaW5sKxQdmarVony6BWKSy/XsF
-upWRctkPBgXey/H3voaqQR3auOkvMnPnbigeNWCFZhEtezrpAwbXqqGKISV1tQrA
-pajNlRwD1nvzY2ZiX87RxmWarWt6doeXaeiwfLGPK2vn7s4SZM1WGz1NlarA3AwX
-E4ixgmPVXB81mXLKq9Na3XffQTW9oWZMahOOEcvq+IkpH1y3iR14TzazUskRXQ35
-fLiK17VYB3DUE95M9duhJzH8XQ2bIw==
-=5Wqw
------END PGP SIGNATURE-----
-
---vreaklujen3bcdlb--
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
