@@ -2,38 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E134C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0777CC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:44:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244044AbiHHCnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 22:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32770 "EHLO
+        id S244129AbiHHCoB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 22:44:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242120AbiHHClk (ORCPT
+        with ESMTP id S242185AbiHHClk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 7 Aug 2022 22:41:40 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FBE25C4;
-        Sun,  7 Aug 2022 19:41:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD8225E3
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 19:41:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=fiLWB7FlMZG/t3/6at/lVnmuLuXlP9ApBxUL44LLPGI=; b=cV+xsr2dJdusY7y0TkSTgMXeQ0
-        hiXR1lQDTb0NZ1r+yPBc/SHwfmocssIf1OWmy7KfHT0zQhxNolb+CBN8mJ+rzcAqxTB7d0jZGxCc2
-        yeAO0NPrLksriSMv1Tjv55L/P1iTRnYT5eiymmpzFFtIySvuDh8xaUuVSOvQEysBDxEG4gsGiX8JT
-        jg74xcTcIF/+GQvexqGnUqjhudrIrBlSuElsRc7yjmn8k1PmBb+p1vf0Hd5N+gDURFOfDjVagZeYF
-        hZRpk2vdiPL6Ynyd65sLsSPz/ef0ZmpeorlTJZGkIhOw6f+X7tXAd41fClIw1bUShUYqzghpwigEL
-        Z25ohh/A==;
+        bh=O10e4f89X47Ind7IOvarTPJ2k5gxmqsKR8G7YqYX1Cg=; b=N7edtCxvgsKuafmwDdeWT0yPZ2
+        FB3MJMFhR12jcCZEHcTZcus9815lmWGogVyh8sutkUHiE0kE4vbmkm5R7nG8Xuu+aXml0uVTPcFtx
+        6mZXoP0+8H17Szl7f8trEwkAfnR4viPXlkZG9LqRSJIZPahVAkzKHT4AKMKBh64nc/3+QRWXIc9vU
+        /yC2B3mbwSyyiYsZDKNQu/BiAggV1x0aHDnMEsNLObEf+ayUJGRNKMcYcw1yI4m5aTWb5td/NZYID
+        uM3vCfk3ZZxbqa8+bULyt6g8e50Sc1lb1o7U1TdogvlEXSL6CizBYaKVCgIiq2DFoGGiieusYqp0X
+        LmjsFJ9A==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oKshy-00DVSX-Gm; Mon, 08 Aug 2022 02:41:34 +0000
+        id 1oKshy-00DVSl-Sz; Mon, 08 Aug 2022 02:41:34 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-kernel@vger.kernel.org, pmladek@suse.com,
         Kent Overstreet <kent.overstreet@gmail.com>
-Cc:     linux-tegra@vger.kernel.org
-Subject: [PATCH v5 23/32] clk: tegra: bpmp: Convert to printbuf
-Date:   Mon,  8 Aug 2022 03:41:19 +0100
-Message-Id: <20220808024128.3219082-24-willy@infradead.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+Subject: [PATCH v5 28/32] tracing: trace_events_synth: Convert to printbuf
+Date:   Mon,  8 Aug 2022 03:41:24 +0100
+Message-Id: <20220808024128.3219082-29-willy@infradead.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220808024128.3219082-1-willy@infradead.org>
 References: <20220808024128.3219082-1-willy@infradead.org>
@@ -45,86 +46,116 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kent Overstreet <kent.overstreet@gmail.com>
 
-This converts from seq_buf to printbuf, which is similar but heap
-allocates the string buffer.
+This converts from seq_buf to printbuf.
 
-Previously in this code the string buffer was allocated on the stack;
-this means we've added a new potential memory allocation failure. This
-is fine though since it's only for a dev_printk() message.
+This code was using seq_buf for building up dynamically allocated
+strings; the conversion uses printbuf's heap allocation functionality to
+simplify things (no longer need to calculate size of the output string).
 
-Memory allocation context: printbuf doesn't take gfp flags, instead we
-prefer the new memalloc_no*_(save|restore) interfaces to be used. Here
-the surrounding code is already allocating with GFP_KERNEL, so
-everything is fine.
+Also, alphabetize the #includes.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
-Cc: linux-tegra@vger.kernel.org
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ingo Molnar <mingo@redhat.com>
 ---
- drivers/clk/tegra/clk-bpmp.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+ kernel/trace/trace_events_synth.c | 51 ++++++++++---------------------
+ 1 file changed, 16 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/clk/tegra/clk-bpmp.c b/drivers/clk/tegra/clk-bpmp.c
-index 3748a39dae7c..7e3b48ed9d45 100644
---- a/drivers/clk/tegra/clk-bpmp.c
-+++ b/drivers/clk/tegra/clk-bpmp.c
-@@ -5,7 +5,7 @@
+diff --git a/kernel/trace/trace_events_synth.c b/kernel/trace/trace_events_synth.c
+index 5e8c07aef071..720c75429c8f 100644
+--- a/kernel/trace/trace_events_synth.c
++++ b/kernel/trace/trace_events_synth.c
+@@ -5,13 +5,14 @@
+  * Copyright (C) 2015, 2020 Tom Zanussi <tom.zanussi@linux.intel.com>
+  */
  
- #include <linux/clk-provider.h>
- #include <linux/device.h>
--#include <linux/seq_buf.h>
+-#include <linux/module.h>
+ #include <linux/kallsyms.h>
+-#include <linux/security.h>
++#include <linux/module.h>
+ #include <linux/mutex.h>
 +#include <linux/printbuf.h>
++#include <linux/rculist.h>
++#include <linux/security.h>
  #include <linux/slab.h>
+ #include <linux/stacktrace.h>
+-#include <linux/rculist.h>
+ #include <linux/tracefs.h>
  
- #include <soc/tegra/bpmp.h>
-@@ -365,39 +365,38 @@ static void tegra_bpmp_clk_info_dump(struct tegra_bpmp *bpmp,
- 				     const struct tegra_bpmp_clk_info *info)
- {
- 	const char *prefix = "";
--	struct seq_buf buf;
-+	struct printbuf buf = PRINTBUF;
- 	unsigned int i;
--	char flags[64];
+ /* for gfp flag names */
+@@ -611,7 +612,7 @@ static struct synth_field *parse_synth_field(int argc, char **argv,
+ 	const char *prefix = NULL, *field_type = argv[0], *field_name, *array;
+ 	struct synth_field *field;
+ 	int len, ret = -ENOMEM;
+-	struct seq_buf s;
++	struct printbuf buf;
+ 	ssize_t size;
+ 
+ 	if (!strcmp(field_type, "unsigned")) {
+@@ -654,28 +655,16 @@ static struct synth_field *parse_synth_field(int argc, char **argv,
+ 		goto free;
+ 	}
+ 
+-	len = strlen(field_type) + 1;
 -
--	seq_buf_init(&buf, flags, sizeof(flags));
+-	if (array)
+-		len += strlen(array);
+-
+-	if (prefix)
+-		len += strlen(prefix);
+-
+-	field->type = kzalloc(len, GFP_KERNEL);
+-	if (!field->type)
+-		goto free;
+-
+-	seq_buf_init(&s, field->type, len);
++	buf = PRINTBUF;
+ 	if (prefix)
+-		seq_buf_puts(&s, prefix);
+-	seq_buf_puts(&s, field_type);
++		prt_str(&buf, prefix);
++	prt_str(&buf, field_type);
+ 	if (array)
+-		seq_buf_puts(&s, array);
+-	if (WARN_ON_ONCE(!seq_buf_buffer_left(&s)))
++		prt_str(&buf, array);
++	if (buf.allocation_failure)
+ 		goto free;
  
- 	if (info->flags)
--		seq_buf_printf(&buf, "(");
-+		prt_printf(&buf, "(");
+-	s.buffer[s.len] = '\0';
++	field->type = buf.buf;
  
- 	if (info->flags & TEGRA_BPMP_CLK_HAS_MUX) {
--		seq_buf_printf(&buf, "%smux", prefix);
-+		prt_printf(&buf, "%smux", prefix);
- 		prefix = ", ";
- 	}
+ 	size = synth_field_size(field->type);
+ 	if (size < 0) {
+@@ -687,23 +676,15 @@ static struct synth_field *parse_synth_field(int argc, char **argv,
+ 		goto free;
+ 	} else if (size == 0) {
+ 		if (synth_field_is_string(field->type)) {
+-			char *type;
+-
+-			len = sizeof("__data_loc ") + strlen(field->type) + 1;
+-			type = kzalloc(len, GFP_KERNEL);
+-			if (!type)
+-				goto free;
+-
+-			seq_buf_init(&s, type, len);
+-			seq_buf_puts(&s, "__data_loc ");
+-			seq_buf_puts(&s, field->type);
++			buf = PRINTBUF;
++			prt_str(&buf, "__data_loc ");
++			prt_str(&buf, field->type);
  
- 	if ((info->flags & TEGRA_BPMP_CLK_HAS_SET_RATE) == 0) {
--		seq_buf_printf(&buf, "%sfixed", prefix);
-+		prt_printf(&buf, "%sfixed", prefix);
- 		prefix = ", ";
- 	}
+-			if (WARN_ON_ONCE(!seq_buf_buffer_left(&s)))
++			if (buf.allocation_failure)
+ 				goto free;
+-			s.buffer[s.len] = '\0';
  
- 	if (info->flags & TEGRA_BPMP_CLK_IS_ROOT) {
--		seq_buf_printf(&buf, "%sroot", prefix);
-+		prt_printf(&buf, "%sroot", prefix);
- 		prefix = ", ";
- 	}
+ 			kfree(field->type);
+-			field->type = type;
++			field->type = buf.buf;
  
- 	if (info->flags)
--		seq_buf_printf(&buf, ")");
-+		prt_printf(&buf, ")");
- 
- 	dev_printk(level, bpmp->dev, "%03u: %s\n", info->id, info->name);
--	dev_printk(level, bpmp->dev, "  flags: %lx %s\n", info->flags, flags);
-+	dev_printk(level, bpmp->dev, "  flags: %lx %s\n", info->flags, printbuf_str(&buf));
- 	dev_printk(level, bpmp->dev, "  parents: %u\n", info->num_parents);
- 
- 	for (i = 0; i < info->num_parents; i++)
- 		dev_printk(level, bpmp->dev, "    %03u\n", info->parents[i]);
-+
-+	printbuf_exit(&buf);
- }
- 
- static int tegra_bpmp_probe_clocks(struct tegra_bpmp *bpmp,
+ 			field->is_dynamic = true;
+ 			size = sizeof(u64);
 -- 
 2.35.1
 
