@@ -2,161 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43915C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:59:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79333C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243839AbiHHP7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 11:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33796 "EHLO
+        id S231154AbiHHQAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 12:00:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243808AbiHHP7M (ORCPT
+        with ESMTP id S243283AbiHHP77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 11:59:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30C81580A;
-        Mon,  8 Aug 2022 08:59:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 486B9B80FE4;
-        Mon,  8 Aug 2022 15:59:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2583C4347C;
-        Mon,  8 Aug 2022 15:59:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659974348;
-        bh=CB8GEk6vrbmCRypZeJSBIKCFthK8v+Ye1fo/yFOFCnY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=JJUUb6F6FbmPuI7Pkoevuis2N8VJzDGFDlKmrFe/6IkrTsAUyh3t3ozpYG3UAKuhU
-         uNwhOsP5EG9aAzcDWtTUrGmDK/t+8/6lOhdFtYh3tKV5SIbuutqyUvVK/I+3lXmyII
-         iG/UvtDPc28pCwT8Eq1tjhY2zwZbsXT3er4eMkSp8H9EOeC/knH1mEKc3SRnYYVm0S
-         0U8ZTlEF7TX/ol8IbXXPQ0IKzmIVJVHT110O+YmFbVqhQN8WaxR3U6wv/WJjks/epD
-         0wAF+rAcaL8OX4k1NyKymK8lXnm3ShISFWRt3l7A4WME1MA20h5/wAFy9GiCuy1uGG
-         Z/VSmi2j28bAw==
-Received: by mail-vs1-f41.google.com with SMTP id 67so1866546vsv.2;
-        Mon, 08 Aug 2022 08:59:08 -0700 (PDT)
-X-Gm-Message-State: ACgBeo35exy8iWdD5i4ilkZdgTzg9E4JFD4X6T6qwp9Wd0vyoNflo+me
-        XasIcaMlhLbQAqT23bmH1cp+UMdJEQCxx8IpFQ==
-X-Google-Smtp-Source: AA6agR7B/cC2PaD3jHCZZwdzxoo79bfvI7Uvngrp1T2ma4YJRXtUhqhJkTAenRqqzr9LWCVNQnoAnENr/fuMjInK2PE=
-X-Received: by 2002:a67:a246:0:b0:388:7e82:1d80 with SMTP id
- t6-20020a67a246000000b003887e821d80mr6508681vsh.26.1659974347774; Mon, 08 Aug
- 2022 08:59:07 -0700 (PDT)
+        Mon, 8 Aug 2022 11:59:59 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A05F15815;
+        Mon,  8 Aug 2022 08:59:58 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id h28so8447576pfq.11;
+        Mon, 08 Aug 2022 08:59:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:from:to:cc;
+        bh=JbzYiMV30iu8zw8Tghw9STeClB50yjw9lFy+lFDjXQk=;
+        b=KF+ziXIIUeepZsz2vpxRP9JOJ1zcN0RlZqdMGqKMi+62UJZ2UWsf0++AY3Oen0Ooim
+         PUHFDROjotI47cQgMTp3fg78GgXhkOjzHOn/h14lN8euzHFCH8BQDge8bbBIu0jSYukS
+         JM/4TghT6zVn98H+f44qfaG7yu1/o/W2v1oGH/QbbUZ5in/sXUz8UKFt33heROzBCFrr
+         ENzl2zrB1HkNphdkreh8Ch4Rw7l2Vcpz+0M4vyuwI8wEay8RwD1teZ5Ac8eslILJNdOi
+         ndCVLkiQvULULaX/HnxZkgsK4e0+6EnAUC7rFOOwZ6sOS0slPe5IkvqTSwLO3y6FlYRF
+         q/Ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :sender:x-gm-message-state:from:to:cc;
+        bh=JbzYiMV30iu8zw8Tghw9STeClB50yjw9lFy+lFDjXQk=;
+        b=fdFJaEmOhpItnaozR/RrMHYeU8FKwVkN7ayiHJUAPHTlMpCris0OHfGCzUErBacEZB
+         ZoJrzMki0ktWZvVbxPKIEEim53mBtGo2OqqbLN3NXQQhFaME0b5FMfeZkX/rJVAkqCM/
+         zwVC9L5i6VfThwyu7HUgJzNhSu9ngTKncdEM1LI5CSNYUh6l5TfYBn/7W4mtaT03NxoW
+         aY82aW84mQNKYwnQ6hGr4JOaZMbh1A8ITGjHOB3dHLR9eHrnro1Kw2Ix+gY6Y23GGEzN
+         17hbek7u/hUj+RrezkJfUxzUy209+vSepkmk4dthzjLzyYHeEI4Fzl8wMVutbG+wTHgM
+         WizQ==
+X-Gm-Message-State: ACgBeo0qheGIS/KnFidOlftUSNq2qJG+icV9iso9uhXVo8tioDtbYKTU
+        2suzD9VX5dmV4ZQtFmswv8UkDPHQeB8=
+X-Google-Smtp-Source: AA6agR7QWtm6tn/DRxjg6mmfWyD5tC8UAbWAogfC7NlLqQZN+r1KKmJhreN/hZ35MHqTyGn+x6vHmg==
+X-Received: by 2002:a63:c106:0:b0:419:b303:2343 with SMTP id w6-20020a63c106000000b00419b3032343mr15518586pgf.166.1659974397604;
+        Mon, 08 Aug 2022 08:59:57 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id u11-20020a17090341cb00b0016d3935eff0sm8965520ple.176.2022.08.08.08.59.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Aug 2022 08:59:56 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <bfedd32c-d274-3fb6-7134-9bf09c8e8dba@roeck-us.net>
+Date:   Mon, 8 Aug 2022 08:59:54 -0700
 MIME-Version: 1.0
-References: <20220728143427.13617-1-Sergey.Semin@baikalelectronics.ru>
- <20220728143427.13617-4-Sergey.Semin@baikalelectronics.ru>
- <20220801175636.GA1234403-robh@kernel.org> <20220808103610.3mv3mzlbzlqz4itz@mobilestation>
-In-Reply-To: <20220808103610.3mv3mzlbzlqz4itz@mobilestation>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 8 Aug 2022 09:58:56 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+1FX2YtaQjQfvLhBN60yvRM7VF-bxL7+O7jtK0d9XZBA@mail.gmail.com>
-Message-ID: <CAL_Jsq+1FX2YtaQjQfvLhBN60yvRM7VF-bxL7+O7jtK0d9XZBA@mail.gmail.com>
-Subject: Re: [PATCH v4 03/17] dt-bindings: PCI: dwc: Add phys/phy-names common properties
-To:     Serge Semin <fancer.lancer@gmail.com>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        PCI <linux-pci@vger.kernel.org>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] docs: Fix Typo
+Content-Language: en-US
+To:     Max Dunbar <mdsurfing4@gmail.com>, jdelvare@suse.com,
+        corbet@lwn.net, linux-hwmon@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220801181038.GA957@DESKTOP-GSR5SR7.localdomain>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220801181038.GA957@DESKTOP-GSR5SR7.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 4:36 AM Serge Semin <fancer.lancer@gmail.com> wrote:
->
-> On Mon, Aug 01, 2022 at 11:56:36AM -0600, Rob Herring wrote:
-> > On Thu, Jul 28, 2022 at 05:34:13PM +0300, Serge Semin wrote:
-> > > It's normal to have the DW PCIe RP/EP DT-nodes equipped with the explicit
-> > > PHY phandle references. There can be up to 16 PHYs attach in accordance
-> > > with the maximum number of supported PCIe lanes. Let's extend the common
-> > > DW PCIe controller schema with the 'phys' and 'phy-names' properties
-> > > definition. The PHY names are defined with the regexp pattern
-> > > '^pcie([0-9]+|-?phy[0-9]*)?$' so to match the names currently supported by
-> > > the DW PCIe platform drivers ("pcie": meson; "pciephy": qcom, imx6;
-> > > "pcie-phy": uniphier, rockchip, spear13xx; "pcie": intel-gw; "pcie-phy%d":
-> > > keystone, dra7xx; "pcie": histb, etc). Though the "pcie%d" format would
-> > > the most preferable in this case.
-> >
->
-> > No phy-names is my preference. Some string plus an index is utterly
-> > pointless. Oh well...
->
-> Mine too, but we have no choice in this case since the named
-> PHY-properties support has already been advertised by the platform
-> drivers. This patch just provides the bindings for them. Just note
-> the string patterns have been designed in a way to match these bindings.
->
-> Anyway thanks for telling about the preferred option. Keeping that in
-> mind I won't have doubts what approach to select for the new
-> driver/bindings development.
->
-> >
-> > >
-> > > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > >
-> > > ---
-> > >
-> > > Changelog v3:
-> > > - This is a new patch unpinned from the next one:
-> > >   https://lore.kernel.org/linux-pci/20220503214638.1895-2-Sergey.Semin@baikalelectronics.ru/
-> > >   by the Rob' request. (@Rob)
-> > > ---
-> > >  .../bindings/pci/snps,dw-pcie-common.yaml         | 15 +++++++++++++++
-> > >  .../devicetree/bindings/pci/snps,dw-pcie-ep.yaml  |  3 +++
-> > >  .../devicetree/bindings/pci/snps,dw-pcie.yaml     |  3 +++
-> > >  3 files changed, 21 insertions(+)
-> > >
-> > > diff --git a/Documentation/devicetree/bindings/pci/snps,dw-pcie-common.yaml b/Documentation/devicetree/bindings/pci/snps,dw-pcie-common.yaml
-> > > index 3e992b653d12..627a5d6625ba 100644
-> > > --- a/Documentation/devicetree/bindings/pci/snps,dw-pcie-common.yaml
-> > > +++ b/Documentation/devicetree/bindings/pci/snps,dw-pcie-common.yaml
-> > > @@ -17,6 +17,21 @@ description:
-> > >  select: false
-> > >
-> > >  properties:
-> > > +  phys:
-> > > +    description:
-> > > +      There can be up to the number of possible lanes PHYs specified.
-> >
->
-> > This needs something about being in order of lane number.
->
-> Ok.
->
-> >
-> > > +      Obviously each specified PHY is supposed to be able to work in the
-> > > +      PCIe mode with a speed implied by the DWC PCIe controller it is
-> > > +      attached to.
-> > > +    minItems: 1
-> > > +    maxItems: 16
-> > > +
-> > > +  phy-names:
-> > > +    minItems: 1
-> > > +    maxItems: 16
-> > > +    items:
-> > > +      pattern: '^pcie([0-9]+|-?phy[0-9]*)?$'
-> >
->
-> > Please comment here that pcie[0-9] is the preferred form.
->
-> What about a bit more sophisticated update?
-> phy-names:
->   minItems: 1
->   maxItems: 16
->   oneOf:
->     - items:
->         pattern: '^pcie[0-9]+$'
->     - deprecated: true
->       items:
->         pattern: '^pcie(-?phy[0-9]*)?$'
+On 8/1/22 11:10, Max Dunbar wrote:
+> Correcting "wil" to "will" in the hwmon documentation
+> 
+> Signed-off-by: Max Dunbar <mdsurfing4@gmail.com>
 
-Sure.
+Please at least use a proper subject indicating the affected subsystem
+if you really have to make those cosmetic changes.
 
-Rob
+Guenter
+
+> ---
+>   Documentation/hwmon/hwmon-kernel-api.rst | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
+> index f3276b3a381a..a4755a5a24af 100644
+> --- a/Documentation/hwmon/hwmon-kernel-api.rst
+> +++ b/Documentation/hwmon/hwmon-kernel-api.rst
+> @@ -57,7 +57,7 @@ register/unregister functions::
+>   hwmon_device_register_with_groups registers a hardware monitoring device.
+>   The first parameter of this function is a pointer to the parent device.
+>   The name parameter is a pointer to the hwmon device name. The registration
+> -function wil create a name sysfs attribute pointing to this name.
+> +function will create a name sysfs attribute pointing to this name.
+>   The drvdata parameter is the pointer to the local driver data.
+>   hwmon_device_register_with_groups will attach this pointer to the newly
+>   allocated hwmon device. The pointer can be retrieved by the driver using
+
