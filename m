@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8210FC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 09:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE88C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 09:32:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242297AbiHHJbx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 05:31:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35930 "EHLO
+        id S242438AbiHHJb7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 05:31:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242536AbiHHJbI (ORCPT
+        with ESMTP id S242532AbiHHJbI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 8 Aug 2022 05:31:08 -0400
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6106912753;
-        Mon,  8 Aug 2022 02:31:08 -0700 (PDT)
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2788RxEe029097;
-        Mon, 8 Aug 2022 09:31:05 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6633665A9;
+        Mon,  8 Aug 2022 02:31:07 -0700 (PDT)
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2786wNv9021703;
+        Mon, 8 Aug 2022 09:30:59 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references; s=qcppdkim1;
- bh=vZsfSM9/j6i7CNVMZjN+f/cqj1ACxwXTGFg+hp5We/M=;
- b=HKo3edkRcggEaQBCfGnspp6oqks75BK08dRiUV7RXQmom5AUBW5mKRdnnTjqafSVSOiR
- kPiebKRqSNIBK6hS5mlPv6EYVZYGbZMnq2qoyLew3fCDAME0aZmjSaOEEVvDjqFj5Z/b
- JnxqELdqCGX0EDVQzDHpl34O94NJnD2c0ycj9vJjJiCV4g6seaLAZ2jyV5ZSoPUBBUIl
- 7asuNSGAJLVltnPA+ncAxWjbdxHtzzXT2FqTMOZXkd8H9hj59bPsr3+Ch5N3/g0BVGNw
- +WTUSEcO4qYNCHpFXBmRthia17TXJGHSGVsHVhsTBxCd282nB7F/rlIR/UG+EEiist30 2Q== 
+ bh=feaQMUU/dIwodf77cnnO/x5t97/zBR762ziYG1gb9wQ=;
+ b=EOWx67QUM+i/uzki7WFdo2Gc3dptHNjIhfwiFqmGfAmtpd76cN4LSa8DqiUT2EW9Cac3
+ rRgduRTnGCDcB2I1n62wu/76mOXKJ1ZCi1XTFjFfwSBZBCedLal8RT+KpC5q6jUXuH6C
+ 6rvu1chwecBFhvKiZovmZn8yBEPWwrqGI9DZ0j5gxjZgRdrg9Iz5SstjtYdYfzK1XJls
+ XYZT4UKaKGjChhXee8WprtsHLNqRhzrkzEN8eTpycgTAim4y0lXisGBb4IJIJI/J5sk+
+ IzrjWXp30ZeG1txnn4Fj7uHU9cZkm0gqwJlvb5iiYi/cPti10vf/IB36tI93G0WxYIsQ Gg== 
 Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hshkeb076-1
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hse0nu8yt-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 08 Aug 2022 09:31:05 +0000
+        Mon, 08 Aug 2022 09:30:58 +0000
 Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-        by APBLRPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 2789UsJl018419;
-        Mon, 8 Aug 2022 09:31:02 GMT
+        by APBLRPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 2789UtUA018432;
+        Mon, 8 Aug 2022 09:30:55 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-        by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 3hshckgpn4-1;
-        Mon, 08 Aug 2022 09:31:02 +0000
+        by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 3hshckgpm1-1;
+        Mon, 08 Aug 2022 09:30:55 +0000
 Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2789V2cb018521;
-        Mon, 8 Aug 2022 09:31:02 GMT
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2789UtWj018426;
+        Mon, 8 Aug 2022 09:30:55 GMT
 Received: from vboma-linux.qualcomm.com (vboma-linux.qualcomm.com [10.204.65.94])
-        by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 2789V1gm018516;
-        Mon, 08 Aug 2022 09:31:02 +0000
+        by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 2789UtPi018425;
+        Mon, 08 Aug 2022 09:30:55 +0000
 Received: by vboma-linux.qualcomm.com (Postfix, from userid 72083)
-        id 1064B900883; Mon,  8 Aug 2022 15:01:01 +0530 (IST)
+        id 8A4B3900883; Mon,  8 Aug 2022 15:00:54 +0530 (IST)
 From:   quic_vboma@quicinc.com
 To:     Stanimir Varbanov <stanimir.varbanov@linaro.org>,
         Andy Gross <agross@kernel.org>,
@@ -51,12 +51,11 @@ To:     Stanimir Varbanov <stanimir.varbanov@linaro.org>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Vikash Garodia <vgarodia@qti.qualcomm.com>,
-        Viswanath Boma <quic_vboma@quicinc.com>,
-        Dikshita Agarwal <quic_dikshita@quicinc.com>
-Subject: [PATCH V2 7/7] venus : Allow MIN/MAX settings for the v4l2 encoder controls defined range.
-Date:   Mon,  8 Aug 2022 14:58:34 +0530
-Message-Id: <20220808092834.29775-8-quic_vboma@quicinc.com>
+Cc:     Viswanath Boma <quic_vboma@quicinc.com>,
+        Vikash Garodia <quic_vgarodia@quicinc.com>
+Subject: [PATCH V2 2/7] venus : Addition of control support - V4L2_CID_MIN_BUFFERS_FOR_OUTPUT
+Date:   Mon,  8 Aug 2022 14:58:29 +0530
+Message-Id: <20220808092834.29775-3-quic_vboma@quicinc.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220808092834.29775-1-quic_vboma@quicinc.com>
 References: <20220712122347.6781-1-quic_vboma@quicinc.com>
@@ -65,49 +64,93 @@ X-QCInternal: smtphost
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: ZULtPtI96q0rRhdlsUJwnYtde13FM1Dk
-X-Proofpoint-GUID: ZULtPtI96q0rRhdlsUJwnYtde13FM1Dk
+X-Proofpoint-GUID: lckIVm8S9YiDmDbsINqOokdvyFa1xN6I
+X-Proofpoint-ORIG-GUID: lckIVm8S9YiDmDbsINqOokdvyFa1xN6I
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-08_06,2022-08-05_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 impostorscore=0
- mlxlogscore=803 bulkscore=0 suspectscore=0 lowpriorityscore=0 adultscore=0
- mlxscore=0 phishscore=0 clxscore=1015 priorityscore=1501 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2208080047
+ definitions=2022-08-08_05,2022-08-05_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 malwarescore=0
+ adultscore=0 lowpriorityscore=0 suspectscore=0 phishscore=0
+ priorityscore=1501 spamscore=0 mlxscore=0 mlxlogscore=999 impostorscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2208080047
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vikash Garodia <vgarodia@qti.qualcomm.com>
+From: Viswanath Boma <quic_vboma@quicinc.com>
 
-Control MIN/MAX range defined as 0 to 1, as MIN value setting enabled
-for V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM.
-
-error details: fail: v4l2-test-controls.cpp(516): 
-invalid maximum range check
+V4l2 encoder compliance expecting minimum buffers support for 
+the application to allocate buffers as per the control support values.
 
 Acked-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
 Signed-off-by: Viswanath Boma <quic_vboma@quicinc.com>
-Signed-off-by: Vikash Garodia <vgarodia@qti.qualcomm.com>
-Signed-off-by: Dikshita Agarwal <quic_dikshita@quicinc.com>
+Signed-off-by: Vikash Garodia <quic_vgarodia@quicinc.com>
 ---
- drivers/media/platform/qcom/venus/venc_ctrls.c | 2 --
- 1 file changed, 2 deletions(-)
+ .../media/platform/qcom/venus/venc_ctrls.c    | 27 ++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/media/platform/qcom/venus/venc_ctrls.c b/drivers/media/platform/qcom/venus/venc_ctrls.c
-index b4437cf598ff1..e55f7a0b39608 100644
+index aa44c0b3ceb57..b4437cf598ff1 100644
 --- a/drivers/media/platform/qcom/venus/venc_ctrls.c
 +++ b/drivers/media/platform/qcom/venus/venc_ctrls.c
-@@ -334,8 +334,6 @@ static int venc_op_s_ctrl(struct v4l2_ctrl *ctrl)
- 		 * if we disable 8x8 transform for HP.
- 		 */
+@@ -8,6 +8,7 @@
  
--		if (ctrl->val == 0)
--			return -EINVAL;
+ #include "core.h"
+ #include "venc.h"
++#include "helpers.h"
  
- 		ctr->h264_8x8_transform = ctrl->val;
- 		break;
+ #define BITRATE_MIN		32000
+ #define BITRATE_MAX		160000000
+@@ -345,8 +346,29 @@ static int venc_op_s_ctrl(struct v4l2_ctrl *ctrl)
+ 	return 0;
+ }
+ 
++static int venc_op_g_volatile_ctrl(struct v4l2_ctrl *ctrl)
++{
++	struct venus_inst *inst = ctrl_to_inst(ctrl);
++	struct hfi_buffer_requirements bufreq;
++	enum hfi_version ver = inst->core->res->hfi_version;
++	int ret;
++
++	switch (ctrl->id) {
++	case V4L2_CID_MIN_BUFFERS_FOR_OUTPUT:
++		ret = venus_helper_get_bufreq(inst, HFI_BUFFER_INPUT, &bufreq);
++		if (!ret)
++			ctrl->val = HFI_BUFREQ_COUNT_MIN(&bufreq, ver);
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ static const struct v4l2_ctrl_ops venc_ctrl_ops = {
+ 	.s_ctrl = venc_op_s_ctrl,
++	.g_volatile_ctrl = venc_op_g_volatile_ctrl,
+ };
+ 
+ int venc_ctrl_init(struct venus_inst *inst)
+@@ -357,7 +379,7 @@ int venc_ctrl_init(struct venus_inst *inst)
+ 		{ 16000, 34500, 3000 }, 15635, 16450, 10000000, 500,
+ 	};
+ 
+-	ret = v4l2_ctrl_handler_init(&inst->ctrl_handler, 58);
++	ret = v4l2_ctrl_handler_init(&inst->ctrl_handler, 59);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -437,6 +459,9 @@ int venc_ctrl_init(struct venus_inst *inst)
+ 		V4L2_MPEG_VIDEO_VP8_PROFILE_3,
+ 		0, V4L2_MPEG_VIDEO_VP8_PROFILE_0);
+ 
++	v4l2_ctrl_new_std(&inst->ctrl_handler, &venc_ctrl_ops,
++			  V4L2_CID_MIN_BUFFERS_FOR_OUTPUT, 4, 11, 1, 4);
++
+ 	v4l2_ctrl_new_std(&inst->ctrl_handler, &venc_ctrl_ops,
+ 		V4L2_CID_MPEG_VIDEO_BITRATE, BITRATE_MIN, BITRATE_MAX,
+ 		BITRATE_STEP, BITRATE_DEFAULT);
 -- 
 2.17.1
 
