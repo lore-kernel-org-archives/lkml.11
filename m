@@ -2,442 +2,306 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0424C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 21:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FD8AC25B0D
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 21:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244355AbiHHV3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 17:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53008 "EHLO
+        id S244393AbiHHVcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 17:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234943AbiHHV3Q (ORCPT
+        with ESMTP id S238069AbiHHVcE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 17:29:16 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D06B193D4
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 14:29:15 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 278LHd3j004387;
-        Mon, 8 Aug 2022 21:28:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : content-transfer-encoding : content-type :
- mime-version; s=corp-2022-7-12;
- bh=xasOB2N2R/Ez4cV8u+YqMTVxj+8UmndA0NcsO5kf2w8=;
- b=q4y0vyoV/7ljUdnRffxo+yt4G0pINzFMGbGQ9xoEMG1Ubmn8mSdPz3WL3aF2l1j+47qb
- b3TuytVxG3dWYDoUUOrjh0vYhDjqiWRvLndmK/Bh9zU+EQ4adFQVazeoFYLSRQkOOSmq
- yTIiD0cgbcmBBCvitnCjdph8ZtOlfF6iMwad+uNlVW6I9Yp5MQcXAQ1x77ZYa/3qQ2ti
- lItRHsZqd4jljmsNTPSuNJ4MLU8upNFCZCggpEcPiE0n8N0ZoE/uAhRnCfLjBAA/bZPh
- dqn/MoBrAttyIQVrRQNB/6SGxoB3FctYNIdYQQkndXj0Ly4OSEVxSvEzqvhsrEkI+QZk Hg== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hsgut4umf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 08 Aug 2022 21:28:48 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 278KfCDa027906;
-        Mon, 8 Aug 2022 21:28:47 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2109.outbound.protection.outlook.com [104.47.70.109])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3hu0q28mjd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 08 Aug 2022 21:28:47 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BaIHEkki85GUwF78dftxPTBhUEiIGV0EtOh9phI5M8MwoGHhn8GJQ1zQ0XrZoBecefY/fLl3pYT3jKfbGH2YmnFAiM0V6KqU2VKu+DonJvNsaMCCdRHOvj9XSiExY+dRuzXgqhvoY8fO1hEfR4L0xMK/y8TgNaoQY6FL+AL0bC2HCvVul+J+vhL846iYjkFD+evvHlg4oxL3xKrXTlGiNFRCWL1rE4Gp1vC9JpGVNfP6L7ysZaSPn9aSBIs6VjKiibOkMkaXzGNEtHzCCJziMShJLo7/KEnfSx+8Ns1B8E/5bDfqSOrzID/MflcuYHVWI7BULQTRphIXXrbEanrIOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xasOB2N2R/Ez4cV8u+YqMTVxj+8UmndA0NcsO5kf2w8=;
- b=F9j0/Zek2+Ex7hIfCs1N+F0WOpdSWVRC2NJuFynH+bfjAuutnnWJRJI5LiWxuI9QFsC7Tx8ARelvwQTUEe+fOS1kEOFtZOyXAOty5DoaERjdmPftKqHknoqAqHjNWMzeWj5nxjoKUM5N6WkHK5xf4c6Vnex75TzjlV+GXX8Fna5zjF2SoH+Eng5AMbih35x4wEDpfC0oS20oUXauQW9yWXQnhKRBk5Ex2ElDBODeody6wGxIh+xDYPmRbBHJWnSIRaTP7vPE/64+sjixg3vrGhr1MR6Zsf+snnOkPQXxGMUxZCgW4vpibKP8Dycd0DA0OXvJZc1Ynunv+IYsBALjyA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xasOB2N2R/Ez4cV8u+YqMTVxj+8UmndA0NcsO5kf2w8=;
- b=Yv1GwvMsCg7bGzvGKTdrWsJpY8B1y2Ei+N1rkSMUBstiniqRZJ8QVn2i4OpO5LxKvYp1K7JDBoyPQWi9V9Zg2evWjV3xfMsT1tw/fhmEcvc5lvx1bxfe/tbZjHUH2T/EERYBw0MQiZx4IHUs9hq+30phzuXz+YNVxa6sjR+t2nI=
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
- by BN8PR10MB3300.namprd10.prod.outlook.com (2603:10b6:408:cc::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.15; Mon, 8 Aug
- 2022 21:28:42 +0000
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::c1ba:c197:f81f:ec0]) by BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::c1ba:c197:f81f:ec0%5]) with mapi id 15.20.5504.020; Mon, 8 Aug 2022
- 21:28:41 +0000
-From:   Mike Kravetz <mike.kravetz@oracle.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc:     Muchun Song <songmuchun@bytedance.com>,
-        Joao Martins <joao.m.martins@oracle.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>
-Subject: [PATCH] hugetlb: freeze allocated pages before creating hugetlb pages
-Date:   Mon,  8 Aug 2022 14:28:36 -0700
-Message-Id: <20220808212836.111749-1-mike.kravetz@oracle.com>
-X-Mailer: git-send-email 2.37.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MW2PR16CA0004.namprd16.prod.outlook.com (2603:10b6:907::17)
- To BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
+        Mon, 8 Aug 2022 17:32:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B0FDFB8;
+        Mon,  8 Aug 2022 14:32:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD73C60EFC;
+        Mon,  8 Aug 2022 21:32:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2B99C433C1;
+        Mon,  8 Aug 2022 21:32:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659994322;
+        bh=CkFamQElMBdW/Xk/iv1dKAw5mdgxBh9BRwVx32FpGJI=;
+        h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
+        b=eWbYrGQKRn+/0f9GiAuFn7ZfmRm2Z7wwcpM/GHuA00OgHsWeNBirXCHmt81YV8alP
+         AC4un/zyrjCjeiNHJVjl9q4FzmPMfXE6UjeQhBqG7UQUTm2bpEhQdLR+a+rEKVvjN1
+         fdFdbV+pfYPtg86fSMT987uV63SZGyhUgk2WhzDE=
+From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+Date:   Mon, 08 Aug 2022 17:31:49 -0400
+Subject: [PATCH v2 1/5] maintainer-pgp-guide: use key terminology consistent with
+ upstream
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9c7117aa-3b4b-43b2-715b-08da7984f6fd
-X-MS-TrafficTypeDiagnostic: BN8PR10MB3300:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: I0Wc7IZIFZbYlrWQXh3DNkznzPEgzUhT8JNghJdzzuH6RuUUwEwxhbWZm+IOKOzeNJ9jXT9pPfkUajp9QhCtqcBKQLUykXl7HS3yUNPWn3QQdI7NaSJ316dtCGTUK9PbmQgh/Mnq0p+TFMaejEV75RLG3UJdjicY+ypUw8muEvAZfswvjSYCq61qrw54cRj2+9tBQfik6RQLnHas6gM0T1LanzzAzzul2/N2I9XdY6AxXFWi7bhaNj4LkiMc1XjtubIPX19YlDxYRAdfumownVDp5m6yaEUcrhJlDmUITgSE5eixzrEQ1y1z09fxv941uVD/VXtG5roTJyl6NZQa3zHs9TOnrtku0fYtJ995sVqXeqJRKfYHCHPUtsBmTSPczz80WzsgWs9AaRxs5jjkyIWiJN+2Rf4LFgA53ZRXPnCVwXT/ovUsrkgmmfQHcYT40gFm2H3s0KJF6heAF2yqtwTmvhQQWB99/nbHxfClAzAdTpOoPcOmfym440tKsJbxzopVlvbmmEGycUUMQHUK5CW64aEWWiUB/JyZG9DQq4Tt4rqoplF97xlQH+Gpjcbq2vjvxK1uN7PY2cCPEZ+HvMvnqpEv9qsrQ8PvEbEx9txMZDkPUgOpmP0mdU2tOdOv3Qe6kqlwkm7F8wfQbi88LQKswyqsHnF0YDNoOxiSV41dhIf2ZrHhf6HcKB0cdD0u5KLUmsastt2gYN9WrV/g+ygQSwdlkKVJMCygwm5RRqUYrNM58BgPE+iKS+NFrKBn0Fw+RgYYfksNg1nkJgz7yPhfVZPcUVvG4Ay30MtvLkboklV6sBdwldyk5vm5YagC
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(39860400002)(376002)(346002)(396003)(136003)(186003)(5660300002)(2616005)(478600001)(107886003)(1076003)(966005)(6486002)(8676002)(26005)(66946007)(6512007)(6506007)(86362001)(36756003)(66476007)(6666004)(30864003)(66556008)(41300700001)(44832011)(83380400001)(2906002)(54906003)(4326008)(8936002)(316002)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CCNXtdCbM+tezUjEtnxy3v1UU4Nw0LKCl3qfQW3aC8nNPITZBv+Ng9Ehi/ZN?=
- =?us-ascii?Q?VeHPJehwc55qO9mTY1FQyeisnCclPRFN7um2ovCSor0/COFcbfjE3E8UARrK?=
- =?us-ascii?Q?u6tR2VRnHwpQVKG1IYfj8nYLGJHxuWS3rOy2J5/2C8+uybiimDI1orxRtatd?=
- =?us-ascii?Q?eW81WCJ9Jj70k6WJwhR8aLbRhn9q11oWCEUhDJWeT76mYLQouHmRl0BZkAOR?=
- =?us-ascii?Q?dVZuKFxciGMIrbdxdyj1P7qKmRaJHhrSjmETgFqlYCbZLQli5deXQ3UwIuVT?=
- =?us-ascii?Q?A+b5bO29YRNQbf9+GR7VSaepDpcNTi/om90qxDSx0N0SGidY8fk9U3Oq3rkc?=
- =?us-ascii?Q?xyw+gKer5qeSNH2fPyT8NHkYRehljwMESjUN5ndfTOQCzrzTQICOaP/UHiwT?=
- =?us-ascii?Q?IzBuJfUQHKGhtYo8jm+TlBX4r+LSjLNxIsK+ibj/y0S+m+JhLMD5hF+ju2SX?=
- =?us-ascii?Q?rT+gzyiYlbndLaZFU3JK/iVeWrLj4JW1FzX9Pj+5KBBSF35sEoDq74twqwhf?=
- =?us-ascii?Q?GT8w7NemcyFUUUo819hVE3J35gE4T2dTPpAJf4UADhbKdgcDQKLVYg7slPWU?=
- =?us-ascii?Q?q1KIqKIfvBQcsvFMzEz4uBFb24pVUyKo7hj1DOEK2O+r6Ttor9UjTEzpjpkz?=
- =?us-ascii?Q?mzfVUOP8A3d/V5xU+zDawwfxfrmU+k3D4oclsSTJsGji2staV51uD+yis9aT?=
- =?us-ascii?Q?9HZDeo8/qBkNQNOF23gsd0BcAqEz3QuUP3kJB6nN69Mp/j576nR2FF03Rs2T?=
- =?us-ascii?Q?77uBug08Xgf4E7Saor+UXN3/aKO8TY9R2JZQ12FTcU/3tWuLRjNC2GMqa9nH?=
- =?us-ascii?Q?EDQE1CYYR266r3/hTKq9TCsvIHT1VP8AQdQJx7lnE9jh8xZ5E1lVcbPxXTjw?=
- =?us-ascii?Q?lfwsDO2Tw8g/cZEfG9bkhhYQtlH6ke8OhE08ZsqNX6yUrp7HEO6HPqMnEpdj?=
- =?us-ascii?Q?G8r4AWX4r4FAnGkG3g1soxULj2+6qDAaaYw9gLjlXi1hLZUEnFSTib9wYPV8?=
- =?us-ascii?Q?TTFQ1QrB5NjiGMqyJp/DugZs2czn2X7c0CzCmRubsLwbS82vcY96G4rqOael?=
- =?us-ascii?Q?ObcATDO1WU4d//5GEXJ2lvs+VRp/9r+EofR5etd6lS7k4eJRn3ceMW5n+2vk?=
- =?us-ascii?Q?iYPocm88YVYn41l4Zz8LJPCTOunz9rB6I/lq69C5ABaScW7E232YcZ3d6rUU?=
- =?us-ascii?Q?qOsYl+5XFSHbgD2CP7+W2nyhCxZCyzBpCt/wnH47Y3R4ku1GzL1ve6D6Nhca?=
- =?us-ascii?Q?vloPRfsNz1MqdU9IMKycoX5VBJoc6rU9AqLZc7U4Dr3d5qrXle1WtozegWGy?=
- =?us-ascii?Q?hZyagJ/oiZa2kYWQsUmQFGToneTjGMOtIiP8YclawSZUpciklSOgY6N6f2+R?=
- =?us-ascii?Q?/CfVDJe+SGmJL9pFs56L+zL/9GOMzrY4d9gSA6dwrW5m0XilpYjZTPUnbPnt?=
- =?us-ascii?Q?POYN5OOqeHzsZffa6Kvf5GBOrHKP384yluOs9PFPjdiTiiSzObqPgj2sRi/U?=
- =?us-ascii?Q?GGHn6AjlZY6JinyLJVQVmnuHhflFnbYHXJub08Gt2WqEGIWJ4C+rRHKRdWCA?=
- =?us-ascii?Q?+kwhgW8SNrrbs3UfB3MHK6d2Ix+9vl0pghkZxQapo3Vi9otTNmr0LbLKXLLL?=
- =?us-ascii?Q?pw=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c7117aa-3b4b-43b2-715b-08da7984f6fd
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2022 21:28:41.4513
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iRN/rlOAQhTRnymB5LXCGEy+JdRYhcj4Vpa9oTnrDySq/GdH+Eq1K6SDnW4KL51TZ6WqxteoFoA7yy+Q+UwzrA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR10MB3300
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-08_13,2022-08-08_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 mlxscore=0 spamscore=0
- phishscore=0 bulkscore=0 adultscore=0 malwarescore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2208080092
-X-Proofpoint-ORIG-GUID: eu6DOETUKWYPMCgD2k2XNV8eAjO1fOWu
-X-Proofpoint-GUID: eu6DOETUKWYPMCgD2k2XNV8eAjO1fOWu
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20220727-docs-pgp-guide-v2-1-e3e6954affb6@linuxfoundation.org>
+References: <20220727-docs-pgp-guide-v2-0-e3e6954affb6@linuxfoundation.org>
+In-Reply-To: <20220727-docs-pgp-guide-v2-0-e3e6954affb6@linuxfoundation.org>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+X-Mailer: b4 0.10.0-dev-fe10a
+X-Developer-Signature: v=1; a=openpgp-sha256; l=11348;
+ i=konstantin@linuxfoundation.org; h=from:subject:message-id;
+ bh=CkFamQElMBdW/Xk/iv1dKAw5mdgxBh9BRwVx32FpGJI=;
+ b=owGbwMvMwCW27YjM47CUmTmMp9WSGJI+Nly0qv46cetyAdbcENPcX6xSFaU39m9+fvz2yj8/LGtl
+ V1zP7yhlYRDjYpAVU2Qp2xe7KajwoYdceo8pzBxWJpAhDFycAjAR3okM/8wmR5/LNHgSkFex9Xfwvv
+ 68XA+bOjPblBsaTvP2SsV1vmRkuLRBeIHG3tQ43aw3j5+b+F2qDAn9ZmZ8NfFYRd7Nmivs3AA=
+X-Developer-Key: i=konstantin@linuxfoundation.org; a=openpgp;
+ fpr=DE0E66E32F1FDD0902666B96E63EDCA9329DD07E
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When creating hugetlb pages, the hugetlb code must first allocate
-contiguous pages from a low level allocator such as buddy, cma or
-memblock.  The pages returned from these low level allocators are
-ref counted.  This creates potential issues with other code taking
-speculative references on these pages before they can be transformed to
-a hugetlb page.  This issue has been addressed with methods and code
-such as that provided in [1].
+GnuPG does not use the word "master key" when referring to the subkey
+marked with the "certification" capability. Our use of this term was not
+only inconsistent, but also misleading, because in real life "master
+keys" are able to open multiple locks made for different keys, while PGP
+Certify key has no such capability.
 
-Recent discussions about vmemmap freeing [2] have indicated that it
-would be beneficial to freeze all sub pages, including the head page
-of pages returned from low level allocators before converting to a
-hugetlb page.  This helps avoid races if want to replace the page
-containing vmemmap for the head page.
+Signed-off-by: Konstantin Ryabitsev <konstantin@linuxfoundation.org>
 
-There have been proposals to change at least the buddy allocator to
-return frozen pages as described at [3].  If such a change is made, it
-can be employed by the hugetlb code.  However, as mentioned above
-hugetlb uses several low level allocators so each would need to be
-modified to return frozen pages.  For now, we can manually freeze the
-returned pages.  This is done in two places:
-1) alloc_buddy_huge_page, only the returned head page is ref counted.
-   We freeze the head page, retrying once in the VERY rare case where
-   there may be an inflated ref count.
-2) prep_compound_gigantic_page, for gigantic pages the current code
-   freezes all pages except the head page.  New code will simply freeze
-   the head page as well.
-
-In a few other places, code checks for inflated ref counts on newly
-allocated hugetlb pages.  With the modifications to freeze after
-allocating, this code can be removed.
-
-After hugetlb pages are freshly allocated, they are often added to the
-hugetlb free lists.  Since these pages were previously ref counted, this
-was done via put_page() which would end up calling the hugetlb
-destructor: free_huge_page.  With changes to freeze pages, we simply
-call free_huge_page directly to add the pages to the free list.
-
-In a few other places, freshly allocated hugetlb pages were immediately
-put into use, and the expectation was they were already ref counted.  In
-these cases, we must manually ref count the page.
-
-[1] https://lore.kernel.org/linux-mm/20210622021423.154662-3-mike.kravetz@oracle.com/
-[2] https://lore.kernel.org/linux-mm/20220802180309.19340-1-joao.m.martins@oracle.com/
-[3] https://lore.kernel.org/linux-mm/20220531150611.1303156-1-willy@infradead.org/
-
-Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
----
- mm/hugetlb.c | 97 +++++++++++++++++++---------------------------------
- 1 file changed, 35 insertions(+), 62 deletions(-)
-
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 28516881a1b2..6b90d85d545b 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -1769,13 +1769,12 @@ static bool __prep_compound_gigantic_page(struct page *page, unsigned int order,
- {
- 	int i, j;
- 	int nr_pages = 1 << order;
--	struct page *p = page + 1;
-+	struct page *p = page;
+diff --git a/Documentation/process/maintainer-pgp-guide.rst b/Documentation/process/maintainer-pgp-guide.rst
+index 29e7d7b1cd44..7dada4eaedca 100644
+--- a/Documentation/process/maintainer-pgp-guide.rst
++++ b/Documentation/process/maintainer-pgp-guide.rst
+@@ -133,45 +133,56 @@ daily cronjob::
+ Check the full path to your ``gpg`` or ``gpg2`` command and use the
+ ``gpg2`` command if regular ``gpg`` for you is the legacy GnuPG v.1.
  
- 	/* we rely on prep_new_huge_page to set the destructor */
- 	set_compound_order(page, order);
--	__ClearPageReserved(page);
- 	__SetPageHead(page);
--	for (i = 1; i < nr_pages; i++, p = mem_map_next(p, page, i)) {
-+	for (i = 0; i < nr_pages; i++, p = mem_map_next(p, page, i)) {
- 		/*
- 		 * For gigantic hugepages allocated through bootmem at
- 		 * boot, it's safer to be consistent with the not-gigantic
-@@ -1814,7 +1813,8 @@ static bool __prep_compound_gigantic_page(struct page *page, unsigned int order,
- 		} else {
- 			VM_BUG_ON_PAGE(page_count(p), p);
- 		}
--		set_compound_head(p, page);
-+		if (i != 0)
-+			set_compound_head(p, page);
- 	}
- 	atomic_set(compound_mapcount_ptr(page), -1);
- 	atomic_set(compound_pincount_ptr(page), 0);
-@@ -1918,6 +1918,7 @@ static struct page *alloc_buddy_huge_page(struct hstate *h,
- 	int order = huge_page_order(h);
- 	struct page *page;
- 	bool alloc_try_hard = true;
-+	bool retry = true;
+-.. _master_key:
++.. _protect_your_key:
  
- 	/*
- 	 * By default we always try hard to allocate the page with
-@@ -1933,7 +1934,21 @@ static struct page *alloc_buddy_huge_page(struct hstate *h,
- 		gfp_mask |= __GFP_RETRY_MAYFAIL;
- 	if (nid == NUMA_NO_NODE)
- 		nid = numa_mem_id();
-+retry:
- 	page = __alloc_pages(gfp_mask, order, nid, nmask);
+-Protect your master PGP key
+-===========================
++Protect your PGP key
++====================
+ 
+ This guide assumes that you already have a PGP key that you use for Linux
+ kernel development purposes. If you do not yet have one, please see the
+ "`Protecting Code Integrity`_" document mentioned earlier for guidance
+ on how to create a new one.
+ 
+-You should also make a new key if your current one is weaker than 2048 bits
+-(RSA).
+-
+-Master key vs. Subkeys
+-----------------------
+-
+-Subkeys are fully independent PGP keypairs that are tied to the "master"
+-key using certifying key signatures (certificates). It is important to
+-understand the following:
+-
+-1. There are no technical differences between the "master key" and "subkeys."
+-2. At creation time, we assign functional limitations to each key by
+-   giving it specific capabilities.
+-3. A PGP key can have 4 capabilities:
+-
+-   - **[S]** key can be used for signing
+-   - **[E]** key can be used for encryption
+-   - **[A]** key can be used for authentication
+-   - **[C]** key can be used for certifying other keys
+-
+-4. A single key may have multiple capabilities.
+-5. A subkey is fully independent from the master key. A message
+-   encrypted to a subkey cannot be decrypted with the master key. If you
+-   lose your private subkey, it cannot be recreated from the master key
+-   in any way.
+-
+-The key carrying the **[C]** (certify) capability is considered the
+-"master" key because it is the only key that can be used to indicate
+-relationship with other keys. Only the **[C]** key can be used to:
++You should also make a new key if your current one is weaker than 2048
++bits (RSA).
 +
-+	/* Freeze head page */
-+	if (!page_ref_freeze(page, 1)) {
-+		__free_pages(page, order);
-+		if (retry) {	/* retry once */
-+			retry = false;
-+			goto retry;
-+		}
-+		/* WOW!  twice in a row. */
-+		pr_warn("HugeTLB head page unexpected inflated ref count\n");
-+		page = NULL;
-+	}
++Understanding PGP Subkeys
++-------------------------
 +
- 	if (page)
- 		__count_vm_event(HTLB_BUDDY_PGALLOC);
- 	else
-@@ -1961,6 +1976,9 @@ static struct page *alloc_buddy_huge_page(struct hstate *h,
- /*
-  * Common helper to allocate a fresh hugetlb page. All specific allocators
-  * should use this function to get new hugetlb pages
-+ *
-+ * Note that returned page is 'frozen':  ref count of head page and all tail
-+ * pages is zero.
-  */
- static struct page *alloc_fresh_huge_page(struct hstate *h,
- 		gfp_t gfp_mask, int nid, nodemask_t *nmask,
-@@ -2018,7 +2036,7 @@ static int alloc_pool_huge_page(struct hstate *h, nodemask_t *nodes_allowed,
- 	if (!page)
- 		return 0;
- 
--	put_page(page); /* free it into the hugepage allocator */
-+	free_huge_page(page); /* free it into the hugepage allocator */
- 
- 	return 1;
- }
-@@ -2175,10 +2193,9 @@ int dissolve_free_huge_pages(unsigned long start_pfn, unsigned long end_pfn)
-  * Allocates a fresh surplus page from the page allocator.
-  */
- static struct page *alloc_surplus_huge_page(struct hstate *h, gfp_t gfp_mask,
--		int nid, nodemask_t *nmask, bool zero_ref)
-+						int nid, nodemask_t *nmask)
- {
- 	struct page *page = NULL;
--	bool retry = false;
- 
- 	if (hstate_is_gigantic(h))
- 		return NULL;
-@@ -2188,7 +2205,6 @@ static struct page *alloc_surplus_huge_page(struct hstate *h, gfp_t gfp_mask,
- 		goto out_unlock;
- 	spin_unlock_irq(&hugetlb_lock);
- 
--retry:
- 	page = alloc_fresh_huge_page(h, gfp_mask, nid, nmask, NULL);
- 	if (!page)
- 		return NULL;
-@@ -2204,34 +2220,10 @@ static struct page *alloc_surplus_huge_page(struct hstate *h, gfp_t gfp_mask,
- 	if (h->surplus_huge_pages >= h->nr_overcommit_huge_pages) {
- 		SetHPageTemporary(page);
- 		spin_unlock_irq(&hugetlb_lock);
--		put_page(page);
-+		free_huge_page(page);
- 		return NULL;
- 	}
- 
--	if (zero_ref) {
--		/*
--		 * Caller requires a page with zero ref count.
--		 * We will drop ref count here.  If someone else is holding
--		 * a ref, the page will be freed when they drop it.  Abuse
--		 * temporary page flag to accomplish this.
--		 */
--		SetHPageTemporary(page);
--		if (!put_page_testzero(page)) {
--			/*
--			 * Unexpected inflated ref count on freshly allocated
--			 * huge.  Retry once.
--			 */
--			pr_info("HugeTLB unexpected inflated ref count on freshly allocated page\n");
--			spin_unlock_irq(&hugetlb_lock);
--			if (retry)
--				return NULL;
--
--			retry = true;
--			goto retry;
--		}
--		ClearHPageTemporary(page);
--	}
--
- 	h->surplus_huge_pages++;
- 	h->surplus_huge_pages_node[page_to_nid(page)]++;
- 
-@@ -2253,6 +2245,9 @@ static struct page *alloc_migrate_huge_page(struct hstate *h, gfp_t gfp_mask,
- 	if (!page)
- 		return NULL;
- 
-+	/* fresh huge pages are frozen */
-+	set_page_refcounted(page);
++A PGP key rarely consists of a single keypair -- usually it is a
++collection of independent subkeys that can be used for different
++purposes based on their capabilities, assigned at their creation time.
++PGP defines four capabilities that a key can have:
 +
- 	/*
- 	 * We do not account these pages as surplus because they are only
- 	 * temporary and will be released properly on the last reference
-@@ -2280,14 +2275,14 @@ struct page *alloc_buddy_huge_page_with_mpol(struct hstate *h,
- 		gfp_t gfp = gfp_mask | __GFP_NOWARN;
++- **[S]** keys can be used for signing
++- **[E]** keys can be used for encryption
++- **[A]** keys can be used for authentication
++- **[C]** keys can be used for certifying other keys
++
++The key with the **[C]** capability is often called the "master" key,
++but this terminology is misleading because it implies that the Certify
++key can be used in place of any of other subkey on the same chain (like
++a physical "master key" can be used to open the locks made for other
++keys). Since this is not the case, this guide will refer to it as "the
++Certify key" to avoid any ambiguity.
++
++It is critical to fully understand the following:
++
++1. All subkeys are fully independent from each other. If you lose a
++   private subkey, it cannot be restored or recreated from any other
++   private key on your chain.
++2. With the exception of the Certify key, there can be multiple subkeys
++   with identical capabilities (e.g. you can have 2 valid encryption
++   subkeys, 3 valid signing subkeys, but only one valid certification
++   subkey). All subkeys are fully independent -- a message encrypted to
++   one **[E]** subkey cannot be decrypted with any other **[E]** subkey
++   you may also have.
++3. A single subkey may have multiple capabilities (e.g. your **[C]** key
++   can also be your **[S]** key).
++
++The key carrying the **[C]** (certify) capability is the only key that
++can be used to indicate relationship with other keys. Only the **[C]**
++key can be used to:
  
- 		gfp &=  ~(__GFP_DIRECT_RECLAIM | __GFP_NOFAIL);
--		page = alloc_surplus_huge_page(h, gfp, nid, nodemask, false);
-+		page = alloc_surplus_huge_page(h, gfp, nid, nodemask);
+ - add or revoke other keys (subkeys) with S/E/A capabilities
+ - add, change or revoke identities (uids) associated with the key
+@@ -180,7 +191,7 @@ relationship with other keys. Only the **[C]** key can be used to:
  
- 		/* Fallback to all nodes if page==NULL */
- 		nodemask = NULL;
- 	}
+ By default, GnuPG creates the following when generating new keys:
  
- 	if (!page)
--		page = alloc_surplus_huge_page(h, gfp_mask, nid, nodemask, false);
-+		page = alloc_surplus_huge_page(h, gfp_mask, nid, nodemask);
- 	mpol_cond_put(mpol);
- 	return page;
- }
-@@ -2358,7 +2353,7 @@ static int gather_surplus_pages(struct hstate *h, long delta)
- 	spin_unlock_irq(&hugetlb_lock);
- 	for (i = 0; i < needed; i++) {
- 		page = alloc_surplus_huge_page(h, htlb_alloc_mask(h),
--				NUMA_NO_NODE, NULL, true);
-+				NUMA_NO_NODE, NULL);
- 		if (!page) {
- 			alloc_ok = false;
- 			break;
-@@ -2720,7 +2715,6 @@ static int alloc_and_dissolve_huge_page(struct hstate *h, struct page *old_page,
- {
- 	gfp_t gfp_mask = htlb_alloc_mask(h) | __GFP_THISNODE;
- 	int nid = page_to_nid(old_page);
--	bool alloc_retry = false;
- 	struct page *new_page;
- 	int ret = 0;
+-- A master key carrying both Certify and Sign capabilities (**[SC]**)
++- One subkey carrying both Certify and Sign capabilities (**[SC]**)
+ - A separate subkey with the Encryption capability (**[E]**)
  
-@@ -2731,30 +2725,9 @@ static int alloc_and_dissolve_huge_page(struct hstate *h, struct page *old_page,
- 	 * the pool.  This simplifies and let us do most of the processing
- 	 * under the lock.
- 	 */
--alloc_retry:
- 	new_page = alloc_buddy_huge_page(h, gfp_mask, nid, NULL, NULL);
- 	if (!new_page)
- 		return -ENOMEM;
--	/*
--	 * If all goes well, this page will be directly added to the free
--	 * list in the pool.  For this the ref count needs to be zero.
--	 * Attempt to drop now, and retry once if needed.  It is VERY
--	 * unlikely there is another ref on the page.
--	 *
--	 * If someone else has a reference to the page, it will be freed
--	 * when they drop their ref.  Abuse temporary page flag to accomplish
--	 * this.  Retry once if there is an inflated ref count.
--	 */
--	SetHPageTemporary(new_page);
--	if (!put_page_testzero(new_page)) {
--		if (alloc_retry)
--			return -EBUSY;
+ If you used the default parameters when generating your key, then that
+@@ -192,9 +203,6 @@ for example::
+     uid           [ultimate] Alice Dev <adev@kernel.org>
+     ssb   rsa2048 2018-01-23 [E] [expires: 2020-01-23]
+ 
+-Any key carrying the **[C]** capability is your master key, regardless
+-of any other capabilities it may have assigned to it.
 -
--		alloc_retry = true;
--		goto alloc_retry;
--	}
--	ClearHPageTemporary(new_page);
--
- 	__prep_new_huge_page(h, new_page);
+ The long line under the ``sec`` entry is your key fingerprint --
+ whenever you see ``[fpr]`` in the examples below, that 40-character
+ string is what it refers to.
+@@ -215,9 +223,9 @@ strong passphrase. To set it or change it, use::
+ Create a separate Signing subkey
+ --------------------------------
  
- retry:
-@@ -2934,6 +2907,7 @@ struct page *alloc_huge_page(struct vm_area_struct *vma,
- 		}
- 		spin_lock_irq(&hugetlb_lock);
- 		list_add(&page->lru, &h->hugepage_activelist);
-+		set_page_refcounted(page);
- 		/* Fall through */
- 	}
- 	hugetlb_cgroup_commit_charge(idx, pages_per_huge_page(h), h_cg, page);
-@@ -3038,7 +3012,7 @@ static void __init gather_bootmem_prealloc(void)
- 		if (prep_compound_gigantic_page(page, huge_page_order(h))) {
- 			WARN_ON(PageReserved(page));
- 			prep_new_huge_page(h, page, page_to_nid(page));
--			put_page(page); /* add to the hugepage allocator */
-+			free_huge_page(page); /* add to the hugepage allocator */
- 		} else {
- 			/* VERY unlikely inflated ref count on a tail page */
- 			free_gigantic_page(page, huge_page_order(h));
-@@ -3070,7 +3044,7 @@ static void __init hugetlb_hstate_alloc_pages_onenode(struct hstate *h, int nid)
- 					&node_states[N_MEMORY], NULL);
- 			if (!page)
- 				break;
--			put_page(page); /* free it into the hugepage allocator */
-+			free_huge_page(page); /* free it into the hugepage allocator */
- 		}
- 		cond_resched();
- 	}
-@@ -3459,9 +3433,8 @@ static int demote_free_huge_page(struct hstate *h, struct page *page)
- 		else
- 			prep_compound_page(page + i, target_hstate->order);
- 		set_page_private(page + i, 0);
--		set_page_refcounted(page + i);
- 		prep_new_huge_page(target_hstate, page + i, nid);
--		put_page(page + i);
-+		free_huge_page(page + i);
- 	}
- 	mutex_unlock(&target_hstate->resize_lock);
+-Our goal is to protect your master key by moving it to offline media, so
+-if you only have a combined **[SC]** key, then you should create a separate
+-signing subkey::
++Our goal is to protect your Certify key by moving it to offline media,
++so if you only have a combined **[SC]** key, then you should create a
++separate signing subkey::
  
+     $ gpg --quick-addkey [fpr] ed25519 sign
+ 
+@@ -230,8 +238,8 @@ your new subkey::
+ 
+     GnuPG 2.1 and later has full support for Elliptic Curve
+     Cryptography, with ability to combine ECC subkeys with traditional
+-    RSA master keys. The main upside of ECC cryptography is that it is
+-    much faster computationally and creates much smaller signatures when
++    RSA keys. The main upside of ECC cryptography is that it is much
++    faster computationally and creates much smaller signatures when
+     compared byte for byte with 2048+ bit RSA keys. Unless you plan on
+     using a smartcard device that does not support ECC operations, we
+     recommend that you create an ECC signing subkey for your kernel
+@@ -244,8 +252,8 @@ your new subkey::
+     "nistp256" instead or "ed25519."
+ 
+ 
+-Back up your master key for disaster recovery
+----------------------------------------------
++Back up your Certify key for disaster recovery
++----------------------------------------------
+ 
+ The more signatures you have on your PGP key from other developers, the
+ more reasons you have to create a backup version that lives on something
+@@ -300,7 +308,7 @@ will use for backup purposes. You will need to encrypt them using LUKS
+ -- refer to your distro's documentation on how to accomplish this.
+ 
+ For the encryption passphrase, you can use the same one as on your
+-master key.
++PGP key.
+ 
+ Once the encryption process is over, re-insert the USB drive and make
+ sure it gets properly mounted. Copy your entire ``.gnupg`` directory
+@@ -319,7 +327,7 @@ far away, because you'll need to use it every now and again for things
+ like editing identities, adding or revoking subkeys, or signing other
+ people's keys.
+ 
+-Remove the master key from  your homedir
++Remove the Certify key from your homedir
+ ----------------------------------------
+ 
+ The files in our home directory are not as well protected as we like to
+@@ -334,7 +342,7 @@ think.  They can be leaked or stolen via many different means:
+ Protecting your key with a good passphrase greatly helps reduce the risk
+ of any of the above, but passphrases can be discovered via keyloggers,
+ shoulder-surfing, or any number of other means. For this reason, the
+-recommended setup is to remove your master key from your home directory
++recommended setup is to remove your Certify key from your home directory
+ and store it on offline storage.
+ 
+ .. warning::
+@@ -343,7 +351,7 @@ and store it on offline storage.
+     your GnuPG directory in its entirety. What we are about to do will
+     render your key useless if you do not have a usable backup!
+ 
+-First, identify the keygrip of your master key::
++First, identify the keygrip of your Certify key::
+ 
+     $ gpg --with-keygrip --list-key [fpr]
+ 
+@@ -359,7 +367,7 @@ The output will be something like this::
+           Keygrip = 3333000000000000000000000000000000000000
+ 
+ Find the keygrip entry that is beneath the ``pub`` line (right under the
+-master key fingerprint). This will correspond directly to a file in your
++Certify key fingerprint). This will correspond directly to a file in your
+ ``~/.gnupg`` directory::
+ 
+     $ cd ~/.gnupg/private-keys-v1.d
+@@ -369,13 +377,13 @@ master key fingerprint). This will correspond directly to a file in your
+     3333000000000000000000000000000000000000.key
+ 
+ All you have to do is simply remove the .key file that corresponds to
+-the master keygrip::
++the Certify key keygrip::
+ 
+     $ cd ~/.gnupg/private-keys-v1.d
+     $ rm 1111000000000000000000000000000000000000.key
+ 
+ Now, if you issue the ``--list-secret-keys`` command, it will show that
+-the master key is missing (the ``#`` indicates it is not available)::
++the Certify key is missing (the ``#`` indicates it is not available)::
+ 
+     $ gpg --list-secret-keys
+     sec#  rsa2048 2018-01-24 [SC] [expires: 2020-01-24]
+@@ -404,7 +412,7 @@ file, which still contains your private keys.
+ Move the subkeys to a dedicated crypto device
+ =============================================
+ 
+-Even though the master key is now safe from being leaked or stolen, the
++Even though the Certify key is now safe from being leaked or stolen, the
+ subkeys are still in your home directory. Anyone who manages to get
+ their hands on those will be able to decrypt your communication or fake
+ your signatures (if they know the passphrase). Furthermore, each time a
+@@ -627,10 +635,10 @@ Other common GnuPG operations
+ Here is a quick reference for some common operations you'll need to do
+ with your PGP key.
+ 
+-Mounting your master key offline storage
+-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++Mounting your safe offline storage
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+-You will need your master key for any of the operations below, so you
++You will need your Certify key for any of the operations below, so you
+ will first need to mount your backup offline storage and tell GnuPG to
+ use it::
+ 
+@@ -644,7 +652,7 @@ your regular home directory location).
+ Extending key expiration date
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+-The master key has the default expiration date of 2 years from the date
++The Certify key has the default expiration date of 2 years from the date
+ of creation. This is done both for security reasons and to make obsolete
+ keys eventually disappear from keyservers.
+ 
+
 -- 
-2.37.1
-
+b4 0.10.0-dev-fe10a
