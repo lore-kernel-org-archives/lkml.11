@@ -2,115 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F172C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5296AC25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243873AbiHHQCR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 12:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36552 "EHLO
+        id S243833AbiHHQDV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 12:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238207AbiHHQCL (ORCPT
+        with ESMTP id S236927AbiHHQDT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 12:02:11 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE465659D;
-        Mon,  8 Aug 2022 09:02:10 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id s2so6815109qtx.6;
-        Mon, 08 Aug 2022 09:02:10 -0700 (PDT)
+        Mon, 8 Aug 2022 12:03:19 -0400
+Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B4B641E
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 09:03:18 -0700 (PDT)
+Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-10bd4812c29so10988575fac.11
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 09:03:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=MgJLgmbjRM5QolIw6FeSChBx0ufKjXuviaShsm9u4Oc=;
-        b=o7O8xEWLvgwpV43E7Nyk9/hzLWLqLVxvgXJQst9KwndG47flo0/dMewxUM+wMpXGjW
-         DnqAHeCaT03gqvBKVrkiXKXeRC8RoZH7Pjk6U8ZMAd8AopI2agcxnVB7ZN0jFUMKLkK2
-         K3XnSJztNAyN23SQK1z3ykYunu34v1HpVVzd3MMNJdJr1EfRabuSI8j++4LOo4EoRpoH
-         cT7j23Jfpt2yAJOAVfMofVHZq/8/Xad6kkPidpbUF6Lu3DXNivpWbC8zs+yzqOa0xgyq
-         aUgwCdwcWO0YnN5huwqhoXCKFl5LIizWp6OHrjrrb4WAJLrSnPW1caRO97HXpvZq29tg
-         3hTg==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=rWZTIOBwzmM4sIioDCBDw6f1XYSRknsCYKXwTZDWqBA=;
+        b=qWOp8PSTbG5Js6+SGWJEuKJZabFzITzdEL4iOhNXgzNDmXxHt51mZGYEcHD+pUHkHu
+         zyJjkuEErmGlzNOgo0pEcfFxazTWoNuvd/KUErN4L+cE1MknxXMcEU5o8JZcp0SDgwJa
+         79xB1NwBfHh3yj08fM6zc2a/WaK8NkXbBvDlCFF1zPLffZ/8PNzTxvoXjHLHR5MG+3t1
+         HQnU6DDW+VBRr6DyDvIhFv0AVqI/i9frKg5jLLdJtGUmgT2tyx0RK7ZujCFrESTGshqD
+         HoK282+bpVeiLYt0TcgZGPJIqJeIJMoUj4zMndpZOEHgFSNntCeztx4E+8Nqwn6t8SKD
+         yDqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=MgJLgmbjRM5QolIw6FeSChBx0ufKjXuviaShsm9u4Oc=;
-        b=URWZ8UO7CJ85cqBwZ097NcPOkqXoCpVHHQWFq7XlPNbDlj6NQ/Epe5k1AX8pdNXrKT
-         HYWkQBgkv5e/lqMHyhuyTp8qOQFZ4LwJQ+IRpY+YG2oxXQ2uQb56g4V0wKfXX7kaoSej
-         OhqhZ/jVHY+tyc3XSf9cbtIvTSeJ/R44/jtg5i8+BwRtskzsS+rkhrsJWTW6y8fpF2BT
-         w4gptCmujAjR5JBpfievU9dm98ATYWkuzKW7j8wBWnN9yjHOM7fFnhvdrs4ZY3auG7v3
-         GRHmVbGtgtAl+sP2u8k6WtuUEAoVYl4RFYvs72xGQ/lv75zIBtRXnBMfXNHVDSJNlvxL
-         0WGA==
-X-Gm-Message-State: ACgBeo0IMvLlz0Jxw27YY+UByF4EvgqQZsXOSHYWOsLOmAiHFmNNqbsg
-        iRI1xwBFEdK8NN4ahS4fTp78xEd0lxqMKe8icZdNzvmNOz8=
-X-Google-Smtp-Source: AA6agR7qfMaHbD0SGpEUdDQwHNPUf93TJMZtRBGDhQOyLX6z101QJY9LHNemvkBQb+DchXCThMqMv4ilKZvUvM+a3Hs=
-X-Received: by 2002:a05:622a:14d2:b0:341:9fcb:79a6 with SMTP id
- u18-20020a05622a14d200b003419fcb79a6mr16262657qtx.195.1659974529776; Mon, 08
- Aug 2022 09:02:09 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=rWZTIOBwzmM4sIioDCBDw6f1XYSRknsCYKXwTZDWqBA=;
+        b=RTn4Q9jpeg/5USWsoiJ11BWeaG3QSolAEdLDUhYIEWpCsiKRxqC1P1DidgTGhuCzVL
+         UHLcL/7oGdaabHzcjBHHmZEhosK+EQt1r6CU9tTRyrYeAZPouQq9yZgdPf4Ac1vbbiHc
+         t+NtOhSkxvNfFXZn22/5L1oLg6egKecMKr+oZ1BkP60dlpPgYO4jKynxhjjVl0VjLMEI
+         7VnQq9Xz0uIvE7xIZxCR5DMvgKIc7epXWKpUL5/wUOjtzRjQiwCP3tv6kRsy57ABRPUo
+         W/zBhQksa8HYOYcnWOpnsr2tDyDIllZaCEHhyi3LG1aO0RFBAakWfAooWYMZ1KSW8ieL
+         uwog==
+X-Gm-Message-State: ACgBeo2fabOfxaaUncQGq5F8+tZv/Gdk/dX/S2BTEsssWItHb7EdhANu
+        5ffkmjZk3Gs3K/3KsWX2FC6jQQ==
+X-Google-Smtp-Source: AA6agR5ksML+MM9uj7Xhr/5FSjtB2SGAkWiAGCgCsk3XNowYdVGQwB+HVYrT/mphSuJLJ1bBxMzmAg==
+X-Received: by 2002:a05:6870:b613:b0:10b:db5f:6026 with SMTP id cm19-20020a056870b61300b0010bdb5f6026mr8768566oab.159.1659974597713;
+        Mon, 08 Aug 2022 09:03:17 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id n16-20020a4ac710000000b0043540f7701esm2229054ooq.31.2022.08.08.09.03.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 09:03:17 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Ohad Ben-Cohen <ohad@wizery.com>, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Minghao Chi <chi.minghao@zte.com.cn>
+Subject: [GIT PULL] hwspinlock updates for v5.20
+Date:   Mon,  8 Aug 2022 11:03:16 -0500
+Message-Id: <20220808160316.2096259-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-References: <20220808030420.8633-1-luke@ljones.dev> <20220808030420.8633-3-luke@ljones.dev>
-In-Reply-To: <20220808030420.8633-3-luke@ljones.dev>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 8 Aug 2022 18:01:30 +0200
-Message-ID: <CAHp75VcR-strGDhaGE78NjToamK98e8UO-rQhU-Ow81AavU5YA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/6] asus-wmi: Implement TUF laptop keyboard LED modes
-To:     "Luke D. Jones" <luke@ljones.dev>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 5:07 AM Luke D. Jones <luke@ljones.dev> wrote:
->
-> Adds support for changing the laptop keyboard LED modes. These
-> are visible effects such as static, rainbow, pulsing, colour cycles.
->
-> Two sysfs attributes are added to asus-nb-wmi:
-> - keyboard_rgb_mode
-> - keyboard_rgb_mode_index
+The following changes since commit ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e:
 
-...
+  Linux 5.18-rc2 (2022-04-10 14:21:36 -1000)
 
-> +       if (sscanf(buf, "%hhd %hhd %hhd", &save, &mode, &speed) != 3)
-> +               return -EINVAL;
+are available in the Git repository at:
 
-Same comment as per v1.
+  https://git.kernel.org/pub/scm/linux/kernel/git/remoteproc/linux.git tags/hwlock-v5.20
 
-...
+for you to fetch changes up to cdab30b44518513003607ecfc8a22de3dbbb78ed:
 
-> +       asus->keyboard_rgb_mode.mode = mode < 12 && mode != 9 ? mode : 0x0a;
+  hwspinlock: qcom: Add support for mmio usage to sfpb-mutex (2022-07-16 21:47:44 -0500)
 
-Same comment as per v1.
+----------------------------------------------------------------
+hwspinlock updates for v5.20
 
-...
+This removes the need for representing the Qualcomm SFPB mutex using an
+intermediate syscon node and it clean up the pm_runtime_get_sync() usage
+in the OMAP hwspinlock driver.
 
-> +       switch (speed) {
-> +       case 0:
-> +               asus->keyboard_rgb_mode.speed = 0xe1;
-> +               break;
-> +       case 1:
-> +               asus->keyboard_rgb_mode.speed = 0xeb;
-> +               break;
-> +       case 2:
-> +               asus->keyboard_rgb_mode.speed = 0xf5;
-> +               break;
-> +       default:
-> +               asus->keyboard_rgb_mode.speed = 0xeb;
+----------------------------------------------------------------
+Christian Marangi (1):
+      hwspinlock: qcom: Add support for mmio usage to sfpb-mutex
 
-break;
+Minghao Chi (1):
+      hwspinlock: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
 
-> +       }
-
-...
-
-> +
-
-A blank line is not needed here.
-
-> +static DEVICE_ATTR_WO(keyboard_rgb_mode);
-
--- 
-With Best Regards,
-Andy Shevchenko
+ drivers/hwspinlock/omap_hwspinlock.c |  6 ++----
+ drivers/hwspinlock/qcom_hwspinlock.c | 28 +++++++++++++++++++++++-----
+ 2 files changed, 25 insertions(+), 9 deletions(-)
