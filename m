@@ -2,78 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 613AEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 21:09:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0254CC25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 21:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244031AbiHHVJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 17:09:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43168 "EHLO
+        id S244152AbiHHVMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 17:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243812AbiHHVJA (ORCPT
+        with ESMTP id S236304AbiHHVMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 17:09:00 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E84219C02
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 14:08:59 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id a7so18855404ejp.2
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 14:08:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=vGL/ZUFLLwrBSAimJhnWItnUczfWEUhMLvlkDlqzesA=;
-        b=WtbS0Rx+b+ff8J3MT+9HprLD/QW7F8kIQjHZ4WrB2flwT5Q1mDuIgtvWoo9NFlO4RN
-         AxsHCUwrfE4UnYl/kBuOp94cOuMPMcWjNCaIiAHT3QnVicGD7IXHPG+5ZFoqjbBEmTAc
-         hubNn5Ayn8UFjfZH7TaBkRfnNdw9hN7drzC2U=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=vGL/ZUFLLwrBSAimJhnWItnUczfWEUhMLvlkDlqzesA=;
-        b=cyOrXKi9+kQAs6KUz906L7R15q6pWo/WIE40wnOChbfZfe6Km7qAgTAmaPdtNJaJjK
-         NrtcauyfijlOyAe2f0qUG1Fc7QC7pHVDfi06RTlUGjwsOk7Jv6jdfKRKRxiGjxJmLsBw
-         tnOGLcSZFs135Ul9n4wfIBHE7WvdImq59mQ2NRiiQ/2Xs7cnY+Od6Zng2Hhu80SivZuX
-         h8+YRS+/gWAApmndI0uan4Fy1dQOSbNhA0/68AGqyrulT3qayVf8HM/ucDfBX8+CjTn1
-         C5I6Ltbu8mycfq+5A+5CBLEWX1Zao9LLGHnCl2SIv6rlPzX3HxQkKv7AdqNrzTNVcAur
-         tYeA==
-X-Gm-Message-State: ACgBeo2ANIJ0aLOG5QGu2Kk+K1s2bsApENxVcVIuM3O+6HqSbVrjFYtn
-        K9f2v+TzF7YIrx9z92fDFNZL5eTzRW7d5PCj
-X-Google-Smtp-Source: AA6agR4Is0cNvtthZ0GBVbIlHsNV2UxLJ5+wiTseqY0ADyiUDz2Rvp22MoBpC8c9uozMrBG6qdEv/Q==
-X-Received: by 2002:a17:907:1629:b0:730:7ad7:24f2 with SMTP id hb41-20020a170907162900b007307ad724f2mr15309500ejc.261.1659992937467;
-        Mon, 08 Aug 2022 14:08:57 -0700 (PDT)
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
-        by smtp.gmail.com with ESMTPSA id l9-20020a1709063d2900b00730af3346d6sm262878ejf.212.2022.08.08.14.08.56
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Aug 2022 14:08:56 -0700 (PDT)
-Received: by mail-wr1-f44.google.com with SMTP id p10so12199068wru.8
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 14:08:56 -0700 (PDT)
-X-Received: by 2002:a5d:6248:0:b0:222:cd3b:94c8 with SMTP id
- m8-20020a5d6248000000b00222cd3b94c8mr4249574wrv.97.1659992936121; Mon, 08 Aug
- 2022 14:08:56 -0700 (PDT)
+        Mon, 8 Aug 2022 17:12:05 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9099917AB0;
+        Mon,  8 Aug 2022 14:12:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659993124; x=1691529124;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ZtSgYuDbaBj2/G6ilDZHPwxBLmBXYG5l1URDjs2uSy8=;
+  b=kFMPbR5TriyGjb3UWxUu5t/nDq33BTLkr0BKWbU34uFCFUqz6pEBGtuz
+   r0MtPcLD1mtY7HW3EzqEzrQXlJTefRPK4gm1sf7g6QaU1G1yA6SiDy+6+
+   k+VHGKQgWuPXXQovByTOKsyGF2eCf6CEARealBfIxWa+v0JZF3ZR1FbdO
+   aTOXwEnyhW+sw7UCHziDJd4dpgapkxLefd+bU8/RUc5zHPclf4dwk2D61
+   xYEdLqIQwWswRZW+MvKOR4bM0t+3nqbR20oTGdf9w8SG+jb60mSidB64C
+   5OQBskGD7+kji/UFLEjn460dr9P3uinxaknap6T8OV11fkpzM40QExQ+v
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="352420977"
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="352420977"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 14:11:51 -0700
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="601225610"
+Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 14:11:50 -0700
+Received: from punajuuri.localdomain (punajuuri.localdomain [192.168.240.130])
+        by paasikivi.fi.intel.com (Postfix) with ESMTP id F16BD202EA;
+        Tue,  9 Aug 2022 00:11:47 +0300 (EEST)
+Received: from sailus by punajuuri.localdomain with local (Exim 4.94.2)
+        (envelope-from <sakari.ailus@linux.intel.com>)
+        id 1oLA2n-004QVL-Ac; Tue, 09 Aug 2022 00:12:13 +0300
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Cc:     Sakari Ailus <sakari.ailus@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        linux-acpi@vger.kernel.org, lkp@lists.01.org, lkp@intel.com,
+        kernel test robot <oliver.sang@intel.com>
+Subject: [PATCH 1/1] ACPI: property: Fix error handling in acpi_init_properties()
+Date:   Tue,  9 Aug 2022 00:12:13 +0300
+Message-Id: <20220808211213.1055148-1-sakari.ailus@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <Yuo/mq0VrqTH9BS+@samfundet.no> <CAHk-=wj6SoG7iSDLijPKWQXhJkfTknMTQ9ZUUTpz+pY=Sq5ziQ@mail.gmail.com>
- <YvFnL37+33cSIo3g@samfundet.no>
-In-Reply-To: <YvFnL37+33cSIo3g@samfundet.no>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 8 Aug 2022 14:08:40 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi6MtKfJCMvcR-O0HMbtGXxZXxrpZ8vUaHO2KFcbRUTOQ@mail.gmail.com>
-Message-ID: <CAHk-=wi6MtKfJCMvcR-O0HMbtGXxZXxrpZ8vUaHO2KFcbRUTOQ@mail.gmail.com>
-Subject: Re: [GIT PULL] AVR32 change for 6.0 - outstanding cleanups
-To:     Hans-Christian Noren Egtvedt <egtvedt@samfundet.no>
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>, hskinnemoen@gmail.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 12:42 PM Hans-Christian Noren Egtvedt
-<egtvedt@samfundet.no> wrote:
->
-> Sure, no problem. I will create a signed tag for next round. Almost done
-> removing AVR32 leftovers.
+buf.pointer, memory for storing _DSD data and nodes, was released if either
+parsing properties or, as recently added, attaching data node tags failed.
+Alas, properties were still left pointing to this memory if parsing
+properties were successful but attaching data node tags failed.
 
-Thanks.
+Fix this by separating error handling for the two, and leaving properties
+intact if data nodes cannot be tagged for a reason or another.
 
-            Linus
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Fixes: 1d52f10917a7 ("ACPI: property: Tie data nodes to acpi handles")
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+---
+Hi Rafael,
+
+This should fix the immediate problem. It needs to be figured out why data
+node tagging doesn't work sometimes but that can wait.
+
+ drivers/acpi/property.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
+index 9711482014a6..201a5a9b2671 100644
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -566,13 +566,13 @@ void acpi_init_properties(struct acpi_device *adev)
+ 					&adev->data, acpi_fwnode_handle(adev)))
+ 		adev->data.pointer = buf.pointer;
+ 
+-	if (!adev->data.pointer ||
+-	    !acpi_tie_nondev_subnodes(&adev->data)) {
+-		acpi_untie_nondev_subnodes(&adev->data);
++	if (!adev->data.pointer) {
+ 		acpi_handle_debug(adev->handle, "Invalid _DSD data, skipping\n");
+ 		ACPI_FREE(buf.pointer);
++	} else {
++		if (!acpi_tie_nondev_subnodes(&adev->data))
++			acpi_untie_nondev_subnodes(&adev->data);
+ 	}
+-
+  out:
+ 	if (acpi_of && !adev->flags.of_compatible_ok)
+ 		acpi_handle_info(adev->handle,
+-- 
+2.30.2
+
