@@ -2,103 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE171C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E53AC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 03:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235209AbiHHCxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 22:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
+        id S235456AbiHHDE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 23:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235284AbiHHCx1 (ORCPT
+        with ESMTP id S235144AbiHHDEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 22:53:27 -0400
-Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F278388B;
-        Sun,  7 Aug 2022 19:53:26 -0700 (PDT)
-Received: by mail-ua1-x92a.google.com with SMTP id f10so3051298uap.2;
-        Sun, 07 Aug 2022 19:53:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+pXr+XtINASTHtS2Vl6bIYsQmgt7hCm2Uk02zirBamE=;
-        b=DuIfbPNc/jD0VNTOP+g2ETrBj0e4lcoEJxt0+xWyNjjDJ38fFgmGqqOAlqzAbHD4Kd
-         c24UswnzFicvTMSOLtuwPo/5J9vWDYheAaCnP0jSi2rEVAjy1I42niESIVC1yPsq8/Jr
-         qa6cSQQ4lkesXFWjp2to05n2Ojnq2ONF6FAihQswTcaWaaNW8K0oc+KG5BHOHTxJvqee
-         QoyS6q23KuP+0Pvn68t7wiwX730lDXQpewZdUmFfE3E1b0nwRgh95/bwKMdooFCEngej
-         yMdQDfhF44abEobNk4NhCHW+mwcQxe+KdkbkQTa1Je59Di/IwaNkdKczhDmZQDdre69q
-         Safw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+pXr+XtINASTHtS2Vl6bIYsQmgt7hCm2Uk02zirBamE=;
-        b=0HJN2exEr2Km/BxMnY6E01+/lKTQSy+W3dqfZW50obBFKffyiyPLximtWUcgHYTYel
-         SGOjlSK5kmSkd4znWXAxGaX/DuhZT0gH7PoBda7nBoGE7GJ5Q+78N+TM9r8Zj+2UhEXQ
-         b3aSvkmuqbv8aLeW6IAFb8ec52E4n8vH2TVg/1+/VzzhyQ0+8NwmyUmL2JtP3J/VJuZT
-         UbgawzjjD5Z3MH1rGYm63dd/AYfGhkxcuZJxL6qGK6v2B5LCN6wDKChnjnoHY3Vk6SkL
-         jJTjMi7f1mss3sZsR0V7Glyn0oZqe9ev2Yo+1b6g5xVY77wvlV3KZSM+B/PNPD5KEa+N
-         MFKw==
-X-Gm-Message-State: ACgBeo1n+Vj0MQYyyE3TijBSv/rebj5HJOwskyW6MFXFPG6zFmtrRO4F
-        msckk0b7j9H/EhxN+Y6rlvw=
-X-Google-Smtp-Source: AA6agR6nrcGsVhmRrgD+6HWTXlPcSeQ6XmGOLfsFd/QFIsTf/jcpqbHZKwGVSQVCG1eWZYCMKT82zQ==
-X-Received: by 2002:a9f:35c9:0:b0:387:967a:fa31 with SMTP id u9-20020a9f35c9000000b00387967afa31mr6908438uad.70.1659927205668;
-        Sun, 07 Aug 2022 19:53:25 -0700 (PDT)
-Received: from bullseye-server.. (179-107-140-16.zamix.com.br. [179.107.140.16])
-        by smtp.gmail.com with ESMTPSA id w8-20020ab07288000000b00384293c4199sm8263979uao.23.2022.08.07.19.53.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Aug 2022 19:53:25 -0700 (PDT)
-From:   =?UTF-8?q?Jo=C3=A3o=20H=2E=20Spies?= <jhlspies@gmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Jianqun Xu <jay.xu@rock-chips.com>
-Cc:     Maya Matuszczyk <maccraft123mc@gmail.com>,
-        =?UTF-8?q?Jo=C3=A3o=20H=2E=20Spies?= <jhlspies@gmail.com>,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] pinctrl: rockchip: Enhance support for IRQ_TYPE_EDGE_BOTH
-Date:   Mon,  8 Aug 2022 02:51:20 +0000
-Message-Id: <20220808025121.110223-1-jhlspies@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Sun, 7 Aug 2022 23:04:52 -0400
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE5D7BE02;
+        Sun,  7 Aug 2022 20:04:51 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 2E3B45C00DA;
+        Sun,  7 Aug 2022 23:04:51 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Sun, 07 Aug 2022 23:04:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ljones.dev; h=cc
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1659927891; x=1660014291; bh=b8
+        zBqnbjGfkGFv4egHJI0533lSwO5A03klYpq+LVrGI=; b=dbxXsl4WCFuQnSu4BL
+        lqzgHTw6+utL+NPN3q5voJHNAlLO32h7GyVvdk2E4qLR5k2PUg9EHeeYS0K39ByU
+        htPlDjjNezwIQD9YDgxSlRYsvuyEy4zgPHYnHAqQOaFr9p8BwOymSbMg46op/8A4
+        lNb8EpcJs/n6mi1IBm6HYxK2l7cW7KEsU/f8GqTpHY7AEke0ARzgXetf2IP2SuhL
+        sXQJntftDgAchpJgYltEbH3Rb6W9RKDRxaOazn9//iT7e5zf6U9TIpDve+4IK6rW
+        BfDciHHlvvv/twv42SQtLCN7CXaKBspoFVMNGuPMIbUOpdmzxHnU4yqxBla8oRQy
+        b7eQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; t=1659927891; x=1660014291; bh=b8zBqnbjGfkGF
+        v4egHJI0533lSwO5A03klYpq+LVrGI=; b=owk211u0JCE1gSsKB+I36FLMwSBAv
+        coI1r0f1QGKTE7RQuA8+5lxn4DSRBjUxrOSK9EOm9r/wYWM8Zi4lBVHHTz1LKz7k
+        wTa6DyIsHNhVwwxZfb+cfjIoY5lV2CNS3/aBq0gSViBjSXNstHv+ecrJ27Ac5IHj
+        ETtwYxXX5XynfgX5vlpuAAqZ63/FHSc1TcSmTFCq+ibr/J6838dsee5ZoM1IXMJ2
+        Kp3V25kyk60+AoiU+ZD8Qm3/YOh+Jw5sY+TBnpEdRydDjXZJi9SkHnkE+U9NqpGA
+        LgM5CVGk1OlxYQ9Ya/3KUoMS+q01AcRCOQ88EwAPqUGcimM/N6olys8Yw==
+X-ME-Sender: <xms:Un3wYpBPah52unz8pM-ClXzUvNjopyQx4xNPcgbybYahOGNwhIlYqA>
+    <xme:Un3wYnhcdfeGzPSb6_0-rvLqBuV89Wkq5iFC0C8GMaHL2isOGSAXKDCmwZ0UHrJTL
+    y_w-v7RxlNVu_Dagbc>
+X-ME-Received: <xmr:Un3wYkmHDBRpy778Ei-O38-7b7-UGfUsDDjHdP07tBXoSZ55Mrj0Ox1UFwbv>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefjedgieegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffojghfggfgsedtke
+    ertdertddtnecuhfhrohhmpedfnfhukhgvucffrdculfhonhgvshdfuceolhhukhgvsehl
+    jhhonhgvshdruggvvheqnecuggftrfgrthhtvghrnhepgfetfedugfetudeuheetjefhue
+    fggfelleetvdevtefhueeujeefvdegleevhefgnecuvehluhhsthgvrhfuihiivgeptden
+    ucfrrghrrghmpehmrghilhhfrhhomheplhhukhgvsehljhhonhgvshdruggvvh
+X-ME-Proxy: <xmx:Un3wYjycEBVDL-6ooiWjj6yvi4RWoJvcK45UrrOrZyqlInfTu1_f-Q>
+    <xmx:Un3wYuQxBDCn_sfPKFbcGeZoQZUXBEbmsggZukreh0nWAkx5lbu0Rw>
+    <xmx:Un3wYmaysm04fVn5rSbpsAVq9P_4xsKDwynxTVB3qm-aNYCW2ctFPQ>
+    <xmx:U33wYpcXRlpPhZ4TdgTJNI4MkzNzOI6aSobuk5p_nJ_0Rqk9QOl-4Q>
+Feedback-ID: i5ec1447f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 7 Aug 2022 23:04:48 -0400 (EDT)
+From:   "Luke D. Jones" <luke@ljones.dev>
+To:     hdegoede@redhat.com
+Cc:     markgross@kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-kernel@vger.kernel.org, "Luke D. Jones" <luke@ljones.dev>
+Subject: [PATCH v2 1/6] asus-wmi: Implement TUF laptop keyboard RGB control
+Date:   Mon,  8 Aug 2022 15:04:15 +1200
+Message-Id: <20220808030420.8633-2-luke@ljones.dev>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220808030420.8633-1-luke@ljones.dev>
+References: <20220808030420.8633-1-luke@ljones.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Switching between falling/rising edges for IRQ_TYPE_EDGE_BOTH on pins that
-require debounce can cause the device to lose events due to a desync
-between pin state and irq type.
+Adds support for TUF laptop RGB control via the multicolor LED API.
 
-This problem is resolved by switching between IRQ_TYPE_LEVEL_LOW and
-IRQ_TYPE_LEVEL_HIGH instead.
+As this is the bas for adjusting only the RGB values, it sets the
+default mode of the keyboard to static since there is no way to read
+any existing settings from the device. These defaults overwrite the
+booted state of the keyboard when the module is loaded.
 
-Fixes: 936ee26 ("gpio/rockchip: add driver for rockchip gpio")
-Signed-off-by: João H. Spies <jhlspies@gmail.com>
+Signed-off-by: Luke D. Jones <luke@ljones.dev>
 ---
- drivers/gpio/gpio-rockchip.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/platform/x86/asus-wmi.c            | 80 ++++++++++++++++++++++
+ include/linux/platform_data/x86/asus-wmi.h |  3 +
+ 2 files changed, 83 insertions(+)
 
-diff --git a/drivers/gpio/gpio-rockchip.c b/drivers/gpio/gpio-rockchip.c
-index 099e358d2491..48b948723077 100644
---- a/drivers/gpio/gpio-rockchip.c
-+++ b/drivers/gpio/gpio-rockchip.c
-@@ -417,11 +417,11 @@ static int rockchip_irq_set_type(struct irq_data *d, unsigned int type)
- 			goto out;
- 		} else {
- 			bank->toggle_edge_mode |= mask;
--			level |= mask;
-+			level &= ~mask;
+diff --git a/drivers/platform/x86/asus-wmi.c b/drivers/platform/x86/asus-wmi.c
+index 0e7fbed8a50d..233e73f4313d 100644
+--- a/drivers/platform/x86/asus-wmi.c
++++ b/drivers/platform/x86/asus-wmi.c
+@@ -25,6 +25,7 @@
+ #include <linux/input/sparse-keymap.h>
+ #include <linux/kernel.h>
+ #include <linux/leds.h>
++#include <linux/led-class-multicolor.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
+ #include <linux/pci_hotplug.h>
+@@ -117,6 +118,9 @@ static const char * const ashs_ids[] = { "ATK4001", "ATK4002", NULL };
  
- 			/*
- 			 * Determine gpio state. If 1 next interrupt should be
--			 * falling otherwise rising.
-+			 * low otherwise high.
- 			 */
- 			data = readl(bank->reg_base + bank->gpio_regs->ext_port);
- 			if (data & mask)
+ static int throttle_thermal_policy_write(struct asus_wmi *);
+ 
++static int tuf_rgb_brightness_set(struct led_classdev *cdev,
++							enum led_brightness brightness);
++
+ static bool ashs_present(void)
+ {
+ 	int i = 0;
+@@ -190,6 +194,14 @@ struct fan_curve_data {
+ 	u8 percents[FAN_CURVE_POINTS];
+ };
+ 
++struct keyboard_rgb_led {
++	struct mc_subled subled_info[3]; /* r g b */
++	struct led_classdev_mc dev;
++	u8 save;
++	u8 mode;
++	u8 speed;
++};
++
+ struct asus_wmi {
+ 	int dsts_id;
+ 	int spec;
+@@ -234,6 +246,8 @@ struct asus_wmi {
+ 	bool dgpu_disable_available;
+ 	bool dgpu_disable;
+ 
++	struct keyboard_rgb_led keyboard_rgb_mode;
++
+ 	bool throttle_thermal_policy_available;
+ 	u8 throttle_thermal_policy_mode;
+ 
+@@ -1028,12 +1042,40 @@ static enum led_brightness lightbar_led_get(struct led_classdev *led_cdev)
+ 	return result & ASUS_WMI_DSTS_LIGHTBAR_MASK;
+ }
+ 
++static int tuf_rgb_brightness_set(struct led_classdev *cdev,
++	enum led_brightness brightness)
++{
++	struct led_classdev_mc *mc_cdev = lcdev_to_mccdev(cdev);
++	struct keyboard_rgb_led *rgb = container_of(mc_cdev, struct keyboard_rgb_led, dev);
++	struct asus_wmi *asus = container_of(rgb, struct asus_wmi, keyboard_rgb_mode);
++	struct device *dev = &asus->platform_device->dev;
++	u8 r, g, b;
++	int err;
++	u32 ret;
++
++	led_mc_calc_color_components(mc_cdev, brightness);
++	r = mc_cdev->subled_info[0].brightness;
++	g = mc_cdev->subled_info[1].brightness;
++	b = mc_cdev->subled_info[2].brightness;
++
++	/* Writing out requires some defaults. This will overwrite boot mode */
++	err = asus_wmi_evaluate_method3(ASUS_WMI_METHODID_DEVS, ASUS_WMI_DEVID_TUF_RGB_MODE,
++				rgb->save | (rgb->mode << 8) | (r << 16) | (g << 24),
++				(b) | (rgb->speed << 8),
++				&ret);
++	if (err)
++		dev_err(dev, "Unable to set TUF RGB data?\n");
++
++	return err;
++}
++
+ static void asus_wmi_led_exit(struct asus_wmi *asus)
+ {
+ 	led_classdev_unregister(&asus->kbd_led);
+ 	led_classdev_unregister(&asus->tpd_led);
+ 	led_classdev_unregister(&asus->wlan_led);
+ 	led_classdev_unregister(&asus->lightbar_led);
++	led_classdev_multicolor_unregister(&asus->keyboard_rgb_mode.dev);
+ 
+ 	if (asus->led_workqueue)
+ 		destroy_workqueue(asus->led_workqueue);
+@@ -1105,6 +1147,44 @@ static int asus_wmi_led_init(struct asus_wmi *asus)
+ 					   &asus->lightbar_led);
+ 	}
+ 
++	if (asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_TUF_RGB_MODE)) {
++		struct mc_subled *mc_led_info = asus->keyboard_rgb_mode.subled_info;
++		struct led_classdev_mc *mc_cdev = &asus->keyboard_rgb_mode.dev;
++		struct device *dev = &asus->platform_device->dev;
++		u8 led_brightness = 255;
++
++		/*
++		 * asus::kbd_backlight still controls a base 3-level backlight and when
++		 * it is on 0, the RGB is not visible at all. RGB should be treated as
++		 * an additional step.
++		 */
++		mc_cdev->led_cdev.name = "asus::multicolour::kbd_backlight";
++		mc_cdev->led_cdev.flags = LED_CORE_SUSPENDRESUME | LED_RETAIN_AT_SHUTDOWN;
++		mc_cdev->led_cdev.brightness_set_blocking = tuf_rgb_brightness_set;
++		mc_cdev->led_cdev.brightness_get = NULL;
++
++		mc_cdev->subled_info = mc_led_info;
++		mc_led_info[0].intensity = 127;
++		mc_led_info[0].color_index = LED_COLOR_ID_RED;
++		mc_led_info[1].color_index = LED_COLOR_ID_GREEN;
++		mc_led_info[2].color_index = LED_COLOR_ID_BLUE;
++		mc_cdev->num_colors = 3;
++
++		/*
++		 * It's not possible to get last set data from device so set defaults
++		 * to make it safe for a user to change either RGB or modes.
++		 */
++		asus->keyboard_rgb_mode.save = 1;
++		asus->keyboard_rgb_mode.mode = 0;
++		asus->keyboard_rgb_mode.speed = 0xeb;
++
++		mc_cdev->led_cdev.brightness = led_brightness;
++		mc_cdev->led_cdev.max_brightness = led_brightness;
++		led_mc_calc_color_components(mc_cdev, led_brightness);
++
++		rv = led_classdev_multicolor_register(dev, mc_cdev);
++	}
++
+ error:
+ 	if (rv)
+ 		asus_wmi_led_exit(asus);
+diff --git a/include/linux/platform_data/x86/asus-wmi.h b/include/linux/platform_data/x86/asus-wmi.h
+index a571b47ff362..d63c9945a17d 100644
+--- a/include/linux/platform_data/x86/asus-wmi.h
++++ b/include/linux/platform_data/x86/asus-wmi.h
+@@ -98,6 +98,9 @@
+ /* dgpu on/off */
+ #define ASUS_WMI_DEVID_DGPU		0x00090020
+ 
++/* TUF laptop RGB control */
++#define ASUS_WMI_DEVID_TUF_RGB_MODE	0x00100056
++
+ /* DSTS masks */
+ #define ASUS_WMI_DSTS_STATUS_BIT	0x00000001
+ #define ASUS_WMI_DSTS_UNKNOWN_BIT	0x00000002
 -- 
-2.30.2
+2.37.1
 
