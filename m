@@ -2,153 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4AA6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 07:41:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88943C25B06
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 07:41:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238101AbiHHHlO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 03:41:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47316 "EHLO
+        id S237399AbiHHHli (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 03:41:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239232AbiHHHkx (ORCPT
+        with ESMTP id S241654AbiHHHl1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 03:40:53 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE87EA188;
-        Mon,  8 Aug 2022 00:40:50 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.188:35708.210023178
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-182.42.224.56 (unknown [172.18.0.188])
-        by chinatelecom.cn (HERMES) with SMTP id F276528009E;
-        Mon,  8 Aug 2022 15:40:40 +0800 (CST)
-X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.188])
-        by app0023 with ESMTP id b08883f68b494bb590f1e44e66e496b3 for huyd12@chinatelecom.cn;
-        Mon, 08 Aug 2022 15:40:46 CST
-X-Transaction-ID: b08883f68b494bb590f1e44e66e496b3
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.188
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-Subject: Re: [PATCH] net:bonding:support balance-alb interface with vlan to
- bridge
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        huyd12@chinatelecom.cn
-References: <20220805074556.70297-1-sunshouxin@chinatelecom.cn>
- <3917.1659727127@famine>
-From:   "sunshouxin@chinatelecom.cn" <sunshouxin@chinatelecom.cn>
-Message-ID: <e557c459-3337-6e5e-d6b5-28a89513b919@chinatelecom.cn>
-Date:   Mon, 8 Aug 2022 15:40:39 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Mon, 8 Aug 2022 03:41:27 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA8712AF9;
+        Mon,  8 Aug 2022 00:41:23 -0700 (PDT)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2787XHsQ018462;
+        Mon, 8 Aug 2022 09:41:02 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=f/9YJc7lHxTxvRxehhYNQeqTxdKH0Po556YIBtfjFVI=;
+ b=PynfWpXh4BK8uD5mI+3Ml5QaJGYo91w4fBV/zDqzvFX9i9HIirOb/7ETxNvAd+0jPfHn
+ HbejdU16WDmJHAi+JsCJe3dh5gf6Y0KpVBgW4vem2i9RgSTohtROVVnQL7fNGnwGwaOu
+ CH4fF2CWg6hIL69F5SE6V8jEQ8XzJcAJt37zvgxRWE9Wr7PEtxk+tWuhepNHGTfLBgMk
+ 4Ou21qthE63kgPPLmMokxpj/kA4ClRNaXdyUGuhVDVgU/UswzxW/AyDhdGNUVFn4JPyu
+ flwtHB9CFEMly/VwyuDVxUQMmRk7zag7LNtXA+c+DoXnNIBx19XcJliWCdfK0tTYtEqR 4g== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hsfn07w9b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 08 Aug 2022 09:41:02 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 103AA10002A;
+        Mon,  8 Aug 2022 09:41:00 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7CD042171DE;
+        Mon,  8 Aug 2022 09:41:00 +0200 (CEST)
+Received: from localhost (10.75.127.46) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 8 Aug
+ 2022 09:40:59 +0200
+From:   <patrice.chotard@foss.st.com>
+To:     Mark Brown <broonie@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
+CC:     <linux-spi@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
+        <patrice.chotard@foss.st.com>, <devicetree@vger.kernel.org>
+Subject: [PATCH 1/3] dt-bindings: spi: stm32: Add st,dual-flash property in st,stm32-qspi.yaml
+Date:   Mon, 8 Aug 2022 09:40:49 +0200
+Message-ID: <20220808074051.44736-2-patrice.chotard@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220808074051.44736-1-patrice.chotard@foss.st.com>
+References: <20220808074051.44736-1-patrice.chotard@foss.st.com>
 MIME-Version: 1.0
-In-Reply-To: <3917.1659727127@famine>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.46]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-08_05,2022-08-05_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Patrice Chotard <patrice.chotard@foss.st.com>
 
-在 2022/8/6 3:18, Jay Vosburgh 写道:
-> Sun Shouxin <sunshouxin@chinatelecom.cn> wrote:
->
->> In my test, balance-alb bonding with two slaves eth0 and eth1,
->> and then Bond0.150 is created with vlan id attached bond0.
->> After adding bond0.150 into one linux bridge, I noted that Bond0,
->> bond0.150 and  bridge were assigned to the same MAC as eth0.
->> Once bond0.150 receives a packet whose dest IP is bridge's
->> and dest MAC is eth1's, the linux bridge cannot process it as expected.
->> The patch fix the issue, and diagram as below:
->>
->> eth1(mac:eth1_mac)--bond0(balance-alb,mac:eth0_mac)--eth0(mac:eth0_mac)
->>       		      |
->>       		   bond0.150(mac:eth0_mac)
->>       		      |
->>       	           bridge(ip:br_ip, mac:eth0_mac)--other port
-> 	In principle, since 567b871e5033, the bond alb mode shouldn't be
-> load balancing incoming traffic for an IP address arriving via a bridge
-> configured above the bond.
->
-> 	Looking at it, there's logic in rlb_arp_xmit to exclude the
-> bridge-over-bond case, but it relies on the MAC of traffic arriving via
-> the bridge being different from the bond's MAC.  I suspect this is
-> because 567b871e5033 was intended to manage traffic originating from
-> other bridge ports, and didn't consider the case of the bridge itself
-> when the bridge MAC equals the bond MAC.
->
-> 	The bridge MAC will equal the bond MAC if the bond is the first
-> port added to the bridge, because the bridge will normally adopt the MAC
-> of the first port added (unless manually set to something else).
->
-> 	I think the correct fix here is to update the test in
-> rlb_arp_xmit to properly exclude all bridge traffic (i.e., handle the
-> bridge MAC == bond MAC case), not to alter the destination MAC address
-> in incoming traffic.
->
-> 	-J
+Add new property st,dual-flash which allows to use the QSPI interface as a
+communication channel using up to 8 qspi line.
+This mode can only be used if cs-gpios property is defined.
 
+Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
+---
+ Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Thanks your warm instruction, I'll resend patch as your suggestion.
+diff --git a/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml b/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml
+index 6ec6f556182f..5e4f9109799e 100644
+--- a/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml
++++ b/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml
+@@ -46,6 +46,14 @@ properties:
+       - const: tx
+       - const: rx
+ 
++  st,dual-flash:
++    type: boolean
++    description:
++      Allows to use 8 data lines in case cs-gpios property is defined.
++
++dependencies:
++  st,dual-flash: [ cs-gpios ]
++
+ required:
+   - compatible
+   - reg
+-- 
+2.25.1
 
-   -Sun
-
-
->
->> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
->> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
->> ---
->> drivers/net/bonding/bond_main.c | 20 ++++++++++++++++++++
->> 1 file changed, 20 insertions(+)
->>
->> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
->> index e75acb14d066..6210a9c7ca76 100644
->> --- a/drivers/net/bonding/bond_main.c
->> +++ b/drivers/net/bonding/bond_main.c
->> @@ -1537,9 +1537,11 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
->> 	struct sk_buff *skb = *pskb;
->> 	struct slave *slave;
->> 	struct bonding *bond;
->> +	struct net_device *vlan;
->> 	int (*recv_probe)(const struct sk_buff *, struct bonding *,
->> 			  struct slave *);
->> 	int ret = RX_HANDLER_ANOTHER;
->> +	unsigned int headroom;
->>
->> 	skb = skb_share_check(skb, GFP_ATOMIC);
->> 	if (unlikely(!skb))
->> @@ -1591,6 +1593,24 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
->> 				  bond->dev->addr_len);
->> 	}
->>
->> +	if (skb_vlan_tag_present(skb)) {
->> +		if (BOND_MODE(bond) == BOND_MODE_ALB && skb->pkt_type == PACKET_HOST) {
->> +			vlan = __vlan_find_dev_deep_rcu(bond->dev, skb->vlan_proto,
->> +							skb_vlan_tag_get(skb) & VLAN_VID_MASK);
->> +			if (vlan) {
->> +				if (vlan->priv_flags & IFF_BRIDGE_PORT) {
->> +					headroom = skb->data - skb_mac_header(skb);
->> +					if (unlikely(skb_cow_head(skb, headroom))) {
->> +						kfree_skb(skb);
->> +						return RX_HANDLER_CONSUMED;
->> +					}
->> +					bond_hw_addr_copy(eth_hdr(skb)->h_dest, vlan->dev_addr,
->> +							  vlan->addr_len);
->> +				}
->> +			}
->> +		}
->> +	}
->> +
->> 	return ret;
->> }
->>
->> -- 
->> 2.27.0
->>
-> ---
-> 	-Jay Vosburgh, jay.vosburgh@canonical.com
