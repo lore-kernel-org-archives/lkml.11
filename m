@@ -2,120 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DE2C25B0C
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:38:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 420D1C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242421AbiHHPi0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 11:38:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46504 "EHLO
+        id S243423AbiHHPjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 11:39:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233652AbiHHPiV (ORCPT
+        with ESMTP id S233652AbiHHPjf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 11:38:21 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CBD16599;
-        Mon,  8 Aug 2022 08:38:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=7mDwuqu1nsWLkvdlsGue1nXAGyykJn4H1kQrpjJWKK4=; b=nvwwtNT9v+5EaJYdYt7rD+i76Z
-        A+qfeXLo54sRVHQkL6knwB+rhdWkzmhrz0GI6se2mb4qXp79J+AINty7ndHbNziIwI2DN3eimBLNh
-        Whee4B4u8Abu7EsEy0jO8isTNizj5NAuDPdgDDc/gDCWJeO799pW1h2dodNc9pJAbzpKdidEAfyFW
-        DkqmqiWbdA1qcB8lf3F2nJmUMPWYY+wPYT+eR3Apomdy5tIn1+gk82LIX8U0kTWRZeLdahbhzKhEK
-        /qZOUo+yZYQGhdflMJTwxHoN45L9Sb1zdlV4MYrzNHaHuW0EaXEywPnC2wyHEMzHQyhS3aDnYWm9F
-        rA38+8Bg==;
-Received: from [187.56.70.103] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oL4pZ-002u80-Gv; Mon, 08 Aug 2022 17:38:13 +0200
-Message-ID: <55a074a0-ca3a-8afc-4336-e40cff757394@igalia.com>
-Date:   Mon, 8 Aug 2022 12:37:46 -0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 03/13] firmware: google: Test spinlock on panic path to
- avoid lockups
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Evan Green <evgreen@chromium.org>, linux-efi@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
+        Mon, 8 Aug 2022 11:39:35 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3267A6599;
+        Mon,  8 Aug 2022 08:39:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=XPl7JeNLjk9TMLNSixLvsZ+qQ4KPho8175mhT8bLnNk=; b=v4A/aroBq0LryFSV4/Iuj+CePP
+        m/2j3fglEbks9mGRfNYBKV1iPkq4IN5rhOjpm0HbxzULHD5jnaFMgRAPHKslHdSoLpNu/EeMoSlPh
+        Fiw8j16eHxehCM4fUs4fmZGWoIPT3QBwfDIb7mf4jTpi6wNzh8WeYqnPPA6Q2cobwzksPSMHlfISN
+        qHg7OoKxEAGDU0SJwE2PYxHs17+jtZDyfXK8/VXUM29uMieBz7YRX7kUsh0R05Y+oJUMnWGeomNSL
+        aWdkuecqof+I8HtG9vXkzgVxrpfVXl9vA4YCIsmMFWiHr6TKpDaD8qOtWmJ5gRH2VXxPQA3W5Nc9L
+        GDJWprLA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oL4qY-00E1Vg-4F; Mon, 08 Aug 2022 15:39:14 +0000
+Date:   Mon, 8 Aug 2022 16:39:14 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Mikulas Patocka <mpatocka@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Will Deacon <will@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
         Ard Biesheuvel <ardb@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
-        Petr Mladek <pmladek@suse.com>, kexec@lists.infradead.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, mikelley@microsoft.com,
-        hidehiro.kawai.ez@hitachi.com, jgross@suse.com,
-        john.ogness@linutronix.de, Kees Cook <keescook@chromium.org>,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, Alan Stern <stern@rowland.harvard.edu>,
-        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
-        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
-        David Gow <davidgow@google.com>,
-        Julius Werner <jwerner@chromium.org>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
- <20220719195325.402745-4-gpiccoli@igalia.com>
- <CAE=gft71vH+P3iAFXC0bLu0M2x2V4uJGWc82Xa+246ECuUdT-w@mail.gmail.com>
- <019ae735-3d69-cb4e-c003-b83cc8cd76f8@igalia.com>
- <YvErMyM8FNjeDeiW@kroah.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <YvErMyM8FNjeDeiW@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v5] add barriers to buffer functions
+Message-ID: <YvEuIg3669UeSwjD@casper.infradead.org>
+References: <alpine.LRH.2.02.2208010628510.22006@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2208010642220.22006@file01.intranet.prod.int.rdu2.redhat.com>
+ <YuflGG60pHiXp2z/@casper.infradead.org>
+ <alpine.LRH.2.02.2208011040190.27101@file01.intranet.prod.int.rdu2.redhat.com>
+ <YuyNE5c06WStxQ2z@casper.infradead.org>
+ <alpine.LRH.2.02.2208070732160.30857@file01.intranet.prod.int.rdu2.redhat.com>
+ <Yu/RJtoJPhkWXIdP@casper.infradead.org>
+ <alpine.LRH.2.02.2208080928580.8160@file01.intranet.prod.int.rdu2.redhat.com>
+ <YvEgZuSdv8XHtkJg@casper.infradead.org>
+ <alpine.LRH.2.02.2208081050330.8160@file01.intranet.prod.int.rdu2.redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.LRH.2.02.2208081050330.8160@file01.intranet.prod.int.rdu2.redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/08/2022 12:26, Greg Kroah-Hartman wrote:
-> [...]
->>
->> Ard / Greg, do you think you could get this patch through your -next (or
->> -fixes) trees? Not sure which tree is the most common for picking GSMI
->> stuff.
+On Mon, Aug 08, 2022 at 10:57:45AM -0400, Mikulas Patocka wrote:
+> On Mon, 8 Aug 2022, Matthew Wilcox wrote:
 > 
-> Picking out an individual patch from a series with as many responses and
-> threads like this one is quite difficult.
+> > On Mon, Aug 08, 2022 at 10:26:10AM -0400, Mikulas Patocka wrote:
+> > > On Sun, 7 Aug 2022, Matthew Wilcox wrote:
+> > > > > +static __always_inline void set_buffer_locked(struct buffer_head *bh)
+> > > > > +{
+> > > > > +	set_bit(BH_Lock, &bh->b_state);
+> > > > > +}
+> > > > > +
+> > > > > +static __always_inline int buffer_locked(const struct buffer_head *bh)
+> > > > > +{
+> > > > > +	bool ret = test_bit(BH_Lock, &bh->b_state);
+> > > > > +	/*
+> > > > > +	 * pairs with smp_mb__after_atomic in unlock_buffer
+> > > > > +	 */
+> > > > > +	if (!ret)
+> > > > > +		smp_acquire__after_ctrl_dep();
+> > > > > +	return ret;
+> > > > > +}
+> > > > 
+> > > > Are there places that think that lock/unlock buffer implies a memory
+> > > > barrier?
+> > > 
+> > > There's this in fs/reiserfs:
+> > > 
+> > > if (!buffer_dirty(bh) && !buffer_locked(bh)) {
+> > > 	reiserfs_free_jh(bh); <--- this could be moved before buffer_locked
+> > 
+> > It might be better to think of buffer_locked() as
+> > buffer_someone_has_exclusive_access().  I can't see the problem with
+> > moving the reads in reiserfs_free_jh() before the read of buffer_locked.
+> > 
+> > > if (buffer_locked((journal->j_header_bh))) {
+> > > 	...
+> > > }
+> > > journal->j_last_flush_trans_id = trans_id;
+> > > journal->j_first_unflushed_offset = offset;
+> > > jh = (struct reiserfs_journal_header *)(journal->j_header_bh->b_data); <--- this could be moved before buffer_locked
+> > 
+> > I don't think b_data is going to be changed while someone else holds
+> > the buffer locked.  That's initialised by set_bh_page(), which is an
+> > initialisation-time thing, before the BH is visible to any other thread.
 > 
-> Just resend this as a stand-alone patch if you want it applied
-> stand-alone as our tools want to apply a whole patch series at once.
+> So, do you think that we don't need a barrier in buffer_locked()?
+
+That's my feeling.  Of course, you might not be the only one confused,
+and if fs authors in general have made the mistake of thinking that
+buffer_locked is serialising, then it might be better to live up to
+that expectation.
+
+> There is also this (where the BUG_ON(!buffer_uptodate(bh)) saves it).
+>                 if (buffer_locked(bh)) {
+>                         int depth;
+>                         PROC_INFO_INC(sb, scan_bitmap.wait);
+>                         depth = reiserfs_write_unlock_nested(sb);
+>                         __wait_on_buffer(bh);
+>                         reiserfs_write_lock_nested(sb, depth);
+>                 }
+>                 BUG_ON(!buffer_uptodate(bh));
+>                 BUG_ON(atomic_read(&bh->b_count) == 0);
 > 
->> I'm trying to get these fixes merged individually in their trees to not
->> stall the whole series and increase the burden of re-submitting.
-> 
-> The burden is on the submitter, not the maintainer as we have more
-> submitters than reviewers/maintainers.
-> 
+>                 if (info->free_count == UINT_MAX)
+>                         reiserfs_cache_bitmap_metadata(sb, bh, info); <--- this could be moved before buffer_locked if there were no BUG_ONs
 
-I understand, thanks for letting me know!
+It could be moved before buffer_locked(), but I don't see the harm in
+that.  Look at how reiserfs_read_bitmap_block() gets the bh:
 
-Let me clarify / ask something: this series, for example, is composed as
-a bunch of patches "centered" around the same idea, panic notifiers
-improvements/fixes. But its patches belong to completely different
-subsystems, like EFI/misc, architectures (alpha, parisc, arm), core
-kernel code, etc.
+        bh = sb_bread(sb, block);
 
-What is the best way of getting this merged?
-(a) Re-send individual patches with the respective Review/ACK tags to
-the proper subsystem, or;
-
-(b) Wait until the whole series is ACKed/Reviewed, and a single
-maintainer (like you or Andrew, for example) would pick the whole series
-and apply at once, even if it spans across multiple parts of the kernel?
-
-Let me know what is the general preference of the kernel maintainers,
-and I'll gladly follow that =)
-
-Thanks,
-
-
-Guilherme
+__bread_gfp() has either already read the buffer (and it's uptodate),
+in which case it returns it.  Or it calls __bread_slow() which will do
+the read and check uptodate before returning it.  I wouldn't be surprised
+to find that this buffer_locked() check is actually dead code, but I have
+no desire to dive into reiserfs far enough to find out whether it's dead
+code or not.
