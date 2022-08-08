@@ -2,151 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC70BC25B08
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 23:47:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D25F9C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 23:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244453AbiHHXrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 19:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36134 "EHLO
+        id S244582AbiHHXrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 19:47:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230072AbiHHXrN (ORCPT
+        with ESMTP id S230072AbiHHXr3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 19:47:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 893AA5FC1
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 16:47:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660002431;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=X5KqcD8vx4696/tvPTBo340K93s7EUOcDjiDbh4jg8c=;
-        b=JPSBk30HtEXziCeK7em+/Wj892MsUcguiwqjVG8VAmTis09YUu+NgnYy2DSoh/ofeCKuX4
-        wTX99AehZ4MuDKukQv6KXk2Nt415yawP0VdLp5MjI9J6+sAy9GfrZ2BjTvBs2mIFQDcD9h
-        S3o0R5yUFowDhG5OLnz+njxYtZv8mUs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-384-wWST4vMdPgCqHfXORRJARA-1; Mon, 08 Aug 2022 19:47:10 -0400
-X-MC-Unique: wWST4vMdPgCqHfXORRJARA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 09E21811E84;
-        Mon,  8 Aug 2022 23:47:10 +0000 (UTC)
-Received: from [10.64.54.20] (vpn2-54-20.bne.redhat.com [10.64.54.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7559918ECC;
-        Mon,  8 Aug 2022 23:47:07 +0000 (UTC)
-Reply-To: Gavin Shan <gshan@redhat.com>
-Subject: Re: tools/testing/selftests/kvm/rseq_test and glibc 2.35
-To:     Florian Weimer <fweimer@redhat.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>
-References: <875yj2n2r0.fsf@oldenburg.str.redhat.com>
-From:   Gavin Shan <gshan@redhat.com>
-Message-ID: <465d3599-2433-7f6e-66fc-b4018ba258cf@redhat.com>
-Date:   Tue, 9 Aug 2022 11:47:43 +1000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        Mon, 8 Aug 2022 19:47:29 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D8891C11F;
+        Mon,  8 Aug 2022 16:47:28 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id u12so7743295qtk.0;
+        Mon, 08 Aug 2022 16:47:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=NLBC3MzbjIOuPKppogTUtaP4Ze7dHFmf0ps9Kq9iUAc=;
+        b=IhRA0U/Rmi2zgoB5cBETPswKNBFZjQ01RIdJCqm5sGosCkd7/zziCY1EJdAuT4XGos
+         s8+oefMgq0JVkNv+Pox9cJ3rfwgnLiSgkORx0GXLvaSd4yKdTUnUvebm/eDsI9/wkg9f
+         /j/30uoIw3WhX7ORB70pe1MZnJHvcTGAD31/UUIh7ar4YgwysVic04uNWsILqN98un36
+         hVQO5BIWhS/fnGQAFAVx8ggWaMcQxxVdhU10DTdz5oRHACLWD3SFE7xyoL6pKfbzPTqo
+         acZU3zmCvp3kzsPhCZf8u9v4txuNaiHn0vkjcGiQPrZpC+VRtmBu8MLyR6GI3SETqD0T
+         rNsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=NLBC3MzbjIOuPKppogTUtaP4Ze7dHFmf0ps9Kq9iUAc=;
+        b=e9lddbL27YRObB61lBlLuBC49O4Z1VmRon18wt5WAXzYKgDjZrIgqQUFOdzxwxldFf
+         O8vtEhHOoNjS62QHsf1sqT1H0Mqq4JgMl3mUqKNc5PaMGzibBwiv6pXnysfgnWtQS022
+         FmEB8dEvDG8CF9lsKYICY9gzt0VPeIqu5N2ML8rHjLpEF2UG/EZfJ8XPM4U/P3GT3NA+
+         X3nff23Bng9sJ2+Dz7rjPP3HwjVgkP1eiy14jQFrEngV/ieakO8nXjs0L4ovsmONHJMU
+         TLTkWmt3R31dVL1SRWGLeKGiGJ3VYwSpNDSRrZgBDGuau6/wanXM7lBBhgjRNAS6SayO
+         1j3w==
+X-Gm-Message-State: ACgBeo1rUpm5lybFN2KqzveErIhybM8wIYSFok47CluPqWXhYpumm8OL
+        dqKuIjmlphg0/lv4aKQxvIBevPetDHSjr6jlBCw=
+X-Google-Smtp-Source: AA6agR41/8kRDMhubzd1fsJlNghYJmNkW6FFpLnU9EHXatW4l4bGIJKOXDpHNYDdgtVyVm6vMCjQRA==
+X-Received: by 2002:a05:622a:1a14:b0:31e:e89f:4dda with SMTP id f20-20020a05622a1a1400b0031ee89f4ddamr18658309qtb.622.1660002447308;
+        Mon, 08 Aug 2022 16:47:27 -0700 (PDT)
+Received: from Latitude-E6420.mynetworksettings.com ([2600:4040:2036:c00:e57a:4cf3:aa55:7079])
+        by smtp.gmail.com with ESMTPSA id d6-20020ac85446000000b00343028a9425sm1346400qtq.16.2022.08.08.16.47.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 16:47:26 -0700 (PDT)
+From:   Rudraksha Gupta <guptarud@gmail.com>
+To:     krzysztof.kozlowski+dt@linaro.org
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, david@ixit.cz,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        Rudraksha Gupta <guptarud@gmail.com>
+Subject: [PATCH 1/2] ARM: msm8960: Rename cxo_board to cxo-board and add alias
+Date:   Mon,  8 Aug 2022 19:47:22 -0400
+Message-Id: <20220808234723.5184-1-guptarud@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <875yj2n2r0.fsf@oldenburg.str.redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Florian,
+This patch renames cxo_board to be up to date with the current naming
+style. It also adds an alias
 
-On 8/9/22 2:01 AM, Florian Weimer wrote:
-> It has come to my attention that the KVM rseq test apparently needs to
-> be ported to glibc 2.35.  The background is that on aarch64, rseq is the
-> only way to get a practically useful sched_getcpu.  (There's no hidden
-> per-task CPU state the vDSO could reveal as the CPU ID.)
-> 
+Signed-off-by: Rudraksha Gupta <guptarud@gmail.com>
+---
+ arch/arm/boot/dts/Makefile     | 1 +
+ drivers/clk/qcom/gcc-msm8960.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-Yes, kvm/selftests/rseq needs to support glibc 2.35. The question is
-about glibc 2.34 or 2.35 because kvm/selftest/rseq fails on glibc 2.34
-
-I would guess upstream-glibc-2.35 feature is enabled on downstream
-glibc-2.34?
-
-# ./rseq_test
-==== Test Assertion Failure ====
-   rseq_test.c:60: !r
-   pid=112043 tid=112043 errno=22 - Invalid argument
-      1	0x0000000000401973: main at rseq_test.c:226
-      2	0x0000ffff84b6c79b: ?? ??:0
-      3	0x0000ffff84b6c86b: ?? ??:0
-      4	0x0000000000401b6f: _start at ??:?
-   rseq failed, errno = 22 (Invalid argument)
-# rpm -aq | grep glibc-2
-glibc-2.34-39.el9.aarch64
-
-
-> The main rseq tests have already been adjusted via:
-> 
-> commit 233e667e1ae3e348686bd9dd0172e62a09d852e1
-> Author: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> Date:   Mon Jan 24 12:12:45 2022 -0500
-> 
->      selftests/rseq: Uplift rseq selftests for compatibility with glibc-2.35
->      
->      glibc-2.35 (upcoming release date 2022-02-01) exposes the rseq per-thread
->      data in the TCB, accessible at an offset from the thread pointer, rather
->      than through an actual Thread-Local Storage (TLS) variable, as the
->      Linux kernel selftests initially expected.
->      
->      The __rseq_abi TLS and glibc-2.35's ABI for per-thread data cannot
->      actively coexist in a process, because the kernel supports only a single
->      rseq registration per thread.
->      
->      Here is the scheme introduced to ensure selftests can work both with an
->      older glibc and with glibc-2.35+:
->      
->      - librseq exposes its own "rseq_offset, rseq_size, rseq_flags" ABI.
->      
->      - librseq queries for glibc rseq ABI (__rseq_offset, __rseq_size,
->        __rseq_flags) using dlsym() in a librseq library constructor. If those
->        are found, copy their values into rseq_offset, rseq_size, and
->        rseq_flags.
->      
->      - Else, if those glibc symbols are not found, handle rseq registration
->        from librseq and use its own IE-model TLS to implement the rseq ABI
->        per-thread storage.
->      
->      Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
->      Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
->      Link: https://lkml.kernel.org/r/20220124171253.22072-8-mathieu.desnoyers@efficios.com
-> 
-> But I don't see a similar adjustment for
-> tools/testing/selftests/kvm/rseq_test.c.  As an additional wrinkle,
-> you'd have to start calling getcpu (glibc function or system call)
-> because comparing rseq.cpu_id against sched_getcpu won't test anything
-> anymore once glibc implements sched_getcpu using rseq.
-> 
-> We noticed this because our downstream glibc version, while based on
-> 2.34, enables rseq registration by default.  To facilitate coordination
-> with rseq application usage, we also backported the __rseq_* ABI
-> symbols, so the selftests could use that even in our downstream version.
-> (We enable the glibc tunables downstream, but they are an optional
-> glibc feature, so it's probably better in the long run to fix the kernel
-> selftests rather than using the tunables as a workaround.)
-> 
-
-Thanks for the pointer. It makes sense. So it means rseq registration has
-been done by glibc TLS? In this case, kvm/selftests/rseq is unable to
-register again.
-
-I will come up something similiar for kvm/selftest/rseq.
-
-Thanks,
-Gavin
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 05d8aef6e5d2..d55f196ad733 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -1049,6 +1049,7 @@ dtb-$(CONFIG_ARCH_QCOM) += \
+ 	qcom-msm8660-surf.dtb \
+ 	qcom-msm8916-samsung-serranove.dtb \
+ 	qcom-msm8960-cdp.dtb \
++	qcom-msm8960-samsung-expressatt.dtb \
+ 	qcom-msm8974-lge-nexus5-hammerhead.dtb \
+ 	qcom-msm8974-sony-xperia-rhine-amami.dtb \
+ 	qcom-msm8974-sony-xperia-rhine-honami.dtb \
+diff --git a/drivers/clk/qcom/gcc-msm8960.c b/drivers/clk/qcom/gcc-msm8960.c
+index 051745ef99c8..56ce05a846dd 100644
+--- a/drivers/clk/qcom/gcc-msm8960.c
++++ b/drivers/clk/qcom/gcc-msm8960.c
+@@ -3624,7 +3624,7 @@ static int gcc_msm8960_probe(struct platform_device *pdev)
+ 	if (!match)
+ 		return -EINVAL;
+ 
+-	ret = qcom_cc_register_board_clk(dev, "cxo_board", "cxo", 19200000);
++	ret = qcom_cc_register_board_clk(dev, "cxo-board", "cxo", 19200000);
+ 	if (ret)
+ 		return ret;
+ 
+-- 
+2.25.1
 
