@@ -2,81 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A9E6C25B0C
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 22:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9291CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 22:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244600AbiHHWio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 18:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34510 "EHLO
+        id S244519AbiHHWnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 18:43:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244567AbiHHWik (ORCPT
+        with ESMTP id S244526AbiHHWnC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 18:38:40 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FB3EF70;
-        Mon,  8 Aug 2022 15:38:38 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4M1rhT6HTDz4xD2;
-        Tue,  9 Aug 2022 08:38:33 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1659998313;
-        bh=csvvQDyGYCMCPcaM/XVHFy6jJ3pw8ANibPTMSGL0GnM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Eyc6iqp0ThtV5q9W+falrAei/hRadBbSb219POoJzG2TrOBvb97FyjGDN8htINzix
-         XPDz5rzNQaOlEZ2O8TvRqPd+JXrVSbXyQU22CwmJ/43I2xcojrlim9IULTeAiAGuTT
-         jkmLwsqiHyim2z9IlQYJN6W80LYyCZY41179TlLnUfmEuEjcS444X9ijleUwybn6gE
-         C8hZKQM4fhht/ub7AVeEthktr+kTJvkO9V+lKhWfnMhTJA+u00VtQjZKpu2wQvv4ls
-         +nuC1RMp00iSRh1YZkZ+UHjj4p7M65O0CrkN4z/Fzkvw9dLWDS7aMlfN49lWSM85QK
-         H74jvUiSQxLeg==
-Date:   Tue, 9 Aug 2022 08:38:16 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: linux-next: Tree for Aug 8
-Message-ID: <20220809083816.338deaae@canb.auug.org.au>
-In-Reply-To: <20220808134735.0b3b93a4@canb.auug.org.au>
-References: <20220808134735.0b3b93a4@canb.auug.org.au>
+        Mon, 8 Aug 2022 18:43:02 -0400
+Received: from hutie.ust.cz (hutie.ust.cz [185.8.165.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3285167E8
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 15:43:00 -0700 (PDT)
+From:   =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1659998578; bh=aQrCd+ijZmlO1Kgsm6C6rwa65AVL97zN0C3e6zixLi4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=DiIM2ZSDHO+5xRGl9iDX/udWRADomI2tu+BybuCkpI19KgpSGU89WsAHxovyXE0Ah
+         g+ErzsGRNeNXpTMl1lmrKQso5rqM8P0AzrKMDWTXjucDNpQ3aYJGEOGUUW2j+r85Gr
+         fzgKJ/0j82AmKlTVa5mrjzO13NgdfuWy2cxdpivY=
+To:     =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     asahi@lists.linux.dev, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 3/3] ASoC: apple: mca: Add locks on foreign cluster access
+Date:   Tue,  9 Aug 2022 00:41:53 +0200
+Message-Id: <20220808224153.3634-4-povik+lin@cutebit.org>
+In-Reply-To: <20220808224153.3634-1-povik+lin@cutebit.org>
+References: <20220808224153.3634-1-povik+lin@cutebit.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/tWXZBdYxPua4UBKr_kypLtv";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/tWXZBdYxPua4UBKr_kypLtv
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+In DAI ops, accesses to the native cluster (of the DAI), and to data of
+clusters related to it by a DPCM frontend-backend link, should have
+been synchronized by the 'pcm_mutex' lock at ASoC level.
 
-Hi All,
+What is not covered are the 'port_driver' accesses on foreign clusters
+to which the current cluster has no a priori relation, so fill in
+locking for that. (This should only matter in bizarre configurations of
+sharing one MCA peripheral between ASoC cards.)
 
-On Mon, 8 Aug 2022 13:47:35 +1000 Stephen Rothwell <sfr@canb.auug.org.au> w=
-rote:
->
+Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
+---
+ sound/soc/apple/mca.c | 27 ++++++++++++++++++++++++---
+ 1 file changed, 24 insertions(+), 3 deletions(-)
 
-Please do not add any v6.1 destined code to your linux-next included
-branches until after v6.0-rc1 has been released.
+diff --git a/sound/soc/apple/mca.c b/sound/soc/apple/mca.c
+index ab41fd1a2444..1e2464e89d1c 100644
+--- a/sound/soc/apple/mca.c
++++ b/sound/soc/apple/mca.c
+@@ -159,6 +159,9 @@ struct mca_data {
+ 	struct reset_control *rstc;
+ 	struct device_link *pd_link;
+ 
++	/* Mutex for accessing port_driver of foreign clusters */
++	struct mutex port_mutex;
++
+ 	int nclusters;
+ 	struct mca_cluster clusters[];
+ };
+@@ -297,16 +300,21 @@ static bool mca_fe_clocks_in_use(struct mca_cluster *cl)
+ 	struct mca_cluster *be_cl;
+ 	int stream, i;
+ 
++	mutex_lock(&mca->port_mutex);
+ 	for (i = 0; i < mca->nclusters; i++) {
+ 		be_cl = &mca->clusters[i];
+ 
+ 		if (be_cl->port_driver != cl->no)
+ 			continue;
+ 
+-		for_each_pcm_streams(stream)
+-			if (be_cl->clocks_in_use[stream])
++		for_each_pcm_streams(stream) {
++			if (be_cl->clocks_in_use[stream]) {
++				mutex_unlock(&mca->port_mutex);
+ 				return true;
++			}
++		}
+ 	}
++	mutex_unlock(&mca->port_mutex);
+ 	return false;
+ }
+ 
+@@ -331,8 +339,10 @@ static int mca_be_prepare(struct snd_pcm_substream *substream,
+ 	 */
+ 	if (!mca_fe_clocks_in_use(fe_cl)) {
+ 		ret = mca_fe_enable_clocks(fe_cl);
+-		if (ret < 0)
++		if (ret < 0) {
++			mutex_unlock(&mca->port_mutex);
+ 			return ret;
++		}
+ 	}
+ 
+ 	cl->clocks_in_use[substream->stream] = true;
+@@ -350,6 +360,11 @@ static int mca_be_hw_free(struct snd_pcm_substream *substream,
+ 	if (cl->port_driver < 0)
+ 		return -EINVAL;
+ 
++	/*
++	 * We are operating on a foreign cluster here, but since we
++	 * belong to the same PCM, accesses should have been
++	 * synchronized at ASoC level.
++	 */
+ 	fe_cl = &mca->clusters[cl->port_driver];
+ 	if (!mca_fe_clocks_in_use(fe_cl))
+ 		return 0; /* Nothing to do */
+@@ -722,7 +737,9 @@ static int mca_be_startup(struct snd_pcm_substream *substream,
+ 		       cl->base + REG_PORT_CLOCK_SEL);
+ 	writel_relaxed(PORT_DATA_SEL_TXA(fe_cl->no),
+ 		       cl->base + REG_PORT_DATA_SEL);
++	mutex_lock(&mca->port_mutex);
+ 	cl->port_driver = fe_cl->no;
++	mutex_unlock(&mca->port_mutex);
+ 	cl->port_started[substream->stream] = true;
+ 
+ 	return 0;
+@@ -732,6 +749,7 @@ static void mca_be_shutdown(struct snd_pcm_substream *substream,
+ 			    struct snd_soc_dai *dai)
+ {
+ 	struct mca_cluster *cl = mca_dai_to_cluster(dai);
++	struct mca_data *mca = cl->host;
+ 
+ 	cl->port_started[substream->stream] = false;
+ 
+@@ -742,7 +760,9 @@ static void mca_be_shutdown(struct snd_pcm_substream *substream,
+ 		 */
+ 		writel_relaxed(0, cl->base + REG_PORT_ENABLES);
+ 		writel_relaxed(0, cl->base + REG_PORT_DATA_SEL);
++		mutex_lock(&mca->port_mutex);
+ 		cl->port_driver = -1;
++		mutex_unlock(&mca->port_mutex);
+ 	}
+ }
+ 
+@@ -963,6 +983,7 @@ static int apple_mca_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	mca->dev = &pdev->dev;
+ 	mca->nclusters = nclusters;
++	mutex_init(&mca->port_mutex);
+ 	platform_set_drvdata(pdev, mca);
+ 	clusters = mca->clusters;
+ 
+-- 
+2.33.0
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/tWXZBdYxPua4UBKr_kypLtv
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLxkFgACgkQAVBC80lX
-0GxjmAf9HpYvFqfx/JoIAApl98DgMlbQnoJny9RcHDeVAlqDs3DFxVBjnBv71nHw
-12GsnYuxcanQWambeLGxM/C6M5DgkkpnyJI7gg1q2FzHYOXcjKn47q/Acg/ObC2w
-8yaYmprViNDzBTfobvG94wPfn7fTBTZcyoRx5Uh3p5cTiwFBAYGMf+vigxdRxZ2O
-j2HGnUNQF/9YGlWrjDcexuyhVEkcKuc5/RLnLPWEEHehLVdz5gB9gHyM2ooIufk6
-+tj+9meXVRoqoDepQIJKsjZLhgr++Br0VcVw2eNBSwZRh35HrAAaqyO+WjN85XRZ
-G5JxEIlZYT0EJgibhqV7DPutY2OQbQ==
-=1pLt
------END PGP SIGNATURE-----
-
---Sig_/tWXZBdYxPua4UBKr_kypLtv--
