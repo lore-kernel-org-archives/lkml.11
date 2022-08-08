@@ -2,129 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3EB2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 08:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7984C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 08:53:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235717AbiHHIxA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 04:53:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36080 "EHLO
+        id S236552AbiHHIxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 04:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231861AbiHHIw6 (ORCPT
+        with ESMTP id S231861AbiHHIxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 04:52:58 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBBD89FFB;
-        Mon,  8 Aug 2022 01:52:56 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id gj1so8223287pjb.0;
-        Mon, 08 Aug 2022 01:52:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=CM2guZb6Hn0pwfDRg7CFUO0ej/Lsp2LuT1wX5l0Jt8g=;
-        b=k45ypWaGJAvcx1jVTyF1lwQ5Ncs9Htz0s/AN7ToMcU1XIJo3Qj8955IS9iiUTMTg9o
-         hPISvzy2/4mtnH31tDJEpdrUjfSjwUkbg+EmNNR7VZCSj3soYoZvxgi8M/1gN3TaqMNY
-         c/l0OFymbBzRN3mC0ZUimIKWqKn9AzujwnbTo0ukJAYZ3Z0MZCuDgMLVqpjzGfEfvamb
-         Hdsq3xJ15UwDUNjcHBXiAWZYMY6wCp03poVljLyiAOAF9SadfAYj1DPuCVTEY6FxihIH
-         n9ywsfmXWU/wXp2FJY8rrBenCEkdBYjIm6y8eYVIBTXNMGRL3jGFqXmjMvyJVdfyfEiM
-         LSNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=CM2guZb6Hn0pwfDRg7CFUO0ej/Lsp2LuT1wX5l0Jt8g=;
-        b=fNOpOA1xp50tG1gQg9R9WyR/smuBC7H42O8rEQY44x5XrluqIPUPReUep3D8GdWrq7
-         Xh4xyYzLQrKtIUsRE6KIGgbuO7cny3CeQvNuoSk8DKjPAc7E8/Un70fYSFokvNsH8SiV
-         yCr14KP9F+LUOS/mc19zzA4oGUqBsPKUdWxwur5lZUhCZXp2d0TZfqZoU7VSjFQEaDkC
-         XcMBZ6yHmittSDdAW9crFO61YJyCL9DRj8/Ad417Sdq6WHlkehM/zN97hJu8A1Z0Gty2
-         Zsu0zddcFbWDdYrvJbIm7l4A67tyPkHzAKRePO6zhN72gr+avX3FkkgMug/qLRvt2r5q
-         YDXA==
-X-Gm-Message-State: ACgBeo3IQpGowjJIZ3QM4b1CbrHvbVkskxHNgiQydjqsyyrHcPD4N5lX
-        Uwpqb/n/FyPlQUdAnPa6tiA=
-X-Google-Smtp-Source: AA6agR5HFR3R02lOfrMcBsBKgjA+us7p2/6lea3lBBqeCWq6Hpd/S9k2kAhbzLEohbBqWWcg6S9PCg==
-X-Received: by 2002:a17:902:848b:b0:16d:4c6b:bf00 with SMTP id c11-20020a170902848b00b0016d4c6bbf00mr17628923plo.58.1659948776412;
-        Mon, 08 Aug 2022 01:52:56 -0700 (PDT)
-Received: from [192.168.11.9] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id n15-20020a056a00212f00b0052deda6e3d2sm8260417pfj.98.2022.08.08.01.52.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Aug 2022 01:52:55 -0700 (PDT)
-Message-ID: <736e39fd-b068-80dd-b383-70e061e71bf5@gmail.com>
-Date:   Mon, 8 Aug 2022 17:52:52 +0900
+        Mon, 8 Aug 2022 04:53:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81AC8CE12
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 01:53:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43FFAB80E2B
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 08:53:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E43F5C433C1;
+        Mon,  8 Aug 2022 08:53:34 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
+        Huacai Chen <chenhuacai@gmail.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] irqchip: Select downstream irqchip drivers for LoongArch CPU
+Date:   Mon,  8 Aug 2022 16:53:19 +0800
+Message-Id: <20220808085319.3350111-1-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: [PATCH v2 2/3] docs/conf.py: Respect env variable SPHINX_IMGMATH
-Content-Language: en-US
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     linux-doc@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-kernel@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>
-References: <c41cab17-afd6-bc99-56a1-e4e73b8c1ef6@gmail.com>
-From:   Akira Yokosawa <akiyks@gmail.com>
-In-Reply-To: <c41cab17-afd6-bc99-56a1-e4e73b8c1ef6@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On some distros with coarse-grained packaging policy, dvipng is
-installed along with latex.  In such cases, math rendering will
-use imgmath by default.  It is possible to override the choice by
-specifying the option string of "-D html_math_renderer='mathjax'"
-to sphinx-build (Sphinx >= 1.8).
+LoongArch irqchips have a fixed hierarchy which currently can't be
+described by ACPI tables, so upstream irqchip drivers call downstream
+irqchip drivers' initialization directly. As a result, the top level
+(CPU-level) irqchip driver should explicitly select downstream drivers
+to avoid build errors.
 
-To provide developers an easier-to-use knob, add code for an env
-variable "SPHINX_IMGMATH" which overrides the automatic choice
-of math renderer for html docs.
-
-    SPHINX_IMGMATH=yes : Load imgmath even if dvipng is not found
-    SPHINX_IMGMATH=no  : Don't load imgmath (fall back to mathjax)
-
-Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-Acked-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
 ---
-Changes since v1:
- - No logical changes.
- - Renames:
-     LOAD_IMGMATH -> SPHINX_IMGMATH (Mauro),
-     opt_load_imgmath -> env_sphinx_imgmath.
- - Acked-by from Mauro.
+ drivers/irqchip/Kconfig | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---
- Documentation/conf.py | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
-
-diff --git a/Documentation/conf.py b/Documentation/conf.py
-index 3ec1f845c839..0b8f20e8e22c 100644
---- a/Documentation/conf.py
-+++ b/Documentation/conf.py
-@@ -128,8 +128,20 @@ autosectionlabel_maxdepth = 2
- # mathjax is the default math renderer since Sphinx 1.8.
- have_latex =  have_command('latex', '--version', 'pdfTeX')
- have_dvipng = have_command('dvipng', '--version', 'dvipng')
--load_imgmath = ((have_latex and have_dvipng)
--                or (major == 1 and minor < 8)
-+load_imgmath = have_latex and have_dvipng
-+
-+# Respect SPHINX_IMGMATH (for html docs only)
-+if 'SPHINX_IMGMATH' in os.environ:
-+    env_sphinx_imgmath = os.environ['SPHINX_IMGMATH']
-+    if 'yes' in env_sphinx_imgmath:
-+        load_imgmath = True
-+    elif 'no' in env_sphinx_imgmath:
-+        load_imgmath = False
-+    else: # otherwide, auto selection
-+        pass
-+
-+# Always load imgmath for Sphinx <1.8 or for epub docs
-+load_imgmath = (load_imgmath or (major == 1 and minor < 8)
-                 or 'epub' in sys.argv)
- 
- if load_imgmath:
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 66b9fa408bf2..2549daa859d6 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -561,6 +561,11 @@ config IRQ_LOONGARCH_CPU
+ 	select GENERIC_IRQ_CHIP
+ 	select IRQ_DOMAIN
+ 	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
++	select LOONGSON_LIOINTC
++	select LOONGSON_EIOINTC
++	select LOONGSON_PCH_PIC
++	select LOONGSON_PCH_MSI
++	select LOONGSON_PCH_LPC
+ 	help
+ 	  Support for the LoongArch CPU Interrupt Controller. For details of
+ 	  irq chip hierarchy on LoongArch platforms please read the document
 -- 
-2.25.1
-
+2.31.1
 
