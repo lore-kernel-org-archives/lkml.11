@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AB4EC25B0E
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 779C6C25B07
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242748AbiHHBmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:42:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41642 "EHLO
+        id S242759AbiHHBmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:42:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242704AbiHHBkm (ORCPT
+        with ESMTP id S242742AbiHHBkr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:40:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A61B87A;
-        Sun,  7 Aug 2022 18:34:52 -0700 (PDT)
+        Sun, 7 Aug 2022 21:40:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0875112758;
+        Sun,  7 Aug 2022 18:34:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E054EB80881;
-        Mon,  8 Aug 2022 01:34:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1465C433D6;
-        Mon,  8 Aug 2022 01:34:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8680160E07;
+        Mon,  8 Aug 2022 01:34:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE947C43141;
+        Mon,  8 Aug 2022 01:34:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922489;
-        bh=iyij/7Rda9GzVqk1fhaYf1o1xG310pgMr6a/apnunPY=;
+        s=k20201202; t=1659922496;
+        bh=8FaatRZzs5J89s4nJSmm66AsNZkhJ2K5cP0SUBU4jF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tX57G+uy+gkDIwroNJpL3JuJ3/AOmp8D1sCGH1ZyAiEvSzFxwW0Bfr340xBWKuyqh
-         CMc6K07R6/ZzCk3sum79yabzVstBERTAJlMaiWa/3WnGuUcKNptueQtksDykSr39Qi
-         CY7XBU6kJ2FpsYAIwognslYE4E3civEKfTc/X8OjUValigIaC0VIvFn+uOXD2KdT1x
-         xxLQgztmr+hK/CXwMofE5cCWzvN9JhfLYBVsEh1/m81tH37zyRiKLvOWy+UHg+1CUz
-         7NXiyxLva0nEu1dcRCDyq27leiHPBIthxpiPMLHi8p/z9rvUfOWMJpJcR25ZHEcggB
-         +BSSVzKLe9k7A==
+        b=DIPMUYk2n/OaCGgXtEEI7ITnFYmN+bULzwC0l+VDoA2jjhZWdUdAWIjVLuN4fsmIf
+         JTvh97m1vbmynM6Rvuu3/zC0ogkobbhTidnk+cDbJxQHTrJ8Go6gC27KbAW8YNaVT7
+         p98NibykovXIk7tXRXH9k5RfaznSZ9o9rHJCv39Tv9g2IZO80V38hSOYFrW6LXS1pF
+         w1kAo/DPoR2D+MQazZBGEFxXO0l4kUQUr6603Ek5OZVY64+hk6yfHjIp4d+o1cDhG5
+         +fwg5uBFNcvlxCnNyN7MLyctop+a06fGOYklJcKfEvaiFjWaQ9ervuIn2/7uK9/U6F
+         23qzFHfe+0Eeg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Samuel Holland <samuel@sholland.org>,
-        kernel test robot <lkp@intel.com>,
+Cc:     William Dean <williamsukatube@163.com>,
+        Hacash Robot <hacashRobot@santino.com>,
         Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de
-Subject: [PATCH AUTOSEL 5.18 17/53] genirq: GENERIC_IRQ_IPI depends on SMP
-Date:   Sun,  7 Aug 2022 21:33:12 -0400
-Message-Id: <20220808013350.314757-17-sashal@kernel.org>
+        tsbogend@alpha.franken.de, fancer.lancer@gmail.com,
+        tglx@linutronix.de, linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 20/53] irqchip/mips-gic: Check the return value of ioremap() in gic_of_init()
+Date:   Sun,  7 Aug 2022 21:33:15 -0400
+Message-Id: <20220808013350.314757-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013350.314757-1-sashal@kernel.org>
 References: <20220808013350.314757-1-sashal@kernel.org>
@@ -52,49 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: William Dean <williamsukatube@163.com>
 
-[ Upstream commit 0f5209fee90b4544c58b4278d944425292789967 ]
+[ Upstream commit 71349cc85e5930dce78ed87084dee098eba24b59 ]
 
-The generic IPI code depends on the IRQ affinity mask being allocated
-and initialized. This will not be the case if SMP is disabled. Fix up
-the remaining driver that selected GENERIC_IRQ_IPI in a non-SMP config.
+The function ioremap() in gic_of_init() can fail, so
+its return value should be checked.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Samuel Holland <samuel@sholland.org>
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: William Dean <williamsukatube@163.com>
 Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220701200056.46555-3-samuel@sholland.org
+Link: https://lore.kernel.org/r/20220723100128.2964304-1-williamsukatube@163.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/Kconfig | 2 +-
- kernel/irq/Kconfig      | 1 +
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/irqchip/irq-mips-gic.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index d43d25a411dd..1af26c409cb1 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -177,7 +177,7 @@ config MADERA_IRQ
- config IRQ_MIPS_CPU
- 	bool
- 	select GENERIC_IRQ_CHIP
--	select GENERIC_IRQ_IPI if SYS_SUPPORTS_MULTITHREADING
-+	select GENERIC_IRQ_IPI if SMP && SYS_SUPPORTS_MULTITHREADING
- 	select IRQ_DOMAIN
- 	select GENERIC_IRQ_EFFECTIVE_AFF_MASK
+diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
+index 8a9efb6ae587..1ba0f1555c80 100644
+--- a/drivers/irqchip/irq-mips-gic.c
++++ b/drivers/irqchip/irq-mips-gic.c
+@@ -783,6 +783,10 @@ static int __init gic_of_init(struct device_node *node,
+ 	}
  
-diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
-index 10929eda9825..fc760d064a65 100644
---- a/kernel/irq/Kconfig
-+++ b/kernel/irq/Kconfig
-@@ -82,6 +82,7 @@ config IRQ_FASTEOI_HIERARCHY_HANDLERS
- # Generic IRQ IPI support
- config GENERIC_IRQ_IPI
- 	bool
-+	depends on SMP
- 	select IRQ_DOMAIN_HIERARCHY
+ 	mips_gic_base = ioremap(gic_base, gic_len);
++	if (!mips_gic_base) {
++		pr_err("Failed to ioremap gic_base\n");
++		return -ENOMEM;
++	}
  
- # Generic MSI interrupt support
+ 	gicconfig = read_gic_config();
+ 	gic_shared_intrs = FIELD_GET(GIC_CONFIG_NUMINTERRUPTS, gicconfig);
 -- 
 2.35.1
 
