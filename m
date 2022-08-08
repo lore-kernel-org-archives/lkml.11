@@ -2,103 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D855BC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33FBCC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243054AbiHHBr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:47:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
+        id S243079AbiHHBrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:47:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243198AbiHHBqV (ORCPT
+        with ESMTP id S243236AbiHHBqa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:46:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F185514D11;
-        Sun,  7 Aug 2022 18:36:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1CD760DF5;
-        Mon,  8 Aug 2022 01:36:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4428AC4347C;
-        Mon,  8 Aug 2022 01:36:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922593;
-        bh=//pzvalXiDFERDVTn7mkwh9A1vGWIPKab/JROE8rypI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aKIn97kgsGr867rED3cJUOEvdmGh89StgYV4a0Y8PiThHUd385oE8OTr5Z9B0FH+l
-         G/8ERvDauK6ovMhzr+qYblUO85lrO6TqR/El7IyQX5iBENTHEERW0FlOeQJuGiVtWR
-         4z8yVvipseoPV5F+sjeRVysJzLcw3jOyOAzlT9ysJEXcbTzr8iL8ZaNnrWOr0zCANv
-         6RGBzGmDP12CHoakoYV2XtmP/d/2PKghv9bBIl7WYxJCRuZgf1/lF3I8HYxDDAT0aB
-         CPDFXZv18sZV7wE0OD9qp6vOlbW0ook1jzOAMd4ZZ3OJt8+kcZodIeAbEQ5L8ocaIy
-         jc3ldx86n1blQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jan Kara <jack@suse.cz>,
-        syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com,
-        Sasha Levin <sashal@kernel.org>, jack@suse.com,
-        linux-ext4@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 10/45] ext2: Add more validity checks for inode counts
-Date:   Sun,  7 Aug 2022 21:35:14 -0400
-Message-Id: <20220808013551.315446-10-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220808013551.315446-1-sashal@kernel.org>
-References: <20220808013551.315446-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        Sun, 7 Aug 2022 21:46:30 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8CD14D00;
+        Sun,  7 Aug 2022 18:36:38 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 3B7E75C00B7;
+        Sun,  7 Aug 2022 21:36:34 -0400 (EDT)
+Received: from imap50 ([10.202.2.100])
+  by compute3.internal (MEProxy); Sun, 07 Aug 2022 21:36:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=cc
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1659922594; x=1660008994; bh=wPmZAZ1DOC
+        5MLpgXHbfw9hWoYqDBWz9rz/oL4D0HM1w=; b=jWLobC4KPvbg4opjCJE24ctar8
+        4vKMEgATegq39xYhxy79X4t94s3PuN5ZeqzIsW0IJSUM5xCZAr9LfL02pw4l7ri6
+        RFhh5Kq8B9fAa1ECXD011prOSP4Sf34OF4+gRkWYv+6eYq6EF+Z44E6XdyPHlTSa
+        PO6FHZAGQUknDiPWSFzZ+kNNQdq4eFqWK67+dcijI0xJHWbAMYjbPE9E+IEK2/Vn
+        41kN0tNp0LdsmdfwVP2cougvStOo2j7WlGs96ntRNfM0+as5nmCHB1rkO4umYDcw
+        lN5pn1cUJo/SGamyDbgCNgxC+c2dStM47RoyWRIB9tmbMAn/ckFUI1vUobrQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1659922594; x=1660008994; bh=wPmZAZ1DOC5MLpgXHbfw9hWoYqDB
+        Wz9rz/oL4D0HM1w=; b=xAhHkPXBvZN+cz4fYh1GTzYn27ucz3ALKXh5T4jKsh8h
+        XbV7kxXcwHFSK4t1TllrLGYkW32kckvfCLPK55Dqxu8Ua+w07Z1KS4kWIrCl3Fke
+        r0UFUUpp1JddC7on7aCXrLI8pof0bvOG5IWcOJRNgepedjUG0ZJmASg6GK5jWBEF
+        w2rLtRBonyNWra8QUdqgdsA0SuzkyYnQwmp0DohT/pSCU/Mw4lEVhx3Egy1HbYbJ
+        dkn/Zq14wWDiFC73VCDntCEl45aNjfVH+dSDWV50RALnvh3uu3RMYiD12wvAZPSI
+        pOd+z8fOCmSInRyXJTIRn6dlDXZDp1qVow6G2w2Y0A==
+X-ME-Sender: <xms:oWjwYr-uoWmnfz7HWwthonOruXdquO70096DnmncXZIRzw4T6Ha6HQ>
+    <xme:oWjwYnsd4T7u0bkmLRT93B53kjBa65-nzDDqedk_siLeL7yh7Pr187RAoQXeb91Vo
+    xob7V2J502-4BKlwg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefjedggeeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdetnhgu
+    rhgvficulfgvfhhfvghrhidfuceorghnughrvgifsegrjhdrihgurdgruheqnecuggftrf
+    grthhtvghrnhephefhfeekgfekudevheffheeihedujeefjeevjeefudfgfeeutdeuvdeh
+    hfevueffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    eprghnughrvgifsegrjhdrihgurdgruh
+X-ME-Proxy: <xmx:omjwYpBnGtU7Vz2r5qfUHltHtwgRTxmHc069jsaYl6exqCt3IQjwpw>
+    <xmx:omjwYnfk7BJ8yqXPc5GNGOmV9Gsee9-SBTWF_J-0jc6faxCJxfrepw>
+    <xmx:omjwYgP1F_C0VCb6ZZktmcgWdgbM5k3-ejjVwx9cpY9o499cEa_hFA>
+    <xmx:omjwYv3blxSGTyawhohXyObalajxIa7HME0KHFMsdqwPiUgjbGGLEw>
+Feedback-ID: idfb84289:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id DAF71170007E; Sun,  7 Aug 2022 21:36:33 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-758-ge0d20a54e1-fm-20220729.001-ge0d20a54
+Mime-Version: 1.0
+Message-Id: <86969f10-9eb1-4c1e-955c-1a00890d10dd@www.fastmail.com>
+In-Reply-To: <20220804092727.64742-1-krzysztof.kozlowski@linaro.org>
+References: <20220804092727.64742-1-krzysztof.kozlowski@linaro.org>
+Date:   Mon, 08 Aug 2022 11:06:13 +0930
+From:   "Andrew Jeffery" <andrew@aj.id.au>
+To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        "Joel Stanley" <joel@jms.id.au>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ARM: dts: ast2600-evb: correct compatible (drop -a1)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit fa78f336937240d1bc598db817d638086060e7e9 ]
 
-Add checks verifying number of inodes stored in the superblock matches
-the number computed from number of inodes per group. Also verify we have
-at least one block worth of inodes per group. This prevents crashes on
-corrupted filesystems.
+On Thu, 4 Aug 2022, at 18:57, Krzysztof Kozlowski wrote:
+> Due to copy-paste, the ast2600-evb and ast2600-evb-a1 got the same
+> compatible.  Drop the '-a1' suffix from the first to match what is
+> expected by bindings.
+>
+> Fixes: aa5e06208500 ("ARM: dts: ast2600-evb: fix board compatible")
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Reported-by: syzbot+d273f7d7f58afd93be48@syzkaller.appspotmail.com
-Signed-off-by: Jan Kara <jack@suse.cz>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/ext2/super.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/fs/ext2/super.c b/fs/ext2/super.c
-index 3d21279fe2cb..fd855574ef09 100644
---- a/fs/ext2/super.c
-+++ b/fs/ext2/super.c
-@@ -1058,9 +1058,10 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 			sbi->s_frags_per_group);
- 		goto failed_mount;
- 	}
--	if (sbi->s_inodes_per_group > sb->s_blocksize * 8) {
-+	if (sbi->s_inodes_per_group < sbi->s_inodes_per_block ||
-+	    sbi->s_inodes_per_group > sb->s_blocksize * 8) {
- 		ext2_msg(sb, KERN_ERR,
--			"error: #inodes per group too big: %lu",
-+			"error: invalid #inodes per group: %lu",
- 			sbi->s_inodes_per_group);
- 		goto failed_mount;
- 	}
-@@ -1070,6 +1071,13 @@ static int ext2_fill_super(struct super_block *sb, void *data, int silent)
- 	sbi->s_groups_count = ((le32_to_cpu(es->s_blocks_count) -
- 				le32_to_cpu(es->s_first_data_block) - 1)
- 					/ EXT2_BLOCKS_PER_GROUP(sb)) + 1;
-+	if ((u64)sbi->s_groups_count * sbi->s_inodes_per_group !=
-+	    le32_to_cpu(es->s_inodes_count)) {
-+		ext2_msg(sb, KERN_ERR, "error: invalid #inodes: %u vs computed %llu",
-+			 le32_to_cpu(es->s_inodes_count),
-+			 (u64)sbi->s_groups_count * sbi->s_inodes_per_group);
-+		goto failed_mount;
-+	}
- 	db_count = (sbi->s_groups_count + EXT2_DESC_PER_BLOCK(sb) - 1) /
- 		   EXT2_DESC_PER_BLOCK(sb);
- 	sbi->s_group_desc = kmalloc_array(db_count,
--- 
-2.35.1
-
+Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
