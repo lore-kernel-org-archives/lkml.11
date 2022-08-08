@@ -2,126 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8179C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 12:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33755C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 13:00:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243192AbiHHM71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 08:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43688 "EHLO
+        id S243019AbiHHNAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 09:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243201AbiHHM6z (ORCPT
+        with ESMTP id S242359AbiHHNAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 08:58:55 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D1FE03B
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 05:58:42 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id y1so2859457plb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 05:58:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jpsF7ETAikN9eZ5FGIx/2HtxGomhcrX08v3cHOIgq4s=;
-        b=bI8LP6BjxCL0bqdcccNqSD2f8AhFDRwqb8ulXK2KG669BulvbmqdNcAW8e9JRKBVJp
-         7IAzBihMZf5bvJyOiGRZpA9XlxbOqpHTVOQeXTNazLdsby7PUNxZUsdbZKAC/97xXZoP
-         NVvx1+TmQtD9DL+c7ekvZxVFeZZi1U+UdHJr5kCDu2S5jf2zedoEQKHj22pN6uHJzRfm
-         e03GymSbax+9EEOv9iRi4o6LeVnXVLaIdhBaW0zaiwyi1aOqM2aqYQaNtwoXyt4xHfDn
-         9mO4/IGz0RhrRWNXvJRKBT4F5st0PXGXGJQGOJuiTEZuimgRh6kw1z9xk08/xHoFjfIX
-         Skhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jpsF7ETAikN9eZ5FGIx/2HtxGomhcrX08v3cHOIgq4s=;
-        b=5WVOG4lIkPQAmSokcqirKXO1GuK98dR5t8Nyln3gOOHSI+82K9m2lIR9IjvJyUtiTM
-         KbpbrV+sV2GqByNHcRaDKDJneiIS6EP6tksGPshorYtNgl/NKLNMi4Pnn/JGjVuWaM1z
-         W2Ckf3JdGOMbxT7IcyjrVIjXRhG15f6HxES5+406R5fLOkCPsMAxW74kTge9DHGLNViQ
-         8PWzyAISDEbatkb6Hy9I3YIupeEOHEOQtXe3vJETH0inGIyN+wDM+0YlNw9ZCBxbIgc3
-         BA4tNWyoK+8PGhCLilV6xPFvfHcPLxi487fHOL5jjFluiS0Hn6pkyk9kVl01RN/1Tym8
-         Zp6w==
-X-Gm-Message-State: ACgBeo3MsSepstgB2BMMPcbGzTkld3RTZ9Mc88KvDNNxpaQrsBYfw27z
-        CJnYp3YrruyxqJRUicJyHr1xCg==
-X-Google-Smtp-Source: AA6agR5U+DoK1A/N8tpDIReBu2dxP1u9In+jBYtvXn28w9TMCnLUT1a9B5QDKh1X1paQua4SwjcJcg==
-X-Received: by 2002:a17:903:2301:b0:16e:f916:22b4 with SMTP id d1-20020a170903230100b0016ef91622b4mr18259293plh.52.1659963521803;
-        Mon, 08 Aug 2022 05:58:41 -0700 (PDT)
-Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.240])
-        by smtp.gmail.com with ESMTPSA id d14-20020a17090ae28e00b001f4ebd47ae7sm8057722pjz.54.2022.08.08.05.58.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 05:58:41 -0700 (PDT)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, vschneid@redhat.com
-Cc:     linux-kernel@vger.kernel.org,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH v4 9/9] sched/fair: don't init util/runnable_avg for !fair task
-Date:   Mon,  8 Aug 2022 20:57:45 +0800
-Message-Id: <20220808125745.22566-10-zhouchengming@bytedance.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220808125745.22566-1-zhouchengming@bytedance.com>
-References: <20220808125745.22566-1-zhouchengming@bytedance.com>
+        Mon, 8 Aug 2022 09:00:01 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12AC911C1D;
+        Mon,  8 Aug 2022 05:59:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659963569; x=1691499569;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SM3M98v9UuODC8UzTTQHTkKNyrbmYERVbOpPcEz1zWg=;
+  b=PR6gRuDHFGq/VG7m4OWtVi9aiehPa3fD+2y5S+ZaZSBd2DIFz5e6oTYG
+   MLO1D5cMRBlo+c7z4fFZI9gChtcUuZOKBkv7PLuoTfjlDTAHCLqeymPm1
+   yR3fQkxBkET5BFB1yZ6hBFa4zcXnAH+9jJSCIkkHm8kotC+CdSErXlbD9
+   6qelw7cnqzcaMkpfRK3UT9e2UZ2wVKVRxOBW83WoYUD6hmlackoSQqbTS
+   DOw/RPabib/D0yLWbhVs/FVbFqESBYCD5KC0rfps/59mUfEuQ6sxEMZZ8
+   S0aWoY6X2ygr0cfQq2JA6Ug8jAO+GLV/gdU93nFn2N+/MVq7gwosJqUtP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270358281"
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="270358281"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 05:59:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="554911922"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 08 Aug 2022 05:59:24 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oL2Lr-000MHx-2l;
+        Mon, 08 Aug 2022 12:59:23 +0000
+Date:   Mon, 8 Aug 2022 20:58:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiucheng Xu <jiucheng.xu@amlogic.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chris Healy <cphealy@gmail.com>,
+        Jiucheng Xu <jiucheng.xu@amlogic.com>
+Subject: Re: [PATCH v4 2/4] docs/perf: Add documentation for the Amlogic G12
+ DDR PMU
+Message-ID: <202208082004.zjwtaGvN-lkp@intel.com>
+References: <20220805071426.2598818-2-jiucheng.xu@amlogic.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220805071426.2598818-2-jiucheng.xu@amlogic.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-post_init_entity_util_avg() init task util_avg according to the cpu util_avg
-at the time of fork, which will decay when switched_to_fair() some time later,
-we'd better to not set them at all in the case of !fair task.
+Hi Jiucheng,
 
-Suggested-by: Vincent Guittot <vincent.guittot@linaro.org>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
----
- kernel/sched/fair.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+I love your patch! Perhaps something to improve:
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 2063e30b2a8f..082174cb0e47 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -833,20 +833,6 @@ void post_init_entity_util_avg(struct task_struct *p)
- 	long cpu_scale = arch_scale_cpu_capacity(cpu_of(rq_of(cfs_rq)));
- 	long cap = (long)(cpu_scale - cfs_rq->avg.util_avg) / 2;
- 
--	if (cap > 0) {
--		if (cfs_rq->avg.util_avg != 0) {
--			sa->util_avg  = cfs_rq->avg.util_avg * se->load.weight;
--			sa->util_avg /= (cfs_rq->avg.load_avg + 1);
--
--			if (sa->util_avg > cap)
--				sa->util_avg = cap;
--		} else {
--			sa->util_avg = cap;
--		}
--	}
--
--	sa->runnable_avg = sa->util_avg;
--
- 	if (p->sched_class != &fair_sched_class) {
- 		/*
- 		 * For !fair tasks do:
-@@ -861,6 +847,20 @@ void post_init_entity_util_avg(struct task_struct *p)
- 		se->avg.last_update_time = cfs_rq_clock_pelt(cfs_rq);
- 		return;
- 	}
-+
-+	if (cap > 0) {
-+		if (cfs_rq->avg.util_avg != 0) {
-+			sa->util_avg  = cfs_rq->avg.util_avg * se->load.weight;
-+			sa->util_avg /= (cfs_rq->avg.load_avg + 1);
-+
-+			if (sa->util_avg > cap)
-+				sa->util_avg = cap;
-+		} else {
-+			sa->util_avg = cap;
-+		}
-+	}
-+
-+	sa->runnable_avg = sa->util_avg;
- }
- 
- #else /* !CONFIG_SMP */
+[auto build test WARNING on robh/for-next]
+[also build test WARNING on arm/for-next arm64/for-next/core clk/clk-next kvmarm/next rockchip/for-next shawnguo/for-next soc/for-next linus/master v5.19 next-20220808]
+[cannot apply to xilinx-xlnx/master]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Jiucheng-Xu/perf-amlogic-Add-support-for-Amlogic-meson-G12-SoC-DDR-PMU-driver/20220805-151704
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+reproduce: make htmldocs
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> Documentation/admin-guide/perf/meson-ddr-pmu.rst:2: WARNING: Explicit markup ends without a blank line; unexpected unindent.
+
+vim +2 Documentation/admin-guide/perf/meson-ddr-pmu.rst
+
+   > 2	===========================================================
+     3	Amlogic SoC DDR Bandwidth Performance Monitoring Unit (PMU)
+     4	===========================================================
+     5	
+
 -- 
-2.36.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
