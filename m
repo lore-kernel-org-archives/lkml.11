@@ -2,197 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B715EC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:46:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC61C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:46:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244199AbiHHRqj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 13:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47322 "EHLO
+        id S244241AbiHHRqp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 13:46:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244191AbiHHRqO (ORCPT
+        with ESMTP id S244599AbiHHRqQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 13:46:14 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4519A2A9
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:45:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1659980508; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Nm3hS48ke9l6IizQfggjexVF2N4X4ZQswbOsOcQR18c=;
-        b=ndX241lw+3mwUm/BWixhAzeXUaBmrRmvRlBKREEyk1S9Hr2pH8i9mJGXxQ12vMw+RhiXap
-        DboZ42ocoL3gDU9MLUeyv1ngZTR87WPrt6gmg89VjeEfL8CAQoXfMcFO10GDey0PSHGEKi
-        G05x+auvzUK2FewhjGXj2ZZrGm1978A=
-From:   Paul Cercueil <paul@crapouillou.net>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2 30/30] mfd: intel-lpss: Remove #ifdef guards for PM related functions
-Date:   Mon,  8 Aug 2022 19:41:07 +0200
-Message-Id: <20220808174107.38676-31-paul@crapouillou.net>
-In-Reply-To: <20220808174107.38676-1-paul@crapouillou.net>
-References: <20220808174107.38676-1-paul@crapouillou.net>
+        Mon, 8 Aug 2022 13:46:16 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34A7131
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:46:10 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id o3so9190855ple.5
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 10:46:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WT0gvMZYO/av++KMudc6Dk4HO66L8Urniksc21Z/06c=;
+        b=HqrXaad1rdwTwFVLqtIf2gsOjqqHSCtra1Op2I+Ip1+B6FPHxPEzwTFH7bXQwHcgET
+         670AgcycqxHJDRROfj5zyTe5NwQtZFhFxYR5FYTupki7enfM8YtWwCxJCV7/nQfmy4cJ
+         IxrZhtFvvcJ66LqIrfUAMfkK7CmlRw5Rv0KXw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WT0gvMZYO/av++KMudc6Dk4HO66L8Urniksc21Z/06c=;
+        b=LLydyCrnOPOnMJL5csXM1OcJzZp6oQpYDU+xfIbAkmUlu0Ssi6924FnJRMwWBjkFOQ
+         NkOJayzN+DaDmpTfJX7CdOVntyjnw8Hpz60QBVVSYVFvmyiT5Y7mKaA2tHlWwfnYRf7l
+         vzp4Y5HwZMk7dyDt44rYeCCerSd/gWfsyNZOjnlx3pGzXuXW06Tpnfjt8oenyVO2+LU+
+         fK8FV0qvNII24sO+wc7sg2/NMr4bkgl+KdpQudOqeVVVtYVN/42hqYwqO5FOez7shOPd
+         gLGedASk77dSq/2mBy5KU3pc8NjGcnM2FGBS9+JdizFdHAtLLyoPMiGPkKxFSoOpkmP2
+         6jaA==
+X-Gm-Message-State: ACgBeo2mCUfGZRkO1OdKnJzrzZhLTCNAG/zSmZU050eIE4YuLRG9vgu2
+        CF75aKofwhSYDq0PWq9KKD6AwA==
+X-Google-Smtp-Source: AA6agR55vq+x0LDDr8mxEbc8OnrHWhZtkoyD+AcW+LYABM9JFgkRs4j4RTu6F017ikC4JmT33xQogA==
+X-Received: by 2002:a17:90b:3c4c:b0:1f3:3d62:39e2 with SMTP id pm12-20020a17090b3c4c00b001f33d6239e2mr29906557pjb.88.1659980770387;
+        Mon, 08 Aug 2022 10:46:10 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id d15-20020a17090ad98f00b001f200eabc65sm8394142pjv.41.2022.08.08.10.46.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 10:46:09 -0700 (PDT)
+Date:   Mon, 8 Aug 2022 10:46:08 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     jeffxu@google.com
+Cc:     skhan@linuxfoundation.org, akpm@linux-foundation.org,
+        dmitry.torokhov@gmail.com, dverkamp@chromium.org, hughd@google.com,
+        jorgelo@chromium.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-mm@kvack.org,
+        mnissler@chromium.org, jannh@google.com,
+        Jeff Xu <jeffxu@chromium.org>, linux-hardening@vger.kernel.org,
+        Aleksa Sarai <cyphar@cyphar.com>, dev@opencontainers.org,
+        Christian Brauner <brauner@kernel.org>
+Subject: Re: [PATCH v2 0/5] mm/memfd: MFD_NOEXEC for memfd_create
+Message-ID: <202208081018.9C782F184C@keescook>
+References: <20220805222126.142525-1-jeffxu@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220805222126.142525-1-jeffxu@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new EXPORT_GPL_DEV_PM_OPS() and pm_sleep_ptr() / pm_ptr() macros
-to handle the PM callbacks.
+On Fri, Aug 05, 2022 at 10:21:21PM +0000, jeffxu@google.com wrote:
+> This v2 series MFD_NOEXEC, this series includes:
+> 1> address comments in V1
+> 2> add sysctl (vm.mfd_noexec) to change the default file permissions
+>     of memfd_create to be non-executable.
+> 
+> Below are cover-level for v1:
+> 
+> The default file permissions on a memfd include execute bits, which
+> means that such a memfd can be filled with a executable and passed to
+> the exec() family of functions. This is undesirable on systems where all
+> code is verified and all filesystems are intended to be mounted noexec,
+> since an attacker may be able to use a memfd to load unverified code and
+> execute it.
 
-These macros allow the PM functions to be automatically dropped by the
-compiler when CONFIG_SUSPEND is disabled, without having to use #ifdef
-guards.
+I would absolutely like to see some kind of protection here. However,
+I'd like a more specific threat model. What are the cases where the X
+bit has been abused (e.g.[1])? What are the cases where the X bit is
+needed (e.g.[2])? With those in mind, it should be possible to draw
+a clear line between the two cases. (e.g. we need to avoid a confused
+deputy attack where an "unprivileged" user can pass an executable memfd
+to a "privileged" user. How those privileges are defined may matter a
+lot based on how memfds are being used. For example, can runc's use of
+executable memfds be distinguished from an attacker's?)
 
-This has the advantage of always compiling these functions in,
-independently of any Kconfig option. Thanks to that, bugs and other
-regressions are subsequently easier to catch.
+> Additionally, execution via memfd is a common way to avoid scrutiny for
+> malicious code, since it allows execution of a program without a file
+> ever appearing on disk. This attack vector is not totally mitigated with
+> this new flag, since the default memfd file permissions must remain
+> executable to avoid breaking existing legitimate uses, but it should be
+> possible to use other security mechanisms to prevent memfd_create calls
+> without MFD_NOEXEC on systems where it is known that executable memfds
+> are not necessary.
 
-Note that instead of exporting two dev_pm_ops structures containing the
-exact same data, one in intel-lpss-acpi.c and one in intel-lpss-pci.c,
-we export one single dev_pm_ops structure from intel-lpss.c using the
-EXPORT_GP_DEV_PM_OPS() macro, which is then referenced from the -acpi.c
-and -pci.c files.
+This reminds me of dealing with non-executable stacks. There ended up
+being three states:
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
----
- drivers/mfd/intel-lpss-acpi.c |  4 +---
- drivers/mfd/intel-lpss-pci.c  |  4 +---
- drivers/mfd/intel-lpss.c      | 15 +++++++++------
- drivers/mfd/intel-lpss.h      | 28 +---------------------------
- 4 files changed, 12 insertions(+), 39 deletions(-)
+- requested to be executable (PT_GNU_STACK X)
+- requested to be non-executable (PT_GNU_STACK NX)
+- undefined (no PT_GNU_STACK)
 
-diff --git a/drivers/mfd/intel-lpss-acpi.c b/drivers/mfd/intel-lpss-acpi.c
-index a143c8dca2d9..1d46a7aa1c61 100644
---- a/drivers/mfd/intel-lpss-acpi.c
-+++ b/drivers/mfd/intel-lpss-acpi.c
-@@ -203,15 +203,13 @@ static int intel_lpss_acpi_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
--static INTEL_LPSS_PM_OPS(intel_lpss_acpi_pm_ops);
--
- static struct platform_driver intel_lpss_acpi_driver = {
- 	.probe = intel_lpss_acpi_probe,
- 	.remove = intel_lpss_acpi_remove,
- 	.driver = {
- 		.name = "intel-lpss",
- 		.acpi_match_table = intel_lpss_acpi_ids,
--		.pm = &intel_lpss_acpi_pm_ops,
-+		.pm = pm_ptr(&intel_lpss_pm_ops),
- 	},
- };
- 
-diff --git a/drivers/mfd/intel-lpss-pci.c b/drivers/mfd/intel-lpss-pci.c
-index bb08b7a73fe1..25f34cf05432 100644
---- a/drivers/mfd/intel-lpss-pci.c
-+++ b/drivers/mfd/intel-lpss-pci.c
-@@ -71,8 +71,6 @@ static void intel_lpss_pci_remove(struct pci_dev *pdev)
- 	intel_lpss_remove(&pdev->dev);
- }
- 
--static INTEL_LPSS_PM_OPS(intel_lpss_pci_pm_ops);
--
- static const struct intel_lpss_platform_info spt_info = {
- 	.clk_rate = 120000000,
- };
-@@ -507,7 +505,7 @@ static struct pci_driver intel_lpss_pci_driver = {
- 	.probe = intel_lpss_pci_probe,
- 	.remove = intel_lpss_pci_remove,
- 	.driver = {
--		.pm = &intel_lpss_pci_pm_ops,
-+		.pm = pm_ptr(&intel_lpss_pm_ops),
- 	},
- };
- 
-diff --git a/drivers/mfd/intel-lpss.c b/drivers/mfd/intel-lpss.c
-index cfbee2cfba6b..9cdd0b52f8d8 100644
---- a/drivers/mfd/intel-lpss.c
-+++ b/drivers/mfd/intel-lpss.c
-@@ -468,7 +468,7 @@ static int resume_lpss_device(struct device *dev, void *data)
- 	return 0;
- }
- 
--int intel_lpss_prepare(struct device *dev)
-+static int intel_lpss_prepare(struct device *dev)
- {
- 	/*
- 	 * Resume both child devices before entering system sleep. This
-@@ -477,9 +477,8 @@ int intel_lpss_prepare(struct device *dev)
- 	device_for_each_child_reverse(dev, NULL, resume_lpss_device);
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(intel_lpss_prepare);
- 
--int intel_lpss_suspend(struct device *dev)
-+static int intel_lpss_suspend(struct device *dev)
- {
- 	struct intel_lpss *lpss = dev_get_drvdata(dev);
- 	unsigned int i;
-@@ -498,9 +497,8 @@ int intel_lpss_suspend(struct device *dev)
- 
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(intel_lpss_suspend);
- 
--int intel_lpss_resume(struct device *dev)
-+static int intel_lpss_resume(struct device *dev)
- {
- 	struct intel_lpss *lpss = dev_get_drvdata(dev);
- 	unsigned int i;
-@@ -513,7 +511,12 @@ int intel_lpss_resume(struct device *dev)
- 
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(intel_lpss_resume);
-+
-+EXPORT_GPL_DEV_PM_OPS(intel_lpss_pm_ops) = {
-+	.prepare = pm_sleep_ptr(intel_lpss_prepare),
-+	LATE_SYSTEM_SLEEP_PM_OPS(intel_lpss_suspend, intel_lpss_resume)
-+	RUNTIME_PM_OPS(intel_lpss_suspend, intel_lpss_resume, NULL)
-+};
- 
- static int __init intel_lpss_init(void)
- {
-diff --git a/drivers/mfd/intel-lpss.h b/drivers/mfd/intel-lpss.h
-index 062ce95b68b9..c1d72b117ed5 100644
---- a/drivers/mfd/intel-lpss.h
-+++ b/drivers/mfd/intel-lpss.h
-@@ -30,32 +30,6 @@ int intel_lpss_probe(struct device *dev,
- 		     const struct intel_lpss_platform_info *info);
- void intel_lpss_remove(struct device *dev);
- 
--#ifdef CONFIG_PM
--int intel_lpss_prepare(struct device *dev);
--int intel_lpss_suspend(struct device *dev);
--int intel_lpss_resume(struct device *dev);
--
--#ifdef CONFIG_PM_SLEEP
--#define INTEL_LPSS_SLEEP_PM_OPS			\
--	.prepare = intel_lpss_prepare,		\
--	SET_LATE_SYSTEM_SLEEP_PM_OPS(intel_lpss_suspend, intel_lpss_resume)
--#else
--#define INTEL_LPSS_SLEEP_PM_OPS
--#endif
--
--#define INTEL_LPSS_RUNTIME_PM_OPS		\
--	.runtime_suspend = intel_lpss_suspend,	\
--	.runtime_resume = intel_lpss_resume,
--
--#else /* !CONFIG_PM */
--#define INTEL_LPSS_SLEEP_PM_OPS
--#define INTEL_LPSS_RUNTIME_PM_OPS
--#endif /* CONFIG_PM */
--
--#define INTEL_LPSS_PM_OPS(name)			\
--const struct dev_pm_ops name = {		\
--	INTEL_LPSS_SLEEP_PM_OPS			\
--	INTEL_LPSS_RUNTIME_PM_OPS		\
--}
-+extern const struct dev_pm_ops intel_lpss_pm_ops;
- 
- #endif /* __MFD_INTEL_LPSS_H */
+The first two are clearly defined, but the third needed a lot of special
+handling. For a "safe by default" world, the third should be "NX", but
+old stuff depended on it being "X".
+
+Here, we have a bit being present or not, so we only have a binary
+state. I'd much rather the default be NX (no bit set) instead of making
+every future (safe) user of memfd have to specify MFD_NOEXEC.
+
+It's also easier on a filtering side to say "disallow memfd_create with
+MFD_EXEC", but how do we deal with the older software?
+
+If the default perms of memfd_create()'s exec bit is controlled by a
+sysctl and the sysctl is set to "leave it executable", how does a user
+create an NX memfd? (i.e. setting MFD_EXEC means "exec" and not setting
+it means "exec" also.) Are two bits needed? Seems wasteful.
+MFD_I_KNOW_HOW_TO_SET_EXEC | MFD_EXEC, etc...
+
+For F_SEAL_EXEC, it seems this should imply F_SEAL_WRITE if forced
+executable to avoid WX mappings (i.e. provide W^X from the start).
+
+-Kees
+
+[1] https://bugs.chromium.org/p/chromium/issues/list?q=type%3Dbug-security%20memfd%20escalation&can=1
+[2] https://lwn.net/Articles/781013/
+
 -- 
-2.35.1
-
+Kees Cook
