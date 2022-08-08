@@ -2,109 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB24C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 09:32:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15159C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 09:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242636AbiHHJcS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 05:32:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35822 "EHLO
+        id S242652AbiHHJcW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 05:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242523AbiHHJbH (ORCPT
+        with ESMTP id S242490AbiHHJb5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 05:31:07 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF57F2AEA;
-        Mon,  8 Aug 2022 02:31:06 -0700 (PDT)
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2789SNTm018149;
-        Mon, 8 Aug 2022 09:30:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references; s=qcppdkim1;
- bh=XBOEaXslQ/ov0WLTHJmjpnPH5ylY2kyXViGO9O2x9Jo=;
- b=M3I6VRPBq87Gdserp2BkArkcYQLXlyUm73wy4LvXuG/6OShIL/91oD0DzP3Z2dpFRSzz
- o1M1VzTnm84fiOOkeRWTe/jf/ljq1tybSe9JTa20ho7F0eL5iXxlArZDXbVXvqFsETiL
- IdtpOoKCVOgaauymsOfee53Psch97U0yN4Q+yAWckYubbQd4zxAA+tV3Ce+H1iUdKvQi
- o22E5YvYP2EdpiR/uYo1rG+8VG7NfzD0jD3OY43VwE+sHiBogUC8w1n7F2bZgXDZA+Ds
- ZJ3eA6Tnr6M4B5MTentsWRppgArUXeQiEmKUpaHmLxDhm9UDGSftMaq+3YXWJB7sRj1H uQ== 
-Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hshfttysx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 08 Aug 2022 09:30:56 +0000
-Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-        by APBLRPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 2789UqTX017987;
-        Mon, 8 Aug 2022 09:30:52 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 3hshckgpkn-1;
-        Mon, 08 Aug 2022 09:30:52 +0000
-Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2789Uqmw017982;
-        Mon, 8 Aug 2022 09:30:52 GMT
-Received: from vboma-linux.qualcomm.com (vboma-linux.qualcomm.com [10.204.65.94])
-        by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 2789Uq8n017965;
-        Mon, 08 Aug 2022 09:30:52 +0000
-Received: by vboma-linux.qualcomm.com (Postfix, from userid 72083)
-        id 61FB0900883; Mon,  8 Aug 2022 15:00:51 +0530 (IST)
-From:   quic_vboma@quicinc.com
-To:     Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Viswanath Boma <quic_vboma@quicinc.com>
-Subject: [PATCH V2 0/7] Fixes for Encoder Compliance issues.
-Date:   Mon,  8 Aug 2022 14:58:27 +0530
-Message-Id: <20220808092834.29775-1-quic_vboma@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220712122347.6781-1-quic_vboma@quicinc.com>
-References: <20220712122347.6781-1-quic_vboma@quicinc.com>
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: wiKhS9YaeYDuSRuDqr-bQXKaVTjxqiq6
-X-Proofpoint-GUID: wiKhS9YaeYDuSRuDqr-bQXKaVTjxqiq6
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-08_06,2022-08-05_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1011
- priorityscore=1501 impostorscore=0 bulkscore=0 mlxlogscore=958 mlxscore=0
- adultscore=0 spamscore=0 lowpriorityscore=0 malwarescore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2208080047
+        Mon, 8 Aug 2022 05:31:57 -0400
+Received: from gentwo.de (gentwo.de [161.97.139.209])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB57DE7
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 02:31:47 -0700 (PDT)
+Received: by gentwo.de (Postfix, from userid 1001)
+        id 35513B0031D; Mon,  8 Aug 2022 11:31:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gentwo.de; s=default;
+        t=1659951104; bh=cAm0EF/td7pugO5S6hgTN1A7+5y0vwo9DxRBgMuNTBQ=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=LDa2NTnVzPd6kEC7wusjeNwIM0cuMz+3R/iBHFN4COgE+Cvgj1cZmXpjCByFf0QIq
+         k1VkgeRGA0gooFKtOpta6BdcHZVyI/UBTAoC8T+eX32jzrsgxg36fLzKrfELVcegef
+         gMyRlSrKoNOYki+D+fSwK5IoV1YmGlKOLicYOKUMWq1UbD/vrj/FA9mWLQbtGmhmcu
+         UeGsOcrH7QJM8PGolvvaZnngGc4xqBgjjTcRMbhT6m3XWbKQWXCf01gC/wlGkr6Fto
+         TMxpGipWiOdiz0iZIdLKCwU0354++VdoKcyTQYv/r9lV5s0u5w/i5w8VO0hiceiGzc
+         f2LOzG6aMZA8g==
+Received: from localhost (localhost [127.0.0.1])
+        by gentwo.de (Postfix) with ESMTP id 327D9B00179;
+        Mon,  8 Aug 2022 11:31:44 +0200 (CEST)
+Date:   Mon, 8 Aug 2022 11:31:44 +0200 (CEST)
+From:   Christoph Lameter <cl@gentwo.de>
+To:     Guo Ren <guoren@kernel.org>
+cc:     tj@kernel.org, palmer@dabbelt.com, will@kernel.org,
+        catalin.marinas@arm.com, peterz@infradead.org, arnd@arndb.de,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, Guo Ren <guoren@linux.alibaba.com>
+Subject: Re: [RFC PATCH 1/4] vmstat: percpu: Rename HAVE_CMPXCHG_LOCAL to
+ HAVE_CMPXCHG_PERCPU_BYTE
+In-Reply-To: <20220808080600.3346843-2-guoren@kernel.org>
+Message-ID: <alpine.DEB.2.22.394.2208081119230.411952@gentwo.de>
+References: <20220808080600.3346843-1-guoren@kernel.org> <20220808080600.3346843-2-guoren@kernel.org>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Viswanath Boma <quic_vboma@quicinc.com>
+On Mon, 8 Aug 2022, guoren@kernel.org wrote:
 
-Fixes for Video Encoder complaince issues .
-Tested on v5.15 kernel and the chrome/client binary details -
-				 v4l2-compliance 1.22.1
+> The name HAVE_CMPXCHG_LOCAL is confused with using cmpxchg_local, but
+> vmstat needs this_cpu_cmpxchg_1. Rename would clarify the meaning, and
+> maybe we could remove cmpxchg(64)_local API (Only drivers/iommu/intel
+> used) in the future.
 
+HAVE_CMPXCHG_LOCAL indicates that cmpxchg_local() is available.
 
+The term LOCAL is important because that has traditionally signified an
+operation that has an atomic nature that only works on the local core.
 
-Dikshita Agarwal (1):
-  venus : Addition of support for VIDIOC_TRY_ENCODER_CMD
+cmpxchg local is used in slub too in the form of this_cpu_cmpxchg_double.
 
-Stanimir Varbanov (2):
-  venus : Add default values for the control
-    V4L2_CID_COLORIMETRY_HDR10_MASTERING_DISPLAY
-  venus : CAPTURE Plane width/height alignment with OUT plane.
+But there is the other naming using this_cpu.....
 
-Vikash Garodia (1):
-  venus : Allow MIN/MAX settings for the v4l2 encoder controls defined
-    range.
+Maybe rename to
 
-Viswanath Boma (3):
-  venus : Addition of control support - V4L2_CID_MIN_BUFFERS_FOR_OUTPUT
-  venus : Addition of EOS Event support for Encoder
-  venus : Remove the capture plane settings for venc_g_parm/venc_s_parm
+	HAVE_THIS_CPU_CMPXCHG ?
 
- drivers/media/platform/qcom/venus/venc.c      | 26 ++++++++++----
- .../media/platform/qcom/venus/venc_ctrls.c    | 35 ++++++++++++++++---
- 2 files changed, 50 insertions(+), 11 deletions(-)
+and clean up all the other mentions of "local" in the source too?
 
--- 
-2.17.1
-
+There is also a local.h header around somewhere
