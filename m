@@ -2,71 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3617CC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 09:25:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 877B7C25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 09:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238580AbiHHJZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 05:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59932 "EHLO
+        id S242347AbiHHJ1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 05:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242343AbiHHJZn (ORCPT
+        with ESMTP id S235152AbiHHJ1H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 05:25:43 -0400
-X-Greylist: delayed 3601 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 08 Aug 2022 02:25:41 PDT
-Received: from 6.mo575.mail-out.ovh.net (6.mo575.mail-out.ovh.net [46.105.63.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3394338AF
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 02:25:40 -0700 (PDT)
-Received: from player791.ha.ovh.net (unknown [10.110.115.113])
-        by mo575.mail-out.ovh.net (Postfix) with ESMTP id 9A01A23E17
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 08:09:15 +0000 (UTC)
-Received: from etezian.org (bbcs-175-223.cust.wingo.ch [178.238.175.223])
-        (Authenticated sender: andi@etezian.org)
-        by player791.ha.ovh.net (Postfix) with ESMTPSA id 0B9A62D4A25E6;
-        Mon,  8 Aug 2022 08:09:02 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-101G004470e5d2f-4ec8-446b-9b2c-f538d1afd209,
-                    D07DC7BC5756341CF3D6D9F7D18BF56C80B463DD) smtp.auth=andi@etezian.org
-X-OVh-ClientIp: 178.238.175.223
-Date:   Mon, 8 Aug 2022 10:09:02 +0200
-From:   Andi Shyti <andi@etezian.org>
-To:     Chanho Park <chanho61.park@samsung.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andi Shyti <andi@etezian.org>, Mark Brown <broonie@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Adithya K V <adithya.kv@samsung.com>,
-        kernel test robot <lkp@intel.com>, linux-spi@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] spi: s3c64xx: correct dma_chan pointer initialization
-Message-ID: <YvDEngXWqFp4lv7i@intel.intel>
-References: <CGME20220808004253epcas2p3937171a6f89a765d67d5cc7b55afb89a@epcas2p3.samsung.com>
- <20220808004851.25122-1-chanho61.park@samsung.com>
+        Mon, 8 Aug 2022 05:27:07 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04A110FF1;
+        Mon,  8 Aug 2022 02:27:05 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4M1W5c3xwsz1HBYP;
+        Mon,  8 Aug 2022 17:25:40 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 8 Aug 2022 17:27:03 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.61) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 8 Aug 2022 17:27:02 +0800
+From:   Yang Jihong <yangjihong1@huawei.com>
+To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
+        <jolsa@kernel.org>, <namhyung@kernel.org>,
+        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <yangjihong1@huawei.com>
+Subject: [PATCH 0/2] perf kvm/sched: Use strstarts instead of strncmp to match subcommands
+Date:   Mon, 8 Aug 2022 17:24:06 +0800
+Message-ID: <20220808092408.107399-1-yangjihong1@huawei.com>
+X-Mailer: git-send-email 2.30.GIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220808004851.25122-1-chanho61.park@samsung.com>
-X-Ovh-Tracer-Id: 14171420654007487195
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefkedgtddvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomheptehnughiucfuhhihthhiuceorghnughisegvthgviihirghnrdhorhhgqeenucggtffrrghtthgvrhhnpeejgfelgeekieffjeegveeuvdehgeelveetveejudffvedvleehvdefleehudelueenucfkpheptddrtddrtddrtddpudejkedrvdefkedrudejhedrvddvfeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeeluddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpegrnhguihesvghtvgiiihgrnhdrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejhe
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.61]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chanho,
+Yang Jihong (2):
+  perf kvm: Fix subcommand matching error
+  perf sched latency: Fix subcommand matching error
 
-On Mon, Aug 08, 2022 at 09:48:51AM +0900, Chanho Park wrote:
-> Use NULL for dma channel pointer initialization instead of plain integer.
-> 
-> sparse warnings: (new ones prefixed by >>)
-> >> drivers/spi/spi-s3c64xx.c:387:34: sparse: sparse: Using plain integer as NULL pointer
->    drivers/spi/spi-s3c64xx.c:388:34: sparse: sparse: Using plain integer as NULL pointer
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: 82295bc0d192 ("spi: s3c64xx: move dma_release_channel to unprepare")
-> Fixes: f52b03c70744 ("spi: s3c64xx: requests spi-dma channel only during data transfer")
-> Signed-off-by: Chanho Park <chanho61.park@samsung.com>
+ tools/perf/builtin-kvm.c   | 8 ++++----
+ tools/perf/builtin-sched.c | 2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-Reviewed-by: Andi Shyti <andi@etezian.org>
+-- 
+2.30.GIT
 
-Thanks,
-Andi
