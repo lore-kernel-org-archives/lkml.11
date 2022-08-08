@@ -2,141 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B92C25B0C
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04207C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243367AbiHHBxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35598 "EHLO
+        id S243417AbiHHBxJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:53:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243402AbiHHBuw (ORCPT
+        with ESMTP id S243412AbiHHBuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:50:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75CD18B32;
-        Sun,  7 Aug 2022 18:37:54 -0700 (PDT)
+        Sun, 7 Aug 2022 21:50:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC6F19012;
+        Sun,  7 Aug 2022 18:37:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1FA97B80E0D;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 785DCB80E10;
+        Mon,  8 Aug 2022 01:37:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81E41C433C1;
         Mon,  8 Aug 2022 01:37:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA884C433D6;
-        Mon,  8 Aug 2022 01:37:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922670;
-        bh=xa9awBFNuvjnDUiojN4ngg94h5XL+TXVfCZlEsYL2hI=;
+        s=k20201202; t=1659922673;
+        bh=9LjwY+T4K0WpW3gEj2ZZaN8kTnJt6JPVShGg+3jjePY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nj6qadzrsZ+mdAFvIYasB3c2LPc5pbFQLR9BzK005jY28OtF0Oupn+Ug8B9f+YkTK
-         LaEpgrB36W8M5NtDuFbU/3l3EdBZLiwcS00+jf6sno/7htkFZPbqh7zNjbkcathvxP
-         qaHcFkcVlkG4mhl63GPElW9lqpbusA4V8SOZIstkTGmNL4SRY53wyHxstX+aZjf9zO
-         kTy6E9tSNa4IWS2tm5nVQdYwxtte2DiMgs2E7CSCoQF7jZNOZvSn8sNEaUEkCvpcA8
-         TKmfmjxes+HShC4DrGBJiDWbOAbgA/RzrcBjoty1gLAh5xtmMNdntPCaCdVIRJRrg6
-         1iFJvwnAK+Y/A==
+        b=ndxBXQDVIwcuZCTtiDS9ee3briQFi6kUYJf+aBatTrYt2Q2y3B0VRO91Kfi85N9Ik
+         bYVVZYk1Q2Zn7DetpYjV/EeeCMx/fmNq91mpwb9kEmVZ4yJTgyhAB3slmDBTQjx/aW
+         uUQcGvs2EBr5AGzRKmrVboMnsgXT+UKDwdav2H8r+YBAlBjtbahOtzWnoRdXtwKJJ1
+         LGnu1dZ/d1o36+2noX59lPzdr+WuCZ5A859xIOTXgjP76e1ZbcjW6GB4nfvefGBkpw
+         yQsujlhv8ZAc6NXpCi19PWx6kgGuv3klhoQ8/5iiIbL2S+JelTHhwA2c68u+HE/+rT
+         fdgXnS6CVxrpw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?haibinzhang=20=28=E5=BC=A0=E6=B5=B7=E6=96=8C=29?= 
-        <haibinzhang@tencent.com>, hewenliang <hewenliang4@huawei.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        ardb@kernel.org, mark.rutland@arm.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 03/29] arm64: fix oops in concurrently setting insn_emulation sysctls
-Date:   Sun,  7 Aug 2022 21:37:13 -0400
-Message-Id: <20220808013741.316026-3-sashal@kernel.org>
+Cc:     Antonio Borneo <antonio.borneo@foss.st.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de
+Subject: [PATCH AUTOSEL 5.10 05/29] genirq: Don't return error on missing optional irq_request_resources()
+Date:   Sun,  7 Aug 2022 21:37:15 -0400
+Message-Id: <20220808013741.316026-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013741.316026-1-sashal@kernel.org>
 References: <20220808013741.316026-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: haibinzhang (张海斌) <haibinzhang@tencent.com>
+From: Antonio Borneo <antonio.borneo@foss.st.com>
 
-[ Upstream commit af483947d472eccb79e42059276c4deed76f99a6 ]
+[ Upstream commit 95001b756467ecc9f5973eb5e74e97699d9bbdf1 ]
 
-emulation_proc_handler() changes table->data for proc_dointvec_minmax
-and can generate the following Oops if called concurrently with itself:
+Function irq_chip::irq_request_resources() is reported as optional
+in the declaration of struct irq_chip.
+If the parent irq_chip does not implement it, we should ignore it
+and return.
 
- | Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
- | Internal error: Oops: 96000006 [#1] SMP
- | Call trace:
- | update_insn_emulation_mode+0xc0/0x148
- | emulation_proc_handler+0x64/0xb8
- | proc_sys_call_handler+0x9c/0xf8
- | proc_sys_write+0x18/0x20
- | __vfs_write+0x20/0x48
- | vfs_write+0xe4/0x1d0
- | ksys_write+0x70/0xf8
- | __arm64_sys_write+0x20/0x28
- | el0_svc_common.constprop.0+0x7c/0x1c0
- | el0_svc_handler+0x2c/0xa0
- | el0_svc+0x8/0x200
+Don't return error if the functions is missing.
 
-To fix this issue, keep the table->data as &insn->current_mode and
-use container_of() to retrieve the insn pointer. Another mutex is
-used to protect against the current_mode update but not for retrieving
-insn_emulation as table->data is no longer changing.
-
-Co-developed-by: hewenliang <hewenliang4@huawei.com>
-Signed-off-by: hewenliang <hewenliang4@huawei.com>
-Signed-off-by: Haibin Zhang <haibinzhang@tencent.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Link: https://lore.kernel.org/r/20220128090324.2727688-1-hewenliang4@huawei.com
-Link: https://lore.kernel.org/r/9A004C03-250B-46C5-BF39-782D7551B00E@tencent.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Antonio Borneo <antonio.borneo@foss.st.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220512160544.13561-1-antonio.borneo@foss.st.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/armv8_deprecated.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ kernel/irq/chip.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/kernel/armv8_deprecated.c b/arch/arm64/kernel/armv8_deprecated.c
-index 7364de008bab..91b8a8378ba3 100644
---- a/arch/arm64/kernel/armv8_deprecated.c
-+++ b/arch/arm64/kernel/armv8_deprecated.c
-@@ -59,6 +59,7 @@ struct insn_emulation {
- static LIST_HEAD(insn_emulation);
- static int nr_insn_emulated __initdata;
- static DEFINE_RAW_SPINLOCK(insn_emulation_lock);
-+static DEFINE_MUTEX(insn_emulation_mutex);
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index 0b70811fd956..621d8dd157bc 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -1543,7 +1543,8 @@ int irq_chip_request_resources_parent(struct irq_data *data)
+ 	if (data->chip->irq_request_resources)
+ 		return data->chip->irq_request_resources(data);
  
- static void register_emulation_hooks(struct insn_emulation_ops *ops)
- {
-@@ -207,10 +208,10 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
- 				  loff_t *ppos)
- {
- 	int ret = 0;
--	struct insn_emulation *insn = (struct insn_emulation *) table->data;
-+	struct insn_emulation *insn = container_of(table->data, struct insn_emulation, current_mode);
- 	enum insn_emulation_mode prev_mode = insn->current_mode;
- 
--	table->data = &insn->current_mode;
-+	mutex_lock(&insn_emulation_mutex);
- 	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
- 
- 	if (ret || !write || prev_mode == insn->current_mode)
-@@ -223,7 +224,7 @@ static int emulation_proc_handler(struct ctl_table *table, int write,
- 		update_insn_emulation_mode(insn, INSN_UNDEF);
- 	}
- ret:
--	table->data = insn;
-+	mutex_unlock(&insn_emulation_mutex);
- 	return ret;
+-	return -ENOSYS;
++	/* no error on missing optional irq_chip::irq_request_resources */
++	return 0;
  }
+ EXPORT_SYMBOL_GPL(irq_chip_request_resources_parent);
  
-@@ -247,7 +248,7 @@ static void __init register_insn_emulation_sysctl(void)
- 		sysctl->maxlen = sizeof(int);
- 
- 		sysctl->procname = insn->ops->name;
--		sysctl->data = insn;
-+		sysctl->data = &insn->current_mode;
- 		sysctl->extra1 = &insn->min;
- 		sysctl->extra2 = &insn->max;
- 		sysctl->proc_handler = emulation_proc_handler;
 -- 
 2.35.1
 
