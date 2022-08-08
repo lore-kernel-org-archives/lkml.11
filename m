@@ -2,86 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F6E6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 13:45:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC4F2C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 13:48:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242949AbiHHNp2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 09:45:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51820 "EHLO
+        id S235211AbiHHNsk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 09:48:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243134AbiHHNpW (ORCPT
+        with ESMTP id S232602AbiHHNs3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 09:45:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5F73893;
-        Mon,  8 Aug 2022 06:45:20 -0700 (PDT)
+        Mon, 8 Aug 2022 09:48:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD2263A5
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 06:48:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B55D3B80EA1;
-        Mon,  8 Aug 2022 13:45:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A234BC433C1;
-        Mon,  8 Aug 2022 13:45:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A08CC6069F
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 13:48:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A08E9C433D6;
+        Mon,  8 Aug 2022 13:48:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659966317;
-        bh=a8EU6eGbgWuI9B2ElfWOtvEkJxdtJvEBO0Sx4mMYwzQ=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=WUDcfYUE+/C4GY6bP96exqGCPwib378v8h7/9uULoLgZoE79oHM1LRomIjlcgYXyF
-         K0X2cIl9VnrgViNfDMgNoxN27Wm6QAnfdMhjI5k7lmaLdcKGQ5beT8NzRrKzwKQ+dA
-         z59FI6SO+Ebrjqq8alLtSjRYBWScRi5ERU5oaTzdqNmxflnBu1d7Bl+KX/XR75ZfKT
-         qLCKHvvG/wLoug+BtNFCclMWF158zRgKBGXrwiiDj3erDjvrUlWrUHlQN2LvH6meT3
-         +QlLqcKys0DjKDv2jO+6Tzo7zlgEWgdm28QAf3gwBxBoG92YA1TSU87I3VILlpixVX
-         LVvYNJ2q4tjPA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        David Howells <dhowells@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: Re: [GIT PULL] tpmdd updates for v5.20
-References: <20220803210228.158993-1-jarkko@kernel.org>
-        <87pmhgikhk.fsf@kernel.org>
-        <5653318a776a8044f413ed1a4b6e3965fac2297e.camel@HansenPartnership.com>
-        <87czdfi6t9.fsf@kernel.org> <Yu6qQHMoBzC4zprg@kernel.org>
-Date:   Mon, 08 Aug 2022 16:45:12 +0300
-In-Reply-To: <Yu6qQHMoBzC4zprg@kernel.org> (Jarkko Sakkinen's message of "Sat,
-        6 Aug 2022 20:52:00 +0300")
-Message-ID: <87o7wun91z.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        s=k20201202; t=1659966508;
+        bh=X0HV5fhPXLUm7NKTXFMV95hb8lBSLoQ/OJXqnQiMfK0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oRGo0mtjC6m1kP8UNXbybRa2Un2g7srfKYkfWbpIqWQ4Jl3ohLQSnSGtNgy+AS5se
+         Zlr61V1czlqDFVdSn68EcckmBlpgZckNbv3edSxNw0LQWm9pmasiPNwVVr7khs12rW
+         fZ2Q9qZMTlJojiRf5JUvWqmZO4vViPO+LCGN1wWBnItnBYBK1csV8cK05RZFF/KW8+
+         qy7OGGgsXL/UKpvKRGfCdhWabGXh1gwGKP/wOL9/K3pvKF021bhh9dXR/AxoSatir1
+         +1zRiAEM5HKUuwTZQ9E55wwVR45pWUqKEYrSEipItiBL6bYXpgqXijI4lpyTlfVMjH
+         A2bwvOd+qI1QA==
+Date:   Mon, 8 Aug 2022 14:48:23 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH v1 1/5] regmap: mmio: Don't unprepare attached clock
+Message-ID: <YvEUJ12TmgRaR4Ub@sirena.org.uk>
+References: <20220805205321.19452-1-andriy.shevchenko@linux.intel.com>
+ <YvEKgkhRWCKtXdD4@sirena.org.uk>
+ <CAHp75VeeZAgKdZhJffNouFh26rwGzmqGuJX7bcObSVV+dFS-tA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ZxuxQCJ31s+QoHqV"
+Content-Disposition: inline
+In-Reply-To: <CAHp75VeeZAgKdZhJffNouFh26rwGzmqGuJX7bcObSVV+dFS-tA@mail.gmail.com>
+X-Cookie: Flee at once, all is discovered.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jarkko Sakkinen <jarkko@kernel.org> writes:
 
->> Odd, I haven't noticed any UTF-8 problems in my setup but Gnus/Emacs is
->> known to be picky. After some more investigation I noticed this in
->> Jarkko's email:
->> 
->> Content-Type: text/plain; charset=y
->> 
->> I admit I'm not up to par with the latest cool stuff but that charset
->> can't be valid, right? :)
->
-> I must have pressed 'y' and enter, instead of enter,
-> when git send-email asked whether to use UTF-8 or
-> something like that.
->
-> Sorry about that :-) I don't recall doing that but
-> that is what it looks like for me.
+--ZxuxQCJ31s+QoHqV
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Hehe, that indeed sounds likely. Thanks, I was curious where that 'y'
-came from :)
+On Mon, Aug 08, 2022 at 03:41:48PM +0200, Andy Shevchenko wrote:
+> On Mon, Aug 8, 2022 at 3:19 PM Mark Brown <broonie@kernel.org> wrote:
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+> > regmap_mmio_attach_clk() prepares the clock that's passed in, we should
+> > undo that when detaching otherwise we're leaking a prepare (as we do in
+> > the explicit detach).
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> Why do we allow the user to avoid explicit detach? What is the point
+> of having that API in the case we take care of it?
+
+I think just for symmetry so it's obvious that error handling is
+happening if people want it to be.
+
+--ZxuxQCJ31s+QoHqV
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLxFCYACgkQJNaLcl1U
+h9BdvQf+OJJbTrFaHiI8cc4lrDovCbKsQ559BIfDzBz+m8Kt7j/yaQHHzcjBBn0c
+0HyvJKLRNDSwcM/sKIxMWSOxqNH9qi7edMnqJd+tKwjUJZOtJfGuDjNoT3eaYNuL
+TBpCMPhH4mAyipt1NkcwnGKLELyKQJ7ltiiLtSlqTOmQ9DUA6P342nbdVyvGmxM0
+aZ9gmhjZ9gKi51kcsjtjCnwNKwq6TIaJENDBvwLn75WlPhTgQBWyx2ALHU/6ER0y
+q+IC8cTebkB6MA9oH+6fbFNy7WXdkCj1uA910lAyPg/SqyuVsY9r2csro8IMuGR1
+70bd5D1V7CAyBlcZMwaLDDiISTIYww==
+=e58/
+-----END PGP SIGNATURE-----
+
+--ZxuxQCJ31s+QoHqV--
