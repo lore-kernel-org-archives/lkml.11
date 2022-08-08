@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED755C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A456C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243668AbiHHRrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 13:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47680 "EHLO
+        id S244011AbiHHRr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 13:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243879AbiHHRqH (ORCPT
+        with ESMTP id S244514AbiHHRqE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 13:46:07 -0400
+        Mon, 8 Aug 2022 13:46:04 -0400
 Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B5917A9D
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:45:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7A17627D
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:45:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
         s=mail; t=1659980507; h=from:from:sender:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MyfIVzDAtyS9hNaCn1YQzhz/dCI8btmYd/18EkdPbzo=;
-        b=0qjLM33ZN78rAyxl5Ult69Aag/DNLTqw1GpoeCuiYoyOQG6qKJh2ww5gStMaysCI8iAD5w
-        zWRuQMDH5GvdAxxsWR2AviEyWynKFP460/0GLI3aXYkl/uV5UgqJdD4tJ7tOREWpwDFPuL
-        xa1ixTyhbCVNKRNxi9Zeh85ScXqb3fI=
+        bh=Z0TOf7NCTCNZLEJUd0n3YWp93p2MEOQ2XhRWmHJulpk=;
+        b=rMgv++6XK2xdJknO31ryPaoawJDkx77mVzmGwzj1bCiQbqPpOKQuY7Snak2IVPYIeIcZTX
+        J/6sWTX0o9bKJSo7eIPrlIm9B6LAPwIKxrng0Kwg4o6n0IuTTfMoytD0WULKBOEuD9zKN6
+        h2ctYA8WDLGslUmH4V0KrHt1I7BVoQ0=
 From:   Paul Cercueil <paul@crapouillou.net>
 To:     Lee Jones <lee.jones@linaro.org>
 Cc:     linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
@@ -31,9 +31,9 @@ Cc:     linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 27/30] mfd: stmpe: Remove #ifdef guards for PM related functions
-Date:   Mon,  8 Aug 2022 19:41:04 +0200
-Message-Id: <20220808174107.38676-28-paul@crapouillou.net>
+Subject: [PATCH v2 26/30] mfd: stmfx: Remove #ifdef guards for PM related functions
+Date:   Mon,  8 Aug 2022 19:41:03 +0200
+Message-Id: <20220808174107.38676-27-paul@crapouillou.net>
 In-Reply-To: <20220808174107.38676-1-paul@crapouillou.net>
 References: <20220808174107.38676-1-paul@crapouillou.net>
 MIME-Version: 1.0
@@ -42,7 +42,7 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new EXPORT_GPL_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros
+Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros
 to handle the .suspend/.resume callbacks.
 
 These macros allow the suspend and resume functions to be automatically
@@ -56,71 +56,64 @@ regressions are subsequently easier to catch.
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
 
-V2: remove duplicated "const".
+V2: remove CONFIG_PM wrapper around fields in private struct
 
 Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
 Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
 Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 
- drivers/mfd/stmpe-i2c.c | 4 +---
- drivers/mfd/stmpe-spi.c | 4 +---
- drivers/mfd/stmpe.c     | 8 ++------
- 3 files changed, 4 insertions(+), 12 deletions(-)
+ drivers/mfd/stmfx.c       | 6 ++----
+ include/linux/mfd/stmfx.h | 2 --
+ 2 files changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/mfd/stmpe-i2c.c b/drivers/mfd/stmpe-i2c.c
-index d3eedf3d607e..bf094cc9f9de 100644
---- a/drivers/mfd/stmpe-i2c.c
-+++ b/drivers/mfd/stmpe-i2c.c
-@@ -116,9 +116,7 @@ MODULE_DEVICE_TABLE(i2c, stmpe_i2c_id);
- static struct i2c_driver stmpe_i2c_driver = {
- 	.driver = {
- 		.name = "stmpe-i2c",
--#ifdef CONFIG_PM
--		.pm = &stmpe_dev_pm_ops,
--#endif
-+		.pm = pm_sleep_ptr(&stmpe_dev_pm_ops),
- 		.of_match_table = stmpe_of_match,
- 	},
- 	.probe		= stmpe_i2c_probe,
-diff --git a/drivers/mfd/stmpe-spi.c b/drivers/mfd/stmpe-spi.c
-index ad8055a0e286..e9cbf33502b3 100644
---- a/drivers/mfd/stmpe-spi.c
-+++ b/drivers/mfd/stmpe-spi.c
-@@ -135,9 +135,7 @@ static struct spi_driver stmpe_spi_driver = {
- 	.driver = {
- 		.name	= "stmpe-spi",
- 		.of_match_table = of_match_ptr(stmpe_spi_of_match),
--#ifdef CONFIG_PM
--		.pm	= &stmpe_dev_pm_ops,
--#endif
-+		.pm	= pm_sleep_ptr(&stmpe_dev_pm_ops),
- 	},
- 	.probe		= stmpe_spi_probe,
- 	.remove		= stmpe_spi_remove,
-diff --git a/drivers/mfd/stmpe.c b/drivers/mfd/stmpe.c
-index aeb9ea55f97d..89ffd5a7fab8 100644
---- a/drivers/mfd/stmpe.c
-+++ b/drivers/mfd/stmpe.c
-@@ -1508,7 +1508,6 @@ void stmpe_remove(struct stmpe *stmpe)
- 	mfd_remove_devices(stmpe->dev);
- }
- 
--#ifdef CONFIG_PM
- static int stmpe_suspend(struct device *dev)
- {
- 	struct stmpe *stmpe = dev_get_drvdata(dev);
-@@ -1529,8 +1528,5 @@ static int stmpe_resume(struct device *dev)
+diff --git a/drivers/mfd/stmfx.c b/drivers/mfd/stmfx.c
+index 122f96094410..94af27346669 100644
+--- a/drivers/mfd/stmfx.c
++++ b/drivers/mfd/stmfx.c
+@@ -476,7 +476,6 @@ static int stmfx_remove(struct i2c_client *client)
  	return 0;
  }
  
--const struct dev_pm_ops stmpe_dev_pm_ops = {
--	.suspend	= stmpe_suspend,
--	.resume		= stmpe_resume,
--};
+-#ifdef CONFIG_PM_SLEEP
+ static int stmfx_suspend(struct device *dev)
+ {
+ 	struct stmfx *stmfx = dev_get_drvdata(dev);
+@@ -542,9 +541,8 @@ static int stmfx_resume(struct device *dev)
+ 
+ 	return 0;
+ }
 -#endif
-+EXPORT_GPL_SIMPLE_DEV_PM_OPS(stmpe_dev_pm_ops,
-+			     stmpe_suspend, stmpe_resume);
+ 
+-static SIMPLE_DEV_PM_OPS(stmfx_dev_pm_ops, stmfx_suspend, stmfx_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(stmfx_dev_pm_ops, stmfx_suspend, stmfx_resume);
+ 
+ static const struct of_device_id stmfx_of_match[] = {
+ 	{ .compatible = "st,stmfx-0300", },
+@@ -556,7 +554,7 @@ static struct i2c_driver stmfx_driver = {
+ 	.driver = {
+ 		.name = "stmfx-core",
+ 		.of_match_table = stmfx_of_match,
+-		.pm = &stmfx_dev_pm_ops,
++		.pm = pm_sleep_ptr(&stmfx_dev_pm_ops),
+ 	},
+ 	.probe = stmfx_probe,
+ 	.remove = stmfx_remove,
+diff --git a/include/linux/mfd/stmfx.h b/include/linux/mfd/stmfx.h
+index 744dce63946e..967a2e486800 100644
+--- a/include/linux/mfd/stmfx.h
++++ b/include/linux/mfd/stmfx.h
+@@ -113,10 +113,8 @@ struct stmfx {
+ 	struct irq_domain *irq_domain;
+ 	struct mutex lock; /* IRQ bus lock */
+ 	u8 irq_src;
+-#ifdef CONFIG_PM
+ 	u8 bkp_sysctrl;
+ 	u8 bkp_irqoutpin;
+-#endif
+ };
+ 
+ int stmfx_function_enable(struct stmfx *stmfx, u32 func);
 -- 
 2.35.1
 
