@@ -2,38 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17516C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:41:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D888C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242814AbiHHClu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 22:41:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
+        id S242760AbiHHClx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 22:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235146AbiHHClj (ORCPT
+        with ESMTP id S234929AbiHHClj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 7 Aug 2022 22:41:39 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B59A21AF
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16AFE21A8
         for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 19:41:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        References:In-Reply-To:Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:
         Content-Type:Content-ID:Content-Description;
-        bh=bSGKE8iFlW5a7FQH8CgH+oMcAkiK5MKZFOT72qzciO0=; b=jt7X1iCUv5mwyJBs5nnKwXo1St
-        DiGJj5DR1zBUtb5zHJVBOI1lreCGl/PenFWfN0U8Tmtnyq4iKrGCCkdItC4TRjJyEoQn9oGQ1Armu
-        bnHlrUrvxN8atfe6yk3aLgo9MYq/B5OwFem8ji4pW4251g9lKeghTnkJaV5xW7a0UikdcWPLvj/JP
-        qdRJqCPaUQyrJSWoP1/aF+UWG2mnkqAqQIMxU4H/gcvL6AeqR67+fGYDfsMQt+4NAcv8NwX3BJenO
-        9KOf4riy0B9lBNxU6wMPAqGt9DatOecGrwlWu+KyVADD4M2cf3v8vduyuNSB9O2EHub8JD4DHEVjQ
-        6M+kdVIQ==;
+        bh=0Phd27slBhf2oZB2+aKxZkfRmOzBSjVGNr+tezYnifU=; b=IadeLGs48NTANaTLlCZ9j21PjY
+        Y0NUj07GBC+dsXzPSMJvJNTKqJxhF4rHIoQGSKZNFvjxwVM7N8L745psCWispeSCSMJEWCv/BVAmT
+        XWKkYYEVEkH54k2fBQVjvq62LsJce73njhhAEa42aMBzpgEVUMtOsPCQglS/DDwgSuwYjABXnVKLd
+        qE0FpjqFOvJ3xoJLiunrfr4uMZW3y9em32+82YmR+2cBJ6b8iVI2E9xFLd07lXUfE9597xe9d+lQH
+        itWNTKFo8CYmqCCOtcm7GxT+xujybOqpzPBzB+c/H525KOiWrVEkiJJWwukssQXv+cdSYO3DNkIuq
+        oyvLOH+Q==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oKshx-00DVRj-E3; Mon, 08 Aug 2022 02:41:33 +0000
+        id 1oKshx-00DVRe-98; Mon, 08 Aug 2022 02:41:33 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-kernel@vger.kernel.org, pmladek@suse.com,
         Kent Overstreet <kent.overstreet@gmail.com>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH v5 10/32] vsprintf: prt_u64_minwidth(), prt_u64()
-Date:   Mon,  8 Aug 2022 03:41:06 +0100
-Message-Id: <20220808024128.3219082-11-willy@infradead.org>
+Subject: [PATCH v5 08/32] lib/printbuf: Unit specifiers
+Date:   Mon,  8 Aug 2022 03:41:04 +0100
+Message-Id: <20220808024128.3219082-9-willy@infradead.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220808024128.3219082-1-willy@infradead.org>
 References: <20220808024128.3219082-1-willy@infradead.org>
@@ -45,192 +44,143 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kent Overstreet <kent.overstreet@gmail.com>
 
-This adds two new-style printbuf helpers for printing simple u64s, and
-converts num_to_str() to be a simple wrapper around prt_u64_minwidth().
+This adds options to printbuf for specifying whether units should be
+printed raw (default) or with human readable units, and for controlling
+whether human-readable units should be base 2 (default), or base 10.
+
+This also adds new helpers that obey these options:
+
+ - pr_human_readable_u64
+ - pr_human_readable_s64
+These obey printbuf->si_units
+
+ - pr_units_u64
+ - pr_units_s64
+These obey both printbuf-human_readable_units and printbuf->si_units
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 ---
- include/linux/kernel.h |  4 +-
- lib/vsprintf.c         | 94 ++++++++++++++++++++----------------------
- 2 files changed, 48 insertions(+), 50 deletions(-)
+ include/linux/printbuf.h | 15 +++++++++++
+ lib/printbuf.c           | 57 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 72 insertions(+)
 
-diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 1906861ece7a..9ba5a53c6ad5 100644
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -202,12 +202,14 @@ static inline void might_fault(void) { }
- 
- void do_exit(long error_code) __noreturn;
- 
-+struct printbuf;
-+extern void prt_u64_minwidth(struct printbuf *out, u64 num, unsigned width);
-+extern void prt_u64(struct printbuf *out, u64 num);
- extern int num_to_str(char *buf, int size,
- 		      unsigned long long num, unsigned int width);
- 
- /* lib/printf utilities */
- 
--struct printbuf;
- extern __printf(2, 3) void prt_printf(struct printbuf *out, const char *fmt, ...);
- extern __printf(2, 0) void prt_vprintf(struct printbuf *out, const char *fmt, va_list);
- 
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 87adc528c6c7..6001710352c4 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -368,41 +368,51 @@ char *put_dec(char *buf, unsigned long long n)
- 
- #endif
- 
--/*
-- * Convert passed number to decimal string.
-- * Returns the length of string.  On buffer overflow, returns 0.
-- *
-- * If speed is not important, use snprintf(). It's easy to read the code.
-+/**
-+ * prt_u64_minwidth - print a u64, in decimal, with zero padding
-+ * @out: printbuf to output to
-+ * @num: u64 to print
-+ * @width: minimum width
-  */
--int num_to_str(char *buf, int size, unsigned long long num, unsigned int width)
-+void prt_u64_minwidth(struct printbuf *out, u64 num, unsigned width)
- {
- 	/* put_dec requires 2-byte alignment of the buffer. */
- 	char tmp[sizeof(num) * 3] __aligned(2);
--	int idx, len;
-+	unsigned len = put_dec(tmp, num) - tmp;
- 
--	/* put_dec() may work incorrectly for num = 0 (generate "", not "0") */
--	if (num <= 9) {
--		tmp[0] = '0' + num;
--		len = 1;
--	} else {
--		len = put_dec(tmp, num) - tmp;
--	}
-+	printbuf_make_room(out, max(len, width));
- 
--	if (len > size || width > size)
--		return 0;
-+	if (width > len)
-+		__prt_chars_reserved(out, '0', width - len);
- 
--	if (width > len) {
--		width = width - len;
--		for (idx = 0; idx < width; idx++)
--			buf[idx] = ' ';
--	} else {
--		width = 0;
--	}
-+	while (len)
-+		__prt_char_reserved(out, tmp[--len]);
-+	printbuf_nul_terminate(out);
-+}
- 
--	for (idx = 0; idx < len; ++idx)
--		buf[idx + width] = tmp[len - idx - 1];
-+/**
-+ * prt_u64 - print a simple u64, in decimal
-+ * @out: printbuf to output to
-+ * @num: u64 to print
-+ */
-+void prt_u64(struct printbuf *out, u64 num)
-+{
-+	prt_u64_minwidth(out, num, 0);
-+}
- 
--	return len + width;
-+/*
-+ * Convert passed number to decimal string.
-+ * Returns the length of string.  On buffer overflow, returns 0.
+diff --git a/include/linux/printbuf.h b/include/linux/printbuf.h
+index c1a482b6c0a8..ebbc4a55fc04 100644
+--- a/include/linux/printbuf.h
++++ b/include/linux/printbuf.h
+@@ -57,11 +57,20 @@
+  *
+  * Make sure you use prt_newline() instead of \n in the format string for indent
+  * level and tabstops to work corretly.
 + *
-+ * Consider switching to printbufs and using prt_u64() or prt_u64_minwith()
-+ * instead.
-+ */
-+int num_to_str(char *buf, int size, unsigned long long num, unsigned int width)
-+{
-+	struct printbuf out = PRINTBUF_EXTERN(buf, size);
++ * Output units: printbuf->units exists to tell pretty-printers how to output
++ * numbers: a raw value (e.g. directly from a superblock field), as bytes, or as
++ * human readable bytes. prt_units() obeys it.
+  */
+ 
+ #include <linux/kernel.h>
+ #include <linux/string.h>
+ 
++enum printbuf_si {
++	PRINTBUF_UNITS_2,	/* use binary powers of 2^10 */
++	PRINTBUF_UNITS_10,	/* use powers of 10^3 (standard SI) */
++};
 +
-+	prt_u64_minwidth(&out, num, width);
-+	return out.pos;
- }
- 
- #define SIGN	1		/* unsigned/signed, must be 1 */
-@@ -993,20 +1003,6 @@ static const struct printf_spec default_dec_spec = {
- 	.precision = -1,
+ struct printbuf {
+ 	char			*buf;
+ 	unsigned		size;
+@@ -75,6 +84,8 @@ struct printbuf {
+ 	u8			atomic;
+ 	bool			allocation_failure:1;
+ 	bool			heap_allocated:1;
++	enum printbuf_si	si_units:1;
++	bool			human_readable_units:1;
+ 	u8			tabstop;
+ 	u8			tabstops[4];
  };
+@@ -88,6 +99,10 @@ void printbuf_indent_add(struct printbuf *, unsigned);
+ void printbuf_indent_sub(struct printbuf *, unsigned);
+ void prt_tab(struct printbuf *);
+ void prt_tab_rjust(struct printbuf *);
++void prt_human_readable_u64(struct printbuf *, u64);
++void prt_human_readable_s64(struct printbuf *, s64);
++void prt_units_u64(struct printbuf *, u64);
++void prt_units_s64(struct printbuf *, s64);
  
--static const struct printf_spec default_dec02_spec = {
--	.base = 10,
--	.field_width = 2,
--	.precision = -1,
--	.flags = ZEROPAD,
--};
--
--static const struct printf_spec default_dec04_spec = {
--	.base = 10,
--	.field_width = 4,
--	.precision = -1,
--	.flags = ZEROPAD,
--};
--
- static noinline_for_stack
- void resource_string(struct printbuf *out, struct resource *res,
- 		     struct printf_spec spec, const char *fmt)
-@@ -1206,12 +1202,12 @@ void bitmap_list_string(struct printbuf *out, unsigned long *bitmap,
- 			prt_char(out, ',');
- 		first = false;
+ /* Initializer for a heap allocated printbuf: */
+ #define PRINTBUF ((struct printbuf) { .heap_allocated = true })
+diff --git a/lib/printbuf.c b/lib/printbuf.c
+index 395c681e3acb..047470025748 100644
+--- a/lib/printbuf.c
++++ b/lib/printbuf.c
+@@ -10,6 +10,7 @@
  
--		number(out, rbot, default_dec_spec);
-+		prt_u64(out, rbot);
- 		if (rtop == rbot + 1)
- 			continue;
+ #include <linux/err.h>
+ #include <linux/slab.h>
++#include <linux/string_helpers.h>
+ #include <linux/printbuf.h>
  
- 		prt_char(out, '-');
--		number(out, rtop - 1, default_dec_spec);
-+		prt_u64(out, rtop - 1);
- 	}
+ static inline size_t printbuf_linelen(struct printbuf *buf)
+@@ -199,3 +200,59 @@ void prt_tab_rjust(struct printbuf *buf)
+ 	buf->tabstop++;
  }
- 
-@@ -1753,21 +1749,21 @@ void date_str(struct printbuf *out,
- 	int year = tm->tm_year + (r ? 0 : 1900);
- 	int mon = tm->tm_mon + (r ? 0 : 1);
- 
--	number(out, year, default_dec04_spec);
-+	prt_u64_minwidth(out, year, 4);
- 	prt_char(out, '-');
--	number(out, mon, default_dec02_spec);
-+	prt_u64_minwidth(out, mon, 2);
- 	prt_char(out, '-');
--	number(out, tm->tm_mday, default_dec02_spec);
-+	prt_u64_minwidth(out, tm->tm_mday, 2);
- }
- 
- static noinline_for_stack
- void time_str(struct printbuf *out, const struct rtc_time *tm, bool r)
- {
--	number(out, tm->tm_hour, default_dec02_spec);
-+	prt_u64_minwidth(out, tm->tm_hour, 2);
- 	prt_char(out, ':');
--	number(out, tm->tm_min, default_dec02_spec);
-+	prt_u64_minwidth(out, tm->tm_min, 2);
- 	prt_char(out, ':');
--	number(out, tm->tm_sec, default_dec02_spec);
-+	prt_u64_minwidth(out, tm->tm_sec, 2);
- }
- 
- static noinline_for_stack
-@@ -2045,7 +2041,7 @@ void device_node_string(struct printbuf *out, struct device_node *dn,
- 			str_spec.precision = precision;
- 			break;
- 		case 'p':	/* phandle */
--			number(out, (unsigned int)dn->phandle, default_dec_spec);
-+			prt_u64(out, (unsigned int)dn->phandle);
- 			break;
- 		case 'P':	/* path-spec */
- 			p = fwnode_get_name(of_fwnode_handle(dn));
+ EXPORT_SYMBOL(prt_tab_rjust);
++
++/**
++ * prt_human_readable_u64 - Print out a u64 in human readable units
++ *
++ * Units of 2^10 (default) or 10^3 are controlled via @buf->si_units
++ */
++void prt_human_readable_u64(struct printbuf *buf, u64 v)
++{
++	printbuf_make_room(buf, 10);
++	buf->pos += string_get_size(v, 1, !buf->si_units,
++				    buf->buf + buf->pos,
++				    printbuf_remaining_size(buf));
++}
++EXPORT_SYMBOL(prt_human_readable_u64);
++
++/**
++ * prt_human_readable_s64 - Print out a s64 in human readable units
++ *
++ * Units of 2^10 (default) or 10^3 are controlled via @buf->si_units
++ */
++void prt_human_readable_s64(struct printbuf *buf, s64 v)
++{
++	if (v < 0)
++		prt_char(buf, '-');
++	prt_human_readable_u64(buf, abs(v));
++}
++EXPORT_SYMBOL(prt_human_readable_s64);
++
++/**
++ * prt_units_u64 - Print out a u64 according to printbuf unit options
++ *
++ * Units are either raw (default), or human reabable units (controlled via
++ * @buf->human_readable_units)
++ */
++void prt_units_u64(struct printbuf *out, u64 v)
++{
++	if (out->human_readable_units)
++		prt_human_readable_u64(out, v);
++	else
++		prt_printf(out, "%llu", v);
++}
++EXPORT_SYMBOL(prt_units_u64);
++
++/**
++ * prt_units_s64 - Print out a s64 according to printbuf unit options
++ *
++ * Units are either raw (default), or human reabable units (controlled via
++ * @buf->human_readable_units)
++ */
++void prt_units_s64(struct printbuf *out, s64 v)
++{
++	if (v < 0)
++		prt_char(out, '-');
++	prt_units_u64(out, abs(v));
++}
++EXPORT_SYMBOL(prt_units_s64);
 -- 
 2.35.1
 
