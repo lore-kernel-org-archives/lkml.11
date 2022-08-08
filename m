@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27814C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32868C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:43:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242862AbiHHBnj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:43:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41642 "EHLO
+        id S242869AbiHHBnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:43:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243062AbiHHBlr (ORCPT
+        with ESMTP id S242719AbiHHBko (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:41:47 -0400
+        Sun, 7 Aug 2022 21:40:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 512E313D35;
-        Sun,  7 Aug 2022 18:35:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07A712748;
+        Sun,  7 Aug 2022 18:34:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98705B80DCF;
-        Mon,  8 Aug 2022 01:35:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93B62C43140;
-        Mon,  8 Aug 2022 01:35:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56526B80E0D;
+        Mon,  8 Aug 2022 01:34:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01330C43470;
+        Mon,  8 Aug 2022 01:34:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922518;
-        bh=lN24LFKC2NWslvWPfsezsUuZEr7kWkBTZ/LrqMh9pO8=;
+        s=k20201202; t=1659922491;
+        bh=Us5azn9z/bhsRcCBR8T73DvmbNO0Qh6ELubzdyA/PTc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SCnms4uz4EiYURnsmi7kQLQkZaka4fPqOwu4ZhCVNP7yIc5T9/t8dJlCHTiIGomg+
-         DZ+PIk4Arnk4GzkhFSlLh09T8Qq2SurBxd6pCS65rUIFe5Byh0Ff/sVFVhDEELBGMb
-         732749T9dPtdWVeUGEI8Ey//l8EhZER54lzt1ZJXMhIY/AkbFsATGzQz5mc5/PIPw9
-         2avr9CnH4ctuBjJklJ1RaXii6mvSpPU8LtrCIk7nVhDO6FMxYaHQkFuq1lSZyHBUr4
-         b0jYOLEzfUhZn/2wd99TD3NA75/TsEfKm9rYCjHZ+4LfYML5voOeLBFy2okcJlYOY6
-         DdJuxY6+mFNzg==
+        b=IhcEQMCpl6cLobrgSlHfRq3Pp+PRWYopnBpENN/xn5PjDSXeCrNuz/nZh+oUtLvNC
+         iQWWOz386+k8dLc9Y4oSphq3NDh3MNGar3vqz/RhnMQA1sA3zbJXEwW8yE7PRJxcXS
+         2ljafzhhJ4zx3Rwryzuiwvvt1e1xojyYava1Skajd3QUEelq4QScCvj2bU8Vt272Jt
+         PX0aOeUnwhMOWUUdxwUySrLPtfoDYtGkpwI7tjH7qDc943fJWFtTl3nB3JymgR3ebU
+         BXjf64aBITMjZrujG+dNFL9KJS11w//1IQz+HfHb9oFcGJ4Ybh4yZdLwBRNvOjZpZa
+         AIu34T/0L9gAw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>, Tony Lindgren <tony@atomide.com>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 35/53] ARM: OMAP2+: pdata-quirks: Fix refcount leak bug
-Date:   Sun,  7 Aug 2022 21:33:30 -0400
-Message-Id: <20220808013350.314757-35-sashal@kernel.org>
+Cc:     Vincent Guittot <vincent.guittot@linaro.org>,
+        David Chen <david.chen@nutanix.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        juri.lelli@redhat.com
+Subject: [PATCH AUTOSEL 5.18 18/53] sched/fair: fix case with reduced capacity CPU
+Date:   Sun,  7 Aug 2022 21:33:13 -0400
+Message-Id: <20220808013350.314757-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013350.314757-1-sashal@kernel.org>
 References: <20220808013350.314757-1-sashal@kernel.org>
@@ -51,33 +54,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Vincent Guittot <vincent.guittot@linaro.org>
 
-[ Upstream commit 5cdbab96bab314c6f2f5e4e8b8a019181328bf5f ]
+[ Upstream commit c82a69629c53eda5233f13fc11c3c01585ef48a2 ]
 
-In pdata_quirks_init_clocks(), the loop contains
-of_find_node_by_name() but without corresponding of_node_put().
+The capacity of the CPU available for CFS tasks can be reduced because of
+other activities running on the latter. In such case, it's worth trying to
+move CFS tasks on a CPU with more available capacity.
 
-Signed-off-by: Liang He <windhl@126.com>
-Message-Id: <20220618020603.4055792-1-windhl@126.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+The rework of the load balance has filtered the case when the CPU is
+classified to be fully busy but its capacity is reduced.
+
+Check if CPU's capacity is reduced while gathering load balance statistic
+and classify it group_misfit_task instead of group_fully_busy so we can
+try to move the load on another CPU.
+
+Reported-by: David Chen <david.chen@nutanix.com>
+Reported-by: Zhang Qiao <zhangqiao22@huawei.com>
+Signed-off-by: Vincent Guittot <vincent.guittot@linaro.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: David Chen <david.chen@nutanix.com>
+Tested-by: Zhang Qiao <zhangqiao22@huawei.com>
+Link: https://lkml.kernel.org/r/20220708154401.21411-1-vincent.guittot@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/pdata-quirks.c | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/sched/fair.c | 54 +++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 42 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm/mach-omap2/pdata-quirks.c b/arch/arm/mach-omap2/pdata-quirks.c
-index e7fd29a502a0..af9d8c432af0 100644
---- a/arch/arm/mach-omap2/pdata-quirks.c
-+++ b/arch/arm/mach-omap2/pdata-quirks.c
-@@ -551,6 +551,8 @@ pdata_quirks_init_clocks(const struct of_device_id *omap_dt_match_table)
- 
- 		of_platform_populate(np, omap_dt_match_table,
- 				     omap_auxdata_lookup, NULL);
-+
-+		of_node_put(np);
- 	}
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index ef2d8690fe18..46f6674a0979 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -7628,8 +7628,8 @@ enum group_type {
+ 	 */
+ 	group_fully_busy,
+ 	/*
+-	 * SD_ASYM_CPUCAPACITY only: One task doesn't fit with CPU's capacity
+-	 * and must be migrated to a more powerful CPU.
++	 * One task doesn't fit with CPU's capacity and must be migrated to a
++	 * more powerful CPU.
+ 	 */
+ 	group_misfit_task,
+ 	/*
+@@ -8712,6 +8712,19 @@ sched_asym(struct lb_env *env, struct sd_lb_stats *sds,  struct sg_lb_stats *sgs
+ 	return sched_asym_prefer(env->dst_cpu, group->asym_prefer_cpu);
  }
+ 
++static inline bool
++sched_reduced_capacity(struct rq *rq, struct sched_domain *sd)
++{
++	/*
++	 * When there is more than 1 task, the group_overloaded case already
++	 * takes care of cpu with reduced capacity
++	 */
++	if (rq->cfs.h_nr_running != 1)
++		return false;
++
++	return check_cpu_capacity(rq, sd);
++}
++
+ /**
+  * update_sg_lb_stats - Update sched_group's statistics for load balancing.
+  * @env: The load balancing environment.
+@@ -8734,8 +8747,9 @@ static inline void update_sg_lb_stats(struct lb_env *env,
+ 
+ 	for_each_cpu_and(i, sched_group_span(group), env->cpus) {
+ 		struct rq *rq = cpu_rq(i);
++		unsigned long load = cpu_load(rq);
+ 
+-		sgs->group_load += cpu_load(rq);
++		sgs->group_load += load;
+ 		sgs->group_util += cpu_util_cfs(i);
+ 		sgs->group_runnable += cpu_runnable(rq);
+ 		sgs->sum_h_nr_running += rq->cfs.h_nr_running;
+@@ -8765,11 +8779,17 @@ static inline void update_sg_lb_stats(struct lb_env *env,
+ 		if (local_group)
+ 			continue;
+ 
+-		/* Check for a misfit task on the cpu */
+-		if (env->sd->flags & SD_ASYM_CPUCAPACITY &&
+-		    sgs->group_misfit_task_load < rq->misfit_task_load) {
+-			sgs->group_misfit_task_load = rq->misfit_task_load;
+-			*sg_status |= SG_OVERLOAD;
++		if (env->sd->flags & SD_ASYM_CPUCAPACITY) {
++			/* Check for a misfit task on the cpu */
++			if (sgs->group_misfit_task_load < rq->misfit_task_load) {
++				sgs->group_misfit_task_load = rq->misfit_task_load;
++				*sg_status |= SG_OVERLOAD;
++			}
++		} else if ((env->idle != CPU_NOT_IDLE) &&
++			   sched_reduced_capacity(rq, env->sd)) {
++			/* Check for a task running on a CPU with reduced capacity */
++			if (sgs->group_misfit_task_load < load)
++				sgs->group_misfit_task_load = load;
+ 		}
+ 	}
+ 
+@@ -8822,7 +8842,8 @@ static bool update_sd_pick_busiest(struct lb_env *env,
+ 	 * CPUs in the group should either be possible to resolve
+ 	 * internally or be covered by avg_load imbalance (eventually).
+ 	 */
+-	if (sgs->group_type == group_misfit_task &&
++	if ((env->sd->flags & SD_ASYM_CPUCAPACITY) &&
++	    (sgs->group_type == group_misfit_task) &&
+ 	    (!capacity_greater(capacity_of(env->dst_cpu), sg->sgc->max_capacity) ||
+ 	     sds->local_stat.group_type != group_has_spare))
+ 		return false;
+@@ -9443,9 +9464,18 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
+ 	busiest = &sds->busiest_stat;
+ 
+ 	if (busiest->group_type == group_misfit_task) {
+-		/* Set imbalance to allow misfit tasks to be balanced. */
+-		env->migration_type = migrate_misfit;
+-		env->imbalance = 1;
++		if (env->sd->flags & SD_ASYM_CPUCAPACITY) {
++			/* Set imbalance to allow misfit tasks to be balanced. */
++			env->migration_type = migrate_misfit;
++			env->imbalance = 1;
++		} else {
++			/*
++			 * Set load imbalance to allow moving task from cpu
++			 * with reduced capacity.
++			 */
++			env->migration_type = migrate_load;
++			env->imbalance = busiest->group_misfit_task_load;
++		}
+ 		return;
+ 	}
  
 -- 
 2.35.1
