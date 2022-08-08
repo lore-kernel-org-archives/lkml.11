@@ -2,151 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E56BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:13:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 056EBC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:14:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243164AbiHHPNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 11:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56330 "EHLO
+        id S243464AbiHHPOr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 11:14:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235852AbiHHPNK (ORCPT
+        with ESMTP id S243008AbiHHPOo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 11:13:10 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2066.outbound.protection.outlook.com [40.107.21.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF06BF7B;
-        Mon,  8 Aug 2022 08:13:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J28HJjOvjJVbK57bJ5sI24lx/N96//uieWB/NiQrRgW7KGZ2hj8NFFLA7zeIcJddsCE0zskqDmGVzko0Lsd1iD/PU5We37W1kW2XjSgzc4xkVB6k0V214+rlBWq1kAWeLyn0Z8QagHoUnwdnH5VIPozsT2RvhGeUMDLXUSL7cV76VJS/ZVtUurqkLiseMwCELTMhs/vDKs5Bfi0qZkjicQNu/yz0qkMd+k30/3uLW0Kz6YV16wbdnnW+1uK4M7ItNY7Ln1xybhxJXxyFB2J1cDTIQM9CR7J1dcHUNLDfaBXBn5DFAzByUKQLILbOW7aul4qKOIr3dNzYe0dRi0n3Jg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MxzeoB6v9hBhUXDCgy2PhOnqTT3CGYJXYu7rZIFMAA8=;
- b=bnWcbHdmkYlz23sQYWQB5kMmEIZpD5+4YupmjShg67Xkw+DS8u5C91TmWifVDtXKM2H0zhirqER0H8ghJuHUhnC6tiJY54NWw1AWPttSVLSdZfhfERrPqLimzTPwJh7sh3DAaA4vgBtHMuozUukusjh4vCjsrmkOW24Rct2qZPLLCOi2tMYW1mBXFUgkzqLLAge8qeOLZSU5c8L2DO4fAOYre7hVCkhk+odgi94bNKLSMqIg6NtENxxDKyplzVOs6NDhnuLwyAE3FKniG7xOSdu4EGGApNxlhDfBl4qWuQH+uzk2UONb/X2HrsEUnSxTGc9RTD6dPenRvDjUYIp/dA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 194.138.21.76) smtp.rcpttodomain=linux-watchdog.org
- smtp.mailfrom=siemens.com; dmarc=fail (p=none sp=none pct=100) action=none
- header.from=siemens.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MxzeoB6v9hBhUXDCgy2PhOnqTT3CGYJXYu7rZIFMAA8=;
- b=jXA1OSxOpcErRHtoHLgVWUWJtmt3w4UpxLkGHWWYAfW+qbNH6c+SrG6bekb/w6V5hIxaAzxzkgfGtB6gd5gRzkR2q67lMK1A1DFiH1uavjaRYQPm7IdldhTuMK+6nrGcvH87hEnKv4biO/6PWmy9PK3XSTrC3RK/g/e9ZFi9kjWWyZlshqM8hZmydhjlfDy2udEjad7c5P17AXh9GfgTbx4MvLopfCw0afyW81IOdnQK2DKJuu8NaEBEoev9uiAG7XGDDE1CP69MBCABdELwkcZd0AXS6tyx7TR4ja8It3EYHUwo1b5Yx8yybbkeSLI36MJBfHcLzQSSqb+lfBeJfw==
-Received: from AM7PR03CA0014.eurprd03.prod.outlook.com (2603:10a6:20b:130::24)
- by DU0PR10MB5776.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:323::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.20; Mon, 8 Aug
- 2022 15:13:06 +0000
-Received: from VE1EUR01FT026.eop-EUR01.prod.protection.outlook.com
- (2603:10a6:20b:130:cafe::ae) by AM7PR03CA0014.outlook.office365.com
- (2603:10a6:20b:130::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.20 via Frontend
- Transport; Mon, 8 Aug 2022 15:13:05 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 194.138.21.76)
- smtp.mailfrom=siemens.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=none header.from=siemens.com;
-Received-SPF: Fail (protection.outlook.com: domain of siemens.com does not
- designate 194.138.21.76 as permitted sender) receiver=protection.outlook.com;
- client-ip=194.138.21.76; helo=hybrid.siemens.com;
-Received: from hybrid.siemens.com (194.138.21.76) by
- VE1EUR01FT026.mail.protection.outlook.com (10.152.2.212) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5504.14 via Frontend Transport; Mon, 8 Aug 2022 15:13:05 +0000
-Received: from DEMCHDC89XA.ad011.siemens.net (139.25.226.103) by
- DEMCHDC8VSA.ad011.siemens.net (194.138.21.76) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.9; Mon, 8 Aug 2022 17:13:02 +0200
-Received: from md1za8fc.ad001.siemens.net (139.25.0.80) by
- DEMCHDC89XA.ad011.siemens.net (139.25.226.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.9; Mon, 8 Aug 2022 17:13:02 +0200
-From:   Henning Schild <henning.schild@siemens.com>
-To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        <linux-watchdog@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Henning Schild <henning.schild@siemens.com>
-Subject: [PATCH] watchdog: w83627hf_wdt: add boostatus support
-Date:   Mon, 8 Aug 2022 17:12:47 +0200
-Message-ID: <20220808151247.14893-1-henning.schild@siemens.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 8 Aug 2022 11:14:44 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4E6CE31;
+        Mon,  8 Aug 2022 08:14:43 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id k12so14121329ybk.6;
+        Mon, 08 Aug 2022 08:14:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=3HgE3/632x1k0MtSqNgva1QuxG/bXv3/l3QcDRfIKGo=;
+        b=XTebna0ZoDS8BXAWbhYJ8X/NQdfNLDl8rBT4BSaT9Q6cMLwqTSKleWU89PoygN2tQW
+         b5iL8Oi/kDLhqiVjnW6dNMuQBZEMhdEn6KCNv2QOc/RgW6eWBtjK7zpfGyQmWxxxB2SE
+         jVZvi/QuLmGtFSTsc5B+sc8ADBjKNzAAXGAS/cCAvxa3YE9gr8nuzdtWJvj4Haact2X9
+         cty4N0/+bWQZd74geComDvXkKPx6ASFcKQPWMpys30x2IYrzS+OAWHvKVaCyPGlI7CDY
+         PYQ8OtyjZJ0zWmQjV6M7Z8fI/EFh4MPH1v2Lwkddxky0E5/g+hEnM10QfkuwHdJFSraP
+         zFgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=3HgE3/632x1k0MtSqNgva1QuxG/bXv3/l3QcDRfIKGo=;
+        b=KQdyS22YXvBVUOi3L4I/Pc2urFyRUPftU9GVnYpE+wL5pF0GFw5KsX/5hyyMwehIYm
+         xE2i4l3NctPA0A/T65wwJjtHtsquENafTmm52tJAoldX+ql0WQzLAKTlvhN9YnWXHWCl
+         3bz4JTwzyKdatE/aYrMGM+i7hPTIuF0aqNXyOyOQXSI6uZ9acjgLzVtiK4NlNAZMURlM
+         ZY8kN6UbF19RzGQ1xZlHhxYChhxLUbLCNsTHwn+N1JnuGs78gF4y7mnWWBnwF7VDiVo6
+         EGjz5W86Ffu9JmtZr88ohxJM6Xx1UWa8eZAwm0dW1CdGwoSMQ3Q1xFB8mH1M74Q5YWKF
+         G18g==
+X-Gm-Message-State: ACgBeo32CLQpx/vXDCdA1jkmmYIWU39+yq1Qm1B21kkUvVid3eSU0381
+        Yx/iCzKgGwahm56dbOiJZwApvbYx3y1RB6cef3M=
+X-Google-Smtp-Source: AA6agR5z3JNzZdR3zqZcIVK6XyuUPGjHt5FNwaFhN95fS/yKOrV7McCa756y962mO6Srxn0/neTJA00KOw6h5AffB9w=
+X-Received: by 2002:a05:6902:124f:b0:66e:e3da:487e with SMTP id
+ t15-20020a056902124f00b0066ee3da487emr17614676ybu.310.1659971682978; Mon, 08
+ Aug 2022 08:14:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [139.25.0.80]
-X-ClientProxiedBy: DEMCHDC8A0A.ad011.siemens.net (139.25.226.106) To
- DEMCHDC89XA.ad011.siemens.net (139.25.226.103)
-X-TM-AS-Product-Ver: SMEX-14.0.0.3080-8.6.1018-26680.007
-X-TM-AS-Result: No-10--9.932400-8.000000
-X-TMASE-MatchedRID: ThXY+5ucIBwqFSncf8X1z8TdRbTaatC1LGmmJTL2jhwD2WXLXdz+AUcA
-        1Ouvduu8SMg2Oe/b8EyfUDMAh2QVUQE2DjEevfnaKH2Br16x0Mq0Tit9+Kk6btWxbZgaqhS0a5K
-        GiIX2maqbKItl61J/yfJvocwUrWp7XWPmaFoiyJsgBwKKRHe+rz0KLOdseNrKf0VfpLZx4hR80j
-        R4aHVLSnNnCd3Hrhuwsuv6xiRRKlw=
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--9.932400-8.000000
-X-TMASE-Version: SMEX-14.0.0.3080-8.6.1018-26680.007
-X-TM-SNTS-SMTP: 96E14921677BF4E3118BFA88D896A8377F521B2EE24455B78E1F4B0C4AF3201B2000:8
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f9da6581-b56f-42c9-0d78-08da79507e98
-X-MS-TrafficTypeDiagnostic: DU0PR10MB5776:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aVJxbeuTQHsGrfdIjefgdt3EGWODN8613pIXMZcrgIPncRzTgvX7kAC1XJ5mnUmNzXBGVktn1RW1D00XCSDwBRr4BcrC+vT+mn6FQI3bc84x+qwfweyxDH92CkuDaf3z6iymbWrH60zX4KCccBQFLZ443V7ubfLHn0w2JeDeEzD4NeJhpuSl88q5dm5KaMSYPtUGfMDL7rEimHT93LDqNimHHSBscFGzqAoFsFvB13oBjXNbyj+vd1a78JdXkGuMta+VJkVw0st0PBSWne2hJ+yDYG+ShklJ1P2VDShrSaYazAtMsrDZ1mT47mTaODqtrCnJjnqwXDSR/6OA5Lu6VHurbKsdGncJnM9vadMYsQNNg9oxjpgpmdg5TE3dl786US6uGAaATB1LXHGSomZgR8nmp4fTaTPaeY+czo0Q4y2/XN3q3J7empFEbZo6fGxKZRaRC+DLEPdu8j9LArWhpLyXNZBKu/wtrgK7MhHiuqZRy6ZQPQgGt04S+qdKDlvBXe8S7LqrNeqNmm2KzLoPP/pnrxcjrY2rVJu5lWkGfoH3I/GPQ99y3PCsHR7yuUaJkiORjBLTZ9Z/VJvck0Wh89SgtN5XwEN23G7K3IM2Pb0z1GwHw/2sWpzJ0txRAP9bALsaLGRjMlVcSrVzqMFtNEWBLfa/Ib46ST1MNUCY9lcec5JL8J+Kj24bB12bJQfohwbBkXkRhQPfGfbDuaO7YUlwYYqmBp+yYqv8h+41Bw73YJiLV/Q/mzByXX74ylMR+mg6X9inidk+Yfo5KFhTBMcaQn2cNQrPUEXyZFPMp7JqjbkcWJqYhjr8gNv/ikENiPOtuSkM0Dz4o1ad6pj9PodX4h2CQ4k4OPFWByFpbI0=
-X-Forefront-Antispam-Report: CIP:194.138.21.76;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:hybrid.siemens.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(39860400002)(396003)(136003)(36840700001)(40470700004)(46966006)(82960400001)(1076003)(16526019)(956004)(2616005)(107886003)(47076005)(82310400005)(186003)(336012)(316002)(5660300002)(110136005)(70206006)(2906002)(4326008)(8676002)(44832011)(70586007)(8936002)(478600001)(356005)(40480700001)(81166007)(6666004)(36756003)(26005)(82740400003)(41300700001)(86362001)(83380400001)(36860700001)(40460700003)(36900700001)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2022 15:13:05.4116
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f9da6581-b56f-42c9-0d78-08da79507e98
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38ae3bcd-9579-4fd4-adda-b42e1495d55a;Ip=[194.138.21.76];Helo=[hybrid.siemens.com]
-X-MS-Exchange-CrossTenant-AuthSource: VE1EUR01FT026.eop-EUR01.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB5776
+References: <CA+khW7iknv0hcn-D2tRt8HFseUnyTV7BwpohQHtEyctbA1k27w@mail.gmail.com>
+ <20220729224254.1798-1-liulin063@gmail.com> <CA+khW7iLeSZPweZEz_tfP+LRtpvZbfvstZWgUbNrEDK-Ntxyxw@mail.gmail.com>
+ <ccafa637-d986-b4e3-73e0-03721a940ce1@iogearbox.net> <CANdZH3U7axKg6zDY+iswF2d1fBYY1Xo2jeVsbgMYMoJfd1AYJg@mail.gmail.com>
+In-Reply-To: <CANdZH3U7axKg6zDY+iswF2d1fBYY1Xo2jeVsbgMYMoJfd1AYJg@mail.gmail.com>
+From:   Kuee k1r0a <liulin063@gmail.com>
+Date:   Mon, 8 Aug 2022 23:14:31 +0800
+Message-ID: <CANdZH3V64LdfYpWrX9teQQU8LGj10_ecXpupRfnyKQ47gvtOoQ@mail.gmail.com>
+Subject: Fwd: [PATCH bpf] bpf: Do more tight ALU bounds tracking
+To:     haoluo@google.com
+Cc:     Alexei Starovoitov <ast@kernel.org>, john.fastabend@gmail.com,
+        Andrii Nakryiko <andrii@kernel.org>, martin.lau@linux.dev,
+        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, sdf@google.com,
+        jolsa@kernel.org, bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The status bit in the status and control register can tell us whether
-the last reboot was caused by the watchdog. Make sure to take that into
-the bootstatus before clearing it.
+---------- Forwarded message ---------
+From: Kuee k1r0a <liulin063@gmail.com>
+Date: Mon, Aug 8, 2022 at 11:11 PM
+Subject: Re: [PATCH bpf] bpf: Do more tight ALU bounds tracking
+To: Daniel Borkmann <daniel@iogearbox.net>
 
-Signed-off-by: Henning Schild <henning.schild@siemens.com>
----
- drivers/watchdog/w83627hf_wdt.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/watchdog/w83627hf_wdt.c b/drivers/watchdog/w83627hf_wdt.c
-index 56a4a4030ca9..bc33b63c5a5d 100644
---- a/drivers/watchdog/w83627hf_wdt.c
-+++ b/drivers/watchdog/w83627hf_wdt.c
-@@ -113,6 +113,10 @@ MODULE_PARM_DESC(early_disable, "Disable watchdog at boot time (default=0)");
- #define W836X7HF_WDT_CSR	0xf7
- #define NCT6102D_WDT_CSR	0xf2
- 
-+#define WDT_CSR_STATUS		0x10
-+#define WDT_CSR_KBD		0x40
-+#define WDT_CSR_MOUSE		0x80
-+
- static void superio_outb(int reg, int val)
- {
- 	outb(reg, WDT_EFER);
-@@ -244,8 +248,12 @@ static int w83627hf_init(struct watchdog_device *wdog, enum chips chip)
- 	t = superio_inb(cr_wdt_control) & ~0x0C;
- 	superio_outb(cr_wdt_control, t);
- 
--	/* reset trigger, disable keyboard & mouse turning off watchdog */
--	t = superio_inb(cr_wdt_csr) & ~0xD0;
-+	t = superio_inb(cr_wdt_csr);
-+	if (t & WDT_CSR_STATUS)
-+		wdog->bootstatus |= WDIOF_CARDRESET;
-+
-+	/* reset status, disable keyboard & mouse turning off watchdog */
-+	t &= ~(WDT_CSR_STATUS | WDT_CSR_KBD | WDT_CSR_MOUSE);
- 	superio_outb(cr_wdt_csr, t);
- 
- 	superio_exit();
--- 
-2.35.1
+On Mon, Aug 8, 2022 at 9:25 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 7/30/22 12:48 AM, Hao Luo wrote:
+> > On Fri, Jul 29, 2022 at 3:43 PM Youlin Li <liulin063@gmail.com> wrote:
+> >>
+> >> In adjust_scalar_min_max_vals(), let 32bit bounds learn from 64bit bounds
+> >> to get more tight bounds tracking. Similar operation can be found in
+> >> reg_set_min_max().
+> >>
+> >> Also, we can now fold reg_bounds_sync() into zext_32_to_64().
+> >>
+> >> Before:
+> >>
+> >>      func#0 @0
+> >>      0: R1=ctx(off=0,imm=0) R10=fp0
+> >>      0: (b7) r0 = 0                        ; R0_w=0
+> >>      1: (b7) r1 = 0                        ; R1_w=0
+> >>      2: (87) r1 = -r1                      ; R1_w=scalar()
+> >>      3: (87) r1 = -r1                      ; R1_w=scalar()
+> >>      4: (c7) r1 s>>= 63                    ; R1_w=scalar(smin=-1,smax=0)
+> >>      5: (07) r1 += 2                       ; R1_w=scalar(umin=1,umax=2,var_off=(0x0; 0xffffffff))  <--- [*]
+> >>      6: (95) exit
+> >>
+> >> It can be seen that even if the 64bit bounds is clear here, the 32bit
+> >> bounds is still in the state of 'UNKNOWN'.
+> >>
+> >> After:
+> >>
+> >>      func#0 @0
+> >>      0: R1=ctx(off=0,imm=0) R10=fp0
+> >>      0: (b7) r0 = 0                        ; R0_w=0
+> >>      1: (b7) r1 = 0                        ; R1_w=0
+> >>      2: (87) r1 = -r1                      ; R1_w=scalar()
+> >>      3: (87) r1 = -r1                      ; R1_w=scalar()
+> >>      4: (c7) r1 s>>= 63                    ; R1_w=scalar(smin=-1,smax=0)
+> >>      5: (07) r1 += 2                       ; R1_w=scalar(umin=1,umax=2,var_off=(0x0; 0x3))  <--- [*]
+> >>      6: (95) exit
+> >>
+> >> Signed-off-by: Youlin Li <liulin063@gmail.com>
+> >
+> > Looks good to me. Thanks Youlin.
+> >
+> > Acked-by: Hao Luo <haoluo@google.com>
+>
+> Thanks Youlin! Looks like the patch breaks CI [0] e.g.:
+>
+>    #142/p bounds check after truncation of non-boundary-crossing range FAIL
+>    Failed to load prog 'Permission denied'!
+>    invalid access to map value, value_size=8 off=16777215 size=1
+>    R0 max value is outside of the allowed memory range
+>    verification time 296 usec
+>    stack depth 8
+>    processed 15 insns (limit 1000000) max_states_per_insn 0 total_states 0 peak_states 0 mark_read 0
+>
+> Please take a look. Also it would be great to add a test_verifier selftest to
+> assert above case from commit log against future changes.
+>
+> Thanks,
+> Daniel
+>
+>    [0] https://github.com/kernel-patches/bpf/runs/7696324041?check_suite_focus=true
 
+This test case fails because the 32bit boundary information is lost
+after the 11th instruction is executed:
+Before:
+    11: (07) r1 += 2147483647             ;
+R1_w=scalar(umin=70866960383,umax=70866960638,var_off=(0x1000000000;
+0xffffffff),u32_min=2147483647,u32_max=-2147483394)
+After:
+    11: (07) r1 += 2147483647             ;
+R1_w=scalar(umin=70866960383,umax=70866960638,var_off=(0x1000000000;
+0xffffffff))
+
+This may be because, in previous versions of the code, when
+__reg_combine_64_into_32() was called, the 32bit boundary was
+completely deduced from the 64bit boundary, so there was a call to
+__mark_reg32_unbounded() in __reg_combine_64_into_32().
+
+But now, before adjust_scalar_min_max_vals() calls
+__reg_combine_64_into_32() , the 32bit bounds are already calculated
+to some extent, and __mark_reg32_unbounded() will eliminate these
+information.
+
+Simply copying a code without __mark_reg32_unbounded() should work,
+perhaps it would be more elegant to introduce a flag into
+__reg_combine_64_into_32()?
+
+Sorry for not completing the tests because I did not 'make selftests'
+successfully, and uploaded the code that caused the error.
