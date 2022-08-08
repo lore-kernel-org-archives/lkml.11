@@ -2,83 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDE8C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 19:01:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31970C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 19:01:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236816AbiHHTBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 15:01:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52114 "EHLO
+        id S238467AbiHHTBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 15:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244112AbiHHTAf (ORCPT
+        with ESMTP id S244148AbiHHTAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 15:00:35 -0400
-Received: from mail.zytor.com (unknown [IPv6:2607:7c80:54:3::138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E33ED39C
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 12:00:33 -0700 (PDT)
-Received: from [IPV6:2601:646:8600:40c0:425:cd56:6750:e1bf] ([IPv6:2601:646:8600:40c0:425:cd56:6750:e1bf])
-        (authenticated bits=0)
-        by mail.zytor.com (8.17.1/8.17.1) with ESMTPSA id 278IxxCq011416
-        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-        Mon, 8 Aug 2022 11:59:59 -0700
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 278IxxCq011416
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-        s=2022080501; t=1659985200;
-        bh=xT4zVgVYZD2M2KKjxqc9/0tArQ9kU5/YMmYbg8guPiQ=;
-        h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
-        b=fcVx8/9GZWVJJZB8jJQ5SSeYdgryT41UC9o/a+CYvwzhZeFyr9nrs6sws4vURRld5
-         aBBZzrq76iXK6TdbWxiK3m2CPqWU+ZpFW+1K6pAg6LnQiH8dO8e9MGCZcpY40ganRT
-         1Fc02rz5qygc22XiwhWIXziz+59cc53QZtDRbvMBIiQJgc4I3YE/LJOFy9zETQ75oi
-         mzn6pdgeBoBsLqqNgLpDOPMlJ9/SW0jt1V5pIHJH5l9vDk8NS1VsUqPwW5SnLe7V9S
-         Bm0+Aw3RmH6MN9ZxK4V25zKwdPfh8X04E9zXl+I8kEExUVxNStGUFNSdHzKcnZZEOH
-         FvL4xGSduJPQA==
-Message-ID: <09d75b16-841b-0eaa-eff6-66673c7c019b@zytor.com>
-Date:   Mon, 8 Aug 2022 11:59:54 -0700
+        Mon, 8 Aug 2022 15:00:44 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B91A10D2
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 12:00:42 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id u9so11348250oiv.12
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 12:00:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=78BKn7qeyMuZq/nBbXsEZdC7K4WoTnDR72eCBOZ4cQk=;
+        b=fNn0xQPJl7I54FDMVw9g5Fy2pyB9k3cwiFukA25DO4KT8JONQJQYUe1zasFBsYeoM8
+         P6IqioLYdzkFC7S+QHrtZwxvtsOHGuo0hMyft2tznZb3xg5UQ1PkZBD3sJplzjiXo2R+
+         XOcE+IVlr7NiRECFDjwWYPYtOc0fw6x9KaNteWde8NLg72aNFIJqdZSdmizvXvOvXd1S
+         8H244Qw5em9GAdPiQIDWm6gN+ZRFjyTtNMfYE8D3e4FkFfTQfKcZs/8IZ008Gv+OtE5S
+         ULm28/ZWGX65qf3dcbj4cBh8MxV6jZgOzdH/Xqni3YJcH5DfcBawtjpmMy8vrMzqJo2p
+         gqVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=78BKn7qeyMuZq/nBbXsEZdC7K4WoTnDR72eCBOZ4cQk=;
+        b=36LmZeZC9xfOsmugFRlSBhv94cu5lrTK6sqypuOmCJgqSqUJqxmjgvlj02R4sKfTAk
+         bFyHSb9pC9Wwd1/Qa/DGIrFgzkJUZZzqoaW0g4zVyJstFBezsPh6q7tMOQzeh5JVKFO7
+         A3GtOwlnuT4JYWN8HWR7jr/nZNMrUs0oAh107hfXuajmIxh4rHTk1kqffziAlvPfqSWO
+         zZHAXgvY+mHl1Rav08C6YGyr8suqFPiWY/7YT9H9riEUS/vsaYD2mtay0GWXFPT5l09n
+         6k1/1OLN6UkEOSvhBqQSZG9WFkDN1SgilwpS9DCIrRAgsojWkFJG6fCYjfGQmM/1gTp+
+         S2pQ==
+X-Gm-Message-State: ACgBeo2ZGeja5nxO9kpqvzLVLX5G5DjmoaiKsoaA9XYXf+OWb4MKXNY8
+        6eDMbKmi2rH6kla+fMGoQgahqg==
+X-Google-Smtp-Source: AA6agR46jRFxbOvzGFQgMIxpT2BXX6H0lmqqi8zZ/KAqa4h3RFAiy7tbW+1mFf/773QFgDRyPoeWhg==
+X-Received: by 2002:aca:905:0:b0:342:e38a:7314 with SMTP id 5-20020aca0905000000b00342e38a7314mr3694184oij.23.1659985241555;
+        Mon, 08 Aug 2022 12:00:41 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id l5-20020acabb05000000b00342d18cc2fdsm1323898oif.53.2022.08.08.12.00.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 12:00:40 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Ohad Ben-Cohen <ohad@wizery.com>, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>,
+        Siddharth Gupta <sidgup@codeaurora.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        Abel Vesa <abel.vesa@linaro.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Luca Weiss <luca@z3ntu.xyz>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Mukesh Ojha <quic_mojha@quicinc.com>,
+        Ren Zhijie <renzhijie2@huawei.com>,
+        Sireesh Kodali <sireeshkodali1@gmail.com>,
+        Xiang wangx <wangxiang@cdjrlc.com>, keliu <liuke94@huawei.com>,
+        ran jianping <ran.jianping@zte.com.cn>,
+        wangjianli <wangjianli@cdjrlc.com>
+Subject: [GIT PULL] remoteproc updates for v5.20
+Date:   Mon,  8 Aug 2022 14:00:39 -0500
+Message-Id: <20220808190039.2106786-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-From:   "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH] x86/acrn: Improve ACRN hypercalls
-To:     Dave Hansen <dave.hansen@intel.com>,
-        Uros Bizjak <ubizjak@gmail.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-References: <20220804180358.32944-1-ubizjak@gmail.com>
- <91ccae0b-6135-6163-f59b-4e99624090a5@intel.com>
- <CAFULd4YRzEXL1+cvBPT1hmfq=ZLwtrexHt+vDABnA2QMiVMBpg@mail.gmail.com>
- <6c516a7c-ac97-e0b1-b056-06a17d1b7420@intel.com>
-Content-Language: en-US
-In-Reply-To: <6c516a7c-ac97-e0b1-b056-06a17d1b7420@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On August 4, 2022 12:03:56 PM PDT, Dave Hansen <dave.hansen@intel.com> 
-wrote:
->On 8/4/22 11:56, Uros Bizjak wrote:
->> The %r8 is not preserved across function calls, so your statement
->> above is correct. But as long as there is no function call *between*
->> the variable definition and the assembly, the approach with the local
->> register variable works without any problems. It is even something GCC
->> itself has used in its library for years.
->
->I'm glad it's workout out for GCC.  But, the kernel is not GCC.  I
->specifically asked for the ACRN code to be the way that it is today and
->your argument is not making me reconsider it in the slightest.
->
->So, thanks for the patch, but I don't think we should apply it.
+The following changes since commit b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3:
 
-Well, this is universally used, so it isn't going to break. x86 is kind 
-of unique in that it often doesn't need it, because it has predicates 
-for so many of the specific registers, but even x86 needs it for 
-inlining system calls in glibc, for example.
+  Linux 5.19-rc2 (2022-06-12 16:11:37 -0700)
 
-There is a way to do it right, which is to wrap the assignments (which 
-don't have to be the declarations, but customarily are) and asm() 
-statements in a block (e.g. an inline function, but can also just be a 
-plain old statement block.)
+are available in the Git repository at:
 
+  https://git.kernel.org/pub/scm/linux/kernel/git/remoteproc/linux.git tags/rproc-v5.20
 
+for you to fetch changes up to 8447d0e75099eb54eea9306c2d43ecfc956d09ed:
+
+  remoteproc: qcom_q6v5_pas: Do not fail if regulators are not found (2022-08-08 10:32:17 -0500)
+
+----------------------------------------------------------------
+remoteproc updates for v5.20
+
+This introduces support for the remoteproc on Mediatek MT8188, and
+enables caches for MT8186 SCP. It adds support for PRU cores found on
+the TI K3 AM62x SoCs.
+
+It moves the recovery work after a firmware crash to an unbound
+workqueue, to allow recovery to happen in parallel.
+
+A new DMA API is introduced to release dma_mem for a device.
+
+It adds support a panic handler for the Qualcomm modem remoteproc, with
+the goal of having caches flushed in memory dumps for post-mortem
+debugging and it introduces a mechanism to wait for the modem firmware
+on SM8450 to decrypt part of its memory for post-mortem debugging.
+
+Qualcomm sysmon is restricted to only inform remote processors about
+peers that are actually running, to avoid a race where Linux tries to
+notify a recovering remote processor about its peers new state. A
+mechanism for waiting for the sysmon connection to be established is also
+introduced, to avoid out-of-sync updates for rapidly restarting remote
+processors.
+
+A number of Devicetree binding cleanups and conversions to YAML are
+introduced, to facilitate Devicetree validation. Lastly it introduces a
+number of smaller fixes and cleanups in the core and a few different
+drivers.
+
+----------------------------------------------------------------
+Abel Vesa (1):
+      remoteproc: qcom_q6v5_pas: Deal silently with optional px and cx regulators
+
+Allen-KH Cheng (1):
+      remoteproc: mediatek: Enable cache for mt8186 SCP
+
+Dmitry Baryshkov (1):
+      remoteproc: qcom: q6v5-mss: add powerdomains to MSM8996 config
+
+Kishon Vijay Abraham I (3):
+      dt-bindings: remoteproc: pru: Re-arrange "compatible" in alphabetic order
+      dt-bindings: remoteproc: pru: Update bindings for K3 AM62x SoCs
+      remoteproc: pru: Add support for various PRU cores on K3 AM62x SoCs
+
+Krzysztof Kozlowski (8):
+      dt-bindings: remoteproc: remove unneeded ref for names
+      dt-bindings: remoteproc: qcom,adsp: add interconnects
+      dt-bindings: remoteproc: qcom,adsp: simplify interrupts
+      dt-bindings: remoteproc: qcom,adsp: simplify SM8150 power domains
+      dt-bindings: remoteproc: qcom,adsp: use GIC_SPI defines in example
+      dt-bindings: remoteproc: qcom,glink-edge: define re-usable schema for glink-edge
+      dt-bindings: remoteproc: qcom,smd-edge: define re-usable schema for smd-edge
+      remoteproc: qcom: correct kerneldoc
+
+Luca Weiss (1):
+      dt-bindings: remoteproc: qcom: q6v5: fix example
+
+Manivannan Sadhasivam (1):
+      remoteproc: qcom_q6v5_pas: Do not fail if regulators are not found
+
+Mark-PK Tsai (2):
+      dma-mapping: Add dma_release_coherent_memory to DMA API
+      remoteproc: Fix dma_mem leak after rproc_shutdown
+
+Miaoqian Lin (2):
+      remoteproc: k3-r5: Fix refcount leak in k3_r5_cluster_of_init
+      remoteproc: imx_rproc: Fix refcount leak in imx_rproc_addr_init
+
+Minghao Chi (1):
+      remoteproc: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+
+Mukesh Ojha (1):
+      remoteproc: Use unbounded workqueue for recovery work
+
+Ren Zhijie (1):
+      dma-mapping: Fix build error unused-value
+
+Sibi Sankar (7):
+      dt-bindings: remoteproc: qcom: Convert SC7280 MSS bindings to YAML
+      dt-bindings: remoteproc: qcom: Convert SC7180 MSS bindings to YAML
+      remoteproc: qcom_q6v5_mss: map/unmap metadata region before/after use
+      remoteproc: qcom_q6v5_mss: Update MBA log info
+      remoteproc: qcom_q6v5: Introduce panic handler for MSS
+      remoteproc: qcom: pas: Add decrypt shutdown support for modem
+      remoteproc: sysmon: Wait for SSCTL service to come up
+
+Siddharth Gupta (5):
+      remoteproc: qcom: pas: Mark va as io memory
+      remoteproc: qcom: pas: Mark devices as wakeup capable
+      remoteproc: qcom: pas: Check if coredump is enabled
+      remoteproc: qcom: q6v5: Set q6 state to offline on receiving wdog irq
+      remoteproc: sysmon: Send sysmon state only for running rprocs
+
+Sireesh Kodali (1):
+      remoteproc: qcom: wcnss: Fix handling of IRQs
+
+Tinghan Shen (2):
+      dt-bindings: remoteproc: mediatek: Add binding for mt8188 scp
+      remoteproc: mediatek: Support MT8188 SCP
+
+Xiang wangx (1):
+      remoteproc: omap_remoteproc: Fix typo in comment
+
+keliu (1):
+      remoteproc: Directly use ida_alloc()/free()
+
+ran jianping (1):
+      remoteproc: qcom: using pm_runtime_resume_and_get to simplify the code
+
+wangjianli (1):
+      drivers/remoteproc: fix repeated words in comments
+
+ .../devicetree/bindings/remoteproc/mtk,scp.yaml    |   2 +
+ .../devicetree/bindings/remoteproc/qcom,adsp.yaml  |  74 +++---
+ .../bindings/remoteproc/qcom,glink-edge.yaml       |  72 ++++++
+ .../devicetree/bindings/remoteproc/qcom,q6v5.txt   |  88 ++-----
+ .../bindings/remoteproc/qcom,qcs404-cdsp-pil.yaml  |   1 -
+ .../bindings/remoteproc/qcom,sc7180-mss-pil.yaml   | 245 +++++++++++++++++++
+ .../bindings/remoteproc/qcom,sc7280-mss-pil.yaml   | 266 +++++++++++++++++++++
+ .../bindings/remoteproc/qcom,sc7280-wpss-pil.yaml  |  21 +-
+ .../bindings/remoteproc/qcom,sdm845-adsp-pil.yaml  |   1 -
+ .../bindings/remoteproc/qcom,smd-edge.yaml         |  85 +++++++
+ .../bindings/remoteproc/ti,pru-rproc.yaml          |   5 +-
+ .../devicetree/bindings/soc/qcom/qcom,smd.yaml     |  50 +---
+ drivers/remoteproc/imx_rproc.c                     |   7 +-
+ drivers/remoteproc/keystone_remoteproc.c           |   3 +-
+ drivers/remoteproc/mtk_scp.c                       |  23 +-
+ drivers/remoteproc/omap_remoteproc.c               |   6 +-
+ drivers/remoteproc/pru_rproc.c                     |   1 +
+ drivers/remoteproc/qcom_common.c                   |   4 +-
+ drivers/remoteproc/qcom_q6v5.c                     |   4 +
+ drivers/remoteproc/qcom_q6v5_adsp.c                |   3 +-
+ drivers/remoteproc/qcom_q6v5_mss.c                 |  54 ++++-
+ drivers/remoteproc/qcom_q6v5_pas.c                 | 105 ++++++--
+ drivers/remoteproc/qcom_sysmon.c                   |  16 +-
+ drivers/remoteproc/qcom_wcnss.c                    |  10 +-
+ drivers/remoteproc/remoteproc_core.c               |  24 +-
+ drivers/remoteproc/ti_k3_r5_remoteproc.c           |   2 +
+ include/linux/dma-map-ops.h                        |   3 +
+ kernel/dma/coherent.c                              |  10 +-
+ 28 files changed, 958 insertions(+), 227 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,glink-edge.yaml
+ create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml
+ create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml
+ create mode 100644 Documentation/devicetree/bindings/remoteproc/qcom,smd-edge.yaml
