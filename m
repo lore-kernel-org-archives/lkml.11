@@ -2,85 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C2FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 11:40:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55100C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 11:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242963AbiHHLkg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 07:40:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44934 "EHLO
+        id S242971AbiHHLlI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 07:41:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242930AbiHHLk3 (ORCPT
+        with ESMTP id S243004AbiHHLk7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 07:40:29 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCAA5F5F;
-        Mon,  8 Aug 2022 04:40:27 -0700 (PDT)
-Received: from localhost.localdomain (unknown [39.46.64.186])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Mon, 8 Aug 2022 07:40:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E090BDED8
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 04:40:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: usama.anjum)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 6F42F6601C28;
-        Mon,  8 Aug 2022 12:40:23 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1659958826;
-        bh=Mz0RDPA7p3Dfvp3I4U1fgB3B0KKGWXSWNIX3BZgcrBw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kzWwD1wcxrwuIt0Octlu4Ol2iu4SmNmMWwgoYoRkmqZF9DCWk0SljRkPp4fvTD/e5
-         4DaopepsJDHllgckmzAn8MVF8Ep2BL/vI0ssgZD0ho41Pu906GWA2ceZvvFdDRMBM4
-         NGaksFFVLjyBZgcHDmA8NFkzlgv0fXoznA7IN5aQMHlxp/cSVVZJoBRM1+yUXOQXBg
-         t1zQ21gD5f0Q9p+nAif9g8EgKGhbOO2L+URXd7jo16LH8CXFn4KzZoYMrdcah9Pi1A
-         sGsBKCZ6GL/h7Kcn4PXAnxgswwvTVefHu0IzVltTS/9JfVF6eHqFgMb+GLo9LYGaWz
-         jhSZksmzqyDxw==
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
-        "H. Peter Anvin" <hpa@zytor.com>,
-        linux-doc@vger.kernel.org (open list:DOCUMENTATION),
-        linux-kernel@vger.kernel.org (open list)
-Cc:     Steven Noonan <steven@uplinklabs.net>, usama.anjum@collabora.com,
-        kernel@collabora.com
-Subject: [PATCH 3/3] x86/tsc: don't check for random warps if using direct sync
-Date:   Mon,  8 Aug 2022 16:39:54 +0500
-Message-Id: <20220808113954.345579-3-usama.anjum@collabora.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220808113954.345579-1-usama.anjum@collabora.com>
-References: <20220808113954.345579-1-usama.anjum@collabora.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E6576105C
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 11:40:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8480C433D6;
+        Mon,  8 Aug 2022 11:40:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659958853;
+        bh=ZTJIjiTBCyo5151EdtrsWqedhkYLw628G+bVuY7sHp8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cWAoCSmteTw95hEAq/qECXjivbV+MCkQ6I7Ort93Ec0SKckC+4bpYyJRuoQF550c/
+         ckZyTRaEe5hY0pB7ffmcM9uWy4kbm6FFk2/RHAKNnBTZdmo30POU+GSf5Fc3vOOHVV
+         vAfrKRBKA2mnrLsingVQfi2YymQh2EWqaB5z/UXg017W8yUjR9tqeG74OXrpdHlQ13
+         Ivd2/2oKvzzEIYfKxH/xntIcsMhxuYnIK8Rs+m+3Kyx6wWKV+q6TBGBHCMtNGqkyRu
+         iQI6PZ/yMjNtfDSrlqlK9p/pyNFT40xPNEazmEGUKSxCrDL/mFfq0DUT2DQMy2DwJu
+         KrGXNR4QvzHjw==
+Date:   Mon, 8 Aug 2022 12:40:49 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Kevin Lu <luminlong@139.com>
+Cc:     linux-kernel@vger.kernel.org, shenghao-ding@ti.com, kevin-lu@ti.com
+Subject: Re: [PATCH v1 1/1] drivers: Modify some parts
+Message-ID: <YvD2QThICnW4873L@sirena.org.uk>
+References: <20220807034052.2314-1-luminlong@139.com>
+ <20220807034052.2314-2-luminlong@139.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="BM0yNN4hPVklAiUl"
+Content-Disposition: inline
+In-Reply-To: <20220807034052.2314-2-luminlong@139.com>
+X-Cookie: Are we running light with overbyte?
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Noonan <steven@uplinklabs.net>
 
-There's some overhead in writing and reading MSR_IA32_TSC. We try to
-account for it. But sometimes overhead gets under or over estimated.
-When we retry syncing, it sees the clock "go backwards". Hence,
-ignore random wrap if using direct sync.
+--BM0yNN4hPVklAiUl
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Steven Noonan <steven@uplinklabs.net>
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
----
- arch/x86/kernel/tsc_sync.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Sun, Aug 07, 2022 at 11:40:52AM +0800, Kevin Lu wrote:
 
-diff --git a/arch/x86/kernel/tsc_sync.c b/arch/x86/kernel/tsc_sync.c
-index 2a855991f982..1fc751212a0e 100644
---- a/arch/x86/kernel/tsc_sync.c
-+++ b/arch/x86/kernel/tsc_sync.c
-@@ -405,7 +405,7 @@ void check_tsc_sync_source(int cpu)
- 		pr_debug("TSC synchronization [CPU#%d -> CPU#%d]: passed\n",
- 			smp_processor_id(), cpu);
- 
--	} else if (atomic_dec_and_test(&test_runs) || random_warps) {
-+	} else if (atomic_dec_and_test(&test_runs) || (random_warps && !tsc_allow_direct_sync)) {
- 		/* Force it to 0 if random warps brought us here */
- 		atomic_set(&test_runs, 0);
- 
--- 
-2.30.2
+> Add a new kcontrol for phase calib, remove unnecessary header file,
+> make code more comply with linux coding style
+>=20
+> Signed-off-by: Kevin Lu <luminlong@139.com>
+> ---
+>  tlv320adcx140.c | 114 ++++++++++++++++++++++++++++++++++++------------
+>  tlv320adcx140.h |   7 +--
+>  2 files changed, 90 insertions(+), 31 deletions(-)
 
+As covered in submitting-patches.rst your diff should be against the
+root of the kernel tree rather than files in a subdirectory, look at how
+other patches on the list are being formatted for examples of how things
+look.  If you use git format-patch to generate patches it should do the
+right thing for you.
+
+The fact that you're describing three different changes changes here
+suggests that this should be a patch series rather than a single patch,
+as covered in submitting-patches.rst this is the general style for Linux
+as it makes things much easier to review.  Each logical change should be
+a separate patch.
+
+> -// Copyright (C) 2020 Texas Instruments Incorporated - https://www.ti.co=
+m/
+> +// Copyright (C) 2020 - 2022 Texas Instruments Incorporated
+> +// - https://www.ti.com/
+> +/*
+> + * Author: Kevin Lu <kevin-lu@ti.com>
+> + *
+> + *  Features:-
+
+Please add the new bits to the header as C++ comments as well, this
+makes things look more intentional.
+
+> +static const char * const phase_calib_text[] =3D {
+> +	"Disable",
+> +	"Enable"
+> +};
+> +
+> +static const struct soc_enum phase_calib_enum[] =3D {
+> +	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(phase_calib_text), phase_calib_text),
+> +};
+
+This is an on/off switch, it should be a normal boolean control ending
+in Switch and taking 0 and 1 as valid values.
+
+> +static int adcx140_phase_calib_put(struct snd_kcontrol *pKcontrol,
+> +	struct snd_ctl_elem_value *pValue)
+> +{
+> +	struct snd_soc_component *codec
+> +		=3D snd_soc_kcontrol_component(pKcontrol);
+> +	struct adcx140_priv *adcx140 =3D snd_soc_component_get_drvdata(codec);
+> +
+> +	adcx140->phase_calib_on =3D pValue->value.integer.value[0];
+> +
+> +	return 0;
+
+The issues with use of hungarian notation and not generating events that
+were present previously remain.
+
+Please don't ignore review comments, people are generally making them
+for a reason and are likely to have the same concerns if issues remain
+unaddressed.  Having to repeat the same comments can get repetitive and
+make people question the value of time spent reviewing.  If you disagree
+with the review comments that's fine but you need to reply and discuss
+your concerns so that the reviewer can understand your decisions.
+
+--BM0yNN4hPVklAiUl
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLw9kAACgkQJNaLcl1U
+h9B3Iwf/Ze6SxEpjZi4bvFh+aPIm+ikx9nidgd+Gx8zo3pasn3M3+JMbe7RyXJaz
+M8QZ8xZhRjxtJ2Q50XZCUuhm3ovmD/WBqSUTqW/QL17m4PTqCJWBlqBoTsiuIVQM
+c7w9ZXbCGcTFNP7FMkm0ylHhvAQXCYsShxedPTAkoimZbNXzHNetU3ThMsZlc0gA
+Z/aYqwFptnaJGxfqUOvncV+UMsZymOF1UMe8cDToZkN1LblTqONwmc0AQON2B0wr
+RmWvZZ0YR0bNkoh1T2S/r2i5E8GkaFS3ZvdEeIjv2hdxxeaD8FhWxTnzrEfQA3Mz
+y6f7BpVfBGU17Bg1M0PE5G4ux5V/yA==
+=TJhU
+-----END PGP SIGNATURE-----
+
+--BM0yNN4hPVklAiUl--
