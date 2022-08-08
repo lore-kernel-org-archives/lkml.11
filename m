@@ -2,381 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6964BC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9F2EC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243715AbiHHCmA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 22:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60996 "EHLO
+        id S242976AbiHHCmF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 22:42:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235236AbiHHClj (ORCPT
+        with ESMTP id S235901AbiHHClj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 7 Aug 2022 22:41:39 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D61B219E
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 19:41:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF9221BA
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 19:41:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:
-        Content-Type:Content-ID:Content-Description;
-        bh=1Pcy2nOf2MsuNc/qSkleQYM5fWNCLNN0ZDrbzvs8o90=; b=p9voLeBA7Kp4Z8voQNS9EXjJHV
-        U3ADUHQogvPAofuVJ/qm/dLNAbmj246qcrCf1oiYgK35a16Uw2N+C8PG9RdHiTldPNa8elQteEi1l
-        Y447ZNdS65FTNOb+tBFZSNbisoQPinpMqJGIz4lnbbYK1VYoQLV0a4qLwlCLregmCcdaCnQpTbz07
-        kVgtGnMjAPJh143A2jzNqYE+BdYwf047Htaz58Y6YpqK5gOgBZ+dVS7OolLTonbO45API93Xms7Je
-        usPRwridBb1TyhYyIXKYoeC6QO0QievEIU27pvIM3izvnGpMrjxZr2xuG1TiC3r9auYn1MMMM9uvh
-        +ZmRO/5A==;
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=cAZQycysCODqFhAu/M10j6by0BGm4a/NlhRQ+Q5eoj4=; b=kVe3wxN5qiwYa2COGvtzkB7svP
+        SvsHylhLVA8LahVABjWTQ/wcqRgghuYrGDjAEvLY7OMnlQxY3URnKLE/PQvUWnLX/LgS60TAyH3pa
+        JytOCgBE9SRdw/5o/lldxTSgrf7KljtUj/r2BFDgiXZPT0nDO0OsSHDz+/nygDEdxEZy2q8cZS7s+
+        +b79LwWyszyGZAvmjxlU16DvoP+1oBCls8ztUj757gYQ8jp0FvwHN4OXO+hqQIGTfNALRgNPKOaMx
+        slyWs3uuTmCPj6xK6cx4/qF5K2Vic0RbfxkNEb66qubClBl9XqSrXrkubuG0cdVC3I24Z4FDt1EVG
+        1gQz/XWg==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oKshx-00DVRZ-41; Mon, 08 Aug 2022 02:41:33 +0000
+        id 1oKshw-00DVRN-I4; Mon, 08 Aug 2022 02:41:32 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-kernel@vger.kernel.org, pmladek@suse.com,
         Kent Overstreet <kent.overstreet@gmail.com>
-Subject: [PATCH v5 06/32] lib/printbuf: Heap allocation
-Date:   Mon,  8 Aug 2022 03:41:02 +0100
-Message-Id: <20220808024128.3219082-7-willy@infradead.org>
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Subject: [PATCH v5 00/32] Printbufs
+Date:   Mon,  8 Aug 2022 03:40:56 +0100
+Message-Id: <20220808024128.3219082-1-willy@infradead.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220808024128.3219082-1-willy@infradead.org>
-References: <20220808024128.3219082-1-willy@infradead.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kent Overstreet <kent.overstreet@gmail.com>
+[all this code is from Kent, I'm helping him out because he's having
+trouble with git send-email and OAUTH]
 
-This makes printbufs optionally heap allocated: a printbuf initialized
-with the PRINTBUF initializer will automatically heap allocate and
-resize as needed.
+This should (hopefully) be the final iteration of this patch series.
 
-Allocations are done with GFP_KERNEL: code should use e.g.
-memalloc_nofs_save()/restore() as needed. Since we do not currently have
-memalloc_nowait_save()/restore(), in contexts where it is not safe to
-block we provide the helpers
+Previous discussion:
+https://lore.kernel.org/linux-mm/20220620004233.3805-1-kent.overstreet@gmail.com/
 
-  printbuf_atomic_inc()
-  printbuf_atomic_dec()
+Changes since v4:
 
-When the atomic count is nonzero, memory allocations will be done with
-GFP_NOWAIT.
+ - %pf(%p) format extension has been dropped for now, since it turned out to be
+   a bit controversial. I think we're going to want it, but I'm leaving it for a
+   future patch series.
+ - There was a small off by one error in the patch converting
+   trace_events_synth. The original code using seq_buf had to calculate the size
+   of the string to allocate; since printbufs have native support for heap
+   allocating strings, the version of the patch in this series just uses that
+   for a nice cleanup.
 
-On memory allocation failure, output will be truncated. Code that wishes
-to check for memory allocation failure (in contexts where we should
-return -ENOMEM) should check if printbuf->allocation_failure is set.
-Since printbufs are expected to be typically used for log messages and
-on a best effort basis, we don't return errors directly.
+What are printbufs, and why?
+============================
 
-Other helpers provided by this patch:
+Printbufs are like the existing seq_buf, with some differences and new features:
 
- - printbuf_make_room(buf, extra)
-   Reallocates if necessary to make room for @extra bytes (not including
-   terminating null).
+ - Heap allocation (optional)
+   
+   Currently, we have no standard mechanism for printing to a heap-allocated
+   string: code that needs to do this must calculate the size of the buffer to
+   allocate, which is tedious and error prone. IOW, this is a major ergonomic
+   improvement.
 
- - printbuf_str(buf)
-   Returns a null terminated string equivalent to the contents of @buf.
-   If @buf was never allocated (or allocation failed), returns a
-   constant empty string.
+ - Indent level
 
- - printbuf_exit(buf)
-   Releases memory allocated by a printbuf.
+   Any time we're printing structured multi-line data, proper indenting makes
+   the output considerably more readable. Printbufs have state for the current
+   indent level, controlled by printbuf_indent_add() and printbuf_indent_sub()
+   and obeyed by prt_newline().
 
-Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
----
- include/linux/printbuf.h | 124 +++++++++++++++++++++++++++++++++------
- lib/Makefile             |   2 +-
- lib/printbuf.c           |  76 ++++++++++++++++++++++++
- 3 files changed, 184 insertions(+), 18 deletions(-)
+   In the future this may work with just \n, pending work to do this without
+   performance regressions.
+
+ - Tab stops
+
+   Printing reports with nicely aligned columns is something we do a _lot_, and
+   printbufs make this a lot easier. After setting tabstops (byte offsets from
+   start of line), prt_tab() will output spaces up to the next tabstop, and
+   pr_tab_rjust() will right justify output since the previous output against
+   the next tabstap. 
+
+   In the future this may work with just \t, pending work to do this without
+   performance regressions.
+
+Why a new data structure, instead of extending seq_buf?
+=======================================================
+
+Some semantic changes were required. The main ones were:
+
+ - printbufs have different overflow semantics vs. seq_buf, to support
+   snprintf() which is required to return the number of characters that were
+   written even when an empty buffer is passed 
+
+ - seq_buf has a readpos member which printbuf drops, since it's only for
+   tracing.
+
+Also, a number of the existing seq_buf users were converted to printbuf's heap
+allocation functionality, replacing open coded string size calculations and
+allocations.
+
+Given all this, adding the new thing and converting existing users one by one
+felt like the more incremental/bisectable approach.
+
+Goals of this patch series:
+===========================
+
+ - A unified API for functions that output strings (i.e. pretty printers).
+
+   Currently, we've got a bit of a mess of different calling conventions for
+   functions that output strings. There's sprintf/snprintf style, seq_buf, and
+   various other variations of passing raw character pointers around.
+
+ - Low level helpers for building up strings (prt_char(), prt_str(), etc.).
+
+   This replaces a _lot_ of low level pointer arithmetic in vsprintf.c, and
+   elsewhere, with proper helpers.
+
+ - Cleanup of pretty-printers in vsprintf.c
+
+   Currently, we have a lot of pretty-printers in vsprintf.c invoked by various
+   %p extensions. However, arguments to those pretty printers are passed as
+   additional format string characters, instead of normal function arguments,
+   and we have the code that decodes format strings mixed with pretty-printer
+   code, which is not great for readability and makes those pretty-printers
+   unnecessarily tied to vsprintf.c internal details.
+
+   One of my goals is to give those pretty-printers normal function call
+   interfaces, and separate out the format-string parsing: this patch series
+   does some of the prep work. I've got more patches in progress in that vein,
+   but this patch series is big enough as is so I'm leaving them for later.
+
+Kent Overstreet (32):
+  lib/printbuf: New data structure for printing strings
+  lib/string_helpers: Convert string_escape_mem() to printbuf
+  vsprintf: Convert to printbuf
+  lib/hexdump: Convert to printbuf
+  lib/string_helpers: string_get_size() now returns characters wrote
+  lib/printbuf: Heap allocation
+  lib/printbuf: Tabstops, indenting
+  lib/printbuf: Unit specifiers
+  vsprintf: Improve number()
+  vsprintf: prt_u64_minwidth(), prt_u64()
+  test_printf: Drop requirement that sprintf not write past nul
+  vsprintf: Start consolidating printf_spec handling
+  vsprintf: Refactor resource_string()
+  vsprintf: Refactor fourcc_string()
+  vsprintf: Refactor ip_addr_string()
+  vsprintf: Refactor mac_address_string()
+  vsprintf: time_and_date() no longer takes printf_spec
+  vsprintf: flags_string() no longer takes printf_spec
+  vsprintf: Refactor device_node_string, fwnode_string
+  vsprintf: Refactor hex_string, bitmap_string_list, bitmap_string
+  Input/joystick/analog: Convert from seq_buf -> printbuf
+  mm/memcontrol.c: Convert to printbuf
+  clk: tegra: bpmp: Convert to printbuf
+  tools/testing/nvdimm: Convert to printbuf
+  powerpc: Convert to printbuf
+  x86/resctrl: Convert to printbuf
+  PCI/P2PDMA: Convert to printbuf
+  tracing: trace_events_synth: Convert to printbuf
+  d_path: prt_path()
+  ACPI/APEI: Add missing include
+  tracing: Convert to printbuf
+  Delete seq_buf
+
+ arch/powerpc/kernel/process.c             |   16 +-
+ arch/powerpc/kernel/security.c            |   75 +-
+ arch/powerpc/platforms/pseries/papr_scm.c |   34 +-
+ arch/x86/kernel/cpu/resctrl/rdtgroup.c    |   16 +-
+ drivers/acpi/apei/erst-dbg.c              |    1 +
+ drivers/clk/tegra/clk-bpmp.c              |   21 +-
+ drivers/input/joystick/analog.c           |   23 +-
+ drivers/pci/p2pdma.c                      |   21 +-
+ fs/d_path.c                               |   35 +
+ include/linux/dcache.h                    |    1 +
+ include/linux/kernel.h                    |   12 +
+ include/linux/printbuf.h                  |  257 ++++
+ include/linux/seq_buf.h                   |  162 --
+ include/linux/string.h                    |    5 +
+ include/linux/string_helpers.h            |    8 +-
+ include/linux/trace_events.h              |    2 +-
+ include/linux/trace_seq.h                 |   17 +-
+ kernel/trace/trace.c                      |   45 +-
+ kernel/trace/trace_dynevent.c             |   34 +-
+ kernel/trace/trace_events_filter.c        |    2 +-
+ kernel/trace/trace_events_synth.c         |   53 +-
+ kernel/trace/trace_functions_graph.c      |    6 +-
+ kernel/trace/trace_kprobe.c               |    2 +-
+ kernel/trace/trace_seq.c                  |  111 +-
+ lib/Makefile                              |    4 +-
+ lib/hexdump.c                             |  246 ++--
+ lib/printbuf.c                            |  258 ++++
+ lib/seq_buf.c                             |  397 -----
+ lib/string_helpers.c                      |  224 +--
+ lib/test_hexdump.c                        |   30 +-
+ lib/test_printf.c                         |    6 -
+ lib/vsprintf.c                            | 1640 ++++++++++-----------
+ mm/memcontrol.c                           |   54 +-
+ tools/testing/nvdimm/test/ndtest.c        |   22 +-
+ 34 files changed, 1855 insertions(+), 1985 deletions(-)
+ create mode 100644 include/linux/printbuf.h
+ delete mode 100644 include/linux/seq_buf.h
  create mode 100644 lib/printbuf.c
+ delete mode 100644 lib/seq_buf.c
 
-diff --git a/include/linux/printbuf.h b/include/linux/printbuf.h
-index 1aa3331bf00b..71f631c49f4e 100644
---- a/include/linux/printbuf.h
-+++ b/include/linux/printbuf.h
-@@ -4,19 +4,73 @@
- #ifndef _LINUX_PRINTBUF_H
- #define _LINUX_PRINTBUF_H
- 
--#include <linux/kernel.h>
--#include <linux/string.h>
--
- /*
-- * Printbufs: String buffer for outputting (printing) to, for vsnprintf
-+ * Printbufs: Simple strings for printing to, with optional heap allocation
-+ *
-+ * This code has provisions for use in userspace, to aid in making other code
-+ * portable between kernelspace and userspace.
-+ *
-+ * Basic example:
-+ *   struct printbuf buf = PRINTBUF;
-+ *
-+ *   prt_printf(&buf, "foo=");
-+ *   foo_to_text(&buf, foo);
-+ *   printk("%s", buf.buf);
-+ *   printbuf_exit(&buf);
-+ *
-+ * Or
-+ *   struct printbuf buf = PRINTBUF_EXTERN(char_buf, char_buf_size)
-+ *
-+ * We can now write pretty printers instead of writing code that dumps
-+ * everything to the kernel log buffer, and then those pretty-printers can be
-+ * used by other code that outputs to kernel log, sysfs, debugfs, etc.
-+ *
-+ * Memory allocation: Outputing to a printbuf may allocate memory. This
-+ * allocation is done with GFP_KERNEL, by default: use the newer
-+ * memalloc_*_(save|restore) functions as needed.
-+ *
-+ * Since no equivalent yet exists for GFP_ATOMIC/GFP_NOWAIT, memory allocations
-+ * will be done with GFP_NOWAIT if printbuf->atomic is nonzero.
-+ *
-+ * It's allowed to grab the output buffer and free it later with kfree() instead
-+ * of using printbuf_exit(), if the user just needs a heap allocated string at
-+ * the end.
-+ *
-+ * Memory allocation failures: We don't return errors directly, because on
-+ * memory allocation failure we usually don't want to bail out and unwind - we
-+ * want to print what we've got, on a best-effort basis. But code that does want
-+ * to return -ENOMEM may check printbuf.allocation_failure.
-  */
- 
-+#include <linux/kernel.h>
-+#include <linux/string.h>
-+
- struct printbuf {
- 	char			*buf;
- 	unsigned		size;
- 	unsigned		pos;
-+	/*
-+	 * If nonzero, allocations will be done with GFP_ATOMIC:
-+	 */
-+	u8			atomic;
-+	bool			allocation_failure:1;
-+	bool			heap_allocated:1;
- };
- 
-+int printbuf_make_room(struct printbuf *, unsigned);
-+const char *printbuf_str(const struct printbuf *);
-+void printbuf_exit(struct printbuf *);
-+
-+/* Initializer for a heap allocated printbuf: */
-+#define PRINTBUF ((struct printbuf) { .heap_allocated = true })
-+
-+/* Initializer a printbuf that points to an external buffer: */
-+#define PRINTBUF_EXTERN(_buf, _size)			\
-+((struct printbuf) {					\
-+	.buf	= _buf,					\
-+	.size	= _size,				\
-+})
-+
- /*
-  * Returns size remaining of output buffer:
-  */
-@@ -49,26 +103,36 @@ static inline bool printbuf_overflowed(struct printbuf *out)
- 
- static inline void printbuf_nul_terminate(struct printbuf *out)
- {
-+	printbuf_make_room(out, 1);
-+
- 	if (out->pos < out->size)
- 		out->buf[out->pos] = 0;
- 	else if (out->size)
- 		out->buf[out->size - 1] = 0;
- }
- 
--static inline void __prt_char(struct printbuf *out, char c)
-+/* Doesn't call printbuf_make_room(), doesn't nul terminate: */
-+static inline void __prt_char_reserved(struct printbuf *out, char c)
- {
- 	if (printbuf_remaining(out))
- 		out->buf[out->pos] = c;
- 	out->pos++;
- }
- 
-+/* Doesn't nul terminate: */
-+static inline void __prt_char(struct printbuf *out, char c)
-+{
-+	printbuf_make_room(out, 1);
-+	__prt_char_reserved(out, c);
-+}
-+
- static inline void prt_char(struct printbuf *out, char c)
- {
- 	__prt_char(out, c);
- 	printbuf_nul_terminate(out);
- }
- 
--static inline void __prt_chars(struct printbuf *out, char c, unsigned n)
-+static inline void __prt_chars_reserved(struct printbuf *out, char c, unsigned n)
- {
- 	unsigned i, can_print = min(n, printbuf_remaining(out));
- 
-@@ -79,13 +143,18 @@ static inline void __prt_chars(struct printbuf *out, char c, unsigned n)
- 
- static inline void prt_chars(struct printbuf *out, char c, unsigned n)
- {
--	__prt_chars(out, c, n);
-+	printbuf_make_room(out, n);
-+	__prt_chars_reserved(out, c, n);
- 	printbuf_nul_terminate(out);
- }
- 
- static inline void prt_bytes(struct printbuf *out, const void *b, unsigned n)
- {
--	unsigned i, can_print = min(n, printbuf_remaining(out));
-+	unsigned i, can_print;
-+
-+	printbuf_make_room(out, n);
-+
-+	can_print = min(n, printbuf_remaining(out));
- 
- 	for (i = 0; i < can_print; i++)
- 		out->buf[out->pos++] = ((char *) b)[i];
-@@ -101,22 +170,43 @@ static inline void prt_str(struct printbuf *out, const char *str)
- 
- static inline void prt_hex_byte(struct printbuf *out, u8 byte)
- {
--	__prt_char(out, hex_asc_hi(byte));
--	__prt_char(out, hex_asc_lo(byte));
-+	printbuf_make_room(out, 2);
-+	__prt_char_reserved(out, hex_asc_hi(byte));
-+	__prt_char_reserved(out, hex_asc_lo(byte));
- 	printbuf_nul_terminate(out);
- }
- 
- static inline void prt_hex_byte_upper(struct printbuf *out, u8 byte)
- {
--	__prt_char(out, hex_asc_upper_hi(byte));
--	__prt_char(out, hex_asc_upper_lo(byte));
-+	printbuf_make_room(out, 2);
-+	__prt_char_reserved(out, hex_asc_upper_hi(byte));
-+	__prt_char_reserved(out, hex_asc_upper_lo(byte));
- 	printbuf_nul_terminate(out);
- }
- 
--#define PRINTBUF_EXTERN(_buf, _size)			\
--((struct printbuf) {					\
--	.buf	= _buf,					\
--	.size	= _size,				\
--})
-+/**
-+ * printbuf_reset - re-use a printbuf without freeing and re-initializing it:
-+ */
-+static inline void printbuf_reset(struct printbuf *buf)
-+{
-+	buf->pos		= 0;
-+	buf->allocation_failure	= 0;
-+}
-+
-+/**
-+ * printbuf_atomic_inc - mark as entering an atomic section
-+ */
-+static inline void printbuf_atomic_inc(struct printbuf *buf)
-+{
-+	buf->atomic++;
-+}
-+
-+/**
-+ * printbuf_atomic_inc - mark as leaving an atomic section
-+ */
-+static inline void printbuf_atomic_dec(struct printbuf *buf)
-+{
-+	buf->atomic--;
-+}
- 
- #endif /* _LINUX_PRINTBUF_H */
-diff --git a/lib/Makefile b/lib/Makefile
-index 17e48da223e2..d44f8d03d66b 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -34,7 +34,7 @@ lib-y := ctype.o string.o vsprintf.o cmdline.o \
- 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
- 	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
- 	 nmi_backtrace.o nodemask.o win_minmax.o memcat_p.o \
--	 buildid.o cpumask.o
-+	 buildid.o cpumask.o printbuf.o
- 
- lib-$(CONFIG_PRINTK) += dump_stack.o
- 
-diff --git a/lib/printbuf.c b/lib/printbuf.c
-new file mode 100644
-index 000000000000..e3e5a791b244
---- /dev/null
-+++ b/lib/printbuf.c
-@@ -0,0 +1,76 @@
-+// SPDX-License-Identifier: LGPL-2.1+
-+/* Copyright (C) 2022 Kent Overstreet */
-+
-+#ifdef __KERNEL__
-+#include <linux/export.h>
-+#include <linux/kernel.h>
-+#else
-+#define EXPORT_SYMBOL(x)
-+#endif
-+
-+#include <linux/err.h>
-+#include <linux/slab.h>
-+#include <linux/printbuf.h>
-+
-+int printbuf_make_room(struct printbuf *out, unsigned extra)
-+{
-+	unsigned new_size;
-+	char *buf;
-+
-+	if (!out->heap_allocated)
-+		return 0;
-+
-+	/* Reserved space for terminating nul: */
-+	extra += 1;
-+
-+	if (out->pos + extra < out->size)
-+		return 0;
-+
-+	new_size = roundup_pow_of_two(out->size + extra);
-+
-+	/*
-+	 * Note: output buffer must be freeable with kfree(), it's not required
-+	 * that the user use printbuf_exit().
-+	 */
-+	buf = krealloc(out->buf, new_size, !out->atomic ? GFP_KERNEL : GFP_NOWAIT);
-+
-+	if (!buf) {
-+		out->allocation_failure = true;
-+		return -ENOMEM;
-+	}
-+
-+	out->buf	= buf;
-+	out->size	= new_size;
-+	return 0;
-+}
-+EXPORT_SYMBOL(printbuf_make_room);
-+
-+/**
-+ * printbuf_str - returns printbuf's buf as a C string, guaranteed to be null
-+ * terminated
-+ */
-+const char *printbuf_str(const struct printbuf *buf)
-+{
-+	/*
-+	 * If we've written to a printbuf then it's guaranteed to be a null
-+	 * terminated string - but if we haven't, then we might not have
-+	 * allocated a buffer at all:
-+	 */
-+	return buf->pos
-+		? buf->buf
-+		: "";
-+}
-+EXPORT_SYMBOL(printbuf_str);
-+
-+/**
-+ * printbuf_exit - exit a printbuf, freeing memory it owns and poisoning it
-+ * against accidental use.
-+ */
-+void printbuf_exit(struct printbuf *buf)
-+{
-+	if (buf->heap_allocated) {
-+		kfree(buf->buf);
-+		buf->buf = ERR_PTR(-EINTR); /* poison value */
-+	}
-+}
-+EXPORT_SYMBOL(printbuf_exit);
 -- 
 2.35.1
 
