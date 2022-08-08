@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A02EC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:57:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19020C25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243774AbiHHB5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52278 "EHLO
+        id S243681AbiHHBzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243702AbiHHBzt (ORCPT
+        with ESMTP id S243244AbiHHBwJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:55:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BE611C117;
-        Sun,  7 Aug 2022 18:39:15 -0700 (PDT)
+        Sun, 7 Aug 2022 21:52:09 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8CD1A82A;
+        Sun,  7 Aug 2022 18:38:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCAF2B80DDF;
-        Mon,  8 Aug 2022 01:39:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B75C8C433C1;
-        Mon,  8 Aug 2022 01:39:11 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 44125CE0F71;
+        Mon,  8 Aug 2022 01:38:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9549DC433C1;
+        Mon,  8 Aug 2022 01:38:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922752;
-        bh=seCT/ORXlSvodg00k6NkJU1CqWU/SW76DI4qvjh+el8=;
+        s=k20201202; t=1659922729;
+        bh=rlZoPdOOJ0HA2H9/i8phZ/Z4JXOvD+sXUYV96nhCgFY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sDQfnofeU9kcJb0fiop7yCD1y6EmD5A/Evih5YtGqKbWz6XN/jbR/biPmdaObkzMA
-         8gyn69JNueOpqEy5Uf7BSfeL+NmQZWDyceAAvBIIVw8vBDebxpFdakwyBiNtSbPZKv
-         NdakFw9GIbDwTB9jfa5XCqfF7f8yay+qHRVul+re4Nf5tgmVuS/HnWS7AEJVEFbipG
-         N0KvmxBZKg6UOefNesPD5BMLJYurquQZGNcUqAjJQFSOUdvFVkgEfSgBfCshvw9Q5i
-         0pdjiiTkcdpBkM1cROh1iAvLnbCd03tlhmR6EmIuSunY6LmojVLWaByr0luBTcPakg
-         ksWvSTllH9ixQ==
+        b=nMp897A0Fnb8Joflar587lw03OniaOA93GhKV2OBJ6X6LUU6vg/0gT1j4Y/y1VIz4
+         NTI2m0F7B1zxLnIvaRVrSMN5RgluOxSX+FuJCb83N0teIXclICa+RhERpkmX2usi2b
+         du5M36IvE8pjXcUbG06V5iK+bC7zJHmxlrns4nbBOTWY2MLfg7GC8AJlAGXFvyDRzq
+         mY2oV4SmSAGK4qWiroFQFpzJ64DExIwN8MD4LPuOjd/sWrTjatyrGkbEw1xTEyT5Ty
+         OIjL/qqyN9pKh3LWqXGGWziga+RjnMNM5TtCpKNoA6ViZmaIRGJurxFfOG0M0cG7I4
+         3BX1gF12Zm1UA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiu Jianfeng <xiujianfeng@huawei.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sasha Levin <sashal@kernel.org>,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        selinux@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 23/23] selinux: Add boundary check in put_entry()
-Date:   Sun,  7 Aug 2022 21:38:30 -0400
-Message-Id: <20220808013832.316381-23-sashal@kernel.org>
+Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 08/23] ARM: dts: imx6ul: add missing properties for sram
+Date:   Sun,  7 Aug 2022 21:38:15 -0400
+Message-Id: <20220808013832.316381-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013832.316381-1-sashal@kernel.org>
 References: <20220808013832.316381-1-sashal@kernel.org>
@@ -53,33 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiu Jianfeng <xiujianfeng@huawei.com>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit 15ec76fb29be31df2bccb30fc09875274cba2776 ]
+[ Upstream commit 5655699cf5cff9f4c4ee703792156bdd05d1addf ]
 
-Just like next_entry(), boundary check is necessary to prevent memory
-out-of-bound access.
+All 3 properties are required by sram.yaml. Fixes the dtbs_check
+warning:
+sram@900000: '#address-cells' is a required property
+sram@900000: '#size-cells' is a required property
+sram@900000: 'ranges' is a required property
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/selinux/ss/policydb.h | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/imx6ul.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/security/selinux/ss/policydb.h b/security/selinux/ss/policydb.h
-index 162d0e79b85b..b18bc405f820 100644
---- a/security/selinux/ss/policydb.h
-+++ b/security/selinux/ss/policydb.h
-@@ -356,6 +356,8 @@ static inline int put_entry(const void *buf, size_t bytes, int num, struct polic
- {
- 	size_t len = bytes * num;
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index f008036e9294..630643013bdc 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -157,6 +157,9 @@ soc {
+ 		ocram: sram@900000 {
+ 			compatible = "mmio-sram";
+ 			reg = <0x00900000 0x20000>;
++			ranges = <0 0x00900000 0x20000>;
++			#address-cells = <1>;
++			#size-cells = <1>;
+ 		};
  
-+	if (len > fp->len)
-+		return -EINVAL;
- 	memcpy(fp->data, buf, len);
- 	fp->data += len;
- 	fp->len -= len;
+ 		intc: interrupt-controller@a01000 {
 -- 
 2.35.1
 
