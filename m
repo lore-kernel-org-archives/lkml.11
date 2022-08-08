@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D78A5C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:46:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC33DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:47:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243610AbiHHPpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 11:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51450 "EHLO
+        id S243632AbiHHPrF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 11:47:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243400AbiHHPpe (ORCPT
+        with ESMTP id S235851AbiHHPrB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 11:45:34 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C5E224;
-        Mon,  8 Aug 2022 08:45:33 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id 17so6727904qky.8;
-        Mon, 08 Aug 2022 08:45:33 -0700 (PDT)
+        Mon, 8 Aug 2022 11:47:01 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27DAE140DE;
+        Mon,  8 Aug 2022 08:47:00 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id b24so340805qka.5;
+        Mon, 08 Aug 2022 08:47:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=bh9vtqVsqdtuRVtF0p+dDtPg259p3E95D1pLQvcru3w=;
-        b=cq0MuZNjL1Iosi7Dw8iy1M0vF630xTIQJG5rd0OZ9lwC1og/efLemVAc6kL8of945S
-         fwOEOiveVvwp/2AJ9c5gMx7T29KMzoRYmOXu/LaDOxmLog87EDhQlY6DElzxNFskfNTf
-         KWIJ6JcK0rQ6QjQJuJjGA5HL+JaNkGm4xHMu7w6e+QvArlZ6gHDlo4+0iX2YBA+2C7kL
-         M3cRRgpfWMypuWLUpnDFGlA6UgxfhC0i1d3/8mEDQQiKvd0kkyfd3CkWWJ28ZsmgKsoO
-         oo7kncJO0EjxdVSjxFHvkIYxPRdRtRRkdQ8DPyuC5HqT+SlxJngbo+FaAvC/5Rdq3Ziq
-         FMVw==
+        bh=2gTAHN16Z4aleevBumMhtMAtPGIRkMKXKmyBCqJALLk=;
+        b=bB6Cte3G8j+p+x5rp22MDx0ExndV+gCJb7HsDVVAsO5NqoVHjZU3p05ta5/6Uu4/Cn
+         y8+UgsNiL2ydDIq77morV3fKGOOUxMAlgTwQMEAn2v9O6q7QtXl/h4Z2+vTNSZssHfI4
+         oPvJvC0UXUbCZMIU2rP/pRG/lQcCpvlrBE/u37rFdiq2luFJ4z8i58mzA5Z6WsrW0+eQ
+         Q73uI5uxx0G1UzHOrcBlz+Yu1gfF2Jb05QrlxaGOhnyDl+CBUHIJXCwKlilA0Ydr0yZV
+         hp6puUix0ny/gZOtv4Bu6blPy+KKf2DdnwlBXqEqltKX5npkCIDPRYtNqaSI4wz5mzQW
+         2rzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=bh9vtqVsqdtuRVtF0p+dDtPg259p3E95D1pLQvcru3w=;
-        b=twgGlGrNrSngSEATXP/vQ6ZHebq8nQKyV/40WxFrw2YBzBRIj6wO+btefewhBzxefm
-         PN5K+pXX0ExhR6I7hB5eeMS5kjhPIbJ5yGLdDAECJQcYmne5aRH+3YikO2q2mIwGYh36
-         e9ZBnDWbJouZtRTXYQxE6lfjzqAzUF7hKum1dPAZK13BWa9KBW4vNzbLXYdhuvNYoTLv
-         dh9VFr/jS7z7dinXDAY/UEm/QWDrgrXagg8V1Nse1M+Zs2lp18+mjIUhEycLydqm3sy+
-         6cNs5KwQS29uPSvZsojTx4gV8yIAyESHFpXD8ojjbC7AbFbtYF4ICN39gp4fejtZhzNh
-         XrMw==
-X-Gm-Message-State: ACgBeo1PLbij1VdqgSGuMbaQiPPJXhHk9k7KPDAIRUk7Nld/tOxYLySt
-        ahofx41DsZPeKViHla2LEHrjtdL0UnLuqBXn7MM=
-X-Google-Smtp-Source: AA6agR57g2gB91n5cIMA3Ek8b3eQgnUCyxfTNAkdw0qeWOfCiyS4onhObEI0VYeZoPmbgnO4c8BDU9l/aioLaBb9hoE=
+        bh=2gTAHN16Z4aleevBumMhtMAtPGIRkMKXKmyBCqJALLk=;
+        b=Gw9p83EWgLHpCVUQ5S+5LuQm0kqYlOdKjiE29l/bANfLGYcNzXD9ngpf55rE843MMQ
+         6D6dSOx9t9Fdg1YRRrbIaR7PdN4c7HoS/6QFu1NZ/1LI0fWrK+Z2IpzAvEy+mkCVs5rR
+         AalolL/i/iaiWRo03BloU1dPKEOPTsDPEF7hMn7o3ohS7FVkd7E4m4CJJ8+4Doj9yLuR
+         Dia1Ir5+Xvw0mhwpe/64l+kqf64PCjkF3OKync+OpadxCrfLQKUtTgu85H7SoNbsqYA+
+         TQ2fG/0T3LIhMWa3Jl8anZYC0KtMm9J61GvPRT6MV++qlt9fKWkRaKWh6Jbe3zHD3Lzs
+         aF1w==
+X-Gm-Message-State: ACgBeo0ktYqQQhOC0IV6dtjML3Mw2Zd1Dk/GNAgLEt05Np+y5XIZyaKc
+        zsCJpIexmAixEx5JaQKUuBfakP833pCYHbVFMvc=
+X-Google-Smtp-Source: AA6agR6hB6P/jeWB0D8zLhbtkolxa1wq913xb7LZUQ5hFmDpBvim9OlvB/jpRj8gcQjSwRUQJ1CVi/pXrlQiTCBtTVs=
 X-Received: by 2002:ae9:e88d:0:b0:6b9:4a0b:cea5 with SMTP id
- a135-20020ae9e88d000000b006b94a0bcea5mr4324382qkg.748.1659973532761; Mon, 08
- Aug 2022 08:45:32 -0700 (PDT)
+ a135-20020ae9e88d000000b006b94a0bcea5mr4328979qkg.748.1659973619276; Mon, 08
+ Aug 2022 08:46:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220808030420.8633-1-luke@ljones.dev> <20220808030420.8633-7-luke@ljones.dev>
-In-Reply-To: <20220808030420.8633-7-luke@ljones.dev>
+References: <20220808031132.10075-1-luke@ljones.dev>
+In-Reply-To: <20220808031132.10075-1-luke@ljones.dev>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 8 Aug 2022 17:44:56 +0200
-Message-ID: <CAHp75VfvSKbVxFBr759p50ii5Hex5HyE3VTiU+J9t58xGXcjjQ@mail.gmail.com>
-Subject: Re: [PATCH v2 6/6] asus-wmi: Add support for dGPU-only mode
+Date:   Mon, 8 Aug 2022 17:46:23 +0200
+Message-ID: <CAHp75VfiNdBM+i=S4pkze1qZ_0tmEEtqAK8BF=wkwqY+BMB0SA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] asus-wmi: add support for ROG XFlow tablet mode
 To:     "Luke D. Jones" <luke@ljones.dev>
 Cc:     Hans de Goede <hdegoede@redhat.com>,
         Mark Gross <markgross@kernel.org>,
@@ -62,35 +62,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 5:10 AM Luke D. Jones <luke@ljones.dev> wrote:
+On Mon, Aug 8, 2022 at 5:12 AM Luke D. Jones <luke@ljones.dev> wrote:
 >
-> Adds support for a dGPU-only mode on some laptops where when enabled
-> the boot GPU is the dGPU, and the iGPU is not visible.
+> This patch series refactors a part of the tablet/lid-flip code to
+> use an enum to set the different behaviours, and adds support for
+> the ASUS ROG XFlow (X13) 2-in-1 laptop.
+>
+> Changelog:
+> - V2:
+>   + Refactor the base handling paths of tablet modes to use enum
+>   + Add support for ROG XFlow using the refactored code
+>
+> This obsoletes a previous patch I submitted:
+> - https://lkml.org/lkml/2022/8/3/94
 
-the enabled boot (If I understood the intention correctly of the phrase)
-
-...
-
-> +What:          /sys/devices/platform/<platform>/dgpu_only
-
-> +Date:          Aug 2022
-
-Not sure, I would put September for sure
-
-> +KernelVersion: 6.0
-
-As in a parallel review it appears that this should be 6.1, merge
-window for 6.0 is ongoing and this series definitely is out of scope
-of it.
-
-> +Contact:       "Luke Jones" <luke@ljones.dev>
-> +Description:
-> +               Set the dGPU to be the only GPU available:
-> +                       * 0 - Disable,
-> +                       * 1 - Enable,
-
-Since you mentioned the patch is wrong, the rest may not be reviewed.
-We will wait for a new version.
+Good written cover letter, thanks!
 
 -- 
 With Best Regards,
