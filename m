@@ -2,437 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E4AC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 23:47:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB884C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 23:53:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244590AbiHHXrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 19:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36536 "EHLO
+        id S236734AbiHHXxz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 19:53:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244593AbiHHXrc (ORCPT
+        with ESMTP id S231877AbiHHXxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 19:47:32 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6FE1C138;
-        Mon,  8 Aug 2022 16:47:31 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id bz13so7691205qtb.7;
-        Mon, 08 Aug 2022 16:47:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Qke1TL64P/LtOU3YqyLC3JLFb9lgaSFxATenIEJJUIw=;
-        b=GN0KslQvpE4yFZmgD3xbSKhDw35TuqWE/OcoblN8tk47A3NaefFYnYj+dOqD+2L1gt
-         1qC5sttm8vR7+/M30eWBBZWFcwYHg6Gqk1QxXoPF8kFsJ2ItKZkB/eVGtsTURqxLVML4
-         jVN5C4Gy8b3TPiybSIqMnJWY8ak98BtA38AfhGS5lV3J/KokVDqqN00m0imIOOnvccUn
-         ZHiXkrz7NVXPGO5lhOQzwkyM+d+JmZ8mmag7XFf6bU/10EtbDQfihlKIrWlj7BdP297g
-         XhV2/RbjFMhXd/nDTIFM2JSwONxIJjzEZ9qH0bdQYgFEi1kmJvlzt2hKK9f5w6Epa8Bv
-         qo5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Qke1TL64P/LtOU3YqyLC3JLFb9lgaSFxATenIEJJUIw=;
-        b=AIcVINVtYP5jiKeEFoPUluqCpVESN8I6HRvxZyTzZOpVVsCK+k0qBW9IyoYH+HeibS
-         ijnhJAoR90mJec1Ez52qsIoZeDSHsXaFxDK/0apG03CeHXM4OTdOvye9RKz6qRxb3+MY
-         dv0NELuVVqxC/TuWHZIGzIa5FDQ3RgZ7ne8nXuIE2dcapq8xsQVsyYcwx0oF9ufcuX23
-         ywqVVSPRBmy5ejsOlTbx7nJUwlICaLrSB5BigTsSMRLupzPLveGxJY3mefPdjEr1+dWu
-         YEUxZ+zBzH7mNP8nHITxI99wXrnQr1VFCt7gojb7ih01Y47w941IbLTBFpCBWRCdC4mL
-         Kmfg==
-X-Gm-Message-State: ACgBeo3Zh2LD+9pVxzhiuMn+K0rX2xqBRa+pAEanWfaPYJuoBJFmqOR2
-        6S4t62O3zne7zInIWos1hLdNzWJEAOxflGNvqic=
-X-Google-Smtp-Source: AA6agR4Z2zZP1LG1REV2tKn7jynyLx9OdxBQ3JjRhvuVu0ZdGlZhs0oZd2DjFCAnmUYyr342tDHesA==
-X-Received: by 2002:ac8:5e49:0:b0:31f:1bfe:b906 with SMTP id i9-20020ac85e49000000b0031f1bfeb906mr17848692qtx.18.1660002450183;
-        Mon, 08 Aug 2022 16:47:30 -0700 (PDT)
-Received: from Latitude-E6420.mynetworksettings.com ([2600:4040:2036:c00:e57a:4cf3:aa55:7079])
-        by smtp.gmail.com with ESMTPSA id d6-20020ac85446000000b00343028a9425sm1346400qtq.16.2022.08.08.16.47.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 16:47:29 -0700 (PDT)
-From:   Rudraksha Gupta <guptarud@gmail.com>
-To:     krzysztof.kozlowski+dt@linaro.org
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, david@ixit.cz,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        Rudraksha Gupta <guptarud@gmail.com>
-Subject: [PATCH 2/2] ARM: msm8960: Add Samsung Galaxy Express support
-Date:   Mon,  8 Aug 2022 19:47:23 -0400
-Message-Id: <20220808234723.5184-2-guptarud@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220808234723.5184-1-guptarud@gmail.com>
-References: <20220808234723.5184-1-guptarud@gmail.com>
+        Mon, 8 Aug 2022 19:53:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7CAB81C120
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 16:53:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660002827;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dghKN9sgINB8op+a+z7QukDv2xnE+e1D1M1hzE9qLkk=;
+        b=gDxE08V84kwf29TaUfOpsKPRjapQpwvTwswsYFCdtxT/CYS6waSyhxHSS+LX7S9RdsByDv
+        zP5xyKPthXYRsC2/Cho4/w6LtzGDDNv+s/IIG64Mn5zjW5AZwHNW3ufzfowVLP8b5ADtI3
+        YPT2B0d08MTSJhcLhEjp/eZL5nx5wrM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-30-wJLvFiSUPSybksW7uvRfog-1; Mon, 08 Aug 2022 19:53:40 -0400
+X-MC-Unique: wJLvFiSUPSybksW7uvRfog-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 746348037B5;
+        Mon,  8 Aug 2022 23:53:39 +0000 (UTC)
+Received: from emerald.lyude.net (unknown [10.22.17.154])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AE38FC15BA1;
+        Mon,  8 Aug 2022 23:53:38 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org
+Cc:     Wayne Lin <Wayne.Lin@amd.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
+        Roman Li <Roman.Li@amd.com>, Claudio Suarez <cssk@net-c.es>,
+        Ian Chen <ian.chen@amd.com>,
+        Colin Ian King <colin.king@intel.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RFC v2 02/18] drm/amdgpu/dm/mst: Rename get_payload_table()
+Date:   Mon,  8 Aug 2022 19:51:47 -0400
+Message-Id: <20220808235203.123892-3-lyude@redhat.com>
+In-Reply-To: <20220808235203.123892-1-lyude@redhat.com>
+References: <20220808235203.123892-1-lyude@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds a very basic device tree file for the Samsung Galaxy Express
-SGH-I437. Currently, the following things work: UART, eMMC, SD Card, and
-USB.
+This function isn't too confusing if you see the comment around the
+call-site for it, but if you don't then it's not at all obvious this is
+meant to copy DRM's payload table over to DC's internal state structs.
+Seeing this function before finding that comment definitely threw me into a
+loop a few times.
 
-Signed-off-by: Rudraksha Gupta <guptarud@gmail.com>
+So, let's rename this to make it's purpose more obvious regardless of where
+in the code you are.
+
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Acked-by: Jani Nikula <jani.nikula@intel.com>
 ---
- .../dts/qcom-msm8960-samsung-expressatt.dts   | 337 ++++++++++++++++++
- arch/arm/boot/dts/qcom-msm8960.dtsi           |   2 +-
- 2 files changed, 338 insertions(+), 1 deletion(-)
- create mode 100644 arch/arm/boot/dts/qcom-msm8960-samsung-expressatt.dts
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8960-samsung-expressatt.dts b/arch/arm/boot/dts/qcom-msm8960-samsung-expressatt.dts
-new file mode 100644
-index 000000000000..cf557f0c9a59
---- /dev/null
-+++ b/arch/arm/boot/dts/qcom-msm8960-samsung-expressatt.dts
-@@ -0,0 +1,337 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#include <dt-bindings/input/input.h>
-+#include "qcom-msm8960.dtsi"
-+
-+/ {
-+	model = "Samsung Galaxy S3 SGH-I437";
-+	compatible = "samsung,expressatt", "qcom,msm8960";
-+
-+	aliases {
-+		serial0 = &gsbi5_serial;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges;
-+	};
-+
-+	soc {
-+		gsbi@16400000 {
-+			status = "ok";
-+			qcom,mode = <GSBI_PROT_I2C_UART>;
-+			serial@16440000 {
-+				status = "ok";
-+			};
-+		};
-+
-+		amba {
-+			/* eMMC */
-+			sdcc1: mmc@12400000 {
-+				status = "okay";
-+				vmmc-supply = <&pm8921_l5>;
-+			};
-+
-+			/* External micro SD card */
-+			sdcc3: mmc@12180000 {
-+				status = "okay";
-+				vmmc-supply = <&pm8921_l6>;
-+				vqmmc-supply = <&pm8921_l7>;
-+			};
-+		};
-+
-+		rpm@108000 {
-+			regulators {
-+				compatible = "qcom,rpm-pm8921-regulators";
-+				vin_lvs1_3_6-supply = <&pm8921_s4>;
-+				vin_lvs2-supply = <&pm8921_s4>;
-+				vin_lvs4_5_7-supply = <&pm8921_s4>;
-+				vdd_ncp-supply = <&pm8921_l6>;
-+				vdd_l1_l2_l12_l18-supply = <&pm8921_s4>;
-+				vdd_l21_l23_l29-supply = <&pm8921_s8>;
-+				vdd_l24-supply = <&pm8921_s1>;
-+				vdd_l25-supply = <&pm8921_s1>;
-+				vdd_l27-supply = <&pm8921_s7>;
-+				vdd_l28-supply = <&pm8921_s7>;
-+
-+				/* Buck SMPS */
-+				pm8921_s1: s1 {
-+					regulator-always-on;
-+					regulator-min-microvolt = <1225000>;
-+					regulator-max-microvolt = <1225000>;
-+					qcom,switch-mode-frequency = <3200000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_s2: s2 {
-+					regulator-min-microvolt = <1300000>;
-+					regulator-max-microvolt = <1300000>;
-+					qcom,switch-mode-frequency = <1600000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_s3: s3 {
-+					regulator-min-microvolt = <500000>;
-+					regulator-max-microvolt = <1150000>;
-+					qcom,switch-mode-frequency = <4800000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_s4: s4 {
-+					regulator-always-on;
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <1800000>;
-+					qcom,switch-mode-frequency = <1600000>;
-+					bias-pull-down;
-+					qcom,force-mode = <QCOM_RPM_FORCE_MODE_AUTO>;
-+				};
-+
-+				pm8921_s7: s7 {
-+					regulator-min-microvolt = <1150000>;
-+					regulator-max-microvolt = <1150000>;
-+					qcom,switch-mode-frequency = <3200000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_s8: s8 {
-+					regulator-always-on;
-+					regulator-min-microvolt = <2050000>;
-+					regulator-max-microvolt = <2050000>;
-+					qcom,switch-mode-frequency = <1600000>;
-+					bias-pull-down;
-+				};
-+
-+				/* PMOS LDO */
-+				pm8921_l1: l1 {
-+					regulator-always-on;
-+					regulator-min-microvolt = <1050000>;
-+					regulator-max-microvolt = <1050000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l2: l2 {
-+					regulator-min-microvolt = <1200000>;
-+					regulator-max-microvolt = <1200000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l3: l3 {
-+					regulator-min-microvolt = <3075000>;
-+					regulator-max-microvolt = <3300000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l4: l4 {
-+					regulator-always-on;
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <1800000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l5: l5 {
-+					regulator-min-microvolt = <2950000>;
-+					regulator-max-microvolt = <2950000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l6: l6 {
-+					regulator-min-microvolt = <2950000>;
-+					regulator-max-microvolt = <2950000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l7: l7 {
-+					regulator-always-on;
-+					regulator-min-microvolt = <1850000>;
-+					regulator-max-microvolt = <2950000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l8: l8 {
-+					regulator-min-microvolt = <3000000>;
-+					regulator-max-microvolt = <3100000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l9: l9 {
-+					regulator-min-microvolt = <2850000>;
-+					regulator-max-microvolt = <2850000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l10: l10 {
-+					regulator-min-microvolt = <3000000>;
-+					regulator-max-microvolt = <3000000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l11: l11 {
-+					regulator-min-microvolt = <2800000>;
-+					regulator-max-microvolt = <3300000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l12: l12 {
-+					regulator-min-microvolt = <1200000>;
-+					regulator-max-microvolt = <1200000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l14: l14 {
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <1800000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l15: l15 {
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <2950000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l16: l16 {
-+					regulator-min-microvolt = <2800000>;
-+					regulator-max-microvolt = <3000000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l17: l17 {
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <3300000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l18: l18 {
-+					regulator-min-microvolt = <1200000>;
-+					regulator-max-microvolt = <1500000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l21: l21 {
-+					regulator-min-microvolt = <1900000>;
-+					regulator-max-microvolt = <1900000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l22: l22 {
-+					regulator-min-microvolt = <2750000>;
-+					regulator-max-microvolt = <2750000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l23: l23 {
-+					regulator-always-on;
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <1800000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l24: l24 {
-+					regulator-min-microvolt = <750000>;
-+					regulator-max-microvolt = <1150000>;
-+					bias-pull-down;
-+				};
-+
-+				pm8921_l25: l25 {
-+					regulator-always-on;
-+					regulator-min-microvolt = <1225000>;
-+					regulator-max-microvolt = <1225000>;
-+					bias-pull-down;
-+				};
-+
-+				/* Low Voltage Switch */
-+				pm8921_lvs1: lvs1 {
-+					bias-pull-down;
-+				};
-+
-+				pm8921_lvs2: lvs2 {
-+					bias-pull-down;
-+				};
-+
-+				pm8921_lvs3: lvs3 {
-+					bias-pull-down;
-+				};
-+
-+				pm8921_lvs4: lvs4 {
-+					bias-pull-down;
-+				};
-+
-+				pm8921_lvs5: lvs5 {
-+					bias-pull-down;
-+				};
-+
-+				pm8921_lvs6: lvs6 {
-+					bias-pull-down;
-+				};
-+
-+				pm8921_lvs7: lvs7 {
-+					bias-pull-down;
-+				};
-+
-+				pm8921_ncp: ncp {
-+					regulator-min-microvolt = <1800000>;
-+					regulator-max-microvolt = <1800000>;
-+					qcom,switch-mode-frequency = <1600000>;
-+				};
-+			};
-+		};
-+
-+		gsbi@16000000 {
-+			status = "ok";
-+			qcom,mode = <GSBI_PROT_SPI>;
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&spi1_default>;
-+			spi@16080000 {
-+				status = "ok";
-+			};
-+		};
-+
-+		pinctrl@800000 {
-+			spi1_default: spi1_default {
-+				mux {
-+					pins = "gpio6", "gpio7", "gpio9";
-+					function = "gsbi1";
-+				};
-+
-+				mosi {
-+					pins = "gpio6";
-+					drive-strength = <12>;
-+					bias-disable;
-+				};
-+
-+				miso {
-+					pins = "gpio7";
-+					drive-strength = <12>;
-+					bias-disable;
-+				};
-+
-+				cs {
-+					pins = "gpio8";
-+					drive-strength = <12>;
-+					bias-disable;
-+					output-low;
-+				};
-+
-+				clk {
-+					pins = "gpio9";
-+					drive-strength = <12>;
-+					bias-disable;
-+				};
-+			};
-+		};
-+
-+		usb@12500000 {
-+			status = "okay";
-+			dr_mode = "otg";
-+
-+			ulpi {
-+				phy {
-+					v3p3-supply = <&pm8921_l3>;
-+					v1p8-supply = <&pm8921_l4>;
-+				};
-+			};
-+		};
-+	};
-+};
-diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
-index 0e099aa7c889..2ed969785b78 100644
---- a/arch/arm/boot/dts/qcom-msm8960.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
-@@ -58,7 +58,7 @@ cpu-pmu {
- 	};
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
+index 3aa385860eea..77c545e670d5 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
+@@ -153,8 +153,9 @@ enum dc_edid_status dm_helpers_parse_edid_caps(
+ 	return result;
+ }
  
- 	clocks {
--		cxo_board {
-+		cxo_board: cxo-board {
- 			compatible = "fixed-clock";
- 			#clock-cells = <0>;
- 			clock-frequency = <19200000>;
+-static void get_payload_table(struct amdgpu_dm_connector *aconnector,
+-			      struct dc_dp_mst_stream_allocation_table *proposed_table)
++static void
++fill_dc_mst_payload_table_from_drm(struct amdgpu_dm_connector *aconnector,
++				   struct dc_dp_mst_stream_allocation_table *proposed_table)
+ {
+ 	int i;
+ 	struct drm_dp_mst_topology_mgr *mst_mgr =
+@@ -252,7 +253,7 @@ bool dm_helpers_dp_mst_write_payload_allocation_table(
+ 	 * stream. AMD ASIC stream slot allocation should follow the same
+ 	 * sequence. copy DRM MST allocation to dc */
+ 
+-	get_payload_table(aconnector, proposed_table);
++	fill_dc_mst_payload_table_from_drm(aconnector, proposed_table);
+ 
+ 	return true;
+ }
 -- 
-2.25.1
+2.37.1
 
