@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77CA3C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:00:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9144DC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243885AbiHHCA1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 22:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52026 "EHLO
+        id S243951AbiHHCAb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 22:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243653AbiHHBzo (ORCPT
+        with ESMTP id S243792AbiHHB4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:55:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC5C1BEB3;
-        Sun,  7 Aug 2022 18:39:10 -0700 (PDT)
+        Sun, 7 Aug 2022 21:56:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C483CF584;
+        Sun,  7 Aug 2022 18:39:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56AC1B80E0D;
-        Mon,  8 Aug 2022 01:39:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E85F2C433D6;
-        Mon,  8 Aug 2022 01:39:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61E7960DF5;
+        Mon,  8 Aug 2022 01:39:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDBFEC4347C;
+        Mon,  8 Aug 2022 01:39:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922747;
-        bh=hwBSpc7erig/674qMUa5THYn7tKXm6QBe24djanajcU=;
+        s=k20201202; t=1659922770;
+        bh=2Q6uC91jPhXMNwvXTNlweCMJW7/Dv/kBwANwkf/4XXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mkGur8NojwwtxYCaQ/HBb7DcOKPHrpgLNo/d5PD94uGsZm86gDaA4FQ0TQrKl3USm
-         hTLL6z7qVISUPcpRNM3jpwpR0PH9dzg7ZQMEyw3SGe9IO0M3r5uuT8aWarM2xN5Czc
-         l8cOtir85vZja1ConUQwFF+dd9hTkPtHjfMecE7/lo3akdczFkUhb5NJ1XeiDK0sZh
-         dpmyLFLaAkv7UJGo5yQvVWQRS4IEKnV9rdMMEWi50WMF9/6JcBhg3aD6uC1xGrWWr4
-         kDRaTIlmQv/iWcrHpe9s/R5J2haoCmFRwiX7x5aF1+gOdBwRdXT2XZrSYtsARDYIMt
-         EJRxdBct03JYw==
+        b=gn1Y3lgkl9d1iE/uPrSPC9bS56UcnMHn5Z5rNBYteS2LfBBphJaVpPymHxBaUsNTn
+         d1J1VO5ii3korICiAzKaxlW8e7tMLj2Z3OZ0HrcshEWMxkq6UmZcCefwD+38MtOIom
+         ydCMr/EXgO+cCM63ZPQ6gly3CBAXvB3EdIWPEUOfrGgXYAuU+Jv4lX9fJGXVZbvDjf
+         gsO2XU35Yj6O5TOBkhvlHGgOi8s/L5bWki0idDhjb31otKZqLW9YBqCvTEM5npvYQG
+         6zWAxeAaCdYpJdCB8sPS6Uyjsxsiy+9uzk+wE2N7nCALLX9aAXZzasynmPnXndskZK
+         5H9S41bf+7sow==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sasha Levin <sashal@kernel.org>, magnus.damm@gmail.com,
-        linux@armlinux.org.uk, linux-renesas-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 20/23] ARM: shmobile: rcar-gen2: Increase refcount for new reference
-Date:   Sun,  7 Aug 2022 21:38:27 -0400
-Message-Id: <20220808013832.316381-20-sashal@kernel.org>
+Cc:     Liang He <windhl@126.com>, Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 09/16] ARM: OMAP2+: display: Fix refcount leak bug
+Date:   Sun,  7 Aug 2022 21:39:06 -0400
+Message-Id: <20220808013914.316709-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220808013832.316381-1-sashal@kernel.org>
-References: <20220808013832.316381-1-sashal@kernel.org>
+In-Reply-To: <20220808013914.316709-1-sashal@kernel.org>
+References: <20220808013914.316709-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,56 +53,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Liang He <windhl@126.com>
 
-[ Upstream commit 75a185fb92e58ccd3670258d8d3b826bd2fa6d29 ]
+[ Upstream commit 50b87a32a79bca6e275918a711fb8cc55e16d739 ]
 
-In rcar_gen2_regulator_quirk(), for_each_matching_node_and_match() will
-automatically increase and decrease the refcount.  However, we should
-call of_node_get() for the new reference created in 'quirk->np'.
-Besides, we also should call of_node_put() before the 'quirk' being
-freed.
+In omapdss_init_fbdev(), of_find_node_by_name() will return a node
+pointer with refcount incremented. We should use of_node_put() when
+it is not used anymore.
 
 Signed-off-by: Liang He <windhl@126.com>
-Link: https://lore.kernel.org/r/20220701121804.234223-1-windhl@126.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Message-Id: <20220617145803.4050918-1-windhl@126.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/arm/mach-omap2/display.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
-index 09ef73b99dd8..ba44cec5e59a 100644
---- a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
-+++ b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
-@@ -125,6 +125,7 @@ static int regulator_quirk_notify(struct notifier_block *nb,
+diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
+index 5d73f2c0b117..dd2ff10790ab 100644
+--- a/arch/arm/mach-omap2/display.c
++++ b/arch/arm/mach-omap2/display.c
+@@ -211,6 +211,7 @@ static int __init omapdss_init_fbdev(void)
+ 	node = of_find_node_by_name(NULL, "omap4_padconf_global");
+ 	if (node)
+ 		omap4_dsi_mux_syscon = syscon_node_to_regmap(node);
++	of_node_put(node);
  
- 	list_for_each_entry_safe(pos, tmp, &quirk_list, list) {
- 		list_del(&pos->list);
-+		of_node_put(pos->np);
- 		kfree(pos);
- 	}
- 
-@@ -174,11 +175,12 @@ static int __init rcar_gen2_regulator_quirk(void)
- 		memcpy(&quirk->i2c_msg, id->data, sizeof(quirk->i2c_msg));
- 
- 		quirk->id = id;
--		quirk->np = np;
-+		quirk->np = of_node_get(np);
- 		quirk->i2c_msg.addr = addr;
- 
- 		ret = of_irq_parse_one(np, 0, argsa);
- 		if (ret) {	/* Skip invalid entry and continue */
-+			of_node_put(np);
- 			kfree(quirk);
- 			continue;
- 		}
-@@ -225,6 +227,7 @@ static int __init rcar_gen2_regulator_quirk(void)
- err_mem:
- 	list_for_each_entry_safe(pos, tmp, &quirk_list, list) {
- 		list_del(&pos->list);
-+		of_node_put(pos->np);
- 		kfree(pos);
- 	}
- 
+ 	return 0;
+ }
 -- 
 2.35.1
 
