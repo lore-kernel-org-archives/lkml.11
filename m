@@ -2,35 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB309C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:45:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9EEEC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244324AbiHHRp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 13:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47584 "EHLO
+        id S243932AbiHHRqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 13:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243791AbiHHRox (ORCPT
+        with ESMTP id S244567AbiHHRqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 13:44:53 -0400
+        Mon, 8 Aug 2022 13:46:12 -0400
 Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C86818B0D
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:44:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B44018385
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:45:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1659980505; h=from:from:sender:reply-to:subject:subject:date:date:
+        s=mail; t=1659980508; h=from:from:sender:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0I+mSneVr477xNU9unTc0UxMGLtgIxgnptmVK+wu/7U=;
-        b=NdfhkT4zPkFoFXPQfeTmdmzC8xHSFC57HtuRxWElV7h2veZRvFgK8Ae3w5xNLlNyDxK1WG
-        aRjoikqMLXSxFWz9PAD/XxzuUx/d7oqKzcaoxDcL33EkSte/p9ICfCEqjQaqm4EdQrniTP
-        rHgUJ9aKHN2ltEpNOI3F+RDCqzNPx0s=
+        bh=FKwp4R0sM21Ivi8navoOTJy75R51wyGPAcCybh3hh04=;
+        b=2GxqKJdDBLDaiQJH6IIZccu2N9k3FrhHHzCMY1gP8AWdV6fMx00EYAurYdebM42B5ggY5W
+        nb3qhLvTdkBS66nsybjV522eYsK7dK794hLuOcxxRVNFJZasqqDLLX/LjCBOJAarinTLj+
+        5qOTNdIVdVOIl5ExnAEo+8DTeuIsSlI=
 From:   Paul Cercueil <paul@crapouillou.net>
 To:     Lee Jones <lee.jones@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        patches@opensource.cirrus.com
-Subject: [PATCH v2 18/30] mfd: wm8994: Remove #ifdef guards for PM related functions
-Date:   Mon,  8 Aug 2022 19:40:55 +0200
-Message-Id: <20220808174107.38676-19-paul@crapouillou.net>
+Cc:     linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2 29/30] mfd: tc6393xb: Remove #ifdef guards for PM related functions
+Date:   Mon,  8 Aug 2022 19:41:06 +0200
+Message-Id: <20220808174107.38676-30-paul@crapouillou.net>
 In-Reply-To: <20220808174107.38676-1-paul@crapouillou.net>
 References: <20220808174107.38676-1-paul@crapouillou.net>
 MIME-Version: 1.0
@@ -39,66 +38,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new RUNTIME_PM_OPS() and pm_ptr() macros to handle the
-.runtime_suspend/.runtime_resume callbacks.
+Use the new pm_sleep_ptr() macro to handle the .suspend/.resume
+callbacks.
 
-These macros allow the suspend and resume functions to be automatically
-dropped by the compiler when CONFIG_PM is disabled, without having
+This macro allow the suspend and resume functions to be automatically
+dropped by the compiler when CONFIG_SUSPEND is disabled, without having
 to use #ifdef guards.
 
 This has the advantage of always compiling these functions in,
 independently of any Kconfig option. Thanks to that, bugs and other
 regressions are subsequently easier to catch.
 
-Note that this driver should probably use the new
-DEFINE_RUNTIME_DEV_PM_OPS() macro instead, which will provide
-.suspend/.resume callbacks, pointing to pm_runtime_force_suspend() and
-pm_runtime_force_resume() respectively; unless those callbacks really
-aren't needed.
-
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
-Cc: patches@opensource.cirrus.com
+ drivers/mfd/tc6393xb.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
- drivers/mfd/wm8994-core.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/mfd/wm8994-core.c b/drivers/mfd/wm8994-core.c
-index 7b1d270722ba..a27a13b5ae1e 100644
---- a/drivers/mfd/wm8994-core.c
-+++ b/drivers/mfd/wm8994-core.c
-@@ -110,7 +110,6 @@ static const char *wm8958_main_supplies[] = {
- 	"SPKVDD2",
- };
+diff --git a/drivers/mfd/tc6393xb.c b/drivers/mfd/tc6393xb.c
+index aa903a31dd43..997bb8b5881d 100644
+--- a/drivers/mfd/tc6393xb.c
++++ b/drivers/mfd/tc6393xb.c
+@@ -813,7 +813,6 @@ static int tc6393xb_remove(struct platform_device *dev)
+ 	return 0;
+ }
  
 -#ifdef CONFIG_PM
- static int wm8994_suspend(struct device *dev)
+ static int tc6393xb_suspend(struct platform_device *dev, pm_message_t state)
  {
- 	struct wm8994 *wm8994 = dev_get_drvdata(dev);
-@@ -213,7 +212,6 @@ static int wm8994_resume(struct device *dev)
+ 	struct tc6393xb_platform_data *tcpd = dev_get_platdata(&dev->dev);
+@@ -876,16 +875,12 @@ static int tc6393xb_resume(struct platform_device *dev)
  
- 	return ret;
+ 	return 0;
  }
+-#else
+-#define tc6393xb_suspend NULL
+-#define tc6393xb_resume NULL
 -#endif
  
- #ifdef CONFIG_REGULATOR
- static int wm8994_ldo_in_use(struct wm8994_pdata *pdata, int ldo)
-@@ -676,13 +674,13 @@ static const struct i2c_device_id wm8994_i2c_id[] = {
- MODULE_DEVICE_TABLE(i2c, wm8994_i2c_id);
+ static struct platform_driver tc6393xb_driver = {
+ 	.probe = tc6393xb_probe,
+ 	.remove = tc6393xb_remove,
+-	.suspend = tc6393xb_suspend,
+-	.resume = tc6393xb_resume,
++	.suspend = pm_sleep_ptr(tc6393xb_suspend),
++	.resume = pm_sleep_ptr(tc6393xb_resume),
  
- static const struct dev_pm_ops wm8994_pm_ops = {
--	SET_RUNTIME_PM_OPS(wm8994_suspend, wm8994_resume, NULL)
-+	RUNTIME_PM_OPS(wm8994_suspend, wm8994_resume, NULL)
- };
- 
- static struct i2c_driver wm8994_i2c_driver = {
  	.driver = {
- 		.name = "wm8994",
--		.pm = &wm8994_pm_ops,
-+		.pm = pm_ptr(&wm8994_pm_ops),
- 		.of_match_table = wm8994_of_match,
- 	},
- 	.probe = wm8994_i2c_probe,
+ 		.name = "tc6393xb",
 -- 
 2.35.1
 
