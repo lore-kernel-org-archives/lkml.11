@@ -2,160 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A906FC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 00:36:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BCF1C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 00:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234914AbiHHAg1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 20:36:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32904 "EHLO
+        id S233294AbiHHAnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 20:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233467AbiHHAgQ (ORCPT
+        with ESMTP id S229684AbiHHAnC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 20:36:16 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCF963EE
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 17:36:15 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id x3-20020a17090ab00300b001f731f28b82so2321525pjq.3
-        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 17:36:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:reply-to:from:to:cc;
-        bh=np/zKDyUVwS1W7aYDEH7LbBLlTsAcwXA4VI1/IKlP2I=;
-        b=FiUQRaBiLsY9KBwqRfBuiGVnyDu61TCCITxCv0dgSH3rP9NopCi+2wiG0KH3QgXIjL
-         vTWeCSIrOotf0pGOgTg/d+Z6FTb5wHqCMqGl3Acur2NHX9QJaSpDb6Bf16HZj985cNax
-         OiYGHZo+PEE9K+iORNib2snUIlpSGMm2d9Rw68fvBY3AwcxXA5SbJoc1h70O2Wwq7Kme
-         Gg90Q3I8eegCZa3Ssf5LjfkwxvUn+PuKA90T65rIcNApcB9eTIEaCVhVKlJLytT70whW
-         P2uPbynkuIo6aAjClE6f7nQwiPicsjTEJdRMhySrvbOBniNwv+zc5qQZpcBn10tFTdIs
-         5DaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=np/zKDyUVwS1W7aYDEH7LbBLlTsAcwXA4VI1/IKlP2I=;
-        b=avw+XbGcHhviiniMniqNRULceMoz6ran0iK9qqnEguf8XTb6CzB/KrkoKhHt5blaHW
-         +Pin5RFIIwdxTxObyWALrLAouTy4B+ARjxXLTGXHOqC8vY+dMGDz3bxkc0q3RBzGH6Gh
-         CYuQJU5bXCZmmssclvw7nwe3zoZNVkN/jg/2zACODxiXlNYAA2v2bbL+oAuuQ2pJjF4A
-         VwmkANuARCRFw4IDx6/0AdGYMLtlmh0f9ZX+85mpPMX8Wn/RzhU4i7/646QV6kIRlxSf
-         20rI5CvvVg9VUJ1EQCkClLHKXdk02+cZA+b8qndTL11qxtrQQ8PhoXEMZ8t7MrG/1DDU
-         DJ4A==
-X-Gm-Message-State: ACgBeo0C8kZyuX7lFfRrNtyXveV36FOV4mTFPhRlkFMdogjE5aZbDeEI
-        TngxU+Wdboq7oP5DMnfdkmmEkgQKZN0M
-X-Google-Smtp-Source: AA6agR4pvER6blwvdq6OmwHugcEqd/AycIb8NeErTtQnYC9hrjM1qbO+O8FI6VrlcogkC7dvkdqBl172wxDY
-X-Received: from mizhang-super.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1071])
- (user=mizhang job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
- t9-20020a17090a024900b001e0a8a33c6cmr1201360pje.0.1659918973913; Sun, 07 Aug
- 2022 17:36:13 -0700 (PDT)
-Reply-To: Mingwei Zhang <mizhang@google.com>
-Date:   Mon,  8 Aug 2022 00:36:06 +0000
-In-Reply-To: <20220808003606.424212-1-mizhang@google.com>
-Message-Id: <20220808003606.424212-4-mizhang@google.com>
-Mime-Version: 1.0
-References: <20220808003606.424212-1-mizhang@google.com>
-X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
-Subject: [PATCH v3 3/3] KVM: x86: Print guest pgd in kvm_nested_vmenter()
-From:   Mingwei Zhang <mizhang@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mingwei Zhang <mizhang@google.com>,
-        David Matlack <dmatlack@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Sun, 7 Aug 2022 20:43:02 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59386658C
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 17:42:57 -0700 (PDT)
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220808004255epoutp0118e32cbf2cbb93999f3ebf4b8dcef99e~JN_CRxcd02253922539epoutp01V
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 00:42:55 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220808004255epoutp0118e32cbf2cbb93999f3ebf4b8dcef99e~JN_CRxcd02253922539epoutp01V
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1659919375;
+        bh=sunQ4SmkLR5K3Io954QPWJRtsZKOFHaGeJrTKKpgmYE=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=eSaBfreUkMHMqFIRYRDR1gN24QkwzIK0xABNSKqqtk7ezAUA2u6ce1mjMOiEMI8xg
+         Dv9/71P1c4ZCgeAv2kx2XIa5nY3jEWvQ3C7CJTU6sexs/z2pCfBQAZ9wBRsV/OX+QJ
+         0ejld+f5HyisoDt6UAth7ophSBWFaZfvvWT4V8HY=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20220808004254epcas2p2f68217532a87c088a73a13a9a9477939~JN_BrYt9G1309813098epcas2p2N;
+        Mon,  8 Aug 2022 00:42:54 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.99]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4M1HVQ1GlXz4x9Pv; Mon,  8 Aug
+        2022 00:42:54 +0000 (GMT)
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        6E.68.56487.E0C50F26; Mon,  8 Aug 2022 09:42:54 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220808004253epcas2p3937171a6f89a765d67d5cc7b55afb89a~JN_A0TSLj2512025120epcas2p3I;
+        Mon,  8 Aug 2022 00:42:53 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220808004253epsmtrp2ef1a624a97b854b923a18a5676fc107d~JN_Azi4vo2154421544epsmtrp2j;
+        Mon,  8 Aug 2022 00:42:53 +0000 (GMT)
+X-AuditID: b6c32a46-e43ff7000000dca7-70-62f05c0ef823
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        5C.31.08905.D0C50F26; Mon,  8 Aug 2022 09:42:53 +0900 (KST)
+Received: from localhost.localdomain (unknown [10.229.9.51]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220808004253epsmtip2ea54f85bfe16342e1ee0db0896b88975~JN_AmGE1A1435014350epsmtip2K;
+        Mon,  8 Aug 2022 00:42:53 +0000 (GMT)
+From:   Chanho Park <chanho61.park@samsung.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andi Shyti <andi@etezian.org>, Mark Brown <broonie@kernel.org>
+Cc:     Alim Akhtar <alim.akhtar@samsung.com>,
+        Adithya K V <adithya.kv@samsung.com>,
+        kernel test robot <lkp@intel.com>, linux-spi@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Chanho Park <chanho61.park@samsung.com>
+Subject: [PATCH] spi: s3c64xx: correct dma_chan pointer initialization
+Date:   Mon,  8 Aug 2022 09:48:51 +0900
+Message-Id: <20220808004851.25122-1-chanho61.park@samsung.com>
+X-Mailer: git-send-email 2.37.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprLJsWRmVeSWpSXmKPExsWy7bCmmS5fzIckg71P2CwOTHjFavFg3jY2
+        i8U/njNZTH0IFLu8X9ti7+ut7BabHl9jtbi8aw6bxYzz+5gsGj/eZLd41fyIzYHb4/qST8we
+        i/e8ZPLYtKqTzePOtT1sHpuX1Hv0bVnF6PF5k1wAe1S2TUZqYkpqkUJqXnJ+SmZeuq2Sd3C8
+        c7ypmYGhrqGlhbmSQl5ibqqtkotPgK5bZg7QiUoKZYk5pUChgMTiYiV9O5ui/NKSVIWM/OIS
+        W6XUgpScAvMCveLE3OLSvHS9vNQSK0MDAyNToMKE7Ix/E9uYC1ZyVrx4uZelgfEDexcjJ4eE
+        gInEtrcPWbsYuTiEBHYwSrS/fMAG4XxilPj54RwThPONUeLbhveMMC1zXh5ghEjsZZRY2rgT
+        yvnIKLF6xhIWkCo2AV2JLc9fgXWICFRJzHz+hhmkiFlgKZNEW+clNpCEsICbxK6fr5lBbBYB
+        VYmpX5eD2bwCdhJNt5ezQKyTl7h+sw0qLihxcuYTsDgzULx562ywoRICX9klmq59Z4VocJHY
+        OHkLlC0s8er4FqhXpSQ+v9vLBmEXSyyd9YkJormBUeLytl9QCWOJWc/agc7mANqgKbF+lz6I
+        KSGgLHHkFtRePomOw3/ZIcK8Eh1tQhCN6hIHtk+HOllWonvOZ6gLPCQufrgHFhcSiJX42tbO
+        OIFRfhaSb2Yh+WYWwt4FjMyrGMVSC4pz01OLjQqM4NGanJ+7iRGcTrXcdjBOeftB7xAjEwfj
+        IUYJDmYlEd4ja98nCfGmJFZWpRblxxeV5qQWH2I0BYbvRGYp0eR8YELPK4k3NLE0MDEzMzQ3
+        MjUwVxLn9UrZkCgkkJ5YkpqdmlqQWgTTx8TBKdXAxDeHU9IxW1Epa7vLvJSjrtZqTh83bP9S
+        mGI6eQrvixO/uqY3Rs16teKezvGpMTndsxh8VTTk+iRyJk29u+nQ38YLeiq+Fy4WZCrdKjl6
+        LeV3cVfnY60YN83WPLePLz9qvXRg/77P9FjTm617JBnM+4P7lctXLD1XUah04b4IS+XqJdUb
+        D61nT0usYtj+sJ8rl+G0XA5jSQOjraGl/wy3tZGcu7K6mwyFJkfemayrUm18r2Cn1Wz/7KbW
+        tLJUtQ3ihyNWKIdcLHXZmm84d/2dTR91ffcqrYj6JPNpovC1q5tmaUYJV97S/P3LmWl3/se4
+        FepBzoq3VW7a+U9dWZP7XEr6hvkqfoPXuvzazBpKLMUZiYZazEXFiQAEBAjpMAQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrDLMWRmVeSWpSXmKPExsWy7bCSvC5vzIckgxvnNSwOTHjFavFg3jY2
+        i8U/njNZTH34hM3i8n5ti72vt7JbbHp8jdXi8q45bBYzzu9jsmj8eJPd4lXzIzYHbo/rSz4x
+        eyze85LJY9OqTjaPO9f2sHlsXlLv0bdlFaPH501yAexRXDYpqTmZZalF+nYJXBn/JrYxF6zk
+        rHjxci9LA+MH9i5GTg4JAROJOS8PMHYxcnEICexmlGg7tIsJIiEr8ezdDqgiYYn7LUdYIYre
+        M0psX9bGDJJgE9CV2PL8FSOILSJQI3HmwlWwScwCq5kkLl1/wAaSEBZwk9j18zVYA4uAqsTU
+        r8vBbF4BO4mm28tZIDbIS1y/2QYVF5Q4OfMJWJwZKN68dTbzBEa+WUhSs5CkFjAyrWKUTC0o
+        zk3PLTYsMMxLLdcrTswtLs1L10vOz93ECA5wLc0djNtXfdA7xMjEwXiIUYKDWUmE98ja90lC
+        vCmJlVWpRfnxRaU5qcWHGKU5WJTEeS90nYwXEkhPLEnNTk0tSC2CyTJxcEo1MBnH9XikvPA9
+        3/B4S+ltmY4Sn1VcKc+vm9+ZMUer8WOqbrfIgv5PK58z/TH4XbRVcF5i2fKp68Uevzscc+Ai
+        Q+Wv+4oiNU4/nx88cbBZ/Nedq+x9j32XXDnosTsqf9fq1KRtPjFX3z5ZlWMcPP0rR5/P7txD
+        5w81uMpWf8lPT8s0VObgsjylExC78Niz/Md62j2rTY19BPRU2h4kXDWwcNNdH7PRq3fKpw5L
+        zW9uXeK1UWXXeXJFO0JzQ+rzv3U3OSWcmLPk0CzBO/e7mRyrj7Zte+Cw1sWvNHdjMmvPlyy/
+        LfPO6dr83bxu80n7b2+3ZFrddXZffHcKC6/h0ZyZ8zmmK6zyn+B8XKdJXqA0SImlOCPRUIu5
+        qDgRAOWgJsDfAgAA
+X-CMS-MailID: 20220808004253epcas2p3937171a6f89a765d67d5cc7b55afb89a
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220808004253epcas2p3937171a6f89a765d67d5cc7b55afb89a
+References: <CGME20220808004253epcas2p3937171a6f89a765d67d5cc7b55afb89a@epcas2p3.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Print guest pgd in kvm_nested_vmenter() to enrich the information for
-tracing. When tdp is enabled, print the value of tdp page table (EPT/NPT);
-when tdp is disabled, print the value of non-nested CR3.
+Use NULL for dma channel pointer initialization instead of plain integer.
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Mingwei Zhang <mizhang@google.com>
+sparse warnings: (new ones prefixed by >>)
+>> drivers/spi/spi-s3c64xx.c:387:34: sparse: sparse: Using plain integer as NULL pointer
+   drivers/spi/spi-s3c64xx.c:388:34: sparse: sparse: Using plain integer as NULL pointer
+
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 82295bc0d192 ("spi: s3c64xx: move dma_release_channel to unprepare")
+Fixes: f52b03c70744 ("spi: s3c64xx: requests spi-dma channel only during data transfer")
+Signed-off-by: Chanho Park <chanho61.park@samsung.com>
 ---
- arch/x86/kvm/svm/nested.c |  2 ++
- arch/x86/kvm/trace.h      | 13 +++++++++----
- arch/x86/kvm/vmx/nested.c |  2 ++
- 3 files changed, 13 insertions(+), 4 deletions(-)
+ drivers/spi/spi-s3c64xx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 0a148a352c3a..0b91a82a3755 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -730,6 +730,8 @@ int enter_svm_guest_mode(struct kvm_vcpu *vcpu, u64 vmcb12_gpa,
- 			       vmcb12->control.int_ctl,
- 			       vmcb12->control.event_inj,
- 			       vmcb12->control.nested_ctl,
-+			       vmcb12->control.nested_cr3,
-+			       vmcb12->save.cr3,
- 			       KVM_ISA_SVM);
+diff --git a/drivers/spi/spi-s3c64xx.c b/drivers/spi/spi-s3c64xx.c
+index 7f346866614a..651c35dd9124 100644
+--- a/drivers/spi/spi-s3c64xx.c
++++ b/drivers/spi/spi-s3c64xx.c
+@@ -389,8 +389,8 @@ static int s3c64xx_spi_unprepare_transfer(struct spi_master *spi)
+ 	if (sdd->rx_dma.ch && sdd->tx_dma.ch) {
+ 		dma_release_channel(sdd->rx_dma.ch);
+ 		dma_release_channel(sdd->tx_dma.ch);
+-		sdd->rx_dma.ch = 0;
+-		sdd->tx_dma.ch = 0;
++		sdd->rx_dma.ch = NULL;
++		sdd->tx_dma.ch = NULL;
+ 	}
  
- 	trace_kvm_nested_intercepts(vmcb12->control.intercepts[INTERCEPT_CR] & 0xffff,
-diff --git a/arch/x86/kvm/trace.h b/arch/x86/kvm/trace.h
-index 3ef29c7e4f69..821b3d254bb9 100644
---- a/arch/x86/kvm/trace.h
-+++ b/arch/x86/kvm/trace.h
-@@ -580,9 +580,10 @@ TRACE_EVENT(kvm_pv_eoi,
-  */
- TRACE_EVENT(kvm_nested_vmenter,
- 	    TP_PROTO(__u64 rip, __u64 vmcb, __u64 nested_rip, __u32 int_ctl,
--		     __u32 event_inj, bool tdp_enabled, __u32 isa),
-+		     __u32 event_inj, bool tdp_enabled, __u64 guest_tdp,
-+		     __u64 guest_cr3, __u32 isa),
- 	    TP_ARGS(rip, vmcb, nested_rip, int_ctl, event_inj, tdp_enabled,
--		    isa),
-+		    guest_tdp, guest_cr3, isa),
- 
- 	TP_STRUCT__entry(
- 		__field(	__u64,		rip		)
-@@ -591,6 +592,7 @@ TRACE_EVENT(kvm_nested_vmenter,
- 		__field(	__u32,		int_ctl		)
- 		__field(	__u32,		event_inj	)
- 		__field(	bool,		tdp_enabled	)
-+		__field(	__u64,		guest_pgd	)
- 		__field(	__u32,		isa		)
- 	),
- 
-@@ -601,11 +603,13 @@ TRACE_EVENT(kvm_nested_vmenter,
- 		__entry->int_ctl	= int_ctl;
- 		__entry->event_inj	= event_inj;
- 		__entry->tdp_enabled	= tdp_enabled;
-+		__entry->guest_pgd	= tdp_enabled ? guest_tdp : guest_cr3;
- 		__entry->isa		= isa;
- 	),
- 
- 	TP_printk("rip: 0x%016llx %s: 0x%016llx nested_rip: 0x%016llx "
--		  "int_ctl: 0x%08x event_inj: 0x%08x nested_%s: %s",
-+		  "int_ctl: 0x%08x event_inj: 0x%08x nested_%s: %s, "
-+		  "guest_pgd: 0x%016llx",
- 		__entry->rip,
- 		__entry->isa == KVM_ISA_VMX ? "vmcs" : "vmcb",
- 		__entry->vmcb,
-@@ -613,7 +617,8 @@ TRACE_EVENT(kvm_nested_vmenter,
- 		__entry->int_ctl,
- 		__entry->event_inj,
- 		__entry->isa == KVM_ISA_VMX ? "ept" : "npt",
--		__entry->tdp_enabled ? "on" : "off")
-+		__entry->tdp_enabled ? "on" : "off",
-+		__entry->guest_pgd)
- );
- 
- TRACE_EVENT(kvm_nested_intercepts,
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index a65477295ec0..4237b415e0f7 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -3373,6 +3373,8 @@ enum nvmx_vmentry_status nested_vmx_enter_non_root_mode(struct kvm_vcpu *vcpu,
- 				 vmcs12->guest_intr_status,
- 				 vmcs12->vm_entry_intr_info_field,
- 				 vmcs12->secondary_vm_exec_control & SECONDARY_EXEC_ENABLE_EPT,
-+				 vmcs12->ept_pointer,
-+				 vmcs12->guest_cr3,
- 				 KVM_ISA_VMX);
- 
- 	kvm_service_local_tlb_flush_requests(vcpu);
+ 	return 0;
 -- 
-2.37.1.559.g78731f0fdb-goog
+2.37.1
 
