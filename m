@@ -2,138 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0B2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 05:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27E45C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 05:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235098AbiHHF2H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 01:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56598 "EHLO
+        id S235284AbiHHF2M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 01:28:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234969AbiHHF16 (ORCPT
+        with ESMTP id S235022AbiHHF17 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 01:27:58 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2067.outbound.protection.outlook.com [40.107.92.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80109EE39;
-        Sun,  7 Aug 2022 22:27:56 -0700 (PDT)
+        Mon, 8 Aug 2022 01:27:59 -0400
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2052.outbound.protection.outlook.com [40.107.101.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2DCF5B3;
+        Sun,  7 Aug 2022 22:27:58 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U+YCiIGHtPRwJwrN6ngTT4MvGrtziCtl80eB+gw+m4+VcPtMneaWRsebSkMp0809ET3CGcIv0r9Iia/PGdo4MFD4bgNMfHIOtULHvAoQ/AQD5qHQk2tsDAltnNzBRlnNhyHMDCcDsyzyvcv00Ef2EnE/0qO59DZDtoE9+8RbZ8VIOjJrs1iI3R37cKCJKXj0kdKDyPg8NRMWKcjLNmpdym38EdT5/RyqD2cSkCTMMEWMEN1Jqd4tWm5eVuupy2LZCRCLxT9LlSgrqhdkAvQNV4kCyyDbKCmj2xpxqlfg9V2Eq/Po+Ck3JFPO/LZ4a9zx9mb0nNBmFSMSOn9hhn0h3Q==
+ b=KcpDsNRS2kvSn0lET8mkrZqotT/IjJOvAynreW3eqP+XKV3KlbVRu1HFryQMN0yYcFWjbgSUkVn/gIX4V+2aYNFsKfa/CgNYSH/a9jAIboGqTE/KDMMPOhPvCN/sFHQwPtrfZBef6cTNGWYhFslP6BwO4LQ5RF7E7phHc3O/FsEpTLKu1CCwaleg5gZIEDoH2TznBv5g33vrJ/5WXy8ZhVQps138w9hGB8gkJ487mMVBsGsiGYeQRAImgXOmve+J7+dESKtUIPYlrLLkijYpqDq0cD5k4xROIMjoeOgYt/0HU5WP4wQliS8iECXbsI+FZmjqFlGF2yhaGkJWJe2oQw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vecqqKtJTuJrIxOYGwWPuDyc4axCHzdCS6gyTQOEWqg=;
- b=Hu5wiVl+YfETdG/5ahCEaJ2fityXiJSD5Icne5uiOU/Hq86f0dkIDUSeW+ofw76Y8bVxDqbEj2HYE9/np0Q0w/kSdQF45zjV2x22ZauJLQhSKF+0ohdMVQnaQG77HcbqSDic718pxqYHBwfoDOfLe1J/gO6SX55hvqQQV6dtF8qXiRvhIV5sexsmdEPt2Anj7K1h2AU0ccW4FWZg66WnEvAbAGcQNCuncGn85/h/BKdVv44U7KkA/q1zau/OE3Xzu2MTILymufw+t+rzlCetgNzIEV4ZGO6O2CMz5SaWPSha7k/bdbOA6Vb5srJaTW4FZV+Mq39oXLbhnooQlx0rbA==
+ bh=cfNcRFaISfDrIFhYwQbPhX7g6U7B0ezGsuFF8+x9Fsc=;
+ b=fFDzNE/Kit4b6h1SN1HLGg16q5YKh0AT2uK6p66s75cSjd22mWOSdSiafLltkudChbid/XW8EAjLEft49glr5IJRQx7P83FKkI61lAXNR0bU84hcHtMEJL00QMtzcXQ2/0TT1aRt7lUda7k3ZPWVnPTGXKaivJygCEMLh9v2rF3YoJKpiJ0/eGJq6g0ZXcIIosmqn39DGPAZpxiqLyrjj5/R4KelertV9Eg5nzDPl3Ni4SWRjxvMTRfrhox9fvzgSyQmKEn0O2KXp5j3rtgDFUhgEjk/is7StVYIgEy6/pJpm5MOaZbxugzUYnymTF0QqyIdW8TK9kMLCfM2xgx5PA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=renesas.com smtp.mailfrom=nvidia.com;
+ 12.22.5.238) smtp.rcpttodomain=renesas.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vecqqKtJTuJrIxOYGwWPuDyc4axCHzdCS6gyTQOEWqg=;
- b=LOkzQbhfy13B+mStQG5SQmJDMWaoV4sWW14z+4LioFBdcWJtsQC+fzVzaa6vy8VZvVlSR98MYSfDqcdWUSfa7cXTo23y+nZu7QK2p1qXjXY68iTlQO1PfWiVvOUGygqnQVg1JF04ePlPWwHsejcqPe85spLrtY2AajN22EdD4rxJ4ez1bRGJCdqRIzVmKkzVWj5k7UymeuasNWzRPEDfNs8wXJNRkUjB3XbZ1gRGCEvUkb0IUF9rC8avM6qotyYB9YpeNs+3l4nH2LW87J/Nat6/fH1aYCsOfDo6YJ/X0i7K+oWuL+WdBwJR+vVIR8uGw6wyNjqAK4jqewgB7jIsqg==
-Received: from DM6PR06CA0019.namprd06.prod.outlook.com (2603:10b6:5:120::32)
- by BL0PR12MB4883.namprd12.prod.outlook.com (2603:10b6:208:1c6::23) with
+ bh=cfNcRFaISfDrIFhYwQbPhX7g6U7B0ezGsuFF8+x9Fsc=;
+ b=n3G0BekpwXoBjXRVQhPFf92EyauoPU3hrKXgQAKuCS/hN/n0D8ilPIpTJS+ohBeR7sqsbb9uUHiUIHqoMukOW3hLNL/YEgl2Nsp3ESt+4Zt8r4k9D2Q/oDl9BMRKS01kqfHbXhhjsJAt2dN7p0raN6R9xtzSZuAWjtofH5poeuKe3dauVhep9YubpoJ2CngRh8T0S+AmcT+yNfXcJpJ+gS8cJXDGUi8h5/KVlZ8G43udDEPqE3hpHF2XcmkoEEr89rcaHft53e2MMW+mERFrLA1B/Ef1ohcyBNemn8nWmz52KXaRkoZtACpQ8b4rmc3J+qsmJcW70OkNq/M3DJCd7g==
+Received: from DM6PR07CA0131.namprd07.prod.outlook.com (2603:10b6:5:330::19)
+ by BN6PR12MB1137.namprd12.prod.outlook.com (2603:10b6:404:1c::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.12; Mon, 8 Aug
- 2022 05:27:43 +0000
-Received: from DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:120:cafe::73) by DM6PR06CA0019.outlook.office365.com
- (2603:10b6:5:120::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.15 via Frontend
- Transport; Mon, 8 Aug 2022 05:27:43 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Mon, 8 Aug
+ 2022 05:27:54 +0000
+Received: from DM6NAM11FT034.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:330:cafe::b7) by DM6PR07CA0131.outlook.office365.com
+ (2603:10b6:5:330::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14 via Frontend
+ Transport; Mon, 8 Aug 2022 05:27:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- DM6NAM11FT057.mail.protection.outlook.com (10.13.172.252) with Microsoft SMTP
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.238) by
+ DM6NAM11FT034.mail.protection.outlook.com (10.13.173.47) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5504.14 via Frontend Transport; Mon, 8 Aug 2022 05:27:43 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 8 Aug
- 2022 05:27:42 +0000
+ 15.20.5504.14 via Frontend Transport; Mon, 8 Aug 2022 05:27:54 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 8 Aug
+ 2022 05:27:53 +0000
 Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
  (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Sun, 7 Aug 2022
- 22:27:41 -0700
+ 22:27:53 -0700
 Received: from audio.nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.9)
  with Microsoft SMTP Server id 15.2.986.26 via Frontend Transport; Sun, 7 Aug
- 2022 22:27:38 -0700
+ 2022 22:27:50 -0700
 From:   Sameer Pujar <spujar@nvidia.com>
 To:     <broonie@kernel.org>, <lgirdwood@gmail.com>, <robh+dt@kernel.org>,
         <krzysztof.kozlowski+dt@linaro.org>, <perex@perex.cz>,
         <tiwai@suse.com>, <kuninori.morimoto.gx@renesas.com>
 CC:     <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, Sameer Pujar <spujar@nvidia.com>
-Subject: [PATCH v3 0/3] DT binding for sample format conversion
-Date:   Mon, 8 Aug 2022 10:57:29 +0530
-Message-ID: <1659936452-2254-1-git-send-email-spujar@nvidia.com>
+Subject: [PATCH v3 3/3] ASoC: simple-card-utils: Fixup DAI sample format
+Date:   Mon, 8 Aug 2022 10:57:32 +0530
+Message-ID: <1659936452-2254-4-git-send-email-spujar@nvidia.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1659936452-2254-1-git-send-email-spujar@nvidia.com>
+References: <1659936452-2254-1-git-send-email-spujar@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 531895a8-f1e3-4fd2-7cfa-08da78feb833
-X-MS-TrafficTypeDiagnostic: BL0PR12MB4883:EE_
+X-MS-Office365-Filtering-Correlation-Id: 135f38e2-0dbd-4b01-1d68-08da78febee9
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1137:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nhLLpfrTRlL/6jcL3BiyymA3ih3hx1LA0omJa5rKU70B2oNbIPitgY9Re+jY3juC7i5j01lcp7fbbfhpeSfZtAG22iPguIPOwbDOmctoW3tFTZ0BZi3c/JZlacBomSNsel8qHpazH7qGtF5G2SW2laZpArpayBB1sQg9iXX8wMTfpBabXFls7/+soucsyzL2l9ouNWvjoodL1ao/1xWH3iTVlkCMQ265SJPHsOs36FCySDM4fPR7VeTRZL3yGocSuYg6X9LKnh9wTFnDCfSC5vBnOoS1ANi+B//RRfQM6k9r0nm9isJPMEa/UVa70z03RIRzJ907SatISLmPWU5q3FEU7xBsgJJXUH305EkT8XUdjT7UJDkWqGe9IcFUn+PBDk0HMRNu/naSfTT8v6KIk1ObTjoetILtL4DV8IIci3zb6+U+7qJzVHCbWMk61etIZNj3mo7Xe56V6tpuLKHWpmP1NazBIcmMa06KgHZpy5+WtTGNb145hwXvARlFgw7banTxglX/5ISti/PUP2IAZ73p3zi70OVuSWBC+5RIHKRv6UKtMppksIKLOURT8sZc1NlTXIm+OnsxR7y4YeyW1lxEud7NEM4fW+DrO1M75wqEbysYYHgFRLhrQepawG0It92tu45/7s68TTHIRTkuEYYPvqPFx3c+OnSSdVGNd0SrrrNy8rBnajdhuOKeK6k4VvSbSSsvsCwWoXd6pvAEZd069S1/7WrOGgx5sdSV1yehfv4nXq4bsHpZ8be8ge0jW/txgbdL43WNX6wfpyepVnaBNhAAjMufWaUB5hKlGTduxZBqfi+WYMJBlMQ9Vrtk7Z1AZuIQin4d1iHejwCApQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(39860400002)(346002)(376002)(46966006)(36840700001)(40470700004)(70206006)(40480700001)(54906003)(40460700003)(316002)(70586007)(82740400003)(110136005)(7416002)(36756003)(81166007)(5660300002)(2616005)(8676002)(8936002)(107886003)(4326008)(356005)(47076005)(478600001)(426003)(86362001)(36860700001)(336012)(83380400001)(7696005)(186003)(2906002)(82310400005)(26005)(6666004)(41300700001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: zY6WA1lV22RsxBPOj5gNP6ObIGccebEPN5luwv+5nO0UqWz+/4oPUZ00EvFGzNnxHm2UD5BEuVNiGNs9ZanE6GphVauhE9hxkjnqj5E5uisb86msTBEZ5GWANU55i2SXGMaqZNgqy9bN/7mJgxH4mv/49ZC2TM+l9ox2gYkbzLe0BqpaEC7WlYXuQU1bKFUGnQMWK7ZZcw2+3Q1yjvOBaDfW9UHKGq8bIyG7eO4cPq9bUiyjAoh0WwYle8wpHLgZ+zjaVgh/G5fv/2/BQ9Z3e6mgjwSNYVL84Z1npcfJTbtFSoRC/j87tT0yXWjHnUJNJzTJ07zxc+VH/eKPiFiC1TbQzsmNW/mMF79qPB9+1aqsVz+pfu5eVRAWn3zYfpb0GwF5vqm5kS/5IuXBap/L3bukVFileFJaIBt4REgIIy0s3MvxaZ+qLGSjqBh/Op98nW8zFMvhSSjTr7xAcjjwIkwNiheM0hVLBTNTki6zMQlB4mEofKxfM808uqB8El30d7B92djJkkYmYbndc6jIDzs5hf2OPJVnhrMnf5Gnx+bMmjcjgenPjZbJ+kiZj/17v35wV6ZGZQ1OIDBLpLf+qIPUABfTvNcHNFQVG/HgAAKoV3ZVyfcrZrQHnPW8+c7UGMeapqjxBbc809eACI4yfYgvNFVUilgd8euouuz5fKfZmJDd4iXwAEdceYvaJXTJcnxqaTMHzT/gIfJZ8csd/QPvFAUwlWgutfGZj+CusSjWfCaaFFLSoMVhFUGEd96jlP0X/jJ3kWCd+a5suhQeBA3yV+rwigMPzYdvbADilueS8DoGECUmUhtqoEqJuCxTmQxTPEEya4Ysqe4TQ9e36A==
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(346002)(136003)(396003)(40470700004)(36840700001)(46966006)(40460700003)(86362001)(36756003)(82310400005)(2906002)(356005)(81166007)(7416002)(5660300002)(36860700001)(8936002)(478600001)(8676002)(70206006)(4326008)(40480700001)(6666004)(7696005)(70586007)(41300700001)(107886003)(110136005)(47076005)(426003)(336012)(54906003)(82740400003)(26005)(2616005)(316002)(186003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2022 05:27:43.2504
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2022 05:27:54.5071
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 531895a8-f1e3-4fd2-7cfa-08da78feb833
+X-MS-Exchange-CrossTenant-Network-Message-Id: 135f38e2-0dbd-4b01-1d68-08da78febee9
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT034.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4883
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1137
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DT binding properties are available to fixup rate and channel
-parameters of a DAI. This series extends this to sample format
-conversion as well. With this now DAI PCM parameters (channels,
-sample rate and sample format) can be fixed up as necessary in
-an audio path.
+Parse "convert-sample-format" DT binding and fixup the sample format
+as applicable. This is similar to the existing "convert-channels" and
+"convert-rate" properties for channels and rate fixup respectively.
 
-Changelog:
-==========
-  v2->v3:
-  -------
-    * Fix DT binding errors in simple-card.yaml
-    * Drop simple-card binding changes from the series since
-      there is no usage requirement. It can be extended later
-      when necessary.
-    * Use definitions instead of properties in the common schema
-      and re-use this in audio-graph related bindings.
+Signed-off-by: Sameer Pujar <spujar@nvidia.com>
+Cc: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+---
+ include/sound/simple_card_utils.h     |  1 +
+ sound/soc/generic/simple-card-utils.c | 34 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 35 insertions(+)
 
-  v1->v2:
-  -------
-    * Move DAI params properties to a new schema and re-use this
-      for simple-card and audio-graph-card.
-    * Use string type for DAI format binding as suggested by
-      Krzysztof.
-
-
-Sameer Pujar (3):
-  ASoC: dt-bindings: Definitions for DAI params
-  ASoC: dt-bindings: Add sample format conversion
-  ASoC: simple-card-utils: Fixup DAI sample format
-
- .../bindings/sound/audio-graph-port.yaml           | 17 ++++-----
- .../devicetree/bindings/sound/audio-graph.yaml     |  9 ++---
- .../devicetree/bindings/sound/dai-params.yaml      | 40 ++++++++++++++++++++++
- include/sound/simple_card_utils.h                  |  1 +
- sound/soc/generic/simple-card-utils.c              | 34 ++++++++++++++++++
- 5 files changed, 89 insertions(+), 12 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/sound/dai-params.yaml
-
+diff --git a/include/sound/simple_card_utils.h b/include/sound/simple_card_utils.h
+index ab55f40..a0b827f 100644
+--- a/include/sound/simple_card_utils.h
++++ b/include/sound/simple_card_utils.h
+@@ -39,6 +39,7 @@ struct asoc_simple_dai {
+ struct asoc_simple_data {
+ 	u32 convert_rate;
+ 	u32 convert_channels;
++	const char *convert_sample_format;
+ };
+ 
+ struct asoc_simple_jack {
+diff --git a/sound/soc/generic/simple-card-utils.c b/sound/soc/generic/simple-card-utils.c
+index 4a29e31..1b201dd 100644
+--- a/sound/soc/generic/simple-card-utils.c
++++ b/sound/soc/generic/simple-card-utils.c
+@@ -15,6 +15,33 @@
+ #include <sound/pcm_params.h>
+ #include <sound/simple_card_utils.h>
+ 
++static void asoc_simple_fixup_sample_fmt(struct asoc_simple_data *data,
++					 struct snd_pcm_hw_params *params)
++{
++	int i;
++	struct snd_mask *mask = hw_param_mask(params,
++					      SNDRV_PCM_HW_PARAM_FORMAT);
++	struct {
++		char *fmt;
++		u32 val;
++	} of_sample_fmt_table[] = {
++		{ "s8",		SNDRV_PCM_FORMAT_S8},
++		{ "s16_le",	SNDRV_PCM_FORMAT_S16_LE},
++		{ "s24_le",	SNDRV_PCM_FORMAT_S24_LE},
++		{ "s24_3le",	SNDRV_PCM_FORMAT_S24_3LE},
++		{ "s32_le",	SNDRV_PCM_FORMAT_S32_LE},
++	};
++
++	for (i = 0; i < ARRAY_SIZE(of_sample_fmt_table); i++) {
++		if (!strcmp(data->convert_sample_format,
++			    of_sample_fmt_table[i].fmt)) {
++			snd_mask_none(mask);
++			snd_mask_set(mask, of_sample_fmt_table[i].val);
++			break;
++		}
++	}
++}
++
+ void asoc_simple_convert_fixup(struct asoc_simple_data *data,
+ 			       struct snd_pcm_hw_params *params)
+ {
+@@ -30,6 +57,9 @@ void asoc_simple_convert_fixup(struct asoc_simple_data *data,
+ 	if (data->convert_channels)
+ 		channels->min =
+ 		channels->max = data->convert_channels;
++
++	if (data->convert_sample_format)
++		asoc_simple_fixup_sample_fmt(data, params);
+ }
+ EXPORT_SYMBOL_GPL(asoc_simple_convert_fixup);
+ 
+@@ -49,6 +79,10 @@ void asoc_simple_parse_convert(struct device_node *np,
+ 	/* channels transfer */
+ 	snprintf(prop, sizeof(prop), "%s%s", prefix, "convert-channels");
+ 	of_property_read_u32(np, prop, &data->convert_channels);
++
++	/* convert sample format */
++	snprintf(prop, sizeof(prop), "%s%s", prefix, "convert-sample-format");
++	of_property_read_string(np, prop, &data->convert_sample_format);
+ }
+ EXPORT_SYMBOL_GPL(asoc_simple_parse_convert);
+ 
 -- 
 2.7.4
 
