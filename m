@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62532C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC78C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:59:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243943AbiHHB7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51464 "EHLO
+        id S243955AbiHHB7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243918AbiHHB4g (ORCPT
+        with ESMTP id S243920AbiHHB4h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:56:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECFF5101CF;
-        Sun,  7 Aug 2022 18:39:58 -0700 (PDT)
+        Sun, 7 Aug 2022 21:56:37 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FAD0101DD;
+        Sun,  7 Aug 2022 18:39:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B8B260EC2;
-        Mon,  8 Aug 2022 01:39:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 494F2C43470;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7990BCE0F71;
         Mon,  8 Aug 2022 01:39:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F22BDC433C1;
+        Mon,  8 Aug 2022 01:39:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922798;
-        bh=YtjYNrgY2aCbWqM67G8OxeniAR3dUoUmn0JshvL67Sg=;
+        s=k20201202; t=1659922795;
+        bh=x599Q0uNqhEXX/zTlqbs0/t9r9wM0qizRo+Y0uYiNVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KteTtMxKJzHxMzT8edN1vC2KTYLMAoewtg5lDuVUw5RTPH4+3xCnx6TvfHeec28bA
-         lOIiilbkfT7bZHjQEFOun2+RL64qZabxp2gqTsON9MXrWFqjQnMX4V4exxJFQJMEWt
-         RwOIEaHVUEK78ZdvMYOp3bHrA8+jtnMriPGdY1WR1jOumA/FSMYiZJlsWW01hYRDlB
-         aP9Vxwt5APiIIUyEd5FTqijiAt9AN7wdciIxCEoipATkZNxlYr9EcC2dBw6xESwkzu
-         jf02OO1FyZsaapyka8Lm48dyhjK04lGq6QpBNBVqPf6SC66rb+CkWFOOIkmj1iZyiU
-         1iy8mo+cmB3Bw==
+        b=VvCSqYj1BHs/+9OCFqyDWVUvnXtnRovMHVYLuXnKaAU1mq9g0NQsbvj83MzLNaw1L
+         4055+I4DiOTRmWUbat9wa4gtLcp4o3lSNwhR0KnV+7xDufPC5dlOVrXdrbewfneSeG
+         gUQZFbXkdaZs8+4RA6MWESVmLDUIzVsW4zZlAqE/35YMEg0XftGe99N6fmgdAGaKUS
+         SfGGxlKWS2Tzxw+s9+M07q7n/PJ7xMshX5g1/A+RBRj75hcM6f/vUSUux4+M2F5czV
+         pBakJ5/aqr9ztugC6ojYoEfi1mPsU+gENjS17jSbR7rA3w47V2U4w6Z3epPfbJLfPf
+         LUTUJe8L/NbaQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     huhai <huhai@kylinos.cn>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 09/12] ACPI: LPSS: Fix missing check in register_device_clock()
-Date:   Sun,  7 Aug 2022 21:39:39 -0400
-Message-Id: <20220808013943.316907-9-sashal@kernel.org>
+Cc:     Liang He <windhl@126.com>, Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 07/12] ARM: OMAP2+: display: Fix refcount leak bug
+Date:   Sun,  7 Aug 2022 21:39:37 -0400
+Message-Id: <20220808013943.316907-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013943.316907-1-sashal@kernel.org>
 References: <20220808013943.316907-1-sashal@kernel.org>
@@ -52,34 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huhai <huhai@kylinos.cn>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit b4f1f61ed5928b1128e60e38d0dffa16966f06dc ]
+[ Upstream commit 50b87a32a79bca6e275918a711fb8cc55e16d739 ]
 
-register_device_clock() misses a check for platform_device_register_simple().
-Add a check to fix it.
+In omapdss_init_fbdev(), of_find_node_by_name() will return a node
+pointer with refcount incremented. We should use of_node_put() when
+it is not used anymore.
 
-Signed-off-by: huhai <huhai@kylinos.cn>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Liang He <windhl@126.com>
+Message-Id: <20220617145803.4050918-1-windhl@126.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpi_lpss.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/mach-omap2/display.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
-index 84b1d30f699c..faa83ff03674 100644
---- a/drivers/acpi/acpi_lpss.c
-+++ b/drivers/acpi/acpi_lpss.c
-@@ -396,6 +396,9 @@ static int register_device_clock(struct acpi_device *adev,
- 	if (!lpss_clk_dev)
- 		lpt_register_clock_device();
+diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
+index 6e7440ef503a..b01b7515b6cc 100644
+--- a/arch/arm/mach-omap2/display.c
++++ b/arch/arm/mach-omap2/display.c
+@@ -218,6 +218,7 @@ static int __init omapdss_init_fbdev(void)
+ 	node = of_find_node_by_name(NULL, "omap4_padconf_global");
+ 	if (node)
+ 		omap4_dsi_mux_syscon = syscon_node_to_regmap(node);
++	of_node_put(node);
  
-+	if (IS_ERR(lpss_clk_dev))
-+		return PTR_ERR(lpss_clk_dev);
-+
- 	clk_data = platform_get_drvdata(lpss_clk_dev);
- 	if (!clk_data)
- 		return -ENODEV;
+ 	return 0;
+ }
 -- 
 2.35.1
 
