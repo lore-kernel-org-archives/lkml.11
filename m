@@ -2,149 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6365EC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 12:05:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44ECEC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 12:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242595AbiHHMFk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 08:05:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36448 "EHLO
+        id S242653AbiHHMFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 08:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242339AbiHHMFg (ORCPT
+        with ESMTP id S242527AbiHHMFi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 08:05:36 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1B2A825E0
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 05:05:30 -0700 (PDT)
-Received: from [10.20.42.22] (unknown [10.20.42.22])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx3yMH_PBiVicKAA--.4044S3;
-        Mon, 08 Aug 2022 20:05:28 +0800 (CST)
-Subject: Re: [PATCH] irqchip/loongarch: Fix irq_domain_alloc_fwnode() abuse
-To:     Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     chenhuacai@loongson.cn, Thomas Gleixner <tglx@linutronix.de>
-References: <20220808105020.2689757-1-maz@kernel.org>
-From:   Jianmin Lv <lvjianmin@loongson.cn>
-Message-ID: <d0b93546-eb2e-029e-5124-144fa10b41d3@loongson.cn>
-Date:   Mon, 8 Aug 2022 20:05:27 +0800
-User-Agent: Mozilla/5.0 (X11; Linux loongarch64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Mon, 8 Aug 2022 08:05:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4DB2263D
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 05:05:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659960331;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fu+EGKvg0tvo2gbBuEatwKbSy6SV8sz3wHepu6Tfd8E=;
+        b=MCqipCFAMClbMsgkMFT/oCOhBxx3D7GvbqSv17mVRFPSpgjMYPopekUxa1hfHtia+Zgun6
+        jjJy+2kqLD7rOLCJi3caHVsy2e8fF78Oh9DF8l+7LxXqZT53w9HAxUNUhM/Li0jHuCPt+A
+        maYLeHorPD6KyKTo5kj59tX2DH/F/C0=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-427-8Li_jNhjPEO5bh_ibEG71g-1; Mon, 08 Aug 2022 08:05:30 -0400
+X-MC-Unique: 8Li_jNhjPEO5bh_ibEG71g-1
+Received: by mail-ed1-f70.google.com with SMTP id n8-20020a05640205c800b00434fb0c150cso5495249edx.19
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 05:05:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fu+EGKvg0tvo2gbBuEatwKbSy6SV8sz3wHepu6Tfd8E=;
+        b=Qwx/av0NSR0SxubIEL6ZXcThpF1nEyBgNOwHb6OqmmcjOCB/WCPQ51kfBkZNrhmGWD
+         DaqqlmH7qXUFOv7NcqKDV1rtk/4rlzoePDuPvAOjnGqKHuqBDignJHcgWzOMMbjyzpi9
+         12Lrz789oCSLa4Q8LewqTWpI3rYiJ4pbJG49WjF4VoB4MpjegsPToHDqeXbE2BgjLqMl
+         Y0g5ze5yL/9/dRjtZDtAI1FoXl5O0wmj8vB8k7PsGika6wy/E5anJHozyNZzh3vCWCXM
+         tkTBnp8shFI0wYquPvM1A8b5wN9YY69aHg5Z9k0TqVM8wugiwCzcwxodsrx0mb/q4W5Y
+         0eig==
+X-Gm-Message-State: ACgBeo1QDaX76AbT7GCx3WK+Z6ywgfspBmtlChP+13UVqHHtcUd8A7Pa
+        gyzgL9JVWiaKdhmuB1EiOGFt4D4FxlP67gKOx/MEp8MusCAKRpwsYdSPTx8/Gh7tVMA/0NdX5QJ
+        hPoayN1fSANbMryY+Y1/0qL1q4BIzI4Viq+wWoa7u
+X-Received: by 2002:a17:907:2d94:b0:730:cad8:fe80 with SMTP id gt20-20020a1709072d9400b00730cad8fe80mr13670216ejc.232.1659960329671;
+        Mon, 08 Aug 2022 05:05:29 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4CLRlV/9x9dD2aK9/HEUTGST8O923oVKubnUWsl1DUA3H8QK1c8I0bxjvCqukDPrkG7iy+Hc20DOZSW/oz9XA=
+X-Received: by 2002:a17:907:2d94:b0:730:cad8:fe80 with SMTP id
+ gt20-20020a1709072d9400b00730cad8fe80mr13670194ejc.232.1659960329404; Mon, 08
+ Aug 2022 05:05:29 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220808105020.2689757-1-maz@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9Dx3yMH_PBiVicKAA--.4044S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxZF4xGw43tryxuw4DGrW3Wrg_yoWrZw45pF
-        W7Aa42vr45Ja4UWFnrGayUXry3Zw1Fg3y7KayrKa4a9r98G39IkF18A3ZrZFs7Ar47Wa1a
-        9F4Fq3WUu3Z8AFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvE1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2
-        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
-        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
-        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4
-        x0x7Aq67IIx4CEVc8vx2IErcIFxwCYjI0SjxkI62AI1cAE67vIY487MxkIecxEwVCm-wCF
-        04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26ryrJr1UJwCFx2IqxVCFs4IE7xkEbV
-        WUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF
-        67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42
-        IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1l
-        IxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWI
-        evJa73UjIFyTuYvjfUoOJ5UUUUU
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+References: <20220804003323.1441376-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <Yu1z0KcU5C2AJO6S@fedora> <3075adc7-e02e-fcd4-44ef-c4228293f460@linux.intel.com>
+In-Reply-To: <3075adc7-e02e-fcd4-44ef-c4228293f460@linux.intel.com>
+From:   Wander Lairson Costa <wander@redhat.com>
+Date:   Mon, 8 Aug 2022 09:05:18 -0300
+Message-ID: <CAAq0SUmY7VvAFVmM--y+QMsjHaUMo27Rn3rO9hcXQsBFGmRwJg@mail.gmail.com>
+Subject: Re: [PATCH v10 1/2] x86/tdx: Add TDX Guest attestation interface driver
+To:     Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kai Huang <kai.huang@intel.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Marc
+On Fri, Aug 5, 2022 at 6:35 PM Sathyanarayanan Kuppuswamy
+<sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+>
+>
+>
+> On 8/5/22 12:47 PM, Wander Lairson Costa wrote:
+> > On Wed, Aug 03, 2022 at 05:33:22PM -0700, Kuppuswamy Sathyanarayanan wrote:
+> >> +/**
+> >> + * struct tdx_report_req: Get TDREPORT using REPORTDATA as input.
+> >> + *
+> >> + * @subtype        : Subtype of TDREPORT (fixed as 0 by TDX Module
+> >> + *                   specification, but added a parameter to handle
+> >> + *                   future extension).
+> >> + * @reportdata     : User-defined REPORTDATA to be included into
+> >> + *                   TDREPORT. Typically it can be some nonce
+> >> + *                   provided by attestation service, so the
+> >> + *                   generated TDREPORT can be uniquely verified.
+> >> + * @rpd_len        : Length of the REPORTDATA (fixed as 64 bytes by
+> >> + *                   the TDX Module specification, but parameter is
+> >> + *                   added to handle future extension).
+> >> + * @tdreport       : TDREPORT output from TDCALL[TDG.MR.REPORT].
+> >> + * @tdr_len        : Length of the TDREPORT (fixed as 1024 bytes by
+> >> + *                   the TDX Module specification, but a parameter
+> >> + *                   is added to accommodate future extension).
+> >> + *
+> >> + * Used in TDX_CMD_GET_REPORT IOCTL request.
+> >> + */
+> >> +struct tdx_report_req {
+> >> +    __u8  subtype;
+> >> +    __u64 reportdata;
+> >> +    __u32 rpd_len;
+> >> +    __u64 tdreport;
+> >> +    __u32 tdr_len;
+> >> +};
+> >
+> > Any reason why reportdata and tdreport aren't "void *"?
+>
+> It is the recommended way to pass the pointers.
+>
+> https://docs.kernel.org/driver-api/ioctl.html
+>
 
-Yes, I think that's right. Thanks for your patch to fix them.
-
-On 2022/8/8 下午6:50, Marc Zyngier wrote:
-> The recently merged LoongArch drivers paper over the lack of
-> topology information by creating a bunch of fwnodes for the
-> irqchips. So far, so good.
-> 
-> However, irq_domain_alloc_fwnode() is supposed to take a PA, and
-> not a kernel VA blindly cast as a PA, potentially disclosing
-> kernel VAs to userspace. In some other cases, even NULL is used
-> as the PA, which is entertaining.
-> 
-> Fix this by using the actual PA of the block when available,
-> and switch to a named fwnode in the other cases.
-> 
-> Signed-off-by: Marc Zyngier <maz@kernel.org>
-> ---
->   drivers/irqchip/irq-loongarch-cpu.c    | 2 +-
->   drivers/irqchip/irq-loongson-eiointc.c | 3 ++-
->   drivers/irqchip/irq-loongson-liointc.c | 2 +-
->   drivers/irqchip/irq-loongson-pch-msi.c | 2 +-
->   drivers/irqchip/irq-loongson-pch-pic.c | 2 +-
->   5 files changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/irqchip/irq-loongarch-cpu.c b/drivers/irqchip/irq-loongarch-cpu.c
-> index 327f3ab62c03..741612ba6a52 100644
-> --- a/drivers/irqchip/irq-loongarch-cpu.c
-> +++ b/drivers/irqchip/irq-loongarch-cpu.c
-> @@ -129,7 +129,7 @@ static int __init cpuintc_acpi_init(union acpi_subtable_headers *header,
->   	clear_csr_ecfg(ECFG0_IM);
->   	clear_csr_estat(ESTATF_IP);
->   
-> -	cpuintc_handle = irq_domain_alloc_fwnode(NULL);
-> +	cpuintc_handle = irq_domain_alloc_named_fwnode("CPUINTC");
->   	irq_domain = irq_domain_create_linear(cpuintc_handle, EXCCODE_INT_NUM,
->   					&loongarch_cpu_intc_irq_domain_ops, NULL);
->   
-> diff --git a/drivers/irqchip/irq-loongson-eiointc.c b/drivers/irqchip/irq-loongson-eiointc.c
-> index bffb7b3128e8..16e9af8d8b1e 100644
-> --- a/drivers/irqchip/irq-loongson-eiointc.c
-> +++ b/drivers/irqchip/irq-loongson-eiointc.c
-> @@ -348,7 +348,8 @@ int __init eiointc_acpi_init(struct irq_domain *parent,
->   	if (!priv)
->   		return -ENOMEM;
->   
-> -	priv->domain_handle = irq_domain_alloc_fwnode((phys_addr_t *)acpi_eiointc);
-> +	priv->domain_handle = irq_domain_alloc_named_id_fwnode("EIOPIC",
-> +							       acpi_eiointc->node);
->   	if (!priv->domain_handle) {
->   		pr_err("Unable to allocate domain handle\n");
->   		goto out_free_priv;
-> diff --git a/drivers/irqchip/irq-loongson-liointc.c b/drivers/irqchip/irq-loongson-liointc.c
-> index c4f3c886ad61..acd1a4b897df 100644
-> --- a/drivers/irqchip/irq-loongson-liointc.c
-> +++ b/drivers/irqchip/irq-loongson-liointc.c
-> @@ -360,7 +360,7 @@ int __init liointc_acpi_init(struct irq_domain *parent, struct acpi_madt_lio_pic
->   	parent_irq[0] = irq_create_mapping(parent, acpi_liointc->cascade[0]);
->   	parent_irq[1] = irq_create_mapping(parent, acpi_liointc->cascade[1]);
->   
-> -	domain_handle = irq_domain_alloc_fwnode((phys_addr_t *)acpi_liointc);
-> +	domain_handle = irq_domain_alloc_fwnode(&acpi_liointc->address);
->   	if (!domain_handle) {
->   		pr_err("Unable to allocate domain handle\n");
->   		return -ENOMEM;
-> diff --git a/drivers/irqchip/irq-loongson-pch-msi.c b/drivers/irqchip/irq-loongson-pch-msi.c
-> index d0e8551bebfa..a72ede90ffc6 100644
-> --- a/drivers/irqchip/irq-loongson-pch-msi.c
-> +++ b/drivers/irqchip/irq-loongson-pch-msi.c
-> @@ -282,7 +282,7 @@ int __init pch_msi_acpi_init(struct irq_domain *parent,
->   	int ret;
->   	struct fwnode_handle *domain_handle;
->   
-> -	domain_handle = irq_domain_alloc_fwnode((phys_addr_t *)acpi_pchmsi);
-> +	domain_handle = irq_domain_alloc_fwnode(&acpi_pchmsi->msg_address);
->   	ret = pch_msi_init(acpi_pchmsi->msg_address, acpi_pchmsi->start,
->   				acpi_pchmsi->count, parent, domain_handle);
->   	if (ret < 0)
-> diff --git a/drivers/irqchip/irq-loongson-pch-pic.c b/drivers/irqchip/irq-loongson-pch-pic.c
-> index b987b6517d59..c01b9c257005 100644
-> --- a/drivers/irqchip/irq-loongson-pch-pic.c
-> +++ b/drivers/irqchip/irq-loongson-pch-pic.c
-> @@ -349,7 +349,7 @@ int __init pch_pic_acpi_init(struct irq_domain *parent,
->   
->   	vec_base = acpi_pchpic->gsi_base - GSI_MIN_PCH_IRQ;
->   
-> -	domain_handle = irq_domain_alloc_fwnode((phys_addr_t *)acpi_pchpic);
-> +	domain_handle = irq_domain_alloc_fwnode(&acpi_pchpic->address);
->   	if (!domain_handle) {
->   		pr_err("Unable to allocate domain handle\n");
->   		return -ENOMEM;
-> 
+Ah, right. In this case, we should use the u64_to_user_ptr() function
+for pointer conversion as recommended.
 
