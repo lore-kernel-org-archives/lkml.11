@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E26C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:42:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF62C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242780AbiHHBmq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41526 "EHLO
+        id S242789AbiHHBmt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242820AbiHHBlG (ORCPT
+        with ESMTP id S242817AbiHHBlE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:41:06 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836DF12ACE;
+        Sun, 7 Aug 2022 21:41:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A2A12AD8;
         Sun,  7 Aug 2022 18:35:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 42335CE0F71;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D947560EA4;
+        Mon,  8 Aug 2022 01:35:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D30AC433D6;
         Mon,  8 Aug 2022 01:34:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 612D5C433C1;
-        Mon,  8 Aug 2022 01:34:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922497;
-        bh=qD8iqtAHW8h3e52RnPcjZiRtkyWciAJc3DN0Ssk+n1s=;
+        s=k20201202; t=1659922500;
+        bh=i2jhH5/szEKqI2jW51v3Ub9wFARlUPzzK8ZZbQhSzOU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bhpK7aIIcgSLkPuxJBOIDhrAbY92RBL5sQ0Uf31GGCV20gDEDD6JFpmxIL/Oc+Gou
-         SRQOgdkdZVBtVK6qnLPXQrpWpePRcgXu0K3HfkmWvM2JFG15ThGPcRBiHfUOqa63Az
-         woZj2Zg5s1DcZFr67/LeEfPk0TTse0TsmMicm+iMJ0fDuJEwfwcaABGDFk3RJ3w8Nk
-         VblMkkfTbt6xVW8F5Xam5r9rQInPL9GX/q4mpD77t1bpz2juSqfam7m4Ow0yHisCIm
-         ReGNI2rusPdJAZtB09gbsA5rie4gDCCqbGa61MvQJHMfKa+ilY0kh0gAjtBm8A4e5E
-         ORSI+fvShFkpQ==
+        b=lVeEQG5Aeeu41kObnPceG/qneuEc5V9uDrt8xjAniGdy+kBSxs9hjD0P4lox6Kyb6
+         h9cF8G7OT/abWohzx/7McTZviBUC8qp+pT5DRzkJ0q5XEJcR3CLX6vV9y4JAmCpgFw
+         qDsLklmXSp+HzKj2ZEvNUtr5MIsPqS95UZ0jHPOhvlV3hdcI6V+P2nlzKCdi/Jkms0
+         2kB5SEUKCgOje+hPoVc0482Qhqe05ADbkxYMpRD9OseAs9KOD+w+ND/pWTk7BlpcL4
+         K4B7hwErathJwC2lbqOXLNVoZL5A/MDGxj625PyD4k1/etmiNOirskK3JHN0x/A6uI
+         9TJMwtq4kYv0g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Juri Lelli <juri.lelli@redhat.com>,
-        Bruno Goncalves <bgoncalv@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        peterz@infradead.org, vincent.guittot@linaro.org
-Subject: [PATCH AUTOSEL 5.18 21/53] wait: Fix __wait_event_hrtimeout for RT/DL tasks
-Date:   Sun,  7 Aug 2022 21:33:16 -0400
-Message-Id: <20220808013350.314757-21-sashal@kernel.org>
+Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 23/53] ARM: dts: imx6ul: change operating-points to uint32-matrix
+Date:   Sun,  7 Aug 2022 21:33:18 -0400
+Message-Id: <20220808013350.314757-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013350.314757-1-sashal@kernel.org>
 References: <20220808013350.314757-1-sashal@kernel.org>
@@ -55,60 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juri Lelli <juri.lelli@redhat.com>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit cceeeb6a6d02e7b9a74ddd27a3225013b34174aa ]
+[ Upstream commit edb67843983bbdf61b4c8c3c50618003d38bb4ae ]
 
-Changes to hrtimer mode (potentially made by __hrtimer_init_sleeper on
-PREEMPT_RT) are not visible to hrtimer_start_range_ns, thus not
-accounted for by hrtimer_start_expires call paths. In particular,
-__wait_event_hrtimeout suffers from this problem as we have, for
-example:
+operating-points is a uint32-matrix as per opp-v1.yaml. Change it
+accordingly. While at it, change fsl,soc-operating-points as well,
+although there is no bindings file (yet). But they should have the same
+format. Fixes the dt_binding_check warning:
+cpu@0: operating-points:0: [696000, 1275000, 528000, 1175000, 396000,
+1025000, 198000, 950000] is too long
+cpu@0: operating-points:0: Additional items are not allowed (528000,
+1175000, 396000, 1025000, 198000, 950000 were unexpected)
 
-fs/aio.c::read_events
-  wait_event_interruptible_hrtimeout
-    __wait_event_hrtimeout
-      hrtimer_init_sleeper_on_stack <- this might "mode |= HRTIMER_MODE_HARD"
-                                       on RT if task runs at RT/DL priority
-        hrtimer_start_range_ns
-          WARN_ON_ONCE(!(mode & HRTIMER_MODE_HARD) ^ !timer->is_hard)
-          fires since the latter doesn't see the change of mode done by
-          init_sleeper
-
-Fix it by making __wait_event_hrtimeout call hrtimer_sleeper_start_expires,
-which is aware of the special RT/DL case, instead of hrtimer_start_range_ns.
-
-Reported-by: Bruno Goncalves <bgoncalv@redhat.com>
-Signed-off-by: Juri Lelli <juri.lelli@redhat.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Reviewed-by: Valentin Schneider <vschneid@redhat.com>
-Link: https://lore.kernel.org/r/20220627095051.42470-1-juri.lelli@redhat.com
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/wait.h | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/imx6ul.dtsi | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
 
-diff --git a/include/linux/wait.h b/include/linux/wait.h
-index 851e07da2583..58cfbf81447c 100644
---- a/include/linux/wait.h
-+++ b/include/linux/wait.h
-@@ -544,10 +544,11 @@ do {										\
- 										\
- 	hrtimer_init_sleeper_on_stack(&__t, CLOCK_MONOTONIC,			\
- 				      HRTIMER_MODE_REL);			\
--	if ((timeout) != KTIME_MAX)						\
--		hrtimer_start_range_ns(&__t.timer, timeout,			\
--				       current->timer_slack_ns,			\
--				       HRTIMER_MODE_REL);			\
-+	if ((timeout) != KTIME_MAX) {						\
-+		hrtimer_set_expires_range_ns(&__t.timer, timeout,		\
-+					current->timer_slack_ns);		\
-+		hrtimer_sleeper_start_expires(&__t, HRTIMER_MODE_REL);		\
-+	}									\
- 										\
- 	__ret = ___wait_event(wq_head, condition, state, 0, 0,			\
- 		if (!__t.task) {						\
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index 1d435a46fc5c..2fcbd9d91521 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -64,20 +64,18 @@ cpu0: cpu@0 {
+ 			clock-frequency = <696000000>;
+ 			clock-latency = <61036>; /* two CLK32 periods */
+ 			#cooling-cells = <2>;
+-			operating-points = <
++			operating-points =
+ 				/* kHz	uV */
+-				696000	1275000
+-				528000	1175000
+-				396000	1025000
+-				198000	950000
+-			>;
+-			fsl,soc-operating-points = <
++				<696000	1275000>,
++				<528000	1175000>,
++				<396000	1025000>,
++				<198000	950000>;
++			fsl,soc-operating-points =
+ 				/* KHz	uV */
+-				696000	1275000
+-				528000	1175000
+-				396000	1175000
+-				198000	1175000
+-			>;
++				<696000	1275000>,
++				<528000	1175000>,
++				<396000	1175000>,
++				<198000	1175000>;
+ 			clocks = <&clks IMX6UL_CLK_ARM>,
+ 				 <&clks IMX6UL_CLK_PLL2_BUS>,
+ 				 <&clks IMX6UL_CLK_PLL2_PFD2>,
 -- 
 2.35.1
 
