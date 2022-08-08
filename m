@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E3DC25B07
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:45:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2165C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:45:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242991AbiHHBpH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:45:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43282 "EHLO
+        id S242996AbiHHBpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242647AbiHHBmN (ORCPT
+        with ESMTP id S242703AbiHHBmU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:42:13 -0400
+        Sun, 7 Aug 2022 21:42:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F40DEF7;
-        Sun,  7 Aug 2022 18:35:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8548013EBD;
+        Sun,  7 Aug 2022 18:35:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53FB9B80E10;
-        Mon,  8 Aug 2022 01:35:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43E8FC433D7;
-        Mon,  8 Aug 2022 01:35:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CBF3B80E06;
+        Mon,  8 Aug 2022 01:35:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5884C433D6;
+        Mon,  8 Aug 2022 01:35:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922535;
-        bh=EU74vkKkp1wsrARBHmW0R9rKUvYeRIF5kWIHuk3CaDk=;
+        s=k20201202; t=1659922542;
+        bh=FlO2+rc4HsuR7lvaoZ66kubdG1FhTpV3XY3NhuCS+jk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tV5C3sKVEo2vWkCZPDZcV0Vr9Kynq1W9UyAh2mas5yC1JLnGvb1acphtXIcz54S2R
-         WyNHwrkICer87m4XpHF71MzgJ48HriXPrw3N+Ghu7eQ4jOLSZLl3OBoxoggPmhyn1o
-         0fJKDyLVPMIBDbsnK2f2XQyekVOblnd0dH1F716BLLGSOPIsO4RFwl9dRsgp+DHpmJ
-         tZh4fNt51vzohGBVOyO0kW6FVczXfsjWXVxWLVrOf4c03kkjKEPBmy+VYI3Buof8RL
-         19nrckC9fbtuwNoltTs0b0Cl+omRSHR8v9g0i1ywciZdZUnNaXU6GBnSBf/SmcmZNF
-         yN5SKWFlIxgFg==
+        b=dah1+ylvW2R4CIyRLbLRXgQER+ZrHu7mmNh0gYajQkYa+EfqUH8NlVzskK2Ck3I2U
+         AlVU4wB5iIlAUHGk4tLagmriOW8L5AQZCsxpi+0lod/4q4dryTzXuSBcVXt6klVVe5
+         4KimlTQYaNlyUrlRud5XRTWcpxQsK5fZlNh/ixKpNJ5+P09BUA3kslHtNvVgPYRzCU
+         FJ9WD69Ms0vv81eMwKrwyOB8Usvkk97NrMFVAS+c9jrJCX4yG2WfdLf5ooq2WO0bxB
+         lMuEp39xPdnXbV+nFiSeJHpSnGeJBrjpFOBFQsHKCh/p5FhEXtjyHFBvj6GHpXsauP
+         caVyuH/DFpicw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Armin Wolf <W_Armin@gmx.de>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>, jdelvare@suse.com,
-        linux-hwmon@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 46/53] hwmon: (dell-smm) Add Dell XPS 13 7390 to fan control whitelist
-Date:   Sun,  7 Aug 2022 21:33:41 -0400
-Message-Id: <20220808013350.314757-46-sashal@kernel.org>
+Cc:     Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        cgzones@googlemail.com, omosnace@redhat.com,
+        michalorzel.eng@gmail.com, selinux@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 50/53] selinux: fix memleak in security_read_state_kernel()
+Date:   Sun,  7 Aug 2022 21:33:45 -0400
+Message-Id: <20220808013350.314757-50-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013350.314757-1-sashal@kernel.org>
 References: <20220808013350.314757-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,46 +54,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Armin Wolf <W_Armin@gmx.de>
+From: Xiu Jianfeng <xiujianfeng@huawei.com>
 
-[ Upstream commit 385e5f57053ff293282fea84c1c27186d53f66e1 ]
+[ Upstream commit 73de1befcc53a7c68b0c5e76b9b5ac41c517760f ]
 
-A user reported that the program dell-bios-fan-control
-worked on his Dell XPS 13 7390 to switch off automatic
-fan control.
-Since it uses the same mechanism as the dell_smm_hwmon
-module, add this model to the fan control whitelist.
+In this function, it directly returns the result of __security_read_policy
+without freeing the allocated memory in *data, cause memory leak issue,
+so free the memory if __security_read_policy failed.
 
-Compile-tested only.
-
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-Acked-by: Pali Rohár <pali@kernel.org>
-Link: https://lore.kernel.org/r/20220612041806.11367-1-W_Armin@gmx.de
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+[PM: subject line tweak]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/dell-smm-hwmon.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ security/selinux/ss/services.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon.c
-index 84cb1ede7bc0..a0df9a0abeb9 100644
---- a/drivers/hwmon/dell-smm-hwmon.c
-+++ b/drivers/hwmon/dell-smm-hwmon.c
-@@ -1262,6 +1262,14 @@ static const struct dmi_system_id i8k_whitelist_fan_control[] __initconst = {
- 		},
- 		.driver_data = (void *)&i8k_fan_control_data[I8K_FAN_34A3_35A3],
- 	},
-+	{
-+		.ident = "Dell XPS 13 7390",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
-+			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "XPS 13 7390"),
-+		},
-+		.driver_data = (void *)&i8k_fan_control_data[I8K_FAN_34A3_35A3],
-+	},
- 	{ }
- };
+diff --git a/security/selinux/ss/services.c b/security/selinux/ss/services.c
+index 6901dc07680d..cad54f454d01 100644
+--- a/security/selinux/ss/services.c
++++ b/security/selinux/ss/services.c
+@@ -4049,6 +4049,7 @@ int security_read_policy(struct selinux_state *state,
+ int security_read_state_kernel(struct selinux_state *state,
+ 			       void **data, size_t *len)
+ {
++	int err;
+ 	struct selinux_policy *policy;
  
+ 	policy = rcu_dereference_protected(
+@@ -4061,5 +4062,11 @@ int security_read_state_kernel(struct selinux_state *state,
+ 	if (!*data)
+ 		return -ENOMEM;
+ 
+-	return __security_read_policy(policy, *data, len);
++	err = __security_read_policy(policy, *data, len);
++	if (err) {
++		vfree(*data);
++		*data = NULL;
++		*len = 0;
++	}
++	return err;
+ }
 -- 
 2.35.1
 
