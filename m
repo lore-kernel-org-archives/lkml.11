@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A88CC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4535EC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:03:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244005AbiHHCAf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 22:00:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51076 "EHLO
+        id S243994AbiHHCAm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 22:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243912AbiHHB4f (ORCPT
+        with ESMTP id S243944AbiHHB4k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:56:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC91101E5;
-        Sun,  7 Aug 2022 18:39:57 -0700 (PDT)
+        Sun, 7 Aug 2022 21:56:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1022E1CB26;
+        Sun,  7 Aug 2022 18:40:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7077560DF3;
-        Mon,  8 Aug 2022 01:39:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF2DC433D6;
-        Mon,  8 Aug 2022 01:39:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99AE1B80E05;
+        Mon,  8 Aug 2022 01:40:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86FDFC433D6;
+        Mon,  8 Aug 2022 01:40:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922796;
-        bh=Xa6s7LYbZMRUMtcixMwGFLO019BA0YLdj1CCuUTJ8O8=;
+        s=k20201202; t=1659922803;
+        bh=FPDq19YmQbyACbhIMdsFfnd/zvD9KE4s0mLFIVXUVOE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Owmnm62KPWHegWdtwSM3fNwNwNJyARHK+AhZtsYRVr3FPV4uPr6HHwM7d1sDVhe0E
-         yDTBtiO4W7lwy1zX69lnCJQV+0mKB6mYDotc19e15wEpxxVvlZ695gCMVhEUQDWGSK
-         luuBvemxPgr89GgEBX+NUbfs7Y+8Y/z+CZ2K4vCyPILyYD4GRyLE9MYROOc3MeeC+G
-         4oAxsiVUdmzTI7ja04Af26k6JK0WdHB+jzDd+uZvPKOvBTUrnp8YyHcvQyF6lSqM8h
-         ldPDRFvPi1MG6LtBX2D+XVsOtM/B/70KGPeJmnC7f6kjNBD95o01D/lG95uy1he+tB
-         fH2d4Tmjm8zZA==
+        b=gm/PcT96YUtsx4iuP87h22UoAsFi4CSdKSvvxGBkUlM60J77eZ+6qdjRBrT93HAU7
+         UWMfYzV62XUbIbMQ4euPf706fEVQzW9B760grpjf7dcUtEaONSVClWP5nPl/bq0VZr
+         tk1KImjdS0SJuyp1XCrYNIrg6kW4AQiBzI7ygwQbdzF2FX/zVfJIlgYH+hwsPM3YuV
+         6G8gthH1WqystQIc2eUcb19kuGezd/vXTcbbL7ojrj5+jv/wN8RD3fIzoQGwHUoqrq
+         IhtKwRi7Cih0oibs7Edoxnv1o4/JzVGrBhdXbrq/z+3sd2N6WExqTGXkroePGNpIxb
+         3dtF5XqSue2rg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Manyi Li <limanyi@uniontech.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 08/12] ACPI: PM: save NVS memory for Lenovo G40-45
-Date:   Sun,  7 Aug 2022 21:39:38 -0400
-Message-Id: <20220808013943.316907-8-sashal@kernel.org>
+Cc:     Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        selinux@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 12/12] selinux: Add boundary check in put_entry()
+Date:   Sun,  7 Aug 2022 21:39:42 -0400
+Message-Id: <20220808013943.316907-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013943.316907-1-sashal@kernel.org>
 References: <20220808013943.316907-1-sashal@kernel.org>
@@ -52,42 +53,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manyi Li <limanyi@uniontech.com>
+From: Xiu Jianfeng <xiujianfeng@huawei.com>
 
-[ Upstream commit 4b7ef7b05afcde44142225c184bf43a0cd9e2178 ]
+[ Upstream commit 15ec76fb29be31df2bccb30fc09875274cba2776 ]
 
-[821d6f0359b0614792ab8e2fb93b503e25a65079] is to make machines
-produced from 2012 to now not saving NVS region to accelerate S3.
+Just like next_entry(), boundary check is necessary to prevent memory
+out-of-bound access.
 
-But, Lenovo G40-45, a platform released in 2015, still needs NVS memory
-saving during S3. A quirk is introduced for this platform.
-
-Signed-off-by: Manyi Li <limanyi@uniontech.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/sleep.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ security/selinux/ss/policydb.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
-index 7a0af16f86f2..d341908cbd16 100644
---- a/drivers/acpi/sleep.c
-+++ b/drivers/acpi/sleep.c
-@@ -359,6 +359,14 @@ static const struct dmi_system_id acpisleep_dmi_table[] __initconst = {
- 		DMI_MATCH(DMI_PRODUCT_NAME, "80E3"),
- 		},
- 	},
-+	{
-+	.callback = init_nvs_save_s3,
-+	.ident = "Lenovo G40-45",
-+	.matches = {
-+		DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+		DMI_MATCH(DMI_PRODUCT_NAME, "80E1"),
-+		},
-+	},
- 	/*
- 	 * https://bugzilla.kernel.org/show_bug.cgi?id=196907
- 	 * Some Dell XPS13 9360 cannot do suspend-to-idle using the Low Power
+diff --git a/security/selinux/ss/policydb.h b/security/selinux/ss/policydb.h
+index 215f8f30ac5a..2a479785ebd4 100644
+--- a/security/selinux/ss/policydb.h
++++ b/security/selinux/ss/policydb.h
+@@ -360,6 +360,8 @@ static inline int put_entry(const void *buf, size_t bytes, int num, struct polic
+ {
+ 	size_t len = bytes * num;
+ 
++	if (len > fp->len)
++		return -EINVAL;
+ 	memcpy(fp->data, buf, len);
+ 	fp->data += len;
+ 	fp->len -= len;
 -- 
 2.35.1
 
