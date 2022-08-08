@@ -2,113 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03573C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 20:13:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44479C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 20:14:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243651AbiHHUNq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 16:13:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38448 "EHLO
+        id S244046AbiHHUOm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 16:14:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231527AbiHHUNo (ORCPT
+        with ESMTP id S231527AbiHHUOk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 16:13:44 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822B1109B;
-        Mon,  8 Aug 2022 13:13:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ThFI7Ax7C1Cn3jLUZILW1k1+Pp+HEQIbEwmrqGliX8k=; b=M9nDUPUC6SVJ6oheLfui7IYTHl
-        JaHUbXCA1X6X6Wumd2iB4PteYn6Dai5IcAjw6CoRKTa4wu2H9lwvOfaTyqr8C+8FU27Yh8HqXv3W+
-        AdhboDBGx0kzcGe52KwnFJGcWcG58DyXNotlTx8c21ofCwnTnOSBmVKDmOKho8sLYnCI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oL981-00CkxX-1u; Mon, 08 Aug 2022 22:13:33 +0200
-Date:   Mon, 8 Aug 2022 22:13:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ravi Gunasekaran <r-gunasekaran@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-omap@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kishon@ti.com,
-        vigneshr@ti.com
-Subject: Re: [RESEND PATCH] net: ethernet: ti: davinci_mdio: Add workaround
- for errata i2329
-Message-ID: <YvFubdCiU7J8Ufi4@lunn.ch>
-References: <20220808111229.11951-1-r-gunasekaran@ti.com>
+        Mon, 8 Aug 2022 16:14:40 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B61061903F
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 13:14:38 -0700 (PDT)
+Received: from dslb-188-096-136-209.188.096.pools.vodafone-ip.de ([188.96.136.209] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1oL98x-0000V9-BU; Mon, 08 Aug 2022 22:14:31 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 3/5] staging: r8188eu: change all num...Q variables to u8
+Date:   Mon,  8 Aug 2022 22:14:03 +0200
+Message-Id: <20220808201405.68966-4-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220808201405.68966-1-martin@kaiser.cx>
+References: <20220808201405.68966-1-martin@kaiser.cx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220808111229.11951-1-r-gunasekaran@ti.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +static int davinci_mdio_sw_read(struct mii_bus *bus, int phy_id, int phy_reg)
-> +{
-> +	struct davinci_mdio_data *data = bus->priv;
-> +	u32 reg, i;
-> +	int ret;
-> +	u8 ack;
-> +
-> +	if (phy_reg & ~PHY_REG_MASK || phy_id & ~PHY_ID_MASK)
-> +		return -EINVAL;
-> +
-> +	ret = pm_runtime_get_sync(data->dev);
-> +	if (ret < 0) {
-> +		pm_runtime_put_noidle(data->dev);
-> +		return ret;
-> +	}
-> +
-> +	davinci_mdio_disable(data);
-> +	davinci_mdio_enable_manual_mode(data);
-> +	davinci_mdio_sw_preamble(data);
-> +
-> +	davinci_mdio_sw_clr_bit(data, MDIO_MDCLK);
-> +	davinci_mdio_sw_set_bit(data, MDIO_OE);
-> +
-> +	 /* Issue clause 22 MII read function {0,1,1,0} */
-> +	davinci_mdio_man_send_pattern(data, C22_BITRANGE, C22_READ_PATTERN);
-> +
-> +	/* Send the device number MSB first */
-> +	davinci_mdio_man_send_pattern(data, PHY_BITRANGE, phy_id);
-> +
-> +	/* Send the register number MSB first */
-> +	davinci_mdio_man_send_pattern(data, PHY_BITRANGE, phy_reg);
-> +
-> +	/* Send turn around cycles */
-> +	davinci_mdio_sw_clr_bit(data, MDIO_OE);
-> +
-> +	davinci_mdio_toggle_man_bit(data, MDIO_MDCLK);
-> +
-> +	ack = davinci_mdio_test_man_bit(data, MDIO_PIN);
-> +	davinci_mdio_toggle_man_bit(data, MDIO_MDCLK);
-> +
-> +	reg = 0;
-> +	if (ack == 0) {
-> +		for (i = MDIO_BITRANGE; i; i = i >> 1) {
-> +			if (davinci_mdio_test_man_bit(data, MDIO_PIN))
-> +				reg |= i;
-> +
-> +			davinci_mdio_toggle_man_bit(data, MDIO_MDCLK);
-> +		}
-> +	} else {
-> +		for (i = MDIO_BITRANGE; i; i = i >> 1)
-> +			davinci_mdio_toggle_man_bit(data, MDIO_MDCLK);
-> +
-> +		reg = 0xFFFF;
-> +	}
-> +
-> +	davinci_mdio_sw_clr_bit(data, MDIO_MDCLK);
-> +	davinci_mdio_sw_set_bit(data, MDIO_MDCLK);
-> +	davinci_mdio_sw_set_bit(data, MDIO_MDCLK);
-> +	davinci_mdio_toggle_man_bit(data, MDIO_MDCLK);
+All of numPubQ, numHQ and numLQ variables store only u8 values. Change
+their types to u8. We can then simplify the REG_RQPN expression. The
+macros and the temporary variable are not needed any more.
 
-You appear to of re-invented drivers/net/mdio/mdio-bitbang.c
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ drivers/staging/r8188eu/hal/usb_halinit.c       | 10 ++++------
+ drivers/staging/r8188eu/include/rtl8188e_spec.h |  4 ----
+ 2 files changed, 4 insertions(+), 10 deletions(-)
 
-If there is a reason this cannot be used, please at least state it in
-the commit message.
+diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
+index 18465e5ce9cc..25fd6b46e76d 100644
+--- a/drivers/staging/r8188eu/hal/usb_halinit.c
++++ b/drivers/staging/r8188eu/hal/usb_halinit.c
+@@ -154,11 +154,10 @@ static void _InitQueueReservedPage(struct adapter *Adapter)
+ {
+ 	struct hal_data_8188e *haldata = &Adapter->haldata;
+ 	struct registry_priv	*pregistrypriv = &Adapter->registrypriv;
+-	u32 numHQ	= 0;
+-	u32 numLQ	= 0;
++	u8 numHQ = 0;
++	u8 numLQ = 0;
+ 	u8 numNQ = 0;
+-	u32 numPubQ;
+-	u32 value32;
++	u8 numPubQ;
+ 
+ 	if (pregistrypriv->wifi_spec) {
+ 		if (haldata->OutEpQueueSel & TX_SELE_HQ)
+@@ -176,8 +175,7 @@ static void _InitQueueReservedPage(struct adapter *Adapter)
+ 		numPubQ = 0xA8 - numHQ - numLQ - numNQ;
+ 
+ 		/*  TX DMA */
+-		value32 = _HPQ(numHQ) | _LPQ(numLQ) | _PUBQ(numPubQ) | LD_RQPN;
+-		rtw_write32(Adapter, REG_RQPN, value32);
++		rtw_write32(Adapter, REG_RQPN, LD_RQPN | numPubQ << 16 | numLQ << 8 | numHQ);
+ 	} else {
+ 		rtw_write16(Adapter, REG_RQPN_NPQ, 0x0000);/* Just follow MP Team,??? Georgia 03/28 */
+ 		rtw_write16(Adapter, REG_RQPN_NPQ, 0x0d);
+diff --git a/drivers/staging/r8188eu/include/rtl8188e_spec.h b/drivers/staging/r8188eu/include/rtl8188e_spec.h
+index d9a85fd13230..011da538df5f 100644
+--- a/drivers/staging/r8188eu/include/rtl8188e_spec.h
++++ b/drivers/staging/r8188eu/include/rtl8188e_spec.h
+@@ -924,10 +924,6 @@ Current IOREG MAP
+ #define _LLT_OP_VALUE(x)		(((x) >> 30) & 0x3)
+ 
+ /* 	0x0200h ~ 0x027Fh	TXDMA Configuration */
+-/* 2RQPN */
+-#define _HPQ(x)				((x) & 0xFF)
+-#define _LPQ(x)				(((x) & 0xFF) << 8)
+-#define _PUBQ(x)			(((x) & 0xFF) << 16)
+ 
+ #define HPQ_PUBLIC_DIS			BIT(24)
+ #define LPQ_PUBLIC_DIS			BIT(25)
+-- 
+2.30.2
 
-    Andrew
