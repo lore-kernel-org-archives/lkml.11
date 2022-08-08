@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE05DC25B07
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A59C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243490AbiHHBx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33986 "EHLO
+        id S243499AbiHHBx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243494AbiHHBvG (ORCPT
+        with ESMTP id S243504AbiHHBvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:51:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB30DCE3E;
-        Sun,  7 Aug 2022 18:38:06 -0700 (PDT)
+        Sun, 7 Aug 2022 21:51:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C196D10F;
+        Sun,  7 Aug 2022 18:38:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A0AFB80E16;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CD9760DF3;
+        Mon,  8 Aug 2022 01:38:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CED95C433D6;
         Mon,  8 Aug 2022 01:38:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 394C6C433D7;
-        Mon,  8 Aug 2022 01:38:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922684;
-        bh=kIWsF77zWPnhFX+qG0aWMe2sCIO7+gDIJgIDthFSsDM=;
+        s=k20201202; t=1659922686;
+        bh=chmQ/QxK3qmOWMj+owMuXHL1OP1NT36bYWpNDyJ2YCw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lj0a6kSGUCoJCW4Q7T6DZdwse91vl0se0aD4dnLXg2kuecaTZCb04eV/5I6m8PRyn
-         fgJDHUqq1bdHZvp8KaZ6ju9O/izHnj5p1/XXJVt0yZbYMsptESbXshn/wgSBcEDAgs
-         Evk/YFCgM/tSVR58QdH+m7PJ5btC1yLvQSgo9N0dmUW7izWpQH1hhfOs5QGklRiFza
-         7dFSqHty4O9n4Z8KwjepDXpr8VbqIn3iiRzpNEBNFMurzXWNrZZgZ4FUQ2Kuay9k6r
-         I+kCzFHbsVPyrMz0iCeRsC/tVcsjSZteK1xCkiTQzMUttgppfH9KGhLNYck9mShfwm
-         Jmb5PChNZVNpA==
+        b=OSak4nV6KNA3GfCCrz7sdE5kqtTB7XNTYbC9wkINofGgcnvPK4XbyZJsUe1zMHUM4
+         N2ZnadIpntg8Yk14Mwt5zSvSnkPqGnMfzGWUvEmGkydRoIuCtFrZzD/I8AvkI9tG/l
+         Bcz2814QEQbeehQUjOb5DZaXN6THC6fv9n+Ot0aADzEBeNDTi3MuguURl24u00698G
+         c6hEdsq0a/DTVjrcghX0zvCP6DWJB4I6R1wN8kCQ/ktEd2tlLt6lTjqCkkjFvsVvhP
+         mf8++ChAsLmgbFbFyzityLFe7TKDtZz1psLYlvoMY+0rfVNYA58gYm9efiL5zZShII
+         G1DGST0ucS1jQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
@@ -39,9 +39,9 @@ Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
         Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 13/29] ARM: dts: imx6ul: fix csi node compatible
-Date:   Sun,  7 Aug 2022 21:37:23 -0400
-Message-Id: <20220808013741.316026-13-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 15/29] ARM: dts: imx6ul: fix qspi node compatible
+Date:   Sun,  7 Aug 2022 21:37:25 -0400
+Message-Id: <20220808013741.316026-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013741.316026-1-sashal@kernel.org>
 References: <20220808013741.316026-1-sashal@kernel.org>
@@ -55,15 +55,17 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit e0aca931a2c7c29c88ebf37f9c3cd045e083483d ]
+[ Upstream commit 0c6cf86e1ab433b2d421880fdd9c6e954f404948 ]
 
-"fsl,imx6ul-csi" was never listed as compatible to "fsl,imx7-csi", neither
-in yaml bindings, nor previous txt binding. Remove the imx7 part. Fixes
-the dt schema check warning:
-csi@21c4000: compatible: 'oneOf' conditional failed, one must be fixed:
-['fsl,imx6ul-csi', 'fsl,imx7-csi'] is too long
-Additional items are not allowed ('fsl,imx7-csi' was unexpected)
-'fsl,imx8mm-csi' was expected
+imx6ul is not compatible to imx6sx, both have different erratas.
+Fixes the dt_binding_check warning:
+spi@21e0000: compatible: 'oneOf' conditional failed, one must be fixed:
+['fsl,imx6ul-qspi', 'fsl,imx6sx-qspi'] is too long
+Additional items are not allowed ('fsl,imx6sx-qspi' was unexpected)
+'fsl,imx6ul-qspi' is not one of ['fsl,ls1043a-qspi']
+'fsl,imx6ul-qspi' is not one of ['fsl,imx8mq-qspi']
+'fsl,ls1021a-qspi' was expected
+'fsl,imx7d-qspi' was expected
 
 Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
 Signed-off-by: Shawn Guo <shawnguo@kernel.org>
@@ -73,18 +75,18 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index 1474985b9908..8e6079a68022 100644
+index 51de36b4125a..c40684ad11b8 100644
 --- a/arch/arm/boot/dts/imx6ul.dtsi
 +++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -995,7 +995,7 @@ cpu_speed_grade: speed-grade@10 {
- 			};
- 
- 			csi: csi@21c4000 {
--				compatible = "fsl,imx6ul-csi", "fsl,imx7-csi";
-+				compatible = "fsl,imx6ul-csi";
- 				reg = <0x021c4000 0x4000>;
- 				interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
- 				clocks = <&clks IMX6UL_CLK_CSI>;
+@@ -1025,7 +1025,7 @@ pxp: pxp@21cc000 {
+ 			qspi: spi@21e0000 {
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				compatible = "fsl,imx6ul-qspi", "fsl,imx6sx-qspi";
++				compatible = "fsl,imx6ul-qspi";
+ 				reg = <0x021e0000 0x4000>, <0x60000000 0x10000000>;
+ 				reg-names = "QuadSPI", "QuadSPI-memory";
+ 				interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
 -- 
 2.35.1
 
