@@ -2,163 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B25F1C25B0C
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 19:00:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D8AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 19:01:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243954AbiHHTAD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 15:00:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51218 "EHLO
+        id S233696AbiHHTAi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 15:00:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236313AbiHHTAA (ORCPT
+        with ESMTP id S244118AbiHHTA3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 15:00:00 -0400
-X-Greylist: delayed 468 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 08 Aug 2022 11:59:58 PDT
-Received: from www.linux-watchdog.org (www.linux-watchdog.org [185.87.125.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 54C261834C;
-        Mon,  8 Aug 2022 11:59:58 -0700 (PDT)
-Received: by www.linux-watchdog.org (Postfix, from userid 500)
-        id 3EA5C409F8; Mon,  8 Aug 2022 19:12:16 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 www.linux-watchdog.org 3EA5C409F8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-watchdog.org;
-        s=odk20180602; t=1659978736;
-        bh=KCx0IvLfZfun9tgRq6MimD6dvHCdYmSX9rsZgPoZ8JQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=dP+GnXWlOOorguuSoB2v5TwJXPk5G8hW1h4X0wne3NwexQB61mY9BdVvPv8GB4txW
-         HPPNQahRZnlQRD6jmaHYXK9nC7Tj7y6qlaOQzeEQzKQ8cTpWiqQ0Eha9Ae/fmzuuxS
-         mYnxTbp6tcpKFYJcNkfRVneKqw433skwR4pkM+R0=
-Date:   Mon, 8 Aug 2022 19:12:16 +0200
-From:   Wim Van Sebroeck <wim@linux-watchdog.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Abel Vesa <abel.vesa@nxp.com>,
-        Bing Fan <tombinfan@tencent.com>,
-        Jason Wang <wangborong@cdjrlc.com>,
-        Jean Delvare <jdelvare@suse.de>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Luca Ceresoli <luca@lucaceresoli.net>,
-        Luo Xueqin <luoxueqin@kylinos.cn>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Rob Herring <robh@kernel.org>,
-        Rohit Agarwal <quic_rohiagar@quicinc.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
-        William Dean <williamsukatube@gmail.com>
-Subject: [GIT PULL REQUEST] watchdog - v5.20 release cycle.
-Message-ID: <20220808171216.GA19810@www.linux-watchdog.org>
+        Mon, 8 Aug 2022 15:00:29 -0400
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C50C204;
+        Mon,  8 Aug 2022 12:00:28 -0700 (PDT)
+Received: from [2603:3005:d05:2b00:6e0b:84ff:fee2:98bb] (helo=imladris.surriel.com)
+        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <riel@shelob.surriel.com>)
+        id 1oL7zA-0007FO-AO;
+        Mon, 08 Aug 2022 15:00:20 -0400
+Date:   Mon, 8 Aug 2022 15:00:19 -0400
+From:   Rik van Riel <riel@surriel.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Josh Poimboeuf <jpoimboe@kernel.org>, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org, kernel-team@fb.com,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>
+Subject: [PATCH v5]  livepatch: fix race between fork and KLP transition
+Message-ID: <20220808150019.03d6a67b@imladris.surriel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.20 (2009-12-10)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Sender: riel@shelob.surriel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+The KLP transition code depends on the TIF_PATCH_PENDING and
+the task->patch_state to stay in sync. On a normal (forward)
+transition, TIF_PATCH_PENDING will be set on every task in
+the system, while on a reverse transition (after a failed
+forward one) first TIF_PATCH_PENDING will be cleared from
+every task, followed by it being set on tasks that need to
+be transitioned back to the original code.
 
-Please pull following watchdog changes for the v5.20 release cycle.
+However, the fork code copies over the TIF_PATCH_PENDING flag
+from the parent to the child early on, in dup_task_struct and
+setup_thread_stack. Much later, klp_copy_process will set
+child->patch_state to match that of the parent.
 
-This series contains:
-* add RTL9310 support
-* sp805_wdt: add arm cmsdk apb wdt support
-* Remove #ifdef guards for PM related functions for several watchdog device drivers
-* pm8916_wdt reboot improvements
-* Several other fixes and improvements
+However, the parent's patch_state may have been changed by KLP loading
+or unloading since it was initially copied over into the child.
 
-The output from git request-pull:
-----------------------------------------------------------------
-The following changes since commit a111daf0c53ae91e71fd2bfe7497862d14132e3e:
+This results in the KLP code occasionally hitting this warning in
+klp_complete_transition:
 
-  Linux 5.19-rc3 (2022-06-19 15:06:47 -0500)
+        for_each_process_thread(g, task) {
+                WARN_ON_ONCE(test_tsk_thread_flag(task, TIF_PATCH_PENDING));
+                task->patch_state = KLP_UNDEFINED;
+        }
 
-are available in the git repository at:
+Set, or clear, the TIF_PATCH_PENDING flag in the child task
+depending on whether or not it is needed at the time
+klp_copy_process is called, at a point in copy_process where the
+tasklist_lock is held exclusively, preventing races with the KLP
+code.
 
-  git://www.linux-watchdog.org/linux-watchdog.git tags/linux-watchdog-5.20-rc1
+The KLP code does have a few places where the state is changed
+without the tasklist_lock held, but those should not cause
+problems because klp_update_patch_state(current) cannot be
+called while the current task is in the middle of fork,
+klp_check_and_switch_task() which is called under the pi_lock,
+which prevents rescheduling, and manipulation of the patch
+state of idle tasks, which do not fork.
 
-for you to fetch changes up to 2d27e52841092e5831dd41f313028c668d816eb0:
+This should prevent this warning from triggering again in the
+future, and close the race for both normal and reverse transitions.
 
-  watchdog: armada_37xx_wdt: check the return value of devm_ioremap() in armada_37xx_wdt_probe() (2022-07-23 14:26:42 +0200)
+Signed-off-by: Rik van Riel <riel@surriel.com>
+Reported-by: Breno Leitao <leitao@debian.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Fixes: d83a7cb375ee ("livepatch: change to a per-task consistency model")
+Cc: stable@kernel.org
+---
+v5: incorporate changelog suggestions by Petr (thank you)
 
-----------------------------------------------------------------
-linux-watchdog 5.20-rc1 tag
+ kernel/livepatch/transition.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
-----------------------------------------------------------------
-Abel Vesa (1):
-      dt-bindings: watchdog: Add fsl,scu-wdt yaml file
+diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+index 5d03a2ad1066..30187b1d8275 100644
+--- a/kernel/livepatch/transition.c
++++ b/kernel/livepatch/transition.c
+@@ -610,9 +610,23 @@ void klp_reverse_transition(void)
+ /* Called from copy_process() during fork */
+ void klp_copy_process(struct task_struct *child)
+ {
+-	child->patch_state = current->patch_state;
+ 
+-	/* TIF_PATCH_PENDING gets copied in setup_thread_stack() */
++	/*
++	 * The parent process may have gone through a KLP transition since
++	 * the thread flag was copied in setup_thread_stack earlier. Bring
++	 * the task flag up to date with the parent here.
++	 *
++	 * The operation is serialized against all klp_*_transition()
++	 * operations by the tasklist_lock. The only exception is
++	 * klp_update_patch_state(current), but we cannot race with
++	 * that because we are current.
++	 */
++	if (test_tsk_thread_flag(current, TIF_PATCH_PENDING))
++		set_tsk_thread_flag(child, TIF_PATCH_PENDING);
++	else
++		clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
++
++	child->patch_state = current->patch_state;
+ }
+ 
+ /*
+-- 
+2.37.1
 
-Bing Fan (1):
-      watchdog: sp805_wdt: add arm cmsdk apb wdt support
-
-Jason Wang (2):
-      watchdog: Fix comment typo
-      watchdog: dw_wdt: Fix comment typo
-
-Jean Delvare (1):
-      watchdog: sp5100_tco: Fix a memory leak of EFCH MMIO resource
-
-Jiasheng Jiang (1):
-      watchdog: f71808e_wdt: Add check for platform_driver_register
-
-Luca Ceresoli (1):
-      watchdog: max77620: update Luca Ceresoli's e-mail address
-
-Luo Xueqin (1):
-      watchdog:Fix typo in comment
-
-Paul Cercueil (8):
-      watchdog: bcm7038_wdt: Remove #ifdef guards for PM related functions
-      watchdog: dw_wdt: Remove #ifdef guards for PM related functions
-      watchdog: mtk_wdt: Remove #ifdef guards for PM related functions
-      watchdog: s3c2410_wdt: Remove #ifdef guards for PM related functions
-      watchdog: sama5d4_wdt: Remove #ifdef guards for PM related functions
-      watchdog: st_lpc_wdt: Remove #ifdef guards for PM related functions
-      watchdog: tegra_wdt: Remove #ifdef guards for PM related functions
-      watchdog: wdat_wdt: Remove #ifdef guards for PM related functions
-
-Rob Herring (1):
-      dt-bindings: watchdog: faraday: Fix typo in example 'timeout-sec' property
-
-Rohit Agarwal (1):
-      dt-bindings: watchdog: Add binding for Qcom SDX65
-
-Sander Vanheule (2):
-      dt-bindings: watchdog: realtek,otto-wdt: add RTL9310
-      watchdog: realtek-otto: add RTL9310 support
-
-Stephan Gerhold (3):
-      watchdog: pm8916_wdt: Avoid read of write-only PET register
-      watchdog: pm8916_wdt: Report reboot reason
-      watchdog: pm8916_wdt: Handle watchdog enabled by bootloader
-
-William Dean (1):
-      watchdog: armada_37xx_wdt: check the return value of devm_ioremap() in armada_37xx_wdt_probe()
-
- .../devicetree/bindings/arm/freescale/fsl,scu.txt  | 15 --------
- .../bindings/watchdog/faraday,ftwdt010.yaml        |  2 +-
- .../devicetree/bindings/watchdog/qcom-wdt.yaml     |  1 +
- .../bindings/watchdog/realtek,otto-wdt.yaml        |  1 +
- drivers/watchdog/armada_37xx_wdt.c                 |  2 ++
- drivers/watchdog/bcm7038_wdt.c                     |  8 ++---
- drivers/watchdog/booke_wdt.c                       |  2 +-
- drivers/watchdog/dw_wdt.c                          |  8 ++---
- drivers/watchdog/f71808e_wdt.c                     |  4 ++-
- drivers/watchdog/max77620_wdt.c                    |  4 +--
- drivers/watchdog/mtk_wdt.c                         | 10 ++----
- drivers/watchdog/pc87413_wdt.c                     |  2 +-
- drivers/watchdog/pm8916_wdt.c                      | 41 +++++++++++++++++++---
- drivers/watchdog/realtek_otto_wdt.c                |  1 +
- drivers/watchdog/s3c2410_wdt.c                     |  9 ++---
- drivers/watchdog/sama5d4_wdt.c                     |  8 ++---
- drivers/watchdog/sp5100_tco.c                      |  1 +
- drivers/watchdog/sp805_wdt.c                       |  5 +++
- drivers/watchdog/st_lpc_wdt.c                      |  9 ++---
- drivers/watchdog/tegra_wdt.c                       | 14 +++-----
- drivers/watchdog/wdat_wdt.c                        |  7 ++--
- 21 files changed, 81 insertions(+), 73 deletions(-)
-----------------------------------------------------------------
-
-Kind regards,
-Wim.
 
