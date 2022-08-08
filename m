@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32DDEC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:48:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6232C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:49:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243145AbiHHBsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54866 "EHLO
+        id S243195AbiHHBtM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243141AbiHHBsU (ORCPT
+        with ESMTP id S243165AbiHHBs2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:48:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04BB167EC;
-        Sun,  7 Aug 2022 18:37:08 -0700 (PDT)
+        Sun, 7 Aug 2022 21:48:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F277515FC1;
+        Sun,  7 Aug 2022 18:37:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 905F560EB5;
-        Mon,  8 Aug 2022 01:37:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16925C433D6;
-        Mon,  8 Aug 2022 01:37:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B185760DBB;
+        Mon,  8 Aug 2022 01:37:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38ABFC433C1;
+        Mon,  8 Aug 2022 01:37:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922627;
-        bh=uY13mo9qtASTnrLurEscpXAMDs4UVUh1xoWThPdMtxw=;
+        s=k20201202; t=1659922624;
+        bh=FhVTNG+2NCgm7ZoRqLg5i5RITzfyGFyyrNjWQjlN2ug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mQrj/6IZANINTSp2BJzqmESCr9Hc1B5UnnRfF1EGZpZaOPRVdGBJXJnsfuQpqyAtF
-         c8teL0yG/7tid7392uoL462baxs0w5XTnDB6ud7WcC0YZH46MO5XoeX4iz7WR2j/dK
-         0OV5aGTWXGb8iWlVn+2PT1Z2M/naQrpjTOy72lseabkETimap2fS9gALGd5jPFBl+H
-         Z8f+xthYqzGP9jyicRlqlRdM07XKtV9MxTrx66+mHbEAlOyvGjaUo3Y8KQNzRa5POe
-         0wFFilt28vNLCZMIHnbDaikI2TYjh1S1ONsghqszbWUbpvptmz+wtcETzvd0A24LyA
-         j4FGml9zfcneg==
+        b=vMaqWYdI22uvYVbUUvzGzb4Z+nvlgoFRhdh6TpZKbWUrehC/+nxkGUgy8BazhUVTQ
+         q0fMUeQMXkWxdhLelw/4HvLMGSpezo7/PtCuc+T1ruajDpfP9pqQND5QGj6d8bU85x
+         VSDoEJRaoqE6+HckVO+JqnCrbgp3fApL0oJKlWQIIQS1uW1hnabx/EWs+P6BtMt0I9
+         Kgf0J5VOMlCHAQxNsr53UpNXMbXtgQ6qDoZxjagfcL56qRycFOnZM0qsoveG0rwlx6
+         7fyXRxOZb2Rd3nbCX6syccRZch450n67LhIROKImBjVNfWgad759kjCwO9dfDyyRbP
+         4fdA9tUxKAgrQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liang He <windhl@126.com>, Tony Lindgren <tony@atomide.com>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 28/45] ARM: OMAP2+: display: Fix refcount leak bug
-Date:   Sun,  7 Aug 2022 21:35:32 -0400
-Message-Id: <20220808013551.315446-28-sashal@kernel.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 26/45] ARM: dts: ux500: Fix Gavini accelerometer mounting matrix
+Date:   Sun,  7 Aug 2022 21:35:30 -0400
+Message-Id: <20220808013551.315446-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013551.315446-1-sashal@kernel.org>
 References: <20220808013551.315446-1-sashal@kernel.org>
@@ -51,34 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-[ Upstream commit 50b87a32a79bca6e275918a711fb8cc55e16d739 ]
+[ Upstream commit e24c75f02a81d6ddac0072cbd7a03e799c19d558 ]
 
-In omapdss_init_fbdev(), of_find_node_by_name() will return a node
-pointer with refcount incremented. We should use of_node_put() when
-it is not used anymore.
+This was fixed wrong so fix it. Now verified by using
+iio-sensor-proxy monitor-sensor test program.
 
-Signed-off-by: Liang He <windhl@126.com>
-Message-Id: <20220617145803.4050918-1-windhl@126.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Link: https://lore.kernel.org/r/20220611205138.491513-1-linus.walleij@linaro.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap2/display.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/ste-ux500-samsung-gavini.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mach-omap2/display.c b/arch/arm/mach-omap2/display.c
-index 21413a9b7b6c..eb09a25e3b45 100644
---- a/arch/arm/mach-omap2/display.c
-+++ b/arch/arm/mach-omap2/display.c
-@@ -211,6 +211,7 @@ static int __init omapdss_init_fbdev(void)
- 	node = of_find_node_by_name(NULL, "omap4_padconf_global");
- 	if (node)
- 		omap4_dsi_mux_syscon = syscon_node_to_regmap(node);
-+	of_node_put(node);
- 
- 	return 0;
- }
+diff --git a/arch/arm/boot/dts/ste-ux500-samsung-gavini.dts b/arch/arm/boot/dts/ste-ux500-samsung-gavini.dts
+index fabc390ccb0c..6c9e812ef03f 100644
+--- a/arch/arm/boot/dts/ste-ux500-samsung-gavini.dts
++++ b/arch/arm/boot/dts/ste-ux500-samsung-gavini.dts
+@@ -502,8 +502,8 @@ i2c-gate {
+ 					accelerometer@18 {
+ 						compatible = "bosch,bma222e";
+ 						reg = <0x18>;
+-						mount-matrix = "0", "1", "0",
+-							       "-1", "0", "0",
++						mount-matrix = "0", "-1", "0",
++							       "1", "0", "0",
+ 							       "0", "0", "1";
+ 						vddio-supply = <&ab8500_ldo_aux2_reg>; // 1.8V
+ 						vdd-supply = <&ab8500_ldo_aux1_reg>; // 3V
 -- 
 2.35.1
 
