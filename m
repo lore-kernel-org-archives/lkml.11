@@ -2,351 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63D71C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 06:28:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6880DC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 06:31:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237454AbiHHG2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 02:28:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60316 "EHLO
+        id S236074AbiHHGbe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 02:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236243AbiHHG1l (ORCPT
+        with ESMTP id S233495AbiHHGbc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 02:27:41 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF0113CC7
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 23:27:26 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2785m2e0014907;
-        Mon, 8 Aug 2022 06:27:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=5cbhY/9EVQFT+FZ5lduHh+TIxdE4tvXhkR9/Vzfcm+I=;
- b=GosEhVDdne/4fSuJeGOH+HX635P5DP5eZW3boe9QbcdSfjVE3O6kLDioRYh6Jq8qGAx+
- CZw/HZ/FhCuN/2EgAbspPcQ9lOOq3sQyLqXoln+J0sslXx5NNM/5ZbQXD3HY/T3lHvpL
- QJlov3Hf4k0MXtTKTcEfRB2jkcy6LSkj0ybwSthKVrw6ui2+TpM7buW438loyxezNWIc
- HFr41YMg+oaJSI3+d9beqkIzMXHY6QIAf8hxWzuSaZwfmTPkhtFG9tlfYyaE3pF0iVUu
- 5pObsT8kNrp4D0j4GLhxHg4XktM2Gedjn4a2sU2MYxtdS4NxKXpKT6SvbgQQzPLv2ak4 mg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3htvnj8vc6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 08 Aug 2022 06:27:02 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2786R1pB029194;
-        Mon, 8 Aug 2022 06:27:01 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3htvnj8vbr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 08 Aug 2022 06:27:01 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2786Lb4W017082;
-        Mon, 8 Aug 2022 06:27:00 GMT
-Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
-        by ppma01dal.us.ibm.com with ESMTP id 3hsfx9dht9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 08 Aug 2022 06:27:00 +0000
-Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2786QxdQ34079178
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 8 Aug 2022 06:26:59 GMT
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6A3697805E;
-        Mon,  8 Aug 2022 06:26:59 +0000 (GMT)
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C4EC578060;
-        Mon,  8 Aug 2022 06:26:53 +0000 (GMT)
-Received: from skywalker.ibmuc.com (unknown [9.43.19.76])
-        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon,  8 Aug 2022 06:26:53 +0000 (GMT)
-From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-To:     linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
-Subject: [PATCH v13 7/9] mm/demotion: Demote pages according to allocation fallback order
-Date:   Mon,  8 Aug 2022 11:55:59 +0530
-Message-Id: <20220808062601.836025-8-aneesh.kumar@linux.ibm.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220808062601.836025-1-aneesh.kumar@linux.ibm.com>
-References: <20220808062601.836025-1-aneesh.kumar@linux.ibm.com>
+        Mon, 8 Aug 2022 02:31:32 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A761BCBA;
+        Sun,  7 Aug 2022 23:31:28 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 463005FD04;
+        Mon,  8 Aug 2022 09:31:24 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1659940284;
+        bh=IjKJpx3bmBabF6bKC/I/OqMndOebQIAA5aw0VvYd9ZQ=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=AUrQdSs6DQ8UdZb02KAq+95S+2eZlEg9avlZHf18KO3uXS0NoeCE3KPNuw8hM8ekG
+         Bnno3pn6vDb31/uHLgusz8wI/2Jw8mM8eH48LOXTMsk3Z2aULSKiRQoa5gkK/pc3kH
+         7y6pgIhTK4MCiKMuNqHSOdcSxSnFZHvnXioTf1Q9ph/oebnaf+tHrz5Zt2EzUEOZvA
+         1KuGHgcXV2p8Z1KgLQN92xly+0Cq6ti5Z2HmE+vcZ37HYFFRyqh6JU5rtf8JMMIBMs
+         K1owIwZgVrI+SpvZ5gOTinQ7FFKxYxFJIPEjce+Quwf0lVFsPkvEKXZXLEbNo4bkq9
+         TShpNmr3ylRvw==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Mon,  8 Aug 2022 09:31:19 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "Dexuan Cui" <decui@microsoft.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Bryan Tan <bryantan@vmware.com>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        "VMware PV-Drivers Reviewers" <pv-drivers@vmware.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [RFC PATCH v3 0/9] vsock: updates for SO_RCVLOWAT handling
+Thread-Topic: [RFC PATCH v3 0/9] vsock: updates for SO_RCVLOWAT handling
+Thread-Index: AQHYpz+pcvNrW+Wes06KlvYKyF5H+a2gSZIAgAQWkgA=
+Date:   Mon, 8 Aug 2022 06:30:31 +0000
+Message-ID: <6f32ea12-f209-d921-ce1b-efa7c74a4f63@sberdevices.ru>
+References: <2ac35e2c-26a8-6f6d-2236-c4692600db9e@sberdevices.ru>
+ <20220805160528.4jzyrjppdftrvdr5@sgarzare-redhat>
+In-Reply-To: <20220805160528.4jzyrjppdftrvdr5@sgarzare-redhat>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A2120B128FC9C64C8E0D6F3918815143@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: vor45uBoi5FBGc5QtrQkJaiOIpgrFeAO
-X-Proofpoint-ORIG-GUID: x6z_kVw9zfDBGetinuziU1S0SRELzVeP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-08_03,2022-08-05_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- impostorscore=0 bulkscore=0 adultscore=0 lowpriorityscore=0 spamscore=0
- clxscore=1015 suspectscore=0 mlxlogscore=999 mlxscore=0 priorityscore=1501
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2208080031
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/08 03:38:00 #20075575
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jagdish Gediya <jvgediya.oss@gmail.com>
-
-Currently, a higher tier node can only be demoted to selected nodes on the next
-lower tier as defined by the demotion path. This strict demotion order does not
-work in all use cases (e.g. some use cases may want to allow cross-socket
-demotion to another node in the same demotion tier as a fallback when the
-preferred demotion node is out of space). This demotion order is also
-inconsistent with the page allocation fallback order when all the nodes in a
-higher tier are out of space: The page allocation can fall back to any node from
-any lower tier, whereas the demotion order doesn't allow that currently.
-
-This patch adds support to get all the allowed demotion targets for a memory
-tier. demote_page_list() function is now modified to utilize this allowed node
-mask as the fallback allocation mask.
-
-Signed-off-by: Jagdish Gediya <jvgediya.oss@gmail.com>
-Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
----
- include/linux/memory-tiers.h | 12 ++++++++
- mm/memory-tiers.c            | 51 +++++++++++++++++++++++++++++--
- mm/vmscan.c                  | 58 ++++++++++++++++++++++++++----------
- 3 files changed, 103 insertions(+), 18 deletions(-)
-
-diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
-index c8cd593fa2df..341ba8082e05 100644
---- a/include/linux/memory-tiers.h
-+++ b/include/linux/memory-tiers.h
-@@ -4,6 +4,7 @@
- 
- #include <linux/types.h>
- #include <linux/nodemask.h>
-+#include <linux/mmzone.h>
- /*
-  * Each tier cover a abstrace distance chunk size of 128
-  */
-@@ -33,11 +34,17 @@ void init_node_memory_type(int node, struct memory_dev_type *default_type);
- void clear_node_memory_type(int node, struct memory_dev_type *memtype);
- #ifdef CONFIG_MIGRATION
- int next_demotion_node(int node);
-+void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets);
- #else
- static inline int next_demotion_node(int node)
- {
- 	return NUMA_NO_NODE;
- }
-+
-+static inline void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets)
-+{
-+	*targets = NODE_MASK_NONE;
-+}
- #endif
- 
- #else
-@@ -57,5 +64,10 @@ static inline int next_demotion_node(int node)
- {
- 	return NUMA_NO_NODE;
- }
-+
-+static inline void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets)
-+{
-+	*targets = NODE_MASK_NONE;
-+}
- #endif	/* CONFIG_NUMA */
- #endif  /* _LINUX_MEMORY_TIERS_H */
-diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-index 3778ac6a44a1..925d7168e825 100644
---- a/mm/memory-tiers.c
-+++ b/mm/memory-tiers.c
-@@ -5,7 +5,6 @@
- #include <linux/kobject.h>
- #include <linux/memory.h>
- #include <linux/random.h>
--#include <linux/mmzone.h>
- #include <linux/memory-tiers.h>
- 
- #include "internal.h"
-@@ -21,6 +20,8 @@ struct memory_tier {
- 	 * adistance_start .. adistance_start + MEMTIER_CHUNK_SIZE
- 	 */
- 	int adistance_start;
-+	/* All the nodes that are part of all the lower memory tiers. */
-+	nodemask_t lower_tier_mask;
- };
- 
- struct demotion_nodes {
-@@ -153,6 +154,24 @@ static struct memory_tier *__node_get_memory_tier(int node)
- }
- 
- #ifdef CONFIG_MIGRATION
-+void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets)
-+{
-+	struct memory_tier *memtier;
-+
-+	/*
-+	 * pg_data_t.memtier updates includes a synchronize_rcu()
-+	 * which ensures that we either find NULL or a valid memtier
-+	 * in NODE_DATA. protect the access via rcu_read_lock();
-+	 */
-+	rcu_read_lock();
-+	memtier = rcu_dereference(pgdat->memtier);
-+	if (memtier)
-+		*targets = memtier->lower_tier_mask;
-+	else
-+		*targets = NODE_MASK_NONE;
-+	rcu_read_unlock();
-+}
-+
- /**
-  * next_demotion_node() - Get the next node in the demotion path
-  * @node: The starting node to lookup the next node
-@@ -200,10 +219,19 @@ int next_demotion_node(int node)
- 
- static void disable_all_demotion_targets(void)
- {
-+	struct memory_tier *memtier;
- 	int node;
- 
--	for_each_node_state(node, N_MEMORY)
-+	for_each_node_state(node, N_MEMORY) {
- 		node_demotion[node].preferred = NODE_MASK_NONE;
-+		/*
-+		 * We are holding memory_tier_lock, it is safe
-+		 * to access pgda->memtier.
-+		 */
-+		memtier = __node_get_memory_tier(node);
-+		if (memtier)
-+			memtier->lower_tier_mask = NODE_MASK_NONE;
-+	}
- 	/*
- 	 * Ensure that the "disable" is visible across the system.
- 	 * Readers will see either a combination of before+disable
-@@ -235,7 +263,7 @@ static void establish_demotion_targets(void)
- 	struct demotion_nodes *nd;
- 	int target = NUMA_NO_NODE, node;
- 	int distance, best_distance;
--	nodemask_t tier_nodes;
-+	nodemask_t tier_nodes, lower_tier;
- 
- 	lockdep_assert_held_once(&memory_tier_lock);
- 
-@@ -283,6 +311,23 @@ static void establish_demotion_targets(void)
- 			}
- 		} while (1);
- 	}
-+	/*
-+	 * Now build the lower_tier mask for each node collecting node mask from
-+	 * all memory tier below it. This allows us to fallback demotion page
-+	 * allocation to a set of nodes that is closer the above selected
-+	 * perferred node.
-+	 */
-+	lower_tier = node_states[N_MEMORY];
-+	list_for_each_entry(memtier, &memory_tiers, list) {
-+		/*
-+		 * Keep removing current tier from lower_tier nodes,
-+		 * This will remove all nodes in current and above
-+		 * memory tier from the lower_tier mask.
-+		 */
-+		tier_nodes = get_memtier_nodemask(memtier);
-+		nodes_andnot(lower_tier, lower_tier, tier_nodes);
-+		memtier->lower_tier_mask = lower_tier;
-+	}
- }
- 
- #else
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 5043b10ff71e..74b4ee8eca2b 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -1460,21 +1460,34 @@ static void folio_check_dirty_writeback(struct folio *folio,
- 		mapping->a_ops->is_dirty_writeback(folio, dirty, writeback);
- }
- 
--static struct page *alloc_demote_page(struct page *page, unsigned long node)
-+static struct page *alloc_demote_page(struct page *page, unsigned long private)
- {
--	struct migration_target_control mtc = {
--		/*
--		 * Allocate from 'node', or fail quickly and quietly.
--		 * When this happens, 'page' will likely just be discarded
--		 * instead of migrated.
--		 */
--		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) |
--			    __GFP_THISNODE  | __GFP_NOWARN |
--			    __GFP_NOMEMALLOC | GFP_NOWAIT,
--		.nid = node
--	};
-+	struct page *target_page;
-+	nodemask_t *allowed_mask;
-+	struct migration_target_control *mtc;
-+
-+	mtc = (struct migration_target_control *)private;
-+
-+	allowed_mask = mtc->nmask;
-+	/*
-+	 * make sure we allocate from the target node first also trying to
-+	 * demote or reclaim pages from the target node via kswapd if we are
-+	 * low on free memory on target node. If we don't do this and if
-+	 * we have free memory on the slower(lower) memtier, we would start
-+	 * allocating pages from slower(lower) memory tiers without even forcing
-+	 * a demotion of cold pages from the target memtier. This can result
-+	 * in the kernel placing hot pages in slower(lower) memory tiers.
-+	 */
-+	mtc->nmask = NULL;
-+	mtc->gfp_mask |= __GFP_THISNODE;
-+	target_page = alloc_migration_target(page, (unsigned long)mtc);
-+	if (target_page)
-+		return target_page;
- 
--	return alloc_migration_target(page, (unsigned long)&mtc);
-+	mtc->gfp_mask &= ~__GFP_THISNODE;
-+	mtc->nmask = allowed_mask;
-+
-+	return alloc_migration_target(page, (unsigned long)mtc);
- }
- 
- /*
-@@ -1487,6 +1500,19 @@ static unsigned int demote_page_list(struct list_head *demote_pages,
- {
- 	int target_nid = next_demotion_node(pgdat->node_id);
- 	unsigned int nr_succeeded;
-+	nodemask_t allowed_mask;
-+
-+	struct migration_target_control mtc = {
-+		/*
-+		 * Allocate from 'node', or fail quickly and quietly.
-+		 * When this happens, 'page' will likely just be discarded
-+		 * instead of migrated.
-+		 */
-+		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) | __GFP_NOWARN |
-+			__GFP_NOMEMALLOC | GFP_NOWAIT,
-+		.nid = target_nid,
-+		.nmask = &allowed_mask
-+	};
- 
- 	if (list_empty(demote_pages))
- 		return 0;
-@@ -1494,10 +1520,12 @@ static unsigned int demote_page_list(struct list_head *demote_pages,
- 	if (target_nid == NUMA_NO_NODE)
- 		return 0;
- 
-+	node_get_allowed_targets(pgdat, &allowed_mask);
-+
- 	/* Demotion ignores all cpuset and mempolicy settings */
- 	migrate_pages(demote_pages, alloc_demote_page, NULL,
--			    target_nid, MIGRATE_ASYNC, MR_DEMOTION,
--			    &nr_succeeded);
-+		      (unsigned long)&mtc, MIGRATE_ASYNC, MR_DEMOTION,
-+		      &nr_succeeded);
- 
- 	if (current_is_kswapd())
- 		__count_vm_events(PGDEMOTE_KSWAPD, nr_succeeded);
--- 
-2.37.1
-
+T24gMDUuMDguMjAyMiAxOTowNSwgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiBIaSBBcnNl
+bml5LA0KPiBzb3JyeSBidXQgSSBkaWRuJ3QgaGF2ZSB0aW1lIHRvIHJldmlldyB0aGlzIHNlcmll
+cy4gSSB3aWxsIGRlZmluaXRlbHkgZG8gaXQgbmV4dCBNb25kYXkhDQo+IA0KPiBIYXZlIGEgbmlj
+ZSB3ZWVrZW5kLA0KPiBTdGVmYW5vDQpIZWxsbywNCm5vIHByb2JsZW0NCg0KVGhhbmsgWW91DQo+
+IA0KPiBPbiBXZWQsIEF1ZyAwMywgMjAyMiBhdCAwMTo0ODowNlBNICswMDAwLCBBcnNlbml5IEty
+YXNub3Ygd3JvdGU6DQo+PiBIZWxsbywNCj4+DQo+PiBUaGlzIHBhdGNoc2V0IGluY2x1ZGVzIHNv
+bWUgdXBkYXRlcyBmb3IgU09fUkNWTE9XQVQ6DQo+Pg0KPj4gMSkgYWZfdnNvY2s6DQo+PiDCoCBE
+dXJpbmcgbXkgZXhwZXJpbWVudHMgd2l0aCB6ZXJvY29weSByZWNlaXZlLCBpIGZvdW5kLCB0aGF0
+IGluIHNvbWUNCj4+IMKgIGNhc2VzLCBwb2xsKCkgaW1wbGVtZW50YXRpb24gdmlvbGF0ZXMgUE9T
+SVg6IHdoZW4gc29ja2V0IGhhcyBub24tDQo+PiDCoCBkZWZhdWx0IFNPX1JDVkxPV0FUKGUuZy4g
+bm90IDEpLCBwb2xsKCkgd2lsbCBhbHdheXMgc2V0IFBPTExJTiBhbmQNCj4+IMKgIFBPTExSRE5P
+Uk0gYml0cyBpbiAncmV2ZW50cycgZXZlbiBudW1iZXIgb2YgYnl0ZXMgYXZhaWxhYmxlIHRvIHJl
+YWQNCj4+IMKgIG9uIHNvY2tldCBpcyBzbWFsbGVyIHRoYW4gU09fUkNWTE9XQVQgdmFsdWUuIElu
+IHRoaXMgY2FzZSx1c2VyIHNlZXMNCj4+IMKgIFBPTExJTiBmbGFnIGFuZCB0aGVuIHRyaWVzIHRv
+IHJlYWQgZGF0YShmb3IgZXhhbXBsZSB1c2luZ8KgICdyZWFkKCknDQo+PiDCoCBjYWxsKSwgYnV0
+IHJlYWQgY2FsbCB3aWxsIGJlIGJsb2NrZWQsIGJlY2F1c2XCoCBTT19SQ1ZMT1dBVCBsb2dpYyBp
+cw0KPj4gwqAgc3VwcG9ydGVkIGluIGRlcXVldWUgbG9vcCBpbiBhZl92c29jay5jLiBCdXQgdGhl
+IHNhbWUgdGltZSzCoCBQT1NJWA0KPj4gwqAgcmVxdWlyZXMgdGhhdDoNCj4+DQo+PiDCoCAiUE9M
+TElOwqDCoMKgwqAgRGF0YSBvdGhlciB0aGFuIGhpZ2gtcHJpb3JpdHkgZGF0YSBtYXkgYmUgcmVh
+ZCB3aXRob3V0DQo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBibG9ja2luZy4NCj4+IMKg
+wqAgUE9MTFJETk9STSBOb3JtYWwgZGF0YSBtYXkgYmUgcmVhZCB3aXRob3V0IGJsb2NraW5nLiIN
+Cj4+DQo+PiDCoCBTZWUgaHR0cHM6Ly93d3cub3Blbi1zdGQub3JnL2p0YzEvc2MyMi9vcGVuL240
+MjE3LnBkZiwgcGFnZSAyOTMuDQo+Pg0KPj4gwqAgU28sIHdlIGhhdmUsIHRoYXQgcG9sbCgpIHN5
+c2NhbGwgcmV0dXJucyBQT0xMSU4sIGJ1dCByZWFkIGNhbGwgd2lsbA0KPj4gwqAgYmUgYmxvY2tl
+ZC4NCj4+DQo+PiDCoCBBbHNvIGluIG1hbiBwYWdlIHNvY2tldCg3KSBpIGZvdW5kIHRoYXQ6DQo+
+Pg0KPj4gwqAgIlNpbmNlIExpbnV4IDIuNi4yOCwgc2VsZWN0KDIpLCBwb2xsKDIpLCBhbmQgZXBv
+bGwoNykgaW5kaWNhdGUgYQ0KPj4gwqAgc29ja2V0IGFzIHJlYWRhYmxlIG9ubHkgaWYgYXQgbGVh
+c3QgU09fUkNWTE9XQVQgYnl0ZXMgYXJlIGF2YWlsYWJsZS4iDQo+Pg0KPj4gwqAgSSBjaGVja2Vk
+IFRDUCBjYWxsYmFjayBmb3IgcG9sbCgpKG5ldC9pcHY0L3RjcC5jLCB0Y3BfcG9sbCgpKSwgaXQN
+Cj4+IMKgIHVzZXMgU09fUkNWTE9XQVQgdmFsdWUgdG8gc2V0IFBPTExJTiBiaXQsIGFsc28gaSd2
+ZSB0ZXN0ZWQgVENQIHdpdGgNCj4+IMKgIHRoaXMgY2FzZSBmb3IgVENQIHNvY2tldCwgaXQgd29y
+a3MgYXMgUE9TSVggcmVxdWlyZWQuDQo+Pg0KPj4gwqAgSSd2ZSBhZGRlZCBzb21lIGZpeGVzIHRv
+IGFmX3Zzb2NrLmMgYW5kIHZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMsDQo+PiDCoCB0ZXN0IGlz
+IGFsc28gaW1wbGVtZW50ZWQuDQo+Pg0KPj4gMikgdmlydGlvL3Zzb2NrOg0KPj4gwqAgSXQgYWRk
+cyBzb21lIG9wdGltaXphdGlvbiB0byB3YWtlIHVwcywgd2hlbiBuZXcgZGF0YSBhcnJpdmVkLiBO
+b3csDQo+PiDCoCBTT19SQ1ZMT1dBVCBpcyBjb25zaWRlcmVkIGJlZm9yZSB3YWtlIHVwIHNsZWVw
+ZXJzIHdobyB3YWl0IG5ldyBkYXRhLg0KPj4gwqAgVGhlcmUgaXMgbm8gc2Vuc2UsIHRvIGtpY2sg
+d2FpdGVyLCB3aGVuIG51bWJlciBvZiBhdmFpbGFibGUgYnl0ZXMNCj4+IMKgIGluIHNvY2tldCdz
+IHF1ZXVlIDwgU09fUkNWTE9XQVQsIGJlY2F1c2UgaWYgd2Ugd2FrZSB1cCByZWFkZXIgaW4NCj4+
+IMKgIHRoaXMgY2FzZSwgaXQgd2lsbCB3YWl0IGZvciBTT19SQ1ZMT1dBVCBkYXRhIGFueXdheSBk
+dXJpbmcgZGVxdWV1ZSwNCj4+IMKgIG9yIGluIHBvbGwoKSBjYXNlLCBQT0xMSU4vUE9MTFJETk9S
+TSBiaXRzIHdvbid0IGJlIHNldCwgc28gc3VjaA0KPj4gwqAgZXhpdCBmcm9tIHBvbGwoKSB3aWxs
+IGJlICJzcHVyaW91cyIuIFRoaXMgbG9naWMgaXMgYWxzbyB1c2VkIGluIFRDUA0KPj4gwqAgc29j
+a2V0cy4NCj4+DQo+PiAzKSB2bWNpL3Zzb2NrOg0KPj4gwqAgU2FtZSBhcyAyKSwgYnV0IGknbSBu
+b3Qgc3VyZSBhYm91dCB0aGlzIGNoYW5nZXMuIFdpbGwgYmUgdmVyeSBnb29kLA0KPj4gwqAgdG8g
+Z2V0IGNvbW1lbnRzIGZyb20gc29tZW9uZSB3aG8ga25vd3MgdGhpcyBjb2RlLg0KPj4NCj4+IDQp
+IEh5cGVyLVY6DQo+PiDCoCBBcyBEZXh1YW4gQ3VpIG1lbnRpb25lZCwgZm9yIEh5cGVyLVYgdHJh
+bnNwb3J0IGl0IGlzIGRpZmZpY3VsdCB0bw0KPj4gwqAgc3VwcG9ydCBTT19SQ1ZMT1dBVCwgc28g
+aGUgc3VnZ2VzdGVkIHRvIGRpc2FibGUgdGhpcyBmZWF0dXJlIGZvcg0KPj4gwqAgSHlwZXItVi4N
+Cj4+DQo+PiBUaGFuayBZb3UNCj4+DQo+PiBBcnNlbml5IEtyYXNub3YoOSk6DQo+PiB2c29jazog
+U09fUkNWTE9XQVQgdHJhbnNwb3J0IHNldCBjYWxsYmFjaw0KPj4gaHZfc29jazogZGlzYWJsZSBT
+T19SQ1ZMT1dBVCBzdXBwb3J0DQo+PiB2aXJ0aW8vdnNvY2s6IHVzZSAndGFyZ2V0JyBpbiBub3Rp
+ZnlfcG9sbF9pbiBjYWxsYmFjaw0KPj4gdm1jaS92c29jazogdXNlICd0YXJnZXQnIGluIG5vdGlm
+eV9wb2xsX2luIGNhbGxiYWNrDQo+PiB2c29jazogcGFzcyBzb2NrX3Jjdmxvd2F0IHRvIG5vdGlm
+eV9wb2xsX2luIGFzIHRhcmdldA0KPj4gdnNvY2s6IGFkZCBBUEkgY2FsbCBmb3IgZGF0YSByZWFk
+eQ0KPj4gdmlydGlvL3Zzb2NrOiBjaGVjayBTT19SQ1ZMT1dBVCBiZWZvcmUgd2FrZSB1cCByZWFk
+ZXINCj4+IHZtY2kvdnNvY2s6IGNoZWNrIFNPX1JDVkxPV0FUIGJlZm9yZSB3YWtlIHVwIHJlYWRl
+cg0KPj4gdnNvY2tfdGVzdDogUE9MTElOICsgU09fUkNWTE9XQVQgdGVzdA0KPj4NCj4+IGluY2x1
+ZGUvbmV0L2FmX3Zzb2NrLmjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCB8wqDCoCAyICsNCj4+IG5ldC92bXdfdnNvY2svYWZfdnNvY2suY8KgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgIDM4ICsrKysrKysrKy0NCj4+IG5ldC92bXdf
+dnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHzCoMKgIDcg
+KysNCj4+IG5ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uY8KgwqDCoMKgwqAg
+fMKgwqAgNyArLQ0KPj4gbmV0L3Ztd192c29jay92bWNpX3RyYW5zcG9ydF9ub3RpZnkuY8KgwqDC
+oMKgwqDCoMKgIHzCoCAxMCArLS0NCj4+IG5ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90
+aWZ5X3FzdGF0ZS5jIHzCoCAxMiArLS0NCj4+IHRvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVz
+dC5jwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHwgMTA3ICsrKysrKysrKysrKysrKysrKysrKysr
+KysrKw0KPj4gNyBmaWxlcyBjaGFuZ2VkLCAxNjYgaW5zZXJ0aW9ucygrKSwgMTcgZGVsZXRpb25z
+KC0pDQo+Pg0KPj4gQ2hhbmdlbG9nOg0KPj4NCj4+IHYxIC0+IHYyOg0KPj4gMSkgUGF0Y2hlcyBm
+b3IgVk1DSSB0cmFuc3BvcnQoc2FtZSBhcyBmb3IgdmlydGlvLXZzb2NrKS4NCj4+IDIpIFBhdGNo
+ZXMgZm9yIEh5cGVyLVYgdHJhbnNwb3J0KGRpc2FibGluZyBTT19SQ1ZMT1dBVCBzZXR0aW5nKS4N
+Cj4+IDMpIFdhaXRpbmcgbG9naWMgaW4gdGVzdCB3YXMgdXBkYXRlZChzbGVlcCgpIC0+IHBvbGwo
+KSkuDQo+Pg0KPj4gdjIgLT4gdjM6DQo+PiAxKSBQYXRjaGVzIHdlcmUgcmVvcmRlcmVkLg0KPj4g
+MikgQ29tbWl0IG1lc3NhZ2UgdXBkYXRlZCBpbiAwMDA1Lg0KPj4gMykgQ2hlY2sgJ3RyYW5zcG9y
+dCcgcG9pbnRlciBpbiAwMDAxIGZvciBOVUxMLg0KPj4gNCkgQ2hlY2sgJ3ZhbHVlJyBpbiAwMDAx
+IGZvciA+IGJ1ZmZlcl9zaXplLg0KPj4NCj4+IC0twqANCj4+IDIuMjUuMQ0KPiANCg0K
