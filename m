@@ -2,114 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01544C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 19:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E06C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 19:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238358AbiHHTCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 15:02:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53372 "EHLO
+        id S244113AbiHHTCb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 15:02:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236918AbiHHTCB (ORCPT
+        with ESMTP id S239759AbiHHTC0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 15:02:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECDC221A4
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 12:01:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 980AAB8105C
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 19:01:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF63FC433D6;
-        Mon,  8 Aug 2022 19:01:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659985317;
-        bh=hF4l8QFriGU1eOWUnU7PWiZ4z9ikvwdpSd6+DkCK1xM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fcWEFkrtp6LsdBp9rhhKiVlKk9AyTkzjezSOPaF7Zr1upGlxOh6LxCSvl3DLc0juM
-         5ozsbleaOgL3Mxdq2UKsjUAfCB6xjaCuIS31gyMU8yuw+JiqEyuYdQo7EmbLYQPwIZ
-         Yv59hSgK4nVV0x+H026l4xtYRcpMykZPAVRl82cWcfGbH7Jcb7KiMYZRsWgtEHFFII
-         rHMffbmZy+hixY0/fCyqhRK+WlfBrCKZy1oEFo33Jm5s5Lkg6TX4WWf+ga27bPl8x7
-         ePa0fnnPwm6Fw0MGowRfQLYrK+uWYBNfYJl/DjTGUWYg9VPmkKoo8Ck0vQ43Ldx2BB
-         Nspu92s2Gh1Yg==
-Date:   Mon, 8 Aug 2022 20:01:52 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v1 1/5] regmap: mmio: Don't unprepare attached clock
-Message-ID: <YvFdoLAj4x3FRVC4@sirena.org.uk>
-References: <20220805205321.19452-1-andriy.shevchenko@linux.intel.com>
- <YvEKgkhRWCKtXdD4@sirena.org.uk>
- <CAHp75VeeZAgKdZhJffNouFh26rwGzmqGuJX7bcObSVV+dFS-tA@mail.gmail.com>
- <YvEUJ12TmgRaR4Ub@sirena.org.uk>
- <CAHp75Vd_wks4d4HyFQpWWUQO-DPj7bmm6e66LSZ3F0+O6fC6bw@mail.gmail.com>
- <YvExSVixNUpOivja@sirena.org.uk>
- <CAHp75VfL2kKqP5m1SZfBdd0Z-kLg=rcccAxmQ4LOd88gOuFcww@mail.gmail.com>
+        Mon, 8 Aug 2022 15:02:26 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3271151
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 12:02:25 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id d6-20020a056e020c0600b002deca741bc2so7139006ile.18
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 12:02:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=oqHBrmrLNW6FZP8ISoYP3AxTA4Ryzm/sJ9jkdQe8RTU=;
+        b=NJM2oaAKSH7NvDCtLT5CH7oon88q4M2crOTX2fxChuX2Mkk9pfaIeTpx/cTa7/Xw4U
+         XMG2gMuSdUP009In6zJxmr8Lc3eFOIGgR+jJ9XEkFsos4ZOp7yEDv3MgC1klPjyR4yAM
+         AQfr7yOJB+Mr/nPdQLm5C4C86KXdgWC42OjGC52Azo3JsX3kfH6TCoitClajKJKwtJ4v
+         Wu2xhD9bn+LDT4AO0DIyzZ94eIvzVC/aTyJ8hXbpfq9EnWAajfDt6qVgz0RDVTzlc1mk
+         N0iLgN/w8kF5vTp4eQbgDqmTrsFKoCGBlsElKSmplB9zOGbhZ/xz33y/JVfF1lzvMFrp
+         WFUQ==
+X-Gm-Message-State: ACgBeo2YnMYGRIXAM8vMiFVt+UcLjmdUC6lUZ9pnyGl6vyqF8fE/KJId
+        udqz/K8laA8i7Hvg1cj08DqhojlTrHHdAc8cHXmm9hiGAp1C
+X-Google-Smtp-Source: AA6agR5VJlgI3qd+dEJIqKRSAe7g44LGSjPfPd/gaaXgV7AcAs4sqk9rm2CG47ksITW/ApcE++YflljvWUHCrs4pcNqLGKk95ML6
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="W7E4tre6vxSM9BnJ"
-Content-Disposition: inline
-In-Reply-To: <CAHp75VfL2kKqP5m1SZfBdd0Z-kLg=rcccAxmQ4LOd88gOuFcww@mail.gmail.com>
-X-Cookie: Flee at once, all is discovered.
+X-Received: by 2002:a05:6e02:1a29:b0:2e0:ea6d:f1d6 with SMTP id
+ g9-20020a056e021a2900b002e0ea6df1d6mr3516943ile.108.1659985344772; Mon, 08
+ Aug 2022 12:02:24 -0700 (PDT)
+Date:   Mon, 08 Aug 2022 12:02:24 -0700
+In-Reply-To: <000000000000967c2805e5b5d4ed@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000cec16b05e5bf7409@google.com>
+Subject: Re: [syzbot] possible deadlock in ext4_bmap
+From:   syzbot <syzbot+9543479984ae9e576000@syzkaller.appspotmail.com>
+To:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tytso@mit.edu
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+syzbot has found a reproducer for the following issue on:
 
---W7E4tre6vxSM9BnJ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+HEAD commit:    ca688bff68bc Add linux-next specific files for 20220808
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=15a71e71080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4c20e006003cdecb
+dashboard link: https://syzkaller.appspot.com/bug?extid=9543479984ae9e576000
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1551c53e080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14fcdbfa080000
 
-On Mon, Aug 08, 2022 at 08:23:28PM +0200, Andy Shevchenko wrote:
-> On Mon, Aug 8, 2022 at 5:52 PM Mark Brown <broonie@kernel.org> wrote:
-> > On Mon, Aug 08, 2022 at 04:42:28PM +0200, Andy Shevchenko wrote:
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+9543479984ae9e576000@syzkaller.appspotmail.com
 
-> > > > I think just for symmetry so it's obvious that error handling is
-> > > > happening if people want it to be.
+warning: checkpointing journal with EXT4_IOC_CHECKPOINT_FLAG_ZEROOUT can be slow
+======================================================
+WARNING: possible circular locking dependency detected
+5.19.0-next-20220808-syzkaller #0 Not tainted
+------------------------------------------------------
+syz-executor725/3607 is trying to acquire lock:
+ffff888144c48400 (&sb->s_type->i_mutex_key#8){++++}-{3:3}, at: inode_lock_shared include/linux/fs.h:771 [inline]
+ffff888144c48400 (&sb->s_type->i_mutex_key#8){++++}-{3:3}, at: ext4_bmap+0x4e/0x460 fs/ext4/inode.c:3157
 
-> > > So, the only user of that API calls it explicitly. Should I rewrite a
-> > > commit message somehow?
+but task is already holding lock:
+ffff88807ec503f8 (&journal->j_checkpoint_mutex){+.+.}-{3:3}, at: jbd2_journal_flush+0x487/0xc00 fs/jbd2/journal.c:2472
 
-> > No.  Your commit would just introduce a bug.
+which lock already depends on the new lock.
 
-> There is no bug with the existing codebase after this commit. Are you
-> talking about out-of-tree modules? Or maybe there is documentation
-> that says that regmap clears all additionally attached resources?
 
-If the regmap code prepared a clock it should unprepare it otherwise we
-leaked a reference - the caller shouldn't have to worry what enables
-are done by regmap inside the implementation (and conversely regmap is
-making sure the clock is prepared and enabled when it's needed).
+the existing dependency chain (in reverse order) is:
 
-> Okay I may admit that Fixes tag might be wrong due to potential users
-> in the past. However, in the current state of affairs either we can
-> proceed with a patch, or amend documentation (if not yet done) to
-> clarify this aspect of regmap MMIO. From the above I may assume that
-> you would rather expect the latter to be done (if not yet).
+-> #3 (&journal->j_checkpoint_mutex){+.+.}-{3:3}:
+       __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+       mutex_lock_io_nested+0x13f/0x1190 kernel/locking/mutex.c:833
+       jbd2_journal_flush+0x19a/0xc00 fs/jbd2/journal.c:2462
+       ext4_ioctl_checkpoint fs/ext4/ioctl.c:1082 [inline]
+       __ext4_ioctl+0x28fd/0x4ab0 fs/ext4/ioctl.c:1586
+       vfs_ioctl fs/ioctl.c:51 [inline]
+       __do_sys_ioctl fs/ioctl.c:870 [inline]
+       __se_sys_ioctl fs/ioctl.c:856 [inline]
+       __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-I don't understand why you think we need any change at all here.  The
-only effect I can see is to make the code less robust in the case where
-the user doesn't explicitly detach the clock which is not something we
-document as mandatory and doesn't strike me as something where there's a
-pressing need for it to be mandatory.
+-> #2 (&journal->j_barrier){+.+.}-{3:3}:
+       __mutex_lock_common kernel/locking/mutex.c:603 [inline]
+       __mutex_lock+0x12f/0x1350 kernel/locking/mutex.c:747
+       jbd2_journal_lock_updates+0x15e/0x310 fs/jbd2/transaction.c:904
+       ext4_change_inode_journal_flag+0x180/0x530 fs/ext4/inode.c:6014
+       ext4_ioctl_setflags fs/ext4/ioctl.c:685 [inline]
+       ext4_fileattr_set+0xddf/0x1930 fs/ext4/ioctl.c:1001
+       vfs_fileattr_set+0x7f5/0xbe0 fs/ioctl.c:696
+       ioctl_fssetxattr fs/ioctl.c:758 [inline]
+       do_vfs_ioctl+0xe62/0x15c0 fs/ioctl.c:845
+       __do_sys_ioctl fs/ioctl.c:868 [inline]
+       __se_sys_ioctl fs/ioctl.c:856 [inline]
+       __x64_sys_ioctl+0x108/0x200 fs/ioctl.c:856
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
---W7E4tre6vxSM9BnJ
-Content-Type: application/pgp-signature; name="signature.asc"
+-> #1 (&sbi->s_writepages_rwsem){++++}-{0:0}:
+       percpu_down_write+0x4d/0x440 kernel/locking/percpu-rwsem.c:221
+       ext4_ind_migrate+0x237/0x840 fs/ext4/migrate.c:624
+       ext4_ioctl_setflags fs/ext4/ioctl.c:694 [inline]
+       ext4_fileattr_set+0x14b8/0x1930 fs/ext4/ioctl.c:1001
+       vfs_fileattr_set+0x7f5/0xbe0 fs/ioctl.c:696
+       ioctl_fssetxattr fs/ioctl.c:758 [inline]
+       do_vfs_ioctl+0xe62/0x15c0 fs/ioctl.c:845
+       __do_sys_ioctl fs/ioctl.c:868 [inline]
+       __se_sys_ioctl fs/ioctl.c:856 [inline]
+       __x64_sys_ioctl+0x108/0x200 fs/ioctl.c:856
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
------BEGIN PGP SIGNATURE-----
+-> #0 (&sb->s_type->i_mutex_key#8){++++}-{3:3}:
+       check_prev_add kernel/locking/lockdep.c:3095 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+       validate_chain kernel/locking/lockdep.c:3829 [inline]
+       __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
+       lock_acquire kernel/locking/lockdep.c:5666 [inline]
+       lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
+       down_read+0x98/0x450 kernel/locking/rwsem.c:1499
+       inode_lock_shared include/linux/fs.h:771 [inline]
+       ext4_bmap+0x4e/0x460 fs/ext4/inode.c:3157
+       bmap+0xaa/0x120 fs/inode.c:1799
+       jbd2_journal_bmap+0xa8/0x180 fs/jbd2/journal.c:971
+       __jbd2_journal_erase fs/jbd2/journal.c:1784 [inline]
+       jbd2_journal_flush+0x84f/0xc00 fs/jbd2/journal.c:2490
+       ext4_ioctl_checkpoint fs/ext4/ioctl.c:1082 [inline]
+       __ext4_ioctl+0x28fd/0x4ab0 fs/ext4/ioctl.c:1586
+       vfs_ioctl fs/ioctl.c:51 [inline]
+       __do_sys_ioctl fs/ioctl.c:870 [inline]
+       __se_sys_ioctl fs/ioctl.c:856 [inline]
+       __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLxXZ8ACgkQJNaLcl1U
-h9Dg4wf/Yi1gkgbrwRTCZisVK49mT6spurF29s3Y+7jEwoSmMpRREJzNfu0K4SY7
-Q2Gh41aA5fdrmq0RpZE+zUNjqndW54EPrH9pI6JKtYuMfN5+32odfqgJlGo5VPGj
-56jGXnwCbX2SYD0l3sS+8evsiwm5B8bm7l6gfpqyemiOX2ZAUf3EKCefDRivPX7s
-POCxv1WTyBXZVdVJA+iv/pNuU3tBSXylPR5PIu8eJp7RcFCp4Te+Bwf4o1bkCNR5
-daJ9LebnED4Sf+U5esSEX/6E9ZymWNQuWHr32q4R4SYqmaOJkuS+HN3bHqAxf/Ja
-sp7dKEUC7avlEI+7H00VTx/hUcOwTw==
-=nTGk
------END PGP SIGNATURE-----
+other info that might help us debug this:
 
---W7E4tre6vxSM9BnJ--
+Chain exists of:
+  &sb->s_type->i_mutex_key#8 --> &journal->j_barrier --> &journal->j_checkpoint_mutex
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&journal->j_checkpoint_mutex);
+                               lock(&journal->j_barrier);
+                               lock(&journal->j_checkpoint_mutex);
+  lock(&sb->s_type->i_mutex_key#8);
+
+ *** DEADLOCK ***
+
+2 locks held by syz-executor725/3607:
+ #0: ffff88807ec50170 (&journal->j_barrier){+.+.}-{3:3}, at: jbd2_journal_lock_updates+0x15e/0x310 fs/jbd2/transaction.c:904
+ #1: ffff88807ec503f8 (&journal->j_checkpoint_mutex){+.+.}-{3:3}, at: jbd2_journal_flush+0x487/0xc00 fs/jbd2/journal.c:2472
+
+stack backtrace:
+CPU: 1 PID: 3607 Comm: syz-executor725 Not tainted 5.19.0-next-20220808-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2175
+ check_prev_add kernel/locking/lockdep.c:3095 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+ validate_chain kernel/locking/lockdep.c:3829 [inline]
+ __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
+ lock_acquire kernel/locking/lockdep.c:5666 [inline]
+ lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
+ down_read+0x98/0x450 kernel/locking/rwsem.c:1499
+ inode_lock_shared include/linux/fs.h:771 [inline]
+ ext4_bmap+0x4e/0x460 fs/ext4/inode.c:3157
+ bmap+0xaa/0x120 fs/inode.c:1799
+ jbd2_journal_bmap+0xa8/0x180 fs/jbd2/journal.c:971
+ __jbd2_journal_erase fs/jbd2/journal.c:1784 [inline]
+ jbd2_journal_flush+0x84f/0xc00 fs/jbd2/journal.c:2490
+ ext4_ioctl_checkpoint fs/ext4/ioctl.c:1082 [inline]
+ __ext4_ioctl+0x28fd/0x4ab0 fs/ext4/ioctl.c:1586
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl fs/ioctl.c:856 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7fe2d1101d69
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffd7aba8f78 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fe2d1101d69
+RDX: 0000000020000000 RSI: 000000004004662b RDI: 0000000000000004
+RBP: 0000000000000000 R08: 00007ffd7aba9118 R09: 00007ffd7aba9118
+R10: 00007ffd7aba9118 R11: 0000000000000246 R12: 00007fe2d10c55f0
+R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+
