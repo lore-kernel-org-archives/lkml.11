@@ -2,88 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0639CC19F2A
-	for <linux-kernel@archiver.kernel.org>; Sun,  7 Aug 2022 23:30:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B86FEC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 00:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231411AbiHGXaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 19:30:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38434 "EHLO
+        id S230035AbiHHAM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 20:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbiHGXaV (ORCPT
+        with ESMTP id S229498AbiHHAMx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 19:30:21 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C4BE99
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 16:30:16 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id r22so4769144pgm.5
-        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 16:30:16 -0700 (PDT)
+        Sun, 7 Aug 2022 20:12:53 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5AE2AD2
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 17:12:52 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id f22so9462665edc.7
+        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 17:12:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc;
-        bh=qbL2Ymxz5e7KekDdLOCsw8SbD8/sAmLdT/zwTpI/iMs=;
-        b=R5iWcoAJGfltcXw8d6iMH8EJQIedF26xa3nF2pmcTBWV6ZAtwiGpdJkc3ESIMqS+r6
-         tYPg8LqY9DG4M3pRYvgfAvNGX5cvpMSLvMlnyoTTbAd1toInkrjCfGwuWSvDbmgmRjSE
-         fL4+HzBnyQUMI44qpxiPIx/42OSGfnvkxEyG0=
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=00yvW9ypMxDxxH8kNSsUvDFZbWzznyVK2jXU6lzwbiw=;
+        b=h3kYla/kRBRK08vrh/tsKWuzkGdegaVz9qcbfa/G+wGFrEZrSDliulfQGC6NCHwdRz
+         Znr8X0aX8siaSB3gF6mls/sO8AbpAzMftvZ8cEN+QhNl8vySztRfx21FVW3hWlRdurN0
+         Y48xQbiK12ePEOG4qi4un4LD1Fpm1qPAgnQGE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc;
-        bh=qbL2Ymxz5e7KekDdLOCsw8SbD8/sAmLdT/zwTpI/iMs=;
-        b=6dvJN5jogG9vfwGwYuhRNUirPtCLUMcwoCOm1ZmvVa1bdmM8J2cbauLL0v/1amc59B
-         v1NhiPzElWDvsbuKMbnoOt1nVoRKaK409T5YMb4ANqShLsnznzGsrxneS0BgDv0n5XSz
-         zyF1G5eMOv6UVBmOPFL0f23SPq2OYM70LLsoptf2XvJh1faAI73+r6FOW3XabzXj/B9M
-         aA198yLPA5gVAKQoj0zA0X4YywDg7yJ46x0ELWWxaTtYUrcBp+tneXTWxPSpOU9LcssM
-         qsCLBFaPDd7Gvv4y4RWbfOUoYyO+Rdqmdy8c4vQ4uw5lwhsmyXmQbDvvwPzAv6o8XDag
-         lc6w==
-X-Gm-Message-State: ACgBeo2C+bR/uSN0kJ/IrzIbTJx6pmA2ig48IcTbdm2mwuMAcPazrZ0m
-        53yDmiXB1ogW7HA/Lw76dNQ+OQ==
-X-Google-Smtp-Source: AA6agR6sadHb5Wxix/DeyrpnxhLihE5ZhtxH5f6V2cbNJj5GTJgIb+1mvG9rSxRjJPfew0QXv55+NQ==
-X-Received: by 2002:a65:6949:0:b0:41c:cb9d:3d1f with SMTP id w9-20020a656949000000b0041ccb9d3d1fmr13462189pgq.334.1659915016477;
-        Sun, 07 Aug 2022 16:30:16 -0700 (PDT)
-Received: from google.com (n122-107-196-14.sbr2.nsw.optusnet.com.au. [122.107.196.14])
-        by smtp.gmail.com with ESMTPSA id d6-20020a170903230600b0016efc27ca98sm7127955plh.169.2022.08.07.16.30.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Aug 2022 16:30:15 -0700 (PDT)
-From:   Daniil Lunev <dlunev@chromium.org>
-X-Google-Original-From: Daniil Lunev <dlunev@google.com>
-Date:   Mon, 8 Aug 2022 09:30:07 +1000
-To:     Arthur Simchaev <Arthur.Simchaev@wdc.com>
-Cc:     James@vger.kernel.org, E.J.Bottomley@vger.kernel.org,
-        jejb@linux.vnet.ibm.com, Martin@vger.kernel.org,
-        K.Petersen@vger.kernel.org, martin.petersen@oracle.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bean@vger.kernel.org, Huo@vger.kernel.org, beanhuo@micron.com
-Subject: Re: [PATCH] scsi: ufs-bsg: Remove ufs_bsg_get_query_desc_size
- function
-Message-ID: <YvBK/8yeohLhu2Za@google.com>
-References: <1655727966-31584-1-git-send-email-Arthur.Simchaev@wdc.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=00yvW9ypMxDxxH8kNSsUvDFZbWzznyVK2jXU6lzwbiw=;
+        b=Eo7t+L9GLIoYQSUSvnKjh7+XfEsJ70XdWUCiL/T4nI4tzriq8t+l7shrBzQDqZe72O
+         ysmtNdzbUB21E8XfmWHJcrIWR+ZfaFhnm4iYkGYQFAb/9vUJE05sdqcsGdzkXSmnbYB5
+         xSQ5/Cmo2AKcY8tWxmpejGsS7j1uUzwylXBq+Hw0efWsXjUu+BgyPn77KAtLR+R4acDR
+         1llckDz4k348H6hhq79/AqeYYqnZd8AYyPnZg5hI52q5aBS0M7EM6FqGRFeAqkZ4s4ox
+         ckx4zLsuDlOk5957siKzPMcmyF/sIUuFKOkKZyULTcpe6nc484auSWBSYStgm+oVDjZv
+         8gJg==
+X-Gm-Message-State: ACgBeo3wMYVP4VQEAjavdpLejAYDPPgU5BhNhJOXHCtn0yVPIcrs9QBT
+        8NB81aW8GadHK6NssJKtnMyxJXUWMMD0tOgg
+X-Google-Smtp-Source: AA6agR6F3rTzaFW9oMz9QvHe3JW5ZUy46cxOH6O9AtkWI5tqRqKWAut0DxnR9M//1f6Zr07Z2+c7vQ==
+X-Received: by 2002:a05:6402:34cf:b0:43d:96fd:bdfa with SMTP id w15-20020a05640234cf00b0043d96fdbdfamr15793030edc.40.1659917570782;
+        Sun, 07 Aug 2022 17:12:50 -0700 (PDT)
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
+        by smtp.gmail.com with ESMTPSA id lb6-20020a170907784600b0072b13ac9ca3sm4310604ejc.183.2022.08.07.17.12.49
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 07 Aug 2022 17:12:50 -0700 (PDT)
+Received: by mail-wr1-f49.google.com with SMTP id z16so9107314wrh.12
+        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 17:12:49 -0700 (PDT)
+X-Received: by 2002:a5d:638b:0:b0:220:6e1a:8794 with SMTP id
+ p11-20020a5d638b000000b002206e1a8794mr10148392wru.193.1659917569541; Sun, 07
+ Aug 2022 17:12:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1655727966-31584-1-git-send-email-Arthur.Simchaev@wdc.com>
+References: <20220805022940.1637978-1-yury.norov@gmail.com>
+In-Reply-To: <20220805022940.1637978-1-yury.norov@gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 7 Aug 2022 17:12:33 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wiEVFpiC5M1-zo9Q47uwP+XaCv2rVXan51Ot7L=UXMs7A@mail.gmail.com>
+Message-ID: <CAHk-=wiEVFpiC5M1-zo9Q47uwP+XaCv2rVXan51Ot7L=UXMs7A@mail.gmail.com>
+Subject: Re: [GIT PULL] Bitmap patches for v6.0-rc1
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 03:26:06PM +0300, Arthur Simchaev wrote:
-> The bsg driver allows user space to send device management commands.
-> As such, it is often used by field application engineers to debug various problems,
-> and as a test bed for new features as well.
-> 
-> Let's not bound ourself to hard coded descriptor sizes, as the new
-> Descriptors that supports new features are not defined yet.
-Can you clarify what you mean "hard-coded"? The descriptor size is initialized
-as QUERY_DESC_MAX_SIZE, and updated in `ufshcd_update_desc_length`, which is
-called with the actual size upon finishing `ufshcd_read_desc_param`.
+On Thu, Aug 4, 2022 at 7:29 PM Yury Norov <yury.norov@gmail.com> wrote:
+>
+>   https://github.com/norov/linux.git/ tags/bitmap-6.0-rc1
 
-The function you are removing - `ufs_bsg_get_query_desc_size` - doesn't seem to
-reject requests on incompatible size, only to restrict the size of the query.
-The way the code is written - if I read it right - will lead to truncation of
-the response if the size of the requested response is less than the actual
-descriptor size, but otherwise you should get full descriptor back.
+Grr.
 
-Can you provide a specific example where you see the problem to arise?
+So I delayed this because I was anticipating pain, but it was worse
+than expected.
 
-Thanks,
-Daniil
+I think I've sorted things out, but part of sorting things out was to
+just basically undo this:
+
+>       lib/bitmap: change type of bitmap_weight to unsigned long
+
+which just was pointless and the explanation for it didn't match what it did.
+
+The explanation was "unsigned makes sense". Ok.
+
+But what it *did* was not to make the return value unsigned, but to
+also expand it from "int" to "long".
+
+That did *not* make sense, and caused pointless changes to printf strings.
+
+And - surprise surprise - new users had come in since, so there would
+have been even *more* pointless changes to printf strings just to
+resolve those.
+
+So I basically undid almost all of it. I did leave the "unsigned"
+part, but removed the "long" part, so at least the printf strings
+noise didn't happen.
+
+That still caused the type clash in the 'min()' in the
+mellanox/mlx4/fw.c file, but at least I couldn't find any new cases of
+that pattern, so it seemed acceptable.
+
+Can bitmap sizes in theory be "unsigned long" bits and thus have
+"weight" not fit in "int"? Yes. But it's not a realistic concern, I
+feel, and I really really didn't want to deal with this pointless
+churn.
+
+And honestly, this was enough churn that I seriously just considered
+throwing the whole pull request away.  And I feel like I will have to
+do a few other architecture tests too before I actually push this out,
+so I may end up still doing that if that shows something else wrong.
+
+So for any future pull requests, please
+
+ (a) make them more targeted
+
+ (b) avoids things like that return value change that clearly was just
+churn and affected random files in the tree
+
+because right now I'm left with a "never again" feeling about this all.
+
+                Linus
