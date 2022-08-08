@@ -2,75 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF346C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE955C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243909AbiHHQNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 12:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44976 "EHLO
+        id S243923AbiHHQNe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 12:13:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243333AbiHHQNJ (ORCPT
+        with ESMTP id S243415AbiHHQNb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 12:13:09 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED392700
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 09:13:06 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id q30so11407182wra.11
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 09:13:06 -0700 (PDT)
+        Mon, 8 Aug 2022 12:13:31 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DDCFE4
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 09:13:30 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id z12so11432407wrs.9
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 09:13:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc;
-        bh=ZryEEyjSCWEbCU3Q+FUhQy+AbSQLPWxQZGpckBFvSEo=;
-        b=vN4bcGGLlSPlkunAjwIrl3thBrrII9OESQ8QQFxQbeUjGxBgRoVHsMDExSNMHrYE+6
-         tx2PFWI6VT/4iRJCUZ/ZJ9AWS1hKhsw6ptYcspqDL6sub27j+oelJWrBWyRdYkpJzF/m
-         sZ5XcE82bLP4HMrafKOHrxElMWCNXbJtMVx2gStCkvgJZCsy/qI+BrJz1VKOm7HFRABp
-         enspCtOVS3Ktamd60YxFk36GBB2Q/iUVyeIp9iObmD8NhORRf21zUSpn/LUjYjytCps/
-         VUcXC6M+FHclLtEfkaRUiJgBfFrMFiF4nQE+ZyWwY1kGqIhRypFRK9F1D9hS4FZY5W3L
-         MqwA==
+        bh=e2k9+csC2s9E3w26N33toJ1//qjvjqrNHy08urbha/g=;
+        b=CkyJF3d7E71SXMCKJRZGqw69Q+ZIZAvqhu0nU3sz0a5TH4xUIzYcNW7WIF7ohVOxj1
+         0j2pKtzdy0/yKtak3FULjUKcIEuH51Y4wus6KYZod26LrCXWsm4XLL5/PARPuKKB4Egs
+         EKY5ZvJO8R9u6Q9VYGdPU/suxvT/hbPw3P6/b8tTlmOD+IGczb3fv+N/GoTzye5Isumi
+         4KHW+ttKTMrJPTTtdkHBQ/S2DLZpNv80CZ8/MENyijKEKYKePCEqB9auF3uJ0KLDO88m
+         UJ1zm761MYRwgZZuAsZNI0n28rL2KZpNVon8CO8EBNUz2RU8U/E7b3lIW3ezPh0XAe64
+         iMLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=ZryEEyjSCWEbCU3Q+FUhQy+AbSQLPWxQZGpckBFvSEo=;
-        b=TvyZYGWdyCY/TwkI2/dun4PnyXzwkv4xBQJYOLxlum10YKbNx0yfGwCK7XO3Q2eaZj
-         tGT4YDvz0/HOP9AUcSC1e1rJ2Mmb4YPJDrKvNrwEFcn4PLkFnT+s11i+02WHUByScJJW
-         rjN+JShoxL9zyW6xFM+vsBxfDUYbKlxomJJ8XsG130ExmuqZ6BEDDi9xXCsXfX7Z8QOt
-         DvhXCNxOfMrcxvClMp5YC6geMdkg/RlAn/Klv/VAowZPtbT0Up583Z8YTBi68TNyLVxC
-         QHXjpTM2jjLCAYSibhNbAYKNkgpimfM/dXIf/vbv3cXJP2a7bldqzI9X9lrObaIfiprF
-         OcnA==
-X-Gm-Message-State: ACgBeo1JKG9CZ0usWNmsXRMlxZCdtLHSlFaqj0uHnjNe2c84jc352/KF
-        pVsR+Y3aRjZtd+9gwk/LMoX3Ag==
-X-Google-Smtp-Source: AA6agR7Mfrb7gIJ0VaClks5ixg4h11z9QgX3ywX1T7uIyneGCWDMEnuGohBa7375GOZC0EUHLvP2Wg==
-X-Received: by 2002:a05:6000:42:b0:21f:dc5:5ce0 with SMTP id k2-20020a056000004200b0021f0dc55ce0mr12440737wrx.12.1659975185361;
-        Mon, 08 Aug 2022 09:13:05 -0700 (PDT)
+        bh=e2k9+csC2s9E3w26N33toJ1//qjvjqrNHy08urbha/g=;
+        b=SqzDrUg+qalVPKuUKtK7lyLk8BqtBHF7id1smaFEeZo6k7rM/QWsqhbyqqo9vuz3kX
+         hLZBbrpo1kA/l+C2r00kIdLMIJxdrUo4+R+fzbXRCXKfOj3MMeuXrplSv7pD3q9YAG17
+         Z29ntc3zIO+cZKX0ksJucQFONaFxaw/yygHKdGgS/1lcl0cBBAQ99/itCrwZx+Y91VWo
+         8dKkpkQ1XMLpIVpwViLZTcjUkB4vESaFn/6MpI4dG4sFX/0zNYq70goE9/zrEy7l1j8A
+         Dyi58OAkGUXm4JbyHlPD9J4oHHTEI64+jL3FK47UUxfjAqtLc6+yXCCHCXu7k+LA/b4r
+         I3gw==
+X-Gm-Message-State: ACgBeo1ZoJho+b6S6dePx2oRLQu3hulAOfbqr9yWw1qTRls/RTRhgddG
+        GeMUdJXPs2UvXkAMaMnMV0ps6+sw19w+Og==
+X-Google-Smtp-Source: AA6agR4t26LyRQ4Z47o/xW5Uop606M9KgBpQe8HaaB5R05j7wbsrTP1D4IMJ55FPKINTyhvMsq+fBw==
+X-Received: by 2002:adf:f1d0:0:b0:21e:c8e1:e82f with SMTP id z16-20020adff1d0000000b0021ec8e1e82fmr11809330wro.635.1659975209012;
+        Mon, 08 Aug 2022 09:13:29 -0700 (PDT)
 Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id q10-20020adff94a000000b0021d80f53324sm11604168wrr.7.2022.08.08.09.13.04
+        by smtp.gmail.com with ESMTPSA id bg21-20020a05600c3c9500b003a4efb794d7sm16424743wmb.36.2022.08.08.09.13.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 09:13:04 -0700 (PDT)
-Date:   Mon, 8 Aug 2022 17:13:03 +0100
+        Mon, 08 Aug 2022 09:13:28 -0700 (PDT)
+Date:   Mon, 8 Aug 2022 17:13:26 +0100
 From:   Lee Jones <lee.jones@linaro.org>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     Hans de Goede <hdegoede@redhat.com>, linux-kernel@vger.kernel.org,
         Lee Jones <lee@kernel.org>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v3 06/10] mfd: intel_soc_pmic_crc: Switch from
- CONFIG_PM_SLEEP guards to pm_sleep_ptr() etc
-Message-ID: <YvE2DyKOHtthMAVN@google.com>
+Subject: Re: [PATCH v3 07/10] mfd: intel_soc_pmic_crc: Drop redundant
+ ACPI_PTR() and ifdeffery
+Message-ID: <YvE2JkKdVA7cpE07@google.com>
 References: <20220801114211.36267-1-andriy.shevchenko@linux.intel.com>
- <20220801114211.36267-6-andriy.shevchenko@linux.intel.com>
+ <20220801114211.36267-7-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220801114211.36267-6-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220801114211.36267-7-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Mon, 01 Aug 2022, Andy Shevchenko wrote:
 
-> Letting the compiler remove these functions when the kernel is built
-> without CONFIG_PM_SLEEP support is simpler and less error prone than the
-> use of #ifdef based kernel configuration guards.
+> The driver depends on ACPI, ACPI_PTR() resolution is always the same.
+> Otherwise a compiler may produce a warning.
+> 
+> That said, the rule of thumb either ugly ifdeffery with ACPI_PTR or
+> none should be used in a driver.
 > 
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > Tested-by: Hans de Goede <hdegoede@redhat.com>
@@ -80,8 +82,9 @@ On Mon, 01 Aug 2022, Andy Shevchenko wrote:
 > v3: no changes
 > v2: added tags and rebased on top of new patch 1
 > 
->  drivers/mfd/intel_soc_pmic_crc.c | 7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
+>  drivers/mfd/Kconfig              | 4 ++--
+>  drivers/mfd/intel_soc_pmic_crc.c | 6 ++----
+>  2 files changed, 4 insertions(+), 6 deletions(-)
 
 Applied, thanks.
 
