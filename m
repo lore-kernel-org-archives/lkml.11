@@ -2,152 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16410C25B07
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 03:26:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 190B6C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 03:27:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236895AbiHHD0N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 23:26:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60624 "EHLO
+        id S236925AbiHHD1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 23:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231905AbiHHD0I (ORCPT
+        with ESMTP id S231905AbiHHD1I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 23:26:08 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40394DFE5;
-        Sun,  7 Aug 2022 20:26:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659929167; x=1691465167;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bOeEbQASG8qYDkYJbxcsIUMSn9m3cJLEwP0JygTYejw=;
-  b=RZeFJKwcGDqZsZwhWgouJVIv2SLE4VaAQSBNXHLRYXo274EET15TAUxW
-   rR8RgdMBddin1WBjHWHQl1a/0MQrXqvCcXIn56OwO2UDvSnSww/ey1AHO
-   25jMLGrzcg+0oYqYAx4KIFBHZHCI7b54lEIok4H0ejPi1gNHYPVAS2BZR
-   T/varMc9QP3Ny83CUN6zZ+wR2zuF3wOqtpjlVMcRSmPysWz0xML1XD1/B
-   ISa8mXsa2Nk7acph52tkEQTBxQtjZkabb4ehGJkH2jNcoaasi0m38GKDL
-   Uxauo/nXoVrk0JpoCWcBm9Zo/h66XL7lZFsWosUq0hCmVdGnBlzlE5ZOg
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="376786101"
-X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
-   d="scan'208";a="376786101"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 20:26:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
-   d="scan'208";a="931870261"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 07 Aug 2022 20:26:04 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oKtP1-000Lqj-1H;
-        Mon, 08 Aug 2022 03:26:03 +0000
-Date:   Mon, 8 Aug 2022 11:25:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Li Jinlin <lijinlin3@huawei.com>, lduncan@suse.com,
-        cleech@redhat.com, michael.christie@oracle.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, mark.mielke@gmail.com
-Cc:     kbuild-all@lists.01.org, open-iscsi@googlegroups.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linfeilong@huawei.com, liuzhiqiang26@huawei.com
-Subject: Re: [PATCH] scsi: iscsi: iscsi_tcp: Fix null-ptr-deref while calling
- getpeername()
-Message-ID: <202208081109.mO6WgY4E-lkp@intel.com>
-References: <20220802101939.3972556-1-lijinlin3@huawei.com>
+        Sun, 7 Aug 2022 23:27:08 -0400
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FEDBDFE5;
+        Sun,  7 Aug 2022 20:27:07 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 9D61E5C0050;
+        Sun,  7 Aug 2022 23:27:06 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Sun, 07 Aug 2022 23:27:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ljones.dev; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659929226; x=
+        1660015626; bh=kz9uFpYclBPOg+dbDXT2G5x7qXu3V/ZJPvJd8gCdT9k=; b=W
+        Yaro3MV8sPaRVxatCHapof6gNk7KJn4oWm19oMZxePStCyNvmqepFdwRjCUjues2
+        YeKhXzoe/WpLc8w3e3Ct5K0a/dNJ7PmvXoqOO8yzOhEO3Iz0i7E4LZ3PrOFyaZLx
+        /q7tuKJc4fRDyC0BGVUvr0nKHUE/Y3p5v66VTIkzE0SU2NqSKACyv5Tj73iA8chF
+        6b5/+dEmXekcbuK3U/yCLYD8ua6SRc5SxeR+ujoXGa88d7dcRlVgF4Cy/Aw/tADk
+        g3aiXvltq3iv7ICfjB5L4SaKzM5Hw9jI0ym6pkeB7eiXBUdIr1/67gYaTos5E9cb
+        t0vdIOYhZKvpMxMVq0WKA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1659929226; x=
+        1660015626; bh=kz9uFpYclBPOg+dbDXT2G5x7qXu3V/ZJPvJd8gCdT9k=; b=R
+        oEwLiEw/6PyZiOcHhR9lSikaDS7+6oYQ/0hUAcSHFJ647K7xDJmOmquAZIa97Dls
+        ErycaFFwuyf1YYqW2sP9vEp2Jvk6wXKiHo0MExdTbUhyNR6CxjHoEke/vyWMtAmK
+        PYXl67rfB+SG3GWD2aZswUjwqRRdv2xwXj1j5aV6Jwgds+UWKnbgDZKt0Jw5dw+h
+        9uQODgkq2b4YGFjeupj+8mNpq+IBgsfak1O3USxmjJ7HSCRWDYhMkkGubdee+C2K
+        RENRVwHGLd8La6OFjoPIWtA+6wTfUa5hY2zw69WTp5Dv3MxtrGkFaQYv5TjJ8E/2
+        GELgkPiLBa3atzf87WjGw==
+X-ME-Sender: <xms:ioLwYuHYgKNov7PxDIeQ6Xvh4L4Zx5Vi3wjwBx37M8-A1Pq1x7h2mg>
+    <xme:ioLwYvWZGLbEnP4Q2oR4FaCyut2CBIv-AOpWQaVb2XTeM2eA1s3pVMAGvQSjfMeR4
+    uhiygCg0YyA1IzaA14>
+X-ME-Received: <xmr:ioLwYoIDCP4X_4BmKEFgds62Xyq8IHSoljn00YD_Wmtfsf5TS80K9xqEWPZYeV0jEaAwKw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefjedgieejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffuvfevkfgjfhfogggtgfesth
+    hqredtredtudenucfhrhhomhepnfhukhgvucflohhnvghsuceolhhukhgvsehljhhonhgv
+    shdruggvvheqnecuggftrfgrthhtvghrnhepheeujeejjeevkefhvdetiefggffgueetvd
+    ehtdduueefteetffeuleetudegffetnecuffhomhgrihhnpehlkhhmlhdrohhrghenucev
+    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehluhhkvgeslh
+    hjohhnvghsrdguvghv
+X-ME-Proxy: <xmx:ioLwYoG2S5kQ0Qc3MYc48n_CRudcPwdQcCG9xGyXVEBXdWD6nc22Ww>
+    <xmx:ioLwYkVfZKThHcARafiRhxXlvTntSp3VY1Oy5Pq2Y18LM_cD4fYjBw>
+    <xmx:ioLwYrMq11ZKNavL4f0hjF6U-coqCrKO0AQjyxjbjoar76JRLaOH3g>
+    <xmx:ioLwYiy71C4gUVRyO8vXAvNvOYLBZ33ZAlXdcp5l-XlxHakzv_cZKw>
+Feedback-ID: i5ec1447f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 7 Aug 2022 23:27:00 -0400 (EDT)
+Date:   Mon, 08 Aug 2022 15:26:42 +1200
+From:   Luke Jones <luke@ljones.dev>
+Subject: Re: [PATCH v2 0/6] asus-wmi: Add support for RGB keyboards
+To:     hdegoede@redhat.com
+Cc:     markgross@kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pavel@ucw.cz, pobrn@protonmail.com,
+        andy.shevchenko@gmail.com
+Message-Id: <IK1AGR.65TRDBUQUK0T3@ljones.dev>
+In-Reply-To: <20220808030420.8633-1-luke@ljones.dev>
+References: <20220808030420.8633-1-luke@ljones.dev>
+X-Mailer: geary/40.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220802101939.3972556-1-lijinlin3@huawei.com>
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Li,
+My apologies to: Pavel, Barnab=E1s, Andy, I should have CC'ed you all in=20
+from the start. I have a wee bit going on and forgot to do so.
 
-Thank you for the patch! Perhaps something to improve:
+Kind regards,
+Luke.
 
-[auto build test WARNING on mkp-scsi/for-next]
-[also build test WARNING on jejb-scsi/for-next linus/master v5.19]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+On Mon, Aug 8 2022 at 15:04:14 +1200, Luke D. Jones <luke@ljones.dev>=20
+wrote:
+> This is a patch series to add RGB support for ASUS laptops.
+> The laptops with this RGB tend to be the TUF series of gamer laptops.
+>=20
+> The first step is initial bringup of support using the multicolor LED=20
+> API.
+>=20
+> These types of keyboards implement a slightly more complex interface=20
+> than
+> just RGB control however - they also have modes with can be static=20
+> LED,
+> blinking, rainbow, color cycles, and more. They also have some custom
+> animations that can play depending on device state, such as suspended
+> playing a fancy colour cycle, or playing a "wave" animation.
+>=20
+> Two of the patches add support for these features.
+>=20
+> The last patch adds documentation in:
+> Documentation/ABI/testing/sysfs-platform-asus-wmi
+>=20
+> Some notes:
+>=20
+> - this patch series obsoletes the previous RGB patches by myself
+>=20
+> - it is not possible to add attribute groups to multicolor LED as
+>   they get overwritten by `led_multicolor_groups` in
+>   `led_classdev_multicolor_register_ext`.
+>=20
+> - the methods for RGB control do not provide a way to fetch exisiting
+>   state, so these methods are WO.
+>=20
+> - There is an existing `asus::kbd_backlight`, this provides a 4-step
+>   brightness to the RGB (off,low,med,high) individually to multicolor.
+>   I was unsure of the effect of adding a similar path so have used the
+>   `asus::multicolour::kbd_backlight` name to be clear about purpose.
+>   If the `asus::kbd_backlight` is off, then no RGB is shown at all.
+>=20
+> Changelog:
+> - V2: patch 1: asus-wmi - RGB
+> 	+ shorten a few lines
+> 	+ move unused keyboard_rgb_mode_available to next patch
+> 	+ remove tuf_rgb_brightness_get() is it was only returning current
+> 	  led_classdev brightness, not reading it from device
+> 	+ remove unnecessary setting of brightness on multicolor init
+> 	+ set brightness_get to null for TUF RGB
+> 	+ actually use the member subled_info in keyboard_rgb_led struct and
+> 	  not the leftover dynamic allocation (now removed)
+> - V2: patch 2: asus-wmi RGB mode control
+> 	+ tuf_rgb_brightness_set() was still using hardcoded save/mode/speed
+> 	  from testing. This is now using the pre-set default.
+> 	+ asus_wmi_led_init(), set speed value to a correct value
+> 	+ keyboard_rgb_mode_store() return count, not 0
+> 	+ correctly unregister the mulicolor led on module exit
+> 	+ use switch/case in keyboard_rgb_mode_store() for speed
+> 	+ remove a single line bracket block
+> - V2: patch 3: asus-wmi RGB power control
+> 	+ Try to fix the indent warning from buildbot
+> 	+ Use correct date on added API docs
+> 	+ Add missing panel_od doc
+> 	+ correctly label attribute for keyboard_rgb_state
+> - V2: patch 4: documentation
+> 	+ Add commit message
+> - V2: patch 5: attributes using sysfs_emit:
+> 	+ Add commit message
+> - V2: patch 6: new patch, dgpu_only mode
+> 	+ A previous patch I submitted=20
+> "0006-asus-wmi-Add-support-for-dGPU-only-mode.patch"
+> 	  is now part of this series due to merge conflicts caused by the
+> 	  previous 5 patches
+>=20
+> Previous patches obsoleted:
+> https://lkml.org/lkml/2022/8/3/885
+> https://lkml.org/lkml/2022/8/3/886
+> https://lkml.org/lkml/2022/8/3/44
+> I may not have listed all.
+>=20
+> Luke D. Jones (6):
+>   asus-wmi: Implement TUF laptop keyboard RGB control
+>   asus-wmi: Implement TUF laptop keyboard LED modes
+>   asus-wmi: Implement TUF laptop keyboard power states
+>   asus-wmi: Document previously added attributes
+>   asus-wmi: Convert all attr-show to use sysfs_emit
+>   asus-wmi: Add support for dGPU-only mode
+>=20
+>  .../ABI/testing/sysfs-platform-asus-wmi       |  68 ++++
+>  drivers/platform/x86/asus-wmi.c               | 343=20
+> +++++++++++++++++-
+>  include/linux/platform_data/x86/asus-wmi.h    |   8 +
+>  3 files changed, 412 insertions(+), 7 deletions(-)
+>=20
+> --
+> 2.37.1
+>=20
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Li-Jinlin/scsi-iscsi-iscsi_tcp-Fix-null-ptr-deref-while-calling-getpeername/20220802-173945
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mkp/scsi.git for-next
-config: powerpc-randconfig-s051-20220801 (https://download.01.org/0day-ci/archive/20220808/202208081109.mO6WgY4E-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/ccc367df3fdba07b24eeda721ca928cce50f40d2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Li-Jinlin/scsi-iscsi-iscsi_tcp-Fix-null-ptr-deref-while-calling-getpeername/20220802-173945
-        git checkout ccc367df3fdba07b24eeda721ca928cce50f40d2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/scsi/
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/scsi/iscsi_tcp.c:798:26: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int fd @@     got struct file *file @@
-   drivers/scsi/iscsi_tcp.c:798:26: sparse:     expected unsigned int fd
-   drivers/scsi/iscsi_tcp.c:798:26: sparse:     got struct file *file
-   drivers/scsi/iscsi_tcp.c:852:26: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int fd @@     got struct file *file @@
-   drivers/scsi/iscsi_tcp.c:852:26: sparse:     expected unsigned int fd
-   drivers/scsi/iscsi_tcp.c:852:26: sparse:     got struct file *file
-
-vim +798 drivers/scsi/iscsi_tcp.c
-
-   777	
-   778	static int iscsi_sw_tcp_conn_get_param(struct iscsi_cls_conn *cls_conn,
-   779					       enum iscsi_param param, char *buf)
-   780	{
-   781		struct iscsi_conn *conn = cls_conn->dd_data;
-   782		struct iscsi_tcp_conn *tcp_conn = conn->dd_data;
-   783		struct iscsi_sw_tcp_conn *tcp_sw_conn = tcp_conn->dd_data;
-   784		struct sockaddr_in6 addr;
-   785		struct socket *sock;
-   786		int rc;
-   787	
-   788		switch(param) {
-   789		case ISCSI_PARAM_CONN_PORT:
-   790		case ISCSI_PARAM_CONN_ADDRESS:
-   791		case ISCSI_PARAM_LOCAL_PORT:
-   792			spin_lock_bh(&conn->session->frwd_lock);
-   793			if (!tcp_sw_conn || !tcp_sw_conn->sock) {
-   794				spin_unlock_bh(&conn->session->frwd_lock);
-   795				return -ENOTCONN;
-   796			}
-   797			sock = tcp_sw_conn->sock;
- > 798			fget(sock->file);
-   799			spin_unlock_bh(&conn->session->frwd_lock);
-   800	
-   801			if (param == ISCSI_PARAM_LOCAL_PORT)
-   802				rc = kernel_getsockname(sock,
-   803							(struct sockaddr *)&addr);
-   804			else
-   805				rc = kernel_getpeername(sock,
-   806							(struct sockaddr *)&addr);
-   807			spin_lock_bh(&conn->session->frwd_lock);
-   808			sockfd_put(sock);
-   809			spin_unlock_bh(&conn->session->frwd_lock);
-   810			if (rc < 0)
-   811				return rc;
-   812	
-   813			return iscsi_conn_get_addr_param((struct sockaddr_storage *)
-   814							 &addr, param, buf);
-   815		default:
-   816			return iscsi_conn_get_param(cls_conn, param, buf);
-   817		}
-   818	
-   819		return 0;
-   820	}
-   821	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
