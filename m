@@ -2,99 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFAA1C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:20:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63426C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243450AbiHHPU0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 11:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34600 "EHLO
+        id S243325AbiHHPUc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 11:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243008AbiHHPUR (ORCPT
+        with ESMTP id S243251AbiHHPUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 11:20:17 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999C32632
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 08:20:15 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id c187-20020a1c35c4000000b003a30d88fe8eso7593600wma.2
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 08:20:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=2sLx6fEQwkbGZWDAMNRbYQgltbUIN1vZK/rvp0HIjo4=;
-        b=nwoEwxKTGt8V6iwPdg4L2df7wpzRUbGM5oh14oMdkU3PpY7aYt3ndUeEBThBPRJiEW
-         urtaayJeZFZYI6Y1aLClDNYma1LXn5iYZbNpFOS7H9XmKYIBmE4wFgTHJOC/1uc318DS
-         daWaPl8l5pF2IQPWiCie+omUaUSzH02CnOv+9CwfpJexNCvfdSK4d27ftNk9sodirDyp
-         8J22b9rMU055iOxRzwVpcFoUtS6uudEek3YAagtYjyrEHka7ULPA4Z0cPU6deaa9M6Ys
-         iRmJ0yjXzKknnEsRpZ59nC8q9slwfOqtB9ORHPdayD8v9HEFPDlJxdte8EsXWUMh7RtW
-         l0gA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=2sLx6fEQwkbGZWDAMNRbYQgltbUIN1vZK/rvp0HIjo4=;
-        b=ybtp08ljSnlS4DdhkVQYuTuWHrGhGaytpeBFb8FJkNo7jqz8wj51GwAzmq7gq70XwZ
-         OdfZD+kh4060Fz290nzqrU0MpdT4EIZdGmGwVReBRL6b/EGPiN5tdDeIOKP13CKGVWIK
-         vZWl369KQT3r/LMDkjvsGmNrPQbJkJehucpYQSJkbVDO2VW0vhAy5abounB+6twd2vn6
-         /l6+iG+z/jRAHe0p6ME87SEmDp43CXcuv60dCuXwOyq5PAiUc+ZDMJ9T3StfgJNVwFQ/
-         hw6/S5byZpygRuKzTIo91TcgM369NlEuC6A1QqppXJbQP6BRiyp/RJsydSIShbGx0NU+
-         TCnQ==
-X-Gm-Message-State: ACgBeo0t5etBBkN4WXHQBLxTXtL5aDq7IjrZu3nBV2uKVRilD+XOVa1P
-        uw23Ls0hagWS5QA0zYjKGQO42e2xhwCnjA==
-X-Google-Smtp-Source: AA6agR6SgIfrt8NeC9kMXjRv2jbafNW4hHNvvi487MT5aAzT7mCG9rSauGVqPaZgNI03UnqE6/ftMw==
-X-Received: by 2002:a05:600c:600b:b0:3a3:1176:222d with SMTP id az11-20020a05600c600b00b003a31176222dmr18086995wmb.42.1659972014200;
-        Mon, 08 Aug 2022 08:20:14 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id e3-20020adf9bc3000000b0020e6ce4dabdsm11530060wrc.103.2022.08.08.08.20.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 08:20:13 -0700 (PDT)
-Date:   Mon, 8 Aug 2022 16:20:12 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
-        Lee Jones <lee@kernel.org>
-Subject: Re: [RESEND][PATCH v1 8/9] mfd: intel_soc_pmic_bxtwc: Support IRQ
- chip hierarchy
-Message-ID: <YvEprE7YwuwaMXwL@google.com>
-References: <20220718122328.8287-1-andriy.shevchenko@linux.intel.com>
- <20220718122328.8287-8-andriy.shevchenko@linux.intel.com>
+        Mon, 8 Aug 2022 11:20:23 -0400
+Received: from bg5.exmail.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54AD1DF55
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 08:20:22 -0700 (PDT)
+X-QQ-mid: bizesmtp73t1659972011tykjz25x
+Received: from localhost.localdomain ( [182.148.14.53])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 08 Aug 2022 23:20:05 +0800 (CST)
+X-QQ-SSF: 0100000000200040B000B00A0000000
+X-QQ-FEAT: CR3LFp2JE4lkPKPkl52ZM+6mQ7+lq6ja/jzb8IWf7GxSJkQEH/txV+93F7Rh9
+        P7Qf/2vfenPL3WZaqxio+9lNBl21RjoMT4gjpHO4/7vCj+ug1sGYIZlD3SWejtyavQPDxde
+        5qk1Khqu5o1ousRqIuG3JTJjXYzVNI38mtrZ0iPxgEBRB3f3dAKF9Dhf+skfgaTmO6KwooW
+        mnTPWgRYjajzkSKFmqE8K37rb5MyCoNTn1++kxjnsDByt+xWLod3ctXf7H/N4ZpkVf0jOYt
+        4c1YuQ5NJHhZVBp40SSv7wAQuWDLWGhf1p/KR3Snh9bkP6Iq7/m/UyburqPdZc2VVYJUQhN
+        CKxD77AiQ3JQYWtQI196zyp7oUjXO1grb77WkrTOpj/tgMIAMGO/7Irk5MPXvBAV4jy82mo
+        3ZQ93mcjdAw=
+X-QQ-GoodBg: 0
+From:   shaomin Deng <dengshaomin@cdjrlc.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     shaomin Deng <dengshaomin@cdjrlc.com>
+Subject: [PATCH] tty: Remove unexpected word "should" in comments
+Date:   Mon,  8 Aug 2022 11:20:04 -0400
+Message-Id: <20220808152004.2364-1-dengshaomin@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220718122328.8287-8-andriy.shevchenko@linux.intel.com>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 18 Jul 2022, Andy Shevchenko wrote:
+There is an unexpected word "should", so remove it.
 
-No commit message.
+Signed-off-by: shaomin Deng <dengshaomin@cdjrlc.com>
+---
+ drivers/tty/amiserial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Probably needs to justify why it's calling a function denoted for
-internal use only.
-
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/mfd/intel_soc_pmic_bxtwc.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/mfd/intel_soc_pmic_bxtwc.c b/drivers/mfd/intel_soc_pmic_bxtwc.c
-> index 8dac0d41f64f..f9842ff44b3f 100644
-> --- a/drivers/mfd/intel_soc_pmic_bxtwc.c
-> +++ b/drivers/mfd/intel_soc_pmic_bxtwc.c
-> @@ -422,8 +422,10 @@ static int bxtwc_add_chained_irq_chip(struct intel_soc_pmic *pmic,
->  		return dev_err_probe(pmic->dev, irq, "Failed to get parent vIRQ(%d) for chip %s\n",
->  				     pirq, chip->name);
->  
-> -	return devm_regmap_add_irq_chip(pmic->dev, pmic->regmap, irq, irq_flags,
-> -					0, chip, data);
-> +	return __devm_regmap_add_irq_chip(pmic->dev, pmic->regmap, irq,
-> +					  irq_flags, 0,
-> +					  regmap_irq_get_domain(pdata),
-> +					  chip, data);
->  }
->  
->  static int bxtwc_probe(struct platform_device *pdev)
-
+diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+index 5458e2b1c125..81e7f64c1739 100644
+--- a/drivers/tty/amiserial.c
++++ b/drivers/tty/amiserial.c
+@@ -12,7 +12,7 @@
+  * (non hardware specific) changes to serial.c.
+  *
+  * The port is registered with the tty driver as minor device 64, and
+- * therefore other ports should should only use 65 upwards.
++ * therefore other ports should only use 65 upwards.
+  *
+  * Richard Lucock 28/12/99
+  *
 -- 
-DEPRECATED: Please use lee@kernel.org
+2.35.1
+
