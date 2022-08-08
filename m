@@ -2,463 +2,468 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F042EC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:44:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2C1FC25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:49:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244172AbiHHCoK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 22:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32800 "EHLO
+        id S233423AbiHHCto (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 22:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242142AbiHHClk (ORCPT
+        with ESMTP id S229967AbiHHCtl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 22:41:40 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03C5F218F
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 19:41:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=hZjSf88l3+lM66CwidCtP8JI0G0z2t8AvLM0WYfg0TQ=; b=p5jQkZsDy0AV/sNBCWvC/4+8dm
-        0VaauoPgqp4NVYzCwEV248UOyXSbbi/ql8lNU+jBMby6YpldIFoWTeyLSs+dLRkysE/Jyas0ICMBy
-        Wl0sp26rQOV16Yq4oNZnM7j04HAgUpGYAGQ7NrLrr2Nl/7bwbwp+FKheY7pXjm2oBBoyC0W6NkexV
-        G2Mcz0DGTQZ4PTBC7qG+CYU2KlbWr8nGeYREeW0VChzZSHGI8d383et5XxDYLoxSOqdcTcTuwHxGj
-        CTSryPAawPxkn1vsqhu2+3NM7FN0KpaGaaKYq6weI0hhQjiMKcSJc/dq5fwz3R1UwlkTk2hTNPchK
-        r7ft5Flw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oKshw-00DVRV-V7; Mon, 08 Aug 2022 02:41:32 +0000
-From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
-To:     linux-kernel@vger.kernel.org, pmladek@suse.com,
-        Kent Overstreet <kent.overstreet@gmail.com>
-Cc:     Mikulas Patocka <mpatocka@redhat.com>
-Subject: [PATCH v5 04/32] lib/hexdump: Convert to printbuf
-Date:   Mon,  8 Aug 2022 03:41:00 +0100
-Message-Id: <20220808024128.3219082-5-willy@infradead.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220808024128.3219082-1-willy@infradead.org>
-References: <20220808024128.3219082-1-willy@infradead.org>
+        Sun, 7 Aug 2022 22:49:41 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE3332F
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 19:49:39 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id a89so9701926edf.5
+        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 19:49:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=HwW83nhJdoLb8JmHiWVVXkr147ZsutIGFLB3Iam3uWw=;
+        b=hBOHnYbB+lEWTNqVPug91LT7omcjE7d8l1wwDxo75wpdVlobzLKioW4xNgzwQn9DB8
+         MCWMsQ9l3RQQv/24hIzeOjhKf7WzQArEXoIE0D6v0B8zHWgluzsGS+C23ReJAtJTmdNV
+         OoyEdCuA6vfJbAU923CUVB6N7MiXCZ0zjSMg/na6cJTxd54i0kdNrxwXKbOaRWyVGC1T
+         6j9JrLpKcelKXTt91ldiufqGOvCgNHJY1bzKtka2Sxo0KfNIjygxkrVcb2GvXre4SKg3
+         LHP6FHyLCHE/MoY2KODUZ3Qz3aNejyjtvp9lhg0PUISkPsYck1tY3TJHkDgrggeKjzXg
+         oEEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=HwW83nhJdoLb8JmHiWVVXkr147ZsutIGFLB3Iam3uWw=;
+        b=wFdURaXUH7HUxoNXMZu05XjKUpVyHV8//1i5V9M2B9Rangl9zXI50XSOSqMFm6HC+L
+         bAINqzxXf4Jh6+Ehkr0uW+GUypeCdZT+zrnFNYjZ7N58sYC0VnN9flwvMwJ7P04e7oTJ
+         UXyaM8Dw4FfKjFMnRYo7g1oryMdtfM2TO4iga3sWn7cnfZKgKqRWMzPOCvstThzOkM06
+         w8V7OB5+Tu2C5z/dPcrpSw+Mhe0qIEBK0q7j6AyrFIA7Y30Ygmr9NpiIQmADTST3N1Hl
+         qu/htM8cEA8XoeBx42DYUGxLCVeAA74lXEl/+sWb5Mz6LmihyBjNZI+XIWA9mMJyfHxk
+         E4qw==
+X-Gm-Message-State: ACgBeo0szX5xZzUsAQNMQm78PMRO8IejobJfnpJ4VFI5/Xi0736a2m7T
+        QZ5Zu3lDhtdEU5eB2spg3SQCBJIILWLs6/j9T90=
+X-Google-Smtp-Source: AA6agR51fKNUN+ODSXSXqZC7hrAhL6NQCTcrhXXNZWE+6LTEZVIxwxb9PxrHS/wMIEaG3XCP+ihsJy2mA4hERWXcDVc=
+X-Received: by 2002:a05:6402:254a:b0:43d:a634:a0ab with SMTP id
+ l10-20020a056402254a00b0043da634a0abmr16041648edb.298.1659926977838; Sun, 07
+ Aug 2022 19:49:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAHCN7xJy6X5733m3zwcFMuWM9oGHJEmKrs2KUNhzMzNVggRx0g@mail.gmail.com>
+ <20220802080820.jyf3tfpgcj3pvbtp@pengutronix.de> <CAHCN7xL-7wGnEhY9+zDXYjigZfnfsnY_NsRf+enYt_BPsFxgnQ@mail.gmail.com>
+ <CAHCN7xLpCbOY+Ma6gKJievw6aUZ5-Qs4S=zxjTgRu=Be7zvhoQ@mail.gmail.com>
+ <CAHCN7xKzYcCPL0ddTENGw6xdCMNdYw-m5u4NSBHb96Vb_tByGg@mail.gmail.com>
+ <20220803062024.vn7awasmifkp5xow@pengutronix.de> <CAHCN7xL3maPyX8eUiT6mKYei==6pkEvVTwX3vY+1uLTSNDGQ3Q@mail.gmail.com>
+ <CAPY8ntBBz56Es=pK+KpqhyYLUET95DT_zE6gorOWx4WkCSxJAg@mail.gmail.com>
+ <20220804093829.42kdelp7u4r743nv@pengutronix.de> <CAPY8ntBovVq1HVt_UneDF8OB9KBdEBv52o=4BCTmf9VpiODxVg@mail.gmail.com>
+ <20220804125152.idyzetjqkjzgbbm2@pengutronix.de> <CAPY8ntAatYvbf5ehfsj4qcSDC=sODeN1Cj0vDjn6p0M=k320NA@mail.gmail.com>
+ <CAHCN7x+DkJgGvMLnYBXscSMDmTCeaHeJKK6T9eLUm+rXSx=NQA@mail.gmail.com>
+ <OS0PR01MB592206843B43BC93F4F699FC869E9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <CAHCN7x+UAk1wPTOj7EFUXkRY3b3BPXTT6SqD4A7sJO87ZpHgFg@mail.gmail.com>
+ <CAHCN7xJ4TWpLmD_WRrEXoHWy52MEfUL-_R5x=kF-1JC0_C8Q1Q@mail.gmail.com> <CAHCN7x+y9zrfs_wtptFNQW3+hcF2aeuqZY7xFs+gcGJNv334oQ@mail.gmail.com>
+In-Reply-To: <CAHCN7x+y9zrfs_wtptFNQW3+hcF2aeuqZY7xFs+gcGJNv334oQ@mail.gmail.com>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Sun, 7 Aug 2022 21:49:25 -0500
+Message-ID: <CAHCN7xLMD2hh8FqFY_pw7-P0RP2wG-7Yf+7y1NAfYxY36r3bGw@mail.gmail.com>
+Subject: Re: imx8mm lcdif->dsi->adv7535 no video, no errors
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Marco Felsch <m.felsch@pengutronix.de>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Marek Vasut <marex@denx.de>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        "robert.chiras@nxp.com" <robert.chiras@nxp.com>,
+        "laurentiu.palcu@nxp.com" <laurentiu.palcu@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kent Overstreet <kent.overstreet@gmail.com>
+On Fri, Aug 5, 2022 at 4:05 PM Adam Ford <aford173@gmail.com> wrote:
+>
+> On Fri, Aug 5, 2022 at 7:56 AM Adam Ford <aford173@gmail.com> wrote:
+> >
+> > On Fri, Aug 5, 2022 at 5:55 AM Adam Ford <aford173@gmail.com> wrote:
+> > >
+> > > On Fri, Aug 5, 2022 at 3:44 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> > > >
+> > > > Hi Adam and all,
+> > > >
+> > > > > Subject: Re: imx8mm lcdif->dsi->adv7535 no video, no errors
+> > > > >
+> > > > > On Thu, Aug 4, 2022 at 9:52 AM Dave Stevenson
+> > > > > <dave.stevenson@raspberrypi.com> wrote:
+> > > > > >
+> > > > > > On Thu, 4 Aug 2022 at 13:51, Marco Felsch <m.felsch@pengutronix.de>
+> > > > > wrote:
+> > > > > > >
+> > > > > > > Hi Dave,
+> > > > > > >
+> > > > > > > On 22-08-04, Dave Stevenson wrote:
+> > > > > > > > Hi Marco
+> > > > > > > >
+> > > > > > > > On Thu, 4 Aug 2022 at 10:38, Marco Felsch
+> > > > > <m.felsch@pengutronix.de> wrote:
+> > > > > > > > >
+> > > > > > > > > Hi Dave, Adam,
+> > > > > > > > >
+> > > > > > > > > On 22-08-03, Dave Stevenson wrote:
+> > > > > > > > > > Hi Adam
+> > > > > > > > > >
+> > > > > > > > > > On Wed, 3 Aug 2022 at 12:03, Adam Ford <aford173@gmail.com>
+> > > > > wrote:
+> > > > > > > > >
+> > > > > > > > > ...
+> > > > > > > > >
+> > > > > > > > > > > > Did managed to get access to the ADV7535 programming
+> > > > > > > > > > > > guide? This is the black box here. Let me check if I can
+> > > > > > > > > > > > provide you a link with our repo so you can test our
+> > > > > current DSIM state if you want.
+> > > > > > > > > > >
+> > > > > > > > > > > I do have access to the programming guide, but it's under
+> > > > > > > > > > > NDA, but I'll try to answer questions if I can.
+> > > > > > > > > >
+> > > > > > > > > > Not meaning to butt in, but I have datasheets for ADV7533 and
+> > > > > > > > > > 7535 from previously looking at these chips.
+> > > > > > > > >
+> > > > > > > > > Thanks for stepping into :)
+> > > > > > > > >
+> > > > > > > > > > Mine fairly plainly states:
+> > > > > > > > > > "The DSI receiver input supports DSI video mode operation
+> > > > > > > > > > only, and specifically, only supports nonburst mode with sync
+> > > > > pulses".
+> > > > > > > > >
+> > > > > > > > > I've read this also, and we are working in nonburst mode with
+> > > > > > > > > sync pulses. I have no access to an MIPI-DSI analyzer therefore
+> > > > > > > > > I can't verify it.
+> > > > > > > > >
+> > > > > > > > > > Non-burst mode meaning that the DSI pixel rate MUST be the
+> > > > > > > > > > same as the HDMI pixel rate.
+> > > > > > > > >
+> > > > > > > > > On DSI side you don't have a pixel-clock instead there is bit-
+> > > > > clock.
+> > > > > > > >
+> > > > > > > > You have an effective pixel clock, with a fixed conversion for the
+> > > > > > > > configuration.
+> > > > > > > >
+> > > > > > > > DSI bit-clock * number of lanes / bits_per_pixel = pixel rate.
+> > > > > > > > 891Mbit/s * 4 lanes / 24bpp = 148.5 Mpixels/s
+> > > > > > >
+> > > > > > > Okay, I just checked the bandwidth which must equal.
+> > > > > > >
+> > > > > > > > As noted elsewhere, the DSI is DDR, so the clock lane itself is
+> > > > > > > > only running at 891 / 2 = 445.5MHz.
+> > > > > > > >
+> > > > > > > > > > Section 6.1.1 "DSI Input Modes" of
+> > > > > > > > > > adv7533_hardware_user_s_guide is even more explicit about the
+> > > > > > > > > > requirement of DSI timing matching
+> > > > > > > > >
+> > > > > > > > > Is it possible to share the key points of the requirements?
+> > > > > > > >
+> > > > > > > > "Specifically the ADV7533 supports the Non-Burst Mode with syncs.
+> > > > > > > > This mode requires real time data generation as a pulse packet
+> > > > > > > > received becomes a pulse generated. Therefore this mode requires a
+> > > > > > > > continuous stream of data with correct video timing to avoid any
+> > > > > > > > visual artifacts."
+> > > > > > > >
+> > > > > > > > LP mode is supported on data lanes. Clock lane must remain in HS
+> > > > > mode.
+> > > > > > > >
+> > > > > > > > "... the goal is to accurately convey DPI-type timing over DSI.
+> > > > > > > > This includes matching DPI pixel-transmission rates, and widths of
+> > > > > > > > timing events."
+> > > > > > >
+> > > > > > > Thanks for sharing.
+> > > > > > >
+> > > > > > > > > > The NXP kernel switching down to an hs_clk of 445.5MHz would
+> > > > > > > > > > therefore be correct for 720p operation.
+> > > > > > > > >
+> > > > > > > > > It should be absolute no difference if you work on 891MHz with 2
+> > > > > > > > > lanes or on 445.5 MHz with 4 lanes. What must be ensured is that
+> > > > > > > > > you need the minimum required bandwidth which is roughly:
+> > > > > > > > > 1280*720*24*60 = 1.327 GBps.
+> > > > > > > >
+> > > > > > > > Has someone changed the number of lanes in use? I'd missed that if
+> > > > > > > > so, but I'll agree that 891MHz over 2 lanes should work for
+> > > > > 720p60.
+> > > > > > >
+> > > > > > > The ADV driver is changing it autom. but this logic is somehow odd
+> > > > > > > and there was already a approach to stop the driver doing this.
+> > > > > >
+> > > > > > I'd missed that bit in the driver where it appears to drop to 3 lanes
+> > > > > > for pixel clock < 80000 via a mipi_dsi_detach and _attach. Quirky, but
+> > > > > > probably the only way it can be achieved in the current framework.
+> > > > > >
+> > > > > > > To sync up: we have two problems:
+> > > > > > >   1) The 720P mode with static DSI host configuration isn't working
+> > > > > > >      without hacks.
+> > > > > > >   2) The DSI link frequency should changed as soon as required
+> > > > > > >      automatically. So we can provide all modes.
+> > > > > > >
+> > > > > > > I would concentrate on problem 1 first before moving on to the 2nd.
+> > > > > >
+> > > > > > If you change your link frequency, it may be worth trying a lower
+> > > > > > resolution again such as 720x480 @ 60fps on 2 lanes. (720480@60 on 4
+> > > > > > lanes is again listed as mandatory for using the timing generator).
+> >
+> > Marco,
+> >
+> > Looking through the DSIM driver that NXP uses, it appears that they
+> > have a few special cases where they intentionally manipulate the DSIM
+> > under certain conditions:
+> >
+> > /* '1280x720@60Hz' mode with 2 data lanes
+> > * requires special fine tuning for DPHY
+> > * TIMING config according to the tests.
+> > */
+> >
+> > There is also a separate one for the 4-lane mode:
+> >
+> > /* workaround for CEA standard mode "1280x720@60" "1920x1080p24"
+> > * display on 4 data lanes with Non-burst with sync
+> > * pulse DSI mode, since use the standard horizontal
+> > * timings cannot display correctly. And this code
+> > * cannot be put into the dsim Bridge's mode_fixup,
+> > * since the DSI device lane number change always
+> > * happens after that.
+> > */
+> >
+> > And lastly, they address issues with 3-lane mode:
+> >
+> > /* TODO: DSIM 3 lanes has some display issue, so
+> > * avoid 3 lanes enable, and force data lanes to
+> > * be 2.
+> > */
+> >
+> > Since the ADV is trying to adjust the lanes to 3 when running at 720p,
+> > it could be part of the reason you need to jump to 2-lane mode.
+> >
+> > > > > >
+> > > > > > > > I have just noted that 720p59.94 at 24bpp on 4 lanes is listed as
+> > > > > > > > one of the modes that is mandatory to use the timing generator
+> > > > > > > > (reg 0x27 bit 7 = 1). On 2 lanes it is not required.
+> > > > > > > > I don't know why it's referencing the 1000/1001 pixel clock rates
+> > > > > > > > and not the base one, as it's only a base clock change with the
+> > > > > > > > same timing (74.176MHz clock instead of 74.25MHz).
+> > > > > > >
+> > > > > > > Interesting! I would like to know how the HDMI block gets fetched by
+> > > > > > > the DSI block and how the timing-generator can influence this in
+> > > > > > > good/bad way. So that we know what DSI settings (freq, lanes) are
+> > > > > sufficient.
+> > > > > > >
+> > > > > > > > > > If you do program the manual DSI divider register to allow a
+> > > > > > > > > > DSI pixel rate of 148.5MHz vs HDMI pixel rate of 74.25MHz,
+> > > > > > > > > > you'd be relying on
+> > > > > > > > >
+> > > > > > > > > There is no such DSI pixel rate to be precise, we only have a
+> > > > > > > > > DSI bit clock/rate.
+> > > > > > > > >
+> > > > > > > > > > the ADV753x having at least a half-line FIFO between DSI rx
+> > > > > > > > > > and HDMI tx to compensate for the differing data rates. I see
+> > > > > > > > > > no reference to such, and I'd be surprised if it was more than
+> > > > > > > > > > a half dozen pixels to compensate for the jitter in the cases
+> > > > > > > > > > where the internal timing generator is mandatory due to
+> > > > > fractional bytes.
+> > > > > > > > >
+> > > > > > > > > This is interesting and would proofs our assumption that the
+> > > > > > > > > device don't have a FIFO :)
+> > > > > > > > >
+> > > > > > > > > Our assumptions (we don't have the datasheet/programming
+> > > > > manual):
+> > > > > > > > >   - HDMI part is fetching 3 bytes per HDMI pixclk
+> > > > > > > > >   - Ratio between dsi-clk and hdmi-pixelclk must be 3 so the DSI
+> > > > > and
+> > > > > > > > >     HDMI are in sync. So from bandwidth pov there are no
+> > > > > differences
+> > > > > > > > >     between:
+> > > > > > > > >       - HDMI: 74.25 MHz * 24 Bit  = 1782.0 MBit/s
+> > > > > > > > >       - DSI:    891 MHz * 2 lanes = 1782.0 MBit/s (dsi-clock:
+> > > > > 445.5 )
+> > > > > > > > >       - DSI:  445.5 MHz * 4 lanes = 1782.0 MBit/s (dsi-clock:
+> > > > > > > > > 222.75)
+> > > > > > > > >
+> > > > > > > > >     But the ratio is different and therefore the faster clocking
+> > > > > option
+> > > > > > > > >     let something 'overflow'.
+> > > > > > > >
+> > > > > > > > I'll agree that all looks consistent.
+> > > > > > > >
+> > > > > > > > > Anyway, but all this means that Adam should configure the
+> > > > > > > > > burst-clock-rate to 445.5 and set the lanes to 4. But this
+> > > > > > > > > doesn't work either and now we are back on my initial statement
+> > > > > > > > > -> the driver needs some attention.
+> > > > > > > >
+> > > > > > > > Things always need attention :-)
+> > > > > > >
+> > > > > > > ^^
+> > > > > > >
+> > > > > > > > I suspect that it's the use of the timing generator that is the
+> > > > > issue.
+> > > > > > > > The programming guide does recommend using it for all modes, so
+> > > > > > > > that would be a sensible first step.
+> > > > > > >
+> > > > > > > But I tested it without the timing-generator too. Can you or Adam
+> > > > > > > verify the timing-generator diable logic?
+> > > > > >
+> > > > > > Sorry, running without the use of the timing generator is the issue.
+> > > > > > It is mandatory in some modes, but supported in all modes. Always
+> > > > > > using it should therefore avoid not using it in one of the mandatory
+> > > > > > modes (the list looks a little arbitrary).
+>
+> I tested running various modes with the timing generator disable on an
+> NXP kernel with functional video, and some of the video modes stopped
+> operating or became blurry.  With the generator on, it appeared to
+> make the issues go away, so I think it should be left on.
+>
+> > > > > >
+> > > > > > > > I will say that we had a number of issues getting this chip to do
+> > > > > > > > anything, and it generally seemed happier on 2 or 3 lanes instead
+> > > > > > > > of 4. Suffice to say that we abandoned trying to use it, despite
+> > > > > > > > some assistance from ADI.
+> > > > > > >
+> > > > > > > Even more interessting, what is your alternative to this chip?
+> > > > > >
+> > > > > > BCM2711 which supported dual HDMI natively.
+> > > > > > Our investigation of ADV7535 was when trying to build what became
+> > > > > > Pi400 using BCM2710/BCM2837 (only has a single HDMI output). Whilst I
+> > > > > > do have the prototype, the ADV was wired up weirdly with I2C so I
+> > > > > > never really got it running with Linux.
+> > > > >
+> > > > > I think I have convinced myself that the DSIM is working good enough to
+> > > > > match that of the NXP.
+> > > > >
+> > > > > I've gone through and made a list of the register differences between a
+> > > > > working display using NXP's kernel and the non-working display.  I've
+> > > > > identified a small handful of registers on both the CEC bank of
+> > > > > registers and main set of registers.
+> > > > >
+> > > > > I noticed that the working NXP version doesn't rescale the number of
+> > > > > lanes based on the clock rate, and it stays fixed at 4 lanes.
+> > > >
+> > > > Does it mean theoretically rescale of lanes is not required??
+> > >
+> > > On the custom kernel from NXP, I can sync at 720p at 4-lanes.
+> > > Unfortunately, I haven't yet been able to replicate all the register
+> > > settings between my working version at 720p and my non-working
+> > > version, and I still have yet to sync at 720p using the mainline
+> > > adv7535 driver.  I am still wrokong on it.
+> > >
+> > > > At least 2 platforms can work with fixed 4 lanes@720p.
+> >
+> > Based on what I'm seeing for this NXP platform, it almost seems like
+> > the DSI transmitter should make the determination on whether or not to
+> > scale the number of lanes instead of having the ADV7373 do it.  Since
+> > their custom kernel is able to do 720p in 4-lane mode with this part,
+> > it doesn't seem unreasonable to me.
+>
+> I did a bunch of comparisons between registers for both the ADV7535
+> and the DSIM, and it appears that the video information is somehow
+> different between the working NXP kernel and non-working one.
+>
+> The two main differences are around the values of htotal  hfp.  Both
+> the DSIM and the ADV7535 are using different values for htotal and the
+> hfp between the kernels.  I am wondering if there is a bug in the 5.19
+> driver which is fetching wrong info or somehow the data isn't being
+> calculated properly because both the DSIM and the ADV timings match
+> each other, but don't match the working kernel.
+>
+>
+> 720p Working on NXP:
+>
+> [   24.657957] sec_mipi_dsim_set_main_mode: vmode->hfront_porch 112 ->
+> hfp_wc = 78
+> [   24.665284] sec_mipi_dsim_set_main_mode: vmode->hsync_len 40 -> hsa_wc = 24
+> [   24.681496] adv7511_dsi_config_timing_gen: htotal 1652
+> [   24.691372] adv7511_dsi_config_timing_gen: hfp 112
+>
+> 720p Not working:
+>
+> [  106.424404] samsung_dsim_set_display_mode: vfp = 5
+> [  106.429216] samsung_dsim_set_display_mode: bfp = 20
+> [  106.441777] sec_mipi_dsim_set_main_mode: vmode->hfront_porch 110 ->
+> hfp_wc = 77
+> [  106.449221] sec_mipi_dsim_set_main_mode: vmode->hsync_len 40 -> hsa_wc = 24
+> [  106.456314] LCD size = 1280x720
+> [  106.470115] adv7511_dsi_config_timing_gen: htotal = 1650
+> [  106.480707] adv7511_dsi_config_timing_gen: hfp = 110
+>
 
-This converts most of the hexdump code to printbufs, along with some
-significant cleanups and a bit of reorganization. The old non-printbuf
-functions are mostly left as wrappers around the new printbuf versions.
+After spending more time than I care to admit, I think I have a
+working solution to the DSIM + ADV7535, but the vast majority of the
+changes I had to do were revolving around samsung_dsim_set_phy_ctrl.
+I have an LVDS bridge based on the ti,sn65dsi83.  With some
+suggestions from Marek V, I replaced the fixed-clock solution with a
+dynamic one based on the attached bridge's requested clocks.
 
-Big note: byte swabbing behaviour
+With those changes, I have the following resolutions working on the
+ADV7535 (with almost no chages to the ADV code) ane one that's nearly
+working:
 
-Previously, hex_dump_to_buffer() would byteswab the groups of bytes
-being printed on little endian machines. This behaviour is... not
-standard or typical for a hex dumper, and this behaviour was silently
-added/changed without documentation (in 2007).
+Working:
 
-Given that the hex dumpers are just used for debugging output, nothing
-is likely to break, and hopefully by reverting to more standard
-behaviour the end result will be _less_ confusion, modulo a few kernel
-developers who will certainly be annoyed by their tools changing.
+1080p@60
+1080p@50
+720p@50
+800x600-75
+720x576
 
-Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
-Cc: Mikulas Patocka <mpatocka@redhat.com>
----
- include/linux/kernel.h |   6 +
- lib/hexdump.c          | 246 ++++++++++++++++++++++++-----------------
- lib/test_hexdump.c     |  30 +----
- 3 files changed, 159 insertions(+), 123 deletions(-)
+Partially Working:
+720p@60 (hsync appears off, rounding error?)
 
-diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 5c4f4b6d36ab..1906861ece7a 100644
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -293,6 +293,12 @@ extern int hex_to_bin(unsigned char ch);
- extern int __must_check hex2bin(u8 *dst, const char *src, size_t count);
- extern char *bin2hex(char *dst, const void *src, size_t count);
- 
-+struct printbuf;
-+void prt_hex_bytes(struct printbuf *, const void *, unsigned, unsigned, unsigned);
-+void prt_hex_line(struct printbuf *, const void *, size_t, int, int, bool);
-+void prt_hex_dump(struct printbuf *, const void *, size_t,
-+		  const char *, int, unsigned, unsigned, bool);
-+
- bool mac_pton(const char *s, u8 *mac);
- 
- /*
-diff --git a/lib/hexdump.c b/lib/hexdump.c
-index 06833d404398..9556f15ad295 100644
---- a/lib/hexdump.c
-+++ b/lib/hexdump.c
-@@ -9,6 +9,7 @@
- #include <linux/kernel.h>
- #include <linux/minmax.h>
- #include <linux/export.h>
-+#include <linux/printbuf.h>
- #include <asm/unaligned.h>
- 
- const char hex_asc[] = "0123456789abcdef";
-@@ -79,32 +80,40 @@ int hex2bin(u8 *dst, const char *src, size_t count)
- EXPORT_SYMBOL(hex2bin);
- 
- /**
-- * bin2hex - convert binary data to an ascii hexadecimal string
-- * @dst: ascii hexadecimal result
-- * @src: binary data
-- * @count: binary data length
-+ * prt_hex_bytes - Print a string of hex bytes, with optional separator
-+ *
-+ * @out: The printbuf to output to
-+ * @addr: Buffer to print
-+ * @nr: Number of bytes to print
-+ * @separator: Optional separator character between each byte
-  */
--char *bin2hex(char *dst, const void *src, size_t count)
-+void prt_hex_bytes(struct printbuf *out, const void *buf, unsigned len,
-+		   unsigned groupsize, unsigned separator)
- {
--	const unsigned char *_src = src;
-+	const u8 *ptr = buf;
-+	unsigned i;
- 
--	while (count--)
--		dst = hex_byte_pack(dst, *_src++);
--	return dst;
-+	if (!groupsize)
-+		groupsize = 1;
-+
-+	for (i = 0; i < len ; ++i) {
-+		if (i && separator && !(i % groupsize))
-+			__prt_char(out, separator);
-+		prt_hex_byte(out, ptr[i]);
-+	}
- }
--EXPORT_SYMBOL(bin2hex);
-+EXPORT_SYMBOL(prt_hex_bytes);
- 
- /**
-- * hex_dump_to_buffer - convert a blob of data to "hex ASCII" in memory
-+ * prt_hex_line - convert a blob of data to "hex ASCII" in memory
-+ * @out: printbuf to output to
-  * @buf: data blob to dump
-  * @len: number of bytes in the @buf
-  * @rowsize: number of bytes to print per line; must be 16 or 32
-  * @groupsize: number of bytes to print at a time (1, 2, 4, 8; default = 1)
-- * @linebuf: where to put the converted data
-- * @linebuflen: total size of @linebuf, including space for terminating NUL
-  * @ascii: include ASCII after the hex output
-  *
-- * hex_dump_to_buffer() works on one "line" of output at a time, i.e.,
-+ * prt_hex_line() works on one "line" of output at a time, i.e.,
-  * 16 or 32 bytes of input data converted to hex + ASCII output.
-  *
-  * Given a buffer of u8 data, hex_dump_to_buffer() converts the input data
-@@ -117,22 +126,13 @@ EXPORT_SYMBOL(bin2hex);
-  *
-  * example output buffer:
-  * 40 41 42 43 44 45 46 47 48 49 4a 4b 4c 4d 4e 4f  @ABCDEFGHIJKLMNO
-- *
-- * Return:
-- * The amount of bytes placed in the buffer without terminating NUL. If the
-- * output was truncated, then the return value is the number of bytes
-- * (excluding the terminating NUL) which would have been written to the final
-- * string if enough space had been available.
-  */
--int hex_dump_to_buffer(const void *buf, size_t len, int rowsize, int groupsize,
--		       char *linebuf, size_t linebuflen, bool ascii)
-+void prt_hex_line(struct printbuf *out, const void *buf, size_t len,
-+		  int rowsize, int groupsize, bool ascii)
- {
-+	unsigned saved_pos = out->pos;
- 	const u8 *ptr = buf;
--	int ngroups;
--	u8 ch;
--	int j, lx = 0;
--	int ascii_column;
--	int ret;
-+	int i, ngroups;
- 
- 	if (rowsize != 16 && rowsize != 32)
- 		rowsize = 16;
-@@ -145,84 +145,127 @@ int hex_dump_to_buffer(const void *buf, size_t len, int rowsize, int groupsize,
- 		groupsize = 1;
- 
- 	ngroups = len / groupsize;
--	ascii_column = rowsize * 2 + rowsize / groupsize + 1;
--
--	if (!linebuflen)
--		goto overflow1;
- 
- 	if (!len)
--		goto nil;
--
--	if (groupsize == 8) {
--		const u64 *ptr8 = buf;
--
--		for (j = 0; j < ngroups; j++) {
--			ret = snprintf(linebuf + lx, linebuflen - lx,
--				       "%s%16.16llx", j ? " " : "",
--				       get_unaligned(ptr8 + j));
--			if (ret >= linebuflen - lx)
--				goto overflow1;
--			lx += ret;
--		}
--	} else if (groupsize == 4) {
--		const u32 *ptr4 = buf;
--
--		for (j = 0; j < ngroups; j++) {
--			ret = snprintf(linebuf + lx, linebuflen - lx,
--				       "%s%8.8x", j ? " " : "",
--				       get_unaligned(ptr4 + j));
--			if (ret >= linebuflen - lx)
--				goto overflow1;
--			lx += ret;
--		}
--	} else if (groupsize == 2) {
--		const u16 *ptr2 = buf;
--
--		for (j = 0; j < ngroups; j++) {
--			ret = snprintf(linebuf + lx, linebuflen - lx,
--				       "%s%4.4x", j ? " " : "",
--				       get_unaligned(ptr2 + j));
--			if (ret >= linebuflen - lx)
--				goto overflow1;
--			lx += ret;
--		}
--	} else {
--		for (j = 0; j < len; j++) {
--			if (linebuflen < lx + 2)
--				goto overflow2;
--			ch = ptr[j];
--			linebuf[lx++] = hex_asc_hi(ch);
--			if (linebuflen < lx + 2)
--				goto overflow2;
--			linebuf[lx++] = hex_asc_lo(ch);
--			if (linebuflen < lx + 2)
--				goto overflow2;
--			linebuf[lx++] = ' ';
-+		return;
-+
-+	prt_hex_bytes(out, ptr, len, groupsize, ' ');
-+
-+	if (ascii) {
-+		unsigned ascii_column = rowsize * 2 + rowsize / groupsize + 1;
-+
-+		prt_chars(out, ' ', max_t(int, 0, ascii_column - (out->pos - saved_pos)));
-+
-+		for (i = 0; i < len; i++) {
-+			u8 ch = ptr[i];
-+			prt_char(out, isascii(ch) && isprint(ch) ? ch : '.');
- 		}
--		if (j)
--			lx--;
- 	}
--	if (!ascii)
--		goto nil;
-+}
-+EXPORT_SYMBOL(prt_hex_line);
- 
--	while (lx < ascii_column) {
--		if (linebuflen < lx + 2)
--			goto overflow2;
--		linebuf[lx++] = ' ';
--	}
--	for (j = 0; j < len; j++) {
--		if (linebuflen < lx + 2)
--			goto overflow2;
--		ch = ptr[j];
--		linebuf[lx++] = (isascii(ch) && isprint(ch)) ? ch : '.';
-+/**
-+ * prt_hex_dump - print multiline formatted hex dump
-+ * @out: printbuf to output to
-+ * @buf: data blob to dump
-+ * @len: number of bytes in the @buf
-+ * @prefix_str: string to prefix each line with;
-+ *  caller supplies trailing spaces for alignment if desired
-+ * @prefix_type: controls whether prefix of an offset, address, or none
-+ *  is printed (%DUMP_PREFIX_OFFSET, %DUMP_PREFIX_ADDRESS, %DUMP_PREFIX_NONE)
-+ * @rowsize: number of bytes to print per line; must be 16 or 32
-+ * @groupsize: number of bytes to print at a time (1, 2, 4, 8; default = 1)
-+ * @ascii: include ASCII after the hex output
-+ *
-+ * Function is an analogue of print_hex_dump() and thus has similar interface.
-+ *
-+ * linebuf size is maximal length for one line.
-+ * 32 * 3 - maximum bytes per line, each printed into 2 chars + 1 for
-+ *	separating space
-+ * 2 - spaces separating hex dump and ascii representation
-+ * 32 - ascii representation
-+ * 1 - terminating '\0'
-+ */
-+void prt_hex_dump(struct printbuf *out, const void *buf, size_t len,
-+		  const char *prefix_str, int prefix_type,
-+		  unsigned rowsize, unsigned groupsize, bool ascii)
-+{
-+	const u8 *ptr = buf;
-+	size_t i;
-+
-+	if (rowsize != 16 && rowsize != 32)
-+		rowsize = 16;
-+
-+	for (i = 0; i < len; i += rowsize) {
-+		prt_str(out, prefix_str);
-+
-+		switch (prefix_type) {
-+		case DUMP_PREFIX_ADDRESS:
-+			prt_printf(out, "%p: ", ptr + i);
-+			break;
-+		case DUMP_PREFIX_OFFSET:
-+			prt_printf(out, "%.8zx: ", i);
-+			break;
-+		}
-+
-+		prt_hex_line(out, ptr + i, min_t(size_t, len - i, rowsize),
-+			     rowsize, groupsize, ascii);
-+		prt_char(out, '\n');
- 	}
--nil:
--	linebuf[lx] = '\0';
--	return lx;
--overflow2:
--	linebuf[lx++] = '\0';
--overflow1:
--	return ascii ? ascii_column + len : (groupsize * 2 + 1) * ngroups - 1;
-+}
-+
-+/**
-+ * bin2hex - convert binary data to an ascii hexadecimal string
-+ * @dst: ascii hexadecimal result
-+ * @src: binary data
-+ * @count: binary data length
-+ */
-+char *bin2hex(char *dst, const void *src, size_t count)
-+{
-+	struct printbuf out = PRINTBUF_EXTERN(dst, count * 4);
-+
-+	prt_hex_bytes(&out, src, count, 0, 0);
-+	return dst + out.pos;
-+}
-+EXPORT_SYMBOL(bin2hex);
-+
-+/**
-+ * hex_dump_to_buffer - convert a blob of data to "hex ASCII" in memory
-+ * @buf: data blob to dump
-+ * @len: number of bytes in the @buf
-+ * @rowsize: number of bytes to print per line; must be 16 or 32
-+ * @groupsize: number of bytes to print at a time (1, 2, 4, 8; default = 1)
-+ * @linebuf: where to put the converted data
-+ * @linebuflen: total size of @linebuf, including space for terminating NUL
-+ * @ascii: include ASCII after the hex output
-+ *
-+ * hex_dump_to_buffer() works on one "line" of output at a time, i.e.,
-+ * 16 or 32 bytes of input data converted to hex + ASCII output.
-+ *
-+ * Given a buffer of u8 data, hex_dump_to_buffer() converts the input data
-+ * to a hex + ASCII dump at the supplied memory location.
-+ * The converted output is always NUL-terminated.
-+ *
-+ * E.g.:
-+ *   hex_dump_to_buffer(frame->data, frame->len, 16, 1,
-+ *			linebuf, sizeof(linebuf), true);
-+ *
-+ * example output buffer:
-+ * 40 41 42 43 44 45 46 47 48 49 4a 4b 4c 4d 4e 4f  @ABCDEFGHIJKLMNO
-+ *
-+ * Return:
-+ * The amount of bytes placed in the buffer without terminating NUL. If the
-+ * output was truncated, then the return value is the number of bytes
-+ * (excluding the terminating NUL) which would have been written to the final
-+ * string if enough space had been available.
-+ */
-+int hex_dump_to_buffer(const void *buf, size_t len, int rowsize, int groupsize,
-+		       char *linebuf, size_t linebuflen, bool ascii)
-+{
-+	struct printbuf out = PRINTBUF_EXTERN(linebuf, linebuflen);
-+
-+	prt_hex_line(&out, buf, len, rowsize, groupsize, ascii);
-+	return out.pos;
- }
- EXPORT_SYMBOL(hex_dump_to_buffer);
- 
-@@ -262,6 +305,11 @@ void print_hex_dump(const char *level, const char *prefix_str, int prefix_type,
- 		    int rowsize, int groupsize,
- 		    const void *buf, size_t len, bool ascii)
- {
-+	/*
-+	 * XXX: this code does the exact same thing as prt_hex_dump(): we should
-+	 * be able to call that and printk() the result, except printk is
-+	 * restricted to 1024 bytes of output per call
-+	 */
- 	const u8 *ptr = buf;
- 	int i, linelen, remaining = len;
- 	unsigned char linebuf[32 * 3 + 2 + 32 + 1];
-diff --git a/lib/test_hexdump.c b/lib/test_hexdump.c
-index 5144899d3c6b..f9e97879dcdf 100644
---- a/lib/test_hexdump.c
-+++ b/lib/test_hexdump.c
-@@ -25,36 +25,19 @@ static const char * const test_data_1[] __initconst = {
- 	"4c", "d1", "19", "99", "43", "b1", "af", "0c",
- };
- 
--static const char * const test_data_2_le[] __initconst = {
--	"32be", "7bdb", "180a", "b293",
--	"ba70", "24c4", "837d", "9b34",
--	"9ca6", "ad31", "0f9c", "e9ac",
--	"d14c", "9919", "b143", "0caf",
--};
--
--static const char * const test_data_2_be[] __initconst = {
-+static const char * const test_data_2[] __initconst = {
- 	"be32", "db7b", "0a18", "93b2",
- 	"70ba", "c424", "7d83", "349b",
- 	"a69c", "31ad", "9c0f", "ace9",
- 	"4cd1", "1999", "43b1", "af0c",
- };
- 
--static const char * const test_data_4_le[] __initconst = {
--	"7bdb32be", "b293180a", "24c4ba70", "9b34837d",
--	"ad319ca6", "e9ac0f9c", "9919d14c", "0cafb143",
--};
--
--static const char * const test_data_4_be[] __initconst = {
-+static const char * const test_data_4[] __initconst = {
- 	"be32db7b", "0a1893b2", "70bac424", "7d83349b",
- 	"a69c31ad", "9c0face9", "4cd11999", "43b1af0c",
- };
- 
--static const char * const test_data_8_le[] __initconst = {
--	"b293180a7bdb32be", "9b34837d24c4ba70",
--	"e9ac0f9cad319ca6", "0cafb1439919d14c",
--};
--
--static const char * const test_data_8_be[] __initconst = {
-+static const char * const test_data_8[] __initconst = {
- 	"be32db7b0a1893b2", "70bac4247d83349b",
- 	"a69c31ad9c0face9", "4cd1199943b1af0c",
- };
-@@ -73,7 +56,6 @@ static void __init test_hexdump_prepare_test(size_t len, int rowsize,
- 	size_t l = len;
- 	int gs = groupsize, rs = rowsize;
- 	unsigned int i;
--	const bool is_be = IS_ENABLED(CONFIG_CPU_BIG_ENDIAN);
- 
- 	if (rs != 16 && rs != 32)
- 		rs = 16;
-@@ -85,11 +67,11 @@ static void __init test_hexdump_prepare_test(size_t len, int rowsize,
- 		gs = 1;
- 
- 	if (gs == 8)
--		result = is_be ? test_data_8_be : test_data_8_le;
-+		result = test_data_8;
- 	else if (gs == 4)
--		result = is_be ? test_data_4_be : test_data_4_le;
-+		result = test_data_4;
- 	else if (gs == 2)
--		result = is_be ? test_data_2_be : test_data_2_le;
-+		result = test_data_2;
- 	else
- 		result = test_data_1;
- 
--- 
-2.35.1
+This driver appears to be using a fixed frequency and the
+corresponding fixed frequency in the DPHY settings. If the clock
+changes, the samsung_dsim_set_phy_ctrl needs to adjust accordingly.
+NXP lists a 2-lane operation mode for 720 as needing some additional
+adjustments because the calculations don't quite line up, but due to
+the other changes I made, I didn't investigate 2-lane very much.
 
+In order to switch resolutions, I had to lock the adv7535 in 4-lane
+mode with a minor patch to the adv driver, because the DSIM doesn't
+appear to operate in 3-lane mode (like the adv7511 wants to do) and
+the DSIM seemed to be unhappy about the connections and
+disconnections.  I also made some changes to the PMS calibration for
+the PLL which allowed me to lower the phy clock a bit.
+
+The rest of the changes I did were attempting to port the dsim dphy
+frequency tables from NXP's kernel.  If anyone from NXP or Samsung has
+the formula for how to determine some of the values for the DPHY, I'd
+like to replace the look-up table [1] with a formula.
+
+Once I have my code changes cleaned up, I'll push them to a github and
+share the info.
+
+[1] - https://source.codeaurora.org/external/imx/linux-imx/tree/include/drm/bridge/sec_mipi_dsim.h?h=lf-5.15.y
+
+adam
+> adam
+> >
+> > > >
+> > > > and looks like few platforms have display stability issue working with 4 lanes@720p,
+> > > > so, as a workaround they changed to 3 lanes based on clock rate to make it work.
+> > > >
+> > > > Can you please confirm, is my understanding correct?
+> > >
+> > > That is my understanding.
+> > >
+> > > >
+> > > > Note:
+> > > >  On Renesas RZ/G2L platform, 720p with 3 lanes will work, but it needs
+> > > >  different pll parameters to generate the dot clock to work.
+> > >
+> > > The NXP platform I am using also needs to regenerate the clock.  From
+> > > what I can tell, it looks like the clock calculation on my board
+> > > appears correct for both
+> > > >
+> > > > Cheers,
+> > > > Biju
