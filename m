@@ -2,72 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA5AC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC53BC25B07
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:41:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233131AbiHHCfZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 22:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58516 "EHLO
+        id S242666AbiHHCln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 22:41:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231560AbiHHCfX (ORCPT
+        with ESMTP id S231560AbiHHCli (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 22:35:23 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61094E97
-        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 19:35:22 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id t2-20020a17090a4e4200b001f21572f3a4so7875510pjl.0
-        for <linux-kernel@vger.kernel.org>; Sun, 07 Aug 2022 19:35:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:subject:from:to:user-agent:mime-version
-         :date:message-id:from:to:cc;
-        bh=YVyLLvwQGdhapgIoA+Eca594bJs0oU8fzFb3turAlJs=;
-        b=FjeIgoQwYYz8soy4hb/Pvuu6IC1FAvAmrTdvkZcHPR6dbG5Wieg08dq+ax/Kag+Eu1
-         4C+RDxJ50ttxWd2qJ/tO0jNjH2Bvi3LLGDSDQ8RQdmTX230CrObXmpr6VHJQQg8RO+fE
-         8iVCPd6whLyuuJNEvdFdE3+xz1q51XMT+0OMnL/S9iL9tE1eR+M/t6VcGSKkopMDd2d5
-         UGonaJ6YqtBMi4qhUB0lcSMiieYpv8Xnh07bIvLP9AhAJqx5Jrpj5noIVSG0FzBnPBqA
-         1i2xlOlktNsJqgmCypTYkuBaCKSVKHicK/Ej3lgr5l/wJxKmQ5MWI0TfSikUF6Q0uWJL
-         2GFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:subject:from:to:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc;
-        bh=YVyLLvwQGdhapgIoA+Eca594bJs0oU8fzFb3turAlJs=;
-        b=zvow78D+WjEALPlyAuZL6vsy0gx16MVn0ZRpFZod1YFDfeAXMB6Mw9DI3ZlaTMh2+I
-         6Do5DKcw+aM9c0tyUpi6Lgz4lsMCO2I0BOvq50M98EqrJXctAzB6eDt99Hu971/bVph8
-         oLU2OfyY64CRK08M4yG7gugg1I3yOITh6vVeWJa1YJIxOiVvylLj6RthCudnx8aoyhDR
-         tb3Ju4BChrkI+mRxtvc1dlXzmO8BZuBUinhgmPX9TebJ3mXb62SwcZUMEh5DL/AW+pYt
-         qptHh9YgYnYhGVBxD6oLu3gbCUl0bkd6YqmVNPYWQy1D5pSJNoPw9GZid4npzOdtYqZN
-         6E0A==
-X-Gm-Message-State: ACgBeo2PDAoSj5qujeO0uja8235yAiD6M5Kj+q2U0pd7thfqfJcDYelp
-        WGmkmIOBBtT/zOu/dd3KqIPd6hI8XGjJ95dU
-X-Google-Smtp-Source: AA6agR5sWn3v2VJIOv+7NJm6WaXZoDCNdZ2oUeCLT8vRUBa8N+W9rJ1ZtPXLAj1ny19FgU/p9rBNHg==
-X-Received: by 2002:a17:90a:b00b:b0:1f1:6023:dacd with SMTP id x11-20020a17090ab00b00b001f16023dacdmr26465699pjq.184.1659926121581;
-        Sun, 07 Aug 2022 19:35:21 -0700 (PDT)
-Received: from [10.211.55.4] ([143.92.127.224])
-        by smtp.gmail.com with ESMTPSA id k6-20020a17090ac50600b001f3126b104fsm6975046pjt.31.2022.08.07.19.35.20
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Aug 2022 19:35:21 -0700 (PDT)
-Message-ID: <61ecca29-2d01-af2d-3d18-62dad41c63b4@gmail.com>
-Date:   Mon, 8 Aug 2022 10:35:19 +0800
+        Sun, 7 Aug 2022 22:41:38 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1FD42183
+        for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 19:41:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description;
+        bh=mymWwDkjjiHh/KYD2mfecqldcFEi+AVyZTL9MNt1bp8=; b=SIABDbFY5J2Gk7jbWFiO3p0ZNf
+        KnDzFa4aGU9xZH59qz/GileVMl4Avij+19/5gDJ6lrrNv/sQjQRHWSLCIZ0WjOXOA3yH3AhtTLyKG
+        ccuQ7CkkqScB3jIIIbsoITNIaXq2jb1/BUklPldKXS3rw4EKbUK86KlfxRAvfQk23SYDLO3tee9Sd
+        hPTmWgrM1J+UkjXBA68Sv1oKotYUtRN/WCdHJelLGVvsai8pnxtL4wvwAjtBCiKCiRnrcWwM1FQpt
+        QulsI4DSgAsSbmj5rhF9seHsZCehHE3Chl3qdUaEBo2Wva4w7ReuS72UaDg82PfrN6mstk+jgLfvd
+        9U/Z8H7w==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oKshx-00DVRg-Bg; Mon, 08 Aug 2022 02:41:33 +0000
+From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
+To:     linux-kernel@vger.kernel.org, pmladek@suse.com,
+        Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: [PATCH v5 09/32] vsprintf: Improve number()
+Date:   Mon,  8 Aug 2022 03:41:05 +0100
+Message-Id: <20220808024128.3219082-10-willy@infradead.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220808024128.3219082-1-willy@infradead.org>
+References: <20220808024128.3219082-1-willy@infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-To:     linux-kernel@vger.kernel.org
-From:   "brookxu.cn@gmail.com" <brookxu.cn@gmail.com>
-Subject: Choose 5.10 LTS or 5.15 LTS
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We want to choose an LTS kernel version to use for a few years. As we 
-know, the 5.10 LTS has a 6 years maintenance period with the help of 
-huawei. But the 5.15 LTS currently only has a two-year maintenance 
-period, and it may reach EOL next year. It is currently unclear whether 
-it will be extended. Coupled with the arrival of the 6.0 kernel, I am a 
-little worried that the maintenance of 5.15 will be reduced. Does anyone 
-have good suggestions, thank you.
+From: Kent Overstreet <kent.overstreet@gmail.com>
+
+This patch refactors number() to make it a bit clearer, and it also
+changes it to call printbuf_make_room() only once at the start, instead
+of in the printbuf output helpers.
+
+Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
+Cc: Petr Mladek <pmladek@suse.com>
+Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+---
+ lib/vsprintf.c | 83 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 41 insertions(+), 42 deletions(-)
+
+diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+index 52dac8519a0a..87adc528c6c7 100644
+--- a/lib/vsprintf.c
++++ b/lib/vsprintf.c
+@@ -457,93 +457,92 @@ void number(struct printbuf *out, unsigned long long num,
+ {
+ 	/* put_dec requires 2-byte alignment of the buffer. */
+ 	char tmp[3 * sizeof(num)] __aligned(2);
+-	char sign;
+-	char locase;
++	char sign = 0;
++	/* locase = 0 or 0x20. ORing digits or letters with 'locase'
++	 * produces same digits or (maybe lowercased) letters */
++	char locase = (spec.flags & SMALL);
+ 	int need_pfx = ((spec.flags & SPECIAL) && spec.base != 10);
+-	int i;
+ 	bool is_zero = num == 0LL;
+ 	int field_width = spec.field_width;
+ 	int precision = spec.precision;
++	int nr_digits = 0;
++	int output_bytes = 0;
+ 
+-	/* locase = 0 or 0x20. ORing digits or letters with 'locase'
+-	 * produces same digits or (maybe lowercased) letters */
+-	locase = (spec.flags & SMALL);
+ 	if (spec.flags & LEFT)
+ 		spec.flags &= ~ZEROPAD;
+-	sign = 0;
+ 	if (spec.flags & SIGN) {
+ 		if ((signed long long)num < 0) {
+ 			sign = '-';
+ 			num = -(signed long long)num;
+-			field_width--;
++			output_bytes++;
+ 		} else if (spec.flags & PLUS) {
+ 			sign = '+';
+-			field_width--;
++			output_bytes++;
+ 		} else if (spec.flags & SPACE) {
+ 			sign = ' ';
+-			field_width--;
++			output_bytes++;
+ 		}
+ 	}
+ 	if (need_pfx) {
+ 		if (spec.base == 16)
+-			field_width -= 2;
++			output_bytes += 2;
+ 		else if (!is_zero)
+-			field_width--;
++			output_bytes++;
+ 	}
+ 
+ 	/* generate full string in tmp[], in reverse order */
+-	i = 0;
+-	if (num < spec.base)
+-		tmp[i++] = hex_asc_upper[num] | locase;
+-	else if (spec.base != 10) { /* 8 or 16 */
++	if (spec.base == 10) {
++		nr_digits = put_dec(tmp, num) - tmp;
++	} else { /* 8 or 16 */
+ 		int mask = spec.base - 1;
+-		int shift = 3;
++		int shift = ilog2((unsigned) spec.base);
+ 
+-		if (spec.base == 16)
+-			shift = 4;
+ 		do {
+-			tmp[i++] = (hex_asc_upper[((unsigned char)num) & mask] | locase);
++			tmp[nr_digits++] = (hex_asc_upper[((unsigned char)num) & mask] | locase);
+ 			num >>= shift;
+ 		} while (num);
+-	} else { /* base 10 */
+-		i = put_dec(tmp, num) - tmp;
+ 	}
+ 
+ 	/* printing 100 using %2d gives "100", not "00" */
+-	if (i > precision)
+-		precision = i;
++	precision = max(nr_digits, precision);
++	output_bytes += precision;
++	field_width = max(0, field_width - output_bytes);
++
++	printbuf_make_room(out, field_width + output_bytes);
++
+ 	/* leading space padding */
+-	field_width = max(0, field_width - precision);
+ 	if (!(spec.flags & (ZEROPAD | LEFT)) && field_width) {
+-		__prt_chars(out, ' ', field_width);
++		__prt_chars_reserved(out, ' ', field_width);
+ 		field_width = 0;
+ 	}
++
+ 	/* sign */
+ 	if (sign)
+-		__prt_char(out, sign);
++		__prt_char_reserved(out, sign);
++
+ 	/* "0x" / "0" prefix */
+ 	if (need_pfx) {
+ 		if (spec.base == 16 || !is_zero)
+-			__prt_char(out, '0');
++			__prt_char_reserved(out, '0');
+ 		if (spec.base == 16)
+-			__prt_char(out, 'X' | locase);
++			__prt_char_reserved(out, 'X' | locase);
+ 	}
+-	/* zero or space padding */
+-	if (!(spec.flags & LEFT) && field_width) {
+-		char c = ' ' + (spec.flags & ZEROPAD);
+ 
+-		__prt_chars(out, c, field_width);
+-		field_width = 0;
+-	}
+-	/* hmm even more zero padding? */
+-	if (precision > i)
+-		__prt_chars(out, '0', precision - i);
++	/* zero padding */
++	if (!(spec.flags & LEFT) && field_width)
++		__prt_chars_reserved(out, '0', field_width);
++
++	/* zero padding from precision */
++	if (precision > nr_digits)
++		__prt_chars_reserved(out, '0', precision - nr_digits);
++
+ 	/* actual digits of result */
+-	while (--i >= 0)
+-		__prt_char(out, tmp[i]);
++	while (--nr_digits >= 0)
++		__prt_char_reserved(out, tmp[nr_digits]);
++
+ 	/* trailing space padding */
+-	if (field_width)
+-		__prt_chars(out, ' ', field_width);
++	if ((spec.flags & LEFT) && field_width)
++		__prt_chars_reserved(out, ' ', field_width);
+ 
+ 	printbuf_nul_terminate(out);
+ }
+-- 
+2.35.1
 
