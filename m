@@ -2,121 +2,330 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A4BC25B0C
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B81C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 15:18:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243644AbiHHPRg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 11:17:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58494 "EHLO
+        id S243553AbiHHPSK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 11:18:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243699AbiHHPPi (ORCPT
+        with ESMTP id S243725AbiHHPR6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 11:15:38 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7324325ED
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 08:15:34 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id 17so6655282qky.8
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 08:15:34 -0700 (PDT)
+        Mon, 8 Aug 2022 11:17:58 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C36B81409C
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 08:17:56 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id h13so11278421wrf.6
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 08:17:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=K+OJZaD6BfpKIEcZ76iDI7EwR6C1BGBUKKfMXoH29ZQ=;
-        b=fQrKqqiaQQ7LKUZcKX24GDSIszjlOtO/68ziq/UZO2iXEqvse4bpklHULolRTPqAzi
-         3JQd+4K6lpM8Fg24QjvcpmV/DfS3yL3hE3mQ4lyzAXrBHnhEUmK7S2yj03BFIF2d35iS
-         btvEiwdYmEWTq0ZQzjin0wLHIk7oPzSTVRFJN1I85a1RGytM9fl8lK+jr1XrNbj4ZxqN
-         jU0Bw8pgwlvJPvRT+K8EQN9EcIK34rsliq9SCPSq9hDwnDOoTdeCglSNyDLDxv0ozuzw
-         jULhrcLhcRwOKLmI3HVd08RoMiPIThv3NiqHhwTlmrb2VX1N6rLme7depPBi+mAoTeJE
-         2c9Q==
+        h=mime-version:references:in-reply-to:message-id:cc:to:subject:from
+         :date:from:to:cc;
+        bh=Sx/LpVMDOgAyPOOip8IKLXylF7z+2nxoh91q5XVdIMU=;
+        b=KwGrIquBlk0FIoPmgkOi9ueE3W2wR4ehGf5t2C81nktdWU0d4Cv2JetNn9PZfSI6Pa
+         MExwBdafxJYvgAcTvwTfxiKWWeW2zmQXFMf5nzAeR+sKPFgdT2A78xR9Fe3k96rUPRSQ
+         jNE5MS9l1jjwBpuxfp+xu6iSA/EVoIBuzNJ4SlIHQKNRQBQx4hsoP18GVmM63su9RXew
+         aloYSPgFGOfMekZV9Lxa6un4jH2Yk+XgACA7I3Vwex8t6E8XCoOBD7DN/H/zfPOUnYtz
+         /XqLP6r7UrEYotwc0wB/bN4E7uKnUUx5EjCWumDdrqWnGBcE14CqxhQ72HKYpXBUEZZo
+         ODNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=K+OJZaD6BfpKIEcZ76iDI7EwR6C1BGBUKKfMXoH29ZQ=;
-        b=QuLVjJBoLpiOz16+yRRN7jlwlsLWfkuGuijtW8fUf0j8vs0K5/PF+P6I0h15LqRuZr
-         4pNXfrkwqzB9MAvYSl8C4yk5IJZCIi89MMRX9i15J1n/cNXjLvX9sLooJvL0MD25jorw
-         JjxtkCzYrrwR1RQ2a/SpStrJXlobUu/H29E6CGcvThucw+x5waH+SHIEuDPc2bf0t/gF
-         sfHlsi49SYp9U0H3CJ8TvmqYxfDDR4VE1iASV6ahYIzq+1GYuGzLnM7vVNfQn4bvng37
-         ZNvnATw/1tnYl3BXnfhFo/IiaCr07zS8zQmE7DqJo3w5VkE6U2MbRXCZ+0gFVdeBVPkf
-         4iHQ==
-X-Gm-Message-State: ACgBeo0uRJoVR2cXSD/HrltZ3FUT7V2j7h91pkF+NgSYp/2wlD4XIYIJ
-        eSHP7XogbJtKN0G4lkhw9w==
-X-Google-Smtp-Source: AA6agR550gq47qy8bwKsftDi+9ltjRf3/b6LbcCpEfw1jf9ADcVd28VHTxJTqkpL/i413B7VklC5rA==
-X-Received: by 2002:a05:620a:4403:b0:6b5:e1ad:75a7 with SMTP id v3-20020a05620a440300b006b5e1ad75a7mr14585657qkp.177.1659971733171;
-        Mon, 08 Aug 2022 08:15:33 -0700 (PDT)
-Received: from [192.168.1.210] (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id j18-20020a05620a411200b006b5cb5d2fa0sm9916618qko.1.2022.08.08.08.15.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Aug 2022 08:15:32 -0700 (PDT)
-Message-ID: <55e6e42f-b3ea-d9d0-4611-f13b3b88acab@gmail.com>
-Date:   Mon, 8 Aug 2022 11:15:31 -0400
+        h=mime-version:references:in-reply-to:message-id:cc:to:subject:from
+         :date:x-gm-message-state:from:to:cc;
+        bh=Sx/LpVMDOgAyPOOip8IKLXylF7z+2nxoh91q5XVdIMU=;
+        b=XznC0bCD2uclCcDmRhwNeMCinN8MMPPutwuxCtUxyQnjuKDTSgkjxNVcPKjUBo6MWS
+         jV0KfAlcfCb7jUXv8yP7R08iEOrEtLl/F8D+wmrje9AB3rKWrmJf8CCP6gCpHjTha761
+         Ao3kSh5tdzyJmqcfMEngVlQpcUrAfUF7geHoMTyCy9mqBAegz6Qy9vpQh1wSOJqobyS9
+         WqGbPY524KJBQLbdYsEnHIhXNrfYtRpVVX+c/3J0BUzxkn3Axv8f8+zJeG31K9iOJbbj
+         nqWUniQ4jbqzvPRmmmm3VxMtzqiCYjnnkMs7bY8WSYOfIc1/KS+MqEEP1NNDYl0qcyMp
+         lCaw==
+X-Gm-Message-State: ACgBeo2uECxN8RWyd/jB0dGUiZZdEySdF2fxbS8hVwGrzDUcK5yVLV8d
+        YjbaSw4CmSV367vLZoRzfl8=
+X-Google-Smtp-Source: AA6agR7D+rkdGU4qRSJaD16XWNBQ0lBTZcg6C9M7QKoqHySWiMP7g9yY+um510CFmmCFFBfmFmOxiw==
+X-Received: by 2002:adf:eb01:0:b0:220:5c0d:eb29 with SMTP id s1-20020adfeb01000000b002205c0deb29mr11168924wrn.528.1659971875061;
+        Mon, 08 Aug 2022 08:17:55 -0700 (PDT)
+Received: from fedora ([2a01:e0a:1d2:1f90:be95:f3a2:4d99:a3b3])
+        by smtp.gmail.com with ESMTPSA id e3-20020adf9bc3000000b0020e6ce4dabdsm11525673wrc.103.2022.08.08.08.17.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 08:17:54 -0700 (PDT)
+Date:   Mon, 08 Aug 2022 17:17:48 +0200
+From:   Matthieu CHARETTE <matthieu.charette@gmail.com>
+Subject: Re: [PATCH] drm: Fix EDID firmware load on resume
+To:     Jani Nikula <jani.nikula@linux.intel.com>
+Cc:     lkp@intel.com, kbuild-all@lists.01.org, tzimmermann@suse.de,
+        airlied@linux.ie, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, andrealmeid@igalia.com
+Message-Id: <OHYAGR.5V9CNVUP533V3@gmail.com>
+In-Reply-To: <87wnbqen2f.fsf@intel.com>
+References: <202207172035.mtErdlaw-lkp@intel.com>
+        <20220727074152.43059-1-matthieu.charette@gmail.com>
+        <87wnbqen2f.fsf@intel.com>
+X-Mailer: geary/40.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Subject: Re: [PATCH v5 31/32] tracing: Convert to printbuf
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org, pmladek@suse.com,
-        Ingo Molnar <mingo@redhat.com>
-References: <20220808024128.3219082-1-willy@infradead.org>
- <20220808024128.3219082-32-willy@infradead.org>
- <20220807225113.6a74b481@gandalf.local.home>
- <8e1df054-062f-63c9-16b4-38143f3e7983@gmail.com>
- <20220808093750.4dd24af2@gandalf.local.home>
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-In-Reply-To: <20220808093750.4dd24af2@gandalf.local.home>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/8/22 09:37, Steven Rostedt wrote:
-> On Sun, 7 Aug 2022 23:32:01 -0400
-> Kent Overstreet <kent.overstreet@gmail.com> wrote:
-> 
->>> Please remove the two tracing patches and the deletion of the seq_buf from
->>> the series.
->>
->> Well, that's not really an option, as Christoph already (rightly)
->> pointed out.
-> 
-> These are the last patches of the series. There's no dependency on them.
-> You should be able to simply drop them. If others find that these patches
-> are worth their while then by all means, let them have them.
-> 
->>
->> If you've got actual engineering concerns that you'd care to articulate
->> I'd (still) like to try to work with you - otherwise, I don't think this
->> is something I can accommodate you on.
-> 
-> Here's my technical reason. These are non trivial changes that are replacing
-> code that has been stable for 8 years that the tracing infrastructure
-> highly depends on. I do not have the time to sit down and review this code
-> as it is not a priority. My time is extremely limited (as my wife keeps
-> complaining to me about, as I'm not spending enough time with the family).
-> 
-> This change is likely to cause subtle regressions for no benefit to the
-> tracing subsystem. Hence, when it comes to risk vs reward, I see none.
+Sorry, What do you mean?
 
-It sounds like you're saying you don't have time to maintain your 
-subsystem..? Is there anyone else actively co-maintaining tracing? Part 
-of our jobs is bringing new people in and training them (and not 
-providing a hostile work environment so they'll want to), maybe 
-something to think about.
+Matthieu
 
-I'm also not seeing the likelihood of subtle regressions - this isn't my 
-first kernel refactoring and not _nearly_ the biggest or the most 
-invasive. There's definitely some stuff in the tracing code code that is 
-a bit on the unorthodox side, but nothing too crazy. The code's been in 
-my tree for ages where I use tracing on a daily basis, and it passes 
-your test suite (and there was just one bug that made it through to be 
-caught by the tests, as I mentioned in the cover letter).
+On Tue, Aug 2 2022 at 05:29:12 PM +0300, Jani Nikula 
+<jani.nikula@linux.intel.com> wrote:
+> On Wed, 27 Jul 2022, Matthieu CHARETTE <matthieu.charette@gmail.com> 
+> wrote:
+>>  Loading an EDID using drm.edid_firmware parameter makes resume to 
+>> fail
+>>  after firmware cache is being cleaned. This is because edid_load() 
+>> use a
+>>  temporary device to request the firmware. This cause the EDID 
+>> firmware
+>>  not to be cached from suspend. And, requesting the EDID firmware 
+>> return
+>>  an error during resume.
+>>  So the request_firmware() call should use a permanent device for 
+>> each
+>>  connector. Also, we should cache the EDID even if no monitor is
+>>  connected, in case it's plugged while suspended.
+> 
+> AFAICT this breaks changing drm.edid_firmware runtime.
+> 
+> BR,
+> Jani.
+> 
+>> 
+>>  Link: https://gitlab.freedesktop.org/drm/amd/-/issues/2061
+>>  Signed-off-by: Matthieu CHARETTE <matthieu.charette@gmail.com>
+>>  ---
+>>   drivers/gpu/drm/drm_connector.c |  9 ++++
+>>   drivers/gpu/drm/drm_edid_load.c | 81 
+>> ++++++++++++++++++++++++++++-----
+>>   include/drm/drm_connector.h     | 12 +++++
+>>   include/drm/drm_edid.h          |  3 ++
+>>   4 files changed, 94 insertions(+), 11 deletions(-)
+>> 
+>>  diff --git a/drivers/gpu/drm/drm_connector.c 
+>> b/drivers/gpu/drm/drm_connector.c
+>>  index 1c48d162c77e..e8819ebf1c4b 100644
+>>  --- a/drivers/gpu/drm/drm_connector.c
+>>  +++ b/drivers/gpu/drm/drm_connector.c
+>>  @@ -31,6 +31,7 @@
+>>   #include <drm/drm_privacy_screen_consumer.h>
+>>   #include <drm/drm_sysfs.h>
+>> 
+>>  +#include <linux/platform_device.h>
+>>   #include <linux/uaccess.h>
+>> 
+>>   #include "drm_crtc_internal.h"
+>>  @@ -289,6 +290,9 @@ int drm_connector_init(struct drm_device *dev,
+>> 
+>>   	drm_connector_get_cmdline_mode(connector);
+>> 
+>>  +	connector->edid_load_pdev = NULL;
+>>  +	drm_cache_edid_firmware(connector);
+>>  +
+>>   	/* We should add connectors at the end to avoid upsetting the 
+>> connector
+>>   	 * index too much.
+>>   	 */
+>>  @@ -473,6 +477,11 @@ void drm_connector_cleanup(struct 
+>> drm_connector *connector)
+>>   		connector->tile_group = NULL;
+>>   	}
+>> 
+>>  +	if (connector->edid_load_pdev) {
+>>  +		platform_device_unregister(connector->edid_load_pdev);
+>>  +		connector->edid_load_pdev = NULL;
+>>  +	}
+>>  +
+>>   	list_for_each_entry_safe(mode, t, &connector->probed_modes, head)
+>>   		drm_mode_remove(connector, mode);
+>> 
+>>  diff --git a/drivers/gpu/drm/drm_edid_load.c 
+>> b/drivers/gpu/drm/drm_edid_load.c
+>>  index 37d8ba3ddb46..5a82be9917ec 100644
+>>  --- a/drivers/gpu/drm/drm_edid_load.c
+>>  +++ b/drivers/gpu/drm/drm_edid_load.c
+>>  @@ -167,6 +167,19 @@ static int edid_size(const u8 *edid, int 
+>> data_size)
+>>   	return (edid[0x7e] + 1) * EDID_LENGTH;
+>>   }
+>> 
+>>  +static struct platform_device *edid_pdev(const char 
+>> *connector_name)
+>>  +{
+>>  +	struct platform_device *pdev = 
+>> platform_device_register_simple(connector_name, -1, NULL, 0);
+>>  +
+>>  +	if (IS_ERR(pdev)) {
+>>  +		DRM_ERROR("Failed to register EDID firmware platform device "
+>>  +			"for connector \"%s\"\n", connector_name);
+>>  +		return ERR_CAST(pdev);
+>>  +	}
+>>  +
+>>  +	return pdev;
+>>  +}
+>>  +
+>>   static void *edid_load(struct drm_connector *connector, const char 
+>> *name,
+>>   			const char *connector_name)
+>>   {
+>>  @@ -182,18 +195,17 @@ static void *edid_load(struct drm_connector 
+>> *connector, const char *name,
+>>   		fwdata = generic_edid[builtin];
+>>   		fwsize = sizeof(generic_edid[builtin]);
+>>   	} else {
+>>  -		struct platform_device *pdev;
+>>  +		struct platform_device *pdev = connector->edid_load_pdev;
+>>   		int err;
+>> 
+>>  -		pdev = platform_device_register_simple(connector_name, -1, NULL, 
+>> 0);
+>>  -		if (IS_ERR(pdev)) {
+>>  -			DRM_ERROR("Failed to register EDID firmware platform device "
+>>  -				  "for connector \"%s\"\n", connector_name);
+>>  -			return ERR_CAST(pdev);
+>>  +		if (WARN_ON(!pdev)) {
+>>  +			pdev = edid_pdev(connector_name);
+>>  +			if (IS_ERR(pdev))
+>>  +				return ERR_CAST(pdev);
+>>  +			connector->edid_load_pdev = pdev;
+>>   		}
+>> 
+>>   		err = request_firmware(&fw, name, &pdev->dev);
+>>  -		platform_device_unregister(pdev);
+>>   		if (err) {
+>>   			DRM_ERROR("Requesting EDID firmware \"%s\" failed (err=%d)\n",
+>>   				  name, err);
+>>  @@ -263,11 +275,9 @@ static void *edid_load(struct drm_connector 
+>> *connector, const char *name,
+>>   	return edid;
+>>   }
+>> 
+>>  -struct edid *drm_load_edid_firmware(struct drm_connector 
+>> *connector)
+>>  +static char *edid_name(const char *connector_name)
+>>   {
+>>  -	const char *connector_name = connector->name;
+>>   	char *edidname, *last, *colon, *fwstr, *edidstr, *fallback = NULL;
+>>  -	struct edid *edid;
+>> 
+>>   	if (edid_firmware[0] == '\0')
+>>   		return ERR_PTR(-ENOENT);
+>>  @@ -310,8 +320,57 @@ struct edid *drm_load_edid_firmware(struct 
+>> drm_connector *connector)
+>>   	if (*last == '\n')
+>>   		*last = '\0';
+>> 
+>>  -	edid = edid_load(connector, edidname, connector_name);
+>>  +	edidname = kstrdup(edidname, GFP_KERNEL);
+>>  +	if (!edidname) {
+>>  +		kfree(fwstr);
+>>  +		return ERR_PTR(-ENOMEM);
+>>  +	}
+>>  +
+>>   	kfree(fwstr);
+>>  +	return edidname;
+>>  +}
+>>  +
+>>  +void drm_cache_edid_firmware(struct drm_connector *connector)
+>>  +{
+>>  +	const char *connector_name = connector->name;
+>>  +	const char *edidname = edid_name(connector_name);
+>>  +	struct platform_device *pdev;
+>>  +	int err;
+>>  +
+>>  +	if (IS_ERR(edidname))
+>>  +		return;
+>>  +
+>>  +	if (match_string(generic_edid_name, GENERIC_EDIDS, edidname) >= 
+>> 0) {
+>>  +		kfree(edidname);
+>>  +		return;
+>>  +	}
+>>  +
+>>  +	pdev = edid_pdev(connector_name);
+>>  +	if (IS_ERR(pdev)) {
+>>  +		kfree(edidname);
+>>  +		return;
+>>  +	}
+>>  +	connector->edid_load_pdev = pdev;
+>>  +
+>>  +	err = firmware_request_cache(&pdev->dev, edidname);
+>>  +	if (err)
+>>  +		DRM_ERROR("Requesting EDID firmware cache \"%s\" failed 
+>> (err=%d)\n",
+>>  +			edidname, err);
+>>  +
+>>  +	kfree(edidname);
+>>  +}
+>>  +
+>>  +struct edid *drm_load_edid_firmware(struct drm_connector 
+>> *connector)
+>>  +{
+>>  +	const char *connector_name = connector->name;
+>>  +	const char *edidname = edid_name(connector_name);
+>>  +	struct edid *edid;
+>>  +
+>>  +	if (IS_ERR(edidname))
+>>  +		return ERR_CAST(edidname);
+>>  +
+>>  +	edid = edid_load(connector, edidname, connector_name);
+>>  +	kfree(edidname);
+>> 
+>>   	return edid;
+>>   }
+>>  diff --git a/include/drm/drm_connector.h 
+>> b/include/drm/drm_connector.h
+>>  index 3ac4bf87f257..47c84741517e 100644
+>>  --- a/include/drm/drm_connector.h
+>>  +++ b/include/drm/drm_connector.h
+>>  @@ -1573,6 +1573,18 @@ struct drm_connector {
+>>   	 */
+>>   	struct i2c_adapter *ddc;
+>> 
+>>  +	/**
+>>  +	 * @edid_load_pdev: Platform device for loading EDID via firmware.
+>>  +	 *
+>>  +	 * The platform device is registered in drm_connector_init() in 
+>> case a
+>>  +	 * custom EDID firmware is used with `edid_firmware` parameter. 
+>> Otherwise,
+>>  +	 * it is set to NULL.
+>>  +	 *
+>>  +	 * Platform device is unregistered in drm_connector_cleanup() if 
+>> it
+>>  +	 * is not NULL.
+>>  +	 */
+>>  +	struct platform_device *edid_load_pdev;
+>>  +
+>>   	/**
+>>   	 * @null_edid_counter: track sinks that give us all zeros for the 
+>> EDID.
+>>   	 * Needed to workaround some HW bugs where we get all 0s
+>>  diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
+>>  index b2756753370b..e907c928a35d 100644
+>>  --- a/include/drm/drm_edid.h
+>>  +++ b/include/drm/drm_edid.h
+>>  @@ -378,10 +378,13 @@ int drm_av_sync_delay(struct drm_connector 
+>> *connector,
+>>   		      const struct drm_display_mode *mode);
+>> 
+>>   #ifdef CONFIG_DRM_LOAD_EDID_FIRMWARE
+>>  +void drm_cache_edid_firmware(struct drm_connector *connector);
+>>   struct edid *drm_load_edid_firmware(struct drm_connector 
+>> *connector);
+>>   int __drm_set_edid_firmware_path(const char *path);
+>>   int __drm_get_edid_firmware_path(char *buf, size_t bufsize);
+>>   #else
+>>  +inline void
+>>  +drm_cache_edid_firmware(struct drm_connector *connector);
+>>   static inline struct edid *
+>>   drm_load_edid_firmware(struct drm_connector *connector)
+>>   {
+> 
+> --
+> Jani Nikula, Intel Open Source Graphics Center
 
-Anyways, if you've got specific, actionable concerns, I'll be happy to 
-take a look. Otherwise... ¯\_(ツ)_/¯
 
-Cheers
