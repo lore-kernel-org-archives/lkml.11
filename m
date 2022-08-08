@@ -2,110 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4330C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:47:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5097C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236351AbiHHRrp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 13:47:45 -0400
+        id S243805AbiHHRrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 13:47:49 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244557AbiHHRqM (ORCPT
+        with ESMTP id S244435AbiHHRpw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 13:46:12 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98ACC18391;
-        Mon,  8 Aug 2022 10:45:40 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id a8so9445435pjg.5;
-        Mon, 08 Aug 2022 10:45:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=56amwkxBxRXvr+sAaZ6aOdlYxwoLvxM3ykitrGAaah8=;
-        b=a1ORMxvWpNX0kXnwXKBq7GyVGHtyasCj9mr5eiGioDbfg8bzRhhMa4+Yve6CnlCLMz
-         D18k1F3uMoGcb+kA0JV2I35sQPNPSe7IjqaBcI5pF6JvnRvdoTLZoaYLM4uBUv8OcFh1
-         LgblEaYB12PZxWbrOlUM6w1EGR5JErkVMA/++h6oi0a/hpFYxZkswB8zHRsyaCZ42wb2
-         B5d4fe59pfkX8ZC7WmjsfEmJBZa+SFnoZky6yf2WZowWYZsUCNEO1yHNRBP12XsNV1px
-         pcItye+E8CDXhwXh4rHlkqPXAGVdM2QHfTl+xZfO7NTNSEPTodUspE8UuJ/+PRmrrfKW
-         MAjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=56amwkxBxRXvr+sAaZ6aOdlYxwoLvxM3ykitrGAaah8=;
-        b=FhXxk50rcgKf0oQNQlo9FElXFZp/4XMQvrR3eJFA9nkyP20Fj1kF/2YtGQa4GHwNXb
-         oKEOtzD6hG2XbF9aVvTfhL7g8rBYtL/2CMXAO2SD8lJZMzZm9AAO1yq2LkLeKUxsOrUi
-         Z8jM1j+EFhLVal62AOPvyIMkmu8V9NAq7r57wCBRqa8uF2m+BcoDZHs6xQqfCVO8BrQG
-         aczVL8h1C3CHa+fu/WhIgwgP3sCdbeKuoyEajQOKKkhB710oB06Aa+Kldc+jnJoqyz3C
-         RGMRqQT/+iAi/UbzPLzEDekxfaix/InkIAjApa/CacyujI9iO3uYJ1CHLvxxeTqQDLh3
-         engA==
-X-Gm-Message-State: ACgBeo0WvPUbGPUmVMtHd3ofsvIojcu4ILmkR+2sZv1119JeiEEhqh6L
-        olVEj4jiuwI0CZFxMD1wDw==
-X-Google-Smtp-Source: AA6agR6LbEQBelXM0gcZPBphI3mlLlv/Oto+0IcXSWAxuNg1pWhe08gw7+wvsUwO7qJ/n+m5wwdHig==
-X-Received: by 2002:a17:902:da92:b0:16e:f2ee:b98a with SMTP id j18-20020a170902da9200b0016ef2eeb98amr19723760plx.154.1659980740077;
-        Mon, 08 Aug 2022 10:45:40 -0700 (PDT)
-Received: from bytedance ([74.199.177.246])
-        by smtp.gmail.com with ESMTPSA id g1-20020a17090a67c100b001f30f823145sm10945804pjm.55.2022.08.08.10.45.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 10:45:39 -0700 (PDT)
-Date:   Mon, 8 Aug 2022 10:45:36 -0700
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        George Zhang <georgezhang@vmware.com>,
-        Dmitry Torokhov <dtor@vmware.com>,
-        Andy King <acking@vmware.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v2 1/2] vsock: Fix memory leak in vsock_connect()
-Message-ID: <20220808174536.GA19626@bytedance>
-References: <20220804020925.32167-1-yepeilin.cs@gmail.com>
- <a02c6e7e3135473d254ac97abc603d963ba8f716.1659862577.git.peilin.ye@bytedance.com>
- <20220808075533.p7pczlnixb2phrun@sgarzare-redhat>
+        Mon, 8 Aug 2022 13:45:52 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7754632A
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:45:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1659980507; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HDKUPQO6lE4XXrIyfPTsCACfjenryJXx0aNwhM3B1z8=;
+        b=ofXL2XyM1YnEPxL4Tn2Kp+ah1vDQm0TuFFRRNwMJB3P1LstbD0oVoCMgQQa9jsfIwVpvE7
+        7DvpmE2YZBlzyIoD51O9AOUV5kV7ZgbYKmrJuJ49c9yNU6XNXy1r7nyGPfMb/pyuLZ3sHp
+        cUiacYZYA42tfC3H9FrHg9jW7HdR6bE=
+From:   Paul Cercueil <paul@crapouillou.net>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>
+Subject: [PATCH v2 25/30] mfd: sprd-sc27xx: Remove #ifdef guards for PM related functions
+Date:   Mon,  8 Aug 2022 19:41:02 +0200
+Message-Id: <20220808174107.38676-26-paul@crapouillou.net>
+In-Reply-To: <20220808174107.38676-1-paul@crapouillou.net>
+References: <20220808174107.38676-1-paul@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220808075533.p7pczlnixb2phrun@sgarzare-redhat>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 08, 2022 at 09:55:33AM +0200, Stefano Garzarella wrote:
-> On Sun, Aug 07, 2022 at 02:00:11AM -0700, Peilin Ye wrote:
-> > net/vmw_vsock/af_vsock.c | 8 +++++++-
-> > 1 file changed, 7 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-> > index f04abf662ec6..fe14f6cbca22 100644
-> > --- a/net/vmw_vsock/af_vsock.c
-> > +++ b/net/vmw_vsock/af_vsock.c
-> > @@ -1391,7 +1391,13 @@ static int vsock_connect(struct socket *sock, struct sockaddr *addr,
-> > 			 * timeout fires.
-> > 			 */
-> > 			sock_hold(sk);
-> > -			schedule_delayed_work(&vsk->connect_work, timeout);
-> > +
-> > +			/* If the timeout function is already scheduled,
-> > +			 * reschedule it, then ungrab the socket refcount to
-> > +			 * keep it balanced.
-> > +			 */
-> > +			if (mod_delayed_work(system_wq, &vsk->connect_work, timeout))
->                             ^
-> Checkpatch warns here about line lenght.
-> If you have to re-send, please split it.
+Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros
+to handle the .suspend/.resume callbacks.
 
-Oh, net-next HEAD's checkpatch --strict didn't complain, I didn't know
-Patchwork checks 80 columns.  I will send v3 soon.
+These macros allow the suspend and resume functions to be automatically
+dropped by the compiler when CONFIG_SUSPEND is disabled, without having
+to use #ifdef guards.
 
-> Anyway, the patch LGTM:
-> 
-> Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+This has the advantage of always compiling these functions in,
+independently of any Kconfig option. Thanks to that, bugs and other
+regressions are subsequently easier to catch.
 
-Thanks!
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+Cc: Orson Zhai <orsonzhai@gmail.com>
+Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
+Cc: Chunyan Zhang <zhang.lyra@gmail.com>
 
-Peilin Ye
+ drivers/mfd/sprd-sc27xx-spi.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/mfd/sprd-sc27xx-spi.c b/drivers/mfd/sprd-sc27xx-spi.c
+index d05a47c5187f..ea68d73e5d1c 100644
+--- a/drivers/mfd/sprd-sc27xx-spi.c
++++ b/drivers/mfd/sprd-sc27xx-spi.c
+@@ -215,7 +215,6 @@ static int sprd_pmic_probe(struct spi_device *spi)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+ static int sprd_pmic_suspend(struct device *dev)
+ {
+ 	struct sprd_pmic *ddata = dev_get_drvdata(dev);
+@@ -235,9 +234,9 @@ static int sprd_pmic_resume(struct device *dev)
+ 
+ 	return 0;
+ }
+-#endif
+ 
+-static SIMPLE_DEV_PM_OPS(sprd_pmic_pm_ops, sprd_pmic_suspend, sprd_pmic_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(sprd_pmic_pm_ops,
++				sprd_pmic_suspend, sprd_pmic_resume);
+ 
+ static const struct of_device_id sprd_pmic_match[] = {
+ 	{ .compatible = "sprd,sc2730", .data = &sc2730_data },
+@@ -257,7 +256,7 @@ static struct spi_driver sprd_pmic_driver = {
+ 	.driver = {
+ 		.name = "sc27xx-pmic",
+ 		.of_match_table = sprd_pmic_match,
+-		.pm = &sprd_pmic_pm_ops,
++		.pm = pm_sleep_ptr(&sprd_pmic_pm_ops),
+ 	},
+ 	.probe = sprd_pmic_probe,
+ 	.id_table = sprd_pmic_spi_ids,
+-- 
+2.35.1
 
