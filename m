@@ -2,235 +2,388 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 098B6C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 23:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E28B4C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 23:54:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238697AbiHHXx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 19:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39262 "EHLO
+        id S244381AbiHHXyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 19:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiHHXxw (ORCPT
+        with ESMTP id S238490AbiHHXx4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 19:53:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1856B1C11C
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 16:53:47 -0700 (PDT)
+        Mon, 8 Aug 2022 19:53:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B4F11C126
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 16:53:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660002826;
+        s=mimecast20190719; t=1660002834;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fYOgf+nym4/Pj7sSYUYK9NZR7cCZXRMoFwQ8QFqYGQA=;
-        b=PJFym09EjOf/2dwJ4HHMVPXyWVhIKqDw2zAVMo6tLYBbJ22z5hNT2HdzeSQXM2x5YChQFP
-        Q7XcDe+PAfciqgDimoZUNM9xNCrqnQidRENqOaL0/m3UF+DDvhZIfI9PF9yQ4NVx/cuOsF
-        34Rls+myxXuZ8M1TS/gPHEfw9LkP0wA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=mcsf4tZNOJC+p+ORC28F9QU+NKR1HBeg7aE42FEEeVc=;
+        b=G/8+FFVdvksW7vTUWOjmuw05DDubf3ONGZivypYbktHoNMEpkFDuX1TXb+RL/xoCcs1Co6
+        2RDQCuRlISbKF+p9Wp9baFp/H6oTFskNC+xfs7A2uRN+IIpli6AaEInmK/qwpN63edzO7w
+        Gj6x9KzQ1XE0Fxom+Z5QNDHZOMrrFtQ=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-367-U6XoKppCPWuMmYuYHBNjSA-1; Mon, 08 Aug 2022 19:53:39 -0400
-X-MC-Unique: U6XoKppCPWuMmYuYHBNjSA-1
+ us-mta-354-VgFNfft-OeusWtGm24G57g-1; Mon, 08 Aug 2022 19:53:48 -0400
+X-MC-Unique: VgFNfft-OeusWtGm24G57g-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 003BC101AA48;
-        Mon,  8 Aug 2022 23:53:38 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 33B6F3C0CD43;
+        Mon,  8 Aug 2022 23:53:48 +0000 (UTC)
 Received: from emerald.lyude.net (unknown [10.22.17.154])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 03C0EC15BA1;
-        Mon,  8 Aug 2022 23:53:35 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 71FCBC15BA1;
+        Mon,  8 Aug 2022 23:53:47 +0000 (UTC)
 From:   Lyude Paul <lyude@redhat.com>
 To:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
         amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org
-Cc:     Wayne Lin <Wayne.Lin@amd.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
+Cc:     Wayne Lin <Wayne.Lin@amd.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Fangzhi Zuo <Jerry.Zuo@amd.com>,
         Jani Nikula <jani.nikula@intel.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
+        Imre Deak <imre.deak@intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Bhawanpreet Lakha <Bhawanpreet.Lakha@amd.com>,
-        Mikita Lipski <mikita.lipski@amd.com>,
-        Roman Li <Roman.Li@amd.com>, Claudio Suarez <cssk@net-c.es>,
-        Ian Chen <ian.chen@amd.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Wenjing Liu <wenjing.liu@amd.com>, Jun Lei <Jun.Lei@amd.com>,
-        Jimmy Kizito <Jimmy.Kizito@amd.com>,
-        Meenakshikumar Somasundaram <meenakshikumar.somasundaram@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        jinzh <jinzh@github.amd.com>, Eric Yang <Eric.Yang2@amd.com>,
-        Alex Hung <alex.hung@amd.com>,
-        Michael Strauss <michael.strauss@amd.com>,
-        "Leo (Hanghong) Ma" <hanghong.ma@amd.com>,
-        "Shen, George" <George.Shen@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         linux-kernel@vger.kernel.org (open list)
-Subject: [RFC v2 01/18] drm/amdgpu/dc/mst: Rename dp_mst_stream_allocation(_table)
-Date:   Mon,  8 Aug 2022 19:51:46 -0400
-Message-Id: <20220808235203.123892-2-lyude@redhat.com>
+Subject: [RFC v2 03/18] drm/display/dp_mst: Rename drm_dp_mst_vcpi_allocation
+Date:   Mon,  8 Aug 2022 19:51:48 -0400
+Message-Id: <20220808235203.123892-4-lyude@redhat.com>
 In-Reply-To: <20220808235203.123892-1-lyude@redhat.com>
 References: <20220808235203.123892-1-lyude@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just to make this more clear to outside contributors that these are
-DC-specific structs, as this also threw me into a loop a number of times
-before I figured out the purpose of this.
+In retrospect, the name I chose for this originally is confusing, as
+there's a lot more info in here then just the VCPI. This really should be
+called a payload. Let's make it more obvious that this is meant to be
+related to the atomic state and is about payloads by renaming it to
+drm_dp_mst_atomic_payload. Also, rename various variables throughout the
+code that use atomic payloads.
 
 Signed-off-by: Lyude Paul <lyude@redhat.com>
 Cc: Wayne Lin <Wayne.Lin@amd.com>
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
 Cc: Fangzhi Zuo <Jerry.Zuo@amd.com>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Imre Deak <imre.deak@intel.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Sean Paul <sean@poorly.run>
 Acked-by: Jani Nikula <jani.nikula@intel.com>
 ---
- .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c |  9 ++++-----
- drivers/gpu/drm/amd/display/dc/core/dc_link.c         | 10 +++++-----
- drivers/gpu/drm/amd/display/dc/dm_helpers.h           |  4 ++--
- .../gpu/drm/amd/display/include/link_service_types.h  | 11 ++++++++---
- 4 files changed, 19 insertions(+), 15 deletions(-)
+ drivers/gpu/drm/display/drm_dp_mst_topology.c | 96 +++++++++----------
+ include/drm/display/drm_dp_mst_helper.h       |  4 +-
+ 2 files changed, 50 insertions(+), 50 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-index a0154a5f7183..3aa385860eea 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c
-@@ -153,9 +153,8 @@ enum dc_edid_status dm_helpers_parse_edid_caps(
- 	return result;
+diff --git a/drivers/gpu/drm/display/drm_dp_mst_topology.c b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+index 7a94a5288e8d..f448e3e5ec6e 100644
+--- a/drivers/gpu/drm/display/drm_dp_mst_topology.c
++++ b/drivers/gpu/drm/display/drm_dp_mst_topology.c
+@@ -4370,7 +4370,7 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
+ 				  int pbn_div)
+ {
+ 	struct drm_dp_mst_topology_state *topology_state;
+-	struct drm_dp_vcpi_allocation *pos, *vcpi = NULL;
++	struct drm_dp_mst_atomic_payload *pos, *payload = NULL;
+ 	int prev_slots, prev_bw, req_slots;
+ 
+ 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
+@@ -4378,11 +4378,11 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
+ 		return PTR_ERR(topology_state);
+ 
+ 	/* Find the current allocation for this port, if any */
+-	list_for_each_entry(pos, &topology_state->vcpis, next) {
++	list_for_each_entry(pos, &topology_state->payloads, next) {
+ 		if (pos->port == port) {
+-			vcpi = pos;
+-			prev_slots = vcpi->vcpi;
+-			prev_bw = vcpi->pbn;
++			payload = pos;
++			prev_slots = payload->vcpi;
++			prev_bw = payload->pbn;
+ 
+ 			/*
+ 			 * This should never happen, unless the driver tries
+@@ -4399,7 +4399,7 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
+ 			break;
+ 		}
+ 	}
+-	if (!vcpi) {
++	if (!payload) {
+ 		prev_slots = 0;
+ 		prev_bw = 0;
+ 	}
+@@ -4417,17 +4417,17 @@ int drm_dp_atomic_find_vcpi_slots(struct drm_atomic_state *state,
+ 		       port, prev_bw, pbn);
+ 
+ 	/* Add the new allocation to the state */
+-	if (!vcpi) {
+-		vcpi = kzalloc(sizeof(*vcpi), GFP_KERNEL);
+-		if (!vcpi)
++	if (!payload) {
++		payload = kzalloc(sizeof(*payload), GFP_KERNEL);
++		if (!payload)
+ 			return -ENOMEM;
+ 
+ 		drm_dp_mst_get_port_malloc(port);
+-		vcpi->port = port;
+-		list_add(&vcpi->next, &topology_state->vcpis);
++		payload->port = port;
++		list_add(&payload->next, &topology_state->payloads);
+ 	}
+-	vcpi->vcpi = req_slots;
+-	vcpi->pbn = pbn;
++	payload->vcpi = req_slots;
++	payload->pbn = pbn;
+ 
+ 	return req_slots;
  }
- 
--static void get_payload_table(
--		struct amdgpu_dm_connector *aconnector,
--		struct dp_mst_stream_allocation_table *proposed_table)
-+static void get_payload_table(struct amdgpu_dm_connector *aconnector,
-+			      struct dc_dp_mst_stream_allocation_table *proposed_table)
+@@ -4464,21 +4464,21 @@ int drm_dp_atomic_release_vcpi_slots(struct drm_atomic_state *state,
+ 				     struct drm_dp_mst_port *port)
  {
- 	int i;
- 	struct drm_dp_mst_topology_mgr *mst_mgr =
-@@ -177,7 +176,7 @@ static void get_payload_table(
- 			mst_mgr->payloads[i].payload_state ==
- 					DP_PAYLOAD_REMOTE) {
+ 	struct drm_dp_mst_topology_state *topology_state;
+-	struct drm_dp_vcpi_allocation *pos;
++	struct drm_dp_mst_atomic_payload *pos;
+ 	bool found = false;
  
--			struct dp_mst_stream_allocation *sa =
-+			struct dc_dp_mst_stream_allocation *sa =
- 					&proposed_table->stream_allocations[
- 						proposed_table->stream_count];
+ 	topology_state = drm_atomic_get_mst_topology_state(state, mgr);
+ 	if (IS_ERR(topology_state))
+ 		return PTR_ERR(topology_state);
  
-@@ -201,7 +200,7 @@ void dm_helpers_dp_update_branch_info(
- bool dm_helpers_dp_mst_write_payload_allocation_table(
- 		struct dc_context *ctx,
- 		const struct dc_stream_state *stream,
--		struct dp_mst_stream_allocation_table *proposed_table,
-+		struct dc_dp_mst_stream_allocation_table *proposed_table,
- 		bool enable)
+-	list_for_each_entry(pos, &topology_state->vcpis, next) {
++	list_for_each_entry(pos, &topology_state->payloads, next) {
+ 		if (pos->port == port) {
+ 			found = true;
+ 			break;
+ 		}
+ 	}
+ 	if (WARN_ON(!found)) {
+-		drm_err(mgr->dev, "no VCPI for [MST PORT:%p] found in mst state %p\n",
++		drm_err(mgr->dev, "No payload for [MST PORT:%p] found in mst state %p\n",
+ 			port, &topology_state->base);
+ 		return -EINVAL;
+ 	}
+@@ -5060,7 +5060,7 @@ drm_dp_mst_duplicate_state(struct drm_private_obj *obj)
  {
- 	struct amdgpu_dm_connector *aconnector;
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link.c b/drivers/gpu/drm/amd/display/dc/core/dc_link.c
-index 9e51338441d0..e01424fb02ba 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_link.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_link.c
-@@ -3516,7 +3516,7 @@ static void update_mst_stream_alloc_table(
- 	struct dc_link *link,
- 	struct stream_encoder *stream_enc,
- 	struct hpo_dp_stream_encoder *hpo_dp_stream_enc, // TODO: Rename stream_enc to dio_stream_enc?
--	const struct dp_mst_stream_allocation_table *proposed_table)
-+	const struct dc_dp_mst_stream_allocation_table *proposed_table)
+ 	struct drm_dp_mst_topology_state *state, *old_state =
+ 		to_dp_mst_topology_state(obj->state);
+-	struct drm_dp_vcpi_allocation *pos, *vcpi;
++	struct drm_dp_mst_atomic_payload *pos, *payload;
+ 
+ 	state = kmemdup(old_state, sizeof(*state), GFP_KERNEL);
+ 	if (!state)
+@@ -5068,25 +5068,25 @@ drm_dp_mst_duplicate_state(struct drm_private_obj *obj)
+ 
+ 	__drm_atomic_helper_private_obj_duplicate_state(obj, &state->base);
+ 
+-	INIT_LIST_HEAD(&state->vcpis);
++	INIT_LIST_HEAD(&state->payloads);
+ 
+-	list_for_each_entry(pos, &old_state->vcpis, next) {
++	list_for_each_entry(pos, &old_state->payloads, next) {
+ 		/* Prune leftover freed VCPI allocations */
+ 		if (!pos->vcpi)
+ 			continue;
+ 
+-		vcpi = kmemdup(pos, sizeof(*vcpi), GFP_KERNEL);
+-		if (!vcpi)
++		payload = kmemdup(pos, sizeof(*payload), GFP_KERNEL);
++		if (!payload)
+ 			goto fail;
+ 
+-		drm_dp_mst_get_port_malloc(vcpi->port);
+-		list_add(&vcpi->next, &state->vcpis);
++		drm_dp_mst_get_port_malloc(payload->port);
++		list_add(&payload->next, &state->payloads);
+ 	}
+ 
+ 	return &state->base;
+ 
+ fail:
+-	list_for_each_entry_safe(pos, vcpi, &state->vcpis, next) {
++	list_for_each_entry_safe(pos, payload, &state->payloads, next) {
+ 		drm_dp_mst_put_port_malloc(pos->port);
+ 		kfree(pos);
+ 	}
+@@ -5100,9 +5100,9 @@ static void drm_dp_mst_destroy_state(struct drm_private_obj *obj,
  {
- 	struct link_mst_stream_allocation work_table[MAX_CONTROLLER_NUM] = { 0 };
- 	struct link_mst_stream_allocation *dc_alloc;
-@@ -3679,7 +3679,7 @@ enum dc_status dc_link_allocate_mst_payload(struct pipe_ctx *pipe_ctx)
+ 	struct drm_dp_mst_topology_state *mst_state =
+ 		to_dp_mst_topology_state(state);
+-	struct drm_dp_vcpi_allocation *pos, *tmp;
++	struct drm_dp_mst_atomic_payload *pos, *tmp;
+ 
+-	list_for_each_entry_safe(pos, tmp, &mst_state->vcpis, next) {
++	list_for_each_entry_safe(pos, tmp, &mst_state->payloads, next) {
+ 		/* We only keep references to ports with non-zero VCPIs */
+ 		if (pos->vcpi)
+ 			drm_dp_mst_put_port_malloc(pos->port);
+@@ -5135,7 +5135,7 @@ static int
+ drm_dp_mst_atomic_check_mstb_bw_limit(struct drm_dp_mst_branch *mstb,
+ 				      struct drm_dp_mst_topology_state *state)
  {
- 	struct dc_stream_state *stream = pipe_ctx->stream;
- 	struct dc_link *link = stream->link;
--	struct dp_mst_stream_allocation_table proposed_table = {0};
-+	struct dc_dp_mst_stream_allocation_table proposed_table = {0};
- 	struct fixed31_32 avg_time_slots_per_mtp;
- 	struct fixed31_32 pbn;
- 	struct fixed31_32 pbn_per_slot;
-@@ -3784,7 +3784,7 @@ enum dc_status dc_link_reduce_mst_payload(struct pipe_ctx *pipe_ctx, uint32_t bw
- 	struct fixed31_32 avg_time_slots_per_mtp;
- 	struct fixed31_32 pbn;
- 	struct fixed31_32 pbn_per_slot;
--	struct dp_mst_stream_allocation_table proposed_table = {0};
-+	struct dc_dp_mst_stream_allocation_table proposed_table = {0};
- 	uint8_t i;
- 	const struct link_hwss *link_hwss = get_link_hwss(link, &pipe_ctx->link_res);
- 	DC_LOGGER_INIT(link->ctx->logger);
-@@ -3873,7 +3873,7 @@ enum dc_status dc_link_increase_mst_payload(struct pipe_ctx *pipe_ctx, uint32_t
- 	struct fixed31_32 avg_time_slots_per_mtp;
- 	struct fixed31_32 pbn;
- 	struct fixed31_32 pbn_per_slot;
--	struct dp_mst_stream_allocation_table proposed_table = {0};
-+	struct dc_dp_mst_stream_allocation_table proposed_table = {0};
- 	uint8_t i;
- 	enum act_return_status ret;
- 	const struct link_hwss *link_hwss = get_link_hwss(link, &pipe_ctx->link_res);
-@@ -3957,7 +3957,7 @@ static enum dc_status deallocate_mst_payload(struct pipe_ctx *pipe_ctx)
+-	struct drm_dp_vcpi_allocation *vcpi;
++	struct drm_dp_mst_atomic_payload *payload;
+ 	struct drm_dp_mst_port *port;
+ 	int pbn_used = 0, ret;
+ 	bool found = false;
+@@ -5143,9 +5143,9 @@ drm_dp_mst_atomic_check_mstb_bw_limit(struct drm_dp_mst_branch *mstb,
+ 	/* Check that we have at least one port in our state that's downstream
+ 	 * of this branch, otherwise we can skip this branch
+ 	 */
+-	list_for_each_entry(vcpi, &state->vcpis, next) {
+-		if (!vcpi->pbn ||
+-		    !drm_dp_mst_port_downstream_of_branch(vcpi->port, mstb))
++	list_for_each_entry(payload, &state->payloads, next) {
++		if (!payload->pbn ||
++		    !drm_dp_mst_port_downstream_of_branch(payload->port, mstb))
+ 			continue;
+ 
+ 		found = true;
+@@ -5176,7 +5176,7 @@ static int
+ drm_dp_mst_atomic_check_port_bw_limit(struct drm_dp_mst_port *port,
+ 				      struct drm_dp_mst_topology_state *state)
  {
- 	struct dc_stream_state *stream = pipe_ctx->stream;
- 	struct dc_link *link = stream->link;
--	struct dp_mst_stream_allocation_table proposed_table = {0};
-+	struct dc_dp_mst_stream_allocation_table proposed_table = {0};
- 	struct fixed31_32 avg_time_slots_per_mtp = dc_fixpt_from_int(0);
- 	int i;
- 	bool mst_mode = (link->type == dc_connection_mst_branch);
-diff --git a/drivers/gpu/drm/amd/display/dc/dm_helpers.h b/drivers/gpu/drm/amd/display/dc/dm_helpers.h
-index fb6a2d7b6470..8173f4b80424 100644
---- a/drivers/gpu/drm/amd/display/dc/dm_helpers.h
-+++ b/drivers/gpu/drm/amd/display/dc/dm_helpers.h
-@@ -33,7 +33,7 @@
- #include "dc_types.h"
- #include "dc.h"
+-	struct drm_dp_vcpi_allocation *vcpi;
++	struct drm_dp_mst_atomic_payload *payload;
+ 	int pbn_used = 0;
  
--struct dp_mst_stream_allocation_table;
-+struct dc_dp_mst_stream_allocation_table;
- struct aux_payload;
- enum aux_return_code_type;
+ 	if (port->pdt == DP_PEER_DEVICE_NONE)
+@@ -5185,10 +5185,10 @@ drm_dp_mst_atomic_check_port_bw_limit(struct drm_dp_mst_port *port,
+ 	if (drm_dp_mst_is_end_device(port->pdt, port->mcs)) {
+ 		bool found = false;
  
-@@ -77,7 +77,7 @@ void dm_helpers_dp_update_branch_info(
- bool dm_helpers_dp_mst_write_payload_allocation_table(
- 		struct dc_context *ctx,
- 		const struct dc_stream_state *stream,
--		struct dp_mst_stream_allocation_table *proposed_table,
-+		struct dc_dp_mst_stream_allocation_table *proposed_table,
- 		bool enable);
+-		list_for_each_entry(vcpi, &state->vcpis, next) {
+-			if (vcpi->port != port)
++		list_for_each_entry(payload, &state->payloads, next) {
++			if (payload->port != port)
+ 				continue;
+-			if (!vcpi->pbn)
++			if (!payload->pbn)
+ 				return 0;
  
- /*
-diff --git a/drivers/gpu/drm/amd/display/include/link_service_types.h b/drivers/gpu/drm/amd/display/include/link_service_types.h
-index 79fabc51c991..f75ed6f8fcb8 100644
---- a/drivers/gpu/drm/amd/display/include/link_service_types.h
-+++ b/drivers/gpu/drm/amd/display/include/link_service_types.h
-@@ -246,8 +246,13 @@ union dpcd_training_lane_set {
- };
+ 			found = true;
+@@ -5208,7 +5208,7 @@ drm_dp_mst_atomic_check_port_bw_limit(struct drm_dp_mst_port *port,
+ 			return -EINVAL;
+ 		}
  
+-		pbn_used = vcpi->pbn;
++		pbn_used = payload->pbn;
+ 	} else {
+ 		pbn_used = drm_dp_mst_atomic_check_mstb_bw_limit(port->mstb,
+ 								 state);
+@@ -5233,25 +5233,25 @@ static inline int
+ drm_dp_mst_atomic_check_vcpi_alloc_limit(struct drm_dp_mst_topology_mgr *mgr,
+ 					 struct drm_dp_mst_topology_state *mst_state)
+ {
+-	struct drm_dp_vcpi_allocation *vcpi;
++	struct drm_dp_mst_atomic_payload *payload;
+ 	int avail_slots = mst_state->total_avail_slots, payload_count = 0;
  
-+/* AMD's copy of various payload data for MST. We have two copies of the payload table (one in DRM,
-+ * one in DC) since DRM's MST helpers can't be accessed here. This stream allocation table should
-+ * _ONLY_ be filled out from DM and then passed to DC, do NOT use these for _any_ kind of atomic
-+ * state calculations in DM, or you will break something.
-+ */
- /* DP MST stream allocation (payload bandwidth number) */
--struct dp_mst_stream_allocation {
-+struct dc_dp_mst_stream_allocation {
- 	uint8_t vcp_id;
- 	/* number of slots required for the DP stream in
- 	 * transport packet */
-@@ -255,11 +260,11 @@ struct dp_mst_stream_allocation {
- };
+-	list_for_each_entry(vcpi, &mst_state->vcpis, next) {
+-		/* Releasing VCPI is always OK-even if the port is gone */
+-		if (!vcpi->vcpi) {
++	list_for_each_entry(payload, &mst_state->payloads, next) {
++		/* Releasing payloads is always OK-even if the port is gone */
++		if (!payload->vcpi) {
+ 			drm_dbg_atomic(mgr->dev, "[MST PORT:%p] releases all VCPI slots\n",
+-				       vcpi->port);
++				       payload->port);
+ 			continue;
+ 		}
  
- /* DP MST stream allocation table */
--struct dp_mst_stream_allocation_table {
-+struct dc_dp_mst_stream_allocation_table {
- 	/* number of DP video streams */
- 	int stream_count;
- 	/* array of stream allocations */
--	struct dp_mst_stream_allocation stream_allocations[MAX_CONTROLLER_NUM];
-+	struct dc_dp_mst_stream_allocation stream_allocations[MAX_CONTROLLER_NUM];
- };
+ 		drm_dbg_atomic(mgr->dev, "[MST PORT:%p] requires %d vcpi slots\n",
+-			       vcpi->port, vcpi->vcpi);
++			       payload->port, payload->vcpi);
  
- #endif /*__DAL_LINK_SERVICE_TYPES_H__*/
+-		avail_slots -= vcpi->vcpi;
++		avail_slots -= payload->vcpi;
+ 		if (avail_slots < 0) {
+ 			drm_dbg_atomic(mgr->dev,
+ 				       "[MST PORT:%p] not enough VCPI slots in mst state %p (avail=%d)\n",
+-				       vcpi->port, mst_state, avail_slots + vcpi->vcpi);
++				       payload->port, mst_state, avail_slots + payload->vcpi);
+ 			return -ENOSPC;
+ 		}
+ 
+@@ -5284,7 +5284,7 @@ drm_dp_mst_atomic_check_vcpi_alloc_limit(struct drm_dp_mst_topology_mgr *mgr,
+ int drm_dp_mst_add_affected_dsc_crtcs(struct drm_atomic_state *state, struct drm_dp_mst_topology_mgr *mgr)
+ {
+ 	struct drm_dp_mst_topology_state *mst_state;
+-	struct drm_dp_vcpi_allocation *pos;
++	struct drm_dp_mst_atomic_payload *pos;
+ 	struct drm_connector *connector;
+ 	struct drm_connector_state *conn_state;
+ 	struct drm_crtc *crtc;
+@@ -5295,7 +5295,7 @@ int drm_dp_mst_add_affected_dsc_crtcs(struct drm_atomic_state *state, struct drm
+ 	if (IS_ERR(mst_state))
+ 		return -EINVAL;
+ 
+-	list_for_each_entry(pos, &mst_state->vcpis, next) {
++	list_for_each_entry(pos, &mst_state->payloads, next) {
+ 
+ 		connector = pos->port->connector;
+ 
+@@ -5349,7 +5349,7 @@ int drm_dp_mst_atomic_enable_dsc(struct drm_atomic_state *state,
+ 				 bool enable)
+ {
+ 	struct drm_dp_mst_topology_state *mst_state;
+-	struct drm_dp_vcpi_allocation *pos;
++	struct drm_dp_mst_atomic_payload *pos;
+ 	bool found = false;
+ 	int vcpi = 0;
+ 
+@@ -5358,7 +5358,7 @@ int drm_dp_mst_atomic_enable_dsc(struct drm_atomic_state *state,
+ 	if (IS_ERR(mst_state))
+ 		return PTR_ERR(mst_state);
+ 
+-	list_for_each_entry(pos, &mst_state->vcpis, next) {
++	list_for_each_entry(pos, &mst_state->payloads, next) {
+ 		if (pos->port == port) {
+ 			found = true;
+ 			break;
+@@ -5544,7 +5544,7 @@ int drm_dp_mst_topology_mgr_init(struct drm_dp_mst_topology_mgr *mgr,
+ 	mst_state->start_slot = 1;
+ 
+ 	mst_state->mgr = mgr;
+-	INIT_LIST_HEAD(&mst_state->vcpis);
++	INIT_LIST_HEAD(&mst_state->payloads);
+ 
+ 	drm_atomic_private_obj_init(dev, &mgr->base,
+ 				    &mst_state->base,
+diff --git a/include/drm/display/drm_dp_mst_helper.h b/include/drm/display/drm_dp_mst_helper.h
+index 10adec068b7f..5671173f9f37 100644
+--- a/include/drm/display/drm_dp_mst_helper.h
++++ b/include/drm/display/drm_dp_mst_helper.h
+@@ -542,7 +542,7 @@ struct drm_dp_payload {
+ 
+ #define to_dp_mst_topology_state(x) container_of(x, struct drm_dp_mst_topology_state, base)
+ 
+-struct drm_dp_vcpi_allocation {
++struct drm_dp_mst_atomic_payload {
+ 	struct drm_dp_mst_port *port;
+ 	int vcpi;
+ 	int pbn;
+@@ -552,7 +552,7 @@ struct drm_dp_vcpi_allocation {
+ 
+ struct drm_dp_mst_topology_state {
+ 	struct drm_private_state base;
+-	struct list_head vcpis;
++	struct list_head payloads;
+ 	struct drm_dp_mst_topology_mgr *mgr;
+ 	u8 total_avail_slots;
+ 	u8 start_slot;
 -- 
 2.37.1
 
