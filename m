@@ -2,197 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DDC5C25B0D
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47D9BC25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:37:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244052AbiHHQcO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 12:32:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59430 "EHLO
+        id S244018AbiHHQh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 12:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244018AbiHHQcL (ORCPT
+        with ESMTP id S234128AbiHHQh0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 12:32:11 -0400
-Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0D4E09F
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 09:32:09 -0700 (PDT)
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220808163206epoutp01a4ae56b3c0f6dfb59fa359f22b92b610~Ja6ybxOcX1754217542epoutp01p
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 16:32:06 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220808163206epoutp01a4ae56b3c0f6dfb59fa359f22b92b610~Ja6ybxOcX1754217542epoutp01p
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1659976326;
-        bh=OeznQ3GkC9JRq+f3xZfmLQAFgDq/aEQ32HyLK7ycDo4=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=uVU/w34lszm2Vo0ALOPdwnTJ0rsyA6R6gTF7vZgW1cv6giaIco196jkMYFOWiP+9A
-         Bg8Xp82/CvAyOhI1oNWTqtN8O2tu5FtjcYGsTWw4hWRmhKVcLLqZFil+pIbrb9O2/b
-         0B8EbjK1+sO35U9vG/l8byPJIyNRhU4/4EaqPN7Q=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
-        20220808163206epcas5p127e3863c746b0fd3dd4ccf20d8268f06~Ja6x3FpUj0145101451epcas5p1R;
-        Mon,  8 Aug 2022 16:32:06 +0000 (GMT)
-Received: from epsmges5p2new.samsung.com (unknown [182.195.38.176]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4M1hYc40hwz4x9Pt; Mon,  8 Aug
-        2022 16:32:04 +0000 (GMT)
-Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        60.52.42669.48A31F26; Tue,  9 Aug 2022 01:32:04 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220808141724epcas5p28c9d48f9e0e5b9a5e5aeb93eba2404bf~JZFLjm15G0522905229epcas5p2-;
-        Mon,  8 Aug 2022 14:17:24 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220808141724epsmtrp2ebdc7d5929baa9d730d15cbe2f08b702~JZFLi27ix1426814268epsmtrp23;
-        Mon,  8 Aug 2022 14:17:24 +0000 (GMT)
-X-AuditID: b6c32a4a-b3bff7000001a6ad-b5-62f13a84a38c
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        73.2A.08905.4FA11F26; Mon,  8 Aug 2022 23:17:24 +0900 (KST)
-Received: from mshams02 (unknown [107.122.12.94]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220808141723epsmtip17c954427ce84ff2780d2df1bf1998fd8~JZFKnLxPN2405624056epsmtip1V;
-        Mon,  8 Aug 2022 14:17:23 +0000 (GMT)
-From:   "m.shams" <m.shams@samsung.com>
-To:     =?iso-8859-1?Q?'Uwe_Kleine-K=F6nig'?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     <thierry.reding@gmail.com>, <lee.jones@linaro.org>,
-        <linux-pwm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <alim.akhtar@samsung.com>
-In-Reply-To: <20220805155509.edqwxcvyoqfic4pn@pengutronix.de>
-Subject: RE: [PATCH] pwm: removes period check from pwm_apply_state()
-Date:   Mon, 8 Aug 2022 19:47:03 +0530
-Message-ID: <019701d8ab31$94c86d60$be594820$@samsung.com>
+        Mon, 8 Aug 2022 12:37:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ECF45DFFE
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 09:37:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659976643;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cA+tWpFYH37Xk4WdfAkkskGhzNmVqVyB+oL1jeFLj/8=;
+        b=M5QS3TD0MlNy3kuMjzwfQxVFvIxdXuSaLfY7Ue3h+LCYZHqkmeZWDZIG1qLumPJdwtL497
+        QF0m657NOFk4GKORIag7XA5Xw5OhvwXipznnmoOWAmZDe6fA0ryGk2vLPc3N7eYqkiRDMZ
+        pFlm5L+jW+W95SiNWjz/BZeulw8u2xk=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-501-brccwyphPRmArF4p4bb4Fw-1; Mon, 08 Aug 2022 12:37:22 -0400
+X-MC-Unique: brccwyphPRmArF4p4bb4Fw-1
+Received: by mail-wm1-f72.google.com with SMTP id i65-20020a1c3b44000000b003a537031613so579944wma.2
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 09:37:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=cA+tWpFYH37Xk4WdfAkkskGhzNmVqVyB+oL1jeFLj/8=;
+        b=XMOKtWGSGl9knYga0hMFl+bStyazFTuWhL0wZtyZf2ojzJIocTWVXUnZyPb76szulu
+         zu6y5wMBUcZrNa9MAWPloTJFOU3qyouVuytMSsFVl0fR/E772byU3g3zNWgMUh/UukwU
+         MQRTmNqhOaZpYeRkVZC5i6nYTEvJXUZZIDf1o8gfOD9T9qOdtCmV7wN/euUEcjKCF76z
+         PMQJ78ZUncKXNyNgOIQQNbD9fsDqImrOii3e2XaBJmt+5QFVq3YfB3eU08z9J6QYlBmH
+         4SfJjmUzcgC2nuxXw9maxeR7NuBAHF7QuQd2uu9/erWVQHjeNzwvfUxNr9jaZGwuHdcO
+         LirQ==
+X-Gm-Message-State: ACgBeo2dlFZYSJEl6GVSErS2rVPykkV61/A+cvYYrPs4pfIUDZUVWukl
+        HxanM5ceMMCdzvI/BjD9E4Mizc9elOhQ7u/PeYjVTobMxzLCTmVym5hab5YoGnWxtIbmS5o7UaA
+        A3AkTmvzKdiOYMGeQzSd2R6dW
+X-Received: by 2002:a7b:c7d4:0:b0:3a5:737:3e1e with SMTP id z20-20020a7bc7d4000000b003a507373e1emr13014144wmk.123.1659976641127;
+        Mon, 08 Aug 2022 09:37:21 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR57tWxR4tXtNGBWeL/q+gvRDaa+lSWgrtHN+Pb/jUpCj+x4GI86pB/BkmHalgM+OXLEE6Eh9g==
+X-Received: by 2002:a7b:c7d4:0:b0:3a5:737:3e1e with SMTP id z20-20020a7bc7d4000000b003a507373e1emr13014137wmk.123.1659976640790;
+        Mon, 08 Aug 2022 09:37:20 -0700 (PDT)
+Received: from ?IPV6:2003:d8:2f15:c300:d2ce:1fb5:2460:179a? (p200300d82f15c300d2ce1fb52460179a.dip0.t-ipconnect.de. [2003:d8:2f15:c300:d2ce:1fb5:2460:179a])
+        by smtp.gmail.com with ESMTPSA id f13-20020a05600c4e8d00b003a319b67f64sm44866965wmq.0.2022.08.08.09.37.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Aug 2022 09:37:20 -0700 (PDT)
+Message-ID: <36bcc1f5-40e9-2d2b-3e94-18994bf62ca4@redhat.com>
+Date:   Mon, 8 Aug 2022 18:36:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 1/2] mm/hugetlb: fix hugetlb not supporting
+ write-notify
+Content-Language: en-US
+To:     Peter Xu <peterx@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Peter Feiner <pfeiner@google.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        stable@vger.kernel.org
+References: <20220805110329.80540-1-david@redhat.com>
+ <20220805110329.80540-2-david@redhat.com> <Yu1eCsMqa641zj5C@xz-m1.local>
+ <Yu1gHnpKRZBhSTZB@monkey> <c2a3b903-099c-4b79-6923-8b288d404c51@redhat.com>
+ <Yu1ie559zt8VvDc1@monkey> <73050e64-e40f-0c94-be96-316d1e8d5f3b@redhat.com>
+ <Yu2CI4wGLHCjMSWm@monkey> <Yu2kK6s8m8NLDjuV@xz-m1.local>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <Yu2kK6s8m8NLDjuV@xz-m1.local>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: en-in
-Thread-Index: AQE14N23Ecc1n6hvU/1TooO9Vl2YEgEF3maVAoBW2yquzm0akA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprGJsWRmVeSWpSXmKPExsWy7bCmpm6L1cckg4svZC0ezNvGZnH/61FG
-        i8u75rBZ3L27itHi5655LBa3J05mdGDz2DnrLrvHnWt72Dz6/xp49G1ZxejxeZNcAGtUtk1G
-        amJKapFCal5yfkpmXrqtkndwvHO8qZmBoa6hpYW5kkJeYm6qrZKLT4CuW2YO0AFKCmWJOaVA
-        oYDE4mIlfTubovzSklSFjPziElul1IKUnAKTAr3ixNzi0rx0vbzUEitDAwMjU6DChOyMabcO
-        sxYclaj4+mciewPjLeEuRk4OCQETic3f17J3MXJxCAnsZpToOrmdEcL5xCgxt/sEG0iVkMA3
-        RokPjXAdW5d/ZYEo2ssoMfHZclYI5xmjxLVvq5m7GDk42ARUJXbcFAFpEBHwkph7eTfYCmaB
-        SYwSP/qPsYIkOAVsJaYteMkCUi8s4Crx8RcjSJhFQEXix997zCA2r4ClxJHHvawQtqDEyZlP
-        WEBsZgE9iRtTp7BB2PIS29/OYYY4TkHi59NlrBBxcYmjP3uYIW5wkrhy7jXYnRICvRwSr9o+
-        MUI0uEgc/nQZyhaWeHV8CzuELSXx+d1eNgg7XWLuw14mCLtAYtmu71A19hIHrsxhgbBlJaae
-        WscEsZhPovf3E6h6Xokd82BsRYn/u/uhesUl3q2YwjqBUWkWkt9mIfltFpLfZiH5ZwEjyypG
-        ydSC4tz01GLTAqO81HJ4jCfn525iBCdQLa8djA8ffNA7xMjEwXiIUYKDWUmE98ja90lCvCmJ
-        lVWpRfnxRaU5qcWHGE2BIT6RWUo0OR+YwvNK4g1NLA1MzMzMTCyNzQyVxHm9rm5KEhJITyxJ
-        zU5NLUgtgulj4uCUamAqfTbZ4dIr90vpi7tOO7277CXDYLtu0pyf+pePGDevD0l3vWVQolzn
-        rnjyznEdHZPzf2Vt3gfZLO7zZahTiTgVeLF3iVrpXvZW3uZHN9S7bdZf+dcmkezqraQadEOo
-        aolo3QXvA2cf2Bj6pWwKv2m5N02tJvV5R87ZGuu9G/Wy89721DWfW/39Hcu10mcyEz3/SJ6S
-        WXhv8fz0KOt7ypNFgx1Tvs5iPXb56EnhGJbvDtKmB28tDoi58qlu/m2DwpZNDds2TM4z5XA6
-        aJR6VeRp9M7is4dk1A3ePqjv+VXIueLnnHB7bsnP58OuhVmqdHffnBo7171cYVeUYUTwuVwP
-        2dc5ZbtMe2PYTrN981RiKc5INNRiLipOBADh4YqoKQQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrLLMWRmVeSWpSXmKPExsWy7bCSnO4XqY9JBh/v61o8mLeNzeL+16OM
-        Fpd3zWGzuHt3FaPFz13zWCxuT5zM6MDmsXPWXXaPO9f2sHn0/zXw6NuyitHj8ya5ANYoLpuU
-        1JzMstQifbsEroxptw6zFhyVqPj6ZyJ7A+Mt4S5GTg4JAROJrcu/snQxcnEICexmlFh5/hgb
-        REJcYtqv/YwQtrDEyn/P2SGKnjBKzDj8BSjBwcEmoCqx46YISI2IgJfE3Mu7wWqYBaYxSky9
-        fZcRburmiXuYQao4BWwlpi14yQLSLCzgKvHxF9gCFgEViR9/74GV8ApYShx53MsKYQtKnJz5
-        hAXEZhYwkLh/qIMVwpaX2P52DjPEcQoSP58ug4qLSxz92cMMcZCTxJVzr1knMArPQjJqFpJR
-        s5CMmoWkfQEjyypGydSC4tz03GLDAsO81HK94sTc4tK8dL3k/NxNjOAY0tLcwbh91Qe9Q4xM
-        HIyHGCU4mJVEeI+sfZ8kxJuSWFmVWpQfX1Sak1p8iFGag0VJnPdC18l4IYH0xJLU7NTUgtQi
-        mCwTB6dUA1P5Sf/na2ZtKb4R33o7a9Ltly92Cv8/PefaWsUsCZHjH06lJj74rX56E5N98N1J
-        Xx9Ma9zeeWLWwndWjnMfhk76J9VvuHvnheZquZVz2X9OmOgiUNrDJ/u1OWbpGRml9zvXxndM
-        vL5u9lHrJ58aa1tPd9Vzhr63fW2aO+FG+N/5r+PPXN7iul9oqlaej2Sx8drLRctftW1c4Xlt
-        /ftTdSJas3oDpcMe/ddeXiYjkLi//cSc97cdVm4UuGQs1HToStiqq/a1cx33mNxslNha0OF2
-        unZyaYn21eArUhdjljCYf54U9USm7W9MIfv6JS5FDtz+zquCmxwOl5+94T7P4OBif5X3Rj8+
-        /T4d9iD6Fg//TCWW4oxEQy3mouJEAEqgA+AQAwAA
-X-CMS-MailID: 20220808141724epcas5p28c9d48f9e0e5b9a5e5aeb93eba2404bf
-X-Msg-Generator: CA
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220805102056epcas5p29f22d42c854bebe6d0301b56094cf3ea
-References: <CGME20220805102056epcas5p29f22d42c854bebe6d0301b56094cf3ea@epcas5p2.samsung.com>
-        <20220805101125.47955-1-m.shams@samsung.com>
-        <20220805155509.edqwxcvyoqfic4pn@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-Hi Uwe,
-
-On Fri, Aug 05, 2022 at 03:41:25PM +0530, Tamseel Shams wrote:
->> There may be situation when PWM is exported using sysfs, but at that 
->> point PWM period is not set. At this situation if we issue a system 
->> suspend, it calls pwm_class_suspend which in turn calls 
->> pwm_apply_state, where PWM period value is checked which returns an 
->> invalid argument error casuing Kernel to panic. So, check for PWM 
->> period value is removed so as to fix the kernel panic observed during 
->> suspend.
-
-> This looks and sounds wrong. One thing I would accept is:
-
-> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c index
-0e042410f6b9..075bbcdad6c1 100644
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-> @@ -557,8 +557,8 @@ int pwm_apply_state(struct pwm_device *pwm, const
-struct pwm_state *state)
-> 	 */
-> 	might_sleep();
+On 06.08.22 01:13, Peter Xu wrote:
+> On Fri, Aug 05, 2022 at 01:48:35PM -0700, Mike Kravetz wrote:
+>> On 08/05/22 20:57, David Hildenbrand wrote:
+>>> On 05.08.22 20:33, Mike Kravetz wrote:
+>>>> On 08/05/22 20:25, David Hildenbrand wrote:
+>>>>> On 05.08.22 20:23, Mike Kravetz wrote:
+>>>>>> On 08/05/22 14:14, Peter Xu wrote:
+>>>>>>> On Fri, Aug 05, 2022 at 01:03:28PM +0200, David Hildenbrand wrote:
+>>>>>>>> diff --git a/mm/mmap.c b/mm/mmap.c
+>>>>>>>> index 61e6135c54ef..462a6b0344ac 100644
+>>>>>>>> --- a/mm/mmap.c
+>>>>>>>> +++ b/mm/mmap.c
+>>>>>>>> @@ -1683,6 +1683,13 @@ int vma_wants_writenotify(struct vm_area_struct *vma, pgprot_t vm_page_prot)
+>>>>>>>>  	if ((vm_flags & (VM_WRITE|VM_SHARED)) != ((VM_WRITE|VM_SHARED)))
+>>>>>>>>  		return 0;
+>>>>>>>>  
+>>>>>>>> +	/*
+>>>>>>>> +	 * Hugetlb does not require/support writenotify; especially, it does not
+>>>>>>>> +	 * support softdirty tracking.
+>>>>>>>> +	 */
+>>>>>>>> +	if (is_vm_hugetlb_page(vma))
+>>>>>>>> +		return 0;
+>>>>>>>
+>>>>>>> I'm kind of confused here..  you seems to be fixing up soft-dirty for
+>>>>>>> hugetlb but here it's explicitly forbidden.
+>>>>>>>
+>>>>>>> Could you explain a bit more on why this patch is needed if (assume
+>>>>>>> there'll be a working) patch 2 being provided?
+>>>>>>>
+>>>>>>
+>>>>>> No comments on the patch, but ...
+>>>>>>
+>>>>>> Since it required little thought, I ran the test program on next-20220802 and
+>>>>>> was surprised that the issue did not recreate.  Even added a simple printk
+>>>>>> to make sure we were getting into vma_wants_writenotify with a hugetlb vma.
+>>>>>> We were.
+>>>>>
+>>>>>
+>>>>> ... does your config have CONFIG_MEM_SOFT_DIRTY enabled?
+>>>>>
+>>>>
+>>>> No, Duh!
+>>>>
+>>>> FYI - Some time back, I started looking at adding soft dirty support for
+>>>> hugetlb mappings.  I did not finish that work.  But, I seem to recall
+>>>> places where code was operating on hugetlb mappings when perhaps it should
+>>>> not.
+>>>>
+>>>> Perhaps, it would also be good to just disable soft dirty for hugetlb at
+>>>> the source?
+>>>
+>>> I thought about that as well. But I came to the conclusion that without
+>>> patch #2, hugetlb VMAs cannot possibly support write-notify, so there is
+>>> no need to bother in vma_wants_writenotify() at all.
+>>>
+>>> The "root" would be places where we clear VM_SOFTDIRTY. That should only
+>>> be fs/proc/task_mmu.c:clear_refs_write() IIRC.
+>>>
+>>> So I don't particularly care, I consider this patch a bit cleaner and
+>>> more generic, but I can adjust clear_refs_write() instead of there is a
+>>> preference.
+>>>
+>>
+>> After a closer look, I agree that this may be the simplest/cleanest way to
+>> proceed.  I was going to suggest that you note hugetlb does not support
+>> softdirty, but see you did in the comment.
+>>
+>> Acked-by: Mike Kravetz <mike.kravetz@oracle.com>
 > 
-> -	if (!pwm || !state || !state->period ||
-> -	    state->duty_cycle > state->period)
-> +	if (!pwm || !state || state->enabled && (!state->period ||
-> +	    state->duty_cycle > state->period))
->  		return -EINVAL;
+> Filtering out hugetlbfs in vma_wants_writenotify() is still a bit hard to
+> follow to me, since it's not clear why hugetlbfs never wants writenotify.
+
+Well, because the write-fault handler as is cannot deal with
+write-faults in shared mappings. It cannot possibly work or ever have
+worked.
+
 > 
-> 	chip = pwm->chip;
+> If it's only about soft-dirty, we could have added the hugetlbfs check into
+> vma_soft_dirty_enabled(), then I think it'll achieve the same thing and
+> much clearer - with the soft-dirty check constantly returning false for it,
+> hugetlbfs shared vmas should have vma_wants_writenotify() naturally return
+> 0 already.
 
-> That is, don't refuse calling pwm_apply_state() for state->period = 0 and
-even state->duty_cycle > state->period if the > > PWM is not enabled.
+I considered that an option, but went with this approach for simplicity
+and because I don't see a need to check for hugetlb in other code paths
+(especially, in the !hugetlb mprotect variant).
 
-By this do you mean doing it following way?
+I mean, with patch #2 we can remove it anytime we do support softdirty
+tracking -- or if there is need for write-notify we can move it into the
+softdirty check only.
 
-if (!pwm || !state || (pwm && !state->period) ||
-	    (pwm && state->duty_cycle > state->period))
-		return -EINVAL;
+> 
+> For the long term - shouldn't we just enable soft-dirty for hugetlbfs?  I
+> remember Mike used to have that in todo.  Since we've got patch 2 already,
+> I feel like that's really much close (is the only missing piece the clear
+> refs write part? or maybe some more that I didn't notice).
 
-> But anyhow, even without that the kernel should not panic. So I ask you to
-research and provide some more info about > > the problem. (Which hardware
-does it affect? Where does it panic? ...)
+My gut feeling is that there isn't too much missing to have it working.
+Define a PTE bit, implement hugetlb variant of clearing, and set it when
+setting the PTE dirty.
 
-Observing Kernel panic in exynos SoC when we issue system suspend. Following
-is the snippet of error:
+Thanks!
 
-# echo mem > /sys/power/state
-[   29.224784] 010: Kernel panic - not syncing: pwm pwmchip0:
-dpm_run_callback failure
-[   29.240134] 010: Call trace:
-[   29.242993] 010:  dump_backtrace+0x0/0x1b8
-[   29.247067] 010:  show_stack+0x24/0x30
-[   29.250793] 010:  dump_stack+0xb8/0x114
-[   29.254606] 010:  panic+0x180/0x398
-[   29.258073] 010:  dpm_run_callback+0x270/0x278
-[   29.262493] 010:  __device_suspend+0x15c/0x628
-[   29.266913] 010:  dpm_suspend+0x124/0x3b0
-[   29.270899] 010:  dpm_suspend_start+0xa0/0xa8
-[   29.275233] 010:  suspend_devices_and_enter+0x110/0x968
-[   29.280433] 010:  pm_suspend+0x308/0x3d8
-[   29.284333] 010:  state_store+0x8c/0x110
-[   29.288233] 010:  kobj_attr_store+0x14/0x28
-[   29.292393] 010:  sysfs_kf_write+0x5c/0x78
-[   29.296466] 010:  kernfs_fop_write+0x10c/0x220
-[   29.300886] 010:  __vfs_write+0x48/0x90
-[   29.304699] 010:  vfs_write+0xb8/0x1c0
-[   29.308426] 010:  ksys_write+0x74/0x100
-[   29.312240] 010:  __arm64_sys_write+0x24/0x30
-[   29.316573] 010:  el0_svc_handler+0x110/0x1b8
-[   29.320906] 010:  el0_svc+0x8/0x1bc
-[   29.324374] 010: SMP: stopping secondary CPUs
-[   29.328711] 010: Kernel Offset: disabled
-[   29.332607] 010: CPU features: 0x0002,00006008
-[   29.337026] 010: Memory Limit: none
-[   29.343949] 010: Rebooting in 1 seconds..
-[   30.344539] 010: Disabling non-boot CPUs ...
+-- 
+Thanks,
 
-
-Thanks & Regards,
-Tamseel
+David / dhildenb
 
