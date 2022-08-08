@@ -2,338 +2,685 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC858C25B0C
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:23:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8EDEC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 16:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243318AbiHHQXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 12:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
+        id S243772AbiHHQXU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 12:23:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233288AbiHHQW7 (ORCPT
+        with ESMTP id S243887AbiHHQXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 12:22:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E6A2BF43
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 09:22:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659975777;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZIIp+4XezCD9XhW5KqD0Wp8O30CPtOvkN45ZhL43/sI=;
-        b=XALp+5LereVFP9Vs+rpO2DZM+WYXOMWdX9fVffHH63I+CDMUzejFV9bi1jSc3yU+4bp4ZR
-        p1BXiPCDIYTAJrW/40eZBn/C8SZ8h+yKmjjxNkNVFHQSsIycYilAlaE+uyY0lIfy3Lr3G+
-        Adg6Hi5CU7x63rh/4qdyVtYw675wvBU=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-553-7QO9wq0rON6R0h_yf4b2aA-1; Mon, 08 Aug 2022 12:21:49 -0400
-X-MC-Unique: 7QO9wq0rON6R0h_yf4b2aA-1
-Received: by mail-qt1-f197.google.com with SMTP id cc11-20020a05622a410b00b0033a100489c4so7204312qtb.20
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 09:21:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=ZIIp+4XezCD9XhW5KqD0Wp8O30CPtOvkN45ZhL43/sI=;
-        b=vlPqLzWgXSO1iolKQZaL72PG3eDCeYyuMaEjkK0LvPJWE9gpDV5AxSzVtgW4I0tVsT
-         hpS1haOpaWT6Vf9cXZkqGvI/WgGdVFre0TkD8QbuaPML/TuFA5wVY7lylH7XffhtPQBQ
-         QLetyCxGLYPH7baWPVPRgg8+YUvJidvp8LlHUGLisO1n2EaAmPa0cA6PLuKS4GmMIDVX
-         fFc+yFjA7rTSqCJFchfP9IN4/n6SOZ2lbmbx8AaGlmbruB+uF/on7Rlw5w07v6HsERvg
-         YJZWw34Zu/jhpmlq47vi+7i8/vYucbMMk6+SQcHv5iscBEpsMmfu1hZOkcXMB3/8YU2C
-         BmSg==
-X-Gm-Message-State: ACgBeo01Z9Xv17ZiuenypA69bHAfdqZ5/vyG4rPB5fFylnw3XkoObha9
-        EX0i0tOCaOp9sD5pH77mKJmheAjjU5toEA1Pq1IJ1PtAvk5UqPAWsH2iCi9ZMh39x7cceI2PvZQ
-        5OHsI+Ka/MrgMJBmaizG06AjH
-X-Received: by 2002:a05:6214:1a07:b0:474:6e80:e1e5 with SMTP id fh7-20020a0562141a0700b004746e80e1e5mr16175792qvb.41.1659975708180;
-        Mon, 08 Aug 2022 09:21:48 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR41H7/KMP6Xrg1+Qu9F5FmU0wuX9R7Ho2OYrizYTxWmBseWvAaRaDU+zCJVlnCznfO7XvDdLA==
-X-Received: by 2002:a05:6214:1a07:b0:474:6e80:e1e5 with SMTP id fh7-20020a0562141a0700b004746e80e1e5mr16175773qvb.41.1659975707871;
-        Mon, 08 Aug 2022 09:21:47 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id bk14-20020a05620a1a0e00b006b967397192sm1079804qkb.69.2022.08.08.09.21.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 09:21:47 -0700 (PDT)
-Date:   Mon, 8 Aug 2022 09:21:46 -0700
-From:   Jerry Snitselaar <jsnitsel@redhat.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Kevin Tian <kevin.tian@intel.com>, Wen Jin <wen.jin@intel.com>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix kdump kernels boot failure with
- scalable mode
-Message-ID: <20220808162146.jrykclf5ez4o7j2t@cantor>
-References: <20220808034612.1691470-1-baolu.lu@linux.intel.com>
+        Mon, 8 Aug 2022 12:23:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0131B15FEA;
+        Mon,  8 Aug 2022 09:23:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E940B80EEA;
+        Mon,  8 Aug 2022 16:23:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37D81C4347C;
+        Mon,  8 Aug 2022 16:23:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659975787;
+        bh=Y27blRbFV3bUQqrsko/Bob+YdhO9yRbvNpf0yCZZxiY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=dT1fSLw1pgzneIWUBBM3O9Ud3baq1lVdOdyunyWXdmNyTUu/w+tsNqVznvKtyB7eV
+         CzHLb1L/avHkUCvDkN6ANmH4j961dsLHSXoUvsgNidMJ6o0YclF3qlNBbMuH/cY+RK
+         pGMt/vhCDkV6+IROp+/lVi3daLRtAG/VGXFtZIgxCoNLwLZwmXnun1SmMwJV3rZ4Ob
+         FeqqP9fBdL+yqzpd2JjOv8+nIIkFxDac79Bsjbol+2NCniu9tSefPagQr9beHr18nx
+         +ZMNe//umD39TanXXbjO6zBSxL76DgqyGdKI09casvwXix4eSkp0mbwcvl5dhIVWNM
+         5UkEssjX9HmUQ==
+Received: by mail-oi1-f172.google.com with SMTP id u14so2776376oie.2;
+        Mon, 08 Aug 2022 09:23:07 -0700 (PDT)
+X-Gm-Message-State: ACgBeo2gA3hGDcBEAcq9MtUepGljbY2AO376s8FZjjijo/tF+Ag/5avx
+        OiZ/CIof3SO0b7uxtRNcS1Ly7N4b4ubu6zSvnvs=
+X-Google-Smtp-Source: AA6agR4Eex+tltZ9bqkchIp/ppRUoanKfW0GyuEpm5nPQq9PJLJZykbmdwYMQdbEtqkfTBh82Jr9XYuDhgyj5QsscMo=
+X-Received: by 2002:a05:6808:d4e:b0:33a:b40a:54dd with SMTP id
+ w14-20020a0568080d4e00b0033ab40a54ddmr8627927oik.294.1659975785979; Mon, 08
+ Aug 2022 09:23:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220808034612.1691470-1-baolu.lu@linux.intel.com>
+References: <20220808102735.4556-1-bingjingc@synology.com> <20220808102735.4556-3-bingjingc@synology.com>
+In-Reply-To: <20220808102735.4556-3-bingjingc@synology.com>
+From:   Filipe Manana <fdmanana@kernel.org>
+Date:   Mon, 8 Aug 2022 17:22:29 +0100
+X-Gmail-Original-Message-ID: <CAL3q7H5Rr6DAQ+rFJUu8aWnGTVkd1GiP2o4_6k93hc1DXcCi1A@mail.gmail.com>
+Message-ID: <CAL3q7H5Rr6DAQ+rFJUu8aWnGTVkd1GiP2o4_6k93hc1DXcCi1A@mail.gmail.com>
+Subject: Re: [PATCH 2/2] btrfs: send: fix a bug that sending unlink commands
+ for directories
+To:     bingjingc <bingjingc@synology.com>
+Cc:     Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, Chris Mason <clm@fb.com>,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Robbie Ko <robbieko@synology.com>, bxxxjxxg@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 08, 2022 at 11:46:12AM +0800, Lu Baolu wrote:
-> The translation table copying code for kdump kernels is currently based
-> on the extended root/context entry formats of ECS mode defined in older
-> VT-d v2.5, and doesn't handle the scalable mode formats. This causes
-> the kexec capture kernel boot failure with DMAR faults if the IOMMU was
-> enabled in scalable mode by the previous kernel.
-> 
-> The ECS mode has already been deprecated by the VT-d spec since v3.0 and
-> Intel IOMMU driver doesn't support this mode as there's no real hardware
-> implementation. Hence this converts ECS checking in copying table code
-> into scalable mode.
-> 
-> The existing copying code consumes a bit in the context entry as a mark
-> of copied entry. This marker needs to work for the old format as well as
-> for extended context entries. It's hard to find such a bit for both
-> legacy and scalable mode context entries. This replaces it with a per-
-> IOMMU bitmap.
-> 
-> Fixes: 7373a8cc38197 ("iommu/vt-d: Setup context and enable RID2PASID support")
-> Cc: stable@vger.kernel.org
-> Reported-by: Jerry Snitselaar <jsnitsel@redhat.com>
-> Tested-by: Wen Jin <wen.jin@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+On Mon, Aug 8, 2022 at 11:27 AM bingjingc <bingjingc@synology.com> wrote:
+>
+> From: BingJing Chang <bingjingc@synology.com>
+>
+
+Reading the subject is confusing, something sounds off:
+
+"btrfs: send: fix a bug that sending unlink commands for directories"
+
+May I suggest something more clear like:
+
+"btrfs: send: fix failures when processing inodes with no links"
+
+Since it does not only address the case of directories but also for
+regular files on the parent snapshot,
+as you mention further below in the changelog.
+
+> There is a bug sending unlink commands for directories. In
+> commit 46b2f4590aab ("Btrfs: fix send failure when root has deleted files
+> still open")', orphan inode issue was addressed. There're no reference
+> paths for these orphan inodes, so the send operation fails with an ENOENT
+> error. Therefore, in that patch, sctx->ignore_cur_inode was introduced to
+> be set if the current inode has a link count of zero for bypassing some
+> unnecessary steps. And a helper function btrfs_unlink_all_paths() was
+> introduced and called to clean up old reference paths found in the parent
+> snapshot. However, not only regular files but also directories can be
+> orphan inodes. So if it meets an orphan directory, a wrong unlink command
+> for this directory will be issued. Soon the unlink command fails with an
+> EISDIR error.
+
+So, there are two things happening:
+
+1) Send fails with -ENOENT, because it tries to generate a path for a directory
+that has no links. This is just like the case of a regular file before
+commit 46b2f4590aab.
+
+2) Before the send ioctl failed with -ENOENT, it generated an unlink
+command for the
+directory. This is the only part you mention.
+
+>
+> Similar example but making an orphan dir for an incremental send:
+>
+>   $ btrfs subvolume create vol
+>   $ mkdir vol/dir
+>   $ touch vol/dir/foo
+>
+>   $ btrfs subvolume snapshot -r vol snap1
+>   $ btrfs subvolume snapshot -r vol snap2
+>
+>   # Turn the second snapshot to RW mode and delete the whole dir while
+>   # holding an open file descriptor on it.
+>   $ btrfs property set snap2 ro false
+>   $ exec 73<snap2/dir
+>   $ rm -rf snap2/dir
+>
+>   # Set the second snapshot back to RO mode and do an incremental send.
+>   $ btrfs property set snap2 ro true
+>   $ mkdir receive_dir
+>   $ btrfs send snap2 -p snap1 | btrfs receive receive_dir/
+>   At subvol snap2
+>   ERROR: unlink dir failed. Is a directory
+
+So running your reproducer, I get send failing with -ENOENT, but oddly in your
+output that doesn't happen. Perhaps that's when running with some
+custom and specific
+synology codebase? Or you unintentionally omitted a part of the output?
+
+This is what I get:
+
+$ cat test.sh
+#!/bin/bash
+
+DEV=/dev/sdj
+MNT=/mnt/sdj
+
+umount $DEV &>/dev/null
+mkfs.btrfs -f $DEV 2>/dev/null
+mount $DEV $MNT
+
+btrfs subvolume create $MNT/vol
+mkdir $MNT/vol/dir
+touch $MNT/vol/dir/foo
+
+btrfs subvolume snapshot -r $MNT/vol $MNT/snap1
+btrfs subvolume snapshot -r $MNT/vol $MNT/snap2
+
+# Turn the second snapshot to RW mode and delete the whole dir while
+# holding an open file descriptor on it.
+btrfs property set $MNT/snap2 ro false
+exec 73<$MNT/snap2/dir
+rm -rf $MNT/snap2/dir
+
+# Set the second snapshot back to RO mode and do an incremental send.
+btrfs property set $MNT/snap2 ro true
+mkdir $MNT/receive_dir
+btrfs send $MNT/snap2 -p $MNT/snap1 | btrfs receive $MNT/receive_dir/
+
+$ ./test.sh
+(...)
+Create subvolume '/mnt/sdj/vol'
+Create a readonly snapshot of '/mnt/sdj/vol' in '/mnt/sdj/snap1'
+Create a readonly snapshot of '/mnt/sdj/vol' in '/mnt/sdj/snap2'
+At subvol /mnt/sdj/snap2
+At snapshot snap2
+ERROR: send ioctl failed with -2: No such file or directory
+ERROR: unlink dir failed: Is a directory
+
+>
+> Actually, orphan inodes are more common use cases in cascading backups.
+> (Please see the illustration below.) In a cascading backup, a user wants
+> to replicate a couple of snapshots from Machine A to Machine B and from
+> Machine B to Machine C. Machine B doesn't take any RO snapshots for
+> sending. All a receiver does is clone an RW subvolume from its parent
+
+What do you mean by cloning a RW subvolume?
+Create a (RW) snapshot of it? Please make it more clear in the next
+patch version.
+
+> snapshot, replay the changes and turn it into RO mode at the end. After
+> all reference paths of some inodes are deleted in applying changes,
+
+"reference paths" is confusing, just say paths only.
+
+"in applying changes" -> "when applying the send stream"
+
+> there's no guarantee that orphan inodes will be cleaned up after subvolumes
+> are turned into RO mode.
+
+Orphan cleanup is not supposed to happen when changing the subvolume
+state from RW to RO (and vice versa).
+Once an inode's link count drops to 0, it's marked as an orphan for
+cleanup, but the cleanup only happens later,
+more on this below.
+
+> Moreover, orphan inodes can occur not only in send
+> snapshots but also in parent snapshots because Machine B may do a batch
+> replication of a couple of snapshots.
+>
+> An illustration for cascading backups:
+> Machine A (snapshot {1..n}) --> Machine B --> Machine C
+>
+> The intuition to solve the problem is to do orphan cleanups before using
+> these snapshots for sending. The more reasonable timing is doing orphan
+> cleanups during the ioctl of turning an RW subvolume into an RO snapshot.
+
+No, attempting to do orphan cleanup in the ioctl would be pointless.
+More details below.
+
+The cleanup, deleting the inode's items etc, can not happen while
+someone is using a file descriptor for the inode,
+which is precisely the case in the reproducer above.
+
+It will happen only once the reference count on the inode drops to 0
+(after the last file descriptor is closed).
+The final iput() triggers the eviction, which will delete all the
+inode items, etc, if the inode still has a link count of 0.
+
+> And it's also because an RO snapshot is regarded that the fs tree has
+> already frozen and will never be adjusted anymore.
+
+We can do orphan cleanup on a RO subvolume/snapshot - that's not a
+problem. We only skip orphan cleanup
+when the fs is mounted in RO mode. It's just pointless for the type of
+reproducer you provided, see below.
+
+> However, that would make
+> the work of property changes more complicated than expected. And the
+> btrfs_orphan_cleanup() is also not promised to remove all orphans
+> successfully.
+
+In this case btrfs_orphan_cleanup() would never trigger the cleanup of
+the inode because there's still
+a process holding a file descriptor open, so the iput() done by
+btrfs_orphan_cleanup() is not the final
+iput - therefore it doesn't not trigger eviction, which is what
+deletes all the items of the inode.
+
+For that test, what will trigger the cleanup is the closing of the
+file descriptor - that triggers the final iput,
+which triggers eviction and that finally triggers the deletions of all
+the items that belong to the inode, etc.
+
+> So we try to extend the original patch to handle orphans in
+> send/parent snapshots. Here are several cases that need to be considered:
+>
+> Case 1: BTRFS_COMPARE_TREE_NEW
+>        |  send snapshot  | action
+>  --------------------------------
+>  nlink |        0        | ignore
+>
+> In case 1, when we get a BTRFS_COMPARE_TREE_NEW tree comparison result,
+> it means that a new inode is found in the send snapshot and it doesn't
+> appear in the parent snapshot. Since this inode has a link count of zero
+> (It's an orphan and there're no reference paths.), we can leverage
+
+Please don't use the term "reference paths", it's confusing. Just say
+it has no links,
+or that it doesn't have any inode reference items.
+
+> sctx->ignore_cur_inode in the original patch to prevent it from being
+> created.
+>
+> Case 2: BTRFS_COMPARE_TREE_DELETED
+>        | parent snapshot | action
+>  ----------------------------------
+>  nlink |        0        | as usual
+>
+> In case 2, when we get a BTRFS_COMPARE_TREE_DELETED tree comparison
+> result, it means that the inode only appears in the parent snapshot.
+> As usual, the send operation will try to delete all its reference paths.
+
+"all its reference paths" -> "all its paths"
+
+> However, this inode has a link count of zero, so no reference paths will
+
+Same as before and same note for everywhere else in the changelog and code
+comments.
+
+> be found. No deletion operations will be issued. We don't need to change
+> any logics.
+>
+> Case 3: BTRFS_COMPARE_TREE_CHANGED
+>            |       | parent snapshot | send snapshot | action
+>  -----------------------------------------------------------------------
+>  subcase 1 | nlink |        0        |       0       | ignore
+>  subcase 2 | nlink |       >0        |       0       | new_gen(deletion)
+>  subcase 3 | nlink |        0        |      >0       | new_gen(creation)
+>
+> In case 3, when we get a BTRFS_COMPARE_TREE_CHANGED tree comparison result,
+> it means that the inode appears in both snapshots. Here're three subcases.
+>
+> First, if the inode has link counts of zero in both snapshots. Since there
+> are no reference paths for this inode in (source/destination) parent
+> snapshots and we don't care about whether there is also an orphan inode in
+> destination or not, we can set sctx->ignore_cur_inode on to prevent it
+> from being created.
+>
+> For the second and the third subcases, if there're reference paths in one
+> snapshot and there're no reference paths in the other snapshot. We can
+> treat this inode as a new generation. We can also leverage the logic
+> handling a new generation of an inode with small adjustments. Then it will
+> delete all old reference paths and create a new inode with new attributes
+> and paths only when there's a positive link count in the send snapshot.
+> Unlike regular files, which just require unlink operations for deleting
+> their old reference paths, a directory may require more operations to
+> remove its old reference paths. For a non-empty directory, the send
+> operation will rename it first and finally issue a rmdir operation to
+> remove it after the last item under this directory has been deleted.
+
+How can we have a non-empty directory with a link count of 0?
+To be able to rmdir a directory (even if some process is holding an
+open file descriptor on it), one
+has to delete all its dentries first - there's no way around this,
+it's enforced in generic code, outside btrfs.
+
+So I don't understand your suggestion that we can have a snapshot with
+a non-empty directory
+that has a link count of 0.
+
+> Therefore, we also need to modify the existence definition of inodes to
+
+"existence definition of inodes" - this is super confusing. I can
+understand it only
+by looking at the code changes. You mean, to treat inodes with a link count of 0
+as if they didn't exist.
+
+Maybe just say "... we also need to consider inodes without links as deleted".
+
+> exclude orphan inodes in get_cur_inode_state(), which is used in
+> process_recorded_refs(). Then it can properly issue the rmdir operation
+> after the last item in the directory has been removed.
+>
+> Note that subcase 3 is not a common case. That's because it's easy to
+> reduce the hard links of an inode, but once all valid paths are removed,
+> there're no valid paths for creating other hard links. The only way to do
+> that is trying to send a older snapshot after a newer snapshot has been
+> sent.
+
+>
+> Fixes: 46b2f4590aab ("Btrfs: fix send failure when root has deleted files still open")
+
+So the Fixes tag is meant to identify a commit that introduced a bug.
+
+That commit only addressed one case of inodes with no links - when
+they are regular files and in the send snapshot only.
+The other cases you identified didn't work before that commit - they
+have never worked since send was introduced in 2012 (commit
+31db9f7c23fbf7e95026143f79645de6507b583b).
+
+If your intention is to have this backported, and simply mark that
+commit as a dependency, then use a proper CC tag as mentioned at:
+
+https://www.kernel.org/doc/html/v4.10/process/stable-kernel-rules.html#option-3
+
+Like this I suppose:
+
+Cc: <stable@vger.kernel.org> # 4.9: 46b2f4590aab: Btrfs: fix send
+failure when root has deleted files still open
+Cc: <stable@vger.kernel.org> # 4.9: 71ecfc133b03: btrfs: send:
+introduce recorded_ref_alloc and recorded_ref_free
+Cc: <stable@vger.kernel.org> # 4.9: 3aa5bd367fa5: btrfs: send: fix
+sending link commands for existing file paths
+Cc: <stable@vger.kernel.org> # 4.9: 0d8869fb6b6f8: btrfs: send: always
+use the rbtree based inode ref management infrastructure
+
+Maybe there are other patches that are needed for a clean backport,
+but those are the only ones I have in mind because they are recent.
+Otherwise we would have to change the version of the patch submitted
+for stable releases.
+
+> Reviewed-by: Robbie Ko <robbieko@synology.com>
+> Signed-off-by: BingJing Chang <bingjingc@synology.com>
 > ---
-
-I did a quick test last night, and it was able to harvest the vmcore,
-and boot back up. Before you mentioned part of the issue being that it
-couldn't get to the PGTT field in the pasid table entry. Was that not
-the case, or is it looking at the old kernel pasid dir entries and
-table entries through the pasid dir pointer in the copied context
-entry?
-
-Regards,
-Jerry
-
->  drivers/iommu/intel/iommu.h   | 17 ++++++--
->  drivers/iommu/intel/debugfs.c |  3 +-
->  drivers/iommu/intel/iommu.c   | 76 +++++++++--------------------------
->  3 files changed, 35 insertions(+), 61 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-> index fae45bbb0c7f..e9b851c42575 100644
-> --- a/drivers/iommu/intel/iommu.h
-> +++ b/drivers/iommu/intel/iommu.h
-> @@ -197,7 +197,6 @@
->  #define ecap_dis(e)		(((e) >> 27) & 0x1)
->  #define ecap_nest(e)		(((e) >> 26) & 0x1)
->  #define ecap_mts(e)		(((e) >> 25) & 0x1)
-> -#define ecap_ecs(e)		(((e) >> 24) & 0x1)
->  #define ecap_iotlb_offset(e) 	((((e) >> 8) & 0x3ff) * 16)
->  #define ecap_max_iotlb_offset(e) (ecap_iotlb_offset(e) + 16)
->  #define ecap_coherent(e)	((e) & 0x1)
-> @@ -265,7 +264,6 @@
->  #define DMA_GSTS_CFIS (((u32)1) << 23)
->  
->  /* DMA_RTADDR_REG */
-> -#define DMA_RTADDR_RTT (((u64)1) << 11)
->  #define DMA_RTADDR_SMT (((u64)1) << 10)
->  
->  /* CCMD_REG */
-> @@ -579,6 +577,7 @@ struct intel_iommu {
->  
->  #ifdef CONFIG_INTEL_IOMMU
->  	unsigned long 	*domain_ids; /* bitmap of domains */
-> +	unsigned long	*copied_tables; /* bitmap of copied tables */
->  	spinlock_t	lock; /* protect context, domain ids */
->  	struct root_entry *root_entry; /* virtual address */
->  
-> @@ -701,6 +700,19 @@ static inline int nr_pte_to_next_page(struct dma_pte *pte)
->  		(struct dma_pte *)ALIGN((unsigned long)pte, VTD_PAGE_SIZE) - pte;
+>  fs/btrfs/send.c | 218 ++++++++++++++++++++----------------------------
+>  1 file changed, 89 insertions(+), 129 deletions(-)
+>
+> diff --git a/fs/btrfs/send.c b/fs/btrfs/send.c
+> index 84b09d428ca3..351fb7cdec4c 100644
+> --- a/fs/btrfs/send.c
+> +++ b/fs/btrfs/send.c
+> @@ -850,6 +850,7 @@ enum inode_field {
+>         INODE_GID = 0x1 << 4,
+>         INODE_RDEV = 0x1 << 5,
+>         INODE_ATTR = 0x1 << 6,
+> +       INODE_NLINK = 0x1 << 7,
+>  };
+>
+>  struct inode_info {
+> @@ -860,6 +861,7 @@ struct inode_info {
+>         u64 gid;
+>         u64 rdev;
+>         u64 attr;
+> +       u64 nlink;
+>  };
+>
+>  /*
+> @@ -904,6 +906,8 @@ static int get_inode_info(struct btrfs_root *root, u64 ino, unsigned int flags,
+>                 info->gid = btrfs_inode_gid(path->nodes[0], ii);
+>         if (flags & INODE_RDEV)
+>                 info->rdev = btrfs_inode_rdev(path->nodes[0], ii);
+> +       if (flags & INODE_NLINK)
+> +               info->nlink = btrfs_inode_nlink(path->nodes[0], ii);
+>         /*
+>          * Transfer the unchanged u64 value of btrfs_inode_item::flags, that's
+>          * otherwise logically split to 32/32 parts.
+> @@ -1669,19 +1673,24 @@ static int get_cur_inode_state(struct send_ctx *sctx, u64 ino, u64 gen)
+>         int right_ret;
+>         u64 left_gen;
+>         u64 right_gen;
+> +       struct inode_info info;
+>
+> -       ret = get_inode_gen(sctx->send_root, ino, &left_gen);
+> +       ret = get_inode_info(sctx->send_root, ino, INODE_GEN|INODE_NLINK,
+> +                            &info);
+>         if (ret < 0 && ret != -ENOENT)
+>                 goto out;
+> -       left_ret = ret;
+> +       left_ret = (info.nlink == 0) ? -ENOENT : ret;
+> +       left_gen = info.gen;
+>
+>         if (!sctx->parent_root) {
+>                 right_ret = -ENOENT;
+>         } else {
+> -               ret = get_inode_gen(sctx->parent_root, ino, &right_gen);
+> +               ret = get_inode_info(sctx->parent_root, ino,
+> +                                    INODE_GEN|INODE_NLINK, &info);
+>                 if (ret < 0 && ret != -ENOENT)
+>                         goto out;
+> -               right_ret = ret;
+> +               right_ret = (info.nlink == 0) ? -ENOENT : ret;
+> +               right_gen = info.gen;
+>         }
+>
+>         if (!left_ret && !right_ret) {
+> @@ -6437,86 +6446,6 @@ static int finish_inode_if_needed(struct send_ctx *sctx, int at_end)
+>         return ret;
 >  }
->  
-> +static inline bool context_copied(struct intel_iommu *iommu, u8 bus, u8 devfn)
-> +{
-> +	if (!iommu->copied_tables)
-> +		return false;
-> +
-> +	return test_bit(((long)bus << 8) | devfn, iommu->copied_tables);
-> +}
-> +
-> +static inline bool context_present(struct context_entry *context)
-> +{
-> +	return (context->lo & 1);
-> +}
-> +
->  extern struct dmar_drhd_unit * dmar_find_matched_drhd_unit(struct pci_dev *dev);
->  
->  extern int dmar_enable_qi(struct intel_iommu *iommu);
-> @@ -784,7 +796,6 @@ static inline void intel_iommu_debugfs_init(void) {}
->  #endif /* CONFIG_INTEL_IOMMU_DEBUGFS */
->  
->  extern const struct attribute_group *intel_iommu_groups[];
-> -bool context_present(struct context_entry *context);
->  struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
->  					 u8 devfn, int alloc);
->  
-> diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
-> index 1f925285104e..f4fd249daad9 100644
-> --- a/drivers/iommu/intel/debugfs.c
-> +++ b/drivers/iommu/intel/debugfs.c
-> @@ -241,7 +241,8 @@ static void ctx_tbl_walk(struct seq_file *m, struct intel_iommu *iommu, u16 bus)
->  		if (!context)
->  			return;
->  
-> -		if (!context_present(context))
-> +		if (!context_present(context) ||
-> +		    context_copied(iommu, bus, devfn))
->  			continue;
->  
->  		tbl_wlk.bus = bus;
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 7cca030a508e..889ad2c9a7b9 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -163,38 +163,6 @@ static phys_addr_t root_entry_uctp(struct root_entry *re)
->  	return re->hi & VTD_PAGE_MASK;
->  }
->  
-> -static inline void context_clear_pasid_enable(struct context_entry *context)
+>
+> -struct parent_paths_ctx {
+> -       struct list_head *refs;
+> -       struct send_ctx *sctx;
+> -};
+> -
+> -static int record_parent_ref(int num, u64 dir, int index, struct fs_path *name,
+> -                            void *ctx)
 > -{
-> -	context->lo &= ~(1ULL << 11);
+> -       struct parent_paths_ctx *ppctx = ctx;
+> -
+> -       /*
+> -        * Pass 0 as the generation for the directory, we don't care about it
+> -        * here as we have no new references to add, we just want to delete all
+> -        * references for an inode.
+> -        */
+> -       return record_ref_in_tree(&ppctx->sctx->rbtree_deleted_refs, ppctx->refs,
+> -                                 name, dir, 0, ppctx->sctx);
 > -}
 > -
-> -static inline bool context_pasid_enabled(struct context_entry *context)
+> -/*
+> - * Issue unlink operations for all paths of the current inode found in the
+> - * parent snapshot.
+> - */
+> -static int btrfs_unlink_all_paths(struct send_ctx *sctx)
 > -{
-> -	return !!(context->lo & (1ULL << 11));
+> -       LIST_HEAD(deleted_refs);
+> -       struct btrfs_path *path;
+> -       struct btrfs_root *root = sctx->parent_root;
+> -       struct btrfs_key key;
+> -       struct btrfs_key found_key;
+> -       struct parent_paths_ctx ctx;
+> -       int iter_ret = 0;
+> -       int ret;
+> -
+> -       path = alloc_path_for_send();
+> -       if (!path)
+> -               return -ENOMEM;
+> -
+> -       key.objectid = sctx->cur_ino;
+> -       key.type = BTRFS_INODE_REF_KEY;
+> -       key.offset = 0;
+> -
+> -       ctx.refs = &deleted_refs;
+> -       ctx.sctx = sctx;
+> -
+> -       btrfs_for_each_slot(root, &key, &found_key, path, iter_ret) {
+> -               if (found_key.objectid != key.objectid)
+> -                       break;
+> -               if (found_key.type != key.type &&
+> -                   found_key.type != BTRFS_INODE_EXTREF_KEY)
+> -                       break;
+> -
+> -               ret = iterate_inode_ref(root, path, &found_key, 1,
+> -                                       record_parent_ref, &ctx);
+> -               if (ret < 0)
+> -                       goto out;
+> -       }
+> -       /* Catch error found during iteration */
+> -       if (iter_ret < 0) {
+> -               ret = iter_ret;
+> -               goto out;
+> -       }
+> -
+> -       while (!list_empty(&deleted_refs)) {
+> -               struct recorded_ref *ref;
+> -
+> -               ref = list_first_entry(&deleted_refs, struct recorded_ref, list);
+> -               ret = send_unlink(sctx, ref->full_path);
+> -               if (ret < 0)
+> -                       goto out;
+> -               recorded_ref_free(ref);
+> -       }
+> -       ret = 0;
+> -out:
+> -       btrfs_free_path(path);
+> -       if (ret)
+> -               __free_recorded_refs(&deleted_refs);
+> -       return ret;
 > -}
 > -
-> -static inline void context_set_copied(struct context_entry *context)
-> -{
-> -	context->hi |= (1ull << 3);
-> -}
-> -
-> -static inline bool context_copied(struct context_entry *context)
-> -{
-> -	return !!(context->hi & (1ULL << 3));
-> -}
-> -
-> -static inline bool __context_present(struct context_entry *context)
-> -{
-> -	return (context->lo & 1);
-> -}
-> -
-> -bool context_present(struct context_entry *context)
-> -{
-> -	return context_pasid_enabled(context) ?
-> -	     __context_present(context) :
-> -	     __context_present(context) && !context_copied(context);
-> -}
-> -
->  static inline void context_set_present(struct context_entry *context)
+>  static void close_current_inode(struct send_ctx *sctx)
 >  {
->  	context->lo |= 1;
-> @@ -764,7 +732,8 @@ static int device_context_mapped(struct intel_iommu *iommu, u8 bus, u8 devfn)
->  	spin_lock(&iommu->lock);
->  	context = iommu_context_addr(iommu, bus, devfn, 0);
->  	if (context)
-> -		ret = context_present(context);
-> +		ret = context_present(context) &&
-> +				!context_copied(iommu, bus, devfn);
->  	spin_unlock(&iommu->lock);
->  	return ret;
->  }
-> @@ -1688,6 +1657,11 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
->  		iommu->domain_ids = NULL;
->  	}
->  
-> +	if (iommu->copied_tables) {
-> +		bitmap_free(iommu->copied_tables);
-> +		iommu->copied_tables = NULL;
-> +	}
-> +
->  	/* free context mapping */
->  	free_context_table(iommu);
->  
-> @@ -1913,7 +1887,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
->  		goto out_unlock;
->  
->  	ret = 0;
-> -	if (context_present(context))
-> +	if (context_present(context) && !context_copied(iommu, bus, devfn))
->  		goto out_unlock;
->  
->  	/*
-> @@ -1925,7 +1899,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
->  	 * in-flight DMA will exist, and we don't need to worry anymore
->  	 * hereafter.
->  	 */
-> -	if (context_copied(context)) {
-> +	if (context_copied(iommu, bus, devfn)) {
->  		u16 did_old = context_domain_id(context);
->  
->  		if (did_old < cap_ndoms(iommu->cap)) {
-> @@ -1936,6 +1910,8 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
->  			iommu->flush.flush_iotlb(iommu, did_old, 0, 0,
->  						 DMA_TLB_DSI_FLUSH);
->  		}
-> +
-> +		clear_bit(((long)bus << 8) | devfn, iommu->copied_tables);
->  	}
->  
->  	context_clear_entry(context);
-> @@ -2684,32 +2660,14 @@ static int copy_context_table(struct intel_iommu *iommu,
->  		/* Now copy the context entry */
->  		memcpy(&ce, old_ce + idx, sizeof(ce));
->  
-> -		if (!__context_present(&ce))
-> +		if (!context_present(&ce))
->  			continue;
->  
->  		did = context_domain_id(&ce);
->  		if (did >= 0 && did < cap_ndoms(iommu->cap))
->  			set_bit(did, iommu->domain_ids);
->  
-> -		/*
-> -		 * We need a marker for copied context entries. This
-> -		 * marker needs to work for the old format as well as
-> -		 * for extended context entries.
-> -		 *
-> -		 * Bit 67 of the context entry is used. In the old
-> -		 * format this bit is available to software, in the
-> -		 * extended format it is the PGE bit, but PGE is ignored
-> -		 * by HW if PASIDs are disabled (and thus still
-> -		 * available).
-> -		 *
-> -		 * So disable PASIDs first and then mark the entry
-> -		 * copied. This means that we don't copy PASID
-> -		 * translations from the old kernel, but this is fine as
-> -		 * faults there are not fatal.
-> -		 */
-> -		context_clear_pasid_enable(&ce);
-> -		context_set_copied(&ce);
-> -
-> +		set_bit(((long)bus << 8) | devfn, iommu->copied_tables);
->  		new_ce[idx] = ce;
->  	}
->  
-> @@ -2735,8 +2693,8 @@ static int copy_translation_tables(struct intel_iommu *iommu)
->  	bool new_ext, ext;
->  
->  	rtaddr_reg = dmar_readq(iommu->reg + DMAR_RTADDR_REG);
-> -	ext        = !!(rtaddr_reg & DMA_RTADDR_RTT);
-> -	new_ext    = !!ecap_ecs(iommu->ecap);
-> +	ext        = !!(rtaddr_reg & DMA_RTADDR_SMT);
-> +	new_ext    = !!ecap_smts(iommu->ecap);
->  
->  	/*
->  	 * The RTT bit can only be changed when translation is disabled,
-> @@ -2747,6 +2705,10 @@ static int copy_translation_tables(struct intel_iommu *iommu)
->  	if (new_ext != ext)
->  		return -EINVAL;
->  
-> +	iommu->copied_tables = bitmap_zalloc(BIT_ULL(16), GFP_KERNEL);
-> +	if (!iommu->copied_tables)
-> +		return -ENOMEM;
-> +
->  	old_rt_phys = rtaddr_reg & VTD_PAGE_MASK;
->  	if (!old_rt_phys)
->  		return -EINVAL;
-> -- 
-> 2.25.1
-> 
+>         u64 i_size;
+> @@ -6607,25 +6536,37 @@ static int changed_inode(struct send_ctx *sctx,
+>          * file descriptor against it or turning a RO snapshot into RW mode,
+>          * keep an open file descriptor against a file, delete it and then
+>          * turn the snapshot back to RO mode before using it for a send
+> -        * operation. So if we find such cases, ignore the inode and all its
+> -        * items completely if it's a new inode, or if it's a changed inode
+> -        * make sure all its previous paths (from the parent snapshot) are all
+> -        * unlinked and all other the inode items are ignored.
+> +        * operation. The former is what the receiver operation does.
+> +        * Therefore, if we want to send these snapshots soon after they're
+> +        * received, we need to handle orphan inodes as well. Moreover,
+> +        * orphans can appear not only in the send snapshot but also in the
+> +        * parent snapshot. Here are several cases:
+> +        *
+> +        * Case 1: BTRFS_COMPARE_TREE_NEW
+> +        *       |  send snapshot  | action
+> +        * --------------------------------
+> +        * nlink |        0        | ignore
+> +        *
+> +        * Case 2: BTRFS_COMPARE_TREE_DELETED
+> +        *       | parent snapshot | action
+> +        * ----------------------------------
+> +        * nlink |        0        | as usual
+> +        * Note: No unlinks will be sent bacause there're no reference paths.
 
+bacause -> because
+
+The code looks good to me, it's a good solution.
+
+Can you please send a test case for fstests covering all these scenarios?
+I.e. directory with a link count of 0, like the reproducer in the
+changelog, parent snapshot with an inode have 0 links as well, etc.
+
+Thanks.
+
+> +        *
+> +        * Case 3: BTRFS_COMPARE_TREE_CHANGED
+> +        *           |       | parent snapshot | send snapshot | action
+> +        * -----------------------------------------------------------------------
+> +        * subcase 1 | nlink |        0        |       0       | ignore
+> +        * subcase 2 | nlink |       >0        |       0       | new_gen(deletion)
+> +        * subcase 3 | nlink |        0        |      >0       | new_gen(creation)
+> +        *
+>          */
+> -       if (result == BTRFS_COMPARE_TREE_NEW ||
+> -           result == BTRFS_COMPARE_TREE_CHANGED) {
+> -               u32 nlinks;
+> -
+> -               nlinks = btrfs_inode_nlink(sctx->left_path->nodes[0], left_ii);
+> -               if (nlinks == 0) {
+> +       if (result == BTRFS_COMPARE_TREE_NEW) {
+> +               if (btrfs_inode_nlink(sctx->left_path->nodes[0], left_ii) ==
+> +                                     0) {
+>                         sctx->ignore_cur_inode = true;
+> -                       if (result == BTRFS_COMPARE_TREE_CHANGED)
+> -                               ret = btrfs_unlink_all_paths(sctx);
+>                         goto out;
+>                 }
+> -       }
+> -
+> -       if (result == BTRFS_COMPARE_TREE_NEW) {
+>                 sctx->cur_inode_gen = left_gen;
+>                 sctx->cur_inode_new = true;
+>                 sctx->cur_inode_deleted = false;
+> @@ -6646,6 +6587,18 @@ static int changed_inode(struct send_ctx *sctx,
+>                 sctx->cur_inode_mode = btrfs_inode_mode(
+>                                 sctx->right_path->nodes[0], right_ii);
+>         } else if (result == BTRFS_COMPARE_TREE_CHANGED) {
+> +               u32 new_nlinks, old_nlinks;
+> +
+> +               new_nlinks = btrfs_inode_nlink(sctx->left_path->nodes[0],
+> +                                              left_ii);
+> +               old_nlinks = btrfs_inode_nlink(sctx->right_path->nodes[0],
+> +                                              right_ii);
+> +               if (new_nlinks == 0 && old_nlinks == 0) {
+> +                       sctx->ignore_cur_inode = true;
+> +                       goto out;
+> +               } else if (new_nlinks == 0 || old_nlinks == 0) {
+> +                       sctx->cur_inode_new_gen = 1;
+> +               }
+>                 /*
+>                  * We need to do some special handling in case the inode was
+>                  * reported as changed with a changed generation number. This
+> @@ -6672,38 +6625,45 @@ static int changed_inode(struct send_ctx *sctx,
+>                         /*
+>                          * Now process the inode as if it was new.
+>                          */
+> -                       sctx->cur_inode_gen = left_gen;
+> -                       sctx->cur_inode_new = true;
+> -                       sctx->cur_inode_deleted = false;
+> -                       sctx->cur_inode_size = btrfs_inode_size(
+> -                                       sctx->left_path->nodes[0], left_ii);
+> -                       sctx->cur_inode_mode = btrfs_inode_mode(
+> -                                       sctx->left_path->nodes[0], left_ii);
+> -                       sctx->cur_inode_rdev = btrfs_inode_rdev(
+> -                                       sctx->left_path->nodes[0], left_ii);
+> -                       ret = send_create_inode_if_needed(sctx);
+> -                       if (ret < 0)
+> -                               goto out;
+> +                       if (new_nlinks > 0) {
+> +                               sctx->cur_inode_gen = left_gen;
+> +                               sctx->cur_inode_new = true;
+> +                               sctx->cur_inode_deleted = false;
+> +                               sctx->cur_inode_size = btrfs_inode_size(
+> +                                               sctx->left_path->nodes[0],
+> +                                               left_ii);
+> +                               sctx->cur_inode_mode = btrfs_inode_mode(
+> +                                               sctx->left_path->nodes[0],
+> +                                               left_ii);
+> +                               sctx->cur_inode_rdev = btrfs_inode_rdev(
+> +                                               sctx->left_path->nodes[0],
+> +                                               left_ii);
+> +                               ret = send_create_inode_if_needed(sctx);
+> +                               if (ret < 0)
+> +                                       goto out;
+>
+> -                       ret = process_all_refs(sctx, BTRFS_COMPARE_TREE_NEW);
+> -                       if (ret < 0)
+> -                               goto out;
+> -                       /*
+> -                        * Advance send_progress now as we did not get into
+> -                        * process_recorded_refs_if_needed in the new_gen case.
+> -                        */
+> -                       sctx->send_progress = sctx->cur_ino + 1;
+> +                               ret = process_all_refs(sctx,
+> +                                               BTRFS_COMPARE_TREE_NEW);
+> +                               if (ret < 0)
+> +                                       goto out;
+> +                               /*
+> +                                * Advance send_progress now as we did not get
+> +                                * into process_recorded_refs_if_needed in the
+> +                                * new_gen case.
+> +                                */
+> +                               sctx->send_progress = sctx->cur_ino + 1;
+>
+> -                       /*
+> -                        * Now process all extents and xattrs of the inode as if
+> -                        * they were all new.
+> -                        */
+> -                       ret = process_all_extents(sctx);
+> -                       if (ret < 0)
+> -                               goto out;
+> -                       ret = process_all_new_xattrs(sctx);
+> -                       if (ret < 0)
+> -                               goto out;
+> +                               /*
+> +                                * Now process all extents and xattrs of the
+> +                                * inode as if they were all new.
+> +                                */
+> +                               ret = process_all_extents(sctx);
+> +                               if (ret < 0)
+> +                                       goto out;
+> +                               ret = process_all_new_xattrs(sctx);
+> +                               if (ret < 0)
+> +                                       goto out;
+> +                       }
+>                 } else {
+>                         sctx->cur_inode_gen = left_gen;
+>                         sctx->cur_inode_new = false;
+> --
+> 2.37.1
+>
