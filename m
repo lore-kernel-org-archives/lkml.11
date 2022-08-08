@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 779C6C25B07
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63726C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242759AbiHHBmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:42:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42174 "EHLO
+        id S242772AbiHHBmj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:42:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242742AbiHHBkr (ORCPT
+        with ESMTP id S242810AbiHHBlD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:40:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0875112758;
-        Sun,  7 Aug 2022 18:34:57 -0700 (PDT)
+        Sun, 7 Aug 2022 21:41:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C414212AB6;
+        Sun,  7 Aug 2022 18:35:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8680160E07;
-        Mon,  8 Aug 2022 01:34:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE947C43141;
-        Mon,  8 Aug 2022 01:34:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6ED8060E08;
+        Mon,  8 Aug 2022 01:34:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF12DC433D7;
+        Mon,  8 Aug 2022 01:34:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922496;
-        bh=8FaatRZzs5J89s4nJSmm66AsNZkhJ2K5cP0SUBU4jF0=;
+        s=k20201202; t=1659922498;
+        bh=iErS5oo2Oc5DNTVd9UDyKVUFsYmh4vo+LGU2SJ245lM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DIPMUYk2n/OaCGgXtEEI7ITnFYmN+bULzwC0l+VDoA2jjhZWdUdAWIjVLuN4fsmIf
-         JTvh97m1vbmynM6Rvuu3/zC0ogkobbhTidnk+cDbJxQHTrJ8Go6gC27KbAW8YNaVT7
-         p98NibykovXIk7tXRXH9k5RfaznSZ9o9rHJCv39Tv9g2IZO80V38hSOYFrW6LXS1pF
-         w1kAo/DPoR2D+MQazZBGEFxXO0l4kUQUr6603Ek5OZVY64+hk6yfHjIp4d+o1cDhG5
-         +fwg5uBFNcvlxCnNyN7MLyctop+a06fGOYklJcKfEvaiFjWaQ9ervuIn2/7uK9/U6F
-         23qzFHfe+0Eeg==
+        b=A3iLjyIFTaB6dmSdimB8kcLYZGKsMN3FeeD2s70x6cgENoTl3CFNj7hL32k22M76k
+         q660B78oN0V+3gHbvRxmmcBuA7NoTUftsJqIXmTYYRVFyvPCHEjCJr4pI8ApQ7rj+T
+         fxl2QtBjZLs0BHH0+07pcaWmp4vR4PKGuGHmQEUebzK+nonQILmKCyDQQSQ6t8F1Tl
+         AQPFFt8Y/9NC8hMNFLv58pzIUXDmQm+/SGzTvsCrojRxXkibYyf54GY6zr+z2eZUoz
+         75GfH6AdIZcFNiZXb2v2hbBxqfb0DioH42AdVRt4qBxbc120H7XLNuRrD1lEdHRVVX
+         gwg7h2avK8hLg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     William Dean <williamsukatube@163.com>,
-        Hacash Robot <hacashRobot@santino.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        tsbogend@alpha.franken.de, fancer.lancer@gmail.com,
-        tglx@linutronix.de, linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 20/53] irqchip/mips-gic: Check the return value of ioremap() in gic_of_init()
-Date:   Sun,  7 Aug 2022 21:33:15 -0400
-Message-Id: <20220808013350.314757-20-sashal@kernel.org>
+Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 22/53] ARM: dts: imx6ul: add missing properties for sram
+Date:   Sun,  7 Aug 2022 21:33:17 -0400
+Message-Id: <20220808013350.314757-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013350.314757-1-sashal@kernel.org>
 References: <20220808013350.314757-1-sashal@kernel.org>
@@ -53,37 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Dean <williamsukatube@163.com>
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
 
-[ Upstream commit 71349cc85e5930dce78ed87084dee098eba24b59 ]
+[ Upstream commit 5655699cf5cff9f4c4ee703792156bdd05d1addf ]
 
-The function ioremap() in gic_of_init() can fail, so
-its return value should be checked.
+All 3 properties are required by sram.yaml. Fixes the dtbs_check
+warning:
+sram@900000: '#address-cells' is a required property
+sram@900000: '#size-cells' is a required property
+sram@900000: 'ranges' is a required property
 
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: William Dean <williamsukatube@163.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220723100128.2964304-1-williamsukatube@163.com
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-mips-gic.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm/boot/dts/imx6ul.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
-index 8a9efb6ae587..1ba0f1555c80 100644
---- a/drivers/irqchip/irq-mips-gic.c
-+++ b/drivers/irqchip/irq-mips-gic.c
-@@ -783,6 +783,10 @@ static int __init gic_of_init(struct device_node *node,
- 	}
+diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
+index afeec01f6522..1d435a46fc5c 100644
+--- a/arch/arm/boot/dts/imx6ul.dtsi
++++ b/arch/arm/boot/dts/imx6ul.dtsi
+@@ -149,6 +149,9 @@ soc {
+ 		ocram: sram@900000 {
+ 			compatible = "mmio-sram";
+ 			reg = <0x00900000 0x20000>;
++			ranges = <0 0x00900000 0x20000>;
++			#address-cells = <1>;
++			#size-cells = <1>;
+ 		};
  
- 	mips_gic_base = ioremap(gic_base, gic_len);
-+	if (!mips_gic_base) {
-+		pr_err("Failed to ioremap gic_base\n");
-+		return -ENOMEM;
-+	}
- 
- 	gicconfig = read_gic_config();
- 	gic_shared_intrs = FIELD_GET(GIC_CONFIG_NUMINTERRUPTS, gicconfig);
+ 		intc: interrupt-controller@a01000 {
 -- 
 2.35.1
 
