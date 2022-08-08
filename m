@@ -2,161 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF94C25B0C
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 07:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83FFBC25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 07:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241714AbiHHHvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 03:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55350 "EHLO
+        id S241909AbiHHHwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 03:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234289AbiHHHvW (ORCPT
+        with ESMTP id S239780AbiHHHwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 03:51:22 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763616268;
-        Mon,  8 Aug 2022 00:51:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659945081; x=1691481081;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=w2oVn/9yhFWn7yqZ9M6VgmJBgHr61NGPEcOPgx2ofJ8=;
-  b=OZav7e/y0c396bVwrAZQjH+AJNUqK5sVToRLK3Rv3ChB4aSdMT7oS+wI
-   Ls46RFNCxT4YWmLDoHFKc6vUrH5eY/qvMotpZJQZCqB09llqWmtjPf+jR
-   ZliuPNltdXPtz15KYxExgkr5SnXxHKyd0phPGbzMCrXWWjQXl72ZIBX2Z
-   r4ybF4Nwawk2aOB8Os36JYMv2L7GmHB4Y2P7IFXD6gu8RQ2fg2Stbm5UI
-   xadJPKoQADd5lekeee7bptifJK3Dc+B9XX8BvKj/OTyLnv16QakZoAN2S
-   R57/+QixtuG3n2qheWC/scX6QNUc5TDfO5hVUkXu6Ia/DMo7HlH/Ebkao
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="270304013"
-X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
-   d="scan'208";a="270304013"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 00:51:21 -0700
-X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
-   d="scan'208";a="672382302"
-Received: from ajanoscz-mobl1.ger.corp.intel.com (HELO [10.252.35.108]) ([10.252.35.108])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 00:51:15 -0700
-Message-ID: <91d05e59-8123-de3f-55da-62b74ac96ddd@linux.intel.com>
-Date:   Mon, 8 Aug 2022 09:34:10 +0200
+        Mon, 8 Aug 2022 03:52:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B567311C29
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 00:52:40 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oKxYk-0007h1-RS; Mon, 08 Aug 2022 09:52:22 +0200
+Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oKxYj-0005lW-J7; Mon, 08 Aug 2022 09:52:21 +0200
+Date:   Mon, 8 Aug 2022 09:52:21 +0200
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     Shenwei Wang <shenwei.wang@nxp.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "brgl@bgdev.pl" <brgl@bgdev.pl>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+Subject: Re: [EXT] Re: [PATCH v1 2/3] dt-bindings: firmware: imx: Add imx-scu
+ gpio node
+Message-ID: <20220808075221.hijtkvubgtw3wirf@pengutronix.de>
+References: <20220804184908.470216-1-shenwei.wang@nxp.com>
+ <20220804184908.470216-3-shenwei.wang@nxp.com>
+ <8e1ffa95-686b-ca4b-1a2b-b7115dc41c98@linaro.org>
+ <AM9PR04MB8274CE6735619BD6B8FB0143899E9@AM9PR04MB8274.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH] ASoC: Intel: kbl_rt5663_max98927: Simplify clk_get()
- usage
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Harsha Priya <harshapriya.n@intel.com>,
-        "Subhransu S. Prusty" <subhransu.s.prusty@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Sriram Periyasamy <sriramx.periyasamy@intel.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        alsa-devel@alsa-project.org
-References: <55e59c4792d64ff6336fcaa85ec15590553e9d63.1659903516.git.christophe.jaillet@wanadoo.fr>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <55e59c4792d64ff6336fcaa85ec15590553e9d63.1659903516.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM9PR04MB8274CE6735619BD6B8FB0143899E9@AM9PR04MB8274.eurprd04.prod.outlook.com>
+User-Agent: NeoMutt/20180716
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 8/7/22 22:18, Christophe JAILLET wrote:
-> If clk_get() returns -ENOENT, there is no need to defer the driver, -ENOENT
-> will be returned the same for each retries.
-> So, return the error code directly instead of -EPROBE_DEFER.
+On 22-08-05, Shenwei Wang wrote:
 > 
-> Remove this special case and use dev_err_probe() to simplify code. It will
-> also be less verbose if the clk is really deferred.
 > 
-> Fixes: f7f61e08fe58 ("ASoC: Intel: kbl: Enable mclk and ssp sclk early")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> This is based on my understanding of clk_get().
-> Review with care.
+> > -----Original Message-----
+> > From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> > Sent: Friday, August 5, 2022 1:56 AM
+> > To: Shenwei Wang <shenwei.wang@nxp.com>; robh+dt@kernel.org;
+> > krzysztof.kozlowski+dt@linaro.org; linus.walleij@linaro.org; brgl@bgdev.pl;
+> > shawnguo@kernel.org; s.hauer@pengutronix.de; kernel@pengutronix.de;
+> > festevam@gmail.com; dl-linux-imx <linux-imx@nxp.com>
+> > Cc: devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
+> > gpio@vger.kernel.org; linux-arm-kernel@lists.infradead.org
+> > Subject: [EXT] Re: [PATCH v1 2/3] dt-bindings: firmware: imx: Add imx-scu gpio
+> > node
+> > 
+> > Caution: EXT Email
+> > 
+> > On 04/08/2022 20:49, Shenwei Wang wrote:
+> > > Add the description for imx-scu gpio subnode.
+> > >
+> > > Signed-off-by: Shenwei Wang <shenwei.wang@nxp.com>
+> > > ---
+> > >  Documentation/devicetree/bindings/firmware/fsl,scu.yaml | 5 +++++
+> > >  1 file changed, 5 insertions(+)
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/firmware/fsl,scu.yaml
+> > b/Documentation/devicetree/bindings/firmware/fsl,scu.yaml
+> > > index b40b0ef56978..080955b6edd8 100644
+> > > --- a/Documentation/devicetree/bindings/firmware/fsl,scu.yaml
+> > > +++ b/Documentation/devicetree/bindings/firmware/fsl,scu.yaml
+> > > @@ -30,6 +30,11 @@ properties:
+> > >        Clock controller node that provides the clocks controlled by the SCU
+> > >      $ref: /schemas/clock/fsl,scu-clk.yaml
+> > >
+> > > +  gpio:
+> > > +    description:
+> > > +      GPIO control over the SCU firmware APIs
+> > 
+> > I don't understand this description. How GPIO can control some API?
 > 
-> Not sure the Fixes tag is needed. The patch does not fix anything.
-> If devm_clk_get() returns -ENOENT, it will just loop several time until
-> the framework gives up.
-> If it returns -EPROBE_DEFER, this case is already handled by the
-> "return ret;"
+> How about change to "Control the GPIO PINs on SCU domain over the firmware APIs"?
+
+For linux it doesn't matter how the GPIOs are controlled. They can be
+controlled by a co-processor like this SCU or by an I2C expander or they
+are native, the list goes on. All those details are hidden.
+
+Regards,
+  Marco
+
 > 
-> So this patch should be a no-op, just a clean-up.
-
-I can't pretend understanding the clk framework in depth, but the only
-case where -ENOENT is returned seems to be this block in clk_hw_create_clk()
-
-	if (!try_module_get(core->owner)) {
-		free_clk(clk);
-		return ERR_PTR(-ENOENT);
-	}
-
-I have no idea why this would be converted to a -EPROBE_DEFER. May to
-account for module loading?
-
-> ---
->  sound/soc/intel/boards/kbl_rt5663_max98927.c | 31 ++++----------------
->  1 file changed, 6 insertions(+), 25 deletions(-)
+> Thanks,
+> Shenwei
 > 
-> diff --git a/sound/soc/intel/boards/kbl_rt5663_max98927.c b/sound/soc/intel/boards/kbl_rt5663_max98927.c
-> index 2d4224c5b152..07b00af2fa3c 100644
-> --- a/sound/soc/intel/boards/kbl_rt5663_max98927.c
-> +++ b/sound/soc/intel/boards/kbl_rt5663_max98927.c
-> @@ -989,7 +989,6 @@ static int kabylake_audio_probe(struct platform_device *pdev)
->  {
->  	struct kbl_rt5663_private *ctx;
->  	struct snd_soc_acpi_mach *mach;
-> -	int ret;
->  
->  	ctx = devm_kzalloc(&pdev->dev, sizeof(*ctx), GFP_KERNEL);
->  	if (!ctx)
-> @@ -1009,32 +1008,14 @@ static int kabylake_audio_probe(struct platform_device *pdev)
->  			&constraints_dmic_2ch : &constraints_dmic_channels;
->  
->  	ctx->mclk = devm_clk_get(&pdev->dev, "ssp1_mclk");
-> -	if (IS_ERR(ctx->mclk)) {
-> -		ret = PTR_ERR(ctx->mclk);
-> -		if (ret == -ENOENT) {
-> -			dev_info(&pdev->dev,
-> -				"Failed to get ssp1_sclk, defer probe\n");
-> -			return -EPROBE_DEFER;
-> -		}
-> -
-> -		dev_err(&pdev->dev, "Failed to get ssp1_mclk with err:%d\n",
-> -								ret);
-> -		return ret;
-> -	}
-> +	if (IS_ERR(ctx->mclk))
-> +		return dev_err_probe(&pdev->dev, PTR_ERR(ctx->mclk),
-> +				     "Failed to get ssp1_mclk\n");
->  
->  	ctx->sclk = devm_clk_get(&pdev->dev, "ssp1_sclk");
-> -	if (IS_ERR(ctx->sclk)) {
-> -		ret = PTR_ERR(ctx->sclk);
-> -		if (ret == -ENOENT) {
-> -			dev_info(&pdev->dev,
-> -				"Failed to get ssp1_sclk, defer probe\n");
-> -			return -EPROBE_DEFER;
-> -		}
-> -
-> -		dev_err(&pdev->dev, "Failed to get ssp1_sclk with err:%d\n",
-> -								ret);
-> -		return ret;
-> -	}
-> +	if (IS_ERR(ctx->sclk))
-> +		return dev_err_probe(&pdev->dev, PTR_ERR(ctx->sclk),
-> +				     "Failed to get ssp1_sclk\n");
->  
->  	return devm_snd_soc_register_card(&pdev->dev, kabylake_audio_card);
->  }
+> > 
+> > Best regards,
+> > Krzysztof
