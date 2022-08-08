@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE109C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:54:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 186F3C19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243550AbiHHByi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38494 "EHLO
+        id S243498AbiHHByl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:54:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243602AbiHHBvY (ORCPT
+        with ESMTP id S243627AbiHHBv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:51:24 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC0CC193DA;
-        Sun,  7 Aug 2022 18:38:20 -0700 (PDT)
+        Sun, 7 Aug 2022 21:51:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CEF193F3;
+        Sun,  7 Aug 2022 18:38:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C564ECE0F71;
-        Mon,  8 Aug 2022 01:38:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 819A2C43144;
-        Mon,  8 Aug 2022 01:38:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2082560E06;
+        Mon,  8 Aug 2022 01:38:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90D80C433C1;
+        Mon,  8 Aug 2022 01:38:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922697;
-        bh=j4raeIPO+v/GVza0FDa/F3rO28yeJBfDMmfX2uRbR4U=;
+        s=k20201202; t=1659922701;
+        bh=hwBSpc7erig/674qMUa5THYn7tKXm6QBe24djanajcU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DbYn3nSWMLNVkT9tmqUV11sdtXAwKCrL79Vvz4dl455lAMIjKvBItpfGGnhtBV68U
-         s5phJVeSo1nonCTy3CL2jic76vm/L04wraxwf6mNiAXc44hp6HZ1H87TAum1riDtMI
-         81BAMjf1a4QNRvSCPTVqRqlsO+zBfh4ZSUa5cNfrVUeyk7rT1qLk9pLEM89uVkM6NL
-         foFCacJTxT0lyVTuXX22ma3ebYZHi2G/E/gCTow+b3/323n3uVE9V0/sYTmX0qkFY2
-         mqZC4P+TqceF2FB0RLjTlDQxCTQYni+AuteI3fW8QNY69hy9SXv78BC3q5nkrQXHNf
-         2I5Y7LqRLAg+A==
+        b=CwuUzKh11NqF3YccmbX6LFxs7a5CmyuDxk2VGm9KPnZT53zN8JAXe69H2YUIt3XQh
+         hJO44JCsIbUk31KIctGN5Ar7dXG+xMRkPDZ1Byu/Gz70jaZ5JiPLsLOVV7Ol7KTUOj
+         0GffDxkxU024zqJkDHVK/X/RbTV6nShcypEuswF9RCeSUn5+r7HXqiCiIINlThbTJO
+         lBtwIYc1Kp6RiKXKbAJ00ppqW4NuDKDeapo5mq3iEpbRn5WxLk96wn/jAyI7tFC+V1
+         RjuDq//FLvVqjS/DvgTCrPHOw+M0RF+8rQZvOUvCqJjWV6UEzpYGnM42K6Z9PcFQQ2
+         lfZYHq31jYaUg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     huhai <huhai@kylinos.cn>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 22/29] ACPI: LPSS: Fix missing check in register_device_clock()
-Date:   Sun,  7 Aug 2022 21:37:32 -0400
-Message-Id: <20220808013741.316026-22-sashal@kernel.org>
+Cc:     Liang He <windhl@126.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sasha Levin <sashal@kernel.org>, magnus.damm@gmail.com,
+        linux@armlinux.org.uk, linux-renesas-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 25/29] ARM: shmobile: rcar-gen2: Increase refcount for new reference
+Date:   Sun,  7 Aug 2022 21:37:35 -0400
+Message-Id: <20220808013741.316026-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013741.316026-1-sashal@kernel.org>
 References: <20220808013741.316026-1-sashal@kernel.org>
@@ -52,34 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huhai <huhai@kylinos.cn>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit b4f1f61ed5928b1128e60e38d0dffa16966f06dc ]
+[ Upstream commit 75a185fb92e58ccd3670258d8d3b826bd2fa6d29 ]
 
-register_device_clock() misses a check for platform_device_register_simple().
-Add a check to fix it.
+In rcar_gen2_regulator_quirk(), for_each_matching_node_and_match() will
+automatically increase and decrease the refcount.  However, we should
+call of_node_get() for the new reference created in 'quirk->np'.
+Besides, we also should call of_node_put() before the 'quirk' being
+freed.
 
-Signed-off-by: huhai <huhai@kylinos.cn>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Liang He <windhl@126.com>
+Link: https://lore.kernel.org/r/20220701121804.234223-1-windhl@126.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpi_lpss.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
-index be73974ce449..6ff81027c69d 100644
---- a/drivers/acpi/acpi_lpss.c
-+++ b/drivers/acpi/acpi_lpss.c
-@@ -401,6 +401,9 @@ static int register_device_clock(struct acpi_device *adev,
- 	if (!lpss_clk_dev)
- 		lpt_register_clock_device();
+diff --git a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
+index 09ef73b99dd8..ba44cec5e59a 100644
+--- a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
++++ b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
+@@ -125,6 +125,7 @@ static int regulator_quirk_notify(struct notifier_block *nb,
  
-+	if (IS_ERR(lpss_clk_dev))
-+		return PTR_ERR(lpss_clk_dev);
-+
- 	clk_data = platform_get_drvdata(lpss_clk_dev);
- 	if (!clk_data)
- 		return -ENODEV;
+ 	list_for_each_entry_safe(pos, tmp, &quirk_list, list) {
+ 		list_del(&pos->list);
++		of_node_put(pos->np);
+ 		kfree(pos);
+ 	}
+ 
+@@ -174,11 +175,12 @@ static int __init rcar_gen2_regulator_quirk(void)
+ 		memcpy(&quirk->i2c_msg, id->data, sizeof(quirk->i2c_msg));
+ 
+ 		quirk->id = id;
+-		quirk->np = np;
++		quirk->np = of_node_get(np);
+ 		quirk->i2c_msg.addr = addr;
+ 
+ 		ret = of_irq_parse_one(np, 0, argsa);
+ 		if (ret) {	/* Skip invalid entry and continue */
++			of_node_put(np);
+ 			kfree(quirk);
+ 			continue;
+ 		}
+@@ -225,6 +227,7 @@ static int __init rcar_gen2_regulator_quirk(void)
+ err_mem:
+ 	list_for_each_entry_safe(pos, tmp, &quirk_list, list) {
+ 		list_del(&pos->list);
++		of_node_put(pos->np);
+ 		kfree(pos);
+ 	}
+ 
 -- 
 2.35.1
 
