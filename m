@@ -2,169 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D372AC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 21:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC4FC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 21:52:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244532AbiHHVoC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 17:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35184 "EHLO
+        id S231742AbiHHVwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 17:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236856AbiHHVn4 (ORCPT
+        with ESMTP id S238812AbiHHVwb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 17:43:56 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A05836369;
-        Mon,  8 Aug 2022 14:43:54 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4E74B5C012B;
-        Mon,  8 Aug 2022 17:43:51 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 08 Aug 2022 17:43:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ljones.dev; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1659995031; x=1660081431; bh=Noq7c0Nawz
-        gYCdsg9ZW5dIqk4AKYo1HmGlvkyEbTt+c=; b=NzBoaOMR564b9o7V+HRo3/nIkd
-        FFrKyQHi2J4r/hOcCnBif/E5rH35hfZdzTrDHzOiWNTndrciYHPflbX3rxT4otuq
-        n+HfFq4qXXh5noZhRaYFley+ZtcEaH2oT9pkUl6Nx7IIC206rZoc48LxnRLM+JTH
-        0irsuf6BNMaVn7Cnx5MhRMwsIwjL+vqwKIAlWApIQVY8NTipKdpZKChVfEc4baYS
-        atGXCzX2xNuQjx0yHqGZlaXpx92cp8i9xq0jY9dg/ZpVBlHU/EGVJ8JRyQ4WFgoo
-        E44AaDSb5A3HMspYOlWQ1s3RhvzQvvZaGWjv77ALZSOhv8XruqTSVRh07TJw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1659995031; x=1660081431; bh=Noq7c0NawzgYCdsg9ZW5dIqk4AKY
-        o1HmGlvkyEbTt+c=; b=hWJITFklnaX55cOl0D/padFTW6Q44xFfQcivdn+cnBVQ
-        LzqDXvc91jS0IcXdppGr7dgDdClEYagzZ//Ep+cyNhGYG/j5XTPmApcEsMDC1WQz
-        hQxso2BA3fnYBeXPo9lxn4nelFL0ioi2YCKDqEZAAlb50Xczwk2WXe9Nd43BFX5Q
-        Ip4jgt5ROy+R2Zmrhu/UmkbBumKN+Mnf4YbrBrcEzbuVsnicEt3vN5BGn1TuXVth
-        fMGvSC6s8Fm0b0MiFut+Va7oK1w91OzesVTOBeles1YmDva/hTxcFZjN+kYvioGi
-        1Vj6EYPmtpMcMkCTVEXa1nGL9ak66D0zNOxiDuGXIg==
-X-ME-Sender: <xms:l4PxYodSMV1sp8ab-ng7IxluAGDZLHKp1bMVDoHc6378JessSTGlIw>
-    <xme:l4PxYqOJj2xRxvksmuFMfYdn6yGGL3JQT26SiUXlt85TYimMc0jyAwYP_6Ya1yFqa
-    ubo7r8v1Uxo7_pZ2Cw>
-X-ME-Received: <xmr:l4PxYphkamKw9GeFClYKpVi1H2X4b7JQ-T4710USchlZlTVpv6hck6ykxJ-eqQ48OCEUFg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefledgtdefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhuffvvefkjghfofggtgesthdtredtredtvdenucfhrhhomhepnfhukhgv
-    ucflohhnvghsuceolhhukhgvsehljhhonhgvshdruggvvheqnecuggftrfgrthhtvghrnh
-    epvddvgeeltdehfeeijefgveegfeeihfdtveetfeetudfhvedtfeeltefhteegledunecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheplhhukhgvse
-    hljhhonhgvshdruggvvh
-X-ME-Proxy: <xmx:l4PxYt_QsE4XqtkyFV_TFEjVn3Xdne4PvHrfItZUN6uEZbUJhdpyCQ>
-    <xmx:l4PxYksNyYjiwRoZzvMMTLO5u5gN2ej8OG3swxS1_S0VYbnfllhcMg>
-    <xmx:l4PxYkGnlqtrJxgpblxR3krWqciZ3FE_JKAZHOMVC2a6Umk1b0tMsg>
-    <xmx:l4PxYt5Yzr6sGrwayr3doGMMzazkEgOd2NGfr4I2EPwA5RTb58kwlQ>
-Feedback-ID: i5ec1447f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 8 Aug 2022 17:43:46 -0400 (EDT)
-Date:   Tue, 09 Aug 2022 09:43:32 +1200
-From:   Luke Jones <luke@ljones.dev>
-Subject: Re: [PATCH v2 2/6] asus-wmi: Implement TUF laptop keyboard LED modes
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Message-Id: <KCGBGR.P2V4UO7HLOX11@ljones.dev>
-In-Reply-To: <CAHp75VcR-strGDhaGE78NjToamK98e8UO-rQhU-Ow81AavU5YA@mail.gmail.com>
-References: <20220808030420.8633-1-luke@ljones.dev>
-        <20220808030420.8633-3-luke@ljones.dev>
-        <CAHp75VcR-strGDhaGE78NjToamK98e8UO-rQhU-Ow81AavU5YA@mail.gmail.com>
-X-Mailer: geary/40.0
+        Mon, 8 Aug 2022 17:52:31 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33AA11837D;
+        Mon,  8 Aug 2022 14:52:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=dvNfVeFM68NeDGpgWDR8lvpLIiBjBMnhp8o6sKAZx70=; b=yLmyMG0H9VbI3XPyB2a0F0I2UL
+        U4uDMErbfNWJneBM5manH5HbGJmUKlIPGlSAq9glYPJX7OU6D4NOeI97RwRBKLHXs+bfiHCczFvAi
+        89QGyZtfz33xlVskllnFS/3kPhH9Fhyuyg4nTLCg1vNAfN+shp3TLS6ogfa2ldpBTEN/d0EQDr983
+        uyL+rXpC5Iy+hZWsYv82w77Q4ojWY0UVKX5SvnyxAD1hV6WuJOYXWuE1vvCHmV9qAeUFVjRaqOCT2
+        PwcgMT7p+foybUyhbRlRxCp5kJC/SBlo9wzaZWAfhk5sRWzaiHliJy9oU3/NtSt7HoJprUi5qGvUz
+        KYX6nMOg==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oLAfW-00GEjJ-04; Mon, 08 Aug 2022 21:52:14 +0000
+Message-ID: <a7a08d22-e04a-d3c2-f245-b676aac9e551@infradead.org>
+Date:   Mon, 8 Aug 2022 14:52:13 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH 6/6] crypto: sa2ul_pka: Add SA2UL PKA driver
+Content-Language: en-US
+To:     Daniel Parks <danielrparks@ti.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>
+Cc:     linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <cover.1659985696.git.danielrparks@ti.com>
+ <b16fdaee8bcaaaa25d01c2e981ddf782ccf726b4.1659985696.git.danielrparks@ti.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <b16fdaee8bcaaaa25d01c2e981ddf782ccf726b4.1659985696.git.danielrparks@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+Hi--
 
-> 
->>  +       if (sscanf(buf, "%hhd %hhd %hhd", &save, &mode, &speed) != 
->> 3)
->>  +               return -EINVAL;
-> 
-> Same comment as per v1.
-> 
+On 8/8/22 12:12, Daniel Parks wrote:
+> diff --git a/drivers/crypto/sa2ul_pka/Kconfig b/drivers/crypto/sa2ul_pka/Kconfig
+> new file mode 100644
+> index 000000000000..c4f87b14878e
+> --- /dev/null
+> +++ b/drivers/crypto/sa2ul_pka/Kconfig
+> @@ -0,0 +1,26 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +
+> +config CRYPTO_DEV_SA2UL_PKA
+> +	tristate "Support for TI security accelerator public-key module"
+> +	depends on CRYPTO_DEV_SA2UL || COMPILE_TEST
+> +	select ARM64_CRYPTO
+> +	select CRYPTO_AKCIPHER
+> +	select CRYPTO_RSA
+> +	select PACKING
+> +	select CRYPTO_DH
+> +	help
+> +		The K3 security accelerator engine contains a public-key
+> +		cryptography module. Select this if you want to use hardware
+> +		acceleration for asymmetric cryptography on these devices. This
+> +		engine is not available to the Linux cores on most devices; check
+> +		your device tree if unsure.
+> +
+> +config CRYPTO_DEV_SA2UL_PKA_DEBUG
+> +	bool "Debugging options for TI security accelerator public-key module"
+> +	depends on CRYPTO_DEV_SA2UL_PKA
+> +	default n
+> +	help
+> +		Enables the module options 'snapshot' and 'poison_mem' to assist
+> +		in debugging the PKA driver. Choosing "y" will allow the root user
+> +		to extract cryptographic keys from the driver, so do not enable in
+> +		a production build.
 
-You wrote:
+Too much help text indentation.
 
- > Usually we have three separate nodes for that, but they are kinda
- > hidden in one driver, so I don't care much.
+from Documentation/process/coding-style.rst:
 
-I think that is the wrong direction to take. Doing so would mean that 
-every write to one of these values has to write-out to device. I don't 
-know how long writes on an i2c device take, but on the USB connected 
-versions they are 1ms, which means that to individually set colour, 
-save, mode, speed (also direction and sometimes a 2nd colour on USB) 
-adds up to 4-6ms - and I don't know what sort of impact that has in the 
-kernel itself, but I do know that users expect there to be fancy 
-effects available on par with Windows (like audio equalizer visuals on 
-the RGB, something that is in progress in asusctl).
+For all of the Kconfig* configuration files throughout the source tree,
+the indentation is somewhat different.  Lines under a ``config`` definition
+are indented with one tab, while help text is indented an additional two
+spaces.
 
-Using multicolor LED class already breaks away from having a single 
-packet write, but the gain in API scope was worth the compromise. 
-Hopefully we can keep the single set of parameters here?
-
-Pavel suggested using triggers, I've yet to look at that, but will do 
-so after finalising this.
-
-I suppose one alternative would be to store speed and mode as 
-attributes, but not write out until the "save" node is written to? So 
-this raises the question of: we can't read from device, and speed+mode 
-must be saved in module for use with "save" now, should I then allow 
-showing these values in a _show? On fresh boot they will be incorrect..
-
-I'm going to go ahead and split those parameters in to individual nodes 
-now anyway - it may help with later work using triggers.
-
-
-> ...
-> 
->>  +       asus->keyboard_rgb_mode.mode = mode < 12 && mode != 9 ? 
->> mode : 0x0a;
-> 
-> Same comment as per v1.
-> 
-
-I missed it sorry. Done now.
-
-> ...
-> 
->>  +       switch (speed) {
->>  +       case 0:
->>  +               asus->keyboard_rgb_mode.speed = 0xe1;
->>  +               break;
->>  +       case 1:
->>  +               asus->keyboard_rgb_mode.speed = 0xeb;
->>  +               break;
->>  +       case 2:
->>  +               asus->keyboard_rgb_mode.speed = 0xf5;
->>  +               break;
->>  +       default:
->>  +               asus->keyboard_rgb_mode.speed = 0xeb;
-> 
-> break;
-
-Done
-
-> 
->>  +       }
-> 
-> ...
-> 
->>  +
-> 
-> A blank line is not needed here.
-
-Okay thanks, I'll go through previous patches and check this.
-
-Kind regards,
-Luke.
-> 
-
-
+-- 
+~Randy
