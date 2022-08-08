@@ -2,140 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B7FC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 18:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADF3AC25B0C
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 18:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244320AbiHHSm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 14:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37224 "EHLO
+        id S244520AbiHHSmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 14:42:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244409AbiHHSmI (ORCPT
+        with ESMTP id S244479AbiHHSmc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 14:42:08 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27C71929D
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 11:41:39 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id h125so11308759oif.8
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 11:41:39 -0700 (PDT)
+        Mon, 8 Aug 2022 14:42:32 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F528E2A;
+        Mon,  8 Aug 2022 11:42:06 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id u8so7005345qvv.1;
+        Mon, 08 Aug 2022 11:42:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=+jov4sDK8fqguLcdGEtCS3PX7Z+/XUaiZu5mjGAoBwc=;
-        b=jQh0ZktlrsGJDfa5sjbq2FHvzf4mdvXfFgJm/+h4G+SV2anYSa8bfoSW0x4cZ+a3Aw
-         l0RRwnm4nakH4bXp8NL0oOLZJ9X2/pY+yndrdlsPeLyxZh/ViMnKFbDOXVx/nMOZ3cKv
-         ceY+U9j3d8UqgTT7Mwyo4gRiFfM9J+QRO6t5Cg1dbWKXaphwir4V2MbeP/89G33WRA+N
-         gelXSFx7JFODRcl3YrPC8cGsN7ItGYTyrXZ575oNF0+odf1LDKxLLKGQ4X6GPFW3SZHF
-         m/3Y2Lopfg0cwERPa5gJWPnQOWwBWBvQIG6zrBuR4751Tjv+mDN+PExBB8PTuQP+jw75
-         MChA==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=u1PXgfOS9jeLalo7AqxZr5mK2SKHlkfGpYodsapJQG0=;
+        b=evq7RpP0UH6ogV/39TW0beGjB2CUxeCUB1sI9H42E5IvZ7DEJTAyurPerZvYvH9F82
+         ddaPRi7cFPWoggHGbJ/v9V48kOtVcKZNvQy/OEeVS7UXlIIAH6cvNLdXwp6lNlfnymB5
+         4tMnK7gyUpjQAv1RXNYoYr0KCMNra9dfCXWxWQDDXFJpqDfs89gBufzcWhVxPCCQOARd
+         aENVHKyOF45k061pvPpuBcjon+YacO94Sma6kMy1mCmw+FJ7JW04cmrI8QNE/NoK8q+O
+         g9Th/A58vsl1nfVxb2FPunrNy57fGSCMsFKdnBDpg+V2Cs8cH6ZPEIKT2u35PkGF1EPR
+         pX6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=+jov4sDK8fqguLcdGEtCS3PX7Z+/XUaiZu5mjGAoBwc=;
-        b=CRY+LH40ZsiRQNuTWES272Ow3jIKUGL+kIVpGamvynBd5Vb1rhm9cybPPfLFGh3wRz
-         bB+wtRZpZS75Su7CM9v+RCZf+vBwE4govUl5FaIpxHg/R8hZmR9m1jo3fr/AA3MqkePS
-         NXTN0j8boxmb8zjnJTSFOqLxwVIGpWHx+AwsW/8nsyVIW0dSo0x/253AUb8RM++OiQgx
-         9HvkQlEHaJ4Ud3M3N4RwHO3lh2MlMOBKQ63kIa+AlViJpwEW9hDJnquLyre4hAyWAPdU
-         SiBXVX2EocWQ1Swy1RPvOpMCw6eSkfrbDQHVdFG7NzfcdisAGY5MOZ2RAeiLglEhQWv3
-         vwfw==
-X-Gm-Message-State: ACgBeo2GN84qq/5fWg89z36cOPEIbUFFhhP4y4gQz8ah6vogA8ba9Eea
-        YB5fT17qoOJThfOfgIcOOYnS1g==
-X-Google-Smtp-Source: AA6agR5bJmLFgnGWaH7lWQ9cZrofG2bX3oeGvmJg+5K1A0TzfoRbCFeR6iE+6t9h5yKMa98pNuVKGQ==
-X-Received: by 2002:a05:6808:2114:b0:343:665:d54e with SMTP id r20-20020a056808211400b003430665d54emr1187227oiw.71.1659984099106;
-        Mon, 08 Aug 2022 11:41:39 -0700 (PDT)
-Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id y12-20020a4a650c000000b00440ed1f8c45sm2295292ooc.43.2022.08.08.11.41.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 11:41:38 -0700 (PDT)
-Date:   Mon, 8 Aug 2022 11:44:18 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
-        robh@kernel.org, pavel@ucw.cz, devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Subject: Re: [PATCH] dt-bindings: leds: Describe optional 'reg' property used
- for Qualcomm LPG nodes
-Message-ID: <YvFZgr1RRq6tYaVC@ripper>
-References: <20220721195502.1525214-1-bhupesh.sharma@linaro.org>
- <CAA8EJppGS38aP7gyd1c3kNgraAVJDoqUef2cDfZpu2aL_iwW0g@mail.gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=u1PXgfOS9jeLalo7AqxZr5mK2SKHlkfGpYodsapJQG0=;
+        b=aVfRciCjuqZ0suJ2t3xob8N/riaoi46SxosXmFDPO/e/h88Vx7UbPl2V/j8AV4QIKr
+         GYtKruAaf58HP1XdRMF1jW8C7sGTB6SZEAMBUb07eghNaPzxGiXcVETgORbhQrOJyzuB
+         DYNSfRnwK+OruwlNaZlvF1uJv2qa3IIsqVShYZBHOXnseBNn5iIVUOLdzIoTNBTs9LK5
+         uR/NvMI+PslgHGHR7KEVlv+t9VSbsWJXjjY9wjbOfE9Jd3JkzSVVQPO+9bfUYcfrK0ZO
+         OdSFLGFIJ+IjV8StN5V4PHINasyAuFhCKZq5QbNqeCKX7/gp46zi0ggy1OF/S2L3FA8G
+         bmEg==
+X-Gm-Message-State: ACgBeo3sUh/CFhkpyefE/vhi3qx0QknJBEI7wnHVS5wgB0B90nEKR4uJ
+        0PajoSN5cAsaxd+KKHQrKBVw/Sa/z6/d
+X-Google-Smtp-Source: AA6agR7ylZhaRL35P4ikdTZUEYUyOFJJd0qNC4BP1gf9ihEu2Q6xzs2KPYDk+AZ3UgpgBrJ44Q/GOg==
+X-Received: by 2002:ad4:5f48:0:b0:476:787f:1cd with SMTP id p8-20020ad45f48000000b00476787f01cdmr17061393qvg.77.1659984125390;
+        Mon, 08 Aug 2022 11:42:05 -0700 (PDT)
+Received: from [192.168.1.210] (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
+        by smtp.gmail.com with ESMTPSA id j17-20020a05620a289100b006b5bf5d45casm10265069qkp.27.2022.08.08.11.42.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Aug 2022 11:42:04 -0700 (PDT)
+Message-ID: <1b92761a-c166-b84f-8d77-a966d4c0ef9a@gmail.com>
+Date:   Mon, 8 Aug 2022 14:42:03 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAA8EJppGS38aP7gyd1c3kNgraAVJDoqUef2cDfZpu2aL_iwW0g@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.0
+Subject: Re: [PATCH v5 27/32] PCI/P2PDMA: Convert to printbuf
+Content-Language: en-US
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, pmladek@suse.com,
+        linux-pci@vger.kernel.org
+References: <20220808175122.GA1215280@bhelgaas>
+From:   Kent Overstreet <kent.overstreet@gmail.com>
+In-Reply-To: <20220808175122.GA1215280@bhelgaas>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 21 Jul 13:19 PDT 2022, Dmitry Baryshkov wrote:
+On 8/8/22 13:51, Bjorn Helgaas wrote:
+> I don't object to the patch, but it would be nice if the commit log
+> hinted at what the advantage is.  I assume it's faster/safer/better in
+> some way, but I have no idea what.
 
-> On Thu, 21 Jul 2022 at 22:55, Bhupesh Sharma <bhupesh.sharma@linaro.org> wrote:
-> >
-> > As Bjorn noted in [1], it is useful to describe the optional
-> > 'reg' property for Qualcomm LPG nodes as it is used in
-> > some Qualcomm dts files.
-> 
-> I don't think this is correct. LPG block maps to several regions, so
-> using just one of them in reg doesn't look correct.
-> 
+Printbufs have some additional features over seq_buf but they're not 
+used here. The main one you might be interested in is heap allocation: 
+that means no need to statically allocate buffers on the stack and no 
+need to calculate the buffer size, printbufs will reallocate as necessary.
 
-I agree, but I also like the uniformity of having unit addresses for the
-devices on the spmi buses.
+I generally haven't been converting code to use that unless it's obvious 
+that we're in a context where it's safe to allocate memory and can deal 
+with allocation failures.
 
-> > This fixes the following 'make dtbs_check' error reported for
-> > pm8350c & sc8280xp pwm nodes:
-> >
-> > arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r1.dtb:
-> >  pwm@e800: 'reg' does not match any of the regexes:
-> >  '^led@[0-9a-f]$', 'pinctrl-[0-9]+'
-> 
-> I'd prefer to follow the existing schema and to drop the region from
-> those files.
-> 
+I notice that in calc_map_type_and_dist() you're using xa_store() which 
+can fail, but you're not checking for that or returning errors properly 
+:) perhaps a fix for that could also switch to using printbuf in 
+heap-allocation mode.
 
-I'm fine either way, but we have more of these nodes, so I would like to
-hear from the DT maintainers on the direction to take. All nodes on the
-spmi bus has an (at least one) address, so it would be accurate to state
-this in the node.
+> Also, cpu_show_meltdown() doesn't appear in this patch, so maybe
+> that's relevant to some other patch but not this one?
 
-It does however not seem like devicetree@, nor Krzysztof is Cc'ed on
-this patch, so I've added them...
-
-Regards,
-Bjorn
-
-> >
-> > [1]. https://lore.kernel.org/linux-arm-msm/Ytg3tIaL5h5b9ewH@builder.lan/
-> >
-> > Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > Cc: robh@kernel.org
-> > Cc: pavel@ucw.cz
-> > Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
-> > ---
-> >  Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
-> > index fe336fa16518..f394ab7a757b 100644
-> > --- a/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
-> > +++ b/Documentation/devicetree/bindings/leds/leds-qcom-lpg.yaml
-> > @@ -27,6 +27,9 @@ properties:
-> >        - qcom,pmi8994-lpg
-> >        - qcom,pmi8998-lpg
-> >
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> >    "#pwm-cells":
-> >      const: 2
-> >
-> > --
-> > 2.35.3
-> >
-> 
-> 
-> -- 
-> With best wishes
-> Dmitry
+Whoops, was copying the commit message from another patch, yeah.n
