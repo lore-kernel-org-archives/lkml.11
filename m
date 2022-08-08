@@ -2,387 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3973C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 21:37:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D72C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 21:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244509AbiHHVhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 17:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59442 "EHLO
+        id S244337AbiHHViR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 17:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244450AbiHHVha (ORCPT
+        with ESMTP id S234108AbiHHViN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 17:37:30 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778121A062;
-        Mon,  8 Aug 2022 14:37:29 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id e23so7530577qts.1;
-        Mon, 08 Aug 2022 14:37:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:sender:from:to:cc;
-        bh=Q9PKtfstb3IaH3UDQ2Oh3oWLE6JBB39oUjolcp8WJoM=;
-        b=cnV1pvEvXh5HnU2ss5eLswHpz9CsKbEe0HUXDSpEdKLdYQxv5hL4W9Ch0G3LuaYibo
-         HRs+2IFOjhfFtMshePef6TfRcEuQunx0l3/XEWNIlOZhTOlmQj1lZCqFPXORhic+ul7n
-         zwcBmo7I4twRJKLXhcLxAqJhZSmdgCmqx6QwxxDUgcBPoh9FtZNNQAsUdu38u99HLfP+
-         Ct+5dF3ZHTYAW6P+N8S6W3vL8uhkzUl++c0Tz8JRMmbuawZd/vUwKV1XSA6IQLywKf3I
-         iAnPCeo90axEXvRBUru6csJHN00zjA0ni15Abm8NFhu+C2TXQ0XY+JUPn8dXTJSApU4N
-         Xqmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:sender:x-gm-message-state:from:to
-         :cc;
-        bh=Q9PKtfstb3IaH3UDQ2Oh3oWLE6JBB39oUjolcp8WJoM=;
-        b=EbDePol7Wuxm77sPRmHQ6avKatMReUWuE/3S5ne2h0TLVci3HBCB0OW9EYi7l1Kmbu
-         eHcjQRuJRrtJrVVGOgQH1G4O+XOQUMS2ZFcY9ETzDv6+5dvsj+YcJ+3L1a+ymuHRscPp
-         D3UytXhuu9jRLSx83iaEKXx551nQijbP/AeK4rphPBBHjLt90UV0yRp0PAuZEfpgsoxs
-         ReU2SzAT0bL+iN25PEUJo2hBEB1OUWbfrFjjZK12ZlPvvMR7jT1W4lNbRe/fZ10PHCQB
-         73D/Anmy3Huq7zpXzMaVKmpHz6U2VYvyA9QES5ao1Ty1JoIf7kU+s5DCswXu+rJfO4pY
-         jm8Q==
-X-Gm-Message-State: ACgBeo3Gv5n63Il1+llbczxA/WLfN0TBm/wh2PznGIQx1YbEOEJpwZQ8
-        IIe8UAtrJ605m7v5Fqh5Gp0=
-X-Google-Smtp-Source: AA6agR5An55LBn0ChO0mUR4t+VVt6Bb7URGonGhlMAWqADocP9TpbTn+D3h07ZCYcAOMSlecPsmWXw==
-X-Received: by 2002:a05:622a:100a:b0:342:9a3d:cd58 with SMTP id d10-20020a05622a100a00b003429a3dcd58mr15376507qte.479.1659994648534;
-        Mon, 08 Aug 2022 14:37:28 -0700 (PDT)
-Received: from kubuntu-desktop.. (108-215-65-189.lightspeed.dybhfl.sbcglobal.net. [108.215.65.189])
-        by smtp.gmail.com with ESMTPSA id e13-20020a05622a110d00b00339163a06fcsm9146656qty.6.2022.08.08.14.37.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 14:37:28 -0700 (PDT)
-Sender: Julian Braha <julian.braha@gmail.com>
-From:   Julian Braha <julianbraha@gmail.com>
-To:     sam@ravnborg.org, airlied@linux.ie, daniel@ffwll.ch,
-        thierry.reding@gmail.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH v3 2/2] drm/panel/tianma-tl057fvxp01: add panel for Motorola Moto G6
-Date:   Mon,  8 Aug 2022 17:37:26 -0400
-Message-Id: <20220808213726.883003-2-julianbraha@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220808213726.883003-1-julianbraha@gmail.com>
-References: <20220808213726.883003-1-julianbraha@gmail.com>
+        Mon, 8 Aug 2022 17:38:13 -0400
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7531149;
+        Mon,  8 Aug 2022 14:38:12 -0700 (PDT)
+Received: from pps.filterd (m0134425.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 278LbHL4029986;
+        Mon, 8 Aug 2022 21:38:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pps0720;
+ bh=dwkrFkOYqutgTZoXLZZQOD5ngiCVOLghHGOAp4FKqZs=;
+ b=U+kSDeYNla4k1IAyoUeQUARkW3+Y61n8Sipxdz1uZzyu1ZT1gNt2ecMlw+a1M/qdagVy
+ lZY6LLhKwLM2ayy6oJ7wzoY12r76lp9rHtcRK3yKmPkqwk05wbOFcCgUtUrNy/xq5A4H
+ zc1rJ6EUYHyR/QxLKJcV5FJhIRsSHitCNnMOiCsq8rladJBabohkxRurROBQbLZGKZbl
+ IqCZXDfCqKgRTTmhQed37XxPP07OpWFNagFOjig5dxYi1TshoRhh3WqmigBw8XHr20gi
+ ihRRGwDgeHO8UPAJNorErWOuf0TI9tO1NEIia5Q++e7bCflqBQ+5SHtuw1BqniAr1GDs uA== 
+Received: from p1lg14881.it.hpe.com (p1lg14881.it.hpe.com [16.230.97.202])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3huaf9020j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 08 Aug 2022 21:37:59 +0000
+Received: from p1wg14923.americas.hpqcorp.net (unknown [10.119.18.111])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by p1lg14881.it.hpe.com (Postfix) with ESMTPS id 81BFB801AE5;
+        Mon,  8 Aug 2022 21:36:46 +0000 (UTC)
+Received: from p1wg14926.americas.hpqcorp.net (10.119.18.115) by
+ p1wg14923.americas.hpqcorp.net (10.119.18.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 8 Aug 2022 09:36:16 -1200
+Received: from p1wg14920.americas.hpqcorp.net (16.230.19.123) by
+ p1wg14926.americas.hpqcorp.net (10.119.18.115) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15
+ via Frontend Transport; Mon, 8 Aug 2022 09:36:16 -1200
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (192.58.206.38)
+ by edge.it.hpe.com (16.230.19.123) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 8 Aug 2022 09:36:15 -1200
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kL4e4hWZd7lUHnAIMjRywOAHmcW5o9yX/EKaZE24R/CWbNMZcTaqgrp/3rbdB0KCu1zn4IIT9hqClQc4c/WP6/hyB3F8wyH+X/EhPjxpkmMU0yBE9N3rK8OJkM3Xw/9mQXNLWuq2IEAyEOx6v9oXaNyWVWsDoOaKJ/XmYqz1Lc+eRpprcBrJeuEg61Nytay4KyoklmssoVJJcnr6kUnJ+Kb1WqUtodP0vZRURqpBIYThaLtIb0lWSomdDBqB3TVVH6b9cWqSZE0PbixQzJd+d/bWCHjl9C0OkWNWTa+pti7SDqEB2fdfaYIFgA51Gnp3Iv3xbgjb6OhgzgfzeARtwQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dwkrFkOYqutgTZoXLZZQOD5ngiCVOLghHGOAp4FKqZs=;
+ b=VhLyz6mHJ0h+vxuCWln1EZqefY+91QU2AMSbPR+WX5PI7Me1B49sdVpch4KU02+WM0cB0Du9qbSfxG8Z6TowpTnXgO24f8YeSN8V1yCGgm75A1SsvE9K+prKAyiUIm62gPbgdcTMWJuGlzpYZVY+ELx/7Sk7ncTbIh5d02aHmY2X1oBCFwsFBt50rfNebH/ZubPQoHzAeZL9f6aR3ZvGGo62C434DFNldkatCGBU3Ia0zBRr6le918OP8rxAyHdovkYwUEIHqR5qW9ZH0hNtmBLYqSa+k4eIyHgcMQxERJPb1JSE2W86jn43MeyAbP63oKa7iVa8qpdMhAnld1DzNg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=hpe.com; dmarc=pass action=none header.from=hpe.com; dkim=pass
+ header.d=hpe.com; arc=none
+Received: from PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:510:154::8)
+ by PH8PR84MB3236.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:510:1c7::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.20; Mon, 8 Aug
+ 2022 21:36:14 +0000
+Received: from PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::dcac:1265:7a54:ee2d]) by PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::dcac:1265:7a54:ee2d%6]) with mapi id 15.20.5504.020; Mon, 8 Aug 2022
+ 21:36:13 +0000
+From:   "Kani, Toshi" <toshi.kani@hpe.com>
+To:     Borislav Petkov <bp@alien8.de>
+CC:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Jia He <justin.he@arm.com>, "Len Brown" <lenb@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Robert Richter" <rric@kernel.org>,
+        Shuai Xue <xueshuai@linux.alibaba.com>,
+        "Jarkko Sakkinen" <jarkko@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:EDAC-CORE" <linux-edac@vger.kernel.org>
+Subject: RE: [PATCH] ACPI: APEI: move edac_init ahead of ghes platform drv
+ register
+Thread-Topic: [PATCH] ACPI: APEI: move edac_init ahead of ghes platform drv
+ register
+Thread-Index: AQHYq1YbHdpOiV0alEuUJHkPzB7Jbq2lceiAgAAKR4CAAADVoIAABbmAgAACeaA=
+Date:   Mon, 8 Aug 2022 21:36:13 +0000
+Message-ID: <PH7PR84MB1838BF4F8B56EF1E24FCF1DC82639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+References: <20220805023200.154634-1-justin.he@arm.com>
+ <CAJZ5v0gUbKYaxRcZsYO6eq7vLgKdgfdLdoL_Hzmd6r-JczkVPg@mail.gmail.com>
+ <YvFX9vTilqMpsF9u@zn.tnic>
+ <PH7PR84MB1838379B8C2DF488DE729A9182639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+ <YvF4p01WJGGUwIJC@zn.tnic>
+ <PH7PR84MB1838492812F5ABAA4BB54D9982639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+ <YvF+J/dfyOEVSbSQ@zn.tnic>
+In-Reply-To: <YvF+J/dfyOEVSbSQ@zn.tnic>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2339aa2e-2299-4b3f-3d47-08da798604c3
+x-ms-traffictypediagnostic: PH8PR84MB3236:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: uooslA170vyMSABNJaeFEOMXLAa5ZquZGpuKsmBrYw1t0BkR1lTndn3AlfdCloKn4aBpqxCJ9qdgBqI5bBJ+6Z9tmK9/BV4UrEX4YaEdhibDeZGBQOP5kc8XXMru6oit6wTIcUckh1osrOWwyPzzMfyRwuxZYB7tyoz+jcs6IZavRKoSIi5Q0g/xVtP0S6SpZei+PQf5GboS34kfkoHMnMh6ZS/6uEzdzghUK7vlBO2pnjH0f9g1rsZYpW9VCZFw3P1ndlcAklOBFHyvw01C6XtnhL8TorztbGGH79S6WIf0h35tMi1aoIu0T9EAiSXnbfrcSH8d7hliIRNRAu/NdwI20faWKzFgnKN9Cih+Y1Ex/cqeB6QKtHmPAfxcgfJhwFYnchgJ04N2Q/XJIllKxaJ3K5ZckSGpX2HHk9XN1+4ZqsgvbOF7p9pU2R9YiICs1OHM3Mcw5n2AJa5GcaB/kSLGoW3VFNP/2SqlRwoNoRGngOwB/3kG7WnN/gAg1+FLG1bpeoOp2+SS/BUrMHPbO47KYt12xDqxwsoacBXOFl1IFfhNZ5LhKjtJBse5qJ4576eTpBhpL1jlmN65xaVDmcS7rWQY/AT6YtlMEB94gX3UNk1gvKC5Tyh/so7pOSsmvNvIAhhB2bPhtwpRy+bLm0YE++PtdIa2ib/f8VoihwKkOfH6tEVEDDEUxLY+nVnw3Xe+h2cFV43b8Wv1Y3BluHVgi4JZDleNZuMHAtD/tnEMf16J0c3+WUgN78LwIj3rWMrsEZIB16k4omhuWYA95nCMPQtVprQA4pcCTQt+g70=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(376002)(136003)(396003)(366004)(346002)(4744005)(7416002)(5660300002)(52536014)(2906002)(76116006)(66946007)(33656002)(71200400001)(6916009)(316002)(55016003)(478600001)(54906003)(8936002)(122000001)(38100700002)(82960400001)(38070700005)(41300700001)(86362001)(26005)(53546011)(6506007)(7696005)(9686003)(4326008)(64756008)(66446008)(66556008)(66476007)(8676002)(186003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MU1pZURvU1dyM1RRY0lkWkhuemVJelpXU2NqM3BnSW0wMWdUVEh3WUZYMWlq?=
+ =?utf-8?B?QzgzaG5GNE0zWndEUDRqUzhaUTVVTVNxNkNMcW9iTUZyWFMrMjBaVXlkSzQ0?=
+ =?utf-8?B?cXNPTFRid01SZTU1UXo3ZU9wbklnbjE5aUF2dWU3V0Z1NFVsbERYRXR0TVlv?=
+ =?utf-8?B?N0VuM2hHWVpmc0I1NWpkMFZjQStpbUl2UWZVTFNhU2tlSklVRS9jNXR4cnll?=
+ =?utf-8?B?czNValBQaUMwSUVnYy81TmZvZFJxdGJCS2tWNzljK0lpQmxIOUhhRDFmZHc0?=
+ =?utf-8?B?dHhvdWtLUml1L1BYS3VNY2RTUnhibElsNzJuWHRCT1p0bHRvSmpRV25DSWhK?=
+ =?utf-8?B?bmxoSDk4Rzl6eTBPVmVxS1F4bU5ENmVZNytZNmNlTWE2SjVvRVM5eHdzM01Z?=
+ =?utf-8?B?MFBsMjRkL3BPZm9Ha1Q0ZUp0YTRRMGxZRnN3amJNZlI2YVJTUWJFYllyamFo?=
+ =?utf-8?B?RzZPVEdpZ0ZOMHcycWNoeGwrc0dVZGd5L0IxNzYvaHE2RzFNcHdCMXZVK3p0?=
+ =?utf-8?B?UTZsemo3eDNYN3cxM01RbFY5Nm1aSnZLUTN5NjBoV0ZzUEZqL2M2VENsYzlp?=
+ =?utf-8?B?bGN4QlhFbTNCSTJWb2ZjVGc2UHlHcTRXOG0xU3QrSE5DcXJVMW1xR1NzOWw2?=
+ =?utf-8?B?VUNLYzNlc1Q0NXdXUlRkQS9NVnlNWFk2Z01LbmtVQ0w0ZkZnTVViaHk1OXVO?=
+ =?utf-8?B?MG16SWNIUlBGS1o2eFJORW9ldzBEd2FSd0Q1YWM0RURreFRqa1puK05NdkNM?=
+ =?utf-8?B?a0tsUDl3Z01TSzNuNGNvT1V3YitQUUFDODYyOXRGU2ZpeFdzN0EreFBGTVAw?=
+ =?utf-8?B?WU8xQnVrYnQ0a1JwcHRSbVJSMys4MXlKMEpxdXBmWGpGVGFwQWxHWHhSNHFs?=
+ =?utf-8?B?aUlmNCtESmEyUDNOVWNvMklxLzdJKzVCVEdDSyswZVVCUmdldzgrdGF1Ny93?=
+ =?utf-8?B?b0l2QXpQS2JlY1Y3K1pDQVMyd0JMc0cycDE2U1k4S0QxQ094c00vL0s2R25B?=
+ =?utf-8?B?VWZ5RVV1bkJlU1pDVXFXR3VSRDZXcVVtalpwUzBDVHFzZUdCaSsrYTBtanYv?=
+ =?utf-8?B?L3BhakNGZWd4WVRNV3dxQWtueENCZk5WQ3FuR3ZQbWZ6OXdTQUhzeVNMbE5N?=
+ =?utf-8?B?NTJka1VvMVZYWGZxajJTZUlwVlU1TStTcW12UjJDK21DbFlaZ2thZStkOGZ0?=
+ =?utf-8?B?ajViZmFhTmZsTXpLUTlDVjNWVFB4TnZWYVI3eVV5ZFZLQm9xdzZkM3BTYXFw?=
+ =?utf-8?B?QzVyY3pON3VzaEhEemtoZmg3SHoydUt1Wjh5MHRnWHRQS1V3SEVzQ3IrdGxu?=
+ =?utf-8?B?anROS2FsaXIvYThHaFBET0piYU9yc2dvWGVxWlhrYU91TFBCRFZmQjZXTGVQ?=
+ =?utf-8?B?T1pLWlVnY3NiZDU4dGRaQ29KRENDeHlXelpOYWFRd0hRZFJ0ajAvR0JKbS9v?=
+ =?utf-8?B?RlpYcTFFUE9vejZlY2R6ZnZRVWRvMUZadDVRRXlBUmk2Q1h1R25OY2c3emRJ?=
+ =?utf-8?B?OEYrQlB4YUZZTHhPMHN6WXBqOW0reUhaWGJseE9wSVVPeXFpS1oyRzJJenU5?=
+ =?utf-8?B?WUFBM2lOL042cmRuQ211RUhnUS85ekhxV01EbUtoOWxUcmtNNUE4YnV0T1VZ?=
+ =?utf-8?B?OE1VOXNrNWtkV0UrU3YySDUwNjEyWXM0TEV0akNoQ1B6QThRdFJQVEFpcXNy?=
+ =?utf-8?B?QXZCdjhwZEpIc1liZWRyd2lybUxZV2RReTdoRzNqQmxlcFFhN0kwUVF4WHpM?=
+ =?utf-8?B?WG5lR09SQTJ3aW4wOXB3M2FhME9OVmYwYm1WUVZpVjBmN2lDYmc3MkU4QkhF?=
+ =?utf-8?B?L1dpNU0wcVB2NmVQQkJUKzlRLyt5QnhkK0Z2V0tCSVc5WExKRHFJc3NpTkdy?=
+ =?utf-8?B?aytVRVR0TEdxWlNMYmEwcHlMRFVPYjhVNjROeHJIN0ZXR0RNcEk3Ums3ZWRQ?=
+ =?utf-8?B?VFFoWUxLem9CVmNCb0g3L1VwUVpqemt2WWk3UjM1NXRtZHd2UUU1alB4QXB6?=
+ =?utf-8?B?T1NaK3oyaTZkT1F0WXMzOXE2M09hWi82SGtObGltMlNTU0lZdTZBd1h0YVYz?=
+ =?utf-8?B?MS84d3p4bzkwUTBBUEQ3dG1xOXJ5RkIzL24wT0dZODRVcStnY3NGK3Bmb2NG?=
+ =?utf-8?Q?zOIMuSnBaYDIya8wLIhxR4GTZ?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2339aa2e-2299-4b3f-3d47-08da798604c3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Aug 2022 21:36:13.8672
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 105b2061-b669-4b31-92ac-24d304d195dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: PxpPXq39JAeBviU/SWc3C/oaOHvMMC5yJiMa5MKCgc8TVrXC6WHfXg8AVNukXK+7uhcQSLKluYmdjoJlvE8xLg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR84MB3236
+X-OriginatorOrg: hpe.com
+X-Proofpoint-GUID: 1ezJrMJAuo0RsV6rrLKZxYJ8chDHwCeh
+X-Proofpoint-ORIG-GUID: 1ezJrMJAuo0RsV6rrLKZxYJ8chDHwCeh
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-08_13,2022-08-08_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ lowpriorityscore=0 priorityscore=1501 malwarescore=0 suspectscore=0
+ phishscore=0 adultscore=0 mlxlogscore=661 bulkscore=0 clxscore=1015
+ mlxscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2208080092
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a 5.7" 2160x1080 panel found on the Motorola Moto G6.
-There may be other smartphones using it, as well.
-
-Signed-off-by: Julian Braha <julianbraha@gmail.com>
----
-v3:
-Fixed kconfig dependencies.
-
-v2:
-Fixed accidental whitespace deletion.
----
- drivers/gpu/drm/panel/Kconfig                 |   9 +
- drivers/gpu/drm/panel/Makefile                |   1 +
- .../gpu/drm/panel/panel-tianma-tl057fvxp01.c  | 262 ++++++++++++++++++
- 3 files changed, 272 insertions(+)
- create mode 100644 drivers/gpu/drm/panel/panel-tianma-tl057fvxp01.c
-
-diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index a9043eacce97..f7d637084d96 100644
---- a/drivers/gpu/drm/panel/Kconfig
-+++ b/drivers/gpu/drm/panel/Kconfig
-@@ -658,6 +658,15 @@ config DRM_PANEL_TDO_TL070WSH30
- 	  24 bit RGB per pixel. It provides a MIPI DSI interface to
- 	  the host, a built-in LED backlight and touch controller.
-
-+config DRM_PANEL_TIANMA_TL057FVXP01
-+	tristate "Tianma TL057FVXP01 panel"
-+	depends on OF
-+	depends on DRM_MIPI_DSI
-+	depends on BACKLIGHT_CLASS_DEVICE
-+	help
-+	  Say Y here if you want to enable support for the Tianma TL057FVXP01
-+	  2160x1080 5.7" panel (found on the Motorola Moto G6)
-+
- config DRM_PANEL_TPO_TD028TTEC1
- 	tristate "Toppoly (TPO) TD028TTEC1 panel driver"
- 	depends on OF && SPI
-diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index 34e717382dbb..8f9228082c32 100644
---- a/drivers/gpu/drm/panel/Makefile
-+++ b/drivers/gpu/drm/panel/Makefile
-@@ -66,6 +66,7 @@ obj-$(CONFIG_DRM_PANEL_SITRONIX_ST7789V) += panel-sitronix-st7789v.o
- obj-$(CONFIG_DRM_PANEL_SONY_ACX565AKM) += panel-sony-acx565akm.o
- obj-$(CONFIG_DRM_PANEL_SONY_TULIP_TRULY_NT35521) += panel-sony-tulip-truly-nt35521.o
- obj-$(CONFIG_DRM_PANEL_TDO_TL070WSH30) += panel-tdo-tl070wsh30.o
-+obj-$(CONFIG_DRM_PANEL_TIANMA-TL057FVXP01) += panel-tianma-tl057fvxp01.o
- obj-$(CONFIG_DRM_PANEL_TPO_TD028TTEC1) += panel-tpo-td028ttec1.o
- obj-$(CONFIG_DRM_PANEL_TPO_TD043MTEA1) += panel-tpo-td043mtea1.o
- obj-$(CONFIG_DRM_PANEL_TPO_TPG110) += panel-tpo-tpg110.o
-diff --git a/drivers/gpu/drm/panel/panel-tianma-tl057fvxp01.c b/drivers/gpu/drm/panel/panel-tianma-tl057fvxp01.c
-new file mode 100644
-index 000000000000..92238defa9ad
---- /dev/null
-+++ b/drivers/gpu/drm/panel/panel-tianma-tl057fvxp01.c
-@@ -0,0 +1,262 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (c) 2021 Julian Braha <julianbraha@gmail.com>
-+ * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-+ * Generated with linux-mdss-dsi-panel-driver-generator from vendor device tree
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+
-+#include <video/mipi_display.h>
-+
-+#include <drm/drm_mipi_dsi.h>
-+#include <drm/drm_modes.h>
-+#include <drm/drm_panel.h>
-+
-+struct tianma_tl057fvxp01 {
-+	struct drm_panel panel;
-+	struct mipi_dsi_device *dsi;
-+	struct gpio_desc *reset_gpio;
-+	bool prepared;
-+};
-+
-+static inline struct tianma_tl057fvxp01 *to_tianma_tl057fvxp01(struct drm_panel *panel)
-+{
-+	return container_of(panel, struct tianma_tl057fvxp01, panel);
-+}
-+
-+#define dsi_dcs_write_seq(dsi, seq...) do {				\
-+		static const u8 d[] = { seq };				\
-+		int ret;						\
-+		ret = mipi_dsi_dcs_write_buffer(dsi, d, ARRAY_SIZE(d));	\
-+		if (ret < 0)						\
-+			return ret;					\
-+	} while (0)
-+
-+static void tianma_tl057fvxp01_reset(struct tianma_tl057fvxp01 *ctx)
-+{
-+	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
-+	usleep_range(5000, 6000);
-+	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
-+	usleep_range(1000, 2000);
-+	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
-+	usleep_range(10000, 11000);
-+}
-+
-+static int tianma_tl057fvxp01_on(struct tianma_tl057fvxp01 *ctx)
-+{
-+	struct mipi_dsi_device *dsi = ctx->dsi;
-+	struct device *dev = &dsi->dev;
-+	int ret;
-+
-+	dsi_dcs_write_seq(dsi, 0x00, 0x00);
-+	dsi_dcs_write_seq(dsi, 0xff, 0x19, 0x11, 0x01);
-+	dsi_dcs_write_seq(dsi, 0x00, 0x80);
-+	dsi_dcs_write_seq(dsi, 0xff, 0x19, 0x11);
-+	dsi_dcs_write_seq(dsi, 0x00, 0xb0);
-+	dsi_dcs_write_seq(dsi, 0xb3, 0x04, 0x38, 0x08, 0x70);
-+	dsi_dcs_write_seq(dsi, 0x00, 0x00);
-+	dsi_dcs_write_seq(dsi, 0xff, 0xff, 0xff, 0xff);
-+	dsi_dcs_write_seq(dsi, 0x35, 0x00);
-+	dsi_dcs_write_seq(dsi, 0x51, 0xcc, 0x08);
-+	dsi_dcs_write_seq(dsi, 0x53, 0x2c);
-+	dsi_dcs_write_seq(dsi, 0x55, 0x01);
-+
-+	ret = mipi_dsi_dcs_exit_sleep_mode(dsi);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to exit sleep mode: %d\n", ret);
-+		return ret;
-+	}
-+	msleep(120);
-+
-+	ret = mipi_dsi_dcs_set_display_on(dsi);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to set display on: %d\n", ret);
-+		return ret;
-+	}
-+	usleep_range(10000, 11000);
-+
-+	return 0;
-+}
-+
-+static int tianma_tl057fvxp01_off(struct tianma_tl057fvxp01 *ctx)
-+{
-+	struct mipi_dsi_device *dsi = ctx->dsi;
-+	struct device *dev = &dsi->dev;
-+	int ret;
-+
-+	ret = mipi_dsi_dcs_set_display_off(dsi);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to set display off: %d\n", ret);
-+		return ret;
-+	}
-+	msleep(50);
-+
-+	ret = mipi_dsi_dcs_enter_sleep_mode(dsi);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to enter sleep mode: %d\n", ret);
-+		return ret;
-+	}
-+	msleep(70);
-+
-+	return 0;
-+}
-+
-+static int tianma_tl057fvxp01_prepare(struct drm_panel *panel)
-+{
-+	struct tianma_tl057fvxp01 *ctx = to_tianma_tl057fvxp01(panel);
-+	struct device *dev = &ctx->dsi->dev;
-+	int ret;
-+
-+	if (ctx->prepared)
-+		return 0;
-+
-+	tianma_tl057fvxp01_reset(ctx);
-+
-+	ret = tianma_tl057fvxp01_on(ctx);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to initialize panel: %d\n", ret);
-+		gpiod_set_value_cansleep(ctx->reset_gpio, 1);
-+		return ret;
-+	}
-+
-+	ctx->prepared = true;
-+	return 0;
-+}
-+
-+static int tianma_tl057fvxp01_unprepare(struct drm_panel *panel)
-+{
-+	struct tianma_tl057fvxp01 *ctx = to_tianma_tl057fvxp01(panel);
-+	struct device *dev = &ctx->dsi->dev;
-+	int ret;
-+
-+	if (!ctx->prepared)
-+		return 0;
-+
-+	ret = tianma_tl057fvxp01_off(ctx);
-+	if (ret < 0)
-+		dev_err(dev, "Failed to un-initialize panel: %d\n", ret);
-+
-+	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
-+
-+	ctx->prepared = false;
-+	return 0;
-+}
-+
-+static const struct drm_display_mode tianma_tl057fvxp01_mode = {
-+	.clock = (1080 + 53 + 4 + 53) * (2160 + 14 + 1 + 11) * 60 / 1000,
-+	.hdisplay = 1080,
-+	.hsync_start = 1080 + 53,
-+	.hsync_end = 1080 + 53 + 4,
-+	.htotal = 1080 + 53 + 4 + 53,
-+	.vdisplay = 2160,
-+	.vsync_start = 2160 + 14,
-+	.vsync_end = 2160 + 14 + 1,
-+	.vtotal = 2160 + 14 + 1 + 11,
-+	.width_mm = 62,
-+	.height_mm = 110,
-+};
-+
-+static int tianma_tl057fvxp01_get_modes(struct drm_panel *panel,
-+				   struct drm_connector *connector)
-+{
-+	struct drm_display_mode *mode;
-+
-+	mode = drm_mode_duplicate(connector->dev, &tianma_tl057fvxp01_mode);
-+	if (!mode)
-+		return -ENOMEM;
-+
-+	drm_mode_set_name(mode);
-+
-+	mode->type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED;
-+	connector->display_info.width_mm = mode->width_mm;
-+	connector->display_info.height_mm = mode->height_mm;
-+	drm_mode_probed_add(connector, mode);
-+
-+	return 1;
-+}
-+
-+static const struct drm_panel_funcs tianma_tl057fvxp01_panel_funcs = {
-+	.prepare = tianma_tl057fvxp01_prepare,
-+	.unprepare = tianma_tl057fvxp01_unprepare,
-+	.get_modes = tianma_tl057fvxp01_get_modes,
-+};
-+
-+static int tianma_tl057fvxp01_probe(struct mipi_dsi_device *dsi)
-+{
-+	struct device *dev = &dsi->dev;
-+	struct tianma_tl057fvxp01 *ctx;
-+	int ret;
-+
-+	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return -ENOMEM;
-+
-+	ctx->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
-+	if (IS_ERR(ctx->reset_gpio))
-+		return dev_err_probe(dev, PTR_ERR(ctx->reset_gpio),
-+				     "Failed to get reset-gpios\n");
-+
-+	ctx->dsi = dsi;
-+	mipi_dsi_set_drvdata(dsi, ctx);
-+
-+	dsi->lanes = 4;
-+	dsi->format = MIPI_DSI_FMT_RGB888;
-+	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST |
-+			  MIPI_DSI_CLOCK_NON_CONTINUOUS | MIPI_DSI_MODE_LPM;
-+
-+	drm_panel_init(&ctx->panel, dev, &tianma_tl057fvxp01_panel_funcs,
-+		       DRM_MODE_CONNECTOR_DSI);
-+
-+	ret = drm_panel_of_backlight(&ctx->panel);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to get backlight\n");
-+
-+	drm_panel_add(&ctx->panel);
-+
-+	ret = mipi_dsi_attach(dsi);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to attach to DSI host: %d\n", ret);
-+		drm_panel_remove(&ctx->panel);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int tianma_tl057fvxp01_remove(struct mipi_dsi_device *dsi)
-+{
-+	struct tianma_tl057fvxp01 *ctx = mipi_dsi_get_drvdata(dsi);
-+	int ret;
-+
-+	ret = mipi_dsi_detach(dsi);
-+	if (ret < 0)
-+		dev_err(&dsi->dev, "Failed to detach from DSI host: %d\n", ret);
-+
-+	drm_panel_remove(&ctx->panel);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id tianma_tl057fvxp01_of_match[] = {
-+	{ .compatible = "tianma,tl057fvxp01" }, // FIXME
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, tianma_tl057fvxp01_of_match);
-+
-+static struct mipi_dsi_driver tianma_tl057fvxp01_driver = {
-+	.probe = tianma_tl057fvxp01_probe,
-+	.remove = tianma_tl057fvxp01_remove,
-+	.driver = {
-+		.name = "panel-tianma-tl057fvxp01",
-+		.of_match_table = tianma_tl057fvxp01_of_match,
-+	},
-+};
-+module_mipi_dsi_driver(tianma_tl057fvxp01_driver);
-+
-+MODULE_AUTHOR("Julian Braha <julianbraha@gmail.com>");
-+MODULE_DESCRIPTION("Tianma TL057FVXP01 panel driver");
-+MODULE_LICENSE("GPL v2");
---
-2.34.1
+T24gTW9uZGF5LCBBdWd1c3QgOCwgMjAyMiAzOjIxIFBNLCBCb3Jpc2xhdiBQZXRrb3Ygd3JvdGU6
+DQo+IE9uIE1vbiwgQXVnIDA4LCAyMDIyIGF0IDA5OjExOjUyUE0gKzAwMDAsIEthbmksIFRvc2hp
+IHdyb3RlOg0KPiA+IFdoaWNoZXZlciBsb2FkZWQgZmlyc3Qgd2lucy4NCj4gDQo+IFRoYXQgSSBr
+bm93Lg0KPiANCj4gVGhlIHF1ZXN0aW9uIGlzLCB3aGljaCBvbmUgKnNob3VsZCogd2luIGVhY2gg
+dGltZS4NCj4gDQo+IElPVywgb24gd2hpY2ggcGxhdGZvcm1zIHNob3VsZCBnaGVzX2VkYWMgbG9h
+ZCBhbmQgb24gd2hpY2ggdGhlIGNoaXBzZXQtDQo+IG9uZT8NCg0KUGxhdGZvcm1zIHdpdGggQUNQ
+SSBHSEVTIHN1cHBvcnQgc2hvdWxkIHVzZSBnaGVzX2VkYWMuICBUaGlzIGlzIHRoZSBjYXNlDQpv
+biBBcm0uICBUaGUgeDg2IHNpZGUgaGFzIGFkZGl0aW9uYWwgcGxhdGZvcm0gSUQgY2hlY2sgdG8g
+cHJvdGVjdCBmcm9tIGxlZ2FjeQ0KYnVnZ3kgR0hFUyBGVyBleGlzdGVkIGJlZm9yZSBnaGVzX2Vk
+YWMgZW5hYmxlbWVudC4gDQoNClRvc2hpDQoNCg==
