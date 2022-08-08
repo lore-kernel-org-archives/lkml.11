@@ -2,286 +2,354 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E30C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 10:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B28A6C25B0E
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 10:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237604AbiHHKlQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 06:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59080 "EHLO
+        id S242121AbiHHKlr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 06:41:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232528AbiHHKlM (ORCPT
+        with ESMTP id S232528AbiHHKlp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 06:41:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36A206389
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 03:41:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659955270;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MJLPOegk0UFvhgGoFsMnh0SPzQgLjSOmQFmdJ12d4pE=;
-        b=UWkddwi3Zq/XNfSa+xv85keVZrx1gdpiiNkTXd6rV+wArpBrTaHBcs9b0DVf+v0zSXIUo4
-        WEQijwXliacx4ObLjNbT5mXUNcONOTVx7XnE/DbzU9YqFksHL1aYHVKPhkNzOOOJv4esI+
-        FU2WOzxnBJCwXEn4EbDNQddw/ZUeNE8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-246-Nc3ZIis2O86ADhrOetFMjw-1; Mon, 08 Aug 2022 06:41:07 -0400
-X-MC-Unique: Nc3ZIis2O86ADhrOetFMjw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4192A8041B5;
-        Mon,  8 Aug 2022 10:41:06 +0000 (UTC)
-Received: from localhost (ovpn-12-221.pek2.redhat.com [10.72.12.221])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 380041121314;
-        Mon,  8 Aug 2022 10:41:04 +0000 (UTC)
-Date:   Mon, 8 Aug 2022 18:41:01 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Eric DeVolder <eric.devolder@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org, david@redhat.com,
-        sourabhjain@linux.ibm.com, konrad.wilk@oracle.com,
-        boris.ostrovsky@oracle.com
-Subject: Re: [PATCH v10 7/8] crash: memory and cpu hotplug sysfs attributes
-Message-ID: <YvDoPTSkYo6dg+Di@MiWiFi-R3L-srv>
-References: <20220721181747.1640-1-eric.devolder@oracle.com>
- <20220721181747.1640-8-eric.devolder@oracle.com>
+        Mon, 8 Aug 2022 06:41:45 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088DE6430;
+        Mon,  8 Aug 2022 03:41:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659955304; x=1691491304;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=aBiG1MGB72IeEyxs+iCyTFUOBbSKHTrSn9Nx+k53lwk=;
+  b=TKV/Rpso8LwJt7+mdxImblmrQ+MycbV7ZtPKvO7KPvIs91dPzGNHnFL7
+   i/z1AiFetTyMDCshykVFKFOKMqHdQ1BSE5EhlR/IghG0LqKSMKGmz/QwZ
+   oawa9Xi4KDPfmVVXQPioJlZkLczG2fJkSRX5wgmk51r6VLWRFtDGagC99
+   s92JHWj/QERTTdZ2nbFZGZFsCiByPTrIjfwqI1eMldXHnTZfkTRYWcivl
+   iSObmWzdRgvim0A94r3YMJwKjGhkkYdp4dvRqii/tN2B14QrD+gfP1R+1
+   tUIFh0lhG0nwN5AXbL0B+iD6wg8P1mB3DyX7segXmdrYLov2cRifnYAL/
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="290568645"
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="290568645"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 03:41:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="746585288"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 08 Aug 2022 03:41:35 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 08 Aug 2022 13:41:35 +0300
+Date:   Mon, 8 Aug 2022 13:41:35 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     ChiaEn Wu <peterwu.pub@gmail.com>
+Cc:     lee.jones@linaro.org, daniel.thompson@linaro.org,
+        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sre@kernel.org, chunfeng.yun@mediatek.com,
+        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
+        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
+        deller@gmx.de, andy.shevchenko@gmail.com, chiaen_wu@richtek.com,
+        alice_chen@richtek.com, cy_huang@richtek.com,
+        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: Re: [PATCH v7 08/13] usb: typec: tcpci_mt6370: Add MediaTek MT6370
+ tcpci driver
+Message-ID: <YvDoXyaFaDeH7dCX@kuha.fi.intel.com>
+References: <20220805070610.3516-1-peterwu.pub@gmail.com>
+ <20220805070610.3516-9-peterwu.pub@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220721181747.1640-8-eric.devolder@oracle.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+In-Reply-To: <20220805070610.3516-9-peterwu.pub@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/21/22 at 02:17pm, Eric DeVolder wrote:
-> This introduces the crash_hotplug attribute for memory and CPUs
-> for use by userspace.  This change directly facilitates the udev
-> rule for managing userspace re-loading of the crash kernel upon
-> hot un/plug changes.
+On Fri, Aug 05, 2022 at 03:06:05PM +0800, ChiaEn Wu wrote:
+> From: ChiYuan Huang <cy_huang@richtek.com>
 > 
-> For memory, this changeset introduces the crash_hotplug attribute
-> to the /sys/devices/system/memory directory. For example:
+> The MediaTek MT6370 is a highly-integrated smart power management IC,
+> which includes a single cell Li-Ion/Li-Polymer switching battery
+> charger, a USB Type-C & Power Delivery (PD) controller, dual
+> Flash LED current sources, a RGB LED driver, a backlight WLED driver,
+> a display bias driver and a general LDO for portable devices.
 > 
->  # udevadm info --attribute-walk /sys/devices/system/memory/memory81
->   looking at device '/devices/system/memory/memory81':
->     KERNEL=="memory81"
->     SUBSYSTEM=="memory"
->     DRIVER==""
->     ATTR{online}=="1"
->     ATTR{phys_device}=="0"
->     ATTR{phys_index}=="00000051"
->     ATTR{removable}=="1"
->     ATTR{state}=="online"
->     ATTR{valid_zones}=="Movable"
+> Add a support for the Type-C & Power Delivery controller in
+> MediaTek MT6370 IC.
 > 
->   looking at parent device '/devices/system/memory':
->     KERNELS=="memory"
->     SUBSYSTEMS==""
->     DRIVERS==""
->     ATTRS{auto_online_blocks}=="offline"
->     ATTRS{block_size_bytes}=="8000000"
->     ATTRS{crash_hotplug}=="1"
-> 
-> For CPUs, this changeset introduces the crash_hotplug attribute
-> to the /sys/devices/system/cpu directory. For example:
-> 
->  # udevadm info --attribute-walk /sys/devices/system/cpu/cpu0
->   looking at device '/devices/system/cpu/cpu0':
->     KERNEL=="cpu0"
->     SUBSYSTEM=="cpu"
->     DRIVER=="processor"
->     ATTR{crash_notes}=="277c38600"
->     ATTR{crash_notes_size}=="368"
->     ATTR{online}=="1"
-> 
->   looking at parent device '/devices/system/cpu':
->     KERNELS=="cpu"
->     SUBSYSTEMS==""
->     DRIVERS==""
->     ATTRS{crash_hotplug}=="1"
->     ATTRS{isolated}==""
->     ATTRS{kernel_max}=="8191"
->     ATTRS{nohz_full}=="  (null)"
->     ATTRS{offline}=="4-7"
->     ATTRS{online}=="0-3"
->     ATTRS{possible}=="0-7"
->     ATTRS{present}=="0-3"
-> 
-> With these sysfs attributes in place, it is possible to efficiently
-> instruct the udev rule to skip crash kernel reloading.
-> 
-> For example, the following is the proposed udev rule change for RHEL
-> system 98-kexec.rules (as the first lines of the rule file):
-> 
->  # The kernel handles updates to crash elfcorehdr for cpu and memory changes
->  SUBSYSTEM=="cpu", ATTRS{crash_hotplug}=="1", GOTO="kdump_reload_end"
->  SUBSYSTEM=="memory", ATTRS{crash_hotplug}=="1", GOTO="kdump_reload_end"
-> 
-> When examined in the context of 98-kexec.rules, the above change
-> tests if crash_hotplug is set, and if so, it skips the userspace
-> initiated unload-then-reload of the crash kernel.
-> 
-> Cpu and memory checks are separated in accordance with
-> CONFIG_HOTPLUG_CPU and CONFIG_MEMORY_HOTPLUG kernel config options.
-> If an architecture supports, for example, memory hotplug but not
-> CPU hotplug, then the /sys/devices/system/memory/crash_hotplug
-> attribute file is present, but the /sys/devices/system/cpu/crash_hotplug
-> attribute file will NOT be present. Thus the udev rule will skip
-> userspace processing of memory hot un/plug events, but the udev
-> rule will fail for CPU events, thus allowing userspace to process
-> cpu hot un/plug events (ie the unload-then-reload of the kdump
-> capture kernel).
-> 
-> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+> Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
 
-LGTM,
-
-Acked-by: Baoquan He <bhe@redhat.com>
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
 > ---
->  .../admin-guide/mm/memory-hotplug.rst          |  8 ++++++++
->  Documentation/core-api/cpu_hotplug.rst         | 18 ++++++++++++++++++
->  drivers/base/cpu.c                             | 14 ++++++++++++++
->  drivers/base/memory.c                          | 13 +++++++++++++
->  include/linux/crash_core.h                     |  6 ++++++
->  5 files changed, 59 insertions(+)
 > 
-> diff --git a/Documentation/admin-guide/mm/memory-hotplug.rst b/Documentation/admin-guide/mm/memory-hotplug.rst
-> index 0f56ecd8ac05..494d7a63c543 100644
-> --- a/Documentation/admin-guide/mm/memory-hotplug.rst
-> +++ b/Documentation/admin-guide/mm/memory-hotplug.rst
-> @@ -293,6 +293,14 @@ The following files are currently defined:
->  		       Availability depends on the CONFIG_ARCH_MEMORY_PROBE
->  		       kernel configuration option.
->  ``uevent``	       read-write: generic udev file for device subsystems.
-> +``crash_hotplug``      read-only: when changes to the system memory map
-> +		       occur due to hot un/plug of memory, this file contains
-> +		       '1' if the kernel updates the kdump capture kernel memory
-> +		       map itself (via elfcorehdr), or '0' if userspace must update
-> +		       the kdump capture kernel memory map.
-> +
-> +		       Availability depends on the CONFIG_MEMORY_HOTPLUG kernel
-> +		       configuration option.
->  ====================== =========================================================
+> v7
+> - Revise 'devm_add_action_or_reset(dev, ...)' to one line
+> - Revise 'return regmap_update_bits(...)' with using positive
+>   conditional
+> ---
+>  drivers/usb/typec/tcpm/Kconfig        |  11 ++
+>  drivers/usb/typec/tcpm/Makefile       |   1 +
+>  drivers/usb/typec/tcpm/tcpci_mt6370.c | 207 ++++++++++++++++++++++++++++++++++
+>  3 files changed, 219 insertions(+)
+>  create mode 100644 drivers/usb/typec/tcpm/tcpci_mt6370.c
+> 
+> diff --git a/drivers/usb/typec/tcpm/Kconfig b/drivers/usb/typec/tcpm/Kconfig
+> index 073fd2e..e6b88ca 100644
+> --- a/drivers/usb/typec/tcpm/Kconfig
+> +++ b/drivers/usb/typec/tcpm/Kconfig
+> @@ -35,6 +35,17 @@ config TYPEC_MT6360
+>  	  USB Type-C. It works with Type-C Port Controller Manager
+>  	  to provide USB PD and USB Type-C functionalities.
 >  
->  .. note::
-> diff --git a/Documentation/core-api/cpu_hotplug.rst b/Documentation/core-api/cpu_hotplug.rst
-> index c6f4ba2fb32d..13e33d098645 100644
-> --- a/Documentation/core-api/cpu_hotplug.rst
-> +++ b/Documentation/core-api/cpu_hotplug.rst
-> @@ -750,6 +750,24 @@ will receive all events. A script like::
->  
->  can process the event further.
->  
-> +When changes to the CPUs in the system occur, the sysfs file
-> +/sys/devices/system/cpu/crash_hotplug contains '1' if the kernel
-> +updates the kdump capture kernel list of CPUs itself (via elfcorehdr),
-> +or '0' if userspace must update the kdump capture kernel list of CPUs.
+> +config TYPEC_TCPCI_MT6370
+> +	tristate "MediaTek MT6370 Type-C driver"
+> +	depends on MFD_MT6370
+> +	help
+> +	  MediaTek MT6370 is a multi-functional IC that includes
+> +	  USB Type-C. It works with Type-C Port Controller Manager
+> +	  to provide USB PD and USB Type-C functionalities.
 > +
-> +The availability depends on the CONFIG_HOTPLUG_CPU kernel configuration
-> +option.
+> +	  This driver can also be built as a module. The module
+> +	  will be called "tcpci_mt6370".
 > +
-> +To skip userspace processing of CPU hot un/plug events for kdump
-> +(ie the unload-then-reload to obtain a current list of CPUs), this sysfs
-> +file can be used in a udev rule as follows:
+>  config TYPEC_TCPCI_MAXIM
+>  	tristate "Maxim TCPCI based Type-C chip driver"
+>  	help
+> diff --git a/drivers/usb/typec/tcpm/Makefile b/drivers/usb/typec/tcpm/Makefile
+> index 7d499f3..906d9dc 100644
+> --- a/drivers/usb/typec/tcpm/Makefile
+> +++ b/drivers/usb/typec/tcpm/Makefile
+> @@ -6,4 +6,5 @@ typec_wcove-y				:= wcove.o
+>  obj-$(CONFIG_TYPEC_TCPCI)		+= tcpci.o
+>  obj-$(CONFIG_TYPEC_RT1711H)		+= tcpci_rt1711h.o
+>  obj-$(CONFIG_TYPEC_MT6360)		+= tcpci_mt6360.o
+> +obj-$(CONFIG_TYPEC_TCPCI_MT6370)	+= tcpci_mt6370.o
+>  obj-$(CONFIG_TYPEC_TCPCI_MAXIM)		+= tcpci_maxim.o
+> diff --git a/drivers/usb/typec/tcpm/tcpci_mt6370.c b/drivers/usb/typec/tcpm/tcpci_mt6370.c
+> new file mode 100644
+> index 0000000..c5bb201
+> --- /dev/null
+> +++ b/drivers/usb/typec/tcpm/tcpci_mt6370.c
+> @@ -0,0 +1,207 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (C) 2022 Richtek Technology Corp.
+> + *
+> + * Author: ChiYuan Huang <cy_huang@richtek.com>
+> + */
 > +
-> + SUBSYSTEM=="cpu", ATTRS{crash_hotplug}=="1", GOTO="kdump_reload_end"
+> +#include <linux/bits.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/kernel.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pm_wakeup.h>
+> +#include <linux/pm_wakeirq.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/usb/tcpci.h>
+> +#include <linux/usb/tcpm.h>
 > +
-> +For a cpu hot un/plug event, if the architecture supports kernel updates
-> +of the elfcorehdr (which contains the list of CPUs), then the rule skips
-> +the unload-then-reload of the kdump capture kernel.
+> +#define MT6370_REG_SYSCTRL8	0x9B
 > +
->  Kernel Inline Documentations Reference
->  ======================================
->  
-> diff --git a/drivers/base/cpu.c b/drivers/base/cpu.c
-> index 4c98849577d4..bd470236d9a2 100644
-> --- a/drivers/base/cpu.c
-> +++ b/drivers/base/cpu.c
-> @@ -293,6 +293,17 @@ static ssize_t print_cpus_nohz_full(struct device *dev,
->  static DEVICE_ATTR(nohz_full, 0444, print_cpus_nohz_full, NULL);
->  #endif
->  
-> +#ifdef CONFIG_HOTPLUG_CPU
-> +#include <linux/crash_core.h>
-> +static ssize_t crash_hotplug_show(struct device *dev,
-> +				     struct device_attribute *attr,
-> +				     char *buf)
+> +#define MT6370_AUTOIDLE_MASK	BIT(3)
+> +
+> +#define MT6370_VENDOR_ID	0x29CF
+> +#define MT6370_TCPC_DID_A	0x2170
+> +
+> +struct mt6370_priv {
+> +	struct device *dev;
+> +	struct regulator *vbus;
+> +	struct tcpci *tcpci;
+> +	struct tcpci_data tcpci_data;
+> +};
+> +
+> +static const struct reg_sequence mt6370_reg_init[] = {
+> +	REG_SEQ(0xA0, 0x1, 1000),
+> +	REG_SEQ(0x81, 0x38, 0),
+> +	REG_SEQ(0x82, 0x82, 0),
+> +	REG_SEQ(0xBA, 0xFC, 0),
+> +	REG_SEQ(0xBB, 0x50, 0),
+> +	REG_SEQ(0x9E, 0x8F, 0),
+> +	REG_SEQ(0xA1, 0x5, 0),
+> +	REG_SEQ(0xA2, 0x4, 0),
+> +	REG_SEQ(0xA3, 0x4A, 0),
+> +	REG_SEQ(0xA4, 0x01, 0),
+> +	REG_SEQ(0x95, 0x01, 0),
+> +	REG_SEQ(0x80, 0x71, 0),
+> +	REG_SEQ(0x9B, 0x3A, 1000),
+> +};
+> +
+> +static int mt6370_tcpc_init(struct tcpci *tcpci, struct tcpci_data *data)
 > +{
-> +	return sprintf(buf, "%d\n", crash_hotplug_cpu_support());
-> +}
-> +static DEVICE_ATTR_ADMIN_RO(crash_hotplug);
-> +#endif
+> +	u16 did;
+> +	int ret;
 > +
->  static void cpu_device_release(struct device *dev)
->  {
->  	/*
-> @@ -469,6 +480,9 @@ static struct attribute *cpu_root_attrs[] = {
->  #ifdef CONFIG_NO_HZ_FULL
->  	&dev_attr_nohz_full.attr,
->  #endif
-> +#ifdef CONFIG_HOTPLUG_CPU
-> +	&dev_attr_crash_hotplug.attr,
-> +#endif
->  #ifdef CONFIG_GENERIC_CPU_AUTOPROBE
->  	&dev_attr_modalias.attr,
->  #endif
-> diff --git a/drivers/base/memory.c b/drivers/base/memory.c
-> index bc60c9cd3230..63c1754a52b6 100644
-> --- a/drivers/base/memory.c
-> +++ b/drivers/base/memory.c
-> @@ -483,6 +483,16 @@ static ssize_t auto_online_blocks_store(struct device *dev,
->  
->  static DEVICE_ATTR_RW(auto_online_blocks);
->  
-> +#ifdef CONFIG_MEMORY_HOTPLUG
-> +#include <linux/crash_core.h>
-> +static ssize_t crash_hotplug_show(struct device *dev,
-> +				       struct device_attribute *attr, char *buf)
+> +	ret = regmap_register_patch(data->regmap, mt6370_reg_init,
+> +				    ARRAY_SIZE(mt6370_reg_init));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_raw_read(data->regmap, TCPC_BCD_DEV, &did, sizeof(u16));
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (did == MT6370_TCPC_DID_A)
+> +		return regmap_write(data->regmap, TCPC_FAULT_CTRL, 0x80);
+> +
+> +	return 0;
+> +}
+> +
+> +static int mt6370_tcpc_set_vconn(struct tcpci *tcpci, struct tcpci_data *data,
+> +				 bool enable)
 > +{
-> +	return sprintf(buf, "%d\n", crash_hotplug_memory_support());
+> +	return regmap_update_bits(data->regmap, MT6370_REG_SYSCTRL8,
+> +				  MT6370_AUTOIDLE_MASK,
+> +				  enable ? 0 : MT6370_AUTOIDLE_MASK);
 > +}
-> +static DEVICE_ATTR_RO(crash_hotplug);
-> +#endif
 > +
->  /*
->   * Some architectures will have custom drivers to do this, and
->   * will not need to do it from userspace.  The fake hot-add code
-> @@ -887,6 +897,9 @@ static struct attribute *memory_root_attrs[] = {
->  
->  	&dev_attr_block_size_bytes.attr,
->  	&dev_attr_auto_online_blocks.attr,
-> +#ifdef CONFIG_MEMORY_HOTPLUG
-> +	&dev_attr_crash_hotplug.attr,
-> +#endif
->  	NULL
->  };
->  
-> diff --git a/include/linux/crash_core.h b/include/linux/crash_core.h
-> index c9705b6872e7..3964e9924ea5 100644
-> --- a/include/linux/crash_core.h
-> +++ b/include/linux/crash_core.h
-> @@ -109,5 +109,11 @@ static inline void arch_crash_handle_hotplug_event(struct kimage *image,
->  {
->  }
->  #endif
-> +#ifndef crash_hotplug_cpu_support
-> +static inline int crash_hotplug_cpu_support(void) { return 0; }
-> +#endif
-> +#ifndef crash_hotplug_memory_support
-> +static inline int crash_hotplug_memory_support(void) { return 0; }
-> +#endif
->  
->  #endif /* LINUX_CRASH_CORE_H */
+> +static int mt6370_tcpc_set_vbus(struct tcpci *tcpci, struct tcpci_data *data,
+> +				bool source, bool sink)
+> +{
+> +	struct mt6370_priv *priv = container_of(data, struct mt6370_priv,
+> +						tcpci_data);
+> +	int ret;
+> +
+> +	ret = regulator_is_enabled(priv->vbus);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (ret && !source)
+> +		return regulator_disable(priv->vbus);
+> +
+> +	if (!ret && source)
+> +		return regulator_enable(priv->vbus);
+> +
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t mt6370_irq_handler(int irq, void *dev_id)
+> +{
+> +	struct mt6370_priv *priv = dev_id;
+> +
+> +	return tcpci_irq(priv->tcpci);
+> +}
+> +
+> +static int mt6370_check_vendor_info(struct mt6370_priv *priv)
+> +{
+> +	struct regmap *regmap = priv->tcpci_data.regmap;
+> +	u16 vid;
+> +	int ret;
+> +
+> +	ret = regmap_raw_read(regmap, TCPC_VENDOR_ID, &vid, sizeof(u16));
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (vid != MT6370_VENDOR_ID)
+> +		return dev_err_probe(priv->dev, -ENODEV,
+> +				     "Vendor ID not correct 0x%02x\n", vid);
+> +
+> +	return 0;
+> +}
+> +
+> +static void mt6370_unregister_tcpci_port(void *tcpci)
+> +{
+> +	tcpci_unregister_port(tcpci);
+> +}
+> +
+> +static int mt6370_tcpc_probe(struct platform_device *pdev)
+> +{
+> +	struct mt6370_priv *priv;
+> +	struct device *dev = &pdev->dev;
+> +	int irq, ret;
+> +
+> +	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+> +	if (!priv)
+> +		return -ENOMEM;
+> +
+> +	priv->dev = dev;
+> +
+> +	priv->tcpci_data.regmap = dev_get_regmap(dev->parent, NULL);
+> +	if (!priv->tcpci_data.regmap)
+> +		return dev_err_probe(dev, -ENODEV, "Failed to init regmap\n");
+> +
+> +	ret = mt6370_check_vendor_info(priv);
+> +	if (ret)
+> +		return ret;
+> +
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0)
+> +		return dev_err_probe(dev, irq, "Failed to get irq\n");
+> +
+> +	/* Assign TCPCI feature and ops */
+> +	priv->tcpci_data.auto_discharge_disconnect = 1;
+> +	priv->tcpci_data.init = mt6370_tcpc_init;
+> +	priv->tcpci_data.set_vconn = mt6370_tcpc_set_vconn;
+> +
+> +	priv->vbus = devm_regulator_get_optional(dev, "vbus");
+> +	if (!IS_ERR(priv->vbus))
+> +		priv->tcpci_data.set_vbus = mt6370_tcpc_set_vbus;
+> +
+> +	priv->tcpci = tcpci_register_port(dev, &priv->tcpci_data);
+> +	if (IS_ERR(priv->tcpci))
+> +		return dev_err_probe(dev, PTR_ERR(priv->tcpci),
+> +				     "Failed to register tcpci port\n");
+> +
+> +	ret = devm_add_action_or_reset(dev, mt6370_unregister_tcpci_port, priv->tcpci);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = devm_request_threaded_irq(dev, irq, NULL, mt6370_irq_handler,
+> +					IRQF_ONESHOT, dev_name(dev), priv);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to allocate irq\n");
+> +
+> +	device_init_wakeup(dev, true);
+> +	dev_pm_set_wake_irq(dev, irq);
+> +
+> +	return 0;
+> +}
+> +
+> +static int mt6370_tcpc_remove(struct platform_device *pdev)
+> +{
+> +	dev_pm_clear_wake_irq(&pdev->dev);
+> +	device_init_wakeup(&pdev->dev, false);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id mt6370_tcpc_devid_table[] = {
+> +	{ .compatible = "mediatek,mt6370-tcpc" },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, mt6370_tcpc_devid_table);
+> +
+> +static struct platform_driver mt6370_tcpc_driver = {
+> +	.driver = {
+> +		.name = "mt6370-tcpc",
+> +		.of_match_table = mt6370_tcpc_devid_table,
+> +	},
+> +	.probe = mt6370_tcpc_probe,
+> +	.remove = mt6370_tcpc_remove,
+> +};
+> +module_platform_driver(mt6370_tcpc_driver);
+> +
+> +MODULE_AUTHOR("ChiYuan Huang <cy_huang@richtek.com>");
+> +MODULE_DESCRIPTION("MT6370 USB Type-C Port Controller Interface Driver");
+> +MODULE_LICENSE("GPL v2");
 > -- 
-> 2.31.1
-> 
+> 2.7.4
 
+-- 
+heikki
