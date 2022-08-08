@@ -2,85 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6BF2C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:09:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF944C00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:14:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236098AbiHHOJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 10:09:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41676 "EHLO
+        id S238323AbiHHOO2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 10:14:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235611AbiHHOJc (ORCPT
+        with ESMTP id S231898AbiHHOOZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 10:09:32 -0400
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2166DFC6;
-        Mon,  8 Aug 2022 07:09:31 -0700 (PDT)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-31f445bd486so81528017b3.13;
-        Mon, 08 Aug 2022 07:09:31 -0700 (PDT)
+        Mon, 8 Aug 2022 10:14:25 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B8EB4B8
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 07:14:24 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id c5-20020a5ea805000000b00684468c5005so3791185ioa.15
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 07:14:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=KP+Y2CoREOwPEAfcEIIlg58FxBYlnBpo4RuuRj/LAAs=;
-        b=mCPAPFWOmLxAGVcafKT2BH3k5nKbfvl0DZ7ZGHfuLkRdBpx6pma+fiSR8IT9RlBBWK
-         dmxCBNAt9urM74EsNoSBNOb3Paj+rbTPlP+QF4YGvFDSgEQr8s7fEDL2S6QpYp85VY77
-         7SbH1UsD4aCmIIB89kGm9z28Zkr1pz2IEukV+obM0OwmHHqFmDZIbBlfUzOeJmGap2VN
-         9pz0VMsBuvbUrjV7Vii86o1UuJPwee+ZPlsysezDJf0YiP9WfjER2TWPV8nmuIV8I0/v
-         Pj1HXzoXF55+dcR0Lr8BgmQQswJ+zSvOUfM0CU5wmX7PxkNmyxSPLVgbNe53/2L+YWyW
-         kqzw==
-X-Gm-Message-State: ACgBeo05Ah2ETaDS5Y4JkzG2ZZm5p5K3AqyqywzCQ852taTKuCkXOLQG
-        xd4/ZvztQ3ef9hgClOjkyK2f0m7wJXjIRiTOvsRfNaTL
-X-Google-Smtp-Source: AA6agR6yfjb/GmD7Ttd6VPQRNP/F8jZYt+Ogyd/6i3bkpXlre7HoSBdHobjOTx+jMnyGBxhcqk5pLRZfIVP94vNbSE8=
-X-Received: by 2002:a81:ae0a:0:b0:324:59ab:feec with SMTP id
- m10-20020a81ae0a000000b0032459abfeecmr19118034ywh.7.1659967770546; Mon, 08
- Aug 2022 07:09:30 -0700 (PDT)
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=JbxttqbDHdfUzYooNKEfPwjaG5YKBPoGxF8SI8GnlAo=;
+        b=t0sKAJI46KjpMhdpSWdDaBvE50A64bl8aLzHC1hTdG/cvwDgLRxC/x+ujdG5gbXqjs
+         1SZ6nhU4OT0BtCXLpxPU6pdL8K9fpqjkzK8E2psE+Nw0kzTSDL6iykeA8OC19npHV7p3
+         b/NBGldpG8zbxce5znNPdGDxC9zgSG6QpWFtosgUkY7IVILjuN1Hq6u1ughiRTwO8MxU
+         KxAV1UbH2rPxwdNiPhOAhDJg7zkUxq6ZY8n5bSMnw2ZLLcyx2aNOgXbqyaM19pdw8yp1
+         e91V+trcgBveNgEWhyKtMTuLhiLRYgG5C51veZ5hhN9xytdaOeaKb/cP1t5mjXTe3OeI
+         GcHg==
+X-Gm-Message-State: ACgBeo0Hs8ZNo/ai9PSZHNrV3X/oJWKjRqiAneD0acurDPhpM76Gfxg6
+        jbWLW7tiytzwivn6XzaKm0Hg8Wefswm9iSReMn2dumR387h4
+X-Google-Smtp-Source: AA6agR5g0KpuQOyObZUkfCjHm/y5cz64ijRFmojwXbbmyIAIPgevNyi2viWTAmjmlWlOpT1XbciZ1k0dMqDKrjw6SkJscr0hfjhn
 MIME-Version: 1.0
-References: <20220808024128.3219082-1-willy@infradead.org> <20220808024128.3219082-31-willy@infradead.org>
-In-Reply-To: <20220808024128.3219082-31-willy@infradead.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 8 Aug 2022 16:09:13 +0200
-Message-ID: <CAJZ5v0h7ipSZBJLH70CGbOGiigoqsQAuyGu4Dz856fcYkyGNhg@mail.gmail.com>
-Subject: Re: [PATCH v5 30/32] ACPI/APEI: Add missing include
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Kent Overstreet <kent.overstreet@gmail.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+X-Received: by 2002:a5e:a70f:0:b0:684:d596:b7e7 with SMTP id
+ b15-20020a5ea70f000000b00684d596b7e7mr1192526iod.84.1659968063797; Mon, 08
+ Aug 2022 07:14:23 -0700 (PDT)
+Date:   Mon, 08 Aug 2022 07:14:23 -0700
+In-Reply-To: <000000000000cad57405e5b5dbb7@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c7ff6a05e5bb6ec8@google.com>
+Subject: Re: [syzbot] possible deadlock in p9_req_put
+From:   syzbot <syzbot+50f7e8d06c3768dd97f3@syzkaller.appspotmail.com>
+To:     asmadeus@codewreck.org, davem@davemloft.net, edumazet@google.com,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 4:41 AM Matthew Wilcox (Oracle)
-<willy@infradead.org> wrote:
->
-> From: Kent Overstreet <kent.overstreet@gmail.com>
->
-> The upcoming patch to switch tracing from seq_buf to printbuf means
-> we're no longer pulling in headers that we used to; this adds a missing
-> include so things don't break.
->
-> Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
-> Cc: linux-acpi@vger.kernel.org
+syzbot has found a reproducer for the following issue on:
 
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+HEAD commit:    ca688bff68bc Add linux-next specific files for 20220808
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=1408148e080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4c20e006003cdecb
+dashboard link: https://syzkaller.appspot.com/bug?extid=50f7e8d06c3768dd97f3
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11f6ea66080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1640de8e080000
 
-> ---
->  drivers/acpi/apei/erst-dbg.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/acpi/apei/erst-dbg.c b/drivers/acpi/apei/erst-dbg.c
-> index 8bc71cdc2270..370993c9c381 100644
-> --- a/drivers/acpi/apei/erst-dbg.c
-> +++ b/drivers/acpi/apei/erst-dbg.c
-> @@ -11,6 +11,7 @@
->   *   Author: Huang Ying <ying.huang@intel.com>
->   */
->
-> +#include <linux/fs.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
->  #include <linux/uaccess.h>
-> --
-> 2.35.1
->
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+50f7e8d06c3768dd97f3@syzkaller.appspotmail.com
+
+============================================
+WARNING: possible recursive locking detected
+5.19.0-next-20220808-syzkaller #0 Not tainted
+--------------------------------------------
+kworker/1:2/1590 is trying to acquire lock:
+ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_tag_remove net/9p/client.c:367 [inline]
+ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_req_put net/9p/client.c:375 [inline]
+ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_req_put+0xc6/0x250 net/9p/client.c:372
+
+but task is already holding lock:
+ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:349 [inline]
+ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_conn_cancel+0xaa/0x970 net/9p/trans_fd.c:192
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(&clnt->lock);
+  lock(&clnt->lock);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+3 locks held by kworker/1:2/1590:
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
+ #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
+ #1: ffffc90006357da8 (p9_poll_work){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
+ #2: ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:349 [inline]
+ #2: ffff888079686c18 (&clnt->lock){+.+.}-{2:2}, at: p9_conn_cancel+0xaa/0x970 net/9p/trans_fd.c:192
+
+stack backtrace:
+CPU: 1 PID: 1590 Comm: kworker/1:2 Not tainted 5.19.0-next-20220808-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+Workqueue: events p9_poll_workfn
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_deadlock_bug kernel/locking/lockdep.c:2988 [inline]
+ check_deadlock kernel/locking/lockdep.c:3031 [inline]
+ validate_chain kernel/locking/lockdep.c:3816 [inline]
+ __lock_acquire.cold+0x116/0x3a7 kernel/locking/lockdep.c:5053
+ lock_acquire kernel/locking/lockdep.c:5666 [inline]
+ lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+ _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
+ p9_tag_remove net/9p/client.c:367 [inline]
+ p9_req_put net/9p/client.c:375 [inline]
+ p9_req_put+0xc6/0x250 net/9p/client.c:372
+ p9_conn_cancel+0x640/0x970 net/9p/trans_fd.c:213
+ p9_poll_mux net/9p/trans_fd.c:627 [inline]
+ p9_poll_workfn+0x25d/0x4e0 net/9p/trans_fd.c:1147
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+
