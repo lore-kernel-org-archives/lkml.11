@@ -2,199 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B4B6C25B0C
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:18:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB2BC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 14:20:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243643AbiHHOSm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 10:18:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
+        id S243378AbiHHOUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 10:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243573AbiHHOS1 (ORCPT
+        with ESMTP id S238638AbiHHOUa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 10:18:27 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2073.outbound.protection.outlook.com [40.107.243.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25F81275C;
-        Mon,  8 Aug 2022 07:17:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RlfE1RtO6mRhg4HAcK8gB44K9HlCGizanbh7EGo6Ep7GqEbVZnR8kdkekRPpb8vdc0tdc6QKuP3G1FTVLluOsuozXjoHxY9yNxjJEwRB2B9mO5md3nrv9VE5M+lZKyjgnI/qgAD3cmxV1f0dwvXF/iiBnDj6mBePRzGO26CI0NmIBGbPhD6Yt7C/ygtFkrfRcwqaXuhjB1H7sQibXeOa6BPegIlpg+LtDykZlVMqD2d4041JWzc/nu/8AcXPXwg7jfCEy2P7BbiGSng+fvUWTEebV/FFuLuI9RfvY9wFwLA2eSbVP1nNiwWyUXXdOPA7urthP4tOPcQ8r7Vbna5fkQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=L5khCtqXtMkcTXDb2jDIsDb6j10F2RoOqg3tIghzE9M=;
- b=NK1przmJeQ9fL+jSUC5yjjvsRrIYzi9KAWJqo0muQ97ss0abC1RLepXLbvDgD3Bnp06WkMHVmHl4RDXDDwORIr25br8ZdEG7qwdfeV9hsskbSw3hXMa9h2kpTtDmllo2DQLouUaTLURmqtEKekTvbtUO1D25swElWmmG8ra/6sHHOrpNt2KAJCr0QQtOfew74ilYh72vjsVGigKcmwWUGYhvDD3Sle5G+uSw/MeB1RTBnzjAvxpYfd1upGIK6Q7bU/trS4XXNfHlgpHteQ4ftsGYPdRBnvy78NJCPPgFilWMVU2/4A+2oAGU+2tnmDbaTfQylV08aI9rzK1oN/d86A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L5khCtqXtMkcTXDb2jDIsDb6j10F2RoOqg3tIghzE9M=;
- b=rz0ixvCD78OdzwAc26x9eiDrK8uHQ6OByuGkdODj6IyJg3+jjL9xHdk4oWLlIAY3xBMCC79R0VxFq6TwKWj+9OX+vMRJ/3ud8ihO2qKhKMk9gqJLtfNLP4RLchtYbh88niYHJxrq3izPMlx+QsRwYVh/YUCe/JotQpfp+xZ2+zU=
-Received: from DS7PR03CA0275.namprd03.prod.outlook.com (2603:10b6:5:3ad::10)
- by PH7PR12MB7138.namprd12.prod.outlook.com (2603:10b6:510:1ee::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Mon, 8 Aug
- 2022 14:17:55 +0000
-Received: from DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3ad:cafe::cc) by DS7PR03CA0275.outlook.office365.com
- (2603:10b6:5:3ad::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16 via Frontend
- Transport; Mon, 8 Aug 2022 14:17:54 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT035.mail.protection.outlook.com (10.13.172.100) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5504.14 via Frontend Transport; Mon, 8 Aug 2022 14:17:54 +0000
-Received: from fritz.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 8 Aug
- 2022 09:17:53 -0500
-From:   Kim Phillips <kim.phillips@amd.com>
-To:     <mingo@kernel.org>
-CC:     <andrew.cooper3@citrix.com>, <bp@alien8.de>, <bp@suse.de>,
-        <bpf@vger.kernel.org>, <jpoimboe@redhat.com>,
-        <kim.phillips@amd.com>, <linux-kernel@vger.kernel.org>,
-        <peterz@infradead.org>, <thomas.lendacky@amd.com>, <x86@kernel.org>
-Subject: [PATCH v3] x86/bugs: Enable STIBP for IBPB mitigated RetBleed
-Date:   Mon, 8 Aug 2022 09:17:02 -0500
-Message-ID: <20220808141702.10439-1-kim.phillips@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <Yu66YlFzd4VRZq6/@gmail.com>
-References: <Yu66YlFzd4VRZq6/@gmail.com>
+        Mon, 8 Aug 2022 10:20:30 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB3FD130
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 07:20:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659968429; x=1691504429;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=1Gs2p+rzLbLqP9Oo2mEc2AFXerz6OxC0YE6EMDkcWwY=;
+  b=gvFIRjRGoHJZQCkRDHPVPWI/dHG/8hx1Qo4SDO6AFGc1A+KuKQtIQ1yk
+   ofxMbEsiTUDTwFEJpRocOQxsGlizkST9skvo4hAf5xiP2oDrOAUylFu+d
+   sSITJMLUOllUe0ZG8ch0ZzVfP4u8NGyp/AX9M0tkADVg2NX23omKF3+i8
+   0ZDWeNIv1VVg9yj1/OCMqIZQQOSgXBBIJJT03+qHYJPgYLngw1SJMbUNl
+   LPCEll/vqAw0j5id5W+6SE8mzuHD/ql+O6XSAaSzVoCSddNs9xTKbP8/K
+   cCawcGAjkZBUu49c9eaZuODRAEDDWKPeFEDBeZ6nYW2i4GjocwcYdQY+R
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="291838461"
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="291838461"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 07:20:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="663965956"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 08 Aug 2022 07:20:25 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oL3cG-000MJt-31;
+        Mon, 08 Aug 2022 14:20:24 +0000
+Date:   Mon, 8 Aug 2022 22:19:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ben Skeggs <bskeggs@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Dave Airlie <airlied@redhat.com>, Lyude Paul <lyude@redhat.com>
+Subject: drivers/gpu/drm/nouveau/nvkm/engine/disp/gv100.c:676:1: sparse:
+ sparse: symbol 'gv100_disp_core_mthd_base' was not declared. Should it be
+ static?
+Message-ID: <202208082250.FRtA3DVc-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 817e7b9f-ed73-446a-87e0-08da7948c940
-X-MS-TrafficTypeDiagnostic: PH7PR12MB7138:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XLrxwZXLxUwWRP/4MUFkcq5AdbF+Kgyww1gsOCmCze/mpkvUxqFYVygVW/adhoO8sb9IHJ9Zeqgmgp9/9SBi9E49WXT0+pCjqP+8eFL3jbAoFCegrjF2ISES2OfkjhEcnf7jMYHc7lZSSOmWffbeUVGzyWBCKAYN0qFhYaYucZN6Agl6kvWTVRIpyxzoKarrT9fB6eRpvmAAi5RWPp/cTtQ5MzemQe2PLHndblLlKIJt6rUmLCUvaMjdZv5Ru7ftTPFenedsUrU9+KCuoHIh6orimtTfUBjl8XbSzy20iOy98lQfMHJcii8P8bhdRNpxojvQJvJWWIhT+BBg8uSBw7B7l54jlE/QP7xml7JvogRF2yRbm0LyPIqnylLaXX4ioxMYePMHW8Yxh7iBVAuRL99xCn9J780mP7h9mE3umlsx0/1Hevxku6v/VvNz74lqesCgCP1NT6BrP+SR2B/ePvbpyFWNB1x1e3jaVU2CiflKfDQNeYZ/U24ISZLSRUsgTYpyjGqgDLLWKfjyebdGp/lrlcHdrOz1JEgdD977PdsmwNPjosOJFM2g1FibGYfNaXByXSig6BWkNotJO1f1XmyOmNYwmPWCeIo4xxqNbxlGFTvKJBPpzl67OnHCaojxjhZKaVvuCj1VmvqajaMk3E2lsxO264jeobmA37MPekNNNpIjjWIkEapLq0ZqoAM5oDYP7DcjU64O0+zzBX5RuOF/Qcaw86rA6fclg5ddEL2rngLwDaiBp2nwnBFT3J7wKwpnKTSseqHZe/Wa5FIVjfCDauL16E1YznFLW41YDrV+CStoJtckTInuvfzYE7TvW2tEYvzlgvnVVVYPK1wDOctRwehn7BLMut3RWtIGtFx5veLm2effcj3AIjzmIF6R
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(376002)(346002)(396003)(46966006)(40470700004)(36840700001)(44832011)(5660300002)(2906002)(70206006)(82310400005)(70586007)(36756003)(6916009)(966005)(478600001)(316002)(40480700001)(54906003)(8936002)(8676002)(26005)(81166007)(86362001)(41300700001)(6666004)(7696005)(36860700001)(16526019)(4326008)(356005)(82740400003)(336012)(426003)(47076005)(186003)(2616005)(1076003)(40460700003)(83380400001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2022 14:17:54.6464
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 817e7b9f-ed73-446a-87e0-08da7948c940
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7138
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-AMD's "Technical Guidance for Mitigating Branch Type Confusion,
-Rev. 1.0 2022-07-12" whitepaper, under section 6.1.2 "IBPB On
-Privileged Mode Entry / SMT Safety" says:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   4e23eeebb2e57f5a28b36221aa776b5a1122dde5
+commit: acbe9ecfb7fb14db868ddbeda8f43e623026316b drm/nouveau/disp: merge head/outp/ior code into chipset files
+date:   13 days ago
+config: alpha-randconfig-s031-20220807 (https://download.01.org/0day-ci/archive/20220808/202208082250.FRtA3DVc-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=acbe9ecfb7fb14db868ddbeda8f43e623026316b
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout acbe9ecfb7fb14db868ddbeda8f43e623026316b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=alpha SHELL=/bin/bash drivers/gpu/drm/
 
-"Similar to the Jmp2Ret mitigation, if the code on the sibling thread
-cannot be trusted, software should set STIBP to 1 or disable SMT to
-ensure SMT safety when using this mitigation."
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-So, like already being done for retbleed=unret, the also for
-retbleed=ibpb, force STIBP on machines that have it, and report
-its SMT vulnerability status accordingly.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/gpu/drm/nouveau/nvkm/engine/disp/gv100.c:676:1: sparse: sparse: symbol 'gv100_disp_core_mthd_base' was not declared. Should it be static?
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=206537
-Fixes: 3ebc17006888 ("x86/bugs: Add retbleed=ibpb")
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
----
-v3:  "unret and ibpb mitigations" -> "UNRET and IBPB mitigations" (Mingo)
-v2:  Justify and explain STIBP's role with IBPB (Boris)
+vim +/gv100_disp_core_mthd_base +676 drivers/gpu/drm/nouveau/nvkm/engine/disp/gv100.c
 
- .../admin-guide/kernel-parameters.txt         | 20 ++++++++++++++-----
- arch/x86/kernel/cpu/bugs.c                    | 10 ++++++----
- 2 files changed, 21 insertions(+), 9 deletions(-)
+   632	
+   633	static const struct nvkm_disp_mthd_list
+   634	gv100_disp_core_mthd_head = {
+   635		.mthd = 0x0400,
+   636		.addr = 0x000400,
+   637		.data = {
+   638			{ 0x2000, 0x682000 },
+   639			{ 0x2004, 0x682004 },
+   640			{ 0x2008, 0x682008 },
+   641			{ 0x200c, 0x68200c },
+   642			{ 0x2014, 0x682014 },
+   643			{ 0x2018, 0x682018 },
+   644			{ 0x201c, 0x68201c },
+   645			{ 0x2020, 0x682020 },
+   646			{ 0x2028, 0x682028 },
+   647			{ 0x202c, 0x68202c },
+   648			{ 0x2030, 0x682030 },
+   649			{ 0x2038, 0x682038 },
+   650			{ 0x203c, 0x68203c },
+   651			{ 0x2048, 0x682048 },
+   652			{ 0x204c, 0x68204c },
+   653			{ 0x2050, 0x682050 },
+   654			{ 0x2054, 0x682054 },
+   655			{ 0x2058, 0x682058 },
+   656			{ 0x205c, 0x68205c },
+   657			{ 0x2060, 0x682060 },
+   658			{ 0x2064, 0x682064 },
+   659			{ 0x2068, 0x682068 },
+   660			{ 0x206c, 0x68206c },
+   661			{ 0x2070, 0x682070 },
+   662			{ 0x2074, 0x682074 },
+   663			{ 0x2078, 0x682078 },
+   664			{ 0x207c, 0x68207c },
+   665			{ 0x2080, 0x682080 },
+   666			{ 0x2088, 0x682088 },
+   667			{ 0x2090, 0x682090 },
+   668			{ 0x209c, 0x68209c },
+   669			{ 0x20a0, 0x6820a0 },
+   670			{ 0x20a4, 0x6820a4 },
+   671			{ 0x20a8, 0x6820a8 },
+   672			{ 0x20ac, 0x6820ac },
+   673			{ 0x2180, 0x682180 },
+   674			{ 0x2184, 0x682184 },
+   675			{ 0x218c, 0x68218c },
+ > 676			{ 0x2194, 0x682194 },
+   677			{ 0x2198, 0x682198 },
+   678			{ 0x219c, 0x68219c },
+   679			{ 0x21a0, 0x6821a0 },
+   680			{ 0x21a4, 0x6821a4 },
+   681			{ 0x2214, 0x682214 },
+   682			{ 0x2218, 0x682218 },
+   683			{}
+   684		}
+   685	};
+   686	
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index bab2b0bf5988..ed6a19ae0dd6 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5260,20 +5260,30 @@
- 			Speculative Code Execution with Return Instructions)
- 			vulnerability.
- 
-+			AMD-based UNRET and IBPB mitigations alone do not stop
-+			sibling threads influencing the predictions of other sibling
-+			threads.  For that reason, we use STIBP on processors
-+			that support it, and mitigate SMT on processors that don't.
-+
- 			off          - no mitigation
- 			auto         - automatically select a migitation
- 			auto,nosmt   - automatically select a mitigation,
- 				       disabling SMT if necessary for
- 				       the full mitigation (only on Zen1
- 				       and older without STIBP).
--			ibpb	     - mitigate short speculation windows on
-+			ibpb         - [AMD] Mitigate short speculation windows on
- 				       basic block boundaries too. Safe, highest
--				       perf impact.
--			unret        - force enable untrained return thunks,
-+				       perf impact. It also enables STIBP if
-+				       present.
-+			ibpb,nosmt   - [AMD] Like ibpb, but will disable SMT when STIBP
-+				       is not available. This is the alternative for
-+				       systems which do not have STIBP.
-+			unret        - [AMD] Force enable untrained return thunks,
- 				       only effective on AMD f15h-f17h
- 				       based systems.
--			unret,nosmt  - like unret, will disable SMT when STIBP
--			               is not available.
-+			unret,nosmt  - [AMD] Like unret, but will disable SMT when STIBP
-+				       is not available. This is the alternative for
-+				       systems which do not have STIBP.
- 
- 			Selecting 'auto' will choose a mitigation method at run
- 			time according to the CPU.
-diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
-index 6761668100b9..d50686ca5870 100644
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -152,7 +152,7 @@ void __init check_bugs(void)
- 	/*
- 	 * spectre_v2_user_select_mitigation() relies on the state set by
- 	 * retbleed_select_mitigation(); specifically the STIBP selection is
--	 * forced for UNRET.
-+	 * forced for UNRET or IBPB.
- 	 */
- 	spectre_v2_user_select_mitigation();
- 	ssb_select_mitigation();
-@@ -1179,7 +1179,8 @@ spectre_v2_user_select_mitigation(void)
- 	    boot_cpu_has(X86_FEATURE_AMD_STIBP_ALWAYS_ON))
- 		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
- 
--	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
-+	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET ||
-+	    retbleed_mitigation == RETBLEED_MITIGATION_IBPB) {
- 		if (mode != SPECTRE_V2_USER_STRICT &&
- 		    mode != SPECTRE_V2_USER_STRICT_PREFERRED)
- 			pr_info("Selecting STIBP always-on mode to complement retbleed mitigation\n");
-@@ -2320,10 +2321,11 @@ static ssize_t srbds_show_state(char *buf)
- 
- static ssize_t retbleed_show_state(char *buf)
- {
--	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
-+	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET ||
-+	    retbleed_mitigation == RETBLEED_MITIGATION_IBPB) {
- 	    if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
- 		boot_cpu_data.x86_vendor != X86_VENDOR_HYGON)
--		    return sprintf(buf, "Vulnerable: untrained return thunk on non-Zen uarch\n");
-+		    return sprintf(buf, "Vulnerable: untrained return thunk / IBPB on non-AMD based uarch\n");
- 
- 	    return sprintf(buf, "%s; SMT %s\n",
- 			   retbleed_strings[retbleed_mitigation],
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
