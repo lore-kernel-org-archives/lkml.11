@@ -2,92 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C883C25B0C
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 09:21:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3617CC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 09:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239731AbiHHJVq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 05:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        id S238580AbiHHJZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 05:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242015AbiHHJVn (ORCPT
+        with ESMTP id S242343AbiHHJZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 05:21:43 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEDD213FA7
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 02:21:40 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id bq11so11792070lfb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 02:21:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=FccXBTNykxjVSFhKJvR6sgQg52SL6XIJ9Oc0djERUqw=;
-        b=XR0I8TNP0FJq7M9R6lesad9vgRFZWfsgcdBiYdcKrJVyoWUymdBn3VzVf+tbhOVjyU
-         16XtvRpfIAyV303x8dcAmtkDyC51hJJHVEWkfYbNWb8LuHUcwVvxEQnfJwG00azOigyg
-         rXL3y1RJZIrfBaW0xhXpk0nqx/OHCCt1Nsb438WjaKKwj5biV2X8ax/9Jfc0CI0QQWUn
-         zL4QugyOzQmkJDJveDxnVahY3motE8CZ5od9W+Br6NpKPve1cWmJauLDcOcAxk3+tJHu
-         1X/ioocLEUhwk7gnAKqsnP79K6FjC73vtrn8QLiIf49Qwo56zrnz7pTMbb30zeSXmjHL
-         L4nA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=FccXBTNykxjVSFhKJvR6sgQg52SL6XIJ9Oc0djERUqw=;
-        b=IiWpcUpdlppJSblTcAr5YLr2JUZzL8QedmuQ3OO9j1nSdQyevKSlqsIqf3ffU+lXK3
-         HySqoi2JKD7GUSsycNkesX8EP+5UhElIe2rxtP0yoGTVB+ENUS9YTbKU00YF1GxLIOg4
-         2kHmIFlsUJgmKO3WsDkT8NtFrdhCyx238cLuCrxPge4OZfUWntht0ebZMgkmrI0/c934
-         VKcTimmhk4i32DfSwc+2pJ94N1d32Z6wNuxRusy7/vz74UvNgjQ2liCzZSxeYKtMDmkL
-         EpNxIMY/XssN6ncS9Bi28J0wUZuEANe3/bq/N63vzEDz5gleKG9IQMtMuh4mW47vKAYO
-         cZ0w==
-X-Gm-Message-State: ACgBeo3/0JGQPkDt3zxhw/ctu4oIT6F4qbBfzBOG2/PB7iAS7OxRiUe/
-        C24zu1ejteOg/Age//dP4h9Pog==
-X-Google-Smtp-Source: AA6agR43ns/ayyEzaw9XITjxIh6rxgbPxery0gWFVIkbcFtX3ekcRkYMzHLww2EqZ1vh+mK1tRWSOw==
-X-Received: by 2002:a05:6512:3b8e:b0:48b:23c6:9b0 with SMTP id g14-20020a0565123b8e00b0048b23c609b0mr6439516lfv.470.1659950499307;
-        Mon, 08 Aug 2022 02:21:39 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id m2-20020a194342000000b0048af85f6581sm1352791lfj.154.2022.08.08.02.21.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Aug 2022 02:21:38 -0700 (PDT)
-Message-ID: <cb74b5e0-2243-5afc-dd8e-7b024ca3e3da@linaro.org>
-Date:   Mon, 8 Aug 2022 12:21:36 +0300
+        Mon, 8 Aug 2022 05:25:43 -0400
+X-Greylist: delayed 3601 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 08 Aug 2022 02:25:41 PDT
+Received: from 6.mo575.mail-out.ovh.net (6.mo575.mail-out.ovh.net [46.105.63.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3394338AF
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 02:25:40 -0700 (PDT)
+Received: from player791.ha.ovh.net (unknown [10.110.115.113])
+        by mo575.mail-out.ovh.net (Postfix) with ESMTP id 9A01A23E17
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 08:09:15 +0000 (UTC)
+Received: from etezian.org (bbcs-175-223.cust.wingo.ch [178.238.175.223])
+        (Authenticated sender: andi@etezian.org)
+        by player791.ha.ovh.net (Postfix) with ESMTPSA id 0B9A62D4A25E6;
+        Mon,  8 Aug 2022 08:09:02 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-101G004470e5d2f-4ec8-446b-9b2c-f538d1afd209,
+                    D07DC7BC5756341CF3D6D9F7D18BF56C80B463DD) smtp.auth=andi@etezian.org
+X-OVh-ClientIp: 178.238.175.223
+Date:   Mon, 8 Aug 2022 10:09:02 +0200
+From:   Andi Shyti <andi@etezian.org>
+To:     Chanho Park <chanho61.park@samsung.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andi Shyti <andi@etezian.org>, Mark Brown <broonie@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Adithya K V <adithya.kv@samsung.com>,
+        kernel test robot <lkp@intel.com>, linux-spi@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] spi: s3c64xx: correct dma_chan pointer initialization
+Message-ID: <YvDEngXWqFp4lv7i@intel.intel>
+References: <CGME20220808004253epcas2p3937171a6f89a765d67d5cc7b55afb89a@epcas2p3.samsung.com>
+ <20220808004851.25122-1-chanho61.park@samsung.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 3/3] arm64: dts: marvell: Add DTSI to fix Xenon SDHCI 2G
- limitation on AC5 SoC
-Content-Language: en-US
-To:     Vadym Kochan <vadym.kochan@plvision.eu>,
-        Hu Ziji <huziji@marvell.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Elad Nachman <enachman@marvell.com>
-References: <20220806085818.9873-1-vadym.kochan@plvision.eu>
- <20220806085818.9873-4-vadym.kochan@plvision.eu>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220806085818.9873-4-vadym.kochan@plvision.eu>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220808004851.25122-1-chanho61.park@samsung.com>
+X-Ovh-Tracer-Id: 14171420654007487195
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdefkedgtddvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomheptehnughiucfuhhihthhiuceorghnughisegvthgviihirghnrdhorhhgqeenucggtffrrghtthgvrhhnpeejgfelgeekieffjeegveeuvdehgeelveetveejudffvedvleehvdefleehudelueenucfkpheptddrtddrtddrtddpudejkedrvdefkedrudejhedrvddvfeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeeluddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpegrnhguihesvghtvgiiihgrnhdrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheejhe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/08/2022 11:58, Vadym Kochan wrote:
-> +
-> +	soc {
-> +		sdhci: sdhci@805c0000 {
-> +			compatible = "marvell,ac5-sdhci";
-> +			reg = <0x0 0x805c0000 0x0 0x300>;
-> +			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&cnm_clock>;
-> +			clock-names = "core";
-> +			marvell,ac5-sdhci-dma-bounce-pool = <&sdhci_dma_bounce_pool>;
+Hi Chanho,
 
-Undocumented property.
+On Mon, Aug 08, 2022 at 09:48:51AM +0900, Chanho Park wrote:
+> Use NULL for dma channel pointer initialization instead of plain integer.
+> 
+> sparse warnings: (new ones prefixed by >>)
+> >> drivers/spi/spi-s3c64xx.c:387:34: sparse: sparse: Using plain integer as NULL pointer
+>    drivers/spi/spi-s3c64xx.c:388:34: sparse: sparse: Using plain integer as NULL pointer
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Fixes: 82295bc0d192 ("spi: s3c64xx: move dma_release_channel to unprepare")
+> Fixes: f52b03c70744 ("spi: s3c64xx: requests spi-dma channel only during data transfer")
+> Signed-off-by: Chanho Park <chanho61.park@samsung.com>
 
-Best regards,
-Krzysztof
+Reviewed-by: Andi Shyti <andi@etezian.org>
+
+Thanks,
+Andi
