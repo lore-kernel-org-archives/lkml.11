@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09EB9C19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1392CC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 01:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243895AbiHHB7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 21:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52078 "EHLO
+        id S243900AbiHHB7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 21:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243810AbiHHB4E (ORCPT
+        with ESMTP id S243822AbiHHB4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 21:56:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB841C90A;
-        Sun,  7 Aug 2022 18:39:37 -0700 (PDT)
+        Sun, 7 Aug 2022 21:56:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690C5FD0B;
+        Sun,  7 Aug 2022 18:39:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C057760DF8;
-        Mon,  8 Aug 2022 01:39:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00568C433D7;
-        Mon,  8 Aug 2022 01:39:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E482B80DDF;
+        Mon,  8 Aug 2022 01:39:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11956C433D6;
+        Mon,  8 Aug 2022 01:39:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659922776;
-        bh=RSDlD8Uga25bmtLYdSTBMn3lox5GFYwmoLKXqo5AMGo=;
+        s=k20201202; t=1659922781;
+        bh=FPDq19YmQbyACbhIMdsFfnd/zvD9KE4s0mLFIVXUVOE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=olZVpdX1siRj/tcvR/WLVfDm5+y4gnTXUtPssiQHgUdVG9ovTlQfKc5xgL2YVem+5
-         KYQrbJHzcb+L4D2GJpJRPefZk/brpWkWjS1dZY/P10SytMEfA82HpRWEj5+2ss5RDX
-         FSrUe6Se2y/Y4WfqEcGW6tiL9pqu9vfiz/2RZHjMRwC+0El3L3KTCGOPpWIJqMoH2c
-         gANMkqA9a9AZdw+z92LhfHbmJ2R+4g8e6Yqy3+8U0urdsLSQUChNVIXCpshGr8t98P
-         3eD/tC3PzPZAqOoiDfBYVsAamJHm1pMQn8MiSbehUcKPNv9UZ3BDQlwRXFG+87OG9Z
-         Cq6DXMkNVbbQg==
+        b=jmwPV2acglsSvsZuLYKlN149I5kMtyx5xHxcwQAiozjb1hXD12VZrzf7zF/DPQced
+         DLeqkTcuhUDLI1hX1D4rOz73a8rFrMV3HO136wK3/32gyNTFEy62U15Lp6UeAdUcbX
+         QeyhRPA3/jS9oYdGi0uvCcrBhAvZjflp/gqbiQimm/nt43PnyLbV+3SMHkFrdJuFR8
+         4jxXneIP5ApbWk421pSdUnmE4y3BfZhQmIfyF7oHD5w2TWFhupBkRN83LfGxn8xXbY
+         5v9HqHOiMZAfpIMpDTrgLo2pKFEmUH/ngposuvMmIbnnOoJzdHURm8aZXdub1hbseu
+         0TCJQWpWJTA+A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 13/16] arm64: dts: qcom: ipq8074: fix NAND node name
-Date:   Sun,  7 Aug 2022 21:39:10 -0400
-Message-Id: <20220808013914.316709-13-sashal@kernel.org>
+Cc:     Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        selinux@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 16/16] selinux: Add boundary check in put_entry()
+Date:   Sun,  7 Aug 2022 21:39:13 -0400
+Message-Id: <20220808013914.316709-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220808013914.316709-1-sashal@kernel.org>
 References: <20220808013914.316709-1-sashal@kernel.org>
@@ -54,35 +53,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robimarko@gmail.com>
+From: Xiu Jianfeng <xiujianfeng@huawei.com>
 
-[ Upstream commit b39961659ffc3c3a9e3d0d43b0476547b5f35d49 ]
+[ Upstream commit 15ec76fb29be31df2bccb30fc09875274cba2776 ]
 
-Per schema it should be nand-controller@79b0000 instead of nand@79b0000.
-Fix it to match nand-controller.yaml requirements.
+Just like next_entry(), boundary check is necessary to prevent memory
+out-of-bound access.
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220621120642.518575-1-robimarko@gmail.com
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/ipq8074.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ security/selinux/ss/policydb.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq8074.dtsi b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-index f48d14cd10a3..bdee07305ce5 100644
---- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -261,7 +261,7 @@ qpic_bam: dma@7984000 {
- 			status = "disabled";
- 		};
+diff --git a/security/selinux/ss/policydb.h b/security/selinux/ss/policydb.h
+index 215f8f30ac5a..2a479785ebd4 100644
+--- a/security/selinux/ss/policydb.h
++++ b/security/selinux/ss/policydb.h
+@@ -360,6 +360,8 @@ static inline int put_entry(const void *buf, size_t bytes, int num, struct polic
+ {
+ 	size_t len = bytes * num;
  
--		qpic_nand: nand@79b0000 {
-+		qpic_nand: nand-controller@79b0000 {
- 			compatible = "qcom,ipq8074-nand";
- 			reg = <0x79b0000 0x10000>;
- 			#address-cells = <1>;
++	if (len > fp->len)
++		return -EINVAL;
+ 	memcpy(fp->data, buf, len);
+ 	fp->data += len;
+ 	fp->len -= len;
 -- 
 2.35.1
 
