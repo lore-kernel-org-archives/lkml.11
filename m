@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D49BC19F2A
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:43:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F0FC19F2A
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 02:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244120AbiHHCnO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 7 Aug 2022 22:43:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32802 "EHLO
+        id S244051AbiHHCnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 7 Aug 2022 22:43:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242536AbiHHClm (ORCPT
+        with ESMTP id S242456AbiHHCll (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 7 Aug 2022 22:41:42 -0400
+        Sun, 7 Aug 2022 22:41:41 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C166521BA
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 556E821B4
         for <linux-kernel@vger.kernel.org>; Sun,  7 Aug 2022 19:41:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=gLSmP0ezGtWML91IudXrNJu8Zj7NmJrDaiBCbrXz+LY=; b=MTuHy9VnQfrt2AB+/dowXbi0Xl
-        p/HsStgU1cVih1U6rA3n+lDtpLxkQnEfX/PJ9DCqQLl9dmaOeL+IMDfMclxATrkBqZTJk/yVL/+ym
-        Dvi5FrLyOGSBglGfyE/fmAK0psd/SAOf5CAfd3w9Z/A5ArMZft9EED/FgJU4F4LRVUfRe1SK5244n
-        UUvRaRG11eBhZWsSXwpHo+I6f5EiRjAR6j1EeEqIwctpKDo3WCeDhq3bvz33d4T13V9/H775it6jV
-        grcDXX65Gl6/qi6bkwITzFZo3MNtqHnXmRWWQyCYi+agf/UoME3pil5+McLv7ZUCHL3s2YoiV0fUN
-        XtBiz4Lw==;
+        bh=W2IBSE6OJvDnrYaJoiE0u8Y6LmGWG6njA3i978Pnn/E=; b=aCyTn0AbGOfCdL2wtfff6oEQ+x
+        s6ZE+C8K84hpVto1NiK3IQGqXdl8nMqGziOVuC75RKlVXD2fo/IcdTpFTQtqqY5SEKhuliQuLhtW7
+        UwCYa3eGp35ag3TMIuy2zvWtYxAQyn8Yg3dpqEmVuL3GvJAUfH1T9RHhegecPkoOkPM2TvSLWCIDU
+        hZqjPt1uL3F8lGXG8MYOFN+8Kfjckzrj1hC5knbk5l8jqarMOclFN3KY0lHxq3nXu0E74hyQNGBO/
+        5OvS+t4CaRDHYlWXUlF5uxZdt/Uc/Qlu1bN/XglH38RkqBxFSCnQzIAS72Y5hxs4Ov+dphfXlOxis
+        VE205cSA==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oKshy-00DVS2-56; Mon, 08 Aug 2022 02:41:34 +0000
+        id 1oKshx-00DVRt-RN; Mon, 08 Aug 2022 02:41:33 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-kernel@vger.kernel.org, pmladek@suse.com,
         Kent Overstreet <kent.overstreet@gmail.com>
 Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH v5 19/32] vsprintf: Refactor device_node_string, fwnode_string
-Date:   Mon,  8 Aug 2022 03:41:15 +0100
-Message-Id: <20220808024128.3219082-20-willy@infradead.org>
+Subject: [PATCH v5 15/32] vsprintf: Refactor ip_addr_string()
+Date:   Mon,  8 Aug 2022 03:41:11 +0100
+Message-Id: <20220808024128.3219082-16-willy@infradead.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220808024128.3219082-1-willy@infradead.org>
 References: <20220808024128.3219082-1-willy@infradead.org>
@@ -45,178 +45,243 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kent Overstreet <kent.overstreet@gmail.com>
 
- - eliminate on-stack buffer in device_node_string
- - eliminate unnecessary uses of printf_spec, lift format string
-   precision/field width to pointer()
+ - We're attempting to consolidate printf_spec and format string
+   handling in the top level vpr_buf(), this changes ip_addr_string() to
+   not take printf_spec
+
+ - With the new printbuf helpers there's no need to use a separate stack
+   allocated buffer, so this patch deletes it.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
 Cc: Petr Mladek <pmladek@suse.com>
 Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 ---
- lib/vsprintf.c | 73 ++++++++++++++++++++------------------------------
- 1 file changed, 29 insertions(+), 44 deletions(-)
+ lib/vsprintf.c | 114 ++++++++++++++++---------------------------------
+ 1 file changed, 37 insertions(+), 77 deletions(-)
 
 diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 38d16aa79e56..06cfa06aa4ee 100644
+index f47f10659737..076e2d23be47 100644
 --- a/lib/vsprintf.c
 +++ b/lib/vsprintf.c
-@@ -1963,25 +1963,20 @@ void fwnode_full_name_string(struct printbuf *out,
+@@ -1276,13 +1276,13 @@ void mac_address_string(struct printbuf *out, u8 *addr,
+ }
  
  static noinline_for_stack
- void device_node_string(struct printbuf *out, struct device_node *dn,
+-void ip4_string(struct printbuf *out,
+-		const u8 *addr, const char *fmt)
++void ip4_string(struct printbuf *out, const u8 *addr, const char *fmt)
+ {
+-	int i;
+-	bool leading_zeros = (fmt[0] == 'i');
+-	int index;
+-	int step;
++	struct printf_spec spec = default_dec_spec;
++	int i, index, step;
++
++	if (fmt[0] == 'i')
++		spec.precision = 3;
+ 
+ 	switch (fmt[2]) {
+ 	case 'h':
+@@ -1306,19 +1306,9 @@ void ip4_string(struct printbuf *out,
+ 		break;
+ 	}
+ 	for (i = 0; i < 4; i++) {
+-		char temp[4] __aligned(2);	/* hold each IP quad in reverse order */
+-		int digits = put_dec_trunc8(temp, addr[index]) - temp;
+-		if (leading_zeros) {
+-			if (digits < 3)
+-				prt_char(out, '0');
+-			if (digits < 2)
+-				prt_char(out, '0');
+-		}
+-		/* reverse the digits in the quad */
+-		while (digits--)
+-			prt_char(out, temp[digits]);
+-		if (i < 3)
++		if (i)
+ 			prt_char(out, '.');
++		number(out, addr[index], spec);
+ 		index += step;
+ 	}
+ }
+@@ -1401,8 +1391,6 @@ void ip6_compressed_string(struct printbuf *out, const char *addr)
+ 			__prt_char(out, ':');
+ 		ip4_string(out, &in6.s6_addr[12], "I4");
+ 	}
+-
+-	printbuf_nul_terminate(out);
+ }
+ 
+ static noinline_for_stack
+@@ -1420,41 +1408,20 @@ void ip6_string(struct printbuf *out, const char *addr, const char *fmt)
+ 
+ static noinline_for_stack
+ void ip6_addr_string(struct printbuf *out, const u8 *addr,
+-		     struct printf_spec spec, const char *fmt)
++		     const char *fmt)
+ {
+-	char ip6_addr_buf[sizeof("xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:255.255.255.255")];
+-	struct printbuf ip6_addr = PRINTBUF_EXTERN(ip6_addr_buf, sizeof(ip6_addr_buf));
+-
+ 	if (fmt[0] == 'I' && fmt[2] == 'c')
+-		ip6_compressed_string(&ip6_addr, addr);
++		ip6_compressed_string(out, addr);
+ 	else
+-		ip6_string(&ip6_addr, addr, fmt);
+-
+-	string_nocheck(out, ip6_addr_buf, spec);
+-}
+-
+-static noinline_for_stack
+-void ip4_addr_string(struct printbuf *out, const u8 *addr,
+-		     struct printf_spec spec, const char *fmt)
+-{
+-	char ip4_addr_buf[sizeof("255.255.255.255")];
+-	struct printbuf ip4_addr = PRINTBUF_EXTERN(ip4_addr_buf, sizeof(ip4_addr_buf));
+-
+-	ip4_string(&ip4_addr, addr, fmt);
+-
+-	string_nocheck(out, ip4_addr_buf, spec);
++		ip6_string(out, addr, fmt);
+ }
+ 
+ static noinline_for_stack
+ void ip6_addr_string_sa(struct printbuf *out,
+ 			const struct sockaddr_in6 *sa,
 -			struct printf_spec spec, const char *fmt)
 +			const char *fmt)
  {
--	char tbuf[sizeof("xxxx") + 1];
- 	const char *p;
- 	int ret;
--	unsigned start = out->pos;
- 	struct property *prop;
- 	bool has_mult, pass;
+ 	bool have_p = false, have_s = false, have_f = false, have_c = false;
+-	char ip6_addr_buf[sizeof("[xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:255.255.255.255]") +
+-		sizeof(":12345") + sizeof("/123456789") +
+-		sizeof("%1234567890")];
+-	struct printbuf ip6_addr = PRINTBUF_EXTERN(ip6_addr_buf, sizeof(ip6_addr_buf));
+ 	const u8 *addr = (const u8 *) &sa->sin6_addr;
+ 	char fmt6[2] = { fmt[0], '6' };
  
--	struct printf_spec str_spec = spec;
--	str_spec.field_width = -1;
--
- 	if (fmt[0] != 'F')
--		return error_string_spec(out, "(%pO?)", spec);
-+		return error_string(out, "(%pO?)");
+@@ -1477,41 +1444,35 @@ void ip6_addr_string_sa(struct printbuf *out,
+ 	}
  
- 	if (!IS_ENABLED(CONFIG_OF))
--		return error_string_spec(out, "(%pOF?)", spec);
-+		return error_string(out, "(%pOF?)");
+ 	if (have_p || have_s || have_f)
+-		prt_char(&ip6_addr, '[');
++		prt_char(out, '[');
  
--	if (check_pointer_spec(out, dn, spec))
-+	if (check_pointer(out, dn))
- 		return;
+ 	if (fmt6[0] == 'I' && have_c)
+-		ip6_compressed_string(&ip6_addr, addr);
++		ip6_compressed_string(out, addr);
+ 	else
+-		ip6_string(&ip6_addr, addr, fmt6);
++		ip6_string(out, addr, fmt6);
  
- 	/* simple case without anything any more format specifiers */
-@@ -1990,7 +1985,6 @@ void device_node_string(struct printbuf *out, struct device_node *dn,
- 		fmt = "f";
+ 	if (have_p || have_s || have_f)
+-		prt_char(&ip6_addr, ']');
++		prt_char(out, ']');
  
- 	for (pass = false; strspn(fmt,"fnpPFcC"); fmt++, pass = true) {
--		int precision;
- 		if (pass)
- 			prt_char(out, ':');
- 
-@@ -1998,43 +1992,41 @@ void device_node_string(struct printbuf *out, struct device_node *dn,
- 		case 'f':	/* full_name */
- 			fwnode_full_name_string(out, of_fwnode_handle(dn));
- 			break;
--		case 'n':	/* name */
--			p = fwnode_get_name(of_fwnode_handle(dn));
--			precision = str_spec.precision;
--			str_spec.precision = strchrnul(p, '@') - p;
--			string_spec(out, p, str_spec);
--			str_spec.precision = precision;
-+		case 'n': {	/* name */
-+			const char *name = fwnode_get_name(of_fwnode_handle(dn));
-+			unsigned len = strchrnul(name, '@') - name;
-+
-+			prt_bytes(out, name, len);
- 			break;
-+		}
- 		case 'p':	/* phandle */
--			prt_u64(out, (unsigned int)dn->phandle);
-+			prt_u64(out, dn->phandle);
- 			break;
- 		case 'P':	/* path-spec */
- 			p = fwnode_get_name(of_fwnode_handle(dn));
- 			if (!p[1])
- 				p = "/";
--			string_spec(out, p, str_spec);
-+			string(out, p);
- 			break;
- 		case 'F':	/* flags */
--			tbuf[0] = of_node_check_flag(dn, OF_DYNAMIC) ? 'D' : '-';
--			tbuf[1] = of_node_check_flag(dn, OF_DETACHED) ? 'd' : '-';
--			tbuf[2] = of_node_check_flag(dn, OF_POPULATED) ? 'P' : '-';
--			tbuf[3] = of_node_check_flag(dn, OF_POPULATED_BUS) ? 'B' : '-';
--			tbuf[4] = 0;
--			string_nocheck(out, tbuf, str_spec);
-+			prt_char(out, of_node_check_flag(dn, OF_DYNAMIC) ? 'D' : '-');
-+			prt_char(out, of_node_check_flag(dn, OF_DETACHED) ? 'd' : '-');
-+			prt_char(out, of_node_check_flag(dn, OF_POPULATED) ? 'P' : '-');
-+			prt_char(out, of_node_check_flag(dn, OF_POPULATED_BUS) ? 'B' : '-');
- 			break;
- 		case 'c':	/* major compatible string_spec */
- 			ret = of_property_read_string(dn, "compatible", &p);
- 			if (!ret)
--				string_spec(out, p, str_spec);
-+				string(out, p);
- 			break;
- 		case 'C':	/* full compatible string_spec */
- 			has_mult = false;
- 			of_property_for_each_string(dn, "compatible", prop, p) {
- 				if (has_mult)
--					string_nocheck(out, ",", str_spec);
--				string_nocheck(out, "\"", str_spec);
--				string_spec(out, p, str_spec);
--				string_nocheck(out, "\"", str_spec);
-+					prt_char(out, ',');
-+				prt_char(out, '\"');
-+				string(out, p);
-+				prt_char(out, '\"');
- 
- 				has_mult = true;
- 			}
-@@ -2043,39 +2035,30 @@ void device_node_string(struct printbuf *out, struct device_node *dn,
- 			break;
- 		}
+ 	if (have_p) {
+-		prt_char(&ip6_addr, ':');
+-		number(&ip6_addr, ntohs(sa->sin6_port), spec);
++		prt_char(out, ':');
++		prt_u64(out, ntohs(sa->sin6_port));
+ 	}
+ 	if (have_f) {
+-		prt_char(&ip6_addr, '/');
+-		number(&ip6_addr, ntohl(sa->sin6_flowinfo &
+-					IPV6_FLOWINFO_MASK), spec);
++		prt_char(out, '/');
++		prt_u64(out, ntohl(sa->sin6_flowinfo & IPV6_FLOWINFO_MASK));
+ 	}
+ 	if (have_s) {
+-		prt_char(&ip6_addr, '%');
+-		number(&ip6_addr, sa->sin6_scope_id, spec);
++		prt_char(out, '%');
++		prt_u64(out, sa->sin6_scope_id);
  	}
 -
--	widen_string(out, out->pos - start, spec);
+-	string_nocheck(out, ip6_addr_buf, spec);
  }
  
  static noinline_for_stack
- void fwnode_string(struct printbuf *out,
- 		   struct fwnode_handle *fwnode,
--		   struct printf_spec spec, const char *fmt)
-+		   const char *fmt)
+-void ip4_addr_string_sa(struct printbuf *out,
+-			const struct sockaddr_in *sa,
+-			struct printf_spec spec, const char *fmt)
++void ip4_addr_string_sa(struct printbuf *out, const struct sockaddr_in *sa,
++			const char *fmt)
  {
--	struct printf_spec str_spec = spec;
--	unsigned start = out->pos;
--
--	str_spec.field_width = -1;
--
- 	if (*fmt != 'w')
--		return error_string_spec(out, "(%pf?)", spec);
-+		return error_string(out, "(%pf?)");
+ 	bool have_p = false;
+-	char ip4_addr_buf[sizeof("255.255.255.255") + sizeof(":12345")];
+-	struct printbuf ip4_addr = PRINTBUF_EXTERN(ip4_addr_buf, sizeof(ip4_addr_buf));
+ 	const u8 *addr = (const u8 *) &sa->sin_addr.s_addr;
+ 	char fmt4[3] = { fmt[0], '4', 0 };
  
--	if (check_pointer_spec(out, fwnode, spec))
-+	if (check_pointer(out, fwnode))
- 		return;
+@@ -1530,29 +1491,27 @@ void ip4_addr_string_sa(struct printbuf *out,
+ 		}
+ 	}
  
- 	fmt++;
- 
- 	switch (*fmt) {
- 	case 'P':	/* name */
--		string_spec(out, fwnode_get_name(fwnode), str_spec);
-+		string(out, fwnode_get_name(fwnode));
- 		break;
- 	case 'f':	/* full_name */
- 	default:
- 		fwnode_full_name_string(out, fwnode);
- 		break;
+-	ip4_string(&ip4_addr, addr, fmt4);
++	ip4_string(out, addr, fmt4);
+ 	if (have_p) {
+-		prt_char(&ip4_addr, ':');
+-		number(&ip4_addr, ntohs(sa->sin_port), spec);
++		prt_char(out, ':');
++		prt_u64(out, ntohs(sa->sin_port));
  	}
 -
--	widen_string(out, out->pos - start, spec);
+-	string_nocheck(out, ip4_addr_buf, spec);
  }
  
- int __init no_hash_pointers_enable(char *str)
-@@ -2313,9 +2296,11 @@ void pointer(struct printbuf *out, const char *fmt,
- 		flags_string(out, ptr, fmt);
- 		return do_width_precision(out, prev_pos, spec);
- 	case 'O':
--		return device_node_string(out, ptr, spec, fmt + 1);
-+		device_node_string(out, ptr, fmt + 1);
+ static noinline_for_stack
+ void ip_addr_string(struct printbuf *out, const void *ptr,
+-		    struct printf_spec spec, const char *fmt)
++		    const char *fmt)
+ {
+ 	char *err_fmt_msg;
+ 
+-	if (check_pointer_spec(out, ptr, spec))
++	if (check_pointer(out, ptr))
+ 		return;
+ 
+ 	switch (fmt[1]) {
+ 	case '6':
+-		return ip6_addr_string(out, ptr, spec, fmt);
++		return ip6_addr_string(out, ptr, fmt);
+ 	case '4':
+-		return ip4_addr_string(out, ptr, spec, fmt);
++		return ip4_string(out, ptr, fmt);
+ 	case 'S': {
+ 		const union {
+ 			struct sockaddr		raw;
+@@ -1562,16 +1521,16 @@ void ip_addr_string(struct printbuf *out, const void *ptr,
+ 
+ 		switch (sa->raw.sa_family) {
+ 		case AF_INET:
+-			return ip4_addr_string_sa(out, &sa->v4, spec, fmt);
++			return ip4_addr_string_sa(out, &sa->v4, fmt);
+ 		case AF_INET6:
+-			return ip6_addr_string_sa(out, &sa->v6, spec, fmt);
++			return ip6_addr_string_sa(out, &sa->v6, fmt);
+ 		default:
+-			return error_string_spec(out, "(einval)", spec);
++			return error_string(out, "(einval)");
+ 		}}
+ 	}
+ 
+ 	err_fmt_msg = fmt[0] == 'i' ? "(%pi?)" : "(%pI?)";
+-	return error_string_spec(out, err_fmt_msg, spec);
++	error_string(out, err_fmt_msg);
+ }
+ 
+ static noinline_for_stack
+@@ -2318,7 +2277,8 @@ void pointer(struct printbuf *out, const char *fmt,
+ 					 * 4:	001.002.003.004
+ 					 * 6:   000102...0f
+ 					 */
+-		return ip_addr_string(out, ptr, spec, fmt);
++		ip_addr_string(out, ptr, fmt);
 +		return do_width_precision(out, prev_pos, spec);
- 	case 'f':
--		return fwnode_string(out, ptr, spec, fmt + 1);
-+		fwnode_string(out, ptr, fmt + 1);
-+		return do_width_precision(out, prev_pos, spec);
- 	case 'x':
- 		return pointer_string(out, ptr, spec);
- 	case 'e':
+ 	case 'E':
+ 		return escaped_string(out, ptr, spec, fmt);
+ 	case 'U':
 -- 
 2.35.1
 
