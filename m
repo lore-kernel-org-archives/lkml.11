@@ -2,124 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44ECEC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 12:05:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD50AC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 12:06:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242653AbiHHMFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 08:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36510 "EHLO
+        id S242670AbiHHMGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 08:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242527AbiHHMFi (ORCPT
+        with ESMTP id S237443AbiHHMGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 08:05:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4DB2263D
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 05:05:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659960331;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fu+EGKvg0tvo2gbBuEatwKbSy6SV8sz3wHepu6Tfd8E=;
-        b=MCqipCFAMClbMsgkMFT/oCOhBxx3D7GvbqSv17mVRFPSpgjMYPopekUxa1hfHtia+Zgun6
-        jjJy+2kqLD7rOLCJi3caHVsy2e8fF78Oh9DF8l+7LxXqZT53w9HAxUNUhM/Li0jHuCPt+A
-        maYLeHorPD6KyKTo5kj59tX2DH/F/C0=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-427-8Li_jNhjPEO5bh_ibEG71g-1; Mon, 08 Aug 2022 08:05:30 -0400
-X-MC-Unique: 8Li_jNhjPEO5bh_ibEG71g-1
-Received: by mail-ed1-f70.google.com with SMTP id n8-20020a05640205c800b00434fb0c150cso5495249edx.19
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 05:05:30 -0700 (PDT)
+        Mon, 8 Aug 2022 08:06:07 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954945F6F
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 05:05:55 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id q1-20020a05600c040100b003a52db97fffso2442800wmb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 05:05:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=melexis.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Yv7/Ul3NtrsgwZNY2tz3vPTVziFu5q3/IA4UlHUJklg=;
+        b=dpXdQWxuBRSCqpfom0NwcrxvY0fURdxtGYuWn0dDyqb/eueUQAGz0+a/jmpILk8Wv6
+         p5CLIGaNGPaXx4US9/Mrp/sQqq4xH9Gqylc0FxO9NmSbnjqerwbPHgs7f3bEFsUgaEYP
+         cS9ZoFeyH+YfGRj6QZMRLNw2aauv/Txu7WxfgVCoLwywZxGLx2M5FJE0x8CGLqHfdmdJ
+         swNWUuceoBsNCj+p6ukU/si7CcmL0QQGAclsWuvYTk+sK0USnxN+nYcZ9CdFC6chGAu2
+         nsDiy0hSalEN84gtIAMNmHny/CQaStNZVqXP+7nFksTR3/E7oI/R59EabeEhddYo+tde
+         IW6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fu+EGKvg0tvo2gbBuEatwKbSy6SV8sz3wHepu6Tfd8E=;
-        b=Qwx/av0NSR0SxubIEL6ZXcThpF1nEyBgNOwHb6OqmmcjOCB/WCPQ51kfBkZNrhmGWD
-         DaqqlmH7qXUFOv7NcqKDV1rtk/4rlzoePDuPvAOjnGqKHuqBDignJHcgWzOMMbjyzpi9
-         12Lrz789oCSLa4Q8LewqTWpI3rYiJ4pbJG49WjF4VoB4MpjegsPToHDqeXbE2BgjLqMl
-         Y0g5ze5yL/9/dRjtZDtAI1FoXl5O0wmj8vB8k7PsGika6wy/E5anJHozyNZzh3vCWCXM
-         tkTBnp8shFI0wYquPvM1A8b5wN9YY69aHg5Z9k0TqVM8wugiwCzcwxodsrx0mb/q4W5Y
-         0eig==
-X-Gm-Message-State: ACgBeo1QDaX76AbT7GCx3WK+Z6ywgfspBmtlChP+13UVqHHtcUd8A7Pa
-        gyzgL9JVWiaKdhmuB1EiOGFt4D4FxlP67gKOx/MEp8MusCAKRpwsYdSPTx8/Gh7tVMA/0NdX5QJ
-        hPoayN1fSANbMryY+Y1/0qL1q4BIzI4Viq+wWoa7u
-X-Received: by 2002:a17:907:2d94:b0:730:cad8:fe80 with SMTP id gt20-20020a1709072d9400b00730cad8fe80mr13670216ejc.232.1659960329671;
-        Mon, 08 Aug 2022 05:05:29 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4CLRlV/9x9dD2aK9/HEUTGST8O923oVKubnUWsl1DUA3H8QK1c8I0bxjvCqukDPrkG7iy+Hc20DOZSW/oz9XA=
-X-Received: by 2002:a17:907:2d94:b0:730:cad8:fe80 with SMTP id
- gt20-20020a1709072d9400b00730cad8fe80mr13670194ejc.232.1659960329404; Mon, 08
- Aug 2022 05:05:29 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Yv7/Ul3NtrsgwZNY2tz3vPTVziFu5q3/IA4UlHUJklg=;
+        b=2a19LtaaYw93/JNHtxRWhvQKOCKvzQasStKvIICwgaDPqZqV17rYSGKcVLtrqUj3WB
+         Zzvgk0qzG6IR7QbcKkh2e/XkLopIeuzdLDlDmeKWHuCO/XuxRXqkLgbyeKqPASTHdGwX
+         8lDhTuwY0A6zNRmI7G1P0/QGUGz+nuDKDRsyjXkW4pLXCMldSBEz0EbbDRoGox45H9sa
+         W3C5wYuBEbO49LjrQTRZfXyv3qwX+YWeSpxm5/QG24+6P9Zku8kZl6e889WeiBpvuSGk
+         oDTaccuYGIUZSYx5f3ePKpMqD0ozsbChE2YgEC8mwiJv9EpLukLy2r+EKZv9vSRjEJvQ
+         sLPw==
+X-Gm-Message-State: ACgBeo0IRdWm563X8OzbFD2uvaZz2BAWVubQURJJC3gXOQisi4CzYTOY
+        7beyMYJk2sZql4HBSBu/9yNGmA==
+X-Google-Smtp-Source: AA6agR5McIiXqc3Z1dpu34Hdqbz9S9Td7lasSrfwR0gSLIBEoMFiIuqtX0Fk/2RcmdewAPxkE2rXHg==
+X-Received: by 2002:a05:600c:5123:b0:3a3:2543:be80 with SMTP id o35-20020a05600c512300b003a32543be80mr17215693wms.155.1659960353944;
+        Mon, 08 Aug 2022 05:05:53 -0700 (PDT)
+Received: from localhost.localdomain (ptr-4xh0y3vuv1059rd6h4r.18120a2.ip6.access.telenet.be. [2a02:1810:a44c:8f00:cd22:c517:e143:e53b])
+        by smtp.gmail.com with ESMTPSA id n66-20020a1ca445000000b003a513ee7830sm15884560wme.27.2022.08.08.05.05.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 05:05:53 -0700 (PDT)
+From:   Crt Mori <cmo@melexis.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Crt Mori <cmo@melexis.com>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 2/2] dt-bindings: iio: mlx90632 Add supply regulator documentation
+Date:   Mon,  8 Aug 2022 14:05:49 +0200
+Message-Id: <20220808120549.1543338-1-cmo@melexis.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220804003323.1441376-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <Yu1z0KcU5C2AJO6S@fedora> <3075adc7-e02e-fcd4-44ef-c4228293f460@linux.intel.com>
-In-Reply-To: <3075adc7-e02e-fcd4-44ef-c4228293f460@linux.intel.com>
-From:   Wander Lairson Costa <wander@redhat.com>
-Date:   Mon, 8 Aug 2022 09:05:18 -0300
-Message-ID: <CAAq0SUmY7VvAFVmM--y+QMsjHaUMo27Rn3rO9hcXQsBFGmRwJg@mail.gmail.com>
-Subject: Re: [PATCH v10 1/2] x86/tdx: Add TDX Guest attestation interface driver
-To:     Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kai Huang <kai.huang@intel.com>,
-        Isaku Yamahata <isaku.yamahata@gmail.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 5, 2022 at 6:35 PM Sathyanarayanan Kuppuswamy
-<sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
->
->
->
-> On 8/5/22 12:47 PM, Wander Lairson Costa wrote:
-> > On Wed, Aug 03, 2022 at 05:33:22PM -0700, Kuppuswamy Sathyanarayanan wrote:
-> >> +/**
-> >> + * struct tdx_report_req: Get TDREPORT using REPORTDATA as input.
-> >> + *
-> >> + * @subtype        : Subtype of TDREPORT (fixed as 0 by TDX Module
-> >> + *                   specification, but added a parameter to handle
-> >> + *                   future extension).
-> >> + * @reportdata     : User-defined REPORTDATA to be included into
-> >> + *                   TDREPORT. Typically it can be some nonce
-> >> + *                   provided by attestation service, so the
-> >> + *                   generated TDREPORT can be uniquely verified.
-> >> + * @rpd_len        : Length of the REPORTDATA (fixed as 64 bytes by
-> >> + *                   the TDX Module specification, but parameter is
-> >> + *                   added to handle future extension).
-> >> + * @tdreport       : TDREPORT output from TDCALL[TDG.MR.REPORT].
-> >> + * @tdr_len        : Length of the TDREPORT (fixed as 1024 bytes by
-> >> + *                   the TDX Module specification, but a parameter
-> >> + *                   is added to accommodate future extension).
-> >> + *
-> >> + * Used in TDX_CMD_GET_REPORT IOCTL request.
-> >> + */
-> >> +struct tdx_report_req {
-> >> +    __u8  subtype;
-> >> +    __u64 reportdata;
-> >> +    __u32 rpd_len;
-> >> +    __u64 tdreport;
-> >> +    __u32 tdr_len;
-> >> +};
-> >
-> > Any reason why reportdata and tdreport aren't "void *"?
->
-> It is the recommended way to pass the pointers.
->
-> https://docs.kernel.org/driver-api/ioctl.html
->
+Document the newly added vdd supply option.
 
-Ah, right. In this case, we should use the u64_to_user_ptr() function
-for pointer conversion as recommended.
+Signed-off-by: Crt Mori <cmo@melexis.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../devicetree/bindings/iio/temperature/melexis,mlx90632.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/temperature/melexis,mlx90632.yaml b/Documentation/devicetree/bindings/iio/temperature/melexis,mlx90632.yaml
+index b547ddcd544a..4a55e7f25ae7 100644
+--- a/Documentation/devicetree/bindings/iio/temperature/melexis,mlx90632.yaml
++++ b/Documentation/devicetree/bindings/iio/temperature/melexis,mlx90632.yaml
+@@ -35,6 +35,9 @@ properties:
+     maxItems: 1
+     description: Default is 0x3a, but can be reprogrammed.
+ 
++  vdd-supply:
++    description: provide VDD power to the sensor.
++
+ required:
+   - compatible
+   - reg
+@@ -50,6 +53,7 @@ examples:
+         temp-sensor@3a {
+             compatible = "melexis,mlx90632";
+             reg = <0x3a>;
++            vdd-supply = <&ldo4_reg>;
+         };
+     };
+ ...
+-- 
+2.34.1
 
