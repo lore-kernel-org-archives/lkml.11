@@ -2,141 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A6A1C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 13:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5C1C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 13:55:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242754AbiHHNwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 09:52:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55628 "EHLO
+        id S243029AbiHHNzJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 09:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237479AbiHHNwG (ORCPT
+        with ESMTP id S235823AbiHHNzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 09:52:06 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60AA2DEC2;
-        Mon,  8 Aug 2022 06:52:04 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 335EC1C0001; Mon,  8 Aug 2022 15:52:02 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ucw.cz; s=gen1;
-        t=1659966722;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type;
-        bh=ZJed1eg0BR3JFaZDVZSq8BNrfezpKyNl8ClpnC7ndWM=;
-        b=eV2K0sDO4MbvF+WKr91/UOn58Gcym1/3jsssNgsPG3hNjW2vwMZ3HpBmSzuiT8TkY4W35D
-        s+nIHY6JKSvqCtZIzbVbR2CXiQqSn4BcyjaLD8MNQkYesnW+gT3YrK2pCSBeM4eR6kAgD/
-        kHZl36aP4bDohWc9oSjjhYUH8c+9Hjs=
-Date:   Mon, 8 Aug 2022 15:52:01 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        jacek.anaszewski@gmail.com, linux-leds@vger.kernel.org
-Subject: [GIT PULL] LEDs changes for v5.20-rc1
-Message-ID: <20220808135201.GA22949@duo.ucw.cz>
+        Mon, 8 Aug 2022 09:55:05 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6DFBE05;
+        Mon,  8 Aug 2022 06:55:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659966903; x=1691502903;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Rj7S2o0i0FnNpMd3hXj9URZkZ3RMds4iYIgoV1QF3YQ=;
+  b=g32FAJPCAlQv3cEBE4ne4qH63RuBXS+/2uAoNHTNH2cF/ne5r1p2LNmT
+   oh1vco9mrZcT9UX+zqAQ1eRu2gNv0OzoOh5F2mrzOZeor37kYQ8b2XMY7
+   PUxGJqIrcR0SBbDWdbKe3NGLOcYAto8uAEVanK4uGm/y0tNPUltxZjFon
+   woxY2GiCIawQT63YROuYyBc0VJBlWA47xWA5n2lS0XS21kPE8iF+Ho46j
+   aNo0ilF67slPEf5IfzCoUEEHV7oNJgh5gNEz44O7xyorOJQXCLJXSSM+k
+   hMIINUe3V3JTXRAH2hBFsWQwE1jue1NhSQO3fbcj6kTdpH96oi11TU/nn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="291830698"
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="291830698"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 06:55:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
+   d="scan'208";a="932063223"
+Received: from mylly.fi.intel.com (HELO [10.237.72.177]) ([10.237.72.177])
+  by fmsmga005.fm.intel.com with ESMTP; 08 Aug 2022 06:55:00 -0700
+Message-ID: <dd1a74e1-4a26-7aec-e3ff-d42e01737700@linux.intel.com>
+Date:   Mon, 8 Aug 2022 16:54:59 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="Nq2Wo0NMKNjxTN9z"
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.10.0
+Subject: Re: [PATCH 2/8] pwm: change &pci->dev to dev in probe
+Content-Language: en-US
+To:     Ben Dooks <ben.dooks@sifive.com>, linux-pwm@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        u.kleine-koenig@pengutronix.de,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        William Salmon <william.salmon@sifive.com>,
+        Jude Onyenegecha --subject-prefix=PATCH v3 
+        <jude.onyenegecha@sifive.com>
+References: <20220805165033.140958-1-ben.dooks@sifive.com>
+ <20220805165033.140958-3-ben.dooks@sifive.com>
+From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
+In-Reply-To: <20220805165033.140958-3-ben.dooks@sifive.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
---Nq2Wo0NMKNjxTN9z
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
-
-  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/ tags/=
-leds-5.20-rc1
-
-for you to fetch changes up to 38ba0bb291aacd92d8eaa4a1aa8b63ce4286e797:
-
-  leds: is31fl319x: use simple i2c probe function (2022-08-02 16:43:31 +020=
-0)
-
-----------------------------------------------------------------
-LED updates for 5.20: new driver for bcm63138, is31fl319x updates,
-fixups for multicolor. Clevo-mail driver got disabled, it needs API
-fix.
-
-----------------------------------------------------------------
-Andy Shevchenko (4):
-      leds: is31fl319x: Make use of device properties
-      leds: is31fl319x: Make use of dev_err_probe()
-      leds: is31fl319x: Fix devm vs. non-devm ordering
-      leds: is31fl319x: use simple i2c probe function
-
-Emil Renner Berthing (3):
-      leds: pwm-multicolor: Don't show -EPROBE_DEFER as errors
-      dt-bindings: leds: pwm-multicolor: Add active-low property
-      leds: pwm-multicolor: Support active-low LEDs
-
-Greg Kroah-Hartman (1):
-      leds: turris-omnia: convert to use dev_groups
-
-Krzysztof Kozlowski (3):
-      dt-bindings: leds: class-multicolor: reference class directly in mult=
-i-led node
-      dt-bindings: leds: lp50xx: fix LED children names
-      dt-bindings: leds: pwm-multicolor: document max-brigthness
-
-Pavel Machek (1):
-      leds: clevo-mail: Mark as broken pending interface fix
-
-Rafa=C5=82 Mi=C5=82ecki (5):
-      dt-bindings: leds: add Broadcom's BCM63138 controller
-      leds: bcm63138: add support for BCM63138 controller
-      dt-bindings: leds: leds-bcm63138: unify full stops in descriptions
-      leds: add help info about BCM63138 module name
-      leds: leds-bcm63138: get rid of LED_OFF
-
-Randy Dunlap (1):
-      leds: clevo-mail: fix Kconfig "its" grammar
-
-Vincent Knecht (5):
-      leds: is31fl319x: Add missing si-en compatibles
-      leds: is31fl319x: Use non-wildcard names for vars, structs and defines
-      leds: is31fl319x: Move chipset-specific values in chipdef struct
-      leds: is31fl319x: Add support for is31fl319{0,1,3} chips
-      leds: is31fl319x: Cleanup formatting and dev_dbg calls
-
- .../bindings/leds/cznic,turris-omnia-leds.yaml     |   2 +
- .../devicetree/bindings/leds/leds-bcm63138.yaml    |  95 ++++
- .../bindings/leds/leds-class-multicolor.yaml       |  32 +-
- .../devicetree/bindings/leds/leds-lp50xx.yaml      |  10 +-
- .../bindings/leds/leds-pwm-multicolor.yaml         |  15 +-
- .../devicetree/bindings/leds/leds-qcom-lpg.yaml    |   2 +
- drivers/leds/Kconfig                               |  10 +-
- drivers/leds/blink/Kconfig                         |  14 +
- drivers/leds/blink/Makefile                        |   1 +
- drivers/leds/blink/leds-bcm63138.c                 | 307 ++++++++++++
- drivers/leds/leds-is31fl319x.c                     | 529 +++++++++++++----=
-----
- drivers/leds/leds-turris-omnia.c                   |   4 +-
- drivers/leds/rgb/leds-pwm-multicolor.c             |   8 +-
- 13 files changed, 811 insertions(+), 218 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/leds/leds-bcm63138.ya=
-ml
- create mode 100644 drivers/leds/blink/leds-bcm63138.c
-
---=20
-People of Russia, stop Putin before his war on Ukraine escalates.
-
---Nq2Wo0NMKNjxTN9z
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYvEVAQAKCRAw5/Bqldv6
-8oE7AJ93lneTAVUA7FJRNPblZjCtJps6JwCfRXV65hBkErtzrJVyyptaF62Cfc8=
-=lgHM
------END PGP SIGNATURE-----
-
---Nq2Wo0NMKNjxTN9z--
+On 8/5/22 19:50, Ben Dooks wrote:
+> The dwc_pwm_probe() assignes dev to be &pci->dev but then uses
+> &pci->dev throughout the function. Change these all to the be
+> 'dev' variable to make lines shorter.
+> 
+> Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+> Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> ---
+>   drivers/pwm/pwm-dwc.c | 10 ++++------
+>   1 file changed, 4 insertions(+), 6 deletions(-)
+> 
+Acked-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
