@@ -2,88 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F28A1C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:44:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D6DDC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244339AbiHHRoJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 13:44:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47914 "EHLO
+        id S243876AbiHHRoR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 13:44:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244343AbiHHRnf (ORCPT
+        with ESMTP id S235567AbiHHRnh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 13:43:35 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC355B51
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:43:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659980614; x=1691516614;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=eZHz5AZts8pa+4dAgLDzj+RDlAzwOdbJVrXvXp0Rcms=;
-  b=WfL43eYuI3KWCs5hUgkt+oYHtcri+hAusIikoE4nQd7hW7eQOSV/U/zl
-   aIj4HPf0AZ1kGVWpxjrcZBReISUp5iIsiBfAdgZ1Y4jN0XKJTwkPTv8/j
-   Lc8A/t04jO9AthfJItzKuBXslRCm/SGsRnuXtpv//wIjYE5qFdp8pJReS
-   OJl/amiW7l6A4OouBVNwKyvdOdpiIaPD+lftPTIiY7L2TdGb+NRbHbFR/
-   vWXh11Gn+wx6fE/wPL+hGAo9KkOqKEgW+EdVB5bPz5y8vp95zOsPsKEb0
-   EPKjnFYoj5yJ/0bkIZVFHHv5IoLhT9S/aWTrtiId5wMb3RIJNM+connEI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="273703180"
-X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
-   d="scan'208";a="273703180"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 10:43:34 -0700
-X-IronPort-AV: E=Sophos;i="5.93,222,1654585200"; 
-   d="scan'208";a="604452861"
-Received: from sankarka-mobl1.amr.corp.intel.com (HELO [10.212.251.15]) ([10.212.251.15])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 10:43:34 -0700
-Message-ID: <b929e415-def2-b47b-fd1e-57877a98c2ad@intel.com>
-Date:   Mon, 8 Aug 2022 10:43:35 -0700
+        Mon, 8 Aug 2022 13:43:37 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9F717E0D
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:43:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1659980504; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4kZIVuuKKO+sS/oNnpnJC3ag5t6waBzISKhOioOsnm4=;
+        b=dcV7nTb2v4GfByhH2Zck6ifngQ987cv/AmVNxvD7h8UHDHwCT0qLNBWJ6dv3N44zBSRTS2
+        2KJl9GGvr8hVyK5F7udILXA1JbdftHHCaNwXK37evov1L6yT9fOj38n3SLgVENUcZalCFA
+        hExwxYRJMEBrtR60FAaHZymRiG1BNbs=
+From:   Paul Cercueil <paul@crapouillou.net>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2 13/30] mfd: mcp-sa11x0: Remove #ifdef guards for PM related functions
+Date:   Mon,  8 Aug 2022 19:40:50 +0200
+Message-Id: <20220808174107.38676-14-paul@crapouillou.net>
+In-Reply-To: <20220808174107.38676-1-paul@crapouillou.net>
+References: <20220808174107.38676-1-paul@crapouillou.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [RFC PATCH 1/5] entry: Pass pt_regs to
- irqentry_exit_cond_resched()
-Content-Language: en-US
-To:     Borislav Petkov <bp@alien8.de>, Ira Weiny <ira.weiny@intel.com>
-Cc:     Rik van Riel <riel@surriel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-References: <20220805173009.3128098-1-ira.weiny@intel.com>
- <20220805173009.3128098-2-ira.weiny@intel.com> <YvDnkALyHl77R/Ug@zn.tnic>
- <YvFJGxU0k492npYT@iweiny-desk3> <YvFKHaRdOkg5RHtv@zn.tnic>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <YvFKHaRdOkg5RHtv@zn.tnic>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/8/22 10:38, Borislav Petkov wrote:
-> On Mon, Aug 08, 2022 at 10:34:19AM -0700, Ira Weiny wrote:
->> I thought about that but generally have been steered away from using bool
->> arguments like this.
-> The reason being?
+Use the new pm_sleep_ptr() macro to handle the .suspend/.resume
+callbacks.
 
-Might have been me.  Function calls that look like this:
+This macro allow the suspend and resume functions to be automatically
+dropped by the compiler when CONFIG_SUSPEND is disabled, without having
+to use #ifdef guards.
 
-	foo(&ptr, false, true, false, true, 1, 0);
+This has the advantage of always compiling these functions in,
+independently of any Kconfig option. Thanks to that, bugs and other
+regressions are subsequently easier to catch.
 
-are incomprehensible.  A true/false is effectively a magic number here
-and you have to go looking at the code implementing 'foo()' or at least
-the declaration hoping that the variable names help (if the declaration
-has variable names).
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ drivers/mfd/mcp-sa11x0.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-I think I've encouraged Ira to do something like this instead:
+diff --git a/drivers/mfd/mcp-sa11x0.c b/drivers/mfd/mcp-sa11x0.c
+index 4629dff187cd..1c9831b78cf9 100644
+--- a/drivers/mfd/mcp-sa11x0.c
++++ b/drivers/mfd/mcp-sa11x0.c
+@@ -255,7 +255,6 @@ static int mcp_sa11x0_remove(struct platform_device *dev)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+ static int mcp_sa11x0_suspend(struct device *dev)
+ {
+ 	struct mcp_sa11x0 *m = priv(dev_get_drvdata(dev));
+@@ -277,17 +276,14 @@ static int mcp_sa11x0_resume(struct device *dev)
+ 
+ 	return 0;
+ }
+-#endif
+ 
+ static const struct dev_pm_ops mcp_sa11x0_pm_ops = {
+-#ifdef CONFIG_PM_SLEEP
+ 	.suspend = mcp_sa11x0_suspend,
+ 	.freeze = mcp_sa11x0_suspend,
+ 	.poweroff = mcp_sa11x0_suspend,
+ 	.resume_noirq = mcp_sa11x0_resume,
+ 	.thaw_noirq = mcp_sa11x0_resume,
+ 	.restore_noirq = mcp_sa11x0_resume,
+-#endif
+ };
+ 
+ static struct platform_driver mcp_sa11x0_driver = {
+@@ -295,7 +291,7 @@ static struct platform_driver mcp_sa11x0_driver = {
+ 	.remove		= mcp_sa11x0_remove,
+ 	.driver		= {
+ 		.name	= DRIVER_NAME,
+-		.pm	= &mcp_sa11x0_pm_ops,
++		.pm	= pm_sleep_ptr(&mcp_sa11x0_pm_ops),
+ 	},
+ };
+ 
+-- 
+2.35.1
 
-enum foo_mode {
-	MODE_BAR,
-	MODE_BAZ
-}
-
-where the call ends up looking like:
-
-	foo(&ptr, MODE_BAR);
-
-which is much more self-documenting.
