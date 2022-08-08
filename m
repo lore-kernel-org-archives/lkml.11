@@ -2,96 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA19C25B0C
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:19:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E3CFC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 17:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242531AbiHHRT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 13:19:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59246 "EHLO
+        id S237483AbiHHRWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 13:22:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237846AbiHHRTN (ORCPT
+        with ESMTP id S234680AbiHHRWO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 13:19:13 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C2D15FEF
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:19:11 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id v2so4997662lfi.6
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 10:19:11 -0700 (PDT)
+        Mon, 8 Aug 2022 13:22:14 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE5AB15FF8
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 10:22:11 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id h132so9137834pgc.10
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 10:22:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=KbpI7aX4OJn+9ta7EZh2prJEXa1vTXGHPmj5GWJjFZo=;
-        b=zlnytlGmuMZ+psy1MdlUiNxuXSiE8ZCQ3Gv5Frvlh8cCNKqt2vz3RyTbRK256z5CKX
-         ZiuNuhAA8KA12Bt3I+BbNroQ91a8BPiMqx26a8cX96K41jkiGVK44WiqKCvPLcROB+9h
-         RMY9cVTGaADY3Uew5DmA0cBp4ZUot3wxoLoTqCOQpZLlYII++6Brua3pyU1+ydwOM6IJ
-         BUIgerP4Y+W2XoSWVc4fw9+o932Bj9skOfT3gBECuXD55/9/WtQgc5G5Avryql3RS6ZX
-         KJKJOgYLQ3PSDLNrWyUjEk0LQY6DhY4+0EDzjqUJLHD/X7Z4ysu2yu2jnnBvISNlVRJd
-         fEIw==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4ISRmfPuzAq5iPA9W7SoAaYtOXEzjnhWi555d7SJED8=;
+        b=nY3cdk1gWCUthARunn+1V5ONlEaJCy1aeQA+5MIdzACrZnvUMxuvRRGrBP8vmXW716
+         KEwygp7xRisTAS1k8qmj7xeHcaG4KkSGfbHhM8pBHkUFiJaS/v3cwWb9su+SqtTlAZu/
+         k3I2I1qk80aFlw2YsI5Ai9QRQDlq/U3MgxLDs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=KbpI7aX4OJn+9ta7EZh2prJEXa1vTXGHPmj5GWJjFZo=;
-        b=42qchAxvDf2/FZ1XfJDy9bPRLrQi7Ve6vKdK9pnDZG563xNNB5jFVxFjeBg6HmLko/
-         wUK1Dg0qxp1wArS1EZZDtnqCbdOfjWU11K4ZRPpa4b00EJ6lLFOjSikfzPN1Ge8QAJk/
-         fu8QLcRiT/09B36vmE+uJXCL9jJG15xNJw2PtrR/4AzdztAqdazmFjkgbhVFmmf6yO/q
-         dVPxJkNRZjURw9ihLHXTzB4zoNmFVHlQx7vc2l0QmmG7qQlszcEvQrQs/gL4OEgEagVW
-         ZKxIuLbNnDZTz6vg/jsks3MJgeG2dxrv/sISx1t3umU9ko/xyC1A4cTj1Ubcds9j9Mv8
-         vcew==
-X-Gm-Message-State: ACgBeo1X9oKCEFTGVMJ0N3UtuCgKpDoBFgjf5YLDudqnhtrFGbZI35gx
-        c0Y5Ph/O//34prpDcowQuvmkogMATQfDHL3gGO20kA==
-X-Google-Smtp-Source: AA6agR60RUwt3/4FZq6vv68Rd14ohShJ+6I1vuQ8pNpdWDWPZ27+sATnt0BnfGxwaXqeGnKcTp+CfCCKh4dFy7ZrKgQ=
-X-Received: by 2002:a05:6512:2306:b0:48b:26f3:91b1 with SMTP id
- o6-20020a056512230600b0048b26f391b1mr6621555lfu.11.1659979150181; Mon, 08 Aug
- 2022 10:19:10 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4ISRmfPuzAq5iPA9W7SoAaYtOXEzjnhWi555d7SJED8=;
+        b=UnLUxFt/S4xppRAAY1NLHHTiMHL2erwd300vzMiU74sGLQCltApVs0NojRJJLZ2I0d
+         KnmGP0ARHQKyA5k7UvxejoYCXhWlvoeVg+bmPTL7qHjEkFflx3o4cFdFNtifH3Atja6t
+         IDZe/DwMT821xU4IKY2UebopfdLuZ6jAuLyR9lrADJmm8Ck1zeeFkh6eWJ3x5al+iJQr
+         u4aOZZ6JreLN8VpRTt/Gcoo+SI39ztW2DyiDDcfeTh8Rr7eIZoZa6RuGIkrLhS27qDMm
+         ZsgzFZoCBnYmRJc/nKdvix3/8IMhukEDntLtdGLhmE5rl9eKEl9Jn0N60AgD1lP1bQXr
+         y1HQ==
+X-Gm-Message-State: ACgBeo3iJpjZbufbDFOfAWQT5U3xC7gQoDiaAxNjYIkIGR8utUey8z2E
+        UK6vL5ZvA152pwmoRke3fGt09Q==
+X-Google-Smtp-Source: AA6agR66v0hA8Eemx2dKzdaVrT6+rtDHvVGdEsmUWrdfx899jKGr/hzPQxI3VEKvhRUidNhEM1Uhzg==
+X-Received: by 2002:a63:2244:0:b0:41d:a9c4:e83 with SMTP id t4-20020a632244000000b0041da9c40e83mr1943438pgm.271.1659979331250;
+        Mon, 08 Aug 2022 10:22:11 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:7a1:96b:e08b:5ba0])
+        by smtp.gmail.com with UTF8SMTPSA id cp2-20020a170902e78200b0016db7f49cc2sm9008576plb.115.2022.08.08.10.22.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Aug 2022 10:22:10 -0700 (PDT)
+Date:   Mon, 8 Aug 2022 10:22:07 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        quic_ppratap@quicinc.com, quic_vpulyala@quicinc.com,
+        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 8/9] usb: dwc3: qcom: fix wakeup implementation
+Message-ID: <YvFGP90eyXoPbcy8@google.com>
+References: <20220804151001.23612-1-johan+linaro@kernel.org>
+ <20220804151001.23612-9-johan+linaro@kernel.org>
+ <Yuv7AM/5jtO/pgcm@google.com>
+ <Yu1MO9sgPslEDAjR@google.com>
+ <Yu6VTYn2/cG79dvl@hovoldconsulting.com>
 MIME-Version: 1.0
-References: <20220726200739.30017-1-semen.protsenko@linaro.org>
-In-Reply-To: <20220726200739.30017-1-semen.protsenko@linaro.org>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Mon, 8 Aug 2022 20:18:58 +0300
-Message-ID: <CAPLW+4kG9V03edHFXWJumuK+tmWiiwF5B7d2O6+Mb_XmfBY5Jw@mail.gmail.com>
-Subject: Re: [PATCH 0/2] iommu/exynos: Add fault handling on SysMMU v7
-To:     Marek Szyprowski <m.szyprowski@samsung.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Janghyuck Kim <janghyuck.kim@samsung.com>,
-        Cho KyongHo <pullip.cho@samsung.com>,
-        Daniel Mentz <danielmentz@google.com>,
-        David Virag <virag.david003@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yu6VTYn2/cG79dvl@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Jul 2022 at 23:07, Sam Protsenko <semen.protsenko@linaro.org> wrote:
->
-> Exynos IOMMU driver implements fault handling for SysMMU v1..v5. But the
-> abstraction currently used is not suited for SysMMU v7, as it has quite
-> different fault related register set.
->
-> This patch series reworks the mentioned fault handling abstraction and
-> adds fault handling support for SysMMU v7.
->
-> Sam Protsenko (2):
->   iommu/exynos: Abstract getting the fault info
->   iommu/exynos: Implement fault handling on SysMMU v7
->
->  drivers/iommu/exynos-iommu.c | 208 ++++++++++++++++++++++++-----------
->  1 file changed, 143 insertions(+), 65 deletions(-)
->
-> --
-> 2.30.2
->
+On Sat, Aug 06, 2022 at 06:22:37PM +0200, Johan Hovold wrote:
+> On Fri, Aug 05, 2022 at 09:58:35AM -0700, Matthias Kaehlcke wrote:
+> > On Thu, Aug 04, 2022 at 09:59:44AM -0700, Matthias Kaehlcke wrote:
+> > > On Thu, Aug 04, 2022 at 05:10:00PM +0200, Johan Hovold wrote:
+> > > > It is the Qualcomm glue wakeup interrupts that may be able to wake the
+> > > > system from suspend and this can now be described in the devicetree.
+> > > > 
+> > > > Move the wakeup-source property handling over from the core driver and
+> > > > instead propagate the capability setting to the core device during
+> > > > probe.
+> > > > 
+> > > > This is needed as there is currently no way for the core driver to query
+> > > > the wakeup setting of the glue device, but it is the core driver that
+> > > > manages the PHY power state during suspend.
+> > > > 
+> > > > Also don't leave the PHYs enabled when system wakeup has been disabled
+> > > > through sysfs.
+> > > > 
+> > > > Fixes: 649f5c842ba3 ("usb: dwc3: core: Host wake up support from system suspend")
+> > > > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> > > > ---
+> > > >  drivers/usb/dwc3/core.c      | 5 ++---
+> > > >  drivers/usb/dwc3/dwc3-qcom.c | 6 +++++-
+> > > >  2 files changed, 7 insertions(+), 4 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+> > > > index 16d1f328775f..8c8e32651473 100644
+> > > > --- a/drivers/usb/dwc3/core.c
+> > > > +++ b/drivers/usb/dwc3/core.c
+> > > > @@ -1822,7 +1822,6 @@ static int dwc3_probe(struct platform_device *pdev)
+> > > >  
+> > > >  	platform_set_drvdata(pdev, dwc);
+> > > >  	dwc3_cache_hwparams(dwc);
+> > > > -	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
+> > > >  
+> > > >  	spin_lock_init(&dwc->lock);
+> > > >  	mutex_init(&dwc->mutex);
+> > > > @@ -1984,7 +1983,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+> > > >  		dwc3_core_exit(dwc);
+> > > >  		break;
+> > > >  	case DWC3_GCTL_PRTCAP_HOST:
+> > > > -		if (!PMSG_IS_AUTO(msg) && !device_can_wakeup(dwc->dev)) {
+> > > > +		if (!PMSG_IS_AUTO(msg) && !device_may_wakeup(dwc->dev)) {
+> > > 
+> > > Let me explain the rationale for why device_can_wakeup() was used here:
+> > > 
+> > > On QCOM SC7180 based Chromebooks we observe that the onboard USB hub consumes
+> > > ~80 mW during system suspend when the PHYs are disabled, as opposed to ~17 mW
+> > > when the PHYs remain enabled. This is a significant delta when the device is
+> > > on a battery power.
+> > > 
+> > > The initial idea was to leave the PHYs always enabled (in a low power mode),
+> > > but then I dug up commit c4a5153e87fd ("usb: dwc3: core: Power-off core/PHYs
+> > > on system_suspend in host mode"), which provides a rationale for the PHYs
+> > > being powered off:
+> > > 
+> > >   Commit 689bf72c6e0d ("usb: dwc3: Don't reinitialize core during
+> > >   host bus-suspend/resume") updated suspend/resume routines to not
+> > >   power_off and reinit PHYs/core for host mode.
+> > >   It broke platforms that rely on DWC3 core to power_off PHYs to
+> > >   enter low power state on system suspend.
+> > > 
+> > > Unfortunately we don't know which platforms are impacted by this. The idea
+> > > behind using device_can_wakeup() was to use it as a proxy for platforms
+> > > that are *not* impacted. If a platform supports USB wakeup supposedly the
+> > > SoC can enter its low power mode during system suspend with the PHYs
+> > > enabled.
+> > > 
+> > > By now I'm not 100% sure if the above assumption is correct. I recently
+> > > saw allegations that the power consumption of a given QC SoC with USB
+> > > wakeup support drops significantly when wakeup is disabled (i.e. when
+> > > the PHYs are off), but haven't confirmed this yet.
+> > 
+> > So far power measurements don't support the claim that SoC power
+> > consumption is substantially lower with USB wakeup disabled/the PHYs
+> > off. I asked the person who made that claim to provide more
+> > details/data (the discussion is in an internal forum).
+> 
+> Thanks for the background on this. So clearly it has nothing to with
+> supporting wakeup as the commit summary claimed, and this should
+> probably never have been made to depend on wakeup capability either.
 
-Hi Marek,
+To be clear, there are two different (supposed) impacts on suspend power:
 
-Can you please review and test this series? I only have my E850 (which
-has VM-capable SysMMU register layout). So it would be nice to check
-if it works fine with non-VM SysMMU v7 and older versions.
+1. with the PHYs powered off an onboard hub on SC7180/SC7280 boards draws
+   ~80mW during system suspend, vs. ~17mW with the PHYs being on. This is
+   confirmed.
 
-Thanks!
+   For SC7180/SC7280 Chrome OS boards in particular it would be ok to
+   power the PHYs off based on device_may_wakeup(), since Chrome OS
+   leaves USB wakeup enabled, hence the PHYs would remain powered as
+   desired.
+
+   However boards that opt for disabling USB wakeup could be impacted
+   by increased power consumption of USB peripherals, as seen with the
+   hub of SC7180/SC7280 Chrome OS boards.
+
+2. with the PHYs on during system suspend allegedly some QC SoCs can't
+   reach their lowest power mode (commit c4a5153e87fd). I don't know
+   which SoCs are impacted.
+
+   Someone from QC claims that SC7280 has significantly lower power
+   consumption with "USB wakeup disabled", so far this has not been
+   confirmed by my colleague who takes power measurements, I'm in
+   the process of clarifying what "USB wakeup disabled" exactly
+   means in this context (e.g. no wakeup source flag vs. no wakeup
+   capable device plugged).
+
+> I'll revisit this after the merge window, but perhaps we should just rip
+> this out completely and use a more descriptive property to configure the
+> PHY suspend state. But depending on the results from your internal
+> measurements, perhaps not even that is needed.
+
+Ok, I'll keep you posted on power findings on our side, though that will
+only cover SC7180/SC7280.
