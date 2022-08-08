@@ -2,73 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C461BC00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 20:57:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C845C25B08
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 20:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244083AbiHHU52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 16:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38070 "EHLO
+        id S244460AbiHHU6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 16:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236488AbiHHU5Z (ORCPT
+        with ESMTP id S236488AbiHHU62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 16:57:25 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D1B15FDE;
-        Mon,  8 Aug 2022 13:57:24 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b98cb329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98cb:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 6F33D1EC0324;
-        Mon,  8 Aug 2022 22:57:18 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1659992238;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=p0Nu/U4H8SmixYd5feGWYPr4UgnChBbHs5iDPvH3yWI=;
-        b=ZqNVh2bzSe9ugQMduDliBm/D6gtyRvcD9lshalZwzblLAwOSiw++v3PvvFI5UTiDaKeB1C
-        hY0a1bfABftejmpxJ8DtII7t3CEF2oJ3elghXxJSnC28CdjWginuoRFpt6NtuXxP9fr+2q
-        Rv/CKyy7VpkanZnUc7QBhsqm3ogaCkk=
-Date:   Mon, 8 Aug 2022 22:57:11 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Kani, Toshi" <toshi.kani@hpe.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Jia He <justin.he@arm.com>, Len Brown <lenb@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Shuai Xue <xueshuai@linux.alibaba.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:EDAC-CORE" <linux-edac@vger.kernel.org>
-Subject: Re: [PATCH] ACPI: APEI: move edac_init ahead of ghes platform drv
- register
-Message-ID: <YvF4p01WJGGUwIJC@zn.tnic>
-References: <20220805023200.154634-1-justin.he@arm.com>
- <CAJZ5v0gUbKYaxRcZsYO6eq7vLgKdgfdLdoL_Hzmd6r-JczkVPg@mail.gmail.com>
- <YvFX9vTilqMpsF9u@zn.tnic>
- <PH7PR84MB1838379B8C2DF488DE729A9182639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <PH7PR84MB1838379B8C2DF488DE729A9182639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+        Mon, 8 Aug 2022 16:58:28 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 756FE18349
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 13:58:27 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31f5668674cso86362767b3.8
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 13:58:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=wDFyY6i2iGLEz8VKfen0AcpNDNUS/ftqH90yGvpjBX4=;
+        b=LA8mY4caRn3CQYC0RmBNTUqTCSho6YBEjR11snUjyzm5pz2SSY5Dnb+XGETs6DRx40
+         zkYzdSo0GsgETEGQDSeiP39PP+R/vpCsZ9PoxbzKiGZXvzU34LJ98WAA3f7IBCWtUAnJ
+         0lD3jgEClnvKuivQ4E1Hf799NBWiEOjPINAfREqgsIWnICrsKUg04Ct9SzC0mCXZOBDJ
+         HE22ugUatr3LPBMYoNhr61FsK1javEAU1vOtVivQoBA6e+4O0sfqmQM4DTFr5sK1p8Ju
+         M9q94q3DJxiQJUK6wBY9p2oTDmEMJCXrh8DNeV7Y9G934YB+dZzU0Hc64Yxhl9rFRoKp
+         hCvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=wDFyY6i2iGLEz8VKfen0AcpNDNUS/ftqH90yGvpjBX4=;
+        b=Kkyx+mJ4MQCvSInYhXNen4xE3ZKANC6WBBldQHWL8R0q15c2BcHCYuVDmzikqiaR3t
+         8gLrve0nPn0Z8Shdb0WS7+YGNQU71os5jIrM8mi2gVkRhEHL6VbzZK8ItkHoVUEnJjXB
+         QJ9+vjqA2bYrhLm0ZcJ4aln/QJmqbkITFtMyOJL3iNx9fVlUKSIAWTWmKovDBaiGjIfp
+         lFUo9znfO8GzPHPWdeM7MmfklhVTP5WhZItxDW20YgEfydf4Lwkx2w6Jg41YPkjLcuMg
+         Gr9X+CSsy4p1xmhfBzsHU1n4nRKpfdW5H6Id75qUiOhAULmTNRR7Ch4SYAT4sE2vWc5G
+         OfaA==
+X-Gm-Message-State: ACgBeo0FVmlRchT6TTR1d4rg0l+J2lcZ/u+1DgnP3YiDGqrhUDqVHVNt
+        IuA65E990Fz+kw1cb+L4/e08Tpmo0A==
+X-Google-Smtp-Source: AA6agR4D+Dn4z/3kSEN+SSp9h+j1Qj+vvmpCiuqEdpwbARC0gR3x94+Yvd2RWB42xfoK7D5rWPW1hHDcuA==
+X-Received: from khmel2.mtv.corp.google.com ([2620:15c:202:201:7a7b:6028:93de:3db7])
+ (user=khmel job=sendgmr) by 2002:a25:a4c3:0:b0:67a:6056:9c7f with SMTP id
+ g61-20020a25a4c3000000b0067a60569c7fmr19241626ybi.198.1659992306756; Mon, 08
+ Aug 2022 13:58:26 -0700 (PDT)
+Date:   Mon,  8 Aug 2022 13:58:22 -0700
+Message-Id: <20220808205822.1350030-1-khmel@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
+Subject: [PATCH] squashfs: Customize squashfs metadata cache size
+From:   Yury Khmel <khmel@google.com>
+To:     Phillip Lougher <phillip@squashfs.org.uk>
+Cc:     linux-kernel@vger.kernel.org, Yury Khmel <khmel@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 08, 2022 at 08:40:18PM +0000, Kani, Toshi wrote:
-> This allows ghes_edac_register() to run before edac_init(), and sets
-> edac_mc_owner to prevent chipset-specific edac driver
+It provides customization using module params.
+In some use-cases reading metadata may take comparable time reading data
+itself. Increasing the cache size in such cases helps to eliminate that
+bottleneck and increase the overall performance.
 
-So this is the important part: how does it get decided which EDAC driver
-to load? The chipset-specific one or the FW glue one?
+Signed-off-by: Yury Khmel <khmel@google.com>
+---
+ fs/squashfs/file.c        |  4 ++--
+ fs/squashfs/squashfs_fs.h |  2 +-
+ fs/squashfs/super.c       | 12 +++++++++++-
+ 3 files changed, 14 insertions(+), 4 deletions(-)
 
-User, policy, etc?
-
+diff --git a/fs/squashfs/file.c b/fs/squashfs/file.c
+index 98e64fec75b7..fc8859741f59 100644
+--- a/fs/squashfs/file.c
++++ b/fs/squashfs/file.c
+@@ -207,7 +207,7 @@ static long long read_indexes(struct super_block *sb, int n,
+  * to distribute these over the length of the file, entry[0] maps index x,
+  * entry[1] maps index x + skip, entry[2] maps index x + 2 * skip, and so on.
+  * The larger the file, the greater the skip factor.  The skip factor is
+- * limited to the size of the metadata cache (SQUASHFS_CACHED_BLKS) to ensure
++ * limited to the size of the metadata cache (squashfs_cached_blks) to ensure
+  * the number of metadata blocks that need to be read fits into the cache.
+  * If the skip factor is limited in this way then the file will use multiple
+  * slots.
+@@ -216,7 +216,7 @@ static inline int calculate_skip(u64 blocks)
+ {
+ 	u64 skip = blocks / ((SQUASHFS_META_ENTRIES + 1)
+ 		 * SQUASHFS_META_INDEXES);
+-	return min((u64) SQUASHFS_CACHED_BLKS - 1, skip + 1);
++	return min((u64) squashfs_cached_blks() - 1, skip + 1);
+ }
+ 
+ 
+diff --git a/fs/squashfs/squashfs_fs.h b/fs/squashfs/squashfs_fs.h
+index b3fdc8212c5f..b42aaf51de28 100644
+--- a/fs/squashfs/squashfs_fs.h
++++ b/fs/squashfs/squashfs_fs.h
+@@ -202,7 +202,7 @@ static inline int squashfs_block_size(__le32 raw)
+ #define SQUASHFS_XATTR_OFFSET(A)	((unsigned int) ((A) & 0xffff))
+ 
+ /* cached data constants for filesystem */
+-#define SQUASHFS_CACHED_BLKS		8
++unsigned int squashfs_cached_blks(void);
+ 
+ /* meta index cache */
+ #define SQUASHFS_META_INDEXES	(SQUASHFS_METADATA_SIZE / sizeof(unsigned int))
+diff --git a/fs/squashfs/super.c b/fs/squashfs/super.c
+index 32565dafa7f3..939a5eb017c2 100644
+--- a/fs/squashfs/super.c
++++ b/fs/squashfs/super.c
+@@ -27,6 +27,7 @@
+ #include <linux/pagemap.h>
+ #include <linux/init.h>
+ #include <linux/module.h>
++#include <linux/moduleparam.h>
+ #include <linux/magic.h>
+ #include <linux/xattr.h>
+ 
+@@ -85,6 +86,15 @@ static int squashfs_parse_param(struct fs_context *fc, struct fs_parameter *para
+ 	return 0;
+ }
+ 
++static unsigned int cached_blks = 8;
++module_param(cached_blks, uint, 0644);
++MODULE_PARM_DESC(cached_blks, "Metadata squashfs cache size");
++
++unsigned int squashfs_cached_blks(void)
++{
++	return cached_blks;
++}
++
+ static const struct squashfs_decompressor *supported_squashfs_filesystem(
+ 	struct fs_context *fc,
+ 	short major, short minor, short id)
+@@ -246,7 +256,7 @@ static int squashfs_fill_super(struct super_block *sb, struct fs_context *fc)
+ 	err = -ENOMEM;
+ 
+ 	msblk->block_cache = squashfs_cache_init("metadata",
+-			SQUASHFS_CACHED_BLKS, SQUASHFS_METADATA_SIZE);
++			squashfs_cached_blks(), SQUASHFS_METADATA_SIZE);
+ 	if (msblk->block_cache == NULL)
+ 		goto failed_mount;
+ 
 -- 
-Regards/Gruss,
-    Boris.
+2.37.1.559.g78731f0fdb-goog
 
-https://people.kernel.org/tglx/notes-about-netiquette
