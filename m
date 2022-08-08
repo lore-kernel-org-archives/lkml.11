@@ -2,66 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18320C00140
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 22:37:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 402DDC00140
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 22:37:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244588AbiHHWha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 18:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59798 "EHLO
+        id S244862AbiHHWhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 18:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244825AbiHHWhM (ORCPT
+        with ESMTP id S244684AbiHHWhL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 18:37:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A62B2B0;
-        Mon,  8 Aug 2022 15:37:11 -0700 (PDT)
+        Mon, 8 Aug 2022 18:37:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B64D8FC6;
+        Mon,  8 Aug 2022 15:37:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30112B810D5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 537D460BCB;
         Mon,  8 Aug 2022 22:37:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EF0A2C433B5;
-        Mon,  8 Aug 2022 22:37:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B640BC433C1;
+        Mon,  8 Aug 2022 22:37:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1659998229;
-        bh=ypU1ekBmO9eH94NIO5RXka2TukuhlZJ5JqQI3eSLXXY=;
+        bh=ZmNHPMhdJEUMHcd4zG4REwxvtBhkoR3gNfiwRF1XsKw=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=DmDBUBui4e0iNAS6aek5XLgs4iehzFE/8HzCzHYuN1xUxvVlULhm9NbxQUr906kXD
-         pMo1xa0cL+9BhFqB02QwpxGFLJP6Qp6H7OgKvUhsAEOWBuaV8JhTuq2da2p5lNEbGt
-         4X3JGMRSesCqIEMhQtwTPx1nC/8XZJCA99lf8mmnZ8LqbwT9MFblhOXCSANc5Zd5sp
-         dyQgBZWEO5LKVObP1PQe5E04JhftrWAA3lfIu6NC96j6NhSB+aZ7l9Mh9hHLFuuS5F
-         2m0krhX3y8vCI+w7C8JiTq1GM2zypHw0e88myY2xiw/ZDvtl9rvXy/6FGgxWSJc7Ey
-         BFnSeS66f1wZQ==
+        b=AQdNzXCINfK0iTK3CsLibv8yUT5A0bqh5g/dc6kUmq0OhR3IKhaCDlOyY9jir2C5k
+         +TmqgejYlTuTfW6+EDDFt1qFyMnhbf52qhDiDDIbT6VsbthKEgBe5l4wZRoWNLPUz7
+         5OOf1xoGagSC0PCWD6KqiE1lzcYU5AJM1y8UmyTejCtgCgRGY+2e3KwAsyebjuG3bh
+         z9j9aD1GxZO4h9WdN8e/3xNWsrG2tYgUD04siAKws60PPmZ1wk81oPF5PtsUW+Xm+8
+         0X4zq9SD7bI/sPNWnKGgQ8sywEbjQ9wULyZUTbp5QYYu+A28CuUL7ojmKozF+8JEze
+         5Th53Yp172y4A==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DC2D9C43140;
-        Mon,  8 Aug 2022 22:37:08 +0000 (UTC)
-Subject: Re: [GIT PULL] More power management updates for v5.20-rc1
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A41BCC43142;
+        Mon,  8 Aug 2022 22:37:09 +0000 (UTC)
+Subject: Re: [GIT PULL] remoteproc updates for v5.20
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAJZ5v0i8zu7SUgf2Bp3TZnxzHS_Oa9oQVKSN2rezDAisYdrWZQ@mail.gmail.com>
-References: <CAJZ5v0i8zu7SUgf2Bp3TZnxzHS_Oa9oQVKSN2rezDAisYdrWZQ@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-pm.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAJZ5v0i8zu7SUgf2Bp3TZnxzHS_Oa9oQVKSN2rezDAisYdrWZQ@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git pm-5.20-rc1-2
-X-PR-Tracked-Commit-Id: c3f834df191ac2e5e58c215b9110e7e19553100f
+In-Reply-To: <20220808190039.2106786-1-bjorn.andersson@linaro.org>
+References: <20220808190039.2106786-1-bjorn.andersson@linaro.org>
+X-PR-Tracked-List-Id: <linux-remoteproc.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220808190039.2106786-1-bjorn.andersson@linaro.org>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/remoteproc/linux.git tags/rproc-v5.20
+X-PR-Tracked-Commit-Id: 8447d0e75099eb54eea9306c2d43ecfc956d09ed
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 507f811f205c17fd6f64e8d34d4bf91cd01b07a2
-Message-Id: <165999822889.1400.13948234317372627937.pr-tracker-bot@kernel.org>
-Date:   Mon, 08 Aug 2022 22:37:08 +0000
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
+X-PR-Merge-Commit-Id: 5d5d353bed32dc3ea52e2619e0d1c60b17133b91
+Message-Id: <165999822966.1400.16617128497130036065.pr-tracker-bot@kernel.org>
+Date:   Mon, 08 Aug 2022 22:37:09 +0000
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>,
+        Siddharth Gupta <sidgup@codeaurora.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        Abel Vesa <abel.vesa@linaro.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Luca Weiss <luca@z3ntu.xyz>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Mukesh Ojha <quic_mojha@quicinc.com>,
+        Ren Zhijie <renzhijie2@huawei.com>,
+        Sireesh Kodali <sireeshkodali1@gmail.com>,
+        Xiang wangx <wangxiang@cdjrlc.com>, keliu <liuke94@huawei.com>,
+        ran jianping <ran.jianping@zte.com.cn>,
+        wangjianli <wangjianli@cdjrlc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 8 Aug 2022 20:13:57 +0200:
+The pull request you sent on Mon,  8 Aug 2022 14:00:39 -0500:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git pm-5.20-rc1-2
+> https://git.kernel.org/pub/scm/linux/kernel/git/remoteproc/linux.git tags/rproc-v5.20
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/507f811f205c17fd6f64e8d34d4bf91cd01b07a2
+https://git.kernel.org/torvalds/c/5d5d353bed32dc3ea52e2619e0d1c60b17133b91
 
 Thank you!
 
