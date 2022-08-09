@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84853C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4AFCC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:13:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345364AbiHISNQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51948 "EHLO
+        id S245421AbiHISNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:13:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345867AbiHISLw (ORCPT
+        with ESMTP id S1345840AbiHISLt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:11:52 -0400
+        Tue, 9 Aug 2022 14:11:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDCB2B263;
-        Tue,  9 Aug 2022 11:04:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6180626AF8;
+        Tue,  9 Aug 2022 11:05:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1D7E61139;
-        Tue,  9 Aug 2022 18:04:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C028C43141;
-        Tue,  9 Aug 2022 18:04:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BFDD6111F;
+        Tue,  9 Aug 2022 18:05:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ABF4C433D6;
+        Tue,  9 Aug 2022 18:04:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068297;
-        bh=eZWrVdJWq375kXAsIUU8k4S8P/O7f2H0xgz4sXsXJrk=;
+        s=korg; t=1660068300;
+        bh=UinAzkFxj+BLJyuf4XCMytJV/KED8ZQPD9DVBguyrlg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M99R9irRchQ3ZbjVVXO2qlHc1rAugBrBJBGyu3x0YYTrL+0jTK7loODSAu+5s8+3i
-         YXck3mjcqywzo/G/Kj8vIYK+XoYdKGUXY4Wngif3rZY0Q7wILquET8otOgbyWh9ANA
-         BrGq4A9nNOG1RgGVASokdpSYfEBXsjwyISYdrhoU=
+        b=Hbd8ggkKTjOXdzM2SOkIZk3yP2Kntl1O+MOXy0eKGLovkXMZfsKax1ienghKQcS56
+         k1NejTb1Ir3dcI7GgoL881P2PvVQ4+IIO/h5mcYUh4DUjLG8ZI6yZKVzTYjAoqC3Hm
+         SvlR4K+BVJIkkhTnmH521n+VnP6TxSNAPalsSMSQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 04/30] block: fix default IO priority handling again
-Date:   Tue,  9 Aug 2022 20:00:29 +0200
-Message-Id: <20220809175514.433647534@linuxfoundation.org>
+        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH 5.15 05/30] tools/vm/slabinfo: Handle files in debugfs
+Date:   Tue,  9 Aug 2022 20:00:30 +0200
+Message-Id: <20220809175514.480552640@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175514.276643253@linuxfoundation.org>
 References: <20220809175514.276643253@linuxfoundation.org>
@@ -51,86 +49,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Stéphane Graber <stgraber@ubuntu.com>
 
-commit e589f46445960c274cc813a1cc8e2fc73b2a1849 upstream.
+commit 0c7e0d699ef1430d7f4cf12b4b1d097af58b5515 upstream.
 
-Commit e70344c05995 ("block: fix default IO priority handling")
-introduced an inconsistency in get_current_ioprio() that tasks without
-IO context return IOPRIO_DEFAULT priority while tasks with freshly
-allocated IO context will return 0 (IOPRIO_CLASS_NONE/0) IO priority.
-Tasks without IO context used to be rare before 5a9d041ba2f6 ("block:
-move io_context creation into where it's needed") but after this commit
-they became common because now only BFQ IO scheduler setups task's IO
-context. Similar inconsistency is there for get_task_ioprio() so this
-inconsistency is now exposed to userspace and userspace will see
-different IO priority for tasks operating on devices with BFQ compared
-to devices without BFQ. Furthemore the changes done by commit
-e70344c05995 change the behavior when no IO priority is set for BFQ IO
-scheduler which is also documented in ioprio_set(2) manpage:
+Commit 64dd68497be76 relocated and renamed the alloc_calls and
+free_calls files from /sys/kernel/slab/NAME/*_calls over to
+/sys/kernel/debug/slab/NAME/*_calls but didn't update the slabinfo tool
+with the new location.
 
-"If no I/O scheduler has been set for a thread, then by default the I/O
-priority will follow the CPU nice value (setpriority(2)).  In Linux
-kernels before version 2.6.24, once an I/O priority had been set using
-ioprio_set(), there was no way to reset the I/O scheduling behavior to
-the default. Since Linux 2.6.24, specifying ioprio as 0 can be used to
-reset to the default I/O scheduling behavior."
+This change will now have slabinfo look at the new location (and filenames)
+with a fallback to the prior files.
 
-So make sure we default to IOPRIO_CLASS_NONE as used to be the case
-before commit e70344c05995. Also cleanup alloc_io_context() to
-explicitely set this IO priority for the allocated IO context to avoid
-future surprises. Note that we tweak ioprio_best() to maintain
-ioprio_get(2) behavior and make this commit easily backportable.
-
-CC: stable@vger.kernel.org
-Fixes: e70344c05995 ("block: fix default IO priority handling")
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Tested-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220623074840.5960-1-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 64dd68497be76 ("mm: slub: move sysfs slab alloc/free interfaces to debugfs")
+Cc: stable@vger.kernel.org
+Signed-off-by: Stéphane Graber <stgraber@ubuntu.com>
+Tested-by: Stéphane Graber <stgraber@ubuntu.com>
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/blk-ioc.c        |    1 +
- block/ioprio.c         |    4 ++--
- include/linux/ioprio.h |    2 +-
- 3 files changed, 4 insertions(+), 3 deletions(-)
+ tools/vm/slabinfo.c |   26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
---- a/block/blk-ioc.c
-+++ b/block/blk-ioc.c
-@@ -265,6 +265,7 @@ int create_task_io_context(struct task_s
- 	INIT_RADIX_TREE(&ioc->icq_tree, GFP_ATOMIC);
- 	INIT_HLIST_HEAD(&ioc->icq_list);
- 	INIT_WORK(&ioc->release_work, ioc_release_fn);
-+	ioc->ioprio = IOPRIO_DEFAULT;
- 
- 	/*
- 	 * Try to install.  ioc shouldn't be installed if someone else
---- a/block/ioprio.c
-+++ b/block/ioprio.c
-@@ -189,9 +189,9 @@ out:
- int ioprio_best(unsigned short aprio, unsigned short bprio)
- {
- 	if (!ioprio_valid(aprio))
--		aprio = IOPRIO_DEFAULT;
-+		aprio = IOPRIO_PRIO_VALUE(IOPRIO_CLASS_BE, IOPRIO_BE_NORM);
- 	if (!ioprio_valid(bprio))
--		bprio = IOPRIO_DEFAULT;
-+		bprio = IOPRIO_PRIO_VALUE(IOPRIO_CLASS_BE, IOPRIO_BE_NORM);
- 
- 	return min(aprio, bprio);
+--- a/tools/vm/slabinfo.c
++++ b/tools/vm/slabinfo.c
+@@ -233,6 +233,24 @@ static unsigned long read_slab_obj(struc
+ 	return l;
  }
---- a/include/linux/ioprio.h
-+++ b/include/linux/ioprio.h
-@@ -11,7 +11,7 @@
- /*
-  * Default IO priority.
-  */
--#define IOPRIO_DEFAULT	IOPRIO_PRIO_VALUE(IOPRIO_CLASS_BE, IOPRIO_BE_NORM)
-+#define IOPRIO_DEFAULT	IOPRIO_PRIO_VALUE(IOPRIO_CLASS_NONE, 0)
+ 
++static unsigned long read_debug_slab_obj(struct slabinfo *s, const char *name)
++{
++	char x[128];
++	FILE *f;
++	size_t l;
++
++	snprintf(x, 128, "/sys/kernel/debug/slab/%s/%s", s->name, name);
++	f = fopen(x, "r");
++	if (!f) {
++		buffer[0] = 0;
++		l = 0;
++	} else {
++		l = fread(buffer, 1, sizeof(buffer), f);
++		buffer[l] = 0;
++		fclose(f);
++	}
++	return l;
++}
  
  /*
-  * Check that a priority value has a valid class.
+  * Put a size string together
+@@ -409,14 +427,18 @@ static void show_tracking(struct slabinf
+ {
+ 	printf("\n%s: Kernel object allocation\n", s->name);
+ 	printf("-----------------------------------------------------------------------\n");
+-	if (read_slab_obj(s, "alloc_calls"))
++	if (read_debug_slab_obj(s, "alloc_traces"))
++		printf("%s", buffer);
++	else if (read_slab_obj(s, "alloc_calls"))
+ 		printf("%s", buffer);
+ 	else
+ 		printf("No Data\n");
+ 
+ 	printf("\n%s: Kernel object freeing\n", s->name);
+ 	printf("------------------------------------------------------------------------\n");
+-	if (read_slab_obj(s, "free_calls"))
++	if (read_debug_slab_obj(s, "free_traces"))
++		printf("%s", buffer);
++	else if (read_slab_obj(s, "free_calls"))
+ 		printf("%s", buffer);
+ 	else
+ 		printf("No Data\n");
 
 
