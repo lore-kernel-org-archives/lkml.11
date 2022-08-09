@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D765C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BDAAC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:30:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344131AbiHISaS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38546 "EHLO
+        id S245420AbiHISa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:30:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238010AbiHIS1g (ORCPT
+        with ESMTP id S1344078AbiHIS3I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:27:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D49F2656A;
-        Tue,  9 Aug 2022 11:10:09 -0700 (PDT)
+        Tue, 9 Aug 2022 14:29:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C11E0DB;
+        Tue,  9 Aug 2022 11:10:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A19BFB8191E;
-        Tue,  9 Aug 2022 18:08:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBF4FC433D7;
-        Tue,  9 Aug 2022 18:08:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 563DAB81A28;
+        Tue,  9 Aug 2022 18:08:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2BD6C433D7;
+        Tue,  9 Aug 2022 18:08:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068490;
-        bh=jDWLxdfLb0UfgoWC21cxL2t9XM8NGIBroBhN1wxTcp4=;
+        s=korg; t=1660068493;
+        bh=/r/vSlJypZ8OUr7CvbZM/sbsoGVTzCnQS+HjWsLDgjY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2WQ+8gZH7cMauaerHMh0NB8S5o7pB/9ppo/Sc0cH2kTv0IO43dCQEXjSGUn9wxM/p
-         QIEp4NKHVdrCz7Mqtos89yvERE9fhAi2iJTisNc0dzK6GCoxzvoaAAC9Auu6obcjko
-         p1wT13/x+SE8yNQOmmQz9UbLqXHgOxAnyYXIoUtM=
+        b=rBfgcNoa3iQFeT7mPOhhuP+QbxJiFw1dHazNTflclnbQZTIwFIQ5T8pzqRBz1JSwv
+         rOisqjkWB3xQ/AVAeVZX1tEpbWy/khL5iz3ZszTrVFe5hUSy/EgJ7ZDKpdv/BNKIN1
+         lLQ9czxz+kFJMnwN/pXXFe0zxvonl/pqUH48FLts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, GUO Zihua <guozihua@huawei.com>,
-        Eric Biggers <ebiggers@google.com>,
-        Will Deacon <will@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.19 06/21] crypto: arm64/poly1305 - fix a read out-of-bound
-Date:   Tue,  9 Aug 2022 20:00:58 +0200
-Message-Id: <20220809175513.542421012@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 5.19 07/21] ata: sata_mv: Fixes expected number of resources now IRQs are gone
+Date:   Tue,  9 Aug 2022 20:00:59 +0200
+Message-Id: <20220809175513.573942177@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175513.345597655@linuxfoundation.org>
 References: <20220809175513.345597655@linuxfoundation.org>
@@ -51,125 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: GUO Zihua <guozihua@huawei.com>
+From: Andrew Lunn <andrew@lunn.ch>
 
-commit 7ae19d422c7da84b5f13bc08b98bd737a08d3a53 upstream.
+commit b3b2bec9646eb1d3f43c85f6d0d2211d6f8af42b upstream.
 
-A kasan error was reported during fuzzing:
+The commit a1a2b7125e10 ("of/platform: Drop static setup of IRQ
+resource from DT core") stopped IRQ resources being available as
+platform resources. This broke the sanity check for the expected
+number of resources in the Marvell SATA driver which expected two
+resources, the IO memory and the interrupt.
 
-BUG: KASAN: slab-out-of-bounds in neon_poly1305_blocks.constprop.0+0x1b4/0x250 [poly1305_neon]
-Read of size 4 at addr ffff0010e293f010 by task syz-executor.5/1646715
-CPU: 4 PID: 1646715 Comm: syz-executor.5 Kdump: loaded Not tainted 5.10.0.aarch64 #1
-Hardware name: Huawei TaiShan 2280 /BC11SPCD, BIOS 1.59 01/31/2019
-Call trace:
- dump_backtrace+0x0/0x394
- show_stack+0x34/0x4c arch/arm64/kernel/stacktrace.c:196
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x158/0x1e4 lib/dump_stack.c:118
- print_address_description.constprop.0+0x68/0x204 mm/kasan/report.c:387
- __kasan_report+0xe0/0x140 mm/kasan/report.c:547
- kasan_report+0x44/0xe0 mm/kasan/report.c:564
- check_memory_region_inline mm/kasan/generic.c:187 [inline]
- __asan_load4+0x94/0xd0 mm/kasan/generic.c:252
- neon_poly1305_blocks.constprop.0+0x1b4/0x250 [poly1305_neon]
- neon_poly1305_do_update+0x6c/0x15c [poly1305_neon]
- neon_poly1305_update+0x9c/0x1c4 [poly1305_neon]
- crypto_shash_update crypto/shash.c:131 [inline]
- shash_finup_unaligned+0x84/0x15c crypto/shash.c:179
- crypto_shash_finup+0x8c/0x140 crypto/shash.c:193
- shash_digest_unaligned+0xb8/0xe4 crypto/shash.c:201
- crypto_shash_digest+0xa4/0xfc crypto/shash.c:217
- crypto_shash_tfm_digest+0xb4/0x150 crypto/shash.c:229
- essiv_skcipher_setkey+0x164/0x200 [essiv]
- crypto_skcipher_setkey+0xb0/0x160 crypto/skcipher.c:612
- skcipher_setkey+0x3c/0x50 crypto/algif_skcipher.c:305
- alg_setkey+0x114/0x2a0 crypto/af_alg.c:220
- alg_setsockopt+0x19c/0x210 crypto/af_alg.c:253
- __sys_setsockopt+0x190/0x2e0 net/socket.c:2123
- __do_sys_setsockopt net/socket.c:2134 [inline]
- __se_sys_setsockopt net/socket.c:2131 [inline]
- __arm64_sys_setsockopt+0x78/0x94 net/socket.c:2131
- __invoke_syscall arch/arm64/kernel/syscall.c:36 [inline]
- invoke_syscall+0x64/0x100 arch/arm64/kernel/syscall.c:48
- el0_svc_common.constprop.0+0x220/0x230 arch/arm64/kernel/syscall.c:155
- do_el0_svc+0xb4/0xd4 arch/arm64/kernel/syscall.c:217
- el0_svc+0x24/0x3c arch/arm64/kernel/entry-common.c:353
- el0_sync_handler+0x160/0x164 arch/arm64/kernel/entry-common.c:369
- el0_sync+0x160/0x180 arch/arm64/kernel/entry.S:683
+Change the sanity check to only expect the IO memory.
 
-This error can be reproduced by the following code compiled as ko on a
-system with kasan enabled:
-
-#include <linux/module.h>
-#include <linux/crypto.h>
-#include <crypto/hash.h>
-#include <crypto/poly1305.h>
-
-char test_data[] = "\x00\x01\x02\x03\x04\x05\x06\x07"
-                   "\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
-                   "\x10\x11\x12\x13\x14\x15\x16\x17"
-                   "\x18\x19\x1a\x1b\x1c\x1d\x1e";
-
-int init(void)
-{
-        struct crypto_shash *tfm = NULL;
-        char *data = NULL, *out = NULL;
-
-        tfm = crypto_alloc_shash("poly1305", 0, 0);
-        data = kmalloc(POLY1305_KEY_SIZE - 1, GFP_KERNEL);
-        out = kmalloc(POLY1305_DIGEST_SIZE, GFP_KERNEL);
-        memcpy(data, test_data, POLY1305_KEY_SIZE - 1);
-        crypto_shash_tfm_digest(tfm, data, POLY1305_KEY_SIZE - 1, out);
-
-        kfree(data);
-        kfree(out);
-        return 0;
-}
-
-void deinit(void)
-{
-}
-
-module_init(init)
-module_exit(deinit)
-MODULE_LICENSE("GPL");
-
-The root cause of the bug sits in neon_poly1305_blocks. The logic
-neon_poly1305_blocks() performed is that if it was called with both s[]
-and r[] uninitialized, it will first try to initialize them with the
-data from the first "block" that it believed to be 32 bytes in length.
-First 16 bytes are used as the key and the next 16 bytes for s[]. This
-would lead to the aforementioned read out-of-bound. However, after
-calling poly1305_init_arch(), only 16 bytes were deducted from the input
-and s[] is initialized yet again with the following 16 bytes. The second
-initialization of s[] is certainly redundent which indicates that the
-first initialization should be for r[] only.
-
-This patch fixes the issue by calling poly1305_init_arm64() instead of
-poly1305_init_arch(). This is also the implementation for the same
-algorithm on arm platform.
-
-Fixes: f569ca164751 ("crypto: arm64/poly1305 - incorporate OpenSSL/CRYPTOGAMS NEON implementation")
-Cc: stable@vger.kernel.org
-Signed-off-by: GUO Zihua <guozihua@huawei.com>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Fixes: a1a2b7125e10 ("of/platform: Drop static setup of IRQ resource from DT core")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/crypto/poly1305-glue.c |    2 +-
+ drivers/ata/sata_mv.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm64/crypto/poly1305-glue.c
-+++ b/arch/arm64/crypto/poly1305-glue.c
-@@ -52,7 +52,7 @@ static void neon_poly1305_blocks(struct
- {
- 	if (unlikely(!dctx->sset)) {
- 		if (!dctx->rset) {
--			poly1305_init_arch(dctx, src);
-+			poly1305_init_arm64(&dctx->h, src);
- 			src += POLY1305_BLOCK_SIZE;
- 			len -= POLY1305_BLOCK_SIZE;
- 			dctx->rset = 1;
+--- a/drivers/ata/sata_mv.c
++++ b/drivers/ata/sata_mv.c
+@@ -4057,7 +4057,7 @@ static int mv_platform_probe(struct plat
+ 	/*
+ 	 * Simple resource validation ..
+ 	 */
+-	if (unlikely(pdev->num_resources != 2)) {
++	if (unlikely(pdev->num_resources != 1)) {
+ 		dev_err(&pdev->dev, "invalid number of resources\n");
+ 		return -EINVAL;
+ 	}
 
 
