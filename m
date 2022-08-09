@@ -2,95 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F057C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 11:45:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B155C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 11:46:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242608AbiHILpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 07:45:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36020 "EHLO
+        id S242786AbiHILqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 07:46:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242879AbiHILpr (ORCPT
+        with ESMTP id S242804AbiHILqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 07:45:47 -0400
+        Tue, 9 Aug 2022 07:46:14 -0400
 Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D5521E13
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 04:45:46 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id l10so8116114lje.7
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 04:45:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEED7248FE
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 04:46:12 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id w15so12736617ljw.1
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 04:46:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=zUYPLrsI2jiauKzG2M7v5iOa2wbC7ozeiUu0l4qgI+w=;
-        b=c7tJt01hfgCM3eVG34V8C3/1/MVeYqu2TxvqhJ40kl5/oT81KhKRDS2VoiEwQsfD2R
-         AI1f43V5NjI/YBAdSUOtrA/f5Y216fN1kQVBpUJVbayKCaPJD6MK4UwzNBaOPSZuThV6
-         cARWDyz4l0x4i8Gclnn+5K6cbj7seJloZ4WZmFDkq4z2YXtU3zxtUciloyud003+mTp+
-         Hj49JgIdG6rDLBZCFyunxvl9A2gvkGMyiiIiTo9c3tC/G7e/73w2mT1cniJrFzjWxJMc
-         wjFdYkvQjLdukxsNxQvU6aeOpZkxvo0lFUJGzUOtknBnJhy80CSKehQQH9vpBb3RA7tl
-         ZdBw==
+        bh=QsmUqL/K7yU3SMzZ0FTopGj6zj1tOvzFKhz171z4vRY=;
+        b=QTHzvwv/41mQMSEBfjxOTjKs8N4fwJGEfzsaCC0mt/Ihiv3I3PcDjCpAmjDTbs/uxF
+         EIn0/mCBPJTSgtJ9ICMCNob8aGvq6IUlcNqhH5EbJliIytnq1AY+nL9nr1QZ+Bedc31v
+         NlDQf0q31jKIfztN03g1jZxVeAiLIsLNxqJxg3HK2vkS6i8TNHvqGap0+MOHhxL5bRwK
+         13POO0aAlCuOhu8p7ZTlPoPj/K8v40sLuvINWM6DyDlHldBkLUU92pHrWgjTV7x9B7C/
+         J8pjg0kDs46WT1AwPDzQYQrBguHsRBBZZDkbpzvoZS7cyVx+PkUZxkUU5ernSavqaQ4u
+         x6vQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=zUYPLrsI2jiauKzG2M7v5iOa2wbC7ozeiUu0l4qgI+w=;
-        b=HSB5RjeEzC80vjvPO46Hr13mnkzwJxIyIdN8VdBMu//CkGUNGay7i/ORoPbb1WXxxo
-         zIvJHWfdQfFKi/Baab7MR+Glp6Pfo+uyrbDiGZngWI7JoTFXvvq4PL2MiwmI+IABRQyo
-         LaQfp6JG6kydJj5PoXkRchemU/eeSz/RxHihiG1Jna8r2vHRBNK+gOCJaYEhUxeR7tBo
-         V4sIT4KBe92ysZde1mFoNbxuxOXmPPiSJL5gqigz5h0GPGYygS/t5JHgJ9l/SRgbMu6V
-         CRiFd0X3KnkzF2E00y4sUXo23TxkFB4HbEeOs3ZGWy6+aFOlILzXARH6Ma7ye0oAzFmn
-         xzow==
-X-Gm-Message-State: ACgBeo3tZNZy9yEipZZKYddWmkNoft9S7nsFn94fLBqXwamdsKTiwZgu
-        A6lhF7ggKmNMVeU2k1q1CXm0M2Db5RjUF76Qj3DBtw==
-X-Google-Smtp-Source: AA6agR6xzLjWyUFZQ9pgjFN8td8td7t9e2m7P04bImaQQqG/sXobBxAJTALBV0Pp5hY/l0hahcUvZbFdlCM9pimnrdg=
-X-Received: by 2002:a2e:aaa2:0:b0:25e:5083:eb9a with SMTP id
- bj34-20020a2eaaa2000000b0025e5083eb9amr7078976ljb.283.1660045544571; Tue, 09
- Aug 2022 04:45:44 -0700 (PDT)
+        bh=QsmUqL/K7yU3SMzZ0FTopGj6zj1tOvzFKhz171z4vRY=;
+        b=fahTaGj/NsNKpDIbqS/iZMXmp2RexcmnwXItowjux9A+MoyKUY7ca2engDt1hz+zTC
+         eEOY34Uef5u7XR1Db+ZE6y9iljjdrC5w1rUBjgHp1js9IG0PGGk6z9uDjyCUlkjeMrYW
+         hnv+R3N3MH2WMFsMSH5q5iO7l6Kip+9DWFH2VgdvAzmY1EHr4eDN9zeEE2O90+zODiwm
+         hBYdnQ/2yQThUnI3DFvoE+VG53ZVw883J0nLbcLDOk7X6VxziYJlAzyLowBGbwpx2Aym
+         Oi+LMwiWgjb6s3JPFNgKiy2YBEmKuME00gUymhSzto2ifKPBbORVHURfgFzb0U452DVz
+         COrQ==
+X-Gm-Message-State: ACgBeo0saTpp1h07xH9Ff4MXbFFUDkOFUh5PJv+sneFC4tWLyitvULYP
+        LPyepepMHT2dQImkOPtCL9vv9NN0vCGz8JxymCS3xA==
+X-Google-Smtp-Source: AA6agR64z/0ZB46ZAz00rHuh7z2Dk81PNldSaQZLPyWTwsm2PmcCZAGxyQg2VQnsxR5Tdof9+9x2LT0E/6IFrcwwqFk=
+X-Received: by 2002:a2e:a4d6:0:b0:25e:439e:39d0 with SMTP id
+ p22-20020a2ea4d6000000b0025e439e39d0mr7029084ljm.169.1660045571001; Tue, 09
+ Aug 2022 04:46:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220808201724.27831-1-semen.protsenko@linaro.org>
-In-Reply-To: <20220808201724.27831-1-semen.protsenko@linaro.org>
+References: <20220808181555.10333-1-semen.protsenko@linaro.org>
+In-Reply-To: <20220808181555.10333-1-semen.protsenko@linaro.org>
 From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Tue, 9 Aug 2022 14:45:33 +0300
-Message-ID: <CAPLW+4kdgrVyE5jTXPRWCKdr_A+C_EGLLp1AjSe3OfHoX8jEvw@mail.gmail.com>
-Subject: Re: [PATCH 0/2] arm64: dts: exynos850: Add cmu and sysmmu nodes
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Chanho Park <chanho61.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        David Virag <virag.david003@gmail.com>,
+Date:   Tue, 9 Aug 2022 14:45:59 +0300
+Message-ID: <CAPLW+4nFzxa6gH_uxRuypWFS3WzrENS5Wz5j32L6q53T7eZG_Q@mail.gmail.com>
+Subject: Re: [PATCH 0/7] clk: samsung: exynos850: Add CMUs needed for SysMMU
+To:     Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>
+Cc:     Tomasz Figa <tomasz.figa@gmail.com>,
         Alim Akhtar <alim.akhtar@samsung.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sumit Semwal <sumit.semwal@linaro.org>,
+        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 8 Aug 2022 at 23:17, Sam Protsenko <semen.protsenko@linaro.org> wrote:
+On Mon, 8 Aug 2022 at 21:15, Sam Protsenko <semen.protsenko@linaro.org> wrote:
 >
-> Now that all clock domains needed for SysMMUs are implemented [1]
-> (pending), and the basic SysMMU v7 support is ready as well [2], let's
-> add all related CMU and SysMMU nodes to Exynos850 SoC device tree.
+> This patch series implements some missing Exynos850 clock domains. Right
+> now those are mainly required for SysMMU clocks, although of course
+> there is a lot of other clocks generated by those CMUs.
 >
-> All those SysMMU instances were tested with "emulated translation"
-> driver [4] on E850-96 board: both the emulated translation and fault
-> handling were verified.
+> Exynos850 has next SysMMU instances:
+>   - SYSMMU_AUD
+>   - SYSMMU_DPU
+>   - SYSMMU_IS0
+>   - SYSMMU_IS1
+>   - SYSMMU_MFCMSCL
 >
-> This patch series depends on [1], so it must be taken into the account
-> when merging it.
+> As CMU_DPU is already implemented, that leaves CMU_AUD, CMU_IS and
+> CMU_MFCMSCL to be implemented, which is done in this series:
+>   - CMU_AUD: audio clocks
+>   - CMU_IS: camera clocks (Image Signal Processing)
+>   - CMU_MFCMSCL: multi-format codec and scaler clocks
 >
-> [1] https://lkml.org/lkml/2022/8/8/752
-> [2] https://lkml.org/lkml/2022/7/14/1215
-> [3] https://lkml.org/lkml/2022/7/26/950
-> [4] https://github.com/joe-skb7/linux/tree/e850-96-mainline-iommu
+> Sam Protsenko (7):
+>   dt-bindings: clock: Add bindings for Exynos850 CMU_AUD
+>   dt-bindings: clock: Add bindings for Exynos850 CMU_IS
+>   dt-bindings: clock: Add bindings for Exynos850 CMU_MFCMSCL
+>   clk: samsung: exynos850: Style fixes
+>   clk: samsung: exynos850: Implement CMU_AUD domain
+>   clk: samsung: exynos850: Implement CMU_IS domain
+>   clk: samsung: exynos850: Implement CMU_MFCMSCL domain
 >
-> Sam Protsenko (2):
->   arm64: dts: exynos: Add CMU_AUD, CMU_IS and CMU_MFCMSCL for Exynos850
->   arm64: dts: exynos: Add SysMMU nodes for Exynos850
->
->  arch/arm64/boot/dts/exynos/exynos850.dtsi | 83 +++++++++++++++++++++++
->  1 file changed, 83 insertions(+)
+>  .../clock/samsung,exynos850-clock.yaml        |  69 ++
+>  drivers/clk/samsung/clk-exynos850.c           | 682 +++++++++++++++++-
+>  include/dt-bindings/clock/exynos850.h         | 136 +++-
+>  3 files changed, 883 insertions(+), 4 deletions(-)
 >
 > --
 > 2.30.2
