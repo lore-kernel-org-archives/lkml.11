@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE317C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D0BC25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345331AbiHISMz (ORCPT
+        id S1345406AbiHISND (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:12:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
+        Tue, 9 Aug 2022 14:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345429AbiHISLB (ORCPT
+        with ESMTP id S1345091AbiHISKK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:11:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE852A729;
-        Tue,  9 Aug 2022 11:04:22 -0700 (PDT)
+        Tue, 9 Aug 2022 14:10:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1134275D5;
+        Tue,  9 Aug 2022 11:04:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 518986103F;
-        Tue,  9 Aug 2022 18:04:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0D8AC43141;
-        Tue,  9 Aug 2022 18:04:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87351B817C0;
+        Tue,  9 Aug 2022 18:04:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 925CBC433D7;
+        Tue,  9 Aug 2022 18:04:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068261;
-        bh=B6I9ywm6he85dPxmbtWsc9fEdjf0MDmn5OyItYXcUX4=;
+        s=korg; t=1660068245;
+        bh=eW52gjMH3KL6P6+f7+B4DNeczuIij+bxaE/1TYLnkms=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fh3ataauM/32RBdX4ttFdIRk2rSzAmddsjy6slcO3xcymeUliqXrACjcytS/RKALz
-         PClo085me1NQ8KS+e/wm+63jX5YYBYS78EizOoA6CG4c8Du7kcOYpwXpbzHimr7Vzn
-         Ywzd/MfpFJPsYBUe4AATNwzC3+FlqUZEqT2zsJc0=
+        b=AZdplGjD7tHriq554NeqA8Wjt8UVvFqmDHvFzouUbHipvzb7kkX04kCcYF+Gq0mU0
+         Gcra2AvkvvP2FeoHQ4XJhXqDfoKwTAiar+ZdGSztB8MMurqXzsKbaCXUaXfaFGzbwT
+         Sk8H7bVZ5acYw41JItE4D3pj7CeA+ieXEU2OxT8o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Klochkov <kdmitry556@gmail.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 11/23] tools/kvm_stat: fix display of error when multiple processes are found
-Date:   Tue,  9 Aug 2022 20:00:29 +0200
-Message-Id: <20220809175513.273395241@linuxfoundation.org>
+        stable@vger.kernel.org, Hilda Wu <hildawu@realtek.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 5.10 17/23] Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04C5:0x1675
+Date:   Tue,  9 Aug 2022 20:00:35 +0200
+Message-Id: <20220809175513.461563370@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175512.853274191@linuxfoundation.org>
 References: <20220809175512.853274191@linuxfoundation.org>
@@ -50,63 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Klochkov <kdmitry556@gmail.com>
+From: Hilda Wu <hildawu@realtek.com>
 
-[ Upstream commit 933b5f9f98da29af646b51b36a0753692908ef64 ]
+commit 893fa8bc9952a36fb682ee12f0a994b5817a36d2 upstream.
 
-Instead of printing an error message, kvm_stat script fails when we
-restrict statistics to a guest by its name and there are multiple guests
-with such name:
+Add the support ID(0x04c5, 0x1675) to usb_device_id table for
+Realtek RTL8852C.
 
-  # kvm_stat -g my_vm
-  Traceback (most recent call last):
-    File "/usr/bin/kvm_stat", line 1819, in <module>
-      main()
-    File "/usr/bin/kvm_stat", line 1779, in main
-      options = get_options()
-    File "/usr/bin/kvm_stat", line 1718, in get_options
-      options = argparser.parse_args()
-    File "/usr/lib64/python3.10/argparse.py", line 1825, in parse_args
-      args, argv = self.parse_known_args(args, namespace)
-    File "/usr/lib64/python3.10/argparse.py", line 1858, in parse_known_args
-      namespace, args = self._parse_known_args(args, namespace)
-    File "/usr/lib64/python3.10/argparse.py", line 2067, in _parse_known_args
-      start_index = consume_optional(start_index)
-    File "/usr/lib64/python3.10/argparse.py", line 2007, in consume_optional
-      take_action(action, args, option_string)
-    File "/usr/lib64/python3.10/argparse.py", line 1935, in take_action
-      action(self, namespace, argument_values, option_string)
-    File "/usr/bin/kvm_stat", line 1649, in __call__
-      ' to specify the desired pid'.format(" ".join(pids)))
-  TypeError: sequence item 0: expected str instance, int found
+The device info from /sys/kernel/debug/usb/devices as below.
 
-To avoid this, it's needed to convert pids int values to strings before
-pass them to join().
+T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
+D:  Ver= 1.00 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=04c5 ProdID=1675 Rev= 0.00
+S:  Manufacturer=Realtek
+S:  Product=Bluetooth Radio
+S:  SerialNumber=00e04c000001
+C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
 
-Signed-off-by: Dmitry Klochkov <kdmitry556@gmail.com>
-Message-Id: <20220614121141.160689-1-kdmitry556@gmail.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Hilda Wu <hildawu@realtek.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/kvm/kvm_stat/kvm_stat | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/bluetooth/btusb.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/kvm/kvm_stat/kvm_stat b/tools/kvm/kvm_stat/kvm_stat
-index b0bf56c5f120..a1efcfbd8b9e 100755
---- a/tools/kvm/kvm_stat/kvm_stat
-+++ b/tools/kvm/kvm_stat/kvm_stat
-@@ -1646,7 +1646,8 @@ Press any other key to refresh statistics immediately.
-                          .format(values))
-             if len(pids) > 1:
-                 sys.exit('Error: Multiple processes found (pids: {}). Use "-p"'
--                         ' to specify the desired pid'.format(" ".join(pids)))
-+                         ' to specify the desired pid'
-+                         .format(" ".join(map(str, pids))))
-             namespace.pid = pids[0]
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -402,6 +402,8 @@ static const struct usb_device_id blackl
+ 	/* Realtek 8852CE Bluetooth devices */
+ 	{ USB_DEVICE(0x04ca, 0x4007), .driver_info = BTUSB_REALTEK |
+ 						     BTUSB_WIDEBAND_SPEECH },
++	{ USB_DEVICE(0x04c5, 0x1675), .driver_info = BTUSB_REALTEK |
++						     BTUSB_WIDEBAND_SPEECH },
  
-     argparser = argparse.ArgumentParser(description=description_text,
--- 
-2.35.1
-
+ 	/* Realtek Bluetooth devices */
+ 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bda, 0xe0, 0x01, 0x01),
 
 
