@@ -2,131 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F6F4C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:44:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FDB9C25B07
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238508AbiHIGoq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 02:44:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51898 "EHLO
+        id S232791AbiHIGuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 02:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233045AbiHIGoo (ORCPT
+        with ESMTP id S229600AbiHIGuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 02:44:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E925201AC
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 23:44:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660027483;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CR6YkkBfyaob1O/ChtSSoS1BxAeM9gKVCgsFRDj4SAA=;
-        b=ef+5dhEooiJNIJXoB4GKqm0l9tar0dmvZKovqClf55Aun+85jRoHpFlW1xHHlS2o4SGLhK
-        S6Mkxuho+agO+zeH84AZawimgd00RYlKRWjwaxh3tF/vV5QKUPTdnsT15m5T1eMLt8GZC3
-        xPkzxHb29ER+ELs435faCKwnUD23oec=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-267-cbov0cI9NWG7_T_0ybwJ4w-1; Tue, 09 Aug 2022 02:44:37 -0400
-X-MC-Unique: cbov0cI9NWG7_T_0ybwJ4w-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 9 Aug 2022 02:50:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3E61F2C4;
+        Mon,  8 Aug 2022 23:50:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 22A4880391B;
-        Tue,  9 Aug 2022 06:44:37 +0000 (UTC)
-Received: from [10.64.54.189] (vpn2-54-189.bne.redhat.com [10.64.54.189])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2BAEA1121315;
-        Tue,  9 Aug 2022 06:44:32 +0000 (UTC)
-Reply-To: Gavin Shan <gshan@redhat.com>
-Subject: Re: [PATCH 1/2] KVM: selftests: Make rseq compatible with glibc-2.35
-To:     Florian Weimer <fweimer@redhat.com>
-Cc:     kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        pbonzini@redhat.com, maz@kernel.org, oliver.upton@linux.dev,
-        andrew.jones@linux.dev, seanjc@google.com,
-        mathieu.desnoyers@efficios.com, yihyu@redhat.com,
-        shan.gavin@gmail.com
-References: <20220809060627.115847-1-gshan@redhat.com>
- <20220809060627.115847-2-gshan@redhat.com>
- <8735e6ncxw.fsf@oldenburg.str.redhat.com>
-From:   Gavin Shan <gshan@redhat.com>
-Message-ID: <7844e3fa-e49e-de75-e424-e82d3a023dd6@redhat.com>
-Date:   Tue, 9 Aug 2022 18:45:26 +1000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 425A261218;
+        Tue,  9 Aug 2022 06:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70ECEC433C1;
+        Tue,  9 Aug 2022 06:50:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660027809;
+        bh=ynJyKQ66METpJqPUjWfrzqF4JjlT26+ei9p1vjSEDTI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iIr5JmbCbVbcJ6eGv8iS/D+qITb4OE5u3y5124+JdEU0NdfQMGYYx93fRc8U9dEw7
+         vKPsO0mHX7pWGitYMqbgeHi1IaWXkc1J4I4zpMUJYZg1T8IWq4QJbmiJwylmIY5RUY
+         frxbvpxxZzliB8m1wrr7FffbnjhnfWlCrhOtQKgyN+rfWRYrF8HNJ6CH5eWbo0iLVd
+         kfSJoS4jPAdy4GMv/0OXlUZQNF+Eedk1DOagWNqqtObYNqFUf+5KwyS1x7cd7jJmUC
+         JrLHhd5GZDka1CbOUaMbgFDrjsVkN3ML+OWDyEXqwUDeAQIKSKGdP/H9wKc/ej/+wa
+         N7WFOY/dS2+lw==
+Date:   Tue, 9 Aug 2022 07:50:02 +0100
+From:   Lee Jones <lee@kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH v2 1/1] bpf: Drop unprotected find_vpid() in favour of
+ find_get_pid()
+Message-ID: <YvIDmku4us2SSBKu@google.com>
+References: <20220803134821.425334-1-lee@kernel.org>
+ <CAADnVQ+X_B4LC6CtYM1PXPA4BBprWLj5Qip--Eeu32Zti==Ydw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <8735e6ncxw.fsf@oldenburg.str.redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAADnVQ+X_B4LC6CtYM1PXPA4BBprWLj5Qip--Eeu32Zti==Ydw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Florian,
+On Thu, 04 Aug 2022, Alexei Starovoitov wrote:
 
-On 8/9/22 4:33 PM, Florian Weimer wrote:
->> diff --git a/tools/testing/selftests/kvm/rseq_test.c b/tools/testing/selftests/kvm/rseq_test.c
->> index a54d4d05a058..acb1bf1f06b3 100644
->> --- a/tools/testing/selftests/kvm/rseq_test.c
->> +++ b/tools/testing/selftests/kvm/rseq_test.c
->> @@ -9,6 +9,7 @@
->>   #include <string.h>
->>   #include <signal.h>
->>   #include <syscall.h>
->> +#include <dlfcn.h>
->>   #include <sys/ioctl.h>
->>   #include <sys/sysinfo.h>
->>   #include <asm/barrier.h>
+> On Wed, Aug 3, 2022 at 6:48 AM Lee Jones <lee@kernel.org> wrote:
+> >
+> > The documentation for find_pid() clearly states:
+> >
+> >   "Must be called with the tasklist_lock or rcu_read_lock() held."
+> >
+> > Presently we do neither.
+> >
+> > Let's use find_get_pid() which searches for the vpid, then takes a
+> > reference to it preventing early free, all within the safety of
+> > rcu_read_lock().  Once we have our reference we can safely make use of
+> > it up until the point it is put.
+> >
+> > Cc: Alexei Starovoitov <ast@kernel.org>
+> > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > Cc: John Fastabend <john.fastabend@gmail.com>
+> > Cc: Andrii Nakryiko <andrii@kernel.org>
+> > Cc: Martin KaFai Lau <martin.lau@linux.dev>
+> > Cc: Song Liu <song@kernel.org>
+> > Cc: Yonghong Song <yhs@fb.com>
+> > Cc: KP Singh <kpsingh@kernel.org>
+> > Cc: Stanislav Fomichev <sdf@google.com>
+> > Cc: Hao Luo <haoluo@google.com>
+> > Cc: Jiri Olsa <jolsa@kernel.org>
+> > Cc: bpf@vger.kernel.org
+> > Fixes: 41bdc4b40ed6f ("bpf: introduce bpf subcommand BPF_TASK_FD_QUERY")
+> > Signed-off-by: Lee Jones <lee@kernel.org>
+> > ---
+> >
+> > v1 => v2:
+> >   * Commit log update - no code differences
+> >
+> >  kernel/bpf/syscall.c | 5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > index 83c7136c5788d..c20cff30581c4 100644
+> > --- a/kernel/bpf/syscall.c
+> > +++ b/kernel/bpf/syscall.c
+> > @@ -4385,6 +4385,7 @@ static int bpf_task_fd_query(const union bpf_attr *attr,
+> >         const struct perf_event *event;
+> >         struct task_struct *task;
+> >         struct file *file;
+> > +       struct pid *ppid;
+> >         int err;
+> >
+> >         if (CHECK_ATTR(BPF_TASK_FD_QUERY))
+> > @@ -4396,7 +4397,9 @@ static int bpf_task_fd_query(const union bpf_attr *attr,
+> >         if (attr->task_fd_query.flags != 0)
+> >                 return -EINVAL;
+> >
+> > -       task = get_pid_task(find_vpid(pid), PIDTYPE_PID);
+> > +       ppid = find_get_pid(pid);
+> > +       task = get_pid_task(ppid, PIDTYPE_PID);
+> > +       put_pid(ppid);
 > 
-> I'm surprised that there isn't a Makefile update to link with -ldl
-> (still required for glibc 2.33 and earlier).
-> 
+> rcu_read_lock/unlock around this line
+> would be a cheaper and faster alternative than pid's
+> refcount inc/dec.
 
-In next revision, I will add '-ldl' into tools/testing/selftests/kvm/Makefile.
+This was already discussed here:
 
+https://lore.kernel.org/all/YtsFT1yFtb7UW2Xu@krava/
 
->> @@ -36,6 +37,8 @@ static __thread volatile struct rseq __rseq = {
->>    */
->>   #define NR_TASK_MIGRATIONS 100000
->>   
->> +static bool __rseq_ownership;
->> +static volatile struct rseq *__rseq_info;
->>   static pthread_t migration_thread;
->>   static cpu_set_t possible_mask;
->>   static int min_cpu, max_cpu;
->> @@ -49,11 +52,33 @@ static void guest_code(void)
->>   		GUEST_SYNC(0);
->>   }
->>   
->> +static void sys_rseq_ownership(void)
->> +{
->> +	long *offset;
->> +	unsigned int *size, *flags;
->> +
->> +	offset = dlsym(RTLD_NEXT, "__rseq_offset");
->> +	size = dlsym(RTLD_NEXT, "__rseq_size");
->> +	flags = dlsym(RTLD_NEXT, "__rseq_flags");
->> +
->> +	if (offset && size && *size && flags) {
->> +		__rseq_ownership = false;
->> +		__rseq_info = (struct rseq *)((uintptr_t)__builtin_thread_pointer() +
->> +					      *offset);
-> 
-> __builtin_thread_pointer doesn't work on all architectures/GCC versions.
-> Is this a problem for selftests?
-> 
-
-It's a problem as the test case is running on all architectures. I think I
-need introduce our own __builtin_thread_pointer() for where it's not
-supported: (1) PowerPC  (2) x86 without GCC 11
-
-Please let me know if I still have missed cases where __buitin_thread_pointer()
-isn't supported?
-
-Thanks,
-Gavin
-
+-- 
+Lee Jones [李琼斯]
