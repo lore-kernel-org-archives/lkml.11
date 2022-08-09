@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F64FC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:14:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F8CC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:14:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345573AbiHISOX (ORCPT
+        id S1345584AbiHISO2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58460 "EHLO
+        Tue, 9 Aug 2022 14:14:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345677AbiHISLc (ORCPT
+        with ESMTP id S1345618AbiHISLW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:11:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAF42AE28;
-        Tue,  9 Aug 2022 11:04:44 -0700 (PDT)
+        Tue, 9 Aug 2022 14:11:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D1927B04;
+        Tue,  9 Aug 2022 11:04:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28A2E61070;
-        Tue,  9 Aug 2022 18:04:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31F1EC433B5;
-        Tue,  9 Aug 2022 18:04:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C340FB817BF;
+        Tue,  9 Aug 2022 18:04:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E10D1C43140;
+        Tue,  9 Aug 2022 18:04:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068283;
-        bh=Aj/qrZaVX0QhpzS2MUF/ANJF5hHr2wjbfHO7Xx3sWUY=;
+        s=korg; t=1660068275;
+        bh=J+es1R0tmHFrd3LGUS5CJCAMMjcFDc+TrglxdGgC9iQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tip/NNZRmN0V3j1+9wmdH2YmLLMppS/Jtf9/rFyZ7K0YFIXOctJa6vYH6M4hMhucs
-         HSRhcvgNfD676AVhPYBf8u5gmFhhZXqP9FWFgP3Nej0vRM2ff/w56Lwlh2J6QtQpKJ
-         3OGdbpCrNUsUkJY0Gjk+V42Xa9yMrTmiXAlgKTOA=
+        b=U4wLHsxxNwYT78zlIIWZrZZj3FT438zURUDqXOX8l42bPrLZq2zu9vf1PtObPReFn
+         ILWn0+yKvNEynttbckbcwlOUf336ofYze7Rf8JGkn811HJ5Oq9fiEr6WvqBT3DTVdG
+         Fu3a55tCQNBr5pQCivaey28rNeT4a9hiOiFO482U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Cooper <andrew.cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>,
-        Daniel Sneddon <daniel.sneddon@linux.intel.com>
-Subject: [PATCH 5.10 23/23] x86/speculation: Add LFENCE to RSB fill sequence
-Date:   Tue,  9 Aug 2022 20:00:41 +0200
-Message-Id: <20220809175513.640042532@linuxfoundation.org>
+        stable@vger.kernel.org, Hilda Wu <hildawu@realtek.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 5.10 16/23] Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04CA:0x4007
+Date:   Tue,  9 Aug 2022 20:00:34 +0200
+Message-Id: <20220809175513.430922798@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175512.853274191@linuxfoundation.org>
 References: <20220809175512.853274191@linuxfoundation.org>
@@ -51,66 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Hilda Wu <hildawu@realtek.com>
 
-commit ba6e31af2be96c4d0536f2152ed6f7b6c11bca47 upstream.
+commit c379c96cc221767af9688a5d4758a78eea30883a upstream.
 
-RSB fill sequence does not have any protection for miss-prediction of
-conditional branch at the end of the sequence. CPU can speculatively
-execute code immediately after the sequence, while RSB filling hasn't
-completed yet.
+Add the support ID(0x04CA, 0x4007) to usb_device_id table for
+Realtek RTL8852C.
 
-  #define __FILL_RETURN_BUFFER(reg, nr, sp)       \
-          mov     $(nr/2), reg;                   \
-  771:                                            \
-          ANNOTATE_INTRA_FUNCTION_CALL;           \
-          call    772f;                           \
-  773:    /* speculation trap */                  \
-          UNWIND_HINT_EMPTY;                      \
-          pause;                                  \
-          lfence;                                 \
-          jmp     773b;                           \
-  772:                                            \
-          ANNOTATE_INTRA_FUNCTION_CALL;           \
-          call    774f;                           \
-  775:    /* speculation trap */                  \
-          UNWIND_HINT_EMPTY;                      \
-          pause;                                  \
-          lfence;                                 \
-          jmp     775b;                           \
-  774:                                            \
-          add     $(BITS_PER_LONG/8) * 2, sp;     \
-          dec     reg;                            \
-          jnz     771b;        <----- CPU can miss-predict here.
+The device info from /sys/kernel/debug/usb/devices as below.
 
-Before RSB is filled, RETs that come in program order after this macro
-can be executed speculatively, making them vulnerable to RSB-based
-attacks.
+T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
+D:  Ver= 1.00 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=04ca ProdID=4007 Rev= 0.00
+S:  Manufacturer=Realtek
+S:  Product=Bluetooth Radio
+S:  SerialNumber=00e04c000001
+C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
 
-Mitigate it by adding an LFENCE after the conditional branch to prevent
-speculation while RSB is being filled.
-
-Suggested-by: Andrew Cooper <andrew.cooper3@citrix.com>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Daniel Sneddon <daniel.sneddon@linux.intel.com>
+Signed-off-by: Hilda Wu <hildawu@realtek.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/nospec-branch.h |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/bluetooth/btusb.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -60,7 +60,9 @@
- 774:						\
- 	add	$(BITS_PER_LONG/8) * 2, sp;	\
- 	dec	reg;				\
--	jnz	771b;
-+	jnz	771b;				\
-+	/* barrier for jnz misprediction */	\
-+	lfence;
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -399,6 +399,10 @@ static const struct usb_device_id blackl
+ 	{ USB_DEVICE(0x0bda, 0xc822), .driver_info = BTUSB_REALTEK |
+ 						     BTUSB_WIDEBAND_SPEECH },
  
- #ifdef __ASSEMBLY__
- 
++	/* Realtek 8852CE Bluetooth devices */
++	{ USB_DEVICE(0x04ca, 0x4007), .driver_info = BTUSB_REALTEK |
++						     BTUSB_WIDEBAND_SPEECH },
++
+ 	/* Realtek Bluetooth devices */
+ 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bda, 0xe0, 0x01, 0x01),
+ 	  .driver_info = BTUSB_REALTEK },
 
 
