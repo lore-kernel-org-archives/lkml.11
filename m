@@ -2,75 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C960BC25B06
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:42:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F6F4C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:44:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238367AbiHIGmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 02:42:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51014 "EHLO
+        id S238508AbiHIGoq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 02:44:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237760AbiHIGmf (ORCPT
+        with ESMTP id S233045AbiHIGoo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 02:42:35 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411F9201AC;
-        Mon,  8 Aug 2022 23:42:33 -0700 (PDT)
-Received: from [192.168.0.2] (ip5f5aecbd.dynamic.kabel-deutschland.de [95.90.236.189])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        Tue, 9 Aug 2022 02:44:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E925201AC
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 23:44:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660027483;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CR6YkkBfyaob1O/ChtSSoS1BxAeM9gKVCgsFRDj4SAA=;
+        b=ef+5dhEooiJNIJXoB4GKqm0l9tar0dmvZKovqClf55Aun+85jRoHpFlW1xHHlS2o4SGLhK
+        S6Mkxuho+agO+zeH84AZawimgd00RYlKRWjwaxh3tF/vV5QKUPTdnsT15m5T1eMLt8GZC3
+        xPkzxHb29ER+ELs435faCKwnUD23oec=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-267-cbov0cI9NWG7_T_0ybwJ4w-1; Tue, 09 Aug 2022 02:44:37 -0400
+X-MC-Unique: cbov0cI9NWG7_T_0ybwJ4w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id D747D61EA192A;
-        Tue,  9 Aug 2022 08:42:29 +0200 (CEST)
-Message-ID: <6d1576c9-f105-2aff-4497-2c2e7bed2f3b@molgen.mpg.de>
-Date:   Tue, 9 Aug 2022 08:42:29 +0200
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 22A4880391B;
+        Tue,  9 Aug 2022 06:44:37 +0000 (UTC)
+Received: from [10.64.54.189] (vpn2-54-189.bne.redhat.com [10.64.54.189])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2BAEA1121315;
+        Tue,  9 Aug 2022 06:44:32 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH 1/2] KVM: selftests: Make rseq compatible with glibc-2.35
+To:     Florian Weimer <fweimer@redhat.com>
+Cc:     kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pbonzini@redhat.com, maz@kernel.org, oliver.upton@linux.dev,
+        andrew.jones@linux.dev, seanjc@google.com,
+        mathieu.desnoyers@efficios.com, yihyu@redhat.com,
+        shan.gavin@gmail.com
+References: <20220809060627.115847-1-gshan@redhat.com>
+ <20220809060627.115847-2-gshan@redhat.com>
+ <8735e6ncxw.fsf@oldenburg.str.redhat.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <7844e3fa-e49e-de75-e424-e82d3a023dd6@redhat.com>
+Date:   Tue, 9 Aug 2022 18:45:26 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.1
-Subject: Referencing non-public datasheets in commit messages (was: [PATCH v12
- 3/3] EDAC: nuvoton: Add NPCM memory controller driver)
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     medadyoung@gmail.com, KWLIU@nuvoton.com, tony.luck@intel.com,
-        rric@kernel.org, benjaminfair@google.com,
-        linux-edac@vger.kernel.org, KFTING@nuvoton.com,
-        avifishman70@gmail.com, venture@google.com,
-        openbmc@lists.ozlabs.org, JJLIU0@nuvoton.com, ctcchien@nuvoton.com,
-        tali.perry1@gmail.com, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, james.morse@arm.com, YSCHU@nuvoton.com,
-        mchehab@kernel.org, linux-kernel@vger.kernel.org,
-        tmaimon77@gmail.com
-References: <20220610084340.2268-1-ctcchien@nuvoton.com>
- <20220610084340.2268-4-ctcchien@nuvoton.com> <YrDIimW0gW1j03WG@zn.tnic>
+In-Reply-To: <8735e6ncxw.fsf@oldenburg.str.redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <YrDIimW0gW1j03WG@zn.tnic>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Borislav,
+Hi Florian,
 
-
-Am 20.06.22 um 21:20 schrieb Borislav Petkov:
-> On Fri, Jun 10, 2022 at 04:43:40PM +0800, medadyoung@gmail.com wrote:
-
-[…]
-
->> Datasheet:
->>      Cadence DDR Controller Register Reference Manual For DDR4 Memories
->>      Chapter 2: Detailed Register Map
+On 8/9/22 4:33 PM, Florian Weimer wrote:
+>> diff --git a/tools/testing/selftests/kvm/rseq_test.c b/tools/testing/selftests/kvm/rseq_test.c
+>> index a54d4d05a058..acb1bf1f06b3 100644
+>> --- a/tools/testing/selftests/kvm/rseq_test.c
+>> +++ b/tools/testing/selftests/kvm/rseq_test.c
+>> @@ -9,6 +9,7 @@
+>>   #include <string.h>
+>>   #include <signal.h>
+>>   #include <syscall.h>
+>> +#include <dlfcn.h>
+>>   #include <sys/ioctl.h>
+>>   #include <sys/sysinfo.h>
+>>   #include <asm/barrier.h>
 > 
-> If that datasheet is not public, no need to mention it here. At least a
-> quick web search cannot find something relevant.
+> I'm surprised that there isn't a Makefile update to link with -ldl
+> (still required for glibc 2.33 and earlier).
+> 
 
-Maybe it could be denoted, that is not public (and also the version), 
-but even mentioning non-public datasheets is useful, as they could be 
-made public in the future, and allows everyone to contact people with 
-access to these datasheets to take a look into the specific datasheet.
+In next revision, I will add '-ldl' into tools/testing/selftests/kvm/Makefile.
 
 
-Kind regards,
+>> @@ -36,6 +37,8 @@ static __thread volatile struct rseq __rseq = {
+>>    */
+>>   #define NR_TASK_MIGRATIONS 100000
+>>   
+>> +static bool __rseq_ownership;
+>> +static volatile struct rseq *__rseq_info;
+>>   static pthread_t migration_thread;
+>>   static cpu_set_t possible_mask;
+>>   static int min_cpu, max_cpu;
+>> @@ -49,11 +52,33 @@ static void guest_code(void)
+>>   		GUEST_SYNC(0);
+>>   }
+>>   
+>> +static void sys_rseq_ownership(void)
+>> +{
+>> +	long *offset;
+>> +	unsigned int *size, *flags;
+>> +
+>> +	offset = dlsym(RTLD_NEXT, "__rseq_offset");
+>> +	size = dlsym(RTLD_NEXT, "__rseq_size");
+>> +	flags = dlsym(RTLD_NEXT, "__rseq_flags");
+>> +
+>> +	if (offset && size && *size && flags) {
+>> +		__rseq_ownership = false;
+>> +		__rseq_info = (struct rseq *)((uintptr_t)__builtin_thread_pointer() +
+>> +					      *offset);
+> 
+> __builtin_thread_pointer doesn't work on all architectures/GCC versions.
+> Is this a problem for selftests?
+> 
 
-Paul
+It's a problem as the test case is running on all architectures. I think I
+need introduce our own __builtin_thread_pointer() for where it's not
+supported: (1) PowerPC  (2) x86 without GCC 11
+
+Please let me know if I still have missed cases where __buitin_thread_pointer()
+isn't supported?
+
+Thanks,
+Gavin
+
