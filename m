@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18315C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:24:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 047EEC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:24:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344318AbiHISYZ (ORCPT
+        id S1343943AbiHISYd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:24:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55288 "EHLO
+        Tue, 9 Aug 2022 14:24:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347327AbiHISWU (ORCPT
+        with ESMTP id S1346443AbiHISVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:22:20 -0400
+        Tue, 9 Aug 2022 14:21:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9198631DC4;
-        Tue,  9 Aug 2022 11:08:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9752930F7A;
+        Tue,  9 Aug 2022 11:07:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D852B8199A;
-        Tue,  9 Aug 2022 18:07:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAE7AC43470;
-        Tue,  9 Aug 2022 18:07:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D9BAB817AE;
+        Tue,  9 Aug 2022 18:07:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58D6EC43470;
+        Tue,  9 Aug 2022 18:07:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068443;
-        bh=ywVLN2ma4MVkAmTR58UKcULnKrwma1toTjcHNXw3Wbg=;
+        s=korg; t=1660068423;
+        bh=Taysnb1prxfCv9T/91n/QGNd8Cyr03FyNjTTbZNsz2Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OId86UbL5sY1lR91qK20OFi+3IZ+VZ8TzILrQ9/OWGlIJAg9M+BBV9hREpvMw9/Zl
-         NFCTJceaImhC7xl7i4/qYblNQEcCKTmvbhTDEjkoZD+2bPZCjWdcVIz8ZJ6Nu1mTHr
-         IREZYooR9o3Ipi1ovjWBFalhTgg1TSZfuo0mpKhY=
+        b=YHe0e1F9OpsXoqmnVO8DIQGTPwiqlBK9UTfcmLnYWCaKbDMS1L7nwwvywoff54Rzf
+         5w/ztdtYcB78TMBqMKszQxH61pgMCtZSfyYBaUbaHAhD4btgpnDNY5IwUd/q+oycEP
+         dogwt8jxU5LilKSnNbfTf+mV1eQVRnT9WVE0z+Qw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.18 21/35] btrfs: zoned: fix critical section of relocation inode writeback
-Date:   Tue,  9 Aug 2022 20:00:50 +0200
-Message-Id: <20220809175515.832622102@linuxfoundation.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: [PATCH 5.18 26/35] dt-bindings: bluetooth: broadcom: Add BCM4349B1 DT binding
+Date:   Tue,  9 Aug 2022 20:00:55 +0200
+Message-Id: <20220809175516.023780646@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
 References: <20220809175515.046484486@linuxfoundation.org>
@@ -51,46 +52,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Ahmad Fatoum <a.fatoum@pengutronix.de>
 
-commit 19ab78ca86981e0e1e73036fb73a508731a7c078 upstream.
+commit 88b65887aa1b76cd8649a97824fb9904c1d79254 upstream.
 
-We use btrfs_zoned_data_reloc_{lock,unlock} to allow only one process to
-write out to the relocation inode. That critical section must include all
-the IO submission for the inode. However, flush_write_bio() in
-extent_writepages() is out of the critical section, causing an IO
-submission outside of the lock. This leads to an out of the order IO
-submission and fail the relocation process.
+The BCM4349B1, aka CYW/BCM89359, is a WiFi+BT chip and its Bluetooth
+portion can be controlled over serial.
+Extend the binding with its DT compatible.
 
-Fix it by extending the critical section.
-
-Fixes: 35156d852762 ("btrfs: zoned: only allow one process to add pages to a relocation inode")
-CC: stable@vger.kernel.org # 5.16+
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/extent_io.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/btrfs/extent_io.c
-+++ b/fs/btrfs/extent_io.c
-@@ -5214,13 +5214,14 @@ int extent_writepages(struct address_spa
- 	 */
- 	btrfs_zoned_data_reloc_lock(BTRFS_I(inode));
- 	ret = extent_write_cache_pages(mapping, wbc, &epd);
--	btrfs_zoned_data_reloc_unlock(BTRFS_I(inode));
- 	ASSERT(ret <= 0);
- 	if (ret < 0) {
-+		btrfs_zoned_data_reloc_unlock(BTRFS_I(inode));
- 		end_write_bio(&epd, ret);
- 		return ret;
- 	}
- 	ret = flush_write_bio(&epd);
-+	btrfs_zoned_data_reloc_unlock(BTRFS_I(inode));
- 	return ret;
- }
+--- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
++++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
+@@ -23,6 +23,7 @@ properties:
+       - brcm,bcm4345c5
+       - brcm,bcm43540-bt
+       - brcm,bcm4335a0
++      - brcm,bcm4349-bt
  
+   shutdown-gpios:
+     maxItems: 1
 
 
