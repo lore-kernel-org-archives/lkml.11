@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E29AC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C787C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343830AbiHISXr (ORCPT
+        id S1343903AbiHISXx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:23:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48418 "EHLO
+        Tue, 9 Aug 2022 14:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346614AbiHISVS (ORCPT
+        with ESMTP id S1346913AbiHISVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:21:18 -0400
+        Tue, 9 Aug 2022 14:21:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F8C230F4D;
-        Tue,  9 Aug 2022 11:08:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FFFD30F78;
+        Tue,  9 Aug 2022 11:08:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BFB1DB81928;
-        Tue,  9 Aug 2022 18:07:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18F18C43470;
-        Tue,  9 Aug 2022 18:07:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 914B9B81977;
+        Tue,  9 Aug 2022 18:07:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D469AC4347C;
+        Tue,  9 Aug 2022 18:07:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068426;
-        bh=CWNgJ/mRgt3f1gIIywjLR7FYwNO5xLv+kG2ApKVF4O4=;
+        s=korg; t=1660068429;
+        bh=cAL7cSlopyAfoe9ePy3AVZXWDpqa/7WVl3RSZd8S3bI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qtQJz8272wSdk0l7eojlrpTmCW/ZcSO18/LSzJcXtIT8IuHq2haaF6924zg1MQcJa
-         Dfkj9D5wA/H9MSnbY3MN6nA0j8AcwqvLcSksIZcwZG25lRdK9OXcrYieg86TywdOeR
-         H2SLK+kwKTvwmKs+J5ryreuC1qPrHqt7XZ+tY/zg=
+        b=OL6pi+cxDpQiTWaTe9bg+6LAGKo2+1x6BA6L1nu6QJc//8SKMFZ0xRL9XN7v9joOj
+         weuqS1xEgc2m6wA8EnAlYhTIUCS3GYzvM5AK4y+XD94n+cWcArw/JF646YcWdUZSvd
+         BYmPWOIAwt52IhJMaf9sp/n83vNQDm77ll0864eU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aaron Ma <aaron.ma@canonical.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.18 27/35] Bluetooth: btusb: Add support of IMC Networks PID 0x3568
-Date:   Tue,  9 Aug 2022 20:00:56 +0200
-Message-Id: <20220809175516.054785926@linuxfoundation.org>
+        stable@vger.kernel.org, Dmitry Klochkov <kdmitry556@gmail.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 16/35] tools/kvm_stat: fix display of error when multiple processes are found
+Date:   Tue,  9 Aug 2022 20:00:45 +0200
+Message-Id: <20220809175515.646168498@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
 References: <20220809175515.046484486@linuxfoundation.org>
@@ -49,48 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aaron Ma <aaron.ma@canonical.com>
+From: Dmitry Klochkov <kdmitry556@gmail.com>
 
-commit c69ecb0ea4c96b8b191cbaa0b420222a37867655 upstream.
+[ Upstream commit 933b5f9f98da29af646b51b36a0753692908ef64 ]
 
-It is 13d3:3568 for MediaTek MT7922 USB Bluetooth chip.
+Instead of printing an error message, kvm_stat script fails when we
+restrict statistics to a guest by its name and there are multiple guests
+with such name:
 
-T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=480 MxCh= 0
-D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=13d3 ProdID=3568 Rev=01.00
-S:  Manufacturer=MediaTek Inc.
-S:  Product=Wireless_Device
-S:  SerialNumber=...
-C:  #Ifs= 3 Cfg#= 1 Atr=e0 MxPwr=100mA
-I:  If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=125us
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:  If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-I:  If#= 2 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=(none)
-E:  Ad=0a(O) Atr=03(Int.) MxPS=  64 Ivl=125us
-E:  Ad=8a(I) Atr=03(Int.) MxPS=  64 Ivl=125us
+  # kvm_stat -g my_vm
+  Traceback (most recent call last):
+    File "/usr/bin/kvm_stat", line 1819, in <module>
+      main()
+    File "/usr/bin/kvm_stat", line 1779, in main
+      options = get_options()
+    File "/usr/bin/kvm_stat", line 1718, in get_options
+      options = argparser.parse_args()
+    File "/usr/lib64/python3.10/argparse.py", line 1825, in parse_args
+      args, argv = self.parse_known_args(args, namespace)
+    File "/usr/lib64/python3.10/argparse.py", line 1858, in parse_known_args
+      namespace, args = self._parse_known_args(args, namespace)
+    File "/usr/lib64/python3.10/argparse.py", line 2067, in _parse_known_args
+      start_index = consume_optional(start_index)
+    File "/usr/lib64/python3.10/argparse.py", line 2007, in consume_optional
+      take_action(action, args, option_string)
+    File "/usr/lib64/python3.10/argparse.py", line 1935, in take_action
+      action(self, namespace, argument_values, option_string)
+    File "/usr/bin/kvm_stat", line 1649, in __call__
+      ' to specify the desired pid'.format(" ".join(pids)))
+  TypeError: sequence item 0: expected str instance, int found
 
-Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To avoid this, it's needed to convert pids int values to strings before
+pass them to join().
+
+Signed-off-by: Dmitry Klochkov <kdmitry556@gmail.com>
+Message-Id: <20220614121141.160689-1-kdmitry556@gmail.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btusb.c |    3 +++
- 1 file changed, 3 insertions(+)
+ tools/kvm/kvm_stat/kvm_stat | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -469,6 +469,9 @@ static const struct usb_device_id blackl
- 	{ USB_DEVICE(0x0489, 0xe0d9), .driver_info = BTUSB_MEDIATEK |
- 						     BTUSB_WIDEBAND_SPEECH |
- 						     BTUSB_VALID_LE_STATES },
-+	{ USB_DEVICE(0x13d3, 0x3568), .driver_info = BTUSB_MEDIATEK |
-+						     BTUSB_WIDEBAND_SPEECH |
-+						     BTUSB_VALID_LE_STATES },
+diff --git a/tools/kvm/kvm_stat/kvm_stat b/tools/kvm/kvm_stat/kvm_stat
+index 5a5bd74f55bd..9c366b3a676d 100755
+--- a/tools/kvm/kvm_stat/kvm_stat
++++ b/tools/kvm/kvm_stat/kvm_stat
+@@ -1646,7 +1646,8 @@ Press any other key to refresh statistics immediately.
+                          .format(values))
+             if len(pids) > 1:
+                 sys.exit('Error: Multiple processes found (pids: {}). Use "-p"'
+-                         ' to specify the desired pid'.format(" ".join(pids)))
++                         ' to specify the desired pid'
++                         .format(" ".join(map(str, pids))))
+             namespace.pid = pids[0]
  
- 	/* Additional Realtek 8723AE Bluetooth devices */
- 	{ USB_DEVICE(0x0930, 0x021d), .driver_info = BTUSB_REALTEK },
+     argparser = argparse.ArgumentParser(description=description_text,
+-- 
+2.35.1
+
 
 
