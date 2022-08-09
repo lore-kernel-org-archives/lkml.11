@@ -2,77 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31F27C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:23:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E970DC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:23:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343862AbiHISXJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:23:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51002 "EHLO
+        id S245411AbiHISXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346206AbiHISU5 (ORCPT
+        with ESMTP id S1346307AbiHISVD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:20:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9486130F49;
-        Tue,  9 Aug 2022 11:07:54 -0700 (PDT)
+        Tue, 9 Aug 2022 14:21:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842D030F42;
+        Tue,  9 Aug 2022 11:07:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AE42B81913;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AE8EB818D8;
         Tue,  9 Aug 2022 18:07:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83509C433D7;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE785C43470;
         Tue,  9 Aug 2022 18:07:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068420;
-        bh=HTT+0szE6QFagNjHa5lguAMblNs0baFDZDBvsdoAhl8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GeTcCw0O45ndAUa0yyl6UXUGSbEMqQb4o54HVG0+FpAh/8nFCwVCHtCrT/NLQIOfq
-         k+CmTqAU2E6McEPaKWEW0qUBQ7ftjYbwG0A/nhp5A1URYjvl3cju1gDivjmlCy3LhY
-         rvohSPvMnecMkkVjl3Y9y+C2V28J6NkQ8xXZUVQQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hakan Jansson <hakan.jansson@infineon.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 5.18 25/35] Bluetooth: hci_bcm: Add DT compatible for CYW55572
-Date:   Tue,  9 Aug 2022 20:00:54 +0200
-Message-Id: <20220809175515.983312516@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
-References: <20220809175515.046484486@linuxfoundation.org>
-User-Agent: quilt/0.66
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660068420;
+        bh=2EdjzasIB09m+gY3gToosq99knMnczwU9bRriEj/PHU=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=c1B7ErLrUkL2D0AfWZ630nEllP0wRB5x2SrJ/43UfDEoqJ8KUfFWubojQSoA05sLB
+         q/P7JrySK0pw+C1zV4u3bdXr/WicT0eT8eZFe25OvEbRZwXLTDh6GpBzU47NZ4X+VX
+         0vb40g8RtiQV+V2Ubbfe8G4D7Vmr5NZiutl3u2Q5xbl7ObyEvNZviib8IWWIaAQkeu
+         6dEetgrnGfD8PKc5U9WDQoqktd0mkCaAJosBrdhiORlBsEfYc8cDkU9+gcCj2tW6Zd
+         6JwH8yOyhnZEjsA4A/wcrJeDWtb9EYvvYEMKeYI/wBoG5Q3nFesHO78ufd6kfE5VGM
+         EKNIpDMOp21vg==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <d92dd996-6961-5291-9504-1fe284b40dd6@gmail.com>
+References: <20220419051114.1569291-1-seanga2@gmail.com> <d92dd996-6961-5291-9504-1fe284b40dd6@gmail.com>
+Subject: Re: [RFT PATCH] clk: ls1c: Fix PLL rate calculation
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Keguang Zhang <keguang.zhang@gmail.com>,
+        Du Huanpeng <dhu@hodcarrier.org>,
+        Yang Ling <gnaygnil@gmail.com>
+To:     Sean Anderson <seanga2@gmail.com>, linux-clk@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Date:   Tue, 09 Aug 2022 11:06:58 -0700
+User-Agent: alot/0.10
+Message-Id: <20220809180700.BE785C43470@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hakan Jansson <hakan.jansson@infineon.com>
+Quoting Sean Anderson (2022-08-03 16:28:41)
+> On 4/19/22 1:11 AM, Sean Anderson wrote:
+> >  =20
+> >       pll =3D __raw_readl(LS1X_CLK_PLL_FREQ);
+> > -     rate =3D ((pll >> 8) & 0xff) + ((pll >> 16) & 0xff);
+> > +     rate =3D (pll & 0xff00) + ((pll >> 16) & 0xff);
+> >       rate *=3D OSC;
+> > -     rate >>=3D 2;
+> > +     rate >>=3D 10;
+> >  =20
+> >       return rate;
+> >   }
+> >=20
+>=20
+> Since there have been no objections, can we apply this?
+>=20
 
-commit f8cad62002a7699fd05a23b558b980b5a77defe0 upstream.
-
-CYW55572 is a Wi-Fi + Bluetooth combo device from Infineon.
-
-Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/bluetooth/hci_bcm.c |    1 +
- 1 file changed, 1 insertion(+)
-
---- a/drivers/bluetooth/hci_bcm.c
-+++ b/drivers/bluetooth/hci_bcm.c
-@@ -1547,6 +1547,7 @@ static const struct of_device_id bcm_blu
- 	{ .compatible = "brcm,bcm4349-bt", .data = &bcm43438_device_data },
- 	{ .compatible = "brcm,bcm43540-bt", .data = &bcm4354_device_data },
- 	{ .compatible = "brcm,bcm4335a0" },
-+	{ .compatible = "infineon,cyw55572-bt" },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, bcm_bluetooth_of_match);
-
-
+Can you resend it? I can apply it after the merge window closes next
+week.
