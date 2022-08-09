@@ -2,63 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89AA2C2BB47
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 22:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90893C32766
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 22:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230138AbiHIWGJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 18:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49758 "EHLO
+        id S230032AbiHIWGO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 18:06:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbiHIWFK (ORCPT
+        with ESMTP id S229935AbiHIWFM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 18:05:10 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C90B862
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 15:05:09 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id l22so15764530wrz.7
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 15:05:08 -0700 (PDT)
+        Tue, 9 Aug 2022 18:05:12 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77497DFC6
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 15:05:11 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id p10so15734090wru.8
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 15:05:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=3LbT+i5JAOF13BKiDcy7sF/Ytx5HM8wW7yjSAT5yeTY=;
-        b=cxtT92hK+noUuGFyDZmEbq2zUm+A2mKihLtpkMj83w4NhXc4OF2gtY0RwzaqjOObaz
-         Wvjvab8q9fsrJ0Pa9HJ7wYon2fNcZDzBxfHAouIJspYTk3Z6nht5gcNidIvdWmUHItLt
-         VPWR1N573S0UluAfKvguNUYag5i2zN3KW811cD156aBCZ64h3b2z2x0bNc1VFlQBvVOd
-         jTvZqZLtI7fUKBbUZNcdo7qPho3lkM/KcsKsZI5zTQVD54ziIPxU/974TJBTQPB4lJqz
-         ATWnN/guGvk5KPi3IqgD+FH2L4B4TMZxHLOV9ZmPRKlhjKnoHlAghRbwYrv3HcgZLcnp
-         v/jQ==
+        bh=pEJ2fI5oyXSDkm4TFagk1yPb1z/Mu52z3/w3W5mIhos=;
+        b=gukC8b/QtpzlyuOSf2HZMDcLd361sAiOCbFHcmG31rZ1AJIiFYQx3AYv9k4a07LNr4
+         EwTzmCGB9dRv3vMSW38S4e+z5Im17IsXi+Hjnf7kTCkmGOBj8WskYC4n0+Gi2ok09oTy
+         fcNSe/CzoW6WL+FvBvNhNYRjBhyK+tuoj5rWZAjSoK73NtrFSMGRYT71Gmbma1O8CfGS
+         m/NMqCmpqmtyseKI/HKonGeZNhRzzAEqo0PNNhlKJv56s4rLaW46DCNbNJ0HfqnM698n
+         TbW+VIuLFm2MgZyqEwN1an8ICRK+EFPMy277KAmgQTXvzOMD5OrAaOuQ0pzi5twYSM2/
+         JYIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=3LbT+i5JAOF13BKiDcy7sF/Ytx5HM8wW7yjSAT5yeTY=;
-        b=UxiF57uunvKEgIaHUuqn03LuCl0v7meBTKJXNaH4WNodOMOFwt/IVb0vAg0MfpQsHi
-         WymRewIe4SDcQNz5lWV/jR9OjL4gqwlrUDBP906wsSZOHNR4F7kzbhMRl3g49oI17ZFu
-         FvRte/vDQzWEXGKkh2ZDoWCFAaqud2llAM3QVqJ5CKy8zWEjtyKrzKpXjKTOelNsH8J9
-         qiGkj7+TLFqeWPOLLBnhbZAw3D+hiKFXQ9g/eV0siG+LwaAIlnxqkAJRiGmK98k4TGP1
-         q0bRiWb1cr9ddVmnBGtbSI7nwuKTedbDD8ItoQt7Agv90CK4rnkLPChoiIT/L4a0Bo68
-         7GeA==
-X-Gm-Message-State: ACgBeo3ggwGGEsrVGwH2rnxqeBYPfFuUl1u/WcXijkwntLY/Efe/dXVt
-        ZbCLBzU1QdtMHBEh+l99nhO5EFKrLvPLcw==
-X-Google-Smtp-Source: AA6agR5Cu6cdrOlw/RnQZUYMoANWaz5D83/mavePTngUcaGqLSHsiHAtOW3HoK/8j8EFCQ1yJzOrRA==
-X-Received: by 2002:a5d:5a94:0:b0:221:6cec:2589 with SMTP id bp20-20020a5d5a94000000b002216cec2589mr13883414wrb.336.1660082707471;
-        Tue, 09 Aug 2022 15:05:07 -0700 (PDT)
+        bh=pEJ2fI5oyXSDkm4TFagk1yPb1z/Mu52z3/w3W5mIhos=;
+        b=m7ZOwWO5hDztORXVIjIsT2cmKyVTCW2KaDOrdkPjb/5IKQAasir4vR1SVPaTXMsCly
+         tDK+16RpTLNIZyrWYEOcGaUcdmnT+eD2sKgUy/IvbpelEC5NjZ0h+NmGUnaw4hXn0LA+
+         knsxNe1nBIuJ4GeSGcykyYKa2V5VIkhRQkLAGm1Z36vu+usYVw6IIJvo1qDxRGVvbr4g
+         fFSUJZwcxYJdmCOVYfHaN7Zscp1mu8tpNk0S6k02NB9vv/17c74XoAp4uhI3XG9BVvfZ
+         TnNs5phvd0pdBjqD1niveY1PqLn2hXybX10550lzMx/AkhAuhdiUDBynKJ57xVHgjd9s
+         19oQ==
+X-Gm-Message-State: ACgBeo1OrmhL+C1TN/GU1bSykwbVvaRmzYKyWobk1DUsYwhs7eW1XxDD
+        C/xQbrMMwD3yDMBloRR/s2i6VQ==
+X-Google-Smtp-Source: AA6agR42y1dsm01IqTnuE1ghurPV48QcVTLBaiYLz53iE4d+SEFarwylT/XtidEzeKRinG9/QyPYQA==
+X-Received: by 2002:adf:fe81:0:b0:21a:3574:ec8e with SMTP id l1-20020adffe81000000b0021a3574ec8emr15996076wrr.410.1660082710038;
+        Tue, 09 Aug 2022 15:05:10 -0700 (PDT)
 Received: from localhost.localdomain (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.gmail.com with ESMTPSA id m21-20020a05600c3b1500b003a317ee3036sm293583wms.2.2022.08.09.15.05.06
+        by smtp.gmail.com with ESMTPSA id m21-20020a05600c3b1500b003a317ee3036sm293583wms.2.2022.08.09.15.05.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 15:05:06 -0700 (PDT)
+        Tue, 09 Aug 2022 15:05:09 -0700 (PDT)
 From:   Daniel Lezcano <daniel.lezcano@linaro.org>
 To:     daniel.lezcano@linaro.org, rafael@kernel.org
 Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Amit Kucheria <amitk@kernel.org>,
-        linux-renesas-soc@vger.kernel.org (open list:RENESAS R-CAR THERMAL
-        DRIVERS)
-Subject: [PATCH v2 08/26] thermal/drivers/rcar: Use generic thermal_zone_get_trip() function
-Date:   Wed, 10 Aug 2022 00:04:18 +0200
-Message-Id: <20220809220436.711020-9-daniel.lezcano@linaro.org>
+        linux-kernel@vger.kernel.org, Amit Kucheria <amitk@kernel.org>
+Subject: [PATCH v2 10/26] thermal/drivers/hisi: Use generic thermal_zone_get_trip() function
+Date:   Wed, 10 Aug 2022 00:04:20 +0200
+Message-Id: <20220809220436.711020-11-daniel.lezcano@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220809220436.711020-1-daniel.lezcano@linaro.org>
 References: <20220809220436.711020-1-daniel.lezcano@linaro.org>
@@ -77,82 +73,39 @@ thermal zone.
 
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 ---
- drivers/thermal/rcar_thermal.c | 49 +++++-----------------------------
- 1 file changed, 6 insertions(+), 43 deletions(-)
+ drivers/thermal/hisi_thermal.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/thermal/rcar_thermal.c b/drivers/thermal/rcar_thermal.c
-index 4df42d70d867..003457810072 100644
---- a/drivers/thermal/rcar_thermal.c
-+++ b/drivers/thermal/rcar_thermal.c
-@@ -278,52 +278,16 @@ static int rcar_thermal_get_temp(struct thermal_zone_device *zone, int *temp)
- 	return rcar_thermal_get_current_temp(priv, temp);
- }
+diff --git a/drivers/thermal/hisi_thermal.c b/drivers/thermal/hisi_thermal.c
+index cc5da71b6f55..914dc73f4263 100644
+--- a/drivers/thermal/hisi_thermal.c
++++ b/drivers/thermal/hisi_thermal.c
+@@ -490,7 +490,7 @@ static int hisi_thermal_register_sensor(struct platform_device *pdev,
+ 					struct hisi_thermal_sensor *sensor)
+ {
+ 	int ret, i;
+-	const struct thermal_trip *trip;
++	struct thermal_trip trip;
  
--static int rcar_thermal_get_trip_type(struct thermal_zone_device *zone,
--				      int trip, enum thermal_trip_type *type)
--{
--	struct rcar_thermal_priv *priv = rcar_zone_to_priv(zone);
--	struct device *dev = rcar_priv_to_dev(priv);
--
--	/* see rcar_thermal_get_temp() */
--	switch (trip) {
--	case 0: /* +90 <= temp */
--		*type = THERMAL_TRIP_CRITICAL;
--		break;
--	default:
--		dev_err(dev, "rcar driver trip error\n");
--		return -EINVAL;
--	}
--
--	return 0;
--}
--
--static int rcar_thermal_get_trip_temp(struct thermal_zone_device *zone,
--				      int trip, int *temp)
--{
--	struct rcar_thermal_priv *priv = rcar_zone_to_priv(zone);
--	struct device *dev = rcar_priv_to_dev(priv);
--
--	/* see rcar_thermal_get_temp() */
--	switch (trip) {
--	case 0: /* +90 <= temp */
--		*temp = MCELSIUS(90);
--		break;
--	default:
--		dev_err(dev, "rcar driver trip error\n");
--		return -EINVAL;
--	}
--
--	return 0;
--}
--
- static struct thermal_zone_device_ops rcar_thermal_zone_of_ops = {
- 	.get_temp	= rcar_thermal_get_temp,
- };
+ 	sensor->tzd = devm_thermal_of_zone_register(&pdev->dev,
+ 						    sensor->id, sensor,
+@@ -503,11 +503,12 @@ static int hisi_thermal_register_sensor(struct platform_device *pdev,
+ 		return ret;
+ 	}
  
- static struct thermal_zone_device_ops rcar_thermal_zone_ops = {
- 	.get_temp	= rcar_thermal_get_temp,
--	.get_trip_type	= rcar_thermal_get_trip_type,
--	.get_trip_temp	= rcar_thermal_get_trip_temp,
-+};
+-	trip = of_thermal_get_trip_points(sensor->tzd);
++	for (i = 0; i < thermal_zone_get_num_trips(sensor->tzd); i++) {
+ 
+-	for (i = 0; i < of_thermal_get_ntrips(sensor->tzd); i++) {
+-		if (trip[i].type == THERMAL_TRIP_PASSIVE) {
+-			sensor->thres_temp = trip[i].temperature;
++		thermal_zone_get_trip(sensor->tzd, i, &trip);
 +
-+static struct thermal_trip trips[] = {
-+	{ .type = THERMAL_TRIP_CRITICAL, .temperature = 90000 }
- };
- 
- /*
-@@ -531,9 +495,8 @@ static int rcar_thermal_probe(struct platform_device *pdev)
- 						dev, i, priv,
- 						&rcar_thermal_zone_of_ops);
- 		} else {
--			priv->zone = thermal_zone_device_register(
--						"rcar_thermal",
--						1, 0, priv,
-+			priv->zone = thermal_zone_device_register_with_trips(
-+				"rcar_thermal", trips, ARRAY_SIZE(trips), 0, priv,
- 						&rcar_thermal_zone_ops, NULL, 0,
- 						idle);
- 
++		if (trip.type == THERMAL_TRIP_PASSIVE) {
++			sensor->thres_temp = trip.temperature;
+ 			break;
+ 		}
+ 	}
 -- 
 2.34.1
 
