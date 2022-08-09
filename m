@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97173C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:13:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A93BC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:14:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343678AbiHISNw (ORCPT
+        id S1343705AbiHISN5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:13:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33490 "EHLO
+        Tue, 9 Aug 2022 14:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345528AbiHISLO (ORCPT
+        with ESMTP id S1343665AbiHISKG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:11:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E57C2A96F;
-        Tue,  9 Aug 2022 11:04:29 -0700 (PDT)
+        Tue, 9 Aug 2022 14:10:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A312A274;
+        Tue,  9 Aug 2022 11:04:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD17B6113A;
-        Tue,  9 Aug 2022 18:04:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3948EC4347C;
-        Tue,  9 Aug 2022 18:04:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A882610AB;
+        Tue,  9 Aug 2022 18:04:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCEF8C4347C;
+        Tue,  9 Aug 2022 18:04:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068269;
-        bh=VHvmkThlg35jBCPjoeRwMSnizj75A86It0QZQylbq2k=;
+        s=korg; t=1660068242;
+        bh=BczoROFTk10AV+L3GqFxcAmhNea7BN0iCUC/7eVo740=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vVTiaCVKGM9M3CJ6Mkp61Y7ZHR9lAtT3CcdpSlnX/OkN4C5p/6kOxKzYc/6rmwHeb
-         UbdLOV11Iu1hHjWDYJw1x/2fi1foQAZCNCo8AhDXZvnR7YiaFzmIrfe+4V5PBME8wz
-         RHbgMmuwQtBKjVAaDzY2S6y1M3nzqABOO02kYSxQ=
+        b=HCPgHYoes0heKijBlhj0hdJi/33j1UUVihXADVQaehZ0STG1LxFYgtiZsEBfH32Ur
+         ej25G0KwAHn+2/7OlmcMFlXBw4VjuNXyAk1TEHbAX9/T+FPvCZGa+jFsLvZHpYiz52
+         8Lx2yvRYxi33Z+SFs4/DwPiOO4z55Xxn86skff8w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hakan Jansson <hakan.jansson@infineon.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 5.10 14/23] Bluetooth: hci_bcm: Add DT compatible for CYW55572
-Date:   Tue,  9 Aug 2022 20:00:32 +0200
-Message-Id: <20220809175513.367997567@linuxfoundation.org>
+        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.10 08/23] ACPI: video: Shortening quirk list by identifying Clevo by board_name only
+Date:   Tue,  9 Aug 2022 20:00:26 +0200
+Message-Id: <20220809175513.171867514@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175512.853274191@linuxfoundation.org>
 References: <20220809175512.853274191@linuxfoundation.org>
@@ -50,29 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hakan Jansson <hakan.jansson@infineon.com>
+From: Werner Sembach <wse@tuxedocomputers.com>
 
-commit f8cad62002a7699fd05a23b558b980b5a77defe0 upstream.
+commit f0341e67b3782603737f7788e71bd3530012a4f4 upstream.
 
-CYW55572 is a Wi-Fi + Bluetooth combo device from Infineon.
+Taking a recent change in the i8042 quirklist to this one: Clevo
+board_names are somewhat unique, and if not: The generic Board_-/Sys_Vendor
+string "Notebook" doesn't help much anyway. So identifying the devices just
+by the board_name helps keeping the list significantly shorter and might
+even hit more devices requiring the fix.
 
-Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+Fixes: c844d22fe0c0 ("ACPI: video: Force backlight native for Clevo NL5xRU and NL5xNU")
+Cc: All applicable <stable@vger.kernel.org>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/hci_bcm.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/acpi/video_detect.c |   34 ----------------------------------
+ 1 file changed, 34 deletions(-)
 
---- a/drivers/bluetooth/hci_bcm.c
-+++ b/drivers/bluetooth/hci_bcm.c
-@@ -1492,6 +1492,7 @@ static const struct of_device_id bcm_blu
- 	{ .compatible = "brcm,bcm4349-bt", .data = &bcm43438_device_data },
- 	{ .compatible = "brcm,bcm43540-bt", .data = &bcm4354_device_data },
- 	{ .compatible = "brcm,bcm4335a0" },
-+	{ .compatible = "infineon,cyw55572-bt" },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, bcm_bluetooth_of_match);
+--- a/drivers/acpi/video_detect.c
++++ b/drivers/acpi/video_detect.c
+@@ -424,23 +424,6 @@ static const struct dmi_system_id video_
+ 	.callback = video_detect_force_native,
+ 	.ident = "Clevo NL5xRU",
+ 	.matches = {
+-		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
+-		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
+-		},
+-	},
+-	{
+-	.callback = video_detect_force_native,
+-	.ident = "Clevo NL5xRU",
+-	.matches = {
+-		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
+-		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
+-		},
+-	},
+-	{
+-	.callback = video_detect_force_native,
+-	.ident = "Clevo NL5xRU",
+-	.matches = {
+-		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
+ 		DMI_MATCH(DMI_BOARD_NAME, "NL5xRU"),
+ 		},
+ 	},
+@@ -464,23 +447,6 @@ static const struct dmi_system_id video_
+ 	.callback = video_detect_force_native,
+ 	.ident = "Clevo NL5xNU",
+ 	.matches = {
+-		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
+-		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
+-		},
+-	},
+-	{
+-	.callback = video_detect_force_native,
+-	.ident = "Clevo NL5xNU",
+-	.matches = {
+-		DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
+-		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
+-		},
+-	},
+-	{
+-	.callback = video_detect_force_native,
+-	.ident = "Clevo NL5xNU",
+-	.matches = {
+-		DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
+ 		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
+ 		},
+ 	},
 
 
