@@ -2,227 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A83C2C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 11:36:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16B88C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 11:36:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242763AbiHILf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 07:35:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56886 "EHLO
+        id S242592AbiHILgJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 07:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242833AbiHILfY (ORCPT
+        with ESMTP id S242932AbiHILff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 07:35:24 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BBDB22B01;
-        Tue,  9 Aug 2022 04:34:57 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id 2AE7F3200979;
-        Tue,  9 Aug 2022 07:34:56 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Tue, 09 Aug 2022 07:34:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm2; t=1660044895; x=1660131295; bh=sG3dfW2+8uHUHlEdheiLB6CAO
-        Rlgb6+iLDptt+xl+L4=; b=pytOGLqMrHrV0vUIbND1YlQwelLouQz9EKwI5BOd0
-        /n9laR37cD8SDdJsrtVtaVR1zI+Fq8It8MMfkU8YJG1MpmEXr4V/rpTpqxe2e8yw
-        WijGkZRuTk79aiQgf8g6ng26Uljbhec/PvBVh5yZW44n/9uY8gUow4/lbqGicWwY
-        vHywdMVRFP008CpLNTrW23EdCL02CH/VjQTzTKP6RM1S+FS7D2C4GRoThJk3lHuk
-        wvB3ZA1gDSdQffqRehPwHttJ42O8/lgfiKGBDUYEhDoN7tgL4zEnouNkIOEXoF1Q
-        Y5lvIaFheK2UzKKF7ADNS2wRluAGltiop66+0KPjoPWeQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-        1660044895; x=1660131295; bh=sG3dfW2+8uHUHlEdheiLB6CAORlgb6+iLDp
-        tt+xl+L4=; b=xG9yL5lsuZcEkpa6OC61vDWSwOkV6A1Mr5sghZ1UGdyXwqfSalS
-        qx91TGjx7f0mjd1YowwyLvMzpeTSkSPqYSfbeI4oazw+/HPuboxvGYDbeW4Iz4fo
-        1aMSSpn6iWeYgupeOfH9HtMfZnDm+GprIHozgwW+cx/l+f6WV1Z/VbOPTR1ZdoZd
-        i82icUvLXmKTBq4UWPIWbb+DBZyZXJqQPRjOBLUBNcZqp6Q8/L2YNEeJfBFsioq4
-        pKmjWpyjfqtLaAP/9LpXycMJfCdjKr4iaN8hT57ZMGplNqH+dgAvIjTct45+RMvW
-        yV+pbWK+KKUYLQv0KP3BAklWBr5g/uijwKw==
-X-ME-Sender: <xms:X0byYsFpwaLn58nEbDYXxHus6b9Hl-_tWx_WlDrsK3CAJBuf8rJUcQ>
-    <xme:X0byYlWJPzU084IRx1lTBnD97Z8E_yISirIUwol_MGbaHlxY1Qjy95PGYlip_spz2
-    QdUAZBmc4fb_Sk9uwo>
-X-ME-Received: <xmr:X0byYmIvLAnDKdLnHgkeEO5Wfv_zgLWS8Nr51lwIWtC5QDy-OZmAV10NMkPCqsJVOc6t6yjPOItSWpi7OG-mjWOcvOVhXPA3pm_7SKwql9XYwbbHh_V4GKKk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegtddggeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffoggfgsedtkeertd
-    ertddtnecuhfhrohhmpeflihgrgihunhcujggrnhhguceojhhirgiguhhnrdihrghnghes
-    fhhlhihgohgrthdrtghomheqnecuggftrfgrthhtvghrnhephfetuddtudevieeljeejte
-    ffheeujeduhefgffejudfhueelleduffefgfffveeknecuvehluhhsthgvrhfuihiivgep
-    tdenucfrrghrrghmpehmrghilhhfrhhomhepjhhirgiguhhnrdihrghnghesfhhlhihgoh
-    grthdrtghomh
-X-ME-Proxy: <xmx:X0byYuGknYmkQBuCY2GJ0tem1zQUq4s2p1-kd9ivUasX6XlfxlZSjQ>
-    <xmx:X0byYiUe8ZPR-bxFGY7kZP-rMObb_C0cWKcyP14qEq3GwRn-15JsVA>
-    <xmx:X0byYhOwwf95n7oqO2Zq2603G1nxw1u3e6ExG0anOP3K193XSJx9-Q>
-    <xmx:X0byYhTlummVrvgyMCGN3Me02FLFQ0AIHC3-ks_Ye97LpDzxBJPuGQ>
-Feedback-ID: ifd894703:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 9 Aug 2022 07:34:54 -0400 (EDT)
-From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
-To:     linux-mips@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, tsbogend@alpha.franken.de,
-        linux-api@vger.kernel.org, Jiaxun Yang <jiaxun.yang@flygoat.com>
-Subject: [PATCH] MIPS: Expose prid and globalnumber to sysfs
-Date:   Tue,  9 Aug 2022 11:34:44 +0000
-Message-Id: <20220809113444.17757-1-jiaxun.yang@flygoat.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 9 Aug 2022 07:35:35 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887B3248E1;
+        Tue,  9 Aug 2022 04:35:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660044934; x=1691580934;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=ckfaBQEm61O3oz3fOP7g8FRe9wCmN4sKBCyP+R9DJ+E=;
+  b=SdAp2v7xREHY8hbPaIsG7yYNdTgpNJotWVlSw46NFNyHwkzrbzwd/rwf
+   UnrsPiFH5stjf1MIkRFu4B/bdRaRntj//0CEaIr4otGTDyf3vYbg0kUNE
+   MPFiocPveZcrFhPfEbGrFCe+wro4dNr8gsFvfBZQ5dicGE1hUOb0Ae0D8
+   PbKCs7ipGi7m1vC1RELfj1vZI04SYU3J0PD+VQ6sJ2Qymk5vKJdlJ5AU8
+   IgE1HE/B3YgGEDm4XKgygX0LKYJgQBh9il0bxWBzCvqqQ6G+HLj8sSX0G
+   xx918iS4PK8u2dYUscRnL6MmoNgHg+owPHRsRyDXhV1wQfFmUqo7FSy7S
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="289568213"
+X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
+   d="scan'208";a="289568213"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 04:35:34 -0700
+X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
+   d="scan'208";a="747008116"
+Received: from labukara-mobl.ger.corp.intel.com (HELO box.shutemov.name) ([10.251.214.212])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 04:35:28 -0700
+Received: by box.shutemov.name (Postfix, from userid 1000)
+        id 86500103886; Tue,  9 Aug 2022 14:38:27 +0300 (+03)
+Date:   Tue, 9 Aug 2022 14:38:27 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Marcelo Henrique Cerri <marcelo.cerri@canonical.com>,
+        tim.gardner@canonical.com, khalid.elmously@canonical.com,
+        philip.cox@canonical.com,
+        the arch/x86 maintainers <x86@kernel.org>,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCHv7 10/14] x86/mm: Avoid load_unaligned_zeropad() stepping
+ into unaccepted memory
+Message-ID: <20220809113827.fchtnyzy44z5fuis@box.shutemov.name>
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <20220614120231.48165-11-kirill.shutemov@linux.intel.com>
+ <7cec93c5-3db4-409b-8c1e-bc1f10dd68fc@www.fastmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <7cec93c5-3db4-409b-8c1e-bc1f10dd68fc@www.fastmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some application would like to know precise model and rev of processor
-to do errata workaround or optimization.
+On Tue, Jul 26, 2022 at 01:17:13PM -0700, Andy Lutomirski wrote:
+> 
+> 
+> On Tue, Jun 14, 2022, at 5:02 AM, Kirill A. Shutemov wrote:
+> > load_unaligned_zeropad() can lead to unwanted loads across page boundaries.
+> > The unwanted loads are typically harmless. But, they might be made to
+> > totally unrelated or even unmapped memory. load_unaligned_zeropad()
+> > relies on exception fixup (#PF, #GP and now #VE) to recover from these
+> > unwanted loads.
+> >
+> > But, this approach does not work for unaccepted memory. For TDX, a load
+> > from unaccepted memory will not lead to a recoverable exception within
+> > the guest. The guest will exit to the VMM where the only recourse is to
+> > terminate the guest.
+> 
+> Why is unaccepted memory marked present in the direct map in the first place?
+> 
+> Having kernel code assume that every valid address is followed by
+> several bytes of memory that may be read without side effects other than
+> #PF also seems like a mistake, but I probably won’t win that fight. But
+> sticking guard pages in front of definitely-not-logically present pages
+> seems silly to me.  Let’s just not map it.
 
-Expose them in sysfs as:
-/sys/devices/system/cpu/cpuX/regs/identification/prid
-/sys/devices/system/cpu/cpuX/regs/identification/globalnumber
+It would mean no 1G pages in direct mapping for TDX as we accept 2M a
+time.
 
-Reusing AArch64 CPU registers directory.
+> (What if MMIO memory is mapped next to regular memory?  Doing random
+> unaligned reads that cross into MMIO seems unwise.)
 
-Signed-off-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
----
- .../ABI/testing/sysfs-devices-system-cpu      | 11 +++
- arch/mips/kernel/topology.c                   | 96 +++++++++++++++++++
- 2 files changed, 107 insertions(+)
+MMIO is shared, not unaccpted private. We already handle the situation.
+See 1e7769653b06 ("x86/tdx: Handle load_unaligned_zeropad() page-cross to
+a shared page").
 
-diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
-index 5bf61881f012..adf855e7bb9b 100644
---- a/Documentation/ABI/testing/sysfs-devices-system-cpu
-+++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
-@@ -512,6 +512,17 @@ Description:	information about CPUs heterogeneity.
- 
- 		cpu_capacity: capacity of cpuX.
- 
-+What:		/sys/devices/system/cpu/cpuX/regs/
-+		/sys/devices/system/cpu/cpuX/regs/identification/
-+		/sys/devices/system/cpu/cpuX/regs/identification/prid
-+		/sys/devices/system/cpu/cpuX/regs/identification/globalnumber
-+Date:		Augest 2022
-+Contact:	Linux MIPS Kernel Mailing list <linux-mips@vger.kernel.org>
-+Description:	MIPS CPU registers
-+
-+		'identification' directory exposes the Processor ID and Global Number
-+		registers for identifying model and revision of the CPU.
-+
- What:		/sys/devices/system/cpu/vulnerabilities
- 		/sys/devices/system/cpu/vulnerabilities/meltdown
- 		/sys/devices/system/cpu/vulnerabilities/spectre_v1
-diff --git a/arch/mips/kernel/topology.c b/arch/mips/kernel/topology.c
-index 9429d85a4703..90b5136afb63 100644
---- a/arch/mips/kernel/topology.c
-+++ b/arch/mips/kernel/topology.c
-@@ -5,6 +5,8 @@
- #include <linux/node.h>
- #include <linux/nodemask.h>
- #include <linux/percpu.h>
-+#include <linux/seq_file.h>
-+#include <linux/smp.h>
- 
- static DEFINE_PER_CPU(struct cpu, cpu_devices);
- 
-@@ -26,3 +28,97 @@ static int __init topology_init(void)
- }
- 
- subsys_initcall(topology_init);
-+
-+static struct kobj_type cpuregs_kobj_type = {
-+	.sysfs_ops = &kobj_sysfs_ops,
-+};
-+
-+struct cpureg {
-+	struct kobject kobj;
-+	struct cpuinfo_mips *info;
-+};
-+static DEFINE_PER_CPU(struct cpureg, cpuregs);
-+
-+#define kobj_to_cpureg(kobj)	container_of(kobj, struct cpureg, kobj)
-+#define CPUREGS_ATTR_RO(_name, _field)						\
-+	static ssize_t _name##_show(struct kobject *kobj,			\
-+			struct kobj_attribute *attr, char *buf)			\
-+	{									\
-+		struct cpuinfo_mips *info = kobj_to_cpureg(kobj)->info;		\
-+										\
-+		return sprintf(buf, "0x%08x\n", info->_field);	\
-+	}									\
-+	static struct kobj_attribute cpuregs_attr_##_name = __ATTR_RO(_name)
-+
-+CPUREGS_ATTR_RO(prid, processor_id);
-+CPUREGS_ATTR_RO(globalnumber, globalnumber);
-+
-+static struct attribute *cpuregs_id_attrs[] = {
-+	&cpuregs_attr_prid.attr,
-+	&cpuregs_attr_globalnumber.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group cpuregs_attr_group = {
-+	.attrs = cpuregs_id_attrs,
-+	.name = "identification"
-+};
-+
-+static int cpuregs_cpu_online(unsigned int cpu)
-+{
-+	int rc;
-+	struct device *dev;
-+	struct cpureg *reg = &per_cpu(cpuregs, cpu);
-+
-+	dev = get_cpu_device(cpu);
-+	if (!dev) {
-+		rc = -ENODEV;
-+		goto out;
-+	}
-+	rc = kobject_add(&reg->kobj, &dev->kobj, "regs");
-+	if (rc)
-+		goto out;
-+	rc = sysfs_create_group(&reg->kobj, &cpuregs_attr_group);
-+	if (rc)
-+		kobject_del(&reg->kobj);
-+out:
-+	return rc;
-+}
-+
-+static int cpuregs_cpu_offline(unsigned int cpu)
-+{
-+	struct device *dev;
-+	struct cpureg *reg = &per_cpu(cpuregs, cpu);
-+
-+	dev = get_cpu_device(cpu);
-+	if (!dev)
-+		return -ENODEV;
-+	if (reg->kobj.parent) {
-+		sysfs_remove_group(&reg->kobj, &cpuregs_attr_group);
-+		kobject_del(&reg->kobj);
-+	}
-+
-+	return 0;
-+}
-+
-+static int __init cpuinfo_regs_init(void)
-+{
-+	int cpu, ret;
-+
-+	for_each_possible_cpu(cpu) {
-+		struct cpureg *reg = &per_cpu(cpuregs, cpu);
-+
-+		reg->info = &cpu_data[cpu];
-+		kobject_init(&reg->kobj, &cpuregs_kobj_type);
-+	}
-+
-+	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "mips/topology:online",
-+				cpuregs_cpu_online, cpuregs_cpu_offline);
-+	if (ret < 0) {
-+		pr_err("cpuinfo: failed to register hotplug callbacks.\n");
-+		return ret;
-+	}
-+	return 0;
-+}
-+
-+device_initcall(cpuinfo_regs_init);
 -- 
-2.34.1
-
+  Kiryl Shutsemau / Kirill A. Shutemov
