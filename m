@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2BBC25B0C
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31F27C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343807AbiHISXD (ORCPT
+        id S1343862AbiHISXJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49472 "EHLO
+        Tue, 9 Aug 2022 14:23:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346094AbiHISUx (ORCPT
+        with ESMTP id S1346206AbiHISU5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:20:53 -0400
+        Tue, 9 Aug 2022 14:20:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909B62FFCC;
-        Tue,  9 Aug 2022 11:07:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9486130F49;
+        Tue,  9 Aug 2022 11:07:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7319DB8190F;
-        Tue,  9 Aug 2022 18:06:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF5E3C43470;
-        Tue,  9 Aug 2022 18:06:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3AE42B81913;
+        Tue,  9 Aug 2022 18:07:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83509C433D7;
+        Tue,  9 Aug 2022 18:07:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068418;
-        bh=cGoSbcBMNOOEJ6uxE2E5jK3xAT+bVsyN8dNDllw4yW0=;
+        s=korg; t=1660068420;
+        bh=HTT+0szE6QFagNjHa5lguAMblNs0baFDZDBvsdoAhl8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P0Do+lXjTmhxxcdPlk/7L2+IqzNBQUqM0gHQPS8OPMl/DV/P67z+eXUKCI78jFBcs
-         cIUfHSONaLTjwtKIOZ40qp8+wYgXCoEtxhul+6PEYwPSVYDIP4nBheVYiYl7W+satM
-         SWN2JMxgVzZsBrOds4RpBk75pqLIEr6oXbNWkMk4=
+        b=GeTcCw0O45ndAUa0yyl6UXUGSbEMqQb4o54HVG0+FpAh/8nFCwVCHtCrT/NLQIOfq
+         k+CmTqAU2E6McEPaKWEW0qUBQ7ftjYbwG0A/nhp5A1URYjvl3cju1gDivjmlCy3LhY
+         rvohSPvMnecMkkVjl3Y9y+C2V28J6NkQ8xXZUVQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        stable@vger.kernel.org, Hakan Jansson <hakan.jansson@infineon.com>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.18 24/35] Bluetooth: hci_bcm: Add BCM4349B1 variant
-Date:   Tue,  9 Aug 2022 20:00:53 +0200
-Message-Id: <20220809175515.952454036@linuxfoundation.org>
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 5.18 25/35] Bluetooth: hci_bcm: Add DT compatible for CYW55572
+Date:   Tue,  9 Aug 2022 20:00:54 +0200
+Message-Id: <20220809175515.983312516@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
 References: <20220809175515.046484486@linuxfoundation.org>
@@ -50,47 +50,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ahmad Fatoum <a.fatoum@pengutronix.de>
+From: Hakan Jansson <hakan.jansson@infineon.com>
 
-commit 4f17c2b6694d0c4098f33b07ee3a696976940aa5 upstream.
+commit f8cad62002a7699fd05a23b558b980b5a77defe0 upstream.
 
-The BCM4349B1, aka CYW/BCM89359, is a WiFi+BT chip and its Bluetooth
-portion can be controlled over serial.
+CYW55572 is a Wi-Fi + Bluetooth combo device from Infineon.
 
-Two subversions are added for the chip, because ROM firmware reports
-002.002.013 (at least for the chips I have here), while depending on
-patchram firmware revision, either 002.002.013 or 002.002.014 is
-reported.
-
-Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/btbcm.c   |    2 ++
  drivers/bluetooth/hci_bcm.c |    1 +
- 2 files changed, 3 insertions(+)
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/bluetooth/btbcm.c
-+++ b/drivers/bluetooth/btbcm.c
-@@ -453,6 +453,8 @@ static const struct bcm_subver_table bcm
- 	{ 0x6606, "BCM4345C5"	},	/* 003.006.006 */
- 	{ 0x230f, "BCM4356A2"	},	/* 001.003.015 */
- 	{ 0x220e, "BCM20702A1"  },	/* 001.002.014 */
-+	{ 0x420d, "BCM4349B1"	},	/* 002.002.013 */
-+	{ 0x420e, "BCM4349B1"	},	/* 002.002.014 */
- 	{ 0x4217, "BCM4329B1"   },	/* 002.002.023 */
- 	{ 0x6106, "BCM4359C0"	},	/* 003.001.006 */
- 	{ 0x4106, "BCM4335A0"	},	/* 002.001.006 */
 --- a/drivers/bluetooth/hci_bcm.c
 +++ b/drivers/bluetooth/hci_bcm.c
-@@ -1544,6 +1544,7 @@ static const struct of_device_id bcm_blu
- 	{ .compatible = "brcm,bcm43430a0-bt" },
- 	{ .compatible = "brcm,bcm43430a1-bt" },
- 	{ .compatible = "brcm,bcm43438-bt", .data = &bcm43438_device_data },
-+	{ .compatible = "brcm,bcm4349-bt", .data = &bcm43438_device_data },
+@@ -1547,6 +1547,7 @@ static const struct of_device_id bcm_blu
+ 	{ .compatible = "brcm,bcm4349-bt", .data = &bcm43438_device_data },
  	{ .compatible = "brcm,bcm43540-bt", .data = &bcm4354_device_data },
  	{ .compatible = "brcm,bcm4335a0" },
++	{ .compatible = "infineon,cyw55572-bt" },
  	{ },
+ };
+ MODULE_DEVICE_TABLE(of, bcm_bluetooth_of_match);
 
 
