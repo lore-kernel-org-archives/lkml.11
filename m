@@ -2,445 +2,333 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D740C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E791C25B06
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241149AbiHIIy0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 04:54:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54804 "EHLO
+        id S241158AbiHIIyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 04:54:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236411AbiHIIyX (ORCPT
+        with ESMTP id S241174AbiHIIyb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 04:54:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A36DB220FF;
-        Tue,  9 Aug 2022 01:54:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3158160BD6;
-        Tue,  9 Aug 2022 08:54:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20151C433C1;
-        Tue,  9 Aug 2022 08:54:14 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V9 1/4] MIPS&LoongArch&NIOS2: Adjust prototypes of p?d_init()
-Date:   Tue,  9 Aug 2022 16:52:50 +0800
-Message-Id: <20220809085253.2916982-2-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220809085253.2916982-1-chenhuacai@loongson.cn>
-References: <20220809085253.2916982-1-chenhuacai@loongson.cn>
+        Tue, 9 Aug 2022 04:54:31 -0400
+Received: from mail-m11885.qiye.163.com (mail-m11885.qiye.163.com [115.236.118.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A72D8222B8;
+        Tue,  9 Aug 2022 01:54:28 -0700 (PDT)
+Received: from [192.168.111.100] (unknown [58.22.7.114])
+        by mail-m11885.qiye.163.com (Hmail) with ESMTPA id 14A394C09F8;
+        Tue,  9 Aug 2022 16:54:26 +0800 (CST)
+Message-ID: <571973c5-02bd-5a18-834b-20c69f82e342@rock-chips.com>
+Date:   Tue, 9 Aug 2022 16:54:24 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.1
+Subject: Re: [PATCH v2] drm/gem: Fix GEM handle release errors
+Content-Language: en-US
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc:     Andy Yan <andy.yan@rock-chips.com>,
+        Jianqun Xu <jay.xu@rock-chips.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        linux-media@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>
+References: <20220803083237.3701-1-jeffy.chen@rock-chips.com>
+ <c7cb225b-7f21-8d9a-773b-efc655e6332c@amd.com>
+ <7cd16264-fa84-7b50-f3ed-64f7f22dcef2@rock-chips.com>
+ <64bf4e4b-4e22-0ff0-5f92-76f603c04ec0@amd.com>
+ <cd806954-e94e-aec8-2b0c-4047da9a92ec@rock-chips.com>
+ <0e284f57-e03c-f128-f6e7-52a58edbcd54@amd.com>
+From:   Chen Jeffy <jeffy.chen@rock-chips.com>
+In-Reply-To: <0e284f57-e03c-f128-f6e7-52a58edbcd54@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFJSktLSjdXWS1ZQUlXWQ8JGhUIEh9ZQVkaGkhOVhpLT0kZGElLHkhJGVUTARMWGhIXJB
+        QOD1lXWRgSC1lBWU5DVUlJVUxVSkpPWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NCo6Lio*Iz0yKy4oNT0INE4T
+        Pz4KCk9VSlVKTU1LS0hOSU1NQklKVTMWGhIXVREeHR0CVRgTHhU7CRQYEFYYExILCFUYFBZFWVdZ
+        EgtZQVlOQ1VJSVVMVUpKT1lXWQgBWUFKSExMSTcG
+X-HM-Tid: 0a8281cff79a2eb9kusn14a394c09f8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feiyang Chen <chenfeiyang@loongson.cn>
+Hi Christian,
 
-We are preparing to add sparse vmemmap support to LoongArch. MIPS and
-LoongArch need to call pgd_init()/pud_init()/pmd_init() when populating
-page tables, so adjust their prototypes to make generic helpers can call
-them.
+On 8/9 星期二 15:55, Christian König wrote:
+> Am 09.08.22 um 03:28 schrieb Chen Jeffy:
+>> Hi Christian,
+>>
+>> On 8/9 星期二 2:03, Christian König wrote:
+>>> Hi Jeffy,
+>>>
+>>> Am 08.08.22 um 05:51 schrieb Chen Jeffy:
+>>>> Hi Christian,
+>>>>
+>>>> Thanks for your reply, and sorry i didn't make it clear.
+>>>>
+>>>> On 8/8 星期一 0:52, Christian König wrote:
+>>>>> Am 03.08.22 um 10:32 schrieb Jeffy Chen:
+>>>>>> Currently we are assuming a one to one mapping between dmabuf and 
+>>>>>> handle
+>>>>>> when releasing GEM handles.
+>>>>>>
+>>>>>> But that is not always true, since we would create extra handles 
+>>>>>> for the
+>>>>>> GEM obj in cases like gem_open() and getfb{,2}().
+>>>>>>
+>>>>>> A similar issue was reported at:
+>>>>>> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.kernel.org%2Fall%2F20211105083308.392156-1-jay.xu%40rock-chips.com%2F&amp;data=05%7C01%7Cchristian.koenig%40amd.com%7C52cd6ca16a3a415b92a708da79a67dec%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637956053232922419%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=hIuH18B10sbVAyS0D4iK6R6WYc%2BZ7mlxGcKdUae%2BW6Y%3D&amp;reserved=0
+>>>>>>
+>>>>>> Another problem is that the drm_gem_remove_prime_handles() now only
+>>>>>> remove handle to the exported dmabuf (gem_obj->dma_buf), so the 
+>>>>>> imported
+>>>>>> ones would leak:
+>>>>>> WARNING: CPU: 2 PID: 236 at drivers/gpu/drm/drm_prime.c:228 
+>>>>>> drm_prime_destroy_file_private+0x18/0x24
+>>>>>>
+>>>>>> Let's fix these by using handle to find the exact map to remove.
+>>>>>
+>>>>> Well we are clearly something missing here. As far as I can see the 
+>>>>> current code is correct.
+>>>>>
+>>>>> Creating multiple GEM handles for the same DMA-buf is possible, but 
+>>>>> illegal. >
+>>>>> In other words when a GEM handle is exported as DMA-buf and 
+>>>>> imported again you should intentionally always get the same handle.
+>>>>
+>>>> These issue are not about having handles for importing an exported 
+>>>> dma-buf case, but for having multiple handles to a GEM object(which 
+>>>> means having multiple handles to a dma-buf).
+>>>>
+>>>> I know the drm-prime is trying to make dma-buf and handle maps one 
+>>>> to one, but the drm-gem is allowing to create extra handles for a 
+>>>> GEM object, for example:
+>>>> drm_gem_open_ioctl -> drm_gem_handle_create_tail
+>>>> drm_mode_getfb2_ioctl -> drm_gem_handle_create
+>>>> drm_mode_getfb -> fb->funcs->create_handle
+>>>
+>>> Yes, so far that's correct.
+>>>
+>>>>
+>>>>
+>>>> So we are allowing GEM object to have multiple handles, and GEM 
+>>>> object could have at most one dma-buf, doesn't that means that 
+>>>> dma-buf could map to multiple handles?
+>>>
+>>> No, at least not for the same GEM file private. That's the reason why 
+>>> the rb is indexed by the dma_buf object and not the handle.
+>>>
+>>> In other words the rb is so that you have exactly one handle for each 
+>>> dma_buf in each file private.
+>>
+>> I don't think so, because if user get multiple handles for the same 
+>> GEM obj and use drm_gem_prime_handle_to_fd() for those handles
+> 
+> Mhm, that works? This is illegal and should have been prevented somehow.
+> 
+> Let me double check the code.
+> 
+> Thanks for pointing that out,
+> Christian.
+> 
 
-NIOS2 declares pmd_init() but doesn't use, just remove it to avoid build
-errors.
+Thanks for checking it, my test case is a preload library which hooks 
+the drmModeSetCrtc(and other APIs) then use drmModeGetFB to extract 
+dmafd from fb_id.
 
-Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/include/asm/pgalloc.h | 13 ++-----------
- arch/loongarch/include/asm/pgtable.h |  8 ++++----
- arch/loongarch/kernel/numa.c         |  4 ++--
- arch/loongarch/mm/pgtable.c          | 23 +++++++++++++----------
- arch/mips/include/asm/pgalloc.h      | 10 +++++-----
- arch/mips/include/asm/pgtable-64.h   |  8 ++++----
- arch/mips/kvm/mmu.c                  |  3 +--
- arch/mips/mm/pgtable-32.c            | 10 +++++-----
- arch/mips/mm/pgtable-64.c            | 18 ++++++++++--------
- arch/mips/mm/pgtable.c               |  2 +-
- arch/nios2/include/asm/pgalloc.h     |  5 -----
- 11 files changed, 47 insertions(+), 57 deletions(-)
+> 
+>> , the current code would try to add multiple maps to rb:
+>> drm_prime_add_buf_handle(buf_1, hdl_1)
+>> drm_prime_add_buf_handle(buf_1, hdl_2)
+>> ...
+>> drm_prime_add_buf_handle(buf_1, hdl_n)
+>>
+>>>
+>>>>
+>>>> Or should we rewrite the GEM framework to limit GEM object with uniq 
+>>>> handle?
+>>>
+>>> No, the extra handles are expected because when you call 
+>>> drm_mode_getfb*() and drm_gem_open_ioctl() the caller now owns the 
+>>> returned GEM handle.
+>>>
+>>>>
+>>>> The other issue is that we are leaking dma-buf <-> handle map for 
+>>>> the imported dma-buf, since the drm_gem_remove_prime_handles doesn't 
+>>>> take care of obj->import_attach->dmabuf.
+>>>
+>>> No, that's correct as well. obj->dma_buf is set even for imported 
+>>> DMA-buf objects. See drm_gem_prime_fd_to_handle().
+>>
+>> Well, that obj->dma_buf would be set in 
+>> drm_gem_prime_fd_to_handle(create new handle), and cleared when 
+>> releasing the latest handle(release handle).
+>>
+>> So it doesn't cover other handle creating path.
+>>
+>> For example, a imported dma buf:
+>> drm_gem_prime_fd_to_handle <-- we got a handle and obj->dma_buf and 
+>> obj->import_attach->dmabuf
+>> drm_gem_handle_delete <-- we lost that handle and obj->dma_buf cleared
+>> drm_gem_open_ioctl/or getfb* <-- we got a new handle and 
+>> obj->import_attach->dmabuf
+>> drm_gem_handle_delete <-- we lost that handle and obj->dma_buf is 
+>> null, which means rb leaks.
 
-diff --git a/arch/loongarch/include/asm/pgalloc.h b/arch/loongarch/include/asm/pgalloc.h
-index b0a57b25c131..6a492d7aeeec 100644
---- a/arch/loongarch/include/asm/pgalloc.h
-+++ b/arch/loongarch/include/asm/pgalloc.h
-@@ -42,15 +42,6 @@ static inline void p4d_populate(struct mm_struct *mm, p4d_t *p4d, pud_t *pud)
- 
- extern void pagetable_init(void);
- 
--/*
-- * Initialize a new pmd table with invalid pointers.
-- */
--extern void pmd_init(unsigned long page, unsigned long pagetable);
--
--/*
-- * Initialize a new pgd / pmd table with invalid pointers.
-- */
--extern void pgd_init(unsigned long page);
- extern pgd_t *pgd_alloc(struct mm_struct *mm);
- 
- #define __pte_free_tlb(tlb, pte, address)			\
-@@ -76,7 +67,7 @@ static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long address)
- 	}
- 
- 	pmd = (pmd_t *)page_address(pg);
--	pmd_init((unsigned long)pmd, (unsigned long)invalid_pte_table);
-+	pmd_init(pmd);
- 	return pmd;
- }
- 
-@@ -92,7 +83,7 @@ static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned long address)
- 
- 	pud = (pud_t *) __get_free_pages(GFP_KERNEL, PUD_ORDER);
- 	if (pud)
--		pud_init((unsigned long)pud, (unsigned long)invalid_pmd_table);
-+		pud_init(pud);
- 	return pud;
- }
- 
-diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
-index d9e86cfa53e2..9c811c3f7572 100644
---- a/arch/loongarch/include/asm/pgtable.h
-+++ b/arch/loongarch/include/asm/pgtable.h
-@@ -243,11 +243,11 @@ extern void set_pmd_at(struct mm_struct *mm, unsigned long addr, pmd_t *pmdp, pm
- #define pfn_pmd(pfn, prot)	__pmd(((pfn) << _PFN_SHIFT) | pgprot_val(prot))
- 
- /*
-- * Initialize a new pgd / pmd table with invalid pointers.
-+ * Initialize a new pgd / pud / pmd table with invalid pointers.
-  */
--extern void pgd_init(unsigned long page);
--extern void pud_init(unsigned long page, unsigned long pagetable);
--extern void pmd_init(unsigned long page, unsigned long pagetable);
-+extern void pgd_init(void *addr);
-+extern void pud_init(void *addr);
-+extern void pmd_init(void *addr);
- 
- /*
-  * Non-present pages:  high 40 bits are offset, next 8 bits type,
-diff --git a/arch/loongarch/kernel/numa.c b/arch/loongarch/kernel/numa.c
-index a13f92593cfd..eb5d3a4c8a7a 100644
---- a/arch/loongarch/kernel/numa.c
-+++ b/arch/loongarch/kernel/numa.c
-@@ -78,7 +78,7 @@ void __init pcpu_populate_pte(unsigned long addr)
- 		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
- 		pgd_populate(&init_mm, pgd, new);
- #ifndef __PAGETABLE_PUD_FOLDED
--		pud_init((unsigned long)new, (unsigned long)invalid_pmd_table);
-+		pud_init(new);
- #endif
- 	}
- 
-@@ -89,7 +89,7 @@ void __init pcpu_populate_pte(unsigned long addr)
- 		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
- 		pud_populate(&init_mm, pud, new);
- #ifndef __PAGETABLE_PMD_FOLDED
--		pmd_init((unsigned long)new, (unsigned long)invalid_pte_table);
-+		pmd_init(new);
- #endif
- 	}
- 
-diff --git a/arch/loongarch/mm/pgtable.c b/arch/loongarch/mm/pgtable.c
-index 0569647152e9..e79cc41acac5 100644
---- a/arch/loongarch/mm/pgtable.c
-+++ b/arch/loongarch/mm/pgtable.c
-@@ -16,7 +16,7 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
- 	ret = (pgd_t *) __get_free_pages(GFP_KERNEL, PGD_ORDER);
- 	if (ret) {
- 		init = pgd_offset(&init_mm, 0UL);
--		pgd_init((unsigned long)ret);
-+		pgd_init(ret);
- 		memcpy(ret + USER_PTRS_PER_PGD, init + USER_PTRS_PER_PGD,
- 		       (PTRS_PER_PGD - USER_PTRS_PER_PGD) * sizeof(pgd_t));
- 	}
-@@ -25,7 +25,7 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
- }
- EXPORT_SYMBOL_GPL(pgd_alloc);
- 
--void pgd_init(unsigned long page)
-+void pgd_init(void *addr)
- {
- 	unsigned long *p, *end;
- 	unsigned long entry;
-@@ -38,7 +38,7 @@ void pgd_init(unsigned long page)
- 	entry = (unsigned long)invalid_pte_table;
- #endif
- 
--	p = (unsigned long *) page;
-+	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PGD;
- 
- 	do {
-@@ -56,11 +56,12 @@ void pgd_init(unsigned long page)
- EXPORT_SYMBOL_GPL(pgd_init);
- 
- #ifndef __PAGETABLE_PMD_FOLDED
--void pmd_init(unsigned long addr, unsigned long pagetable)
-+void pmd_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pte_table;
- 
--	p = (unsigned long *) addr;
-+	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PMD;
- 
- 	do {
-@@ -79,9 +80,10 @@ EXPORT_SYMBOL_GPL(pmd_init);
- #endif
- 
- #ifndef __PAGETABLE_PUD_FOLDED
--void pud_init(unsigned long addr, unsigned long pagetable)
-+void pud_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pmd_table;
- 
- 	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PUD;
-@@ -98,6 +100,7 @@ void pud_init(unsigned long addr, unsigned long pagetable)
- 		p[-1] = pagetable;
- 	} while (p != end);
- }
-+EXPORT_SYMBOL_GPL(pud_init);
- #endif
- 
- pmd_t mk_pmd(struct page *page, pgprot_t prot)
-@@ -119,12 +122,12 @@ void set_pmd_at(struct mm_struct *mm, unsigned long addr,
- void __init pagetable_init(void)
- {
- 	/* Initialize the entire pgd.  */
--	pgd_init((unsigned long)swapper_pg_dir);
--	pgd_init((unsigned long)invalid_pg_dir);
-+	pgd_init(swapper_pg_dir);
-+	pgd_init(invalid_pg_dir);
- #ifndef __PAGETABLE_PUD_FOLDED
--	pud_init((unsigned long)invalid_pud_table, (unsigned long)invalid_pmd_table);
-+	pud_init(invalid_pud_table);
- #endif
- #ifndef __PAGETABLE_PMD_FOLDED
--	pmd_init((unsigned long)invalid_pmd_table, (unsigned long)invalid_pte_table);
-+	pmd_init(invalid_pmd_table);
- #endif
- }
-diff --git a/arch/mips/include/asm/pgalloc.h b/arch/mips/include/asm/pgalloc.h
-index 867e9c3db76e..74081c461844 100644
---- a/arch/mips/include/asm/pgalloc.h
-+++ b/arch/mips/include/asm/pgalloc.h
-@@ -33,7 +33,7 @@ static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
- /*
-  * Initialize a new pmd table with invalid pointers.
-  */
--extern void pmd_init(unsigned long page, unsigned long pagetable);
-+extern void pmd_init(void *addr);
- 
- #ifndef __PAGETABLE_PMD_FOLDED
- 
-@@ -44,9 +44,9 @@ static inline void pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
- #endif
- 
- /*
-- * Initialize a new pgd / pmd table with invalid pointers.
-+ * Initialize a new pgd table with invalid pointers.
-  */
--extern void pgd_init(unsigned long page);
-+extern void pgd_init(void *addr);
- extern pgd_t *pgd_alloc(struct mm_struct *mm);
- 
- static inline void pgd_free(struct mm_struct *mm, pgd_t *pgd)
-@@ -77,7 +77,7 @@ static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long address)
- 	}
- 
- 	pmd = (pmd_t *)page_address(pg);
--	pmd_init((unsigned long)pmd, (unsigned long)invalid_pte_table);
-+	pmd_init(pmd);
- 	return pmd;
- }
- 
-@@ -93,7 +93,7 @@ static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned long address)
- 
- 	pud = (pud_t *) __get_free_pages(GFP_KERNEL, PUD_ORDER);
- 	if (pud)
--		pud_init((unsigned long)pud, (unsigned long)invalid_pmd_table);
-+		pud_init(pud);
- 	return pud;
- }
- 
-diff --git a/arch/mips/include/asm/pgtable-64.h b/arch/mips/include/asm/pgtable-64.h
-index 41921acdc9d8..8ac76bbb4b38 100644
---- a/arch/mips/include/asm/pgtable-64.h
-+++ b/arch/mips/include/asm/pgtable-64.h
-@@ -323,11 +323,11 @@ static inline pmd_t *pud_pgtable(pud_t pud)
- #endif
- 
- /*
-- * Initialize a new pgd / pmd table with invalid pointers.
-+ * Initialize a new pgd / pud / pmd table with invalid pointers.
-  */
--extern void pgd_init(unsigned long page);
--extern void pud_init(unsigned long page, unsigned long pagetable);
--extern void pmd_init(unsigned long page, unsigned long pagetable);
-+extern void pgd_init(void *addr);
-+extern void pud_init(void *addr);
-+extern void pmd_init(void *addr);
- 
- /*
-  * Non-present pages:  high 40 bits are offset, next 8 bits type,
-diff --git a/arch/mips/kvm/mmu.c b/arch/mips/kvm/mmu.c
-index 1bfd1b501d82..cb10a92ad3ae 100644
---- a/arch/mips/kvm/mmu.c
-+++ b/arch/mips/kvm/mmu.c
-@@ -122,8 +122,7 @@ static pte_t *kvm_mips_walk_pgd(pgd_t *pgd, struct kvm_mmu_memory_cache *cache,
- 		if (!cache)
- 			return NULL;
- 		new_pmd = kvm_mmu_memory_cache_alloc(cache);
--		pmd_init((unsigned long)new_pmd,
--			 (unsigned long)invalid_pte_table);
-+		pmd_init(new_pmd);
- 		pud_populate(NULL, pud, new_pmd);
- 	}
- 	pmd = pmd_offset(pud, addr);
-diff --git a/arch/mips/mm/pgtable-32.c b/arch/mips/mm/pgtable-32.c
-index 61891af25019..88819a21d97e 100644
---- a/arch/mips/mm/pgtable-32.c
-+++ b/arch/mips/mm/pgtable-32.c
-@@ -13,9 +13,9 @@
- #include <asm/pgalloc.h>
- #include <asm/tlbflush.h>
- 
--void pgd_init(unsigned long page)
-+void pgd_init(void *addr)
- {
--	unsigned long *p = (unsigned long *) page;
-+	unsigned long *p = (unsigned long *)addr;
- 	int i;
- 
- 	for (i = 0; i < USER_PTRS_PER_PGD; i+=8) {
-@@ -61,9 +61,9 @@ void __init pagetable_init(void)
- #endif
- 
- 	/* Initialize the entire pgd.  */
--	pgd_init((unsigned long)swapper_pg_dir);
--	pgd_init((unsigned long)swapper_pg_dir
--		 + sizeof(pgd_t) * USER_PTRS_PER_PGD);
-+	pgd_init(swapper_pg_dir);
-+	pgd_init((void *)((unsigned long)swapper_pg_dir
-+		 + sizeof(pgd_t) * USER_PTRS_PER_PGD));
- 
- 	pgd_base = swapper_pg_dir;
- 
-diff --git a/arch/mips/mm/pgtable-64.c b/arch/mips/mm/pgtable-64.c
-index 7536f7804c44..b4386a0e2ef8 100644
---- a/arch/mips/mm/pgtable-64.c
-+++ b/arch/mips/mm/pgtable-64.c
-@@ -13,7 +13,7 @@
- #include <asm/pgalloc.h>
- #include <asm/tlbflush.h>
- 
--void pgd_init(unsigned long page)
-+void pgd_init(void *addr)
- {
- 	unsigned long *p, *end;
- 	unsigned long entry;
-@@ -26,7 +26,7 @@ void pgd_init(unsigned long page)
- 	entry = (unsigned long)invalid_pte_table;
- #endif
- 
--	p = (unsigned long *) page;
-+	p = (unsigned long *) addr;
- 	end = p + PTRS_PER_PGD;
- 
- 	do {
-@@ -43,11 +43,12 @@ void pgd_init(unsigned long page)
- }
- 
- #ifndef __PAGETABLE_PMD_FOLDED
--void pmd_init(unsigned long addr, unsigned long pagetable)
-+void pmd_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pte_table;
- 
--	p = (unsigned long *) addr;
-+	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PMD;
- 
- 	do {
-@@ -66,9 +67,10 @@ EXPORT_SYMBOL_GPL(pmd_init);
- #endif
- 
- #ifndef __PAGETABLE_PUD_FOLDED
--void pud_init(unsigned long addr, unsigned long pagetable)
-+void pud_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pmd_table;
- 
- 	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PUD;
-@@ -108,12 +110,12 @@ void __init pagetable_init(void)
- 	pgd_t *pgd_base;
- 
- 	/* Initialize the entire pgd.  */
--	pgd_init((unsigned long)swapper_pg_dir);
-+	pgd_init(swapper_pg_dir);
- #ifndef __PAGETABLE_PUD_FOLDED
--	pud_init((unsigned long)invalid_pud_table, (unsigned long)invalid_pmd_table);
-+	pud_init(invalid_pud_table);
- #endif
- #ifndef __PAGETABLE_PMD_FOLDED
--	pmd_init((unsigned long)invalid_pmd_table, (unsigned long)invalid_pte_table);
-+	pmd_init(invalid_pmd_table);
- #endif
- 	pgd_base = swapper_pg_dir;
- 	/*
-diff --git a/arch/mips/mm/pgtable.c b/arch/mips/mm/pgtable.c
-index 05560b042d82..98e5e880927a 100644
---- a/arch/mips/mm/pgtable.c
-+++ b/arch/mips/mm/pgtable.c
-@@ -15,7 +15,7 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
- 	ret = (pgd_t *) __get_free_pages(GFP_KERNEL, PGD_ORDER);
- 	if (ret) {
- 		init = pgd_offset(&init_mm, 0UL);
--		pgd_init((unsigned long)ret);
-+		pgd_init(ret);
- 		memcpy(ret + USER_PTRS_PER_PGD, init + USER_PTRS_PER_PGD,
- 		       (PTRS_PER_PGD - USER_PTRS_PER_PGD) * sizeof(pgd_t));
- 	}
-diff --git a/arch/nios2/include/asm/pgalloc.h b/arch/nios2/include/asm/pgalloc.h
-index 3c4ae74d5798..ecd1657bb2ce 100644
---- a/arch/nios2/include/asm/pgalloc.h
-+++ b/arch/nios2/include/asm/pgalloc.h
-@@ -26,11 +26,6 @@ static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
- 	set_pmd(pmd, __pmd((unsigned long)page_address(pte)));
- }
- 
--/*
-- * Initialize a new pmd table with invalid pointers.
-- */
--extern void pmd_init(unsigned long page, unsigned long pagetable);
--
- extern pgd_t *pgd_alloc(struct mm_struct *mm);
- 
- #define __pte_free_tlb(tlb, pte, addr)				\
--- 
-2.31.1
+Another way to solve this would be set this obj->dma_buf again in 
+drm_gem_prime_handle_to_fd(), which would make sure obj->dma_buf is 
+valid in all current paths lead to drm_prime_add_buf_handle().
+
+>>
+>>>
+>>> Regards,
+>>> Christian.
+>>>
+>>>>
+>>>> But of cause this can be fixed in other way:
+>>>> +++ b/drivers/gpu/drm/drm_gem.c
+>>>> @@ -180,6 +180,9 @@ drm_gem_remove_prime_handles(struct 
+>>>> drm_gem_object *obj, struct drm_file *filp)
+>>>> drm_prime_remove_buf_handle_locked(&filp->prime,
+>>>> obj->dma_buf);
+>>>>         }
+>>>> +       if (obj->import_attach)
+>>>> + drm_prime_remove_buf_handle_locked(&filp->prime,
+>>>> + obj->import_attach->dmabuf);
+>>>>         mutex_unlock(&filp->prime.lock);
+>>>>  }
+>>>>
+>>>>
+>>>>> So this is pretty much a clear NAK to this patch since it shouldn't 
+>>>>> be necessary or something is seriously broken somewhere else.
+>>>>>
+>>>>> Regards,
+>>>>> Christian.
+>>>>>
+>>>>>>
+>>>>>> Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
+>>>>>> ---
+>>>>>>
+>>>>>> Changes in v2:
+>>>>>> Fix a typo of rbtree.
+>>>>>>
+>>>>>>   drivers/gpu/drm/drm_gem.c      | 17 +----------------
+>>>>>>   drivers/gpu/drm/drm_internal.h |  4 ++--
+>>>>>>   drivers/gpu/drm/drm_prime.c    | 20 ++++++++++++--------
+>>>>>>   3 files changed, 15 insertions(+), 26 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/gpu/drm/drm_gem.c b/drivers/gpu/drm/drm_gem.c
+>>>>>> index eb0c2d041f13..ed39da383570 100644
+>>>>>> --- a/drivers/gpu/drm/drm_gem.c
+>>>>>> +++ b/drivers/gpu/drm/drm_gem.c
+>>>>>> @@ -168,21 +168,6 @@ void drm_gem_private_object_init(struct 
+>>>>>> drm_device *dev,
+>>>>>>   }
+>>>>>>   EXPORT_SYMBOL(drm_gem_private_object_init);
+>>>>>> -static void
+>>>>>> -drm_gem_remove_prime_handles(struct drm_gem_object *obj, struct 
+>>>>>> drm_file *filp)
+>>>>>> -{
+>>>>>> -    /*
+>>>>>> -     * Note: obj->dma_buf can't disappear as long as we still hold a
+>>>>>> -     * handle reference in obj->handle_count.
+>>>>>> -     */
+>>>>>> -    mutex_lock(&filp->prime.lock);
+>>>>>> -    if (obj->dma_buf) {
+>>>>>> - drm_prime_remove_buf_handle_locked(&filp->prime,
+>>>>>> -                           obj->dma_buf);
+>>>>>> -    }
+>>>>>> -    mutex_unlock(&filp->prime.lock);
+>>>>>> -}
+>>>>>> -
+>>>>>>   /**
+>>>>>>    * drm_gem_object_handle_free - release resources bound to 
+>>>>>> userspace handles
+>>>>>>    * @obj: GEM object to clean up.
+>>>>>> @@ -253,7 +238,7 @@ drm_gem_object_release_handle(int id, void 
+>>>>>> *ptr, void *data)
+>>>>>>       if (obj->funcs->close)
+>>>>>>           obj->funcs->close(obj, file_priv);
+>>>>>> -    drm_gem_remove_prime_handles(obj, file_priv);
+>>>>>> +    drm_prime_remove_buf_handle(&file_priv->prime, id);
+>>>>>>       drm_vma_node_revoke(&obj->vma_node, file_priv);
+>>>>>>       drm_gem_object_handle_put_unlocked(obj);
+>>>>>> diff --git a/drivers/gpu/drm/drm_internal.h 
+>>>>>> b/drivers/gpu/drm/drm_internal.h
+>>>>>> index 1fbbc19f1ac0..7bb98e6a446d 100644
+>>>>>> --- a/drivers/gpu/drm/drm_internal.h
+>>>>>> +++ b/drivers/gpu/drm/drm_internal.h
+>>>>>> @@ -74,8 +74,8 @@ int drm_prime_fd_to_handle_ioctl(struct 
+>>>>>> drm_device *dev, void *data,
+>>>>>>   void drm_prime_init_file_private(struct drm_prime_file_private 
+>>>>>> *prime_fpriv);
+>>>>>>   void drm_prime_destroy_file_private(struct 
+>>>>>> drm_prime_file_private *prime_fpriv);
+>>>>>> -void drm_prime_remove_buf_handle_locked(struct 
+>>>>>> drm_prime_file_private *prime_fpriv,
+>>>>>> -                    struct dma_buf *dma_buf);
+>>>>>> +void drm_prime_remove_buf_handle(struct drm_prime_file_private 
+>>>>>> *prime_fpriv,
+>>>>>> +                 uint32_t handle);
+>>>>>>   /* drm_drv.c */
+>>>>>>   struct drm_minor *drm_minor_acquire(unsigned int minor_id);
+>>>>>> diff --git a/drivers/gpu/drm/drm_prime.c 
+>>>>>> b/drivers/gpu/drm/drm_prime.c
+>>>>>> index e3f09f18110c..bd5366b16381 100644
+>>>>>> --- a/drivers/gpu/drm/drm_prime.c
+>>>>>> +++ b/drivers/gpu/drm/drm_prime.c
+>>>>>> @@ -190,29 +190,33 @@ static int 
+>>>>>> drm_prime_lookup_buf_handle(struct drm_prime_file_private *prime_fpri
+>>>>>>       return -ENOENT;
+>>>>>>   }
+>>>>>> -void drm_prime_remove_buf_handle_locked(struct 
+>>>>>> drm_prime_file_private *prime_fpriv,
+>>>>>> -                    struct dma_buf *dma_buf)
+>>>>>> +void drm_prime_remove_buf_handle(struct drm_prime_file_private 
+>>>>>> *prime_fpriv,
+>>>>>> +                 uint32_t handle)
+>>>>>>   {
+>>>>>>       struct rb_node *rb;
+>>>>>> -    rb = prime_fpriv->dmabufs.rb_node;
+>>>>>> +    mutex_lock(&prime_fpriv->lock);
+>>>>>> +
+>>>>>> +    rb = prime_fpriv->handles.rb_node;
+>>>>>>       while (rb) {
+>>>>>>           struct drm_prime_member *member;
+>>>>>> -        member = rb_entry(rb, struct drm_prime_member, dmabuf_rb);
+>>>>>> -        if (member->dma_buf == dma_buf) {
+>>>>>> +        member = rb_entry(rb, struct drm_prime_member, handle_rb);
+>>>>>> +        if (member->handle == handle) {
+>>>>>>               rb_erase(&member->handle_rb, &prime_fpriv->handles);
+>>>>>>               rb_erase(&member->dmabuf_rb, &prime_fpriv->dmabufs);
+>>>>>> -            dma_buf_put(dma_buf);
+>>>>>> +            dma_buf_put(member->dma_buf);
+>>>>>>               kfree(member);
+>>>>>> -            return;
+>>>>>> -        } else if (member->dma_buf < dma_buf) {
+>>>>>> +            break;
+>>>>>> +        } else if (member->handle < handle) {
+>>>>>>               rb = rb->rb_right;
+>>>>>>           } else {
+>>>>>>               rb = rb->rb_left;
+>>>>>>           }
+>>>>>>       }
+>>>>>> +
+>>>>>> +    mutex_unlock(&prime_fpriv->lock);
+>>>>>>   }
+>>>>>>   void drm_prime_init_file_private(struct drm_prime_file_private 
+>>>>>> *prime_fpriv)
+>>>>>
+>>>>>
+>>>>
+>>>
+>>>
+>>
+> 
+> 
 
