@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4C7C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 17:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B8BC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 17:37:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245388AbiHIRgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 13:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44102 "EHLO
+        id S245618AbiHIRgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 13:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245601AbiHIRgr (ORCPT
+        with ESMTP id S245152AbiHIRgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 13:36:47 -0400
-Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4852C252A2
+        Tue, 9 Aug 2022 13:36:46 -0400
+Received: from polaris.svanheule.net (polaris.svanheule.net [IPv6:2a00:c98:2060:a004:1::200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E62252B0
         for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 10:36:43 -0700 (PDT)
 Received: from terra.. (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: sander@svanheule.net)
-        by polaris.svanheule.net (Postfix) with ESMTPSA id A715F308CDF;
-        Tue,  9 Aug 2022 19:36:40 +0200 (CEST)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id 915AC308CE1;
+        Tue,  9 Aug 2022 19:36:41 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
-        s=mail1707; t=1660066600;
+        s=mail1707; t=1660066601;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JOxZ/n1mG+AA2dVZMQCKulbPFD0Jg/I+TAQ2E5jb4Pk=;
-        b=ZCpT2pjXzU52EP2M06gzt9GRdNG8xGPDfzP1s3RXT/RwX4MaoXLvRH01gOnYHbQRrFTvcZ
-        XjyMD45MJ9RbHXAeSPJu3GT0nQaCX/9EFqQ00rGjXbpECLb/tH3VrVVReISxCduqXjC4D/
-        SbRsY0+HlmR3k3nA+hyb6pNpLYMN8STrsX15n3xOiq7YkqpNg9EZSA0+CcT6uMPOIfdL2Z
-        GuetI33PKA4EGKk/9HzLnud2RW41nXn33qx1SXoV2qY0aWjtlN11XWzqU9/kJj212bcVIQ
-        OWGzpVK+9050ZIjtoCoegH5xMEfilZmbLPXauHJJYpLlKAreND2NDi17oprVCg==
+        bh=CdNsFW8BmdC6Xp+NKHPLPlR/rbAil8TvL/l8WLev1Qw=;
+        b=DhqZXpR5jsXxk6UUDCFNVVCXig9nbC2Iv2WJpgsfuhEF23sXrQdtdzFiHLHrpyyS2KK+6e
+        dpiPn/0E1qd7jw5Q+5qhH/56CuDGB41c766qRf9FSjrArRQGDqDTlkgxy7Z9Smj4D+Tk+f
+        +6vVzsrkxKVLxFAeH/JIK0sIGqLccXid39slzhcgF7KxfjdSC0779iGW/quothxnzSfkWF
+        BOzR9PbDMsLCFyaKAjHnAILxRAo/GpcUsVaanDmyxd6iashykT5WP7rSUGXpeXj5Afm5Lh
+        U/JZ3uTHRspJ1EqtvlexQe0iJbPXqVsXDXi+aS2dcyD2rNX2Puih31zM2lAnnQ==
 From:   Sander Vanheule <sander@svanheule.net>
 To:     Yury Norov <yury.norov@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>
 Cc:     linux-kernel@vger.kernel.org,
         Sander Vanheule <sander@svanheule.net>
-Subject: [PATCH v1 1/3] cpumask: align signatures of UP implementations
-Date:   Tue,  9 Aug 2022 19:36:33 +0200
-Message-Id: <f7f60127f29aa718fe670dba6761bf9d1243f772.1660066581.git.sander@svanheule.net>
+Subject: [PATCH v1 3/3] lib/cpumask: drop always-true preprocessor guard
+Date:   Tue,  9 Aug 2022 19:36:35 +0200
+Message-Id: <37f6ddf22de46a81b07861682347fa2f25bb0c69.1660066581.git.sander@svanheule.net>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <cover.1660066581.git.sander@svanheule.net>
 References: <cover.1660066581.git.sander@svanheule.net>
@@ -52,38 +52,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Between the generic version, and their uniprocessor optimised
-implementations, the return types of cpumask_any_and_distribute() and
-cpumask_any_distribute() are not identical.  Change the UP versions to
-'unsigned int', to match the generic versions.
+Since lib/cpumask.o is only built for CONFIG_SMP=y, NR_CPUS will always
+be greater than 1 at compile time.  This makes checking for that
+condition unnecesarry, so it can be dropped.
 
-Suggested-by: Yury Norov <yury.norov@gmail.com>
 Signed-off-by: Sander Vanheule <sander@svanheule.net>
 ---
- include/linux/cpumask.h | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ lib/cpumask.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-index 0d435d0edbcb..d8c2a40f8beb 100644
---- a/include/linux/cpumask.h
-+++ b/include/linux/cpumask.h
-@@ -202,12 +202,13 @@ static inline unsigned int cpumask_local_spread(unsigned int i, int node)
- 	return 0;
+diff --git a/lib/cpumask.c b/lib/cpumask.c
+index 8baeb37e23d3..f0ae119be8c4 100644
+--- a/lib/cpumask.c
++++ b/lib/cpumask.c
+@@ -109,7 +109,6 @@ void __init free_bootmem_cpumask_var(cpumask_var_t mask)
  }
+ #endif
  
--static inline int cpumask_any_and_distribute(const struct cpumask *src1p,
--					     const struct cpumask *src2p) {
-+static inline unsigned int cpumask_any_and_distribute(const struct cpumask *src1p,
-+						      const struct cpumask *src2p)
-+{
- 	return cpumask_first_and(src1p, src2p);
+-#if NR_CPUS > 1
+ /**
+  * cpumask_local_spread - select the i'th cpu with local numa cpu's first
+  * @i: index number
+@@ -197,4 +196,3 @@ unsigned int cpumask_any_distribute(const struct cpumask *srcp)
+ 	return next;
  }
- 
--static inline int cpumask_any_distribute(const struct cpumask *srcp)
-+static inline unsigned int cpumask_any_distribute(const struct cpumask *srcp)
- {
- 	return cpumask_first(srcp);
- }
+ EXPORT_SYMBOL(cpumask_any_distribute);
+-#endif /* NR_CPUS */
 -- 
 2.37.1
 
