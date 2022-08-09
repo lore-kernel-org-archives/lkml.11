@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89928C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:18:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 609E5C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343735AbiHISSp (ORCPT
+        id S1343791AbiHISSt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42932 "EHLO
+        Tue, 9 Aug 2022 14:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345603AbiHISOf (ORCPT
+        with ESMTP id S1345817AbiHISPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:14:35 -0400
+        Tue, 9 Aug 2022 14:15:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E91602C65A;
-        Tue,  9 Aug 2022 11:05:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8786A2C671;
+        Tue,  9 Aug 2022 11:05:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14FD661199;
-        Tue,  9 Aug 2022 18:05:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24073C4347C;
-        Tue,  9 Aug 2022 18:05:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 13E6161070;
+        Tue,  9 Aug 2022 18:05:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FC7EC433B5;
+        Tue,  9 Aug 2022 18:05:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068336;
-        bh=cAL7cSlopyAfoe9ePy3AVZXWDpqa/7WVl3RSZd8S3bI=;
+        s=korg; t=1660068344;
+        bh=tgQRxVvf3DgTp6QivUr5kqVoMh/0T6Ohp9Fs32BqAng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vk0Ucg8OtVw49aA23NRbgSSpBldsQF1ew0xT1b3otzxxg2Kfbq97AAw71ZXfU60P0
-         +kvX/aAauTyD/OyC+CRy9JEeCtTCiuzVQCuPBoTHTBVprN99ptr1jK9DrDM6dVQx9S
-         1YY+zCrEBohj+mDlM/qejYZJ0JALoxDrQRoAZfwU=
+        b=VOQM/TDPT+hqGDpcHPKxE19nWMI5BpiGLBSy9TYIYtCKG3tOrBH+pb8gM+uzDLgcy
+         6bjI7H89uvUXL+U+1XPWlgk5s25oD3E6JJCK31qhiQnuCiYufJsWZb77c2gne0jMM2
+         d0rFtKQV4qSLBHQEyrBQbXTDvsg5tZMZt9LQFjEY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Klochkov <kdmitry556@gmail.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 13/30] tools/kvm_stat: fix display of error when multiple processes are found
-Date:   Tue,  9 Aug 2022 20:00:38 +0200
-Message-Id: <20220809175514.781731540@linuxfoundation.org>
+        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.15 06/30] ACPI: video: Force backlight native for some TongFang devices
+Date:   Tue,  9 Aug 2022 20:00:31 +0200
+Message-Id: <20220809175514.514352256@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175514.276643253@linuxfoundation.org>
 References: <20220809175514.276643253@linuxfoundation.org>
@@ -50,63 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Klochkov <kdmitry556@gmail.com>
+From: Werner Sembach <wse@tuxedocomputers.com>
 
-[ Upstream commit 933b5f9f98da29af646b51b36a0753692908ef64 ]
+commit c752089f7cf5b5800c6ace4cdd1a8351ee78a598 upstream.
 
-Instead of printing an error message, kvm_stat script fails when we
-restrict statistics to a guest by its name and there are multiple guests
-with such name:
+The TongFang PF5PU1G, PF4NU1F, PF5NU1G, and PF5LUXG/TUXEDO BA15 Gen10,
+Pulse 14/15 Gen1, and Pulse 15 Gen2 have the same problem as the Clevo
+NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2:
+They have a working native and video interface. However the default
+detection mechanism first registers the video interface before
+unregistering it again and switching to the native interface during boot.
+This results in a dangling SBIOS request for backlight change for some
+reason, causing the backlight to switch to ~2% once per boot on the first
+power cord connect or disconnect event. Setting the native interface
+explicitly circumvents this buggy behaviour by avoiding the unregistering
+process.
 
-  # kvm_stat -g my_vm
-  Traceback (most recent call last):
-    File "/usr/bin/kvm_stat", line 1819, in <module>
-      main()
-    File "/usr/bin/kvm_stat", line 1779, in main
-      options = get_options()
-    File "/usr/bin/kvm_stat", line 1718, in get_options
-      options = argparser.parse_args()
-    File "/usr/lib64/python3.10/argparse.py", line 1825, in parse_args
-      args, argv = self.parse_known_args(args, namespace)
-    File "/usr/lib64/python3.10/argparse.py", line 1858, in parse_known_args
-      namespace, args = self._parse_known_args(args, namespace)
-    File "/usr/lib64/python3.10/argparse.py", line 2067, in _parse_known_args
-      start_index = consume_optional(start_index)
-    File "/usr/lib64/python3.10/argparse.py", line 2007, in consume_optional
-      take_action(action, args, option_string)
-    File "/usr/lib64/python3.10/argparse.py", line 1935, in take_action
-      action(self, namespace, argument_values, option_string)
-    File "/usr/bin/kvm_stat", line 1649, in __call__
-      ' to specify the desired pid'.format(" ".join(pids)))
-  TypeError: sequence item 0: expected str instance, int found
-
-To avoid this, it's needed to convert pids int values to strings before
-pass them to join().
-
-Signed-off-by: Dmitry Klochkov <kdmitry556@gmail.com>
-Message-Id: <20220614121141.160689-1-kdmitry556@gmail.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+Cc: All applicable <stable@vger.kernel.org>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/kvm/kvm_stat/kvm_stat | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/acpi/video_detect.c |   51 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 50 insertions(+), 1 deletion(-)
 
-diff --git a/tools/kvm/kvm_stat/kvm_stat b/tools/kvm/kvm_stat/kvm_stat
-index 5a5bd74f55bd..9c366b3a676d 100755
---- a/tools/kvm/kvm_stat/kvm_stat
-+++ b/tools/kvm/kvm_stat/kvm_stat
-@@ -1646,7 +1646,8 @@ Press any other key to refresh statistics immediately.
-                          .format(values))
-             if len(pids) > 1:
-                 sys.exit('Error: Multiple processes found (pids: {}). Use "-p"'
--                         ' to specify the desired pid'.format(" ".join(pids)))
-+                         ' to specify the desired pid'
-+                         .format(" ".join(map(str, pids))))
-             namespace.pid = pids[0]
- 
-     argparser = argparse.ArgumentParser(description=description_text,
--- 
-2.35.1
-
+--- a/drivers/acpi/video_detect.c
++++ b/drivers/acpi/video_detect.c
+@@ -484,7 +484,56 @@ static const struct dmi_system_id video_
+ 		DMI_MATCH(DMI_BOARD_NAME, "NL5xNU"),
+ 		},
+ 	},
+-
++	/*
++	 * The TongFang PF5PU1G, PF4NU1F, PF5NU1G, and PF5LUXG/TUXEDO BA15 Gen10,
++	 * Pulse 14/15 Gen1, and Pulse 15 Gen2 have the same problem as the Clevo
++	 * NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2. See the description
++	 * above.
++	 */
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF5PU1G",
++	.matches = {
++		DMI_MATCH(DMI_BOARD_NAME, "PF5PU1G"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF4NU1F",
++	.matches = {
++		DMI_MATCH(DMI_BOARD_NAME, "PF4NU1F"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF4NU1F",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "PULSE1401"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF5NU1G",
++	.matches = {
++		DMI_MATCH(DMI_BOARD_NAME, "PF5NU1G"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF5NU1G",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
++		DMI_MATCH(DMI_BOARD_NAME, "PULSE1501"),
++		},
++	},
++	{
++	.callback = video_detect_force_native,
++	.ident = "TongFang PF5LUXG",
++	.matches = {
++		DMI_MATCH(DMI_BOARD_NAME, "PF5LUXG"),
++		},
++	},
+ 	/*
+ 	 * Desktops which falsely report a backlight and which our heuristics
+ 	 * for this do not catch.
 
 
