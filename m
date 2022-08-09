@@ -2,46 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F032C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:28:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5919FC25B0C
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344007AbiHIS2W (ORCPT
+        id S1343900AbiHIS2d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55144 "EHLO
+        Tue, 9 Aug 2022 14:28:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346051AbiHISZz (ORCPT
+        with ESMTP id S1346272AbiHIS0D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:25:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582D932BB7;
-        Tue,  9 Aug 2022 11:09:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 9 Aug 2022 14:26:03 -0400
+Received: from polaris.svanheule.net (polaris.svanheule.net [IPv6:2a00:c98:2060:a004:1::200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F223F32DA2
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:09:20 -0700 (PDT)
+Received: from terra.. (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FA9F61133;
-        Tue,  9 Aug 2022 18:08:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83A3BC433C1;
-        Tue,  9 Aug 2022 18:08:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068520;
-        bh=C3m33bWYwvhPo1FUOuATKT2wqQS4o8x9meU5DVUNFQQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eU8XIZnnUbNmljmnfWCI4/h1t+7BAc8Tx82xc/ZuCC+vDhxTBsNUrHcs1wCyzXn6l
-         ePaP8mXmysDmsVUvyMm7HyT7SNnpf2PQzC+tfaHAvI3HpdXWSqdo2dvp4C8+W6m2tb
-         hhhMsfl34HS5w9wE0vEpHBE4FFjbTZImcYQDF+hE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hilda Wu <hildawu@realtek.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 5.19 15/21] Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04C5:0x1675
-Date:   Tue,  9 Aug 2022 20:01:07 +0200
-Message-Id: <20220809175513.813140997@linuxfoundation.org>
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id BF81C308D12;
+        Tue,  9 Aug 2022 20:09:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1660068556;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KfTiZQs2sfHYRaI7Qu0NRsrjU7eU90hIkAxnH/Tgy2Y=;
+        b=V11hRc9sGF8j6PC5jytWZmfqQF1A0QUqgoATS1mk44dW65GNcQ24swOtp79y7/cqhFe7vq
+        Acd/89PoBClnz1k6DZ4bgU+V6ESBZSc8h+IaIMdKZQycFUlQuKmphcMLA0HjjB6Jle0Pxi
+        k6wLmX9tSoiHXSonx2Fute2zsU3HWMz4tofhoos4QWf//cePmf4tbnSk3yi0IX9sVQgERH
+        LZtQh98BIvw1tVwi/ol5eV/ui5R/36nyoVrpSwSeUyX87qXj19JUvWA7GJhb6soRlDFjXG
+        siJFKp378LolO/hluyi1MtC/8XYpA9vb4AuHzKwGE3uHPTav/43/kxhjfbgUZA==
+From:   Sander Vanheule <sander@svanheule.net>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>,
+        David Gow <davidgow@google.com>,
+        Sander Vanheule <sander@svanheule.net>
+Subject: [PATCH v1 3/5] lib/test_cpumask: follow KUnit style guidelines
+Date:   Tue,  9 Aug 2022 20:08:53 +0200
+Message-Id: <c3b4b27a1135558e1eb30261ce7e2df3cb43ec6e.1660068429.git.sander@svanheule.net>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220809175513.345597655@linuxfoundation.org>
-References: <20220809175513.345597655@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <cover.1660068429.git.sander@svanheule.net>
+References: <cover.1660068429.git.sander@svanheule.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,62 +56,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hilda Wu <hildawu@realtek.com>
+The cpumask test suite doesn't follow the KUnit style guidelines, as
+laid out in Documentation/dev-tools/kunit/style.rst.  The file is
+renamed to lib/cpumask_kunit.c to clearly distinguish it from other,
+non-KUnit, tests.
 
-commit 893fa8bc9952a36fb682ee12f0a994b5817a36d2 upstream.
-
-Add the support ID(0x04c5, 0x1675) to usb_device_id table for
-Realtek RTL8852C.
-
-The device info from /sys/kernel/debug/usb/devices as below.
-
-T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
-D:  Ver= 1.00 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=04c5 ProdID=1675 Rev= 0.00
-S:  Manufacturer=Realtek
-S:  Product=Bluetooth Radio
-S:  SerialNumber=00e04c000001
-C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
-I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-
-Signed-off-by: Hilda Wu <hildawu@realtek.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/lkml/346cb279-8e75-24b0-7d12-9803f2b41c73@riseup.net/
+Suggested-by: Maíra Canal <mairacanal@riseup.net>
+Signed-off-by: Sander Vanheule <sander@svanheule.net>
 ---
- drivers/bluetooth/btusb.c |    2 ++
- 1 file changed, 2 insertions(+)
+ lib/Kconfig.debug                       | 7 +++++--
+ lib/Makefile                            | 2 +-
+ lib/{test_cpumask.c => cpumask_kunit.c} | 0
+ 3 files changed, 6 insertions(+), 3 deletions(-)
+ rename lib/{test_cpumask.c => cpumask_kunit.c} (100%)
 
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -430,6 +430,8 @@ static const struct usb_device_id blackl
- 	/* Realtek 8852CE Bluetooth devices */
- 	{ USB_DEVICE(0x04ca, 0x4007), .driver_info = BTUSB_REALTEK |
- 						     BTUSB_WIDEBAND_SPEECH },
-+	{ USB_DEVICE(0x04c5, 0x1675), .driver_info = BTUSB_REALTEK |
-+						     BTUSB_WIDEBAND_SPEECH },
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 072e4b289c13..bcbe60d6c80c 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -2029,13 +2029,16 @@ config LKDTM
+ 	Documentation on how to use the module can be found in
+ 	Documentation/fault-injection/provoke-crashes.rst
  
- 	/* Realtek Bluetooth devices */
- 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bda, 0xe0, 0x01, 0x01),
-
+-config TEST_CPUMASK
+-	tristate "cpumask tests" if !KUNIT_ALL_TESTS
++config CPUMASK_KUNIT_TEST
++	tristate "KUnit test for cpumask" if !KUNIT_ALL_TESTS
+ 	depends on KUNIT
+ 	default KUNIT_ALL_TESTS
+ 	help
+ 	  Enable to turn on cpumask tests, running at boot or module load time.
+ 
++	  For more information on KUnit and unit tests in general, please refer
++	  to the KUnit documentation in Documentation/dev-tools/kunit/.
++
+ 	  If unsure, say N.
+ 
+ config TEST_LIST_SORT
+diff --git a/lib/Makefile b/lib/Makefile
+index c95212141928..22eafcd39b51 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -59,6 +59,7 @@ obj-$(CONFIG_TEST_BPF) += test_bpf.o
+ obj-$(CONFIG_TEST_FIRMWARE) += test_firmware.o
+ obj-$(CONFIG_TEST_BITOPS) += test_bitops.o
+ CFLAGS_test_bitops.o += -Werror
++obj-$(CONFIG_CPUMASK_KUNIT_TEST) += cpumask_kunit.o
+ obj-$(CONFIG_TEST_SYSCTL) += test_sysctl.o
+ obj-$(CONFIG_TEST_SIPHASH) += test_siphash.o
+ obj-$(CONFIG_HASH_KUNIT_TEST) += test_hash.o
+@@ -99,7 +100,6 @@ obj-$(CONFIG_TEST_HMM) += test_hmm.o
+ obj-$(CONFIG_TEST_FREE_PAGES) += test_free_pages.o
+ obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
+ obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
+-obj-$(CONFIG_TEST_CPUMASK) += test_cpumask.o
+ CFLAGS_test_fprobe.o += $(CC_FLAGS_FTRACE)
+ obj-$(CONFIG_FPROBE_SANITY_TEST) += test_fprobe.o
+ #
+diff --git a/lib/test_cpumask.c b/lib/cpumask_kunit.c
+similarity index 100%
+rename from lib/test_cpumask.c
+rename to lib/cpumask_kunit.c
+-- 
+2.37.1
 
