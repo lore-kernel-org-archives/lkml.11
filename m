@@ -2,110 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 768A2C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 11:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE0FCC25B07
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 12:05:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243055AbiHIL6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 07:58:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43994 "EHLO
+        id S241395AbiHIMFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 08:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240188AbiHIL6V (ORCPT
+        with ESMTP id S236564AbiHIMFI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 07:58:21 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C4BCE24
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 04:58:20 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 279BVgED012666;
-        Tue, 9 Aug 2022 07:58:13 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3hudyckh6n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 09 Aug 2022 07:58:13 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 279BwCQP033823
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 9 Aug 2022 07:58:12 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 9 Aug 2022 07:58:11 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 9 Aug 2022 07:58:11 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 9 Aug 2022 07:58:11 -0400
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.134])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 279Bvw5I024498;
-        Tue, 9 Aug 2022 07:58:04 -0400
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>, <nuno.sa@analog.com>,
-        <cosmin.tanislav@analog.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH] MAINTAINERS: fix Analog Devices forum links
-Date:   Tue, 9 Aug 2022 14:57:47 +0300
-Message-ID: <20220809115747.11303-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.37.1
+        Tue, 9 Aug 2022 08:05:08 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C34A51EEC3;
+        Tue,  9 Aug 2022 05:05:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660046704; x=1691582704;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=rIJtg6N3ukhnUG2gqKWmREiUxHfYT175zglEAUmnV9E=;
+  b=AH7ui4fF4hCupigWHipG7d3CSEb5mbTh6SWBddTm2f9W+Tw8uX73YJ4w
+   P4/M8PrJ5guQOcY5iM1u9/UIxx/KkHuVmy0dQ6fi/Jlabq/YuiQv0jDiW
+   aQWPccRK6PN/RriletX0Dmb8D+paUYYSEyGIYNUA4WYG8tcFkl4Za0U5n
+   Dnt2i7j3bv9ezUXhIaGl8PkE6F1pLqGevQO8Oi9iUXYsCK85DkmNeLvNj
+   hMB2b+m8DeewU0MdETmb/3JUDfM8lnzkqSn68VsvLtn+cPkFqPF5RjlU+
+   t8UkUjcyHL3BbZkZwXw6D0KJ+ambputnA1NrCxU4o7F+dp46JmWIuvFmF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="291603911"
+X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
+   d="scan'208";a="291603911"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 05:05:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
+   d="scan'208";a="633300813"
+Received: from mylly.fi.intel.com (HELO [10.237.72.177]) ([10.237.72.177])
+  by orsmga008.jf.intel.com with ESMTP; 09 Aug 2022 05:05:01 -0700
+Message-ID: <d2be49af-71e4-978b-fe00-8b8fca6f80b5@linux.intel.com>
+Date:   Tue, 9 Aug 2022 15:05:01 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: yaBeWKavo-smfpchArCw2wutbg5WRm4q
-X-Proofpoint-GUID: yaBeWKavo-smfpchArCw2wutbg5WRm4q
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-09_03,2022-08-09_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
- priorityscore=1501 bulkscore=0 spamscore=0 lowpriorityscore=0
- clxscore=1011 phishscore=0 mlxscore=0 malwarescore=0 impostorscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2208090052
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.10.0
+Subject: Re: [PATCH] i2c: designware: Introduce cooldown timer to AMDPSP
+ driver
+Content-Language: en-US
+To:     Jan Dabros <jsd@semihalf.com>, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, andriy.shevchenko@linux.intel.com
+Cc:     mika.westerberg@linux.intel.com, wsa@kernel.org,
+        rrangel@chromium.org, mw@semihalf.com, upstream@semihalf.com
+References: <20220725080240.106619-1-jsd@semihalf.com>
+From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
+In-Reply-To: <20220725080240.106619-1-jsd@semihalf.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the links to redirect to the correct forum subsection for the latest
-Analog Devices drivers added.
+Hi
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- MAINTAINERS | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Sorry the delay, this slipped through my eyes during vacation. Couple 
+minor comments below.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b7221f4143cb..2c440f3d90e3 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -615,7 +615,7 @@ ADXL367 THREE-AXIS DIGITAL ACCELEROMETER DRIVER
- M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
- L:	linux-iio@vger.kernel.org
- S:	Supported
--W:	http://ez.analog.com/community/linux-device-drivers
-+W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
- F:	drivers/iio/accel/adxl367*
- 
-@@ -1147,7 +1147,7 @@ ANALOG DEVICES INC AD74413R DRIVER
- M:	Cosmin Tanislav <cosmin.tanislav@analog.com>
- L:	linux-iio@vger.kernel.org
- S:	Supported
--W:	http://ez.analog.com/community/linux-device-drivers
-+W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml
- F:	drivers/iio/addac/ad74413r.c
- F:	include/dt-bindings/iio/addac/adi,ad74413r.h
-@@ -11913,7 +11913,7 @@ LTC2688 IIO DAC DRIVER
- M:	Nuno Sá <nuno.sa@analog.com>
- L:	linux-iio@vger.kernel.org
- S:	Supported
--W:	http://ez.analog.com/community/linux-device-drivers
-+W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/ABI/testing/sysfs-bus-iio-dac-ltc2688
- F:	Documentation/devicetree/bindings/iio/dac/adi,ltc2688.yaml
- F:	drivers/iio/dac/ltc2688.c
--- 
-2.37.1
+On 7/25/22 11:02, Jan Dabros wrote:
+> In order to optimize performance, limit amount of back and forth
+> transactions between x86 and PSP. This is done by introduction of
+> cooldown period - that is window in which x86 isn't releasing the bus
+> immediately after each I2C transaction.
+> 
+> In order to protect PSP from being starved while waiting for
+> arbitration, after a programmed time bus is automatically released by a
+> deferred function.
+> 
+> Signed-off-by: Jan Dabros <jsd@semihalf.com>
+> ---
+>   drivers/i2c/busses/i2c-designware-amdpsp.c | 68 +++++++++++++++++-----
+>   1 file changed, 53 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/i2c/busses/i2c-designware-amdpsp.c b/drivers/i2c/busses/i2c-designware-amdpsp.c
+> index b624356c945f..2e1bb5ae72c3 100644
+> --- a/drivers/i2c/busses/i2c-designware-amdpsp.c
+> +++ b/drivers/i2c/busses/i2c-designware-amdpsp.c
+> @@ -6,6 +6,7 @@
+>   #include <linux/io-64-nonatomic-lo-hi.h>
+>   #include <linux/psp-sev.h>
+>   #include <linux/types.h>
+> +#include <linux/workqueue.h>
+>   
+>   #include <asm/msr.h>
+>   
+> @@ -15,6 +16,8 @@
+>   #define PSP_MBOX_OFFSET		0x10570
+>   #define PSP_CMD_TIMEOUT_US	(500 * USEC_PER_MSEC)
+>   
+> +#define PSP_I2C_COOLDOWN_TIME_MS 100
+> +
 
+"cooldown" distract me thinking thermal management. Would semaphore 
+reservation time/timer fit better?
+
+> +static void release_bus_now(void)
+> +static void psp_release_i2c_bus_deferred(struct work_struct *work)
+> +static DECLARE_DELAYED_WORK(release_queue, psp_release_i2c_bus_deferred);
+> +
+
+I'd use the same namespace here. Perhaps _now can be dropped from the 
+name since the release_bus and release_bus_deferred are near to each 
+other and _deferred variant implies it's called after timeout.
+
+> +	/*
+> +	 * Send a release command to PSP if the cooldown timeout elapsed but x86 still
+> +	 * owns the ctrlr.
+> +	 */
+
+Replace "ctrlr" -> "control" here since then it doesn't lead to think 
+is't some technical object like register etc.
