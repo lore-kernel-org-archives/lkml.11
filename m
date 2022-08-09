@@ -2,134 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3828FC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 20:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE60C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 20:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345150AbiHIUUl (ORCPT
+        id S1344990AbiHIUVX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 16:20:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44486 "EHLO
+        Tue, 9 Aug 2022 16:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245607AbiHIUU3 (ORCPT
+        with ESMTP id S1345388AbiHIUUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 16:20:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBA1E193F2
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 13:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660076427;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WcR+xwROcY1mQWTajdWclph8yvOYoZAKRICeYRXiSjg=;
-        b=FI6h0vywseC2pF+6zIYltNItxNdlp/BDgVWb78rbn+dGuvm/NrwkaWFk7JGloOGxHagjs1
-        rxZ4YsyNSbArH5HjUPe+GZKP1JgdNq60cLo+p/5BUN6cZ4qd7Yg9mI8qKOzgH7SC98ipTO
-        dOsEFGmice5wZohS4duT99/NwQxpFq4=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-556-_Xn88JKEMS-GSiYwJDiV0Q-1; Tue, 09 Aug 2022 16:20:25 -0400
-X-MC-Unique: _Xn88JKEMS-GSiYwJDiV0Q-1
-Received: by mail-wm1-f71.google.com with SMTP id j22-20020a05600c485600b003a50fa6981bso5203wmo.9
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 13:20:24 -0700 (PDT)
+        Tue, 9 Aug 2022 16:20:44 -0400
+Received: from mail-il1-f170.google.com (mail-il1-f170.google.com [209.85.166.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E900427B1C;
+        Tue,  9 Aug 2022 13:20:41 -0700 (PDT)
+Received: by mail-il1-f170.google.com with SMTP id t15so7156850ilm.7;
+        Tue, 09 Aug 2022 13:20:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=WcR+xwROcY1mQWTajdWclph8yvOYoZAKRICeYRXiSjg=;
-        b=o2a7yc6kooJOvjkJeN373OGTJP9Cm8c1fwRvsoR8TS8aOAdPS/bfczX6q2tuJuG9WP
-         /TBdxZ22+FL2iHv2fMW/3Vz1U12bz0xwcAPmM1qSOgRwWszmpPO0HevtJ3HnNBKU9dxI
-         IsoA5p67HX/naUfyGzfHj/QKVNzgGGyRO3M82Bbun7elK5AY4m2Inbbqg/v+lx9aIK5s
-         GKXcaYSrBboe1Fw5Y6v0gbTXu2lcLyAxYSOYqS8JgacTWgtZJhZdm5pbXJX8SdK6kiQs
-         US2YZS6BPNAlsKCl9Kb+iiacKDevAzz8NMDeHJHS/YWJ2ptgZlpxeBeO0yuOtOHec1h1
-         WKHA==
-X-Gm-Message-State: ACgBeo3IZJlGYHEZejJqnJKBMjO1/Ey5IPQUW1PIuZBBeKle/aHkgIXt
-        Ywwn6oyE0dQ832zZmYZKWnSyYoQCnfOFU7Q9+v5MNEGDCiv3uoeAPFyZOcudQl1EY7bdRmMWKr0
-        NFbWGHVnlBmXZw28uHrpthtNH
-X-Received: by 2002:a05:6000:1f08:b0:21f:bbe:252c with SMTP id bv8-20020a0560001f0800b0021f0bbe252cmr15069297wrb.340.1660076423835;
-        Tue, 09 Aug 2022 13:20:23 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7Zk/2i2sQWeAOcXQyBbElluR5dmTZ3mGZC6uzovtHrJmIzwfvv+RsxeehU4XAEb3CDzxc9Ew==
-X-Received: by 2002:a05:6000:1f08:b0:21f:bbe:252c with SMTP id bv8-20020a0560001f0800b0021f0bbe252cmr15069286wrb.340.1660076423561;
-        Tue, 09 Aug 2022 13:20:23 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c705:3700:aed2:a0f8:c270:7f30? (p200300cbc7053700aed2a0f8c2707f30.dip0.t-ipconnect.de. [2003:cb:c705:3700:aed2:a0f8:c270:7f30])
-        by smtp.gmail.com with ESMTPSA id k12-20020adfb34c000000b002205df9ce16sm14294415wrd.97.2022.08.09.13.20.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 13:20:23 -0700 (PDT)
-Message-ID: <c096cc82-60b4-9e75-06ad-156461292941@redhat.com>
-Date:   Tue, 9 Aug 2022 22:20:22 +0200
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=i8fLGMiVtuza7jt0uHgJRZ2ISnpXL3HFiXjjuGSh5DI=;
+        b=udvQLNXIdqjyyVeasMAVXxYM+m8BBoo46nhRSP+/K3WScowvh25LOzQWMJ5vv3AXmM
+         jXxY1cDU0n8yjH4dM5PF1mWhGeWsOk7e7ZaIs13IX+GYoUwUa1lX4ZE8keV6jiPhNvBz
+         5sRqNVT6N9iSrOW9ZKDGWTzNLEuRvh5PTdJ7EwCKi8qtnB/t0YjrHIZ9UXByPy2n+/dw
+         aFDQ/+/JSFob/yZDma5vEdiSClkH6mErU4FyuxTtmvgOEdYBgJN3Ng4b5tchoD42bOcU
+         ar+aKFAMIGLQwayrI/nY3GigjGSRP2NWqe6tHpyBt3GF7Q9F9Wn7svTrnOIg19KV7XF2
+         IYxQ==
+X-Gm-Message-State: ACgBeo3Rm7pPIBuCnsMS81YQy5/TNipZPPK2ee98qQAcXiIud0P51Zii
+        0ZpceU7+ztwy6Lv+HSsi1g==
+X-Google-Smtp-Source: AA6agR77Fjf8hjr8S8p/hEDdFDs8WlVvIGS5ALi31059dRoIxCAB8E+e02SA/ATgkv5OqsLL3MA3Zw==
+X-Received: by 2002:a92:c501:0:b0:2de:69e6:4143 with SMTP id r1-20020a92c501000000b002de69e64143mr11738240ilg.262.1660076441170;
+        Tue, 09 Aug 2022 13:20:41 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id h5-20020a92c265000000b002dd0ba40abdsm1413532ild.18.2022.08.09.13.20.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 13:20:40 -0700 (PDT)
+Received: (nullmailer pid 2327658 invoked by uid 1000);
+        Tue, 09 Aug 2022 20:20:38 -0000
+Date:   Tue, 9 Aug 2022 14:20:38 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Julian Braha <julianbraha@gmail.com>
+Cc:     devicetree@vger.kernel.org, daniel@ffwll.ch,
+        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, airlied@linux.ie,
+        sam@ravnborg.org, thierry.reding@gmail.com, robh+dt@kernel.org
+Subject: Re: [PATCH v3 1/2] dt-bindings: panel-simple-dsi: add Tianma
+ TL057FVXP01
+Message-ID: <20220809202038.GA2327602-robh@kernel.org>
+References: <20220808213726.883003-1-julianbraha@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove
- FOLL_COW
-Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-References: <20220808073232.8808-1-david@redhat.com>
- <CAHk-=wgsDOz5MfYYS9mE7PvFn4kLhTFdBwXvN6HCEsw1kvJnRQ@mail.gmail.com>
- <91e18a2f-c93d-00b8-7c1b-6d8493c3b2d5@redhat.com>
- <CAHk-=whg0ddey-LqFAPfZJDXHMjaHJNojAV3q17yvjc6W8QRvQ@mail.gmail.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <CAHk-=whg0ddey-LqFAPfZJDXHMjaHJNojAV3q17yvjc6W8QRvQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220808213726.883003-1-julianbraha@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09.08.22 22:14, Linus Torvalds wrote:
-> On Tue, Aug 9, 2022 at 1:07 PM David Hildenbrand <david@redhat.com> wrote:
->>
->>>         /* But FOLL_FORCE has no effect on shared mappings */
->>>         if (vma->vm_flags & MAP_SHARED)
->>>                 return false;
->>
->> I'd actually rather check for MAP_MAYSHARE here, which is even stronger.
->> Thoughts?
+On Mon, 08 Aug 2022 17:37:25 -0400, Julian Braha wrote:
+> Adds the bindings for the Tianma TL057FVXP01 DSI panel,
+> found on the Motorola Moto G6.
 > 
-> Hmm. Adding the test for both is basically free (all those vm_flags
-> checks end up being a bit mask and compare), so no objections.
+> Signed-off-by: Julian Braha <julianbraha@gmail.com>
+> ---
+> v3:
+> Fixed kconfig dependencies.
 > 
-> For some reason I though VM_SHARED and VM_MAYSHARE end up always being
-> the same bits, and it was a mistake to make them two bits in the first
-> place (unlike the read/write/exec bits that can are about mprotect),
+> v2:
+> Fixed accidental whitespace deletion.
+> ---
+>  .../devicetree/bindings/display/panel/panel-simple-dsi.yaml     | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> But as there are two bits, I'm sure somebody ends up touching one and
-> not the other.
-> 
-> So yeah, I don't see any downside to just checking both bits.
-> 
-> [ That said, is_cow_mapping() only checks VM_SHARED, so if they are
-> ever different, that's a potential source of confusion ]
 
-IIUC VM_MAYSHARE is always set in a MAP_SHARED mapping, but for file
-mappings we only set VM_SHARED if the file allows for writes (and we can
-set VM_MAYWRITE or even VM_WRITE). [don't ask me why, it's a steady
-source of confusion]
-
-That's why is_cow_mapping() works even due to the weird MAP_SHARED vs.
-VM_MAYSHARE logic.
-
-
-I'd actually only check for VM_MAYSHARE here, which implies MAP_SHARED.
-If someone would ever mess that up, I guess we'd be in bigger trouble.
-
-But whatever you prefer.
-
--- 
-Thanks,
-
-David / dhildenb
-
+Acked-by: Rob Herring <robh@kernel.org>
