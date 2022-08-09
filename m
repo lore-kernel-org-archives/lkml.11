@@ -2,132 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 241E8C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:00:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B69C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 09:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241548AbiHIJAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 05:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
+        id S235252AbiHIJDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 05:03:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241486AbiHIJAN (ORCPT
+        with ESMTP id S235573AbiHIJDS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 05:00:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8075F1C5;
-        Tue,  9 Aug 2022 02:00:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 9 Aug 2022 05:03:18 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613362229C
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 02:03:17 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A79260E9C;
-        Tue,  9 Aug 2022 09:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37840C433D6;
-        Tue,  9 Aug 2022 09:00:06 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V9 4/4] LoongArch: Enable ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-Date:   Tue,  9 Aug 2022 16:52:53 +0800
-Message-Id: <20220809085253.2916982-5-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220809085253.2916982-1-chenhuacai@loongson.cn>
-References: <20220809085253.2916982-1-chenhuacai@loongson.cn>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 507BA1FDE0;
+        Tue,  9 Aug 2022 09:03:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1660035794; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lhykmQ44uj44lUBw5voN63DGvbKrGYW5PE8k5Kwylb8=;
+        b=VUH79OCxr1bqjexgeWWz/8KclSRjY2HIeCdX+ZxUPMvp1kJeTB9iVV3aEZG8JNwzTPMC2J
+        sZgkgShilaFOvvX222uCU99U3wgJwEOvXjt56WT5D9GLzlVTlU9DJzz/x66ffKKt5P859A
+        ldR+zO9zwnuTcHa3bPf95eB0N6cqI3I=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1660035794;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lhykmQ44uj44lUBw5voN63DGvbKrGYW5PE8k5Kwylb8=;
+        b=6vvDCYtVHkbTAfiodpJoQihX3ATuVrrolewfU16zMtpQtMx94E5WewknYnuZpaqsk9cRes
+        JvX/D3On/lRNK8CA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2AA5113A9D;
+        Tue,  9 Aug 2022 09:03:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id xV7ACdIi8mKdKAAAMHmgww
+        (envelope-from <tiwai@suse.de>); Tue, 09 Aug 2022 09:03:14 +0000
+Date:   Tue, 09 Aug 2022 11:03:13 +0200
+Message-ID: <87a68dwzzi.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     Takashi Iwai <tiwai@suse.de>, Dave Airlie <airlied@redhat.com>,
+        Sean Paul <sean@poorly.run>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH 3/4] drm/udl: Kill pending URBs at suspend and disconnect
+In-Reply-To: <2a307221-62a8-a5f8-354f-d92e90f74f04@suse.de>
+References: <20220804075826.27036-1-tiwai@suse.de>
+        <20220804075826.27036-4-tiwai@suse.de>
+        <bebcfa4a-7908-d8ba-3bff-ea7c2ee2d7a9@suse.de>
+        <87h72lx4yw.wl-tiwai@suse.de>
+        <2a307221-62a8-a5f8-354f-d92e90f74f04@suse.de>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feiyang Chen <chenfeiyang@loongson.cn>
+On Tue, 09 Aug 2022 09:41:19 +0200,
+Thomas Zimmermann wrote:
+> 
+> Hi
+> 
+> Am 09.08.22 um 09:15 schrieb Takashi Iwai:
+> > On Tue, 09 Aug 2022 09:13:16 +0200,
+> > Thomas Zimmermann wrote:
+> >> 
+> >> Hi
+> >> 
+> >> Am 04.08.22 um 09:58 schrieb Takashi Iwai:
+> >>> At both suspend and disconnect, we should rather cancel the pending
+> >>> URBs immediately.  For the suspend case, the display will be turned
+> >>> off, so it makes no sense to process the rendering.  And for the
+> >>> disconnect case, the device may be no longer accessible, hence we
+> >>> shouldn't do any submission.
+> >>> 
+> >>> Tested-by: Thomas Zimmermann <tzimmermann@suse.de>
+> >>> Signed-off-by: Takashi Iwai <tiwai@suse.de>
+> >>> ---
+> >>>    drivers/gpu/drm/udl/udl_drv.h     |  2 ++
+> >>>    drivers/gpu/drm/udl/udl_main.c    | 25 ++++++++++++++++++++++---
+> >>>    drivers/gpu/drm/udl/udl_modeset.c |  2 ++
+> >>>    3 files changed, 26 insertions(+), 3 deletions(-)
+> >>> 
+> >>> diff --git a/drivers/gpu/drm/udl/udl_drv.h b/drivers/gpu/drm/udl/udl_drv.h
+> >>> index f01e50c5b7b7..28aaf75d71cf 100644
+> >>> --- a/drivers/gpu/drm/udl/udl_drv.h
+> >>> +++ b/drivers/gpu/drm/udl/udl_drv.h
+> >>> @@ -39,6 +39,7 @@ struct urb_node {
+> >>>      struct urb_list {
+> >>>    	struct list_head list;
+> >>> +	struct list_head in_flight;
+> >>>    	spinlock_t lock;
+> >>>    	wait_queue_head_t sleep;
+> >>>    	int available;
+> >>> @@ -84,6 +85,7 @@ static inline struct urb *udl_get_urb(struct drm_device *dev)
+> >>>      int udl_submit_urb(struct drm_device *dev, struct urb *urb,
+> >>> size_t len);
+> >>>    int udl_sync_pending_urbs(struct drm_device *dev);
+> >>> +void udl_kill_pending_urbs(struct drm_device *dev);
+> >>>    void udl_urb_completion(struct urb *urb);
+> >>>      int udl_init(struct udl_device *udl);
+> >>> diff --git a/drivers/gpu/drm/udl/udl_main.c b/drivers/gpu/drm/udl/udl_main.c
+> >>> index 93615648414b..47204b7eb10e 100644
+> >>> --- a/drivers/gpu/drm/udl/udl_main.c
+> >>> +++ b/drivers/gpu/drm/udl/udl_main.c
+> >>> @@ -135,7 +135,7 @@ void udl_urb_completion(struct urb *urb)
+> >>>    	urb->transfer_buffer_length = udl->urbs.size; /* reset to actual */
+> >>>      	spin_lock_irqsave(&udl->urbs.lock, flags);
+> >>> -	list_add_tail(&unode->entry, &udl->urbs.list);
+> >>> +	list_move(&unode->entry, &udl->urbs.list);
+> >>>    	udl->urbs.available++;
+> >>>    	spin_unlock_irqrestore(&udl->urbs.lock, flags);
+> >>>    @@ -180,6 +180,7 @@ static int udl_alloc_urb_list(struct
+> >>> drm_device *dev, int count, size_t size)
+> >>>    retry:
+> >>>    	udl->urbs.size = size;
+> >>>    	INIT_LIST_HEAD(&udl->urbs.list);
+> >>> +	INIT_LIST_HEAD(&udl->urbs.in_flight);
+> >>>      	init_waitqueue_head(&udl->urbs.sleep);
+> >>>    	udl->urbs.count = 0;
+> >>> @@ -246,7 +247,7 @@ struct urb *udl_get_urb_timeout(struct drm_device *dev, long timeout)
+> >>>    	}
+> >>>      	unode = list_first_entry(&udl->urbs.list, struct urb_node,
+> >>> entry);
+> >>> -	list_del_init(&unode->entry);
+> >>> +	list_move(&unode->entry, &udl->urbs.in_flight);
+> >>>    	udl->urbs.available--;
+> >>>      unlock:
+> >>> @@ -279,7 +280,7 @@ int udl_sync_pending_urbs(struct drm_device *dev)
+> >>>    	spin_lock_irq(&udl->urbs.lock);
+> >>>    	/* 2 seconds as a sane timeout */
+> >>>    	if (!wait_event_lock_irq_timeout(udl->urbs.sleep,
+> >>> -					 udl->urbs.available == udl->urbs.count,
+> >>> +					 list_empty(&udl->urbs.in_flight),
+> >>>    					 udl->urbs.lock,
+> >>>    					 msecs_to_jiffies(2000)))
+> >>>    		ret = -ETIMEDOUT;
+> >>> @@ -287,6 +288,23 @@ int udl_sync_pending_urbs(struct drm_device *dev)
+> >>>    	return ret;
+> >>>    }
+> >>>    +/* kill pending URBs */
+> >>> +void udl_kill_pending_urbs(struct drm_device *dev)
+> >>> +{
+> >>> +	struct udl_device *udl = to_udl(dev);
+> >>> +	struct urb_node *unode;
+> >>> +
+> >>> +	spin_lock_irq(&udl->urbs.lock);
+> >>> +	while (!list_empty(&udl->urbs.in_flight)) {
+> >>> +		unode = list_first_entry(&udl->urbs.in_flight,
+> >>> +					 struct urb_node, entry);
+> >>> +		spin_unlock_irq(&udl->urbs.lock);
+> >>> +		usb_kill_urb(unode->urb);
+> >>> +		spin_lock_irq(&udl->urbs.lock);
+> >>> +	}
+> >>> +	spin_unlock_irq(&udl->urbs.lock);
+> >>> +}
+> >>> +
+> >>>    int udl_init(struct udl_device *udl)
+> >>>    {
+> >>>    	struct drm_device *dev = &udl->drm;
+> >>> @@ -335,6 +353,7 @@ int udl_drop_usb(struct drm_device *dev)
+> >>>    {
+> >>>    	struct udl_device *udl = to_udl(dev);
+> >>>    +	udl_kill_pending_urbs(dev);
+> >>>    	udl_free_urb_list(dev);
+> >>>    	put_device(udl->dmadev);
+> >>>    	udl->dmadev = NULL;
+> >>> diff --git a/drivers/gpu/drm/udl/udl_modeset.c b/drivers/gpu/drm/udl/udl_modeset.c
+> >>> index 50025606b6ad..169110d8fc2e 100644
+> >>> --- a/drivers/gpu/drm/udl/udl_modeset.c
+> >>> +++ b/drivers/gpu/drm/udl/udl_modeset.c
+> >>> @@ -397,6 +397,8 @@ udl_simple_display_pipe_disable(struct drm_simple_display_pipe *pipe)
+> >>>    	struct urb *urb;
+> >>>    	char *buf;
+> >>>    +	udl_kill_pending_urbs(dev);
+> >>> +
+> >> 
+> >> I already reviewed the patchset, but I have another comment. I think
+> >> we should only kill urbs from within the suspend handler. Same for the
+> >> call to the URB-sync function in patch 2.
+> >> 
+> >> This disable function is part of the regular modeset path. It's
+> >> probably not appropriate to outright remove pending URBs here. This
+> >> can lead to failed modesets, which would have succeeded otherwise.
+> > 
+> > Well, the device shall be turned off right after that point, so the
+> > all pending rendering makes little sense, no?
+> 
+> udl_simple_display_pipe_disable() only disables the display, but not
+> the device. The kill operation here could potentially kill some valid
+> modeset operation that was still going on. And who knows what the
+> device state is after that.
 
-The feature of minimizing overhead of struct page associated with each
-HugeTLB page is implemented on x86_64. However, the infrastructure of
-this feature is already there, so just select ARCH_WANT_HUGETLB_PAGE_
-OPTIMIZE_VMEMMAP is enough to enable this feature for LoongArch.
+But udl_simple_display_pipe_disable() invokes UDL_BLANK_MODE_POWERDOWN
+command right after the place I've put udl_kill_pending_urbs().  So it
+shall blank / turn off the power (of the device, as it has a single
+output).  And the URB completion doesn't do any error handling but
+just re-links URB chain and wakes up the queue.  So killing a pending
+URB would nothing but canceling the in-flight URBs, and there should
+be no disturbance to the modeset operation itself, as the screen will
+be blanked immediately.
 
-To avoid the following build error on LoongArch we should include linux/
-static_key.h in page-flags.h.
+Of course, it's all theory, and if this breaks anything, it should be
+corrected :)
 
-In file included from ./include/linux/mmzone.h:22,
-from ./include/linux/gfp.h:6,
-from ./include/linux/mm.h:7,
-from arch/loongarch/kernel/asm-offsets.c:9:
-./include/linux/page-flags.h:208:1: warning: data definition has no
-type or storage class
-208 | DECLARE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h:208:1: error: type defaults to 'int' in
-declaration of 'DECLARE_STATIC_KEY_MAYBE' [-Werror=implicit-int]
-./include/linux/page-flags.h:209:26: warning: parameter names (without
-types) in function declaration
-209 | hugetlb_optimize_vmemmap_key);
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h: In function 'hugetlb_optimize_vmemmap_enabled':
-./include/linux/page-flags.h:213:16: error: implicit declaration of
-function 'static_branch_maybe' [-Werror=implicit-function-declaration]
-213 | return static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h:213:36: error:
-'CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON' undeclared (first
-use in this function); did you mean
-'CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP'?
-213 | return static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-| CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-./include/linux/page-flags.h:213:36: note: each undeclared identifier
-is reported only once for each function it appears in
-./include/linux/page-flags.h:214:37: error:
-'hugetlb_optimize_vmemmap_key' undeclared (first use in this
-function); did you mean 'hugetlb_optimize_vmemmap_enabled'?
-214 | &hugetlb_optimize_vmemmap_key);
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-| hugetlb_optimize_vmemmap_enabled
 
-Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/Kconfig     | 1 +
- include/linux/page-flags.h | 1 +
- 2 files changed, 2 insertions(+)
+thanks,
 
-diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
-index cff781d92c81..de78c86a205c 100644
---- a/arch/loongarch/Kconfig
-+++ b/arch/loongarch/Kconfig
-@@ -49,6 +49,7 @@ config LOONGARCH
- 	select ARCH_USE_CMPXCHG_LOCKREF
- 	select ARCH_USE_QUEUED_RWLOCKS
- 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
-+	select ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
- 	select ARCH_WANTS_NO_INSTR
- 	select BUILDTIME_TABLE_SORT
- 	select COMMON_CLK
-diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index e66f7aa3191d..28a53ac7aa3e 100644
---- a/include/linux/page-flags.h
-+++ b/include/linux/page-flags.h
-@@ -9,6 +9,7 @@
- #include <linux/types.h>
- #include <linux/bug.h>
- #include <linux/mmdebug.h>
-+#include <linux/static_key.h>
- #ifndef __GENERATING_BOUNDS_H
- #include <linux/mm_types.h>
- #include <generated/bounds.h>
--- 
-2.31.1
-
+Takashi
