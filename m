@@ -2,77 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AF0DC25B08
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA91DC25B0F
 	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 22:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230083AbiHIWGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 18:06:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50092 "EHLO
+        id S230313AbiHIWHF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 18:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229963AbiHIWFT (ORCPT
+        with ESMTP id S229976AbiHIWFX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 18:05:19 -0400
-Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5ABB8A8;
-        Tue,  9 Aug 2022 15:05:18 -0700 (PDT)
-Received: from dread.disaster.area (pa49-181-193-158.pa.nsw.optusnet.com.au [49.181.193.158])
-        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id 2C7A110E85DA;
-        Wed, 10 Aug 2022 08:05:13 +1000 (AEST)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1oLXLb-00BCHm-Hu; Wed, 10 Aug 2022 08:05:11 +1000
-Date:   Wed, 10 Aug 2022 08:05:11 +1000
-From:   Dave Chinner <david@fromorbit.com>
-To:     Uros Bizjak <ubizjak@gmail.com>
-Cc:     linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Darrick J. Wong" <djwong@kernel.org>
-Subject: Re: [PATCH] fs/xfs: Use atomic64_try_cmpxchg in
- xlog_grant_{add,sub}_space
-Message-ID: <20220809220511.GI3600936@dread.disaster.area>
-References: <20220809165615.9694-1-ubizjak@gmail.com>
+        Tue, 9 Aug 2022 18:05:23 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768C011A38
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 15:05:22 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id q30so15718924wra.11
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 15:05:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=mcqvl7P2tMp4cqPIcszOgPsr8Wnw9dXPIC7QNOz6O1k=;
+        b=rxs/j6Ljj8ksqZlbC1OXmElheN+CD/HJDdaVUj7PCZMQthx1c4YA04gd5tmlApW7zo
+         Yd8Z2FyWM79/A7lEgTA3wNeJT1VCATFBMN+YYY9lo/PFIdfhCrMHbfLMA8K7FKzYz614
+         SbGrciKxomvM4vDJiapLS+eyEqGwFwkiWKp037oVIyvwZI10N8OuugwCDptt4+cg8/PW
+         d9GjQAcjFAwRVxIfa1mUA80sM97utX0C6oTuOZvq14owAIRbSnObl+6hRhjgJQPG4Fm8
+         3RoHVxPj+pU+pUIDdsGNtOU4LpG5mqShOm0kVIHjcdhkZKK530p6mrmLwWP72f5OUYjw
+         4p3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=mcqvl7P2tMp4cqPIcszOgPsr8Wnw9dXPIC7QNOz6O1k=;
+        b=zkjMY7q/o+UEUea6q/ERjrcXoR/l0bAo6GHi1WOkBvpbbvO2nMPnH6XOQCjES/ngn8
+         5S96G2FWe7fvOR7PyswDbB6RcSup8InHqt3yI2pbsKauy0CNnvvwo9ceGCmvVdnJ25gY
+         dR1m8SUmfhh+EgNYO0CkEIS1Tyco7GRLkNGeddTKcV3vpc+bzlMoCWRCI/G5B274bkOZ
+         kovCPrWW6umyyfTjfw6NGna5y1SMiKemin9i5Z/zAi0uLFdgQPTDehXd8taqXYm+1AKB
+         pkz0WAkjJgEFTEPtWbsjgchDULarOsu040fIL9K5rvchxuHFfAlQlit+nJQGLM+iS2GI
+         Dn7Q==
+X-Gm-Message-State: ACgBeo2886ucNG3YTEPlxMDul8gN1o+ZwuHKVufO7FNmHaMrgmIQaK+4
+        9doRl8eo0TlmV4FiM1p2iw41hA==
+X-Google-Smtp-Source: AA6agR4CIQYSMIXd3v7taFCva4wBjJNAsuhGFodu7kMgNZ2iX2ej1pAoGMZreaLYcxRxEio3bAXxRA==
+X-Received: by 2002:a05:6000:1f1d:b0:221:6c4c:4995 with SMTP id bv29-20020a0560001f1d00b002216c4c4995mr13971265wrb.675.1660082722036;
+        Tue, 09 Aug 2022 15:05:22 -0700 (PDT)
+Received: from localhost.localdomain (146725694.box.freepro.com. [130.180.211.218])
+        by smtp.gmail.com with ESMTPSA id m21-20020a05600c3b1500b003a317ee3036sm293583wms.2.2022.08.09.15.05.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 15:05:21 -0700 (PDT)
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+To:     daniel.lezcano@linaro.org, rafael@kernel.org
+Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Amit Kucheria <amitk@kernel.org>
+Subject: [PATCH v2 19/26] thermal/core/of: Remove of_thermal_is_trip_valid()
+Date:   Wed, 10 Aug 2022 00:04:29 +0200
+Message-Id: <20220809220436.711020-20-daniel.lezcano@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220809220436.711020-1-daniel.lezcano@linaro.org>
+References: <20220809220436.711020-1-daniel.lezcano@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220809165615.9694-1-ubizjak@gmail.com>
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.4 cv=VuxAv86n c=1 sm=1 tr=0 ts=62f2da19
-        a=SeswVvpAPK2RnNNwqI8AaA==:117 a=SeswVvpAPK2RnNNwqI8AaA==:17
-        a=kj9zAlcOel0A:10 a=biHskzXt2R4A:10 a=7-415B0cAAAA:8
-        a=qgxBokI5hthhnRxBgHsA:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 09, 2022 at 06:56:15PM +0200, Uros Bizjak wrote:
-> Use `!atomic64_try_cmpxchg(ptr, &old, new)` instead of
-> `atomic64_cmpxchg(ptr, old, new) != old` in xlog_grant_{add,sub}_space.
-> This has two benefits:
-> 
-> - The x86 cmpxchg instruction returns success in the ZF flag, so this
->   change saves a compare after cmpxchg, as well as a related move
->   instruction in the front of cmpxchg.
-> 
-> - atomic64_try_cmpxchg implicitly assigns the *ptr value to &old when
->   cmpxchg fails, enabling further code simplifications.
+There is no benefit with the of_thermal_is_trip_valid() function as it
+does the check the thermal_zone_get_trip() is already doing for the
+sake of getting the trip point.
 
-Do the two cmpxchg operations have the same memory ordering
-semantics on failure?
+As all the calls have been replaced by thermal_zone_get_trip(), there
+is no more users of of_thermal_is_trip_valid().
 
-> This patch has no functional change.
+Remove the function.
 
-The patch looks ok, but ....
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+---
+ drivers/thermal/thermal_core.h | 10 ----------
+ drivers/thermal/thermal_of.c   | 19 -------------------
+ 2 files changed, 29 deletions(-)
 
-... I'm about 2 hours away from posting a patchset that completely
-removes the cmpxchg and the new grant head accounting has
-significantly lower fast path overhead. It also opens the door for
-tracking more than 2GB of log space in the grant heads.
-
-So I don't think we need to be micro-optimising this code given that
-there are much bigger perf gains about to land...
-
-Cheers,
-
-Dave.
+diff --git a/drivers/thermal/thermal_core.h b/drivers/thermal/thermal_core.h
+index ed60b3be9082..b66e12f49042 100644
+--- a/drivers/thermal/thermal_core.h
++++ b/drivers/thermal/thermal_core.h
+@@ -142,16 +142,6 @@ thermal_cooling_device_stats_update(struct thermal_cooling_device *cdev,
+ #endif /* CONFIG_THERMAL_STATISTICS */
+ 
+ /* device tree support */
+-#ifdef CONFIG_THERMAL_OF
+-bool of_thermal_is_trip_valid(struct thermal_zone_device *, int);
+-#else
+-static inline bool of_thermal_is_trip_valid(struct thermal_zone_device *tz,
+-					    int trip)
+-{
+-	return false;
+-}
+-#endif
+-
+ int thermal_zone_device_is_enabled(struct thermal_zone_device *tz);
+ 
+ #endif /* __THERMAL_CORE_H__ */
+diff --git a/drivers/thermal/thermal_of.c b/drivers/thermal/thermal_of.c
+index d1208b196b21..ded7ea2fc794 100644
+--- a/drivers/thermal/thermal_of.c
++++ b/drivers/thermal/thermal_of.c
+@@ -19,25 +19,6 @@
+ 
+ #include "thermal_core.h"
+ 
+-/**
+- * of_thermal_is_trip_valid - function to check if trip point is valid
+- *
+- * @tz:	pointer to a thermal zone
+- * @trip:	trip point to evaluate
+- *
+- * This function is responsible for checking if passed trip point is valid
+- *
+- * Return: true if trip point is valid, false otherwise
+- */
+-bool of_thermal_is_trip_valid(struct thermal_zone_device *tz, int trip)
+-{
+-	if (trip >= tz->num_trips || trip < 0)
+-		return false;
+-
+-	return true;
+-}
+-EXPORT_SYMBOL_GPL(of_thermal_is_trip_valid);
+-
+ static int of_thermal_set_trip_hyst(struct thermal_zone_device *tz, int trip,
+ 				    int hyst)
+ {
 -- 
-Dave Chinner
-david@fromorbit.com
+2.34.1
+
