@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7A6C25B07
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:33:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB12C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344210AbiHISdR (ORCPT
+        id S1344232AbiHISdd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39066 "EHLO
+        Tue, 9 Aug 2022 14:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344146AbiHISad (ORCPT
+        with ESMTP id S245061AbiHIS3l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:30:33 -0400
+        Tue, 9 Aug 2022 14:29:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE4A33E3C;
-        Tue,  9 Aug 2022 11:10:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC33324BCB;
+        Tue,  9 Aug 2022 11:10:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBC86B818A5;
-        Tue,  9 Aug 2022 18:08:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B851C43470;
-        Tue,  9 Aug 2022 18:08:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09B51B818C4;
+        Tue,  9 Aug 2022 18:08:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 538FCC433B5;
+        Tue,  9 Aug 2022 18:08:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068498;
-        bh=7LfGCkVyeoRC8AJERvMQ5FbN5wqrWZU+sE8GTZfe3iA=;
+        s=korg; t=1660068495;
+        bh=Du+LfgidnyUZQYmLnNKvCIdplUELRrxtwIDyhwydf1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mYY0jyTHDZWnXuysAtcWrbzqXSxUjWRwD8yrT3gkKCZrZjBcmZ7C9FsHU5nhClnAQ
-         9JGdx0vTHsxxYpbGN/i12wgwsafTvP485RdYNYV9AeJo96sqIRWpoBJRKAgD5BjE9P
-         wvzerabZ8nDdLmV6p7Ija5OqVNsfH2jj/cf/Z444=
+        b=ef88kDjgJrH2a+05EzCgCLs+xspHqOc+tLPWPShTpSw2RTRGUtVbm/ND1a9Cbmx+X
+         EJRMeEi4zEmjj1nV+g+wl06rEkKIeFtF3dOT6oAmccZOSJa1/sZkGuXdErFXJ7DWnp
+         uuNyJiqOrIwCYnBFoy9e8l3uvMAX/dwad+/wCdYU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sai Teja Aluvala <quic_saluvala@quicinc.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.19 09/21] Bluetooth: hci_qca: Return wakeup for qca_wakeup
-Date:   Tue,  9 Aug 2022 20:01:01 +0200
-Message-Id: <20220809175513.634063761@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Collingbourne <pcc@google.com>,
+        Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH 5.19 08/21] arm64: set UXN on swapper page tables
+Date:   Tue,  9 Aug 2022 20:01:00 +0200
+Message-Id: <20220809175513.603831926@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175513.345597655@linuxfoundation.org>
 References: <20220809175513.345597655@linuxfoundation.org>
@@ -50,31 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sai Teja Aluvala <quic_saluvala@quicinc.com>
+From: Peter Collingbourne <pcc@google.com>
 
-commit bde63e9effd3a6ba384707c62abe46c32d22f665 upstream.
+[ This issue was fixed upstream by accident in c3cee924bd85 ("arm64:
+  head: cover entire kernel image in initial ID map") as part of a
+  large refactoring of the arm64 boot flow. This simple fix is therefore
+  preferred for -stable backporting ]
 
-This fixes the return value of qca_wakeup(), since
-.wakeup work inversely with original .prevent_wake.
+On a system that implements FEAT_EPAN, read/write access to the idmap
+is denied because UXN is not set on the swapper PTEs. As a result,
+idmap_kpti_install_ng_mappings panics the kernel when accessing
+__idmap_kpti_flag. Fix it by setting UXN on these PTEs.
 
-Fixes: 4539ca67fe8ed (Bluetooth: Rename driver .prevent_wake to .wakeup)
-Signed-off-by: Sai Teja Aluvala <quic_saluvala@quicinc.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 18107f8a2df6 ("arm64: Support execute-only permissions with Enhanced PAN")
+Cc: <stable@vger.kernel.org> # 5.15
+Link: https://linux-review.googlesource.com/id/Ic452fa4b4f74753e54f71e61027e7222a0fae1b1
+Signed-off-by: Peter Collingbourne <pcc@google.com>
+Acked-by: Will Deacon <will@kernel.org>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Link: https://lore.kernel.org/r/20220719234909.1398992-1-pcc@google.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/hci_qca.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/include/asm/kernel-pgtable.h |    4 ++--
+ arch/arm64/kernel/head.S                |    2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/bluetooth/hci_qca.c
-+++ b/drivers/bluetooth/hci_qca.c
-@@ -1588,7 +1588,7 @@ static bool qca_wakeup(struct hci_dev *h
- 	wakeup = device_may_wakeup(hu->serdev->ctrl->dev.parent);
- 	bt_dev_dbg(hu->hdev, "wakeup status : %d", wakeup);
+--- a/arch/arm64/include/asm/kernel-pgtable.h
++++ b/arch/arm64/include/asm/kernel-pgtable.h
+@@ -103,8 +103,8 @@
+ /*
+  * Initial memory map attributes.
+  */
+-#define SWAPPER_PTE_FLAGS	(PTE_TYPE_PAGE | PTE_AF | PTE_SHARED)
+-#define SWAPPER_PMD_FLAGS	(PMD_TYPE_SECT | PMD_SECT_AF | PMD_SECT_S)
++#define SWAPPER_PTE_FLAGS	(PTE_TYPE_PAGE | PTE_AF | PTE_SHARED | PTE_UXN)
++#define SWAPPER_PMD_FLAGS	(PMD_TYPE_SECT | PMD_SECT_AF | PMD_SECT_S | PMD_SECT_UXN)
  
--	return !wakeup;
-+	return wakeup;
- }
+ #if ARM64_KERNEL_USES_PMD_MAPS
+ #define SWAPPER_MM_MMUFLAGS	(PMD_ATTRINDX(MT_NORMAL) | SWAPPER_PMD_FLAGS)
+--- a/arch/arm64/kernel/head.S
++++ b/arch/arm64/kernel/head.S
+@@ -285,7 +285,7 @@ SYM_FUNC_START_LOCAL(__create_page_table
+ 	subs	x1, x1, #64
+ 	b.ne	1b
  
- static int qca_regulator_init(struct hci_uart *hu)
+-	mov	x7, SWAPPER_MM_MMUFLAGS
++	mov_q	x7, SWAPPER_MM_MMUFLAGS
+ 
+ 	/*
+ 	 * Create the identity mapping.
 
 
