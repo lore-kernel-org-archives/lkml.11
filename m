@@ -2,85 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F046CC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 04:00:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F391C25B08
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 04:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234053AbiHIEAs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 00:00:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54176 "EHLO
+        id S233586AbiHIEGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 00:06:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231346AbiHIEAX (ORCPT
+        with ESMTP id S231277AbiHIEGR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 00:00:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7343E7A;
-        Mon,  8 Aug 2022 21:00:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 9 Aug 2022 00:06:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1EFC6BC18
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 21:06:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660017974;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ZjK0GuZ2alM35iqhgJkEaVdZNKEdFOR/rEWuzOn8N5o=;
+        b=IRm72Q3otQ10mZtg+MYqO93C/GgeNSO8iu8VIKaSr6KUJfBWPloTdVUXrGp0RfmwRCT5Ml
+        JcuRBGuZwV98LqREb/AonzrW79VV4ORRB4lLms+k2xypKPjW2R7LYeuPM96xbTJpGDQKnN
+        akgV23TXCFV7IYiyLxIa7LhrQ7qH2sk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-449-HpMhBOelPCOEFVO_l6NS2w-1; Tue, 09 Aug 2022 00:06:11 -0400
+X-MC-Unique: HpMhBOelPCOEFVO_l6NS2w-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D559B81190;
-        Tue,  9 Aug 2022 04:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 91DAAC433B5;
-        Tue,  9 Aug 2022 04:00:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660017614;
-        bh=0uHjm+KGcXAlJ7V6LXwNtiG4SVeDoNJSDLlk7EbtmWI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=h9pGFWPb+hUeNR7eRF3hmP03hcVneB+7HEaCkkxDhbfCeWuxgUPDoIOs9xJ8ANI6t
-         Uc0O3YbWZz9vT1PzadqJCQZp4UG3qu+iqHI3mCDLigXh+nIOa9ZlsUBzeWn2gIqDjz
-         CrZ/qsd28oJGfzAZJNv+MuxS6xvauIeTtLM7AJHjSBfykx8JSudfZiXP8sSCKW5bQW
-         f6pbwKZOhPWd2GlleTMcR9fwKx4CW//+/PocSzinSIkyi5TBuFcxLQlvSZcyaxfJVL
-         cvkDJ5uCKKFBgzzLT791fOpp3hDG/qiAOBWCTA8PbrO3jGXltAOqu9YeescmAv6prH
-         P5LEv0PVhg4KQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 753FAC43144;
-        Tue,  9 Aug 2022 04:00:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 46DF080391B;
+        Tue,  9 Aug 2022 04:06:10 +0000 (UTC)
+Received: from gshan.redhat.com (vpn2-54-20.bne.redhat.com [10.64.54.20])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D19482166B26;
+        Tue,  9 Aug 2022 04:06:05 +0000 (UTC)
+From:   Gavin Shan <gshan@redhat.com>
+To:     kvmarm@lists.cs.columbia.edu
+Cc:     kvm@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pbonzini@redhat.com, maz@kernel.org,
+        oliver.upton@linux.dev, andrew.jones@linux.dev, seanjc@google.com,
+        mathieu.desnoyers@efficios.com, fweimer@redhat.com,
+        yihyu@redhat.com, shan.gavin@gmail.com
+Subject: [PATCH 0/2] kvm/selftests: Two rseq_test fixes
+Date:   Tue,  9 Aug 2022 14:06:25 +0800
+Message-Id: <20220809060627.115847-1-gshan@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net/x25: fix call timeouts in blocking connects
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166001761447.6286.4599664715576942070.git-patchwork-notify@kernel.org>
-Date:   Tue, 09 Aug 2022 04:00:14 +0000
-References: <20220805061810.10824-1-ms@dev.tdt.de>
-In-Reply-To: <20220805061810.10824-1-ms@dev.tdt.de>
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-x25@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+There are two issues in current rseq_test implementation and the
+series intends to fix them:
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+- From glibc-2.35, rseq information is registered by TLS. It means
+  rseq_test is unable to register its own rseq information. PATCH[01]
+  fixes the issue by reuse TLS's rseq information if needed.
 
-On Fri,  5 Aug 2022 08:18:10 +0200 you wrote:
-> When a userspace application starts a blocking connect(), a CALL REQUEST
-> is sent, the t21 timer is started and the connect is waiting in
-> x25_wait_for_connection_establishment(). If then for some reason the t21
-> timer expires before any reaction on the assigned logical channel (e.g.
-> CALL ACCEPT, CLEAR REQUEST), there is sent a CLEAR REQUEST and timer
-> t23 is started waiting for a CLEAR confirmation. If we now receive a
-> CLEAR CONFIRMATION from the peer, x25_disconnect() is called in
-> x25_state2_machine() with reason "0", which means "normal" call
-> clearing. This is ok, but the parameter "reason" is used as sk->sk_err
-> in x25_disconnect() and sock_error(sk) is evaluated in
-> x25_wait_for_connection_establishment() to check if the call is still
-> pending. As "0" is not rated as an error, the connect will stuck here
-> forever.
-> 
-> [...]
+- sched_getcpu() relies on glibc's implementation and it can simply
+  returns the CPU ID cached in the rseq information. In this case,
+  it's pointless to compare the return value from sched_getcpu()
+  and that fetched from rseq information. PATCH[02] fixes the issue
+  by replacing sched_getcpu() with getcpu().
 
-Here is the summary with links:
-  - [net] net/x25: fix call timeouts in blocking connects
-    https://git.kernel.org/netdev/net/c/944e594cfa84
+Gavin Shan (2):
+  KVM: selftests: Make rseq compatible with glibc-2.35
+  KVM: selftests: Use getcpu() instead of sched_getcpu() in rseq_test
 
-You are awesome, thank you!
+ tools/testing/selftests/kvm/rseq_test.c | 62 ++++++++++++++++++-------
+ 1 file changed, 44 insertions(+), 18 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.23.0
 
