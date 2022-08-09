@@ -2,204 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE26C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 23:18:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3098C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 23:22:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229542AbiHIXSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 19:18:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36526 "EHLO
+        id S229595AbiHIXWN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 19:22:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiHIXSe (ORCPT
+        with ESMTP id S229480AbiHIXWL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 19:18:34 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E939461DBE
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 16:18:33 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1660087111;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=49BR0x796LXoJ0VhQzJr4EQaUub9aq/xCwbr1Uy7JZk=;
-        b=upJCVu7v+BJugzpD9dLKrlHgXZINP3F4S+n0ysjUqHvUEydbmm0eIPKWsP5p0UMnA3TYyH
-        +TFpc35CmLXz7Zg8bPXdY2HNbvHv9V5cG8hlJq810fL5ht2agyxpPQUAvFIz1Urjb+xdns
-        CKIiL30f1q5Yqqfx0BuWx/kq1HtO4dzYhG+is8WFtJd4T/iZNvM37U0aLrYWSyzHFyqbu3
-        ubnIRrHTbmv4USJZcZOrKP+xNMNthjC9I+IAgustXu0ndWmegF2hm0cf3lRQORkohEC/bP
-        60h3nPQznbkW82NmMmu3eft4UnNaRPF3b5nbNgw8rYyprug5eWwbRIM9V+W1Ig==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1660087111;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=49BR0x796LXoJ0VhQzJr4EQaUub9aq/xCwbr1Uy7JZk=;
-        b=bQ8bUaL+l2tqSf1Y2TuxxI63mBSDGryCDh4JjNRVoN/gw99rBKqmksnMfsljxFlPQnp9+R
-        0/q9xr9y5tx3tKAw==
-To:     Borislav Petkov <bp@alien8.de>, ira.weiny@intel.com
-Cc:     Rik van Riel <riel@surriel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>
-Subject: Re: [RFC PATCH 1/5] entry: Pass pt_regs to
- irqentry_exit_cond_resched()
-In-Reply-To: <YvDnkALyHl77R/Ug@zn.tnic>
-References: <20220805173009.3128098-1-ira.weiny@intel.com>
- <20220805173009.3128098-2-ira.weiny@intel.com> <YvDnkALyHl77R/Ug@zn.tnic>
-Date:   Wed, 10 Aug 2022 01:18:30 +0200
-Message-ID: <87fsi5qa49.ffs@tglx>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Tue, 9 Aug 2022 19:22:11 -0400
+Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DB06E89C;
+        Tue,  9 Aug 2022 16:22:10 -0700 (PDT)
+Received: by mail-io1-f52.google.com with SMTP id o2so10864200iof.8;
+        Tue, 09 Aug 2022 16:22:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:references:in-reply-to:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=WKgX6OwnJvslqRDDK7OwdRHlwGBrq/rnVAIRLno0eKk=;
+        b=rgHJxJmIuUW7b8nxO0USQv48D9yrBymKkBYeMvQhRDevk/YEcDYcJY2tfvnlBhPfoe
+         k83FJMxqS7redvl+uJQiM8Omwlzy7OFAtalgyT+BZpkuyx6Wl8ppELo1JGqJlmsZHIB6
+         8z3cKRvm1X7pr/mDFUvpMM7M+9cjR7Rbh/vUa+w/3xjh5HOpo4NE6lKm5TUehHzqKUhW
+         uARiP26eVvZTcUm9usx4Pc/3hJOESOBcr5wGfhP8Axhk9nbpwcR5b0H4t27oAEz+QE4f
+         wBBPSFRUQPatLgH/ZtpSNePiUb39JqqpONoIqRoRYod9uqMppE0Cedqt6bPRxlK49Tuc
+         ngxQ==
+X-Gm-Message-State: ACgBeo1IF9/sSqf11fP0Z+BOw+RfoFKnF+MNp+GIZZlTjzMlmEiDf8Sf
+        FnhNUqxwK976hU76JCS9dQ==
+X-Google-Smtp-Source: AA6agR5QFg4qxoRQtr79qrPZn1JaCwglNPErhIuT1Uu88akqQwP9BtBHPUYP4k7Bfn8OgjZ+21s6tA==
+X-Received: by 2002:a02:cc6d:0:b0:342:82b1:c73b with SMTP id j13-20020a02cc6d000000b0034282b1c73bmr11769610jaq.290.1660087329552;
+        Tue, 09 Aug 2022 16:22:09 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id j16-20020a056e020ef000b002df7e3c40fbsm1557389ilk.6.2022.08.09.16.22.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 16:22:08 -0700 (PDT)
+Received: (nullmailer pid 2675463 invoked by uid 1000);
+        Tue, 09 Aug 2022 23:22:06 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Daniel Parks <danielrparks@ti.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Tero Kristo <kristo@kernel.org>, linux-crypto@vger.kernel.org,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Nishanth Menon <nm@ti.com>
+In-Reply-To: <42d04e9ec43d10f978cee1dd974bbfdccf121d85.1659985696.git.danielrparks@ti.com>
+References: <cover.1659985696.git.danielrparks@ti.com> <42d04e9ec43d10f978cee1dd974bbfdccf121d85.1659985696.git.danielrparks@ti.com>
+Subject: Re: [RFC PATCH 1/6] dt-bindings: crypto: ti,sa2ul: add pka subdevice
+Date:   Tue, 09 Aug 2022 17:22:06 -0600
+Message-Id: <1660087326.225301.2675458.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 08 2022 at 12:38, Borislav Petkov wrote:
-> On Fri, Aug 05, 2022 at 10:30:05AM -0700, ira.weiny@intel.com wrote:
->> ---
->>  arch/arm64/include/asm/preempt.h |  2 +-
->>  arch/arm64/kernel/entry-common.c |  4 ++--
->>  arch/x86/entry/common.c          |  2 +-
->>  include/linux/entry-common.h     | 17 ++++++++------
->>  kernel/entry/common.c            | 13 +++++++----
->>  kernel/sched/core.c              | 40 ++++++++++++++++----------------
->>  6 files changed, 43 insertions(+), 35 deletions(-)
->
-> Why all this churn?
->
-> Why can't you add a parameter to irqentry_exit():
->
->   noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state, bool cond_resched);
->
-> and then have all callers except xen_pv_evtchn_do_upcall() pass in false
-> and this way have all exit paths end up in irqentry_exit()?
->
-> And, ofc, move the true case which is the body of
-> raw_irqentry_exit_cond_resched() to irqentry_exit() and then get rid of
-> former.
->
-> xen_pv_evtchn_do_upcall() will, ofc, do:
->
->         if (inhcall && !WARN_ON_ONCE(state.exit_rcu)) {
->                 irqentry_exit(regs, state, true);
->                 instrumentation_end();
->                 restore_inhcall(inhcall);
->         } else {
->                 instrumentation_end();
->                 irqentry_exit(regs, state, false);
->
+On Mon, 08 Aug 2022 14:12:50 -0500, Daniel Parks wrote:
+> The PKA (aka eip29t2) is a subdevice of the SA2UL on k3.
+> 
+> Signed-off-by: Daniel Parks <danielrparks@ti.com>
+> ---
+>  Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
 
-How is that less churn? Care to do:
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-    git grep 'irqentry_exit(' arch/
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml:68:1: [error] duplication of key "patternProperties" in mapping (key-duplicates)
 
-The real question is:
+dtschema/dtc warnings/errors:
+make[1]: *** Deleting file 'Documentation/devicetree/bindings/crypto/ti,sa2ul.example.dts'
+Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml:68:1: found duplicate key "patternProperties" with value "{}" (original value: "{}")
+make[1]: *** [Documentation/devicetree/bindings/Makefile:26: Documentation/devicetree/bindings/crypto/ti,sa2ul.example.dts] Error 1
+make[1]: *** Waiting for unfinished jobs....
+./Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml:68:1: found duplicate key "patternProperties" with value "{}" (original value: "{}")
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml: ignoring, error parsing file
+make: *** [Makefile:1404: dt_binding_check] Error 2
 
-    Why is it required that irqentry_exit_cond_resched() handles any of
-    the auxiliary pt regs space?
-    
-That's completely unanswered by the changelog and absolutely irrelevant
-for the problem at hand, i.e. storing the CPU number on irq/exception
-entry.
+doc reference errors (make refcheckdocs):
 
-    So why is this patch in this series at all?
+See https://patchwork.ozlabs.org/patch/
 
-But even for future purposes it is more than questionable. Why?
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
-Contrary to the claim of the changelog xen_pv_evtchn_do_upcall() is not
-really a bypass of irqentry_exit(). The point is:
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
-The hypercall is issued by the kernel from privcmd_ioctl_hypercall()
-which does:
+pip3 install dtschema --upgrade
 
-      xen_preemptible_hcall_begin();
-      hypercall();
-      xen_preemptible_hcall_end();
+Please check and re-submit.
 
-So any upcall from the hypervisor to the guest will semantically hit
-regular interrupt enabled guest kernel space which means that if that
-code would call irqentry_exit() then it would run through the kernel
-exit code path:
-
-	} else if (!regs_irqs_disabled(regs)) {
-
-		instrumentation_begin();
-		if (IS_ENABLED(CONFIG_PREEMPTION))
-			irqentry_exit_cond_resched();
-
-		/* Covers both tracing and lockdep */
-		trace_hardirqs_on();
-		instrumentation_end();
-       } ....
-
-Which would fail to invoke irqentry_exit_cond_resched() if
-CONFIG_PREEMPTION=n.  But the whole point of this exercise is to allow
-preemption from the upcall even when the kernel has CONFIG_PREEMPTION=n.
-
-Staring at this XENPV code there are two issues:
-
-  1) That code lacks a trace_hardirqs_on() after the call to
-     irqentry_exit_cond_resched(). My bad.
-
-  2) CONFIG_PREEMPT_DYNAMIC broke this mechanism.
-
-     If the static call/key is disabled then the call becomes a NOP.
-
-     Frederic?
-
-Both clearly demonstrate how well tested this XEN_PV muck is which means
-we should just delete it.
-
-Anyway. This wants the fix below.
-
-If there is still a need to do anything about this XEN cond_resched()
-muck for the PREEMPTION=n case for future auxregs usage then this can be
-simply hidden in this new XEN helper and does not need any change to the
-rest of the code.
-
-I doubt that this is required, but if so then there needs to be a very
-concise explanation and not just uncomprehensible hand waving word
-salad.
-
-Thanks,
-
-        tglx
----
---- a/arch/x86/entry/common.c
-+++ b/arch/x86/entry/common.c
-@@ -283,9 +283,18 @@ static __always_inline void restore_inhc
- {
- 	__this_cpu_write(xen_in_preemptible_hcall, inhcall);
- }
-+
-+static __always_inline void xenpv_irqentry_exit_cond_resched(void)
-+{
-+	instrumentation_begin();
-+	raw_irqentry_exit_cond_resched();
-+	trace_hardirqs_on();
-+	instrumentation_end();
-+}
- #else
- static __always_inline bool get_and_clear_inhcall(void) { return false; }
- static __always_inline void restore_inhcall(bool inhcall) { }
-+static __always_inline void xenpv_irqentry_exit_cond_resched(void) { }
- #endif
- 
- static void __xen_pv_evtchn_do_upcall(struct pt_regs *regs)
-@@ -306,11 +315,11 @@ static void __xen_pv_evtchn_do_upcall(st
- 
- 	instrumentation_begin();
- 	run_sysvec_on_irqstack_cond(__xen_pv_evtchn_do_upcall, regs);
-+	instrumentation_end();
- 
- 	inhcall = get_and_clear_inhcall();
- 	if (inhcall && !WARN_ON_ONCE(state.exit_rcu)) {
--		irqentry_exit_cond_resched();
--		instrumentation_end();
-+		xenpv_irqentry_exit_cond_resched();
- 		restore_inhcall(inhcall);
- 	} else {
- 		instrumentation_end();
