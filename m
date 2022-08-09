@@ -2,187 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E0BCC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:13:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E013C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343693AbiHISN3 (ORCPT
+        id S1345452AbiHISNc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:13:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54514 "EHLO
+        Tue, 9 Aug 2022 14:13:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345148AbiHISKE (ORCPT
+        with ESMTP id S1345792AbiHISLp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:10:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 003DB2A27D;
-        Tue,  9 Aug 2022 11:04:03 -0700 (PDT)
+        Tue, 9 Aug 2022 14:11:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434672B1A1;
+        Tue,  9 Aug 2022 11:04:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A643CCE18C6;
-        Tue,  9 Aug 2022 18:04:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6C5BC433B5;
-        Tue,  9 Aug 2022 18:03:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7706961070;
+        Tue,  9 Aug 2022 18:04:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE977C433D6;
+        Tue,  9 Aug 2022 18:04:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068239;
-        bh=cYQNhOoTlCgWZwWP7xAPmvtSkECzdZg+hySvuD5gb4U=;
-        h=From:To:Cc:Subject:Date:From;
-        b=aVFc+7CDs5cDNMvhEKR2+d6kMKmim4Clm52b35qnE5RbR5jXirtRE+EsRvjehIZjB
-         QQegZKsOmy5pWtGpCF2/aATELDl/6p9pm7DeCgJbtODljYvdAta66CNFE9UKBWZzGE
-         btdUnE6YlgNkCU4LyKR5099+SFV/ghNLDbPnCtxs=
+        s=korg; t=1660068289;
+        bh=S2xxbuptJ7V+bMWXdehtQv+Fi2QhUDp4XHIgVKjwTfM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0VLQxqus1+xsRqbvBsMZdCcgE7DdY0MfB9ildAqe1u2t02MT39/eP8Lj0zBARpdfL
+         xpDxAlF0rYiX7OqjRunfdrCoNV3hzizIzy2wGMivvQzeqMOYCQ3azBqVHsxssGX6cS
+         d54PCbHwY/7bKjiu5TNH+kJ3ncC36JHFIdbeur+c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.10 00/23] 5.10.136-rc1 review
-Date:   Tue,  9 Aug 2022 20:00:18 +0200
-Message-Id: <20220809175512.853274191@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Hutchings <ben@decadent.org.uk>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.15 01/30] x86/speculation: Make all RETbleed mitigations 64-bit only
+Date:   Tue,  9 Aug 2022 20:00:26 +0200
+Message-Id: <20220809175514.322531397@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-MIME-Version: 1.0
+In-Reply-To: <20220809175514.276643253@linuxfoundation.org>
+References: <20220809175514.276643253@linuxfoundation.org>
 User-Agent: quilt/0.66
 X-stable: review
 X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.136-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.10.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.10.136-rc1
-X-KernelTest-Deadline: 2022-08-11T17:55+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.10.136 release.
-There are 23 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Ben Hutchings <ben@decadent.org.uk>
 
-Responses should be made by Thu, 11 Aug 2022 17:55:02 +0000.
-Anything received after that time might be too late.
+commit b648ab487f31bc4c38941bc770ea97fe394304bb upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.136-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-and the diffstat can be found below.
+The mitigations for RETBleed are currently ineffective on x86_32 since
+entry_32.S does not use the required macros.  However, for an x86_32
+target, the kconfig symbols for them are still enabled by default and
+/sys/devices/system/cpu/vulnerabilities/retbleed will wrongly report
+that mitigations are in place.
 
-thanks,
+Make all of these symbols depend on X86_64, and only enable RETHUNK by
+default on X86_64.
 
-greg k-h
+Fixes: f43b9876e857 ("x86/retbleed: Add fine grained Kconfig knobs")
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/YtwSR3NNsWp1ohfV@decadent.org.uk
+[bwh: Backported to 5.10/5.15/5.18: adjust context]
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/Kconfig |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.10.136-rc1
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation: Add LFENCE to RSB fill sequence
-
-Daniel Sneddon <daniel.sneddon@linux.intel.com>
-    x86/speculation: Add RSB VM Exit protections
-
-Ning Qiang <sohu0106@126.com>
-    macintosh/adb: fix oob read in do_adb_query() function
-
-Hilda Wu <hildawu@realtek.com>
-    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x13D3:0x3586
-
-Hilda Wu <hildawu@realtek.com>
-    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x13D3:0x3587
-
-Hilda Wu <hildawu@realtek.com>
-    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x0CB8:0xC558
-
-Hilda Wu <hildawu@realtek.com>
-    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04C5:0x1675
-
-Hilda Wu <hildawu@realtek.com>
-    Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04CA:0x4007
-
-Aaron Ma <aaron.ma@canonical.com>
-    Bluetooth: btusb: Add support of IMC Networks PID 0x3568
-
-Hakan Jansson <hakan.jansson@infineon.com>
-    Bluetooth: hci_bcm: Add DT compatible for CYW55572
-
-Ahmad Fatoum <a.fatoum@pengutronix.de>
-    Bluetooth: hci_bcm: Add BCM4349B1 variant
-
-Raghavendra Rao Ananta <rananta@google.com>
-    selftests: KVM: Handle compiler optimizations in ucall
-
-Dmitry Klochkov <kdmitry556@gmail.com>
-    tools/kvm_stat: fix display of error when multiple processes are found
-
-GUO Zihua <guozihua@huawei.com>
-    crypto: arm64/poly1305 - fix a read out-of-bound
-
-Tony Luck <tony.luck@intel.com>
-    ACPI: APEI: Better fix to avoid spamming the console with old error logs
-
-Werner Sembach <wse@tuxedocomputers.com>
-    ACPI: video: Shortening quirk list by identifying Clevo by board_name only
-
-Werner Sembach <wse@tuxedocomputers.com>
-    ACPI: video: Force backlight native for some TongFang devices
-
-George Kennedy <george.kennedy@oracle.com>
-    tun: avoid double free in tun_free_netdev
-
-Jakub Sitnicki <jakub@cloudflare.com>
-    selftests/bpf: Check dst_port only on the client socket
-
-Jakub Sitnicki <jakub@cloudflare.com>
-    selftests/bpf: Extend verifier and bpf_sock tests for dst_port loads
-
-Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-    ath9k_htc: fix NULL pointer dereference at ath9k_htc_tx_get_packet()
-
-Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-    ath9k_htc: fix NULL pointer dereference at ath9k_htc_rxep()
-
-Ben Hutchings <ben@decadent.org.uk>
-    x86/speculation: Make all RETbleed mitigations 64-bit only
-
-
--------------
-
-Diffstat:
-
- Documentation/admin-guide/hw-vuln/spectre.rst      |   8 ++
- Makefile                                           |   4 +-
- arch/arm64/crypto/poly1305-glue.c                  |   2 +-
- arch/x86/Kconfig                                   |   8 +-
- arch/x86/include/asm/cpufeatures.h                 |   2 +
- arch/x86/include/asm/msr-index.h                   |   4 +
- arch/x86/include/asm/nospec-branch.h               |  21 +++-
- arch/x86/kernel/cpu/bugs.c                         |  86 +++++++++++-----
- arch/x86/kernel/cpu/common.c                       |  12 ++-
- arch/x86/kvm/vmx/vmenter.S                         |   8 +-
- drivers/acpi/apei/bert.c                           |  31 ++++--
- drivers/acpi/video_detect.c                        |  55 ++++++----
- drivers/bluetooth/btbcm.c                          |   2 +
- drivers/bluetooth/btusb.c                          |  15 +++
- drivers/bluetooth/hci_bcm.c                        |   2 +
- drivers/macintosh/adb.c                            |   2 +-
- drivers/net/tun.c                                  | 114 +++++++++++----------
- drivers/net/wireless/ath/ath9k/htc.h               |   2 +
- drivers/net/wireless/ath/ath9k/htc_drv_txrx.c      |  13 +++
- drivers/net/wireless/ath/ath9k/wmi.c               |   4 +
- tools/arch/x86/include/asm/cpufeatures.h           |   1 +
- tools/arch/x86/include/asm/msr-index.h             |   4 +
- tools/include/uapi/linux/bpf.h                     |   3 +-
- tools/kvm/kvm_stat/kvm_stat                        |   3 +-
- .../testing/selftests/bpf/prog_tests/sock_fields.c |  60 +++++++----
- .../testing/selftests/bpf/progs/test_sock_fields.c |  45 ++++++++
- tools/testing/selftests/bpf/verifier/sock.c        |  81 ++++++++++++++-
- tools/testing/selftests/kvm/lib/aarch64/ucall.c    |   9 +-
- 28 files changed, 451 insertions(+), 150 deletions(-)
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2427,7 +2427,7 @@ config RETPOLINE
+ config RETHUNK
+ 	bool "Enable return-thunks"
+ 	depends on RETPOLINE && CC_HAS_RETURN_THUNK
+-	default y
++	default y if X86_64
+ 	help
+ 	  Compile the kernel with the return-thunks compiler option to guard
+ 	  against kernel-to-user data leaks by avoiding return speculation.
+@@ -2436,21 +2436,21 @@ config RETHUNK
+ 
+ config CPU_UNRET_ENTRY
+ 	bool "Enable UNRET on kernel entry"
+-	depends on CPU_SUP_AMD && RETHUNK
++	depends on CPU_SUP_AMD && RETHUNK && X86_64
+ 	default y
+ 	help
+ 	  Compile the kernel with support for the retbleed=unret mitigation.
+ 
+ config CPU_IBPB_ENTRY
+ 	bool "Enable IBPB on kernel entry"
+-	depends on CPU_SUP_AMD
++	depends on CPU_SUP_AMD && X86_64
+ 	default y
+ 	help
+ 	  Compile the kernel with support for the retbleed=ibpb mitigation.
+ 
+ config CPU_IBRS_ENTRY
+ 	bool "Enable IBRS on kernel entry"
+-	depends on CPU_SUP_INTEL
++	depends on CPU_SUP_INTEL && X86_64
+ 	default y
+ 	help
+ 	  Compile the kernel with support for the spectre_v2=ibrs mitigation.
 
 
