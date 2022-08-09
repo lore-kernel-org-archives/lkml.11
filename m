@@ -2,101 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45FE7C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 05:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2958C25B0E
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 05:59:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233349AbiHIF5l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 01:57:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49902 "EHLO
+        id S235464AbiHIF7C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 01:59:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235430AbiHIF5h (ORCPT
+        with ESMTP id S235453AbiHIF6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 01:57:37 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFA91D319
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 22:57:34 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id by6so3565272ljb.11
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 22:57:34 -0700 (PDT)
+        Tue, 9 Aug 2022 01:58:55 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCE51D316
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 22:58:53 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id o2so8292530lfb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 22:58:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KINEf/W4t5TWaccuFrwzG0MR+MtGhaWK/ta0M81cluM=;
-        b=MxCoAZKOsuXIqZOJdYt2kNL0DAGOO+nQDd7odztJ2+5gsNxZnCkX0hZ39iiWe4fmLK
-         PN2XSwjFXHrcMXU+luitYQSbZ5Q7zc9xM2KEEnJy8QBJeG/t4n+4Po+gi2SVkWtV2YeL
-         D5RU1JXYfdqasVZAUfkhKy42hrG5a2OLT+4tT1maT9zrL2q8/eRFbrS4qpUw6YCvBxyq
-         jx1+rUoubhiq/HUcdhOdAs3aUAwcZAPntEr5nLTXQRaqphPM3VuxPoahYGAe2R8tTpi0
-         /vEUkpfKYZup9qfFFj7AdeLEaVgzmEevwrMuM47DwcqxpuHfscESOcNhjr/81UHXXMKX
-         iM8A==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZJBG39fDlqpaA1Zn84O39JgZL/7c6kJ0cMrFhlEKwFI=;
+        b=cF6DYtSQF0stJ1CklN9S6lnCCiKTvVh4l582v8zver+q5dkthBM2hDHFtqqgD3vpzv
+         VyEwIdYW9dFG+9eeHT5hzJXRCrBYr3v5e2c9a0+cXy2rG2ka9vgMgULDh9qqCg6dN8R2
+         vxfc41hPt2SkciLqQSsQjVKjg/dOTmcY0sfiRcJnGS8m++N3+ZjVZcOaof7Eid5qlopc
+         wFWYE2SNNvZkr3lNbHQIRcXnl7if5ziUXzhxctpa0yFcXZaEcvbc9Jq34vSiFPRcACmM
+         lASoM0i3qNBLOirpH47TuLVvU1gibZSdYdJuktGaJNi01R89TjrataCup3qdwaO4gkLf
+         6i6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=KINEf/W4t5TWaccuFrwzG0MR+MtGhaWK/ta0M81cluM=;
-        b=nybUdbUVCnHNhYGSBBKHE0itre7sw1fe1N5noeZkamjd1LGf6XyvwsmKzCy47qHw53
-         tasWhAHAkIJ1bqB/e90Bcoa4u9RNfCMm2QUd/JWrGlr+Up28ihAq3GyhfJ/IH62GqVeS
-         jx8lYdJNgRty9CtlG284HWaQlnw8W3Z8Vs5UFsgEmXD6QalPcCdmXyL80osc6Ecd0so1
-         gRw46rH2NwBXJdiIO0JtBYSJW8XIubzU2EO2UPyslHso0S/ducwE8pqVzgJ4oqIlD0xW
-         E0MCdpjj9peZ+19EYO3CRsCHzegclt8rSbY48rFVUil5joEkzmczF9gxbgYrm0QPQaA9
-         pKtw==
-X-Gm-Message-State: ACgBeo3TE2R7AC7xgwr6h90x+QmwqialbXykz+MXhsdSso5p5KclgjX6
-        HD5V+yExKbmY/52rPZvYcGWCCQ==
-X-Google-Smtp-Source: AA6agR7Tf8hS9GdPkMqpMPlR2hA5a+tL4eVunhSXBds31WlgEuQinLuKuMUhl7PB7BYl4BonmilNGg==
-X-Received: by 2002:a2e:93c8:0:b0:24d:b348:b070 with SMTP id p8-20020a2e93c8000000b0024db348b070mr7145942ljh.434.1660024652823;
-        Mon, 08 Aug 2022 22:57:32 -0700 (PDT)
-Received: from localhost.localdomain ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id w27-20020a05651c119b00b0025e01ee7229sm1558012ljo.54.2022.08.08.22.57.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 22:57:32 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] MAINTAINERS: ARM: marvell: include bindings
-Date:   Tue,  9 Aug 2022 08:57:29 +0300
-Message-Id: <20220809055729.19242-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        bh=ZJBG39fDlqpaA1Zn84O39JgZL/7c6kJ0cMrFhlEKwFI=;
+        b=Di/wzvjIy82/MjXiZzEsLuWCpUf4Se/5/gDS21AqM+wOzUzqtut83x/fid+EDqc+9q
+         3EAybvepPSi+WeoCigutezNI/GKf+TmtrB9J9IOwpTdE74I99rZpkFn5zI+Y73O9y1cN
+         0JdN63TcoGQUrLK0ldTpWgRoVRdwn/aU9BSJEI79iaCfNj+i63oZ6/4SDhCSsOLg1gbl
+         cpi87oiutIB3SOlP8yABAilYPLHXyfzjMkDhZamStM/Yr2YjjfiRjmntxuHw0hWcEdK2
+         WAmzqTd2bW3czbOn9Y9ONmXadMIPt306WmQA2s/AHCK/i9hbJrNJAIaqxAovZMqfPNLj
+         bNJg==
+X-Gm-Message-State: ACgBeo0rwNu7N6Cyzh4V2P0T29Iqdufv7Nf4VtKa1oxfZcVB4GKNVnCe
+        PEqRwh/S1SzE46kW29TCJ4uArA==
+X-Google-Smtp-Source: AA6agR7Y0wTdjv8S/L+wC/7ttd0yMMGYE/ktj9TQq6IRkdGMV2hIRNr5NbmqQ4cTi1fq6XauXxa44g==
+X-Received: by 2002:ac2:5f70:0:b0:48b:ca3:14d2 with SMTP id c16-20020ac25f70000000b0048b0ca314d2mr7189598lfc.41.1660024732351;
+        Mon, 08 Aug 2022 22:58:52 -0700 (PDT)
+Received: from [192.168.1.39] ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id t7-20020a05651c204700b0025e5a65afbbsm1550472ljo.120.2022.08.08.22.58.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Aug 2022 22:58:51 -0700 (PDT)
+Message-ID: <20a349c9-a479-ad5b-fe33-4758a773972e@linaro.org>
+Date:   Tue, 9 Aug 2022 08:58:50 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] dt-bindings: marvell: Update Armada 37xx platform
+ bindings
+Content-Language: en-US
+To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220713200123.22612-1-pali@kernel.org>
+ <20220808202352.iimhb2q6yawi35y6@pali>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220808202352.iimhb2q6yawi35y6@pali>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Include top-level Marvell bindings in Marvell maintainer entries.
+On 08/08/2022 23:23, Pali Rohár wrote:
+> PING?
+> 
+> On Wednesday 13 July 2022 22:01:23 Pali Rohár wrote:
+>> Distinguish between Armada 3700 family, Armada 3710 SoC and Armada 3720 SoC.
+>> Armada 3720 DB is name of the board with Armada 3720 SoC, so correctly
+>> indicate SoC in example.
+>>
+>> Signed-off-by: Pali Rohár <pali@kernel.org>
+>> ---
+>>  .../devicetree/bindings/arm/marvell/armada-37xx.txt        | 7 ++++++-
+>>  1 file changed, 6 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/arm/marvell/armada-37xx.txt b/Documentation/devicetree/bindings/arm/marvell/armada-37xx.txt
+>> index f6d6642d81c0..d2ca008de266 100644
+>> --- a/Documentation/devicetree/bindings/arm/marvell/armada-37xx.txt
+>> +++ b/Documentation/devicetree/bindings/arm/marvell/armada-37xx.txt
+>> @@ -4,6 +4,11 @@ Marvell Armada 37xx Platforms Device Tree Bindings
+>>  Boards using a SoC of the Marvell Armada 37xx family must carry the
+>>  following root node property:
+>>  
+>> + - compatible: must contain "marvell,armada3700"
+>> +
+>> +In addition, boards using the Marvell Armada 3710 SoC shall have the
+>> +following property before the previous one:
+>> +
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- MAINTAINERS | 3 +++
- 1 file changed, 3 insertions(+)
+The change is an ABI break, which looks reasonable, but still platform
+maintainer should comment on it. Especially on the aspect why the
+marvell,armada3710 fallback was chosen at the first place.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ee8f04918d44..b087994f8783 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2301,6 +2301,8 @@ M:	Gregory Clement <gregory.clement@bootlin.com>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gclement/mvebu.git
-+F:	Documentation/devicetree/bindings/arm/marvell/marvell,dove.txt
-+F:	Documentation/devicetree/bindings/arm/marvell/marvell,orion5x.txt
- F:	Documentation/devicetree/bindings/soc/dove/
- F:	arch/arm/boot/dts/dove*
- F:	arch/arm/boot/dts/orion5x*
-@@ -2317,6 +2319,7 @@ M:	Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gclement/mvebu.git
-+F:	Documentation/devicetree/bindings/arm/marvell/
- F:	arch/arm/boot/dts/armada*
- F:	arch/arm/boot/dts/kirkwood*
- F:	arch/arm/configs/mvebu_*_defconfig
--- 
-2.34.1
+Unfortunately none of Marvel folks were CCed here, so you will need to
+resend it. Otherwise no one will apply it, regardless of our ack.
 
+Best regards,
+Krzysztof
