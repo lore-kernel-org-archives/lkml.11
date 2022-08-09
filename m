@@ -2,169 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3D05C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23219C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:04:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240252AbiHIIB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 04:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47918 "EHLO
+        id S236964AbiHIIEc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 04:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240241AbiHIIBt (ORCPT
+        with ESMTP id S229963AbiHIIE3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 04:01:49 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B94B101;
-        Tue,  9 Aug 2022 01:01:48 -0700 (PDT)
-X-UUID: a81a8667ce8d4c8c8d6095012a684188-20220809
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=UnISrPZbEARL17mL/MeN88mOyzX08bBl1eKun0Gx6wc=;
-        b=JZy3ocpiccQ0nuEbZuIFKJG50qzjcbi9BVVcJ0y72eSQRWOv7ppbcHXusRMQeoL+bONY1EXCOslw3wOz0GeMmM4ziC3fQFCdM2BikTydafZ813E0FH5sf2IggkUSW4GY0zqBalzuPv+aR6qDZbryhLI+47NnI/obQrVupH42WHo=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.9,REQID:a4c6b259-979c-48da-ac6f-60f6ba1bab1a,OB:-327
-        68,LOB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:-32768,FILE:0,BULK:-32768
-        ,RULE:Release_Ham,ACTION:release,TS:0
-X-CID-META: VersionHash:3d8acc9,CLOUDID:c89e4eae-9535-44a6-aa9b-7f62b79b6ff6,C
-        OID:nil,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bul
-        k:nil,QS:nil,BEC:nil,COL:0
-X-UUID: a81a8667ce8d4c8c8d6095012a684188-20220809
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1257392279; Tue, 09 Aug 2022 16:01:35 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Tue, 9 Aug 2022 16:01:35 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Tue, 9 Aug 2022 16:01:35 +0800
-Message-ID: <76efe86bb6ffa2447fd68ea9f77d86712bf44662.camel@mediatek.com>
-Subject: Re: [PATCH v16 3/8] drm/mediatek: Add MT8195 Embedded DisplayPort
- driver
-From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
-To:     CK Hu <ck.hu@mediatek.com>,
-        "chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
-        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "daniel@ffwll.ch" <daniel@ffwll.ch>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "mripard@kernel.org" <mripard@kernel.org>,
-        "tzimmermann@suse.de" <tzimmermann@suse.de>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "deller@gmx.de" <deller@gmx.de>,
-        "airlied@linux.ie" <airlied@linux.ie>
-CC:     "msp@baylibre.com" <msp@baylibre.com>,
-        "granquet@baylibre.com" <granquet@baylibre.com>,
-        Jitao Shi =?UTF-8?Q?=28=E7=9F=B3=E8=AE=B0=E6=B6=9B=29?= 
-        <jitao.shi@mediatek.com>,
-        "wenst@chromium.org" <wenst@chromium.org>,
-        "angelogioacchino.delregno@collabora.com" 
-        <angelogioacchino.delregno@collabora.com>,
-        LiangXu Xu =?UTF-8?Q?=28=E5=BE=90=E4=BA=AE=29?= 
-        <LiangXu.Xu@mediatek.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
-        Project_Global_Chrome_Upstream_Group 
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Tue, 9 Aug 2022 16:01:33 +0800
-In-Reply-To: <575181dc6cdd1fcf391e840c0fcd5722b954a457.camel@mediatek.com>
-References: <20220805101459.3386-1-rex-bc.chen@mediatek.com>
-         <20220805101459.3386-4-rex-bc.chen@mediatek.com>
-         <575181dc6cdd1fcf391e840c0fcd5722b954a457.camel@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Tue, 9 Aug 2022 04:04:29 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526A8101
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 01:04:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Oa4idRH4opHSvrEGBh8PFBi1NgOPjrOcCMzNY1zf3fI=; b=X3qOEXcTyIvfa0X8utVuAQut8A
+        vp3PtHZDmJyZWtksujPyDFRS793XvV9UCqtI+3cpRpO9iWnwkt+yKf9NUQ8eaaKKdK/DyPbzJhDJm
+        QPA6FA7X80izxyNHOyy28oEvSKQjQwwR20YheOyXrtjFQifQWL39YFrxQw7jTmbMeNFS8N+h1eFHS
+        +slsmD9wXVFlQx1WW0IOi/bzviepqWBw0xILC/A2MPQatuswMELzIsCkkX8qqFP0HikEfmcp3xtgU
+        7h2tE7P0xKX6XNjYn+tGwJ0clp3vhYE8tUop54ZoTld7Rd+qZ/R5SVLrLGv1uRHAxEOYzYojQHMzl
+        nKe4pg1w==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oLKDn-002dIs-Tw; Tue, 09 Aug 2022 08:04:15 +0000
+Date:   Tue, 9 Aug 2022 01:04:15 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>,
+        Dave Airlie <airlied@gmail.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>,
+        Jiho Chu <jiho.chu@samsung.com>, Arnd Bergmann <arnd@arndb.de>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
+Subject: Re: New subsystem for acceleration devices
+Message-ID: <YvIU/wMdqFA1fYc6@infradead.org>
+References: <CAPM=9txSKv_xwZJ6SndtqsdQm6aK1KJVF91dB5Odhc_Xv6Qdrw@mail.gmail.com>
+ <CAFCwf10CsLgt+_qT7dT=8DVXsL0a=w=uXN6HC=CpP5EfitvLfQ@mail.gmail.com>
+ <YuvctaLwRi+z0Gw4@nvidia.com>
+ <CAFCwf12wD3uEhr+kxwN9ROXApHzGh_n1je5susZV5NgGR9fCcQ@mail.gmail.com>
+ <Yuxi1eRHPN36Or+1@nvidia.com>
+ <CAFCwf13QF_JdzNcpw==zzBoEQUYChMXfechotH31qmAfYZUGmg@mail.gmail.com>
+ <CAFCwf107tLxHKxkPqSRsOHVVp5s2tDEFOOy2oDZUz_KGmv-rDg@mail.gmail.com>
+ <YvCozvgodIY19LSr@kroah.com>
+ <YvFOEPdC9r8QBH11@nvidia.com>
+ <YvH9X5puer4jpzMX@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvH9X5puer4jpzMX@kroah.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-08-08 at 16:04 +0800, CK Hu wrote:
-> Hi, Bo-Chen:
-> 
-> On Fri, 2022-08-05 at 18:14 +0800, Bo-Chen Chen wrote:
-> > From: Markus Schneider-Pargmann <msp@baylibre.com>
-> > 
-> > This patch adds a embedded displayport driver for the MediaTek
-> > mt8195
-> > SoC.
-> > 
-> > It supports the MT8195, the embedded DisplayPort units. It offers
-> > DisplayPort 1.4 with up to 4 lanes.
-> > 
-> > The driver creates a child device for the phy. The child device
-> > will
-> > never exist without the parent being active. As they are sharing a
-> > register range, the parent passes a regmap pointer to the child so
-> > that
-> > both can work with the same register range. The phy driver sets
-> > device
-> > data that is read by the parent to get the phy device that can be
-> > used
-> > to control the phy properties.
-> > 
-> > This driver is based on an initial version by
-> > Jitao shi <jitao.shi@mediatek.com>
-> > 
-> > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> > Tested-by: AngeloGioacchino Del Regno <
-> > angelogioacchino.delregno@collabora.com>
-> > Reviewed-by: AngeloGioacchino Del Regno <
-> > angelogioacchino.delregno@collabora.com>
-> > ---
-> 
-> [snip]
-> 
-> > +
-> > +static enum drm_mode_status
-> > +mtk_dp_bridge_mode_valid(struct drm_bridge *bridge,
-> > +			 const struct drm_display_info *info,
-> > +			 const struct drm_display_mode *mode)
-> > +{
-> > +	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
-> > +	u32 rx_linkrate = (u32)mtk_dp->train_info.link_rate * 27000;
-> > +	u32 bpp = info->color_formats & DRM_COLOR_FORMAT_YCBCR422 ? 16
-> > : 24;
-> > +
-> > +	if (rx_linkrate * mtk_dp->train_info.lane_count < mode->clock *
-> > bpp / 8)
-> > +		return MODE_CLOCK_HIGH;
-> > +
-> > +	if (mode->clock > 600000)
-> 
-> If the clock has pass the linkrate and land_count limitation, the
-> clock
-> would be OK because the linkrate and lane_count is trained. Why need
-> to
-> check 600000?
-> 
-> Regards,
-> CK
-> 
+On Tue, Aug 09, 2022 at 08:23:27AM +0200, Greg Kroah-Hartman wrote:
+> Based on the number of drivers that I see submitted weekly that try to
+> restrict their open call to just one user by using atomic variables or
+> other tricks, I think my interpretation of this stands :)
 
-Hello CK,
+I think they really want what Jason described most of the time.  They
+just don't know about the pitfalls of dup yet.
 
-The condition above is enough to cover this.
-I will drop this check.
-
-BRs,
-Bo-Chen
-
-> > +		return MODE_CLOCK_HIGH;
-> > +
-> > +	return MODE_OK;
-> > +}
-> > +
+> > This is different from the number of FDs pointing at the struct file.
+> > Userpsace can open a HW state and point a lot of FDs at it, that is
+> > userspace's problem. From a kernel view they all share one struct file
+> > and thus one HW state.
 > 
-> 
+> Yes, that's fine, if that is what is happening here, I have no
+> objection.
 
+It would be great if we could actually life that into a common
+layer (chardev or vfs) given just how common this, and drivers tend
+to get it wrong, do it suboptimal so often.
