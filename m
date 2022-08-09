@@ -2,90 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC917C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:55:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3D2AC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244990AbiHISzc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:55:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60212 "EHLO
+        id S1343861AbiHIS5Y (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:57:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344944AbiHISzA (ORCPT
+        with ESMTP id S1348666AbiHIS4r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:55:00 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40FF81EC77;
-        Tue,  9 Aug 2022 11:25:21 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id q1-20020a05600c040100b003a52db97fffso4334655wmb.4;
-        Tue, 09 Aug 2022 11:25:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=iR1UBa3fcEjPoYYuaep1Tag2qx+Me802676/JFCG/W8=;
-        b=RlcBaeE0yFOKt3O5Rf1v8YGF4SMX/8chz8AFe0CRJN7MGoARW32+tIrBCiNfcH4/Zz
-         plzS9lCWLSIJh1z19JfG1VYGI9VfX3LhdVW5Xkwh6c3zoBMB9VW3GstRdAGnJBmpF7s9
-         HUke9IV6euF5A6DUD9fV/SHZ9M+yZ3s1El4xyd+VQ1Kad7rjTT40FPrmJqItsyRTsZlP
-         pd5SAPoi1VMuLTXxq++k/T2CTLLDkIe6RglpYABCXc0slfq8lbit6GY0V/8R5A3Tc+BG
-         njXZa0WIG9exg/dDCN1O9V9fbU7XuUXx1kQgkCJVMvS8Zac0rRoa/iS5LTStnhwqd1HD
-         WUYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=iR1UBa3fcEjPoYYuaep1Tag2qx+Me802676/JFCG/W8=;
-        b=iyntTRJ6MQPgSPD+fdYTkO8jd3oAydPMEiD/FtUjdkmuiVv0eUP6cT8xQrS2nWbkMq
-         Ei19ZxRgn+hU/kSNzeUcbdpeoaZR/yzjysUM0Hz2YKqDK/6iThFyZY3yUdZhu+rKdEmU
-         Wy59BE19SRy7E4k+goYwPVLD/BOIW5udxkKmLmfbtSDneVy1hjWIOezOmGIMOrA6H18b
-         Qn/CtJTHfBijVSWuXaEzGWgmspZVb1c0G8NEj7f7Vbbxi6haR50q/thsGxg2+BLA2orT
-         bTrah3PEJ//Z7+/2NTKsLF5DROts6/a1+hZ4jPbFDXe7N9yBxH2nKZaByzn0MxubQNyx
-         dBOw==
-X-Gm-Message-State: ACgBeo09P2iobFw3JK8MKPa5q8qJxvN95jh9igwhf4SUWwpNM2fVls6R
-        BmSyNZAjuKnbQ8Gub64YotE=
-X-Google-Smtp-Source: AA6agR7uXxer+8UdJWsF72Vp9SYWd/fJgbb6WwTEuzs97Thgx1Iz8Vl/nTOntrGu1D2zsxkDMxO+Ng==
-X-Received: by 2002:a05:600c:4e92:b0:3a3:2a1c:d005 with SMTP id f18-20020a05600c4e9200b003a32a1cd005mr21887281wmq.170.1660069519727;
-        Tue, 09 Aug 2022 11:25:19 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id m6-20020a05600c4f4600b003a4eea0aa48sm18153154wmq.0.2022.08.09.11.25.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 11:25:19 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Hannes Reinecke <hare@suse.com>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] scsi: aic79xx: make read-only array tok_list static const
-Date:   Tue,  9 Aug 2022 19:25:18 +0100
-Message-Id: <20220809182518.3046935-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        Tue, 9 Aug 2022 14:56:47 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2251D33401
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:28:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=09pFjKjYwkYQqB1IyTImm6ka5abGU9alMVjAe/qx3Mc=; b=kbuZJX6j7rQ/VQMU2C18Ft2vYJ
+        5k35U8ek35VZUQ3hRRuf3mfGLsJFoDL21FzQadEQBplksFab9YcAbORm0YKvlzItrrHKWJJ3gdBTD
+        AAEQgCa6ztbDnQDqpmXHwaNSkUeQ29paTR+Zbn2rAjT8hfMiuaoaLaY9ipgFA9Y+qsPcDeg5rMlJr
+        kWh6i9udbqDYw2w0hslEaq89izo/XZKxdhqzWh8T3H9uzH/+t7HnYlH6SRg4Y7eAbCCQOFZVM+rYQ
+        ADyKzTB0PPIpFhf98AvnNH+OUrUzX3TOaqLqcy7WKKUkiuq1dLf7LA+Xi4THxKAe6yBLQjkoVnI2I
+        O9hjLDfg==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oLTyE-005XPO-Di; Tue, 09 Aug 2022 18:28:50 +0000
+Message-ID: <98fe1c6d-9528-05b5-c603-fb4ae028a19c@infradead.org>
+Date:   Tue, 9 Aug 2022 11:28:47 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] Doc fix for dget_dlock
+Content-Language: en-US
+To:     Anup K Parikh <parikhanupk.foss@gmail.com>,
+        skhan@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org
+References: <Yu1HwVoTYOeaCh4v@autolfshost>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <Yu1HwVoTYOeaCh4v@autolfshost>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Don't populate the read-only array tok_list on the stack but instead make
-it static const. Also makes the object code a little smaller.
+Hi--
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/scsi/aic7xxx/aic79xx_osm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 8/5/22 09:39, Anup K Parikh wrote:
+> Removes the warning for dget_dlock in include/linux/dcache.h and
+> enables generation of its API documentation
+> 
+> Signed-off-by: Anup K Parikh <parikhanupk.foss@gmail.com>
+> ---
+>  include/linux/dcache.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/dcache.h b/include/linux/dcache.h
+> index f5bba5148..ce0b36f72 100644
+> --- a/include/linux/dcache.h
+> +++ b/include/linux/dcache.h
+> @@ -297,7 +297,7 @@ extern char *dentry_path(const struct dentry *, char *, int);
+>  /* Allocation counts.. */
+>  
+>  /**
+> - *	dget, dget_dlock -	get a reference to a dentry
+> + *	dget_dlock -	get a reference to a dentry
+>   *	@dentry: dentry to get a reference to
+>   *
+>   *	Given a dentry or %NULL pointer increment the reference count
 
-diff --git a/drivers/scsi/aic7xxx/aic79xx_osm.c b/drivers/scsi/aic7xxx/aic79xx_osm.c
-index 928099163f0f..4ed40e6c5522 100644
---- a/drivers/scsi/aic7xxx/aic79xx_osm.c
-+++ b/drivers/scsi/aic7xxx/aic79xx_osm.c
-@@ -1044,7 +1044,7 @@ ahd_parse_brace_option(char *opt_name, char *opt_arg, char *end, int depth,
- 	int      instance;
- 	int	 targ;
- 	int	 done;
--	char	 tok_list[] = {'.', ',', '{', '}', '\0'};
-+	static const char tok_list[] = {'.', ',', '{', '}', '\0'};
- 
- 	/* All options use a ':' name/arg separator */
- 	if (*opt_arg != ':')
+Someone was trying to document both dget() and get_dlock() with the same
+kernel-doc comment block.
+I suppose that you could duplicate the comments for dget() also.
+
+It would be nice to know the difference(s) in the functions as well.
+
+thanks.
 -- 
-2.35.3
-
+~Randy
