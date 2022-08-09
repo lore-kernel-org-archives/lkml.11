@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C05C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:07:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACFA1C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344973AbiHISHs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44020 "EHLO
+        id S245168AbiHISHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245168AbiHISHD (ORCPT
+        with ESMTP id S1344691AbiHISFK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:07:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B282286C9;
-        Tue,  9 Aug 2022 11:03:06 -0700 (PDT)
+        Tue, 9 Aug 2022 14:05:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573BC27CD0;
+        Tue,  9 Aug 2022 11:02:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BBFBB8171A;
-        Tue,  9 Aug 2022 18:03:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEAE5C433D7;
-        Tue,  9 Aug 2022 18:03:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0054D6109E;
+        Tue,  9 Aug 2022 18:02:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 687CAC43141;
+        Tue,  9 Aug 2022 18:02:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068184;
-        bh=wRLfI31WrZ59IkEj+z6Z5ZZev9x2pVNmX2cjKkCxs74=;
+        s=korg; t=1660068144;
+        bh=8aF3FxV/ALEBr6GIZ3WgB/THrpqRvHOI1d3gzgitkjs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1iIU4bggJNWtjqOccjNZ01lAY8fJ/etxgtu4quSna9I+rHERwpUXZh0sgG8l9QzGb
-         3gQKR/U7eMAJYKQXR18luYyevhFg9iQciheAtqpg6Mw4/d513PpF76042Sci793GMa
-         pxXR9jp/fM8LFPg4+5a5HynLBQiewtGT76gB1aPE=
+        b=QuHklywIiSRiB/Wrhjyq+TiXyOVZoSvXR1BAAVG5G1j+vk5k4LEYZpnukt0INoIN1
+         BTW1Rl9P6fCHU7jgsJIm1kZ8BapLtfaObwTDr+WgChx5Evs+vHi27S7P7so+pI2MTR
+         Dhe4lan25Ly6+wTK6aCvDLs+CC32zx91zx9AKzRw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ricardo Koller <ricarkol@google.com>,
-        Reiji Watanabe <reijiw@google.com>,
-        Raghavendra Rao Ananta <rananta@google.com>,
-        Andrew Jones <drjones@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 11/15] selftests: KVM: Handle compiler optimizations in ucall
-Date:   Tue,  9 Aug 2022 20:00:29 +0200
-Message-Id: <20220809175510.695751738@linuxfoundation.org>
+Subject: [PATCH 4.19 17/32] tcp: Fix a data-race around sysctl_tcp_invalid_ratelimit.
+Date:   Tue,  9 Aug 2022 20:00:08 +0200
+Message-Id: <20220809175513.631737701@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220809175510.312431319@linuxfoundation.org>
-References: <20220809175510.312431319@linuxfoundation.org>
+In-Reply-To: <20220809175513.082573955@linuxfoundation.org>
+References: <20220809175513.082573955@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,59 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Raghavendra Rao Ananta <rananta@google.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 9e2f6498efbbc880d7caa7935839e682b64fe5a6 ]
+[ Upstream commit 2afdbe7b8de84c28e219073a6661080e1b3ded48 ]
 
-The selftests, when built with newer versions of clang, is found
-to have over optimized guests' ucall() function, and eliminating
-the stores for uc.cmd (perhaps due to no immediate readers). This
-resulted in the userspace side always reading a value of '0', and
-causing multiple test failures.
+While reading sysctl_tcp_invalid_ratelimit, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-As a result, prevent the compiler from optimizing the stores in
-ucall() with WRITE_ONCE().
-
-Suggested-by: Ricardo Koller <ricarkol@google.com>
-Suggested-by: Reiji Watanabe <reijiw@google.com>
-Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
-Message-Id: <20220615185706.1099208-1-rananta@google.com>
-Reviewed-by: Andrew Jones <drjones@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 032ee4236954 ("tcp: helpers to mitigate ACK loops by rate-limiting out-of-window dupacks")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/kvm/lib/aarch64/ucall.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ net/ipv4/tcp_input.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/kvm/lib/aarch64/ucall.c b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-index 6cd91970fbad..3b2a426070c4 100644
---- a/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-+++ b/tools/testing/selftests/kvm/lib/aarch64/ucall.c
-@@ -73,20 +73,19 @@ void ucall_uninit(struct kvm_vm *vm)
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 04788bd5e82c..38412d93400a 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3420,7 +3420,8 @@ static bool __tcp_oow_rate_limited(struct net *net, int mib_idx,
+ 	if (*last_oow_ack_time) {
+ 		s32 elapsed = (s32)(tcp_jiffies32 - *last_oow_ack_time);
  
- void ucall(uint64_t cmd, int nargs, ...)
- {
--	struct ucall uc = {
--		.cmd = cmd,
--	};
-+	struct ucall uc = {};
- 	va_list va;
- 	int i;
- 
-+	WRITE_ONCE(uc.cmd, cmd);
- 	nargs = nargs <= UCALL_MAX_ARGS ? nargs : UCALL_MAX_ARGS;
- 
- 	va_start(va, nargs);
- 	for (i = 0; i < nargs; ++i)
--		uc.args[i] = va_arg(va, uint64_t);
-+		WRITE_ONCE(uc.args[i], va_arg(va, uint64_t));
- 	va_end(va);
- 
--	*ucall_exit_mmio_addr = (vm_vaddr_t)&uc;
-+	WRITE_ONCE(*ucall_exit_mmio_addr, (vm_vaddr_t)&uc);
- }
- 
- uint64_t get_ucall(struct kvm_vm *vm, uint32_t vcpu_id, struct ucall *uc)
+-		if (0 <= elapsed && elapsed < net->ipv4.sysctl_tcp_invalid_ratelimit) {
++		if (0 <= elapsed &&
++		    elapsed < READ_ONCE(net->ipv4.sysctl_tcp_invalid_ratelimit)) {
+ 			NET_INC_STATS(net, mib_idx);
+ 			return true;	/* rate-limited: don't send yet! */
+ 		}
 -- 
 2.35.1
 
