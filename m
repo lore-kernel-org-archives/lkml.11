@@ -2,99 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89A22C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:54:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9383C25B07
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:58:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234542AbiHIGyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 02:54:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58538 "EHLO
+        id S236007AbiHIG6y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 02:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbiHIGyh (ORCPT
+        with ESMTP id S232502AbiHIG6v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 02:54:37 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49661201BD
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 23:54:36 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M23dV0PqZzlVqJ;
-        Tue,  9 Aug 2022 14:51:42 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 9 Aug 2022 14:54:33 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
- (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 9 Aug
- 2022 14:54:32 +0800
-From:   Zhihao Cheng <chengzhihao1@huawei.com>
-To:     <richard@nod.at>, <miquel.raynal@bootlin.com>, <vigneshr@ti.com>,
-        <s.hauer@pengutronix.de>, <arne.edholm@axis.com>
-CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>
-Subject: [PATCH] ubi: fastmap: Fix missed fm_anchor PEB in wear-leveling after disabling fastmap
-Date:   Tue, 9 Aug 2022 15:06:19 +0800
-Message-ID: <20220809070619.1565447-1-chengzhihao1@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 9 Aug 2022 02:58:51 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318801CB00;
+        Mon,  8 Aug 2022 23:58:49 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R591e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0VLov6Aw_1660028320;
+Received: from B-LB6YLVDL-0141.local(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VLov6Aw_1660028320)
+          by smtp.aliyun-inc.com;
+          Tue, 09 Aug 2022 14:58:41 +0800
+Subject: Re: [PATCH V5 0/6] RISC-V fixups to work with crash tool
+To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, anup@brainfault.org, heiko@sntech.de,
+        guoren@kernel.org, mick@ics.forth.gr,
+        alexandre.ghiti@canonical.com, bhe@redhat.com, vgoyal@redhat.com,
+        dyoung@redhat.com, corbet@lwn.net, Conor.Dooley@microchip.com
+Cc:     kexec@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        crash-utility@redhat.com, huanyi.xj@alibaba-inc.com,
+        heinrich.schuchardt@canonical.com, k-hagio-ab@nec.com,
+        hschauhan@nulltrace.org, yixun.lan@gmail.com
+References: <20220802121818.2201268-1-xianting.tian@linux.alibaba.com>
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+Message-ID: <b79ab47e-a1e2-eb21-0611-bcbc8b7802c5@linux.alibaba.com>
+Date:   Tue, 9 Aug 2022 14:58:40 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+In-Reply-To: <20220802121818.2201268-1-xianting.tian@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After disabling fastmap(ubi->fm_disabled = 1), fastmap won't be updated,
-fm_anchor PEB is missed being scheduled for erasing. Besides, fm_anchor
-PEB may have smallest erase count, it doesn't participate wear-leveling.
-The difference of erase count between fm_anchor PEB and other PEBs will
-be larger and larger later on.
+Hi Palmer
 
-In which situation fastmap can be disabled? Initially, we have an UBI
-image with fastmap. Then the image will be atttached without module
-parameter 'fm_autoconvert', ubi turns to full scanning mode in one
-random attaching process(eg. bad fastmap caused by powercut), ubi
-fastmap is disabled since then.
+Could you please help review this patch set?  thanks.
 
-Fix it by not getting fm_anchor if fastmap is disabled in
-ubi_refill_pools().
+Crash-utility patch set is ready(acked by HAGIO KAZUHITO), now waiting 
+the kernel patch set merged firstly.
 
-Fetch a reproducer in [Link].
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216341
-Fixes: 4b68bf9a69d22d ("ubi: Select fastmap anchor PEBs considering ...")
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
----
- drivers/mtd/ubi/fastmap-wl.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/mtd/ubi/fastmap-wl.c b/drivers/mtd/ubi/fastmap-wl.c
-index 0ee452275578..863f571f1adb 100644
---- a/drivers/mtd/ubi/fastmap-wl.c
-+++ b/drivers/mtd/ubi/fastmap-wl.c
-@@ -146,13 +146,15 @@ void ubi_refill_pools(struct ubi_device *ubi)
- 	if (ubi->fm_anchor) {
- 		wl_tree_add(ubi->fm_anchor, &ubi->free);
- 		ubi->free_count++;
-+		ubi->fm_anchor = NULL;
- 	}
- 
--	/*
--	 * All available PEBs are in ubi->free, now is the time to get
--	 * the best anchor PEBs.
--	 */
--	ubi->fm_anchor = ubi_wl_get_fm_peb(ubi, 1);
-+	if (!ubi->fm_disabled)
-+		/*
-+		 * All available PEBs are in ubi->free, now is the time to get
-+		 * the best anchor PEBs.
-+		 */
-+		ubi->fm_anchor = ubi_wl_get_fm_peb(ubi, 1);
- 
- 	for (;;) {
- 		enough = 0;
--- 
-2.31.1
-
+在 2022/8/2 下午8:18, Xianting Tian 写道:
+> I ever sent the patch 1 in the link:
+> https://patchwork.kernel.org/project/linux-riscv/patch/20220708073150.352830-3-xianting.tian@linux.alibaba.com/
+> And patch 2,3 in the link:
+> https://patchwork.kernel.org/project/linux-riscv/patch/20220714113300.367854-2-xianting.tian@linux.alibaba.com/
+> https://patchwork.kernel.org/project/linux-riscv/patch/20220714113300.367854-3-xianting.tian@linux.alibaba.com/
+>
+> This patch set just put these patches together, and with three new patch 4, 5, 6.
+> these six patches are the fixups for machine_kexec, kernel mode PC for vmcore
+> and improvements for vmcoreinfo, memory layout dump and fixup chedule out issue
+> in machine_crash_shutdown().
+>
+> The main changes in the six patchs as below,
+> Patch 1: use __smp_processor_id() instead of smp_processor_id() to cleanup
+>           the console prints.
+> Patch 2: Add VM layout, va bits, ram base to vmcoreinfo, which can simplify
+>           the development of crash tool as ARM64 already did
+>           (arch/arm64/kernel/crash_core.c).
+> Patch 3: Add modules to virtual kernel memory layout dump.
+> Patch 4: Fixup to get correct kernel mode PC for vmcore.
+> Patch 5: Updates vmcoreinfo.rst.
+> Patch 6: Fixup schedule out issue in machine_crash_shutdown()
+>
+> With these six patches(patch 2 is must), crash tool can work well to analyze
+> a vmcore. The patches for crash tool for RISCV64 is in the link:
+> https://lore.kernel.org/linux-riscv/20220801043040.2003264-1-xianting.tian@linux.alibaba.com/
+>
+> ------
+> Changes v1 -> v2:
+>   1, remove the patch "Add a fast call path of crash_kexec()" from this series
+>   of patches, as it already applied to riscv git.
+>   https://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git/commit/?h=for-next&id=3f1901110a89b0e2e13adb2ac8d1a7102879ea98
+>   2, add 'Reviewed-by' based on the comments of v1.
+> Changes v2 -> v3:
+>   use "riscv" instead of "riscv64" in patch 5 subject line.
+> Changes v3 -> v4:
+>   use "riscv" instead of "riscv64" in the summary of patch 5 subject line.
+> Changes v4 -> v5:
+>   add a new patch "RISC-V: Fixup schedule out issue in machine_crash_shutdown()"
+>
+> Xianting Tian (6):
+>    RISC-V: use __smp_processor_id() instead of smp_processor_id()
+>    RISC-V: Add arch_crash_save_vmcoreinfo support
+>    riscv: Add modules to virtual kernel memory layout dump
+>    RISC-V: Fixup getting correct current pc
+>    riscv: crash_core: Export kernel vm layout, phys_ram_base
+>    RISC-V: Fixup schedule out issue in machine_crash_shutdown()
+>
+>   .../admin-guide/kdump/vmcoreinfo.rst          | 31 +++++++++++++++++++
+>   arch/riscv/kernel/Makefile                    |  1 +
+>   arch/riscv/kernel/crash_core.c                | 29 +++++++++++++++++
+>   arch/riscv/kernel/crash_save_regs.S           |  2 +-
+>   arch/riscv/kernel/machine_kexec.c             | 28 ++++++++++++++---
+>   arch/riscv/mm/init.c                          |  4 +++
+>   6 files changed, 89 insertions(+), 6 deletions(-)
+>   create mode 100644 arch/riscv/kernel/crash_core.c
+>
