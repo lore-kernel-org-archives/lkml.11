@@ -2,327 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35544C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BACE9C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344039AbiHITH1 (ORCPT
+        id S1345195AbiHITHb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 15:07:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38592 "EHLO
+        Tue, 9 Aug 2022 15:07:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345971AbiHITGP (ORCPT
+        with ESMTP id S1348221AbiHITGc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 15:06:15 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67CC109;
-        Tue,  9 Aug 2022 11:46:31 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b9800329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9800:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D0E8D1EC050F;
-        Tue,  9 Aug 2022 20:46:25 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1660070786;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=isELGFuYHhfnrRtAt5/XPB2ebAau9OPRcs9FGy+PSbc=;
-        b=Hxoy+RtUpZ/w/UKftVYnwLRTTT0rEO7w8pYKPx9or6CQWCQH0qQjzSfKfbPURvIEIsVqPP
-        IXktObR7fQ+e4BG30rhKCFGcrGZTja01CZssG0krf7ZO9o0168V41Bc0DgGnklW3UYFVIU
-        sm1NJr378G8BI4o3uC4D44Y2gJH2jqo=
-Date:   Tue, 9 Aug 2022 20:46:22 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Justin He <Justin.He@arm.com>
-Cc:     "Kani, Toshi" <toshi.kani@hpe.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, James Morse <James.Morse@arm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Shuai Xue <xueshuai@linux.alibaba.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:EDAC-CORE" <linux-edac@vger.kernel.org>
-Subject: Re: =?utf-8?B?5Zue5aSNOiBbUEFUQ0hdIEFDUEk=?= =?utf-8?Q?=3A?= APEI:
- move edac_init ahead of ghes platform drv register
-Message-ID: <YvKrfqAsVLUqW5PN@zn.tnic>
-References: <PH7PR84MB1838379B8C2DF488DE729A9182639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
- <YvF4p01WJGGUwIJC@zn.tnic>
- <PH7PR84MB1838492812F5ABAA4BB54D9982639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
- <YvF+J/dfyOEVSbSQ@zn.tnic>
- <PH7PR84MB1838BF4F8B56EF1E24FCF1DC82639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
- <YvIPf/m3hU46S9Ik@zn.tnic>
- <DBBPR08MB4538A5C080B09A96A77CCDA9F7629@DBBPR08MB4538.eurprd08.prod.outlook.com>
- <YvJB5cxSldpigw1g@zn.tnic>
- <DBBPR08MB453870FA5C5D26AADFDF05C7F7629@DBBPR08MB4538.eurprd08.prod.outlook.com>
- <YvKWP2BcAh/+YKXM@zn.tnic>
+        Tue, 9 Aug 2022 15:06:32 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA0126103
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:49:12 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id z19so12165054plb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 11:49:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=wxjpe2mRFKGT8P+j55tH9VVKtl0m60jJkcmkH27O1X0=;
+        b=rX510oQLQTQgYsGfs52YJ2Pqzej/cCIfJYbCr+UQ7zuyxHrUImZc/1D2IXbhA+aWx4
+         9ge6y085uD4FX3x7eFej+7Wfiu/9UE6M8cKl1AZ7b1woItJw1DTyOfb17t1gAJCHJWiX
+         XBUd1WphWCmHL+RKY/E7NPEwAW7cTRIzLyIAN7OhCa/v5kjBMeOvUr8AERC1w0NLbbPr
+         FBeq+0hDfjgwUYmbeQON/xFV+3wDb8QB1Ud5hLy4MAoHhYLZ1JR+FEGRn9rtQ7FsJdeU
+         hk5WVgwL1ms9QyE9I48mldDcHNg4cYxgyDbihYQqBTxsXBLM/vkb0CTXBPBi2lEQb5Ga
+         lfdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=wxjpe2mRFKGT8P+j55tH9VVKtl0m60jJkcmkH27O1X0=;
+        b=VZYqL29pDyL3hPKulQ1DHh4BGk2xWA3GLB7QxDXYO1mcJQpniR4XIGhu2SYk71yAMV
+         mwDma+pPze/V8YMx3f30PA0FbMB6VbnIRfTXl0+hGXRyIK+RVMIGkcnjZMz2On+If1yX
+         6nPQxZmdeyKx8cJS6dGXZo67403U7IN8RAh8aiyWBuqcwPdu66po24mZu/dYGLbAYX0j
+         bwPbXwYdZx3kSAW5SW44zLp1yj5YZRz+BtUVpBMxq5zvnNqfs2yTX8dJuFAdy4WiMrvL
+         Hvpj/J3XAtAZaHnJgnt+nLy69u3+FFb5Vx2rAi50HLJfqS87QEJ/FqzSxcbsk0yE2+qj
+         Qj/A==
+X-Gm-Message-State: ACgBeo3r9tjzUe51lsSERpRo6yxVvRQzQ6JKlKVesF6jBSkaP6OGcdUS
+        LqJsKOEMl6UPENf5bAlts7c3VA==
+X-Google-Smtp-Source: AA6agR7V/N6oONYQ68gqg6oMgkl+qhMG1P6S21y/lICvQ32LYHpb4CDM+tIsSE+rHs9qxpl3WUxl2A==
+X-Received: by 2002:a17:90a:7aca:b0:1f1:ff59:fe7e with SMTP id b10-20020a17090a7aca00b001f1ff59fe7emr27772289pjl.11.1660070951915;
+        Tue, 09 Aug 2022 11:49:11 -0700 (PDT)
+Received: from google.com (238.76.127.34.bc.googleusercontent.com. [34.127.76.238])
+        by smtp.gmail.com with ESMTPSA id l9-20020a170903120900b0016bfbd99f64sm11331143plh.118.2022.08.09.11.49.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 11:49:11 -0700 (PDT)
+Date:   Tue, 9 Aug 2022 18:49:07 +0000
+From:   Carlos Llamas <cmllamas@google.com>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        syzbot <syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        Minchan Kim <minchan@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Martijn Coenen <maco@android.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Todd Kjos <tkjos@android.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>
+Subject: Re: [PATCH] binder_alloc: Add missing mmap_lock calls when using the
+ VMA
+Message-ID: <YvKsI5pMbgQ5Irup@google.com>
+References: <20220809160618.1052539-1-Liam.Howlett@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YvKWP2BcAh/+YKXM@zn.tnic>
+In-Reply-To: <20220809160618.1052539-1-Liam.Howlett@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 09, 2022 at 07:15:43PM +0200, Borislav Petkov wrote:
-> Yes, I think you do. Lemme write something and you can finish it/test
-> it.
+On Tue, Aug 09, 2022 at 04:06:31PM +0000, Liam Howlett wrote:
+> Take the mmap_read_lock() when using the VMA in
+> binder_alloc_print_pages() and when checking for a VMA in
+> binder_alloc_new_buf_locked().
+> 
+> It is worth noting binder_alloc_new_buf_locked() drops the VMA read lock
+> after it verifies a VMA exists, but may be taken again deeper in the
+> call stack, if necessary.
+> 
+> Reported-by: Ondrej Mosnacek <omosnace@redhat.com>
+> Reported-by: syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.com
+> Fixes: a43cfc87caaf (android: binder: stop saving a pointer to the VMA)
+> Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+> ---
+>  drivers/android/binder_alloc.c | 29 +++++++++++++++++++----------
+>  1 file changed, 19 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/android/binder_alloc.c b/drivers/android/binder_alloc.c
+> index f555eebceef6..c23cad7fe313 100644
+> --- a/drivers/android/binder_alloc.c
+> +++ b/drivers/android/binder_alloc.c
+> @@ -395,12 +395,15 @@ static struct binder_buffer *binder_alloc_new_buf_locked(
+>  	size_t size, data_offsets_size;
+>  	int ret;
+>  
+> +	mmap_read_lock(alloc->vma_vm_mm);
+>  	if (!binder_alloc_get_vma(alloc)) {
+> +		mmap_read_unlock(alloc->vma_vm_mm);
+>  		binder_alloc_debug(BINDER_DEBUG_USER_ERROR,
+>  				   "%d: binder_alloc_buf, no vma\n",
+>  				   alloc->pid);
+>  		return ERR_PTR(-ESRCH);
+>  	}
+> +	mmap_read_unlock(alloc->vma_vm_mm);
+>  
+>  	data_offsets_size = ALIGN(data_size, sizeof(void *)) +
+>  		ALIGN(offsets_size, sizeof(void *));
+> @@ -922,17 +925,23 @@ void binder_alloc_print_pages(struct seq_file *m,
+>  	 * Make sure the binder_alloc is fully initialized, otherwise we might
+>  	 * read inconsistent state.
+>  	 */
+> -	if (binder_alloc_get_vma(alloc) != NULL) {
+> -		for (i = 0; i < alloc->buffer_size / PAGE_SIZE; i++) {
+> -			page = &alloc->pages[i];
+> -			if (!page->page_ptr)
+> -				free++;
+> -			else if (list_empty(&page->lru))
+> -				active++;
+> -			else
+> -				lru++;
+> -		}
+> +
+> +	mmap_read_lock(alloc->vma_vm_mm);
+> +	if (binder_alloc_get_vma(alloc) == NULL)
+> +		goto uninitialized;
+> +
+> +	for (i = 0; i < alloc->buffer_size / PAGE_SIZE; i++) {
 
-Here's something to only show what I'm thinking of. It doesn't build
-because of:
+do we need to hold on to the lock while we loop through the pages here?
 
-drivers/acpi/apei/ghes.c: In function ‘ghes_do_proc’:
-drivers/acpi/apei/ghes.c:651:25: error: implicit declaration of function ‘ghes_edac_report_mem_error’; did you mean ‘arch_apei_report_mem_error’? [-Werror=implicit-function-declaration]
-  651 |                         ghes_edac_report_mem_error(sev, mem_err);
-
-
-and that needs more thinking what to do. My idea currently is to do a
-notifier like we do for MCA...
-
-And I'm not really happy about returning a list of ghes devices just so
-ghes_edac instances can get their struct device * pointers. Maybe we'll
-think of something better.
-
-But this is the general goal: not call module code from builtin code -
-i.e., call ghes_edac.c code from ghes.c. It works now because ghes_edac
-is forced builtin which is ugly as hell.
-
-Anyway, enough for today...
-
----
-diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
-index d91ad378c00d..0919317b8313 100644
---- a/drivers/acpi/apei/ghes.c
-+++ b/drivers/acpi/apei/ghes.c
-@@ -118,6 +118,9 @@ module_param_named(disable, ghes_disable, bool, 0);
- static LIST_HEAD(ghes_hed);
- static DEFINE_MUTEX(ghes_list_mutex);
- 
-+static LIST_HEAD(ghes_devs);
-+static DEFINE_MUTEX(ghes_devs_mutex);
-+
- /*
-  * Because the memory area used to transfer hardware error information
-  * from BIOS to Linux can be determined only in NMI, IRQ or timer
-@@ -1376,7 +1379,11 @@ static int ghes_probe(struct platform_device *ghes_dev)
- 
- 	platform_set_drvdata(ghes_dev, ghes);
- 
--	ghes_edac_register(ghes, &ghes_dev->dev);
-+	ghes->dev = &ghes_dev->dev;
-+
-+	mutex_lock(&ghes_devs_mutex);
-+	list_add_tail(&ghes->elist, &ghes_devs);
-+	mutex_unlock(&ghes_devs_mutex);
- 
- 	/* Handle any pending errors right away */
- 	spin_lock_irqsave(&ghes_notify_lock_irq, flags);
-@@ -1440,8 +1447,6 @@ static int ghes_remove(struct platform_device *ghes_dev)
- 
- 	ghes_fini(ghes);
- 
--	ghes_edac_unregister(ghes);
--
- 	kfree(ghes);
- 
- 	platform_set_drvdata(ghes_dev, NULL);
-@@ -1497,3 +1502,25 @@ void __init acpi_ghes_init(void)
- 	else
- 		pr_info(GHES_PFX "Failed to enable APEI firmware first mode.\n");
- }
-+
-+/*
-+ * Known x86 systems that prefer GHES error reporting:
-+ */
-+static struct acpi_platform_list plat_list[] = {
-+	{"HPE   ", "Server  ", 0, ACPI_SIG_FADT, all_versions},
-+	{ } /* End */
-+};
-+
-+struct list_head *ghes_get_devices(bool force)
-+{
-+	int idx = -1;
-+
-+	if (IS_ENABLED(CONFIG_X86)) {
-+		idx = acpi_match_platform_list(plat_list);
-+		if (idx < 0 && !force)
-+			return NULL;
-+	}
-+
-+	return &ghes_devs;
-+}
-+EXPORT_SYMBOL_GPL(ghes_get_devices);
-diff --git a/drivers/edac/Kconfig b/drivers/edac/Kconfig
-index 17562cf1fe97..df45db81858b 100644
---- a/drivers/edac/Kconfig
-+++ b/drivers/edac/Kconfig
-@@ -53,8 +53,8 @@ config EDAC_DECODE_MCE
- 	  has been initialized.
- 
- config EDAC_GHES
--	bool "Output ACPI APEI/GHES BIOS detected errors via EDAC"
--	depends on ACPI_APEI_GHES && (EDAC=y)
-+	tristate "Output ACPI APEI/GHES BIOS detected errors via EDAC"
-+	depends on ACPI_APEI_GHES
- 	select UEFI_CPER
- 	help
- 	  Not all machines support hardware-driven error report. Some of those
-diff --git a/drivers/edac/ghes_edac.c b/drivers/edac/ghes_edac.c
-index c8fa7dcfdbd0..da6d1a9e107d 100644
---- a/drivers/edac/ghes_edac.c
-+++ b/drivers/edac/ghes_edac.c
-@@ -59,6 +59,8 @@ module_param(force_load, bool, 0);
- 
- static bool system_scanned;
- 
-+static struct list_head *ghes_devs;
-+
- /* Memory Device - Type 17 of SMBIOS spec */
- struct memdev_dmi_entry {
- 	u8 type;
-@@ -376,34 +378,15 @@ void ghes_edac_report_mem_error(int sev, struct cper_sec_mem_err *mem_err)
- 	spin_unlock_irqrestore(&ghes_lock, flags);
- }
- 
--/*
-- * Known systems that are safe to enable this module.
-- */
--static struct acpi_platform_list plat_list[] = {
--	{"HPE   ", "Server  ", 0, ACPI_SIG_FADT, all_versions},
--	{ } /* End */
--};
--
--int ghes_edac_register(struct ghes *ghes, struct device *dev)
-+static int ghes_edac_register(struct device *dev)
- {
- 	bool fake = false;
- 	struct mem_ctl_info *mci;
- 	struct ghes_pvt *pvt;
- 	struct edac_mc_layer layers[1];
- 	unsigned long flags;
--	int idx = -1;
- 	int rc = 0;
- 
--	if (IS_ENABLED(CONFIG_X86)) {
--		/* Check if safe to enable on this system */
--		idx = acpi_match_platform_list(plat_list);
--		if (!force_load && idx < 0)
--			return -ENODEV;
--	} else {
--		force_load = true;
--		idx = 0;
--	}
--
- 	/* finish another registration/unregistration instance first */
- 	mutex_lock(&ghes_reg_mutex);
- 
-@@ -447,7 +430,7 @@ int ghes_edac_register(struct ghes *ghes, struct device *dev)
- 		pr_info("This system has a very crappy BIOS: It doesn't even list the DIMMS.\n");
- 		pr_info("Its SMBIOS info is wrong. It is doubtful that the error report would\n");
- 		pr_info("work on such system. Use this driver with caution\n");
--	} else if (idx < 0) {
-+	} else if (force_load) {
- 		pr_info("This EDAC driver relies on BIOS to enumerate memory and get error reports.\n");
- 		pr_info("Unfortunately, not all BIOSes reflect the memory layout correctly.\n");
- 		pr_info("So, the end result of using this driver varies from vendor to vendor.\n");
-@@ -517,7 +500,7 @@ int ghes_edac_register(struct ghes *ghes, struct device *dev)
- 	return rc;
- }
- 
--void ghes_edac_unregister(struct ghes *ghes)
-+static void ghes_edac_unregister(struct ghes *ghes)
- {
- 	struct mem_ctl_info *mci;
- 	unsigned long flags;
-@@ -551,3 +534,30 @@ void ghes_edac_unregister(struct ghes *ghes)
- unlock:
- 	mutex_unlock(&ghes_reg_mutex);
- }
-+
-+static int __init ghes_edac_init(void)
-+{
-+	struct ghes *g, *g_tmp;
-+
-+	ghes_devs = ghes_get_devices(force_load);
-+	if (ghes_devs)
-+		return -ENODEV;
-+
-+	list_for_each_entry_safe(g, g_tmp, ghes_devs, elist) {
-+		ghes_edac_register(g->dev);
-+	}
-+
-+	return 0;
-+}
-+module_init(ghes_edac_init);
-+
-+static void __exit ghes_edac_exit(void)
-+{
-+	struct ghes *g, *g_tmp;
-+
-+
-+	list_for_each_entry_safe(g, g_tmp, ghes_devs, elist) {
-+		ghes_edac_unregister(g);
-+	}
-+}
-+module_exit(ghes_edac_exit);
-diff --git a/include/acpi/ghes.h b/include/acpi/ghes.h
-index 34fb3431a8f3..f39b75c3f9c6 100644
---- a/include/acpi/ghes.h
-+++ b/include/acpi/ghes.h
-@@ -27,6 +27,8 @@ struct ghes {
- 		struct timer_list timer;
- 		unsigned int irq;
- 	};
-+	struct device *dev;
-+	struct list_head elist;
- };
- 
- struct ghes_estatus_node {
-@@ -69,35 +71,13 @@ int ghes_register_vendor_record_notifier(struct notifier_block *nb);
-  * @nb: pointer to the notifier_block structure of the vendor record handler.
-  */
- void ghes_unregister_vendor_record_notifier(struct notifier_block *nb);
-+struct list_head *ghes_get_devices(bool force);
-+#else
-+static inline struct list_head *ghes_get_devices(bool force) { return NULL; }
- #endif
- 
- int ghes_estatus_pool_init(int num_ghes);
- 
--/* From drivers/edac/ghes_edac.c */
--
--#ifdef CONFIG_EDAC_GHES
--void ghes_edac_report_mem_error(int sev, struct cper_sec_mem_err *mem_err);
--
--int ghes_edac_register(struct ghes *ghes, struct device *dev);
--
--void ghes_edac_unregister(struct ghes *ghes);
--
--#else
--static inline void ghes_edac_report_mem_error(int sev,
--				       struct cper_sec_mem_err *mem_err)
--{
--}
--
--static inline int ghes_edac_register(struct ghes *ghes, struct device *dev)
--{
--	return -ENODEV;
--}
--
--static inline void ghes_edac_unregister(struct ghes *ghes)
--{
--}
--#endif
--
- static inline int acpi_hest_get_version(struct acpi_hest_generic_data *gdata)
- {
- 	return gdata->revision >> 8;
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+> +		page = &alloc->pages[i];
+> +		if (!page->page_ptr)
+> +			free++;
+> +		else if (list_empty(&page->lru))
+> +			active++;
+> +		else
+> +			lru++;
+>  	}
+> +
+> +uninitialized:
+> +	mmap_read_unlock(alloc->vma_vm_mm);
+>  	mutex_unlock(&alloc->mutex);
+>  	seq_printf(m, "  pages: %d:%d:%d\n", active, lru, free);
+>  	seq_printf(m, "  pages high watermark: %zu\n", alloc->pages_high);
+> -- 
+> 2.35.1
