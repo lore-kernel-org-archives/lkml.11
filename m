@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43532C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA75C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:25:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242549AbiHISYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:24:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49142 "EHLO
+        id S1344593AbiHISZX (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347402AbiHISW1 (ORCPT
+        with ESMTP id S245720AbiHISWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:22:27 -0400
+        Tue, 9 Aug 2022 14:22:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDCDC31DE6;
-        Tue,  9 Aug 2022 11:08:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DD732058;
+        Tue,  9 Aug 2022 11:08:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FC52B818C2;
-        Tue,  9 Aug 2022 18:07:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA402C4347C;
-        Tue,  9 Aug 2022 18:07:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EDC3B818C9;
+        Tue,  9 Aug 2022 18:07:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77044C433D7;
+        Tue,  9 Aug 2022 18:07:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068446;
-        bh=bTdcFfwKJ/nbB6gJvzfhysdQBts1d5oaJWWzgVsCDuc=;
+        s=korg; t=1660068451;
+        bh=u9PreAMLfAZXPuhQcBjbpBtRZ/5+dZ+KdUmxs9Nagbk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ad0hxGuRVBjomg6S32i3X4fc2BK673vrekKy8Ux8EXJP6zTCwzvine9L6HdY4rs7V
-         1/wJsMyyAAyYHCCHHN9+h5njZOyqHSCo/UO4tQEJR1Xx9tcpF/WCHhrNXN3QWWyhr/
-         RVOrTFZry03UEVx7reE2fYc5YQfp9DFuYw8EoZ4Q=
+        b=wTTGWX0VU+cfqabt/vVcy48wvWLR2oV8DJorN+yrW2tBFtDplopKiocwUAdh3d/vu
+         3ACRM5UOszyKVIkqKv9FlITnoNTWUF36FvlwR2XlEfHSh6eWKTxGsDzdGqydG2bq7Q
+         C5IQrYH+fSFUDFsl3/RoZyZl+sW0Lohb3L/Luq34=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Naohiro Aota <naohiro.aota@wdc.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.18 22/35] btrfs: zoned: drop optimization of zone finish
-Date:   Tue,  9 Aug 2022 20:00:51 +0200
-Message-Id: <20220809175515.877774133@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 14/35] KVM: x86: disable preemption around the call to kvm_arch_vcpu_{un|}blocking
+Date:   Tue,  9 Aug 2022 20:00:43 +0200
+Message-Id: <20220809175515.577225397@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
 References: <20220809175515.046484486@linuxfoundation.org>
@@ -50,80 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naohiro Aota <naohiro.aota@wdc.com>
+From: Maxim Levitsky <mlevitsk@redhat.com>
 
-commit b3a3b0255797e1d395253366ba24a4cc6c8bdf9c upstream.
+[ Upstream commit 18869f26df1a11ed11031dfb7392bc7d774062e8 ]
 
-We have an optimization in do_zone_finish() to send REQ_OP_ZONE_FINISH only
-when necessary, i.e. we don't send REQ_OP_ZONE_FINISH when we assume we
-wrote fully into the zone.
+On SVM, if preemption happens right after the call to finish_rcuwait
+but before call to kvm_arch_vcpu_unblocking on SVM/AVIC, it itself
+will re-enable AVIC, and then we will try to re-enable it again
+in kvm_arch_vcpu_unblocking which will lead to a warning
+in __avic_vcpu_load.
 
-The assumption is determined by "alloc_offset == capacity". This condition
-won't work if the last ordered extent is canceled due to some errors. In
-that case, we consider the zone is deactivated without sending the finish
-command while it's still active.
+The same problem can happen if the vCPU is preempted right after the call
+to kvm_arch_vcpu_blocking but before the call to prepare_to_rcuwait
+and in this case, we will end up with AVIC enabled during sleep -
+Ooops.
 
-This inconstancy results in activating another block group while we cannot
-really activate the underlying zone, which causes the active zone exceeds
-errors like below.
-
-    BTRFS error (device nvme3n2): allocation failed flags 1, wanted 520192 tree-log 0, relocation: 0
-    nvme3n2: I/O Cmd(0x7d) @ LBA 160432128, 127 blocks, I/O Error (sct 0x1 / sc 0xbd) MORE DNR
-    active zones exceeded error, dev nvme3n2, sector 0 op 0xd:(ZONE_APPEND) flags 0x4800 phys_seg 1 prio class 0
-    nvme3n2: I/O Cmd(0x7d) @ LBA 160432128, 127 blocks, I/O Error (sct 0x1 / sc 0xbd) MORE DNR
-    active zones exceeded error, dev nvme3n2, sector 0 op 0xd:(ZONE_APPEND) flags 0x4800 phys_seg 1 prio class 0
-
-Fix the issue by removing the optimization for now.
-
-Fixes: 8376d9e1ed8f ("btrfs: zoned: finish superblock zone once no space left for new SB")
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Message-Id: <20220606180829.102503-7-mlevitsk@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/zoned.c |   23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+ virt/kvm/kvm_main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/fs/btrfs/zoned.c
-+++ b/fs/btrfs/zoned.c
-@@ -2005,6 +2005,7 @@ void btrfs_zone_finish_endio(struct btrf
- 	struct btrfs_device *device;
- 	u64 min_alloc_bytes;
- 	u64 physical;
-+	int i;
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 24cb37d19c63..7f1d19689701 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -3327,9 +3327,11 @@ bool kvm_vcpu_block(struct kvm_vcpu *vcpu)
  
- 	if (!btrfs_is_zoned(fs_info))
- 		return;
-@@ -2039,13 +2040,25 @@ void btrfs_zone_finish_endio(struct btrf
- 	spin_unlock(&block_group->lock);
+ 	vcpu->stat.generic.blocking = 1;
  
- 	map = block_group->physical_map;
--	device = map->stripes[0].dev;
--	physical = map->stripes[0].physical;
-+	for (i = 0; i < map->num_stripes; i++) {
-+		int ret;
- 
--	if (!device->zone_info->max_active_zones)
--		goto out;
-+		device = map->stripes[i].dev;
-+		physical = map->stripes[i].physical;
++	preempt_disable();
+ 	kvm_arch_vcpu_blocking(vcpu);
+-
+ 	prepare_to_rcuwait(wait);
++	preempt_enable();
 +
-+		if (device->zone_info->max_active_zones == 0)
-+			continue;
-+
-+		ret = blkdev_zone_mgmt(device->bdev, REQ_OP_ZONE_FINISH,
-+				       physical >> SECTOR_SHIFT,
-+				       device->zone_info->zone_size >> SECTOR_SHIFT,
-+				       GFP_NOFS);
+ 	for (;;) {
+ 		set_current_state(TASK_INTERRUPTIBLE);
  
--	btrfs_dev_clear_active_zone(device, physical);
-+		if (ret)
-+			return;
-+
-+		btrfs_dev_clear_active_zone(device, physical);
-+	}
+@@ -3339,9 +3341,11 @@ bool kvm_vcpu_block(struct kvm_vcpu *vcpu)
+ 		waited = true;
+ 		schedule();
+ 	}
+-	finish_rcuwait(wait);
  
- 	spin_lock(&fs_info->zone_active_bgs_lock);
- 	ASSERT(!list_empty(&block_group->active_bg_list));
++	preempt_disable();
++	finish_rcuwait(wait);
+ 	kvm_arch_vcpu_unblocking(vcpu);
++	preempt_enable();
+ 
+ 	vcpu->stat.generic.blocking = 0;
+ 
+-- 
+2.35.1
+
 
 
