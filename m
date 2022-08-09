@@ -2,242 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35EE1C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 13:48:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A0AC25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 13:48:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244534AbiHINsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 09:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55746 "EHLO
+        id S244558AbiHINs5 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 09:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244405AbiHINsE (ORCPT
+        with ESMTP id S244597AbiHINsq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 09:48:04 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5182167D0;
-        Tue,  9 Aug 2022 06:48:03 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M2Dpl4ZT9z68029;
-        Tue,  9 Aug 2022 21:45:19 +0800 (CST)
-Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 9 Aug 2022 15:48:00 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
-        <haoluo@google.com>, <jolsa@kernel.org>, <corbet@lwn.net>,
-        <dhowells@redhat.com>, <jarkko@kernel.org>, <rostedt@goodmis.org>,
-        <mingo@redhat.com>, <paul@paul-moore.com>, <jmorris@namei.org>,
-        <serge@hallyn.com>, <shuah@kernel.org>
-CC:     <bpf@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <keyrings@vger.kernel.org>,
-        <linux-security-module@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH v9 09/10] selftests/bpf: Add additional tests for bpf_lookup_*_key()
-Date:   Tue, 9 Aug 2022 15:46:02 +0200
-Message-ID: <20220809134603.1769279-10-roberto.sassu@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220809134603.1769279-1-roberto.sassu@huawei.com>
-References: <20220809134603.1769279-1-roberto.sassu@huawei.com>
+        Tue, 9 Aug 2022 09:48:46 -0400
+Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.111.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 245031AF09
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 06:48:44 -0700 (PDT)
+Received: from CHE01-GV0-obe.outbound.protection.outlook.com
+ (mail-gv0che01lp2044.outbound.protection.outlook.com [104.47.22.44]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-28-f_XtdghQN6mzjdIUhlBnEg-2; Tue, 09 Aug 2022 15:48:40 +0200
+X-MC-Unique: f_XtdghQN6mzjdIUhlBnEg-2
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
+ ZRAP278MB0367.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2c::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5504.14; Tue, 9 Aug 2022 13:48:38 +0000
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::3510:6f55:f14a:380f]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::3510:6f55:f14a:380f%8]) with mapi id 15.20.5504.020; Tue, 9 Aug 2022
+ 13:48:38 +0000
+Date:   Tue, 9 Aug 2022 15:48:36 +0200
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        Francesco Dolcini <francesco.dolcini@toradex.com>
+Subject: Re: [PATCH v2 3/5] dt-bindings: gpio: stmpe: Remove node name
+ requirement
+Message-ID: <20220809134836.GB44926@francesco-nb.int.toradex.com>
+References: <20220712163345.445811-1-francesco.dolcini@toradex.com>
+ <20220712163345.445811-4-francesco.dolcini@toradex.com>
+In-Reply-To: <20220712163345.445811-4-francesco.dolcini@toradex.com>
+X-ClientProxiedBy: MR2P264CA0093.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:32::33) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:2e::8)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.204.63.22]
-X-ClientProxiedBy: lhrpeml500006.china.huawei.com (7.191.161.198) To
- fraeml714-chm.china.huawei.com (10.206.15.33)
-X-CFilter-Loop: Reflected
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2d0023cb-8aad-495c-4692-08da7a0ddc88
+X-MS-TrafficTypeDiagnostic: ZRAP278MB0367:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0
+X-Microsoft-Antispam-Message-Info: 8P7ZuVvT4TI3bq6Kpg5CVrN5HMlyPO44BkOYnkSL7/CZ6pXMKUdmViez6ViU+0t1LR5OuJjW8VoGr3JwIBtzNj4PvI2dqo9NGY3Ge7JLCNSwi9QQjVNdnzECasHFgZE2Q+p14VtJcfmK383pdArxhWCMH0C0LWzmRy3TfSq+Hfa+8iNhew0ANF+T75CGMFe0vJuw5o7giFK9alVrw18nZNvTewlCUJeM/o1WPP25RFtx0nj74Wn1dOsseeXb5sW+2iB3qixdRnAMdt/IFMVtMxpS4jt8V68JzGPDc/RbFjU67UWN6tP280dio5sXC0AP2YRCHbUBKhI0GJpoasj4Q1mLTiDB5qGX0DWZYI0zuvCxNJSEg1Em1LxFHfB89EYFyf3COI3JBhoGaNd+rKkea85rPQsaHeJD68yAhKgLQd76xEth420DS0M8waJFVrAE0mhQzy0R0Iy3RSGXfN53WXVDS+gOYNpagQrf+TBzRbPXbANkA4rYprAZVZVnAkdLoejDWAa8CQdlvHM04tDznowykD/iDxcyY+XPXrLi8jamLwezNT3a60nY6HbJQfFRN4gENyK8N3GRv0JHWiejQBvqZR4eve57lBMFAXkZDoHMFoWWVMcycn7VjsUuqGptOsawtxLIKcuSTzXONjELZwkWeH6dJPkvTxFAkcu/m/F1f5zFWLnqiUS0XMY4TA+jFBF4xioN9lodpZIDb9+bxiY6T+H6TDyasNLVcmzFMm1guza8YH/tfGbBKqNE0BKPbaEXe6I11OPbKe6bY69ouL4I9uRayMhg9FWgG+Z8+WQw2pJQFPXku1n+Qp8dPt46
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39840400004)(346002)(366004)(136003)(396003)(376002)(2906002)(6486002)(478600001)(41300700001)(26005)(33656002)(52116002)(83380400001)(6512007)(186003)(1076003)(107886003)(54906003)(6506007)(66476007)(66556008)(5660300002)(8676002)(4326008)(66946007)(6916009)(316002)(38100700002)(38350700002)(86362001)(8936002)(7416002)(44832011);DIR:OUT;SFP:1102
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PhzMTt3PkCXOClS2i4W2ZADQ6Dx1+ceV/c9nKd43v+KRiTFkVcTE46XP4gzw?=
+ =?us-ascii?Q?a+9Qwx8mEW62KrEQ+wuN1TN4AkvaS4KpMXFfgrUnMLFBE1fEzA/fOzsx/xLS?=
+ =?us-ascii?Q?98j8QardwSXpdHCmWHR52jURXHufRSbOxhlRsG5kDaNdU/NIAfjEUsQIz6+s?=
+ =?us-ascii?Q?MvfrOC9G6KjK2qBaVwMsqLPiI/tAK6ULSFIDCBZT7cDb+f+qq0I6ejzVUhCL?=
+ =?us-ascii?Q?SFULSpmak57Ot56OLk9a8Y5WiD+eO35sWacky7xhfU7TbrkDxmB0tpIQNBHe?=
+ =?us-ascii?Q?u1REL5T3TDLiG25ioHKzgZlmxMseuB03dX2Cngiiw0wnJtJdr00jNvK/poCm?=
+ =?us-ascii?Q?9PC88F/HVh9Q0kWdW+cLlR6DyJDvRuNamPESzEfREGU0IvwFggWdCDG4hGpa?=
+ =?us-ascii?Q?nw3IbKfnTRj8nIukQA1ZjTolkdwZ+NOWgeJhOQDybdMICSUpasekqkd/wsdZ?=
+ =?us-ascii?Q?cM/6dz1VswgxCY/mMQaiRM0+bkL7S75XnrOzWSgUhOwod2AEwZOSLjdplEc6?=
+ =?us-ascii?Q?QuZ7Xx7tdqtF7ny21fyGmWNV4+xUDHTPn/4IX1W/naTWNnlE0ZXSBCoSpU4R?=
+ =?us-ascii?Q?aNx++lpCuzKQ+REaueJxaRVDooLR+upihBAjOII1PAd8kvaKMxiTCbtOQ7yR?=
+ =?us-ascii?Q?rtRVkRwlPKz6hKrE0b5aYTUPcIpsgwO2GaCpbCrHd4ZTlFhJsFtq8sNhFmEI?=
+ =?us-ascii?Q?jX99V/ZMpGcT/3p8lhwtEOeU6gqpxbpfLUSKDH5nno01hJ+xF548J6tHx5RH?=
+ =?us-ascii?Q?xBwYfOvWuqqCoQS/GCobsCBCRj0bDNpkYtZmViFcAJ9GbPZI6VbLjSFWWSG/?=
+ =?us-ascii?Q?uoMCR3KnixRmROESty60J1cyTj6OaU4vImocgpkWgc2Q2tK0nzA6gIDe9Yyy?=
+ =?us-ascii?Q?d45Jc2Dhw1D5aWsSmMKxYZoWGLjtEGufc/swJQ+hBBbQmR26rFjHUH2InlVB?=
+ =?us-ascii?Q?J49IunOS0QgiQs9PvbO0DslkwCtki505TQ4LSxowBkPJcfthLNTeaWD9lvb8?=
+ =?us-ascii?Q?a4t3yc/F3I7iqACY5hTd0ehO9XWzmzohJOZIqtfUQaVwKxWYKF+gc63rzlBj?=
+ =?us-ascii?Q?DlZ430iRVg/5EMHAkE+O39f9DMVbGr1pQ1WeGHivwB1OmWAXayrder12crG7?=
+ =?us-ascii?Q?HZCqoj1yE74iHvL0ZeYbzbHxjHFaemS32/PilYMIylOO05aMGQycuC7xXcNk?=
+ =?us-ascii?Q?gkJXqA3jWW5HWVFemUsedLy48oPBn10Ui0aPm2BMYkvbuNrbsGK1Ip5s+KJP?=
+ =?us-ascii?Q?7EoobtHgG/gh3oaNkeR6rytBQFiIVkpr/5AQUVFja5uZP91Or11oxs0DBWcp?=
+ =?us-ascii?Q?toeQKv+A8TyI8R9e9TR1BWlu7KzcibbfivAq7S3KRiwIOf0Q5I+8BFR5LN4w?=
+ =?us-ascii?Q?H3URM5oAKfOpExZiFyRHBBCtiIBrPgivYaMmOe7PaHwtXbt8dvd/sXwsles+?=
+ =?us-ascii?Q?z2xnjj/WKJGNmepR++TX2Hyhlg+ZRCuOxwmn5BsrcJOqmWIEzMEphFAz/eOd?=
+ =?us-ascii?Q?BYi6sJfg90U1yWvA61dGL6WPlmUJL/xCyCbTyCV0vuPy36YgfCcedDsrC+BE?=
+ =?us-ascii?Q?uY4Si36zXtX/R5yThdJtQcamqu46Ux46UxYofZojGJiv5NKosRnWP4miYDxZ?=
+ =?us-ascii?Q?lw=3D=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d0023cb-8aad-495c-4692-08da7a0ddc88
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2022 13:48:38.0355
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0P47+wF/aavBvealti9R4cnOb01a1LVadC5t7iIGNUDvmm66PG7OzJcJfot5OJS3uWRO7LMIzEhpDv6qZJaixtMx3Orc611AoYnpzPChy6o=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0367
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: toradex.com
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a test to ensure that bpf_lookup_user_key() creates a referenced
-special keyring when the KEY_LOOKUP_CREATE flag is passed to this function.
+Hello Bartosz, can you pick this? Patches 1 and 2 were applied to MFD
+tree.
 
-Ensure that the kfunc rejects invalid flags.
-
-Ensure that a keyring can be obtained from bpf_lookup_system_key() when one
-of the pre-determined keyring IDs is provided.
-
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
----
- .../selftests/bpf/prog_tests/lookup_key.c     | 112 ++++++++++++++++++
- .../selftests/bpf/progs/test_lookup_key.c     |  46 +++++++
- 2 files changed, 158 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/lookup_key.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_lookup_key.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/lookup_key.c b/tools/testing/selftests/bpf/prog_tests/lookup_key.c
-new file mode 100644
-index 000000000000..2e0cde729dc7
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/lookup_key.c
-@@ -0,0 +1,112 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include <linux/keyctl.h>
-+#include <test_progs.h>
-+
-+#include "test_lookup_key.skel.h"
-+
-+#define KEY_LOOKUP_CREATE	0x01
-+#define KEY_LOOKUP_PARTIAL	0x02
-+
-+static bool kfunc_not_supported;
-+
-+static int libbpf_print_cb(enum libbpf_print_level level, const char *fmt,
-+			   va_list args)
-+{
-+	char *func;
-+
-+	if (strcmp(fmt, "libbpf: extern (func ksym) '%s': not found in kernel or module BTFs\n"))
-+		return 0;
-+
-+	func = va_arg(args, char *);
-+
-+	if (strcmp(func, "bpf_lookup_user_key") && strcmp(func, "bpf_key_put") &&
-+	    strcmp(func, "bpf_lookup_system_key"))
-+		return 0;
-+
-+	kfunc_not_supported = true;
-+	return 0;
-+}
-+
-+void test_lookup_key(void)
-+{
-+	libbpf_print_fn_t old_print_cb;
-+	struct test_lookup_key *skel;
-+	u32 next_id;
-+	int ret;
-+
-+	skel = test_lookup_key__open();
-+	if (!ASSERT_OK_PTR(skel, "test_lookup_key__open"))
-+		return;
-+
-+	old_print_cb = libbpf_set_print(libbpf_print_cb);
-+	ret = test_lookup_key__load(skel);
-+	libbpf_set_print(old_print_cb);
-+
-+	if (ret < 0 && kfunc_not_supported) {
-+		printf("%s:SKIP:bpf_lookup_*_key(), bpf_key_put() kfuncs not supported\n",
-+		       __func__);
-+		test__skip();
-+		goto close_prog;
-+	}
-+
-+	if (!ASSERT_OK(ret, "test_lookup_key__load"))
-+		goto close_prog;
-+
-+	ret = test_lookup_key__attach(skel);
-+	if (!ASSERT_OK(ret, "test_lookup_key__attach"))
-+		goto close_prog;
-+
-+	skel->bss->monitored_pid = getpid();
-+	skel->bss->key_serial = KEY_SPEC_THREAD_KEYRING;
-+
-+	/* The thread-specific keyring does not exist, this test fails. */
-+	skel->bss->flags = 0;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_LT(ret, 0, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	/* Force creation of the thread-specific keyring, this test succeeds. */
-+	skel->bss->flags = KEY_LOOKUP_CREATE;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_OK(ret, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	/* Pass both lookup flags for parameter validation. */
-+	skel->bss->flags = KEY_LOOKUP_CREATE | KEY_LOOKUP_PARTIAL;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_OK(ret, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	/* Pass invalid flags. */
-+	skel->bss->flags = UINT64_MAX;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_LT(ret, 0, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	skel->bss->key_serial = 0;
-+	skel->bss->key_id = 1;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	if (!ASSERT_OK(ret, "bpf_prog_get_next_id"))
-+		goto close_prog;
-+
-+	skel->bss->key_id = UINT32_MAX;
-+
-+	ret = bpf_prog_get_next_id(0, &next_id);
-+	ASSERT_LT(ret, 0, "bpf_prog_get_next_id");
-+
-+close_prog:
-+	skel->bss->monitored_pid = 0;
-+	test_lookup_key__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_lookup_key.c b/tools/testing/selftests/bpf/progs/test_lookup_key.c
-new file mode 100644
-index 000000000000..c73776990ae3
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_lookup_key.c
-@@ -0,0 +1,46 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include "vmlinux.h"
-+#include <errno.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+__u32 monitored_pid;
-+__u32 key_serial;
-+__u32 key_id;
-+__u64 flags;
-+
-+extern struct bpf_key *bpf_lookup_user_key(__u32 serial, __u64 flags) __ksym;
-+extern struct bpf_key *bpf_lookup_system_key(__u64 id) __ksym;
-+extern void bpf_key_put(struct bpf_key *key) __ksym;
-+
-+SEC("lsm.s/bpf")
-+int BPF_PROG(bpf, int cmd, union bpf_attr *attr, unsigned int size)
-+{
-+	struct bpf_key *bkey;
-+	__u32 pid;
-+
-+	pid = bpf_get_current_pid_tgid() >> 32;
-+	if (pid != monitored_pid)
-+		return 0;
-+
-+	if (key_serial)
-+		bkey = bpf_lookup_user_key(key_serial, flags);
-+	else
-+		bkey = bpf_lookup_system_key(key_id);
-+
-+	if (!bkey)
-+		return -ENOENT;
-+
-+	bpf_key_put(bkey);
-+
-+	return 0;
-+}
--- 
-2.25.1
+On Tue, Jul 12, 2022 at 06:33:43PM +0200, Francesco Dolcini wrote:
+> STMPE driver does not require a specific node name anymore, only the
+> compatible is checked, update binding according to this.
+> 
+> Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+> ---
+>  Documentation/devicetree/bindings/gpio/gpio-stmpe.txt | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/gpio/gpio-stmpe.txt b/Documentation/devicetree/bindings/gpio/gpio-stmpe.txt
+> index a0e4cf885213..b33f8f02c0d7 100644
+> --- a/Documentation/devicetree/bindings/gpio/gpio-stmpe.txt
+> +++ b/Documentation/devicetree/bindings/gpio/gpio-stmpe.txt
+> @@ -8,8 +8,7 @@ Optional properties:
+>   - st,norequest-mask: bitmask specifying which GPIOs should _not_ be requestable
+>     due to different usage (e.g. touch, keypad)
+>  
+> -Node name must be stmpe_gpio and should be child node of stmpe node to which it
+> -belongs.
+> +Node should be child node of stmpe node to which it belongs.
+>  
+>  Example:
+>  	stmpe_gpio {
+> -- 
+> 2.25.1
+> 
 
