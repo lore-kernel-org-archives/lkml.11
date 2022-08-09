@@ -2,174 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F059AC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 14:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AD89C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 14:59:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244690AbiHIO7d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 10:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43560 "EHLO
+        id S230051AbiHIO7r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 10:59:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230051AbiHIO73 (ORCPT
+        with ESMTP id S244692AbiHIO7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 10:59:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA68E1B7B8
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 07:59:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660057167;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qs24elduxwmKkvWpu/vcasLN6Bebi5rixcEIdq2uT34=;
-        b=HBQVi7Y3rB3mSaL5NcsVF5syZDTfkVGGdAk31qtYHlEK++qbgClMci/umrx0Pd9ooST6GJ
-        fgBHnJNaLf8oq0V3OFWF19XUYCXmV9J1L8kT12iavGIAcpsctIf/9zlFi2z7JGc0OpnHXa
-        mmN7ZKws1QQ+twjNIAKA6k3zQecpuS8=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-358-67u3Zs4pNbWp9Ncf7BHJnQ-1; Tue, 09 Aug 2022 10:59:26 -0400
-X-MC-Unique: 67u3Zs4pNbWp9Ncf7BHJnQ-1
-Received: by mail-qt1-f200.google.com with SMTP id h13-20020ac87d4d000000b00342f6c363afso5093915qtb.9
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 07:59:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=qs24elduxwmKkvWpu/vcasLN6Bebi5rixcEIdq2uT34=;
-        b=lUE3ek9erRBWLeTPn7r69VuXSUjpor+vhDiEuztyQW+liV4jClbL2eXbjB2rCco4J9
-         DgRI+BTsWPpz7CFYKvthtfaahp5yXjlb+7uvggNamINxsZNbAeq+Joy6y597VjIvqdLz
-         d2U2VVH+jZ1jVavKOT5JmlY3jPJWFn6W94RrjqDJnE6Ddj/AWn8u199TLdsS8xBagQX7
-         0mg8bhjLbmvSqKelJgsLqD9oeKY0Kd7TE75LcZvyiGd2vOFPpXDNVokE9QGg/P2wXCFE
-         /c42Gp2M2FgsqJI2XwCU+N69nDU6qjpnm2MQpYUkMrSST5qwuXVyXJMdhRMNxSD30EVc
-         f4HA==
-X-Gm-Message-State: ACgBeo0UFKmZp6x5PUDRMhCE2SoMR29HPgUfu4e/CnyV/0iwM0H5un6L
-        CkLTPJsCyHF8gyugvKzpEtUpoOy+NbRjgwC0RQSsY64nW5qYsC9mQ+S/xaPQcinUM6w9RiSJTl2
-        l9BF4+/OE7YTv4ofR+MqivwDg
-X-Received: by 2002:a05:622a:3cb:b0:33f:bb53:f041 with SMTP id k11-20020a05622a03cb00b0033fbb53f041mr19745427qtx.135.1660057165805;
-        Tue, 09 Aug 2022 07:59:25 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7PT70Zgc/UE+P84IPg1Zz2LDf/m6IfK1bB4BWmJUnXcK6KOR/FICD5mJBqgM/ji2TMK0LovA==
-X-Received: by 2002:a05:622a:3cb:b0:33f:bb53:f041 with SMTP id k11-20020a05622a03cb00b0033fbb53f041mr19745411qtx.135.1660057165560;
-        Tue, 09 Aug 2022 07:59:25 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id j18-20020a05620a411200b006b8f8e9bd00sm1066121qko.5.2022.08.09.07.59.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 07:59:25 -0700 (PDT)
-Date:   Tue, 9 Aug 2022 10:59:23 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     Nadav Amit <nadav.amit@gmail.com>, Linux MM <linux-mm@kvack.org>,
-        linux-kernel@vger.kernel.org,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Minchan Kim <minchan@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Hugh Dickins <hughd@google.com>,
-        Andi Kleen <andi.kleen@intel.com>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>
-Subject: Re: [PATCH v2 2/2] mm: Remember young/dirty bit for page migrations
-Message-ID: <YvJ2S8X4tAqM4oZ4@xz-m1.local>
-References: <20220804203952.53665-1-peterx@redhat.com>
- <20220804203952.53665-3-peterx@redhat.com>
- <A84CB6A0-86C8-4CAB-A977-47495D877C31@gmail.com>
- <Yu1FkCkjJ00+H0sF@xz-m1.local>
- <8735e5hkk3.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        Tue, 9 Aug 2022 10:59:40 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90B91DA4D;
+        Tue,  9 Aug 2022 07:59:39 -0700 (PDT)
+Received: from pps.filterd (m0148663.ppops.net [127.0.0.1])
+        by mx0a-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 279EvBir021954;
+        Tue, 9 Aug 2022 14:59:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pps0720;
+ bh=beLCDdrfCogOtCBpJFfvYpJ03UK9uOB8uFyo50CgRyY=;
+ b=lUu7h3KsdacjrVtOnstJmWWQt03fPBTx1Xj6mMs+33VVgraqa6BIdkgCyagpAtKewb6R
+ 0CrOx9dQ9GSv52jngZDk3at5kvQQ1RibqRLDXnRs97K3vzkHI04AQrjgoVeyRXMlb2of
+ qqKuxZ/mOeaThcPVTqMyHyzKQcC8job8q/WX+YkmT4NZvWb6dO1CiXXZ4P4EjvnQAzGz
+ 1z3ml7SFqe68hT2vwnBji8AphJ0FD/36z6fVI01h8A1O4DGEGhnK3YtfeUI1OQWOkbih
+ xE8G2TBPNLXvPaLothzOdHAFdYr9V3ouOW9x9yJUdmbn4IrKBozDoIYi6Q3uPO+Tnunn Dg== 
+Received: from p1lg14879.it.hpe.com (p1lg14879.it.hpe.com [16.230.97.200])
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3husr5r2t9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 09 Aug 2022 14:59:18 +0000
+Received: from p1wg14925.americas.hpqcorp.net (unknown [10.119.18.114])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by p1lg14879.it.hpe.com (Postfix) with ESMTPS id 6F95BE5FDF;
+        Tue,  9 Aug 2022 14:36:38 +0000 (UTC)
+Received: from p1wg14927.americas.hpqcorp.net (10.119.18.117) by
+ p1wg14925.americas.hpqcorp.net (10.119.18.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 9 Aug 2022 02:36:38 -1200
+Received: from p1wg14927.americas.hpqcorp.net (10.119.18.117) by
+ p1wg14927.americas.hpqcorp.net (10.119.18.117) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 9 Aug 2022 02:36:37 -1200
+Received: from p1wg14919.americas.hpqcorp.net (16.230.19.122) by
+ p1wg14927.americas.hpqcorp.net (10.119.18.117) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15
+ via Frontend Transport; Tue, 9 Aug 2022 02:36:37 -1200
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (192.58.206.38)
+ by edge.it.hpe.com (16.230.19.122) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 9 Aug 2022 02:36:37 -1200
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MdYb6reuPaA7wdtLmotHRnG4cLJwMBoaQHlJpQl196avPNp+NJSj2nBiMimaCWo2GdIykkFq33N7gRdI26VPyImqaX8+e+GCwzcjb+lPnf8K7sQ4XJUM3RgawYWd2KBfjCqDLEeo7h7Ojobczw+a3YRUFIfahJjlijvADMVGYxt++YkmFYTMSx2N+LwmotZRfxm0cemHTVJZ/yhj+a11hZr6h7fnCjHt3tNJqbqxi8q8yFOjZFoqodx2wtHLGntozQgsFs/xMbSb3iMqCTuOrD3Qn5hDlbOHUcvVdeiVHPI0T+Ae4Dbtp/ilFag/ME48wKsdGoprOVYZDCR1rN8ZzQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=beLCDdrfCogOtCBpJFfvYpJ03UK9uOB8uFyo50CgRyY=;
+ b=JMOLuw3kO+4UAP02ifdnYSpf7MN0ODMcrX2zB7Vu6MmRt1clqY3hFNrJVGv25hwq3ffhaYbW9lIQ19J4gHpEjfUnp6UcK4jJ2V2nDcprIUPbYEw768r8g9M11/1+aSCrqBwt4A/Iw9pLcr/6BGBLTg+F9F8al15yEYSAe7RHLcljNTZbMWXNP0gqWyoUo3lmL8eztbqz59lJiIVwVs+R7wRwdlNVJ2vYXzWlaJsPvB0aEsRmilmlvtpHfM5lziku9pGs5kngssZ9ipnsWCChRFTV7qbYOzQGxItiW9+Y1oYCJLZbBDKwo07pJP7VhZhvMg8OW4yir7i8WBrZbA0btA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=hpe.com; dmarc=pass action=none header.from=hpe.com; dkim=pass
+ header.d=hpe.com; arc=none
+Received: from PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:510:154::8)
+ by MW4PR84MB3172.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:303:1ed::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Tue, 9 Aug
+ 2022 14:36:34 +0000
+Received: from PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::dcac:1265:7a54:ee2d]) by PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::dcac:1265:7a54:ee2d%6]) with mapi id 15.20.5504.020; Tue, 9 Aug 2022
+ 14:36:33 +0000
+From:   "Kani, Toshi" <toshi.kani@hpe.com>
+To:     Borislav Petkov <bp@alien8.de>, Justin He <Justin.He@arm.com>
+CC:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, James Morse <James.Morse@arm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Shuai Xue <xueshuai@linux.alibaba.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        "open list:EDAC-CORE" <linux-edac@vger.kernel.org>
+Subject: =?utf-8?B?UkU6IOWbnuWkjTogW1BBVENIXSBBQ1BJOiBBUEVJOiBtb3ZlIGVkYWNfaW5p?=
+ =?utf-8?Q?t_ahead_of_ghes_platform_drv_register?=
+Thread-Topic: =?utf-8?B?5Zue5aSNOiBbUEFUQ0hdIEFDUEk6IEFQRUk6IG1vdmUgZWRhY19pbml0IGFo?=
+ =?utf-8?Q?ead_of_ghes_platform_drv_register?=
+Thread-Index: AQHYq1YbHdpOiV0alEuUJHkPzB7Jbq2lceiAgAAKR4CAAADVoIAABbmAgAACeaCAAKrLgIAAHP6AgAAfFoCAAC4DUA==
+Date:   Tue, 9 Aug 2022 14:36:33 +0000
+Message-ID: <PH7PR84MB18380596CA00597E9D5D18DF82629@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+References: <20220805023200.154634-1-justin.he@arm.com>
+ <CAJZ5v0gUbKYaxRcZsYO6eq7vLgKdgfdLdoL_Hzmd6r-JczkVPg@mail.gmail.com>
+ <YvFX9vTilqMpsF9u@zn.tnic>
+ <PH7PR84MB1838379B8C2DF488DE729A9182639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+ <YvF4p01WJGGUwIJC@zn.tnic>
+ <PH7PR84MB1838492812F5ABAA4BB54D9982639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+ <YvF+J/dfyOEVSbSQ@zn.tnic>
+ <PH7PR84MB1838BF4F8B56EF1E24FCF1DC82639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+ <YvIPf/m3hU46S9Ik@zn.tnic>
+ <DBBPR08MB4538A5C080B09A96A77CCDA9F7629@DBBPR08MB4538.eurprd08.prod.outlook.com>
+ <YvJB5cxSldpigw1g@zn.tnic>
+In-Reply-To: <YvJB5cxSldpigw1g@zn.tnic>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d8460d7c-b0c4-4f13-ecec-08da7a148eae
+x-ms-traffictypediagnostic: MW4PR84MB3172:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: uNfLnFkV1nZyW4O/m8aLD6ErPol90vzBT1QnAtjiv4rrMGDnCHZ+mTPeEXh8v64R91L8zO75Yps0lKo0IvRjkhX8nA1eowkmmo/eZdZnHuLuVei5QMNWiowuvF/D/eo8u5XT5XxS7v7e8SUoBoe0LUWtsgyB6lmQxpr3Ul5DeOUQDBRr6O5s4XM5BXg7X7rpw90Dc3v8z17nwRXLt7nmTtWOh0MBJUv2rwu+MT2HHfPcoea3LTb9WR87LaafnpfpXR5qwFO8NnGeJjaSbFYZEk0yC/frBPZnEeHrPNZpU0ygL4Cy0WH/tyiuAZ0/qFxgnDOCe1Va7g5hKucWfphkY9y7LHNHE19/mrNT7xaITAsQFfO5hiKWORawG2c8mfjoQLYE/gzM7xPsPKFSWLLQrq8rzH/XQsSeQOIDBzgQmdLV5vWBsiIlQeXUZo0bQ47Rv51SuNrOu8DJneOyAFzv1T0vctmrrAQ7pIdTKo032LfbmWoj1M3ksYielBPtNfVTAvXmwkfYSRDbCZGAn+t3+ruV7CI7wyLH+B80gLjfMWMFCfNDG8Yl4KTe5iAJWi80epeX37A3JMx37jmC6mZTE7qMo9wc+9aXSWa4c/ewDgMCD8qZopWgHzTl5HlHsgjWfc6JLiJfjcbqC8nr30lEbF2K8YDqkZ+xQT3smK9WQWsYeLk9vcaG7ve6ca+uS+UEiiLBqCn+6mWNS87F1eWbT1R7978LvYBuQ9UKiiiSLieoHWIa8a7r7CB2ckPBC+ucqWs3E37/Sggwv1IiEgOD+4VNlDKijvc3HrW8nBdRsclGnuxqQoQSF351fYbvM3za
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(346002)(376002)(396003)(366004)(136003)(39860400002)(53546011)(26005)(7696005)(6506007)(83380400001)(9686003)(38100700002)(186003)(38070700005)(82960400001)(122000001)(52536014)(8936002)(5660300002)(76116006)(7416002)(4326008)(66946007)(66556008)(66476007)(66446008)(64756008)(316002)(55016003)(2906002)(478600001)(71200400001)(41300700001)(110136005)(54906003)(224303003)(86362001)(33656002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?R2pwVXZnNGZCKzJBWVM1VkcwQWY0ayswOGJOVUErTXEvT2g5bnNWRHNTOTY2?=
+ =?utf-8?B?Zk5iRm5IUTBhN05zeWZWZTRNVE5KTVpTUnd0emJ3S1l0QUZYcWZwSFZjcW1B?=
+ =?utf-8?B?bm9yVzVzMmxFVnY1SmlkTTdkWGJlUHk0WVIxUDgzcENWM2ZsMXZqTkNERTdx?=
+ =?utf-8?B?SkNtMXlsdWN1SzRiTk5BSGZoQWluazM2VlpJenB4Wjg5RkN1L0NEWUo1SENv?=
+ =?utf-8?B?RjdqMS83QVJMenN3d0Q3WjdSbmhGQWcySXB6U2dpWjl0MnE0QlllZDY2YW5u?=
+ =?utf-8?B?MkNKQXZ6OUxxQW1CTkFFMjEreGF3ZmIzQVZ2cG42Zzh4djRobTR2cm5oWmoy?=
+ =?utf-8?B?N3c2S2plMytqUjF5cTJMMTN1dXZ1WFpZT0JMWVRJVG5JbU1adUdPKzBEc25x?=
+ =?utf-8?B?dGNQdXllM3YvS25pdUZCVjIxN1FvSkNQSXZRbGZHVFNZMUxJZXV0TjJUWThs?=
+ =?utf-8?B?QkYydVU3bXYvM1dhQ3NEK2RIZGRSUEFDUktUTTg4WDIwc2o3dUZFaGtaVXkx?=
+ =?utf-8?B?VnpDVlVEdlc0ZzhDdVdoY2NnWHFxbjVHa1kzQWxCNzEyV1ZVR1E2QmRnRHJK?=
+ =?utf-8?B?Zmt1c1ZPRGJqOVpZSzVDUFQ2dnNVRHVQdUVmcm5QUEZTdGkyUGhJRyt5eTlE?=
+ =?utf-8?B?VTVyL0NCTHBFRlF4UDdpM1Q0TkhzUXppc0UvYmlmYm1DSVVaZ1ZjYnRYbmRQ?=
+ =?utf-8?B?Znl2TGRaUnUwVEh2M3dULzV4dTEzUnUwUWZGV082MjRWVEtXb1F3VTZPT0pZ?=
+ =?utf-8?B?T2tkMm9VbzFmMjlSNjRpdkZjanFiSVJFY05EWGxNTFlmeTk1ZnRlcTRkOWFK?=
+ =?utf-8?B?UmsyeTFJTUR4Y1hrZElnSjc0VzR0ZlNYU2NWSmIrQy9tQ1NGbTVtNm44MDNn?=
+ =?utf-8?B?V2dUeTlnbkRpTmRmOFlZbmVHSERGZjUwaXJvejZES1ZRaFhQQW1JbjBEa1d6?=
+ =?utf-8?B?U2pxcG5SWDNCallrb3dMcDdMWktrZ2VZS2l5b0N0cm1IQUZTK1h4ZTJkNnBH?=
+ =?utf-8?B?VmdLMHhydk5mOWRCYzBDUTlDcmtVL1BoVVNETEZKQ21WVXhybHZGdnFrRCt5?=
+ =?utf-8?B?Tyt4Uk9SNWhOWUhxWVVlcGhoaXZjQlJIR3ZZS2JQWDNvRzdqakNRaUJaNjVv?=
+ =?utf-8?B?K0JMeEw5QXZNNWFkVlRMQUxFMnpOSU53Z1VkZ2tUbWFhbW93ZmVlTGFRUGJn?=
+ =?utf-8?B?bU1BZXZ5bDNWTllHNklSS0haaWtzNFB3VmhzVWMzOVR4V00zbDFzTHJKRkhr?=
+ =?utf-8?B?bzhhZW9ZNnAvcG1xeXQrZHlwUmNwL0FQaUtmZG80RU5NYXdoOFRXQmZJbHdu?=
+ =?utf-8?B?Ykh5R3RFdDlKbmtEUEVNd01nSnZ5V3V6UXhsdEdkd0l4VytYUThuV0V0YkZR?=
+ =?utf-8?B?bloyNkV4TzZ6cmg0bFR5eEw3QWlNNTJGS3RWamhCbDNicml5Ym1FZUVyRndw?=
+ =?utf-8?B?RGZJcVpWTGdQWGNrajRKTTF3VUsybEw4akduQkhZUU80QWtZTGk4a0U5dWtu?=
+ =?utf-8?B?NlFJTjNwVE1CaWZoSjUxbllHaEwyK1lJejlkTUh6SUtiWndXRm5hSGRkdWUy?=
+ =?utf-8?B?Q1BML0NEVWswRDkvRmVhYTNIelNNSlMzSUk1V00yWHNacDlnc256OThZMThH?=
+ =?utf-8?B?VEZYYkVHUHgrOGtXQm9pRGk1VlFTZTJSTDRKZm9PTmNtQlluTlJmSjRRV2J6?=
+ =?utf-8?B?d0pyQ3JKeUhsLzFBdHpJNXYrS1FQcmh6MXVLRGpTOUZYZWx2STVJZzY3dyta?=
+ =?utf-8?B?c1BjbTBOTzczMi9MSGltL2tvUXJBZGIzSEFRNXgrNDR1ZEVtMStUZzBXNE41?=
+ =?utf-8?B?NUFUZFc4NnIwRUJ4ZWlmZzdHOTgxRXpDdW5rdjhlUU5FbkVIYjZuU0pvWUVE?=
+ =?utf-8?B?M0NETmppdy9uRVFScUtUUnJTbW5UK3ZvbERSQkIvT0ZyZENpN3dKMzAvd2JQ?=
+ =?utf-8?B?Q0w5cGxqVTVNd0FRZDB2THNGQ3dEbkFhMEdYSzdsdkk4NVpTT1hYY0k2aEY3?=
+ =?utf-8?B?UjBTYXNXS3AyNWVZeHlDWlBvbHRoRHFCZlR0TVk1QnVFU1NvdUQyVTI2dDZR?=
+ =?utf-8?B?VFV4Yk55dGNvbjdsa1ppQ21hNnlDMXZkamZSc3pLejQ0NDk3OXpsZElmR0pS?=
+ =?utf-8?Q?K3Rl1cWNwC4fGp2Sv7+epHeDT?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <8735e5hkk3.fsf@yhuang6-desk2.ccr.corp.intel.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: d8460d7c-b0c4-4f13-ecec-08da7a148eae
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Aug 2022 14:36:33.7483
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 105b2061-b669-4b31-92ac-24d304d195dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: F1rw8TLEqr6QqLnG7GUjm/d5FQuy4Ssf/Pd1Ed+OqozTbv9nZ899tr9ekwqKPO1ygUQUBk31psPm85SCqVsrSA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR84MB3172
+X-OriginatorOrg: hpe.com
+X-Proofpoint-ORIG-GUID: D9OvlX6oqwM5FyKfb3sa7tdV0YjVEnE4
+X-Proofpoint-GUID: D9OvlX6oqwM5FyKfb3sa7tdV0YjVEnE4
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-09_03,2022-08-09_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 bulkscore=0
+ priorityscore=1501 phishscore=0 mlxlogscore=999 spamscore=0 mlxscore=0
+ impostorscore=0 suspectscore=0 lowpriorityscore=0 malwarescore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2208090064
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 09, 2022 at 04:45:32PM +0800, Huang, Ying wrote:
-> Peter Xu <peterx@redhat.com> writes:
-> 
-> > On Thu, Aug 04, 2022 at 03:40:57PM -0700, Nadav Amit wrote:
-> >> On Aug 4, 2022, at 1:39 PM, Peter Xu <peterx@redhat.com> wrote:
-> >> > +
-> >> > static inline bool is_pfn_swap_entry(swp_entry_t entry);
-> >> > 
-> >> > /* Clear all flags but only keep swp_entry_t related information */
-> >> > @@ -265,6 +285,57 @@ static inline swp_entry_t make_writable_migration_entry(pgoff_t offset)
-> >> > 	return swp_entry(SWP_MIGRATION_WRITE, offset);
-> >> > }
-> >> > 
-> >> > +/*
-> >> > + * Returns whether the host has large enough swap offset field to support
-> >> > + * carrying over pgtable A/D bits for page migrations.  The result is
-> >> > + * pretty much arch specific.
-> >> > + */
-> >> > +static inline bool migration_entry_supports_ad(void)
-> >> > +{
-> >> > +	/*
-> >> > +	 * max_swapfile_size() returns the max supported swp-offset plus 1.
-> >> > +	 * We can support the migration A/D bits iff the pfn swap entry has
-> >> > +	 * the offset large enough to cover all of them (PFN, A & D bits).
-> >> > +	 */
-> >> > +#ifdef CONFIG_SWAP
-> >> > +	return max_swapfile_size() >= (1UL << SWP_MIG_TOTAL_BITS);
-> >> 
-> >> This is an actual a function call (unless LTO has some trick). A bit of a
-> >> shame it cannot be at least memoized.
-> >> 
-> >> Or at least mark max_swapfile_size() as __attribute_const__ so it would not
-> >> be called twice for make_migration_entry_young() and
-> >> make_migration_entry_dirty().
-> >
-> > I didn't take too much effort on this one since we're on swap path and I
-> > assumed that's not a super hot path.  But __attribute_const__ sounds good
-> > and easy to get, thanks.
-> >
-> > Perhaps I should mark it on migration_entry_supports_ad() as a whole?  Note
-> > that unfortunately SWP_MIG_TOTAL_BITS may not be a const either (see how
-> > that define roots back to MAX_PHYSMEM_BITS, where on x86_64 it needs to
-> > check 5-lvl).
-> 
-> I think it's possible to memorize max_swapfile_size() or
-> migration_entry_supports_ad().  Although they are not constant, they are
-> not changed after initialized.  The challenge is to find a clean way to
-> initialize it.
-
-I checked it up today, the conclusion is I think it's safe we initialize ad
-bits for migration in swapfile_init() and I'll do that in the next version.
-
-Longer proof material below.
-
-Generic max_swapfile_size() is pretty much a constant except x86.  x86 has
-two dependency, on (1) X86_BUG_L1TF, and (2) l1tf_mitigation.
-
-The other challenge is the reference to MAX_PHYSMEM_BITS, which is also
-only complicated on x86 with 5 level page tables.
-
-Luckily the cpu bits are all setup within early_cpu_init(). The setup of
-l1tf_mitigation variable is later but still earlier than most of the init
-calls (which swapfile_init belongs to level 4).
-
-A full graph for reference:
-
-- start_kernel
-  - setup_arch
-    - early_cpu_init
-      - get_cpu_cap --> fetch from CPUID (including X86_FEATURE_LA57)
-      - early_identify_cpu --> setup X86_BUG_L1TF
-      - early_identify_cpu --> clear X86_FEATURE_LA57 (if early lvl5 not enabled (USE_EARLY_PGTABLE_L5))
-  - parse_early_param
-    - l1tf_cmdline --> set l1tf_mitigation
-  - check_bugs
-    - l1tf_select_mitigation --> set l1tf_mitigation
-  - arch_call_rest_init
-    - rest_init
-      - kernel_init
-        - kernel_init_freeable
-          - do_basic_setup
-            - do_initcalls --> calls swapfile_init() (initcall level 4)
-
-I'll add one (or maybe >1?) patch on top in next post to optimize the
-fetching of these states.
-
-Thanks,
-
--- 
-Peter Xu
-
+T24gVHVlc2RheSwgQXVndXN0IDksIDIwMjIgNToxNiBBTSwgQm9yaXNsYXYgUGV0a292IHdyb3Rl
+Og0KPiBib29sIGdoZXNfZWRhY19kcml2ZXJfaXNfcHJlZmVycmVkKCkNCj4gew0KPiAJaWYgKElT
+X0VOQUJMRUQoQ09ORklHX1g4NikpIHsNCj4gICAgICAgICAgICAgICAgIC8qIENoZWNrIGlmIHNh
+ZmUgdG8gZW5hYmxlIG9uIHRoaXMgc3lzdGVtICovDQo+ICAgICAgICAgICAgICAgICBpZHggPSBh
+Y3BpX21hdGNoX3BsYXRmb3JtX2xpc3QocGxhdF9saXN0KTsNCj4gCX0gZWxzZSBpZiAoQVJNKSB7
+DQo+IAkJLyogaW5zZXJ0IEFSTSBsb2dpYyBoZXJlICovDQo+IAl9DQo+IH0NCj4gDQo+IFRoYXQg
+ZnVuY3Rpb24gc2hvdWxkIGJlIGNhbGxlZCBieSB0aGUgRURBQyBtb2R1bGVzIHdoaWNoIGNvbXBl
+dGUgd2l0aA0KPiBnaGVzX2VkYWMuDQoNClRoZSBsb2dpYyBuZWVkcyB0byBiZSBsYXRjaGVkIG9u
+IGdoZXMgcHJlc2VuY2UsIGkuZS4sIHRoZSBjb25kaXRpb24gaXMNCihnaGVzLXByZXNlbnQpICYm
+IChnaGVzLXByZWZlcnJlZCkuICBDdXJyZW50bHksIGdoZXNfcHJvYmUoKSBjYWxscw0KZ2hlc19l
+ZGFjX3JlZ2lzdGVyKCkgZm9yIHRoaXMuDQoNCj4gSW4gdGhlIHg4NiBjYXNlLCB0aGF0J3Mgc2Jf
+ZWRhYywgc2t4X2VkYWMgYW5kIGFtZDY0X2VkYWMsIEkgZ3Vlc3MuDQoNCkFncmVlIHRoYXQgY2hh
+bmdpbmcgYWxsIGVkYWMgZHJpdmVycyB0byBjaGVjayB3aXRoIEdIRVMgaXMgYW4gb3B0aW9uLg0K
+SW4gdGhpcyBhcHByb2FjaCwgdGhvdWdoLCB0aGV5IHdpbGwgbmVlZCB0byBjaGVjayB3aXRoIGZv
+b19wcmVmZXJyZWQoKQ0Kd2hlbiBhIG5ldyBGVyBpbnRlcmZhY2UgRk9PIGlzIGludHJvZHVjZWQu
+DQogDQo+IEl0IGFsbCBkZXBlbmRzIG9uIHdoYXQgcGxhdGZvcm1zIFRvc2hpIHdhbnRzIHRvIGxv
+YWQgaXQgLSBJJ20gZ3Vlc3NpbmcNCj4gSFBFIGhhcyBib3RoIEludGVsIGFuZCBBTUQgcGxhdGZv
+cm1zIHdoZXJlIHRoZXkgcHJlZmVyIGdoZXNfZWRhYy4NCg0KWWVzLCBhbmQgSFBFIHdpbGwga2Vl
+cCB0aGUgc2FtZSBwbGF0Zm9ybSBJRCBmb3IgR0hFUy9GRiBtb2RlbC4NCg0KPiBPbiBBUk0sIHRo
+YXQncyB1cCB0byBBUk0gZm9sa3MuDQo+IA0KPiA+IEJlY2F1c2UgSSBub3RpY2UgdGhhdCBsb3Rz
+IG9mIG90aGVyIGVkYWMgZHJpdmVycyBhcmUgcHJvYmluZyBsaWtlOg0KPiA+IC4uLg0KPiA+ICAg
+ICAgICAgb3duZXIgPSBlZGFjX2dldF9vd25lcigpOw0KPiA+ICAgICAgICAgaWYgKG93bmVyICYm
+IHN0cm5jbXAob3duZXIsIEVEQUNfTU9EX1NUUiwNCj4gc2l6ZW9mKEVEQUNfTU9EX1NUUikpKQ0K
+PiA+ICAgICAgICAgICAgICAgICByZXR1cm4gLUVCVVNZOw0KPiANCj4gTm8sIHRoYXQncyBhIHNp
+bGx5IG1lY2hhbmlzbSB0byBhbGxvdyBhIHNpbmdsZSBFREFDIGRyaXZlciB0byBsb2FkIG9uDQo+
+IHRoZSBzeXN0ZW0uIEJ1dCB5b3VyIHRlc3Qgd2lsbCBnbyBiZWZvcmUgaXQsIGF0IHRoZSB2ZXJ5
+IGJlZ2lubmluZyBvZg0KPiB0aGUgaW5pdCBmdW5jdGlvbi4NCg0KV2VsbCwgdGhpcyBjaGVjayBi
+ZWluZyBpbnRlcmZhY2UgaW5kZXBlbmRlbnQgKGxpa2UgR0hFUykgaXMgZ29vZCBhdCBsZWFzdC4N
+Cg0KVG9zaGkNCg==
