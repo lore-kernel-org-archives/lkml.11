@@ -2,201 +2,323 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B87D2C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 20:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 833D6C25B08
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 20:07:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345969AbiHIUHM (ORCPT
+        id S1346038AbiHIUHv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 16:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58988 "EHLO
+        Tue, 9 Aug 2022 16:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346430AbiHIUGj (ORCPT
+        with ESMTP id S1346064AbiHIUH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 16:06:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B2C61EAED
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 13:06:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660075597;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tnFi6UtyTY9WNAK3ojJYdk14zblLhZ4ZNfoakUrtm+A=;
-        b=RRiSmuFGaAVaXZg6OWVjPlgu5WMHvcU7AnqD5I/zEQL97l58WkRa222T2lCiOEkMhlhqOD
-        j2H23ffFtxQXCtiJ69C/nfFlwEP9AyRnum6zHdAH6oazWSWtshBAUIIW8nVM/SaQp0HkbK
-        kxbmQYO9b9nY0mgu6SW1IDd9COBUy98=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-604-IxuZWIk0NhiobfKkJCcBcQ-1; Tue, 09 Aug 2022 16:06:28 -0400
-X-MC-Unique: IxuZWIk0NhiobfKkJCcBcQ-1
-Received: by mail-wm1-f70.google.com with SMTP id j22-20020a05600c485600b003a50fa6981bso8510283wmo.9
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 13:06:28 -0700 (PDT)
+        Tue, 9 Aug 2022 16:07:28 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202F026AE4;
+        Tue,  9 Aug 2022 13:07:24 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id l10so9489051lje.7;
+        Tue, 09 Aug 2022 13:07:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=fwBcaPOh0Mm+acQPx+pBaxkbh8G7qludAI3l5erBzns=;
+        b=hX9A97JKoAHldxFoLw6+bJjpX1nrK2XfMLcjDrvGwEX9ZpQpFlPh/0EXN8SwJz3ZSC
+         jC9RHWFCVuVpSjyJjRvWgL/u/HRrol95ost9DKS56yNYoerIvbpv2zOUOrmETzHTUrK5
+         q/unmvCTDT9Naou21HAByCayszBhv2VxTRra5zzbHpE3E/9I+yOr+M1O4TYofuJp+Gs0
+         wKfzOIhkGJKPJRoI7KmYr4Sn0FCrPdE9t9tdOBuW4wi2axwHoWiyNL8a+0wV93+79TUx
+         da/mdgVVBPH3FdD8oVAuchBridx6N3psl+4gIrfPFZh+bfe+GosBdJgoh4n7RKUQGhQ0
+         WstA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=tnFi6UtyTY9WNAK3ojJYdk14zblLhZ4ZNfoakUrtm+A=;
-        b=Y16XgQoICCdxiDm/tiw1ZlMLY6m6eGAlea+2wWWzQLpq+3hb+J6B8X8Jeynrxszxm5
-         eLZQ+CCjD+zUt+jORvzvAAuCttWWp995YyI27LWMe/GGWANhnqpiUE2XYTSQZiGU41k/
-         unA8t1Ga6yuj442v9/aTLT+HeU2jcfF7N1zJPxDHFncMGj5+tSWjZr3oO+Pxd4CVUhH7
-         qINKObta921SaYY1zOtu/WWlBcydtCVw/RtqWlnJh8UL3kT9D077FW5NRMWp8Q7yMpxt
-         Nz2J8cO+2jIQEJOBnkO7G9v48xH3q1fWIHT/We2JRCjO+Zfjm2+ksfNrokNIrnSYb3Ob
-         Sw3w==
-X-Gm-Message-State: ACgBeo0GXF42ShZqbQ3zQ4TKDaRvcr4z9OJyfjykHRJkT3S6y1hOwvTL
-        Ib1e50ZJR7+lVjQHgmQTU0N6ocqgkyQSczju8SkEq7sMAmxuGv4RuF6H2wOZYHWh0Q97ASrvsMk
-        oj5ayW4T0CXZnsGCJQznjTPX1
-X-Received: by 2002:a05:600c:1c83:b0:3a3:1f70:25a5 with SMTP id k3-20020a05600c1c8300b003a31f7025a5mr96406wms.54.1660075587257;
-        Tue, 09 Aug 2022 13:06:27 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR66DZ40NogmO6UZUwoav9+z+Te4GfHYB3lGDXDsf01sUqvkBPwo8yj0Y6XaOnjGX9a867sFmQ==
-X-Received: by 2002:a05:600c:1c83:b0:3a3:1f70:25a5 with SMTP id k3-20020a05600c1c8300b003a31f7025a5mr96390wms.54.1660075586937;
-        Tue, 09 Aug 2022 13:06:26 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c705:3700:aed2:a0f8:c270:7f30? (p200300cbc7053700aed2a0f8c2707f30.dip0.t-ipconnect.de. [2003:cb:c705:3700:aed2:a0f8:c270:7f30])
-        by smtp.gmail.com with ESMTPSA id a7-20020a056000100700b0021f0c0c62d1sm14231325wrx.13.2022.08.09.13.06.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 13:06:26 -0700 (PDT)
-Message-ID: <92f5352e-c903-0413-6dea-9758222c79ad@redhat.com>
-Date:   Tue, 9 Aug 2022 22:06:25 +0200
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=fwBcaPOh0Mm+acQPx+pBaxkbh8G7qludAI3l5erBzns=;
+        b=xV7xDgpwyskWZiIGJj0wI8psMHYawLeTdrW0qKB6HB75iI3SJFMrwlZiH1U2j2tllJ
+         lHXx8PngtIN7MZe6imCvX/ikKj7bpvRxwEiOjvMf3L4NX5HjzjGMJsxquIkh+HZm6sQS
+         PGntkz+GeJhhqDjQSwOh+UdhWkrpU+qt21Nq6mqHAYdjt8iCd4FiLDdRzDpTyy1lrOvW
+         U1b4VBZkWiK5gZ4JTwgW1HESTyvglFt9eL3MzCMAVH1DFHcgjvEG9VHJDzIg0C/ZumAQ
+         yaXxyO20RxLE83s6GfokEROpZiboqKQMw7imrpN25ovKmhghvvoIcYb3+oG5pbN+wu1c
+         WxTw==
+X-Gm-Message-State: ACgBeo33Eg7A+v6rxgH0Evkwk7o1IKdZqsfyupGVPxFnh5QZh9lUqTUA
+        Imdcky+e7x0nMKjhwIumXozf+W0sEJvAfA==
+X-Google-Smtp-Source: AA6agR4Td0H3wZFe13z/LRRPT/uL+MbC4gveyuOroFTQStmoSaNZvJJdxSyScEE0SRcBa2c6+pVpIA==
+X-Received: by 2002:a05:651c:150b:b0:25f:e204:9b99 with SMTP id e11-20020a05651c150b00b0025fe2049b99mr2985806ljf.498.1660075642273;
+        Tue, 09 Aug 2022 13:07:22 -0700 (PDT)
+Received: from mobilestation (ip1.ibrae.ac.ru. [91.238.191.1])
+        by smtp.gmail.com with ESMTPSA id b7-20020a05651c032700b0025d5eb5dde7sm84454ljp.104.2022.08.09.13.07.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 13:07:21 -0700 (PDT)
+Date:   Tue, 9 Aug 2022 23:07:18 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
+        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND v4 15/15] PCI: dwc: Introduce dma-ranges property
+ support for RC-host
+Message-ID: <20220809200718.hda3soxqvreonj3q@mobilestation>
+References: <20220624143947.8991-1-Sergey.Semin@baikalelectronics.ru>
+ <20220624143947.8991-16-Sergey.Semin@baikalelectronics.ru>
+ <20220801140047.GO93763@thinkpad>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove
- FOLL_COW
-Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-References: <20220808073232.8808-1-david@redhat.com>
- <CAHk-=wgsDOz5MfYYS9mE7PvFn4kLhTFdBwXvN6HCEsw1kvJnRQ@mail.gmail.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <CAHk-=wgsDOz5MfYYS9mE7PvFn4kLhTFdBwXvN6HCEsw1kvJnRQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220801140047.GO93763@thinkpad>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09.08.22 22:00, Linus Torvalds wrote:
-> On Mon, Aug 8, 2022 at 12:32 AM David Hildenbrand <david@redhat.com> wrote:
->>
+On Mon, Aug 01, 2022 at 07:30:47PM +0530, Manivannan Sadhasivam wrote:
+> On Fri, Jun 24, 2022 at 05:39:47PM +0300, Serge Semin wrote:
+> > In accordance with the generic PCIe Root Port DT-bindings the "dma-ranges"
+> > property has the same format as the "ranges" property. The only difference
+> > is in their semantics. The "dma-ranges" property describes the PCIe-to-CPU
+> > memory mapping in opposite to the CPU-to-PCIe mapping of the "ranges"
+> > property. Even though the DW PCIe controllers are normally equipped with
+> > the internal Address Translation Unit which inbound and outbound tables
+> > can be used to implement both properties semantics, it was surprising for
+> > me to discover that the host-related part of the DW PCIe driver currently
+> > supports the "ranges" property only while the "dma-ranges" windows are
+> > just ignored. Having the "dma-ranges" supported in the driver would be
+> > very handy for the platforms, that don't tolerate the 1:1 CPU-PCIe memory
+> > mapping and require a customized PCIe memory layout. So let's fix that by
+> > introducing the "dma-ranges" property support.
+> > 
+> > First of all we suggest to rename the dw_pcie_prog_inbound_atu() method to
+> > dw_pcie_prog_ep_inbound_atu() and create a new version of the
+> > dw_pcie_prog_inbound_atu() function. Thus we'll have two methods for the
+> > RC and EP controllers respectively in the same way as it has been
+> > developed for the outbound ATU setup methods.
+> > 
+> > Secondly aside with the memory window index and type the new
+> > dw_pcie_prog_inbound_atu() function will accept CPU address, PCIe address
+> > and size as its arguments. These parameters define the PCIe and CPU memory
+> > ranges which will be used to setup the respective inbound ATU mapping. The
+> > passed parameters need to be verified against the ATU ranges constraints
+> > in the same way as it is done for the outbound ranges.
+> > 
+> > Finally the DMA-ranges detected for the PCIe controller need to be
+> > converted to the inbound ATU entries during the host controller
+> > initialization procedure. It will be done in the framework of the
+> > dw_pcie_iatu_setup() method. Note before setting the inbound ranges up we
+> > need to disable all the inbound ATU entries in order to prevent unexpected
+> > PCIe TLPs translations defined by some third party software like
+> > bootloaders.
+> > 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 > 
-> So I've read through the patch several times, and it seems fine, but
-> this function (and the pmd version of it) just read oddly to me.
+> Small nitpick below,
 > 
->> +static inline bool can_follow_write_pte(pte_t pte, struct page *page,
->> +                                       struct vm_area_struct *vma,
->> +                                       unsigned int flags)
->> +{
->> +       if (pte_write(pte))
->> +               return true;
->> +       if (!(flags & FOLL_FORCE))
->> +               return false;
->> +
->> +       /*
->> +        * See check_vma_flags(): only COW mappings need that special
->> +        * "force" handling when they lack VM_WRITE.
->> +        */
->> +       if (vma->vm_flags & VM_WRITE)
->> +               return false;
->> +       VM_BUG_ON(!is_cow_mapping(vma->vm_flags));
+> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 > 
-> So apart from the VM_BUG_ON(), this code just looks really strange -
-> even despite the comment. Just conceptually, the whole "if it's
-> writable, return that you cannot follow it for a write" just looks so
-> very very strange.
+> Thanks,
+> Mani
 > 
-> That doesn't make the code _wrong_, but considering how many times
-> this has had subtle bugs, let's not write code that looks strange.
+> > Reviewed-by: Rob Herring <robh@kernel.org>
+> > 
+> > ---
+> > 
+> > Changelog v3:
+> > - Drop inbound iATU window size alignment constraint. (@Manivannan)
+> > ---
+> >  .../pci/controller/dwc/pcie-designware-ep.c   |  4 +-
+> >  .../pci/controller/dwc/pcie-designware-host.c | 32 ++++++++++-
+> >  drivers/pci/controller/dwc/pcie-designware.c  | 56 ++++++++++++++++++-
+> >  drivers/pci/controller/dwc/pcie-designware.h  |  6 +-
+> >  4 files changed, 89 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/drivers/pci/controller/dwc/pcie-designware-ep.c b/drivers/pci/controller/dwc/pcie-designware-ep.c
+> > index 627c4b69878c..441feff1917a 100644
+> > --- a/drivers/pci/controller/dwc/pcie-designware-ep.c
+> > +++ b/drivers/pci/controller/dwc/pcie-designware-ep.c
+> > @@ -167,8 +167,8 @@ static int dw_pcie_ep_inbound_atu(struct dw_pcie_ep *ep, u8 func_no, int type,
+> >  		return -EINVAL;
+> >  	}
+> >  
+> > -	ret = dw_pcie_prog_inbound_atu(pci, func_no, free_win, type,
+> > -				       cpu_addr, bar);
+> > +	ret = dw_pcie_prog_ep_inbound_atu(pci, func_no, free_win, type,
+> > +					  cpu_addr, bar);
+> >  	if (ret < 0) {
+> >  		dev_err(pci->dev, "Failed to program IB window\n");
+> >  		return ret;
+> > diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+> > index 6993ce9e856d..2fbe9dc11634 100644
+> > --- a/drivers/pci/controller/dwc/pcie-designware-host.c
+> > +++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+> > @@ -581,12 +581,15 @@ static int dw_pcie_iatu_setup(struct dw_pcie_rp *pp)
+> >  	}
+> >  
+> >  	/*
+> > -	 * Ensure all outbound windows are disabled before proceeding with
+> > -	 * the MEM/IO ranges setups.
+> > +	 * Ensure all out/inbound windows are disabled before proceeding with
+> > +	 * the MEM/IO (dma-)ranges setups.
+> >  	 */
+> >  	for (i = 0; i < pci->num_ob_windows; i++)
+> >  		dw_pcie_disable_atu(pci, PCIE_ATU_REGION_DIR_OB, i);
+> >  
+> > +	for (i = 0; i < pci->num_ib_windows; i++)
+> > +		dw_pcie_disable_atu(pci, PCIE_ATU_REGION_DIR_IB, i);
+> > +
+> >  	i = 0;
+> >  	resource_list_for_each_entry(entry, &pp->bridge->windows) {
+> >  		if (resource_type(entry->res) != IORESOURCE_MEM)
+> > @@ -623,9 +626,32 @@ static int dw_pcie_iatu_setup(struct dw_pcie_rp *pp)
+> >  	}
+> >  
+> >  	if (pci->num_ob_windows <= i)
+> > -		dev_warn(pci->dev, "Resources exceed number of ATU entries (%d)\n",
+> > +		dev_warn(pci->dev, "Ranges exceed outbound iATU size (%d)\n",
+> >  			 pci->num_ob_windows);
+> >  
 > 
-> So I would suggest that to protect against future bugs, we try to make
-> it be fairly clear and straightforward, and maybe even a bit overly
-> protective.
-> 
-> For example, let's kill the "shared mapping that you don't have write
-> permissions to" very explicitly and without any subtle code at all.
-> The vm_flags tests are cheap and easy, and we could very easily just
-> add some core ones to make any mistakes much less critical.
-> 
-> Now, making that 'is_cow_mapping()' check explicit at the very top of
-> this would already go a long way:
-> 
->         /* FOLL_FORCE for writability only affects COW mappings */
->         if (!is_cow_mapping(vma->vm_flags))
->                 return false;
 
-I actually put the is_cow_mapping() mapping check in there because
-check_vma_flags() should make sure that we cannot possibly end up here
-in that case. But we can spell it out with comments, doesn't hurt.
+> I think a comment here explaining what's going on below would be helpful in the
+> future.
+
+Both ranges and dma-ranges are initialized in the same way. Moreover
+the method is pretty much coherent with self-explained name. So adding
+an additional comment here doesn't seem much required.
 
 > 
-> but I'd actually go even further: in this case that "is_cow_mapping()"
-> helper to some degree actually hides what is going on.
+> > +	i = 0;
+> > +	resource_list_for_each_entry(entry, &pp->bridge->dma_ranges) {
+> > +		if (resource_type(entry->res) != IORESOURCE_MEM)
+> > +			continue;
+> > +
+> > +		if (pci->num_ib_windows <= i)
+> > +			break;
+> > +
+> > +		ret = dw_pcie_prog_inbound_atu(pci, i++, PCIE_ATU_TYPE_MEM,
+> > +					       entry->res->start,
+> > +					       entry->res->start - entry->offset,
+> > +					       resource_size(entry->res));
+> > +		if (ret) {
+> > +			dev_err(pci->dev, "Failed to set DMA range %pr\n",
+> > +				entry->res);
+> > +			return ret;
+> > +		}
+> > +	}
+> > +
+> > +	if (pci->num_ib_windows <= i)
+> > +		dev_warn(pci->dev, "Dma-ranges exceed inbound iATU size (%u)\n",
 > 
-> So I'd actually prefer for that function to be written something like
-> 
->         /* If the pte is writable, we can write to the page */
->         if (pte_write(pte))
->                 return true;
-> 
->         /* Maybe FOLL_FORCE is set to override it? */
->         if (flags & FOLL_FORCE)
->                 return false;
-> 
->         /* But FOLL_FORCE has no effect on shared mappings */
->         if (vma->vm_flags & MAP_SHARED)
->                 return false;
-> 
->         /* .. or read-only private ones */
->         if (!(vma->vm_flags & MAP_MAYWRITE))
->                 return false;
-> 
->         /* .. or already writable ones that just need to take a write fault */
->         if (vma->vm_flags & MAP_WRITE)
->                 return false;
-> 
-> and the two first vm_flags tests above are basically doing tat
-> "is_cow_mapping()", and maybe we could even have a comment to that
-> effect, but wouldn't it be nice to just write it out that way?
-> 
-> And after you've written it out like the above, now that
-> 
->         if (!page || !PageAnon(page) || !PageAnonExclusive(page))
->                 return false;
-> 
-> makes you pretty safe from a data sharing perspective: it's most
-> definitely not a shared page at that point.
-> 
-> So if you write it that way, the only remaining issues are the magic
-> special soft-dirty and uffd ones, but at that point it's purely about
-> the semantics of those features, no longer about any possible "oh, we
-> fooled some shared page to be writable".
-> 
-> And I think the above is fairly legible without any subtle cases, and
-> the one-liner comments make it all fairly clear that it's testing.
-> 
-> Is any of this in any _technical_ way different from what your patch
-> did? No. It's literally just rewriting it to be a bit more explicit in
-> what it is doing, I think, and it makes that odd "it's not writable if
-> VM_WRITE is set" case a bit more explicit.
-> 
-> Hmm?
 
-No strong opinion. I'm happy as long as it's fixed, and the fix is robust.
+> "dma-ranges"
 
+I was referring to the similar message printed in case of the number
+of specified ranges goes out of bounds.
 
--- 
-Thanks,
+-Sergey
 
-David / dhildenb
-
+> 
+> > +			 pci->num_ib_windows);
+> > +
+> >  	return 0;
+> >  }
+> >  
+> > diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+> > index 9c622b635fdd..7a5be3c4f8e0 100644
+> > --- a/drivers/pci/controller/dwc/pcie-designware.c
+> > +++ b/drivers/pci/controller/dwc/pcie-designware.c
+> > @@ -396,8 +396,60 @@ static inline void dw_pcie_writel_atu_ib(struct dw_pcie *pci, u32 index, u32 reg
+> >  	dw_pcie_writel_atu(pci, PCIE_ATU_REGION_DIR_IB, index, reg, val);
+> >  }
+> >  
+> > -int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
+> > -			     int type, u64 cpu_addr, u8 bar)
+> > +int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, int index, int type,
+> > +			     u64 cpu_addr, u64 pci_addr, u64 size)
+> > +{
+> > +	u64 limit_addr = pci_addr + size - 1;
+> > +	u32 retries, val;
+> > +
+> > +	if ((limit_addr & ~pci->region_limit) != (pci_addr & ~pci->region_limit) ||
+> > +	    !IS_ALIGNED(cpu_addr, pci->region_align) ||
+> > +	    !IS_ALIGNED(pci_addr, pci->region_align) || !size) {
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_LOWER_BASE,
+> > +			      lower_32_bits(pci_addr));
+> > +	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_UPPER_BASE,
+> > +			      upper_32_bits(pci_addr));
+> > +
+> > +	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_LIMIT,
+> > +			      lower_32_bits(limit_addr));
+> > +	if (dw_pcie_ver_is_ge(pci, 460A))
+> > +		dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_UPPER_LIMIT,
+> > +				      upper_32_bits(limit_addr));
+> > +
+> > +	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_LOWER_TARGET,
+> > +			      lower_32_bits(cpu_addr));
+> > +	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_UPPER_TARGET,
+> > +			      upper_32_bits(cpu_addr));
+> > +
+> > +	val = type;
+> > +	if (upper_32_bits(limit_addr) > upper_32_bits(pci_addr) &&
+> > +	    dw_pcie_ver_is_ge(pci, 460A))
+> > +		val |= PCIE_ATU_INCREASE_REGION_SIZE;
+> > +	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_REGION_CTRL1, val);
+> > +	dw_pcie_writel_atu_ib(pci, index, PCIE_ATU_REGION_CTRL2, PCIE_ATU_ENABLE);
+> > +
+> > +	/*
+> > +	 * Make sure ATU enable takes effect before any subsequent config
+> > +	 * and I/O accesses.
+> > +	 */
+> > +	for (retries = 0; retries < LINK_WAIT_MAX_IATU_RETRIES; retries++) {
+> > +		val = dw_pcie_readl_atu_ib(pci, index, PCIE_ATU_REGION_CTRL2);
+> > +		if (val & PCIE_ATU_ENABLE)
+> > +			return 0;
+> > +
+> > +		mdelay(LINK_WAIT_IATU);
+> > +	}
+> > +
+> > +	dev_err(pci->dev, "Inbound iATU is not being enabled\n");
+> > +
+> > +	return -ETIMEDOUT;
+> > +}
+> > +
+> > +int dw_pcie_prog_ep_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
+> > +				int type, u64 cpu_addr, u8 bar)
+> >  {
+> >  	u32 retries, val;
+> >  
+> > diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
+> > index c3e73ed9aff5..5954e8cf9eec 100644
+> > --- a/drivers/pci/controller/dwc/pcie-designware.h
+> > +++ b/drivers/pci/controller/dwc/pcie-designware.h
+> > @@ -308,8 +308,10 @@ int dw_pcie_prog_outbound_atu(struct dw_pcie *pci, int index, int type,
+> >  			      u64 cpu_addr, u64 pci_addr, u64 size);
+> >  int dw_pcie_prog_ep_outbound_atu(struct dw_pcie *pci, u8 func_no, int index,
+> >  				 int type, u64 cpu_addr, u64 pci_addr, u64 size);
+> > -int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
+> > -			     int type, u64 cpu_addr, u8 bar);
+> > +int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, int index, int type,
+> > +			     u64 cpu_addr, u64 pci_addr, u64 size);
+> > +int dw_pcie_prog_ep_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
+> > +				int type, u64 cpu_addr, u8 bar);
+> >  void dw_pcie_disable_atu(struct dw_pcie *pci, u32 dir, int index);
+> >  void dw_pcie_setup(struct dw_pcie *pci);
+> >  void dw_pcie_iatu_detect(struct dw_pcie *pci);
+> > -- 
+> > 2.35.1
+> > 
+> 
+> -- 
+> மணிவண்ணன் சதாசிவம்
