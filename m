@@ -2,134 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C52C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 13:57:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72FB7C25B0C
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 13:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244702AbiHIN45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 09:56:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34912 "EHLO
+        id S244703AbiHIN6j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 09:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244780AbiHIN4W (ORCPT
+        with ESMTP id S230380AbiHIN6e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 09:56:22 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAC518368;
-        Tue,  9 Aug 2022 06:56:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660053382; x=1691589382;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=odYNCkcIAQcBKQptQexLin/WRKzdil3fPD/Uqu4HkkI=;
-  b=aEFzcalQ97hAG4bs2JdRqWh1VYvGCJfnHi664tJe/d/FqlvKXVw2DGNF
-   0sl4Mb77jMqaH3pw2ip5ztIa2t/6kYAuQ4kVNeWE0WSFPGYG3tWmustKj
-   S1MyZYCrFhh3nnAJx34sgJL686GkGPuP7OCHq+najECXbN6sNphKBVeTe
-   U=;
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-b09d0114.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 13:56:08 +0000
-Received: from EX13D24EUC003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-b09d0114.us-east-1.amazon.com (Postfix) with ESMTPS id 35EAD80383;
-        Tue,  9 Aug 2022 13:55:58 +0000 (UTC)
-Received: from dev-dsk-sabrapan-1c-164a86ac.eu-west-1.amazon.com
- (10.43.162.227) by EX13D24EUC003.ant.amazon.com (10.43.164.217) with
- Microsoft SMTP Server (TLS) id 15.0.1497.36; Tue, 9 Aug 2022 13:55:48 +0000
-From:   Sabin Rapan <sabrapan@amazon.com>
-To:     <ashish.kalra@amd.com>
-CC:     <ak@linux.intel.com>, <alpergun@google.com>, <ardb@kernel.org>,
-        <bp@alien8.de>, <dave.hansen@linux.intel.com>,
-        <dgilbert@redhat.com>, <dovmurik@linux.ibm.com>, <hpa@zytor.com>,
-        <jarkko@kernel.org>, <jmattson@google.com>, <jroedel@suse.de>,
-        <kirill@shutemov.name>, <kvm@vger.kernel.org>,
-        <linux-coco@lists.linux.dev>, <linux-crypto@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        <luto@kernel.org>, <marcorr@google.com>, <michael.roth@amd.com>,
-        <mingo@redhat.com>, <pbonzini@redhat.com>, <peterz@infradead.org>,
-        <pgonda@google.com>, <rientjes@google.com>,
-        <sathyanarayanan.kuppuswamy@linux.intel.com>, <seanjc@google.com>,
-        <slp@redhat.com>, <srinivas.pandruvada@linux.intel.com>,
-        <tglx@linutronix.de>, <thomas.lendacky@amd.com>, <tobin@ibm.com>,
-        <tony.luck@intel.com>, <vbabka@suse.cz>, <vkuznets@redhat.com>,
-        <x86@kernel.org>
-Subject: Re: [PATCH Part2 v6 26/49] KVM: SVM: Add KVM_SEV_SNP_LAUNCH_UPDATE command 
-Date:   Tue, 9 Aug 2022 13:55:35 +0000
-Message-ID: <20220809135535.88234-1-sabrapan@amazon.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <fdf036c1e2fdf770da8238b31056206be08a7c1b.1655761627.git.ashish.kalra@amd.com>
-References: <fdf036c1e2fdf770da8238b31056206be08a7c1b.1655761627.git.ashish.kalra@amd.com>
+        Tue, 9 Aug 2022 09:58:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72A3DBD7
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 06:58:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660053512;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+iBX2CUEKV5L8oNC+j4le4zVCb3jpztFMMY/uHRCYck=;
+        b=eO3T1nIJWJywdOPVobAFElXTEH3pc+bOQB2KDw0gJN9RTgKvQKhoa7e5L7T80J/MzE8wA4
+        +P5BfB4YuAf+rf1BIu74H8AIf1oUra78eAPOpS3UdSQwz7vghyePG8J+cCK5tM2hLv6Y6l
+        3NWPfzicIvrZ7n9yGQ70z93amw/Q8RQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-45-l1jlXfT-M9eGcztM8uR2LQ-1; Tue, 09 Aug 2022 09:58:28 -0400
+X-MC-Unique: l1jlXfT-M9eGcztM8uR2LQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 417818039A6;
+        Tue,  9 Aug 2022 13:58:28 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.14])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7CB95492C3B;
+        Tue,  9 Aug 2022 13:58:27 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <431242.1660051645@warthog.procyon.org.uk>
+References: <431242.1660051645@warthog.procyon.org.uk>
+Cc:     dhowells@redhat.com, torvalds@linux-foundation.org,
+        jlayton@kernel.org, linux-cachefs@redhat.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [GIT PULL] fscache: Invalidation fix and new tracepoint
 MIME-Version: 1.0
-X-Originating-IP: [10.43.162.227]
-X-ClientProxiedBy: EX13D40UWC003.ant.amazon.com (10.43.162.246) To
- EX13D24EUC003.ant.amazon.com (10.43.164.217)
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-ID: <433855.1660053506.1@warthog.procyon.org.uk>
+Date:   Tue, 09 Aug 2022 14:58:26 +0100
+Message-ID: <433856.1660053506@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +static bool is_hva_registered(struct kvm *kvm, hva_t hva, size_t len)
-> +{
-> +	struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
-> +	struct list_head *head = &sev->regions_list;
-> +	struct enc_region *i;
-> +
-> +	lockdep_assert_held(&kvm->lock);
-> +
-> +	list_for_each_entry(i, head, list) {
-> +		u64 start = i->uaddr;
-> +		u64 end = start + i->size;
-> +
-> +		if (start <= hva && end >= (hva + len))
-> +			return true;
-> +	}
-> +
-> +	return false;
-> +}
+Bah...  I forgot to set the subject line.
 
-Since KVM_MEMORY_ENCRYPT_REG_REGION should be called for every memory region the user gives to kvm,
-is the regions_list any different from kvm's memslots?
-
-> +
-> +static int snp_launch_update(struct kvm *kvm, struct kvm_sev_cmd *argp)
-> +{
-> +	struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
-> +	struct sev_data_snp_launch_update data = {0};
-> +	struct kvm_sev_snp_launch_update params;
-> +	unsigned long npages, pfn, n = 0;
-> +	int *error = &argp->error;
-> +	struct page **inpages;
-> +	int ret, i, level;
-> +	u64 gfn;
-> +
-> +	if (!sev_snp_guest(kvm))
-> +		return -ENOTTY;
-> +
-> +	if (!sev->snp_context)
-> +		return -EINVAL;
-> +
-> +	if (copy_from_user(&params, (void __user *)(uintptr_t)argp->data, sizeof(params)))
-> +		return -EFAULT;
-> +
-> +	/* Verify that the specified address range is registered. */
-> +	if (!is_hva_registered(kvm, params.uaddr, params.len))
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * The userspace memory is already locked so technically we don't
-> +	 * need to lock it again. Later part of the function needs to know
-> +	 * pfn so call the sev_pin_memory() so that we can get the list of
-> +	 * pages to iterate through.
-> +	 */
-> +	inpages = sev_pin_memory(kvm, params.uaddr, params.len, &npages, 1);
-> +	if (!inpages)
-> +		return -ENOMEM;
-
-sev_pin_memory will call pin_user_pages() which fails for PFNMAP vmas that you
-would get if you use memory allocated from an IO driver.
-Using gfn_to_pfn instead will make this work with vmas backed by pages or raw
-pfn mappings.
-
-
-
-
-Amazon Development Center (Romania) S.R.L. registered office: 27A Sf. Lazar Street, UBC5, floor 2, Iasi, Iasi County, 700045, Romania. Registered in Romania. Registration number J22/2621/2005.
+David
 
