@@ -2,108 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48E2FC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 10:41:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6F5C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 10:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242634AbiHIKle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 06:41:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52600 "EHLO
+        id S234943AbiHIKlu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 06:41:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242608AbiHIKlc (ORCPT
+        with ESMTP id S242671AbiHIKlp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 06:41:32 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FCF24099
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 03:41:31 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id x2-20020a6bfe02000000b00682bffede8fso6006958ioh.2
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 03:41:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=tUq98I7aR5JXGl5sCzEIGpj+bZOjTZ1Xlr+6Uy5x0Ls=;
-        b=tIzkzpzIwMLJ5eWcNhC/rndcAoXDob0DDIiIVNNYAfGfh3moNV0yVtIffiTLqNg1L/
-         tCIdwmE0xHTj1Ts41NQewGnmV3Iv8k+ZfUefmY3EE3FU2QAZx6P22gv3WDgN8TtZCz4C
-         lQRCHqxICxdMrXyN9XPFyV0RsA1wkGg6y07GPBEK8p6ylRd8KDaboVR8p4vJtSscvM1V
-         JUz0s4SBu1md+jQRQ0Ee+bZT0G/0q27dgd2lCpnDb96swfG21AYMJ96tRnbVclsJNhvp
-         fpdkZX+7oiuUaHu6+Pgg4+MzjyF6Poj7gV/E+VYmfyaU+KV2CXftq0biUGM6+GhvxRt7
-         S0Ow==
-X-Gm-Message-State: ACgBeo06Q8kxzqDvHZ8ETeZX2LfUYDF0kyu7Cjf/cD+Aai4M9NSsvD69
-        JXDca5E9aOlpWilK51Vd8WG+1tTLYTWSbFql/+JgHKIYHrBX
-X-Google-Smtp-Source: AA6agR43YaEMsUVc0nln447abeqEOnooti4uMdExknLZbeue8Dw4a9H4ecC1NOhlEGgjwc23KyBdSLEYB1ui7NliMkUNc7CZRNSg
+        Tue, 9 Aug 2022 06:41:45 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F3F240B0;
+        Tue,  9 Aug 2022 03:41:42 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4M28kq4Mkpz9sj9;
+        Tue,  9 Aug 2022 12:41:39 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id bwunTC9zQdnT; Tue,  9 Aug 2022 12:41:39 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4M28kq3KFwz9sTf;
+        Tue,  9 Aug 2022 12:41:39 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 618598B778;
+        Tue,  9 Aug 2022 12:41:39 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id OgfyrO3Jg3AT; Tue,  9 Aug 2022 12:41:39 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.234.255])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 1C0FF8B763;
+        Tue,  9 Aug 2022 12:41:39 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 279AfUiP098284
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Tue, 9 Aug 2022 12:41:30 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 279AfSLO098283;
+        Tue, 9 Aug 2022 12:41:28 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
+        "H. Peter Anvin" <hpa@zytor.com>, Arnd Bergmann <arnd@arndb.de>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-gpio@vger.kernel.org (open list:GPIO SUBSYSTEM),
+        linux-doc@vger.kernel.org (open list:DOCUMENTATION),
+        linux-kernel@vger.kernel.org (open list),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM PORT),
+        linux-arch@vger.kernel.org (open list:GENERIC INCLUDE/ASM HEADER FILES)
+Subject: [PATCH] gpio: Allow user to customise maximum number of GPIOs
+Date:   Tue,  9 Aug 2022 12:40:38 +0200
+Message-Id: <f31b818cf8d682de61c74b133beffcc8a8202478.1660041358.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3015:b0:341:de68:602c with SMTP id
- r21-20020a056638301500b00341de68602cmr10181049jak.10.1660041690986; Tue, 09
- Aug 2022 03:41:30 -0700 (PDT)
-Date:   Tue, 09 Aug 2022 03:41:30 -0700
-In-Reply-To: <000000000000ab752605e5c85e9a@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004dbc5305e5cc93a6@google.com>
-Subject: Re: [syzbot] WARNING in blk_mq_release
-From:   syzbot <syzbot+31c9594f6e43b9289b25@syzkaller.appspotmail.com>
-To:     axboe@kernel.dk, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1660041632; l=4893; s=20211009; h=from:subject:message-id; bh=ejR9oy9Pzrb8cgNZizsVlepvN45Ei2h0wt6+agIKtnw=; b=iINNvBE7QtjOKvB5PfN++erBtPsIhPMmqt/Z3lpvNjlBik2I3AaHxITPd0hsvJrpISp2eGMVSXs7 k8V7YsxYANQW8OT/GDp2OZUhMBB4TXFze5pWuYa7YMXL3wOm+uOE
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+At the time being, the default maximum number of GPIOs is set to 512
+and can only get customised via an architecture specific
+CONFIG_ARCH_NR_GPIO.
 
-HEAD commit:    200e340f2196 Merge tag 'pull-work.dcache' of git://git.ker..
-git tree:       upstream
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=1446b746080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a3f4d6985d3164cd
-dashboard link: https://syzkaller.appspot.com/bug?extid=31c9594f6e43b9289b25
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=106b302a080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16b1dae1080000
+The maximum number of GPIOs might be dependent on the number of
+interface boards and is somewhat independent of architecture.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+31c9594f6e43b9289b25@syzkaller.appspotmail.com
+Allow the user to select that maximum number outside of any
+architecture configuration. To enable that, re-define a
+core CONFIG_ARCH_NR_GPIO for architectures which don't already
+define one. Guard it with a new hidden CONFIG_ARCH_HAS_NR_GPIO.
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 23016 at block/blk-mq.c:3881 blk_mq_release+0xf8/0x3e0 block/blk-mq.c:3881
-Modules linked in:
-CPU: 1 PID: 23016 Comm: syz-executor588 Not tainted 5.19.0-syzkaller-02972-g200e340f2196 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:blk_mq_release+0xf8/0x3e0 block/blk-mq.c:3881
-Code: fd 4c 8d a3 a8 02 00 00 4c 89 e0 48 c1 e8 03 80 3c 28 00 0f 85 14 02 00 00 48 8b 83 a8 02 00 00 49 39 c4 75 b1 e8 48 e4 96 fd <0f> 0b eb a8 e8 3f e4 96 fd 48 8b 44 24 10 48 05 18 05 00 00 48 89
-RSP: 0018:ffffc900032bfc60 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffff88807a8e8800 RCX: 0000000000000000
-RDX: ffff88807cd89d80 RSI: ffffffff83e3f578 RDI: 0000000000000000
-RBP: dffffc0000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000001 R12: ffff88807a8e8aa8
-R13: ffff88807ab0db40 R14: ffff88807ab0db88 R15: 0000000000000000
-FS:  0000555555af3300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fbf573219f0 CR3: 000000007deea000 CR4: 0000000000350ee0
-Call Trace:
- <TASK>
- blk_release_queue+0x153/0x270 block/blk-sysfs.c:780
- kobject_cleanup lib/kobject.c:673 [inline]
- kobject_release lib/kobject.c:704 [inline]
- kref_put include/linux/kref.h:65 [inline]
- kobject_put+0x1c8/0x540 lib/kobject.c:721
- __alloc_disk_node+0x4f7/0x610 block/genhd.c:1388
- __blk_mq_alloc_disk+0x13b/0x1f0 block/blk-mq.c:3961
- loop_add+0x3e2/0xaf0 drivers/block/loop.c:1978
- loop_control_ioctl+0x133/0x620 drivers/block/loop.c:2150
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl fs/ioctl.c:856 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fbf572f20b9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 b1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffca9b31288 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007fbf572f20b9
-RDX: 000000000000000c RSI: 0000000000004c80 RDI: 0000000000000003
-RBP: 00007ffca9b312a0 R08: 0000000000000002 R09: 0000000000000001
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000004
-R13: 431bde82d7b634db R14: 0000000000000000 R15: 0000000000000000
- </TASK>
+Only two architectures will need CONFIG_ARCH_HAS_NR_GPIO: x86 and arm.
+
+On arm, do like x86 and set 512 as the default instead of 0, that
+allows simplifying the logic in asm-generic/gpio.h
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ Documentation/driver-api/gpio/legacy.rst |  2 +-
+ arch/arm/Kconfig                         |  3 ++-
+ arch/arm/include/asm/gpio.h              |  1 -
+ arch/x86/Kconfig                         |  1 +
+ drivers/gpio/Kconfig                     | 14 ++++++++++++++
+ include/asm-generic/gpio.h               |  6 ------
+ 6 files changed, 18 insertions(+), 9 deletions(-)
+
+diff --git a/Documentation/driver-api/gpio/legacy.rst b/Documentation/driver-api/gpio/legacy.rst
+index 9b12eeb89170..566b06a584cf 100644
+--- a/Documentation/driver-api/gpio/legacy.rst
++++ b/Documentation/driver-api/gpio/legacy.rst
+@@ -558,7 +558,7 @@ Platform Support
+ To force-enable this framework, a platform's Kconfig will "select" GPIOLIB,
+ else it is up to the user to configure support for GPIO.
+ 
+-It may also provide a custom value for ARCH_NR_GPIOS, so that it better
++It may also provide a custom value for CONFIG_ARCH_NR_GPIO, so that it better
+ reflects the number of GPIOs in actual use on that platform, without
+ wasting static table space.  (It should count both built-in/SoC GPIOs and
+ also ones on GPIO expanders.
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 53e6a1da9af5..e55b6560fe4f 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -14,6 +14,7 @@ config ARM
+ 	select ARCH_HAS_KCOV
+ 	select ARCH_HAS_MEMBARRIER_SYNC_CORE
+ 	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
++	select ARCH_HAS_NR_GPIO
+ 	select ARCH_HAS_PTE_SPECIAL if ARM_LPAE
+ 	select ARCH_HAS_PHYS_TO_DMA
+ 	select ARCH_HAS_SETUP_DMA_OPS
+@@ -1243,7 +1244,7 @@ config ARCH_NR_GPIO
+ 	default 352 if ARCH_VT8500
+ 	default 288 if ARCH_ROCKCHIP
+ 	default 264 if MACH_H4700
+-	default 0
++	default 512
+ 	help
+ 	  Maximum number of GPIOs in the system.
+ 
+diff --git a/arch/arm/include/asm/gpio.h b/arch/arm/include/asm/gpio.h
+index f3bb8a2bf788..4ebbb58f06ea 100644
+--- a/arch/arm/include/asm/gpio.h
++++ b/arch/arm/include/asm/gpio.h
+@@ -2,7 +2,6 @@
+ #ifndef _ARCH_ARM_GPIO_H
+ #define _ARCH_ARM_GPIO_H
+ 
+-/* Note: this may rely upon the value of ARCH_NR_GPIOS set in mach/gpio.h */
+ #include <asm-generic/gpio.h>
+ 
+ /* The trivial gpiolib dispatchers */
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index f9920f1341c8..a8c956abc21e 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -82,6 +82,7 @@ config X86
+ 	select ARCH_HAS_MEM_ENCRYPT
+ 	select ARCH_HAS_MEMBARRIER_SYNC_CORE
+ 	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
++	select ARCH_HAS_NR_GPIO
+ 	select ARCH_HAS_PMEM_API		if X86_64
+ 	select ARCH_HAS_PTE_DEVMAP		if X86_64
+ 	select ARCH_HAS_PTE_SPECIAL
+diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
+index 0642f579196f..250b50ed44e1 100644
+--- a/drivers/gpio/Kconfig
++++ b/drivers/gpio/Kconfig
+@@ -11,6 +11,9 @@ config ARCH_HAVE_CUSTOM_GPIO_H
+ 	  overriding the default implementations.  New uses of this are
+ 	  strongly discouraged.
+ 
++config ARCH_HAS_NR_GPIO
++	bool
++
+ menuconfig GPIOLIB
+ 	bool "GPIO Support"
+ 	help
+@@ -22,6 +25,17 @@ menuconfig GPIOLIB
+ 
+ if GPIOLIB
+ 
++config ARCH_NR_GPIO
++	int "Maximum number of GPIOs" if EXPERT
++	depends on !ARCH_HAS_NR_GPIO
++	default 512
++	help
++	  This allows the user to select the maximum number of GPIOs the
++	  kernel must support. When the architecture defines a number
++	  through CONFIG_ARCH_NR_GPIO, that value is taken and the user
++	  cannot change it. Otherwise it defaults to 512 and the user
++	  can change it when CONFIG_EXPERT is set.
++
+ config GPIOLIB_FASTPATH_LIMIT
+ 	int "Maximum number of GPIOs for fast path"
+ 	range 32 512
+diff --git a/include/asm-generic/gpio.h b/include/asm-generic/gpio.h
+index aea9aee1f3e9..ee090f534ab8 100644
+--- a/include/asm-generic/gpio.h
++++ b/include/asm-generic/gpio.h
+@@ -24,13 +24,7 @@
+  * actually an estimate of a board-specific value.
+  */
+ 
+-#ifndef ARCH_NR_GPIOS
+-#if defined(CONFIG_ARCH_NR_GPIO) && CONFIG_ARCH_NR_GPIO > 0
+ #define ARCH_NR_GPIOS CONFIG_ARCH_NR_GPIO
+-#else
+-#define ARCH_NR_GPIOS		512
+-#endif
+-#endif
+ 
+ /*
+  * "valid" GPIO numbers are nonnegative and may be passed to
+-- 
+2.37.1
 
