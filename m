@@ -2,90 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FF5C00140
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 01:58:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16CEFC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 01:58:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230033AbiHIB6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 21:58:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50056 "EHLO
+        id S231447AbiHIB62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 21:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbiHIB6V (ORCPT
+        with ESMTP id S231241AbiHIB6Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 21:58:21 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283CA1D0CF
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 18:58:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660010301; x=1691546301;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/kgqxvayGmYr7WeQzjjxmxGhkWnKjNCZ9r00wywtC6I=;
-  b=mzwkJuqhazQ2FOrechchajscPLSVkK54WV5ZAcDvCluWvd6QOYgbtl+p
-   fPMNUfENPYqK0fGcoBZPw/2fVVlUoDHTXHL4PzIRR5I7fBhWpND9RZY5W
-   MBVpQ7IR59k5W8y+5xLQNnzwug31W2E6L9VybB3H/Upj3sUEK6fZjbUFW
-   coG4GKdMY0bQ+CT02UP47nvvRfX+Xpk4SkgUW3+D7+5Oyhg/Y1R2qjz3j
-   SY9ibfiLrQFe+AneBtGXoJBiVmOB6jWW6g8l82xeS1roEiF6XR1jnJkk9
-   xyW6F4v+gdStbugMhaNsXfa1w63IipISqnCDxLxZxLqOsNJXMwmH7D4Tr
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="291519129"
-X-IronPort-AV: E=Sophos;i="5.93,223,1654585200"; 
-   d="scan'208";a="291519129"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 18:58:20 -0700
-X-IronPort-AV: E=Sophos;i="5.93,223,1654585200"; 
-   d="scan'208";a="664225312"
-Received: from rongch2-desk.sh.intel.com (HELO localhost) ([10.239.159.175])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 18:58:18 -0700
-Date:   Tue, 9 Aug 2022 09:58:16 +0800
-From:   kernel test robot <rong.a.chen@intel.com>
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     Paul Gazzillo <paul@pgazz.com>,
-        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: kismet: WARNING: unmet direct dependencies detected for
- PM_GENERIC_DOMAINS_OF when selected by QCOM_RPMPD
-Message-ID: <YvG/OO+Go7YQwsrc@rongch2-desk2>
+        Mon, 8 Aug 2022 21:58:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C4861D0E3
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 18:58:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660010303;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AraItjhsp1dqssP9+NH8TryXJ/RaDUuvHej+wmvZvL0=;
+        b=EzUjcQ0vsF33fPlG1n/9xaKc5D1WyK6SFvW0wyrB+djT0ghKSg2DNut9Mt81h0t8VaD1nX
+        ifTYMbLODeWokgoNgXOZDnI+r2YiZBHNzyk5OeD8fSdpkr3TKs8Cn78LmNlFL/Rd0GQBLZ
+        RzsqS41mD2hYJNEuhYPECKXEz7E4wT8=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-124-KszI8-sjOhaONA8JWpJ02g-1; Mon, 08 Aug 2022 21:58:20 -0400
+X-MC-Unique: KszI8-sjOhaONA8JWpJ02g-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id ABDA11C068CC;
+        Tue,  9 Aug 2022 01:58:19 +0000 (UTC)
+Received: from [10.64.54.20] (vpn2-54-20.bne.redhat.com [10.64.54.20])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id E554940CF8F2;
+        Tue,  9 Aug 2022 01:58:16 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: tools/testing/selftests/kvm/rseq_test and glibc 2.35
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     Florian Weimer <fweimer@redhat.com>,
+        Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+References: <875yj2n2r0.fsf@oldenburg.str.redhat.com>
+ <465d3599-2433-7f6e-66fc-b4018ba258cf@redhat.com>
+ <1675511593.114778.1660006670558.JavaMail.zimbra@efficios.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <721274ac-6b56-3baf-a99a-ab746ecce014@redhat.com>
+Date:   Tue, 9 Aug 2022 13:58:53 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+In-Reply-To: <1675511593.114778.1660006670558.JavaMail.zimbra@efficios.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   74cae210a335d159f2eb822e261adee905b6951a
-commit: 7d0221fb59125181a31ef3a561306c70fb238bc7 soc/qcom: Make QCOM_RPMPD select PM_GENERIC_DOMAINS/_OF
-config: x86_64-kismet-CONFIG_PM_GENERIC_DOMAINS_OF-CONFIG_QCOM_RPMPD-0-0 (https://download.01.org/0day-ci/archive/20220806/202208060923.DrywHbPW-lkp@intel.com/config)
-reproduce:
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7d0221fb59125181a31ef3a561306c70fb238bc7
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 7d0221fb59125181a31ef3a561306c70fb238bc7
-        # 1. reproduce by kismet
-           # install kmax per https://github.com/paulgazz/kmax/blob/master/README.md
-           kismet --linux-ksrc=linux --selectees CONFIG_PM_GENERIC_DOMAINS_OF --selectors CONFIG_QCOM_RPMPD -a=x86_64
-        # 2. reproduce by make
-           # save the config file to linux source tree
-           cd linux
-           make ARCH=x86_64 olddefconfig
+On 8/9/22 10:57 AM, Mathieu Desnoyers wrote:
+> 
+> ----- Gavin Shan <gshan@redhat.com> wrote:
+>> Hi Florian,
+>>
+>> On 8/9/22 2:01 AM, Florian Weimer wrote:
+>>> It has come to my attention that the KVM rseq test apparently needs to
+>>> be ported to glibc 2.35.  The background is that on aarch64, rseq is the
+>>> only way to get a practically useful sched_getcpu.  (There's no hidden
+>>> per-task CPU state the vDSO could reveal as the CPU ID.)
+>>>
+>>
+>> Yes, kvm/selftests/rseq needs to support glibc 2.35. The question is
+>> about glibc 2.34 or 2.35 because kvm/selftest/rseq fails on glibc 2.34
+>>
+>> I would guess upstream-glibc-2.35 feature is enabled on downstream
+>> glibc-2.34?
+>>
+>> # ./rseq_test
+>> ==== Test Assertion Failure ====
+>>     rseq_test.c:60: !r
+>>     pid=112043 tid=112043 errno=22 - Invalid argument
+>>        1	0x0000000000401973: main at rseq_test.c:226
+>>        2	0x0000ffff84b6c79b: ?? ??:0
+>>        3	0x0000ffff84b6c86b: ?? ??:0
+>>        4	0x0000000000401b6f: _start at ??:?
+>>     rseq failed, errno = 22 (Invalid argument)
+>> # rpm -aq | grep glibc-2
+>> glibc-2.34-39.el9.aarch64
+>>
+>>
+>>> The main rseq tests have already been adjusted via:
+>>>
+>>> commit 233e667e1ae3e348686bd9dd0172e62a09d852e1
+>>> Author: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+>>> Date:   Mon Jan 24 12:12:45 2022 -0500
+>>>
+>>>       selftests/rseq: Uplift rseq selftests for compatibility with glibc-2.35
+>>>       
+>>>       glibc-2.35 (upcoming release date 2022-02-01) exposes the rseq per-thread
+>>>       data in the TCB, accessible at an offset from the thread pointer, rather
+>>>       than through an actual Thread-Local Storage (TLS) variable, as the
+>>>       Linux kernel selftests initially expected.
+>>>       
+>>>       The __rseq_abi TLS and glibc-2.35's ABI for per-thread data cannot
+>>>       actively coexist in a process, because the kernel supports only a single
+>>>       rseq registration per thread.
+>>>       
+>>>       Here is the scheme introduced to ensure selftests can work both with an
+>>>       older glibc and with glibc-2.35+:
+>>>       
+>>>       - librseq exposes its own "rseq_offset, rseq_size, rseq_flags" ABI.
+>>>       
+>>>       - librseq queries for glibc rseq ABI (__rseq_offset, __rseq_size,
+>>>         __rseq_flags) using dlsym() in a librseq library constructor. If those
+>>>         are found, copy their values into rseq_offset, rseq_size, and
+>>>         rseq_flags.
+>>>       
+>>>       - Else, if those glibc symbols are not found, handle rseq registration
+>>>         from librseq and use its own IE-model TLS to implement the rseq ABI
+>>>         per-thread storage.
+>>>       
+>>>       Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+>>>       Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+>>>       Link: https://lkml.kernel.org/r/20220124171253.22072-8-mathieu.desnoyers@efficios.com
+>>>
+>>> But I don't see a similar adjustment for
+>>> tools/testing/selftests/kvm/rseq_test.c.  As an additional wrinkle,
+>>> you'd have to start calling getcpu (glibc function or system call)
+>>> because comparing rseq.cpu_id against sched_getcpu won't test anything
+>>> anymore once glibc implements sched_getcpu using rseq.
+>>>
+>>> We noticed this because our downstream glibc version, while based on
+>>> 2.34, enables rseq registration by default.  To facilitate coordination
+>>> with rseq application usage, we also backported the __rseq_* ABI
+>>> symbols, so the selftests could use that even in our downstream version.
+>>> (We enable the glibc tunables downstream, but they are an optional
+>>> glibc feature, so it's probably better in the long run to fix the kernel
+>>> selftests rather than using the tunables as a workaround.)
+>>>
+>>
+>> Thanks for the pointer. It makes sense. So it means rseq registration has
+>> been done by glibc TLS? In this case, kvm/selftests/rseq is unable to
+>> register again.
+> 
+> The registration is done by glibc initialization and thread startup code.
+> 
+>>
+>> I will come up something similiar for kvm/selftest/rseq.
+> 
+> Make sure to chech the rseq selftests fixes recently pulled in the current merge window as well. One is relevant:
+> 
+> https://github.com/torvalds/linux/commit/d1a997ba4c1bf65497d956aea90de42a6398f73a
+> 
+> We may want to find a way to remove this duplicated rseq.c code eventually.
+> 
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks, Mathieu. The check for 'rseq-size' will be included either. I almost
+have something working. I will post the fixes after some tests.
 
-kismet warnings: (new ones prefixed by >>)
->> kismet: WARNING: unmet direct dependencies detected for PM_GENERIC_DOMAINS_OF when selected by QCOM_RPMPD
-   
-   WARNING: unmet direct dependencies detected for PM_GENERIC_DOMAINS
-     Depends on [n]: PM [=n]
-     Selected by [y]:
-     - QCOM_RPMPD [=y] && QCOM_SMD_RPM [=y]
-   
-   WARNING: unmet direct dependencies detected for PM_GENERIC_DOMAINS_OF
-     Depends on [n]: PM_GENERIC_DOMAINS [=y] && OF [=n]
-     Selected by [y]:
-     - QCOM_RPMPD [=y] && QCOM_SMD_RPM [=y]
+Thanks,
+Gavin
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
