@@ -2,117 +2,273 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4481FC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB81C25B06
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:56:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241291AbiHIIzl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 04:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56608 "EHLO
+        id S233149AbiHII4B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 04:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236411AbiHIIzi (ORCPT
+        with ESMTP id S241438AbiHIIzw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 04:55:38 -0400
-Received: from hutie.ust.cz (unknown [IPv6:2a03:3b40:fe:f0::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CED21270;
-        Tue,  9 Aug 2022 01:55:37 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
-        t=1660035335; bh=gC4GNArn5L/+qSmbqUbjWxF4hXj6UbOzOdSVGC9cgDE=;
-        h=Subject:From:In-Reply-To:Date:Cc:References:To;
-        b=ZajEXVjp7mPMMG2eOn3wmWnNtyDDnBp6T+mh3Lh7LDgJkT00oLqeXkpQkzqJk4Tdb
-         Q31ajC+zOqJEr6HgWWNNIXqDtjUn5onK4CiWqrqUJ4ukSUOYk6AkOziyznRr5ywn31
-         qQTwzcFLfOLG5AFWJHC4utUEbbWrT1nIUfpjjz58=
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [PATCH 1/3] dt-bindings: sound: Add Apple MCA I2S transceiver
-From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>
-In-Reply-To: <cbe80ae1-3ae8-eccf-89f7-4506e3f44ca7@linaro.org>
-Date:   Tue, 9 Aug 2022 10:55:35 +0200
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>, asahi@lists.linux.dev,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <C55ADB0F-0894-4A3B-BDD2-6A20BB1F4A4F@cutebit.org>
-References: <20220808224153.3634-1-povik+lin@cutebit.org>
- <20220808224153.3634-2-povik+lin@cutebit.org>
- <8ce59940-f559-35cb-5f86-37399da166a1@linaro.org>
- <DCBCB694-F5A3-4E76-9518-89E9A1A4AB55@cutebit.org>
- <cbe80ae1-3ae8-eccf-89f7-4506e3f44ca7@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+        Tue, 9 Aug 2022 04:55:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D8C22286;
+        Tue,  9 Aug 2022 01:55:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CE5AB810A7;
+        Tue,  9 Aug 2022 08:55:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1019C433C1;
+        Tue,  9 Aug 2022 08:55:43 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Feiyang Chen <chenfeiyang@loongson.cn>,
+        Min Zhou <zhoumin@loongson.cn>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH V9 2/4] LoongArch: Add sparse memory vmemmap support
+Date:   Tue,  9 Aug 2022 16:52:51 +0800
+Message-Id: <20220809085253.2916982-3-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220809085253.2916982-1-chenhuacai@loongson.cn>
+References: <20220809085253.2916982-1-chenhuacai@loongson.cn>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Feiyang Chen <chenfeiyang@loongson.cn>
 
-> On 9. 8. 2022, at 10:47, Krzysztof Kozlowski =
-<krzysztof.kozlowski@linaro.org> wrote:
->=20
-> On 09/08/2022 11:40, Martin Povi=C5=A1er wrote:
->>> Describe the items because otherwise you allow any order. The list =
-will
->>> be unfortunately quite long, but still readable enough.
->>=20
->> Well, I would assume the =E2=80=98dmas=E2=80=99 property as described =
-above has an implicit
->> natural order, and the dma-names are tied to it. You order it like =
-the other
->> per-cluster properties, and then within the cluster the order is =
-fixed to
->> 'TXA, RXA, TXB, RXB=E2=80=99 (maybe the word =E2=80=98respectively=E2=80=
-=99 thrown into the description
->> would have made it clearer).
->>=20
->> Anyway that=E2=80=99s just discussing my assumptions. I can roll out =
-the items list
->> for =E2=80=98dma-names=E2=80=99, if that=E2=80=99s what you mean. Or =
-do you mean explicitly describing
->> the items in =E2=80=98dmas=E2=80=99 too?
->=20
-> The text description of 'dmas' does not mean it will be followed by =
-DTS
-> author. In current bindings DTS author can therefore put any order of
-> dmas/dma-names. Unrolling the dma-names forces this order to be fixed
-> and validated by dtschema.
+Add sparse memory vmemmap support for LoongArch. SPARSEMEM_VMEMMAP
+uses a virtually mapped memmap to optimise pfn_to_page and page_to_pfn
+operations. This is the most efficient option when sufficient kernel
+resources are available.
 
-OK
+Signed-off-by: Min Zhou <zhoumin@loongson.cn>
+Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ arch/loongarch/Kconfig                 |  1 +
+ arch/loongarch/include/asm/pgtable.h   |  6 ++-
+ arch/loongarch/include/asm/sparsemem.h |  6 +++
+ arch/loongarch/mm/init.c               | 73 +++++++++++++++++++++++++-
+ include/linux/mm.h                     |  2 +
+ mm/sparse-vmemmap.c                    | 10 ++++
+ 6 files changed, 96 insertions(+), 2 deletions(-)
 
->>=20
->>>> +    description: |
->>>> +      Names for the DMA channels: 'tx'/'rx', then cluster number, =
-then 'a'/'b'
->>>> +      based on the associated SERDES unit.
->>>> +
->>=20
->> (...)
->>=20
->>>> +
->>>> +additionalProperties: false
->>>> +
->>>> +examples:
->>>> +  - |
->>>> +    mca: mca@9b600000 {
->>>=20
->>> You called it I2S transceiver but isn't it also actually I2S =
-controller?
->>> If yes, then the node name should be probably "i2s".
->>=20
->> It=E2=80=99s a peripheral you use to transmit and receive samples =
-over I2S, frankly
->> I don't know the nomenclature.
->=20
-> Looking at other devices, it's i2s.
-
-OK, thanks.
-
-> Best regards,
-> Krzysztof
-
-Best,
-Martin
+diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
+index 1281128d9fce..cff781d92c81 100644
+--- a/arch/loongarch/Kconfig
++++ b/arch/loongarch/Kconfig
+@@ -418,6 +418,7 @@ config ARCH_FLATMEM_ENABLE
+ 
+ config ARCH_SPARSEMEM_ENABLE
+ 	def_bool y
++	select SPARSEMEM_VMEMMAP_ENABLE
+ 	help
+ 	  Say Y to support efficient handling of sparse physical memory,
+ 	  for architectures which are either NUMA (Non-Uniform Memory Access)
+diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
+index 9c811c3f7572..adb5a3d2ed4f 100644
+--- a/arch/loongarch/include/asm/pgtable.h
++++ b/arch/loongarch/include/asm/pgtable.h
+@@ -65,6 +65,7 @@
+ #include <linux/mmzone.h>
+ #include <asm/fixmap.h>
+ #include <asm/io.h>
++#include <asm/sparsemem.h>
+ 
+ struct mm_struct;
+ struct vm_area_struct;
+@@ -92,7 +93,10 @@ extern unsigned long zero_page_mask;
+ #define VMALLOC_START	MODULES_END
+ #define VMALLOC_END	\
+ 	(vm_map_base +	\
+-	 min(PTRS_PER_PGD * PTRS_PER_PUD * PTRS_PER_PMD * PTRS_PER_PTE * PAGE_SIZE, (1UL << cpu_vabits)) - PMD_SIZE)
++	 min(PTRS_PER_PGD * PTRS_PER_PUD * PTRS_PER_PMD * PTRS_PER_PTE * PAGE_SIZE, (1UL << cpu_vabits)) - PMD_SIZE - VMEMMAP_SIZE)
++
++#define vmemmap		((struct page *)((VMALLOC_END + PMD_SIZE) & PMD_MASK))
++#define VMEMMAP_END	((unsigned long)vmemmap + VMEMMAP_SIZE - 1)
+ 
+ #define pte_ERROR(e) \
+ 	pr_err("%s:%d: bad pte %016lx.\n", __FILE__, __LINE__, pte_val(e))
+diff --git a/arch/loongarch/include/asm/sparsemem.h b/arch/loongarch/include/asm/sparsemem.h
+index 3d18cdf1b069..ee55cdf933c6 100644
+--- a/arch/loongarch/include/asm/sparsemem.h
++++ b/arch/loongarch/include/asm/sparsemem.h
+@@ -11,6 +11,12 @@
+ #define SECTION_SIZE_BITS	29 /* 2^29 = Largest Huge Page Size */
+ #define MAX_PHYSMEM_BITS	48
+ 
++#ifndef CONFIG_SPARSEMEM_VMEMMAP
++#define VMEMMAP_SIZE	0
++#else
++#define VMEMMAP_SIZE	(sizeof(struct page) * (1UL << (cpu_pabits + 1 - PAGE_SHIFT)))
++#endif
++
+ #endif /* CONFIG_SPARSEMEM */
+ 
+ #ifdef CONFIG_MEMORY_HOTPLUG
+diff --git a/arch/loongarch/mm/init.c b/arch/loongarch/mm/init.c
+index 7094a68c9b83..78f71f9bf295 100644
+--- a/arch/loongarch/mm/init.c
++++ b/arch/loongarch/mm/init.c
+@@ -22,7 +22,7 @@
+ #include <linux/pfn.h>
+ #include <linux/hardirq.h>
+ #include <linux/gfp.h>
+-#include <linux/initrd.h>
++#include <linux/hugetlb.h>
+ #include <linux/mmzone.h>
+ 
+ #include <asm/asm-offsets.h>
+@@ -157,6 +157,77 @@ void arch_remove_memory(u64 start, u64 size, struct vmem_altmap *altmap)
+ #endif
+ #endif
+ 
++#ifdef CONFIG_SPARSEMEM_VMEMMAP
++static int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
++						int node, struct vmem_altmap *altmap)
++{
++	unsigned long addr = start;
++	unsigned long next;
++	pgd_t *pgd;
++	p4d_t *p4d;
++	pud_t *pud;
++	pmd_t *pmd;
++
++	for (addr = start; addr < end; addr = next) {
++		next = pmd_addr_end(addr, end);
++
++		pgd = vmemmap_pgd_populate(addr, node);
++		if (!pgd)
++			return -ENOMEM;
++		p4d = vmemmap_p4d_populate(pgd, addr, node);
++		if (!p4d)
++			return -ENOMEM;
++		pud = vmemmap_pud_populate(p4d, addr, node);
++		if (!pud)
++			return -ENOMEM;
++
++		pmd = pmd_offset(pud, addr);
++		if (pmd_none(*pmd)) {
++			void *p = NULL;
++
++			p = vmemmap_alloc_block_buf(PMD_SIZE, node, NULL);
++			if (p) {
++				pmd_t entry;
++
++				entry = pfn_pmd(virt_to_pfn(p), PAGE_KERNEL);
++				pmd_val(entry) |= _PAGE_HUGE | _PAGE_HGLOBAL;
++				set_pmd_at(&init_mm, addr, pmd, entry);
++
++				continue;
++			}
++		} else if (pmd_val(*pmd) & _PAGE_HUGE) {
++			vmemmap_verify((pte_t *)pmd, node, addr, next);
++			continue;
++		}
++		if (vmemmap_populate_basepages(addr, next, node, NULL))
++			return -ENOMEM;
++	}
++
++	return 0;
++}
++
++#if CONFIG_PGTABLE_LEVELS == 2
++int __meminit vmemmap_populate(unsigned long start, unsigned long end,
++			int node, struct vmem_altmap *altmap)
++{
++	return vmemmap_populate_basepages(start, end, node, NULL);
++}
++#else
++int __meminit vmemmap_populate(unsigned long start, unsigned long end,
++			int node, struct vmem_altmap *altmap)
++{
++	return vmemmap_populate_hugepages(start, end, node, NULL);
++}
++#endif
++
++#ifdef CONFIG_MEMORY_HOTPLUG
++void vmemmap_free(unsigned long start, unsigned long end,
++			struct vmem_altmap *altmap)
++{
++}
++#endif
++#endif
++
+ /*
+  * Align swapper_pg_dir in to 64K, allows its address to be loaded
+  * with a single LUI instruction in the TLB handlers.  If we used
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 7898e29bcfb5..16bee6513f1a 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -3207,6 +3207,8 @@ void *sparse_buffer_alloc(unsigned long size);
+ struct page * __populate_section_memmap(unsigned long pfn,
+ 		unsigned long nr_pages, int nid, struct vmem_altmap *altmap,
+ 		struct dev_pagemap *pgmap);
++void pmd_init(void *addr);
++void pud_init(void *addr);
+ pgd_t *vmemmap_pgd_populate(unsigned long addr, int node);
+ p4d_t *vmemmap_p4d_populate(pgd_t *pgd, unsigned long addr, int node);
+ pud_t *vmemmap_pud_populate(p4d_t *p4d, unsigned long addr, int node);
+diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
+index dbbd1a7e65f3..0abcb0a5f1b5 100644
+--- a/mm/sparse-vmemmap.c
++++ b/mm/sparse-vmemmap.c
+@@ -595,6 +595,10 @@ pmd_t * __meminit vmemmap_pmd_populate(pud_t *pud, unsigned long addr, int node)
+ 	return pmd;
+ }
+ 
++void __weak __meminit pmd_init(void *addr)
++{
++}
++
+ pud_t * __meminit vmemmap_pud_populate(p4d_t *p4d, unsigned long addr, int node)
+ {
+ 	pud_t *pud = pud_offset(p4d, addr);
+@@ -602,11 +606,16 @@ pud_t * __meminit vmemmap_pud_populate(p4d_t *p4d, unsigned long addr, int node)
+ 		void *p = vmemmap_alloc_block_zero(PAGE_SIZE, node);
+ 		if (!p)
+ 			return NULL;
++		pmd_init(p);
+ 		pud_populate(&init_mm, pud, p);
+ 	}
+ 	return pud;
+ }
+ 
++void __weak __meminit pud_init(void *addr)
++{
++}
++
+ p4d_t * __meminit vmemmap_p4d_populate(pgd_t *pgd, unsigned long addr, int node)
+ {
+ 	p4d_t *p4d = p4d_offset(pgd, addr);
+@@ -614,6 +623,7 @@ p4d_t * __meminit vmemmap_p4d_populate(pgd_t *pgd, unsigned long addr, int node)
+ 		void *p = vmemmap_alloc_block_zero(PAGE_SIZE, node);
+ 		if (!p)
+ 			return NULL;
++		pud_init(p);
+ 		p4d_populate(&init_mm, p4d, p);
+ 	}
+ 	return p4d;
+-- 
+2.31.1
 
