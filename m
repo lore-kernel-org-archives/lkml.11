@@ -2,86 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1F3BC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 21:17:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7CA5C25B06
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 21:20:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbiHIVRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 17:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46520 "EHLO
+        id S229517AbiHIVTm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 17:19:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229691AbiHIVQq (ORCPT
+        with ESMTP id S229480AbiHIVTb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 17:16:46 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68194C619
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 14:16:45 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-31f443e276fso124597997b3.1
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 14:16:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=oLnzvgiiApV3VWlzq6jRPE1yUvY8BFpXJK7uuRxPViY=;
-        b=fayvEf5WdJjEIxnfSI2fgWunYKmTvDIRKtCzVSQkNKwFu8iJI+08U9BhoICiNt7cl4
-         COv9Dx86ZsTmY1ghlFRFjOitQNyuyzZdaorSLwfGmQz1IYyEPHSPFNzosVnoGsXxujcG
-         uB4Brcz2j+CfN+vXjtrM/9QS7wD7nd3789kOI=
+        Tue, 9 Aug 2022 17:19:31 -0400
+Received: from mail-il1-f170.google.com (mail-il1-f170.google.com [209.85.166.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1CBF65801;
+        Tue,  9 Aug 2022 14:19:30 -0700 (PDT)
+Received: by mail-il1-f170.google.com with SMTP id x2so1121845ilp.10;
+        Tue, 09 Aug 2022 14:19:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=oLnzvgiiApV3VWlzq6jRPE1yUvY8BFpXJK7uuRxPViY=;
-        b=EN17ccXQNU2uUXHu8XH/FFeJDrIIIl+O6io0KNWtNt/sX+x9hiTlFIB6UD5U/SAgxM
-         A226q4S5gZrklYoAm8JsTA4FY0VPIbdwZL7eNwuXhFFoIZwWPIIv0yC83fZoOenVmS7T
-         9luh6N+DO8to8+NK99SAYeRxrWWvOCNCXJhnBA2I5WxAkh5HF6NZvMkh6wLUKuyiXx8O
-         s6RXRTvimcQ1mO7341MEpk46EOKr4aRva/W1vBQLbu1xfvKaB98srQwv04pmOMJxl+AS
-         qA2nGHLGqlTvbuYegLLjMhUvX/MBUZ3+g2vIp+umPeeh+tKbfo7ZNdZ4o2v9PWEbBrj0
-         HIow==
-X-Gm-Message-State: ACgBeo3HVN0yi3xTO5oDTBqgubQzQwfaaENLdwgVY+8I/DlQJrvxiaxn
-        7o8OUW+8dAUDObwnf+HyM8QG0Wx/18AqiCqxm+sPxA==
-X-Google-Smtp-Source: AA6agR6qo0VuTK0himSt+FUyEOvT/ZelIHR1bqwnVqgzBc/13WFe04zeW+Up8BNE3369loXSWZ3IzSFjH9Qmynp4wuk=
-X-Received: by 2002:a81:5d07:0:b0:329:8fb8:779 with SMTP id
- r7-20020a815d07000000b003298fb80779mr15696137ywb.77.1660079805095; Tue, 09
- Aug 2022 14:16:45 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=6M/FU7adSM+py46tX1SaYYVRLASGwO2gMfEt0TKFxyg=;
+        b=bjkNCBtKZelSUFY0C3TKG9U+T34nccQzbGUvLx8f7/D3nOtFGgyjXOurmForIRnIgb
+         gCqxNASGiKAiy1cL+qSi/Bu8caPfU6F8RDzlRLZlHvsaHOUfaqCotGBHLXkOsX3X4WyV
+         JX6AxCWUQ5mNJqqX0YTJbifK4QolLbj+JxrXqjK1D1yU0cHpJcc0tQWfkWQUJuHiv+oc
+         k4c1ZBWQOOpAd49LjwZ7/6ljt1eDOiTFy2tLCdOt7MlWQzo3mooeR8Ir5WHFS0fSxJr9
+         QUdGjRv30VkGwzX7uhGvULK8PvqwTtkCe0JtUEepCcancX2FgpEoqWnghvmMZFvQHkuO
+         roGQ==
+X-Gm-Message-State: ACgBeo0IjJVhS5qcGFmlQZejP7ZrX1ckgDhb39KVobZFTwAM90T7+l++
+        bhi+q37EXDNsQuNNzh5l9w==
+X-Google-Smtp-Source: AA6agR5bFw3+/PqucyVOoY3afOh/9y5TDMia+P843qb/iw0Un2IGsb1EqNiKHGZvoLHYUnrJ+VGFlw==
+X-Received: by 2002:a92:6e11:0:b0:2df:3082:a28d with SMTP id j17-20020a926e11000000b002df3082a28dmr11284313ilc.199.1660079969888;
+        Tue, 09 Aug 2022 14:19:29 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id bs27-20020a056638451b00b0033f51f165e3sm6670989jab.140.2022.08.09.14.19.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 14:19:29 -0700 (PDT)
+Received: (nullmailer pid 2420839 invoked by uid 1000);
+        Tue, 09 Aug 2022 21:19:27 -0000
+Date:   Tue, 9 Aug 2022 15:19:27 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Cc:     agross@kernel.org, devicetree@vger.kernel.org,
+        ulf.hansson@linaro.org, linux-arm-msm@vger.kernel.org,
+        bhupesh.linux@gmail.com, bjorn.andersson@linaro.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: mmc: sdhci-msm: Fix 'operating-points-v2
+ was unexpected' issue
+Message-ID: <20220809211927.GA2419725-robh@kernel.org>
+References: <20220725202709.2861789-1-bhupesh.sharma@linaro.org>
 MIME-Version: 1.0
-References: <20220803074955.v6.1.Ibf9efc9be50783eeee55befa2270b7d38552354c@changeid>
- <YuoRuP2pxgSQ6c9E@kroah.com> <CAONX=-f8kHWCEEyqUdpn5wsyMZKa4eJSSCLvPDn3R5mQF9FSMA@mail.gmail.com>
-In-Reply-To: <CAONX=-f8kHWCEEyqUdpn5wsyMZKa4eJSSCLvPDn3R5mQF9FSMA@mail.gmail.com>
-From:   Daniil Lunev <dlunev@chromium.org>
-Date:   Wed, 10 Aug 2022 07:16:34 +1000
-Message-ID: <CAONX=-eL02see4m6wK74cX2D6rUXJXtZYSRiNhPQVDsS8kU27g@mail.gmail.com>
-Subject: Re: [PATCH v6] ufs: core: print UFSHCD capabilities in controller's
- sysfs node
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bart Van Assche <bvanassche@acm.org>
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        Bean Huo <beanhuo@micron.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sohaib Mohamed <sohaib.amhmd@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220725202709.2861789-1-bhupesh.sharma@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Tue, 26 Jul 2022 01:57:09 +0530, Bhupesh Sharma wrote:
+> As Rob reported in [1], there is one more issue present
+> in the 'sdhci-msm' dt-binding which shows up when a fix for
+> 'unevaluatedProperties' handling is applied:
+> 
+>  Documentation/devicetree/bindings/mmc/sdhci-msm.example.dtb:
+>   mmc@8804000: Unevaluated properties are not allowed
+>    ('operating-points-v2' was unexpected)
+> 
+> Fix the same.
+> 
+> [1]. https://lore.kernel.org/lkml/20220514220116.1008254-1-bhupesh.sharma@linaro.org/
+> 
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Rob Herring <robh@kernel.org>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> ---
+>  - Rebased on linux-next/master.
+> 
+>  Documentation/devicetree/bindings/mmc/sdhci-msm.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-Are there any more amendments you would want me to make or is it good to go?
+I picked this one up so it can be fixed for rc1.
 
-Thanks,
-Daniil
-
-
-On Wed, Aug 3, 2022 at 4:34 PM Daniil Lunev <dlunev@chromium.org> wrote:
->
-> > Why is this information not also in the Documentation/ABI/ entries as
-> > well?
-> How would you want me to word it in there? For each entry? There
-> will be more in the future, would we need to just copy it as a
-> boilerplate? Bart suggested it be added in the code, do you see
-> a good way to mention the same in the doc?
-> Thanks,
-> --Daniil
+Rob
