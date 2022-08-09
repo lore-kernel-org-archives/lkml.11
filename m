@@ -2,109 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB79C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 07:25:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94095C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 07:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237363AbiHIHZ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 03:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51600 "EHLO
+        id S238115AbiHIH1F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 03:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233351AbiHIHZ1 (ORCPT
+        with ESMTP id S237469AbiHIH1C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 03:25:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C95110E
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 00:25:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 9 Aug 2022 03:27:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A365D20F58
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 00:27:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660030020;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=58ycySmE5DZLA6nFa+M3yTmfckqgxGPNOPL3Wz/hH9I=;
+        b=eWDcQlx/TwE5DuAUj5ipHX3ZRpNsLlbn3aXdscU9mFBiUcL2xeQvKj9o1sr4O9nr3y7z7O
+        fc0p2nQOartzo/BvopfxRM6XdCy6+1znAKH9MScbBZNzCDxzKPdsx9UagQCpEsWKeGgDwU
+        vP6pXzJYZ3wrRLR/U8fhL6hqpMcoDL0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-626-bNGKTN3lOaC_mqGjTKJ4WA-1; Tue, 09 Aug 2022 03:26:56 -0400
+X-MC-Unique: bNGKTN3lOaC_mqGjTKJ4WA-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51E92B80EED
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 07:25:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA290C433C1;
-        Tue,  9 Aug 2022 07:25:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660029922;
-        bh=0LChqBLur/1vL8sdoGSRTnx+IdOJAGSm3zJMhTg8KE4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=BY4Ymap+shoQoX56j+8nP+I9i2/rms0IdC8STp9ov5xJheah+wNWG89c517MvdbFj
-         z2bRDbbXprdlxgIVUM2YggYJv7nj0xEH5sP+M/+rWCTBXdHfzVKKYs+egg++QQpTU2
-         0/gPQt/zTXmOCF11aXxCg+VOfcmDLeQr2bAdLq5w2ZavidVmeqHZlffE1NoUvn2Hhv
-         qcPocXoOn4Jtk21xXlnw1RLYs6BRxAP9Po83VywzUIMt1JfgJiqcfulCb37u6JShn5
-         vmSlsciuOh34ggTVyMMFL3mKvn59NgZBIFfMHwhpH0P8VnoL0pz64QDCwnzaPso2Re
-         V0xss4SZRf/Rw==
-Date:   Tue, 9 Aug 2022 10:25:07 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     David Hildenbrand <david@redhat.com>, Jinyu Tang <tjytimi@163.com>,
-        Liu Xinpeng <liuxp11@chinatelecom.cn>,
-        Ma Wupeng <mawupeng1@huawei.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Rebecca Mckeever <remckee0@gmail.com>,
-        Shaoqin Huang <shaoqin.huang@intel.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] memblock updates for v5.20
-Message-ID: <YvIL0wn1WTDxjFVr@kernel.org>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 16E1A8039A6;
+        Tue,  9 Aug 2022 07:26:56 +0000 (UTC)
+Received: from [10.64.54.189] (vpn2-54-189.bne.redhat.com [10.64.54.189])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id ADF60492C3B;
+        Tue,  9 Aug 2022 07:26:51 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH 1/2] KVM: selftests: Make rseq compatible with glibc-2.35
+To:     Florian Weimer <fweimer@redhat.com>
+Cc:     kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pbonzini@redhat.com, maz@kernel.org, oliver.upton@linux.dev,
+        andrew.jones@linux.dev, seanjc@google.com,
+        mathieu.desnoyers@efficios.com, yihyu@redhat.com,
+        shan.gavin@gmail.com
+References: <20220809060627.115847-1-gshan@redhat.com>
+ <20220809060627.115847-2-gshan@redhat.com>
+ <8735e6ncxw.fsf@oldenburg.str.redhat.com>
+ <7844e3fa-e49e-de75-e424-e82d3a023dd6@redhat.com>
+ <87o7wtnay6.fsf@oldenburg.str.redhat.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <616d4de6-81f6-9d14-4e57-4a79fec45690@redhat.com>
+Date:   Tue, 9 Aug 2022 19:27:44 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <87o7wtnay6.fsf@oldenburg.str.redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Hi Florian,
 
-The following changes since commit 03c765b0e3b4cb5063276b086c76f7a612856a9a:
+On 8/9/22 5:16 PM, Florian Weimer wrote:
+>>> __builtin_thread_pointer doesn't work on all architectures/GCC
+>>> versions.
+>>> Is this a problem for selftests?
+>>>
+>>
+>> It's a problem as the test case is running on all architectures. I think I
+>> need introduce our own __builtin_thread_pointer() for where it's not
+>> supported: (1) PowerPC  (2) x86 without GCC 11
+>>
+>> Please let me know if I still have missed cases where
+>> __buitin_thread_pointer() isn't supported?
+> 
+> As far as I know, these are the two outliers that also have rseq
+> support.  The list is a bit longer if we also consider non-rseq
+> architectures (csky, hppa, ia64, m68k, microblaze, sparc, don't know
+> about the Linux architectures without glibc support).
+> 
 
-  Linux 5.19-rc4 (2022-06-26 14:22:10 -0700)
+For kvm/selftests, there are 3 architectures involved actually. So we
+just need consider 4 cases: aarch64, x86, s390 and other. For other
+case, we just use __builtin_thread_pointer() to maintain code's
+integrity, but it's not called at all.
 
-are available in the Git repository at:
+I think kvm/selftest is always relying on glibc if I'm correct.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/rppt/memblock tags/memblock-v5.20-rc1
+Thanks,
+Gavin
 
-for you to fetch changes up to 04d9490986d1e04a38db88276115e6b3c9ec3faa:
-
-  memblock test: Modify the obsolete description in README (2022-07-30 11:46:49 +0300)
-
-----------------------------------------------------------------
-memblock updates for v5.20
-
-* An optimization in memblock_add_range() to reduce array traversals
-* Improvements to the memblock test suite
-
-----------------------------------------------------------------
-Jinyu Tang (1):
-      memblock: avoid some repeat when add new range
-
-Liu Xinpeng (1):
-      memblock tests: fix compilation errors
-
-Rebecca Mckeever (5):
-      memblock tests: Makefile: add arguments to control verbosity
-      memblock tests: add verbose output to memblock tests
-      memblock tests: set memblock_debug to enable memblock_dbg() messages
-      memblock tests: remove completed TODO items
-      memblock tests: change build options to run-time options
-
-Shaoqin Huang (1):
-      memblock test: Modify the obsolete description in README
-
- mm/memblock.c                                    |  11 +
- tools/testing/memblock/Makefile                  |   3 +-
- tools/testing/memblock/README                    |  17 +-
- tools/testing/memblock/TODO                      |  14 +-
- tools/testing/memblock/internal.h                |  11 +
- tools/testing/memblock/linux/memory_hotplug.h    |   8 +-
- tools/testing/memblock/main.c                    |   2 +
- tools/testing/memblock/scripts/Makefile.include  |  10 +-
- tools/testing/memblock/tests/alloc_api.c         | 225 ++++++++++-----
- tools/testing/memblock/tests/alloc_helpers_api.c | 129 ++++++---
- tools/testing/memblock/tests/alloc_nid_api.c     | 351 +++++++++++++++--------
- tools/testing/memblock/tests/basic_api.c         | 337 +++++++++++++++-------
- tools/testing/memblock/tests/common.c            | 118 ++++++++
- tools/testing/memblock/tests/common.h            |  54 ++++
- 14 files changed, 920 insertions(+), 370 deletions(-)
-
--- 
-Sincerely yours,
-Mike.
