@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5111C25B0D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 03:45:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7A6FC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 03:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232506AbiHIDpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 23:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46256 "EHLO
+        id S233226AbiHIDpo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 23:45:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232168AbiHIDpa (ORCPT
+        with ESMTP id S232353AbiHIDpa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 8 Aug 2022 23:45:30 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8654DE00
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 20:45:25 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id i24so7886346qkg.13
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 20:45:25 -0700 (PDT)
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECD3F2C
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 20:45:26 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id j11so7717863qvt.10
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 20:45:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=joelfernandes.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=p+HVuUoTv/hcZh+nVQHfE/DwnGU0VTtZkIAwTKHUXkE=;
-        b=p6wM30KxXMWYMheCM9NHChPX+30J7zCsg0tW+SXxLonFUZingOyxiKfMLhzBiKcUs7
-         GLMVV6xHy/Ihobz7aIE4E7oH3bCXzPi7sCfWC/+axLdfShsiTwn7p+fP9mdDWcMNdQrS
-         M+2IxMz+P1abjlRPBLzOfkOdyIdRxin8CtB4s=
+        bh=79M25MWR38hIwNzB4pc/QQCfMvwV2bxODQRXrcGwFU0=;
+        b=g3RxAkVgiKl0CSfhHsB+k7kFQuj0x+rUuKnYD76+0f9Ygy9kyCF9wbkAR9l0f2yxaY
+         oyFOmLSB1kme/H7HQMMb5wVP0Iv3+4NAGZg+AeUEsSjfw6UaX8wtqmtnM+VKYX/GHu46
+         tV9iq3HgqRMGX9BCtXUD1cx4cZP73Kcgt986M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=p+HVuUoTv/hcZh+nVQHfE/DwnGU0VTtZkIAwTKHUXkE=;
-        b=P0oYpYUmvY+5Pm3Zbqx3U6oXNPFobOceSBKYTySwNa4V3CAC5cUNzmcvZ8EvSZr5kx
-         JyQdpQHUf8WsX9IvEsyCqOqtLd9D2Pq7wKP5FLk94dHe8IzBDZI0S0NkGRYinsaT/RBs
-         ZP4GZ0MUOGLnJafvEGzzopAvRTfm7rMMEVoKJ+nxTKp3wqAE49WO/08VnT2bK99CK7iO
-         O34WE1ne4wUhYX1q6xMA6ZM59JS/VV5yzCMC0a2jRQG4NtEIlOA0VLomrRGzyD4zRU32
-         zDDpgkM54HOhSBQgTetkVDvZ9LmvGoeaMgOiujQcfT5dhko2o+fW7VfbEsPhIo9Ai+O6
-         OyUw==
-X-Gm-Message-State: ACgBeo0KE8ZV4vWnguwqhY+XxXuH+n4a1yyE7boKOuVCk2kbn7nTpWNF
-        VWkS1nApPORN0NnUD5WhI550MeBGsxy3ZQ==
-X-Google-Smtp-Source: AA6agR7MOwPivnTLcWzn3SAKLw+nYkpuMxj95FH/cMuG3ODmwi68cH2fQonJP/RA5m1AEhYyQcJj5Q==
-X-Received: by 2002:a05:620a:4611:b0:6b5:fefb:5fb5 with SMTP id br17-20020a05620a461100b006b5fefb5fb5mr16268506qkb.71.1660016724334;
-        Mon, 08 Aug 2022 20:45:24 -0700 (PDT)
+        bh=79M25MWR38hIwNzB4pc/QQCfMvwV2bxODQRXrcGwFU0=;
+        b=7uf/9NlBtTzYXbl5XMwXvwcdq4M8vpb3LR3XplnRWVf+GirjCLtRhZcc+bWE2gxgWl
+         uRnSKiXUJRnefOEl2X3B0JFtrDw710rU4iGnl+HikNS0hYLTAR4P0/g39UjBiK/E9ISU
+         KCBh7wxCde3ax6PSzmHt1IUXHXi3mk3sEGx/DMiSkjbS3n+pQKmLxmwFIETnQjEwQ2I5
+         W1VzDvPc+M8+jBzvWk80pcSq0GAxT4HQvLNiDgvX4UgPzePnzxvv4gcOs3cSBKEWzbfq
+         LwLoo1AIDF56AAEvBcnr5tMSlQ8ChBtaqnpCVAuh0XfC88UQ8OSp3CDLduuiGIEER9Fg
+         F7ow==
+X-Gm-Message-State: ACgBeo0wSisiazK9B/Sp+ICVWjESvCSbePAglobWR5kuxkuKvJAI2RPj
+        AUFsjTai6bjO1GCIgntwha5ExyetkRpJsw==
+X-Google-Smtp-Source: AA6agR4rCqZqlEj5g79Z1AokQt/3xKmmsG9dVVl2MU0A2ZqjbQLET9iyJIwV8cudoBdMzHi7pXW1rQ==
+X-Received: by 2002:a05:6214:226e:b0:474:9a8b:3853 with SMTP id gs14-20020a056214226e00b004749a8b3853mr18230624qvb.85.1660016725836;
+        Mon, 08 Aug 2022 20:45:25 -0700 (PDT)
 Received: from joelboxx.c.googlers.com.com (228.221.150.34.bc.googleusercontent.com. [34.150.221.228])
-        by smtp.gmail.com with ESMTPSA id ca8-20020a05622a1f0800b0031f0b43629dsm9170979qtb.23.2022.08.08.20.45.23
+        by smtp.gmail.com with ESMTPSA id ca8-20020a05622a1f0800b0031f0b43629dsm9170979qtb.23.2022.08.08.20.45.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 20:45:23 -0700 (PDT)
+        Mon, 08 Aug 2022 20:45:25 -0700 (PDT)
 From:   "Joel Fernandes (Google)" <joel@joelfernandes.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Vineeth Pillai <vineeth@bitbyteword.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
+Cc:     "Joel Fernandes (Google)" <joel@joelfernandes.org>,
         rushikesh.s.kadam@intel.com, urezki@gmail.com,
         neeraj.iitr10@gmail.com, frederic@kernel.org, paulmck@kernel.org,
         rostedt@goodmis.org, rcu@vger.kernel.org
-Subject: [PATCH v3 resend 2/6] rcu: shrinker for lazy rcu
-Date:   Tue,  9 Aug 2022 03:45:13 +0000
-Message-Id: <20220809034517.3867176-3-joel@joelfernandes.org>
+Subject: [PATCH v3 resend 4/6] fs: Move call_rcu() to call_rcu_lazy() in some paths
+Date:   Tue,  9 Aug 2022 03:45:15 +0000
+Message-Id: <20220809034517.3867176-5-joel@joelfernandes.org>
 X-Mailer: git-send-email 2.37.1.559.g78731f0fdb-goog
 In-Reply-To: <20220809034517.3867176-1-joel@joelfernandes.org>
 References: <20220809034517.3867176-1-joel@joelfernandes.org>
@@ -64,88 +63,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vineeth Pillai <vineeth@bitbyteword.org>
+This is required to prevent callbacks triggering RCU machinery too
+quickly and too often, which adds more power to the system.
 
-The shrinker is used to speed up the free'ing of memory potentially held
-by RCU lazy callbacks. RCU kernel module test cases show this to be
-effective. Test is introduced in a later patch.
+When testing, we found that these paths were invoked often when the
+system is not doing anything (screen is ON but otherwise idle).
 
-Signed-off-by: Vineeth Pillai <vineeth@bitbyteword.org>
 Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
 ---
- kernel/rcu/tree_nocb.h | 52 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+ fs/dcache.c     | 4 ++--
+ fs/eventpoll.c  | 2 +-
+ fs/file_table.c | 2 +-
+ fs/inode.c      | 2 +-
+ 4 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
-index 61b1409bd4d6..f8d7255f4f0a 100644
---- a/kernel/rcu/tree_nocb.h
-+++ b/kernel/rcu/tree_nocb.h
-@@ -1249,6 +1249,55 @@ int rcu_nocb_cpu_offload(int cpu)
+diff --git a/fs/dcache.c b/fs/dcache.c
+index 93f4f5ee07bf..7f51bac390c8 100644
+--- a/fs/dcache.c
++++ b/fs/dcache.c
+@@ -366,7 +366,7 @@ static void dentry_free(struct dentry *dentry)
+ 	if (unlikely(dname_external(dentry))) {
+ 		struct external_name *p = external_name(dentry);
+ 		if (likely(atomic_dec_and_test(&p->u.count))) {
+-			call_rcu(&dentry->d_u.d_rcu, __d_free_external);
++			call_rcu_lazy(&dentry->d_u.d_rcu, __d_free_external);
+ 			return;
+ 		}
+ 	}
+@@ -374,7 +374,7 @@ static void dentry_free(struct dentry *dentry)
+ 	if (dentry->d_flags & DCACHE_NORCU)
+ 		__d_free(&dentry->d_u.d_rcu);
+ 	else
+-		call_rcu(&dentry->d_u.d_rcu, __d_free);
++		call_rcu_lazy(&dentry->d_u.d_rcu, __d_free);
  }
- EXPORT_SYMBOL_GPL(rcu_nocb_cpu_offload);
  
-+static unsigned long
-+lazy_rcu_shrink_count(struct shrinker *shrink, struct shrink_control *sc)
-+{
-+	int cpu;
-+	unsigned long count = 0;
-+
-+	/* Snapshot count of all CPUs */
-+	for_each_possible_cpu(cpu) {
-+		struct rcu_data *rdp = per_cpu_ptr(&rcu_data, cpu);
-+
-+		count += rcu_cblist_n_lazy_cbs(&rdp->nocb_bypass);
-+	}
-+
-+	return count ? count : SHRINK_EMPTY;
-+}
-+
-+static unsigned long
-+lazy_rcu_shrink_scan(struct shrinker *shrink, struct shrink_control *sc)
-+{
-+	int cpu;
-+	unsigned long flags;
-+	unsigned long count = 0;
-+
-+	/* Snapshot count of all CPUs */
-+	for_each_possible_cpu(cpu) {
-+		struct rcu_data *rdp = per_cpu_ptr(&rcu_data, cpu);
-+		int _count = rcu_cblist_n_lazy_cbs(&rdp->nocb_bypass);
-+
-+		if (_count == 0)
-+			continue;
-+		rcu_nocb_lock_irqsave(rdp, flags);
-+		rcu_cblist_reset_lazy_len(&rdp->nocb_bypass);
-+		rcu_nocb_unlock_irqrestore(rdp, flags);
-+		wake_nocb_gp(rdp, false);
-+		sc->nr_to_scan -= _count;
-+		count += _count;
-+		if (sc->nr_to_scan <= 0)
-+			break;
-+	}
-+	return count ? count : SHRINK_STOP;
-+}
-+
-+static struct shrinker lazy_rcu_shrinker = {
-+	.count_objects = lazy_rcu_shrink_count,
-+	.scan_objects = lazy_rcu_shrink_scan,
-+	.batch = 0,
-+	.seeks = DEFAULT_SEEKS,
-+};
-+
- void __init rcu_init_nohz(void)
- {
- 	int cpu;
-@@ -1286,6 +1335,9 @@ void __init rcu_init_nohz(void)
- 	if (!rcu_state.nocb_is_setup)
- 		return;
+ /*
+diff --git a/fs/eventpoll.c b/fs/eventpoll.c
+index 971f98af48ff..57b3f781760c 100644
+--- a/fs/eventpoll.c
++++ b/fs/eventpoll.c
+@@ -729,7 +729,7 @@ static int ep_remove(struct eventpoll *ep, struct epitem *epi)
+ 	 * ep->mtx. The rcu read side, reverse_path_check_proc(), does not make
+ 	 * use of the rbn field.
+ 	 */
+-	call_rcu(&epi->rcu, epi_rcu_free);
++	call_rcu_lazy(&epi->rcu, epi_rcu_free);
  
-+	if (register_shrinker(&lazy_rcu_shrinker))
-+		pr_err("Failed to register lazy_rcu shrinker!\n");
-+
- #if defined(CONFIG_NO_HZ_FULL)
- 	if (tick_nohz_full_running)
- 		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, tick_nohz_full_mask);
+ 	percpu_counter_dec(&ep->user->epoll_watches);
+ 
+diff --git a/fs/file_table.c b/fs/file_table.c
+index 5424e3a8df5f..417f57e9cb30 100644
+--- a/fs/file_table.c
++++ b/fs/file_table.c
+@@ -56,7 +56,7 @@ static inline void file_free(struct file *f)
+ 	security_file_free(f);
+ 	if (!(f->f_mode & FMODE_NOACCOUNT))
+ 		percpu_counter_dec(&nr_files);
+-	call_rcu(&f->f_u.fu_rcuhead, file_free_rcu);
++	call_rcu_lazy(&f->f_u.fu_rcuhead, file_free_rcu);
+ }
+ 
+ /*
+diff --git a/fs/inode.c b/fs/inode.c
+index bd4da9c5207e..38fe040ddbd6 100644
+--- a/fs/inode.c
++++ b/fs/inode.c
+@@ -312,7 +312,7 @@ static void destroy_inode(struct inode *inode)
+ 			return;
+ 	}
+ 	inode->free_inode = ops->free_inode;
+-	call_rcu(&inode->i_rcu, i_callback);
++	call_rcu_lazy(&inode->i_rcu, i_callback);
+ }
+ 
+ /**
 -- 
 2.37.1.559.g78731f0fdb-goog
 
