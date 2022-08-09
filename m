@@ -2,95 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B9A6C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:34:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D7F4C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345524AbiHISeZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45642 "EHLO
+        id S245689AbiHISmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245560AbiHISdA (ORCPT
+        with ESMTP id S1348225AbiHISlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:33:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAD72B18F;
-        Tue,  9 Aug 2022 11:11:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12C94B81A87;
-        Tue,  9 Aug 2022 18:08:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56EF6C43141;
-        Tue,  9 Aug 2022 18:08:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068534;
-        bh=RR6SLuNdftHUy2v7t6mMtJQYsPkmBgW8i7xgUe0XiU0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BQarkLPk/HLgyL1f9U0MoLL45ImzGkJTYygb3CKBsINCadM4kIGS0XqQSn9Ayv9TT
-         4rIJnVSsctZFO4j11vmTfTBcUP+0Stp0Me4FH19Th3UF3k7/KFtdSTPMc/G9T+0ax4
-         spETad5t2x4y6OaOK6aqdcntHzYe6z1RHvk+5i44=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.19 10/21] Bluetooth: hci_bcm: Add BCM4349B1 variant
-Date:   Tue,  9 Aug 2022 20:01:02 +0200
-Message-Id: <20220809175513.663564684@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220809175513.345597655@linuxfoundation.org>
-References: <20220809175513.345597655@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 9 Aug 2022 14:41:55 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57CA46DB5;
+        Tue,  9 Aug 2022 11:15:48 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id n185so6690568wmn.4;
+        Tue, 09 Aug 2022 11:15:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=qeKkefaI8rAn6PdLcG/BjASCBCjakKAMrlqG8PzJfoA=;
+        b=RwC/xY4OulFkweCDNYiIDHC75IPHlmscyLW0IFNZlASwaL1YDJssP6ge2AAidgxRkZ
+         n2ipv+eiO4y4YB9hMs9YkZTAO7Uv4qHxO+GHHQZb+uWnRcvBBiLf9PzTjr/cPaX6OdeI
+         9LEAKdypsqmb1z7l0YfE9L9HTn4YJ76MRWkrD4eBTteqn3Yii+6wK+DWFDmqsjvyR04O
+         1ySxFpK/0mHEjHd3o6gpf4IKAa9NSlFbCLKIRz0G+2RrsyI89SmbmP9TE5nmvekfCZ1f
+         a2bX2X4NIwEgNJT9erGmmlaxEw7Ysr2rHuZcfLMcxmth+9cAfSJ/8vlmFCw0O0pAqtwZ
+         jWeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=qeKkefaI8rAn6PdLcG/BjASCBCjakKAMrlqG8PzJfoA=;
+        b=ZSIeDk2Vxzk/KCvuPjQ16UOQudPneDKFaxFfw6FTCZR1ndUexuVaVt7TdDrchssXzK
+         CfDkw3w5yDEaZQrXnvZSK19bovmMX9sJN7ZDz3KXeXYb780woXtIOLdExPGrGH++VyFn
+         5xxqxMMnvF/NmCVmeUzxSshRpQXfMvtFkmJ1HFPa48pUZJfrg6o0ZZagF5/eIEWVvshu
+         KhJTDiRaw8uMpZCrx9zNpoaPMF1fFWlcJaAA8ly8AlUw5rHIA7UFk4pZeZG5a4Il/4tU
+         sZXg3aVK5wu9W7LxzNx+zLJQn7hYlAQUCZh2gVI+NgaKtE656lYn8HKjqccz8sUlYsR/
+         CfMQ==
+X-Gm-Message-State: ACgBeo0JHntogmAIUaplzJSH1iih18NJATYz/rnQPIObCzIj1IXgltdQ
+        njqY1xK+S/XgYyRyFBpFj3Y=
+X-Google-Smtp-Source: AA6agR6tWoLJjD3AvKZPvfi984GJjILsxOkx4GUwcfw9X+CWLNACfY6ZAkRPNXFxZEZYAxxvJp/WGg==
+X-Received: by 2002:a05:600c:1e83:b0:3a3:3ecb:52a0 with SMTP id be3-20020a05600c1e8300b003a33ecb52a0mr21965836wmb.44.1660068946370;
+        Tue, 09 Aug 2022 11:15:46 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id w5-20020a5d6805000000b0021ea1bcc300sm14272737wru.56.2022.08.09.11.15.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 11:15:45 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Jaroslav Kysela <perex@perex.cz>, alsa-devel@alsa-project.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ALSA: usb-audio: make read-only array marker static const
+Date:   Tue,  9 Aug 2022 19:15:44 +0100
+Message-Id: <20220809181544.3046429-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Don't populate the read-only array marker on the stack but instead make
+it static const. Also makes the object code a little smaller.
 
-commit 4f17c2b6694d0c4098f33b07ee3a696976940aa5 upstream.
-
-The BCM4349B1, aka CYW/BCM89359, is a WiFi+BT chip and its Bluetooth
-portion can be controlled over serial.
-
-Two subversions are added for the chip, because ROM firmware reports
-002.002.013 (at least for the chips I have here), while depending on
-patchram firmware revision, either 002.002.013 or 002.002.014 is
-reported.
-
-Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- drivers/bluetooth/btbcm.c   |    2 ++
- drivers/bluetooth/hci_bcm.c |    1 +
- 2 files changed, 3 insertions(+)
+ sound/usb/pcm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/bluetooth/btbcm.c
-+++ b/drivers/bluetooth/btbcm.c
-@@ -454,6 +454,8 @@ static const struct bcm_subver_table bcm
- 	{ 0x6606, "BCM4345C5"	},	/* 003.006.006 */
- 	{ 0x230f, "BCM4356A2"	},	/* 001.003.015 */
- 	{ 0x220e, "BCM20702A1"  },	/* 001.002.014 */
-+	{ 0x420d, "BCM4349B1"	},	/* 002.002.013 */
-+	{ 0x420e, "BCM4349B1"	},	/* 002.002.014 */
- 	{ 0x4217, "BCM4329B1"   },	/* 002.002.023 */
- 	{ 0x6106, "BCM4359C0"	},	/* 003.001.006 */
- 	{ 0x4106, "BCM4335A0"	},	/* 002.001.006 */
---- a/drivers/bluetooth/hci_bcm.c
-+++ b/drivers/bluetooth/hci_bcm.c
-@@ -1544,6 +1544,7 @@ static const struct of_device_id bcm_blu
- 	{ .compatible = "brcm,bcm43430a0-bt" },
- 	{ .compatible = "brcm,bcm43430a1-bt" },
- 	{ .compatible = "brcm,bcm43438-bt", .data = &bcm43438_device_data },
-+	{ .compatible = "brcm,bcm4349-bt", .data = &bcm43438_device_data },
- 	{ .compatible = "brcm,bcm43540-bt", .data = &bcm4354_device_data },
- 	{ .compatible = "brcm,bcm4335a0" },
- 	{ },
-
+diff --git a/sound/usb/pcm.c b/sound/usb/pcm.c
+index e692ae04436a..d45d1d7e6664 100644
+--- a/sound/usb/pcm.c
++++ b/sound/usb/pcm.c
+@@ -1269,7 +1269,7 @@ static inline void fill_playback_urb_dsd_dop(struct snd_usb_substream *subs,
+ 	unsigned int wrap = subs->buffer_bytes;
+ 	u8 *dst = urb->transfer_buffer;
+ 	u8 *src = runtime->dma_area;
+-	u8 marker[] = { 0x05, 0xfa };
++	static const u8 marker[] = { 0x05, 0xfa };
+ 	unsigned int queued = 0;
+ 
+ 	/*
+-- 
+2.35.3
 
