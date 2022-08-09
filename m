@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E80C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25408C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:06:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344767AbiHISGf (ORCPT
+        id S1344794AbiHISGk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39206 "EHLO
+        Tue, 9 Aug 2022 14:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344757AbiHISFo (ORCPT
+        with ESMTP id S1344781AbiHISFq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:05:44 -0400
+        Tue, 9 Aug 2022 14:05:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7E127CD9;
-        Tue,  9 Aug 2022 11:02:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E14E27FC8;
+        Tue,  9 Aug 2022 11:02:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A11CD6106C;
-        Tue,  9 Aug 2022 18:02:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACC5FC433C1;
-        Tue,  9 Aug 2022 18:02:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FE6861012;
+        Tue,  9 Aug 2022 18:02:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79B7FC433C1;
+        Tue,  9 Aug 2022 18:02:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068156;
-        bh=iJ3n/ovvuywHeUCdRoL+0FiyTg+YR+72DqrzGIc88cA=;
+        s=korg; t=1660068158;
+        bh=OSOCjuKU/rjuKloGep42br5G+ar+oQ9cJvsuobfhIu4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EArP4kQimPVZOHgd6z7Mnb8LkVKWd9bDiiOPy5Av8loHnFq0Aou5rGXJafUtOmzz5
-         R1LKSQu8wMzg5UhoiuyamXDYN+ACnss+LN218gFodTUrhIkWR6pq/XHTTkRjKtq72z
-         EPvqU2ITBlUZMpJOMVeUYeYx7cSlhG4QWiOa1hSs=
+        b=YMlURqaX9fb5A35KpMfbJYMiqW0pF4QZg5FbH1mGmafm2Ez7khawVJCdsPU/2ctyQ
+         G+BJkvTiJGJIVAAjr9ocXFz9N4RDjc97U4EOuq8qP7iMxR3lDNW4G0YBjvdYLwCxgS
+         qCoCqw9lw9fdu52wVu0PRiXz6lAoN4ksmPK7nNLw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dawid Lukwinski <dawid.lukwinski@intel.com>,
-        Michal Maloszewski <michal.maloszewski@intel.com>,
-        Dave Switzer <david.switzer@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 21/32] i40e: Fix interface init with MSI interrupts (no MSI-X)
-Date:   Tue,  9 Aug 2022 20:00:12 +0200
-Message-Id: <20220809175513.753445598@linuxfoundation.org>
+Subject: [PATCH 4.19 12/32] igmp: Fix data-races around sysctl_igmp_qrv.
+Date:   Tue,  9 Aug 2022 20:00:03 +0200
+Message-Id: <20220809175513.482217787@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175513.082573955@linuxfoundation.org>
 References: <20220809175513.082573955@linuxfoundation.org>
@@ -54,47 +50,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Maloszewski <michal.maloszewski@intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 5fcbb711024aac6d4db385623e6f2fdf019f7782 ]
+[ Upstream commit 8ebcc62c738f68688ee7c6fec2efe5bc6d3d7e60 ]
 
-Fix the inability to bring an interface up on a setup with
-only MSI interrupts enabled (no MSI-X).
-Solution is to add a default number of QPs = 1. This is enough,
-since without MSI-X support driver enables only a basic feature set.
+While reading sysctl_igmp_qrv, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: bc6d33c8d93f ("i40e: Fix the number of queues available to be mapped for use")
-Signed-off-by: Dawid Lukwinski <dawid.lukwinski@intel.com>
-Signed-off-by: Michal Maloszewski <michal.maloszewski@intel.com>
-Tested-by: Dave Switzer <david.switzer@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Link: https://lore.kernel.org/r/20220722175401.112572-1-anthony.l.nguyen@intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This test can be packed into a helper, so such changes will be in the
+follow-up series after net is merged into net-next.
+
+  qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+
+Fixes: a9fe8e29945d ("ipv4: implement igmp_qrv sysctl to tune igmp robustness variable")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/ipv4/igmp.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 3615c6533cf4..2f3b393e5506 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -1808,11 +1808,15 @@ static void i40e_vsi_setup_queue_map(struct i40e_vsi *vsi,
- 		 * non-zero req_queue_pairs says that user requested a new
- 		 * queue count via ethtool's set_channels, so use this
- 		 * value for queues distribution across traffic classes
-+		 * We need at least one queue pair for the interface
-+		 * to be usable as we see in else statement.
- 		 */
- 		if (vsi->req_queue_pairs > 0)
- 			vsi->num_queue_pairs = vsi->req_queue_pairs;
- 		else if (pf->flags & I40E_FLAG_MSIX_ENABLED)
- 			vsi->num_queue_pairs = pf->num_lan_msix;
-+		else
-+			vsi->num_queue_pairs = 1;
- 	}
+diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+index b831825f234f..a08acb54b6b0 100644
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -831,7 +831,7 @@ static void igmp_ifc_event(struct in_device *in_dev)
+ 	struct net *net = dev_net(in_dev->dev);
+ 	if (IGMP_V1_SEEN(in_dev) || IGMP_V2_SEEN(in_dev))
+ 		return;
+-	WRITE_ONCE(in_dev->mr_ifc_count, in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv);
++	WRITE_ONCE(in_dev->mr_ifc_count, in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv));
+ 	igmp_ifc_start_timer(in_dev, 1);
+ }
  
- 	/* Number of queues per enabled TC */
+@@ -1013,7 +1013,7 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
+ 		 * received value was zero, use the default or statically
+ 		 * configured value.
+ 		 */
+-		in_dev->mr_qrv = ih3->qrv ?: net->ipv4.sysctl_igmp_qrv;
++		in_dev->mr_qrv = ih3->qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		in_dev->mr_qi = IGMPV3_QQIC(ih3->qqic)*HZ ?: IGMP_QUERY_INTERVAL;
+ 
+ 		/* RFC3376, 8.3. Query Response Interval:
+@@ -1192,7 +1192,7 @@ static void igmpv3_add_delrec(struct in_device *in_dev, struct ip_mc_list *im)
+ 	pmc->interface = im->interface;
+ 	in_dev_hold(in_dev);
+ 	pmc->multiaddr = im->multiaddr;
+-	pmc->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++	pmc->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 	pmc->sfmode = im->sfmode;
+ 	if (pmc->sfmode == MCAST_INCLUDE) {
+ 		struct ip_sf_list *psf;
+@@ -1243,9 +1243,11 @@ static void igmpv3_del_delrec(struct in_device *in_dev, struct ip_mc_list *im)
+ 			swap(im->tomb, pmc->tomb);
+ 			swap(im->sources, pmc->sources);
+ 			for (psf = im->sources; psf; psf = psf->sf_next)
+-				psf->sf_crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++				psf->sf_crcount = in_dev->mr_qrv ?:
++					READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		} else {
+-			im->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++			im->crcount = in_dev->mr_qrv ?:
++				READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		}
+ 		in_dev_put(pmc->interface);
+ 		kfree_pmc(pmc);
+@@ -1347,7 +1349,7 @@ static void igmp_group_added(struct ip_mc_list *im)
+ 	if (in_dev->dead)
+ 		return;
+ 
+-	im->unsolicit_count = net->ipv4.sysctl_igmp_qrv;
++	im->unsolicit_count = READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 	if (IGMP_V1_SEEN(in_dev) || IGMP_V2_SEEN(in_dev)) {
+ 		spin_lock_bh(&im->lock);
+ 		igmp_start_timer(im, IGMP_INITIAL_REPORT_DELAY);
+@@ -1361,7 +1363,7 @@ static void igmp_group_added(struct ip_mc_list *im)
+ 	 * IN() to IN(A).
+ 	 */
+ 	if (im->sfmode == MCAST_EXCLUDE)
+-		im->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++		im->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 
+ 	igmp_ifc_event(in_dev);
+ #endif
+@@ -1769,7 +1771,7 @@ static void ip_mc_reset(struct in_device *in_dev)
+ 
+ 	in_dev->mr_qi = IGMP_QUERY_INTERVAL;
+ 	in_dev->mr_qri = IGMP_QUERY_RESPONSE_INTERVAL;
+-	in_dev->mr_qrv = net->ipv4.sysctl_igmp_qrv;
++	in_dev->mr_qrv = READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ }
+ #else
+ static void ip_mc_reset(struct in_device *in_dev)
+@@ -1903,7 +1905,7 @@ static int ip_mc_del1_src(struct ip_mc_list *pmc, int sfmode,
+ #ifdef CONFIG_IP_MULTICAST
+ 		if (psf->sf_oldin &&
+ 		    !IGMP_V1_SEEN(in_dev) && !IGMP_V2_SEEN(in_dev)) {
+-			psf->sf_crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++			psf->sf_crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 			psf->sf_next = pmc->tomb;
+ 			pmc->tomb = psf;
+ 			rv = 1;
+@@ -1967,7 +1969,7 @@ static int ip_mc_del_src(struct in_device *in_dev, __be32 *pmca, int sfmode,
+ 		/* filter mode change */
+ 		pmc->sfmode = MCAST_INCLUDE;
+ #ifdef CONFIG_IP_MULTICAST
+-		pmc->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++		pmc->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		WRITE_ONCE(in_dev->mr_ifc_count, pmc->crcount);
+ 		for (psf = pmc->sources; psf; psf = psf->sf_next)
+ 			psf->sf_crcount = 0;
+@@ -2146,7 +2148,7 @@ static int ip_mc_add_src(struct in_device *in_dev, __be32 *pmca, int sfmode,
+ #ifdef CONFIG_IP_MULTICAST
+ 		/* else no filters; keep old mode for reports */
+ 
+-		pmc->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++		pmc->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		WRITE_ONCE(in_dev->mr_ifc_count, pmc->crcount);
+ 		for (psf = pmc->sources; psf; psf = psf->sf_next)
+ 			psf->sf_crcount = 0;
 -- 
 2.35.1
 
