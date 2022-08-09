@@ -2,100 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF0EC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2D4CC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 08:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238996AbiHIIcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 04:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37192 "EHLO
+        id S239445AbiHIIc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 04:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236481AbiHIIcr (ORCPT
+        with ESMTP id S239186AbiHIIcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 04:32:47 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF6F1F619
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 01:32:45 -0700 (PDT)
-Received: from mail-ej1-f43.google.com ([209.85.218.43]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MhClw-1nhIp41hvW-00eLLm for <linux-kernel@vger.kernel.org>; Tue, 09 Aug
- 2022 10:32:44 +0200
-Received: by mail-ej1-f43.google.com with SMTP id dc19so20876909ejb.12
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 01:32:44 -0700 (PDT)
-X-Gm-Message-State: ACgBeo0SUdbBO4Dx5cLdbJed7Ph9yRC7icTRVU6HyDFyCXruhFTTwM/U
-        VE6wEbCOkJfvXtHmDoDSGU7HKBjaPAEQZuhhL3Q=
-X-Google-Smtp-Source: AA6agR4TKFxtd5LiYcX73HbGF2u7VeVKCRTYtwOOZ8D2bVS25LcWy9weFOVCptPzjGX0tAq94ORtgLDqHbENdmCFPc8=
-X-Received: by 2002:a17:907:7395:b0:730:b636:2c89 with SMTP id
- er21-20020a170907739500b00730b6362c89mr16431662ejc.547.1660033964094; Tue, 09
- Aug 2022 01:32:44 -0700 (PDT)
+        Tue, 9 Aug 2022 04:32:51 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E54205F9
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 01:32:49 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M25qm4dsvzmVJS;
+        Tue,  9 Aug 2022 16:30:44 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 9 Aug 2022 16:32:47 +0800
+Received: from [10.174.177.243] (10.174.177.243) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 9 Aug 2022 16:32:47 +0800
+Message-ID: <abe62159-c218-2fb5-e096-3c71c10c28e1@huawei.com>
+Date:   Tue, 9 Aug 2022 16:32:46 +0800
 MIME-Version: 1.0
-References: <CAPM=9txSKv_xwZJ6SndtqsdQm6aK1KJVF91dB5Odhc_Xv6Qdrw@mail.gmail.com>
- <CAFCwf10CsLgt+_qT7dT=8DVXsL0a=w=uXN6HC=CpP5EfitvLfQ@mail.gmail.com>
- <YuvctaLwRi+z0Gw4@nvidia.com> <CAFCwf12wD3uEhr+kxwN9ROXApHzGh_n1je5susZV5NgGR9fCcQ@mail.gmail.com>
- <Yuxi1eRHPN36Or+1@nvidia.com> <CAFCwf13QF_JdzNcpw==zzBoEQUYChMXfechotH31qmAfYZUGmg@mail.gmail.com>
- <CAFCwf107tLxHKxkPqSRsOHVVp5s2tDEFOOy2oDZUz_KGmv-rDg@mail.gmail.com>
- <YvCozvgodIY19LSr@kroah.com> <YvFOEPdC9r8QBH11@nvidia.com>
- <YvH9X5puer4jpzMX@kroah.com> <YvIU/wMdqFA1fYc6@infradead.org>
-In-Reply-To: <YvIU/wMdqFA1fYc6@infradead.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 9 Aug 2022 10:32:27 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3y2=FyzK4S6MRfZdrz=DdLat1ajdT_uPmN533mNYmF9w@mail.gmail.com>
-Message-ID: <CAK8P3a3y2=FyzK4S6MRfZdrz=DdLat1ajdT_uPmN533mNYmF9w@mail.gmail.com>
-Subject: Re: New subsystem for acceleration devices
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>,
-        Dave Airlie <airlied@gmail.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>,
-        Jiho Chu <jiho.chu@samsung.com>, Arnd Bergmann <arnd@arndb.de>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:5E5bCciRIBKhYs8DONl/B/spZHbKI7r800+vqWgPu43CFVIOFTu
- m2StS3+sqLXuHOo9PcuJi0uizp1xuIpFG6dXqa+rvxrDTcbOG/AEwhAXp88JqQZJjNj9cPJ
- tzkRCQwdinppWbVwxCnUmCDiK+VcoDrrm6IyOYtVkQHW2BS03N5ddpARgSMgyJFJ23G1979
- RT82PSVuQm1sorbhri/4w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:IUbD/5MRfm0=:wORYGYWlIPTD4JBHNA62p+
- 3os6aBT/RUwOOX/Z/Cw4P0+W8uGghbFBflZDNfEPPuUuRNhjKAbmidj85wPGOElfvXYBBSRHP
- cwZ5e2zaX2NiWltTR7fr5VJPXeXfyl2GNZQWmITZIR4yfcF/D4DNyAhRbwRpnbRQkkyEmeWSR
- Na5gpN7JO0SPG+z2gFwLtClkLcKw3CuTWFyKos354aJ2NJ/bdYXh4x0dqkbH56uJm1+13IE7R
- qWKtcuTQzvH7YwXi+9a9QjIKUkE1pCuEgOOaHz8MXeBvLIKFI8Ic+EjTwbSgClD5Zr2FXs16d
- 5Yuib6Ce2gPPGsFWEQDOF03A/6iU9kP2g+2142TUy0HBl+NTH3lD1JMDYZYY61rIrSIydNClV
- wXTwwSiPyoTeyLOEjzBPJz3wlpkwHp8z821FGBPmA0gVvHYG9bcZ0v2vwOSnIzmZ953mnC3Ae
- hoGb44NuJZmQ676y6ZZODnxwj/93555iAsP6aR9/4ovGAAmjfKJb7OaFOLYu6KSpc0Dkbf+nK
- dWGbj5JrxKSimhWh40bHBekG8mIZXAJhe95Raw/J/mdEy45hdntpuBqXlUniOQgk8k5t1T2Ot
- dzqGW+LtbaW9Oq0OjBdZaD8KZCXnPK5UXriiIrnTvfLi8rkN6HcJF6uavJ7Nfbv3+xpsZzjvE
- PIrJ1e+i/5luDUZ2gKXtScXSzQjyQ1tT+rePW4N13p8YN6Q9sVEMNl4SS9LsXj/TRgoddudyr
- wk5SH2HdSM849NVt5Yqd5yOoqBTXdwOVBABr/r6xxn1HuiHYYf9f8/UtfAw/iMmBcybChwLEa
- hrxbkpV80wJZMu+eR84cHFHmBPCFZ9992mAYvsOM6jTE1CBjd83k/qodj1V7mWKLm2X7pgxtt
- CN6Ahd7uQOvptwHNvYtQ==
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2] mm: add warning if __vm_enough_memory fails
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     David Hildenbrand <david@redhat.com>,
+        Yongqiang Liu <liuyongqiang13@huawei.com>
+References: <20220726145428.8030-1-wangkefeng.wang@huawei.com>
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+In-Reply-To: <20220726145428.8030-1-wangkefeng.wang@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.243]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 9, 2022 at 10:04 AM Christoph Hellwig <hch@infradead.org> wrote:
-> On Tue, Aug 09, 2022 at 08:23:27AM +0200, Greg Kroah-Hartman wrote:
-> > > This is different from the number of FDs pointing at the struct file.
-> > > Userpsace can open a HW state and point a lot of FDs at it, that is
-> > > userspace's problem. From a kernel view they all share one struct file
-> > > and thus one HW state.
-> >
-> > Yes, that's fine, if that is what is happening here, I have no
-> > objection.
+Hi maintainer, any comments, thanks
+
+On 2022/7/26 22:54, Kefeng Wang wrote:
+> If a process has no enough memory to allocate a new virtual mapping, we
+> may meet kinds of error, eg, fork cannot allocate memory, SIGBUS error
+> in shmem, but it is difficult to confirm them, let's add some debug
+> information to easy to check this scenario if __vm_enough_memory fails.
 >
-> It would be great if we could actually life that into a common
-> layer (chardev or vfs) given just how common this, and drivers tend
-> to get it wrong, do it suboptimal so often.
-
-Totally agreed.
-
-I think for devices with hardware MMU contexts you actually want to
-bind the context to a 'mm_struct', and then ensure that the context
-is only ever used from a process that shares this mm_struct,
-regardless of who else has access to the same file or inode.
-
-We did this in a somewhat hacky way in spufs a long time ago, and
-I would expect this to be solved more cleanly in drivers/gpu/drm, but
-I don't know where to look for that code.
-
-        Arnd
+> Reported-by: Yongqiang Liu <liuyongqiang13@huawei.com>
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+> v2: use pr_warn_ratelimited, suggested by David Hildenbrand
+>
+>   mm/util.c | 2 ++
+>   1 file changed, 2 insertions(+)
+>
+> diff --git a/mm/util.c b/mm/util.c
+> index 1266a33a49ea..c786e21c6051 100644
+> --- a/mm/util.c
+> +++ b/mm/util.c
+> @@ -1020,6 +1020,8 @@ int __vm_enough_memory(struct mm_struct *mm, long pages, int cap_sys_admin)
+>   	if (percpu_counter_read_positive(&vm_committed_as) < allowed)
+>   		return 0;
+>   error:
+> +	pr_warn_ratelimited("%s: pid: %d, comm: %s, no enough memory for the allocation\n",
+> +			    __func__, current->pid, current->comm);
+>   	vm_unacct_memory(pages);
+>   
+>   	return -ENOMEM;
