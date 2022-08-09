@@ -2,105 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DF9CC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 16:20:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6665AC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 16:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244956AbiHIQUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 12:20:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39666 "EHLO
+        id S244987AbiHIQUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 12:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244942AbiHIQUS (ORCPT
+        with ESMTP id S245016AbiHIQUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 12:20:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2813DCB;
-        Tue,  9 Aug 2022 09:20:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0008B81627;
-        Tue,  9 Aug 2022 16:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5148CC433D6;
-        Tue,  9 Aug 2022 16:20:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660062014;
-        bh=pH94ZgNSPsft0KMGKgNtAAy5I1z5p+RQ7sS2YK/gSFA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KzaIq/DjAPWWMODx0NABsh615wiKrLh3RKkH1WfZpnARD84xYVrv2HCtf+SNjD7tx
-         OJ03GVvaQjO1E9TZ5PMAhlhG4SIkummt3jUGCPyxynksYTlamx3y/BSraS8+09CuX/
-         ywBaMi7L/xRaKm3lpN//DKdEuLhbz6p34ZTAk1i4ZHARb6DSOSXhlA+lFoH+olJ0aq
-         tOf9OEQS6eQZFaDgZBQS65RW9bwIAjAuA8pLMEN0iIrWPiNTglaXsMWXXEveanGbTG
-         C1xjhCiJ1Dcaw/kmR2O+qqDU7YSV5TU8hbg2FtDoRJMYpIZR0hMI8sUNAtNR5xYstN
-         i1ti62C1lp60w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 35F78C43140;
-        Tue,  9 Aug 2022 16:20:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 9 Aug 2022 12:20:37 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A1920F68
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 09:20:30 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id m7so9059627qkk.6
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 09:20:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=PG/NzpP7dxYgSbT1VGhdPEfvsq4XeuSudB3XVxm5vho=;
+        b=UWFcTHBG5hnvXz+bOhhIMs+36qXUs7LS+bm8wscLrUKvkhW1PkrqNEt32SN2Ch60WF
+         45OX0C7T/Y90O6bR2Zck7kKcRKlCcOkgGVzLxYzDIzlMam5/9vHVAZJ5lY0IqoikggDC
+         l6VQInX5RJyUjG5en0AgacfSSw/Rk33TfBuyFsDlJytpV4hvFFxhTKyoRwWRne3gTaME
+         z0+/6y5mfgFBof4NsOgQGkXMqGfmPgB4+qLmK37PVJ6429s5c58JSUsZjp7umaYRteAq
+         vDQoE7TsoLnx7Ne9/uVXyooRLvvPCqsigtYXXv7GIh1oYg2KvI6GyumvSHY+URTg8WJ0
+         YkjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=PG/NzpP7dxYgSbT1VGhdPEfvsq4XeuSudB3XVxm5vho=;
+        b=bUCZSvZud4L2BP0rvvWJt1DbsMayBiGGiFl4rSLL4hj8bWofvXuarmQu+bTJ+nStvO
+         C9tWW9xr2O67r2R06OYdkRZxweogiv3ZxsN/pXn+u9TkWLft8RhwQeAXDg/pdDmLVJko
+         /Yudzt9TlE7nn/GdcU0M/Ux5VyLqlvBXZBRdu7Slq9e43CJcM3JE4a/U3nyQMKCL1wM0
+         r237yIrE4vHX/XyBXJsLLDiIus2d9auSyPVgPs/AkulGMvrT+/BA8oOCAmHNegBtrJrr
+         40p5BwFGqW4vkhbi3SeZ1StUxzoScXAtMR/jZD5V+I1mSwAsucVdqzRTRlwPiviOG6tA
+         fZOw==
+X-Gm-Message-State: ACgBeo1ujmy+uW/ZzvvkNJqaN3JYx62+OxXhGqFFiW1uzOjyXe3Tfruf
+        I3eRiwITlJ+6vvhxA8Nvoqsbag==
+X-Google-Smtp-Source: AA6agR6XqzWz63ok/9lDp5yv2YzmPFN9jxiX+xJ5eurZ4xCN2N8OROoNYGECiJqBxHp+LSIjMnnimw==
+X-Received: by 2002:a05:620a:2947:b0:6b9:6fa7:abd1 with SMTP id n7-20020a05620a294700b006b96fa7abd1mr4589260qkp.202.1660062029646;
+        Tue, 09 Aug 2022 09:20:29 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id h126-20020a375384000000b006b5cb0c512asm11261863qkb.101.2022.08.09.09.20.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 09:20:28 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1oLRy0-0067SD-2f;
+        Tue, 09 Aug 2022 13:20:28 -0300
+Date:   Tue, 9 Aug 2022 13:20:28 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Diana Craciun <diana.craciun@oss.nxp.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: Re: [PATCH] vfio/fsl-mc: Fix a typo in a comment
+Message-ID: <YvKJTKYv2htxM1n/@ziepe.ca>
+References: <2b65bf8d2b4d940cafbafcede07c23c35f042f5a.1659815764.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v9 00/10] bpf: Add kfuncs for PKCS#7 signature verification
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166006201421.29142.5957999549167447991.git-patchwork-notify@kernel.org>
-Date:   Tue, 09 Aug 2022 16:20:14 +0000
-References: <20220809134603.1769279-1-roberto.sassu@huawei.com>
-In-Reply-To: <20220809134603.1769279-1-roberto.sassu@huawei.com>
-To:     Roberto Sassu <roberto.sassu@huawei.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, corbet@lwn.net,
-        dhowells@redhat.com, jarkko@kernel.org, rostedt@goodmis.org,
-        mingo@redhat.com, paul@paul-moore.com, jmorris@namei.org,
-        serge@hallyn.com, shuah@kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2b65bf8d2b4d940cafbafcede07c23c35f042f5a.1659815764.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This series was applied to bpf/bpf-next.git (master)
-by Alexei Starovoitov <ast@kernel.org>:
-
-On Tue, 9 Aug 2022 15:45:53 +0200 you wrote:
-> One of the desirable features in security is the ability to restrict import
-> of data to a given system based on data authenticity. If data import can be
-> restricted, it would be possible to enforce a system-wide policy based on
-> the signing keys the system owner trusts.
+On Sat, Aug 06, 2022 at 09:56:13PM +0200, Christophe JAILLET wrote:
+> L and S are swapped/
+> s/VFIO_FLS_MC/VFIO_FSL_MC/
 > 
-> This feature is widely used in the kernel. For example, if the restriction
-> is enabled, kernel modules can be plugged in only if they are signed with a
-> key whose public part is in the primary or secondary keyring.
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> All the dev_ logging functions in the file have the "VFIO_FSL_MC: "
+> prefix.
+> As they are dev_ function, the driver should already be displayed.
 > 
-> [...]
+> So, does it make sense or could they be all removed?
+> ---
+>  drivers/vfio/fsl-mc/vfio_fsl_mc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/vfio/fsl-mc/vfio_fsl_mc.c b/drivers/vfio/fsl-mc/vfio_fsl_mc.c
+> index 3feff729f3ce..66d01db1d240 100644
+> --- a/drivers/vfio/fsl-mc/vfio_fsl_mc.c
+> +++ b/drivers/vfio/fsl-mc/vfio_fsl_mc.c
+> @@ -110,7 +110,7 @@ static void vfio_fsl_mc_close_device(struct vfio_device *core_vdev)
+>  
+>  	if (WARN_ON(ret))
+>  		dev_warn(&mc_cont->dev,
+> -			 "VFIO_FLS_MC: reset device has failed (%d)\n", ret);
+> +			 "VFIO_FSL_MC: reset device has failed (%d)\n", ret);
 
-Here is the summary with links:
-  - [v9,01/10] btf: Add a new kfunc flag which allows to mark a function to be sleepable
-    https://git.kernel.org/bpf/bpf-next/c/fa96b24204af
-  - [v9,02/10] bpf: Allow kfuncs to be used in LSM programs
-    (no matching commit)
-  - [v9,03/10] btf: Handle dynamic pointer parameter in kfuncs
-    (no matching commit)
-  - [v9,04/10] bpf: Export bpf_dynptr_get_size()
-    (no matching commit)
-  - [v9,05/10] KEYS: Move KEY_LOOKUP_ to include/linux/key.h
-    (no matching commit)
-  - [v9,06/10] bpf: Add bpf_lookup_*_key() and bpf_key_put() kfuncs
-    (no matching commit)
-  - [v9,07/10] bpf: Add bpf_verify_pkcs7_signature() kfunc
-    (no matching commit)
-  - [v9,08/10] selftests/bpf: Add verifier tests for bpf_lookup_*_key() and bpf_key_put()
-    (no matching commit)
-  - [v9,09/10] selftests/bpf: Add additional tests for bpf_lookup_*_key()
-    (no matching commit)
-  - [v9,10/10] selftests/bpf: Add test for bpf_verify_pkcs7_signature() kfunc
-    (no matching commit)
+WARN_ON already prints, this is better written as
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+WARN(ret, "VFIO_FSL_MC: reset device has failed (%d)\n", ret);
 
-
+Jason
