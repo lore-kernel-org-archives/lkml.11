@@ -2,121 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EEFEC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 11:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E886BC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 11:12:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240117AbiHILLu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 07:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43020 "EHLO
+        id S239133AbiHILMS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 07:12:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239296AbiHILLq (ORCPT
+        with ESMTP id S239836AbiHILMI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 07:11:46 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F04622BE5;
-        Tue,  9 Aug 2022 04:11:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660043505; x=1691579505;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=g4riI1Cedm0YyxvcNI2oLRUNfvQrlF8b9RCytIm1Osc=;
-  b=OVJoBS1btqv+Ihl4BHzsIYkeepFtXkKH69p2rjqcOfsbiBnSpVJXflf7
-   K1EcTJQUHhqS/jgX7rUc9a8A33n5IA8lXIIFvuGYQxz8PJhBIIh3UZaEP
-   Pj28SLuWKTH6W49Q3OMMU8hDANsMDnBMV4MGpznxMRiHcIH63oZQZvCQk
-   GsRarFL1RcvhUqoP01stRTk+g3EBHFmlm4AQuhmaqVWxDoECpbKS/FxuL
-   vZDjf5lRF2RJ/l1iSE/W/KRtjlEA+leL9C5ELp+NnT+dvp19XKlRKcI9W
-   PFGvwG7J5l0v6/eZNW4h4p2q0ucUeSZ/mTLrorjvJx9WTb9X1n5PmacsV
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="273859109"
-X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
-   d="scan'208";a="273859109"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 04:11:44 -0700
-X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
-   d="scan'208";a="694105197"
-Received: from labukara-mobl.ger.corp.intel.com (HELO box.shutemov.name) ([10.251.214.212])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 04:11:37 -0700
-Received: by box.shutemov.name (Postfix, from userid 1000)
-        id B515D103886; Tue,  9 Aug 2022 14:14:36 +0300 (+03)
-Date:   Tue, 9 Aug 2022 14:14:36 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Dave Hansen <dave.hansen@intel.com>, Marc Orr <marcorr@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dionna Amalie Glaze <dionnaglaze@google.com>,
-        Peter Gonda <pgonda@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Marcelo Cerri <marcelo.cerri@canonical.com>,
-        tim.gardner@canonical.com,
-        Khalid ElMously <khalid.elmously@canonical.com>,
-        philip.cox@canonical.com,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-coco@lists.linux.dev, linux-efi <linux-efi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Yao, Jiewen" <jiewen.yao@intel.com>
-Subject: Re: [PATCHv7 00/14] mm, x86/cc: Implement support for unaccepted
- memory
-Message-ID: <20220809111436.kudwg2nprnnsfvuh@box.shutemov.name>
-References: <CAAH4kHaB2tL+sAn0NAciu5DQeX5hpNkDees=n=f83S=Ph9Y6tw@mail.gmail.com>
- <YtcCWfCQuEsVhH6W@zn.tnic>
- <CAMj1kXEKtcieycyyFMyuLKJK61FgaDwtLieC0N47W1Sa5LaBsA@mail.gmail.com>
- <YtcgxxMyFTReuuRw@zn.tnic>
- <bb7479df-7871-9861-600d-c2fed783b659@intel.com>
- <YtcnQbiRgZPtR+rQ@zn.tnic>
- <22d54786-bc12-ecc5-2b37-cbaa56090aa8@intel.com>
- <CAA03e5FMEyswDhoXRJ5U_n9RG4QM524aQYpF4473ydnAVJr1PA@mail.gmail.com>
- <ffb4ae72-7fd4-d2a0-df10-3969cf8ca07f@intel.com>
- <CAMj1kXHEc=vEt=CtfdiPEsUe2i8QogAi+jvtY6h1awo7GZ-nRg@mail.gmail.com>
+        Tue, 9 Aug 2022 07:12:08 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B79D2125B
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 04:12:07 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M29LG25FNz1M8bx;
+        Tue,  9 Aug 2022 19:08:54 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 9 Aug 2022 19:12:04 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 9 Aug 2022 19:12:04 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH v2] mm: memory-failure: cleanup try_to_split_thp_page()
+Date:   Tue, 9 Aug 2022 19:18:13 +0800
+Message-ID: <20220809111813.139690-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXHEc=vEt=CtfdiPEsUe2i8QogAi+jvtY6h1awo7GZ-nRg@mail.gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 23, 2022 at 01:14:07PM +0200, Ard Biesheuvel wrote:
-> On Thu, 21 Jul 2022 at 19:13, Dave Hansen <dave.hansen@intel.com> wrote:
-> >
-> > On 7/19/22 17:26, Marc Orr wrote:
-> > > - Dave's suggestion to "2. Boot some intermediate thing like a
-> > > bootloader that does acceptance ..." is pretty clever! So if upstream
-> > > thinks this FW-kernel negotiation is not a good direction, maybe we
-> > > (Google) can pursue this idea to avoid introducing yet another tag on
-> > > our images.
-> >
-> > I'm obviously speaking only for myself here and not for "upstream" as a
-> > whole, but I clearly don't like the FW/kernel negotiation thing.  It's a
-> > permanent pain in our necks to solve a very temporary problem.
-> 
-> EFI is basically our existing embodiment of this fw/kernel negotiation
-> thing, and iff we need it, I have no objection to using it for this
-> purpose, i.e., to allow the firmware to infer whether or not it should
-> accept all available memory on behalf of the OS before exiting boot
-> services. But if we don't need this, even better.
+Since commit 5d1fd5dc877b ("mm,hwpoison: introduce MF_MSG_UNSPLIT_THP"),
+the action_result(,MF_MSG_UNSPLIT_THP,) called to show memory error event
+in memory_failure(), so the pr_info() in try_to_split_thp_page() is only
+needed in soft_offline_in_use_page().
 
-FW/kernel negotiation does not work if there's a boot loader in the middle
-that does ExitBootServices(). By the time kernel can announce if it
-supports unaccepted memory there's nobody to announce to.
+Meanwhile this could also fix the unexpected prefix for "thp split failed"
+due to commit 96f96763de26 ("mm: memory-failure: convert to pr_fmt()").
 
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+v2: update changelog
+
+ mm/memory-failure.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index 14439806b5ef..0dfed9d7b273 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -1524,20 +1524,18 @@ static int identify_page_state(unsigned long pfn, struct page *p,
+ 	return page_action(ps, p, pfn);
+ }
+ 
+-static int try_to_split_thp_page(struct page *page, const char *msg)
++static int try_to_split_thp_page(struct page *page)
+ {
++	int ret;
++
+ 	lock_page(page);
+-	if (unlikely(split_huge_page(page))) {
+-		unsigned long pfn = page_to_pfn(page);
++	ret = split_huge_page(page);
++	unlock_page(page);
+ 
+-		unlock_page(page);
+-		pr_info("%s: %#lx: thp split failed\n", msg, pfn);
++	if (unlikely(ret))
+ 		put_page(page);
+-		return -EBUSY;
+-	}
+-	unlock_page(page);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static void unmap_and_kill(struct list_head *to_kill, unsigned long pfn,
+@@ -2079,7 +2077,7 @@ int memory_failure(unsigned long pfn, int flags)
+ 		 * page is a valid handlable page.
+ 		 */
+ 		SetPageHasHWPoisoned(hpage);
+-		if (try_to_split_thp_page(p, "Memory Failure") < 0) {
++		if (try_to_split_thp_page(p) < 0) {
+ 			action_result(pfn, MF_MSG_UNSPLIT_THP, MF_IGNORED);
+ 			res = -EBUSY;
+ 			goto unlock_mutex;
+@@ -2505,8 +2503,11 @@ static int soft_offline_in_use_page(struct page *page)
+ 	struct page *hpage = compound_head(page);
+ 
+ 	if (!PageHuge(page) && PageTransHuge(hpage))
+-		if (try_to_split_thp_page(page, "soft offline") < 0)
++		if (try_to_split_thp_page(page) < 0) {
++			pr_info("soft offline: %#lx: thp split failed\n",
++				page_to_pfn(page));
+ 			return -EBUSY;
++		}
+ 	return __soft_offline_page(page);
+ }
+ 
 -- 
-  Kiryl Shutsemau / Kirill A. Shutemov
+2.35.3
+
