@@ -2,114 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F4CC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 10:53:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 769E8C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 10:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233502AbiHIKxt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 06:53:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59684 "EHLO
+        id S237791AbiHIKzO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 06:55:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242264AbiHIKx3 (ORCPT
+        with ESMTP id S236832AbiHIKzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 06:53:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A8752DCE
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 03:53:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660042407;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=xTyqe2j7rpO6EUBF4khPbbfDOmMZA+TQt5p8dEfCV6c=;
-        b=S/KFxq1fD+HX1WCTDbDbBY6wOYMDgqMNhwfduC4e/54elzY7GM6q4EdCj2Dz25tkzvh/zE
-        tjLq+dyf6ZGHvpipCbNRyGLOY+I/afgoGxAiWU8899xAROln15JMljhIPy0OZbT31lQnPc
-        ef6I7GhrFyQFzRm+q7iR4bNPKjPG/Rw=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-652-zuYQ5ramMXawJslZnWPevA-1; Tue, 09 Aug 2022 06:53:19 -0400
-X-MC-Unique: zuYQ5ramMXawJslZnWPevA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2F1D5280D223;
-        Tue,  9 Aug 2022 10:53:19 +0000 (UTC)
-Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id E77C69459C;
-        Tue,  9 Aug 2022 10:53:18 +0000 (UTC)
-Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
-        id DA7E81C02A9; Tue,  9 Aug 2022 12:53:17 +0200 (CEST)
-From:   Artem Savkov <asavkov@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Daniel Vacek <dvacek@redhat.com>,
-        Jiri Olsa <olsajiri@gmail.com>, Song Liu <song@kernel.org>,
-        Daniel Xu <dxu@dxuuu.xyz>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Artem Savkov <asavkov@redhat.com>
-Subject: [PATCH bpf-next v4 0/3] destructive bpf_kfuncs
-Date:   Tue,  9 Aug 2022 12:53:14 +0200
-Message-Id: <20220809105317.436682-1-asavkov@redhat.com>
+        Tue, 9 Aug 2022 06:55:10 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA19326F4
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 03:55:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660042509; x=1691578509;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=nThm70cbh3yuihLopwrO/iHlRv4329SKFx3NKXGE0C4=;
+  b=Iae9b6d9j35BDJ43JBJ/aUGD5UhSsIalPeGDxHO1TsoTRLv37CgiJy3V
+   m9xu9zzu5hgd+PtXtEjfR3AWrBqkyTrR9V173EcTb5wbSsJhIcWz9GLym
+   YfC18Mn4aLlWyFenumt0Wt9dJNk19oao/6qyLY2426cf7jSXEavPueTLE
+   U5cYhwYzR60F3rAjvwevk0o3YVz86m4Ir1VeGjOgNhjaZebHWZPZxkqD1
+   47cMiXyHg+PWRgZEeUof9yroLR1HzkluawAnidfCqB2vSxJ6QwcdGBbVk
+   vgDWQtiqV2LcFo03W9XFKO9AtqLsvvqMZrphCLUZbnJj/jmUdsAi3KKUs
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="316735507"
+X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
+   d="scan'208";a="316735507"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 03:55:09 -0700
+X-IronPort-AV: E=Sophos;i="5.93,224,1654585200"; 
+   d="scan'208";a="850428746"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 03:55:07 -0700
+Received: by lahna (sSMTP sendmail emulation); Tue, 09 Aug 2022 13:55:05 +0300
+Date:   Tue, 9 Aug 2022 13:55:05 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Brad Campbell <lists2009@fnarfbargle.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: Apple Thunderbolt Display chaining
+Message-ID: <YvI9Cbin4OKQwZ05@lahna>
+References: <87c1a001-ef79-6390-dfe2-06d2850f6e84@fnarfbargle.com>
+ <Yu4Gmkous7asng6h@lahna>
+ <42e81a8e-e393-7a69-7339-a020ebb57935@fnarfbargle.com>
+ <YvDcudE5BRtZAtfM@lahna>
+ <a1db1454-63b6-7c39-bbf6-53e53bbd36e6@fnarfbargle.com>
+ <5474e599-057a-ec0f-b469-560644155907@fnarfbargle.com>
+ <YvEFtPF7SBIwNG/o@lahna>
+ <d234ea9b-9303-6088-0a9b-4de887a77bf4@fnarfbargle.com>
+ <YvI1lQh+C0SJiG73@lahna>
+ <bcebdeb9-4f6a-e931-46f5-b9be899db9a4@fnarfbargle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bcebdeb9-4f6a-e931-46f5-b9be899db9a4@fnarfbargle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-eBPF is often used for kernel debugging, and one of the widely used and
-powerful debugging techniques is post-mortem debugging with a full memory dump.
-Triggering a panic at exactly the right moment allows the user to get such a
-dump and thus a better view at the system's state. Right now the only way to
-do this in BPF is to signal userspace to trigger kexec/panic. This is
-suboptimal as going through userspace requires context changes and adds
-significant delays taking system further away from "the right moment". On a
-single-cpu system the situation is even worse because BPF program won't even be
-able to block the thread of interest.
+Hi,
 
-This patchset tries to solve this problem by allowing properly marked tracing
-bpf programs to call crash_kexec() kernel function. The only requirement for
-now to run programs calling crash_kexec() or other destructive kfuncs is
-CAP_SYS_BOOT capability. When signature checking for bpf programs is available
-it is possible that stricter rules will be applied to programs utilizing
-destructive kfuncs.
+On Tue, Aug 09, 2022 at 06:40:54PM +0800, Brad Campbell wrote:
+> G'day Mika,
+> 
+> 
+> On 9/8/22 18:23, Mika Westerberg wrote:
+> > Hi,
+> > 
+> > On Mon, Aug 08, 2022 at 09:27:24PM +0800, Brad Campbell wrote:
+> >> If I don't authorize the PCIe tunnels and just leave the DP enabled it
+> >> works fine also.
+> > 
+> > But you say that it fails on boot when the driver discovers the tunnels,
+> > right? So there is really nothing to authorize (they should be already
+> > "authorized" by the boot firmware).
+> > 
+> > If I understand correctly this is how it reproduces (the simplest):
+> > 
+> >   1. Connect a single Apple TB1 display to the system
+> >   2. Boot it up
+> >   3. Wait a while and it hangs
+> > 
+> > If this is the case, then the driver certainly is not creating any
+> > PCIe tunnels itself unless there is a bug somewhere.
+> > 
+> > An additional question, does it reproduce with either TB1 display
+> > connected or just with specific TB1 display?
+> > 
+> 
+> No, I've not been clear enough, I'm sorry. I've re-read what I've written below and
+> I'm still not sure I'm clear enough.
+> 
+> The firmware never sets anything up. 
+> 
+> When I cold boot the machine (from power on), the thunderbolt displays and tunnels
+> remain dark until linux initializes the thunderbolt driver the first time. 
+>  
+> If I compile the thunderbolt driver into the kernel, or let the initramfs load it
+> the displays come up, all PCIe tunnels are established and everything works.
+> 
+> When I reboot the machine (reset button or warm boot), the firmware continues to
+> do nothing and all the tunnels remain in place. The machine dies when the thunderbolt 
+> driver is loaded for a second time.
+> 
+> That might be a reset/warm boot with it compiled in or loaded from iniramfs.
+> It may also be me loading it from the command line after booting with it as a
+> module and blacklisted.
+> 
+> The problem comes about when the thunderbolt module is loaded while the PCIe tunnels
+> are already established.
+> 
+> To reproduce in the easiest manner I compile the thunderbolt driver as a module and
+> blacklist it. This prevents it from auto-loading.
+> 
+> I cold boot the machine, let it boot completely then modprobe thunderbolt and authorize
+> the tunnels. I then warm boot which lets the kernel detect and init the DP displays
+> and detect/configure all the PCIe devices. The thunderbolt driver is not loaded.
+> 
+> The machine comes up, all tunnels are established and all devices work.
+> 
+> If I then modprobe the thunderbolt driver, things break.
+> 
+> This is the hack in my boot script :
+> 
+> # Spark up thunderbolt
+> if [ -z "`grep notb /proc/cmdline`" -a -z "`lsusb | grep '05ac:9227'`" ] ; then
+> 	modprobe thunderbolt
+> 	sleep 1
+> 	echo 1 > /sys/bus/thunderbolt/devices/0-3/authorized
+> 	echo 1 > /sys/bus/thunderbolt/devices/0-303/authorized
+> 	reboot
+> fi
 
-Changes in v4:
- - Added description for KF_DESTRUCTIVE flag to documentation
-
-Changes in v3:
- - moved kfunc set registration to kernel/bpf/helpers.c
-
-Changes in v2:
- - BPF_PROG_LOAD flag dropped as it doesn't fully achieve it's aim of
-   preventing accidental execution of destructive bpf programs
- - selftest moved to the end of patchset
- - switched to kfunc destructive flag instead of a separate set
-
-Changes from RFC:
- - sysctl knob dropped
- - using crash_kexec() instead of panic()
- - using kfuncs instead of adding a new helper
-
-Artem Savkov (3):
-  bpf: add destructive kfunc flag
-  bpf: export crash_kexec() as destructive kfunc
-  selftests/bpf: add destructive kfunc test
-
- Documentation/bpf/kfuncs.rst                  |  9 +++++
- include/linux/btf.h                           |  1 +
- kernel/bpf/helpers.c                          | 21 +++++++++++
- kernel/bpf/verifier.c                         |  5 +++
- net/bpf/test_run.c                            |  5 +++
- .../selftests/bpf/prog_tests/kfunc_call.c     | 36 +++++++++++++++++++
- .../bpf/progs/kfunc_call_destructive.c        | 14 ++++++++
- 7 files changed, 91 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_destructive.c
-
--- 
-2.37.1
-
+Thanks for the clarification! How about on macOS side, does it work (I
+would expect yes)?
