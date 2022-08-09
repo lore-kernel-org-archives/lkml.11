@@ -2,67 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF05CC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 20:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E39C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 20:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235769AbiHIUC6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 16:02:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55186 "EHLO
+        id S245124AbiHIUDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 16:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346298AbiHIUBJ (ORCPT
+        with ESMTP id S1346157AbiHIUAz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 16:01:09 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F06CF9
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 13:01:08 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id n13-20020a056e02140d00b002dfa5464967so7842726ilo.19
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 13:01:08 -0700 (PDT)
+        Tue, 9 Aug 2022 16:00:55 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11B623145
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 13:00:54 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id x21so16498551edd.3
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 13:00:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=3Nw+UCMkb8eM5P4o4fg5DPpCP6PyLs67xhLCM5SqQGM=;
+        b=VRBM9D6pcPFAJOfjA+37UektR0jrpOFKofLKXQ8dh9+GHqA9kghDd4C5F1PQSSakLC
+         uiJ/X8JuI7hj3D7sznroAaF0LHsLxleBjlrNKIUQ1Fvc76loYqdCHQw/er29PAcKm6dz
+         RWHrVlurVBlAOBYpfxEdiWKtz+KG/FFvLYv3A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=lUD5K1OaKXZ+uIyIJbpNGwhrosahtoeyYFURN2v4TZk=;
-        b=c8KL63IyP812iYPFxiimwSdkLs/+/5eWnhn3TKjXPVLo5GwtnfC/I99uxZ3iOLfOyk
-         LGbY9qflYuIibEvE36/yaVaLHzkV9OIKr954K2O5jwLzstTAG73IsZj8c+6cZkd49oUV
-         KRAmxgZd3HTtJMsdktwblaulc4MmowV4eJL34RYWAETIt7F2OKmJdnhUvsxvR0M+wXbG
-         ccV2KYcgOVd35vEG8jhWr2nd9x7c4FPbvuvKj6MQ7YqmNXVAb5QqcPF4vV61BtJzOvqA
-         wVi5L7f7VvrJ73ei33xwQrD+reTp14f3t7fKTrlNjps4w6SHmbQKHhh+JcwjIujMu1uu
-         25tw==
-X-Gm-Message-State: ACgBeo30Glz+a0ALs0+BecCm7e/rfnA9cn7srgtyycKoWtpnPzeeSsxE
-        CFJmkffiIuCJ3RkeVo78JJo77dIjW517dxBKXdE+ARFxze62
-X-Google-Smtp-Source: AA6agR6n58/o7pKgAaqATtwzUJsoBbzrcET1Z/GWo1Rby+nPb4jgIIXcO7lcmAk6ESpnFU5dkYO4p96EPmp30/dWFS9jw2nOlhTg
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=3Nw+UCMkb8eM5P4o4fg5DPpCP6PyLs67xhLCM5SqQGM=;
+        b=bImld8CIEGmPg+I4Tg5OfB8oREHXro6Qr+8sXMGgpriLzy+R31hOo3Jl6sSBpd3/gM
+         OU51a1yiZ9VeKR2r5tDJT3gVUVmI0uWmsBijuvz7bI331qD8U44z0yuch8+bWUJzx+kR
+         04fYefccJ0w6j31HX+Q73D+vRQXByRuuJgUbTxk2bIZrz0VwED6AppKRd0+nvH1wlA3y
+         YvTKokbZ7XLdOrRKnlr3oqCPllRrSxIRwaEG3Up7PIhzm1Qjju0uo4CHtMhS6XnkkYbH
+         TZIWGTXRbBcBQdrGk0weFU09nv8oQekyslq2cpfqs3PZpZavx9AhWk2EbGdXNL+3lVzV
+         TtUQ==
+X-Gm-Message-State: ACgBeo3Z9jP5+18WghaAtgudpctgVcOHPhcY9x/KIu1qY4vDOMAyCetm
+        43c+pK4AEHvt/hYmqEVCS9Dko5XmBzizUl3o8Z0=
+X-Google-Smtp-Source: AA6agR6U9NOuwUd27+1R+q2gmMrgfsUBBkyKgo5SMN+iCjJX/fV9NGxTvXVGaNTH2zDTWJp/uOzEqg==
+X-Received: by 2002:a05:6402:1e8f:b0:440:eb20:7a05 with SMTP id f15-20020a0564021e8f00b00440eb207a05mr6301743edf.169.1660075252975;
+        Tue, 09 Aug 2022 13:00:52 -0700 (PDT)
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com. [209.85.221.50])
+        by smtp.gmail.com with ESMTPSA id cb21-20020a0564020b7500b0043cfc872e7dsm6495686edb.10.2022.08.09.13.00.51
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Aug 2022 13:00:51 -0700 (PDT)
+Received: by mail-wr1-f50.google.com with SMTP id n4so13703194wrp.10
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 13:00:51 -0700 (PDT)
+X-Received: by 2002:a5d:56cf:0:b0:21e:ce64:afe7 with SMTP id
+ m15-20020a5d56cf000000b0021ece64afe7mr14978811wrw.281.1660075250807; Tue, 09
+ Aug 2022 13:00:50 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9b99:0:b0:680:360:8703 with SMTP id
- r25-20020a5d9b99000000b0068003608703mr9559963iom.72.1660075268055; Tue, 09
- Aug 2022 13:01:08 -0700 (PDT)
-Date:   Tue, 09 Aug 2022 13:01:08 -0700
-In-Reply-To: <20220809111035.2393-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a7290705e5d46441@google.com>
-Subject: Re: [syzbot] possible deadlock in ext4_bmap
-From:   syzbot <syzbot+9543479984ae9e576000@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+References: <20220808073232.8808-1-david@redhat.com>
+In-Reply-To: <20220808073232.8808-1-david@redhat.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 9 Aug 2022 13:00:34 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgsDOz5MfYYS9mE7PvFn4kLhTFdBwXvN6HCEsw1kvJnRQ@mail.gmail.com>
+Message-ID: <CAHk-=wgsDOz5MfYYS9mE7PvFn4kLhTFdBwXvN6HCEsw1kvJnRQ@mail.gmail.com>
+Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove FOLL_COW
+To:     David Hildenbrand <david@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Mon, Aug 8, 2022 at 12:32 AM David Hildenbrand <david@redhat.com> wrote:
+>
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+So I've read through the patch several times, and it seems fine, but
+this function (and the pmd version of it) just read oddly to me.
 
-Reported-and-tested-by: syzbot+9543479984ae9e576000@syzkaller.appspotmail.com
+> +static inline bool can_follow_write_pte(pte_t pte, struct page *page,
+> +                                       struct vm_area_struct *vma,
+> +                                       unsigned int flags)
+> +{
+> +       if (pte_write(pte))
+> +               return true;
+> +       if (!(flags & FOLL_FORCE))
+> +               return false;
+> +
+> +       /*
+> +        * See check_vma_flags(): only COW mappings need that special
+> +        * "force" handling when they lack VM_WRITE.
+> +        */
+> +       if (vma->vm_flags & VM_WRITE)
+> +               return false;
+> +       VM_BUG_ON(!is_cow_mapping(vma->vm_flags));
 
-Tested on:
+So apart from the VM_BUG_ON(), this code just looks really strange -
+even despite the comment. Just conceptually, the whole "if it's
+writable, return that you cannot follow it for a write" just looks so
+very very strange.
 
-commit:         ca688bff Add linux-next specific files for 20220808
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-console output: https://syzkaller.appspot.com/x/log.txt?x=147eb8be080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4c20e006003cdecb
-dashboard link: https://syzkaller.appspot.com/bug?extid=9543479984ae9e576000
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=17ee2476080000
+That doesn't make the code _wrong_, but considering how many times
+this has had subtle bugs, let's not write code that looks strange.
 
-Note: testing is done by a robot and is best-effort only.
+So I would suggest that to protect against future bugs, we try to make
+it be fairly clear and straightforward, and maybe even a bit overly
+protective.
+
+For example, let's kill the "shared mapping that you don't have write
+permissions to" very explicitly and without any subtle code at all.
+The vm_flags tests are cheap and easy, and we could very easily just
+add some core ones to make any mistakes much less critical.
+
+Now, making that 'is_cow_mapping()' check explicit at the very top of
+this would already go a long way:
+
+        /* FOLL_FORCE for writability only affects COW mappings */
+        if (!is_cow_mapping(vma->vm_flags))
+                return false;
+
+but I'd actually go even further: in this case that "is_cow_mapping()"
+helper to some degree actually hides what is going on.
+
+So I'd actually prefer for that function to be written something like
+
+        /* If the pte is writable, we can write to the page */
+        if (pte_write(pte))
+                return true;
+
+        /* Maybe FOLL_FORCE is set to override it? */
+        if (flags & FOLL_FORCE)
+                return false;
+
+        /* But FOLL_FORCE has no effect on shared mappings */
+        if (vma->vm_flags & MAP_SHARED)
+                return false;
+
+        /* .. or read-only private ones */
+        if (!(vma->vm_flags & MAP_MAYWRITE))
+                return false;
+
+        /* .. or already writable ones that just need to take a write fault */
+        if (vma->vm_flags & MAP_WRITE)
+                return false;
+
+and the two first vm_flags tests above are basically doing tat
+"is_cow_mapping()", and maybe we could even have a comment to that
+effect, but wouldn't it be nice to just write it out that way?
+
+And after you've written it out like the above, now that
+
+        if (!page || !PageAnon(page) || !PageAnonExclusive(page))
+                return false;
+
+makes you pretty safe from a data sharing perspective: it's most
+definitely not a shared page at that point.
+
+So if you write it that way, the only remaining issues are the magic
+special soft-dirty and uffd ones, but at that point it's purely about
+the semantics of those features, no longer about any possible "oh, we
+fooled some shared page to be writable".
+
+And I think the above is fairly legible without any subtle cases, and
+the one-liner comments make it all fairly clear that it's testing.
+
+Is any of this in any _technical_ way different from what your patch
+did? No. It's literally just rewriting it to be a bit more explicit in
+what it is doing, I think, and it makes that odd "it's not writable if
+VM_WRITE is set" case a bit more explicit.
+
+Hmm?
+
+                  Linus
