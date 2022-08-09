@@ -2,119 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B287C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 23:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32CADC00140
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 00:03:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244620AbiHHX6y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 19:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41856 "EHLO
+        id S244081AbiHIADK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 20:03:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244664AbiHHX6b (ORCPT
+        with ESMTP id S232541AbiHIADH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 19:58:31 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4474A112D
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 16:57:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660003067; x=1691539067;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ecb0gY4vX9N5iJyAQ4enIDSBKMM7NnOIzQUhbpmgwM8=;
-  b=Mg1Gwt+U0UPnX62hAgAdhru52CcZLtpja+4WhuG8MQMrT934mJL3tzwJ
-   3bOkrul/h5vwRXmZDmfhv3rnMM4MG8+MJNv4ZckFCD7USoEwJB6j6ncPZ
-   pJlCCSPW/JPY+6k9hpbOn2Ecs0uW8J1a3CtOb4+M11m5+Ii9Fzz4H9Uz3
-   yTHj2fDQZ0KAMqzLY8mQaN0FWYw/okXmJqWcI6vxFoT9gxHlRnqiC0ohE
-   0JElmxSGijhLpAxnBnDGAy9HvpVFg6glOQyzzU5QqSE2UE5UJGNJBDbY1
-   dQBDq/bK7OGqsxnj1G0KvcQ/4zp5exJZf/HfsrM1euIzuwzt4lEiEqYb0
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10433"; a="289473835"
-X-IronPort-AV: E=Sophos;i="5.93,223,1654585200"; 
-   d="scan'208";a="289473835"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 16:57:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,223,1654585200"; 
-   d="scan'208";a="555124486"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 08 Aug 2022 16:57:36 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oLCcp-000Maz-0y;
-        Mon, 08 Aug 2022 23:57:35 +0000
-Date:   Tue, 9 Aug 2022 07:57:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Venkata Lakshmi Narayana Gubba <gubbaven@codeaurora.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: drivers/bluetooth/hci_qca.c:1860:37: warning: 'qca_soc_data_wcn6750'
- defined but not used
-Message-ID: <202208090758.H0TcTuyd-lkp@intel.com>
+        Mon, 8 Aug 2022 20:03:07 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B790916590;
+        Mon,  8 Aug 2022 17:03:06 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id s11so733991qtx.6;
+        Mon, 08 Aug 2022 17:03:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=0vJOHKFBTjReQiciwGJs8MU84pqoq/FtbgACoNpaTeQ=;
+        b=Xvw4gbEOFrC4qcS/bD1MwL56IBXBsMGVu4xQCOQUySNzRCWkiejAW2c9h0U0ry6oN2
+         QpawVtvW5FJCkgLlZrLfw5Tz1WPWW2hFEq6sy05Pqf/E0UOAwVBtEEYdULDcKg0LHJ09
+         IQQuRQs5inCbjM7lcRCTw6M0/MlcjIXJUrXTmryJS45wQV2tfKDyRR1XZATbpgN2D2uK
+         JcOSPk+U3TJXB1hX7Mr7UWOHWKM+eJGgxOQ6HNTCaN8SIkBdhhEEqsOYlWqKTGdwLWqn
+         iGn+BFY0XA4EWGzg+pR8OYufekzru5OB26ds1HbQe7Q0S9de23V7LaGMc/oqOrr6Nhzv
+         JCww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=0vJOHKFBTjReQiciwGJs8MU84pqoq/FtbgACoNpaTeQ=;
+        b=CivfCmz5eQHrY6gUjmpMMkAAV+eMvvgEjC0zvPUu094M8RhVjcxunpKOhQNpUXP96r
+         kcGk+jJcIoWDpVrGz7FE4GyebRZxzLUZTyHFCbv60rhES/BF/eh/a76HvhGZQZxPa/la
+         yneuRjJMKh3rVivQPa6xf417L7ndS18RH+cozIqPQYUeYmfCepYgnfxcCcLewb6xgGsv
+         CyYJfIW2simfimJH/ZYbVyWAepo5Sy71neRK0H31tGam543ltGUZMARGNvax5slsFaTL
+         4tGTg9W0sLY1zCHFb3J5AHxX0RFmDstNk2T6sgCZiEkPvVAeUFYuqoGcyP4OFAH5Ll0y
+         rXnQ==
+X-Gm-Message-State: ACgBeo0umNS1xsmeb5lDHcBPNqFVJfkzt6Qy+41SCjADBdoWeJ2KY/rJ
+        vE5ZCnNuFgIT30UWxXLu8cw=
+X-Google-Smtp-Source: AA6agR6THagCHv9NPktVyODlio/ByMdWfyEqjuQq2j6ziaNkiXLeRmCuKLCFoYl7euzKsmGe44eYdg==
+X-Received: by 2002:a05:622a:1806:b0:343:236:2971 with SMTP id t6-20020a05622a180600b0034302362971mr3299107qtc.379.1660003385655;
+        Mon, 08 Aug 2022 17:03:05 -0700 (PDT)
+Received: from Latitude-E6420.mynetworksettings.com ([2600:4040:2036:c00:e57a:4cf3:aa55:7079])
+        by smtp.gmail.com with ESMTPSA id u4-20020a05620a430400b006b5988b2ca8sm10265719qko.40.2022.08.08.17.03.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Aug 2022 17:03:05 -0700 (PDT)
+From:   Rudraksha Gupta <guptarud@gmail.com>
+To:     guptarud@gmail.com
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, david@ixit.cz,
+        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org
+Subject: [PATCH v2 1/2] ARM: msm8960: Rename cxo_board to cxo-board and add alias
+Date:   Mon,  8 Aug 2022 20:02:59 -0400
+Message-Id: <20220809000300.6384-1-guptarud@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220808234723.5184-2-guptarud@gmail.com>
+References: <20220808234723.5184-2-guptarud@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Venkata,
+This patch renames cxo_board to be up to date with the current naming
+style. It also adds an alias.
 
-FYI, the error/warning still remains.
+Signed-off-by: Rudraksha Gupta <guptarud@gmail.com>
+---
+v2:
+ - Group the correct changes together
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   c8a684e2e110376c58f0bfa30fb3855d1e319670
-commit: d8f97da1b92d2fe89d51c673ecf80c4016119e5c Bluetooth: hci_qca: Add support for QTI Bluetooth chip wcn6750
-date:   1 year, 1 month ago
-config: x86_64-randconfig-c032-20220808 (https://download.01.org/0day-ci/archive/20220809/202208090758.H0TcTuyd-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d8f97da1b92d2fe89d51c673ecf80c4016119e5c
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout d8f97da1b92d2fe89d51c673ecf80c4016119e5c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/bluetooth/
+ arch/arm/boot/dts/qcom-msm8960.dtsi | 2 +-
+ drivers/clk/qcom/gcc-msm8960.c      | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/bluetooth/hci_qca.c:1860:37: warning: 'qca_soc_data_wcn6750' defined but not used [-Wunused-const-variable=]
-    1860 | static const struct qca_device_data qca_soc_data_wcn6750 = {
-         |                                     ^~~~~~~~~~~~~~~~~~~~
-   drivers/bluetooth/hci_qca.c:1844:37: warning: 'qca_soc_data_wcn3998' defined but not used [-Wunused-const-variable=]
-    1844 | static const struct qca_device_data qca_soc_data_wcn3998 = {
-         |                                     ^~~~~~~~~~~~~~~~~~~~
-   drivers/bluetooth/hci_qca.c:1832:37: warning: 'qca_soc_data_wcn3991' defined but not used [-Wunused-const-variable=]
-    1832 | static const struct qca_device_data qca_soc_data_wcn3991 = {
-         |                                     ^~~~~~~~~~~~~~~~~~~~
-   drivers/bluetooth/hci_qca.c:1821:37: warning: 'qca_soc_data_wcn3990' defined but not used [-Wunused-const-variable=]
-    1821 | static const struct qca_device_data qca_soc_data_wcn3990 = {
-         |                                     ^~~~~~~~~~~~~~~~~~~~
-
-
-vim +/qca_soc_data_wcn6750 +1860 drivers/bluetooth/hci_qca.c
-
-  1859	
-> 1860	static const struct qca_device_data qca_soc_data_wcn6750 = {
-  1861		.soc_type = QCA_WCN6750,
-  1862		.vregs = (struct qca_vreg []) {
-  1863			{ "vddio", 5000 },
-  1864			{ "vddaon", 26000 },
-  1865			{ "vddbtcxmx", 126000 },
-  1866			{ "vddrfacmn", 12500 },
-  1867			{ "vddrfa0p8", 102000 },
-  1868			{ "vddrfa1p7", 302000 },
-  1869			{ "vddrfa1p2", 257000 },
-  1870			{ "vddrfa2p2", 1700000 },
-  1871			{ "vddasd", 200 },
-  1872		},
-  1873		.num_vregs = 9,
-  1874		.capabilities = QCA_CAP_WIDEBAND_SPEECH | QCA_CAP_VALID_LE_STATES,
-  1875	};
-  1876	
-
+diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
+index 0e099aa7c889..2ed969785b78 100644
+--- a/arch/arm/boot/dts/qcom-msm8960.dtsi
++++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
+@@ -58,7 +58,7 @@ cpu-pmu {
+ 	};
+ 
+ 	clocks {
+-		cxo_board {
++		cxo_board: cxo-board {
+ 			compatible = "fixed-clock";
+ 			#clock-cells = <0>;
+ 			clock-frequency = <19200000>;
+diff --git a/drivers/clk/qcom/gcc-msm8960.c b/drivers/clk/qcom/gcc-msm8960.c
+index 051745ef99c8..56ce05a846dd 100644
+--- a/drivers/clk/qcom/gcc-msm8960.c
++++ b/drivers/clk/qcom/gcc-msm8960.c
+@@ -3624,7 +3624,7 @@ static int gcc_msm8960_probe(struct platform_device *pdev)
+ 	if (!match)
+ 		return -EINVAL;
+ 
+-	ret = qcom_cc_register_board_clk(dev, "cxo_board", "cxo", 19200000);
++	ret = qcom_cc_register_board_clk(dev, "cxo-board", "cxo", 19200000);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
