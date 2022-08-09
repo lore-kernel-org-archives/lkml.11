@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE58C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:18:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEEFBC25B07
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:18:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345777AbiHISPj (ORCPT
+        id S1345943AbiHISPw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:15:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58646 "EHLO
+        Tue, 9 Aug 2022 14:15:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345249AbiHISMa (ORCPT
+        with ESMTP id S1345391AbiHISMl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:12:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B59A82C101;
-        Tue,  9 Aug 2022 11:05:30 -0700 (PDT)
+        Tue, 9 Aug 2022 14:12:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C572C11E;
+        Tue,  9 Aug 2022 11:05:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A02E7611D5;
-        Tue,  9 Aug 2022 18:05:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1757AC433D7;
-        Tue,  9 Aug 2022 18:05:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE707B8171E;
+        Tue,  9 Aug 2022 18:05:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DDBAC4347C;
+        Tue,  9 Aug 2022 18:05:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068322;
-        bh=aS6kC7/UR/+s4cEQ6IbqOtahiGkvu5P7CX0AzJ/IWIM=;
+        s=korg; t=1660068333;
+        bh=IBCeAButYsRtNeRmHz0Nr8ebRIHdO/EQ3qn0BXhofwY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HYCOMZKF6jcVsSdCIv4yQ5HkxeIe7fF/RPjOzhHbmAVsl9c0+UKmEkssRPi9otvp5
-         hEhONWw1+y5jgkRLcd8I6nVuB5EDONzrFar2tSwEEnkC91ElRUz2dBMfPDOoReX5RZ
-         8Fj9oPyZgmw1suX76XRtDK7FDD7qJ00PyUyZ/nWA=
+        b=LFx3fZAOYEr8n6dnq3aqpjE1+4dOHbDvqEVD62enCRrNG/9YETa4HfifbTznrUE68
+         S5raZac2Blan5but8El5NJALyxqpGec6xhTUCx/H0KsdNIB+UheKGFe/ZsVygXUMbM
+         b0Htx/KCzPqRmHWyBnByoVQG9LVhJI/fkiwsgltI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.15 08/30] ACPI: APEI: Better fix to avoid spamming the console with old error logs
-Date:   Tue,  9 Aug 2022 20:00:33 +0200
-Message-Id: <20220809175514.612640481@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 12/30] KVM: selftests: Make hyperv_clock selftest more stable
+Date:   Tue,  9 Aug 2022 20:00:37 +0200
+Message-Id: <20220809175514.746631465@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175514.276643253@linuxfoundation.org>
 References: <20220809175514.276643253@linuxfoundation.org>
@@ -49,105 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Luck <tony.luck@intel.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-commit c3481b6b75b4797657838f44028fd28226ab48e0 upstream.
+[ Upstream commit eae260be3a0111a28fe95923e117a55dddec0384 ]
 
-The fix in commit 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT
-table data") does not work as intended on systems where the BIOS has a
-fixed size block of memory for the BERT table, relying on s/w to quit
-when it finds a record with estatus->block_status == 0. On these systems
-all errors are suppressed because the check:
+hyperv_clock doesn't always give a stable test result, especially with
+AMD CPUs. The test compares Hyper-V MSR clocksource (acquired either
+with rdmsr() from within the guest or KVM_GET_MSRS from the host)
+against rdtsc(). To increase the accuracy, increase the measured delay
+(done with nop loop) by two orders of magnitude and take the mean rdtsc()
+value before and after rdmsr()/KVM_GET_MSRS.
 
-	if (region_len < ACPI_BERT_PRINT_MAX_LEN)
-
-always fails.
-
-New scheme skips individual CPER records that are too large, and also
-limits the total number of records that will be printed to 5.
-
-Fixes: 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT table data")
-Cc: All applicable <stable@vger.kernel.org>
-Signed-off-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Tested-by: Maxim Levitsky <mlevitsk@redhat.com>
+Message-Id: <20220601144322.1968742-1-vkuznets@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/apei/bert.c |   31 +++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
+ tools/testing/selftests/kvm/x86_64/hyperv_clock.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
---- a/drivers/acpi/apei/bert.c
-+++ b/drivers/acpi/apei/bert.c
-@@ -29,16 +29,26 @@
- 
- #undef pr_fmt
- #define pr_fmt(fmt) "BERT: " fmt
-+
-+#define ACPI_BERT_PRINT_MAX_RECORDS 5
- #define ACPI_BERT_PRINT_MAX_LEN 1024
- 
- static int bert_disable;
- 
-+/*
-+ * Print "all" the error records in the BERT table, but avoid huge spam to
-+ * the console if the BIOS included oversize records, or too many records.
-+ * Skipping some records here does not lose anything because the full
-+ * data is available to user tools in:
-+ *	/sys/firmware/acpi/tables/data/BERT
-+ */
- static void __init bert_print_all(struct acpi_bert_region *region,
- 				  unsigned int region_len)
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
+index e0b2bb1339b1..3330fb183c68 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_clock.c
+@@ -44,7 +44,7 @@ static inline void nop_loop(void)
  {
- 	struct acpi_hest_generic_status *estatus =
- 		(struct acpi_hest_generic_status *)region;
- 	int remain = region_len;
-+	int printed = 0, skipped = 0;
- 	u32 estatus_len;
+ 	int i;
  
- 	while (remain >= sizeof(struct acpi_bert_region)) {
-@@ -46,24 +56,26 @@ static void __init bert_print_all(struct
- 		if (remain < estatus_len) {
- 			pr_err(FW_BUG "Truncated status block (length: %u).\n",
- 			       estatus_len);
--			return;
-+			break;
- 		}
- 
- 		/* No more error records. */
- 		if (!estatus->block_status)
--			return;
-+			break;
- 
- 		if (cper_estatus_check(estatus)) {
- 			pr_err(FW_BUG "Invalid error record.\n");
--			return;
-+			break;
- 		}
- 
--		pr_info_once("Error records from previous boot:\n");
--		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
-+		if (estatus_len < ACPI_BERT_PRINT_MAX_LEN &&
-+		    printed < ACPI_BERT_PRINT_MAX_RECORDS) {
-+			pr_info_once("Error records from previous boot:\n");
- 			cper_estatus_print(KERN_INFO HW_ERR, estatus);
--		else
--			pr_info_once("Max print length exceeded, table data is available at:\n"
--				     "/sys/firmware/acpi/tables/data/BERT");
-+			printed++;
-+		} else {
-+			skipped++;
-+		}
- 
- 		/*
- 		 * Because the boot error source is "one-time polled" type,
-@@ -75,6 +87,9 @@ static void __init bert_print_all(struct
- 		estatus = (void *)estatus + estatus_len;
- 		remain -= estatus_len;
- 	}
-+
-+	if (skipped)
-+		pr_info(HW_ERR "Skipped %d error records\n", skipped);
+-	for (i = 0; i < 1000000; i++)
++	for (i = 0; i < 100000000; i++)
+ 		asm volatile("nop");
  }
  
- static int __init setup_bert_disable(char *str)
+@@ -56,12 +56,14 @@ static inline void check_tsc_msr_rdtsc(void)
+ 	tsc_freq = rdmsr(HV_X64_MSR_TSC_FREQUENCY);
+ 	GUEST_ASSERT(tsc_freq > 0);
+ 
+-	/* First, check MSR-based clocksource */
++	/* For increased accuracy, take mean rdtsc() before and afrer rdmsr() */
+ 	r1 = rdtsc();
+ 	t1 = rdmsr(HV_X64_MSR_TIME_REF_COUNT);
++	r1 = (r1 + rdtsc()) / 2;
+ 	nop_loop();
+ 	r2 = rdtsc();
+ 	t2 = rdmsr(HV_X64_MSR_TIME_REF_COUNT);
++	r2 = (r2 + rdtsc()) / 2;
+ 
+ 	GUEST_ASSERT(r2 > r1 && t2 > t1);
+ 
+@@ -181,12 +183,14 @@ static void host_check_tsc_msr_rdtsc(struct kvm_vm *vm)
+ 	tsc_freq = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TSC_FREQUENCY);
+ 	TEST_ASSERT(tsc_freq > 0, "TSC frequency must be nonzero");
+ 
+-	/* First, check MSR-based clocksource */
++	/* For increased accuracy, take mean rdtsc() before and afrer ioctl */
+ 	r1 = rdtsc();
+ 	t1 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
++	r1 = (r1 + rdtsc()) / 2;
+ 	nop_loop();
+ 	r2 = rdtsc();
+ 	t2 = vcpu_get_msr(vm, VCPU_ID, HV_X64_MSR_TIME_REF_COUNT);
++	r2 = (r2 + rdtsc()) / 2;
+ 
+ 	TEST_ASSERT(t2 > t1, "Time reference MSR is not monotonic (%ld <= %ld)", t1, t2);
+ 
+-- 
+2.35.1
+
 
 
