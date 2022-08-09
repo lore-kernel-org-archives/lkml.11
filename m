@@ -2,115 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C65FC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 17:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D14C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 17:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245198AbiHIROU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 13:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54208 "EHLO
+        id S243859AbiHIRP5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 13:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245266AbiHIROO (ORCPT
+        with ESMTP id S232983AbiHIRPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 13:14:14 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A1724F18;
-        Tue,  9 Aug 2022 10:14:13 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id E7AF432007E8;
-        Tue,  9 Aug 2022 13:14:11 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Tue, 09 Aug 2022 13:14:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm3; t=1660065251; x=1660151651; bh=J4
-        gpiV71j0xKQ3FtJFMd2wIZaka/D1TIWpUk5i2bNWw=; b=jESG/Hpr8Q121hxrB7
-        3p8jpraFEzmRUnx2scQOkcwk3Hp0JYaxPri4/XMj87PA6yEk8ULRV0T4uOVy7/NP
-        SZNPo4+ah1TQDk9k1+P3OFfi0GDbWYzZmghufnz/LSQQERvNY79QAoOUR+4N3xqJ
-        5NXDgbyID59kBDlTQqi4uK2zoRtdiwQaFDQ8k0tjyxejjBYGCj0Q07K8hytZpl6Q
-        tAiOtO9T44q0KCyFK5jygSzMhVHeDz7CEhEhxW8pv9LcK4uVtpkSHl6KfY8m0J0j
-        ixKlPKP3nWYQd7Va7i+MJRpCALwnE2dODHbkH5B8dRTolYV5Rtqt0+zHC4Kf6WWO
-        qaEA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1660065251; x=1660151651; bh=J4gpiV71j0xKQ
-        3FtJFMd2wIZaka/D1TIWpUk5i2bNWw=; b=FThzYY0uIS5SIPv8vCNy7LkRFdpGH
-        ASVbigxf79HR/4oAFlHi69N9DNwRbDJCddqG+vhslB5l14f5jxiuNNeZMnZt/87n
-        yb2iLjdKgG+ThhIQGj/ni7ZQbb99QvKHqSKxGrzvilyj7echnAFQQ0xP4LDMl9zS
-        pXdraZbyBPAiwNM4fIx5hXEw8Zv8vFJkqBirUEXeEcPONp8Cen7OommedeAFqAnk
-        E4iTZ+tsxov0uNnwQX3n3NSgm3qthsSbapFxQ9FtRAXgDJGTDa+w8UHG/DCi1MHz
-        O4QclSCbQq+T1Opdg5hXrVYaLmVE/29fIgJdJAzWZGjZ/6bZbiF1DqVdg==
-X-ME-Sender: <xms:4pXyYg9w5aB-KACNIXIywemVt3KKCb0a1vYHBCdnGJY-oB_2YBKGgQ>
-    <xme:4pXyYotMKDywonsH_5keXBl6zJ91gnO0vqJfnKquBHOn9qOp8O9RlefqUelPzoYT0
-    iTiJVSJYFJeHbfHOA>
-X-ME-Received: <xmr:4pXyYmDRcePklYRu7yOooIZNtArw6iaoyjRemhcKb7gFG_7GWgplLdKOcCkLGpocSqDPtcx0fcU>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegtddgudduudcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephf
-    fvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcu
-    oegugihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpefgfefggeejhfduie
-    ekvdeuteffleeifeeuvdfhheejleejjeekgfffgefhtddtteenucevlhhushhtvghrufhi
-    iigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:45XyYgfS9aK_p9Fk7REePY5A4XuGox4bMqg4W3gnf_geuMFvPbbKRg>
-    <xmx:45XyYlN7FCrIWB9Ea3xApwQABgJ3mnwSxhxj_eW5qRfb4Vsho2w3JQ>
-    <xmx:45XyYqmw73yxL0CoxLZzrSqEOGIW_aiolEpkl--KTv4KBfdVPCQ3Qg>
-    <xmx:45XyYo1U0l4wi_WMJtpZ9L6VhJ8q2ul5OnJ9o0_kBP7-xZzu6STPGw>
-Feedback-ID: i6a694271:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 9 Aug 2022 13:14:09 -0400 (EDT)
-From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kpsingh@kernel.org
-Cc:     Daniel Xu <dxu@dxuuu.xyz>, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next 2/2] selftests/bpf: Fix vmtest.sh getopts optstring
-Date:   Tue,  9 Aug 2022 11:11:10 -0600
-Message-Id: <0f93b56198328b6b4da7b4cf4662d05c3edb5fd2.1660064925.git.dxu@dxuuu.xyz>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <cover.1660064925.git.dxu@dxuuu.xyz>
-References: <cover.1660064925.git.dxu@dxuuu.xyz>
+        Tue, 9 Aug 2022 13:15:50 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B0825FA;
+        Tue,  9 Aug 2022 10:15:49 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b9800329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:9800:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 1295A1EC0554;
+        Tue,  9 Aug 2022 19:15:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660065344;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=qYCIERlVU5uYY2QgYl+2fvUl3A85yoSNYStCUb+X3TA=;
+        b=IT6BilTWrRbJf9BlHfmtWVItWzJSO6RYSs1B76KNZmFbc0ychnLMX4aV6Sc155uveh2aCF
+        UqSA8Fq/UQHrVy7Q1hlBVAJ82OYZEio43OH4iRqvXsjsBldP0rh2s+u0xCFoqLVuv2t0eA
+        wBoBeSxUWiWQ8ygl7xfOXVmLnsfJNVM=
+Date:   Tue, 9 Aug 2022 19:15:43 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Justin He <Justin.He@arm.com>
+Cc:     "Kani, Toshi" <toshi.kani@hpe.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, James Morse <James.Morse@arm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Shuai Xue <xueshuai@linux.alibaba.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:EDAC-CORE" <linux-edac@vger.kernel.org>
+Subject: Re: =?utf-8?B?5Zue5aSNOiBbUEFUQ0hdIEFDUEk=?= =?utf-8?Q?=3A?= APEI:
+ move edac_init ahead of ghes platform drv register
+Message-ID: <YvKWP2BcAh/+YKXM@zn.tnic>
+References: <YvFX9vTilqMpsF9u@zn.tnic>
+ <PH7PR84MB1838379B8C2DF488DE729A9182639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+ <YvF4p01WJGGUwIJC@zn.tnic>
+ <PH7PR84MB1838492812F5ABAA4BB54D9982639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+ <YvF+J/dfyOEVSbSQ@zn.tnic>
+ <PH7PR84MB1838BF4F8B56EF1E24FCF1DC82639@PH7PR84MB1838.NAMPRD84.PROD.OUTLOOK.COM>
+ <YvIPf/m3hU46S9Ik@zn.tnic>
+ <DBBPR08MB4538A5C080B09A96A77CCDA9F7629@DBBPR08MB4538.eurprd08.prod.outlook.com>
+ <YvJB5cxSldpigw1g@zn.tnic>
+ <DBBPR08MB453870FA5C5D26AADFDF05C7F7629@DBBPR08MB4538.eurprd08.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <DBBPR08MB453870FA5C5D26AADFDF05C7F7629@DBBPR08MB4538.eurprd08.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Before, you could see the following errors:
+On Tue, Aug 09, 2022 at 04:51:45PM +0000, Justin He wrote:
+> Let me summarize it before sending v2 (maybe tomorrow):
+> 1. implement a ghes_edac_driver_is_preferred() to replace the old ghes_edac_register()
+> and move it to ghes.c together with plat_list
 
-```
-$ ./vmtest.sh -j
-./vmtest.sh: option requires an argument -- j
-./vmtest.sh: line 357: OPTARG: unbound variable
+No, not replace.
 
-$ ./vmtest.sh -z
-./vmtest.sh: illegal option -- z
-./vmtest.sh: line 357: OPTARG: unbound variable
-```
+In ghes.c:
 
-Fix by adding ':' as first character of optstring. Reason is that
-getopts requires ':' as the first character for OPTARG to be set in the
-`?` and `:` error cases.
+- add ghes_edac_driver_is_preferred()
+- remove ghes_edac_register() and _unregister() calls from there. Make them proper module
+init/exit functions.
+- Make ghes_edac.c a proper module - i.e., get rid of this thing:
 
-Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
----
- tools/testing/selftests/bpf/vmtest.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+config EDAC_GHES
+        bool "Output ACPI APEI/GHES BIOS detected errors via EDAC"
+        depends on ACPI_APEI_GHES && (EDAC=y)
+				     ^^^^^^^^
 
-diff --git a/tools/testing/selftests/bpf/vmtest.sh b/tools/testing/selftests/bpf/vmtest.sh
-index 976ef7585b33..a29aa05ebb3e 100755
---- a/tools/testing/selftests/bpf/vmtest.sh
-+++ b/tools/testing/selftests/bpf/vmtest.sh
-@@ -333,7 +333,7 @@ main()
- 	local exit_command="poweroff -f"
- 	local debug_shell="no"
- 
--	while getopts 'hskid:j:' opt; do
-+	while getopts ':hskid:j:' opt; do
- 		case ${opt} in
- 		i)
- 			update_image="yes"
+> 2. save the ghes and dev to a global structure and pass it to the new module_init
+
+Not at all...
+
+> 3.move the remain logic of old ghes_edac_register() to a new XX_init() which is under the
+> module_init path.
+> 4. introduce a stub ghes_edac_driver_is_preferred() for sb_edac, skx_edac and amd64_edac
+> to check.
+> 5. add the check condition in the XXX_init of sb_edac, skx_edac and amd64_edac
+> 
+> Please let me know if I missed anything above.
+
+Yes, I think you do. Lemme write something and you can finish it/test
+it.
+
+Thx.
+
 -- 
-2.37.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
