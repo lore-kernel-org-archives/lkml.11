@@ -2,275 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E12DC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 21:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37EC2C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 21:14:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229615AbiHIVNx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 17:13:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39388 "EHLO
+        id S229609AbiHIVOy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 17:14:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiHIVNg (ORCPT
+        with ESMTP id S229584AbiHIVOY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 17:13:36 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130D66112E;
-        Tue,  9 Aug 2022 14:13:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660079615; x=1691615615;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fKbRm/ODJ2VQwFPEZja7M8Is66R6eZL4VJf5D930RXk=;
-  b=cxyUk7Bd8iKJGuUOOYiVq/Vhx/CYJfW4H8EyOHzFvFO1Xu2bHysrQkGI
-   CdWvoVLhbUmaAN5L5rAa58WM5u7ikVHGCaPGRbCIB/G1bQANrOo/TwvfP
-   aASNXZgSpijb/u2Bej9MXP3aKXAPzT1shN5cQqRBai6Ro66J0eah5TiVf
-   c=;
-X-IronPort-AV: E=Sophos;i="5.93,225,1654560000"; 
-   d="scan'208";a="117413240"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-bbd95331.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 21:13:10 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-bbd95331.us-east-1.amazon.com (Postfix) with ESMTPS id EAF5CC19DB;
-        Tue,  9 Aug 2022 21:13:06 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Tue, 9 Aug 2022 21:13:06 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.120) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Tue, 9 Aug 2022 21:13:03 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <syzbot+ed5155f1684f6cab8abc@syzkaller.appspotmail.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <kuniyu@amazon.com>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>,
-        <syzkaller-bugs@googlegroups.com>
-Subject: Re: [syzbot] possible deadlock in sk_diag_fill (4)
-Date:   Tue, 9 Aug 2022 14:12:47 -0700
-Message-ID: <20220809211247.17835-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <0000000000007d6f2105e5d4a94e@google.com>
-References: <0000000000007d6f2105e5d4a94e@google.com>
+        Tue, 9 Aug 2022 17:14:24 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DCE961B12
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 14:14:22 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1660079660;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iHxEgVmEh6JR00sxeNhAi+8y/A6SXxBI7puVDuB6aJ8=;
+        b=ak0yiCbdsTBynHZdeYORQKegIa2UyIGI6OUCB3TgNQKPV9Ho42GSJLH3vuzu6/4dAW9cMd
+        s6bVFeZZ+y33hTAGFv9Lvp4aAVf1uC88Ykrj99TP40bppD3C9Ip8gfWdxrz+299BacacYl
+        pQti81UurRaXYUnnvKs4Rf+FQDyq0mc/Ip9v901xTjokpF0jrX+6wSm8IdNyaYyHgWOB9k
+        nFOsnhHy+lK3rWIGhzmGAgopj6g+/E80fGnDBO68iMVESezy5PW5u/xftqfRq8dTV3iqSq
+        Esxk1vuJf2IC39v/hvkRmU25L9c4OBhqVxkyk+VvwknrM/pd+Fx9x1UySMnDmw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1660079660;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iHxEgVmEh6JR00sxeNhAi+8y/A6SXxBI7puVDuB6aJ8=;
+        b=9aFCsYAtz0ZZLUdgN4XFNZQaNXmv6L6JEYVFHkP49xTswpUXVQvtba2CAkxREXoq2+rPy2
+        VDS8ujDJOTlS1/AQ==
+To:     Borislav Petkov <bp@alien8.de>, Ira Weiny <ira.weiny@intel.com>
+Cc:     Rik van Riel <riel@surriel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [RFC PATCH 2/5] entry: Add calls for save/restore auxiliary
+ pt_regs
+In-Reply-To: <YvKsS3QuOu4JVzZU@zn.tnic>
+References: <20220805173009.3128098-1-ira.weiny@intel.com>
+ <20220805173009.3128098-3-ira.weiny@intel.com> <YvJNe2rzXfcogFFX@zn.tnic>
+ <YvKpi/CVHko50PNQ@iweiny-desk3> <YvKsS3QuOu4JVzZU@zn.tnic>
+Date:   Tue, 09 Aug 2022 23:14:19 +0200
+Message-ID: <87lerxqfv8.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.43.160.120]
-X-ClientProxiedBy: EX13D37UWA003.ant.amazon.com (10.43.160.25) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From:   syzbot <syzbot+ed5155f1684f6cab8abc@syzkaller.appspotmail.com>
-Date:   Tue, 09 Aug 2022 13:20:22 -0700
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    cb71b93c2dc3 Add linux-next specific files for 20220628
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=17f69c12080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
-> dashboard link: https://syzkaller.appspot.com/bug?extid=ed5155f1684f6cab8abc
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+ed5155f1684f6cab8abc@syzkaller.appspotmail.com
-> 
-> ======================================================
-> WARNING: possible circular locking dependency detected
-> 5.19.0-rc4-next-20220628-syzkaller #0 Not tainted
-> ------------------------------------------------------
-> syz-executor.3/3509 is trying to acquire lock:
-> ffff8880765fae70 (&u->lock/1){+.+.}-{2:2}, at: sk_diag_dump_icons net/unix/diag.c:87 [inline]
-> ffff8880765fae70 (&u->lock/1){+.+.}-{2:2}, at: sk_diag_fill+0xaaf/0x10d0 net/unix/diag.c:155
-> 
-> but task is already holding lock:
-> ffff8880765fe9e8 (rlock-AF_UNIX){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:360 [inline]
-> ffff8880765fe9e8 (rlock-AF_UNIX){+.+.}-{2:2}, at: sk_diag_dump_icons net/unix/diag.c:69 [inline]
-> ffff8880765fe9e8 (rlock-AF_UNIX){+.+.}-{2:2}, at: sk_diag_fill+0x9c3/0x10d0 net/unix/diag.c:155
-> 
-> which lock already depends on the new lock.
-> 
-> 
-> the existing dependency chain (in reverse order) is:
-> 
-> -> #1 (rlock-AF_UNIX){+.+.}-{2:2}:
->        __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
->        _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
->        skb_queue_tail+0x21/0x140 net/core/skbuff.c:3371
->        unix_dgram_sendmsg+0xf5a/0x1b60 net/unix/af_unix.c:2015
->        sock_sendmsg_nosec net/socket.c:714 [inline]
->        sock_sendmsg+0xcf/0x120 net/socket.c:734
->        io_send+0x26b/0x780 io_uring/net.c:266
->        io_issue_sqe+0x15e/0xd20 io_uring/io_uring.c:1601
->        io_queue_sqe io_uring/io_uring.c:1778 [inline]
->        io_submit_sqe io_uring/io_uring.c:2036 [inline]
->        io_submit_sqes+0x9a6/0x1ec0 io_uring/io_uring.c:2147
->        __do_sys_io_uring_enter+0xb85/0x1eb0 io_uring/io_uring.c:3087
->        do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->        do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->        entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> 
-> -> #0 (&u->lock/1){+.+.}-{2:2}:
->        check_prev_add kernel/locking/lockdep.c:3095 [inline]
->        check_prevs_add kernel/locking/lockdep.c:3214 [inline]
->        validate_chain kernel/locking/lockdep.c:3829 [inline]
->        __lock_acquire+0x2abe/0x5660 kernel/locking/lockdep.c:5053
->        lock_acquire kernel/locking/lockdep.c:5665 [inline]
->        lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5630
->        _raw_spin_lock_nested+0x30/0x40 kernel/locking/spinlock.c:378
->        sk_diag_dump_icons net/unix/diag.c:87 [inline]
->        sk_diag_fill+0xaaf/0x10d0 net/unix/diag.c:155
->        sk_diag_dump net/unix/diag.c:193 [inline]
->        unix_diag_dump+0x3a9/0x640 net/unix/diag.c:217
->        netlink_dump+0x541/0xc20 net/netlink/af_netlink.c:2275
->        __netlink_dump_start+0x647/0x900 net/netlink/af_netlink.c:2380
->        netlink_dump_start include/linux/netlink.h:245 [inline]
->        unix_diag_handler_dump net/unix/diag.c:315 [inline]
->        unix_diag_handler_dump+0x5c2/0x830 net/unix/diag.c:304
->        __sock_diag_cmd net/core/sock_diag.c:235 [inline]
->        sock_diag_rcv_msg+0x31a/0x440 net/core/sock_diag.c:266
->        netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
->        sock_diag_rcv+0x26/0x40 net/core/sock_diag.c:277
->        netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
->        netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
->        netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
->        sock_sendmsg_nosec net/socket.c:714 [inline]
->        sock_sendmsg+0xcf/0x120 net/socket.c:734
->        sock_no_sendpage+0xff/0x140 net/core/sock.c:3162
->        kernel_sendpage.part.0+0x1d5/0x700 net/socket.c:3564
->        kernel_sendpage net/socket.c:3561 [inline]
->        sock_sendpage+0xdf/0x140 net/socket.c:1054
->        pipe_to_sendpage+0x2ad/0x380 fs/splice.c:364
->        splice_from_pipe_feed fs/splice.c:418 [inline]
->        __splice_from_pipe+0x43e/0x8a0 fs/splice.c:562
->        splice_from_pipe fs/splice.c:597 [inline]
->        generic_splice_sendpage+0xd4/0x140 fs/splice.c:746
->        do_splice_from fs/splice.c:767 [inline]
->        do_splice+0xb57/0x1920 fs/splice.c:1079
->        __do_splice+0x134/0x250 fs/splice.c:1144
->        __do_sys_splice fs/splice.c:1350 [inline]
->        __se_sys_splice fs/splice.c:1332 [inline]
->        __x64_sys_splice+0x198/0x250 fs/splice.c:1332
->        do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->        do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->        entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> 
-> other info that might help us debug this:
-> 
->  Possible unsafe locking scenario:
-> 
->        CPU0                    CPU1
->        ----                    ----
->   lock(rlock-AF_UNIX);
->                                lock(&u->lock/1);
->                                lock(rlock-AF_UNIX);
->   lock(&u->lock/1);
+On Tue, Aug 09 2022 at 20:49, Borislav Petkov wrote:
+> On Tue, Aug 09, 2022 at 11:38:03AM -0700, Ira Weiny wrote:
+>> Thomas did a lot of work to make the entry code generic. So I was
+>> keeping that work consistent. This also helps to ensure I did not miss
+>> any places.
+>
+> How about you worry about the other arches when you actually cross that
+> bridge?
 
-This report seems false-positive.
+Ira is right. If we want it for everything, then the generic code is the
+right place.
 
-sk_diag_dump_icons() works for TCP_LISTEN, so it won't
-race with unix_dgram_sendmsg().
+>> I don't believe this is correct because instrumentation is not enabled
+>> here.
+>
+> Why do you have to run
+>
+> 	arch_save_aux_pt_regs()
+>
+> with instrumentation enabled?
+>
+> Patch 5 does
+>
+> +       struct pt_regs_auxiliary *aux_pt_regs = &to_extended_pt_regs(regs)->aux;
+> +
+> +       aux_pt_regs->cpu = raw_smp_processor_id();
+>
+> only?
+>
+> Why does that need to run with instrumentation enabled?
 
-Also, sk_diag_dump_icons() does not seem to race with
-unix_stream_connect().
+There is no reason and actually _if_ we go there then this _has_ to
+happen _before_ instrumentation comes into play as instrumentation might
+want to have access to extended pt_regs. Not necessarily the cpu number,
+but the other things which need to go there for a real reason.
 
-- sk_diag_dump_icons
-  - if (sk->sk_state == TCP_LISTEN)
-    - spin_lock(&listener->sk_receive_queue.lock)
-      - unix_state_lock_nested(req)
+Thanks,
 
-- unix_stream_connect
-  - unix_state_unlock(listener)
-    - spin_lock(&listener->sk_receive_queue.lock)
+        tglx
 
 
-
-> 
->  *** DEADLOCK ***
-> 
-> 6 locks held by syz-executor.3/3509:
->  #0: ffff888074fac468 (&pipe->mutex/1){+.+.}-{3:3}, at: pipe_lock_nested fs/pipe.c:82 [inline]
->  #0: ffff888074fac468 (&pipe->mutex/1){+.+.}-{3:3}, at: pipe_lock+0x5a/0x70 fs/pipe.c:90
->  #1: ffffffff8d5aef88 (sock_diag_mutex){+.+.}-{3:3}, at: sock_diag_rcv+0x17/0x40 net/core/sock_diag.c:276
->  #2: ffffffff8d5af108 (sock_diag_table_mutex){+.+.}-{3:3}, at: __sock_diag_cmd net/core/sock_diag.c:230 [inline]
->  #2: ffffffff8d5af108 (sock_diag_table_mutex){+.+.}-{3:3}, at: sock_diag_rcv_msg+0x19b/0x440 net/core/sock_diag.c:266
->  #3: ffff88801d907678 (nlk_cb_mutex-SOCK_DIAG){+.+.}-{3:3}, at: netlink_dump+0xae/0xc20 net/netlink/af_netlink.c:2223
->  #4: ffff888046a7a798 (&net->unx.table.locks[i]){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:360 [inline]
->  #4: ffff888046a7a798 (&net->unx.table.locks[i]){+.+.}-{2:2}, at: unix_diag_dump+0x1b4/0x640 net/unix/diag.c:211
->  #5: ffff8880765fe9e8 (rlock-AF_UNIX){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:360 [inline]
->  #5: ffff8880765fe9e8 (rlock-AF_UNIX){+.+.}-{2:2}, at: sk_diag_dump_icons net/unix/diag.c:69 [inline]
->  #5: ffff8880765fe9e8 (rlock-AF_UNIX){+.+.}-{2:2}, at: sk_diag_fill+0x9c3/0x10d0 net/unix/diag.c:155
-> 
-> stack backtrace:
-> CPU: 1 PID: 3509 Comm: syz-executor.3 Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2175
->  check_prev_add kernel/locking/lockdep.c:3095 [inline]
->  check_prevs_add kernel/locking/lockdep.c:3214 [inline]
->  validate_chain kernel/locking/lockdep.c:3829 [inline]
->  __lock_acquire+0x2abe/0x5660 kernel/locking/lockdep.c:5053
->  lock_acquire kernel/locking/lockdep.c:5665 [inline]
->  lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5630
->  _raw_spin_lock_nested+0x30/0x40 kernel/locking/spinlock.c:378
->  sk_diag_dump_icons net/unix/diag.c:87 [inline]
->  sk_diag_fill+0xaaf/0x10d0 net/unix/diag.c:155
->  sk_diag_dump net/unix/diag.c:193 [inline]
->  unix_diag_dump+0x3a9/0x640 net/unix/diag.c:217
->  netlink_dump+0x541/0xc20 net/netlink/af_netlink.c:2275
->  __netlink_dump_start+0x647/0x900 net/netlink/af_netlink.c:2380
->  netlink_dump_start include/linux/netlink.h:245 [inline]
->  unix_diag_handler_dump net/unix/diag.c:315 [inline]
->  unix_diag_handler_dump+0x5c2/0x830 net/unix/diag.c:304
->  __sock_diag_cmd net/core/sock_diag.c:235 [inline]
->  sock_diag_rcv_msg+0x31a/0x440 net/core/sock_diag.c:266
->  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
->  sock_diag_rcv+0x26/0x40 net/core/sock_diag.c:277
->  netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
->  netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
->  netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
->  sock_sendmsg_nosec net/socket.c:714 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:734
->  sock_no_sendpage+0xff/0x140 net/core/sock.c:3162
->  kernel_sendpage.part.0+0x1d5/0x700 net/socket.c:3564
->  kernel_sendpage net/socket.c:3561 [inline]
->  sock_sendpage+0xdf/0x140 net/socket.c:1054
->  pipe_to_sendpage+0x2ad/0x380 fs/splice.c:364
->  splice_from_pipe_feed fs/splice.c:418 [inline]
->  __splice_from_pipe+0x43e/0x8a0 fs/splice.c:562
->  splice_from_pipe fs/splice.c:597 [inline]
->  generic_splice_sendpage+0xd4/0x140 fs/splice.c:746
->  do_splice_from fs/splice.c:767 [inline]
->  do_splice+0xb57/0x1920 fs/splice.c:1079
->  __do_splice+0x134/0x250 fs/splice.c:1144
->  __do_sys_splice fs/splice.c:1350 [inline]
->  __se_sys_splice fs/splice.c:1332 [inline]
->  __x64_sys_splice+0x198/0x250 fs/splice.c:1332
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> RIP: 0033:0x7f94a7089209
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f94a8105168 EFLAGS: 00000246 ORIG_RAX: 0000000000000113
-> RAX: ffffffffffffffda RBX: 00007f94a719bf60 RCX: 00007f94a7089209
-> RDX: 0000000000000005 RSI: 0000000000000000 RDI: 0000000000000003
-> RBP: 00007f94a70e3161 R08: 0000000080000001 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007ffd5cb777cf R14: 00007f94a8105300 R15: 0000000000022000
->  </TASK>
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
