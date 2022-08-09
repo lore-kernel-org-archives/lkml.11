@@ -2,70 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03908C25B0C
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 14:58:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2498C25B0D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:00:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244684AbiHIO6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 10:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42916 "EHLO
+        id S235863AbiHIGAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 02:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244671AbiHIO6v (ORCPT
+        with ESMTP id S231388AbiHIGAc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 10:58:51 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3643A1D323;
-        Tue,  9 Aug 2022 07:58:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=JRyd0USx0pAjaDjWtRY6YJGa08LFJASFCAJlB960sTw=; b=Ib
-        1iUpuLHo7K4v0EYPMfORFnZWBbySKthJvN7xPmqmsqiny2soEZmRMUpKdBBr7OsUEN8e+l/O/rmfB
-        s9zbhvo3DJOInNlP3Zl3xzp+p0UYrtFVUY6l2dIv1eSDRLsOuOYk6y9VcbjRiAQdkRPJVgZKL7Xf/
-        MvAGFHCj4QZU2Jw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oLQgm-00Cq24-Vp; Tue, 09 Aug 2022 16:58:36 +0200
-Date:   Tue, 9 Aug 2022 16:58:36 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: marvell: Update Armada 37xx platform
- bindings
-Message-ID: <YvJ2HKqMTTyWiNth@lunn.ch>
-References: <20220713200123.22612-1-pali@kernel.org>
- <20220809131252.z3mbmiz4duxwlauw@pali>
+        Tue, 9 Aug 2022 02:00:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC49110A;
+        Mon,  8 Aug 2022 23:00:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C338611CC;
+        Tue,  9 Aug 2022 06:00:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4E3BC433D6;
+        Tue,  9 Aug 2022 06:00:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660024829;
+        bh=ifiUPYbblJzn2/JbG65kiuriPNytr8++13jKGGc5K7M=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=E5nUuuVBonoYap4YAIzOJOoZc/UVjqNI1mSg/rlN+uRGuJkmYdbscQ8WLlerMtkrW
+         fGe8GmfHl+5Kk41Rrp6iGL/cLOrwPFFNGT51YqrXKyOVL/MfobK/5/CKVJ4udtd9oI
+         RUjiqSeA9/L+i3XkV6olsezwo/kgdg6ZVrNQMdvZgq7WRJqURzVFiRF/1xi+xkeaAO
+         Lzvu8MP0bAh8mMYjMl2hsBNzKWMln6GVDLEQpfpzE8pfpEqmwuA0PGa5ptYYBQmq3h
+         vgixr6gtB9bl2mzudPfbpmtSi07TQzNfes33uSfjwm5wSeuSHitFHgQI4GUj0Um75X
+         PEmdej2XWZ2vw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220809131252.z3mbmiz4duxwlauw@pali>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [-next] wifi: qtnfmac: remove braces around single statement
+ blocks
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220802045305.235684-1-mailmesebin00@gmail.com>
+References: <20220802045305.235684-1-mailmesebin00@gmail.com>
+To:     Sebin Sebastian <mailmesebin00@gmail.com>
+Cc:     unlisted-recipients:; (no To-header on input)
+        mailmesebin00@gmail.com, Igor Mitsyanko <imitsyanko@quantenna.com>,
+        Sergey Matyukevich <geomatsi@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
+        Cc:     unlisted-recipients:; (no To-header on input)mailmesebin00@gmail.com
+                                                                     ^-missing end of address
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <166002482507.8958.9992440618598993380.kvalo@kernel.org>
+Date:   Tue,  9 Aug 2022 06:00:26 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 09, 2022 at 03:12:52PM +0200, Pali Rohár wrote:
-> + Andrew, Gregory, Sebastian
+Sebin Sebastian <mailmesebin00@gmail.com> wrote:
+
+> Remove braces around single statement blocks in order to improve
+> readability. Also, an extra blank line was removed. Both warnings are
+> reported by checkpatch.pl
 > 
-> please comment on this
+> Signed-off-by: Sebin Sebastian <mailmesebin00@gmail.com>
 
-Krzysztof said:
+Patch applied to wireless-next.git, thanks.
 
-> The change is an ABI break, which looks reasonable, but still
-> platform maintainer should comment on it. Especially on the aspect
-> why the marvell,armada3710 fallback was chosen at the first place.
+6b013c3d47be wifi: qtnfmac: remove braces around single statement blocks
 
-I was not involved in the armada37xx enablement. I have no idea why
-marvell,armada3710 fallback was chosen.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20220802045305.235684-1-mailmesebin00@gmail.com/
 
-Gregory might know, he is the author of this file.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-It does however seem reasonable. And a grep does suggest this
-compatible is purely cosmetic, it is not matched on anywhere.
-
-	   Andrew
