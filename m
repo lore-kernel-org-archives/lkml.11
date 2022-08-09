@@ -2,180 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87BA1C25B08
-	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 23:32:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC70BC25B08
+	for <linux-kernel@archiver.kernel.org>; Mon,  8 Aug 2022 23:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244565AbiHHXc5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 8 Aug 2022 19:32:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
+        id S244453AbiHHXrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 8 Aug 2022 19:47:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232862AbiHHXcx (ORCPT
+        with ESMTP id S230072AbiHHXrN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 8 Aug 2022 19:32:53 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC57183BD;
-        Mon,  8 Aug 2022 16:32:52 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id x21so13174892edd.3;
-        Mon, 08 Aug 2022 16:32:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CIXA4MSQ+6QaYHNm/6Jco4hxXt/+NqpIOuwnKHF6mgk=;
-        b=XXnOJtMc9+m/JOakJbcKPG7GWV9MFHJ/hTyU2WrnDcsXY0as0Z5X3u+rMA7dWscD8S
-         pJ2wdJOARfOUyZINLUTK+4ZtqdHBRA8AaLO17PEtyQZaToad+COLAL3tgP1X6xKvxdun
-         h1lp18ByrOMG5DtdwFtD3w4IxO0opTEWqUOhOUu39WwH3dhIiY6jw31st3KgtSTQThdv
-         E+vMPZmgk1xpTwp21p5Gz/4h7eBoP0nIrNDyKMaXsmwqoivlU3l3HPLS/gCW4ml4eDHI
-         un5l001XYMqcXs95HQBKH08kzLYJXf3qZaacJlwhiVNC5koYA61OcmUVD98hvkynlPFO
-         klIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CIXA4MSQ+6QaYHNm/6Jco4hxXt/+NqpIOuwnKHF6mgk=;
-        b=FXYudtVtIAudWR+etZa9Bl0x9Ylbj2Vo8OL6EFOgjBz/vlfgpt8kRd55crDEGYw3dk
-         QijUnd5uLNqIKT4UiBXG3yDenbqaUo9rIO0XOWMmDDi0RSWNaQ9NNjTQxCFtUPfKQq+p
-         zv4hI2sIgHayPDvCqobg1MDsvNS+A8jOZ8yqkamioZSb6dKZkCSNXSGb1l49bFtF4zFd
-         4i+800ryG2cWyekIBaaL4BeXCEWjGyjLun4MG6gLnM1zfu74Ls2VjSPH+Z0r3GmCbNKJ
-         v2guy2wR4hEqngELZ3MBoLID+zaC1hOWN1nOzv+/Vy7Mzr3JNxKhvrLHF0pfYCyBKiah
-         nexA==
-X-Gm-Message-State: ACgBeo1lFS7C5mQ+xrj9rKym1f9UZpGEIuPJVwJTin3BCMlA4CaKK+M3
-        nsM2TkRCNM6GiWxMMYjinszW1N6ySAwzX2SBLIo=
-X-Google-Smtp-Source: AA6agR7dWx4nxeXPZUvLRcmd4Xv1CsTtnzQ3CR5cfJOyE7vfan0wvHnMI48RgsMf8DqYYC5/cc8cY0hk+ZGRr+GJ3DQ=
-X-Received: by 2002:a05:6402:2b98:b0:43e:107:183d with SMTP id
- fj24-20020a0564022b9800b0043e0107183dmr19812321edb.366.1660001570729; Mon, 08
- Aug 2022 16:32:50 -0700 (PDT)
+        Mon, 8 Aug 2022 19:47:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 893AA5FC1
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 16:47:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660002431;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=X5KqcD8vx4696/tvPTBo340K93s7EUOcDjiDbh4jg8c=;
+        b=JPSBk30HtEXziCeK7em+/Wj892MsUcguiwqjVG8VAmTis09YUu+NgnYy2DSoh/ofeCKuX4
+        wTX99AehZ4MuDKukQv6KXk2Nt415yawP0VdLp5MjI9J6+sAy9GfrZ2BjTvBs2mIFQDcD9h
+        S3o0R5yUFowDhG5OLnz+njxYtZv8mUs=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-384-wWST4vMdPgCqHfXORRJARA-1; Mon, 08 Aug 2022 19:47:10 -0400
+X-MC-Unique: wWST4vMdPgCqHfXORRJARA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 09E21811E84;
+        Mon,  8 Aug 2022 23:47:10 +0000 (UTC)
+Received: from [10.64.54.20] (vpn2-54-20.bne.redhat.com [10.64.54.20])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7559918ECC;
+        Mon,  8 Aug 2022 23:47:07 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: tools/testing/selftests/kvm/rseq_test and glibc 2.35
+To:     Florian Weimer <fweimer@redhat.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+References: <875yj2n2r0.fsf@oldenburg.str.redhat.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <465d3599-2433-7f6e-66fc-b4018ba258cf@redhat.com>
+Date:   Tue, 9 Aug 2022 11:47:43 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-References: <20220808155341.2479054-1-void@manifault.com> <CAJnrk1YL1N371vkRDx9E6_OU2GwCj4sVzasBdjmYNUBuzygF_g@mail.gmail.com>
- <20220808185021.6papg2iwujlcaqlc@dev0025.ash9.facebook.com>
-In-Reply-To: <20220808185021.6papg2iwujlcaqlc@dev0025.ash9.facebook.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Mon, 8 Aug 2022 16:32:39 -0700
-Message-ID: <CAJnrk1bxiYfaR-2aM-PQdg75UQxWt0XJZxxrMs3sfZo02vvkYw@mail.gmail.com>
-Subject: Re: [PATCH 1/5] bpf: Clear callee saved regs after updating REG0
-To:     David Vernet <void@manifault.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, john.fastabend@gmail.com, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, tj@kernel.org,
-        linux-kernel@vger.kernel.org, Kernel-team@fb.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <875yj2n2r0.fsf@oldenburg.str.redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 8, 2022 at 11:50 AM David Vernet <void@manifault.com> wrote:
->
-> On Mon, Aug 08, 2022 at 11:14:48AM -0700, Joanne Koong wrote:
-> > On Mon, Aug 8, 2022 at 8:53 AM David Vernet <void@manifault.com> wrote:
-> > >
-> > > In the verifier, we currently reset all of the registers containing caller
-> > > saved args before updating the callee's return register (REG0). In a
-> > > follow-on patch, we will need to be able to be able to inspect the caller
-> > > saved registers when updating REG0 to determine if a dynptr that's passed
-> > > to a helper function was allocated by a helper, or allocated by a program.
-> > >
-> > > This patch therefore updates check_helper_call() to clear the caller saved
-> > > regs after updating REG0.
-> > >
-> > Overall lgtm
->
-> Thanks for the quick review!
->
-> > There's a patch [0] that finds + stores the ref obj id before the
-> > caller saved regs get reset, which would make this patch not needed.
->
-> Interesting. Indeed, that would solve this issue, and I'm fine with that
-> approach as well, if not preferential to it.
->
-> > That hasn't been merged in yet though and I think there's pros for
-> > either approach.
-> >
-> > In the one where we find + store the ref obj id before any caller
-> > saved regs get reset, the pro is that getting the dynptr metadata (eg
-> > ref obj id and in the near future, the dynptr type as well) earlier
-> > will be useful (eg when we add skb/xdp dynptrs [1], we'll need to know
-> > the type of the dynptr in order to determine whether to set the return
-> > reg as PTR_TO_PACKET). In this patch, the pro is that the logic is a
-> > lot more obvious to readers that the ref obj id for the dynptr gets
-> > found and set in order to store it in the return reg's ref obj id.
-> >
-> > I personally lean more towards the approach in [0] because I think
-> > that ends up being cleaner for future extensibility, but I don't feel
-> > strongly about it and would be happy going with this approach as well
->
-> So, I think regardless of whether this gets merged, [0] is probably worth
-> merging as I agree that it simplifies the current logic for setting the ref
-> obj id and is a purely positive change on its own.
->
-> When I was originally typing my response to your email, I was wondering
-> whether it would be useful to keep the state in the caller saved registers
-> for the logic in 7360 - 7489 in general for the future even if [0] is
-> applied. It's probably simpler, however, to keep what we have now and just
-> reset all of the registers. So if [0] gets merged, I can just remove this
-> patch from the set.
+Hi Florian,
 
-sounds great!
+On 8/9/22 2:01 AM, Florian Weimer wrote:
+> It has come to my attention that the KVM rseq test apparently needs to
+> be ported to glibc 2.35.  The background is that on aarch64, rseq is the
+> only way to get a practically useful sched_getcpu.  (There's no hidden
+> per-task CPU state the vDSO could reveal as the CPU ID.)
+> 
 
->
-> > [0] https://lore.kernel.org/bpf/20220722175807.4038317-1-joannelkoong@gmail.com/#t
-> >
-> > [1] https://lore.kernel.org/bpf/20220726184706.954822-1-joannelkoong@gmail.com/T/#t
-> >
-> > > Signed-off-by: David Vernet <void@manifault.com>
-> > > ---
-> > >  kernel/bpf/verifier.c | 15 ++++++++++-----
-> > >  1 file changed, 10 insertions(+), 5 deletions(-)
-> > >
-> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > > index 096fdac70165..938ba1536249 100644
-> > > --- a/kernel/bpf/verifier.c
-> > > +++ b/kernel/bpf/verifier.c
-> > > @@ -7348,11 +7348,9 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
-> > >         if (err)
-> > >                 return err;
-> > >
-> > > -       /* reset caller saved regs */
-> > > -       for (i = 0; i < CALLER_SAVED_REGS; i++) {
-> > > -               mark_reg_not_init(env, regs, caller_saved[i]);
-> > > -               check_reg_arg(env, caller_saved[i], DST_OP_NO_MARK);
-> > > -       }
-> > > +       /* reset return reg */
-> > > +       mark_reg_not_init(env, regs, BPF_REG_0);
-> > > +       check_reg_arg(env, BPF_REG_0, DST_OP_NO_MARK);
-> > >
-> > >         /* helper call returns 64-bit value. */
-> > >         regs[BPF_REG_0].subreg_def = DEF_NOT_SUBREG;
-> > > @@ -7488,6 +7486,13 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
-> > >                 regs[BPF_REG_0].ref_obj_id = dynptr_id;
-> > >         }
-> > >
-> > > +       /* reset remaining caller saved regs */
-> > > +       BUILD_BUG_ON(caller_saved[0] != BPF_REG_0);
-> >
-> > nit: caller_saved is a read-only const, so I don't think this line is needed
->
-> It being a read-only const is was why I made this a BUILD_BUG_ON. My
-> intention here was to ensure that we're not accidentally skipping the
-> resetting of caller_saved[0]. The original code iterated from
-> caller_saved[0] -> caller_saved[CALLER_SAVED_REGS - 1]. Now that we're
-> starting from caller_saved[1], this compile-time assertion verifies that
-> we're not accidentally skipping caller_saved[0] by checking that it's the
-> same as BPF_REG_0, which is reset above. Does that make sense?
+Yes, kvm/selftests/rseq needs to support glibc 2.35. The question is
+about glibc 2.34 or 2.35 because kvm/selftest/rseq fails on glibc 2.34
 
-I think it's an invariant that r0 - r5 are the caller saved args and
-that caller_saved[0] will always be BPF_REG_0. I'm having a hard time
-seeing a case where this would change in the future, but then again, I
-am also not a fortune teller so maybe I am wrong here :) I don't think
-it's a big deal though so I don't feel strongly about this
+I would guess upstream-glibc-2.35 feature is enabled on downstream
+glibc-2.34?
 
->
-> > > +       for (i = 1; i < CALLER_SAVED_REGS; i++) {
-> >
-> > nit: maybe "for i = BPF_REG_1" ?
->
-> Good suggestion, will apply in the v2 (if there is one and we don't decide
-> to just go with [0] :-))
->
-> Thanks,
-> David
+# ./rseq_test
+==== Test Assertion Failure ====
+   rseq_test.c:60: !r
+   pid=112043 tid=112043 errno=22 - Invalid argument
+      1	0x0000000000401973: main at rseq_test.c:226
+      2	0x0000ffff84b6c79b: ?? ??:0
+      3	0x0000ffff84b6c86b: ?? ??:0
+      4	0x0000000000401b6f: _start at ??:?
+   rseq failed, errno = 22 (Invalid argument)
+# rpm -aq | grep glibc-2
+glibc-2.34-39.el9.aarch64
+
+
+> The main rseq tests have already been adjusted via:
+> 
+> commit 233e667e1ae3e348686bd9dd0172e62a09d852e1
+> Author: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> Date:   Mon Jan 24 12:12:45 2022 -0500
+> 
+>      selftests/rseq: Uplift rseq selftests for compatibility with glibc-2.35
+>      
+>      glibc-2.35 (upcoming release date 2022-02-01) exposes the rseq per-thread
+>      data in the TCB, accessible at an offset from the thread pointer, rather
+>      than through an actual Thread-Local Storage (TLS) variable, as the
+>      Linux kernel selftests initially expected.
+>      
+>      The __rseq_abi TLS and glibc-2.35's ABI for per-thread data cannot
+>      actively coexist in a process, because the kernel supports only a single
+>      rseq registration per thread.
+>      
+>      Here is the scheme introduced to ensure selftests can work both with an
+>      older glibc and with glibc-2.35+:
+>      
+>      - librseq exposes its own "rseq_offset, rseq_size, rseq_flags" ABI.
+>      
+>      - librseq queries for glibc rseq ABI (__rseq_offset, __rseq_size,
+>        __rseq_flags) using dlsym() in a librseq library constructor. If those
+>        are found, copy their values into rseq_offset, rseq_size, and
+>        rseq_flags.
+>      
+>      - Else, if those glibc symbols are not found, handle rseq registration
+>        from librseq and use its own IE-model TLS to implement the rseq ABI
+>        per-thread storage.
+>      
+>      Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+>      Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+>      Link: https://lkml.kernel.org/r/20220124171253.22072-8-mathieu.desnoyers@efficios.com
+> 
+> But I don't see a similar adjustment for
+> tools/testing/selftests/kvm/rseq_test.c.  As an additional wrinkle,
+> you'd have to start calling getcpu (glibc function or system call)
+> because comparing rseq.cpu_id against sched_getcpu won't test anything
+> anymore once glibc implements sched_getcpu using rseq.
+> 
+> We noticed this because our downstream glibc version, while based on
+> 2.34, enables rseq registration by default.  To facilitate coordination
+> with rseq application usage, we also backported the __rseq_* ABI
+> symbols, so the selftests could use that even in our downstream version.
+> (We enable the glibc tunables downstream, but they are an optional
+> glibc feature, so it's probably better in the long run to fix the kernel
+> selftests rather than using the tunables as a workaround.)
+> 
+
+Thanks for the pointer. It makes sense. So it means rseq registration has
+been done by glibc TLS? In this case, kvm/selftests/rseq is unable to
+register again.
+
+I will come up something similiar for kvm/selftest/rseq.
+
+Thanks,
+Gavin
+
