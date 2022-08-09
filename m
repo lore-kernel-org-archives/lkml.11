@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 178AEC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99DA0C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:27:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245669AbiHISZc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:25:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50300 "EHLO
+        id S1344605AbiHISZi (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343680AbiHISX5 (ORCPT
+        with ESMTP id S1343519AbiHISWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:23:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD28A3207E;
-        Tue,  9 Aug 2022 11:08:53 -0700 (PDT)
+        Tue, 9 Aug 2022 14:22:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225D52872F;
+        Tue,  9 Aug 2022 11:08:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D33EAB818A4;
-        Tue,  9 Aug 2022 18:07:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E0D1C433D6;
-        Tue,  9 Aug 2022 18:07:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77DB2B818AF;
+        Tue,  9 Aug 2022 18:07:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD804C43470;
+        Tue,  9 Aug 2022 18:07:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068454;
-        bh=XOZonHpnPLoxWjir9XnHleFqm42CLckIlkVZmh2+kSs=;
+        s=korg; t=1660068449;
+        bh=+vJskcDitlf+1EjDn+hcxj0rA5Uriic/6Rh7abIhVGg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MbGIYwIOR8ll5Td3vPuXBEs8oryzC3ULV58Xp82JDKIO9mIPZDe16XaKG39NJNHNG
-         cBGWNbm/X/7XSn8S8ivj8UcPLxckEK8SmcIhqG0r0LqBhspRtwxCAp8Z3yqmXlT/Mk
-         JGZxYkYDqvvX+DAxmwTo6qhRehMtYfmLy+Fn5Fcw=
+        b=HcjxM2kdhGzmGU0HrLOpyZVHn0n87U+7dyBxtWzApnbevO7FapOb7A78NdRRVeCoS
+         j0JwRcVh+Q5/vryHQ8oEFPTH1OgERfTBnBPWeXLQxf6LeF7cmKmI4MS6huWCARmdPK
+         YJ8Di90m3+4nzmNh4DlquJY0l+UXesXymxKZhptk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hilda Wu <hildawu@realtek.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Subject: [PATCH 5.18 29/35] Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04C5:0x1675
-Date:   Tue,  9 Aug 2022 20:00:58 +0200
-Message-Id: <20220809175516.135240859@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sai Teja Aluvala <quic_saluvala@quicinc.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: [PATCH 5.18 23/35] Bluetooth: hci_qca: Return wakeup for qca_wakeup
+Date:   Tue,  9 Aug 2022 20:00:52 +0200
+Message-Id: <20220809175515.907662332@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
 References: <20220809175515.046484486@linuxfoundation.org>
@@ -48,62 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hilda Wu <hildawu@realtek.com>
+From: Sai Teja Aluvala <quic_saluvala@quicinc.com>
 
-commit 893fa8bc9952a36fb682ee12f0a994b5817a36d2 upstream.
+commit bde63e9effd3a6ba384707c62abe46c32d22f665 upstream.
 
-Add the support ID(0x04c5, 0x1675) to usb_device_id table for
-Realtek RTL8852C.
+This fixes the return value of qca_wakeup(), since
+.wakeup work inversely with original .prevent_wake.
 
-The device info from /sys/kernel/debug/usb/devices as below.
-
-T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
-D:  Ver= 1.00 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=04c5 ProdID=1675 Rev= 0.00
-S:  Manufacturer=Realtek
-S:  Product=Bluetooth Radio
-S:  SerialNumber=00e04c000001
-C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
-I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-
-Signed-off-by: Hilda Wu <hildawu@realtek.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Fixes: 4539ca67fe8ed (Bluetooth: Rename driver .prevent_wake to .wakeup)
+Signed-off-by: Sai Teja Aluvala <quic_saluvala@quicinc.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/btusb.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/bluetooth/hci_qca.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -425,6 +425,8 @@ static const struct usb_device_id blackl
- 	/* Realtek 8852CE Bluetooth devices */
- 	{ USB_DEVICE(0x04ca, 0x4007), .driver_info = BTUSB_REALTEK |
- 						     BTUSB_WIDEBAND_SPEECH },
-+	{ USB_DEVICE(0x04c5, 0x1675), .driver_info = BTUSB_REALTEK |
-+						     BTUSB_WIDEBAND_SPEECH },
+diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+index eab34e24d944..8df11016fd51 100644
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -1588,7 +1588,7 @@ static bool qca_wakeup(struct hci_dev *hdev)
+ 	wakeup = device_may_wakeup(hu->serdev->ctrl->dev.parent);
+ 	bt_dev_dbg(hu->hdev, "wakeup status : %d", wakeup);
  
- 	/* Realtek Bluetooth devices */
- 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bda, 0xe0, 0x01, 0x01),
+-	return !wakeup;
++	return wakeup;
+ }
+ 
+ static int qca_regulator_init(struct hci_uart *hu)
+-- 
+2.37.1
+
 
 
