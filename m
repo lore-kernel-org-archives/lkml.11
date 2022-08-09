@@ -2,136 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2087C25B06
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E9AC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 06:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237693AbiHIGet (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 02:34:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45166 "EHLO
+        id S237883AbiHIGfe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 02:35:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233465AbiHIGer (ORCPT
+        with ESMTP id S237733AbiHIGfb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 02:34:47 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A832018A;
-        Mon,  8 Aug 2022 23:34:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1660026886; x=1691562886;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=mg9vIVUx08wD84/AJ2iAaKf+in4l8tFD4HkpfPm7fKM=;
-  b=qcw3ocxwzR+U//C+Y7QnlcJI4Hlz58wabrOch2Ntrr1qw1CX3Az3A2lP
-   aa1WM4EsIPUnMMhkr3nlxoT8ccnWM5VYnWF+ZeOGhNLjl9iSF7cIZe7sW
-   Vgyu33qwYs++GdSgEUAYoPAgpA+7gZPrL9YL+l1srbyFYYnQFzp8Eitoh
-   8=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 08 Aug 2022 23:34:46 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 23:34:45 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 8 Aug 2022 23:34:44 -0700
-Received: from [10.216.39.97] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 8 Aug 2022
- 23:34:38 -0700
-Message-ID: <e3e087ba-b6d8-981f-e22f-cadd557c35af@quicinc.com>
-Date:   Tue, 9 Aug 2022 12:04:35 +0530
+        Tue, 9 Aug 2022 02:35:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC88E13E2F
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 23:35:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660026930;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=q2eAM1/hYw4jzhc9gj4LD1tO4qXa+Z9mYKQuildX4rA=;
+        b=Mtyz6qgQRy7qBrFIFqwim3Jrntp0K5Imga7sH7pBgDHUeBsaF7k5xvUmnm1O7ONCqE8dx3
+        5V43jroPoN2sa/JeWcYRumXv/SsHGuoKWQ1bMw79joy1r6DTVj5ktwJz6saOMzcy1hUhSU
+        duCXGJ4wxtBto3BJtYLdYf4E7CDMmkA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-651-4bi-5j_ePrmKV_eqokFj0A-1; Tue, 09 Aug 2022 02:35:19 -0400
+X-MC-Unique: 4bi-5j_ePrmKV_eqokFj0A-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DC68F3C0E20D;
+        Tue,  9 Aug 2022 06:35:18 +0000 (UTC)
+Received: from oldenburg.str.redhat.com (unknown [10.39.193.65])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id CA20318EB5;
+        Tue,  9 Aug 2022 06:35:15 +0000 (UTC)
+From:   Florian Weimer <fweimer@redhat.com>
+To:     Gavin Shan <gshan@redhat.com>
+Cc:     kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        pbonzini@redhat.com, maz@kernel.org, oliver.upton@linux.dev,
+        andrew.jones@linux.dev, seanjc@google.com,
+        mathieu.desnoyers@efficios.com, yihyu@redhat.com,
+        shan.gavin@gmail.com
+Subject: Re: [PATCH 2/2] KVM: selftests: Use getcpu() instead of
+ sched_getcpu() in rseq_test
+References: <20220809060627.115847-1-gshan@redhat.com>
+        <20220809060627.115847-3-gshan@redhat.com>
+Date:   Tue, 09 Aug 2022 08:35:14 +0200
+In-Reply-To: <20220809060627.115847-3-gshan@redhat.com> (Gavin Shan's message
+        of "Tue, 9 Aug 2022 14:06:27 +0800")
+Message-ID: <87y1vxncv1.fsf@oldenburg.str.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 7/8] remoteproc: qcom: Add support for memory sandbox
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-CC:     <agross@kernel.org>, <bgoswami@quicinc.com>,
-        <bjorn.andersson@linaro.org>, <broonie@kernel.org>,
-        <devicetree@vger.kernel.org>, <judyhsiao@chromium.org>,
-        <lgirdwood@gmail.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-remoteproc@vger.kernel.org>,
-        <perex@perex.cz>, <quic_plai@quicinc.com>,
-        <quic_rohkumar@quicinc.com>, <robh+dt@kernel.org>,
-        <srinivas.kandagatla@linaro.org>, <swboyd@chromium.org>,
-        <tiwai@suse.com>
-References: <1659536480-5176-1-git-send-email-quic_srivasam@quicinc.com>
- <1659536480-5176-8-git-send-email-quic_srivasam@quicinc.com>
- <2729cd6f-17ff-70d8-52c5-3dceb93e6a82@wanadoo.fr>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <2729cd6f-17ff-70d8-52c5-3dceb93e6a82@wanadoo.fr>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+* Gavin Shan:
 
-On 8/7/2022 2:09 AM, Christophe JAILLET wrote:
-Thanks for Your Time CJ!!!
-> Hi,
+> sched_getcpu() is glibc dependent and it can simply return the CPU
+> ID from the registered rseq information, as Florian Weimer pointed.
+> In this case, it's pointless to compare the return value from
+> sched_getcpu() and that fetched from the registered rseq information.
 >
-> the error handling below looks odd.
->
-> Le 03/08/2022 à 16:21, Srinivasa Rao Mandadapu a écrit :
->> Add memory sandbox support for ADSP based platforms secure booting.
->>
->> Signed-off-by: Srinivasa Rao Mandadapu 
->> <quic_srivasam-jfJNa2p1gH1BDgjK7y7TUQ@public.gmane.org>
->> ---
->>   drivers/remoteproc/qcom_q6v5_adsp.c | 101 
->> +++++++++++++++++++++++++++++++++++-
->>   1 file changed, 99 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/remoteproc/qcom_q6v5_adsp.c 
->> b/drivers/remoteproc/qcom_q6v5_adsp.c
->> index 3dbd035..f81da47 100644
->> --- a/drivers/remoteproc/qcom_q6v5_adsp.c
->> +++ b/drivers/remoteproc/qcom_q6v5_adsp.c
->
->>   static int adsp_start(struct rproc *rproc)
->>   {
->>       struct qcom_adsp *adsp = (struct qcom_adsp *)rproc->priv;
->> @@ -341,7 +429,13 @@ static int adsp_start(struct rproc *rproc)
->>       ret = qcom_q6v5_prepare(&adsp->q6v5);
->>       if (ret)
->>           return ret;
->> -
->> +    if (!adsp->is_wpss) {
->> +        ret = adsp_map_smmu(adsp, rproc);
->> +        if (ret) {
->> +            dev_err(adsp->dev, "ADSP smmu mapping failed\n");
->> +            goto adsp_smmu_unmap;
-> goto disable_irqs;?
-Yes. will correct it accordingly.
->
->> +        }
->> +    }
->>       ret = clk_prepare_enable(adsp->xo);
->>       if (ret)
->>           goto disable_irqs;
->
-> goto adsp_smmu_unmap;?
-Yes. will correct it accordingly.
->
->> @@ -402,6 +496,9 @@ static int adsp_start(struct rproc *rproc)
->>       clk_disable_unprepare(adsp->xo);
->>   disable_irqs:
->>       qcom_q6v5_unprepare(&adsp->q6v5);
->> +adsp_smmu_unmap:
->> +    iommu_unmap(adsp->iommu_dom, adsp->mem_phys, adsp->mem_size);
->> +    iommu_domain_free(adsp->iommu_dom);
->
-> Should this new hunk be above disable_irqs?
-> And I think that it should be guardd with a "if (!adsp->is_wpss)".
-Yes. will correct it accordingly.
->
-> CJ
->
->>         return ret;
->>   }
->
+> Fix the issue by replacing sched_getcpu() with getcpu(), as Florian
+> suggested. The comments are modified accordingly.
+
+Note that getcpu was added in glibc 2.29, so perhaps you need to perform
+a direct system call?
+
+Thanks,
+Florian
+
