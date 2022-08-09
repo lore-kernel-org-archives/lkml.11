@@ -2,153 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63DCBC19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 04:06:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 416C7C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 04:18:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234279AbiHIEGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 00:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
+        id S234110AbiHIESo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 00:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232813AbiHIEGe (ORCPT
+        with ESMTP id S233685AbiHIESi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 00:06:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B108A186F2
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 21:06:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660017985;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GpMqE31lls01IVsW/AFKiHmLzH6RkUJAa9i/teIiT1c=;
-        b=BqZP3567C01JSpTFhWGoL6H0itSST4FSU2yXkY0Um/B3KCEqpLHEa+Bv4DThJp99CKytXH
-        bA6u7mDM21RSsUOCs/7NGdbPj7I+7xdRJkruo1WGTfhmFcFg3rq6K5he3Gi1hFP7PB96PA
-        V5oGAaIWgPPqE7mLC0rtcnJN5OKp3CU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-135-ahVzwH5mPJ6nYZb0VLyzfg-1; Tue, 09 Aug 2022 00:06:21 -0400
-X-MC-Unique: ahVzwH5mPJ6nYZb0VLyzfg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BF4D8804191;
-        Tue,  9 Aug 2022 04:06:20 +0000 (UTC)
-Received: from gshan.redhat.com (vpn2-54-20.bne.redhat.com [10.64.54.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 26FE72166B26;
-        Tue,  9 Aug 2022 04:06:15 +0000 (UTC)
-From:   Gavin Shan <gshan@redhat.com>
-To:     kvmarm@lists.cs.columbia.edu
-Cc:     kvm@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pbonzini@redhat.com, maz@kernel.org,
-        oliver.upton@linux.dev, andrew.jones@linux.dev, seanjc@google.com,
-        mathieu.desnoyers@efficios.com, fweimer@redhat.com,
-        yihyu@redhat.com, shan.gavin@gmail.com
-Subject: [PATCH 2/2] KVM: selftests: Use getcpu() instead of sched_getcpu() in rseq_test
-Date:   Tue,  9 Aug 2022 14:06:27 +0800
-Message-Id: <20220809060627.115847-3-gshan@redhat.com>
-In-Reply-To: <20220809060627.115847-1-gshan@redhat.com>
-References: <20220809060627.115847-1-gshan@redhat.com>
+        Tue, 9 Aug 2022 00:18:38 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68A619C00
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 21:18:37 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id x25so11818759ljm.5
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 21:18:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ktjbOwbUIz6JZWGLIYlF9Qv19zLsmQ14nlnBHaQqtKY=;
+        b=fQbtoJUe4jFNbbbhRZa3Tv3NjHw8InWX5xP/yg0r7db2IBJyPK2LkV+4jCyhbDQxTw
+         rS0bRSG/hcpK0Ii5M7QHqSc7nbfDNrH8nq39KCCP42jnpx40OMM+sayFO5PvyZL97k8k
+         dJPX3sQtCrl/8Qx3b30gxzLIBFrnvQmGjPPpXLRAzFUHKw+plgD8zpAbIcjExJ3qS74q
+         5pNKgzTmMakgmVu14v4B5GKshfCaFDntqrRboBU4fdj8b4KF09hpLWQ15iTdEnNKwlNN
+         HQB0Ff1f5ldnZOq1TZ4UtvFSTmp5mgvhGd8oCI99ROxC6dFDMXGfpQQszUFs0uSzBXNK
+         nDdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ktjbOwbUIz6JZWGLIYlF9Qv19zLsmQ14nlnBHaQqtKY=;
+        b=h0W8cdc/gNJ02MjcGlrTMzyIeUPjvJas9/dvnsMjTKAfs9YGNm1gVbvqo7vF+gnZC2
+         +V//LwWwDnycGaPMoY82dPU8R8dQ4IovFz+h8lNSLqL0MJS7SLl0A8vKqt1wYmu4wbGf
+         bOyLgM6aIQMz0E4ohxN8QidchuACMWYtyLx/2v7ddre+1JwUV1IyTooZBvtet6bxpUQD
+         QyxCfhdKoUCV7VsWYdhFgeOQ3lbvawQveBtVTd6gjq1k8irn3jii4Lwvymc8LvFmRyQV
+         gREyhL1xu6Hd0Js0IlA2kp8SuHAgdP49Y7GDNq5sgG47aRgQDjUGPUVso+4z3j1miDr0
+         aYxg==
+X-Gm-Message-State: ACgBeo1pWhoSk0uGJ199OGUdVCgVJIQ9ABqj41ptMQmyV5N0lQ282kOb
+        oCceCAdLa088GW5eWQsA8oyPMg==
+X-Google-Smtp-Source: AA6agR7anU7Jd1Qacvlqh82YFYxyDO1oFmXIYlQYQsIHymSU5X0Uh7ffWNrP57hUs0cBE78V8Gi8pQ==
+X-Received: by 2002:a2e:bea8:0:b0:25f:e9ab:5a1b with SMTP id a40-20020a2ebea8000000b0025fe9ab5a1bmr1592141ljr.448.1660018716032;
+        Mon, 08 Aug 2022 21:18:36 -0700 (PDT)
+Received: from [192.168.1.39] ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id t15-20020a2e9d0f000000b0025e2e70b41fsm1529430lji.71.2022.08.08.21.18.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Aug 2022 21:18:35 -0700 (PDT)
+Message-ID: <38c3977a-0196-1832-ff94-317064cbc439@linaro.org>
+Date:   Tue, 9 Aug 2022 07:18:34 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/3] dt-bindings: spi: stm32: Add st,dual-flash property
+ in st,stm32-qspi.yaml
+Content-Language: en-US
+To:     Patrice CHOTARD <patrice.chotard@foss.st.com>,
+        Mark Brown <broonie@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-spi@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        christophe.kerello@foss.st.com, devicetree@vger.kernel.org
+References: <20220808074051.44736-1-patrice.chotard@foss.st.com>
+ <20220808074051.44736-2-patrice.chotard@foss.st.com>
+ <9ad4b4a8-988e-f185-f80c-6f15f341ce8c@linaro.org>
+ <79fd7e19-ceef-14fb-5a83-603740735f8f@foss.st.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <79fd7e19-ceef-14fb-5a83-603740735f8f@foss.st.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sched_getcpu() is glibc dependent and it can simply return the CPU
-ID from the registered rseq information, as Florian Weimer pointed.
-In this case, it's pointless to compare the return value from
-sched_getcpu() and that fetched from the registered rseq information.
+On 08/08/2022 19:08, Patrice CHOTARD wrote:
+> Hi Krzystof
+> 
+> On 8/8/22 11:01, Krzysztof Kozlowski wrote:
+>> On 08/08/2022 10:40, patrice.chotard@foss.st.com wrote:
+>>> From: Patrice Chotard <patrice.chotard@foss.st.com>
+>>>
+>>> Add new property st,dual-flash which allows to use the QSPI interface as a
+>>> communication channel using up to 8 qspi line.
+>>> This mode can only be used if cs-gpios property is defined.
+>>>
+>>> Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
+>>> ---
+>>>  Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml | 8 ++++++++
+>>>  1 file changed, 8 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml b/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml
+>>> index 6ec6f556182f..5e4f9109799e 100644
+>>> --- a/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml
+>>> +++ b/Documentation/devicetree/bindings/spi/st,stm32-qspi.yaml
+>>> @@ -46,6 +46,14 @@ properties:
+>>>        - const: tx
+>>>        - const: rx
+>>>  
+>>> +  st,dual-flash:
+>>> +    type: boolean
+>>> +    description:
+>>> +      Allows to use 8 data lines in case cs-gpios property is defined.
+>>
+>> It's named dual-flash, but what if you want to use QSPI to connect for
+>> example to FPGA?
+>>
+>> Also how is this related to parallel-memories property?
+> 
+> I called it "dual-flash" simply because it enable the dual flash feature of the QSPI block (bit CR_DFM : Dual Flash Mode)
+> which allows to use the 8 lines simultaneously of our dual QSPI block.
 
-Fix the issue by replacing sched_getcpu() with getcpu(), as Florian
-suggested. The comments are modified accordingly.
+And how is it related to existing parallel-memories property?
 
-Reported-by: Yihuang Yu <yihyu@redhat.com>
-Suggested-by: Florian Weimer <fweimer@redhat.com>
-Suggested-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Signed-off-by: Gavin Shan <gshan@redhat.com>
----
- tools/testing/selftests/kvm/rseq_test.c | 32 ++++++++++++-------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
-
-diff --git a/tools/testing/selftests/kvm/rseq_test.c b/tools/testing/selftests/kvm/rseq_test.c
-index acb1bf1f06b3..621b9b15049b 100644
---- a/tools/testing/selftests/kvm/rseq_test.c
-+++ b/tools/testing/selftests/kvm/rseq_test.c
-@@ -126,7 +126,7 @@ static void *migration_worker(void *__rseq_tid)
- 		atomic_inc(&seq_cnt);
- 
- 		/*
--		 * Ensure the odd count is visible while sched_getcpu() isn't
-+		 * Ensure the odd count is visible while getcpu() isn't
- 		 * stable, i.e. while changing affinity is in-progress.
- 		 */
- 		smp_wmb();
-@@ -167,10 +167,10 @@ static void *migration_worker(void *__rseq_tid)
- 		 *     check completes.
- 		 *
- 		 *  3. To ensure the read-side makes efficient forward progress,
--		 *     e.g. if sched_getcpu() involves a syscall.  Stalling the
--		 *     read-side means the test will spend more time waiting for
--		 *     sched_getcpu() to stabilize and less time trying to hit
--		 *     the timing-dependent bug.
-+		 *     e.g. if getcpu() involves a syscall. Stalling the read-side
-+		 *     means the test will spend more time waiting for getcpu()
-+		 *     to stabilize and less time trying to hit the timing-dependent
-+		 *     bug.
- 		 *
- 		 * Because any bug in this area is likely to be timing-dependent,
- 		 * run with a range of delays at 1us intervals from 1us to 10us
-@@ -264,9 +264,9 @@ int main(int argc, char *argv[])
- 
- 		/*
- 		 * Verify rseq's CPU matches sched's CPU.  Ensure migration
--		 * doesn't occur between sched_getcpu() and reading the rseq
--		 * cpu_id by rereading both if the sequence count changes, or
--		 * if the count is odd (migration in-progress).
-+		 * doesn't occur between getcpu() and reading the rseq cpu_id
-+		 * by rereading both if the sequence count changes, or if the
-+		 * count is odd (migration in-progress).
- 		 */
- 		do {
- 			/*
-@@ -276,15 +276,15 @@ int main(int argc, char *argv[])
- 			snapshot = atomic_read(&seq_cnt) & ~1;
- 
- 			/*
--			 * Ensure reading sched_getcpu() and rseq.cpu_id
--			 * complete in a single "no migration" window, i.e. are
--			 * not reordered across the seq_cnt reads.
-+			 * Ensure reading getcpu() and rseq.cpu_id complete in
-+			 * a single "no migration" window, i.e. are not reordered
-+			 * across the seq_cnt reads.
- 			 */
- 			smp_rmb();
--			cpu = sched_getcpu();
-+			r = getcpu(&cpu, NULL);
- 			rseq_cpu = READ_ONCE(__rseq_info->cpu_id);
- 			smp_rmb();
--		} while (snapshot != atomic_read(&seq_cnt));
-+		} while (r || snapshot != atomic_read(&seq_cnt));
- 
- 		TEST_ASSERT(rseq_cpu == cpu,
- 			    "rseq CPU = %d, sched CPU = %d\n", rseq_cpu, cpu);
-@@ -293,9 +293,9 @@ int main(int argc, char *argv[])
- 	/*
- 	 * Sanity check that the test was able to enter the guest a reasonable
- 	 * number of times, e.g. didn't get stalled too often/long waiting for
--	 * sched_getcpu() to stabilize.  A 2:1 migration:KVM_RUN ratio is a
--	 * fairly conservative ratio on x86-64, which can do _more_ KVM_RUNs
--	 * than migrations given the 1us+ delay in the migration task.
-+	 * getcpu() to stabilize.  A 2:1 migration:KVM_RUN ratio is a fairly
-+	 * conservative ratio on x86-64, which can do _more_ KVM_RUNs than
-+	 * migrations given the 1us+ delay in the migration task.
- 	 */
- 	TEST_ASSERT(i > (NR_TASK_MIGRATIONS / 2),
- 		    "Only performed %d KVM_RUNs, task stalled too much?\n", i);
--- 
-2.23.0
-
+Best regards,
+Krzysztof
