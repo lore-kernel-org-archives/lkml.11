@@ -2,55 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD85FC3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF1E6C25B0C
 	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 04:00:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233615AbiHIEAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 00:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54056 "EHLO
+        id S233867AbiHIEAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 00:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiHIEAS (ORCPT
+        with ESMTP id S233488AbiHIEAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 00:00:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED5BDD7;
-        Mon,  8 Aug 2022 21:00:15 -0700 (PDT)
+        Tue, 9 Aug 2022 00:00:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6A0CEB1;
+        Mon,  8 Aug 2022 21:00:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3665161165;
-        Tue,  9 Aug 2022 04:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 89B28C433C1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01048B8118D;
+        Tue,  9 Aug 2022 04:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9E173C43470;
         Tue,  9 Aug 2022 04:00:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1660017614;
-        bh=0zuPuI9oltl+XSx8zJPE3c1haO5OclQwKYEyUHU4Q3U=;
+        bh=KyvX/gILUlR+8s7n8GEyEi0pPMpiGZvg9KqKkd9tYeY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ec8bYfX4cJFWdbnyPzZT2jarZY1t42Bu1jqKqJGHbS/7zTHLI4y4JgjmvW8td383e
-         L7A1bDL9cQLwrCkT5xAS9nkHi18j9fXBCRz0BY2ewjmCjR1VQegXrNBpJpKEZ1kG8u
-         iD0ISC+5a6p2FdjiPDKO4o7+ZZ4M5LAOlaNgopTzHNpVYaFRtP347Qnb0p826wS6yl
-         G+g/j+t2F6HrDZBxjpNAoOjOj12OkgU9nvgCv3eMHFmSe8p+MKQhAQD6vyVs7tM+/M
-         UmNRxqecTDmyiMEvchb2qSCQHMR+gTvxLR8ReBKuUQeynXfAGWMwP+TPLQfrl9MzRl
-         ilqQvO0LnW9yQ==
+        b=p3Hje8Nos/gTvlUZZfwvFqEZ+DZ2H/Q0j8AI/oG+airfMltUEccqLK0JZbqpwGMd6
+         W+gdg5RsR89qVc/3eYdACTsLmzJG7cX+ag33m1pY6Sjs/IyBic/ASejquaauf5cG1Q
+         KMVOC1ziftnE2pQCpVWSZvZlJoK3Sn5JSmpR1m1INRT10KwNnX3tcfGycOzO0ClJ4V
+         u3D8uIUDBldTIUVQroJBLPVpzDb7d+qxzqxXsUkAD7CtgNC9GwejhOazaicTQgJ3rX
+         7chL/kH6ctSeXPx1u5tK6uIC83YCbWYecQFkV1VFpCgMHJM5YeJ0/6Z7K/bjnPK8s0
+         fhp+raoOUOP8Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 69B9FC43140;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8556CC43146;
         Tue,  9 Aug 2022 04:00:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: dsa: felix: fix min gate len calculation for tc when
- its first gate is closed
+Subject: Re: [PATCH] net: phy: dp83867: fix get nvmem cell fail
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166001761442.6286.6031346686908712641.git-patchwork-notify@kernel.org>
+Message-Id: <166001761454.6286.13550371941501693473.git-patchwork-notify@kernel.org>
 Date:   Tue, 09 Aug 2022 04:00:14 +0000
-References: <20220804202817.1677572-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220804202817.1677572-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, xiaoliang.yang_1@nxp.com,
-        richard.pearn@nxp.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+References: <20220805084843.24542-1-nikita.shubin@maquefel.me>
+In-Reply-To: <20220805084843.24542-1-nikita.shubin@maquefel.me>
+To:     Nikita Shubin <nikita.shubin@maquefel.me>
+Cc:     linux@yadro.com, n.shubin@yadro.com, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux@rasmusvillemoes.dk, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -61,21 +59,19 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu,  4 Aug 2022 23:28:17 +0300 you wrote:
-> min_gate_len[tc] is supposed to track the shortest interval of
-> continuously open gates for a traffic class. For example, in the
-> following case:
+On Fri,  5 Aug 2022 11:48:43 +0300 you wrote:
+> From: Nikita Shubin <n.shubin@yadro.com>
 > 
-> TC 76543210
-> 
-> t0 00000001b 200000 ns
-> t1 00000010b 200000 ns
+> If CONFIG_NVMEM is not set of_nvmem_cell_get, of_nvmem_device_get
+> functions will return ERR_PTR(-EOPNOTSUPP) and "failed to get nvmem
+> cell io_impedance_ctrl" error would be reported despite "io_impedance_ctrl"
+> is completely missing in Device Tree and we should use default values.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: dsa: felix: fix min gate len calculation for tc when its first gate is closed
-    https://git.kernel.org/netdev/net/c/7e4babffa6f3
+  - net: phy: dp83867: fix get nvmem cell fail
+    https://git.kernel.org/netdev/net/c/546b9d3f406a
 
 You are awesome, thank you!
 -- 
