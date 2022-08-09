@@ -2,138 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE66C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:29:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 574B9C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344114AbiHIS3o (ORCPT
+        id S1344118AbiHIS3s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:29:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37298 "EHLO
+        Tue, 9 Aug 2022 14:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347128AbiHIS0z (ORCPT
+        with ESMTP id S1347180AbiHIS06 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:26:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD9A29834;
-        Tue,  9 Aug 2022 11:09:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 9 Aug 2022 14:26:58 -0400
+Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989363337F
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:09:45 -0700 (PDT)
+Received: from terra.. (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC13AB81A0C;
-        Tue,  9 Aug 2022 18:07:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CA78C433B5;
-        Tue,  9 Aug 2022 18:07:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068476;
-        bh=mOhX7/1JiVZXl/rUxysqLLJzKJJU34tJ44uNbeSOHMw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d0Ra3nczDPXPt+D4iI3n02t0/9N/34E7aAxxYOX/D0smCcvTZKtijKfpmWvf2umwQ
-         WS2dx6nper0ZbCMwiFu2TQwzXhJE9gP56U55ISYLQtyaNJZ+3cp8IdqoUNo7gz0ief
-         Feir+vWqahQnOb/yFz35G2beiMSAntBLbYai+/yk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.19 01/21] block: fix default IO priority handling again
-Date:   Tue,  9 Aug 2022 20:00:53 +0200
-Message-Id: <20220809175513.393349023@linuxfoundation.org>
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id B542A308D14;
+        Tue,  9 Aug 2022 20:09:17 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1660068557;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GlwIJOS1mMHl8Ark2H9mL6uLPeWSFOOW6h0gHl0P9GY=;
+        b=dSdXX+ZiUXZ6ggjmBj/1G0NSkCYhE0H7NnYxr1fneLYOZfgbHDq/cMtheCREng4fEqSQ00
+        J66ZjZA6Z8sT2TxQm/b+kz3kUUd+io46yrYuAAcrz4fB+iIavhtDqz8GUafhezhAX0qYKk
+        lb9KLHRjuUeqNXy5RVT1zkzxoJ+G8D0qniCC5bH4H9YpoQkdhCu4KdAld03zZXRJ8pURCx
+        0qon4/By6qlYgNZRsjJqpUPR64+34FnV/RNwxbW4fogEsaeKHGyHfcQR0/buvweAfvWoML
+        mHf6ER0RjD9GgqY4ujpNSDkrTO6/KgAR3wh48Q9bHhobbxPpHAlA3B3ADqXU/w==
+From:   Sander Vanheule <sander@svanheule.net>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>,
+        David Gow <davidgow@google.com>,
+        Sander Vanheule <sander@svanheule.net>
+Subject: [PATCH v1 5/5] lib/cpumask_kunit: add tests file to MAINTAINERS
+Date:   Tue,  9 Aug 2022 20:08:55 +0200
+Message-Id: <7de8103cab9ef218e0216a66ab002a84ab66f9cc.1660068429.git.sander@svanheule.net>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220809175513.345597655@linuxfoundation.org>
-References: <20220809175513.345597655@linuxfoundation.org>
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
+In-Reply-To: <cover.1660068429.git.sander@svanheule.net>
+References: <cover.1660068429.git.sander@svanheule.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+cpumask related files are listed under the BITMAP API section, so file
+with the tests for cpumask should be added to that list.
 
-commit e589f46445960c274cc813a1cc8e2fc73b2a1849 upstream.
-
-Commit e70344c05995 ("block: fix default IO priority handling")
-introduced an inconsistency in get_current_ioprio() that tasks without
-IO context return IOPRIO_DEFAULT priority while tasks with freshly
-allocated IO context will return 0 (IOPRIO_CLASS_NONE/0) IO priority.
-Tasks without IO context used to be rare before 5a9d041ba2f6 ("block:
-move io_context creation into where it's needed") but after this commit
-they became common because now only BFQ IO scheduler setups task's IO
-context. Similar inconsistency is there for get_task_ioprio() so this
-inconsistency is now exposed to userspace and userspace will see
-different IO priority for tasks operating on devices with BFQ compared
-to devices without BFQ. Furthemore the changes done by commit
-e70344c05995 change the behavior when no IO priority is set for BFQ IO
-scheduler which is also documented in ioprio_set(2) manpage:
-
-"If no I/O scheduler has been set for a thread, then by default the I/O
-priority will follow the CPU nice value (setpriority(2)).  In Linux
-kernels before version 2.6.24, once an I/O priority had been set using
-ioprio_set(), there was no way to reset the I/O scheduling behavior to
-the default. Since Linux 2.6.24, specifying ioprio as 0 can be used to
-reset to the default I/O scheduling behavior."
-
-So make sure we default to IOPRIO_CLASS_NONE as used to be the case
-before commit e70344c05995. Also cleanup alloc_io_context() to
-explicitely set this IO priority for the allocated IO context to avoid
-future surprises. Note that we tweak ioprio_best() to maintain
-ioprio_get(2) behavior and make this commit easily backportable.
-
-CC: stable@vger.kernel.org
-Fixes: e70344c05995 ("block: fix default IO priority handling")
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Tested-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220623074840.5960-1-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sander Vanheule <sander@svanheule.net>
 ---
- block/blk-ioc.c        |    2 ++
- block/ioprio.c         |    4 ++--
- include/linux/ioprio.h |    2 +-
- 3 files changed, 5 insertions(+), 3 deletions(-)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/block/blk-ioc.c
-+++ b/block/blk-ioc.c
-@@ -247,6 +247,8 @@ static struct io_context *alloc_io_conte
- 	INIT_HLIST_HEAD(&ioc->icq_list);
- 	INIT_WORK(&ioc->release_work, ioc_release_fn);
- #endif
-+	ioc->ioprio = IOPRIO_DEFAULT;
-+
- 	return ioc;
- }
- 
---- a/block/ioprio.c
-+++ b/block/ioprio.c
-@@ -157,9 +157,9 @@ out:
- int ioprio_best(unsigned short aprio, unsigned short bprio)
- {
- 	if (!ioprio_valid(aprio))
--		aprio = IOPRIO_DEFAULT;
-+		aprio = IOPRIO_PRIO_VALUE(IOPRIO_CLASS_BE, IOPRIO_BE_NORM);
- 	if (!ioprio_valid(bprio))
--		bprio = IOPRIO_DEFAULT;
-+		bprio = IOPRIO_PRIO_VALUE(IOPRIO_CLASS_BE, IOPRIO_BE_NORM);
- 
- 	return min(aprio, bprio);
- }
---- a/include/linux/ioprio.h
-+++ b/include/linux/ioprio.h
-@@ -11,7 +11,7 @@
- /*
-  * Default IO priority.
-  */
--#define IOPRIO_DEFAULT	IOPRIO_PRIO_VALUE(IOPRIO_CLASS_BE, IOPRIO_BE_NORM)
-+#define IOPRIO_DEFAULT	IOPRIO_PRIO_VALUE(IOPRIO_CLASS_NONE, 0)
- 
- /*
-  * Check that a priority value has a valid class.
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 868bbf31603d..21ff272c2c10 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3601,6 +3601,7 @@ F:	include/linux/find.h
+ F:	include/linux/nodemask.h
+ F:	lib/bitmap.c
+ F:	lib/cpumask.c
++F:	lib/cpumask_kunit.c
+ F:	lib/find_bit.c
+ F:	lib/find_bit_benchmark.c
+ F:	lib/test_bitmap.c
+-- 
+2.37.1
 
