@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA75C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 178AEC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:25:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344593AbiHISZX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:25:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54092 "EHLO
+        id S245669AbiHISZc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 14:25:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245720AbiHISWq (ORCPT
+        with ESMTP id S1343680AbiHISX5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:22:46 -0400
+        Tue, 9 Aug 2022 14:23:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DD732058;
-        Tue,  9 Aug 2022 11:08:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD28A3207E;
+        Tue,  9 Aug 2022 11:08:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EDC3B818C9;
-        Tue,  9 Aug 2022 18:07:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77044C433D7;
-        Tue,  9 Aug 2022 18:07:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D33EAB818A4;
+        Tue,  9 Aug 2022 18:07:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E0D1C433D6;
+        Tue,  9 Aug 2022 18:07:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660068451;
-        bh=u9PreAMLfAZXPuhQcBjbpBtRZ/5+dZ+KdUmxs9Nagbk=;
+        s=korg; t=1660068454;
+        bh=XOZonHpnPLoxWjir9XnHleFqm42CLckIlkVZmh2+kSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wTTGWX0VU+cfqabt/vVcy48wvWLR2oV8DJorN+yrW2tBFtDplopKiocwUAdh3d/vu
-         3ACRM5UOszyKVIkqKv9FlITnoNTWUF36FvlwR2XlEfHSh6eWKTxGsDzdGqydG2bq7Q
-         C5IQrYH+fSFUDFsl3/RoZyZl+sW0Lohb3L/Luq34=
+        b=MbGIYwIOR8ll5Td3vPuXBEs8oryzC3ULV58Xp82JDKIO9mIPZDe16XaKG39NJNHNG
+         cBGWNbm/X/7XSn8S8ivj8UcPLxckEK8SmcIhqG0r0LqBhspRtwxCAp8Z3yqmXlT/Mk
+         JGZxYkYDqvvX+DAxmwTo6qhRehMtYfmLy+Fn5Fcw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 14/35] KVM: x86: disable preemption around the call to kvm_arch_vcpu_{un|}blocking
-Date:   Tue,  9 Aug 2022 20:00:43 +0200
-Message-Id: <20220809175515.577225397@linuxfoundation.org>
+        stable@vger.kernel.org, Hilda Wu <hildawu@realtek.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Subject: [PATCH 5.18 29/35] Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04C5:0x1675
+Date:   Tue,  9 Aug 2022 20:00:58 +0200
+Message-Id: <20220809175516.135240859@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
 References: <20220809175515.046484486@linuxfoundation.org>
@@ -50,61 +48,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Levitsky <mlevitsk@redhat.com>
+From: Hilda Wu <hildawu@realtek.com>
 
-[ Upstream commit 18869f26df1a11ed11031dfb7392bc7d774062e8 ]
+commit 893fa8bc9952a36fb682ee12f0a994b5817a36d2 upstream.
 
-On SVM, if preemption happens right after the call to finish_rcuwait
-but before call to kvm_arch_vcpu_unblocking on SVM/AVIC, it itself
-will re-enable AVIC, and then we will try to re-enable it again
-in kvm_arch_vcpu_unblocking which will lead to a warning
-in __avic_vcpu_load.
+Add the support ID(0x04c5, 0x1675) to usb_device_id table for
+Realtek RTL8852C.
 
-The same problem can happen if the vCPU is preempted right after the call
-to kvm_arch_vcpu_blocking but before the call to prepare_to_rcuwait
-and in this case, we will end up with AVIC enabled during sleep -
-Ooops.
+The device info from /sys/kernel/debug/usb/devices as below.
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-Message-Id: <20220606180829.102503-7-mlevitsk@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
+D:  Ver= 1.00 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=04c5 ProdID=1675 Rev= 0.00
+S:  Manufacturer=Realtek
+S:  Product=Bluetooth Radio
+S:  SerialNumber=00e04c000001
+C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+
+Signed-off-by: Hilda Wu <hildawu@realtek.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- virt/kvm/kvm_main.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/bluetooth/btusb.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 24cb37d19c63..7f1d19689701 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -3327,9 +3327,11 @@ bool kvm_vcpu_block(struct kvm_vcpu *vcpu)
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -425,6 +425,8 @@ static const struct usb_device_id blackl
+ 	/* Realtek 8852CE Bluetooth devices */
+ 	{ USB_DEVICE(0x04ca, 0x4007), .driver_info = BTUSB_REALTEK |
+ 						     BTUSB_WIDEBAND_SPEECH },
++	{ USB_DEVICE(0x04c5, 0x1675), .driver_info = BTUSB_REALTEK |
++						     BTUSB_WIDEBAND_SPEECH },
  
- 	vcpu->stat.generic.blocking = 1;
- 
-+	preempt_disable();
- 	kvm_arch_vcpu_blocking(vcpu);
--
- 	prepare_to_rcuwait(wait);
-+	preempt_enable();
-+
- 	for (;;) {
- 		set_current_state(TASK_INTERRUPTIBLE);
- 
-@@ -3339,9 +3341,11 @@ bool kvm_vcpu_block(struct kvm_vcpu *vcpu)
- 		waited = true;
- 		schedule();
- 	}
--	finish_rcuwait(wait);
- 
-+	preempt_disable();
-+	finish_rcuwait(wait);
- 	kvm_arch_vcpu_unblocking(vcpu);
-+	preempt_enable();
- 
- 	vcpu->stat.generic.blocking = 0;
- 
--- 
-2.35.1
-
+ 	/* Realtek Bluetooth devices */
+ 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bda, 0xe0, 0x01, 0x01),
 
 
