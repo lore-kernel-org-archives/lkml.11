@@ -2,53 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45BF4C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73CE7C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 18:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344074AbiHIS3I (ORCPT
+        id S1344089AbiHIS3P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 14:29:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37414 "EHLO
+        Tue, 9 Aug 2022 14:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346500AbiHIS0V (ORCPT
+        with ESMTP id S1346688AbiHIS0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 14:26:21 -0400
-Received: from polaris.svanheule.net (polaris.svanheule.net [IPv6:2a00:c98:2060:a004:1::200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A73E32DA7
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 11:09:21 -0700 (PDT)
-Received: from terra.. (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 9 Aug 2022 14:26:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCBD232EF2;
+        Tue,  9 Aug 2022 11:09:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: sander@svanheule.net)
-        by polaris.svanheule.net (Postfix) with ESMTPSA id 498DE308D11;
-        Tue,  9 Aug 2022 20:09:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
-        s=mail1707; t=1660068556;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RaM4fqJuh1bdAcPxbCOWOjg++5wy11STNZgGQX7FNYo=;
-        b=cM1KDrLs+m0j2hm5omOKL3w+DObs4NtTDU/t2EXApylqA5NPaWs9Tw6vCCD3kYgjJv+oXQ
-        F+V2tGsJg+sWWYoNtj2G0eTh2DCem/uoitCf5w35bHQ+9uiv+xovtFgHIRisfiCkqcNeYm
-        +JvBwcoa/fhN4IdsUq6JI+dRXKu+YD98ta9PuQRTxpt/pI6kFM/F6OfhVQ4TqYaXRzy3ab
-        uSQXhQQ4g7fwfPiHt0hPqb1CbTnLUniIbgpmDWepLIZneEAWAfIt5m3gN2PeMizHfLjX0m
-        hS2AlK9gKSB+gRQ+hnfaSsVc5gJmCceR+/W4mAzJyx5tOhXBTLTIwGOWUji6hA==
-From:   Sander Vanheule <sander@svanheule.net>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc:     linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>,
-        David Gow <davidgow@google.com>,
-        Sander Vanheule <sander@svanheule.net>
-Subject: [PATCH v1 2/5] lib/test_cpumask: fix cpu_possible_mask last test
-Date:   Tue,  9 Aug 2022 20:08:52 +0200
-Message-Id: <01cf5f4ee3a2d2ef56b19a91056496fd4d648cb1.1660068429.git.sander@svanheule.net>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 512B9B819ED;
+        Tue,  9 Aug 2022 18:07:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A637C433C1;
+        Tue,  9 Aug 2022 18:07:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1660068471;
+        bh=Aj/qrZaVX0QhpzS2MUF/ANJF5hHr2wjbfHO7Xx3sWUY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LM4Ot6b5dt+QDNNe73zgQcuvlD143Iv5/ETOVjeb91Dig3RTKgSFgxLJUf85s0j7z
+         d4OnvEgopQexRO9otBfN4SLL9WhEWSlsGNnmT34MtadShCuXK625/q7Wr0hT+5IgC1
+         Yn4jvqg+WfOZGukGROCCHYnZYorVQTWcfT2RN9yM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Andrew Cooper <andrew.cooper3@citrix.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Daniel Sneddon <daniel.sneddon@linux.intel.com>
+Subject: [PATCH 5.18 35/35] x86/speculation: Add LFENCE to RSB fill sequence
+Date:   Tue,  9 Aug 2022 20:01:04 +0200
+Message-Id: <20220809175516.425509841@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <cover.1660068429.git.sander@svanheule.net>
-References: <cover.1660068429.git.sander@svanheule.net>
+In-Reply-To: <20220809175515.046484486@linuxfoundation.org>
+References: <20220809175515.046484486@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -56,34 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since cpumask_first() on the cpu_possible_mask must return at most
-nr_cpu_ids - 1 for a valid result, cpumask_last() cannot return anything
-larger than this value.  As test_cpumask_weight() also verifies that the
-total weight of cpu_possible_mask must equal nr_cpu_ids, the last bit
-set in this mask must be at nr_cpu_ids - 1.
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-Fixes: c41e8866c28c ("lib/test: introduce cpumask KUnit test suite")
-Link: https://lore.kernel.org/lkml/346cb279-8e75-24b0-7d12-9803f2b41c73@riseup.net/
-Reported-by: Maíra Canal <mairacanal@riseup.net>
-Signed-off-by: Sander Vanheule <sander@svanheule.net>
-Cc: David Gow <davidgow@google.com>
+commit ba6e31af2be96c4d0536f2152ed6f7b6c11bca47 upstream.
+
+RSB fill sequence does not have any protection for miss-prediction of
+conditional branch at the end of the sequence. CPU can speculatively
+execute code immediately after the sequence, while RSB filling hasn't
+completed yet.
+
+  #define __FILL_RETURN_BUFFER(reg, nr, sp)       \
+          mov     $(nr/2), reg;                   \
+  771:                                            \
+          ANNOTATE_INTRA_FUNCTION_CALL;           \
+          call    772f;                           \
+  773:    /* speculation trap */                  \
+          UNWIND_HINT_EMPTY;                      \
+          pause;                                  \
+          lfence;                                 \
+          jmp     773b;                           \
+  772:                                            \
+          ANNOTATE_INTRA_FUNCTION_CALL;           \
+          call    774f;                           \
+  775:    /* speculation trap */                  \
+          UNWIND_HINT_EMPTY;                      \
+          pause;                                  \
+          lfence;                                 \
+          jmp     775b;                           \
+  774:                                            \
+          add     $(BITS_PER_LONG/8) * 2, sp;     \
+          dec     reg;                            \
+          jnz     771b;        <----- CPU can miss-predict here.
+
+Before RSB is filled, RETs that come in program order after this macro
+can be executed speculatively, making them vulnerable to RSB-based
+attacks.
+
+Mitigate it by adding an LFENCE after the conditional branch to prevent
+speculation while RSB is being filled.
+
+Suggested-by: Andrew Cooper <andrew.cooper3@citrix.com>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Daniel Sneddon <daniel.sneddon@linux.intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/test_cpumask.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/include/asm/nospec-branch.h |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/lib/test_cpumask.c b/lib/test_cpumask.c
-index 4ebf9f5805f3..4d353614d853 100644
---- a/lib/test_cpumask.c
-+++ b/lib/test_cpumask.c
-@@ -73,7 +73,7 @@ static void test_cpumask_first(struct kunit *test)
- static void test_cpumask_last(struct kunit *test)
- {
- 	KUNIT_EXPECT_LE(test, nr_cpumask_bits, cpumask_last(&mask_empty));
--	KUNIT_EXPECT_EQ(test, nr_cpumask_bits - 1, cpumask_last(cpu_possible_mask));
-+	KUNIT_EXPECT_EQ(test, nr_cpu_ids - 1, cpumask_last(cpu_possible_mask));
- }
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -60,7 +60,9 @@
+ 774:						\
+ 	add	$(BITS_PER_LONG/8) * 2, sp;	\
+ 	dec	reg;				\
+-	jnz	771b;
++	jnz	771b;				\
++	/* barrier for jnz misprediction */	\
++	lfence;
  
- static void test_cpumask_next(struct kunit *test)
--- 
-2.37.1
+ #ifdef __ASSEMBLY__
+ 
+
 
