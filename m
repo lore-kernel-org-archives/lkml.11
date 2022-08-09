@@ -2,102 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B11F9C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 20:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87AB4C19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 20:16:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242822AbiHIUPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 16:15:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37776 "EHLO
+        id S245670AbiHIUQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 16:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343765AbiHIUPK (ORCPT
+        with ESMTP id S1344982AbiHIUPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 16:15:10 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DB62657A
-        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 13:15:08 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id gb36so24110467ejc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 13:15:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=X1/mYkVHU3QQELeXoM1reH5RSgIloRBIOFMBth8wCSU=;
-        b=FGG/j0qA+lcc5NIm9Yr1RfxyjspKe0bRMPQntKiDcsr1oym/+xnHixwfrbQ28m7YGu
-         g/N5WLzKwxa4WMJlknvz7Yf00cZu5FrHuLCG6il2QAFzWtyDTqzgTjgpynexBGJCyuhp
-         tdJUKIRlyrFII/hnW7p3KEJ2rfU9KhujBiUdM=
+        Tue, 9 Aug 2022 16:15:50 -0400
+Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6201713B;
+        Tue,  9 Aug 2022 13:15:49 -0700 (PDT)
+Received: by mail-io1-f49.google.com with SMTP id x64so10540986iof.1;
+        Tue, 09 Aug 2022 13:15:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=X1/mYkVHU3QQELeXoM1reH5RSgIloRBIOFMBth8wCSU=;
-        b=todZvNbkmDVu1uXY6d8XA4iV5sxd2wwh5gEjGE9JQu2JD5hxfXRg9wFsxfUpdJcKdn
-         pUmf5yIYkPxNHpg4MxzYpt/vk4zZbK7PZncnAPABAjen+sbsWpci3RShSE2YhF8UP503
-         Dta61v8p7mm3tvA9p6pMaLbmCSJGwww7HtYNF1bL9sr1uHDpT2nkf5BZM6o/7wk1jrc+
-         GAGHwGlOXoCT5N4NmfBqTEOn6JIxCtZNIaoxQcZWUHBA3FKsUWaatR6IVpt9g7XkM56N
-         DWemI6aWZjA2mq1FKx1rNanHmfPoIpt9HuJFehctzOoPgg1t6Rl8c7/hV8hCsBsyfNwO
-         0Rgg==
-X-Gm-Message-State: ACgBeo2K5nIeAP+ZBnFvXNh3E8pYk2TdwTh23pgbvAUhiRt2CMeVMdBi
-        L+T2G5QR5CydbtRqqQpMtKtwAhiI6Aqhkrhx92c=
-X-Google-Smtp-Source: AA6agR7eGSWs49djoXSUEliVleIq9T0N9bSOr/xK2PaxcYLHJ738g+m495KKhH1RdtkW9vD4d8qRSQ==
-X-Received: by 2002:a17:907:75fb:b0:730:9e1f:73f1 with SMTP id jz27-20020a17090775fb00b007309e1f73f1mr17321303ejc.495.1660076107029;
-        Tue, 09 Aug 2022 13:15:07 -0700 (PDT)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id w19-20020aa7dcd3000000b0043d668dec21sm6568342edu.38.2022.08.09.13.15.06
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Aug 2022 13:15:06 -0700 (PDT)
-Received: by mail-wr1-f47.google.com with SMTP id l4so15474067wrm.13
-        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 13:15:06 -0700 (PDT)
-X-Received: by 2002:a5d:638b:0:b0:220:6e1a:8794 with SMTP id
- p11-20020a5d638b000000b002206e1a8794mr15513397wru.193.1660076105927; Tue, 09
- Aug 2022 13:15:05 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=P6nva6fF4oucGEQzdC/pymMNLM5179tf7HGPx3y8Hyc=;
+        b=1LtOBn4P668TrQ8n+SnGkT+4QwviE+xbSgDOvXiirm4Nh8d5kx85c9HDbFbM74AmFS
+         mm5msMZr1X0uOUHSADhzz5/kaG2ROM2OLBDG9QcvQ8I/6LWsS9oz2zer+yniRuFqmidt
+         OyWqjCdtJqyhEf6afyHr/2yJjJCL4O0SDfs49WLZyciT10RV1FUU4s8+YkkkYenPWcnn
+         N9+aRSCM2NPzAZXKX1+wKOY3UbMjnvUuZPyF7yBdk+5oJpsxHz3XHIw0fxW+4gLH6ivO
+         +OCxBNXxG0/3DoQ33Hf7Ow1ijQ6nVFd8tD+SF48FWioCmq2OBTfj0GaF7hbYJQZ/ralo
+         G0bA==
+X-Gm-Message-State: ACgBeo1b4T62uHUFQPYFn/udBUhBadsfzBfk2FAgnEReREDyk+FqKW+Q
+        Rm4jbZg8NLv4terc4Xz16fhSHRyP0Q==
+X-Google-Smtp-Source: AA6agR4NKtP/OF5xrXLLg3UNZO4muwOsD9ToaP+gwyexb1NzV6xUl19KqXN5MxSKBjLT4fP4zW+grQ==
+X-Received: by 2002:a05:6638:144a:b0:343:2464:d030 with SMTP id l10-20020a056638144a00b003432464d030mr3269144jad.89.1660076148592;
+        Tue, 09 Aug 2022 13:15:48 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id w76-20020a022a4f000000b00342d85cde45sm4762488jaw.120.2022.08.09.13.15.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 13:15:47 -0700 (PDT)
+Received: (nullmailer pid 2319487 invoked by uid 1000);
+        Tue, 09 Aug 2022 20:15:44 -0000
+Date:   Tue, 9 Aug 2022 14:15:44 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Sameer Pujar <spujar@nvidia.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tiwai@suse.com, lgirdwood@gmail.com, broonie@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+        perex@perex.cz, kuninori.morimoto.gx@renesas.com,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH v3 2/3] ASoC: dt-bindings: Add sample format conversion
+Message-ID: <20220809201544.GA2319453-robh@kernel.org>
+References: <1659936452-2254-1-git-send-email-spujar@nvidia.com>
+ <1659936452-2254-3-git-send-email-spujar@nvidia.com>
 MIME-Version: 1.0
-References: <20220808073232.8808-1-david@redhat.com> <CAHk-=wgsDOz5MfYYS9mE7PvFn4kLhTFdBwXvN6HCEsw1kvJnRQ@mail.gmail.com>
- <91e18a2f-c93d-00b8-7c1b-6d8493c3b2d5@redhat.com>
-In-Reply-To: <91e18a2f-c93d-00b8-7c1b-6d8493c3b2d5@redhat.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 9 Aug 2022 13:14:49 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whg0ddey-LqFAPfZJDXHMjaHJNojAV3q17yvjc6W8QRvQ@mail.gmail.com>
-Message-ID: <CAHk-=whg0ddey-LqFAPfZJDXHMjaHJNojAV3q17yvjc6W8QRvQ@mail.gmail.com>
-Subject: Re: [PATCH v1] mm/gup: fix FOLL_FORCE COW security issue and remove FOLL_COW
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1659936452-2254-3-git-send-email-spujar@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 9, 2022 at 1:07 PM David Hildenbrand <david@redhat.com> wrote:
->
-> >         /* But FOLL_FORCE has no effect on shared mappings */
-> >         if (vma->vm_flags & MAP_SHARED)
-> >                 return false;
->
-> I'd actually rather check for MAP_MAYSHARE here, which is even stronger.
-> Thoughts?
+On Mon, 08 Aug 2022 10:57:31 +0530, Sameer Pujar wrote:
+> Presently "convert-channels" and "convert-rate" DT bindings are available
+> for channel and rate fixups respectively.
+> 
+> Similarly add "convert-sample-format" binding to fixup DAI sample format
+> as well. This is added to audio-graph-card based bindings.
+> 
+> Signed-off-by: Sameer Pujar <spujar@nvidia.com>
+> Cc: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+> ---
+>  Documentation/devicetree/bindings/sound/audio-graph-port.yaml |  4 ++++
+>  Documentation/devicetree/bindings/sound/audio-graph.yaml      |  2 ++
+>  Documentation/devicetree/bindings/sound/dai-params.yaml       | 10 ++++++++++
+>  3 files changed, 16 insertions(+)
+> 
 
-Hmm. Adding the test for both is basically free (all those vm_flags
-checks end up being a bit mask and compare), so no objections.
-
-For some reason I though VM_SHARED and VM_MAYSHARE end up always being
-the same bits, and it was a mistake to make them two bits in the first
-place (unlike the read/write/exec bits that can are about mprotect),
-
-But as there are two bits, I'm sure somebody ends up touching one and
-not the other.
-
-So yeah, I don't see any downside to just checking both bits.
-
-[ That said, is_cow_mapping() only checks VM_SHARED, so if they are
-ever different, that's a potential source of confusion ]
-
-               Linus
+Reviewed-by: Rob Herring <robh@kernel.org>
