@@ -2,188 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61363C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 23:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E07DC19F2D
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 23:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbiHIXxA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 19:53:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36904 "EHLO
+        id S229794AbiHIXxa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 19:53:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229740AbiHIXw4 (ORCPT
+        with ESMTP id S229819AbiHIXxM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 19:52:56 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E557FE49;
-        Tue,  9 Aug 2022 16:52:56 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id r22so10410241pgm.5;
-        Tue, 09 Aug 2022 16:52:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=USyZqluqA43/rUeAlF5/qHhmGQX9P9xzVxOeyhsHrvo=;
-        b=SblroUSOOLZI9EyIoCySuNHP1s7lQ4EB0GJBNMbxczzgvB6Cjx4iTILWJjVL1NIn10
-         O3Kt8as6sruzWeO+AyaPM22TEB5loFFcRNAjTp2XY4+2d5nCFihsevc7W4PTK6GlqxuP
-         8+/d1ysOzkY2RhADMhQj5ula+0F44kwZxBXlsRse7tmbr3E7r+0Oa3lZ2QqG4wXRmJJc
-         JVzmRGPZ1V17YNkW3JfaCohkOrCNFZp2b8w0nkAIixNbaBW5HEDW3ebzfvvbAan0NyzY
-         uxpL/YmR26UZh19qV71YN83zrNash1aLrYj9D1HWRX4WyTEWJnLWozWJj8HdkkGRpLWT
-         vvNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=USyZqluqA43/rUeAlF5/qHhmGQX9P9xzVxOeyhsHrvo=;
-        b=5maIxL5WLiE+OwRSTATzU3+mYnIuh9fco0E7Xr4LSDw0OkZfsC1yvqlKvD5i36CItt
-         gbS4I59CC5P39wj1p7KDCNhCOBDbozplbWHegxBpfw0M2CG+dqKF7Dlz/76awRQoXKUj
-         sIQEDcWMiQBmx9HW1EsHAMT5N/Mb9/Z/HIPBJI7S/UGow3SM/1YD4tNQ/c/Uul2JpYA9
-         YStVUUJd13bA50m/JJD4e8mBJgQwmD9rdFniFmr3A9F4LiETd8sDBaIDE89DJgm9lQex
-         d03cGrkyWKDSkNSE0IXbV2MN71r5X2rDtZPjxsUBzGjho6VJg+mKBTfiGUd6tfnNBk8a
-         ultA==
-X-Gm-Message-State: ACgBeo1dK1HXcCb7rzwn5MS4s01gdsrYaZ5+nsgCseS6SZgPA1+1frPf
-        qs2ogn6rN8EdUQ8XtPrL9LM=
-X-Google-Smtp-Source: AA6agR4/36cbFq4wzIyIuGRtwDJNLqYFTUty6nCiqEwJxhLvnbLrAOBCp95pG3tuAq36Jcirste9BQ==
-X-Received: by 2002:a05:6a00:1581:b0:52f:332d:9c98 with SMTP id u1-20020a056a00158100b0052f332d9c98mr12567697pfk.64.1660089175349;
-        Tue, 09 Aug 2022 16:52:55 -0700 (PDT)
-Received: from localhost ([192.55.54.49])
-        by smtp.gmail.com with ESMTPSA id w18-20020a170902e89200b0016efa52d428sm11417479plg.218.2022.08.09.16.52.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 16:52:54 -0700 (PDT)
-Date:   Tue, 9 Aug 2022 16:52:54 -0700
-From:   Isaku Yamahata <isaku.yamahata@gmail.com>
-To:     David Matlack <dmatlack@google.com>
-Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH v7 044/102] KVM: x86/mmu: Add a private pointer to struct
- kvm_mmu_page
-Message-ID: <20220809235254.GB515657@ls.amr.corp.intel.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
- <392839e09c48ff4e14a598ff6ed8bd56429bf17b.1656366338.git.isaku.yamahata@intel.com>
- <YuLmf+dovudTbjqh@google.com>
+        Tue, 9 Aug 2022 19:53:12 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE9180480
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 16:53:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660089185; x=1691625185;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rjA1iC6t5N4BF6XjAcfKyGXVErDAjfUWb7Hx6P1OsJ4=;
+  b=fWbQ1qVcvHnWjgJL2rKLoh0JUN7kjXC3h9DmMty0FwGQ+LHS4QxLN18E
+   cmAemZ0KrXWSy68uqM5X9GtNHaNtHs4Vzjak2xMog7FOXsbaTl322Uoz7
+   /YoQGKHpIaQJr35fPCU4JYDx65+18mo1PqD4TKvnHYDdw+jNdqy0jxlmJ
+   cNZepg4mSWGsh7QGS9PjrQk3t2w6ZLwbajbBA10YFqt3t6ujCQRIS1z1J
+   OwXHTUzsQ1SibuM10GOp3Lqd4Bzccm2R5I180/piPSKiJY1oLrCItQNuu
+   L/XQIGTdZnBgkWnH8IS2bLf2Xp4lcmrmplZ46toMS+dvMyQkNGh6M99JX
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10434"; a="316902346"
+X-IronPort-AV: E=Sophos;i="5.93,225,1654585200"; 
+   d="scan'208";a="316902346"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Aug 2022 16:53:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,225,1654585200"; 
+   d="scan'208";a="555528949"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 09 Aug 2022 16:53:03 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oLZ1y-000NMJ-2V;
+        Tue, 09 Aug 2022 23:53:02 +0000
+Date:   Wed, 10 Aug 2022 07:52:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Chao Peng <chao.p.peng@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Isaku Yamahata <isaku.yamahata@intel.com>
+Subject: [intel-tdx:kvm-upstream-workaround 693/846]
+ arch/x86/kvm/mmu/mmu.c:7264:27: error: 'struct kvm' has no member named
+ 'mem_attr_array'
+Message-ID: <202208100759.CNcZjfEI-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YuLmf+dovudTbjqh@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 12:41:51PM -0700,
-David Matlack <dmatlack@google.com> wrote:
+tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
+head:   6e62680f6e4094d3986229a4145ebd54390dc110
+commit: bb9b2174d4d2edc63bdaf11c0ab09af02f64ca44 [693/846] KVM: Update lpage info when private/shared memory are mixed
+config: i386-randconfig-a001-20220808 (https://download.01.org/0day-ci/archive/20220810/202208100759.CNcZjfEI-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel/tdx/commit/bb9b2174d4d2edc63bdaf11c0ab09af02f64ca44
+        git remote add intel-tdx https://github.com/intel/tdx.git
+        git fetch --no-tags intel-tdx kvm-upstream-workaround
+        git checkout bb9b2174d4d2edc63bdaf11c0ab09af02f64ca44
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kvm/
 
-> > diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> > index f4d4ed41641b..bfc934dc9a33 100644
-> > --- a/arch/x86/include/asm/kvm_host.h
-> > +++ b/arch/x86/include/asm/kvm_host.h
-> > @@ -716,6 +716,7 @@ struct kvm_vcpu_arch {
-> >  	struct kvm_mmu_memory_cache mmu_shadow_page_cache;
-> >  	struct kvm_mmu_memory_cache mmu_gfn_array_cache;
-> >  	struct kvm_mmu_memory_cache mmu_page_header_cache;
-> > +	struct kvm_mmu_memory_cache mmu_private_sp_cache;
-> 
-> I notice that mmu_private_sp_cache.gfp_zero is left unset so these pages
-> may contain garbage. Is this by design because the TDX module can't rely
-> on the contents being zero and has to take care of initializing the page
-> itself? i.e. GFP_ZERO would be a waste of cycles?
-> 
-> If I'm correct please include a comment here in the next revision to
-> explain why GFP_ZERO is not necessary.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Yes, exactly.  Here is the added comments.
- /*
-  * This cache is to allocate pages used for Secure-EPT used by the TDX
-  * module.  Because the TDX module doesn't trust VMM and initializes the
-  * pages itself, KVM doesn't initialize them.  Allocate pages with
-  * garbage and give them to the TDX module.
-  */
+All errors (new ones prefixed by >>):
 
-> >  	/*
-> >  	 * QEMU userspace and the guest each have their own FPU state.
-> > diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> > index c517c7bca105..a5bf3e40e209 100644
-> > --- a/arch/x86/kvm/mmu/mmu.c
-> > +++ b/arch/x86/kvm/mmu/mmu.c
-> > @@ -691,6 +691,13 @@ static int mmu_topup_shadow_page_cache(struct kvm_vcpu *vcpu)
-> >  	int start, end, i, r;
-> >  	bool is_tdp_mmu = is_tdp_mmu_enabled(vcpu->kvm);
-> >  
-> > +	if (kvm_gfn_shared_mask(vcpu->kvm)) {
-> > +		r = kvm_mmu_topup_memory_cache(&vcpu->arch.mmu_private_sp_cache,
-> > +					       PT64_ROOT_MAX_LEVEL);
-> > +		if (r)
-> > +			return r;
-> > +	}
-> > +
-> >  	if (is_tdp_mmu && shadow_nonpresent_value)
-> >  		start = kvm_mmu_memory_cache_nr_free_objects(mc);
-> >  
-> > @@ -732,6 +739,7 @@ static void mmu_free_memory_caches(struct kvm_vcpu *vcpu)
-> >  {
-> >  	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_pte_list_desc_cache);
-> >  	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_shadow_page_cache);
-> > +	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_private_sp_cache);
-> >  	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_gfn_array_cache);
-> >  	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_page_header_cache);
-> >  }
-> > @@ -1736,6 +1744,7 @@ static struct kvm_mmu_page *kvm_mmu_alloc_page(struct kvm_vcpu *vcpu, int direct
-> >  	if (!direct)
-> >  		sp->gfns = kvm_mmu_memory_cache_alloc(&vcpu->arch.mmu_gfn_array_cache);
-> >  	set_page_private(virt_to_page(sp->spt), (unsigned long)sp);
-> > +	kvm_mmu_init_private_sp(sp, NULL);
-> 
-> This is unnecessary. kvm_mmu_page structs are zero-initialized so
-> private_sp will already be NULL.
-
-Ok. 
-
-
-> >  
-> >  	/*
-> >  	 * active_mmu_pages must be a FIFO list, as kvm_zap_obsolete_pages()
-> > diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
-> > index 44a04fad4bed..9f3a6bea60a3 100644
-> > --- a/arch/x86/kvm/mmu/mmu_internal.h
-> > +++ b/arch/x86/kvm/mmu/mmu_internal.h
-> > @@ -55,6 +55,10 @@ struct kvm_mmu_page {
-> >  	u64 *spt;
-> >  	/* hold the gfn of each spte inside spt */
-> >  	gfn_t *gfns;
-> > +#ifdef CONFIG_KVM_MMU_PRIVATE
-> > +	/* associated private shadow page, e.g. SEPT page. */
-> 
-> Can we use "Secure EPT" instead of SEPT in KVM code and comments? (i.e.
-> also including variable names like sept_page -> secure_ept_page)
-> 
-> "SEPT" looks like a mispelling of SPTE, which is used all over KVM. It
-> will be difficult to read code that contains both acronyms.
-
-Makes sense. Will update it.
+   arch/x86/kvm/mmu/mmu.c: In function 'kvm_mmu_zap_collapsible_spte':
+   arch/x86/kvm/mmu/mmu.c:6667:19: warning: variable 'pfn' set but not used [-Wunused-but-set-variable]
+    6667 |         kvm_pfn_t pfn;
+         |                   ^~~
+   arch/x86/kvm/mmu/mmu.c: In function 'kvm_mmu_map_gpa':
+   arch/x86/kvm/mmu/mmu.c:6839:30: error: 'KVM_MEM_ATTR_PRIVATE' undeclared (first use in this function); did you mean 'KVM_MEM_PRIVATE'?
+    6839 |         attr = map_private ? KVM_MEM_ATTR_PRIVATE : KVM_MEM_ATTR_SHARED;
+         |                              ^~~~~~~~~~~~~~~~~~~~
+         |                              KVM_MEM_PRIVATE
+   arch/x86/kvm/mmu/mmu.c:6839:30: note: each undeclared identifier is reported only once for each function it appears in
+   arch/x86/kvm/mmu/mmu.c:6839:53: error: 'KVM_MEM_ATTR_SHARED' undeclared (first use in this function)
+    6839 |         attr = map_private ? KVM_MEM_ATTR_PRIVATE : KVM_MEM_ATTR_SHARED;
+         |                                                     ^~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/list_lru.h:14,
+                    from include/linux/fs.h:13,
+                    from include/linux/huge_mm.h:8,
+                    from include/linux/mm.h:700,
+                    from include/linux/kvm_host.h:16,
+                    from arch/x86/kvm/irq.h:15,
+                    from arch/x86/kvm/mmu/mmu.c:18:
+   arch/x86/kvm/mmu/mmu.c: In function '__mem_attr_is_mixed':
+>> arch/x86/kvm/mmu/mmu.c:7264:27: error: 'struct kvm' has no member named 'mem_attr_array'
+    7264 |         XA_STATE(xas, &kvm->mem_attr_array, start);
+         |                           ^~
+   include/linux/xarray.h:1333:15: note: in definition of macro '__XA_STATE'
+    1333 |         .xa = array,                                    \
+         |               ^~~~~
+   arch/x86/kvm/mmu/mmu.c:7264:9: note: in expansion of macro 'XA_STATE'
+    7264 |         XA_STATE(xas, &kvm->mem_attr_array, start);
+         |         ^~~~~~~~
+   arch/x86/kvm/mmu/mmu.c: In function 'mem_attr_is_mixed':
+   arch/x86/kvm/mmu/mmu.c:7308:29: error: 'struct kvm' has no member named 'mem_attr_array'
+    7308 |         entry = xa_load(&kvm->mem_attr_array, start);
+         |                             ^~
+   arch/x86/kvm/mmu/mmu.c:7315:33: error: 'struct kvm' has no member named 'mem_attr_array'
+    7315 |                 if (xa_load(&kvm->mem_attr_array, gfn) != entry) {
+         |                                 ^~
+   In file included from include/linux/printk.h:10,
+                    from include/linux/kernel.h:29,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/mm_types_task.h:14,
+                    from include/linux/mm_types.h:5,
+                    from arch/x86/kvm/irq.h:13,
+                    from arch/x86/kvm/mmu/mmu.c:18:
+   arch/x86/kvm/mmu/mmu.c: In function 'kvm_arch_update_mem_attr':
+   arch/x86/kvm/mmu/mmu.c:7369:29: error: 'KVM_MEM_ATTR_PRIVATE' undeclared (first use in this function); did you mean 'KVM_MEM_PRIVATE'?
+    7369 |         WARN_ONCE(!(attr & (KVM_MEM_ATTR_PRIVATE | KVM_MEM_ATTR_SHARED)),
+         |                             ^~~~~~~~~~~~~~~~~~~~
+   include/linux/once_lite.h:15:41: note: in definition of macro 'DO_ONCE_LITE_IF'
+      15 |                 bool __ret_do_once = !!(condition);                     \
+         |                                         ^~~~~~~~~
+   arch/x86/kvm/mmu/mmu.c:7369:9: note: in expansion of macro 'WARN_ONCE'
+    7369 |         WARN_ONCE(!(attr & (KVM_MEM_ATTR_PRIVATE | KVM_MEM_ATTR_SHARED)),
+         |         ^~~~~~~~~
+   arch/x86/kvm/mmu/mmu.c:7369:52: error: 'KVM_MEM_ATTR_SHARED' undeclared (first use in this function)
+    7369 |         WARN_ONCE(!(attr & (KVM_MEM_ATTR_PRIVATE | KVM_MEM_ATTR_SHARED)),
+         |                                                    ^~~~~~~~~~~~~~~~~~~
+   include/linux/once_lite.h:15:41: note: in definition of macro 'DO_ONCE_LITE_IF'
+      15 |                 bool __ret_do_once = !!(condition);                     \
+         |                                         ^~~~~~~~~
+   arch/x86/kvm/mmu/mmu.c:7369:9: note: in expansion of macro 'WARN_ONCE'
+    7369 |         WARN_ONCE(!(attr & (KVM_MEM_ATTR_PRIVATE | KVM_MEM_ATTR_SHARED)),
+         |         ^~~~~~~~~
 
 
-> > +	void *private_sp;
-> 
-> Please name this "private_spt" and move it up next to "spt".
-> 
-> sp" or "shadow page" is used to refer to kvm_mmu_page structs. For
-> example, look at all the code in KVM that uses `struct kvm_mmu_page *sp`.
-> 
-> "spt" is "shadow page table", i.e. the actual page table memory. See
-> kvm_mmu_page.spt. Calling this field "private_spt" makes it obvious that
-> this pointer is pointing to a page table.
-> 
-> Also please update the language in the comment accordingly to "private
-> shadow page table".
+vim +7264 arch/x86/kvm/mmu/mmu.c
 
-I'll rename as follows
+  7261	
+  7262	static bool __mem_attr_is_mixed(struct kvm *kvm, gfn_t start, gfn_t end)
+  7263	{
+> 7264		XA_STATE(xas, &kvm->mem_attr_array, start);
+  7265		bool mixed = false;
+  7266		gfn_t gfn = start;
+  7267		void *s_entry;
+  7268		void *entry;
+  7269	
+  7270		rcu_read_lock();
+  7271		s_entry = xas_load(&xas);
+  7272		while (gfn < end) {
+  7273			if (xas_retry(&xas, entry))
+  7274				continue;
+  7275	
+  7276			KVM_BUG_ON(gfn != xas.xa_index, kvm);
+  7277	
+  7278			entry = xas_next(&xas);
+  7279			if (entry != s_entry) {
+  7280				mixed = true;
+  7281				break;
+  7282			}
+  7283			gfn++;
+  7284		}
+  7285		rcu_read_unlock();
+  7286		return mixed;
+  7287	}
+  7288	
 
-private_sp => private_spt
-spet_page => private_spt
-mmu_private_sp_cache => mmu_private_spt_cache
-kvm_mmu_init_private_sp => kvm_mmu_inite_private_spt
-kvm_mmu_alloc_private_sp => kvm_mmu_alloc_private_spt
-kvm_mmu_free_private_sp => kvm_mmu_free_private_spt
-kvm_alloc_private_sp_for_split => kvm_alloc_private_spt_for_split
-
-Thanks,
 -- 
-Isaku Yamahata <isaku.yamahata@gmail.com>
+0-DAY CI Kernel Test Service
+https://01.org/lkp
