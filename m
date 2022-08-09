@@ -2,104 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02262C19F2D
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 05:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E6CC25B08
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 05:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234287AbiHIFbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 01:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35666 "EHLO
+        id S234441AbiHIFcw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 01:32:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230195AbiHIFa5 (ORCPT
+        with ESMTP id S229991AbiHIFct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 01:30:57 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585FE21B5
-        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 22:30:56 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id t1so15552024lft.8
-        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 22:30:56 -0700 (PDT)
+        Tue, 9 Aug 2022 01:32:49 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DB417A9B
+        for <linux-kernel@vger.kernel.org>; Mon,  8 Aug 2022 22:32:48 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id a9so15513275lfm.12
+        for <linux-kernel@vger.kernel.org>; Mon, 08 Aug 2022 22:32:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=sKwNIt+Su79UppYhwI6KzTX7lzsG54zDOaS458PPq0U=;
-        b=rvIJKHD9j94DMkpsYlJg3wlog0UPCoFTp0kA1NMcJYKV8rCjD+gncCpD/1ZZsUUARL
-         hCGGZEGskm9SXouLFtNhMMEY54eFrCf6lFMWG2uLIkJG9WYlmfbeGQ+SY2ziW4fv6PeX
-         yEQ0HxZqW+oKYoniUoE7HQjVKavsG2YOQu3f7BYpW0ZlRrQ4NVVlts7VRhrVO754cyri
-         q9gndgD+u2WjFyVinTQkjDR2ooQScBxEeP2dHwsY6GZhOVEiSwf9HMFdTZBZmmGQIvyF
-         J/RfZPOb7Leq8OK0PUHNoZ+ccLAw/4pVgBRwMEDrpose5n2n6y2coD+a39O5007ezT7t
-         Rvvw==
+        bh=jXrsz+hPo7uM9Ts7BZ1QcFnFvHqlv6WfJx8qylXeF5o=;
+        b=FtXlMk39aN21nXaPR77Y1ZtEnDupnVhhExSRhXnX0OO5lXmwpqR12SSv5p82ppX7VM
+         Aql+1vmRahqbO54KIIl8w/Qiau50kPzcjSkYELCfvBhQ21mqMG94UXeZLaZN9Hh0SXRR
+         z8t/mvV3tIfzci8lEUZyGd1uTqBzv4ZoKJGYyVdcdMGVf89zKjD7DdBJ0agerNkS+3kd
+         0lDIOMf8JFBXL2f0GuhL0IG+o7mylYy3UI5EpzfAazAMryvdjHarAEnruGqQGfUWLzJm
+         6wyavCH/opPMCny6PwsYNza5yIrp1RzhxhH5q++n3EYJ4KNkgtjNt0OcU/n5iOViDw96
+         gOtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=sKwNIt+Su79UppYhwI6KzTX7lzsG54zDOaS458PPq0U=;
-        b=OT9ZP3PqqPfXqwalq4otiMN+5a3jmQTg42zFsvkQNpUduR/4ynrk2qrgACfR3FeP7B
-         2Tgx03shIkTVE32mQpZS1Bmqc7dOD2zi77W2XhOa6fPWnEDRST6GwMn9bAOkwGEb+wD0
-         dhj/H/TSZ+vg/9ULMAxxFZVGolnMqeHB22odP2dO2yD6K5uinm3LC6N8D6Ynd2p+8rA6
-         CJ5k222st/KKpilVfYPjUAaWCyUmucPkFlvzPMoUQ+7fNtEQWs5wo8fzBASnTdG0vMkv
-         S0PMi90o1vF1oWZ0M728d5joomObG+rTtttP0h6l1Pp57nQULdzfeSd9DGCiIPZLmssG
-         LK/Q==
-X-Gm-Message-State: ACgBeo04778pLPN0bbT1Zgc5hPGkCjJa9LBckYUp8YfwFroVPp0RcOUh
-        xA1T1VJy6jXp1PJbl+7GvPsYBw==
-X-Google-Smtp-Source: AA6agR6BzACfIJmBVjmp3EG4nPvz2giX+6BEYM6KC8E4LFpoYhpibF1aKDUpao68Wituea3Vd8vUmw==
-X-Received: by 2002:a19:3859:0:b0:48b:2523:d26c with SMTP id d25-20020a193859000000b0048b2523d26cmr7750713lfj.88.1660023054752;
-        Mon, 08 Aug 2022 22:30:54 -0700 (PDT)
+        bh=jXrsz+hPo7uM9Ts7BZ1QcFnFvHqlv6WfJx8qylXeF5o=;
+        b=12QGJNmEQFQWwZfYZJ52riuzSPJZLflZhIc6DEu7arj8vL7zA8fsB5mlobP908zLyG
+         IK924CFEOgOhE/Xk0F6T2A0ki1q6BtYXkoSDH5rZbKBR1VNKXAmXiYc8yH3BLt3i2NlU
+         n89aLUx6RlzWO66Ts6m8DlFznR//SpzjDIkRmy+Y1kxkVa+LW5B70/3QdgqIBceFJf8Z
+         qurdYXqAsfIUe/u8OAclq1V0vGUsOMKzTEAHLMkBSqhAZW+/sLcGPotj3ywyWEipy+MG
+         6xwbk0hGHZoo56DRIwsy8ylp4x0b1/+Cq6dSoOl/XRjnI1ceKwUf+urhK7sqs+tOnzX5
+         ha1A==
+X-Gm-Message-State: ACgBeo154gvPCzCRtyW4KZ2986lcduC+l/2oE4nBfLjmODPCYq4tk5YS
+        YZwJj007euUn+wZLnX+EKoB0xg==
+X-Google-Smtp-Source: AA6agR5AT8zfAo/4iJU4TuqAZVPu2vYEWKLzbFO3EHMVZ/Z/CGOtQTYoZBa0e1bf3+2iM8rMK3l+YA==
+X-Received: by 2002:a05:6512:c02:b0:48a:80f:b92d with SMTP id z2-20020a0565120c0200b0048a080fb92dmr7801928lfu.675.1660023167051;
+        Mon, 08 Aug 2022 22:32:47 -0700 (PDT)
 Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id m9-20020a056512358900b0048abf3a550asm1634905lfr.224.2022.08.08.22.30.53
+        by smtp.gmail.com with ESMTPSA id k11-20020ac257cb000000b0048a73208cbbsm1627637lfo.280.2022.08.08.22.32.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Aug 2022 22:30:54 -0700 (PDT)
-Message-ID: <4b39c749-5685-c821-6723-4a950287656d@linaro.org>
-Date:   Tue, 9 Aug 2022 08:30:53 +0300
+        Mon, 08 Aug 2022 22:32:46 -0700 (PDT)
+Message-ID: <9199f9a4-f527-ad90-917d-3121c41082b2@linaro.org>
+Date:   Tue, 9 Aug 2022 08:32:45 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH 1/2] ARM: msm8960: Rename cxo_board to cxo-board and add
- alias
+Subject: Re: [PATCH v2 1/2] ARM: msm8960: Rename cxo_board to cxo-board and
+ add alias
 Content-Language: en-US
-To:     Rudraksha Gupta <guptarud@gmail.com>,
-        krzysztof.kozlowski+dt@linaro.org
+To:     Rudraksha Gupta <guptarud@gmail.com>
 Cc:     agross@kernel.org, bjorn.andersson@linaro.org, david@ixit.cz,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org
-References: <20220808234723.5184-1-guptarud@gmail.com>
+        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org
+References: <20220808234723.5184-2-guptarud@gmail.com>
+ <20220809000300.6384-1-guptarud@gmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220808234723.5184-1-guptarud@gmail.com>
+In-Reply-To: <20220809000300.6384-1-guptarud@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/08/2022 02:47, Rudraksha Gupta wrote:
+On 09/08/2022 03:02, Rudraksha Gupta wrote:
 > This patch renames cxo_board to be up to date with the current naming
-> style. It also adds an alias
+> style. It also adds an alias.
 
-Do not use "This commit/patch".
-https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
+Same comment as v1.
+
+Additionally you do not explain why you are doing it.
 
 > 
 > Signed-off-by: Rudraksha Gupta <guptarud@gmail.com>
 > ---
->  arch/arm/boot/dts/Makefile     | 1 +
->  drivers/clk/qcom/gcc-msm8960.c | 2 +-
->  2 files changed, 2 insertions(+), 1 deletion(-)
+> v2:
+>  - Group the correct changes together
+
+Don't link new patchsets to some other threads.
 > 
-> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-> index 05d8aef6e5d2..d55f196ad733 100644
-> --- a/arch/arm/boot/dts/Makefile
-> +++ b/arch/arm/boot/dts/Makefile
-> @@ -1049,6 +1049,7 @@ dtb-$(CONFIG_ARCH_QCOM) += \
->  	qcom-msm8660-surf.dtb \
->  	qcom-msm8916-samsung-serranove.dtb \
->  	qcom-msm8960-cdp.dtb \
-> +	qcom-msm8960-samsung-expressatt.dtb \
-
-This does not look related at all.
-
->  	qcom-msm8974-lge-nexus5-hammerhead.dtb \
->  	qcom-msm8974-sony-xperia-rhine-amami.dtb \
->  	qcom-msm8974-sony-xperia-rhine-honami.dtb \
+>  arch/arm/boot/dts/qcom-msm8960.dtsi | 2 +-
+>  drivers/clk/qcom/gcc-msm8960.c      | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
+> index 0e099aa7c889..2ed969785b78 100644
+> --- a/arch/arm/boot/dts/qcom-msm8960.dtsi
+> +++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
+> @@ -58,7 +58,7 @@ cpu-pmu {
+>  	};
+>  
+>  	clocks {
+> -		cxo_board {
+> +		cxo_board: cxo-board {
+>  			compatible = "fixed-clock";
+>  			#clock-cells = <0>;
+>  			clock-frequency = <19200000>;
 > diff --git a/drivers/clk/qcom/gcc-msm8960.c b/drivers/clk/qcom/gcc-msm8960.c
 > index 051745ef99c8..56ce05a846dd 100644
 > --- a/drivers/clk/qcom/gcc-msm8960.c
@@ -111,7 +116,11 @@ This does not look related at all.
 > -	ret = qcom_cc_register_board_clk(dev, "cxo_board", "cxo", 19200000);
 > +	ret = qcom_cc_register_board_clk(dev, "cxo-board", "cxo", 19200000);
 
-... and this does not look related to subject prefix.
+
+My comment from v1 still applies - this does not match subsystem.
+Additionally DTS change and driver change *cannot* go together.
+Basically your commit is non-bisectable which is indication it is not
+correct approach.
 
 Best regards,
 Krzysztof
