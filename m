@@ -2,126 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54B7AC25B06
-	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 19:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF05CC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Tue,  9 Aug 2022 20:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345439AbiHITz3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 9 Aug 2022 15:55:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52534 "EHLO
+        id S235769AbiHIUC6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 9 Aug 2022 16:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345376AbiHITzZ (ORCPT
+        with ESMTP id S1346298AbiHIUBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 9 Aug 2022 15:55:25 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08605F7D;
-        Tue,  9 Aug 2022 12:55:24 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id f30so11358094pfq.4;
-        Tue, 09 Aug 2022 12:55:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=9MuUym0qseMztmmB08QIe6J0PxQHYo7/9v1WA9Ef9Bg=;
-        b=oC3ymHBJylR7XqQ1/YsoJWKU1vaS4NJ9iVSdgfEdCt9FgymssN/Wxfz4zV0wTqb8ox
-         mHrHVPgBvk1V5bINjpZmmSZ2YVsLiVWbMc0QHAlLbxmlYteVr0eseqlyDpS3+otxKogh
-         8n/4AHVa6kc0D7E4Nj6mrsGdmf7c/OQjhIbyhwrB9YafOwrvn6lCkvFCwEL8hV8uLSwx
-         CYCfs9tOBHKWRpPEnz9suBU2fGtc5Jv3JLCCnD4ANllmc1h1yVvAZQMGRSRKbV9MiSKL
-         SBzlVoS1vtOQUaMUVkuMOTZw/vBbRy4Qj8otjY2kg7ehzaT9sqR+sB2yizTxBQEx4EV1
-         /GyA==
+        Tue, 9 Aug 2022 16:01:09 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F06CF9
+        for <linux-kernel@vger.kernel.org>; Tue,  9 Aug 2022 13:01:08 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id n13-20020a056e02140d00b002dfa5464967so7842726ilo.19
+        for <linux-kernel@vger.kernel.org>; Tue, 09 Aug 2022 13:01:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=9MuUym0qseMztmmB08QIe6J0PxQHYo7/9v1WA9Ef9Bg=;
-        b=BD7RJQzQKU161Hk6Oj4WKXuvoKCjyXXO0VRw1VhI+I1juzWuxbq0Qx7LuVrpbE9QgW
-         w8Rw+8wUIO0n6SbAC+0zjWiWi18ISfa0UG9utRecYIE3NfHhZR2V2R5Scu26ENbmkR1c
-         LV15Xk1L41dNNCg1whFtUIRkVogMdDF5+dk5/vMOe59T2mGKvdrUZhcHdStVC29KNyoA
-         SIwlrWY3A9QtkZY7tXMJ2Vp9V2Pj+Wcn6kiNclT5Q6F05s2CQ8aqFD4qjejeZgdVM6z1
-         9rik1rpnrHB/S63EscrWXF84NLCE/A8Nsmo/I5x68tI3DCFuWTmLzYfsKSsyvXnNWDDZ
-         apyg==
-X-Gm-Message-State: ACgBeo3RfpQEud5If5U4UEiRX4uH3qtyuMZ+/PQb8jiBWyAGcoV7+6ag
-        gyOS8ju9GQnNzFTYLpBYoBk=
-X-Google-Smtp-Source: AA6agR5T2qyURPAUNz3Ik2+ANuXj1MEgX0/CWpXSSiJzOivF1/nX/FJPYo2OmCzEmS1ezPOFCZwC9g==
-X-Received: by 2002:a65:5504:0:b0:41d:271:4929 with SMTP id f4-20020a655504000000b0041d02714929mr17565614pgr.606.1660074923724;
-        Tue, 09 Aug 2022 12:55:23 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:237b])
-        by smtp.gmail.com with ESMTPSA id u8-20020a1709026e0800b0016c4147e48asm11156900plk.219.2022.08.09.12.55.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Aug 2022 12:55:23 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Tue, 9 Aug 2022 09:55:21 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Will Deacon <will@kernel.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH v2 2/2] cgroup/cpuset: Keep user set cpus affinity
-Message-ID: <YvK7qVkmzbA12Eut@slm.duckdns.org>
-References: <20220801154124.2011987-1-longman@redhat.com>
- <20220801154124.2011987-3-longman@redhat.com>
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=lUD5K1OaKXZ+uIyIJbpNGwhrosahtoeyYFURN2v4TZk=;
+        b=c8KL63IyP812iYPFxiimwSdkLs/+/5eWnhn3TKjXPVLo5GwtnfC/I99uxZ3iOLfOyk
+         LGbY9qflYuIibEvE36/yaVaLHzkV9OIKr954K2O5jwLzstTAG73IsZj8c+6cZkd49oUV
+         KRAmxgZd3HTtJMsdktwblaulc4MmowV4eJL34RYWAETIt7F2OKmJdnhUvsxvR0M+wXbG
+         ccV2KYcgOVd35vEG8jhWr2nd9x7c4FPbvuvKj6MQ7YqmNXVAb5QqcPF4vV61BtJzOvqA
+         wVi5L7f7VvrJ73ei33xwQrD+reTp14f3t7fKTrlNjps4w6SHmbQKHhh+JcwjIujMu1uu
+         25tw==
+X-Gm-Message-State: ACgBeo30Glz+a0ALs0+BecCm7e/rfnA9cn7srgtyycKoWtpnPzeeSsxE
+        CFJmkffiIuCJ3RkeVo78JJo77dIjW517dxBKXdE+ARFxze62
+X-Google-Smtp-Source: AA6agR6n58/o7pKgAaqATtwzUJsoBbzrcET1Z/GWo1Rby+nPb4jgIIXcO7lcmAk6ESpnFU5dkYO4p96EPmp30/dWFS9jw2nOlhTg
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220801154124.2011987-3-longman@redhat.com>
+X-Received: by 2002:a5d:9b99:0:b0:680:360:8703 with SMTP id
+ r25-20020a5d9b99000000b0068003608703mr9559963iom.72.1660075268055; Tue, 09
+ Aug 2022 13:01:08 -0700 (PDT)
+Date:   Tue, 09 Aug 2022 13:01:08 -0700
+In-Reply-To: <20220809111035.2393-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a7290705e5d46441@google.com>
+Subject: Re: [syzbot] possible deadlock in ext4_bmap
+From:   syzbot <syzbot+9543479984ae9e576000@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(cc'ing Linus)
-
 Hello,
 
-On Mon, Aug 01, 2022 at 11:41:24AM -0400, Waiman Long wrote:
-> It was found that any change to the current cpuset hierarchy may reset
-> the cpumask of the tasks in the affected cpusets to the default cpuset
-> value even if those tasks have cpus affinity explicitly set by the users
-> before. That is especially easy to trigger under a cgroup v2 environment
-> where writing "+cpuset" to the root cgroup's cgroup.subtree_control
-> file will reset the cpus affinity of all the processes in the system.
-> 
-> That is problematic in a nohz_full environment where the tasks running
-> in the nohz_full CPUs usually have their cpus affinity explicitly set
-> and will behave incorrectly if cpus affinity changes.
-> 
-> Fix this problem by looking at user_cpus_ptr which will be set if
-> cpus affinity have been explicitly set before and use it to restrcit
-> the given cpumask unless there is no overlap. In that case, it will
-> fallback to the given one.
-> 
-> With that change in place, it was verified that tasks that have its
-> cpus affinity explicitly set will not be affected by changes made to
-> the v2 cgroup.subtree_control files.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-The fact that the kernel clobbers user-specified cpus_allowed as cpu
-availability changes always bothered me and it has been causing this sort of
-problems w/ cpu hotplug and cpuset. We've been patching this up partially
-here and there but I think it would be better if we just make the rules
-really simple - ie. allow users to configure whatever cpus_allowed as long
-as that's within cpu_possible_mask and override only the effective
-cpus_allowed if the mask leaves no runnable CPUs, so that we can restore the
-original configured behavior if and when some of the cpus become available
-again.
+Reported-and-tested-by: syzbot+9543479984ae9e576000@syzkaller.appspotmail.com
 
-One obvious problem with changing the behavior is that it may affect /
-confuse users expecting the current behavior however inconsistent it may be,
-but given that we have partially changed how cpus_allowed interacts with
-hotplug in the past and the current behavior can be inconsistent and
-surprising, I don't think this is a bridge we can't cross. What do others
-think?
+Tested on:
 
-Thanks.
+commit:         ca688bff Add linux-next specific files for 20220808
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=147eb8be080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4c20e006003cdecb
+dashboard link: https://syzkaller.appspot.com/bug?extid=9543479984ae9e576000
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=17ee2476080000
 
--- 
-tejun
+Note: testing is done by a robot and is best-effort only.
